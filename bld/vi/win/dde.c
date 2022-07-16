@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include "ddedef.h"
 #include "wclbdde.h"
+#include "myprintf.h"
 
 
 /* Local Windows CALLBACK function prototypes */

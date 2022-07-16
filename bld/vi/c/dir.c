@@ -33,6 +33,7 @@
 #include "vi.h"
 #include <sys/types.h>
 #include "posix.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 

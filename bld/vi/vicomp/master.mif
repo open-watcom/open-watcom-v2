@@ -30,13 +30,11 @@ exetarg_objs = &
     addstr.obj &
     srcgen.obj &
     srclabel.obj &
-    myprintf.obj &
+    bprintf.obj &
     srccs.obj &
     srcdata.obj &
     pdata.obj &
     exdata.obj &
-    mapkey.obj &
-    dat.obj &
     clset.obj &
     llrtns.obj &
     srcvar.obj &

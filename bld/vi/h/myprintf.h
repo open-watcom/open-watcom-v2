@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,3 +34,7 @@
 
 void    MyVSprintf( char *, const char *, va_list );
 void    MyVPrintf( const char *, va_list );
+void    MySprintf( char *, const char *, ... );
+void    MyPrintf( const char *, ... );
+void    MyFprintf( FILE *,const char *, ... );
+

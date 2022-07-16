@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "menu.h"
+#include "myprintf.h"
 #include <assert.h>
 
 

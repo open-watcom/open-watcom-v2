@@ -44,6 +44,7 @@
 #include "sstyle.h"
 #include "fts.h"
 #include "rcs.h"
+#include "myprintf.h"
 #ifdef __WIN__
 #include "ideactiv.h"
 #endif

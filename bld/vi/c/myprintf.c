@@ -31,185 +31,44 @@
 
 
 #include "vi.h"
+#include "bprintf.h"
 #include "myprintf.h"
 
 
-void Lead( char c, int num, char *buff )
-// With "c", to "num" bytes, put leading bytes in "buff"
-// This is a service for basePrintf() which is made available externally.
-{
-    int len, diff, i;
-
-    len = (int)strlen( buff );
-    diff = num - len;
-    if( diff <= 0 ) {
-        return;
-    }
-    for( i = len; i >= 0; i-- ) {
-        buff[diff + i] = buff[i];
-    }
-    for( i = 0; i < diff; i++ ) {
-        buff[i] = c;
-    }
-}
-
-// barfChar() - called from basePrintf() - writes to (cFile) ? cFile : cStr
-static FILE *cFile;
+// out_char_str() - called from BasePrintf() - writes to cStr
 static char *cStr;
 
-static void barfChar( char ch )
+static void out_char_str( char ch )
 {
-    if( cFile == NULL ) {
-        *cStr++ = ch;
-    } else {
-        fputc( ch, cFile );
-    }
+    *cStr++ = ch;
 }
 
-static void basePrintf( const char *in, va_list args )
-// With format "in" and argument list "al", use barfChar() to write an output
-// Flags, minimum field width, precision, and length modifiers are unsupported.
-// conversion specifiers are a superset of a subset of those printf supports.
-// Unsupported specifiers are quietly ignored.
+// out_char_file() - called from BasePrintf() - writes to cFile
+static FILE *cFile;
+
+static void out_char_file( char ch )
 {
-    char        cin;
-    int         i, j;
-    long        l;
-    char        buff[MAX_STR], *tmp;
-
-    while( (cin = *in) != '\0' ) {
-        if( cin == '%' ) {
-            in++;
-            switch( *in ) {
-            case '%':
-                barfChar( '%' );
-                break;
-            case 'c':
-                barfChar( (char)va_arg( args, int ) );
-                break;
-            case 'u':
-                i = va_arg( args, int );
-                sprintf( buff, "%u", (unsigned)i );
-                goto copyloop1;
-            case 'd':
-                i = va_arg( args, int );
-                sprintf( buff, "%d", (unsigned)i );
-                goto copyloop1;
-            case 'U':
-                l = va_arg( args, long );
-                sprintf( buff, "%lu", (unsigned long)l );
-                goto copyloop1;
-            case 'l':
-                l = va_arg( args, long );
-                sprintf( buff, "%ld", (long)l );
-                goto copyloop1;
-            case 's':
-                tmp = va_arg( args, char * );
-                goto copyloop2;
-#ifndef NDEBUG
-            case 'W':
-#ifdef _M_I86
-                i = va_arg( args, int );
-                j = va_arg( args, int );
-                sprintf( buff, "%04x:%04x", j, i );
-#else
-                i = va_arg( args, int );
-                sprintf( buff, "%08x", i );
-#endif
-                goto copyloop1;
-#endif
-            case 'Z':   /* %02x */
-                i = va_arg( args, int );
-                sprintf( buff, "%02x", i );
-                goto copyloop1;
-            case 'D':   /* %02d */
-                i = va_arg( args, int );
-                sprintf( buff, "%02d", i );
-                goto copyloop1;
-            case 'L':   /* %8ld */
-                l = va_arg( args, long );
-                sprintf( buff, "%8ld", l );
-                j = 8;
-                goto copyloop;
-            case 'M':   /* %5ld */
-                l = va_arg( args, long );
-                sprintf( buff, "%5ld", l );
-                j = 5;
-                goto copyloop;
-            case 'N':   /* %6ld */
-                l = va_arg( args, long );
-                sprintf( buff, "%6ld", l );
-                j = 6;
-                goto copyloop;
-            case 'O':   /* %6d */
-                i = va_arg( args, int );
-                sprintf( buff, "%6d", i );
-                j = 6;
-                goto copyloop;
-            case 'S':   /* %-12s */
-                j = 12;
-                goto copyloopa;
-            case 'X':   /* %-15s */
-                j = 15;
-                goto copyloopa;
-            case 'Y':   /* %-32s */
-                j = 32;
-copyloopa:
-                tmp = va_arg( args, char * );
-                strcpy( buff, tmp );
-                {
-                    int k;
-
-                    l = (long)strlen( buff );
-                    k = j - l;
-                    if( k > 0 ) {
-                        tmp = &buff[l];
-                        for( i = 0; i < k; i++ ) {
-                            tmp[i] = ' ';
-                        }
-                        tmp[k] = '\0';
-                    }
-                }
-                goto copyloop1;
-copyloop:
-                Lead( ' ', j, buff );
-copyloop1:
-                tmp = buff;
-copyloop2:
-                while( *tmp != '\0' ) {
-                    barfChar( *tmp++ );
-                }
-                break;
-            }
-        } else {
-            barfChar( cin );
-        }
-        in++;
-    }
-    if( cFile == NULL ) {
-        *cStr++ = '\0';
-    }
+    fputc( ch, cFile );
 }
 
 void MyPrintf( const char *str, ... )
 {
     va_list     args;
-
 #ifdef __WIN__
     char        tmp[MAX_STR];
 
-    va_start( args, str );
-    cFile = NULL;
     cStr = tmp;
-    basePrintf( str, args );
+    va_start( args, str );
+    BasePrintf( str, out_char_str, args );
+    va_end( args );
+    *cStr++ = '\0';
     MessageBox( NO_WINDOW, tmp, EditorName, MB_OK | MB_TASKMODAL );
 #else
-    va_start( args, str );
     cFile = stdout;
-    cStr = NULL;
-    basePrintf( str, args );
-#endif
+    va_start( args, str );
+    BasePrintf( str, out_char_file, args );
     va_end( args );
+#endif
 }
 
 void MySprintf( char *out, const char *str, ... )
@@ -217,26 +76,26 @@ void MySprintf( char *out, const char *str, ... )
 {
     va_list     args;
 
-    va_start( args, str );
-    cFile = NULL;
     cStr = out;
-    basePrintf( str, args );
+    va_start( args, str );
+    BasePrintf( str, out_char_str, args );
     va_end( args );
+    *cStr++ = '\0';
 }
 
 void MyVSprintf( char *out, const char *str, va_list args )
 // vsprintf++ functionality
 {
-    cFile = NULL;
     cStr = out;
-    basePrintf( str, args );
+    BasePrintf( str, out_char_str, args );
+    *cStr++ = '\0';
 }
 
 void MyVPrintf( const char *str, va_list args )
 // vprintf++ functionality
 {
     cFile = stdout;
-    basePrintf( str, args );
+    BasePrintf( str, out_char_file, args );
 }
 
 void MyFprintf( FILE *fp, const char *str, ... )
@@ -246,6 +105,6 @@ void MyFprintf( FILE *fp, const char *str, ... )
 
     va_start( args, str );
     cFile = fp;
-    basePrintf( str, args );
+    BasePrintf( str, out_char_file, args );
     va_end( args );
 }

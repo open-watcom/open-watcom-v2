@@ -37,6 +37,7 @@
     #include "winrtns.h"
 #endif
 #include "myio.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 

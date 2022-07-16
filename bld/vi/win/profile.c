@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
     typedef HRESULT (CALLBACK *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
 #endif
 #include "posix.h"
+#include "myprintf.h"
 
 
 #define CONFIG_DIR "Open Watcom"

@@ -38,6 +38,7 @@
 #include "ex.h"
 #include "fts.h"
 #include "pathgrp2.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 

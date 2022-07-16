@@ -35,6 +35,7 @@
 #include "posix.h"
 #include "win.h"
 #include "pathgrp2.h"
+#include "myprintf.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif

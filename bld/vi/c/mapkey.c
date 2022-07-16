@@ -33,11 +33,12 @@
 
 #include "vi.h"
 #include "win.h"
+#include "myprintf.h"
+
 
 static bool     keysRead = false;
 static char     *CharTokens;
 static vi_key   *keyVals;
-
 
 static bool key_alloc( int cnt )
 {

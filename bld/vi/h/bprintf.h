@@ -25,29 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes of internal functions that require stdarg.h.
 *
 ****************************************************************************/
 
 
-#include "vi.h"
-#include "myprintf.h"
+#include <stdarg.h>
 
-/*
- * AbandonHopeAllYesWhoEnterHere - death for the masses
- */
-void AbandonHopeAllYesWhoEnterHere( vi_rc rc )
-{
-
-    EditVars.AutoSaveInterval = 0;
-    ClearScreen();
-    SetPosToMessageLine();
-    if( rc == ERR_NO_MEMORY )  {
-        MyPrintf( "Out of memory\n" );
-    } else {
-        MyPrintf( "Fatal error %d\n", rc );
-    }
-    QuitEditor( rc );
-
-} /* AbandonHopeAllYesWhoEnterHere */
+extern void Lead( char c, int num, char *buff );
+extern void BasePrintf( const char *in, void(*out_fn)(char), va_list args );

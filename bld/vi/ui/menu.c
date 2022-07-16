@@ -35,6 +35,7 @@
 #include <time.h>
 #include "menu.h"
 #include "win.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 

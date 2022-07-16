@@ -38,6 +38,8 @@
 #include "sstyle.h"
 #include "banner.h"
 #include "fts.h"
+#include "myprintf.h"
+
 
 #define VBUF_SIZE       8192
 

@@ -34,6 +34,8 @@
 #include "vi.h"
 #include "ex.h"
 #include "win.h"
+#include "myprintf.h"
+
 
 static window_info  exwInfo = {
     BLACK, WHITE, DEF_HILIGHT_STYLE, DEF_TEXT_STYLE, { 0, 24, 79, 24 }, false

@@ -41,6 +41,7 @@
 #endif
 #include "posix.h"
 #include "win.h"
+#include "myprintf.h"
 #ifdef __WIN__
   #include "color.h"
   #include "winctl.h"

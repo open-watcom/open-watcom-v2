@@ -39,6 +39,7 @@
 #include "win.h"
 #include "menu.h"
 #include "tempio.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 

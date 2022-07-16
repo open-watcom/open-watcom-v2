@@ -674,12 +674,6 @@ void    ParseConfigFile( char * );
 vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
 vi_rc   GetAddress( const char **, linenum * );
 
-/* printf.c */
-void    MySprintf( char *, const char *, ... );
-void    MyPrintf( const char *, ... );
-void    MyFprintf( FILE *,const char *, ... );
-void    Lead( char c, int num, char *buff );
-
 /* readstr.c */
 bool    ReadStringInWindow( window_id, int, char *, char *, size_t, history_data * );
 vi_rc   PromptForString( char *prompt, char *buff, size_t maxbuff, history_data *h );

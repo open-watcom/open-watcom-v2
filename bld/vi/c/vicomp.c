@@ -36,6 +36,7 @@
 #include "specio.h"
 #include "pathgrp2.h"
 #include "myio.h"
+#include "bprintf.h"
 
 #include "clibext.h"
 
@@ -48,8 +49,6 @@ const char _NEAR  SingleDQuote[] = "\"";
 
 int         SourceErrCount = 0;
 line        *WorkLine;
-key_map     *KeyMaps = NULL;
-key_map     *InputKeyMaps = NULL;
 int         MaxLine = 512;
 
 vi_rc       LastRC      = ERR_NO_ERR;
@@ -168,6 +167,45 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf )
     }
 
 } /* finiSource */
+
+// out_char_str() - called from BasePrintf() - writes to cStr
+static char *cStr;
+
+static void out_char_str( char ch )
+{
+    *cStr++ = ch;
+}
+
+// out_char_file() - called from BasePrintf() - writes to cFile
+static FILE *cFile;
+
+static void out_char_file( char ch )
+{
+    fputc( ch, cFile );
+}
+
+void MyFprintf( FILE *fp, const char *str, ... )
+// vfprintf++ functionality
+{
+    va_list args;
+
+    va_start( args, str );
+    cFile = fp;
+    BasePrintf( str, out_char_file, args );
+    va_end( args );
+}
+
+void MySprintf( char *out, const char *str, ... )
+// sprintf++ functionality
+{
+    va_list     args;
+
+    cStr = out;
+    va_start( args, str );
+    BasePrintf( str, out_char_str, args );
+    va_end( args );
+    *cStr++ = '\0';
+}
 
 /*
  * writeScript - write a compiled script

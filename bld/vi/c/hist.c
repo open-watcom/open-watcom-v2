@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include "myio.h"
+#include "myprintf.h"
 
 
 static bool historyLoaded;
