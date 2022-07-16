@@ -103,8 +103,8 @@ void MyFprintf( FILE *fp, const char *str, ... )
 {
     va_list args;
 
-    va_start( args, str );
     cFile = fp;
+    va_start( args, str );
     BasePrintf( str, out_char_file, args );
     va_end( args );
 }

@@ -71,6 +71,7 @@ typedef struct menu {
 static menu     mainMenu = { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false };
 static menu     *rootMenu = &mainMenu;
 static menu     *currMenu = NULL;
+static unsigned nextAvail = 0;
 
 /* utility functions used in rest of module */
 
@@ -111,8 +112,6 @@ static vi_key getHotKey( const char *str )
     return( 0 );
 
 } /* getHotKey */
-
-static unsigned nextAvail = 0;
 
 /*
  * NextMenuId - returns the next available unique idea for a menu item

@@ -38,15 +38,15 @@
 #include "myio.h"
 #include "bprintf.h"
 #include "parse.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 
 
 #define MAX_SRC_LINE    512
 
-const char _NEAR  SingleBlank[] = " ";
-const char _NEAR  SingleSlash[] = "/";
-const char _NEAR  SingleDQuote[] = "\"";
+const char  SingleBlank[] = " ";
+const char  SingleDQuote[] = "\"";
 
 int         SourceErrCount = 0;
 line        *WorkLine;
@@ -190,8 +190,8 @@ void MyFprintf( FILE *fp, const char *str, ... )
 {
     va_list args;
 
-    va_start( args, str );
     cFile = fp;
+    va_start( args, str );
     BasePrintf( str, out_char_file, args );
     va_end( args );
 }

@@ -33,7 +33,10 @@
 #ifndef __CONTROL_INCLUDED__
 #define __CONTROL_INCLUDED__
 
-#if defined( _M_I86 )
+#if defined( VICOMP )
+    #define _FAR
+    #define _NEAR
+#elif defined( _M_I86 )
     #define _FAR    __far
     #define _NEAR   __near
 #elif defined( __DOS__ )

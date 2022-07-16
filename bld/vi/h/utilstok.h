@@ -31,10 +31,9 @@
 ****************************************************************************/
 
 
-extern int          GetNumberOfTokens( const char *list );
+extern int          GetNumberOfTokens( const char * );
 #if 0
-extern char         **BuildTokenList( int num, char *list );
+extern char         **BuildTokenList( int, char * );
 #endif
-extern const char   *GetTokenString( const char *list, int num );
-extern char         *GetTokenStringCVT( const char *list, int num, char *dst, bool lowercase );
-extern int          ReplaceSubString( char *data, int len, int s, int e, char *rep, int replen );
+extern const char   *GetTokenString( const char *, int );
+extern char         *GetTokenStringCVT( const char *, int, char *, bool );

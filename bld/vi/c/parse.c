@@ -52,6 +52,7 @@ static bool isIgnorable( char c, const char *ign )
 
 } /* isIgnorable */
 
+#ifndef VICOMP
 /*
  * GetNextWordOrString
  */
@@ -80,6 +81,7 @@ vi_rc GetNextWordOrString( const char **pbuff, char *st )
     return( ERR_NO_ERR );
 
 } /* GetNextWordOrString */
+#endif
 
 /*
  * GetNextWord1 - get next space delimited word in buff

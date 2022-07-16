@@ -36,7 +36,6 @@
 #include "utilstok.h"
 
 
-
 /*
  * GetNumberOfTokens - return number of tokens in a token string
  */
