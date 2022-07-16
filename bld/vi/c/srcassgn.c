@@ -36,6 +36,8 @@
 #include <time.h>
 #include "expr.h"
 #include "rxsupp.h"
+#include "tokenize.h"
+#include "parse.h"
 
 #include "clibext.h"
 

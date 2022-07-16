@@ -37,6 +37,8 @@
 #include <assert.h>
 #include "parsecl.h"
 #include "myprintf.h"
+#include "parse.h"
+#include "utilstok.h"
 
 
 static  ft_src  *ftsHead;

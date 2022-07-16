@@ -36,6 +36,7 @@
 #include "bnddata.h"
 #include "specio.h"
 #include "myio.h"
+#include "tokenize.h"
 
 #include "clibext.h"
 

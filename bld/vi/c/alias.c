@@ -32,6 +32,8 @@
 
 
 #include "vi.h"
+#include "parse.h"
+
 
 static alias_list *alHead, *alTail;
 static alias_list *abHead, *abTail;

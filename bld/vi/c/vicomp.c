@@ -37,6 +37,7 @@
 #include "pathgrp2.h"
 #include "myio.h"
 #include "bprintf.h"
+#include "parse.h"
 
 #include "clibext.h"
 

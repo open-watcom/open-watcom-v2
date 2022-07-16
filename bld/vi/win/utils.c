@@ -43,6 +43,7 @@
 #include "aboutdlg.h"
 #include "win.h"
 #include "viabout.h"
+#include "utilstok.h"
 
 #include "clibext.h"
 

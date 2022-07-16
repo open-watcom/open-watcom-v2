@@ -1,7 +1,7 @@
 objtimeroot = &
     rxwrap.obj rxsupp.obj tab_hell.obj regsub.obj findrx.obj &
     mem.obj memdmp.obj fcbxmint.obj addstr.obj llrtns.obj &
-    parse.obj
+    parse.obj tokenize.obj utilstok.obj
 
 objtime = &
     fcbems.obj fcbxms.obj fcbdisk.obj fcbxmem.obj &

@@ -36,6 +36,7 @@
 #include "menu.h"
 #include "win.h"
 #include "myprintf.h"
+#include "parse.h"
 
 #include "clibext.h"
 

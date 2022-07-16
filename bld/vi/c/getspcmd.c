@@ -34,6 +34,7 @@
 #include "vi.h"
 #include "posix.h"
 #include "pathgrp2.h"
+#include "parse.h"
 
 #include "clibext.h"
 

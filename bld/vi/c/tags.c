@@ -38,6 +38,7 @@
 #endif
 #include "myio.h"
 #include "myprintf.h"
+#include "parse.h"
 
 #include "clibext.h"
 

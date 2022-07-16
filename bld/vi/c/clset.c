@@ -40,6 +40,9 @@
 #include "menu.h"
 #include "tempio.h"
 #include "myprintf.h"
+#include "tokenize.h"
+#include "parse.h"
+#include "utilstok.h"
 
 #include "clibext.h"
 

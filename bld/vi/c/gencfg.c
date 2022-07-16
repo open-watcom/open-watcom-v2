@@ -39,6 +39,7 @@
 #include "banner.h"
 #include "fts.h"
 #include "myprintf.h"
+#include "utilstok.h"
 
 
 #define VBUF_SIZE       8192

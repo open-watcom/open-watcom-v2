@@ -35,6 +35,7 @@
 #include "ex.h"
 #include "win.h"
 #include "myprintf.h"
+#include "parse.h"
 
 
 static window_info  exwInfo = {

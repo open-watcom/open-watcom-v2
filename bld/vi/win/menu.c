@@ -34,6 +34,7 @@
 #include "menu.h"
 #include "myprintf.h"
 #include <assert.h>
+#include "parse.h"
 
 
 /* The following value comes from Petzold - page 344 */

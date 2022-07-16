@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include "win.h"
+#include "parse.h"
 
 
 /*

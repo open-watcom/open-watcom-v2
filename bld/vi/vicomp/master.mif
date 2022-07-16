@@ -38,6 +38,7 @@ exetarg_objs = &
     clset.obj &
     llrtns.obj &
     srcvar.obj &
+    tokenize.obj &
     parse.obj &
     myio.obj
 

@@ -32,6 +32,7 @@
 
 
 #include "vi.h"
+#include "parse.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif

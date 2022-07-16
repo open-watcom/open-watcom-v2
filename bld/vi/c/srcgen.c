@@ -38,6 +38,8 @@
 #include "specio.h"
 #include "source.h"
 #include "myprintf.h"
+#include "tokenize.h"
+#include "parse.h"
 
 
 static sfile        *tmpTail;

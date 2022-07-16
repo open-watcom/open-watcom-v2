@@ -38,6 +38,8 @@
 #include "dosx.h"
 #include "vibios.h"
 #include "pragmas.h"
+#include "parse.h"
+
 
 static int  saveRow, saveCol;
 int         PageCnt = 0;

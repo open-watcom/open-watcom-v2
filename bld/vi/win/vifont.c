@@ -33,6 +33,7 @@
 #include "vi.h"
 #include "vifont.h"
 #include "myprintf.h"
+#include "parse.h"
 
 
 #ifdef __NT__

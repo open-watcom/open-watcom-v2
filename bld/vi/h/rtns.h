@@ -82,6 +82,7 @@ const char *GetASetVal( const char *token, char * );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */
+int     ReplaceSubString( char *, int, int, int, char *, int );
 vi_rc   TwoPartSubstitute( const char *, const char *, int, int );
 vi_rc   Substitute( linenum, linenum, const char * );
 linenum SplitUpLine( linenum );
@@ -648,20 +649,6 @@ bool    CheckCurrentColumn( void );
 int     ShiftTab( int, int );
 vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( const char * );
-
-/* parse.c */
-vi_rc   GetNextWordOrString( const char **, char * );
-const char  *GetNextWord( const char *, char *, const char *);
-const char  *GetNextWord1( const char *, char * );
-const char  *GetNextWord2( const char *, char *, char );
-int     Tokenize( const char *, const char *, bool );
-int     GetNumberOfTokens( const char * );
-#if 0
-char    **BuildTokenList( int, char * );
-#endif
-const char  *GetTokenString( const char *, int );
-char    *GetTokenStringCVT( const char *, int, char *, bool );
-int     ReplaceSubString( char *, int, int, int, char *, int );
 
 /* parsecfg.c */
 void    ParseConfigFile( char * );

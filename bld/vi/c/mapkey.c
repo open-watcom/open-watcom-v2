@@ -34,6 +34,9 @@
 #include "vi.h"
 #include "win.h"
 #include "myprintf.h"
+#include "tokenize.h"
+#include "parse.h"
+#include "utilstok.h"
 
 
 static bool     keysRead = false;

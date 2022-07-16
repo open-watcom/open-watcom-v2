@@ -45,6 +45,7 @@
 #include "fts.h"
 #include "rcs.h"
 #include "myprintf.h"
+#include "parse.h"
 #ifdef __WIN__
 #include "ideactiv.h"
 #endif

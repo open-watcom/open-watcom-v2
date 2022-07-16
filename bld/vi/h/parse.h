@@ -31,45 +31,7 @@
 ****************************************************************************/
 
 
-#include "vi.h"
-#include "parse.h"
-
-/*
- * SrcNextWord - get next word in a variable, putting result into another
- *               variable
- */
-vi_rc SrcNextWord( const char *data, vars_list *vl )
-{
-    char        name1[MAX_SRC_LINE], name2[MAX_SRC_LINE], str[MAX_STR];
-    vars        *v;
-    char        *ptr;
-
-    /*
-     * get syntax :
-     * NEXTWORD src res
-     */
-    if( !ReadVarName( &data, name1, vl ) ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    if( !ReadVarName( &data, name2, vl ) ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    v = VarFind( name1, vl );
-    data = v->value;
-    SKIP_SPACES( data );
-    if( *data == '"' ) {
-        data = GetNextWord( data, str, SingleDQuote );
-        if( *data == '"' ) {
-            SKIP_CHAR_SPACES( data );
-        }
-    } else {
-        data = GetNextWord1( data, str );
-    }
-    // remove next word from src variable
-    for( ptr = v->value; (*ptr = *data) != '\0'; ++ptr ) {
-        ++data;
-    }
-    VarAddStr( name2, str, vl );
-    return( ERR_NO_ERR );
-
-} /* SrcNextWord */
+extern vi_rc        GetNextWordOrString( const char **pbuff, char *st );
+extern const char   *GetNextWord1( const char *buff, char *res );
+extern const char   *GetNextWord2( const char *buff, char *res, char alt_delim );
+extern const char   *GetNextWord( const char *buff, char *res, const char *ign );

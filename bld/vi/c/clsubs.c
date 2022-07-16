@@ -33,6 +33,7 @@
 #include "vi.h"
 #include "rxsupp.h"
 #include "win.h"
+#include "parse.h"
 #ifdef __WIN__
 #include "wclbproc.h"
 #endif
@@ -188,6 +189,43 @@ static void nextSearchStartPos( i_mark *pos, bool gflag, int rlen )
         pos->column = 0;
     }
 }
+
+
+/*
+ * ReplaceSubString - replace a sub-string with a different one
+ */
+int ReplaceSubString( char *data, int len, int s, int e, char *rep, int replen )
+{
+    int i, ln, delta, slen;
+
+    slen = e - s + 1;
+    delta = slen - replen;
+
+    /*
+     * make room
+     */
+    ln = len;
+    len -= delta;
+    if( delta < 0 ) {
+        delta *= -1;
+        for( i = ln; i > e; i-- ) {
+            data[i + delta] = data[i];
+        }
+    } else if( delta > 0 ) {
+        for(i = e + 1; i <= ln; i++ ) {
+            data[i - delta] = data[i];
+        }
+    }
+
+    /*
+     * copy in new string
+     */
+    for( i = 0; i < replen; i++ ) {
+        data[s + i] = rep[i];
+    }
+    return( len );
+
+} /* ReplaceSubString */
 
 /*
  * Substitute - perform substitution

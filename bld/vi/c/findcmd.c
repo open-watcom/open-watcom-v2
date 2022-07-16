@@ -34,6 +34,7 @@
 #include "vi.h"
 #include "rxsupp.h"
 #include "win.h"
+#include "parse.h"
 
 
 static char     *lastFind = NULL;

@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include "specio.h"
+#include "parse.h"
 
 /*
  * ReadDataFile - do just that

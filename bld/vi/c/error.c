@@ -33,6 +33,7 @@
 #include "vi.h"
 #include "win.h"
 #include "myprintf.h"
+#include "tokenize.h"
 
 
 #define ERROR_COUNT (sizeof( errorList ) / sizeof( errorList[0] ))

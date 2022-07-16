@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include <stddef.h>
+#include "parse.h"
 
 #include "clibext.h"
 

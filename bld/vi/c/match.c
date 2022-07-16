@@ -34,6 +34,7 @@
 #include "vi.h"
 #include "rxsupp.h"
 #include "myprintf.h"
+#include "parse.h"
 
 
 /*

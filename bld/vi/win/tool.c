@@ -38,6 +38,7 @@
 #include "wresdefn.h"
 #include "rcstr.grh"
 #include "myprintf.h"
+#include "parse.h"
 
 
 #define BORDER_X( x )           ((x) / 4)
