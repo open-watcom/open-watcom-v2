@@ -1109,6 +1109,24 @@ static int compareString( void const *p1, void const *p2 )
 } /* compareString */
 
 /*
+ * getLongestTokenLength - return length of longest token in token string
+ */
+static size_t getLongestTokenLength( const char *list )
+{
+    size_t      max_len = 0, len;
+    const char  *t;
+
+    for( t = list; *t != '\0'; t += len + 1 ) {
+        len = strlen( t );
+        if( max_len < len ) {
+            max_len = len;
+        }
+    }
+    return( max_len );
+
+} /* getLongestTokenLength */
+
+/*
  * getSetInfo - build string of values
  */
 static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
@@ -1146,8 +1164,8 @@ static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
         (*vals)[i] = sdata[i]->val;
     }
     _MemFreePtrArray( sdata, tc, MemFree );
-    i1 = GetLongestTokenLength( SetVarTokens );
-    i2 = GetLongestTokenLength( SetFlagTokens );
+    i1 = getLongestTokenLength( SetVarTokens );
+    i2 = getLongestTokenLength( SetFlagTokens );
     if( i1 > i2 ) {
         *longest = i1;
     } else {

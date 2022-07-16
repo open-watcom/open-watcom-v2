@@ -52,25 +52,6 @@ static bool isIgnorable( char c, const char *ign )
 } /* isIgnorable */
 
 /*
- * TranslateTabs
- */
-void TranslateTabs( char *buff )
-{
-    int     k;
-    int     j;
-
-    for( k = 0; buff[k] != '\0'; ++k ) {
-        if( buff[k] == '\\' && buff[k + 1] == 't') {
-            buff[k] = '\t';
-            for( j = k + 1; buff[j] != 0; j++ ) {
-                buff[j] = buff[j + 1];
-            }
-        }
-    }
-
-} /* TranslateTabs */
-
-/*
  * GetNextWordOrString
  */
 vi_rc GetNextWordOrString( const char **pbuff, char *st )
@@ -320,24 +301,6 @@ int GetNumberOfTokens( const char *list )
     return( i );
 
 } /* GetNumberOfTokens */
-
-/*
- * GetLongestTokenLength - return length of longest token in token string
- */
-size_t GetLongestTokenLength( const char *list )
-{
-    size_t      max_len = 0, len;
-    const char  *t;
-
-    for( t = list; *t != '\0'; t += len + 1 ) {
-        len = strlen( t );
-        if( max_len < len ) {
-            max_len = len;
-        }
-    }
-    return( max_len );
-
-} /* GetLongestTokenLength */
 
 #if 0
 /*

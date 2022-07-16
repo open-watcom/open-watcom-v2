@@ -522,6 +522,25 @@ vi_rc StartMenu( const char *data )
 } /* StartMenu */
 
 /*
+ * translateTabs
+ */
+static void translateTabs( char *buff )
+{
+    int     k;
+    int     j;
+
+    for( k = 0; buff[k] != '\0'; ++k ) {
+        if( buff[k] == '\\' && buff[k + 1] == 't') {
+            buff[k] = '\t';
+            for( j = k + 1; buff[j] != 0; j++ ) {
+                buff[j] = buff[j + 1];
+            }
+        }
+    }
+
+} /* translateTabs */
+
+/*
  * MenuItem - add an item to the current menu
  */
 vi_rc MenuItem( const char *data )
@@ -534,7 +553,7 @@ vi_rc MenuItem( const char *data )
     }
     GetNextWordOrString( &data, name );
     GetNextWordOrString( &data, help );
-    TranslateTabs( name );
+    translateTabs( name );
     addItemToMenu( currMenu, name, help, data, false );
     return( ERR_NO_ERR );
 

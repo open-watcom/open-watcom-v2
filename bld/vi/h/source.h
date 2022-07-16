@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,8 +198,6 @@ typedef struct resident {
 /*
  * external defs (from srcdata.c)
  */
-extern const char _NEAR   StrTokens[];
-extern const char _NEAR   SourceTokens[];
 extern long         CurrentSrcLabel;
 extern srcline      CurrentSrcLine;
 extern int          CurrentSrcToken;

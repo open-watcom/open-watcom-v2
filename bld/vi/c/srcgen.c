@@ -45,6 +45,15 @@ static bool         hasVar;
 static labels       *cLab;
 static jmp_buf      genExit;
 
+/*
+ * language tokens
+ */
+static const char _NEAR SourceTokens[] = {
+    #define PICK(a,b) a "\0"
+    #include "srckeys.h"
+    #undef PICK
+};
+
 void AbortGen( vi_rc rc )
 {
     longjmp( genExit, (int)rc );

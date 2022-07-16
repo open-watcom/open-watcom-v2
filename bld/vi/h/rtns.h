@@ -650,13 +650,11 @@ vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( const char * );
 
 /* parse.c */
-void    TranslateTabs( char * );
 vi_rc   GetNextWordOrString( const char **, char * );
 const char  *GetNextWord( const char *, char *, const char *);
 const char  *GetNextWord1( const char *, char * );
 const char  *GetNextWord2( const char *, char *, char );
 int     Tokenize( const char *, const char *, bool );
-size_t  GetLongestTokenLength( const char * );
 int     GetNumberOfTokens( const char * );
 char    **BuildTokenList( int, char * );
 const char  *GetTokenString( const char *, int );
