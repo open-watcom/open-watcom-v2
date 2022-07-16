@@ -32,7 +32,8 @@
 
 #include "vi.h"
 #include "win.h"
-#include "myprtf.h"
+#include "myprintf.h"
+
 
 #define ERROR_COUNT (sizeof( errorList ) / sizeof( errorList[0] ))
 

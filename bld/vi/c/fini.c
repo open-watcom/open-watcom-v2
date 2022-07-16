@@ -43,7 +43,7 @@
 #include "fts.h"
 #include "rxsupp.h"
 #include "rcs.h"
-#include "myprtf.h"
+#include "myprintf.h"
 
 
 #ifdef __WIN__
