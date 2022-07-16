@@ -1304,24 +1304,4 @@ const char *GetASetVal( const char *token, char *tmpstr )
     return( "" );
 
 } /* GetASetVal */
-
-char *ExpandTokenSet( char *token_no, char *buff )
-{
-    bool        val;
-    int         tok;
-    char        settokstr[TOK_MAX_LEN + 1];
-
-    tok = atoi( token_no );
-    val = true;
-    if( tok < 0 ) {
-        tok *= -1;
-        val = false;
-    }
-    if( tok >= SETVAR_T_ ) {
-        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( SetFlagTokens, tok - SETVAR_T_, settokstr, true ) );
-    } else {
-        sprintf( buff, "%s" CFG_SET_SEPARATOR, GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
-    }
-    return( buff );
-}
 #endif

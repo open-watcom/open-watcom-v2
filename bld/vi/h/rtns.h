@@ -656,14 +656,12 @@ const char  *GetNextWord1( const char *, char * );
 const char  *GetNextWord2( const char *, char *, char );
 int     Tokenize( const char *, const char *, bool );
 int     GetNumberOfTokens( const char * );
+#if 0
 char    **BuildTokenList( int, char * );
+#endif
 const char  *GetTokenString( const char *, int );
 char    *GetTokenStringCVT( const char *, int, char *, bool );
-char    *ExpandTokenSet( char *token_no, char *buff );
-int     AddColorToken( char *);
 int     ReplaceSubString( char *, int, int, int, char *, int );
-void    GetSubString( char *, int, int, char * );
-void    GetEndString( char *data, char *res );
 
 /* parsecfg.c */
 void    ParseConfigFile( char * );
