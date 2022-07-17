@@ -3182,6 +3182,9 @@ trap_error      err
 .section REQ_CAPABILITIES_GET_8B_BP
 .*
 .np
+Request to get information if 8-byte breakpoints are supported
+on the remote system.
+.np
 Request message:
 .millust begin
 access_req      req
@@ -3190,26 +3193,48 @@ access_req      req
 Return message:
 .millust begin
 trap_error      err
+unsigned_8      status
 .millust end
 .pp
+The
+.id status
+contains true if 8-byte breakpoints are supported
+on the remote system otherwise
+.id status
+contains false.
 .*
 .section REQ_CAPABILITIES_SET_8B_BP
 .*
 .np
+Request to set if 8-byte breakpoints are active
+on the remote system.
+.np
 Request message:
 .millust begin
 access_req      req
+unsigned_8      status
 .millust end
 .np
 Return message:
 .millust begin
 trap_error      err
+unsigned_8      status
 .millust end
 .pp
+The input
+.id status
+contains if 8-byte breakpoints are required to be active on the remote system.
+.pp
+The output
+.id status
+contains status if 8-byte breakpoints are currently active on the remote system.
 .*
 .section REQ_CAPABILITIES_GET_EXACT_BP
 .*
 .np
+Request to get information if exact breakpoints are supported
+on the remote system.
+.np
 Request message:
 .millust begin
 access_req      req
@@ -3218,22 +3243,41 @@ access_req      req
 Return message:
 .millust begin
 trap_error      err
+unsigned_8      status
 .millust end
 .pp
+The
+.id status
+contains true if exact breakpoints are supported
+on the remote system otherwise
+.id status
+contains false.
 .*
 .section REQ_CAPABILITIES_SET_EXACT_BP
 .*
 .np
+Request to set if exact breakpoints are active
+on the remote system.
+.np
 Request message:
 .millust begin
 access_req      req
+unsigned_8      status
 .millust end
 .np
 Return message:
 .millust begin
 trap_error      err
+unsigned_8      status
 .millust end
 .pp
+The input
+.id status
+contains if exact breakpoints are required to be active on the remote system.
+.pp
+The output
+.id status
+contains status if exact breakpoints are currently active on the remote system.
 .endlevel
 .*
 .*

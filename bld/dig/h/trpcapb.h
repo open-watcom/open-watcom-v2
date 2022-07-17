@@ -65,7 +65,7 @@ typedef struct {
 
 typedef struct {
     trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = un-supported, 1 = supported */
 } capabilities_get_8b_bp_ret;
 
 /*======================= REQ_CAPABILITIES_SET_8B_BP ================*/
@@ -73,12 +73,12 @@ typedef struct {
 typedef struct {
     supp_prefix         supp;
     access_req          req;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = off, 1 = on */
 } capabilities_set_8b_bp_req;
 
 typedef struct {
     trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = off, 1 = on */
 } capabilities_set_8b_bp_ret;
 
 /*======================= REQ_CAPABILITIES_EXACT_8B_BP ================*/
@@ -93,7 +93,7 @@ typedef struct {
 
 typedef struct {
     trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = un-supported, 1 = supported */
 } capabilities_get_exact_bp_ret;
 
 /*======================= REQ_CAPABILITIES_SET_EXACT_BP ================*/
@@ -101,12 +101,12 @@ typedef struct {
 typedef struct {
     supp_prefix         supp;
     access_req          req;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = off, 1 = on */
 } capabilities_set_exact_bp_req;
 
 typedef struct {
     trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = off, 1 = on */
 } capabilities_set_exact_bp_ret;
 
 #include "poppck.h"
