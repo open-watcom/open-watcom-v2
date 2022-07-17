@@ -51,7 +51,7 @@
 !inject wbrw             win  chm  nt  os2           html
 !inject wccerrs     dos  win  chm  nt  os2           html  wikihtml  wikipdf
 !inject wd          dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject wddoc                               pdf  ps        wikihtml  wikipdf
+!inject wddoc                               pdf  ps  html  wikihtml  wikipdf
 !inject wfcerrs     dos  win  chm  nt  os2           html  wikihtml  wikipdf
 !inject wjcerrs
 !inject wlnkerrs         win  chm  nt                html
