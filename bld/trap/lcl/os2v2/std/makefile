@@ -26,6 +26,7 @@ extra_objs =          &
         pmlock.obj    &
         x86cpu.obj    &
         supp.obj      &
+        supphdlr.obj  &
         core.obj
 
 extra_linker = &

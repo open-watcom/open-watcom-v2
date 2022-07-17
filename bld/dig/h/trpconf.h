@@ -94,6 +94,7 @@
         #define     WANT_THREAD
         #undef      WANT_RUN_THREAD
         #define     WANT_RFX
+        #define     WANT_CAPABILITIES
     #endif
   #endif
 #elif defined(__NT__)

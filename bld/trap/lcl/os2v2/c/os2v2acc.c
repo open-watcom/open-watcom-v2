@@ -83,7 +83,10 @@
 typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
-    word        len;
+    dword       value_hi;
+    dword       linear;
+    byte        size;
+    byte        dregs;
 } watch_point;
 
 uDB_t                   Buff;
@@ -148,10 +151,10 @@ static void OutNum( ULONG i )
 static bool Is32BitSeg( unsigned seg )
 {
     if( IsFlatSeg( seg ) )
-        return( TRUE );
+        return( true );
     if( IsUnknownGDTSeg( seg ) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 /*
@@ -169,21 +172,21 @@ static void RecordModHandle( HMODULE value )
 /*
  * SeekRead - seek to a file position, and read the data
  */
-static BOOL SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
+static bool SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
 {
     ULONG       read;
     ULONG       pos;
 
     if( DosSetFilePtr( handle, newpos, 0, &pos ) != 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( DosRead( handle, ptr, size, &read ) != 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( read != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* SeekRead */
 
@@ -201,10 +204,10 @@ static BOOL FindNewHeader( char *name, HFILE *hdl,
 
     open_rc = OpenFile( name, 0, OPEN_PRIVATE );
     if( open_rc < 0 ) {
-        return( FALSE );
+        return( false );
     }
     h = open_rc;
-    rc = FALSE;
+    rc = false;
     for( ;; ) {
         if( !SeekRead( h, 0x00, &data, sizeof( data ) ) ) {
             break;
@@ -225,7 +228,7 @@ static BOOL FindNewHeader( char *name, HFILE *hdl,
         if( !SeekRead( h, *new_head, id, sizeof( USHORT ) ) ) {
             break;
         }
-        rc = TRUE;
+        rc = true;
         break;
     }
     if( !rc ) {
@@ -306,7 +309,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
         case DBG_N_ModuleLoad:
             RecordModHandle( buff->Value );
             if( stop_on_module_load )
-                return( TRUE );
+                return( true );
             break;
         case DBG_N_ModuleFree:
             break;
@@ -925,10 +928,10 @@ static bool FindLinearStartAddress( ULONG *pLin, char *name )
     USHORT      ip;
 
     if( !FindNewHeader( name, &hdl, &new_head, &type ) ) {
-        return( FALSE );
+        return( false );
     }
     for( ;; ) {
-        rc = FALSE;
+        rc = false;
         if( type == EXE_NE ) {
             if( !SeekRead( hdl, new_head + 0x14, &ip, sizeof( ip ) ) ) {
                 break;
@@ -939,7 +942,7 @@ static bool FindLinearStartAddress( ULONG *pLin, char *name )
             }
             objnum = sobjn;
 
-            Is32Bit = FALSE;
+            Is32Bit = false;
         } else if( type == EXE_LE || type == EXE_LX ) {
             if( !SeekRead( hdl, new_head + 0x1c, &eip, sizeof( eip ) ) ) {
                 break;
@@ -964,7 +967,7 @@ static bool FindLinearStartAddress( ULONG *pLin, char *name )
 
         Buff.MTE = ModHandles[0];
 
-        rc = TRUE;
+        rc = true;
         break;
     }
     DosClose( hdl );
@@ -994,7 +997,7 @@ static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
             break;
         }
         if( ExceptNum != XCPT_BREAKPOINT ) {
-            rc = FALSE;
+            rc = false;
             break;
         }
     } while( ExceptLinear != lin );
@@ -1269,16 +1272,34 @@ static int DRegsCount( void )
 
     needed = 0;
     for( i = 0; i < WatchCount; i++ ) {
-        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].len - 1 ) ? 2 : 1;
+        needed += WatchPoints[i].dregs;
     }
     return( needed );
+}
+
+static dword ReadWatchData( addr48_ptr *addr, byte size, dword *value_hi )
+{
+    dword       value;
+
+    *value_hi = 0;
+    if( size == 8 ) {
+        addr->offset += 4;
+        ReadBuffer( value_hi, addr->segment, addr->offset, 4 );
+        addr->offset -= 4;
+        size = 4;
+    }
+    value = 0;
+    ReadBuffer( &value, addr->segment, addr->offset, size );
+    return( value );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
-    dword               buff;
+    watch_point         *wp;
+    byte                size;
+    dword               linear;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1286,12 +1307,19 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // fail
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         ret->err = 0;   // OK
-        WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
-        WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
-        WatchPoints[WatchCount].len = acc->size;
-        ReadBuffer( (char *)&buff, acc->watch_addr.segment,
-                    acc->watch_addr.offset, sizeof( dword ) );
-        WatchPoints[WatchCount].value = buff;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
+        size = wp->size;
+        if( size > 4 )
+            size = 4;
+        linear = MakeItFlatNumberOne( wp->addr.segment, wp->addr.offset );
+        wp->linear = linear & ~( size - 1 );
+        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
+        if( wp->size == 8 )
+            wp->dregs++;
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
@@ -1311,8 +1339,8 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; ++i ) {
-        if( src->addr.segment != acc->watch_addr.segment ||
-                src->addr.offset != acc->watch_addr.offset ) {
+        if( src->addr.segment != acc->watch_addr.segment
+          || src->addr.offset != acc->watch_addr.offset ) {
             *dst = *src;
             ++dst;
         } else {
@@ -1331,7 +1359,7 @@ static volatile bool     BrkPending;
 
 void SetBrkPending( void )
 {
-    BrkPending = TRUE;
+    BrkPending = true;
 }
 
 static trap_conditions MapReturn( trap_conditions conditions )
@@ -1382,24 +1410,26 @@ static trap_conditions MapReturn( trap_conditions conditions )
 
 static bool setDebugRegs( void )
 {
-    int                 i;
+    int         i;
+    int         j;
+    watch_point *wp;
+    byte        size;
 
     if( DRegsCount() > 4 ) {
         return( FALSE );
     }
-    for( i = 0; i < WatchCount; ++i ) {
-        Buff.Cmd = DBG_C_SetWatch;
-        Buff.Addr = MakeItFlatNumberOne( WatchPoints[i].addr.segment,
-                                        WatchPoints[i].addr.offset & ~(WatchPoints[i].len - 1) );
-        Buff.Len = WatchPoints[i].len;
-        Buff.Index = 0;
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        size = wp->size;
+        if( size > 4 )
+            size = 4;
+        Buff.Addr = wp->linear;
         Buff.Value = DBG_W_Write | DBG_W_Local;
-        CallDosDebug( &Buff );
-        if( WatchPoints[i].addr.offset & (WatchPoints[i].len - 1) ) {
+        for( j = 0; j < wp->dregs; j++ ) {
             Buff.Cmd = DBG_C_SetWatch;
-            Buff.Addr += WatchPoints[i].len;
+            Buff.Len = size;
             Buff.Index = 0;
             CallDosDebug( &Buff );
+            Buff.Addr += size;
         }
     }
     return( TRUE );
@@ -1409,14 +1439,16 @@ static bool CheckWatchPoints( void )
 {
     uDB_t           save;
     watch_point     *wp;
-    dword           memval;
     int             i;
+    dword           value;
+    dword           value_hi;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         ReadRegs( &save );
-        ReadBuffer( (char *)&memval, wp->addr.segment, wp->addr.offset, sizeof( memval ) );
+        value = ReadWatchData( &wp->addr, wp->size, &value_hi );
         WriteRegs( &save );
-        if( WatchPoints[i].value != memval ) {
+        if( wp->value != value
+          || wp->value_hi != value_hi ) {
             return( true );
         }
     }
