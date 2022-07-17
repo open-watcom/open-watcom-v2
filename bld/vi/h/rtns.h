@@ -36,7 +36,6 @@ void    AbandonHopeAllYesWhoEnterHere( vi_rc );
 /* addstr.c */
 void    ReplaceString( char **, const char * );
 char    *DupString( const char * );
-void    DeleteString( char ** );
 
 /* alias.c */
 vi_rc   SetAlias( const char * );
@@ -442,7 +441,8 @@ linenum GetHiddenLineBreaks( linenum s, linenum e );
 /* hist.c */
 void    LoadHistory( const char *cmd );
 void    SaveHistory( void );
-void    HistInit( history_data *, int );
+void    HistInitSingle( hist_type ht, int max );
+void    HistInit( void );
 void    HistFini( void );
 
 #ifdef __IDE__

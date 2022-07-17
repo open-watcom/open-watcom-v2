@@ -65,9 +65,3 @@ char *DupString( const char *str )
     return( ptr );
 
 } /* DupString */
-
-void DeleteString( char **string )
-{
-    _MemFreeArray( *string );
-    *string = NULL;
-}

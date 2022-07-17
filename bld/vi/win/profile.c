@@ -216,10 +216,10 @@ static void getConfigFilePaths( void )
     ReplaceString( &iniPath, path );                /* these freed in WriteProfile */
     GlobVarAddStr( GLOBVAR_INIPATH, iniPath );      /* make accessable to scripts */
     strcat( path, "\\" INI_FILE );
-    ReplaceString( &iniFile, path);
+    ReplaceString( &iniFile, path );
     strcpy( path, iniPath );
     strcat( path, "\\" CFG_NAME );
-    ReplaceString( &cfgFile, path);
+    ReplaceString( &cfgFile, path );
 
 } /* getConfigFilePaths */
 
@@ -326,8 +326,11 @@ void WriteProfile( void )
  */
 void FiniProfile( void )
 {
-    DeleteString( &cfgFile );
-    DeleteString( &iniFile );
-    DeleteString( &iniPath );
+    _MemFreeArray( cfgFile );
+    cfgFile = NULL;
+    _MemFreeArray( iniFile );
+    iniFile = NULL;
+    _MemFreeArray( iniPath );
+    iniPath = NULL;
 
 } /* FiniProfile */

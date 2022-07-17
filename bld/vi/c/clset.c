@@ -979,16 +979,16 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
   #endif
                 break;
             case SETVAR_T_MAXFILTERHISTORY:
-                HistInit( &EditVars.Hist[HIST_FILTER], lval );
+                HistInitSingle( HIST_FILTER, lval );
                 break;
             case SETVAR_T_MAXCLHISTORY:
-                HistInit( &EditVars.Hist[HIST_CMD], lval );
+                HistInitSingle( HIST_CMD, lval );
                 break;
             case SETVAR_T_MAXFINDHISTORY:
-                HistInit( &EditVars.Hist[HIST_FIND], lval );
+                HistInitSingle( HIST_FIND, lval );
                 break;
             case SETVAR_T_MAXLASTFILESHISTORY:
-                HistInit( &EditVars.Hist[HIST_LASTFILES], lval );
+                HistInitSingle( HIST_LASTFILES, lval );
                 break;
             case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;

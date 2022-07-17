@@ -233,7 +233,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     char            *startup_parms[MAX_STARTUP];
     vi_rc           rc;
     vi_rc           rc1;
-    history_data    *h;
 
     /*
      * Make sure WATCOM is setup and if it is not, make a best guess.
@@ -360,9 +359,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     SwapBlockInit( EditVars.MaxSwapBlocks );
     ReadBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
     WriteBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
-    for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
-        HistInit( h, h->max );
-    }
+    HistInit();
     GetClockStart();
     GetSpinStart();
     SelRgnInit();
