@@ -249,7 +249,7 @@ void MemFree( void *ptr )
 } /* MemFree */
 
 /*
- * MemFreeList - free up memory
+ * MemFreePtrArray - free up memory
  */
 void MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) )
 {
@@ -262,7 +262,7 @@ void MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) )
         MemFree( ptr );
     }
 
-} /* MemFreeList */
+} /* MemFreePtrArray */
 
 
 /*
