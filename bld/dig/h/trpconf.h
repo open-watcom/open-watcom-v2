@@ -64,6 +64,7 @@
         #undef          WANT_THREAD
         #undef          WANT_RUN_THREAD
         #define         WANT_RFX
+        #define         WANT_CAPABILITIES
     #endif
 #elif defined(__OS2__)
   #if defined(_M_I86)

@@ -99,6 +99,7 @@ typedef struct pblock {
 typedef struct watch_point {
     addr32_ptr  addr;
     dword       value;
+    dword       value_hi;
     dword       linear;
     word        size;
     word        dregs;
@@ -739,13 +740,29 @@ static int DRegsCount( void )
     return( needed );
 }
 
+static dword ReadWatchData( addr32_ptr *addr, word size, dword *value_hi )
+{
+    dword       value;
+
+    *value_hi = 0;
+    if( size == 8 ) {
+        addr->offset += 4;
+        ReadMemory( addr->segment, addr->offset, value_hi, 4 );
+        addr->offset -= 4;
+        size = 4;
+    }
+    value = 0;
+    ReadMemory( addr->segment, addr->offset, &value, size );
+    return( value );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
     watch_point         *wp;
     dword               linear;
-    size_t              size;
+    word                size;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -754,19 +771,20 @@ trap_retval TRAP_CORE( Set_watch )( void )
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
-        wp->size = size = acc->size;
-        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
-        wp->value = 0;
-        ReadMemory( acc->watch_addr.segment, acc->watch_addr.offset, &wp->value, size );
+        size = wp->size = acc->size;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
+        wp->value = ReadWatchData( &wp->addr, size, &wp->value_hi );
+        linear = GetLinear( wp->addr.segment, wp->addr.offset );
+        if( size == 8 )
+            size = 4;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
+        if( wp->size == 8 )
+            wp->dregs++;
         ++WatchCount;
-        if( Flags & F_DRsOn ) {
-            if( DRegsCount() <= 4 ) {
-                ret->multiplier |= USING_DEBUG_REG;
-            }
+        if( (Flags & F_DRsOn) && DRegsCount() <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
         }
     }
     return( sizeof( *ret ) );

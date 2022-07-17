@@ -100,8 +100,9 @@ F_Is386         equ     0x0001
 ; These offsets must match the watch_point struct in dosacc.c
 WP_ADDR         equ     0       ; offset of watch point address
 WP_VALUE        equ     4       ; offset of watch point value
-WP_SIZE         equ     12      ; watch point data lenght
-WP_STRUCT_SIZE  equ     16      ; size of the watch point structure
+WP_VALUE_HI     equ     8       ; offset of watch point value high 32-bit
+WP_SIZE         equ     16      ; watch point data lenght
+WP_STRUCT_SIZE  equ     20      ; size of the watch point structure
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -416,11 +417,6 @@ regsRestored:
         iret                    ; return to user's program
 
 
-watch_trap:                     ; we have a watch point trap
-        lds     BX,dword ptr CS:SaveRegs; point at save area
-        mov     byte ptr CS:TrapType,TRAP_WATCH_POINT
-        jmp     save_rest       ; save rest of the registers & enter debugger
-
 WatchRestart:                   ; restart a watch point after a soft int
         push    BP              ; save BP
         mov     BP,SP           ; get access to stack
@@ -431,6 +427,11 @@ WatchRestart:                   ; restart a watch point after a soft int
         pop     AX              ; restore AX
         pop     BP              ; restore BP
         jmp     short WatchTrap ; go do rest of watch point
+
+watch_trap:                     ; we have a watch point trap
+        lds     BX,dword ptr CS:SaveRegs; point at save area
+        mov     byte ptr CS:TrapType,TRAP_WATCH_POINT
+        jmp     save_rest       ; save rest of the registers & enter debugger
 
 WatchTrap386:                   ; we have a watchpoint trap
         .386p
@@ -449,19 +450,28 @@ do_watch:
         sti                     ; enable interrupts
         lds     BX,dword ptr CS:SaveRegs; get save area
 ; NYI- this could be fine tuned
-        mov     [BX].RAX,AX       ; save AX
-        mov     [BX].RCX,CX       ; save CX
-        mov     [BX].RSI,SI       ; save SI
-        mov     [BX].RES,ES       ; save ES
+        mov     [BX].RAX,AX     ; save AX
+        mov     [BX].RCX,CX     ; save CX
+        mov     [BX].RSI,SI     ; save SI
+        mov     [BX].RES,ES     ; save ES
         lds     SI,dword ptr CS:WatchTbl; get address of watch point table
         mov     CX,CS:WatchCnt  ; get number of watch points
 start_loop:                     ; loop
         les     BX,WP_ADDR[SI]  ; - get address of watch point
         mov     AL,WP_SIZE[SI]  ; - get watch data size
         cmp     AL,1            ; - if byte size
-        je      check_byte      ; - then go to next watch entry
+        je      check_byte      ; - then go to byte watch entry compare
         cmp     AL,2            ; - if word size
-        je      check_word      ; - then go to next watch entry
+        je      check_word      ; - then go to word watch entry compare
+        cmp     AL,4            ; - if dword size
+        je      check_dword     ; - then go to dword watch entry compare
+        mov     AX,ES:6[BX]     ; - get high order word of high dword
+        cmp     AX,WP_VALUE_HI+2[SI];- compare with entry in table
+        jne     watch_trap      ; - set watchpoint trap if different
+        mov     AX,ES:4[BX]     ; - get low order word of high dword
+        cmp     AX,WP_VALUE_HI+0[SI];- compare with entry in table
+        jne     watch_trap      ; - set watchpoint trap if different
+check_dword:
         mov     AX,ES:2[BX]     ; - get high order word
         cmp     AX,WP_VALUE+2[SI];- compare with entry in table
         jne     watch_trap      ; - set watchpoint trap if different
@@ -471,7 +481,7 @@ check_word:
         jne     watch_trap      ; - set watchpoint trap if different
 check_byte:
         mov     AL,ES:[BX]      ; - get low byte of low word
-        cmp     AL,WP_VALUE[SI] ; - compare with entry in table
+        cmp     AL,WP_VALUE+0[SI]; - compare with entry in table
         jne     watch_trap      ; - set watchpoint trap if different
         add     SI,WP_STRUCT_SIZE; - point to next entry
         loop    start_loop      ; until --CX = 0
