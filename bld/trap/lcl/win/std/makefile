@@ -41,6 +41,7 @@ extra_objs = &
         x86cpu.obj &
         misc7086.obj &
         supp.obj &
+        supphdlr.obj &
         core.obj
 
 #       export ENUMTASKWINDOWSFUNC.10 &
