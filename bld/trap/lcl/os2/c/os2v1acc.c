@@ -790,7 +790,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char                *name;
     TRACEBUF            save;
     char                exe_name[255];
-    USHORT              startCS, startIP;
+    USHORT              startCS;
+    USHORT              startIP;
     USHORT              exe_type;
     prog_load_ret       *ret;
     char                appname[200];
@@ -1141,13 +1142,13 @@ trap_retval TRAP_CORE( Prog_step )( void )
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    USHORT       len;
+    size_t       len;
     USHORT       written_len;
     unsigned     save_ax;
     unsigned     save_dx;
     unsigned     save_bx;
     byte         *ptr;
-    unsigned     size;
+    size_t       size;
     file_write_console_ret  *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );

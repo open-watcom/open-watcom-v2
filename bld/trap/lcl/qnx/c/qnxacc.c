@@ -209,7 +209,7 @@ static size_t ReadBuffer( void *data, addr_seg segv, addr_off offv, size_t size 
     return( MoveMem( _DEBUG_MEM_RD, data, segv, offv, size ) );
 }
 
-static thread_info *find_thread(pid_t tid)
+static thread_info *find_thread( pid_t tid )
 {
     thread_info *thread;
     unsigned    new_count;
@@ -239,7 +239,7 @@ static thread_info *find_thread(pid_t tid)
 #define THREAD_ALL      (-1)
 #define NO_TID          (INT_MAX)
 
-static pid_t next_thread(pid_t last, int state) {
+static pid_t next_thread( pid_t last, int state ) {
     thread_info         *thread;
     pid_t               tid = NO_TID;
     pid_t               curr;
