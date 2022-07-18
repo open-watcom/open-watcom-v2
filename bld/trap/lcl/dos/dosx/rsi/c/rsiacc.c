@@ -65,15 +65,15 @@
 #define INT_PRT_SCRN_KEY    0x05
 #define MAX_WATCHES         32
 #define IsDPMI              (_d16info.swmode == 0)
+#define MAX_DREGS           3
 
 typedef struct watch_point {
-    addr48_ptr          addr;
-    dword               value;
+    uint_64             value;
     dword               linear;
+    addr48_ptr          addr;
     word                size;
     word                dregs;
-    long                handle;
-    long                handle2;
+    short               handle[MAX_DREGS];
 } watch_point;
 
 extern bool IsSel32bit( unsigned_16 );
@@ -564,7 +564,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret   *ret;
     watch_point     *wp;
     dword           linear;
-    size_t          size;
+    word            size;
+    word            dregs;
+    int             i;
 
     _DBG_Writeln( "AccSetWatch" );
 
@@ -583,10 +585,18 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         linear = DPMIGetSegmentBaseAddress( wp->addr.segment ) + wp->addr.offset;
         size = wp->size;
+        if( size == 8 )
+            size = 4;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
+        if( wp->size == 8 )
+            dregs++;
+        wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
-        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
-        wp->handle = -1;
-        wp->handle2 = -1;
+        for( i = 0; i < MAX_DREGS; i++ ) {
+            wp->handle[i] = -1;
+        }
 
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
@@ -634,7 +644,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static dword SetDRn( int dr, dword linear, unsigned type )
+static dword SetDRn( int dr, dword linear, word type )
 {
     SetDRx( dr, linear );
     return( ( (dword)type << DR7_RWLSHIFT( dr ) )
@@ -645,17 +655,16 @@ static dword SetDRn( int dr, dword linear, unsigned type )
 static void ClearDebugRegs( void )
 {
     int         i;
+    int         j;
     watch_point *wp;
 
     if( IsDPMI ) {
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-            if( wp->handle >= 0 ) {
-                DPMIClearWatch( wp->handle );
-                wp->handle = -1;
-            }
-            if( wp->handle2 >= 0 ) {
-                DPMIClearWatch( wp->handle2 );
-                wp->handle2 = -1;
+            for( j = 0; j < MAX_DREGS; j++ ) {
+                if( wp->handle[j] >= 0 ) {
+                    DPMIClearWatch( wp->handle[j] );
+                    wp->handle[j] = -1;
+                }
             }
         }
     } else {
@@ -668,70 +677,65 @@ static void ClearDebugRegs( void )
 static bool SetDebugRegs( void )
 {
     int                 i;
-    bool                success;
+    int                 j;
     long                rc;
     watch_point         *wp;
     dword               linear;
-    size_t              size;
+    word                size;
 
     if( DRegsCount() > 4 )
         return( false );
     if( IsDPMI ) {
-        success = true;
         for( i = 0; i < WatchCount; ++i ) {
-            WatchPoints[i].handle = -1;
-            WatchPoints[i].handle2 = -1;
+            for( j = 0; j < MAX_DREGS; j++ ) {
+                WatchPoints[i].handle[j] = -1;
+            }
         }
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             linear = wp->linear;
             size = wp->size;
+            if( size == 8 )
+                size = 4;
             _DBG_Write( "Setting Watch On " );
             _DBG_Write32( linear );
             _DBG_NewLine();
-            success = false;
-            rc = DPMISetWatch( linear, size, DPMI_WATCH_WRITE );
-            _DBG_Write( "OK 1 = " );
-            _DBG_Write16( rc >= 0 );
-            _DBG_NewLine();
-            if( rc < 0 )
-                break;
-            wp->handle = rc;
-            if( wp->dregs == 2 ) {
-                rc = DPMISetWatch( linear + size, size, DPMI_WATCH_WRITE );
-                _DBG_Write( "OK 2 = " );
+            for( j = 0; j < wp->dregs; j++ ) {
+                rc = DPMISetWatch( linear, size, DPMI_WATCH_WRITE );
+                _DBG_Write( "OK " );
+                _DBG_Write16( j );
+                _DBG_Write( " = " );
                 _DBG_Write16( rc >= 0 );
                 _DBG_NewLine();
-                if( rc < 0 )
-                    break;
-                wp->handle2 = rc;
+                if( rc < 0 ) {
+                    ClearDebugRegs();
+                    return( false );
+                }
+                wp->handle[j] = rc;
+                linear += size;
             }
-            success = true;
         }
-        if( !success ) {
-            ClearDebugRegs();
-        }
-        return( success );
     } else {
         int         dr;
         dword       dr7;
-        unsigned    type;
+        word        type;
 
         dr = 0;
         dr7 = /* DR7_GE | */ DR7_LE;
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             linear = wp->linear;
             size = wp->size;
+            if( size == 8 )
+                size = 4;
             type = DRLen( size ) | DR7_BWR;
-            dr7 |= SetDRn( dr, linear, type );
-            ++dr;
-            if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, linear + size, type );
+            for( j = 0; j < wp->dregs; j++ ) {
+                dr7 |= SetDRn( dr, linear, type );
                 ++dr;
+                linear += size;
             }
         }
         SetDR7( dr7 );
-        return( true );
     }
+    return( true );
 }
 
 static trap_conditions DoRun( void )
@@ -766,7 +770,7 @@ static bool CheckWatchPoints( void )
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         value = 0;
         D32DebugRead( &wp->addr, false, &value, wp->size );
-        if( value != wp->value ) {
+        if( wp->value != value ) {
             return( true );
         }
     }

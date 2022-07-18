@@ -98,9 +98,9 @@ assume  cs:_text
 F_Is386         equ     0x0001
 
 ; These offsets must match the watch_point struct in dosacc.c
-WP_ADDR         equ     0       ; offset of watch point address
-WP_VALUE        equ     4       ; offset of watch point value
-WP_VALUE_HI     equ     8       ; offset of watch point value high 32-bit
+WP_VALUE        equ     0       ; offset of watch point value
+WP_VALUE_HI     equ     4       ; offset of watch point value high 32-bit
+WP_ADDR         equ     12      ; offset of watch point segmented far address (16:16)
 WP_SIZE         equ     16      ; watch point data lenght
 WP_STRUCT_SIZE  equ     20      ; size of the watch point structure
 ;

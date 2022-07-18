@@ -97,10 +97,9 @@ typedef struct pblock {
  * NOTE: if you change this structure, you must update dbgtrap.asm
  */
 typedef struct watch_point {
-    addr32_ptr  addr;
-    dword       value;
-    dword       value_hi;
+    uint_64     value;
     dword       linear;
+    addr32_ptr  addr;
     word        size;
     word        dregs;
 } watch_point;
@@ -187,7 +186,7 @@ static int              WatchCount;
 static bool             IsBreak[4];
 
 static word             NumSegments;
-static addr48_ptr       BadBreak;
+static dword            BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
 static byte             RealNPXType;
@@ -231,11 +230,6 @@ char *hex( unsigned long num )
     #define out0( s ) 0
     #define hex( n )
 #endif
-
-static dword GetLinear( addr_seg segment, addr48_off offset )
-{
-    return( ( (dword)segment << 4 ) + offset );
-}
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
 {
@@ -341,7 +335,7 @@ static bool IsInterrupt( addr48_ptr *addr, size_t len )
     dword   start;
     dword   end;
 
-    start = GetLinear( addr->segment, addr->offset );
+    start = ( (dword)addr->segment << 4 ) + addr->offset;
     end = start + len;
     return( start < 0x400 || end < 0x400 );
 }
@@ -550,8 +544,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
     old_opcode = *paddr;
     *paddr = BreakOpcode;
     if( *paddr != BreakOpcode ) {
-        BadBreak.segment = addr->segment;
-        BadBreak.offset = addr->offset;
+        BadBreak = ( (dword)addr->segment << 4 ) + offset );
         GotABadBreak = true;
     }
     return( old_opcode );
@@ -740,29 +733,14 @@ static int DRegsCount( void )
     return( needed );
 }
 
-static dword ReadWatchData( addr32_ptr *addr, word size, dword *value_hi )
-{
-    dword       value;
-
-    *value_hi = 0;
-    if( size == 8 ) {
-        addr->offset += 4;
-        ReadMemory( addr->segment, addr->offset, value_hi, 4 );
-        addr->offset -= 4;
-        size = 4;
-    }
-    value = 0;
-    ReadMemory( addr->segment, addr->offset, &value, size );
-    return( value );
-}
-
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    set_watch_req       *acc;
-    set_watch_ret       *ret;
-    watch_point         *wp;
-    dword               linear;
-    word                size;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
+    watch_point     *wp;
+    dword           linear;
+    word            size;
+    word            dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -774,16 +752,20 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
-        wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
+        wp->value = 0;
+        ReadMemory( wp->addr.segment, wp->addr.offset, &wp->value, wp->size );
 
-        linear = GetLinear( wp->addr.segment, wp->addr.offset );
+        linear = ( (dword)wp->addr.segment << 4 ) + wp->addr.offset;
         size = wp->size;
         if( size == 8 )
             size = 4;
-        wp->linear = linear & ~( size - 1 );
-        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
         if( wp->size == 8 )
-            wp->dregs++;
+            dregs++;
+        wp->dregs = dregs;
+        wp->linear = linear & ~( size - 1 );
 
         WatchCount++;
         if( (Flags & F_DRsOn) && DRegsCount() <= 4 ) {
@@ -859,13 +841,14 @@ static int ClearDebugRegs( int trap )
 static bool SetDebugRegs( void )
 {
     int                 i;
+    int                 j;
     int                 dr;
     dword               dr7;
     dword               linear;
     bool                watch386;
     watch_point         *wp;
-    size_t              size;
-    unsigned            type;
+    word                size;
+    word                type;
 
     if( (Flags & F_DRsOn) == 0 )
         return( false );
@@ -875,20 +858,20 @@ static bool SetDebugRegs( void )
     if( DRegsCount() <= 4 ) {
         dr7 = /* DR7_GE | */ DR7_LE;
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-            size = wp->size;
             linear = wp->linear;
+            size = wp->size;
+            if( size == 8 )
+                size = 4;
             type = DRLen( size ) | DR7_BWR;
-            dr7 |= SetDRn( dr, linear, type );
-            ++dr;
-            if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, linear + size, type );
+            for( j = 0; j < wp->dregs; j++ ) {
+                dr7 |= SetDRn( dr, linear, type );
                 ++dr;
+                linear += size;
             }
             watch386 = true;
         }
         if( GotABadBreak && dr < 4 ) {
-            linear = GetLinear( BadBreak.segment, BadBreak.offset );
-            dr7 |= SetDRn( dr, linear, DRLen( 1 ) | DR7_BINST );
+            dr7 |= SetDRn( dr, BadBreak, DRLen( 1 ) | DR7_BINST );
             IsBreak[dr] = true;
             ++dr;
         }

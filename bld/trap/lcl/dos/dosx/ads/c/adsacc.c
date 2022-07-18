@@ -61,9 +61,9 @@
 
 
 typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
+    uint_64     value;
     dword       linear;
+    addr48_ptr  addr;
     word        size;
     word        dregs;
 } watch_point;
@@ -669,6 +669,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     int             needed;
     dword           linear;
     word            size;
+    word            dregs;
 
     _DBG0(( "AccSetWatch" ));
     acc = GetInPtr( 0 );
@@ -686,8 +687,15 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         linear = GetLinear( wp->addr.segment, wp->addr.offset );
         size = wp->size;
+        if( size == 8 )
+            size = 4;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
+        if( wp->size == 8 )
+            dregs++;
+        wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
-        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
 
         WatchCount++;
         needed = DRegsCount();
@@ -747,7 +755,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
 
 static dword *DR[] = { &SysRegs.dr0, &SysRegs.dr1, &SysRegs.dr2, &SysRegs.dr3 };
 
-static void SetDRn( int dr, dword linear, unsigned type )
+static void SetDRn( int dr, dword linear, word type )
 {
     *DR[dr] = linear;
     SysRegs.dr7 |= ( (dword)type << DR7_RWLSHIFT( dr ) )
@@ -757,26 +765,28 @@ static void SetDRn( int dr, dword linear, unsigned type )
 
 static bool SetDebugRegs( void )
 {
-    int         i;
-    int         dr;
     watch_point *wp;
+    int         i;
+    int         j;
+    int         dr;
     dword       linear;
-    size_t      size;
-    unsigned    type;
+    word        size;
+    word        type;
 
     if( DRegsCount() > 4 )
         return( false );
     dr = 0;
     SysRegs.dr7 = DR7_GE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        size = wp->size;
         linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
         type = DRLen( size ) | DR7_BWR;
-        SetDRn( dr, linear, type );
-        ++dr;
-        if( wp->dregs == 2 ) {
-            SetDRn( dr, linear + size, type );
+        for( j = 0; j < wp->dregs; j++ ) {
+            SetDRn( dr, linear, type );
             ++dr;
+            linear += size;
         }
     }
     return( true );
@@ -784,14 +794,14 @@ static bool SetDebugRegs( void )
 
 static bool CheckWatchPoints( void )
 {
-    int         i;
-    dword       value;
     watch_point *wp;
+    int         i;
+    uint_64     value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         value = 0;
         ReadMemory( &wp->addr, &value, wp->size );
-        if( value != wp->value ) {
+        if( wp->value != value ) {
             return( true );
         }
     }

@@ -795,7 +795,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret   *ret;
     watch_point     *wp;
     dword           linear;
-    size_t          size;
+    word            size;
+    word            dregs;
 
     _DBG(("AccSetWatch\r\n"));
     acc = GetInPtr( 0 );
@@ -813,8 +814,15 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         linear = GetLinear( &wp->addr );
         size = wp->size;
+        if( size == 8 )
+            size = 4;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
+        if( wp->size == 8 )
+            dregs++;
+        wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
-        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
 
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
@@ -853,7 +861,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static void SetDRn( int dr, dword linear, unsigned type )
+static void SetDRn( int dr, dword linear, word type )
 {
     Mach.msb_dreg[dr] = linear;
     Mach.msb_dreg[7] |= ( (dword)type << DR7_RWLSHIFT( dr ) )
@@ -864,25 +872,27 @@ static void SetDRn( int dr, dword linear, unsigned type )
 static bool SetDebugRegs( void )
 {
     int         i;
+    int         j;
     int         dr;
     watch_point *wp;
     dword       linear;
-    size_t      size;
-    unsigned    type;
+    word        size;
+    word        type;
 
     if( DRegsCount() > 4 )
         return( false );
     dr = 0;
     Mach.msb_dreg[7] = DR7_GE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; ++wp ) {
-        size = wp->size;
         linear = wp->linear;
-        type = DRLen( size ) + DR7_BWR;
-        SetDRn( dr, linear, type );
-        ++dr;
-        if( wp->dregs == 2 ) {
-            SetDRn( dr, linear + size, type );
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        type = DRLen( size ) | DR7_BWR;
+        for( j = 0; j < wp->dregs; j++ ) {
+            SetDRn( dr, linear, type );
             ++dr;
+            linear += size;
         }
     }
     return( true );
