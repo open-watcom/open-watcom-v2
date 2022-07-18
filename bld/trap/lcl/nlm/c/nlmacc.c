@@ -66,8 +66,8 @@
 #include "miscx87.h"
 
 
-#define NO_DREG     ((byte)-1)
-#define NUM_DREG    4
+#define NO_DREG         ((byte)-1)
+#define NUM_DREG        4
 #define MAX_WATCHES     32
 
 #define FLG_T           0x0100UL
@@ -114,15 +114,15 @@ typedef struct nlm_entry {
 } nlm_entry;
 
 typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
+    uint_64     value;
     dword       linear;
+    addr48_ptr  addr;
     word        size;
     word        dregs;
 } watch_point;
 
 typedef struct {
-    dword   address;
+    dword   linear;
     byte    type;
     byte    size;
 } dreg_info;
@@ -1390,7 +1390,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
     int             i;
     int             dreg_avail[4];
     dword           linear;
-    size_t          size;
+    word            size;
+    word            dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1407,8 +1408,15 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         linear = GetLinear( wp->addr.segment, wp->addr.offset );
         size = wp->size;
+        if( size == 8 )
+            size = 4;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
+        if( wp->size == 8 )
+            dregs++;
+        wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
-        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
 
         ++WatchCount;
         for( i = 0; i < NUM_DREG; ++i ) {
@@ -1484,29 +1492,27 @@ static void ClearDebugRegs( void )
     }
 }
 
-
 static void ActivateDebugRegs( void )
 {
     int         i;
 
     for( i = 0; i < NUM_DREG; ++i ) {
         if( DR[i].type != NO_DREG ) {
-            _DBG_DR(( "set %d, addr=%8x, typ=%d, siz=%d\r\n", i, DR[i].address, DR[i].type, DR[i].size ));
-           CSetABreakpoint( i, DR[i].address, DR[i].type, DR[i].size );
+            _DBG_DR(( "set %d, addr=%8x, typ=%d, siz=%d\r\n", i, DR[i].linear, DR[i].type, DR[i].size ));
+           CSetABreakpoint( i, DR[i].linear, DR[i].type, DR[i].size );
         }
     }
 }
 
-static bool SetDR( dword address, size_t size )
+static bool SetDR( dword linear, word size )
 {
     int     i;
     i = DoReserveBreakpoint();
-    _DBG_DR(( "reserved %d addr=%8x\r\n", i, address ));
+    _DBG_DR(( "reserved %d addr=%8x\r\n", i, linear ));
     if( i < 0 ) {
-        ClearDebugRegs();
         return( false );
     }
-    DR[i].address = address;
+    DR[i].linear = linear;
     DR[i].type = DR7_BWR;
     DR[i].size = size;
     return( true );
@@ -1514,19 +1520,24 @@ static bool SetDR( dword address, size_t size )
 
 static bool SetDebugRegs( void )
 {
-    int         i;
-    dword       address;
     watch_point *wp;
+    int         i;
+    int         j;
+    dword       linear;
+    word        size;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        address = wp->addr.offset;
-        _DBG_DR(( "offset = %8x, addr=%8x\r\n", wp->addr.offset, address ));
-        if( !SetDR( wp->linear, wp->size ) )
-            return( false );
-        if( wp->dregs > 1 ) {
-            if( !SetDR( wp->linear + wp->size, wp->size ) ) {
+        linear = wp->addr.offset;
+        _DBG_DR(( "offset = %8x, addr=%8x\r\n", wp->addr.offset, linear ));
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        for( j = 0; j < wp->dregs; j++ ) {
+            if( !SetDR( linear, size ) ) {
+                ClearDebugRegs();
                 return( false );
             }
+            linear += size;
         }
     }
     return( true );
@@ -1534,14 +1545,14 @@ static bool SetDebugRegs( void )
 
 static bool CheckWatchPoints( void )
 {
-    int         i;
-    dword       value;
     watch_point *wp;
+    int         i;
+    uint_64     value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         value = 0;
         ReadMemory( &wp->addr, &value, wp->size );
-        if( value != wp->value ) {
+        if( wp->value != value ) {
             return( true );
         }
     }
