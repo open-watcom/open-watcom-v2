@@ -1188,8 +1188,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp = WatchPoints + WatchCount;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->len = acc->size;
-        wp->value = ReadWatchData( acc->watch_addr.segment, acc->watch_addr.offset, acc->size );
+        wp->size = acc->size;
+        wp->value = ReadWatchData( wp->addr.segment, wp->addr.offset, wp->size );
+
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;

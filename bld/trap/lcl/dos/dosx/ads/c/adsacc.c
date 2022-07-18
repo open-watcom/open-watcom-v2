@@ -668,7 +668,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     watch_point     *wp;
     int             needed;
     dword           linear;
-    size_t          size;
+    word            size;
 
     _DBG0(( "AccSetWatch" ));
     acc = GetInPtr( 0 );
@@ -678,14 +678,17 @@ trap_retval TRAP_CORE( Set_watch )( void )
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
-        wp->size = size = acc->size;
-        wp->value = 0;
-        ReadMemory( &acc->watch_addr, &wp->value, size );
-        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        ReadMemory( &wp->addr, &wp->value, wp->size );
+
+        linear = GetLinear( wp->addr.segment, wp->addr.offset );
+        size = wp->size;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
+
         WatchCount++;
         needed = DRegsCount();
         if( needed <= 4 )

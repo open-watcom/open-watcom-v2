@@ -1312,6 +1312,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
         wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
+
         size = wp->size;
         if( size > 4 )
             size = 4;
@@ -1320,6 +1321,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         if( wp->size == 8 )
             wp->dregs++;
+
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;

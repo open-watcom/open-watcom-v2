@@ -771,18 +771,21 @@ trap_retval TRAP_CORE( Set_watch )( void )
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
-        size = wp->size = acc->size;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->value = ReadWatchData( &wp->addr, size, &wp->value_hi );
+        wp->size = acc->size;
+        wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
+
         linear = GetLinear( wp->addr.segment, wp->addr.offset );
+        size = wp->size;
         if( size == 8 )
             size = 4;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         if( wp->size == 8 )
             wp->dregs++;
-        ++WatchCount;
+
+        WatchCount++;
         if( (Flags & F_DRsOn) && DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }

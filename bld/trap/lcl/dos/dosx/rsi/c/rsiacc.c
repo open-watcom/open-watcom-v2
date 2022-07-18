@@ -575,16 +575,19 @@ trap_retval TRAP_CORE( Set_watch )( void )
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
-        wp->size = size = acc->size;
-        wp->value = 0;
-        D32DebugRead( &acc->watch_addr, false, &wp->value, size );
-        linear = DPMIGetSegmentBaseAddress( acc->watch_addr.segment ) + acc->watch_addr.offset;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        D32DebugRead( &wp->addr, false, &wp->value, wp->size );
+
+        linear = DPMIGetSegmentBaseAddress( wp->addr.segment ) + wp->addr.offset;
+        size = wp->size;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         wp->handle = -1;
         wp->handle2 = -1;
+
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;

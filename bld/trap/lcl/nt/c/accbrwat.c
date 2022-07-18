@@ -430,7 +430,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
         wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
-        WatchCount++;
 
 #if defined( MD_x86 )
         linear = GetLinear( &acc->watch_addr );
@@ -498,9 +497,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
                 return 0;   /* Error!!! */
             }
         }
+        WatchCount++;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
+#else
+        WatchCount++;
 #endif
     }
     return( sizeof( *ret ) );

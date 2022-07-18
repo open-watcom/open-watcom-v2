@@ -336,7 +336,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret       *ret;
     watch_point         *wp;
     dword               linear;
-    size_t              size;
+    word                size;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -349,14 +349,16 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
         wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
+
         linear = GetLinear( wp->addr.segment, wp->addr.offset );
         size = ( wp->size > 4 ) ? 4 : wp->size;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( ( linear & ( size - 1 ) ) ? 2 : 1 ) + ( ( wp->size == 8 ) ? 1 : 0 );
-        WatchCount++;
         if( WDebug386 && DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
+
+        WatchCount++;
     }
     return( sizeof( *ret ) );
 }
