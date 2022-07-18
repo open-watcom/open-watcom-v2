@@ -60,10 +60,9 @@
 #define MAX_WATCHES     8
 
 typedef struct {
-    addr48_ptr  addr;
-    dword       value;
-    dword       value_hi;
+    uint_64     value;
     dword       linear;
+    addr48_ptr  addr;
     word        size;
     word        dregs;
 } watch_point;
@@ -237,7 +236,7 @@ void ClearDebugRegs( void )
 
     if( WDebug386 ) {
         for( i = 0; i < 4; i++ )
-            SetDRn( i, 0L, 0L );
+            SetDRn( i, 0, 0 );
         setDR6( 0 );
         setDR7( 0 );
     }
@@ -269,6 +268,7 @@ bool SetDebugRegs( void )
     watch_point *wp;
     word        size;
     dword       linear;
+    word        type;
 
     if( !WDebug386 || DRegsCount() > 4 )
         return( false );
@@ -276,10 +276,13 @@ bool SetDebugRegs( void )
     dr  = 0;
     dr7 = DR7_GE | DR7_LE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        size = ( wp->size == 8 ) ? 4 : wp->size;
         linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        type = DRLen( size ) | DR7_BWR;
         for( j = 0; j < wp->dregs; j++ ) {
-            dr7 |= SetDRn( dr, linear, DRLen( size ) | DR7_BWR );
+            dr7 |= SetDRn( dr, linear, type );
             dr++;
             linear += size;
         }
@@ -288,22 +291,6 @@ bool SetDebugRegs( void )
     return( true );
 } /* SetDebugRegs */
 
-static dword ReadWatchData( addr48_ptr *addr, word size, dword *value_hi )
-{
-    dword       value;
-
-    *value_hi = 0;
-    if( size == 8 ) {
-        addr->offset += 4;
-        ReadMemory( addr, value_hi, 4 );
-        addr->offset -= 4;
-        size = 4;
-    }
-    value = 0;
-    ReadMemory( addr, &value, size );
-    return( value );
-}
-
 /*
  * CheckWatchPoints - check if a watchpoint was hit
  */
@@ -311,11 +298,12 @@ bool CheckWatchPoints( void )
 {
     watch_point *wp;
     int         i;
-    dword       value_hi;
+    uint_64     value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        if( wp->value != ReadWatchData( &wp->addr, wp->size, &value_hi )
-          || wp->value_hi != value_hi ) {
+        value = 0;
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( wp->value != value ) {
             return( true );
         }
     }
@@ -337,6 +325,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     watch_point         *wp;
     dword               linear;
     word                size;
+    word                dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -348,12 +337,20 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
-        wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
+        wp->value = 0;
+        ReadMemory( &wp->addr, &wp->value, wp->size );
 
         linear = GetLinear( wp->addr.segment, wp->addr.offset );
-        size = ( wp->size > 4 ) ? 4 : wp->size;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
+        if( wp->size == 8 )
+            dregs++;
+        wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
-        wp->dregs = ( ( linear & ( size - 1 ) ) ? 2 : 1 ) + ( ( wp->size == 8 ) ? 1 : 0 );
         if( WDebug386 && DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }

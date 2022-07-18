@@ -1277,29 +1277,14 @@ static int DRegsCount( void )
     return( needed );
 }
 
-static dword ReadWatchData( addr48_ptr *addr, byte size, dword *value_hi )
-{
-    dword       value;
-
-    *value_hi = 0;
-    if( size == 8 ) {
-        addr->offset += 4;
-        ReadBuffer( value_hi, addr->segment, addr->offset, 4 );
-        addr->offset -= 4;
-        size = 4;
-    }
-    value = 0;
-    ReadBuffer( &value, addr->segment, addr->offset, size );
-    return( value );
-}
-
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
     watch_point         *wp;
-    byte                size;
+    word                size;
     dword               linear;
+    word                dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1311,16 +1296,20 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
-        wp->value = ReadWatchData( &wp->addr, wp->size, &wp->value_hi );
+        wp->value = 0;
+        ReadBuffer( &wp->value, wp->addr.segment, wp->addr.offset, wp->size );
 
-        size = wp->size;
-        if( size > 4 )
-            size = 4;
         linear = MakeItFlatNumberOne( wp->addr.segment, wp->addr.offset );
-        wp->linear = linear & ~( size - 1 );
-        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
         if( wp->size == 8 )
-            wp->dregs++;
+            dregs++;
+        wp->dregs = dregs;
+        wp->linear = linear & ~( size - 1 );
 
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
@@ -1415,23 +1404,25 @@ static bool setDebugRegs( void )
     int         i;
     int         j;
     watch_point *wp;
-    byte        size;
+    word        size;
+    dword       linear;
 
     if( DRegsCount() > 4 ) {
         return( FALSE );
     }
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        linear = wp->linear;
         size = wp->size;
-        if( size > 4 )
+        if( size == 8 )
             size = 4;
-        Buff.Addr = wp->linear;
         Buff.Value = DBG_W_Write | DBG_W_Local;
         for( j = 0; j < wp->dregs; j++ ) {
             Buff.Cmd = DBG_C_SetWatch;
+            Buff.Addr = linear;
             Buff.Len = size;
             Buff.Index = 0;
             CallDosDebug( &Buff );
-            Buff.Addr += size;
+            linear += size;
         }
     }
     return( TRUE );
@@ -1442,15 +1433,14 @@ static bool CheckWatchPoints( void )
     uDB_t           save;
     watch_point     *wp;
     int             i;
-    dword           value;
-    dword           value_hi;
+    uint_64         value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         ReadRegs( &save );
-        value = ReadWatchData( &wp->addr, wp->size, &value_hi );
+        value = 0;
+        ReadBuffer( &value, wp->addr.segment, wp->addr.offset, wp->size );
         WriteRegs( &save );
-        if( wp->value != value
-          || wp->value_hi != value_hi ) {
+        if( wp->value != value ) {
             return( true );
         }
     }

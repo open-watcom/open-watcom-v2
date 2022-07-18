@@ -79,8 +79,8 @@
 
 /* Structure used internally to set hardware watch points */
 typedef struct watch_point {
+    uint_64     value;
     addr48_ptr  addr;
-    dword       value;
     word        size;
 } watch_point;
 
@@ -1158,25 +1158,15 @@ static int DRegsCount( void )
 
     needed = 0;
     for( i = 0; i < WatchCount; i++ ) {
-        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].len -1 ) ? 2 : 1;
+        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].size - 1 ) ? 2 : 1;
     }
     return( needed );
-}
-
-static dword ReadWatchData( word segv, dword offv, word size )
-{
-    dword   value;
-
-    value = 0;
-    ReadBuffer( &value, segv, offv, size );
-    return( value );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
-    dword               buff;
     watch_point         *wp;
 
     acc = GetInPtr( 0 );
@@ -1189,7 +1179,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
-        wp->value = ReadWatchData( wp->addr.segment, wp->addr.offset, wp->size );
+        wp->value = 0;
+        ReadBuffer( (PBYTE)&wp->value, wp->addr.segment, wp->addr.offset, wp->size );
 
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
@@ -1299,14 +1290,14 @@ static bool setDebugRegs( void )
     for( i = 0; i < WatchCount; ++i ) {
         Buff.Cmd = DBG_C_SetWatch;
         Buff.Addr = MakeItFlatNumberOne( WatchPoints[i].addr.segment,
-                                         WatchPoints[i].addr.offset & ~( WatchPoints[i].len -1 ) );
-        Buff.Len = WatchPoints[i].len;
+                                         WatchPoints[i].addr.offset & ~( WatchPoints[i].size - 1 ) );
+        Buff.Len = WatchPoints[i].size;
         Buff.Index = 0;
         Buff.Value = DBG_W_Write | DBG_W_Local;
         CallDosDebug( &Buff );
-        if( WatchPoints[i].addr.offset & ( WatchPoints[i].len-1 ) ) {
+        if( WatchPoints[i].addr.offset & ( WatchPoints[i].size - 1 ) ) {
             Buff.Cmd = DBG_C_SetWatch;
-            Buff.Addr += WatchPoints[i].len;
+            Buff.Addr += WatchPoints[i].size;
             Buff.Index = 0;
             CallDosDebug( &Buff );
         }
@@ -1318,11 +1309,13 @@ static bool CheckWatchPoints( void )
 {
     watch_point     *wp;
     int             i;
-    dword           value;
+    uint_64         value;
+    dos_debug       save;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         ReadRegs( &save );
-        value = ReadWatchData( wp->addr.segment, wp->addr.offset, wp->size );
+        value = 0;
+        ReadBuffer( (PBYTE)&value, wp->addr.segment, wp->addr.offset, wp->size );
         WriteRegs( &save );
         if( wp->value != value ) {
             return( true );
@@ -1333,8 +1326,6 @@ static bool CheckWatchPoints( void )
 
 static void watchSingleStep( void )
 {
-    dos_debug       save;
-
     DebugExecute( &Buff, DBG_C_SStep, TRUE );
     while( Buff.Cmd == DBG_N_SStep ) {
         if( CheckWatchPoints() ) {

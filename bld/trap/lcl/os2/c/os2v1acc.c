@@ -71,8 +71,8 @@ extern PVOID my_alloca( unsigned short );
     __modify        [__sp]
 
 typedef struct watch_point {
+    uint_64     value;
     addr48_ptr  addr;
-    dword       value;
     word        size;
 } watch_point;
 
@@ -934,43 +934,10 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static dword ReadWatchData( word segv, dword offv, word size )
-{
-    dword    high_value;
-
-    high_value = 0;
-    Buff.cmd = PT_CMD_READ_MEM_D;
-    Buff.segv = segv;
-    switch( size ) {
-    case 4:
-        Buff.offv = offv + 2;
-        DosPTrace( &Buff );
-        if( Buff.cmd != PT_RET_SUCCESS )
-            break;
-        high_value = Buff.value << 16;
-        Buff.cmd = PT_CMD_READ_MEM_D;
-        /* fall through */
-    case 2:
-        Buff.offv = offv;
-        DosPTrace( &Buff );
-        if( Buff.cmd != PT_RET_SUCCESS )
-            break;
-        return( high_value + Buff.value );
-    case 1:
-        Buff.offv = offv;
-        DosPTrace( &Buff );
-        if( Buff.cmd != PT_RET_SUCCESS )
-            break;
-        return( (byte)Buff.value );
-    }
-    return( 0 );
-}
-
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
-    dword               buff;
     watch_point         *wp;
 
     acc = GetInPtr( 0 );
@@ -983,7 +950,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = acc->size;
-        wp->value = ReadWatchData( wp->addr.segment, wp->addr.offset, wp->size );
+        wp->value = 0;
+        ReadBuffer( (PBYTE)&wp->value, wp->addr.segment, wp->addr.offset, wp->size );
 
         ++WatchCount;
     }
@@ -1064,9 +1032,12 @@ static bool CheckWatchPoints( void )
 {
     watch_point     *wp;
     int             i;
+    uint_64         value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        if( ReadWatchData( wp->addr.segment, wp->addr.offset, wp->size ) != wp->value ) {
+        value = 0;
+        ReadBuffer( (PBYTE)&value, wp->addr.segment, wp->addr.offset, wp->size );
+        if( wp->value != value ) {
             return( true );
         }
     }

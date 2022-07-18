@@ -48,9 +48,9 @@
 
 /* Structure used internally to set hardware watch points */
 typedef struct {
+    uint_64     value;
+    dword       linear;
     addr48_ptr  addr;
-    u_long      value;
-    u_long      linear;
     word        size;
     word        dregs;
 } watch_point;
@@ -207,10 +207,10 @@ static void SetDR7( u_long val )
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG(7), (void *)val );
 }
 
-static u_long SetDRn( int i, u_long linear, u_long type )
+static dword SetDRn( int i, dword linear, word type )
 {
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG( i ), (void *)linear );
-    return( ( type << DR7_RWLSHIFT( i ) )
+    return( ( (dword)type << DR7_RWLSHIFT( i ) )
 //        | ( DR7_GEMASK << DR7_GLSHIFT( i ) )
           | ( DR7_LEMASK << DR7_GLSHIFT( i ) ) );
 }
@@ -240,20 +240,28 @@ static int DRegsCount( void )
 int SetDebugRegs( void )
 {
     int         i;
+    int         j;
     int         dr;
-    u_long      dr7;
+    dword       dr7;
     watch_point *wp;
+    dword       linear;
+    word        size;
+    word        type;
 
     if( DRegsCount() > 4 )
         return( false );
     dr  = 0;
     dr7 =  /* DR7_GE | */ DR7_LE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
-        dr++;
-        if( wp->dregs == 2 ) {
-            dr7 |= SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) | DR7_BWR );
+        linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        type = DRLen( size ) | DR7_BWR;
+        for( j = 0; j < wp->dregs; j++ ) {
+            dr7 |= SetDRn( dr, linear, type );
             dr++;
+            linear += size;
         }
     }
     SetDR7( dr7 );
@@ -270,13 +278,14 @@ static dword GetLinear( addr_seg segment, addr48_off offset )
 #if 0
 int CheckWatchPoints( void )
 {
-    u_long      value;
-    int         i;
     watch_point *wp;
+    int         i;
+    uint_64     value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
         ReadMemory( pid, wp->addr.offset, &value, wp->size );
-        if( value != wp->value ) {
+        if( wp->value != value ) {
             return( true );
         }
     }
@@ -289,8 +298,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
-    u_long          linear;
-    size_t          size;
+    dword           linear;
+    word            size;
+    word            dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -301,14 +311,21 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp = WatchPoints + WatchCount;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->size = size = acc->size;
+        wp->size = acc->size;
         wp->value = 0;
-        ReadMemory( pid, wp->addr.offset, &wp->value, size );
+        ReadMemory( pid, wp->addr.offset, &wp->value, wp->size );
 
         linear = GetLinear( wp->addr.segment, wp->addr.offset );
         size = wp->size;
+        if( size == 8 )
+            size = 4;
+        dregs = 1;
+        if( linear & ( size - 1 ) )
+            dregs++;
+        if( wp->size == 8 )
+            dregs++;
+        wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
-        wp->dregs = (linear & ( size - 1 )) ? 2 : 1;
 
         WatchCount++;
         if( DRegsCount() <= 4 ) {
