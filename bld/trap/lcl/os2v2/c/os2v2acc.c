@@ -486,7 +486,7 @@ void WriteLinear( void *data, ULONG lin, USHORT size )
 USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
-    bool        iugs;
+    bool        is_ugs;
     USHORT      resdata;
     ULONG       flat;
     BYTE        *data = src;
@@ -497,8 +497,8 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
 
     length = size;
     if( Pid != 0 ) {
-        iugs = IsUnknownGDTSeg( segv );
-        if( !iugs ) {
+        is_ugs = IsUnknownGDTSeg( segv );
+        if( !is_ugs ) {
             flat = MakeItFlatNumberOne( segv, offv );
             WriteLinear( data, flat, size );
             if( Buff.Cmd == DBG_N_Success ) {
@@ -509,7 +509,7 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
             Buff.Cmd = DBG_C_WriteMem_D;
             if( length == 1 ) {
                 /* Don't want to write anything in the kernel area - that means no breakpoints! */
-                if( iugs /*|| offv > KERNEL_MEM_OFFSET*/ ) {
+                if( is_ugs /*|| offv > KERNEL_MEM_OFFSET*/ ) {
                     if( !TaskReadWord( segv, offv, &resdata ) ) {
                         break;
                     }
@@ -539,7 +539,7 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
                 data++;
                 resdata |= *data << 8;
                 data++;
-                if( iugs ) {
+                if( is_ugs ) {
                     if( !TaskWriteWord( segv, offv, resdata ) ) {
                         break;
                     }
@@ -563,7 +563,7 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
 static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
-    bool        iugs;
+    bool        is_ugs;
     USHORT      resdata;
     ULONG       flat;
     BYTE        *data = dst;
@@ -573,8 +573,8 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
     }
     length = size;
     if( Pid != 0 ) {
-        iugs = IsUnknownGDTSeg( segv );
-        if( !iugs ) {
+        is_ugs = IsUnknownGDTSeg( segv );
+        if( !is_ugs ) {
             flat = MakeItFlatNumberOne( segv, offv );
             ReadLinear( data, flat, size );
             if( Buff.Cmd == DBG_N_Success ) {
@@ -582,7 +582,7 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
             }
         }
         while( length != 0 ) {
-            if( iugs || offv > KERNEL_MEM_OFFSET ) {
+            if( is_ugs || offv > KERNEL_MEM_OFFSET ) {
                 if( !TaskReadWord( segv, offv, &resdata ) ) {
                     break;
                 }
