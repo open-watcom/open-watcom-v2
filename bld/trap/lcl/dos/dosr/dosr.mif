@@ -12,5 +12,5 @@ extra_a_flags += -DREAL_MODE
 !include $(trap_dir)/lcl/dos/dos.mif
 !include $(trap_dir)/lcl/lcl.mif
 
-extra_objs  += realtrap.obj $(dosr_objs) $(dos_trap_core_objs) supphdlr.obj
-extra_dobjs += dumtrap.obj $(dosr_objs) $(dos_trap_core_objs) supphdlr.obj
+extra_objs  += realtrap.obj $(dosr_objs) $(dos_trap_core_objs)
+extra_dobjs += dumtrap.obj $(dosr_objs) $(dos_trap_core_objs)

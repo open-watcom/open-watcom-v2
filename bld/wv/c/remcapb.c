@@ -8,7 +8,6 @@
  *  Find if the current trap file supports the capabilities service
  */
 
-static bool             Supports8ByteBreakpoints = false;
 static bool             SupportsExactBreakpoints = false;
 
 static trap_shandle     SuppCapabilitiesId = 0;
@@ -17,43 +16,6 @@ static trap_shandle     SuppCapabilitiesId = 0;
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
         in.supp.id              = SuppCapabilitiesId;       \
         in.req                  = request;
-
-static bool CapabilitiesGet8ByteBreakpointSupport( void )
-{
-    capabilities_get_8b_bp_req  acc;
-    capabilities_get_8b_bp_ret  ret;
-
-    if( SuppCapabilitiesId == 0 )
-        return( false );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( false );
-    }
-    Supports8ByteBreakpoints = true;    /* The trap supports 8 byte breakpoints */
-    return( true );
-}
-
-static bool CapabilitiesSet8ByteBreakpointSupport( bool status )
-{
-    capabilities_set_8b_bp_req  acc;
-    capabilities_set_8b_bp_ret  ret;
-
-    if( SuppCapabilitiesId == 0 )
-        return( false );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_8B_BP );
-    acc.status = status ? true : false;
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( false );
-    }
-    Supports8ByteBreakpoints = ret.status ? true : false;
-    return( true );
-}
 
 static bool CapabilitiesGetExactBreakpointSupport( void )
 {
@@ -117,26 +79,16 @@ bool IsExactBreakpointsSupported( void )
     }
 }
 
-bool Is8ByteBreakpointsSupported( void )
-{
-    return( Supports8ByteBreakpoints );
-}
-
 bool InitCapabilities( void )
 {
     /* Always reset in case of trap switch */
-    Supports8ByteBreakpoints = false;
     SupportsExactBreakpoints = false;
 
     SuppCapabilitiesId = GETSUPPID( CAPABILITIES_SUPP_NAME );
     if( SuppCapabilitiesId == 0 )
         return( false );
 
-    CapabilitiesGet8ByteBreakpointSupport();
     CapabilitiesGetExactBreakpointSupport();
-
-    if( Supports8ByteBreakpoints )
-        CapabilitiesSet8ByteBreakpointSupport( true );
 
     if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
         CapabilitiesSetExactBreakpointSupport( true );

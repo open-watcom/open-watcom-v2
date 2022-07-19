@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -48,5 +48,4 @@ extern void RemoteResume( void );
 
 extern bool SetCapabilitiesExactBreakpointSupport( bool status, bool set_switch );
 extern bool IsExactBreakpointsSupported( void );
-extern bool Is8ByteBreakpointsSupported( void );
 

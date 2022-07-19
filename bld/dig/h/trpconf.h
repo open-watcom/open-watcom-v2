@@ -44,6 +44,7 @@
         #undef          WANT_THREAD
         #undef          WANT_RUN_THREAD
         #undef          WANT_RFX
+        #undef          WANT_CAPABILITIES
     #elif defined(DOSXTRAP)
         /* real mode trap file talking to protected mode helper */
         #undef          WANT_FILE_INFO
@@ -54,6 +55,7 @@
         #undef          WANT_THREAD
         #undef          WANT_RUN_THREAD
         #define         WANT_RFX
+        #undef          WANT_CAPABILITIES
     #else
         /* straight dos */
         #undef          WANT_FILE_INFO
@@ -64,7 +66,7 @@
         #undef          WANT_THREAD
         #undef          WANT_RUN_THREAD
         #define         WANT_RFX
-        #define         WANT_CAPABILITIES
+        #undef          WANT_CAPABILITIES
     #endif
 #elif defined(__OS2__)
   #if defined(_M_I86)
@@ -76,6 +78,7 @@
     #define         WANT_THREAD
     #undef          WANT_RUN_THREAD
     #define         WANT_RFX
+    #undef          WANT_CAPABILITIES
   #else
     #if defined(ELFCORE)
         #undef      WANT_FILE_INFO
@@ -86,6 +89,7 @@
         #undef      WANT_THREAD
         #undef      WANT_RUN_THREAD
         #undef      WANT_RFX
+        #undef      WANT_CAPABILITIES
     #else
         #undef      WANT_FILE_INFO
         #undef      WANT_ENV
@@ -95,7 +99,7 @@
         #define     WANT_THREAD
         #undef      WANT_RUN_THREAD
         #define     WANT_RFX
-        #define     WANT_CAPABILITIES
+        #undef      WANT_CAPABILITIES
     #endif
   #endif
 #elif defined(__NT__)
@@ -108,6 +112,7 @@
         #define WANT_THREAD
         #undef  WANT_RUN_THREAD
         #define WANT_RFX
+        #undef  WANT_CAPABILITIES
     #elif defined(MSJXTRAP)
         #define WANT_FILE_INFO
         #define WANT_ENV
@@ -117,6 +122,7 @@
         #define WANT_THREAD
         #undef  WANT_RUN_THREAD
         #define WANT_RFX
+        #undef  WANT_CAPABILITIES
     #elif defined(ELFCORE)
         #undef  WANT_FILE_INFO
         #undef  WANT_ENV
@@ -126,6 +132,7 @@
         #undef  WANT_THREAD
         #undef  WANT_RUN_THREAD
         #undef  WANT_RFX
+        #undef  WANT_CAPABILITIES
     #else
         #define WANT_FILE_INFO
         #define WANT_ENV
@@ -137,6 +144,8 @@
         #define WANT_RFX
         #if defined( _M_IX86 ) || defined( _M_X64 )
             #define WANT_CAPABILITIES
+        #else
+            #undef  WANT_CAPABILITIES
         #endif
     #endif
 #elif defined(__WINDOWS__)
@@ -148,7 +157,7 @@
     #undef      WANT_THREAD
     #undef      WANT_RUN_THREAD
     #define     WANT_RFX
-    #define     WANT_CAPABILITIES
+    #undef      WANT_CAPABILITIES
 #elif defined(__QNX__)
     #undef      WANT_FILE_INFO
     #undef      WANT_ENV
@@ -158,6 +167,7 @@
     #define     WANT_THREAD
     #undef      WANT_RUN_THREAD
     #undef      WANT_RFX
+    #undef      WANT_CAPABILITIES
 #elif defined(__LINUX__)
     #undef      WANT_FILE_INFO  // TODO: Want this later for Linux!
     #undef      WANT_ENV        // TODO: Want this later for Linux!
@@ -167,6 +177,7 @@
     #undef      WANT_THREAD     // TODO: Want this later for Linux!
     #undef      WANT_RUN_THREAD
     #undef      WANT_RFX        // TODO: Want this later for Linux!
+    #undef      WANT_CAPABILITIES
 #elif defined(__UNIX__)
     #undef      WANT_FILE_INFO
     #undef      WANT_ENV
@@ -176,6 +187,7 @@
     #undef      WANT_THREAD
     #undef      WANT_RUN_THREAD
     #undef      WANT_RFX
+    #undef      WANT_CAPABILITIES
 #elif defined(__NETWARE__)
     #undef      WANT_FILE_INFO
     #undef      WANT_ENV
@@ -185,6 +197,7 @@
     #define     WANT_THREAD
     #undef      WANT_RUN_THREAD
     #undef      WANT_RFX
+    #undef      WANT_CAPABILITIES
 #elif defined(__RDOS__)
     #define     WANT_FILE_INFO
     #define     WANT_ENV

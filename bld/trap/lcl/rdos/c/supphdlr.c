@@ -34,30 +34,6 @@
 #include <stdlib.h>
 #include "stdrdos.h"
 
-trap_retval TRAP_CAPABILITIES( get_8b_bp )( void )
-{
-    capabilities_get_8b_bp_req  *req;
-    capabilities_get_8b_bp_ret  *ret;
-
-    req = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
-    ret->status = 1;            /* This signals we support 8 byte breakpoints */
-    return( sizeof( *ret ) );
-}
-
-trap_retval TRAP_CAPABILITIES( set_8b_bp )( void )
-{
-    capabilities_set_8b_bp_req  *req;
-    capabilities_set_8b_bp_ret  *ret;
-
-    req = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
-    ret->status = 1;   /* And are we supporting it? */
-    return( sizeof( *ret ) );
-}
-
 trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
 {
     capabilities_get_exact_bp_req  *req;

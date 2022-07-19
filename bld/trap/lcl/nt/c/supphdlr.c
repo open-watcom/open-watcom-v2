@@ -34,37 +34,8 @@
 #include <stdlib.h>
 #include "stdnt.h"
 
-/* Do not like this! */
 
-extern bool                  Supporting8ByteBreakpoints;
 extern bool                  SupportingExactBreakpoints;
-
-trap_retval TRAP_CAPABILITIES( get_8b_bp )( void )
-{
-    capabilities_get_8b_bp_req  *req;
-    capabilities_get_8b_bp_ret  *ret;
-
-    req = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
-    ret->status = 1;            /* This signals we support 8 byte breakpoints */
-    return( sizeof( *ret ) );
-}
-
-trap_retval TRAP_CAPABILITIES( set_8b_bp )( void )
-{
-    capabilities_set_8b_bp_req  *req;
-    capabilities_set_8b_bp_ret  *ret;
-
-    req = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
-
-    Supporting8ByteBreakpoints = ( req->status != 0 );
-
-    ret->status = Supporting8ByteBreakpoints;   /* And are we supporting it? */
-    return( sizeof( *ret ) );
-}
 
 trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
 {

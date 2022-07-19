@@ -1503,11 +1503,8 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case 1:
         case 2:
         case 4:
-            break;
         case 8:
-            if( Is8ByteBreakpointsSupported() )
-                break;
-            /* fall through */
+            break;
         default:
             Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
             break;
@@ -1557,14 +1554,10 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
         return( false );
     MADTypeInfo( mth, &mti );
     switch( BITS2BYTES( mti.b.bits ) ) {
-    case 8:
-        if( !Is8ByteBreakpointsSupported() ) {
-            ok_to_try = false;
-        }
-        /* fall through */
     case 1:
     case 2:
     case 4:
+    case 8:
         if( ok_to_try ) {
             if(  FindBreak( addr ) != NULL ) {
                 Error( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
