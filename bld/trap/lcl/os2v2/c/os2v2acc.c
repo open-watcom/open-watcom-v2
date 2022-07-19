@@ -81,12 +81,11 @@
 #define MAX_OBJECTS         128
 
 typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
-    dword       value_hi;
+    uint_64     value;
     dword       linear;
-    byte        size;
-    byte        dregs;
+    addr48_ptr  addr;
+    word        size;
+    word        dregs;
 } watch_point;
 
 uDB_t                   Buff;
@@ -1282,8 +1281,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req       *acc;
     set_watch_ret       *ret;
     watch_point         *wp;
-    word                size;
     dword               linear;
+    word                size;
     word                dregs;
 
     acc = GetInPtr( 0 );
@@ -1404,8 +1403,8 @@ static bool setDebugRegs( void )
     int         i;
     int         j;
     watch_point *wp;
-    word        size;
     dword       linear;
+    word        size;
 
     if( DRegsCount() > 4 ) {
         return( FALSE );
@@ -1430,9 +1429,9 @@ static bool setDebugRegs( void )
 
 static bool CheckWatchPoints( void )
 {
-    uDB_t           save;
     watch_point     *wp;
     int             i;
+    uDB_t           save;
     uint_64         value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {

@@ -351,11 +351,11 @@ trap_retval TRAP_CORE( Set_watch )( void )
             dregs++;
         wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
+
+        WatchCount++;
         if( WDebug386 && DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
-
-        WatchCount++;
     }
     return( sizeof( *ret ) );
 }

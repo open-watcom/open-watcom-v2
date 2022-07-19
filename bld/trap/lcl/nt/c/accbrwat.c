@@ -418,44 +418,39 @@ trap_retval TRAP_CORE( Set_watch )( void )
         /* Calculate where the breakpoint should be */
         /* 1 byte breakpoint starts at where it says on the tin -   OK */
         /* 2 byte breakpoint starts at previous word offset -       OK */
-        /* 4 byte breakpoint starts at previous dword offset -      not sure */
-        /* 8 byte breakpoint starts at previous dword offset -      not sure */
+        /* 4 byte breakpoint starts at previous dword offset -      OK */
+        /* 8 byte breakpoint starts at previous dword offset -      OK */
 
+        dregs = 1;
         /* If we are supporting exact break on write, then don't adjust the linear address */
         if( !SupportingExactBreakpoints ) {
-            wp->linear = linear & ~( size - 1 );
             /* This is checking if we are crossing a DWORD boundary to use 2 registers. We need to do the same if we are a QWord */
-            dregs = 1;
             if( linear & ( size - 1 ) ) {
                 dregs++;
             }
+            wp->linear = linear & ~( size - 1 );
         } else {
-            int     boundary_check = linear & 0x3;
-
-            wp->linear = linear;
             if( size == 1 ) {
-                dregs = 1;
             } else if ( size == 2 ) {
-                dregs = 1;
-                if( boundary_check & 1 ) {
+                if( linear & 1 ) {
                     dregs++;        /* Need two 1 byte watches */
                 }
             } else if ( size == 4 ) {
-                switch( boundary_check ) {
+                switch( linear & 0x3 ) {
                 case 0:
-                    dregs = 1;      /* 0x00-0x03:   4B@0x00 */
+                                    /* 0x00-0x03:   4B@0x00 */
                                     /* 0x00-0x07:   4B@0x00, 4B@0x04 */
                     break;
                 case 1:
-                    dregs = 3;      /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
+                    dregs += 2;     /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
                                     /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
                     break;
                 case 2:
-                    dregs = 2;      /* 0x02-0x05:   2B@0x02, 2B@0x04 */
+                    dregs += 1;     /* 0x02-0x05:   2B@0x02, 2B@0x04 */
                                     /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
                     break;
                 case 3:
-                    dregs = 3;      /* 0x03-0x06:   1B@0x03, 2B@0x04, 1B@0x06 */
+                    dregs += 2;     /* 0x03-0x06:   1B@0x03, 2B@0x04, 1B@0x06 */
                                     /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
                     break;
                 }
@@ -463,11 +458,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
                 /* Error!!! */
                 return( sizeof( *ret ) );
             }
+            wp->linear = linear;
         }
         /* QWord always needs 1 more register */
         if( wp->size == 8 )
             dregs++;
         wp->dregs = dregs;
+
         WatchCount++;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;

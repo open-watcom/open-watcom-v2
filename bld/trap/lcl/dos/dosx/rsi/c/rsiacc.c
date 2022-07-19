@@ -763,9 +763,9 @@ static trap_conditions DoRun( void )
 
 static bool CheckWatchPoints( void )
 {
-    dword       value;
-    int         i;
     watch_point *wp;
+    int         i;
+    uint_64     value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         value = 0;

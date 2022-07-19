@@ -71,9 +71,9 @@
 #endif
 
 typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
+    uint_64     value;
     dword       linear;
+    addr48_ptr  addr;
     word        size;
     word        dregs;
 } watch_point;
@@ -900,14 +900,14 @@ static bool SetDebugRegs( void )
 
 static bool CheckWatchPoints( void )
 {
-    int         i;
-    dword       value;
     watch_point *wp;
+    int         i;
+    uint_64     value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         value = 0;
         ReadMemory( &wp->addr, &value, wp->size );
-        if( value != wp->value ) {
+        if( wp->value != value ) {
             return( true );
         }
     }
