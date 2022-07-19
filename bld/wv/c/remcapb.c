@@ -19,8 +19,8 @@ static trap_shandle     SuppCapabilitiesId = 0;
 
 static bool CapabilitiesGetExactBreakpointSupport( void )
 {
-    capabilities_get_8b_bp_req  acc;
-    capabilities_get_8b_bp_ret  ret;
+    capabilities_get_exact_bp_req  acc;
+    capabilities_get_exact_bp_ret  ret;
 
 
     if( SuppCapabilitiesId == 0 )
@@ -39,8 +39,8 @@ static bool CapabilitiesGetExactBreakpointSupport( void )
 
 static bool CapabilitiesSetExactBreakpointSupport( bool status )
 {
-    capabilities_set_8b_bp_req  acc;
-    capabilities_set_8b_bp_ret  ret;
+    capabilities_set_exact_bp_req  acc;
+    capabilities_set_exact_bp_ret  ret;
 
     if( SuppCapabilitiesId == 0 )
         return( false );
