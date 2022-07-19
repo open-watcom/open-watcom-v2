@@ -756,13 +756,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ReadMemory( wp->addr.segment, wp->addr.offset, &wp->value, wp->size );
 
         linear = ( (dword)wp->addr.segment << 4 ) + wp->addr.offset;
-        size = wp->size;
-        if( size == 8 )
-            size = 4;
         dregs = 1;
-        if( linear & ( size - 1 ) )
+        size = wp->size;
+        if( size == 8 ) {
+            size = 4;
             dregs++;
-        if( wp->size == 8 )
+        }
+        if( linear & ( size - 1 ) )
             dregs++;
         wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
@@ -802,7 +802,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static dword SetDRn( int dr, dword linear, unsigned type )
+static dword SetDRn( int dr, dword linear, word type )
 {
     SetDRx( dr, linear );
     return( ( (dword)type << DR7_RWLSHIFT( dr ) )

@@ -813,13 +813,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ReadMemory( &wp->addr, &wp->value, wp->size );
 
         linear = GetLinear( &wp->addr );
-        size = wp->size;
-        if( size == 8 )
-            size = 4;
         dregs = 1;
-        if( linear & ( size - 1 ) )
+        size = wp->size;
+        if( size == 8 ) {
+            size = 4;
             dregs++;
-        if( wp->size == 8 )
+        }
+        if( linear & ( size - 1 ) )
             dregs++;
         wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );

@@ -1299,13 +1299,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ReadBuffer( &wp->value, wp->addr.segment, wp->addr.offset, wp->size );
 
         linear = MakeItFlatNumberOne( wp->addr.segment, wp->addr.offset );
-        size = wp->size;
-        if( size == 8 )
-            size = 4;
         dregs = 1;
-        if( linear & ( size - 1 ) )
+        size = wp->size;
+        if( size == 8 ) {
+            size = 4;
             dregs++;
-        if( wp->size == 8 )
+        }
+        if( linear & ( size - 1 ) )
             dregs++;
         wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );

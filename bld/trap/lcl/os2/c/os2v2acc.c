@@ -1155,10 +1155,19 @@ static int DRegsCount( void )
 {
     int     needed;
     int     i;
+    word    size;
 
     needed = 0;
     for( i = 0; i < WatchCount; i++ ) {
-        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].size - 1 ) ? 2 : 1;
+        needed++;
+        size = WatchPoints[i].size;
+        if( size == 8 ) {
+            needed++;
+            size = 4;
+        }
+        if( WatchPoints[i].addr.offset & ( size - 1 ) )
+            needed++;
+        }
     }
     return( needed );
 }
