@@ -33,7 +33,7 @@ static bool CapabilitiesGetExactBreakpointSupport( void )
         return( false );
     }
     /* The trap may support it, but it is not possible currently */
-    SupportsExactBreakpoints = ret.status ? true : false;
+    SupportsExactBreakpoints = ret.status;
     return( true );
 }
 
@@ -46,13 +46,13 @@ static bool CapabilitiesSetExactBreakpointSupport( bool status )
         return( false );
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
-    acc.status = status ? true : false;
+    acc.status = status;
 
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
     }
-    _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? true : false );
+    _SwitchSet( SW_BREAK_ON_WRITE, ret.status );
     return( true );
 }
 
