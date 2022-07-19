@@ -1140,7 +1140,7 @@ The address of the watchpoint is given by the
 field.
 The
 .id size
-field gives the number of bytes to be watched.
+field gives the number of bytes to be watched (1, 2, 4 or 8 bytes).
 .np
 Return message:
 .millust begin
@@ -1174,7 +1174,7 @@ The address of the watch point is given by the
 field.
 The
 .id size
-field gives the size of the watch point.
+field gives the size of the watch point (1, 2, 4 or 8 bytes).
 .np
 Return message:
 .millust begin
@@ -3178,56 +3178,6 @@ trap_error      err
 .*
 .np
 .beglevel
-.*
-.section REQ_CAPABILITIES_GET_8B_BP
-.*
-.np
-Request to get information if 8-byte breakpoints are supported
-on the remote system.
-.np
-Request message:
-.millust begin
-access_req      req
-.millust end
-.np
-Return message:
-.millust begin
-trap_error      err
-unsigned_8      status
-.millust end
-.pp
-The
-.id status
-contains true if 8-byte breakpoints are supported
-on the remote system otherwise
-.id status
-contains false.
-.*
-.section REQ_CAPABILITIES_SET_8B_BP
-.*
-.np
-Request to set if 8-byte breakpoints are active
-on the remote system.
-.np
-Request message:
-.millust begin
-access_req      req
-unsigned_8      status
-.millust end
-.np
-Return message:
-.millust begin
-trap_error      err
-unsigned_8      status
-.millust end
-.pp
-The input
-.id status
-contains if 8-byte breakpoints are required to be active on the remote system.
-.pp
-The output
-.id status
-contains status if 8-byte breakpoints are currently active on the remote system.
 .*
 .section REQ_CAPABILITIES_GET_EXACT_BP
 .*
