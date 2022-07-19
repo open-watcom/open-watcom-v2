@@ -234,8 +234,8 @@ extern void         ReleaseVectors( void );
 
 extern unsigned_8       Exception;
 extern int              XVersion;
-extern trap_cpu_regs    DebugRegs;
-extern unsigned_16      DebugPSP;
+extern trap_cpu_regs    ProcRegs;
+extern unsigned_16      ProcPSP;
 
 int                 WatchCount = 0;
 bool                FakeBreak = false;
@@ -705,26 +705,26 @@ static unsigned ProgRun( bool step )
     unsigned    status;
     epsp_t      *epsp;
 
-    _DBG1( "AccRunProg %X:%X\n", DebugRegs.CS, DebugRegs.EIP );
+    _DBG1( "AccRunProg %X:%X\n", ProcRegs.CS, ProcRegs.EIP );
     ret = GetOutPtr( 0 );
     status = Execute( step );
     //handle module load/unload
     if( status & ST_LOAD_MODULE ) {
-        epsp = (epsp_t *)DebugRegs.EDI;
+        epsp = (epsp_t *)ProcRegs.EDI;
         if( epsp->EntryCS != 0 ) {
             epsp->EntryCS = flatCode;   // set debugee flat selector for init routine
         }
         AddModHandle( NULL, epsp );
     } else if( status & ST_UNLOAD_MODULE ) {
-        RemoveModHandle( (epsp_t *)DebugRegs.EDI );
+        RemoveModHandle( (epsp_t *)ProcRegs.EDI );
     }
     ret->conditions = MapStateToCond( status );
     ret->conditions |= COND_CONFIG;
     // Now setup return value to reflect why we stopped execution.
-    ret->program_counter.offset = DebugRegs.EIP;
-    ret->program_counter.segment = DebugRegs.CS;
-    ret->stack_pointer.offset = DebugRegs.ESP;
-    ret->stack_pointer.segment = DebugRegs.SS;
+    ret->program_counter.offset = ProcRegs.EIP;
+    ret->program_counter.segment = ProcRegs.CS;
+    ret->stack_pointer.offset = ProcRegs.ESP;
+    ret->stack_pointer.segment = ProcRegs.SS;
     return( sizeof( *ret ) );
 }
 
@@ -784,8 +784,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
     ret->mod_handle = 0;
     if( rc == 0 ) {
-        ret->task_id = DebugPSP;
-        AddModsInfo( name, (epsp_t *)GetModuleHandle( DebugPSP ) );
+        ret->task_id = ProcPSP;
+        AddModsInfo( name, (epsp_t *)GetModuleHandle( ProcPSP ) );
     } else {
         ret->task_id = 0;
         if( rc == 1 ) {
@@ -1039,7 +1039,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
     mad_registers       *mr;
 
     mr = GetOutPtr( 0 );
-    *(&mr->x86.cpu) = DebugRegs;
+    *(&mr->x86.cpu) = ProcRegs;
     Read387( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
@@ -1050,7 +1050,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     mad_registers       *mr;
 
     mr = GetInPtr( sizeof( write_regs_req ) );
-    DebugRegs = *(&mr->x86.cpu);
+    ProcRegs = *(&mr->x86.cpu);
     Write387( &mr->x86.u.fpu );
     return( 0 );
 }

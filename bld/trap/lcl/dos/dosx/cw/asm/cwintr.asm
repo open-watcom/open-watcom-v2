@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*
 ;*  ========================================================================
 ;*
@@ -110,18 +110,18 @@ endm
 ;Save all debug registers (general + segment), DS is on the stack
 ;*******************************************************************************
 save_debug_regs macro
-        mov     DebugEAX,eax
-        mov     DebugEBX,ebx
-        mov     DebugECX,ecx
-        mov     DebugEDX,edx
-        mov     DebugESI,esi
-        mov     DebugEDI,edi
-        mov     DebugEBP,ebp
+        mov     ProcEAX,eax
+        mov     ProcEBX,ebx
+        mov     ProcECX,ecx
+        mov     ProcEDX,edx
+        mov     ProcESI,esi
+        mov     ProcEDI,edi
+        mov     ProcEBP,ebp
         pop     eax
-        mov     DebugDS,ax
-        mov     DebugES,es
-        mov     DebugFS,fs
-        mov     DebugGS,gs
+        mov     ProcDS,ax
+        mov     ProcES,es
+        mov     ProcFS,fs
+        mov     ProcGS,gs
 endm
 
 ;*******************************************************************************
@@ -151,37 +151,37 @@ INTFRM ends
 extern  "C", _psp:WORD
 extern  "C", WatchCount:dword
 
-public  "C", DebugPSP
-public  "C", DebugRegs
+public  "C", ProcPSP
+public  "C", ProcRegs
 public  "C", Exception
 
 dLockStart      label byte
 
-DebugPSP        dw 0
+ProcPSP         dw 0
 
-DebugRegs       label byte
+ProcRegs        label byte
 
-DebugEAX        dd 0
-DebugEBX        dd 0
-DebugECX        dd 0
-DebugEDX        dd 0
-DebugESI        dd 0
-DebugEDI        dd 0
-DebugEBP        dd 0
-DebugESP        dd 0
-DebugEIP        dd 0
-DebugEFL        dd 0
-DebugCR0        dd 0
-DebugCR2        dd 0
-DebugCR3        dd 0
-DebugDS         dw 0
-DebugES         dw 0
-DebugSS         dw 0
-DebugCS         dw 0
-DebugFS         dw 0
-DebugGS         dw 0
+ProcEAX         dd 0
+ProcEBX         dd 0
+ProcECX         dd 0
+ProcEDX         dd 0
+ProcESI         dd 0
+ProcEDI         dd 0
+ProcEBP         dd 0
+ProcESP         dd 0
+ProcEIP         dd 0
+ProcEFL         dd 0
+ProcCR0         dd 0
+ProcCR2         dd 0
+ProcCR3         dd 0
+ProcDS          dw 0
+ProcES          dw 0
+ProcSS          dw 0
+ProcCS          dw 0
+ProcFS          dw 0
+ProcGS          dw 0
 
-DebugZero       dw 0
+ProcZero        dw 0
 
 DebuggerESP     dd 0
 DebuggerSS      dw 0
@@ -244,13 +244,13 @@ SwitchToDebuggerIntFrame:
 @@skip1:
         dec     eax
 @@skip2:
-        mov     DebugEIP,eax
+        mov     ProcEIP,eax
         mov     eax,d[esp+INTFRM.i_cs]
-        mov     DebugCS,ax
+        mov     ProcCS,ax
 ;
         mov     eax,[esp+INTFRM.i_flags]
         and     ah,not (CPU_FLAG_SINGLE_STEP shr 8)
-        mov     DebugEFL,eax
+        mov     ProcEFL,eax
 ;
 ;Now modify original CS:EIP,SS:ESP values and return control
 ;to debugger code via interupt structure to restore stacks.
@@ -282,15 +282,15 @@ SwitchToDebuggerExcFrame:
         jnz     @@skip3
         dec     eax
 @@skip3:
-        mov     DebugEIP,eax
+        mov     ProcEIP,eax
         mov     eax,d[esp+EXCPFRM.e_cs]
-        mov     DebugCS,ax
+        mov     ProcCS,ax
 ;
 ;Fetch original Flags
 ;
         mov     eax,[esp+EXCPFRM.e_flags]
         and     ah,not (CPU_FLAG_SINGLE_STEP shr 8)
-        mov     DebugEFL,eax
+        mov     ProcEFL,eax
 ;
 ;Now modify origional CS:EIP,SS:ESP values and return control
 ;to debugger code via exception structure to restore stacks.
@@ -315,7 +315,7 @@ SwitchToDebuggerBreakKey:
 ;
         pushfd
         pop     eax
-        mov     DebugEFL,eax
+        mov     ProcEFL,eax
         or      DebugState1,ST1_KEYBREAK
         dec     InInt09
 ;Fall down
@@ -330,8 +330,8 @@ SwitchToDebugger:
         mov     es,eax
         mov     fs,eax
         mov     gs,eax
-        mov     DebugSS,ss
-        mov     DebugESP,esp
+        mov     ProcSS,ss
+        mov     ProcESP,esp
         lss     esp,f[DebuggerESP]
         ret
 
@@ -620,7 +620,7 @@ BreakChecker    proc    near
 ;Check if return CS:EIP & stack belong to the program we're running.
 ;
         push    es
-        mov     es,DebugPSP
+        mov     es,ProcPSP
         mov     ax,es:[EPSP_SegBase]
         pop     es
 
@@ -629,9 +629,9 @@ STACK_DEPTH = 3 * 4
         cmp     [esp+STACK_DEPTH+INTFRM.i_cs],ax
         jc      @@oldbc
         mov     eax,[esp+STACK_DEPTH+INTFRM.i_eip]
-        mov     DebugEIP,eax
+        mov     ProcEIP,eax
         mov     eax,d[esp+STACK_DEPTH+INTFRM.i_cs]
-        mov     DebugCS,ax
+        mov     ProcCS,ax
 ;
 ;Want to break into the program so swollow this key press.
 ;
@@ -785,10 +785,10 @@ nowatch:
 @@7exec:
         test    DebugState2,ST2_SINGLE_STEPPING or ST2_SINGLE_STEPPING_WATCH
         jz      @@0exec
-        or      b[DebugEFL+1],CPU_FLAG_SINGLE_STEP shr 8
+        or      b[ProcEFL+1],CPU_FLAG_SINGLE_STEP shr 8
         jmp     @@11exec
 @@0exec:
-        and     b[DebugEFL+1],not (CPU_FLAG_SINGLE_STEP shr 8)
+        and     b[ProcEFL+1],not (CPU_FLAG_SINGLE_STEP shr 8)
 @@11exec:
 ;
 ;Set flags ready for execution.
@@ -805,23 +805,23 @@ nowatch:
 ;
 ;Execute the program.
 ;
-        mov     ss,DebugSS
-        mov     esp,DebugESP
-        push    d[DebugEFL]
-        push    w[DebugZero]
-        push    w[DebugCS]
-        push    d[DebugEIP]
-        mov     eax,DebugEAX
-        mov     ebx,DebugEBX
-        mov     ecx,DebugECX
-        mov     edx,DebugEDX
-        mov     esi,DebugESI
-        mov     edi,DebugEDI
-        mov     ebp,DebugEBP
-        mov     gs,DebugGS
-        mov     fs,DebugFS
-        mov     es,DebugES
-        mov     ds,DebugDS
+        mov     ss,ProcSS
+        mov     esp,ProcESP
+        push    d[ProcEFL]
+        push    w[ProcZero]
+        push    w[ProcCS]
+        push    d[ProcEIP]
+        mov     eax,ProcEAX
+        mov     ebx,ProcEBX
+        mov     ecx,ProcECX
+        mov     edx,ProcEDX
+        mov     esi,ProcESI
+        mov     edi,ProcEDI
+        mov     ebp,ProcEBP
+        mov     gs,ProcGS
+        mov     fs,ProcFS
+        mov     es,ProcES
+        mov     ds,ProcDS
         iretdf
 ;
 ;Clear execution flag.
@@ -867,7 +867,7 @@ nowatch:
 ;
         mov     ah,62h
         int     21h
-        mov     DebugPSP,bx
+        mov     ProcPSP,bx
 ;
 ;Switch back to helper's PSP.
 ;
@@ -916,24 +916,24 @@ DebugLoad   proc    "C" public  uses ebx ecx edx esi edi
 ;Setup initial register values.
 ;
 @@3load:
-        mov     DebugCS,cx
-        mov     DebugEIP,edx
-        mov     DebugSS,bx
-        mov     DebugESP,eax
-        mov     DebugPSP,si
-        mov     DebugDS,di
-        mov     DebugES,si
+        mov     ProcCS,cx
+        mov     ProcEIP,edx
+        mov     ProcSS,bx
+        mov     ProcESP,eax
+        mov     ProcPSP,si
+        mov     ProcDS,di
+        mov     ProcES,si
         pushfd
         pop     eax
-        mov     DebugEFL,eax
+        mov     ProcEFL,eax
         xor     eax,eax
-        mov     DebugEAX,eax
-        mov     DebugEBX,eax
-        mov     DebugECX,eax
-        mov     DebugEDX,eax
-        mov     DebugESI,eax
-        mov     DebugEDI,eax
-        mov     DebugEBP,eax
+        mov     ProcEAX,eax
+        mov     ProcEBX,eax
+        mov     ProcECX,eax
+        mov     ProcEDX,eax
+        mov     ProcESI,eax
+        mov     ProcEDI,eax
+        mov     ProcEBP,eax
 ;
 ;Setup a new transfer buffer to stop debugger interfering.
 ;
@@ -966,7 +966,7 @@ DebugLoad   endp
 SetUsrTask  proc    near    "C" public
         push    ebx
         push    eax
-        mov     bx,DebugPSP
+        mov     bx,ProcPSP
         mov     ah,50h
         int     21h
         pop     eax
