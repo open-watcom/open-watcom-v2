@@ -236,9 +236,9 @@ bool SetDebugRegs( void )
 #if defined( MD_x86 ) || defined( MD_x64 )
     int         i;
     int         dr;
-    DWORD       dr7;
+    dword       dr7;
     watch_point *wp;
-    DWORD       linear;
+    dword       linear;
     word        size;
 
 
@@ -267,9 +267,6 @@ bool SetDebugRegs( void )
          */
 
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-
-            int     boundary_check = wp->linear & 0x3;
-
             size = wp->size;
             linear = wp->linear;
             switch( wp->dregs ) {
@@ -310,7 +307,7 @@ bool SetDebugRegs( void )
                 break;
             case 4: /* If we need 4 registers, then must be 8 bytes and ... */
                 {
-                    if( boundary_check == 1 ) { /* Need 1, 2, 4, 1 */
+                    if( (linear & 0x3) == 1 ) { /* Need 1, 2, 4, 1 */
                         dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
                         dr7 |= setDRn( dr+1, linear+1, DRLen( 2 ) | DR7_BWR );
                         dr7 |= setDRn( dr+2, linear+3, DRLen( 4 ) | DR7_BWR );

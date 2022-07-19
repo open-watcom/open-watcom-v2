@@ -699,8 +699,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         WatchCount++;
         needed = DRegsCount();
-        if( needed <= 4 )
+        if( needed <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
+        }
         _DBG0(("addr %4.4x:%8.8lx " "linear %8.8x " "len %d " "needed %d ",
                wp->addr.segment, wp->addr.offset, wp->linear, wp->size, wp->dreg));
     }

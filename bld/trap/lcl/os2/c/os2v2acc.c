@@ -1295,6 +1295,7 @@ static bool setDebugRegs( void )
     int         i;
     word        size;
     word        dregs;
+    dword       linear;
 
     if( DRegsCount() > 4 ) {
         return( FALSE );
@@ -1308,15 +1309,15 @@ static bool setDebugRegs( void )
         }
         if( WatchPoints[i].addr.offset & ( size - 1 ) )
             dregs++;
-        Buff.Len = size;
-        Buff.Addr = MakeItFlatNumberOne( WatchPoints[i].addr.segment,
-                                         WatchPoints[i].addr.offset & ~( size - 1 ) );
+        linear = MakeItFlatNumberOne( WatchPoints[i].addr.segment, WatchPoints[i].addr.offset & ~( size - 1 ) );
         while( dregs-- > 0 ) {
             Buff.Cmd = DBG_C_SetWatch;
+            Buff.Addr = linear;
+            Buff.Len = size;
             Buff.Index = 0;
             Buff.Value = DBG_W_Write | DBG_W_Local;
             CallDosDebug( &Buff );
-            Buff.Addr += size;
+            linear += size;
         }
     }
     return( TRUE );

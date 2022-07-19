@@ -1418,7 +1418,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
 
-        ++WatchCount;
+        WatchCount++;
         for( i = 0; i < NUM_DREG; ++i ) {
             dreg_avail[i] = DoReserveBreakpoint();
             if( dreg_avail[i] < 0 ) {

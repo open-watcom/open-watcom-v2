@@ -197,12 +197,12 @@ u_long GetDR6( void )
     return( val );
 }
 
-static void SetDR6( u_long val )
+static void SetDR6( dword val )
 {
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG( 6 ), (void *)val );
 }
 
-static void SetDR7( u_long val )
+static void SetDR7( dword val )
 {
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG(7), (void *)val );
 }
@@ -251,7 +251,7 @@ int SetDebugRegs( void )
     if( DRegsCount() > 4 )
         return( false );
     dr  = 0;
-    dr7 =  /* DR7_GE | */ DR7_LE;
+    dr7 = /* DR7_GE | */ DR7_LE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         linear = wp->linear;
         size = wp->size;

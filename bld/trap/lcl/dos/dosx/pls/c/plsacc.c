@@ -824,7 +824,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
 
-        ++WatchCount;
+        WatchCount++;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }

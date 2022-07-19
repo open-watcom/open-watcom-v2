@@ -1310,7 +1310,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->dregs = dregs;
         wp->linear = linear & ~( size - 1 );
 
-        ++WatchCount;
+        WatchCount++;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
@@ -1324,7 +1324,6 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     watch_point      *dst;
     watch_point      *src;
     int              i;
-
 
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
