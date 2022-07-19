@@ -1165,7 +1165,7 @@ static int DRegsCount( void )
             needed++;
             size = 4;
         }
-        if( WatchPoints[i].addr.offset & ( size - 1 ) )
+        if( WatchPoints[i].addr.offset & ( size - 1 ) ) {
             needed++;
         }
     }
