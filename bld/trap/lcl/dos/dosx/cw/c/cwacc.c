@@ -81,7 +81,6 @@ extern void dos_printf( const char *format, ... );
 #endif
 
 #define GetModuleHandle GetSelBase
-#define GetLinAddr(x)   GetSelBase(x.segment)+x.offset
 
 typedef unsigned_16 selector;
 typedef unsigned_16 segment;
@@ -894,7 +893,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->value = 0;
         MemoryRead( wp->addr.offset, wp->addr.segment, &wp->value, wp->size );
 
-        linear = GetLinAddr( acc->watch_addr );
+        linear = GetSelBase( wp->addr.segment ) + wp->addr.offset;
         dregs = 1;
         size = wp->size;
         if( size == 8 ) {
