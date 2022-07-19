@@ -44,6 +44,7 @@ CPU_FLAG_SINGLE_STEP        equ 100h
 
 ;*******************************************************************************
 ;Execution status symbolic constants
+;must correspond with ST_... macros in cwacc.c
 ;*******************************************************************************
 ST1_EXECUTING               equ 01h
 ST1_BREAK                   equ 02h
@@ -53,9 +54,6 @@ ST1_KEYBREAK                equ 10h
 ST1_TERMINATE               equ 20h
 ST1_LOAD_MODULE             equ 40h
 ST1_UNLOAD_MODULE           equ 80h
-;
-ST2_SINGLE_STEPPING         equ 1h
-ST2_SINGLE_STEPPING_WATCH   equ 2h
 
 ;*******************************************************************************
 ;Add a memory region to the auto-lock list.
@@ -149,7 +147,6 @@ INTFRM ends
 .data
 
 extern  "C", _psp:WORD
-extern  "C", WatchCount:dword
 
 public  "C", ProcPSP
 public  "C", ProcRegs
@@ -207,10 +204,6 @@ dLockEnd        label byte
 
 .code
 
-extern          "C", IsHardBreak:proc
-extern          "C", CheckWatchPoints:proc
-extern          "C", SetHBRK:proc
-extern          "C", ResetHBRK:proc
 extern          "C", CheckTerminate:proc
 
 cLockStart      label byte
@@ -346,16 +339,7 @@ Int01Handler    proc    near
         jz      @@Oldi01
         push    ds
         mov     ds,dgroup_seg
-        push    eax
-        call    IsHardBreak
-        or      eax,eax
-        pop     eax
-        jz      @@0i01
-        or      DebugState1,ST1_WATCH
-        jmp     @@0i02
-@@0i01: 
         or      DebugState1,ST1_TRACE
-@@0i02: 
         mov     Exception,1
         jmp     SwitchToDebuggerIntFrame
 ;
@@ -375,16 +359,7 @@ EInt01Handler   proc    near
         jz      @@Olde01
         push    ds
         mov     ds,dgroup_seg
-        push    eax
-        call    IsHardBreak
-        or      eax,eax
-        pop     eax
-        jz      @@0e01
-        or      DebugState1,ST1_WATCH
-        jmp     @@0e02
-@@0e01:
         or      DebugState1,ST1_TRACE
-@@0e02:
         mov     Exception,1
         jmp     SwitchToDebuggerExcFrame
 ;
@@ -759,37 +734,13 @@ Int31Intercept  endp
 ;*******************************************************************************
 Execute proc    "C" public  uses es fs gs ebx ecx edx esi edi ebp
 ;
-        or      al,al
-        jz      nostep
-        mov     al,ST2_SINGLE_STEPPING
-nostep: 
-;
-; Force watch point checking if watches are present.
-;
-        cmp     WatchCount,0
-        jz      nowatch
-        or      al,ST2_SINGLE_STEPPING_WATCH
-nowatch:
-        mov     DebugState2,al
-;
 ;Switch to debuggee's PSP.
 ;
         call    SetUsrTask
 ;
-;Install hardware break points.
-;
-        call    SetHBRK
-;
 ;Set debuggee trap flag if it's a single instruction trace else clear it if not.
 ;
 @@7exec:
-        test    DebugState2,ST2_SINGLE_STEPPING or ST2_SINGLE_STEPPING_WATCH
-        jz      @@0exec
-        or      b[ProcEFL+1],CPU_FLAG_SINGLE_STEP shr 8
-        jmp     @@11exec
-@@0exec:
-        and     b[ProcEFL+1],not (CPU_FLAG_SINGLE_STEP shr 8)
-@@11exec:
 ;
 ;Set flags ready for execution.
 ;
@@ -829,39 +780,10 @@ nowatch:
 @@backexec:
         and     DebugState1,not ST1_EXECUTING
 ;
-;Check if we're single stepping to allow for watches.
-;
-        test    DebugState2,ST2_SINGLE_STEPPING_WATCH
-        jz      @@8exec
-        test    DebugState1,(ST1_TERMINATE or ST1_KEYBREAK or ST1_BREAK or ST1_WATCH or ST1_LOAD_MODULE or ST1_UNLOAD_MODULE)
-        jnz     @@8exec
-        test    DebugState1,ST1_TRACE
-        jz      @@8exec
-;
-;Check state of all watches.
-;
-        call    CheckWatchPoints
-        or      eax,eax
-        jnz     @@10exec
-;
-;Check it wasn't a single step anyway.
-;
-        test    DebugState2,ST2_SINGLE_STEPPING ;single steping anyway?
-        jnz     @@8exec
-        jmp     @@7exec
-
-@@10exec:
-        or      DebugState1,ST1_WATCH
-@@8exec:
-;
 ;Re-enable interrupts
 ;
         mov     al,20h
         out     20h,al
-;
-;Remove HBRK's
-;
-        call    ResetHBRK
 ;
 ;Store current Debugee's PSP.
 ;

@@ -54,6 +54,7 @@
 
 
 #define MAX_WATCHES         256
+#define MAX_DREGS           3
 
 #define ST_EXECUTING        0x01
 #define ST_BREAK            0x02
@@ -133,20 +134,13 @@ typedef struct mod_t {
     seg_t           *ObjInfo;
 } mod_t;
 
-typedef struct hbrk_t {
-    unsigned_32     address;
-    unsigned_16     handle;
-    unsigned_8      type;
-    unsigned_8      size;
-    unsigned        inuse     :1;
-    unsigned        installed :1;
-} hbrk_t;
-
 typedef struct watch_point {
-    unsigned_32     address;
-    unsigned_32     check;
-    unsigned_8      size;
-    unsigned        inuse     :1;
+    uint_64         value;
+    dword           linear;
+    addr48_ptr      addr;
+    word            size;
+    word            dregs;
+    short           handle[MAX_DREGS];
 } watch_point;
 
 void dos_print( char *s );
@@ -227,7 +221,7 @@ extern int GetExecCount( unsigned_32 * );
 extern unsigned     MemoryCheck( unsigned_32, unsigned, unsigned );
 extern size_t       MemoryRead( unsigned_32, unsigned, void *, size_t );
 extern size_t       MemoryWrite( unsigned_32, unsigned, void *, size_t );
-extern unsigned     Execute( bool );
+extern unsigned     Execute( void );
 extern int          DebugLoad( char *prog_name, char *cmdl );
 extern int          GrabVectors( void );
 extern void         ReleaseVectors( void );
@@ -237,12 +231,11 @@ extern int              XVersion;
 extern trap_cpu_regs    ProcRegs;
 extern unsigned_16      ProcPSP;
 
-int                 WatchCount = 0;
 bool                FakeBreak = false;
 
 static unsigned_8   RealNPXType;
-static hbrk_t       HBRKTable[4];
 static watch_point  WatchPoints[MAX_WATCHES];
+static int          WatchCount = 0;
 static mod_t        *ModHandles = NULL;
 static int          NumModHandles = 0;
 
@@ -266,87 +259,83 @@ void dos_printf( const char *format, ... )
 }
 #endif
 
-static void HBRKInit( void )
-/**************************/
+static int DRegsCount( void )
 {
+    int     needed;
     int     i;
 
-    for( i = 0; i < 4; ++i ) {
-        HBRKTable[i].inuse = false;
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
     }
+    return( needed );
 }
 
-void SetHBRK( void )
-/******************/
-{
-    int     i;
-    hbrk_t  *hbp;
-
-    // Install hardware break points.
-    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
-        if( hbp->inuse ) {
-            long    wh;
-
-            wh = _DPMISetWatch( hbp->address, hbp->size, hbp->type );
-            if( wh >= 0 ) {
-                hbp->installed = true;
-                hbp->handle = wh;
-                _DPMIResetWatch( wh );
-            }
-        }
-    }
-}
-
-void ResetHBRK( void )
-/********************/
-{
-    int     i;
-    hbrk_t  *hbp;
-
-    // Uninstall hardware break points.
-    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
-        if( hbp->inuse && hbp->installed ) {
-            _DPMIClearWatch( hbp->handle );
-            hbp->installed = false;
-        }
-    }
-}
-
-int IsHardBreak( void )
-/*********************/
-{
-    int     i;
-    hbrk_t  *hbp;
-
-    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
-        if( hbp->inuse && hbp->installed ) {
-            if( _DPMITestWatch( hbp->handle ) > 0 ) {
-                return( true );
-            }
-        }
-    }
-    return( false );
-}
-
-int CheckWatchPoints( void )
-/**************************/
+static void ClearDebugRegs( void )
 {
     int         i;
     int         j;
-    unsigned_8  *p;
-    unsigned_32 sum;
     watch_point *wp;
 
-    for( wp = WatchPoints, i = MAX_WATCHES; i-- > 0; wp++ ) {
-        if( wp->inuse ) {
-            p = (unsigned_8 *)wp->address;
-            sum = 0;
-            for( j = 0; j < wp->size; ++j ) {
-                sum += *(p++);
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        for( j = 0; j < MAX_DREGS; j++ ) {
+            if( wp->handle[j] >= 0 ) {
+                DPMIClearWatch( wp->handle[j] );
+                wp->handle[j] = -1;
             }
-            if( sum != wp->check ) {
-                return( true );
+        }
+    }
+}
+
+static bool SetDebugRegs( void )
+{
+    int                 i;
+    int                 j;
+    long                rc;
+    watch_point         *wp;
+    dword               linear;
+    word                size;
+
+    if( DRegsCount() > 4 )
+        return( false );
+
+    for( i = 0; i < WatchCount; ++i ) {
+        for( j = 0; j < MAX_DREGS; j++ ) {
+            WatchPoints[i].handle[j] = -1;
+        }
+    }
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        _DBG( "Setting Watch On 0x%X\r\n", linear );
+        for( j = 0; j < wp->dregs; j++ ) {
+            rc = DPMISetWatch( linear, size, DPMI_WATCH_WRITE );
+            _DBG( "OK %d = %d\r\n", j, ( rc >= 0 ) );
+            if( rc < 0 ) {
+                ClearDebugRegs();
+                return( false );
             }
+            wp->handle[j] = rc;
+            linear += size;
+        }
+    }
+    return( true );
+}
+
+static bool CheckWatchPoints( void )
+/**********************************/
+{
+    watch_point *wp;
+    int         i;
+    uint_64     value;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        MemoryRead( wp->addr.offset, wp->addr.segment, &value, wp->size );
+        if( wp->value != value ) {
+            return( true );
         }
     }
     return( false );
@@ -698,6 +687,20 @@ trap_retval TRAP_CORE( Write_io )( void )
     return( sizeof( *ret ) );
 }
 
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type     old_opcode;
+
+    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
+}
+
 static unsigned ProgRun( bool step )
 /**********************************/
 {
@@ -707,7 +710,54 @@ static unsigned ProgRun( bool step )
 
     _DBG1( "AccRunProg %X:%X\n", ProcRegs.CS, ProcRegs.EIP );
     ret = GetOutPtr( 0 );
-    status = Execute( step );
+    if( step ) {
+        ProcRegs.EFL |= TRACE_BIT;
+        status = Execute();
+        ProcRegs.EFL &= ~TRACE_BIT;
+    } else if( WatchCount > 0 ) {
+        if( SetDebugRegs() ) {
+            status = Execute();
+            ClearDebugRegs();
+            if( status & ST_TRACE ) {
+                status |= ST_WATCH;
+                status &= ~ST_TRACE;
+            }
+        } else {
+            for( ;; ) {
+                addr48_ptr  start_addr;
+                byte        int_buff[2 + sizeof( opcode_type )];
+
+                start_addr.segment = ProcRegs.CS;
+                start_addr.offset = ProcRegs.EIP;
+                /*
+                 * have to breakpoint across software interrupts because Intel
+                 * doesn't know how to design chips
+                 */
+                if( ReadMemory( &start_addr, int_buff, 2 + sizeof( opcode_type ) ) == 2 + sizeof( opcode_type ) && int_buff[0] == 0xcd ) {
+                    opcode_type old_opcode;
+
+                    start_addr.offset += 2;
+                    old_opcode = place_breakpoint( &start_addr );
+                    status = Execute();
+                    start_addr.offset = ProcRegs.EIP;
+                    remove_breakpoint( &start_addr, old_opcode );
+                } else {
+                    ProcRegs.EFL |= TRACE_BIT;
+                    status = Execute();
+                    ProcRegs.EFL &= ~TRACE_BIT;
+                }
+                if( (status & (ST_TRACE | ST_BREAK)) == 0 )
+                    break;
+                if( CheckWatchPoints() ) {
+                    status |= ST_WATCH;
+                    status &= ~(ST_TRACE | ST_BREAK);
+                    break;
+                }
+            }
+        }
+    } else {
+        status = Execute();
+    }
     //handle module load/unload
     if( status & ST_LOAD_MODULE ) {
         epsp = (epsp_t *)ProcRegs.EDI;
@@ -825,100 +875,53 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     int             i;
-    int             j;
-    unsigned_8      *p;
-    unsigned_32     sum;
-    hbrk_t          *hbp;
     watch_point     *wp;
+    dword           linear;
+    word            size;
+    word            dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 0;   // OK
-    if( acc->size == 1 || acc->size == 2 || acc->size == 4 ) {
-        for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
-            if( !hbp->inuse ) {
-                hbp->inuse = true;
-                hbp->installed = false;
-                hbp->address = GetLinAddr( acc->watch_addr );
-                hbp->size = acc->size;
-                hbp->type = DPMI_WATCH_WRITE;
-                ret->multiplier = 10 | USING_DEBUG_REG;
-                return( sizeof( *ret ) );
-            }
-        }
-    }
-    if( WatchCount < MAX_WATCHES ) {
-        for( wp = WatchPoints, i = MAX_WATCHES; i-- > 0; wp++ ) {
-            if( !wp->inuse ) {
-                wp->inuse = true;
-                wp->address = GetLinAddr( acc->watch_addr );
-                wp->size = acc->size;
-                p = (unsigned_8 *)wp->address;
-                sum = 0;
-                for( j = 0; j < acc->size; ++j ) {
-                    sum += *(p++);
-                }
-                wp->check = sum;
-                ++WatchCount;
-                ret->multiplier = 5000;
-                return( sizeof( *ret ) );
-            }
-        }
-    }
-    ret->err = ERR_INVALID_DATA;
     ret->multiplier = 0;
+    ret->err = ERR_INVALID_DATA;
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        ret->multiplier = 5000;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        MemoryRead( wp->addr.offset, wp->addr.segment, &wp->value, wp->size );
+
+        linear = GetLinAddr( acc->watch_addr );
+        dregs = 1;
+        size = wp->size;
+        if( size == 8 ) {
+            size = 4;
+            dregs++;
+        }
+        if( linear & ( size - 1 ) )
+            dregs++;
+        wp->dregs = dregs;
+        wp->linear = linear & ~( size - 1 );
+        for( i = 0; i < MAX_DREGS; i++ ) {
+            wp->handle[i] = -1;
+        }
+
+        WatchCount++;
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier = 10 | USING_DEBUG_REG;
+        }
+    }
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 /******************************************/
 {
-    clear_watch_req     *acc;
-    int                 i;
-    unsigned_32         watch_addr;
-    hbrk_t              *hbp;
-    watch_point         *wp;
-
-    acc = GetInPtr( 0 );
-    watch_addr = GetLinAddr( acc->watch_addr );
-    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
-        if( hbp->inuse ) {
-            if( hbp->address == watch_addr ) {
-                if( hbp->size == acc->size ) {
-                    hbp->inuse = false;
-                    return( 0 );
-                }
-            }
-        }
-    }
-    if( WatchCount > 0 ) {
-        for( wp = WatchPoints, i = MAX_WATCHES; i-- > 0; wp++ ) {
-            if( wp->inuse ) {
-                if( wp->address == watch_addr ) {
-                    if( wp->size == acc->size ) {
-                        wp->inuse = false;
-                        --WatchCount;
-                        break;
-                    }
-                }
-            }
-        }
-    }
+    WatchCount = 0;
     return( 0 );
-}
-
-static opcode_type place_breakpoint( addr48_ptr *addr )
-{
-    opcode_type     old_opcode;
-
-    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
-    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
-    return( old_opcode );
-}
-
-static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
-{
-    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
@@ -1090,7 +1093,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ver.remote = false;
     RedirectInit();
     RealNPXType = NPXType();
-    HBRKInit();
     WatchCount = 0;
     FakeBreak = false;
     BreakOpcode = BRKPOINT;
