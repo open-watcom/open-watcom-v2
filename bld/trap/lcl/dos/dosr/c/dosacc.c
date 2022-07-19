@@ -544,7 +544,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
     old_opcode = *paddr;
     *paddr = BreakOpcode;
     if( *paddr != BreakOpcode ) {
-        BadBreak = ( (dword)addr->segment << 4 ) + offset );
+        BadBreak = ( (dword)addr->segment << 4 ) + addr->offset;
         GotABadBreak = true;
     }
     return( old_opcode );
