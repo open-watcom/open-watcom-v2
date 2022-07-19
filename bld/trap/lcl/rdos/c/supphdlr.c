@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include "stdrdos.h"
 
+
 trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
 {
     capabilities_get_exact_bp_req  *req;
@@ -42,7 +43,7 @@ trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    ret->status = 1;            /* This signals we support exact breakpoints */
+    ret->status = true;         /* This signals we support exact breakpoints */
     return( sizeof( *ret ) );
 }
 
@@ -54,6 +55,6 @@ trap_retval TRAP_CAPABILITIES( set_exact_bp )( void )
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    ret->status = 1;
+    ret->status = true;
     return( sizeof( *ret ) );
 }

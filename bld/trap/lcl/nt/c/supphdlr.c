@@ -35,7 +35,7 @@
 #include "stdnt.h"
 
 
-extern bool                  SupportingExactBreakpoints;
+extern bool     SupportingExactBreakpoints;
 
 trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
 {
@@ -45,7 +45,7 @@ trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    ret->status = 1;            /* This signals we support exact breakpoints */
+    ret->status = true;         /* This signals we support exact breakpoints */
     return( sizeof( *ret ) );
 }
 
