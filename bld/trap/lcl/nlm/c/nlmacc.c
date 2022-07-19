@@ -905,17 +905,17 @@ trap_retval TRAP_CORE( Machine_data )( void )
     return( sizeof( *ret ) );
 }
 
-static size_t ReadWrite( bool (*rtn)(addr48_ptr *, void *, size_t), addr48_ptr *addr,
+static size_t ReadWrite( bool (*r)(addr48_ptr *, void *, size_t), addr48_ptr *addr,
                                 void *data, size_t req_len )
 {
     size_t      len;
 
-    if( !rtn( addr, data, req_len ) ) {
+    if( !r( addr, data, req_len ) ) {
         addr->offset += req_len;
         return( req_len );
     }
     for( len = req_len; len > 0; len++ ) {
-        if( rtn( addr, data, 1 ) )
+        if( r( addr, data, 1 ) )
             break;
         data = (char *)data + 1;
         addr->offset++;
@@ -1499,7 +1499,7 @@ static void ActivateDebugRegs( void )
     for( i = 0; i < NUM_DREG; ++i ) {
         if( DR[i].type != NO_DREG ) {
             _DBG_DR(( "set %d, addr=%8x, typ=%d, siz=%d\r\n", i, DR[i].linear, DR[i].type, DR[i].size ));
-           CSetABreakpoint( i, DR[i].linear, DR[i].type, DR[i].size );
+            CSetABreakpoint( i, DR[i].linear, DR[i].type, DR[i].size );
         }
     }
 }

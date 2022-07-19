@@ -420,13 +420,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         dregs = 1;
         /* If we are supporting exact break on write, then don't adjust the linear address */
-        if( !SupportingExactBreakpoints ) {
-            /* This is checking if we are crossing a DWORD boundary to use 2 registers. We need to do the same if we are a QWord */
-            if( linear & ( size - 1 ) ) {
-                dregs++;
-            }
-            wp->linear = linear & ~( size - 1 );
-        } else {
+        if( SupportingExactBreakpoints ) {
             if( size == 1 ) {
             } else if ( size == 2 ) {
                 if( linear & 1 ) {
@@ -456,6 +450,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
                 return( sizeof( *ret ) );
             }
             wp->linear = linear;
+        } else {
+            /* This is checking if we are crossing a DWORD boundary to use 2 registers. We need to do the same if we are a QWord */
+            if( linear & ( size - 1 ) ) {
+                dregs++;
+            }
+            wp->linear = linear & ~( size - 1 );
         }
         /* QWord always needs 1 more register */
         if( wp->size == 8 )
