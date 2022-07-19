@@ -465,7 +465,7 @@ USHORT WriteBuffer( PBYTE data, USHORT segv, ULONG offv, USHORT size )
                 return( size );
             }
         }
-        while( length != 0 ) {
+        while( length > 0 ) {
             Buff.Cmd = DBG_C_WriteMem_D;
             if( length == 1 ) {
                 if( iugs ) {
@@ -539,7 +539,7 @@ static USHORT ReadBuffer( PBYTE data, USHORT segv, ULONG offv, USHORT size )
                 return( size );
             }
         }
-        while( length != 0 ) {
+        while( length > 0 ) {
             if( iugs ) {
                 if( !TaskReadWord( segv, offv, &resdata ) ) {
                     break;
@@ -1172,7 +1172,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 50000;
-    ret->err = 1;       // fail
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
@@ -1201,8 +1201,8 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; ++i ) {
-        if( src->addr.segment != acc->watch_addr.segment ||
-                src->addr.offset != acc->watch_addr.offset ) {
+        if( src->addr.segment != acc->watch_addr.segment
+          || src->addr.offset != acc->watch_addr.offset ) {
             *dst = *src;
             ++dst;
         } else {
@@ -1282,24 +1282,32 @@ static trap_conditions MapReturn( trap_conditions conditions )
 
 static bool setDebugRegs( void )
 {
-    int                 i;
+    watch_point *wp;
+    int         i;
+    word        size;
+    word        dregs;
 
     if( DRegsCount() > 4 ) {
         return( FALSE );
     }
-    for( i = 0; i < WatchCount; ++i ) {
-        Buff.Cmd = DBG_C_SetWatch;
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        size = WatchPoints[i].size;
+        dregs = 1;
+        if( size == 8 ) {
+            size = 4;
+            dregs++;
+        }
+        if( WatchPoints[i].addr.offset & ( size - 1 ) )
+            dregs++;
+        Buff.Len = size;
         Buff.Addr = MakeItFlatNumberOne( WatchPoints[i].addr.segment,
-                                         WatchPoints[i].addr.offset & ~( WatchPoints[i].size - 1 ) );
-        Buff.Len = WatchPoints[i].size;
-        Buff.Index = 0;
-        Buff.Value = DBG_W_Write | DBG_W_Local;
-        CallDosDebug( &Buff );
-        if( WatchPoints[i].addr.offset & ( WatchPoints[i].size - 1 ) ) {
+                                         WatchPoints[i].addr.offset & ~( size - 1 ) );
+        while( dregs-- > 0 ) {
             Buff.Cmd = DBG_C_SetWatch;
-            Buff.Addr += WatchPoints[i].size;
             Buff.Index = 0;
+            Buff.Value = DBG_W_Write | DBG_W_Local;
             CallDosDebug( &Buff );
+            Buff.Addr += size;
         }
     }
     return( TRUE );
@@ -1307,6 +1315,7 @@ static bool setDebugRegs( void )
 
 static bool CheckWatchPoints( void )
 {
+    dos_debug       save;
     watch_point     *wp;
     int             i;
     uint_64         value;

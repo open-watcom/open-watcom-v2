@@ -219,7 +219,7 @@ static USHORT ReadBuffer( PBYTE data, USHORT segv, USHORT offv, USHORT size )
 
     length = size;
     if( Pid != 0 ) {
-        while( length != 0 ) {
+        while( length > 0 ) {
             Buff.cmd = PT_CMD_READ_MEM_D;
             Buff.offv = offv;
             Buff.segv = segv;
@@ -942,8 +942,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 84;      /* failed, out of structures */
     ret->multiplier = 50000;
+    ret->err = 84;      // failure, out of structures
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
@@ -1225,7 +1225,7 @@ static unsigned DoThread( trace_codes code )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 1;       // failed
+    ret->err = 1;       // failure
     if( ValidThread( acc->thread ) ) {
         ret->err = 0;   // OK
         save = Buff.tid;
