@@ -692,7 +692,8 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
             if( stat( name, &chk ) != 0 ) {
                 /* try it without the node number */
                 name += 2;
-                while( *name != '/' ) ++name;
+                while( *name != '/' )
+                    ++name;
                 if( stat( name, &chk ) != 0 ) {
                     chk.st_mtime = 0;
                 }

@@ -544,7 +544,8 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
 #endif
                     ultoa( (unsigned long)(pointer_uint)a, buff, 16 );
                     strcat( new->msg, buff );
-                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next ) {}
+                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next )
+                        {}
                     *owner = new;
                     continue_how = DBG_EXCEPTION_NOT_HANDLED;
                     /*
@@ -627,7 +628,8 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     new->next = NULL;
                     memcpy( new->msg, p, q - p );
                     new->msg[q - p] = '\0';
-                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next ) {}
+                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next )
+                        {}
                     *owner = new;
                     if( q[0] == '\0' ) {
                         break;

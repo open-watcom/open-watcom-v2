@@ -375,7 +375,8 @@ _DBG_IPX(( "FindPartner -- nobody home\r\n" ));
     RespECB.fragmentDescriptor[1].address = &PartnerSPXSocket;
     CIPXListen( &RespECB );
     CIPXSendPacket( &ServECB );
-    while( InUse( ServECB ) ) NothingToDo();
+    while( InUse( ServECB ) )
+        NothingToDo();
     if( !Completed( ServECB ) )
         return( false );
     NothingToDo();

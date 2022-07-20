@@ -268,8 +268,8 @@ static char * TrimName( char * name )
     while( isspace( *name ) ) {
         name++;
     }
-    endptr = name + strlen(name) - 1;
-    while( isspace(*endptr) ) {
+    endptr = name + strlen( name ) - 1;
+    while( isspace( *endptr ) ) {
         *endptr = '\0';
         endptr--;
     }
@@ -458,8 +458,10 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
     len = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
         NULL, err, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
         (LPSTR) p, 0, &args );
-    while( ( q = strchr( *p, '\r' ) ) != NULL ) *q = ' ';
-    while( ( q = strchr( *p, '\n' ) ) != NULL ) *q = ' ';
+    while( ( q = strchr( *p, '\r' ) ) != NULL )
+        *q = ' ';
+    while( ( q = strchr( *p, '\n' ) ) != NULL )
+        *q = ' ';
     va_end( args );
     return( len );
 }

@@ -320,7 +320,9 @@ static char *CheckPath( const char __far *path, char *fullpath, char **endname )
         name = doSearchPath( path, namep, fullpath, endname );
         if( *name != '\0' )
             return( name );
-        while( *namep++ != '\0' ) {}    // skip to next extender name
+        while( *namep++ != '\0' ) {     // skip to next extender name
+            {}
+        }
     }
     return( NULL );
 }
@@ -498,7 +500,8 @@ const char *RemoteLink( const char *parms, bool server )
         }
         _DBG_Write( "Extender name: " );
         _DBG_NoTabWriteln( name );
-        while( *endname++ != '\0' ) {}      // skip after extender name + '\0'
+        while( *endname++ != '\0' )         // skip after extender name + '\0'
+            {}
   #if defined(ACAD)
         buffp = buff;
         *buffp = '\0';
@@ -509,7 +512,8 @@ const char *RemoteLink( const char *parms, bool server )
 
     #if defined(PHARLAP)
             exe_name = parms;
-            while( *exe_name++ != '\0' ) {} // skip to command line
+            while( *exe_name++ != '\0' )    // skip to command line
+                {}
             help_name = GetHelpName( exe_name );
     #else
             help_name = HELPNAME;

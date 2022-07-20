@@ -408,7 +408,9 @@ void RemoteDisco( void )
     Listening = 0;
     _INITSPXECB( Conn, 1, 0, 0 );
     if( SpxTerminateConnection( Connection, &ConnECB ) == 0 ) {
-        while( InUse( ConnECB ) ) IPXRelinquishControl();
+        while( InUse( ConnECB ) ) {
+            IPXRelinquishControl();
+        }
     }
     for( i = NUM_REC_BUFFS-1; i >= 0; --i ) {
         if( InUse( RecECB[i] ) ) {

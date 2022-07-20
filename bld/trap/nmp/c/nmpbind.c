@@ -184,7 +184,8 @@ static void FreeLink( a_link *junk )
 {
     a_link      **owner;
 
-    for( owner = &Links; *owner != junk; owner = &(*owner)->next ) ;
+    for( owner = &Links; *owner != junk; owner = &(*owner)->next )
+        {}
     *owner = junk->next;
     free( junk->name );
     free( junk );

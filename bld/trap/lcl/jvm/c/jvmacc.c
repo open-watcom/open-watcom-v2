@@ -647,7 +647,8 @@ BuildArguments( char **argv, struct execenv *ee)
     int argc;
     HArrayOfString *args;
 
-    for( argc = 0; argv[argc] != NULL; ++argc ) ;
+    for( argc = 0; argv[argc] != NULL; ++argc )
+        {}
     args = (HArrayOfString *)ArrayAlloc(T_CLASS, argc);
     if (args == NULL) {
         return NULL;

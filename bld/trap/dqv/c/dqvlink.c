@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,8 @@ static int fstrlen( char __far *str )
 {
     int         i;
 
-    for( i=0; *str; ++i, ++str );
+    for( i = 0; *str != '\0'; ++i, ++str )
+        {}
     return( i );
 }
 
@@ -63,11 +64,11 @@ unsigned RemoteGet( void __far *data, unsigned len )
     int         buflen;
     int         status;
 
-    len=len;
+    /* unused parameters */(void)len;
+
     status = mal_read( GetHandle, &buffer, &buflen );
     movedata( _FP_SEG( buffer ), _FP_OFF( buffer ),
-              _FP_SEG( data ), _FP_OFF( data ),
-              buflen );
+              _FP_SEG( data ), _FP_OFF( data ), buflen );
     return( buflen );
 }
 
