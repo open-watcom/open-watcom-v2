@@ -16,29 +16,52 @@ set PROJDIR=<CWD>
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
     <CCCMD> lcl/dos/dosr/dos.std/std*.trp           <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosr/dos.std/std*.sym           <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/rsi/dos.trp/rsi*.trp       <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/rsi/dos.trp/rsi*.sym       <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/rsi/dos.srv/rsihel*.exp    <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/rsi/dos.srv/rsihel*.sym    <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/pls/dos.trp/pls*.trp       <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/pls/dos.trp/pls*.sym       <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/pls/dos.srv/plshel*.exp    <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/pls/dos.srv/plshel*.sym    <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/pls/dosped.srv/pedhel*.exp <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/pls/dosped.srv/pedhel*.sym <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/cw/dos.trp/cw*.trp         <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/cw/dos.trp/cw*.sym         <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhel*.exe      <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhelp.cfg      <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhel*.sym      <OWRELROOT>/binw/
     <CCCMD> net/dos.trp/net*.trp                    <OWRELROOT>/binw/
+    <CCCMD> net/dos.trp/net*.sym                    <OWRELROOT>/binw/
     <CCCMD> net/dos.srv/netserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> net/dos.srv/netserv.sym                 <OWRELROOT>/binw/
     <CCCMD> nmp/dos.trp/nmp*.trp                    <OWRELROOT>/binw/
+    <CCCMD> nmp/dos.trp/nmp*.sym                    <OWRELROOT>/binw/
     <CCCMD> nmp/dos.srv/nmpserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> nmp/dos.srv/nmpserv.sym                 <OWRELROOT>/binw/
     <CCCMD> nov/dos.trp/nov*.trp                    <OWRELROOT>/binw/
+    <CCCMD> nov/dos.trp/nov*.sym                    <OWRELROOT>/binw/
     <CCCMD> nov/dos.srv/novserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> nov/dos.srv/novserv.sym                 <OWRELROOT>/binw/
     <CCCMD> par/dos.trp/par*.trp                    <OWRELROOT>/binw/
+    <CCCMD> par/dos.trp/par*.sym                    <OWRELROOT>/binw/
     <CCCMD> par/dos.srv/parserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> par/dos.srv/parserv.sym                 <OWRELROOT>/binw/
     <CCCMD> ser/dos.trp/ser*.trp                    <OWRELROOT>/binw/
+    <CCCMD> ser/dos.trp/ser*.sym                    <OWRELROOT>/binw/
     <CCCMD> ser/dos.srv/serserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> ser/dos.srv/serserv.sym                 <OWRELROOT>/binw/
 #    <CCCMD> tcp/dos.trp/tcp*.trp                    <OWRELROOT>/binw/
+#    <CCCMD> tcp/dos.trp/tcp*.sym                    <OWRELROOT>/binw/
     <CCCMD> tcp/dos.srv/tcpserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> tcp/dos.srv/tcpserv.sym                 <OWRELROOT>/binw/
     <CCCMD> vdm/dos.srv/vdmserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> vdm/dos.srv/vdmserv.sym                 <OWRELROOT>/binw/
     <CCCMD> win/dos.trp/win*.trp                    <OWRELROOT>/binw/
+    <CCCMD> win/dos.trp/win*.sym                    <OWRELROOT>/binw/
     <CCCMD> win/dos.srv/winserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> win/dos.srv/winserv.sym                 <OWRELROOT>/binw/
     <CCCMD> win/wsrv.pif                            <OWRELROOT>/binw/
 
     <CCCMD> lcl/os2v2/std/std*.d32                  <OWRELROOT>/binp/
