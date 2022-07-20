@@ -4,7 +4,6 @@ host_os  = win
 host_cpu = i86
 
 target_cpu = x86
-target_os  = win
 
 srv   = lcl
 which = TRAP

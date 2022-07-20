@@ -3,7 +3,6 @@ host_cpu = 386
 host_os  = rdos
 
 target_cpu = x86
-target_os  = rdos
 
 srv = ser
 which = SERVER

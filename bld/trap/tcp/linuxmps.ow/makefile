@@ -4,7 +4,6 @@ host_os  = linux
 host_cpu = mps
 
 target_cpu = mps
-target_os  = linux
 
 srv   = tcp
 which = SERVER

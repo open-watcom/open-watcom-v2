@@ -3,7 +3,6 @@ host_cpu = x64
 host_os  = nt
 
 target_cpu = x86
-target_os  = nt
 
 srv = tcp
 which = TRAP

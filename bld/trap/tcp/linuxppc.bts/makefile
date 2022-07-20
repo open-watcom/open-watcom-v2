@@ -6,7 +6,6 @@ host_os  = linux
 host_cpu = ppc
 
 target_cpu = ppc
-target_os  = linux
 
 srv   = tcp
 which = SERVER

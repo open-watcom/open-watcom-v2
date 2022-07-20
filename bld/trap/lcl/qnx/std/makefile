@@ -6,7 +6,6 @@ host_cpu = 386
 host_os  = qnx
 
 target_cpu = x86
-target_os  = qnx
 
 srv     = lcl
 which = TRAP

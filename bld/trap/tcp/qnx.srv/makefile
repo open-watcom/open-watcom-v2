@@ -4,7 +4,6 @@ host_os  = qnx
 host_cpu = 386
 
 target_cpu = x86
-target_os  = qnx
 
 srv   = tcp
 which = SERVER

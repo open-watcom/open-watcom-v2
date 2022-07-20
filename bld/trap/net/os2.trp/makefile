@@ -3,7 +3,6 @@ host_cpu = i86
 host_os  = os2
 
 target_cpu = x86
-target_os  = os2
 
 srv = net
 which = TRAP

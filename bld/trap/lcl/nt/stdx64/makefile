@@ -4,7 +4,6 @@ host_os  = nt
 host_cpu = x64
 
 target_cpu = x86
-target_os  = nt
 
 #
 # Create the NT STD32.DLL

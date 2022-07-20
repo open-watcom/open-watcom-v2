@@ -4,7 +4,6 @@ host_cpu = 386
 host_os  = nt
 
 target_cpu = x86
-target_os  = nt
 
 srv = net
 which = SERVER

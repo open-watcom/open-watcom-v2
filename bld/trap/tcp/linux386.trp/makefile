@@ -4,7 +4,6 @@ host_cpu = 386
 host_os  = linux
 
 target_cpu = x86
-target_os  = linux
 
 srv = tcp
 which = TRAP

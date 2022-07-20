@@ -3,10 +3,8 @@ host_cpu = 386
 host_os  = nov
 
 target_cpu = x86
-target_os  = nlm
-target_sys = nlm_clib
+target_sys = nlm4
 
-nlm_ver = 4
 srv = par
 which = SERVER
 remote_link = 1

@@ -4,7 +4,6 @@ host_os  = nt
 host_cpu = axp
 
 target_cpu = axp
-target_os  = nt
 
 srv   = tcp
 which = TRAP

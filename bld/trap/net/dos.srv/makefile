@@ -3,7 +3,6 @@ host_cpu = i86
 host_os  = dos
 
 target_cpu = x86
-target_os  = dos
 
 srv = net
 which = SERVER
