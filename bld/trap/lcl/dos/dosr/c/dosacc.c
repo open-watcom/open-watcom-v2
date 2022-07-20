@@ -777,6 +777,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
+    /* assume all watches removed at same time */
     WatchCount = 0;
     return( 0 );
 }

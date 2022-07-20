@@ -484,10 +484,9 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; i++ ) {
-        if( src->addr.segment != acc->watch_addr.segment || src->addr.offset != acc->watch_addr.offset ) {
-            dst->addr.offset = src->addr.offset;
-            dst->addr.segment = src->addr.segment;
-            dst->value = src->value;
+        if( src->addr.segment != acc->watch_addr.segment
+          || src->addr.offset != acc->watch_addr.offset ) {
+            *dst = *src;
             dst++;
         }
         src++;

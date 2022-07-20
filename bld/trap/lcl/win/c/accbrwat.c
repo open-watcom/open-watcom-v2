@@ -372,9 +372,7 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     for( i = 0; i < WatchCount; i++ ) {
         if( src->addr.segment != acc->watch_addr.segment
          || src->addr.offset != acc->watch_addr.offset ) {
-            dst->addr.offset = src->addr.offset;
-            dst->addr.segment = src->addr.segment;
-            dst->value = src->value;
+            *dst = *src;
             dst++;
         }
         src++;
