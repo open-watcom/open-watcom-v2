@@ -1452,8 +1452,8 @@ trap_retval TRAP_FILE( write_console )( void )
 
 static int ValidThread( TID thread )
 {
-    struct thd_state state;
-    TID save;
+    struct thd_state    state;
+    TID                 save;
 
     if( thread == 0 )
         return( 0 );
@@ -1513,9 +1513,9 @@ trap_retval TRAP_THREAD( set )( void )
 
 static unsigned DoThread( trace_codes code )
 {
-    TID           save;
-    thread_thaw_req     *acc;
-    thread_thaw_ret     *ret;
+    TID             save;
+    thread_thaw_req *acc;
+    thread_thaw_ret *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
