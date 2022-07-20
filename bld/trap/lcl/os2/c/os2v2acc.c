@@ -1329,7 +1329,6 @@ static bool CheckWatchPoints( void )
     watch_point     *wp;
     int             i;
     uint_64         value;
-    dos_debug       save;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         ReadRegs( &save );

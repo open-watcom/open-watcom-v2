@@ -261,7 +261,7 @@ bool SetDebugRegs( void )
     if( SupportingExactBreakpoints ) {
         /*
          *  With SupportingExactBreakpoints enabled, the linear address will not have been
-         *  adjusted, so we may be on an odd boundary. A 4 byte watch of offset 0 will entail
+         *  adjusted, so we may be on an odd boundary. A 4 byte watch of offset 1 will entail
          *  3 registers - 1@1, 2@2 and 1@3
          *
          */
@@ -270,56 +270,78 @@ bool SetDebugRegs( void )
             size = wp->size;
             linear = wp->linear;
             switch( wp->dregs ) {
-            case 1: /* If we only need one register, then we are 1 byte anywhere, 2 bytes on word boundary, or 4 bytes on dword boundary */
-                {
-                    dr7 |= setDRn( dr+0, linear, DRLen( size ) | DR7_BWR );
-                    dr++;
-                }
+            case 1:
+                /*
+                 * If we only need one register, then we are 1 byte anywhere,
+                 * 2 bytes on word boundary, or 4 bytes on dword boundary
+                 */
+                dr7 |= setDRn( dr+0, linear, DRLen( size ) | DR7_BWR );
+                dr++;
                 break;
-            case 2: /* If we need 2 registers, then ... */
-                {
-                    if( size == 2 ) {        /* For a 2 byte write, this is two 1's at any address */
-                        dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+1, linear+1, DRLen( 1 ) | DR7_BWR );
-                    } else if( size == 4 ) { /* For a 4 byte write, this must be two 2's at a word boundary */
-                        dr7 |= setDRn( dr+0, linear+0, DRLen( 2 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+1, linear+2, DRLen( 2 ) | DR7_BWR );
-                    } else if( size == 8 ) { /* For an 8 byte write, this must be two 4's at a dword boundary */
-                        dr7 |= setDRn( dr+0, linear+0, DRLen( 4 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+1, linear+4, DRLen( 4 ) | DR7_BWR );
-                    }
-                    dr += 2;
+            case 2:
+                /*
+                 * If we need 2 registers, then ...
+                 */
+                if( size == 2 ) {
+                    /*
+                     * For a 2 byte write, this is two 1's at any address
+                     */
+                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+1, linear+1, DRLen( 1 ) | DR7_BWR );
+                } else if( size == 4 ) {
+                    /*
+                     * For a 4 byte write, this must be two 2's at a word boundary
+                     */
+                    dr7 |= setDRn( dr+0, linear+0, DRLen( 2 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+1, linear+2, DRLen( 2 ) | DR7_BWR );
+                } else if( size == 8 ) {
+                    /*
+                     * For an 8 byte write, this must be two 4's at a dword boundary
+                     */
+                    dr7 |= setDRn( dr+0, linear+0, DRLen( 4 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+1, linear+4, DRLen( 4 ) | DR7_BWR );
                 }
+                dr += 2;
                 break;
-            case 3: /* If we need 3 registers, then must be 4 bytes or larger, and ... */
-                {
-                    if( size == 4 ) {        /* For a 4 byte write, this must be 1,2,1 at a odd boundary */
-                        dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+1, linear+1, DRLen( 2 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+2, linear+3, DRLen( 1 ) | DR7_BWR );
-                    } else if( size == 8 ) { /* For an 8 byte write, this must be 2,4,2 at a word boundary */
-                        dr7 |= setDRn( dr+0, linear+0, DRLen( 2 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+1, linear+2, DRLen( 4 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+2, linear+6, DRLen( 2 ) | DR7_BWR );
-                    }
-                    dr += 3;
+            case 3:
+                /*
+                 * If we need 3 registers, then must be 4 bytes or larger, and ...
+                 */
+                if( size == 4 ) {
+                    /*
+                     * For a 4 byte write, this must be 1,2,1 at a odd boundary
+                     */
+                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+1, linear+1, DRLen( 2 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+2, linear+3, DRLen( 1 ) | DR7_BWR );
+                } else if( size == 8 ) {
+                    /*
+                     * For an 8 byte write, this must be 2,4,2 at a word boundary
+                     */
+                    dr7 |= setDRn( dr+0, linear+0, DRLen( 2 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+1, linear+2, DRLen( 4 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+2, linear+6, DRLen( 2 ) | DR7_BWR );
                 }
+                dr += 3;
                 break;
-            case 4: /* If we need 4 registers, then must be 8 bytes and ... */
-                {
-                    if( (linear & 0x3) == 1 ) { /* Need 1, 2, 4, 1 */
-                        dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+1, linear+1, DRLen( 2 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+2, linear+3, DRLen( 4 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+3, linear+7, DRLen( 1 ) | DR7_BWR );
-                    } else { /* boundary check = 3 - Need 1, 4, 2, 1 */
-                        dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+1, linear+1, DRLen( 4 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+2, linear+5, DRLen( 2 ) | DR7_BWR );
-                        dr7 |= setDRn( dr+3, linear+7, DRLen( 1 ) | DR7_BWR );
-                    }
-                    dr += 4;
+            case 4:
+                /*
+                 * If we need 4 registers, then must be 8 bytes and ...
+                 */
+                if( (linear & 0x3) == 1 ) {
+                    /* Need 1, 2, 4, 1 */
+                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+1, linear+1, DRLen( 2 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+2, linear+3, DRLen( 4 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+3, linear+7, DRLen( 1 ) | DR7_BWR );
+                } else { /* (linear & 0x3) == 3 */
+                    /* Need 1, 4, 2, 1 */
+                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+1, linear+1, DRLen( 4 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+2, linear+5, DRLen( 2 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+3, linear+7, DRLen( 1 ) | DR7_BWR );
                 }
+                dr += 4;
                 break;
             default:
                 return( false );
@@ -451,7 +473,10 @@ trap_retval TRAP_CORE( Set_watch )( void )
             }
             wp->linear = linear;
         } else {
-            /* This is checking if we are crossing a DWORD boundary to use 2 registers. We need to do the same if we are a QWord */
+            /*
+             * This is checking if we are crossing a "size" boundary to use 2 registers.
+             * We need to do the same if we are a QWord
+             */
             if( linear & ( size - 1 ) ) {
                 dregs++;
             }
