@@ -93,7 +93,7 @@ static int CheckForPort( int i, unsigned char value )
 
     output_port( PortTest[i], value );
 #ifdef _M_I86
-    for( j = 100; j != 0; j-- )
+    for( j = 100; j > 0; j-- )
         {}
 #else
     DosSleep(1);

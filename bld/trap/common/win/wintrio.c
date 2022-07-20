@@ -39,19 +39,20 @@
 #include "servio.h"
 #include "winserv.h"
 
+
 #define TMPSLEN 256
 
 static char     tmpStr[TMPSLEN];
-static short    tmpOff=0;
+static size_t   tmpOff = 0;
 
 void Output( const char *str )
 {
-    int         i;
-    int         len;
+    size_t      i;
+    size_t      len;
 
     len = strlen( str );
-    for( i=0;i<=len;i++ ) {
-        if( str[i] == 0 ) {
+    for( i = 0; i <= len; i++ ) {
+        if( str[i] == '\0' ) {
             return;
         }
         if( str[i] == '\r' ) {
@@ -65,7 +66,7 @@ void Output( const char *str )
             tmpOff = 0;
         } else {
             tmpStr[tmpOff++] = str[i];
-            if( tmpOff >= TMPSLEN-1 ) {
+            if( tmpOff >= TMPSLEN - 1 ) {
                 tmpOff--;
             }
         }

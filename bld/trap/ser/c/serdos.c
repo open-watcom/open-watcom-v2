@@ -240,7 +240,8 @@ bool Baud( int index )
         return( true );
 
     /* don't change baud rate while a character is still being sent */
-    do {} while( (inp( LSR ) & LSR_TSRE) == 0 );
+    while( (inp( LSR ) & LSR_TSRE) == 0 )
+        {}
     lcr_value = inp( LCR );              /* get LCR value */
     _disable();                          /* disable interrupt */
     outp( LCR, lcr_value | LCR_DLAB );   /* set Divisor Latch Access Bit(DLAB)*/

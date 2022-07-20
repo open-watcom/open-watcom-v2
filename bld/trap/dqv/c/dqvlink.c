@@ -49,13 +49,14 @@ static a_handle         PutHandle;
 #define PATTERN 0xA5
 
 
-static int fstrlen( char __far *str )
+static size_t fstrlen( char __far *str )
 {
-    int         i;
+    size_t      len;
 
-    for( i = 0; *str != '\0'; ++i, ++str )
-        {}
-    return( i );
+    len = 0;
+    while( *str++ != '\0' )
+        ++len;
+    return( len );
 }
 
 unsigned RemoteGet( void __far *data, unsigned len )
@@ -114,7 +115,7 @@ void RemoteDisco( void )
 
 const char *RemoteLink( const char __far *parms, char server )
 {
-    int                 version;
+    int         version;
 
     server = server;
 

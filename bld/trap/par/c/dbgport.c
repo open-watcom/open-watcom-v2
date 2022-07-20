@@ -599,8 +599,8 @@ static unsigned RemoteGet(
         get_len = ((get_len & 0x7f) << 8) | DataGet( ext, KEEP );
     }
     i = get_len;
-    for( ; i != 0; --i, ++data ) {
-        *data = DataGet( ext, KEEP );
+    while( i-- > 0 ) {
+        *data++ = DataGet( ext, KEEP );
     }
     return( get_len );
 }
@@ -616,8 +616,9 @@ static unsigned RemotePut(
         DataPut( ext, ((len >> 8) | 0x80), RELINQUISH );
     }
     DataPut( ext, (len & 0xff), RELINQUISH );
-    for( count = len; count != 0; --count, ++data ) {
-        DataPut( ext, *data, KEEP );
+    count = len;
+    while( count-- > 0 ) {
+        DataPut( ext, *data++, KEEP );
     }
     return( len );
 }
@@ -689,7 +690,7 @@ static bool Twidle(
     unsigned            i;
     unsigned long       time;
 
-    for( i = 20; i != 0; i-- ) {
+    for( i = 20; i > 0; i-- ) {
         WriteData( TWIDLE_ON );
         time = Ticks() + TWIDLE_TIME;
         while( time > Ticks() ) {

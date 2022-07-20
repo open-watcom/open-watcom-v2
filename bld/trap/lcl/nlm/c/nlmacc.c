@@ -1807,7 +1807,7 @@ static LoadedListHandle GetLoadedListHandle( struct LoadDefinitionStructure *ld 
 
 trap_retval TRAP_CORE( Get_lib_name )( void )
 {
-    int                 len;
+    size_t              len;
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;

@@ -366,10 +366,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
         }
         while( *s == ' ' )
             ++s;
-        for( ;; ) {
-            ch = *s++;
-            if( ch == '\0' )
-                break;
+        while( (ch = *s++) != '\0' ) {
             if( ch == '\n' )
                 ch = ' ';
             if( ch != '\r' ) {

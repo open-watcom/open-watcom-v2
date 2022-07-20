@@ -278,7 +278,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     }
     if( Flags & F_BoundApp ) {
         segment = _MK_FP( SegmentChain, 14 );
-        for( count = NumSegments - seg; count != 0; --count ) {
+        for( count = NumSegments - seg; count > 0; --count ) {
             segment = _MK_FP( *segment, 14 );
         }
         ret->out_addr.segment = _FP_SEG( segment ) + 1;

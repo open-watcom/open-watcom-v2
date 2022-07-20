@@ -329,7 +329,7 @@ static int ASCIIZToLenStr( char *lstr, char *string )
    int i;
 
     for( i = 0; i < 255 && string[i] != 0; i++ ) {
-        lstr[i+1] = string[i];
+        lstr[i + 1] = string[i];
     }
     lstr[0] = i;
     return( ( i == 255 ) && ( string[255] != 0 ) );

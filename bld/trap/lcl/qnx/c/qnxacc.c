@@ -1249,7 +1249,7 @@ static unsigned ProgRun( bool step )
             }
         }
 #endif
-        for( pid = 0; pid = next_thread( pid, THREAD_THAWED ) ; ) {
+        for( pid = 0; pid = next_thread( pid, THREAD_THAWED ); ) {
             __qnx_debug_xfer( ProcInfo.proc, pid, _DEBUG_WATCH_WR, WatchPoints,
                     WatchCount * sizeof( struct _watch_struct ), 0, 0 );
         }

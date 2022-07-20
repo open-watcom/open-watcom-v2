@@ -345,7 +345,7 @@ static void CheckForTraffic( HPIPE hdl )
     DosSleep( 500 );
     if( rc != 0 )
         return;
-    rc = DosRead( hdl, buff, BUFF_LEN-1, &bytes_read );
+    rc = DosRead( hdl, buff, BUFF_LEN - 1, &bytes_read );
     if( rc == 0 && bytes_read != 0 ) {
         buff[bytes_read] = '\0';
     }
