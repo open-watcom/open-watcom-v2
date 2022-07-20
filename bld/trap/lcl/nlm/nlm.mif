@@ -1,5 +1,3 @@
-builtin_trap = 1
-
 !ifndef test
 
 nlm_trap_objs = &
