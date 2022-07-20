@@ -332,7 +332,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 }
 
 
-static bool IsInterrupt( addr32_ptr *addr, size_t len )
+static bool IsInterrupt( addr48_ptr *addr, size_t len )
 {
     dword   start;
     dword   end;
@@ -537,7 +537,7 @@ static void remove_breakpoint_file( tiny_handle_t handle, dword pos, opcode_type
     TinyFarWrite( handle, &old_opcode, sizeof( old_opcode ) );
 }
 
-static opcode_type place_breakpoint( addr32_ptr *addr )
+static opcode_type place_breakpoint( addr48_ptr *addr )
 {
     opcode_type __far *paddr;
     opcode_type old_opcode;
@@ -552,7 +552,7 @@ static opcode_type place_breakpoint( addr32_ptr *addr )
     return( old_opcode );
 }
 
-static void remove_breakpoint( addr32_ptr *addr, opcode_type old_opcode )
+static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
     opcode_type __far *paddr;
 
@@ -585,7 +585,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     dword           NEOffset;
     dword           StartPos;
     dword           SegTable;
-    addr32_ptr      start_addr;
+    addr48_ptr      start_addr;
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
