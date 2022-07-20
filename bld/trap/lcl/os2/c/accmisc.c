@@ -347,7 +347,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     acc = GetInPtr( 0 );
     err = acc->err & 0xffff;
     if( acc->err & ERROR_OS2_TRAP_FILE_OWN ) {
-        strcpy( err_txt, OS2ErrMsgs[ err ] );
+        strcpy( err_txt, OS2ErrMsgs[err] );
     } else if( DosGetMessage( NULL, 0, err_txt, 80, err, "OSO001.MSG", &msg_len ) == 0 ) {
         err_txt[msg_len] = '\0';
         s = d = err_txt;
@@ -380,7 +380,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
             --d;
         *d = '\0';
     } else if( err < ERR_LAST ) {
-        strcpy( err_txt, DosErrMsgs[ err ] );
+        strcpy( err_txt, DosErrMsgs[err] );
     } else {
         strcpy( err_txt, TRP_ERR_unknown_system_error );
         ultoa( err, err_txt + strlen( err_txt ), 16 );

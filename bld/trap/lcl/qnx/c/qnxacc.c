@@ -1536,7 +1536,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
         } else if( ProcInfo.sig > ( ( sizeof( ExceptionMsgs ) / sizeof( char * ) - 1 ) ) ) {
             strcpy( err_txt, TRP_EXC_unknown );
         } else {
-            strcpy( err_txt, ExceptionMsgs[ ProcInfo.sig ] );
+            strcpy( err_txt, ExceptionMsgs[ProcInfo.sig] );
         }
         ProcInfo.sig = -1;
         ret->flags = MSG_NEWLINE | MSG_ERROR;

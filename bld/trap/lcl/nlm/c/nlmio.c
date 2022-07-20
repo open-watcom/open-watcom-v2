@@ -314,13 +314,13 @@ int IOClose( int closehandle )
     index = closehandle - FIRST_HANDLE;
     if( index < 0 || index > NUM_FILES )
         return( 0 );
-    handle = Files[ index ].handle;
-    Files[ index ].handle = 0;
+    handle = Files[index].handle;
+    Files[index].handle = 0;
     _DBG_IO(( "Closing file %8x", handle ));
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type == FILE_INVALID ) {
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type == FILE_INVALID ) {
         BadFile();
     }
-    switch( Files[ index ].file_type ) {
+    switch( Files[index].file_type ) {
     case FILE_DOS:
         ccode = INWDOSClose( handle );
         break;
@@ -346,10 +346,10 @@ int IOWrite( int writehandle, char *buff, int buff_len )
 //    if( !MayRelinquishControl )
 //        return( -1 );
     index = writehandle - FIRST_HANDLE;
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type != FILE_SERVER ) {
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type != FILE_SERVER ) {
         BadFile();
     }
-    p = &Files[ index ];
+    p = &Files[index];
     written = WriteServer( p->handle, p->seekpos, buff, buff_len );
     if( written != buff_len ) {
         written = ErrorCode();
@@ -366,10 +366,10 @@ long IOSeek( int seekhandle, int seekmode, long seekpos )
 //    if( !MayRelinquishControl )
 //        return( -1 );
     index = seekhandle - FIRST_HANDLE;
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type == FILE_INVALID ) {
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type == FILE_INVALID ) {
         BadFile();
     }
-    pos = Files[ index ].seekpos;
+    pos = Files[index].seekpos;
     switch( seekmode ) {
     case SEEK_SET:
         pos = seekpos;
@@ -378,13 +378,13 @@ long IOSeek( int seekhandle, int seekmode, long seekpos )
         pos += seekpos;
         break;
     case SEEK_END:
-        pos = Files[ index ].filesize + seekpos;
+        pos = Files[index].filesize + seekpos;
         break;
     }
     if( pos < 0 ) {
         return( ccode ? ErrorCode() : -1 );
     } else {
-        Files[ index ].seekpos = pos;
+        Files[index].seekpos = pos;
         return( pos );
     }
 }
@@ -399,10 +399,10 @@ int IORead( int readhandle, char *buff, int len )
 //    if( !MayRelinquishControl )
 //        return( -1 );
     index = readhandle - FIRST_HANDLE;
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type == FILE_INVALID ) {
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type == FILE_INVALID ) {
         BadFile();
     }
-    p = &Files[ index ];
+    p = &Files[index];
     amt_read = p->routine( p->handle, p->seekpos, buff, len );
     p->seekpos += amt_read;
     return( amt_read );

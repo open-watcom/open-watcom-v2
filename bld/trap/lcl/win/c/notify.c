@@ -159,14 +159,14 @@ static bool doOutStr( DWORD data )
     src = (LPSTR) data;
     while( *src ) {
         if( *src == '\r' || OutPos == (MAX_STR-1) ) {
-            OutBuff[ OutPos++ ] = '\0';
+            OutBuff[OutPos++] = '\0';
             Out((OUT_RUN,"Going to debugger for OUT_STR '%s'",OutBuff));
             if( DebugeeTask == NULL )
                 return( false );
             ToDebugger( OUT_STR );
         }
         if( *src != '\n' && *src != '\t' ) {
-            OutBuff[ OutPos++ ] = *src;
+            OutBuff[OutPos++] = *src;
         }
         src++;
     }

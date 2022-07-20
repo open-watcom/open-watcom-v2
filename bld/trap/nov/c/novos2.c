@@ -86,7 +86,7 @@ char * hex( unsigned long num )
       return( p );
     }
     while( num != 0 ) {
-        *--p = "0123456789abcdef"[ num & 15 ];
+        *--p = "0123456789abcdef"[num & 15];
         num >>= 4;
     }
     return( p );
@@ -187,12 +187,12 @@ void putconnstatus( WORD conn )
 #define NUM_REC_BUFFS   5
 
 SPX_HEADER       SendHead;
-SPX_HEADER       RecHead[ NUM_REC_BUFFS ];
+SPX_HEADER       RecHead[NUM_REC_BUFFS];
 SPX_HEADER       ConnHead;
 
 SPX_ECB          SendECB;
 SPX_ECB          ConnECB;
-SPX_ECB          RecECB[ NUM_REC_BUFFS ];
+SPX_ECB          RecECB[NUM_REC_BUFFS];
 
 char            Buffer[NUM_REC_BUFFS][MAX_DATA_SIZE];
 
@@ -438,7 +438,7 @@ volatile enum {
 
 #define STACKSIZE 2048
 
-char    RespondStack[ STACKSIZE ];
+char    RespondStack[STACKSIZE];
 
 static void __far Respond( void )
 {
@@ -464,7 +464,7 @@ static void __far Respond( void )
 }
 
 
-char    BroadcastStack[ STACKSIZE ];
+char    BroadcastStack[STACKSIZE];
 ULONG   BroadCastStop = 0;
 ULONG   BroadCastStart = 0;
 
@@ -543,10 +543,10 @@ putstring( "RemoteLink\r\n" );
         parms = "NovLink";
     for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            SAPHead.name[ i++ ] = toupper( *parms );
+            SAPHead.name[i++] = toupper( *parms );
         }
     }
-    SAPHead.name[ i ] = '\0';
+    SAPHead.name[i] = '\0';
     if( SpxOpenSocket( &SPXSocket ) != 0 || IpxOpenSocket( &IPXSocket ) != 0 ) {
         return( TRP_ERR_can_not_obtain_socket );
     }

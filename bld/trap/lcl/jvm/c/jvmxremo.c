@@ -146,7 +146,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     if( acc->err == ERR_JVM_SAVED_ERROR ) {
         strcpy( err_txt, SavedError );
     } else if( IsUserErr( acc->err ) ) {
-        strcpy( err_txt, Errors[ ErrIndex( acc->err ) ] );
+        strcpy( err_txt, Errors[ErrIndex( acc->err )] );
     } else {
         len = DoFmtMsg( &lpMessageBuffer, acc->err, "%1","%2","%3","%4" );
         if( len > 0 ) {

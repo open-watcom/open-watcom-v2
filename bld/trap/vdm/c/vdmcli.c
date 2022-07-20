@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ HPIPE   pipeHdl;
 const char *RemoteLink( const char *parms, bool server )
 {
     APIRET      rc;
-    char        buf[ PREFIX_LEN + MAX_NAME + 1 ];
+    char        buf[PREFIX_LEN + MAX_NAME + 1];
 
     if( server )
         return( "this should never be seen" );
@@ -143,7 +144,7 @@ void RemoteDisco( void )
 {
     APIRET      rc;
     USHORT      bytes_read;
-    char        tmp[ MAX_TRANS ];
+    char        tmp[MAX_TRANS];
 
     /*
         Before disconnecting we must wait until the server has closed

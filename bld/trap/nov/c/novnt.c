@@ -200,7 +200,7 @@ static DWORD WINAPI Responder( LPVOID parm )
 {
     int                 from_length;
     struct sockaddr_ipx from;
-    char                buffer[ 1 ];
+    char                buffer[1];
 
     parm = parm;
     for( ;; ) {
@@ -358,10 +358,10 @@ const char *RemoteLink( const char *parms, bool server )
         parms = "NovLink";
     for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            ServerName[ i++ ] = (char)toupper( *(byte *)parms );
+            ServerName[i++] = (char)toupper( *(byte *)parms );
         }
     }
-    ServerName[ i ] = '\0';
+    ServerName[i] = '\0';
     if( WSAStartup( 0x101, &data ) != 0 ) {
         return( TRP_ERR_can_not_obtain_socket );
     }

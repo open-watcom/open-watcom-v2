@@ -234,7 +234,7 @@ static bool SetBaud( int baud_index, int *sync_point_p )
         return( false );
     }
     /* now go the other way */
-    *sync_point_p += BaudTable[ baud_index ].full_test_ticks;
+    *sync_point_p += BaudTable[baud_index].full_test_ticks;
 #ifdef SERVER
     if( !SetBaudReceiver() )
         return( false );
@@ -707,7 +707,7 @@ static char *SetLinkParms( const char **pparm )
     *pparm = parm;
     if( arg1_len == 0 )
         return( NULL );
-    arg1[ arg1_len ] = '\0';
+    arg1[arg1_len] = '\0';
     if( StrEq( arg1, "0" ) ) {
         MaxBaud = MIN_BAUD;
         return( NULL );

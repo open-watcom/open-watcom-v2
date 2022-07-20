@@ -59,10 +59,10 @@ static int CheckForPort( int i, unsigned char value )
 {
     int         j;
 
-    outp( PortTest[ i ], value );
+    outp( PortTest[i], value );
     for( j = 100; j != 0; j-- )
         {}
-    return( inp( PortTest[ i ] ) == value );
+    return( inp( PortTest[i] ) == value );
 }
 
 
@@ -74,7 +74,7 @@ static void InitPorts( void )
     portnum = 0;
     for( i = 0; i < 3; ++i ) {
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[ portnum++ ] = PortTest[ i ];
+            PortAddress[portnum++] = PortTest[i];
         }
     }
 }
@@ -125,7 +125,7 @@ int NumPrinters( void )
     int         i;
 
     for( i = 0; i < 3; ++i ) {
-        if( PortAddress[ i ] == 0 ) {
+        if( PortAddress[i] == 0 ) {
             break;
         }
     }
@@ -135,7 +135,7 @@ int NumPrinters( void )
 
 unsigned PrnAddress( int n )
 {
-    return( PortAddress[ n ] );
+    return( PortAddress[n] );
 }
 
 void FreePorts( unsigned first, unsigned last )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,9 +205,9 @@ trap_retval TRAP_CORE( Read_regs )( void )
 #if defined( MD_x86 ) || defined( MD_x64 )
         ReadCPU( &mr->x86.cpu, &con );
         memcpy( &mr->x86.u.fpu, &con.FloatSave, sizeof( mr->x86.u.fpu ) );
-        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[ MYCONTEXT_XMM ],
+        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[MYCONTEXT_XMM],
             sizeof( mr->x86.xmm.xmm ) );
-        mr->x86.xmm.mxcsr = con.ExtendedRegisters[ MYCONTEXT_MXCSR ];
+        mr->x86.xmm.mxcsr = con.ExtendedRegisters[MYCONTEXT_MXCSR];
 #elif defined( MD_axp )
         memcpy( &mr->axp.r, &con, sizeof( mr->axp.r ) );
         mr->axp.pal.nt.fir      = *( unsigned_64 * ) & con.Fir;
@@ -290,8 +290,8 @@ trap_retval TRAP_CORE( Write_regs )( void )
 #if defined( MD_x86 ) || defined( MD_x64 )
     WriteCPU( &mr->x86.cpu, &con );
     memcpy( &con.FloatSave, &mr->x86.u.fpu, sizeof( mr->x86.u.fpu ) );
-    memcpy( &con.ExtendedRegisters[ MYCONTEXT_XMM ], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
-    con.ExtendedRegisters[ MYCONTEXT_MXCSR ] = mr->x86.xmm.mxcsr;
+    memcpy( &con.ExtendedRegisters[MYCONTEXT_XMM], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
+    con.ExtendedRegisters[MYCONTEXT_MXCSR] = mr->x86.xmm.mxcsr;
 #elif defined( MD_axp )
     memcpy( &con, &mr->axp.r, sizeof( mr->axp.r ) );
     *( unsigned_64 * ) & con.Fir            = mr->axp.pal.nt.fir;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,13 +55,13 @@ bhandle ReadHdl;
 bhandle WriteHdl;
 bhandle BindHdl;
 
-static char     MachBuff[ MACH_NAME+1 ];
-       char     NameBuff[ MAX_PIPE_NAME+1 ];
+static char     MachBuff[MACH_NAME+1];
+       char     NameBuff[MAX_PIPE_NAME+1];
 static char     *NameEnd;
 
 static bhandle PipeOpen( char *name )
 {
-    char        buff[ MAX_PIPE_NAME+1 ];
+    char        buff[MAX_PIPE_NAME+1];
     char        *end;
 
     end = buff;
@@ -116,7 +117,7 @@ static const char *ValidName( const char *name )
     int         len;
 
     len = 0;
-    MachBuff[ 0 ] = '\0';
+    MachBuff[0] = '\0';
     while( *name ) {
         if( *name == '@' ) {
             strcpy( MachBuff, name+1 );

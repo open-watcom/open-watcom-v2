@@ -158,7 +158,7 @@ unsigned int CallDosDebug( dos_debug __far *buff )
                         if( num_paints >= MAX_PAINTS )
                             --num_paints;
                         paints[num_paints].hwnd = qmsg.hwnd;
-                        ps = WinBeginPaint( qmsg.hwnd, 0, &paints[ num_paints ].rcl );
+                        ps = WinBeginPaint( qmsg.hwnd, 0, &paints[num_paints].rcl );
                         GpiErase( ps );
                         WinEndPaint( ps );
                         num_paints++;

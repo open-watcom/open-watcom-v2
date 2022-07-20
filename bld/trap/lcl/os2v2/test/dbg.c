@@ -60,7 +60,7 @@ extern int printf(char*,...);
 
 struct location_context Context;
 dbg_switches            DbgSwitches;
-char                    TrpBuff[ TRP_LEN + 1 ];
+char                    TrpBuff[TRP_LEN + 1];
 char                    *TxtBuff;
 char                    *TrpFile;
 char                    NullStr[] = { '\0' };

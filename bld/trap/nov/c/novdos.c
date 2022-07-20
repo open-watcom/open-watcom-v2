@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@ static char * hex( unsigned long num )
       return( p );
     }
     while( num != 0 ) {
-        *--p = "0123456789abcdef"[ num & 15 ];
+        *--p = "0123456789abcdef"[num & 15];
         num >>= 4;
     }
     return( p );
@@ -492,15 +492,15 @@ static char FindPartner( void )
         static char ReqBuff[80];
         unsigned    i;
 
-        ReqBuff[ 2 ] = 0x3d; /* sub-function */
-        ACC_WORD( ReqBuff[ 3 ] ) = DBG_SERVER_TYPE;
+        ReqBuff[2] = 0x3d; /* sub-function */
+        ACC_WORD( ReqBuff[3] ) = DBG_SERVER_TYPE;
         i = strlen( SAPHead.name );
         ReqBuff[5] = i;
         memcpy( &ReqBuff[6], &SAPHead.name, i );
         i += 6;
-        ReqBuff[ i++ ] = 1;
-        ReqBuff[ i++ ] = sizeof( "NET_ADDRESS" ) - 1;
-        memcpy( &ReqBuff[ i ], "NET_ADDRESS", sizeof( "NET_ADDRESS" ) - 1 );
+        ReqBuff[i++] = 1;
+        ReqBuff[i++] = sizeof( "NET_ADDRESS" ) - 1;
+        memcpy( &ReqBuff[i], "NET_ADDRESS", sizeof( "NET_ADDRESS" ) - 1 );
         ACC_WORD( ReqBuff[0] ) = i + (sizeof( "NET_ADDRESS" ) - 2);
         ACC_WORD( RepBuff[0] ) = 130;
 putstring( "read prop\r\n" );
@@ -587,10 +587,10 @@ const char *RemoteLink( const char *parms, bool server )
         parms = DefLinkName;
     for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            SAPHead.name[ i++ ] = toupper( *parms );
+            SAPHead.name[i++] = toupper( *parms );
         }
     }
-    SAPHead.name[ i ] = '\0';
+    SAPHead.name[i] = '\0';
     if( !_SPXInitialize( 20, 576, &major_ver, &minor_ver, &max_conn, &avail_conn ) ) {
         return( TRP_ERR_SPX_not_present );
     }

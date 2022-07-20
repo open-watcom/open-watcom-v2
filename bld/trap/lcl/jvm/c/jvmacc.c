@@ -1054,12 +1054,12 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     if( first >= nbinclasses )
         return( sizeof( *ret ) );
 
-    cb = binclasses[ first ];
+    cb = binclasses[first];
     if( cb == CbMain ) {
         ++first;
         if( first >= nbinclasses )
             return( sizeof( *ret ) );
-        cb = binclasses[ first ];
+        cb = binclasses[first];
     }
 
     max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
@@ -1241,9 +1241,9 @@ trap_retval TRAP_FILE( open )( void )
     if( memcmp( buff, JAVAPREFIX, sizeof( JAVAPREFIX )-1 ) == 0 ) {
         buff += sizeof( JAVAPREFIX ) - 1;
         for( i = 0; i < nbinclasses; ++i ) {
-            if( strcmp( binclasses[ i ]->name, buff ) == 0 ) {
+            if( strcmp( binclasses[i]->name, buff ) == 0 ) {
                 ret->err = 0;
-                CbOpened = binclasses[ i ];
+                CbOpened = binclasses[i];
                 break;
             }
         }

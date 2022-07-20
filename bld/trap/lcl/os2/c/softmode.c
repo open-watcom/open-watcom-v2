@@ -74,7 +74,7 @@ static HMODULE          HookDLL;
 //static HWND           AppFocusWnd;
 
 #define MAX_QUEUES      50
-static HMQ              AssumedQueues[ MAX_QUEUES ];
+static HMQ              AssumedQueues[MAX_QUEUES];
 static int              NumAssumedQueues;
 
 typedef struct {
@@ -186,7 +186,7 @@ static void GrabThreadQueue( PID pid, TID tid )
             return;
         }
     }
-    AssumedQueues[ NumAssumedQueues ] = thread.hmq;
+    AssumedQueues[NumAssumedQueues] = thread.hmq;
     ++NumAssumedQueues;
     BeginSoftModeThread( &thread );
 }
@@ -203,7 +203,7 @@ static void ReleaseThreadQueue( PID pid, TID tid )
     for( i = 0; i < NumAssumedQueues; ++i ) {
         if( hmq == AssumedQueues[i] ) {
             WinPostQueueMsg( hmq, WM_QUIT, 0, 0 ); // break one soft mode loop
-            AssumedQueues[ i ] = NULL;
+            AssumedQueues[i] = NULL;
             break;
         }
     }

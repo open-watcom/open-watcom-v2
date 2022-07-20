@@ -127,7 +127,7 @@ void OutNum( ULONG i )
         *--ptr = '0';
     }
     while( i != 0 ) {
-        *--ptr = "0123456789abcdef"[ i & 0x0f ];
+        *--ptr = "0123456789abcdef"[i & 0x0f];
         i >>= 4;
     }
     Out( ptr );
@@ -630,7 +630,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         return( sizeof( *ret ) );
     }
 
-    GetObjectInfo( ModHandles[ acc->mod_handle ] );
+    GetObjectInfo( ModHandles[acc->mod_handle] );
 
     seg = acc->in_addr.segment;
     off = acc->in_addr.offset;
@@ -652,11 +652,11 @@ trap_retval TRAP_CORE( Map_addr )( void )
         break;
     }
 
-    Buff.MTE = ModHandles[ acc->mod_handle ];
+    Buff.MTE = ModHandles[acc->mod_handle];
     Buff.Cmd = DBG_C_NumToAddr;
     Buff.Value = seg;
     CallDosDebug( &Buff );
-    Buff.MTE = ModHandles[ 0 ];
+    Buff.MTE = ModHandles[0];
     flags = ObjInfo[seg - 1].flags;
     if( flags & OBJECT_IS_BIG ) {
         ret->out_addr.segment = (flags & OBJECT_IS_CODE) ? FlatCS : FlatDS;
@@ -928,14 +928,14 @@ static bool FindLinearStartAddress( ULONG *pLin, char *name )
 
         Buff.Cmd = DBG_C_NumToAddr;
         Buff.Value = objnum;
-        Buff.MTE = ModHandles[ 0 ];
+        Buff.MTE = ModHandles[0];
         CallDosDebug( &Buff );
         if( Buff.Cmd != DBG_N_Success ) {
             break;
         }
         *pLin = eip + Buff.Addr;
 
-        Buff.MTE = ModHandles[ 0 ];
+        Buff.MTE = ModHandles[0];
 
         rc = TRUE;
         break;

@@ -123,8 +123,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     }
     con_num = console_active( con, -1 );
     console_close( con );
-    con_name[ FIRST_DIGIT + 0 ] = (con_num / 10) + '0';
-    con_name[ FIRST_DIGIT + 1 ] = (con_num % 10) + '0';
+    con_name[FIRST_DIGIT + 0] = (con_num / 10) + '0';
+    con_name[FIRST_DIGIT + 1] = (con_num % 10) + '0';
 
     con_hdl = open( con_name, O_RDONLY );
     if( con_hdl < 0 ) {

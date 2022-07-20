@@ -136,7 +136,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
             strcpy( err_txt, LoadError );
             LoadError = NULL;
         } else if( acc->err < ERR_LAST ) {
-            strcpy( err_txt, DosErrMsgs[ acc->err ] );
+            strcpy( err_txt, DosErrMsgs[acc->err] );
         } else {
             strcpy( err_txt, TRP_ERR_unknown_system_error );
             ultoa( acc->err, err_txt + strlen( err_txt ), 16 );

@@ -277,8 +277,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
             index = seg >> 3;
         }
         if( PmdInfo.loaded && index < PmdInfo.hdr.numsegs ) {
-            seg = PmdInfo.segs[ seg >> 3 ].real_seg;
-            ret->out_addr.offset += PmdInfo.segs[ index ].mem_off;
+            seg = PmdInfo.segs[seg >> 3].real_seg;
+            ret->out_addr.offset += PmdInfo.segs[index].mem_off;
         }
         break;
     case MH_SLIB:
@@ -500,7 +500,7 @@ static void ReadSegData( void )
                 /* flat model */
                 ptr[0] = ptr[-1];
                 ptr[-1].mem_off = seg_info.addr;
-                ptr[ 0].mem_off = seg_info.addr + seg_info.nbytes;
+                ptr[0].mem_off = seg_info.addr + seg_info.nbytes;
                 seg_info.nbytes = 0;
             }
             ptr->real_seg = seg_info.selector & 0x7fff;
@@ -727,7 +727,7 @@ static bool AddrIs32( addr_seg seg )
             }
          }
     } else if( PmdInfo.loaded && index < PmdInfo.hdr.numsegs ) {
-        is_32 = PmdInfo.segs[ index ].is_32;
+        is_32 = PmdInfo.segs[index].is_32;
     }
     return( is_32 );
 }

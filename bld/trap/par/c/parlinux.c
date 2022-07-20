@@ -52,7 +52,7 @@ int NumPrinters()
 
 unsigned PrnAddress( int printer )
 {
-    return( PortAddress[ printer ] );
+    return( PortAddress[printer] );
 }
 
 unsigned AccessPorts( unsigned first, unsigned last )
@@ -69,10 +69,10 @@ static int CheckForPort( int i, unsigned char value )
 {
     int         j;
 
-    outp( PortTest[ i ], value );
+    outp( PortTest[i], value );
     for( j = 100; j != 0; j-- )
         {}
-    return( inp( PortTest[ i ] ) == value );
+    return( inp( PortTest[i] ) == value );
 }
 
 char *InitSys()
@@ -86,7 +86,7 @@ char *InitSys()
             exit(-1);
             }
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[ PortsFound++ ] = PortTest[ i ];
+            PortAddress[PortsFound++] = PortTest[i];
         }
         FreePorts(PortTest[i], PortTest[i]);
     }

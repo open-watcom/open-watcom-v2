@@ -68,7 +68,7 @@
 
 static trap_version     TrapVer;
 
-char    RWBuff[ 0x400 ];
+char    RWBuff[0x400];
 
 static in_mx_entry  In[1];
 static mx_entry     Out[1];

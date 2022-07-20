@@ -150,7 +150,7 @@ extern void fxsave( unsigned char *addr );
 
 void __export DoReadXMMRegs( struct x86_xmm *xmm_regs )
 {
-    unsigned char   fxsave_buff[ 512 + 16 ];
+    unsigned char   fxsave_buff[512 + 16];
     unsigned char   *aligned_buf;
 
     /* The FXSAVE buffer must be 16-byte aligned! */
@@ -172,7 +172,7 @@ extern void fxrstor( unsigned char *addr );
 
 void __export DoWriteXMMRegs( struct x86_xmm *xmm_regs )
 {
-    unsigned char   fxrstor_buff[ 512 + 16 ];
+    unsigned char   fxrstor_buff[512 + 16];
     unsigned char   *aligned_buf;
 
     /* The FXRSTOR buffer must be 16-byte aligned! */

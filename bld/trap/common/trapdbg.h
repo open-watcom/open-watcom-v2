@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,7 +194,7 @@ extern void _DBG_DumpStr( const char __far *str, uint_16 len, uint_16 fhandle );
 
 #define _DBG_Request( n )       ( (access_req)(n) >= REQ__LAST ?        \
                                   DBG_UNKNOWN_REQ :                     \
-                                  DBG_ReqStrings[ (access_req)(n) ] )
+                                  DBG_ReqStrings[(access_req)(n)] )
 #define _DBG_Space()            _DBG_DumpChar( DBG_BLANK, DBG_STDOUT_H );
 #define _DBG_RingBell()         _DBG_DumpChar( DBG_BELL, DBG_STDOUT_H );
 #define _DBG_DumpHexChar( n )   _DBG_DumpChar( _DBG_HexChar( n ),       \

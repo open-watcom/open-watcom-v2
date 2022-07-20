@@ -254,8 +254,8 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         GpiSetBackColor( hps, CLR_BACKGROUND );  /* its background and    */
         GpiSetBackMix( hps, BM_OVERPAINT );      /* how it mixes,         */
                                                /* and draw the string...*/
-        strcpy( WhatItIs[ State ] +HARD_POS, IsHardMode[ HardMode ] );
-        GpiCharStringAt( hps, &pt, (LONG)strlen( WhatItIs[ State ] ), WhatItIs[ State ] );
+        strcpy( WhatItIs[State] +HARD_POS, IsHardMode[HardMode] );
+        GpiCharStringAt( hps, &pt, (LONG)strlen( WhatItIs[State] ), WhatItIs[State] );
         WinEndPaint( hps );                      /* Drawing is complete   */
         break;
     case WM_CLOSE:

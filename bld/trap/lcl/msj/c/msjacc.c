@@ -488,7 +488,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     } else
 #endif
     if( IsUserErr( acc->err ) ) {
-        strcpy( err_txt, Errors[ ErrIndex( acc->err ) ] );
+        strcpy( err_txt, Errors[ErrIndex( acc->err )] );
     } else {
         len = DoFmtMsg( &lpMessageBuffer, acc->err, "%1","%2","%3","%4" );
         if( len > 0 ) {

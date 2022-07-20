@@ -529,7 +529,7 @@ LONG _Prelude(
         (BYTE *)"Debugger IPX socket",
         SocketSignature );
 
-    CMakeProcess( 50, &MainHelper, &stack[ sizeof( stack ) ],
+    CMakeProcess( 50, &MainHelper, &stack[sizeof( stack )],
                     sizeof( stack ), "WATCOM Debugger Server", ProcessTag );
 #endif
     return( 0 );

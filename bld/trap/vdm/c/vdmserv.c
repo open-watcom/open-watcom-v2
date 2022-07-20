@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@
 typedef unsigned short  USHORT;
 
 int     pipeHdl = -1;
-char    pipeName[ MACH_NAME_LEN + PREFIX_LEN + MAX_NAME ];
+char    pipeName[MACH_NAME_LEN + PREFIX_LEN + MAX_NAME];
 
 char    DefLinkName[] = DEFAULT_NAME;
 

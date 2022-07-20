@@ -262,7 +262,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
 #if 0
         if( core_info.loaded ) {
-            ret->out_addr.offset += core_info.segs[ index ].mem_off;
+            ret->out_addr.offset += core_info.segs[index].mem_off;
         }
 #endif
         break;
