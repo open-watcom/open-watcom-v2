@@ -777,16 +777,26 @@ static int DRegsCount( void )
     return( needed );
 }
 
-static dword GetLinear( addr48_ptr *paddr )
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
 {
-    PTR386          addr;
-    ULONG           linear;
+    word    dregs;
+    ULONG   linear;
+    PTR386  addr;
 
-    addr.offset = paddr->offset;
-    addr.selector = paddr->segment;
+    addr.offset = offset;
+    addr.selector = segment;
     linear = 0;
     dbg_ptolin( &addr, &linear );
-    return( linear );
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
@@ -794,9 +804,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
-    dword           linear;
-    word            size;
-    word            dregs;
 
     _DBG(("AccSetWatch\r\n"));
     acc = GetInPtr( 0 );
@@ -812,17 +819,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->value = 0;
         ReadMemory( &wp->addr, &wp->value, wp->size );
 
-        linear = GetLinear( &wp->addr );
-        dregs = 1;
-        size = wp->size;
-        if( size == 8 ) {
-            size = 4;
-            dregs++;
-        }
-        if( linear & ( size - 1 ) )
-            dregs++;
-        wp->dregs = dregs;
-        wp->linear = linear & ~( size - 1 );
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
 
         WatchCount++;
         if( DRegsCount() <= 4 ) {

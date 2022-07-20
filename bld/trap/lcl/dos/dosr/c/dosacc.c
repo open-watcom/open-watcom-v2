@@ -57,6 +57,8 @@
 #include "drset.h"
 
 
+#define GET_LINEAR(s,o) (((dword)(s) << 4) + (o))
+
 typedef enum {
     EXE_UNKNOWN,
     EXE_DOS,                    /* DOS */
@@ -330,12 +332,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 }
 
 
-static bool IsInterrupt( addr48_ptr *addr, size_t len )
+static bool IsInterrupt( addr32_ptr *addr, size_t len )
 {
     dword   start;
     dword   end;
 
-    start = ( (dword)addr->segment << 4 ) + addr->offset;
+    start = GET_LINEAR( addr->segment, addr->offset );
     end = start + len;
     return( start < 0x400 || end < 0x400 );
 }
@@ -535,7 +537,7 @@ static void remove_breakpoint_file( tiny_handle_t handle, dword pos, opcode_type
     TinyFarWrite( handle, &old_opcode, sizeof( old_opcode ) );
 }
 
-static opcode_type place_breakpoint( addr48_ptr *addr )
+static opcode_type place_breakpoint( addr32_ptr *addr )
 {
     opcode_type __far *paddr;
     opcode_type old_opcode;
@@ -544,13 +546,13 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
     old_opcode = *paddr;
     *paddr = BreakOpcode;
     if( *paddr != BreakOpcode ) {
-        BadBreak = ( (dword)addr->segment << 4 ) + addr->offset;
+        BadBreak = GET_LINEAR( addr->segment, addr->offset );
         GotABadBreak = true;
     }
     return( old_opcode );
 }
 
-static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+static void remove_breakpoint( addr32_ptr *addr, opcode_type old_opcode )
 {
     opcode_type __far *paddr;
 
@@ -583,7 +585,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     dword           NEOffset;
     dword           StartPos;
     dword           SegTable;
-    addr48_ptr      start_addr;
+    addr32_ptr      start_addr;
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
@@ -733,14 +735,29 @@ static int DRegsCount( void )
     return( needed );
 }
 
+static word GetDRInfo( word segment, word offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    linear = GET_LINEAR( segment, offset );
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
-    dword           linear;
-    word            size;
-    word            dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -754,22 +771,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->size = acc->size;
         wp->value = 0;
         ReadMemory( wp->addr.segment, wp->addr.offset, &wp->value, wp->size );
-
-        linear = ( (dword)wp->addr.segment << 4 ) + wp->addr.offset;
-        dregs = 1;
-        size = wp->size;
-        if( size == 8 ) {
-            size = 4;
-            dregs++;
-        }
-        if( linear & ( size - 1 ) )
-            dregs++;
-        wp->dregs = dregs;
-        wp->linear = linear & ~( size - 1 );
-
         WatchCount++;
-        if( (Flags & F_DRsOn) && DRegsCount() <= 4 ) {
-            ret->multiplier |= USING_DEBUG_REG;
+
+        if( Flags & F_DRsOn ) {
+            wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+            if( DRegsCount() <= 4 ) {
+                ret->multiplier |= USING_DEBUG_REG;
+            }
         }
     }
     return( sizeof( *ret ) );
@@ -857,7 +865,7 @@ static bool SetDebugRegs( void )
     dr  = 0;
     dr7 = 0;
     if( DRegsCount() <= 4 ) {
-        dr7 = /* DR7_GE | */ DR7_LE;
+        dr7 |= /* DR7_GE | */ DR7_LE;
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             linear = wp->linear;
             size = wp->size;
@@ -871,11 +879,12 @@ static bool SetDebugRegs( void )
             }
             watch386 = true;
         }
-        if( GotABadBreak && dr < 4 ) {
-            dr7 |= SetDRn( dr, BadBreak, DRLen( 1 ) | DR7_BINST );
-            IsBreak[dr] = true;
-            ++dr;
-        }
+    }
+    if( GotABadBreak && dr < 4 ) {
+        dr7 |= /* DR7_GE | */ DR7_LE;
+        dr7 |= SetDRn( dr, BadBreak, DRLen( 1 ) | DR7_BINST );
+        IsBreak[dr] = true;
+        ++dr;
     }
     SetDR7( dr7 );
     return( watch386 );

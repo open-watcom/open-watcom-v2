@@ -1375,11 +1375,24 @@ static int DRegsCount( void )
     return( needed );
 }
 
-static dword GetLinear( addr_seg segment, addr48_off offset )
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
 {
-    (void)segment;
+    word    dregs;
+    dword   linear;
 
-    return( offset );
+    /* unused parameters */ (void)segment;
+
+    linear = offset;
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
@@ -1389,9 +1402,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     watch_point     *wp;
     int             i;
     int             dreg_avail[4];
-    dword           linear;
-    word            size;
-    word            dregs;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1406,17 +1416,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->value = 0;
         ReadMemory( &wp->addr, &wp->value, wp->size );
 
-        linear = GetLinear( wp->addr.segment, wp->addr.offset );
-        dregs = 1;
-        size = wp->size;
-        if( size == 8 ) {
-            size = 4;
-            dregs++;
-        }
-        if( linear & ( size - 1 ) )
-            dregs++;
-        wp->dregs = dregs;
-        wp->linear = linear & ~( size - 1 );
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
 
         WatchCount++;
         for( i = 0; i < NUM_DREG; ++i ) {

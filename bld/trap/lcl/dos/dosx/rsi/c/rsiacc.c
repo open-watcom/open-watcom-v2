@@ -558,14 +558,29 @@ static int DRegsCount( void )
     return( needed );
 }
 
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    linear = DPMIGetSegmentBaseAddress( segment ) + offset;
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
-    dword           linear;
-    word            size;
-    word            dregs;
     int             i;
 
     _DBG_Writeln( "AccSetWatch" );
@@ -583,17 +598,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->value = 0;
         D32DebugRead( &wp->addr, false, &wp->value, wp->size );
 
-        linear = DPMIGetSegmentBaseAddress( wp->addr.segment ) + wp->addr.offset;
-        dregs = 1;
-        size = wp->size;
-        if( size == 8 ) {
-            size = 4;
-            dregs++;
-        }
-        if( linear & ( size - 1 ) )
-            dregs++;
-        wp->dregs = dregs;
-        wp->linear = linear & ~( size - 1 );
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
         for( i = 0; i < MAX_DREGS; i++ ) {
             wp->handle[i] = -1;
         }

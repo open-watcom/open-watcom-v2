@@ -394,14 +394,73 @@ bool CheckWatchPoints( void )
 }
 
 #if defined( MD_x86 )
-static DWORD GetLinear( addr48_ptr *addr )
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
 {
+    word        dregs;
+    dword       linear;
     LDT_ENTRY   ldt;
 
-    if( GetSelectorLDTEntry( addr->segment, &ldt ) ) {
-        return( addr->offset + GET_LDT_BASE( ldt ) );
+    linear = offset;
+    if( GetSelectorLDTEntry( segment, &ldt ) ) {
+        linear += GET_LDT_BASE( ldt );
     }
-    return( addr->offset );
+    dregs = 1;
+    if( size == 8 ) {
+        /* QWord always needs 1 more register */
+        dregs++;
+        size = 4;
+    }
+
+    /* Calculate where the breakpoint should be */
+    /* 1 byte breakpoint starts at where it says on the tin -   OK */
+    /* 2 byte breakpoint starts at previous word offset -       OK */
+    /* 4 byte breakpoint starts at previous dword offset -      OK */
+    /* 8 byte breakpoint starts at previous dword offset -      OK */
+
+    /* If we are supporting exact break on write, then don't adjust the linear address */
+    if( SupportingExactBreakpoints ) {
+        if( size == 1 ) {
+        } else if ( size == 2 ) {
+            if( linear & 1 ) {
+                dregs++;        /* Need two 1 byte watches */
+            }
+        } else if ( size == 4 ) {
+            switch( linear & 0x3 ) {
+            case 0:
+                                /* 0x00-0x03:   4B@0x00 */
+                                /* 0x00-0x07:   4B@0x00, 4B@0x04 */
+                break;
+            case 1:
+                dregs += 2;     /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
+                                /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
+                break;
+            case 2:
+                dregs += 1;     /* 0x02-0x05:   2B@0x02, 2B@0x04 */
+                                /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
+                break;
+            case 3:
+                dregs += 2;     /* 0x03-0x06:   1B@0x03, 2B@0x04, 1B@0x06 */
+                                /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
+                break;
+            }
+        } else {
+            /* Error */
+            return( 0 );
+        }
+    } else {
+        /*
+         * This is checking if we are crossing a "size" boundary to use 2 registers.
+         * We need to do the same if we are a QWord
+         */
+        if( linear & ( size - 1 ) ) {
+            dregs++;
+        }
+        linear &= ~( size - 1 );
+    }
+    if( plinear != NULL ) {
+        *plinear = linear;
+    }
+    return( dregs );
 }
 #endif
 
@@ -410,11 +469,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
-#if defined( MD_x86 )
-    dword           linear;
-    word            size;
-    word            dregs;
-#endif
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -429,63 +483,10 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ReadMemory( &wp->addr, &wp->value, wp->size );
 
 #if defined( MD_x86 )
-        linear = GetLinear( &acc->watch_addr );
-        size = wp->size;
-        if( size == 8 )
-            size = 4;
-
-        /* Calculate where the breakpoint should be */
-        /* 1 byte breakpoint starts at where it says on the tin -   OK */
-        /* 2 byte breakpoint starts at previous word offset -       OK */
-        /* 4 byte breakpoint starts at previous dword offset -      OK */
-        /* 8 byte breakpoint starts at previous dword offset -      OK */
-
-        dregs = 1;
-        /* If we are supporting exact break on write, then don't adjust the linear address */
-        if( SupportingExactBreakpoints ) {
-            if( size == 1 ) {
-            } else if ( size == 2 ) {
-                if( linear & 1 ) {
-                    dregs++;        /* Need two 1 byte watches */
-                }
-            } else if ( size == 4 ) {
-                switch( linear & 0x3 ) {
-                case 0:
-                                    /* 0x00-0x03:   4B@0x00 */
-                                    /* 0x00-0x07:   4B@0x00, 4B@0x04 */
-                    break;
-                case 1:
-                    dregs += 2;     /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
-                                    /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
-                    break;
-                case 2:
-                    dregs += 1;     /* 0x02-0x05:   2B@0x02, 2B@0x04 */
-                                    /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
-                    break;
-                case 3:
-                    dregs += 2;     /* 0x03-0x06:   1B@0x03, 2B@0x04, 1B@0x06 */
-                                    /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
-                    break;
-                }
-            } else {
-                /* Error!!! */
-                return( sizeof( *ret ) );
-            }
-            wp->linear = linear;
-        } else {
-            /*
-             * This is checking if we are crossing a "size" boundary to use 2 registers.
-             * We need to do the same if we are a QWord
-             */
-            if( linear & ( size - 1 ) ) {
-                dregs++;
-            }
-            wp->linear = linear & ~( size - 1 );
-        }
-        /* QWord always needs 1 more register */
-        if( wp->size == 8 )
-            dregs++;
-        wp->dregs = dregs;
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+        if( wp->dregs == 0 )
+            /* Error */
+            return( sizeof( *ret ) );
 
         WatchCount++;
         if( DRegsCount() <= 4 ) {

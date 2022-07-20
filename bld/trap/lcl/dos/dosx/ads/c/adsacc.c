@@ -61,6 +61,8 @@
 #include "clibint.h"
 
 
+#define GET_LINEAR(s,o) (SegBase( (s) ) + (o))
+
 typedef struct watch_point {
     uint_64     value;
     dword       linear;
@@ -258,11 +260,6 @@ void MyOut( char *str, ... )
 
 #endif
 
-static dword GetLinear( word segment, dword offset )
-{
-    return( SegBase( segment ) + offset );
-}
-
 int SetUsrTask( void )
 {
     return( 1 );
@@ -280,7 +277,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
     word        otherseg;
 
     sdtlim = SegLimit( sdtseg );
-    linear = GetLinear( seg, 0 );
+    linear = GET_LINEAR( seg, 0 );
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
         if( sdtoff == ( seg & 0xfff8 ) )
             continue;
@@ -291,7 +288,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
         }
         if( !WriteOK( otherseg ) )
             continue;
-        if( GetLinear( otherseg, 0 ) != linear )
+        if( GET_LINEAR( otherseg, 0 ) != linear )
             continue;
         _DBG3(("lookup %4.4x", otherseg));
         return( otherseg );
@@ -662,15 +659,30 @@ static int DRegsCount( void )
     return( needed );
 }
 
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    linear = GET_LINEAR( segment, offset );
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
     int             needed;
-    dword           linear;
-    word            size;
-    word            dregs;
 
     _DBG0(( "AccSetWatch" ));
     acc = GetInPtr( 0 );
@@ -686,17 +698,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->value = 0;
         ReadMemory( &wp->addr, &wp->value, wp->size );
 
-        linear = GetLinear( wp->addr.segment, wp->addr.offset );
-        dregs = 1;
-        size = wp->size;
-        if( size == 8 ) {
-            size = 4;
-            dregs++;
-        }
-        if( linear & ( size - 1 ) )
-            dregs++;
-        wp->dregs = dregs;
-        wp->linear = linear & ~( size - 1 );
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
 
         WatchCount++;
         needed = DRegsCount();
