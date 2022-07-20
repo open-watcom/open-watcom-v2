@@ -1034,14 +1034,19 @@ trap_retval TRAP_CORE( Clear_break )( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    unsigned      size;
-    set_watch_req       *acc;
-    set_watch_ret       *ret;
+    int             size;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->multiplier = 1000;
     ret->err = 0;   // OK
-    for( size = acc->size; size != 0; --size ) {
+    for( size = acc->size; size-- > 0; ) {
+        if( WatchCount >= MAX_WATCHES ) {
+            ret->err = 1;   // failure
+            break;
+        }
         WatchPoints[WatchCount].seg = acc->watch_addr.segment;
         WatchPoints[WatchCount].off = acc->watch_addr.offset;
 #if 0
@@ -1051,13 +1056,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ++acc->watch_addr.offset;
         ++WatchCount;
     }
-    ret->multiplier = 1000;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
-    WatchCount = 0; /* assume all are cleared at the same time */
+    /* assume all are cleared at the same time */
+    WatchCount = 0;
     return( 0 );
 }
 

@@ -58,6 +58,7 @@
 #include "adsacc.h"
 #include "int16.h"
 #include "segmcpu.h"
+#include "clibint.h"
 
 
 typedef struct watch_point {
@@ -1003,6 +1004,13 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     GrabVects();
     _DBG0(( "Done TrapInit" ));
     return( ver );
+}
+
+void ACADInit( void )
+{
+    _DBG0( ( "Calling ads_init()\r\n" ) );
+    ads_init( _argc, _argv );
+    _DBG0( ( "After ads_init()\r\n" ) );
 }
 
 void LetACADDie( void )

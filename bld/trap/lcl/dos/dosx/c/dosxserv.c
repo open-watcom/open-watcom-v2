@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +43,14 @@
 #include "packet.h"
 #include "servio.h"
 #include "dosxlink.h"
+#ifdef ACAD
+    #include "adsacc.h"
+    #include "adslib.h"
+#endif
+
 
 #ifdef ACAD
 
-extern void LetACADDie(void);
-#include "adslib.h"
 #define _DBG(x) // printf x; fflush( stdout );
 
 #else
@@ -143,21 +147,11 @@ static void Initialize( void )
 }
 
 
-#if defined(ACAD)
-
-int main( int argc, char **argv )
-{
-    _DBG( ( "Calling ads_init()\r\n" ) );
-    ads_init( argc, argv );
-    _DBG( ( "After ads_init()\r\n" ) );
-
-#else
-
 int main( void )
 {
-
+#ifdef ACAD
+    ACADInit();
 #endif
-
     _DBG(("Calling Initialize\n"));
     Initialize();
     _DBG(("Calling RemoteConnect\n"));
