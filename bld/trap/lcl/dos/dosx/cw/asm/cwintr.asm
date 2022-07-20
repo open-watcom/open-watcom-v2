@@ -738,10 +738,6 @@ Execute proc    "C" public  uses es fs gs ebx ecx edx esi edi ebp
 ;
         call    SetUsrTask
 ;
-;Set debuggee trap flag if it's a single instruction trace else clear it if not.
-;
-@@7exec:
-;
 ;Set flags ready for execution.
 ;
         mov     DebugState1,ST1_EXECUTING
