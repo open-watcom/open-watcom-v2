@@ -279,7 +279,7 @@ static msb *LocateThread( T_ProcessID *pid )
     }
     m = Alloc( sizeof( msb ), AllocTag );
 
-    if( NULL == m ){
+    if( NULL == m ) {
         _DBG_ERROR(( "LocateThread: Failed to allocate msb block\r\n" ));
         return NULL;
     }
@@ -713,9 +713,9 @@ void BigKludge( msb *m )
     _DBG_EVENT(( "*BigKludge: MSB=%8x xnum=%d PID=%8x\r\n", m, m->xnum, m->os_id ));
     m->asleep = TRUE;
 #if defined( _USE_NEW_KERNEL )
-    if( NULL == m->ksem ){
+    if( NULL == m->ksem ) {
         m->ksem = kSemaphoreAlloc( NULL, 0 );
-        if( NULL == m->ksem ){
+        if( NULL == m->ksem ) {
             _DBG_ERROR(( "*BigKludge: Failed to allocate semaphore\r\n" ));
         }
     }

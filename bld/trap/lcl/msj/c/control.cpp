@@ -797,7 +797,7 @@ static bool CantDoIt( void )
         }
     } else if( MessageBox( NULL, TRP_WIN_wanna_interrupt,
                            TRP_The_WATCOM_Debugger,
-                           MB_SYSTEMMODAL+MB_YESNO+MB_ICONQUESTION ) == IDYES ){
+                           MB_SYSTEMMODAL+MB_YESNO+MB_ICONQUESTION ) == IDYES ) {
         DoInterrupt();
     }
     return FALSE;

@@ -249,7 +249,7 @@ static void ControlReq( ctl_request req )
                         break;
                       }
                       /* Allow someone to press ALT+TAB to get focus! */
-                      if( msg.wParam == VK_MENU ){
+                      if( msg.wParam == VK_MENU ) {
                         break;
                       }
                       // fall through!

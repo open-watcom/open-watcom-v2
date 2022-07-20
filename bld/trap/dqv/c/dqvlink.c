@@ -90,7 +90,7 @@ bool RemoteConnect( void )
     if( status == 0 )
         return( false );
     status = mal_read( GetHandle, &buffer, &buflen );
-    if( *buffer == PATTERN ){
+    if( *buffer == PATTERN ) {
         PutHandle = mal_of( mal_addr( GetHandle ) );
         pattern = PATTERN;
         mal_write( PutHandle, &pattern, sizeof(pattern) );
@@ -100,7 +100,7 @@ bool RemoteConnect( void )
     pattern = PATTERN;
     mal_write( PutHandle, &pattern, sizeof( pattern ) );
     status = mal_read( GetHandle, &buffer, &buflen );
-    if( *buffer == PATTERN ){
+    if( *buffer == PATTERN ) {
         return( true );
     }
 #endif
@@ -119,13 +119,13 @@ const char *RemoteLink( const char __far *parms, char server )
     server = server;
 
     version = api_init();
-    if( version == 0 ){
+    if( version == 0 ) {
         return( "DESQview not installed" );
     } else if( version < 0x200 ) {
         return( "this program requires DESQview 2.00 or higher" );
     }
     api_level( 0x200 );
-    if( *parms == '\0' ){
+    if( *parms == '\0' ) {
         parms = "WATCOM Server";
     }
 

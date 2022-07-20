@@ -692,7 +692,7 @@ static bool Twidle(
     for( i = 20; i != 0; i-- ) {
         WriteData( TWIDLE_ON );
         time = Ticks() + TWIDLE_TIME;
-        while( time > Ticks() ){
+        while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle( ext ) ) {
                     return( TRUE );
@@ -705,7 +705,7 @@ static bool Twidle(
         }
         WriteData( TWIDLE_OFF );
         time = Ticks() + TWIDLE_TIME;
-        while( time > Ticks() ){
+        while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle( ext ) ) {
                     return( TRUE );
