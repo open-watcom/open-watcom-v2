@@ -158,9 +158,9 @@ extern unsigned_32 GetSelBase( unsigned_16 );
     __value     [__edx] \
     __modify    [__ax __ebx __ecx]
 
-extern int RelSel( unsigned_16 );
-#pragma aux RelSel = \
-        "mov  ax,0FF04h" /* RelSel */ \
+extern int ReleaseSel( unsigned_16 );
+#pragma aux ReleaseSel = \
+        "mov  ax,0FF04h" /* ReleaseSel */ \
         "int  31h" \
         "sbb  eax,eax" \
     __parm      [__bx] \
@@ -863,7 +863,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     FreeModsInfo();
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    if( RelSel( acc->task_id ) )
+    if( ReleaseSel( acc->task_id ) )
         ret->err = ERR_INVALID_HANDLE;
     return( sizeof( *ret ) );
 }

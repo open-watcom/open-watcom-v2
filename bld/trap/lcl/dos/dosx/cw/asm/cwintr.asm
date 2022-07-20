@@ -821,13 +821,13 @@ DebugLoad   proc    "C" public  uses ebx ecx edx esi edi
         mov     esi,edx
         mov     edx,eax
         xor     ecx,ecx
+        push    es
+        push    ds
+        pop     es
         push    ebp
         sys     ExecDebug
         pop     ebp
-;!!!! TODO - Causeway bug, change ES !!!!
-        push    ds
         pop     es
-;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         jnc     @@3load
 ;
 ;Some sort of error occured so set status.
