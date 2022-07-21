@@ -350,7 +350,7 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf, undo_stack *atomi
 
     if( lab != NULL ) {
         _MemFreePtrArray( lab->name, lab->cnt, MemFree );
-        _MemFreePtrArray( lab->pos, lab->cnt, MemFree );
+        _MemFreePtrArray( lab->pos, 0, NULL );
     }
 
     VarListDelete( vl );
