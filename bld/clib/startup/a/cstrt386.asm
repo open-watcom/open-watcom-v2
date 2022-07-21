@@ -202,9 +202,17 @@ ENV_SEG equ     2ch
         shr     eax,16                  ; get top 16 bits of eax
         cmp     ax,'DX'                 ; if top 16 bits = "DX"
         jne     not_pharlap             ; then its pharlap
+        ;cmp    ebx,'12aJ'              ; - if ebx (version number) is 12aJ
+        cmp     ebx,4A613231h           ; - if ebx (version number) is 12aJ
+        jne     normal_pharlap          ; - then this is FM TOWNS's pharlap version (1.2aJ)
+        mov     al,X_PHARLAP_V2         ; -   behaves closest to Pharlap V2?
+        mov     ah,XS_PHARLAP_FMTOWNS   ; -   mark the subtype for checking as needed
+        jmp short pharlap_general       ; -   act like normal pharlap otherwise
+normal_pharlap:
         sub     bl,'0'                  ; - save major version number
         mov     al,bl                   ; - (was in ascii)
         mov     ah,XS_NONE              ; - extender subtype
+pharlap_general:
         push    eax                     ; - save version number
         mov     es,_psp                 ; - point to PSP
         mov     ebx,es:[5Ch]            ; - get highest addr used

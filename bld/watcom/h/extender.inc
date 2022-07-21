@@ -49,5 +49,6 @@ X_WIN386                equ     10      ; Watcom Win386
 ;       386 DOS Extender Equates for __ExtenderSubtype variable
 ;
 XS_NONE                 equ     0
+XS_PHARLAP_FMTOWNS      equ     1
 XS_RATIONAL_ZEROBASE    equ     0
 XS_RATIONAL_NONZEROBASE equ     1
