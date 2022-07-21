@@ -62,6 +62,9 @@ sys_axp_nt      = sys ntaxp op st=16k, modname=$^&, desc $(description)
 sys_ppc_nt      = sys ntppc op st=16k, modname=$^&, desc $(description)
 
 server_suf_os2_os2   = 1
+server_suf_nov_nlm3  = 3
+server_suf_nov_nlm4  = 4
+server_suf_nov_nlm5  = 5
 
 server_ext_os2_os2   = .exe
 server_ext_os2_os2v2 = .exe
@@ -75,10 +78,8 @@ server_ext_nov       = .nlm
 serv_basename = jvmhlp_g
 !else ifeq srv msj
 serv_basename = msjhlp
-!else ifdef server_ext_$(host_os)_$(target_sys)
+!else ifdef server_suf_$(host_os)_$(target_sys)
 serv_basename = $(xname)$(server_suf_$(host_os)_$(target_sys))
-!else ifdef server_ext_$(host_os)
-serv_basename = $(xname)
 !else
 serv_basename = $(xname)
 !endif
