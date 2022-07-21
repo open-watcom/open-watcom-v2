@@ -117,7 +117,16 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         segregs.ds = _FP_SEG( &pblock );
         intdosx( &regs, &regs, &segregs );
         if( regs.x.cflag == 0 && pblock.real_eax.b.l == 0 ) {
-            if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
+            if( pblock.real_ds == 0xFFFF ) {    /* weird OS/2 value */
+                return( NULL );
+            } else if( pblock.real_ds == 0 && regs.w.si == 0) {
+                /* Because EXTENDER_RM2PM forces the segment value, without this
+                 * a NULL check on the result of this function would never detect it
+                 * so long as this DOS call doesn't fail.
+                 * At least FM TOWNS returns success but DS:SI=0:0 (which is bogus memory).
+                 */
+                return( NULL );
+            } else {
                 return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );
             }
         }
