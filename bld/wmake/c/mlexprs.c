@@ -534,17 +534,41 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
     STRM_T  s;
     bool    dquote;
 
-
     s = PreGetCHR();
     UnGetCHR( s );
     if( s == '\n' || s == STRM_END || s == STRM_MAGIC ) {
         return( CharToStrSafe( NULLCHAR ) );
     }
+
+    dquote = start_dquote;
+
     if( s == STRM_TMP_LEX_START ) {
         PreGetCHR();  /* Eat STRM_TMP_LEX_START */
         pos = 0;
         for( s = PreGetCHR(); s != STRM_MAGIC && pos < _MAX_PATH; s = PreGetCHR() ) {
             assert( s != '\n' || s != STRM_END );
+            if( s == '\"' ) {
+                if( !dquote ) {
+                    /* Found the start of a Double Quoted String */
+                    if( pos != 0 ) {
+                        buffer[pos] = NULLCHAR;
+                        UnGetCHR( s );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        return( StrDupSafe( buffer ) );
+                    }
+                    dquote = true;
+                } else {
+                    /* Found the end of the Double Quoted String */
+                    buffer[pos++] = s;
+                    buffer[pos] = NULLCHAR;
+                    s = PreGetCHR();
+                    if( s != STRM_MAGIC ) {
+                        UnGetCHR( s );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                    }
+                    return( StrDupSafe( buffer ) );
+                }
+            }
             buffer[pos++] = s;
         }
 
@@ -557,33 +581,32 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
         buffer[pos] = NULLCHAR;
         p = StrDupSafe( buffer );
     } else {
+
         p = DeMacro( MAC_WS );
-    }
 
-    dquote = start_dquote;
-
-    for( current = p; *current != NULLCHAR; ++current ) {
-        if( *current == '\"' ) {
-            if( !dquote ) {
-                /* Found the start of a Double Quoted String */
-                if( current != p ) {
-                    UnGetCHR( STRM_MAGIC );
-                    InsString( StrDupSafe( current ), true );
-                    UnGetCHR( STRM_TMP_LEX_START );
-                    *current = NULLCHAR;
+        for( current = p; *current != NULLCHAR; ++current ) {
+            if( *current == '\"' ) {
+                if( !dquote ) {
+                    /* Found the start of a Double Quoted String */
+                    if( current != p ) {
+                        UnGetCHR( STRM_MAGIC );
+                        InsString( StrDupSafe( current ), true );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        *current = NULLCHAR;
+                        return( p );
+                    }
+                    dquote = true;
+                } else {
+                    /* Found the end of the Double Quoted String */
+                    current++;
+                    if( *current != NULLCHAR ) {
+                        UnGetCHR( STRM_MAGIC );
+                        InsString( StrDupSafe( current ), true );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        *current = NULLCHAR;
+                    }
                     return( p );
                 }
-                dquote = true;
-            } else {
-                /* Found the end of the Double Quoted String */
-                current++;
-                if( *current != NULLCHAR ) {
-                    UnGetCHR( STRM_MAGIC );
-                    InsString( StrDupSafe( current ), true );
-                    UnGetCHR( STRM_TMP_LEX_START );
-                    *current = NULLCHAR;
-                }
-                return( p );
             }
         }
     }
