@@ -576,11 +576,12 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                 dquote = true;
             } else {
                 /* Found the end of the Double Quoted String */
-                if( *(current + 1) != NULLCHAR ) {
+                current++;
+                if( *current != NULLCHAR ) {
                     UnGetCHR( STRM_MAGIC );
-                    InsString( StrDupSafe( current + 1 ), true );
+                    InsString( StrDupSafe( current ), true );
                     UnGetCHR( STRM_TMP_LEX_START );
-                    *(current + 1) = NULLCHAR;
+                    *current = NULLCHAR;
                 }
                 return( p );
             }
