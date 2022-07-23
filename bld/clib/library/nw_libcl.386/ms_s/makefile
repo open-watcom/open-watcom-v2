@@ -5,4 +5,4 @@ system=nw_libcl
 linkage=static
 convention=stack
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

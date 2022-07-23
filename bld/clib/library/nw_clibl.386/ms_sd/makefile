@@ -7,4 +7,4 @@ convention=stack
 
 lib_debug = 1
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

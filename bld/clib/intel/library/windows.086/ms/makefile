@@ -4,4 +4,4 @@ model=ms
 system=windows
 linkage=static
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

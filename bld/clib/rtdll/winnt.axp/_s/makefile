@@ -4,4 +4,4 @@ processor=axp
 system=winnt
 mthreaded=1
 
-!include $(rtdll_dir)/master.mif
+!include ../../../rtdll.mif

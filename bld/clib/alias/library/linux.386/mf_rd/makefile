@@ -7,4 +7,4 @@ linkage    = static
 
 lib_debug = 1
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

@@ -5,4 +5,4 @@ system=qnx
 linkage=static
 qlib=qlibc.lib
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

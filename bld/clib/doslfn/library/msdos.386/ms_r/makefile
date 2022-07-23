@@ -5,4 +5,4 @@ system     = msdos
 convention = register
 linkage    = static
 
-!include ../../doslfn.mif
+!include ../../../../doslfn.mif

@@ -4,4 +4,4 @@ processor = mps
 system    = linux
 linkage   = static
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

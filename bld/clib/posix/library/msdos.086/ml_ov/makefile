@@ -5,4 +5,4 @@ system    = msdos
 linkage   = static
 overlay   = 1
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

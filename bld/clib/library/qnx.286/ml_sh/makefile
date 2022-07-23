@@ -6,4 +6,4 @@ linkage=static
 qlib=qlibshar.lib
 share=1
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

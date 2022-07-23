@@ -8,4 +8,4 @@ mthreaded=1
 
 lib_debug = 1
 
-!include $(rtdll_dir)/master.mif
+!include ../../../rtdll.mif

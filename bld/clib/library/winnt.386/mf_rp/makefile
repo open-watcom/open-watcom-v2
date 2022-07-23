@@ -8,4 +8,4 @@ convention=register
 
 clib_rtdll=1
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

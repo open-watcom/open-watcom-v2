@@ -5,4 +5,4 @@ system     = msdos
 convention = stack
 linkage    = static
 
-!include ../../doslfn.mif
+!include ../../../../doslfn.mif

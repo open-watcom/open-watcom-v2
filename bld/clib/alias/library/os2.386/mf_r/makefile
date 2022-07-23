@@ -5,4 +5,4 @@ system=os2
 linkage=dynamic
 convention=register
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif
