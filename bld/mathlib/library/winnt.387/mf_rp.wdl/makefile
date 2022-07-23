@@ -10,4 +10,4 @@ profile       = 1
 
 mathlib_rtdll = 1
 
-!include $(mathlib_dir)/mrglib.mif
+!include ../../../mrglib.mif

@@ -5,4 +5,4 @@ system=winnt
 convention=register
 linkage=dynamic
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

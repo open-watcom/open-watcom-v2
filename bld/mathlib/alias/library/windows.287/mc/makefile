@@ -4,4 +4,4 @@ model=mc
 system=windows
 linkage=static
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

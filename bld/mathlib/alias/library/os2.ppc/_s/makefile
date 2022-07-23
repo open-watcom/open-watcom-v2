@@ -4,4 +4,4 @@ model=
 system=os2
 linkage=static
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

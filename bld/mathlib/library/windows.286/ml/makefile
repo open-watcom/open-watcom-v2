@@ -4,4 +4,4 @@ model=ml
 system=windows
 linkage=static
 
-!include $(mathlib_dir)/mrglib.mif
+!include ../../../mrglib.mif

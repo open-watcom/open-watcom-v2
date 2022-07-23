@@ -6,4 +6,4 @@ convention=register
 linkage=dynamic
 export_only=1
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

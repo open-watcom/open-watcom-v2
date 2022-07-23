@@ -4,4 +4,4 @@ model=
 system=winnt
 linkage=static
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

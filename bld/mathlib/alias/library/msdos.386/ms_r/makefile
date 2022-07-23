@@ -6,4 +6,4 @@ system     = msdos
 linkage    = static
 convention = register
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

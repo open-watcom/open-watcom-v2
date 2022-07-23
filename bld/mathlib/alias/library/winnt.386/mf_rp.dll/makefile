@@ -8,4 +8,4 @@ profile=1
 
 mathlib_rtdll=1
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

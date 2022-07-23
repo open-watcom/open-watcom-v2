@@ -5,4 +5,4 @@ system=msdos
 linkage=static
 convention=register
 
-!include $(mathlib_dir)/mrglib.mif
+!include ../../../mrglib.mif

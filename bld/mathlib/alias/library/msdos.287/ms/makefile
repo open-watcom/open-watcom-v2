@@ -4,4 +4,4 @@ model=ms
 system=msdos
 linkage=static
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif
