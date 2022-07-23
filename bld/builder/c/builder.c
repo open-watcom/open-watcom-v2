@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -558,7 +558,6 @@ static int MatchFound( char *p )
 static int ProcessCtlFile( const char *name )
 {
     char        *p;
-    char        *log_name;
     char        *word;
     int         res;
     bool        logit;
@@ -580,12 +579,16 @@ static int ProcessCtlFile( const char *name )
             p = GetWord( p + 1, &word );
             if( stricmp( word, "INCLUDE" ) == 0 ) {
                 if( !includeStk->skipping && !includeStk->ifdefskipping ) {
-                    p = GetWord( p, &word );
-                    PushInclude( word );
+                    char    inc_file[_MAX_PATH];
+
+                    p = GetPathOrFile( p, inc_file );
+                    PushInclude( inc_file );
                 }
             } else if( stricmp( word, "LOG" ) == 0 ) {
                 if( includeStk->skipping == 0 ) {
-                    p = GetWord( p, &log_name );
+                    char    log_name[_MAX_PATH];
+
+                    p = GetPathOrFile( p, &log_name );
                     p = GetWord( p, &word );
                     if( *word == '\0' || strcmp( word, "]" ) == 0 ) {
                         BackupLog( log_name, LogBackup );
