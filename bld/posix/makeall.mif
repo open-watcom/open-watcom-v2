@@ -2,6 +2,12 @@
 #   define macro for OS's which need POSIX utilities
 #
 
+!ifdef bootstrap
+tree_depth = 2
+!else
+tree_depth = 3
+!endif
+
 !ifndef __UNIX__
 
 proj_name = posix_all
@@ -20,6 +26,7 @@ model_switch_386=
 !include $(posix_dir)/common.mif
 
 inc_dirs += -I"$(posix_dir)/h"
+
 .c: $(posix_dir)/misc
 
 subdir_stdlib = $(stdlibdir)
@@ -73,18 +80,19 @@ wmake_opts += release=$(release)
 !endif
 
 $(commands) : .symbolic $(__MAKEFILES__)
-    $(noecho)!$(nested_wmake) -h $(wmake_opts) -f $(posix_dir)/src/$@/makefile
+    $(noecho)!$(nested_wmake) -h $(wmake_opts) -f "$(posix_dir)/src/$@/makefile"
 
 curr_dir=$+$(%__CWD__)$-
 
 clean : .symbolic
     cd $(subdir_stdlib)
     @%make killobjs
+    cd "$(curr_dir)"
 !ifdef alt_posixlib
     cd $(subdir_altlib)
     @%make killobjs
+    cd "$(curr_dir)"
 !endif
-    cd $(curr_dir)
     @%make killobjs
 
 killobjs : .PROCEDURE .EXPLICIT

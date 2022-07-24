@@ -3,4 +3,4 @@
 host_os  = nt
 host_cpu = 386
 
-!include $(posix_dir)/makeall.mif
+!include ../../makeall.mif
