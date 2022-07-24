@@ -33,7 +33,7 @@ suffix_stack = s
 #
 # cflags
 #
-.c: ../c
+.c: $(graphlib_dir)/c
 
 inc_dirs = -I. -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h"
 inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
@@ -65,7 +65,7 @@ extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(me
 !endif
 .asm: $(graphlib_dir)/asm
 
-extra_a_flags = $(supervga_support) -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
+extra_a_flags = $(supervga_support) -ms -i"$(graphlib_dir)/inc" $(extra_a_flags_$(machine)) -fo=$@
 
 extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
 extra_a_flags_386_register = -3r

@@ -1,6 +1,9 @@
 #
 # WATCOM Presentation Graphics (PGCHART.LIB)
 #
+
+tree_depth = 3
+
 proj_name = pgchart
 
 subdir_v2 = v2objs
@@ -35,7 +38,7 @@ memory_model_i86 = l
 #
 .c: ../c
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" $(inc_dirs_lang_dos)
+inc_dirs = -I. -I"../h" -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" $(inc_dirs_lang_dos)
 
 extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
 

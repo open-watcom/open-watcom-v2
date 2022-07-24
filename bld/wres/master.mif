@@ -3,6 +3,12 @@
 #
 # path names used in the script
 
+!ifdef bootstrap
+tree_depth = 2
+!else
+tree_depth = 3
+!endif
+
 proj_name = wres
 
 wres_autodepends = .AUTODEPEND

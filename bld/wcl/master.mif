@@ -1,3 +1,5 @@
+tree_depth = 3
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -8,7 +10,7 @@
 #
 .c: $(wcl_dir)/c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I.. -I"$(wcl_dir)/h"
+inc_dirs = -I. -I"$(wcl_dir)/h"
 
 extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
