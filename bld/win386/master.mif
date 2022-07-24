@@ -49,10 +49,10 @@ objs_exe = $(objs_common) &
 objs_vxd = wdebug.obj &
     $(fpuemu_dir)/386/win386/emu387.obj
 
-.asm : ../conv/win386;../asm
-.c : ../conv/win386;../c
+.asm : $(win386_dir)/conv/win386;$(win386_dir)/asm
+.c : $(win386_dir)/conv/win386;$(win386_dir)/c
 
-inc_dirs = -I"../h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/intel/h" -I"$(clib_dir)/h"
+inc_dirs = -I"$(win386_dir)/h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/intel/h" -I"$(clib_dir)/h"
 
 # cflags stuff
 ###############
@@ -84,7 +84,7 @@ extra_c_flags_toolhelp = -zu
 # aflags stuff
 ###############
 extra_a_flags_wdebug   = -mf
-extra_a_flags_winglue  = -I"../conv/win386"
+extra_a_flags_winglue  = -I"$(win386_dir)/conv/win386"
 !ifeq fmt dll
 extra_a_flags_wincall  = -DDLL32
 extra_a_flags_dllthunk = -DDLL32
