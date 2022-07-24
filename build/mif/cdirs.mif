@@ -139,6 +139,9 @@ ctest_dir       = $(src_dir)/ctest
 !ifndef f77_dir
 f77_dir         = $(src_dir)/f77
 !endif
+!ifndef f77lib_dir
+f77lib_dir      = $(src_dir)/f77/f77lib
+!endif
 !ifndef ftest_dir
 ftest_dir       = $(src_dir)/f77test
 !endif
