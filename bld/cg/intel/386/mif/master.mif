@@ -1,3 +1,5 @@
+tree_depth = 4
+
 !include $(cg_dir)/intel/386/mif/386.mif
 !include $(cg_dir)/intel/mif/intel.mif
 !include $(cg_dir)/mif/master.mif

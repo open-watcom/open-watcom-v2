@@ -26,23 +26,20 @@ additional_clean = *.c *.h *.re *.y
 # yacc macros
 #########################
 
-yacc_prefix     = asy
+as_yacc_prefix  = asy
 asi_yacc_prefix = asiy
 
-yacc_flags      = -b $(yacc_prefix) -d -db -dd
+as_yacc_flags   = -b $(as_yacc_prefix) -d -db -dd
 asi_yacc_flags  = -b $(asi_yacc_prefix) -d -db -dd
 
-yacc_src        = as.y
-yacc_in         = as_in
-asi_yacc_in     = asi_in
-yacc_out        = $(yacc_prefix)tab
+yacc_src        = $(as_dir)/y/as.y
+yacc_driver     = $(as_dir)/y/yydriver.c
+as_yacc_out     = $(as_yacc_prefix)tab
 asi_yacc_out    = $(asi_yacc_prefix)tab
 
 lex_flags       =
-lex_src         = scan.re
-lex_in          = scan_in
-asi_lex_in      = scani_in
-lex_out         = aslexyy
+lex_src         = $(as_dir)/y/scan.re
+as_lex_out      = aslexyy
 asi_lex_out     = asilexyy
 
 # cflags
@@ -114,8 +111,8 @@ as_comm_objs = &
     $(_subdir_)asmsg.obj
 
 as_stand_objs = &
-    $(_subdir_)$(yacc_out).obj &
-    $(_subdir_)$(lex_out).obj &
+    $(_subdir_)$(as_yacc_out).obj &
+    $(_subdir_)$(as_lex_out).obj &
     $(_subdir_)main.obj &
     $(_subdir_)obj.obj &
     $(_subdir_)sections.obj &
@@ -195,52 +192,48 @@ msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) -zku8 $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
+    $(awk) -v base=MSG_AS_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. msg.tmp
 
 asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) -zku8 $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
+    $(awk) -v base=MSG_AS_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. asi_msg.tmp
 
 wsplice_opts_axp = -kAS_ALPHA
 wsplice_opts_mps = -kAS_MIPS
 wsplice_opts_ppc = -kAS_PPC
 wsplice_opts     = $(wsplice_opts_$(target_cpu))
 
-$(yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $(yacc_in).tmp
-    $(sed) -e "s/ytab.h/asytab.h/g" $(yacc_in).tmp > $@
+as_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
-$(asi_yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $(asi_yacc_in).tmp
-    $(sed) -e "s/ytab.h/asiytab.h/g" $(asi_yacc_in).tmp > $@
+asi_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
-yacc_deps = $(yacc_in).y $(as_dir)/y/yydriver.c
-
-$(yacc_out).c : $(yacc_deps) $(__MAKEFILES__)
+$(as_yacc_out).c : as_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(yacc) $(yacc_flags) $(yacc_deps) > $(nulldevice)
+    $(yacc) $(as_yacc_flags) as_in.y $(yacc_driver) > $(nulldevice)
 
-asi_yacc_deps = $(asi_yacc_in).y $(as_dir)/y/yydriver.c
-
-$(asi_yacc_out).c : $(asi_yacc_deps) $(__MAKEFILES__)
+$(asi_yacc_out).c : asi_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(yacc) $(asi_yacc_flags) $(asi_yacc_deps) > $(nulldevice)
+    $(yacc) $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
 
-$(lex_in).re : $(as_dir)/y/$(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $(lex_in).tmp
-    $(sed) -e "s/ytab.h/asytab.h/g" $(lex_in).tmp > $@
+scan_in.re : $(lex_src) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
-$(asi_lex_in).re : $(as_dir)/y/$(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $(asi_lex_in).tmp
-    $(sed) -e "s/ytab.h/asiytab.h/g" $(asi_lex_in).tmp > $@
+scani_in.re : $(lex_src) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
-$(lex_out).c : $(lex_in).re $(__MAKEFILES__)
+$(as_lex_out).c : scan_in.re $(__MAKEFILES__)
     @%make echo_re2c
     $(re2c) $(lex_flags) $[@ > $@
 
-$(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
+$(asi_lex_out).c : scani_in.re $(__MAKEFILES__)
     @%make echo_re2c
     $(re2c) $(lex_flags) $[@ > $@
 

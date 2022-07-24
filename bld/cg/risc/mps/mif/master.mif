@@ -1,3 +1,5 @@
+tree_depth = 4
+
 !include $(cg_dir)/risc/mps/mif/mps.mif
 !include $(cg_dir)/risc/mif/risc.mif
 !include $(cg_dir)/mif/master.mif

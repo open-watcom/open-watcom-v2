@@ -23,7 +23,7 @@ wasm_client_extra_defines = -D_STANDALONE_
 
 wasmcmsg.grh : $(wasm_dir)/h/wasmc.msg $(__MAKEFILES__) .EXPLICIT
     @%make echo_awk
-    $(awk) -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_SHARE_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. $[@
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(__MAKEFILES__) .EXPLICIT
     @%make echo_bldcl

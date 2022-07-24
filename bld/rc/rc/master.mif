@@ -234,7 +234,7 @@ keyword2.gh : ../hash/rcos2.key
 
 rcmsg.grh : ../h/rc.msg
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_RC_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. $[@
 
 $(misc_objs):
     cat ../$@ >$@
@@ -251,7 +251,7 @@ usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
 
-./cvttable.exe: ../c/cvttable.c $(watcom_dir)/h/cp932uni.h $(__MAKEFILES__)
+./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
     @%make echo_bldcl
     $(bld_cl) $[@ -D_STANDALONE_ -I"../h" $(bld_clflags) $(bld_ldflags)
 

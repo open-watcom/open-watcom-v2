@@ -116,7 +116,7 @@ wresui.res : ../h/wasm.rc usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
 
 wasmsmsg.grh : ../h/wasms.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_WASM_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
