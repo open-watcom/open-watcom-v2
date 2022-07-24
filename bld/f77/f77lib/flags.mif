@@ -229,4 +229,4 @@ flib_lib_flags = -b-c-n-pa
 flib_lib_flags = -b-c-n-pa-s-t-zld
 !endif
 
-!include ../../include.mif
+!include $(f77lib_dir)/include.mif

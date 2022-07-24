@@ -142,6 +142,12 @@ f77_dir         = $(src_dir)/f77
 !ifndef f77lib_dir
 f77lib_dir      = $(src_dir)/f77/f77lib
 !endif
+!ifndef f77wfc_dir
+f77wfc_dir      = $(src_dir)/f77/wfc
+!endif
+!ifndef f77wfl_dir
+f77wfl_dir      = $(src_dir)/f77/wfl
+!endif
 !ifndef ftest_dir
 ftest_dir       = $(src_dir)/f77test
 !endif
@@ -165,6 +171,9 @@ lib_misc_dir    = $(src_dir)/lib_misc
 !endif
 !ifndef womp_dir
 womp_dir        = $(src_dir)/womp
+!endif
+!ifndef wcl_dir
+wcl_dir         = $(src_dir)/wcl
 !endif
 !ifndef wclass_dir
 wclass_dir      = $(src_dir)/wclass

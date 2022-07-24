@@ -23,14 +23,14 @@ exetarg_name = $(exename_$(target_cpu))
 !include $(cg_dir)/mif/fe.mif
 !include asclient.mif
 
-!include ../../files.mif
+!include $(f77wfc_dir)/files.mif
 
 #
 # cflags
 #
-.c: ..;../../c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
+.c: ..;$(f77wfc_dir)/c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
 
-inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" &
+inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" &
     -I"$(fe_misc_dir)/h" $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
 extra_cpp_flags =
@@ -47,7 +47,7 @@ extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 # aflags
 #
 !ifeq host_cpu axp
-.asm: ../../../asmaxp
+.asm: $(f77_dir)/asmaxp
 !endif
 
 extra_a_flags_axp = -oc
@@ -74,9 +74,9 @@ wf77aux.obj : wf77aux.c regs.c
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
-rcui_inc_dirs = -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+rcui_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-wresui.res : ../../h/wfc.rc wasmcmsg.grh ../../h/wfc.rh
+wresui.res : $(f77wfc_dir)/h/wfc.rc wasmcmsg.grh $(f77wfc_dir)/h/wfc.rh
     @%make echo_rc
     $(rcui8)
 
@@ -110,7 +110,7 @@ target_as_386   = bwasm -zq -w8 -3
 target_as_ppc   = bwasppc -zq -w8
 target_as_mps   = bwasmps -zq -w8
 
-xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
+xcode$(target_cpu).tmp: $(f77wfc_dir)/a/code$(target_cpu).asm
     @%make echo_aslink
     $(noecho)*$(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
     $(noecho)*bwlink system bin op quiet file code$(target_cpu).obj name $@
@@ -119,7 +119,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
-wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : ../../gml/wfcmsgs.gml
+wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : $(f77wfc_dir)/gml/wfcmsgs.gml
     @%make echo_msgencod
     $(msgencod) -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
@@ -133,6 +133,6 @@ optencod_targets = $(target_cpu) $(host_os)
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../../../gml/wfxopts.gml $(__MAKEFILES__)
+usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/wfxopts.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

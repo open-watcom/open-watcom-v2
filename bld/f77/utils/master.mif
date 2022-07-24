@@ -8,7 +8,7 @@ errsrc_autodepends = .autodepend
 
 .c: ../c
 
-bld_extra_incs = -I"../../wfc/h"
+bld_extra_incs = -I"$(f77wfc_dir)/h"
 
 all: errsrc.exe errdoc.exe .symbolic
 
