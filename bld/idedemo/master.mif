@@ -1,3 +1,5 @@
+tree_depth = 3
+
 projname = src_idedemo
 
 !include cproj.mif
@@ -6,19 +8,19 @@ ide_cfg_dir_nt  = $(idecfg_dir)/nt386/
 ide_cfg_dir_os2 = $(idecfg_dir)/os2386/
 ide_cfg_dir_win = $(idecfg_dir)/wini86/
 
-src_objs = $(idedemo_dir)/src/$(targ_dir)/box.obj &
-    $(idedemo_dir)/src/$(targ_dir)/drawroom.obj &
-    $(idedemo_dir)/src/$(targ_dir)/furnitu.obj
+src_objs = $(src_dir)/idedemo/src/$(targ_dir)/box.obj &
+    $(src_dir)/idedemo/src/$(targ_dir)/drawroom.obj &
+    $(src_dir)/idedemo/src/$(targ_dir)/furnitu.obj
 
 !ifdef targ_file
 $(src_objs) : .SYMBOLIC
     @SET WATCOM=
     $(ide2make) -l -r $(targ_file).tgt -i $(ide_cfg_dir_$(host_os))
     sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(targ_file).mk1 >temp.mk1
-    $(noecho)!$(nested_wmake) -i -h -f temp.mk1 $@
+    $(noecho)!$(nested_wmake) -i -h -f temp.mk1 tree_depth=3 $@
 !else
 $(host_os)_3d.dll: $(host_os)_3d.mk1
-    $(noecho)!$(nested_wmake) -i -h -f project.mk
+    $(noecho)!$(nested_wmake) -i -h -f project.mk tree_depth=3
 
 $(host_os)_3d.mk1: $(host_os)_3d.tgt
     @SET WATCOM=
