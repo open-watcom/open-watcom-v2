@@ -6,9 +6,9 @@
 #
 # cflags
 #
-.c: ../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
+.c: $(wcl_dir)/c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I.. -I"../../h"
+inc_dirs = -I. -I.. -I"$(wcl_dir)/h"
 
 extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
@@ -58,23 +58,23 @@ exetarg_res_version_nt_x64 = exever.res
 # rc and others
 #
 #verrc_exe = $(proj_name)
-verrc_exe_skel = ../../exever.rc
+verrc_exe_skel = $(wcl_dir)/exever.rc
 !include verrc.mif
 
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     @%make echo_wsplice
 !ifdef bootstrap
-    $(wsplice) -k Pspecs $[@ - | sed -f ../../convtool.sed >$@
+    $(wsplice) -k Pspecs $[@ - | sed -f $(wcl_dir)/convtool.sed >$@
 !else
     $(wsplice) -k Pspecs $[@ $@
 !endif
 
 # optencod options and targets for various hosts
 !ifdef target_cpu
-optencod_src = ../../h/wclopts.gml
+optencod_src = $(wcl_dir)/h/wclopts.gml
 optencod_opt = -n
 !else
-optencod_src = ../../h/owccopts.gml
+optencod_src = $(wcl_dir)/h/owccopts.gml
 optencod_opt = -c
 !endif
 !ifdef exetarg_qnx_res
