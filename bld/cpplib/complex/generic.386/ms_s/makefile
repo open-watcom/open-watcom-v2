@@ -8,4 +8,4 @@ model      = ms
 convention = stack
 linkage    = static
 
-!include $(cpplib_dir)/complex/complex.mif
+!include ../../complex.mif

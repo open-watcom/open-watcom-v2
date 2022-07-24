@@ -8,4 +8,4 @@ model      = mf
 convention = stack
 linkage    = static
 
-!include $(cpplib_dir)/iostream/iostream.mif
+!include ../../iostream.mif

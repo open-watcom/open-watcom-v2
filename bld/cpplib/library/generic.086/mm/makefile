@@ -4,4 +4,4 @@ system     = generic
 model      = mm
 linkage    = static
 
-!include $(cpplib_dir)/mrglib.mif
+!include ../../../mrglib.mif

@@ -9,4 +9,4 @@ convention = register
 linkage    = static
 mthreaded  = 1
 
-!include $(cpplib_dir)/iostream/iostream.mif
+!include ../../iostream.mif

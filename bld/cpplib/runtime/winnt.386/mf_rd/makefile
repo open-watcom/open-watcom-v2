@@ -11,4 +11,4 @@ fs_registration = yes
 
 lib_debug = 1
 
-!include $(cpplib_dir)/runtime/runtime.mif
+!include ../../runtime.mif

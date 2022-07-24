@@ -7,4 +7,4 @@ linkage    = dynamic
 export_only=1
 mthreaded  = 1
 
-!include $(cpplib_dir)/mrglib.mif
+!include ../../../mrglib.mif

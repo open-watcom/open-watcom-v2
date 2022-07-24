@@ -9,4 +9,4 @@ convention = stack
 linkage    = static
 mthreaded  = 1
 
-!include $(cpplib_dir)/string/string.mif
+!include ../../string.mif

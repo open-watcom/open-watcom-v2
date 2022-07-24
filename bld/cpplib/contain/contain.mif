@@ -1,3 +1,5 @@
+tree_depth = 4
+
 prefix   = cont
 prefix_x = conx
 

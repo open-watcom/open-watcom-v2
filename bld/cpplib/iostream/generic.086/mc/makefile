@@ -7,4 +7,4 @@ system     = generic
 model      = mc
 linkage    = static
 
-!include $(cpplib_dir)/iostream/iostream.mif
+!include ../../iostream.mif

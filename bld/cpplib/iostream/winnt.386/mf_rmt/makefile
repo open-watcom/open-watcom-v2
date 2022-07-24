@@ -10,4 +10,4 @@ linkage    = static
 mthreaded  = 1
 fs_registration = yes
 
-!include $(cpplib_dir)/iostream/iostream.mif
+!include ../../iostream.mif

@@ -5,4 +5,4 @@ model      = mf
 convention = register
 linkage    = static
 
-!include $(cpplib_dir)/iostream/iostream.mif
+!include ../../iostream.mif

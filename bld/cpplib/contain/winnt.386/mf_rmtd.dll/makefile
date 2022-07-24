@@ -11,4 +11,4 @@ mthreaded  = 1
 fs_registration = yes
 lib_debug = 1
 
-!include $(cpplib_dir)/contain/contain.mif
+!include ../../contain.mif

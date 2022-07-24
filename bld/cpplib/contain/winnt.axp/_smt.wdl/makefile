@@ -8,4 +8,4 @@ linkage      = dynamic
 mthreaded    = 1
 export_only  = 1
 
-!include $(cpplib_dir)/contain/contain.mif
+!include ../../contain.mif

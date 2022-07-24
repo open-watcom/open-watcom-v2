@@ -3,4 +3,4 @@ processor    = axp
 system       = winnt
 linkage      = static
 
-!include $(cpplib_dir)/mrglib.mif
+!include ../../../mrglib.mif
