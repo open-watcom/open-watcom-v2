@@ -192,13 +192,13 @@ msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) -zku8 $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=MSG_AS_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. msg.tmp
+    $(awk) -v base=MSG_AS_BASE -f $(build_awk_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) -zku8 $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=MSG_AS_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. asi_msg.tmp
+    $(awk) -v base=MSG_AS_BASE -f $(build_awk_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 
 wsplice_opts_axp = -kAS_ALPHA
 wsplice_opts_mps = -kAS_MIPS

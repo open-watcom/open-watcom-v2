@@ -1222,7 +1222,7 @@ STATIC void doForSubst( const char *var, size_t varlen,
     while( *src != NULLCHAR ) {
         p = nextVar( src, var, varlen );
         if( p != NULL ) {
-            while( p > src ) {      /* copy upto first rplcment */
+            while( p > src ) {      /* copy upto first replacement */
                 *dest++ = *src++;
             }
             src += varlen;

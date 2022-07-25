@@ -234,7 +234,7 @@ keyword2.gh : ../hash/rcos2.key
 
 rcmsg.grh : ../h/rc.msg
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_RC_BASE -f $(build_awk_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(misc_objs):
     cat ../$@ >$@

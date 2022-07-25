@@ -17,15 +17,15 @@ objs = &
 .c : ../c;$(builder_dir)/c;$(watcom_dir)/c
 
 !ifdef __UNIX__
-$(%OWBINDIR)/$(%OWOBJDIR)/wmake : wmk.exe
-    cp wmk.exe $@
+"$(%OWBINDIR)/$(%OWOBJDIR)/wmake" : wmk.exe
+    cp wmk.exe "$@"
 !else
-$(%OWBINDIR)\$(%OWOBJDIR)\wmake.exe : wmk.exe
-    copy wmk.exe $@
+"$(%OWBINDIR)\$(%OWOBJDIR)\wmake.exe" : wmk.exe
+    copy wmk.exe "$@"
 !endif
 
 .c.obj : .AUTODEPEND
-    *wcc386 -zq -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) -DBOOTSTRAP -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo=$@ $<
+    *wcc386 -zq -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) -DBOOTSTRAP -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
 
 ./wsplice.exe : wsplice.obj
     *wlink name $@ op q, map sys $(link_sys) file {$<}

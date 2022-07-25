@@ -1,10 +1,10 @@
-proj_name = browse
+proj_name = browser
 
-!ifndef browse_autodepends
-browse_autodepends = .AUTODEPEND
+!ifndef browser_autodepends
+browser_autodepends = .AUTODEPEND
 !endif
 
-browse_trmem = 1
+browser_trmem = 1
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
@@ -49,7 +49,7 @@ extra_cpp_flags_rxwrap = -DALLOC=WBRAlloc
 extra_cpp_flags_brmem  = $(trmem_cpp_flags)
 
 extra_cxx_flags = -ew -xs
-!ifdef gen_browse_file
+!ifdef gen_browser_file
 extra_cxx_flags += -db
 !endif
 
@@ -84,7 +84,7 @@ extra_l_flags_os2 =
 # explicit rules
 #################
 
-!ifdef gen_browse_file
+!ifdef gen_browser_file
 ext = mbr
 mbr_files = $+$(template)$-
 !endif
@@ -110,7 +110,7 @@ exetarg_nt_manif_386  = ntmanif.res
 exetarg_nt_manif_x64  = ntmanif.res
 exetarg_name          = wbrw
 !include exetarg.mif
-!ifdef gen_browse_file
+!ifdef gen_browser_file
     $(noecho)%create browser.wbr
     @for %i in ($(mbr_files)) do @%append browser.wbr file %i
 !endif

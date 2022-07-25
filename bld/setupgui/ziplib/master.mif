@@ -1,3 +1,5 @@
+tree_depth = 3
+
 proj_name       = ziplib
 
 ziplib_autodepends = .autodepend

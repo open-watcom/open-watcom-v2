@@ -26,7 +26,7 @@ wgml_trmem = 1
 #
 # cflags
 #
-.c: ../c;../../watcom/c;$(trmem_dir)
+.c: ../c;$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I. -I"../h" $(wres_inc_dirs)
 

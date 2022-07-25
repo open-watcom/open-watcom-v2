@@ -1,3 +1,5 @@
+tree_depth = 3
+
 !ifndef clib_ctags
 proj_name = ctags
 ctags_autodepends = .AUTODEPEND

@@ -95,7 +95,7 @@ distbls.gh : ./disbuild.exe $(__MAKEFILES__)
 
 msg.grh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=WDIS_LITERAL_BASE -f $(build_awk_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
