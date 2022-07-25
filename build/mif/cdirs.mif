@@ -190,8 +190,8 @@ gui_dir         = $(src_dir)/gui
 !ifndef trap_dir
 trap_dir        = $(src_dir)/trap
 !endif
-!ifndef browse_dir
-browse_dir      = $(src_dir)/browser
+!ifndef browser_dir
+browser_dir      = $(src_dir)/browser
 !endif
 !ifndef wres_dir
 wres_dir        = $(src_dir)/wres
