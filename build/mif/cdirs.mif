@@ -319,3 +319,6 @@ rsilib_dir      = $(src_dir)/rsilib
 !ifndef wprof_dir
 wprof_dir      = $(src_dir)/wprof
 !endif
+!ifndef build_awk_dir
+build_awk_dir  = $(build_dir)
+!endif
