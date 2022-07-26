@@ -1004,8 +1004,10 @@ static bool ProcStub( void )
     char        *name;
     char        **nameptr;
 
+    if( !HaveEquals( TOK_IS_FILENAME ) )
+        return( false );
     nameptr = getStubNamePtr();
-    if( !HaveEquals( TOK_IS_FILENAME ) || nameptr == NULL )
+    if( nameptr == NULL )
         return( false );
     name = FileName( Token.this, Token.len, E_LOAD, false );
     if( *nameptr == NULL ) {
