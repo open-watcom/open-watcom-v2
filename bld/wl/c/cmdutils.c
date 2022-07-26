@@ -636,8 +636,8 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
     return( true );
 }
 
-static void ExpandEnvVariable( void )
-/***********************************/
+static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
+/******************************************************************/
 /* parse the specified environment variable & deal with it */
 {
     char        *envname;
@@ -654,18 +654,14 @@ static void ExpandEnvVariable( void )
     if( env == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_ENV_NOT_FOUND, "s", envname );
     } else {
-        if( !IS_WHITESPACE( Token.next ) ) {
-            MakeToken( TOK_INCLUDE_DOT, SEP_SPACE );
-            envlen = strlen( env );
-            _ChkAlloc( buff, envlen + Token.len + 1);
-            memcpy( buff, env, envlen );
-            memcpy( buff + envlen, Token.this, Token.len );
-            buff[Token.len + envlen] = '\0';
-            NewCommandSource( envname, buff, ENVIRONMENT );
-            _LnkFree( buff );
-        } else {
-            NewCommandSource( envname, env, ENVIRONMENT );
-        }
+        MakeToken( ctrl, req );
+        envlen = strlen( env );
+        _ChkAlloc( buff, envlen + Token.len + 1);
+        memcpy( buff, env, envlen );
+        memcpy( buff + envlen, Token.this, Token.len );
+        buff[Token.len + envlen] = '\0';
+        NewCommandSource( envname, buff, ENVIRONMENT );
+        _LnkFree( buff );
     }
     _LnkFree( envname );
 }
@@ -868,7 +864,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                 return( ret );
             case '%':
                 if( req != SEP_SPACE ) {
-                    ExpandEnvVariable();
+                    ExpandEnvVariable( ctrl, req );
                     break;
                 }
                 /* fall through */
