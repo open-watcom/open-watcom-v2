@@ -1,6 +1,9 @@
 #
 # Open Watcom DIP Dumper makefile.
 #
+
+tree_depth = 3
+
 proj_name = dipdump
 
 !ifndef dipdump_autodepends

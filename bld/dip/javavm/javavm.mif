@@ -1,8 +1,4 @@
-!ifdef %OWUSE_FILENAME_VERSION
-dllname = javavm$(bld_ver)
-!else
-dllname = javavm
-!endif
+dip_format = javavm
 
 imp_objs = &
         jvmmisc.obj &
@@ -14,7 +10,5 @@ imp_objs = &
         jvmsupp.obj
 
 extra_incs = $(javasdk)/include;$(javasdk)/include/win32;$(java_src_dir)/src/win32/java/include;$(lang_root)/h/nt
-
-extra_dllbase = $(dip_dllbase_$(host_os)_$(host_cpu)_javavm)
 
 !include ../../master.mif

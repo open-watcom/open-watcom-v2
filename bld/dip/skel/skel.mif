@@ -1,9 +1,5 @@
 # change the name macro to the name of your dip
-!ifdef %OWUSE_FILENAME_VERSION
-dllname = skel$(bld_ver)
-!else
-dllname = skel
-!endif
+dip_format = skel
 
 #
 # change the name of this file to match the name of your dip
@@ -27,15 +23,13 @@ imp_libs =
 # additional includes or source files. Delete the definitions if you don't
 # have any.
 #
-extra_incs = -I"$(lib_misc_dir)/h"
-extra_srcs = $(lib_misc_dir)/c
+extra_incs = -I"...."
+extra_srcs = ....
 
 #
 # Set extra_cflags if you have any additional C compiler flags that you
 # want (macro defs most probably). Delete it if you don't have any.
 #
 extra_cppflag = -DIM_A_MACRO
-
-extra_dllbase = $(dip_dllbase_$(host_os)_$(host_cpu)_skel)
 
 !include ../../master.mif
