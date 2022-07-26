@@ -187,7 +187,7 @@ void intern physupdate( SAREA *area )
 #include <stdio.h>
 #include <stdarg.h>
 
-void QNXDebugPrintf( const char *f, ... )
+void UIDebugPrintf( const char *f, ... )
 {
     static FILE *file = NULL;
     va_list args;
