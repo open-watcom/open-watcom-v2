@@ -644,6 +644,7 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
     const char  *env;
     char        *buff;
     size_t      envlen;
+    size_t      toklen;
 
     Token.next++;
     if( !MakeToken( TOK_INCLUDE_DOT, SEP_PERCENT ) ) {
@@ -656,10 +657,13 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
     } else {
         MakeToken( ctrl, req );
         envlen = strlen( env );
-        _ChkAlloc( buff, envlen + Token.len + 1);
+        toklen = Token.len;
+        if( req == SEP_QUOTE && Token.this[toklen] == '\'' )
+            toklen++;
+        _ChkAlloc( buff, envlen + toklen + 1);
         memcpy( buff, env, envlen );
-        memcpy( buff + envlen, Token.this, Token.len );
-        buff[Token.len + envlen] = '\0';
+        memcpy( buff + envlen, Token.this, toklen );
+        buff[toklen + envlen] = '\0';
         NewCommandSource( envname, buff, ENVIRONMENT );
         _LnkFree( buff );
     }
@@ -923,6 +927,13 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                         req = SEP_QUOTE;   /* token has been quoted */
                         Token.next++;      /* don't include the quote */
                         Token.quoted = true;
+                        if( ctrl & TOK_IS_FILENAME ) {
+                            /*
+                             * re-process quoted file name for environment
+                             * variables expansion
+                             */
+                            break;
+                        }
                     }
                     ret = MakeToken( ctrl, req );
                     return( ret );
