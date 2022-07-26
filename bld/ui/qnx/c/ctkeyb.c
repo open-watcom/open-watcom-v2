@@ -509,11 +509,11 @@ ui_event ck_keyboardevent( void )
                 }
             }
         }
-        QNXDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
+        UIDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
         return( ui_ev );
     }
     shift_state = real_shift;
-    QNXDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
+    UIDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
     return( ui_ev );
 }
 
@@ -524,7 +524,7 @@ ui_event tk_keyboardevent( void )
     ui_ev = ck_keyboardevent();
     if( ui_ev != EV_MOUSE_PRESS )
         return( ui_ev );
-    QNXDebugPrintf0( "UI: Mouse event handling" );
+    UIDebugPrintf0( "UI: Mouse event handling" );
     tm_saveevent();
     return( EV_NO_EVENT ); /* make UI check for mouse events */
 }
