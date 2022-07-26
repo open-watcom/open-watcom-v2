@@ -182,7 +182,7 @@ void intern physupdate( SAREA *area )
     }
 }
 
-#if defined( QNX_DEBUG )
+#if defined( UI_DEBUG )
 
 #include <stdio.h>
 #include <stdarg.h>
