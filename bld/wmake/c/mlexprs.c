@@ -533,6 +533,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
     int     pos;
     STRM_T  s;
     bool    dquote;
+    bool    word;
 
     s = PreGetCHR();
     UnGetCHR( s );
@@ -541,11 +542,17 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
     }
 
     dquote = start_dquote;
+    word = false;
 
     if( s == STRM_TMP_LEX_START ) {
         PreGetCHR();  /* Eat STRM_TMP_LEX_START */
         pos = 0;
         for( s = PreGetCHR(); s != STRM_MAGIC && pos < _MAX_PATH; s = PreGetCHR() ) {
+            /*
+             * this divide stream to quoted strings
+             * and single words separated by spaces
+             * to not overflow buffer size
+             */
             assert( s != '\n' || s != STRM_END );
             if( s == '\"' ) {
                 if( !dquote ) {
@@ -567,6 +574,28 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                         UnGetCHR( STRM_TMP_LEX_START );
                     }
                     return( StrDupSafe( buffer ) );
+                }
+            }
+            if( !dquote ) {
+                if( s == ' ' ) {
+                    if( word ) {
+                        /* Found the end of the Word */
+                        buffer[pos] = NULLCHAR;
+                        UnGetCHR( s );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        return( StrDupSafe( buffer ) );
+                    }
+                } else {
+                    if( !word ) {
+                        /* Found the start of the Word */
+                        if( pos != 0 ) {
+                            buffer[pos] = NULLCHAR;
+                            UnGetCHR( s );
+                            UnGetCHR( STRM_TMP_LEX_START );
+                            return( StrDupSafe( buffer ) );
+                        }
+                        word = true;
+                    }
                 }
             }
             buffer[pos++] = s;
