@@ -7,38 +7,38 @@ set BINTOOL=0
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BINTOOL> build ]
 #========================
-    cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/dmpobj.exe <OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>
+    cdsay "<PROJDIR>"
+    <CPCMD> <OWOBJDIR>/dmpobj.exe "<OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>
+    echo rm -f "<OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>"
+    rm -f "<OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> dosi86/dmpobj.exe    <OWRELROOT>/binw/
-    <CCCMD> os2386/dmpobj.exe    <OWRELROOT>/binp/
-    <CCCMD> nt386/dmpobj.exe     <OWRELROOT>/binnt/
-    <CCCMD> linux386/dmpobj.exe  <OWRELROOT>/binl/dmpobj
-    <CCCMD> ntaxp/dmpobj.exe     <OWRELROOT>/axpnt/
+    <CCCMD> dosi86/dmpobj.exe    "<OWRELROOT>/binw/"
+    <CCCMD> os2386/dmpobj.exe    "<OWRELROOT>/binp/"
+    <CCCMD> nt386/dmpobj.exe     "<OWRELROOT>/binnt/"
+    <CCCMD> linux386/dmpobj.exe  "<OWRELROOT>/binl/dmpobj"
+    <CCCMD> ntaxp/dmpobj.exe     "<OWRELROOT>/axpnt/"
 
-    <CCCMD> ntx64/dmpobj.exe     <OWRELROOT>/binnt64/
-    <CCCMD> linuxx64/dmpobj.exe  <OWRELROOT>/binl64/dmpobj
-    <CCCMD> linuxarm/dmpobj.exe  <OWRELROOT>/arml/dmpobj
-    <CCCMD> osxx64/dmpobj.exe    <OWRELROOT>/bino64/dmpobj
-    <CCCMD> osxarm/dmpobj.exe    <OWRELROOT>/armo/dmpobj
+    <CCCMD> ntx64/dmpobj.exe     "<OWRELROOT>/binnt64/"
+    <CCCMD> linuxx64/dmpobj.exe  "<OWRELROOT>/binl64/dmpobj"
+    <CCCMD> linuxarm/dmpobj.exe  "<OWRELROOT>/arml/dmpobj"
+    <CCCMD> osxx64/dmpobj.exe    "<OWRELROOT>/bino64/dmpobj"
+    <CCCMD> osxarm/dmpobj.exe    "<OWRELROOT>/armo/dmpobj"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

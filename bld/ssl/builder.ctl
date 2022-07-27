@@ -5,9 +5,9 @@ set PROJNAME=ssl
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE "<OWROOT>/build/deftool.ctl" ]
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
@@ -15,4 +15,4 @@ set PROJDIR=<CWD>
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

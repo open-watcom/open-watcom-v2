@@ -5,25 +5,25 @@ set PROJNAME=cvpack
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE "<OWROOT>/build/deftool.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> dos386/cvpack.exe    <OWRELROOT>/binw/
-    <CCCMD> os2386/cvpack.exe    <OWRELROOT>/binp/
-    <CCCMD> nt386/cvpack.exe     <OWRELROOT>/binnt/
-    <CCCMD> linux386/cvpack.exe  <OWRELROOT>/binl/cvpack
-    <CCCMD> ntaxp/cvpack.exe     <OWRELROOT>/axpnt/
+    <CCCMD> dos386/cvpack.exe    "<OWRELROOT>/binw/"
+    <CCCMD> os2386/cvpack.exe    "<OWRELROOT>/binp/"
+    <CCCMD> nt386/cvpack.exe     "<OWRELROOT>/binnt/"
+    <CCCMD> linux386/cvpack.exe  "<OWRELROOT>/binl/cvpack"
+    <CCCMD> ntaxp/cvpack.exe     "<OWRELROOT>/axpnt/"
 
-#    <CCCMD> linuxx64/cvpack.exe  <OWRELROOT>/binl64/cvpack
-    <CCCMD> ntx64/cvpack.exe     <OWRELROOT>/binnt64/
+#    <CCCMD> linuxx64/cvpack.exe  "<OWRELROOT>/binl64/cvpack"
+    <CCCMD> ntx64/cvpack.exe     "<OWRELROOT>/binnt64/"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

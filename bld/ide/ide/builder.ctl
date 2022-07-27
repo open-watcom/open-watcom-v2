@@ -5,29 +5,29 @@ set PROJNAME=ide
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CPCMD> ../ide.doc      <OWRELROOT>/ide.doc
+    <CPCMD> ../ide.doc      "<OWRELROOT>/ide.doc"
 
-    <CCCMD> wini86/ide.exe  <OWRELROOT>/binw/
-    <CCCMD> wini86/ide.sym  <OWRELROOT>/binw/
-    <CCCMD> os2386/ide.exe  <OWRELROOT>/binp/
-    <CCCMD> os2386/ide.sym  <OWRELROOT>/binp/
-    <CCCMD> nt386/ide.exe   <OWRELROOT>/binnt/
-    <CCCMD> nt386/ide.sym   <OWRELROOT>/binnt/
-    <CCCMD> ntaxp/ide.exe   <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/ide.sym   <OWRELROOT>/axpnt/
+    <CCCMD> wini86/ide.exe  "<OWRELROOT>/binw/"
+    <CCCMD> wini86/ide.sym  "<OWRELROOT>/binw/"
+    <CCCMD> os2386/ide.exe  "<OWRELROOT>/binp/"
+    <CCCMD> os2386/ide.sym  "<OWRELROOT>/binp/"
+    <CCCMD> nt386/ide.exe   "<OWRELROOT>/binnt/"
+    <CCCMD> nt386/ide.sym   "<OWRELROOT>/binnt/"
+    <CCCMD> ntaxp/ide.exe   "<OWRELROOT>/axpnt/"
+    <CCCMD> ntaxp/ide.sym   "<OWRELROOT>/axpnt/"
 
-    <CCCMD> ntx64/ide.exe   <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/ide.exe   "<OWRELROOT>/binnt64/"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

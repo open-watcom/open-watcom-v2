@@ -5,7 +5,7 @@ set PROJNAME=ftest
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
 [ BLOCK <BLDRULE> test ]
 #=======================

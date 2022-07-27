@@ -5,7 +5,7 @@ set PROJNAME=womp
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
 cdsay .
 
@@ -18,8 +18,8 @@ cdsay .
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-#   <CPCMD> womp.exe  <OWRELROOT>/binw/womp.exe
-#   <CPCMD> wompj.exe <OWRELROOT>/binw/japan/womp.exe
+#   <CPCMD> womp.exe  "<OWRELROOT>/binw/womp.exe"
+#   <CPCMD> wompj.exe "<OWRELROOT>/binw/japan/womp.exe"
 
 [ BLOCK <BLDRULE> clean ]
 #========================
@@ -28,4 +28,4 @@ cdsay .
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

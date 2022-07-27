@@ -5,19 +5,19 @@ set PROJNAME=techinfo
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> dosi86/techinfo.exe <OWRELROOT>/binw/
-    <CCCMD> os2i86/techinfo.exe <OWRELROOT>/binp/
+    <CCCMD> dosi86/techinfo.exe "<OWRELROOT>/binw/"
+    <CCCMD> os2i86/techinfo.exe "<OWRELROOT>/binp/"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

@@ -4,7 +4,7 @@
 set PROJDIR=<CWD>
 set FTEST_NAME=result
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
+[ INCLUDE "<OWROOT>/build/master.ctl" ]
 
 cdsay .
 

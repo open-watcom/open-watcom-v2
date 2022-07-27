@@ -5,9 +5,9 @@ set PROJNAME=auisampl
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <1> tests ]
 #==================
@@ -19,4 +19,4 @@ set PROJDIR=<CWD>
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

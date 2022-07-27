@@ -1,4 +1,4 @@
-[ INCLUDE <OWROOT>/build/master.ctl ]
+[ INCLUDE "<OWROOT>/build/master.ctl" ]
 
 [ BLOCK <PROJNAME> <OWNOBUILD> ]
     set NOBUILD=<1>

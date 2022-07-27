@@ -5,22 +5,22 @@ set PROJNAME=whelp
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE "<OWROOT>/build/deftool.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> dos386/whelp.exe    <OWRELROOT>/binw/whelp.exe
-    <CCCMD> os2386/whelp.exe    <OWRELROOT>/binp/whelp.exe
-    <CCCMD> linux386/whelp.exe  <OWRELROOT>/binl/whelp
+    <CCCMD> dos386/whelp.exe    "<OWRELROOT>/binw/whelp.exe"
+    <CCCMD> os2386/whelp.exe    "<OWRELROOT>/binp/whelp.exe"
+    <CCCMD> linux386/whelp.exe  "<OWRELROOT>/binl/whelp"
 
-    <CCCMD> linuxx64/whelp.exe  <OWRELROOT>/binl64/whelp
+    <CCCMD> linuxx64/whelp.exe  "<OWRELROOT>/binl64/whelp"
     
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

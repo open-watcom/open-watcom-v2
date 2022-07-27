@@ -5,19 +5,19 @@ set PROJNAME=w16api
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> wini86/lib/*                <OWRELROOT>/lib286/win/
-    <CCCMD> wini86/h/*                  <OWRELROOT>/h/win/
+    <CCCMD> wini86/lib/*                "<OWRELROOT>/lib286/win/"
+    <CCCMD> wini86/h/*                  "<OWRELROOT>/h/win/"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]
