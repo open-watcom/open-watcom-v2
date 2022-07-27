@@ -9,20 +9,20 @@ if [ -z "$OWROOT" ]; then
     . ./setvars.sh
 fi
 
-if [ ! -d $OWBINDIR/$OWOBJDIR ]; then mkdir $OWBINDIR/$OWOBJDIR; fi
+if [ ! -d build/$OWOBJDIR ]; then mkdir build/$OWOBJDIR; fi
 
-OWBUILDER_BOOTX_OUTPUT=$OWBINDIR/$OWOBJDIR/bootx.log
+OWBUILDER_BOOTX_OUTPUT="$OWROOT/build/$OWOBJDIR/bootx.log"
 
 output_redirect()
 {
-    "$@" >>$OWBUILDER_BOOTX_OUTPUT 2>&1
+    $@ >>$OWBUILDER_BOOTX_OUTPUT 2>&1
 }
 
-rm -f $OWBUILDER_BOOTX_OUTPUT
-cd $OWSRCDIR/wmake
+rm -f "$OWBUILDER_BOOTX_OUTPUT"
+cd bld/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
-rm -f $OWBINDIR/$OWOBJDIR/wmake
+rm -f ../../../build/$OWOBJDIR/wmake
 if [ "$OWTOOLS" = "WATCOM" ]; then
     output_redirect wmake -f ../wmake clean
     output_redirect wmake -f ../wmake
@@ -51,14 +51,16 @@ RC=$?
 if [ $RC -ne 0 ]; then
     echo "wmake bootstrap build error"
 else
-    cd $OWSRCDIR/builder
+    cd "$OWROOT"
+    cd bld/builder
     if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
     cd $OWOBJDIR
-    rm -f $OWBINDIR/$OWOBJDIR/builder
-    output_redirect $OWBINDIR/$OWOBJDIR/wmake -f ../binmake clean
-    output_redirect $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1
+    rm -f ../../../build/$OWOBJDIR/builder
+    output_redirect ../../../build/$OWOBJDIR/wmake -f ../binmake clean
+    output_redirect ../../../build/$OWOBJDIR/wmake -f ../binmake bootstrap=1
+    cd "$OWROOT"
     if [ "$1" != "preboot" ]; then
-        cd $OWSRCDIR
+        cd bld
         builder boot
         RC=$?
         if [ $RC -ne 0 ]; then
@@ -73,5 +75,5 @@ else
         fi
     fi
 fi
-cd $OWROOT
+cd "$OWROOT"
 exit $RC

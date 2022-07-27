@@ -71,6 +71,6 @@ export OWDISTRBUILD=0
 export OWOBJDIR=binbuild
 
 # Invoke the script for the common environment
-. $OWROOT/cmnvars.sh
+. "$OWROOT/cmnvars.sh"
 
-cd $OWROOT
+cd "$OWROOT"
