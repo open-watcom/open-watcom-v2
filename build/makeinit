@@ -9,9 +9,6 @@ curr_year     = $+$(%OWCYEAR)$-
 curr_year     = $+$(%__CYEAR__)$-
 !endif
 patch_level   = 0
-contrib_dir   = $+$(%OWROOT)$-/contrib
-build_dir     = $+$(%OWROOT)$-/build
-src_dir       = $+$(%OWSRCDIR)$-
 docs_dir      = $+$(%OWDOCSDIR)$-
 !if $(__VERSION__) < 1300
 !ifdef __MSDOS__
