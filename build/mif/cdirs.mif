@@ -248,10 +248,10 @@ fmedit_dir      = $(src_dir)/sdk/fmedit
 uninstal_dir    = $(src_dir)/uninstal
 !endif
 !ifndef libzip_dir
-libzip_dir      = $(contrib_dir)/libzip
+libzip_dir      = $(src_dir)/../contrib/libzip
 !endif
 !ifndef zlib_dir
-zlib_dir        = $(contrib_dir)/zlib
+zlib_dir        = $(src_dir)/../contrib/zlib
 !endif
 !ifndef awk_dir
 awk_dir         = $(src_dir)/awk
@@ -317,8 +317,11 @@ wstub_dir       = $(src_dir)/wstuba
 rsilib_dir      = $(src_dir)/rsilib
 !endif
 !ifndef wprof_dir
-wprof_dir      = $(src_dir)/wprof
+wprof_dir       = $(src_dir)/wprof
 !endif
 !ifndef build_awk_dir
-build_awk_dir  = $(build_dir)
+build_awk_dir   = $(src_dir)/../build
+!endif
+!ifndef build_dir
+build_dir       = $(src_dir)/../build
 !endif
