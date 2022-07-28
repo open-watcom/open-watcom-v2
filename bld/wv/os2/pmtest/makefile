@@ -1,5 +1,7 @@
 #pmake: os_dos cpu_i86 i86 intel
 
+tree_depth = 3
+
 .SUFFIXES:
 .SUFFIXES: .res .rc .lst .obj .c .asm .hlp .itl .ipf
 

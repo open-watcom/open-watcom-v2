@@ -1,6 +1,9 @@
 #
 # Open Watcom Debugger makefile
 #
+
+tree_depth = 3
+
 proj_name = wv
 name = $(proj_name)
 
