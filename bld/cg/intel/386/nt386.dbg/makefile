@@ -5,4 +5,4 @@ host_cpu = 386
 
 cg_release = 0
 
-!include ../mif/master.mif
+!include ../master.mif

@@ -1,3 +1,8 @@
+tree_depth = 4
+
+target_cpu      = i86
+target_cls      = intel
+
 i86_objs = i86conv.obj &
     i86enc.obj &
     i86ilen.obj &
@@ -10,7 +15,7 @@ i86_objs = i86conv.obj &
     i86sib.obj &
     i86splt2.obj &
     i86table.obj &
-    i86type.obj
+    i86type.obj &
+    encode.obj
 
-
-src_path        = $(cg_dir)/intel/i86/c
+!include $(cg_dir)/$(target_cls)/master.mif

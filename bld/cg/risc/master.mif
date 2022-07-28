@@ -19,5 +19,7 @@ risc_objs = &
         rsctype.obj  &
         rscqueue.obj
 
-inc_dirs_targ  += -I"$(cg_dir)/risc/h" -I"$(owl_dir)/h"
-src_path        = $+$(src_path)$-;$(cg_dir)/risc/c
+src_path        = $(cg_dir)/$(target_cls)/$(target_cpu)/c;$(cg_dir)/$(target_cls)/c
+inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h" -I"$(cg_dir)/$(target_cls)/h" -I"$(owl_dir)/h"
+
+!include $(cg_dir)/mif/master.mif

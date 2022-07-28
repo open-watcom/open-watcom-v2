@@ -1,3 +1,8 @@
+tree_depth = 4
+
+target_cpu      = mps
+target_cls      = risc
+
 mips_objs = &
         mpscall.obj  &
         mpsconv.obj  &
@@ -16,7 +21,10 @@ mips_objs = &
         mpsstub.obj  &
         mpstable.obj &
         mpsparm.obj  &
-        rscconst.obj
+        rscconst.obj &
+    	encode.obj
 
-src_path        = $(cg_dir)/risc/mps/c
-inc_dirs_targ   = -I"$(cg_dir)/risc/mps/h"
+src_path        = $(cg_dir)/$(target_cls)/$(target_cpu)/c
+inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h"
+
+!include $(cg_dir)/$(target_cls)/master.mif

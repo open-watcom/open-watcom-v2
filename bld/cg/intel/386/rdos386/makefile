@@ -3,4 +3,4 @@
 host_os  = rdos
 host_cpu = 386
 
-!include ../mif/master.mif
+!include ../master.mif

@@ -7,4 +7,4 @@ dll_cg = 1
 
 sys_dll = 1
 
-!include ../mif/master.mif
+!include ../master.mif

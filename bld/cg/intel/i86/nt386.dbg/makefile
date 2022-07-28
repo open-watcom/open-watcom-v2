@@ -6,4 +6,4 @@ host_cpu = 386
 cg_release = 0
 debug = 1
 
-!include ../mif/master.mif
+!include ../master.mif

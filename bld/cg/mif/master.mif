@@ -11,3 +11,7 @@ cg_autodepends = .AUTODEPEND
 !include $(cg_dir)/mif/cghost.mif
 !include $(cg_dir)/mif/cg.mif
 !include $(cg_dir)/mif/hostos.mif
+
+target_objs = $($(target_cpu)_objs) $($(target_cls)_objs) $(cg_objs)
+
+!include $(cg_dir)/mif/target.mif

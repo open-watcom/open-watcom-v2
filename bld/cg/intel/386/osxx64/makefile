@@ -3,4 +3,4 @@
 host_os  = osx
 host_cpu = x64
 
-!include ../mif/master.mif
+!include ../master.mif
