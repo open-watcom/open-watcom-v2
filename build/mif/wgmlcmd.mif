@@ -54,13 +54,13 @@ dosemu_options = -dumb -quiet -I 'keyboard {layout us}'
 
 !ifeq bld_os dos
 
-WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
-GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
+WGMLCMD = $(docs_dir:/=\)\gml\dos\wgml $(wgml_cmdl_params)
+GENDEVCMD = $(docs_dir:/=\)\gml\dos\gendev $(gendev_cmdl_params)
 
 !else ifeq bld_os os2
 
-WGMLCMD = $(docs_dir)\gml\os2\wgml $(wgml_cmdl_params)
-GENDEVCMD = $(docs_dir)\gml\os2\gendev $(gendev_cmdl_params)
+WGMLCMD = $(docs_dir:/=\)\gml\os2\wgml $(wgml_cmdl_params)
+GENDEVCMD = $(docs_dir:/=\)\gml\os2\gendev $(gendev_cmdl_params)
 
 !else ifdef dosbox
 
@@ -72,8 +72,8 @@ use_dosemu = dosbox
 
 !else ifeq bld_os nt
 
-WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
-GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
+WGMLCMD = $(docs_dir:/=\)\gml\dos\wgml $(wgml_cmdl_params)
+GENDEVCMD = $(docs_dir:/=\)\gml\dos\gendev $(gendev_cmdl_params)
 # NT DOSX use upper cased file name
 wgml_ucase=1
 
