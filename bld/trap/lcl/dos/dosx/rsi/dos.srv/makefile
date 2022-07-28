@@ -1,5 +1,7 @@
 #pmake: build serv lcl os_dos dsx cpu_386 x86 rsi
 
+tree_depth = 6
+
 host_os  = dos
 host_cpu = i86
 

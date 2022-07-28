@@ -1,5 +1,7 @@
 #pmake: serv remote os_linux cpu_ppc tcp ppc monolithic
 
+tree_depth = 3
+
 bootstrap = 1
 
 host_os  = linux

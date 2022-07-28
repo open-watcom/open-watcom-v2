@@ -1,4 +1,7 @@
 #pmake: nobuild remote os_nt cpu_386 par
+
+tree_depth = 3
+
 host_os  = nt
 host_cpu = 386
 

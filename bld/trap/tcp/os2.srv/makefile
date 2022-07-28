@@ -1,5 +1,7 @@
 #pmake: serv remote os_os2 cpu_i86 tcp
 
+tree_depth = 3
+
 host_os  = os2
 host_cpu = i86
 

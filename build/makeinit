@@ -9,7 +9,6 @@ curr_year     = $+$(%OWCYEAR)$-
 curr_year     = $+$(%__CYEAR__)$-
 !endif
 patch_level   = 0
-docs_dir      = $+$(%OWDOCSDIR)$-
 !if $(__VERSION__) < 1300
 !ifdef __MSDOS__
 __DOS__=
@@ -38,7 +37,7 @@ noecho =
 
 mif_path      = $(%OWROOT)/build/mif
 
-.mif: $(mif_path)
+.mif: "$(mif_path)"
 
 # setup non-WATCOM tools macros
 !ifeq %OWTOOLS VISUALC

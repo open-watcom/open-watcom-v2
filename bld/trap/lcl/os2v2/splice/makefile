@@ -3,6 +3,8 @@
 # Builds wdsplice.dll
 #
 
+tree_depth = 4
+
 host_os  = os2
 host_cpu = 386
 

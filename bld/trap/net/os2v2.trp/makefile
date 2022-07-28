@@ -1,5 +1,7 @@
 #pmake: build trap remote os_os2 cpu_i86 cpu_386 net x86
 
+tree_depth = 3
+
 host_os  = os2
 host_cpu = 386
 

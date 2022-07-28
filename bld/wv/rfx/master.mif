@@ -1,6 +1,9 @@
 #
 # Open Watcom Debugger makefile (RFX)
 #
+
+tree_depth = 3
+
 proj_name = rfx
 
 rfx_autodepends = .AUTODEPEND

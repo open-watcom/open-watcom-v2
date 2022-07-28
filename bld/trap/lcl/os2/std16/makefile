@@ -2,6 +2,9 @@
 #
 # Create the OS/2 STD16.DLL
 #
+
+tree_depth = 4
+
 host_cpu = i86
 host_os  = os2
 

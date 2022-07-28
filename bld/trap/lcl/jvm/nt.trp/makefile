@@ -1,4 +1,7 @@
 #pmake: trap lcl os_dos dsx cpu_386 x86
+
+tree_depth = 4
+
 host_cpu = 386
 host_os  = nt
 

@@ -2,6 +2,9 @@
 #
 # Create the NT STD.DLL for Alpha
 #
+
+tree_depth = 4
+
 host_os  = nt
 host_cpu = axp
 

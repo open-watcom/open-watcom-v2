@@ -1,4 +1,7 @@
 #pmake: trap remote os_qnx cpu_i86 cpu_386 par x86
+
+tree_depth = 3
+
 host_cpu = 386
 host_os  = qnx
 

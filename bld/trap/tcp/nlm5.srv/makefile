@@ -1,4 +1,7 @@
 #pmake: serv remote os_nov cpu_386 nov x86
+
+tree_depth = 3
+
 host_cpu = 386
 host_os  = nov
 

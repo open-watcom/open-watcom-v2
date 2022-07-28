@@ -17,7 +17,7 @@ set PROJDIR=<CWD>
 #============================
 
     <CPCMD> watcom.ico              "<OWRELROOT>/"
-    <CPCMD> <OWROOT>/license.txt    "<OWRELROOT>/"
+    <CPCMD> "<OWROOT>/license.txt"  "<OWRELROOT>/"
 
     <CCCMD> nt386/unicode*          "<OWRELROOT>/binnt/"
     <CCCMD> ntx64/unicode*          "<OWRELROOT>/binnt64/"

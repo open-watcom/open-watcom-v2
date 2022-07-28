@@ -1,4 +1,7 @@
 #pmake: serv remote os_nt cpu_386 tcp axp
+
+tree_depth = 3
+
 host_cpu = axp
 host_os  = nt
 

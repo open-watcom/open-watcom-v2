@@ -2,6 +2,9 @@
 #
 # Create the QNX Neutrino std.trp
 #
+
+tree_depth = 4
+
 host_os  = nto
 host_cpu = 386
 

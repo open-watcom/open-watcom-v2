@@ -1,4 +1,7 @@
 #pmake: trap remote os_dos cpu_i86 cpu_386 tcp x86
+
+tree_depth = 3
+
 host_cpu = i86
 host_os  = dos
 

@@ -2,6 +2,9 @@
 #
 # Create WDPMHELP.EXE, WDPMHOOK.DLL
 #
+
+tree_depth = 4
+
 host_os  = os2
 host_cpu = i86
 

@@ -149,8 +149,8 @@ test : $(exetarg_name).exe .always .symbolic
 curr_dir=$+$(%__CWD__)$-
     cd ../regress
 !ifdef __UNIX__
-    -./test.sh $(curr_dir)/$(exetarg_name).exe
+    -./test.sh "$(curr_dir)/$(exetarg_name).exe"
 !else
-    -test $(curr_dir)\$(exetarg_name).exe
+    -test "$(curr_dir)\$(exetarg_name).exe"
 !endif
-    cd $(curr_dir)
+    cd "$(curr_dir)"

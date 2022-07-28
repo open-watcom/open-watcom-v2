@@ -1,5 +1,7 @@
 #pmake: build remote support nmp os_os2 cpu_i86 cpu_386
 
+tree_depth = 3
+
 host_os  = os2
 host_cpu = i86
 
