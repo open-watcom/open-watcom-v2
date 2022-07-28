@@ -319,9 +319,9 @@ rsilib_dir      = $(%OWROOT)/bld/rsilib
 !ifndef wprof_dir
 wprof_dir       = $(%OWROOT)/bld/wprof
 !endif
-!ifndef build_awk_dir
-build_awk_dir   = $(%OWROOT)/build
-!endif
 !ifndef build_dir
 build_dir       = $(%OWROOT)/build
+!endif
+!ifndef docs_dir
+docs_dir        = $(%OWROOT)/docs
 !endif
