@@ -1,3 +1,5 @@
+tree_depth = 3
+
 proj_name = wre
 
 !ifndef wre_autodepends

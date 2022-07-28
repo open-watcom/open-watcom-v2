@@ -1,3 +1,5 @@
+tree_depth = 3
+
 proj_name = wimgedit
 
 !ifndef wimgedit_autodepends
@@ -104,4 +106,4 @@ rcstrmsg.gh : ../res/wimgedit.msg $(__MAKEFILES__)
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -f $(build_awk_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@

@@ -1,3 +1,5 @@
+tree_depth = 3
+
 target_cpu = jvm
 
 imp_objs = &

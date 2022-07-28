@@ -1,3 +1,5 @@
+tree_depth = 3
+
 type=ui
 
 ui_sysobjs = &

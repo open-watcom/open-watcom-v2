@@ -58,7 +58,7 @@ wresui.res : ../wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
 
 msg.grh : ../wstrip.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_awk_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
