@@ -1,3 +1,4 @@
+tree_depth = 3
 
 proj_name = ide
 
@@ -105,4 +106,4 @@ $(docs_host_dir) : .SYMBOLIC
 
 $(docs_host_dir)/ide.gh : $(docs_host_dir) .ALWAYS
     $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
-    $(noecho)cd $(curr_dir)
+    $(noecho)cd "$(curr_dir)"

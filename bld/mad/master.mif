@@ -2,6 +2,8 @@
 # Master makefile for creating MADs (Machine Architecture Descriptions)
 #
 
+tree_depth = 3
+
 proj_name = mad
 
 !ifndef mad_autodepends
