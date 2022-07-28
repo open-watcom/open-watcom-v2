@@ -19,9 +19,9 @@ sys_dll = 1
 #
 # cflags
 #
-.c: ../c
+.c: $(dwarfr_dir)/c
 
-inc_dirs = -I"../h"
+inc_dirs = -I"$(dwarfr_dir)/h"
 
 !ifeq use_virtmem 1
 extra_cpp_flags = -DUSE_VIRTMEM

@@ -102,4 +102,4 @@ ui_sysobjs_wini86 = &
 
 sysobjs = $(ui_sysobjs) $(ui_sysobjs_$(objs_subdir)) $(sys_hooks) $(hlpview_objs)
 
-!include ../../master.mif
+!include $(gui_dir)/master.mif

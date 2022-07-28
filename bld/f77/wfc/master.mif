@@ -30,10 +30,11 @@ exetarg_name = $(exename_$(target_cpu))
 #
 # cflags
 #
-.c: ..;$(f77wfc_dir)/c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
+.c: $(f77wfc_dir)/c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
 
-inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" &
-    -I"$(fe_misc_dir)/h" $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
+inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
+    $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
+    $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
 extra_cpp_flags =
 !ifeq dll_cg 1
@@ -48,10 +49,6 @@ extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 #
 # aflags
 #
-!ifeq host_cpu axp
-.asm: $(f77_dir)/asmaxp
-!endif
-
 extra_a_flags_axp = -oc
 
 # explicit rules
@@ -76,7 +73,8 @@ wf77aux.obj : wf77aux.c regs.c
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
-rcui_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+rcui_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
+    $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 wresui.res : $(f77wfc_dir)/h/wfc.rc wasmcmsg.grh $(f77wfc_dir)/h/wfc.rh
     @%make echo_rc

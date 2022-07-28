@@ -60,7 +60,7 @@ exetarg_res_wresui    = wresui.res
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
-rcui_inc_dirs = -I. -I.. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
+rcui_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
 
 wresui.res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
     @%make echo_rc
