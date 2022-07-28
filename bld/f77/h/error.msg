@@ -1,3 +1,4 @@
+ *** UTF-8 encoding, ¥ ***
 AR Subprogram Arguments
 AR_BAD_COUNT [   c2] invalid number of arguments to intrinsic function %s1
 AR_BAD_COUNT [j  c2] 組込み関数%s1で定義された引数の数とそれを呼出すために指定した引数の数が一致していません。
