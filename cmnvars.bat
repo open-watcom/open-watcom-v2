@@ -11,14 +11,14 @@ set OWBLDVERSTR=2.0
 set OWBLDVERTOOL=1300
 
 REM Set up default path information variables
-if not "%OWDEFPATH%" == "" goto skip1
+if not '%OWDEFPATH%' == '' goto skip1
 set OWDEFPATH=%PATH%;
 set OWDEFINCLUDE=%INCLUDE%
 set OWDEFWATCOM=%WATCOM%
 :skip1
 
 REM Subdirectory to be used for building OW build tools
-if "%OWOBJDIR%" == "" set OWOBJDIR=binbuild
+if '%OWOBJDIR%' == '' set OWOBJDIR=binbuild
 
 REM Subdirectory to be used for build binaries
 set OWBINDIR=%OWROOT%\build
