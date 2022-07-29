@@ -1,3 +1,5 @@
+target_objs = $($(target_cpu)_objs) $($(target_cls)_objs) $(cg_objs)
+
 !ifeq dll_cg 1
 
 libs = cg$(target_cpu).lib $(cg_target_host_name).lib $(dwarfw_lib) $(owl_lib) $(cfloat_lib)

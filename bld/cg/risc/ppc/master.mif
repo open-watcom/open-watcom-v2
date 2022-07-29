@@ -22,7 +22,4 @@ ppc_objs = &
         ppcstub.obj  &
         ppcptype.obj
 
-src_path        = $(cg_dir)/$(target_cls)/$(target_cpu)/c
-inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h"
-
 !include $(cg_dir)/$(target_cls)/master.mif
