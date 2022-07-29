@@ -21,7 +21,4 @@ target_cls	= intel
     sib.obj &
     encode.obj
 
-asm_path        =
-asm_include     =
-
 !include $(cg_dir)/$(target_cls)/master.mif

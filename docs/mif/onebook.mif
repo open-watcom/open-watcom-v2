@@ -322,14 +322,14 @@ $(hbook).pdf : $(hbook).ps
 
 $(hbook).inf : $(hbook).ipf
     $(noecho)set IPFCARTWORK=$(book_incs)
-    $(noecho)set WIPFC=$(wipfc_dir)/helper
+    $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(wipfc) -q -inf $(hbook).ipf
     $(lowercase) $@ $@	    # change file name to lower case
 
 !ifdef book_os2_help
 $(hbook).hlp : $(hbook).ipf
     $(noecho)set IPFCARTWORK=$(book_incs)
-    $(noecho)set WIPFC=$(wipfc_dir)/helper
+    $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(wipfc) -q $(hbook).ipf
     $(lowercase) $@ $@	    # change file name to lower case
 !else
