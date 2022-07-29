@@ -14,14 +14,14 @@ objs = &
   msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj dostimet.obj &
   mcache.obj misc.obj
 
-.c : ../c;$(builder_dir)/c;$(watcom_dir)/c
+.c : ../c;../../builder/c;../../watcom/c
 
 !ifdef __UNIX__
-"$(%OWBINDIR)/$(%OWOBJDIR)/wmake" : wmk.exe
-    cp wmk.exe "$@"
+../../../build/$(%OWOBJDIR)/wmake : wmk.exe
+    cp wmk.exe $@
 !else
-"$(%OWBINDIR)\$(%OWOBJDIR)\wmake.exe" : wmk.exe
-    copy wmk.exe "$@"
+..\..\..\build\$(%OWOBJDIR)\wmake.exe : wmk.exe
+    copy wmk.exe $@
 !endif
 
 .c.obj : .AUTODEPEND
