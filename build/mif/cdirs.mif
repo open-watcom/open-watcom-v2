@@ -1,6 +1,6 @@
 !ifdef absolute_path
 #########################################
-# use absolute path
+# use absolute paths
 #########################################
 owroot_bld     = $(%OWROOT)/bld/
 owroot_build   = $(%OWROOT)/build
@@ -8,7 +8,7 @@ owroot_contrib = $(%OWROOT)/contrib/
 owroot_docs    = $(%OWROOT)/docs
 !else
 #########################################
-# use relative path
+# use relative paths
 #########################################
 depth_0 =
 depth_1 = ../
