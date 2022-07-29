@@ -1,327 +1,330 @@
+!ifdef absolute_path
+#########################################
+# use absolute path
+#########################################
+owroot_bld     = $(%OWROOT)/bld/
+owroot_build   = $(%OWROOT)/build
+owroot_contrib = $(%OWROOT)/contrib/
+owroot_docs    = $(%OWROOT)/docs
+!else
+#########################################
+# use relative path
+#########################################
+depth_0 =
+depth_1 = ../
+depth_2 = ../../
+depth_3 = ../../../
+depth_4 = ../../../../
+depth_5 = ../../../../../
+depth_6 = ../../../../../../
+!ifdef $(proj_name)_tree_depth
+tree_depth = $($(proj_name)_tree_depth)
+!else ifndef tree_depth
+tree_depth = 2
+!endif
+owroot_bld     = $(depth_$(tree_depth))
+owroot_build   = $(depth_$(tree_depth))../build
+owroot_contrib = $(depth_$(tree_depth))../contrib/
+owroot_docs    = $(depth_$(tree_depth))../docs
+!endif
+#########################################
 !ifndef bench_dir
-bench_dir       = $(%OWROOT)/bld/bench
+bench_dir       = $(owroot_bld)bench
 !endif
 !ifndef brinfo_dir
-brinfo_dir      = $(%OWROOT)/bld/brinfo
+brinfo_dir      = $(owroot_bld)brinfo
 !endif
 !ifndef fe_misc_dir
-fe_misc_dir     = $(%OWROOT)/bld/fe_misc
+fe_misc_dir     = $(owroot_bld)fe_misc
 !endif
 !ifndef cg_dir
-cg_dir          = $(%OWROOT)/bld/cg
+cg_dir          = $(owroot_bld)cg
 !endif
 !ifndef cc_dir
-cc_dir          = $(%OWROOT)/bld/cc
+cc_dir          = $(owroot_bld)cc
 !endif
 !ifndef cfloat_dir
-cfloat_dir      = $(%OWROOT)/bld/cfloat
+cfloat_dir      = $(owroot_bld)cfloat
 !endif
 !ifndef plusplus_dir
-plusplus_dir    = $(%OWROOT)/bld/plusplus
+plusplus_dir    = $(owroot_bld)plusplus
 !endif
 !ifndef cpplib_dir
-cpplib_dir      = $(%OWROOT)/bld/cpplib
+cpplib_dir      = $(owroot_bld)cpplib
 !endif
 !ifndef dwarfr_dir
-dwarfr_dir      = $(%OWROOT)/bld/dwarf/dr
+dwarfr_dir      = $(owroot_bld)dwarf/dr
 !endif
 !ifndef dwarfw_dir
-dwarfw_dir      = $(%OWROOT)/bld/dwarf/dw
+dwarfw_dir      = $(owroot_bld)dwarf/dw
 !endif
 !ifndef wzoom_dir
-wzoom_dir       = $(%OWROOT)/bld/sdk/zoom
+wzoom_dir       = $(owroot_bld)sdk/zoom
 !endif
 !ifndef wddespy_dir
-wddespy_dir     = $(%OWROOT)/bld/sdk/ddespy
+wddespy_dir     = $(owroot_bld)sdk/ddespy
 !endif
 !ifndef wimgedit_dir
-wimgedit_dir    = $(%OWROOT)/bld/sdk/imgedit
+wimgedit_dir    = $(owroot_bld)sdk/imgedit
 !endif
 !ifndef wre_dir
-wre_dir         = $(%OWROOT)/bld/sdk/wre
+wre_dir         = $(owroot_bld)sdk/wre
 !endif
 !ifndef wresedit_dir
-wresedit_dir    = $(%OWROOT)/bld/sdk/wresedit
+wresedit_dir    = $(owroot_bld)sdk/wresedit
 !endif
 !ifndef wspy_dir
-wspy_dir        = $(%OWROOT)/bld/sdk/spy
+wspy_dir        = $(owroot_bld)sdk/spy
 !endif
 !ifndef wrc_dir
-wrc_dir         = $(%OWROOT)/bld/rc/rc
+wrc_dir         = $(owroot_bld)rc/rc
 !endif
 !ifndef wr_dir
-wr_dir          = $(%OWROOT)/bld/sdk/wr
+wr_dir          = $(owroot_bld)sdk/wr
 !endif
 !ifndef wheapwlk_dir
-wheapwlk_dir    = $(%OWROOT)/bld/sdk/heapwalk
+wheapwlk_dir    = $(owroot_bld)sdk/heapwalk
 !endif
 !ifndef commonui_dir
-commonui_dir    = $(%OWROOT)/bld/commonui
+commonui_dir    = $(owroot_bld)commonui
 !endif
 !ifndef owl_dir
-owl_dir         = $(%OWROOT)/bld/owl
+owl_dir         = $(owroot_bld)owl
 !endif
 !ifndef as_dir
-as_dir          = $(%OWROOT)/bld/as
+as_dir          = $(owroot_bld)as
 !endif
 !ifndef wpack_dir
-wpack_dir       = $(%OWROOT)/bld/wpack
+wpack_dir       = $(owroot_bld)wpack
 !endif
 !ifndef wtouch_dir
-wtouch_dir      = $(%OWROOT)/bld/wtouch
+wtouch_dir      = $(owroot_bld)wtouch
 !endif
 !ifndef wmake_dir
-wmake_dir       = $(%OWROOT)/bld/wmake
+wmake_dir       = $(owroot_bld)wmake
 !endif
 !ifndef wdump_dir
-wdump_dir       = $(%OWROOT)/bld/wdump
+wdump_dir       = $(owroot_bld)wdump
 !endif
 !ifndef disasm_dir
-disasm_dir      = $(%OWROOT)/bld/ndisasm
+disasm_dir      = $(owroot_bld)ndisasm
 !endif
 !ifndef orl_dir
-orl_dir         = $(%OWROOT)/bld/orl
+orl_dir         = $(owroot_bld)orl
 !endif
 !ifndef watcom_dir
-watcom_dir      = $(%OWROOT)/bld/watcom
+watcom_dir      = $(owroot_bld)watcom
 !endif
 !ifndef comp_cfg_dir
-comp_cfg_dir    = $(%OWROOT)/bld/comp_cfg
+comp_cfg_dir    = $(owroot_bld)comp_cfg
 !endif
 !ifndef wpi_dir
-wpi_dir         = $(%OWROOT)/bld/wpi
+wpi_dir         = $(owroot_bld)wpi
 !endif
 !ifndef trmem_dir
-trmem_dir       = $(%OWROOT)/bld/trmem
+trmem_dir       = $(owroot_bld)trmem
 !endif
 !ifndef diff_dir
-diff_dir        = $(%OWROOT)/bld/diff
+diff_dir        = $(owroot_bld)diff
 !endif
 !ifndef bdiff_dir
-bdiff_dir       = $(%OWROOT)/bld/bdiff
+bdiff_dir       = $(owroot_bld)bdiff
 !endif
 !ifndef cpp_dir
-cpp_dir         = $(%OWROOT)/bld/cpp
+cpp_dir         = $(owroot_bld)cpp
 !endif
 !ifndef wlib_dir
-wlib_dir        = $(%OWROOT)/bld/nwlib
+wlib_dir        = $(owroot_bld)nwlib
 !endif
 !ifndef vi_dir
-vi_dir          = $(%OWROOT)/bld/vi
+vi_dir          = $(owroot_bld)vi
 !endif
 !ifndef posix_dir
-posix_dir       = $(%OWROOT)/bld/posix
+posix_dir       = $(owroot_bld)posix
 !endif
 !ifndef rcsdll_dir
-rcsdll_dir      = $(%OWROOT)/bld/rcsdll
+rcsdll_dir      = $(owroot_bld)rcsdll
 !endif
 !ifndef ncurses_dir
-ncurses_dir     = $(%OWROOT)/bld/ncurses
+ncurses_dir     = $(owroot_bld)ncurses
 !endif
 !ifndef wlink_dir
-wlink_dir       = $(%OWROOT)/bld/wl
+wlink_dir       = $(owroot_bld)wl
 !endif
 !ifndef wasm_dir
-wasm_dir        = $(%OWROOT)/bld/wasm
+wasm_dir        = $(owroot_bld)wasm
 !endif
 !ifndef wasmtest_dir
-wasmtest_dir    = $(%OWROOT)/bld/wasmtest
+wasmtest_dir    = $(owroot_bld)wasmtest
 !endif
 !ifndef hdr_dir
-hdr_dir         = $(%OWROOT)/bld/hdr
+hdr_dir         = $(owroot_bld)hdr
 !endif
 !ifndef plustest_dir
-plustest_dir    = $(%OWROOT)/bld/plustest
+plustest_dir    = $(owroot_bld)plustest
 !endif
 !ifndef ctest_dir
-ctest_dir       = $(%OWROOT)/bld/ctest
+ctest_dir       = $(owroot_bld)ctest
 !endif
 !ifndef f77_dir
-f77_dir         = $(%OWROOT)/bld/f77
+f77_dir         = $(owroot_bld)f77
 !endif
 !ifndef f77lib_dir
-f77lib_dir      = $(%OWROOT)/bld/f77/f77lib
+f77lib_dir      = $(owroot_bld)f77/f77lib
 !endif
 !ifndef f77wfc_dir
-f77wfc_dir      = $(%OWROOT)/bld/f77/wfc
+f77wfc_dir      = $(owroot_bld)f77/wfc
 !endif
 !ifndef f77wfl_dir
-f77wfl_dir      = $(%OWROOT)/bld/f77/wfl
+f77wfl_dir      = $(owroot_bld)f77/wfl
 !endif
 !ifndef ftest_dir
-ftest_dir       = $(%OWROOT)/bld/f77test
+ftest_dir       = $(owroot_bld)f77test
 !endif
 !ifndef clib_dir
-clib_dir        = $(%OWROOT)/bld/clib
+clib_dir        = $(owroot_bld)clib
 !endif
 !ifndef clibtest_dir
-clibtest_dir    = $(%OWROOT)/bld/clibtest
+clibtest_dir    = $(owroot_bld)clibtest
 !endif
 !ifndef mathlib_dir
-mathlib_dir     = $(%OWROOT)/bld/mathlib
+mathlib_dir     = $(owroot_bld)mathlib
 !endif
 !ifndef mathtest_dir
-mathtest_dir    = $(%OWROOT)/bld/mathtest
+mathtest_dir    = $(owroot_bld)mathtest
 !endif
 !ifndef rtdll_dir
-rtdll_dir       = $(%OWROOT)/bld/rtdll
+rtdll_dir       = $(owroot_bld)rtdll
 !endif
 !ifndef lib_misc_dir
-lib_misc_dir    = $(%OWROOT)/bld/lib_misc
+lib_misc_dir    = $(owroot_bld)lib_misc
 !endif
 !ifndef womp_dir
-womp_dir        = $(%OWROOT)/bld/womp
+womp_dir        = $(owroot_bld)womp
 !endif
 !ifndef wcl_dir
-wcl_dir         = $(%OWROOT)/bld/wcl
+wcl_dir         = $(owroot_bld)wcl
 !endif
 !ifndef wclass_dir
-wclass_dir      = $(%OWROOT)/bld/wclass
+wclass_dir      = $(owroot_bld)wclass
 !endif
 !ifndef batch_dir
-batch_dir       = $(%OWROOT)/bld/idebatch
+batch_dir       = $(owroot_bld)idebatch
 !endif
 !ifndef editdll_dir
-editdll_dir     = $(%OWROOT)/bld/editdll
+editdll_dir     = $(owroot_bld)editdll
 !endif
 !ifndef gui_dir
-gui_dir         = $(%OWROOT)/bld/gui
+gui_dir         = $(owroot_bld)gui
 !endif
 !ifndef trap_dir
-trap_dir        = $(%OWROOT)/bld/trap
+trap_dir        = $(owroot_bld)trap
 !endif
 !ifndef browser_dir
-browser_dir      = $(%OWROOT)/bld/browser
+browser_dir     = $(owroot_bld)browser
 !endif
 !ifndef wres_dir
-wres_dir        = $(%OWROOT)/bld/wres
+wres_dir        = $(owroot_bld)wres
 !endif
 !ifndef wedit_dir
-wedit_dir       = $(%OWROOT)/bld/wedit
+wedit_dir       = $(owroot_bld)wedit
 !endif
 !ifndef lexlib_dir
-lexlib_dir      = $(%OWROOT)/bld/lexlib
+lexlib_dir      = $(owroot_bld)lexlib
 !endif
 !ifndef dig_dir
-dig_dir         = $(%OWROOT)/bld/dig
+dig_dir         = $(owroot_bld)dig
 !endif
 !ifndef dip_dir
-dip_dir         = $(%OWROOT)/bld/dip
+dip_dir         = $(owroot_bld)dip
 !endif
 !ifndef mad_dir
-mad_dir         = $(%OWROOT)/bld/mad
+mad_dir         = $(owroot_bld)mad
 !endif
 !ifndef wdisasm_dir
-wdisasm_dir     = $(%OWROOT)/bld/wdisasm
+wdisasm_dir     = $(owroot_bld)wdisasm
 !endif
 !ifndef yacc_dir
-yacc_dir        = $(%OWROOT)/bld/yacc
+yacc_dir        = $(owroot_bld)yacc
 !endif
 !ifndef whpcvt_dir
-whpcvt_dir      = $(%OWROOT)/bld/whpcvt
+whpcvt_dir      = $(owroot_bld)whpcvt
 !endif
 !ifndef aui_dir
-aui_dir         = $(%OWROOT)/bld/aui
+aui_dir         = $(owroot_bld)aui
 !endif
 !ifndef wsample_dir
-wsample_dir     = $(%OWROOT)/bld/wsample
+wsample_dir     = $(owroot_bld)wsample
 !endif
 !ifndef ui_dir
-ui_dir          = $(%OWROOT)/bld/ui
+ui_dir          = $(owroot_bld)ui
 !endif
 !ifndef hlpview_dir
-hlpview_dir     = $(%OWROOT)/bld/hlpview
+hlpview_dir     = $(owroot_bld)hlpview
 !endif
 !ifndef wv_dir
-wv_dir          = $(%OWROOT)/bld/wv
+wv_dir          = $(owroot_bld)wv
 !endif
 !ifndef causeway_dir
-causeway_dir    = $(%OWROOT)/bld/causeway
+causeway_dir    = $(owroot_bld)causeway
 !endif
 !ifndef re2c_dir
-re2c_dir        = $(%OWROOT)/bld/re2c
+re2c_dir        = $(owroot_bld)re2c
 !endif
 !ifndef fmedit_dir
-fmedit_dir      = $(%OWROOT)/bld/sdk/fmedit
+fmedit_dir      = $(owroot_bld)sdk/fmedit
 !endif
 !ifndef uninstal_dir
-uninstal_dir    = $(%OWROOT)/bld/uninstal
+uninstal_dir    = $(owroot_bld)uninstal
 !endif
 !ifndef libzip_dir
-libzip_dir      = $(%OWROOT)/contrib/libzip
+libzip_dir      = $(owroot_contrib)libzip
 !endif
 !ifndef zlib_dir
-zlib_dir        = $(%OWROOT)/contrib/zlib
+zlib_dir        = $(owroot_contrib)zlib
 !endif
 !ifndef awk_dir
-awk_dir         = $(%OWROOT)/bld/awk
+awk_dir         = $(owroot_bld)awk
 !endif
 !ifndef fpuemu_dir
-fpuemu_dir      = $(%OWROOT)/bld/fpuemu
+fpuemu_dir      = $(owroot_bld)fpuemu
 !endif
 !ifndef graphlib_dir
-graphlib_dir    = $(%OWROOT)/bld/graphlib
+graphlib_dir    = $(owroot_bld)graphlib
 !endif
 !ifndef wattcp_dir
-wattcp_dir      = $(%OWROOT)/bld/wattcp
+wattcp_dir      = $(owroot_bld)wattcp
 !endif
 !ifndef wipfc_dir
-wipfc_dir       = $(%OWROOT)/bld/wipfc
+wipfc_dir       = $(owroot_bld)wipfc
 !endif
 !ifndef builder_dir
-builder_dir     = $(%OWROOT)/bld/builder
+builder_dir     = $(owroot_bld)builder
 !endif
 !ifndef ideact_dir
-ideact_dir      = $(%OWROOT)/bld/ide/ideact
+ideact_dir      = $(owroot_bld)ide/ideact
 !endif
 !ifndef idelib_dir
-idelib_dir      = $(%OWROOT)/bld/ide/lib
+idelib_dir      = $(owroot_bld)ide/lib
 !endif
 !ifndef idecfg_dir
-idecfg_dir      = $(%OWROOT)/bld/ide/cfg
+idecfg_dir      = $(owroot_bld)ide/cfg
 !endif
 !ifndef idedemo_dir
-idedemo_dir     = $(%OWROOT)/bld/idedemo
+idedemo_dir     = $(owroot_bld)idedemo
 !endif
 !ifndef version_dir
-version_dir     = $(%OWROOT)/bld/version
+version_dir     = $(owroot_bld)version
 !endif
 !ifndef pmake_dir
-pmake_dir       = $(%OWROOT)/bld/pmake
+pmake_dir       = $(owroot_bld)pmake
 !endif
 !ifndef os2api_dir
-os2api_dir      = $(%OWROOT)/bld/os2api
+os2api_dir      = $(owroot_bld)os2api
 !endif
 !ifndef w16api_dir
-w16api_dir      = $(%OWROOT)/bld/w16api
+w16api_dir      = $(owroot_bld)w16api
 !endif
 !ifndef w32api_dir
-w32api_dir      = $(%OWROOT)/bld/w32api
-!endif
-!ifndef nwoss_dir
-nwoss_dir       = $(%OWROOT)/bld/os_supp/novell
-!endif
-!ifndef setupgui_dir
-setupgui_dir    = $(%OWROOT)/bld/setupgui
-!endif
-!ifndef win386_dir
-win386_dir      = $(%OWROOT)/bld/win386
-!endif
-!ifndef d16api_dir
-d16api_dir      = $(%OWROOT)/bld/d16api
-!endif
-!ifndef wstub_dir
-wstub_dir       = $(%OWROOT)/bld/wstuba
-!endif
-!ifndef rsilib_dir
-rsilib_dir      = $(%OWROOT)/bld/rsilib
-!endif
-!ifndef wprof_dir
-wprof_dir       = $(%OWROOT)/bld/wprof
-!endif
-!ifndef build_dir
-build_dir       = $(%OWROOT)/build
-!endif
-!ifndef docs_dir
-docs_dir        = $(%OWROOT)/docs
+w32api_dir      = $(owroot_bld)w32api
 !endif
