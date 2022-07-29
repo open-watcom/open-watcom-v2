@@ -92,6 +92,7 @@ static void GrModeRows( short rows )
             break;
         case _MAXTEXTROWS:
             rows = 43;
+            /* fall through */
         case 43:
             font = GR_FONT_8x8;   // 8x8
             break;
@@ -111,6 +112,7 @@ static void GrModeRows( short rows )
             break;
         case _MAXTEXTROWS:
             rows = 60;
+            /* fall through */
         case 60:
             font = GR_FONT_8x8;   // 8x8
             break;
