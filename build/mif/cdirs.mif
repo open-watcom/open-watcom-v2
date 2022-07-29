@@ -328,3 +328,30 @@ w16api_dir      = $(owroot_bld)w16api
 !ifndef w32api_dir
 w32api_dir      = $(owroot_bld)w32api
 !endif
+!ifndef nwoss_dir
+nwoss_dir       = $(owroot_bld)os_supp/novell
+!endif
+!ifndef setupgui_dir
+setupgui_dir    = $(owroot_bld)setupgui
+!endif
+!ifndef win386_dir
+win386_dir      = $(owroot_bld)win386
+!endif
+!ifndef d16api_dir
+d16api_dir      = $(owroot_bld)d16api
+!endif
+!ifndef wstub_dir
+wstub_dir       = $(owroot_bld)wstuba
+!endif
+!ifndef rsilib_dir
+rsilib_dir      = $(owroot_bld)rsilib
+!endif
+!ifndef wprof_dir
+wprof_dir       = $(owroot_bld)wprof
+!endif
+!ifndef build_dir
+build_dir       = $(owroot_build)
+!endif
+!ifndef docs_dir
+docs_dir        = $(owroot_docs)
+!endif
