@@ -156,7 +156,7 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
     $(noecho)set SDL_DISKAUDIOFILE=NUL
 !endif
     @%create $(dos_gendev_tmp_batch)
-    @%append $(dos_gendev_tmp_batch) mount d $(docs_dir)
+    @%append $(dos_gendev_tmp_batch) mount d ../../docs
     @%append $(dos_gendev_tmp_batch) c:
     @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
     @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
