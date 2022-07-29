@@ -691,7 +691,7 @@ system begin zrdx
     option osname='Zurenava'
     libpath '%WATCOM%/lib386'
     libpath '%WATCOM%/lib386/dos'
-    op stub= zrdx.exe
+    op stub=zrdx.exe
     format os2 le
 :endsegment
 end

@@ -5,6 +5,7 @@ if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.exe del %OWSRCDIR%\builder\%OWOBJDIR%\*
 if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.obj del %OWSRCDIR%\builder\%OWOBJDIR%\*.obj
 if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.map del %OWSRCDIR%\builder\%OWOBJDIR%\*.map
 if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.err del %OWSRCDIR%\builder\%OWOBJDIR%\*.err
+if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.lnk del %OWSRCDIR%\builder\%OWOBJDIR%\*.lnk
 if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.sym del %OWSRCDIR%\builder\%OWOBJDIR%\*.sym
 if exist %OWSRCDIR%\builder\%OWOBJDIR% rmdir %OWSRCDIR%\builder\%OWOBJDIR%
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.exe del %OWSRCDIR%\wmake\%OWOBJDIR%\*.exe
@@ -12,6 +13,7 @@ if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.obj del %OWSRCDIR%\wmake\%OWOBJDIR%\*.obj
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.map del %OWSRCDIR%\wmake\%OWOBJDIR%\*.map
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.gh del %OWSRCDIR%\wmake\%OWOBJDIR%\*.gh
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.err del %OWSRCDIR%\wmake\%OWOBJDIR%\*.err
+if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.lnk del %OWSRCDIR%\wmake\%OWOBJDIR%\*.lnk
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.sym del %OWSRCDIR%\wmake\%OWOBJDIR%\*.sym
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.tmp del %OWSRCDIR%\wmake\%OWOBJDIR%\*.tmp
 if exist %OWSRCDIR%\wmake\%OWOBJDIR% rmdir %OWSRCDIR%\wmake\%OWOBJDIR%
