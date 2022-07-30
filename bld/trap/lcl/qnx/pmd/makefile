@@ -3,7 +3,7 @@
 # Create the QNX PMD.TRP
 #
 
-tree_depth = 4
+tree_depth = 5
 
 host_cpu = 386
 host_os  = qnx

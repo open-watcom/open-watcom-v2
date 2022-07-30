@@ -1,4 +1,4 @@
-tree_depth = 4
+tree_depth = 5
 
 target_cpu      = mps
 target_cls      = risc

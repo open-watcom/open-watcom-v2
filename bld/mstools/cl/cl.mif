@@ -1,4 +1,4 @@
-tree_depth = 4
+tree_depth = 5
 
 !ifdef target_cpu
 exetarg_prebuild_objs = cmdlnprs.gc

@@ -1,6 +1,6 @@
 #pmake: trap remote os_nt cpu_axp tcp axp
 
-tree_depth = 3
+tree_depth = 4
 
 host_os  = nt
 host_cpu = axp

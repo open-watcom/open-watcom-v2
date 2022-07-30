@@ -1,6 +1,6 @@
 #pmake: serv remote os_linux cpu_mips tcp mips monolithic
 
-tree_depth = 3
+tree_depth = 4
 
 bootstrap = 1
 

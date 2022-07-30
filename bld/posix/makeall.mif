@@ -3,9 +3,9 @@
 #
 
 !ifdef bootstrap
-tree_depth = 2
-!else
 tree_depth = 3
+!else
+tree_depth = 4
 !endif
 
 !ifndef __UNIX__

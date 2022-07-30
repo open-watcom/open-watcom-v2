@@ -1,6 +1,6 @@
 # AUI sample project makefile
 
-tree_depth = 3
+tree_depth = 4
 
 proj_name = auisample
 

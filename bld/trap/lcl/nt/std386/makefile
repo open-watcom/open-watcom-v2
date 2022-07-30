@@ -1,6 +1,6 @@
 #pmake: build lcl os_nt cpu_386 trap x86
 
-tree_depth = 4
+tree_depth = 5
 
 host_os  = nt
 host_cpu = 386

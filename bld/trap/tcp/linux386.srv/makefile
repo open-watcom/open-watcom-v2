@@ -1,6 +1,6 @@
 #pmake: build serv remote os_linux cpu_386 tcp x86
 
-tree_depth = 3
+tree_depth = 4
 
 host_os  = linux
 host_cpu = 386

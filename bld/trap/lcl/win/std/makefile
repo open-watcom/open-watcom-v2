@@ -1,6 +1,6 @@
 #pmake: build guitool lcl os_win cpu_i86 cpu_386 trap x86
 
-tree_depth = 4
+tree_depth = 5
 
 host_os  = win
 host_cpu = i86

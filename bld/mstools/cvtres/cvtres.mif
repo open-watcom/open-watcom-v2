@@ -1,4 +1,4 @@
-tree_depth = 4
+tree_depth = 5
 
 exetarg_prebuild_objs = cmdlnprs.gc
 exetarg_objs = cvtres.obj message.obj parse.obj $(mstools_objs)

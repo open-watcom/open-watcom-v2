@@ -1,4 +1,4 @@
-tree_depth = 5 
+tree_depth = 6
 
 !include $(mathlib_dir)/master.mif
 

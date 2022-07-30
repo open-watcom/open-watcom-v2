@@ -1,6 +1,6 @@
 #pmake: serv remote os_nto cpu_x86 tcp x86 monolithic
 
-tree_depth = 3
+tree_depth = 4
 
 bootstrap = 1
 

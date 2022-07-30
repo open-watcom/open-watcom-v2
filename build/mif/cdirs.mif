@@ -5,6 +5,7 @@
 owroot_bld     = $(%OWROOT)/bld/
 owroot_build   = $(%OWROOT)/build
 owroot_contrib = $(%OWROOT)/contrib/
+owroot_distrib = $(%OWROOT)/distrib
 owroot_docs    = $(%OWROOT)/docs
 !else
 #########################################
@@ -17,15 +18,17 @@ depth_3 = ../../../
 depth_4 = ../../../../
 depth_5 = ../../../../../
 depth_6 = ../../../../../../
+depth_7 = ../../../../../../../
 !ifdef $(proj_name)_tree_depth
 tree_depth = $($(proj_name)_tree_depth)
 !else ifndef tree_depth
-tree_depth = 2
+tree_depth = 3
 !endif
-owroot_bld     = $(depth_$(tree_depth))
-owroot_build   = $(depth_$(tree_depth))../build
-owroot_contrib = $(depth_$(tree_depth))../contrib/
-owroot_docs    = $(depth_$(tree_depth))../docs
+owroot_bld     = $(depth_$(tree_depth))bld/
+owroot_build   = $(depth_$(tree_depth))build
+owroot_contrib = $(depth_$(tree_depth))contrib/
+owroot_disrib  = $(depth_$(tree_depth))distrib
+owroot_docs    = $(depth_$(tree_depth))docs
 !endif
 #########################################
 !ifndef bench_dir
@@ -354,4 +357,7 @@ build_dir       = $(owroot_build)
 !endif
 !ifndef docs_dir
 docs_dir        = $(owroot_docs)
+!endif
+!ifndef distrib_dir
+distrib_dir     = $(owroot_distrib)
 !endif

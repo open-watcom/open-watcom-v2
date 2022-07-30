@@ -2,7 +2,7 @@
 # Change this macro name to whatever the name of your machine is
 #
 
-tree_depth = 3
+tree_depth = 4
 
 target_cpu = xmp
 

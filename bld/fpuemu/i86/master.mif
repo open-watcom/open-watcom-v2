@@ -2,7 +2,7 @@
 # EMUI86 makefile
 #
 
-tree_depth = 3
+tree_depth = 4
 
 proj_name = emui86
 

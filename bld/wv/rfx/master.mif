@@ -2,7 +2,7 @@
 # Open Watcom Debugger makefile (RFX)
 #
 
-tree_depth = 3
+tree_depth = 4
 
 proj_name = rfx
 

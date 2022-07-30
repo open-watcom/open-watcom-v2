@@ -1,4 +1,4 @@
-tree_depth = 3
+tree_depth = 4
 
 !ifndef clib_ctags
 proj_name = ctags

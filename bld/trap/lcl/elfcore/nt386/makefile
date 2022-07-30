@@ -3,7 +3,7 @@
 # Create the generic ELF core trap file
 #
 
-tree_depth = 4
+tree_depth = 5
 
 host_cpu = 386
 host_os  = nt

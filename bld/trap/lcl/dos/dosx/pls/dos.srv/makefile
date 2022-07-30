@@ -1,6 +1,6 @@
 #pmake: serv lcl os_dos dsx cpu_386 x86 pls
 
-tree_depth = 6
+tree_depth = 7
 
 host_cpu = 386
 host_os  = dos

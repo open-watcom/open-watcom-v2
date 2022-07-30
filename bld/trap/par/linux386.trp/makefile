@@ -1,6 +1,6 @@
 #pmake: build trap remote os_linux cpu_386 par
 
-tree_depth = 3
+tree_depth = 4
 
 host_cpu = 386
 host_os  = linux

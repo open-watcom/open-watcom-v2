@@ -1,4 +1,4 @@
-tree_depth = 4
+tree_depth = 5
 
 target_cpu      = i86
 target_cls      = intel

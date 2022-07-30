@@ -2,7 +2,7 @@
 # WATCOM Presentation Graphics (PGCHART.LIB)
 #
 
-tree_depth = 3
+tree_depth = 4
 
 proj_name = pgchart
 

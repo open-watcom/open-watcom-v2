@@ -1,6 +1,6 @@
 #pmake: serv remote os_linux cpu_ppc tcp ppc monolithic
 
-tree_depth = 3
+tree_depth = 4
 
 bootstrap = 1
 
