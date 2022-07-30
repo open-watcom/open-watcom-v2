@@ -74,9 +74,9 @@ wine_hc_batch=winehc.bat
 #
 # define target and platform help compilers
 #
-hc_nt = $(%OWWIN95HC:$(to_os_path))
-hc_hh = $(%OWHHC:$(to_os_path))
-hc_chmcmd = $(%OWCHMCMD)
+hc_nt = "$(%OWWIN95HC:$(to_os_path))"
+hc_hh = "$(%OWHHC:$(to_os_path))"
+hc_chmcmd = "$(%OWCHMCMD)"
 hc_pdf = ps2pdf12
 
 hcdos   = hcdos
