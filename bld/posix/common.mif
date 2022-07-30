@@ -5,8 +5,6 @@
 #
 #   Macros used by this file:
 #
-#   posix_dir   Must point to the root of the posix project.
-#
 #   cflags      If defined, these options to the compiler override the
 #               defaults selected by this file.
 #
@@ -15,7 +13,7 @@
 #   if make_lib isn't defined, then the following must be defined:
 #
 #   name        The name of the command which is being built.  The
-#               directory $(posix_dir)/src/$(name) must exist, and
+#               directory posix/src/$(name) must exist, and
 #               contain the source for the command.
 
 #

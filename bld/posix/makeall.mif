@@ -8,7 +8,7 @@ proj_name = posix_all
 
 posix_all_autodepends = .AUTODEPEND
 
-!include $(posix_dir)/model.mif
+!include ../model.mif
 
 model_switch_i86=
 model_switch_386=
@@ -16,12 +16,12 @@ model_switch_386=
 !include cproj.mif
 !include defrule.mif
 
-!include $(posix_dir)/commands.mif
-!include $(posix_dir)/common.mif
+!include ../commands.mif
+!include ../common.mif
 
-inc_dirs += -I"$(posix_dir)/h"
+inc_dirs += -I"../h"
 
-.c: $(posix_dir)/misc
+.c: ../misc
 
 subdir_stdlib = $(stdlibdir)
 subdir_altlib = $(altlibdir)
@@ -74,7 +74,7 @@ wmake_opts += release=$(release)
 !endif
 
 $(commands) : .symbolic $(__MAKEFILES__)
-    $(noecho)!$(nested_wmake) -h $(wmake_opts) -f "$(posix_dir)/src/$@/makefile"
+    $(noecho)!$(nested_wmake) -h $(wmake_opts) -f "../src/$@/makefile"
 
 curr_dir=$+$(%__CWD__)$-
 
