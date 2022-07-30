@@ -729,13 +729,15 @@ static  int  ParseArgs( int argc, char **argv )
             }
             switch( Word[0] ) {
             case 'd':           /* name of linker directive file */
+                if( Link_Name != NULL )
+                    MemFree( Link_Name );
                 if( Word[1] == '=' || Word[1] == '#' ) {
-                    MakeName( Word, TOOL_LNK_EXT );  /* add extension */
-                    MemFree( Link_Name );
-                    Link_Name = strfdup( Word + 2 );
+                    MakeName( Word + 2, TOOL_LNK_EXT );  /* add extension */
+                    Link_Name = MemAlloc( strlen( Word + 2 ) + 2 );
+                    Link_Name[0] = '@';
+                    strcpy( Link_Name + 1, Word + 2 );
                 } else {
-                    MemFree( Link_Name );
-                    Link_Name = MemStrDup( TEMPFILE );
+                    Link_Name = MemStrDup( "@" TEMPFILE );
                 }
                 wcc_option = 0;
                 break;
@@ -1508,30 +1510,36 @@ static  int  CompLink( void )
         rc = 1;
     } else {
         FILE    *fp;
+        bool    remove_file;
 
-        errno = 0; /* Standard C does not require fopen failure to set errno */
-        if( (fp = fopen( TEMPFILE, "w" )) == NULL ) {
-            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE, strerror( errno ) );
+        remove_file = false;
+        if( Link_Name == NULL ) {
+            Link_Name = MemStrDup( "@" TEMPFILE );
+            remove_file = true;
+        }
+        if( access( Link_Name + 1, F_OK ) == 0 ) {
+            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], Link_Name + 1, "file already exists" );
             rc = 2;
         } else {
-            rc = 0;
-            BuildLinkFile( fp );
-            fclose( fp );
-            if( ( Obj_List != NULL || Flags.do_link ) && !Flags.no_link ) {
-                rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
-                if( rc == 0 && Flags.do_cvpack ) {
-                    char fname[_MAX_PATH];
-
-                    rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
-                }
-            }
-            if( Link_Name != NULL ) {
-                if( fname_cmp( Link_Name, TEMPFILE ) != 0 ) {
-                    remove( Link_Name );
-                    rename( TEMPFILE, Link_Name );
-                }
+            errno = 0; /* Standard C does not require fopen failure to set errno */
+            if( (fp = fopen( Link_Name + 1, "w" )) == NULL ) {
+                PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], Link_Name + 1, strerror( errno ) );
+                rc = 2;
             } else {
-                remove( TEMPFILE );
+                rc = 0;
+                BuildLinkFile( fp );
+                fclose( fp );
+                if( ( Obj_List != NULL || Flags.do_link ) && !Flags.no_link ) {
+                    rc = tool_exec( TYPE_LINK, Link_Name, NULL );
+                    if( rc == 0 && Flags.do_cvpack ) {
+                        char fname[_MAX_PATH];
+
+                        rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
+                    }
+                }
+                if( remove_file ) {
+                    remove( Link_Name + 1 );
+                }
             }
         }
     }

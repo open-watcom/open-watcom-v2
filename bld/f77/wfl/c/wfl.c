@@ -750,14 +750,15 @@ static  int     Parse( int argc, char **argv )
                     case 'd':   // name of linker directive file
                         if( Link_Name != NULL )
                             MemFree( Link_Name );
-                        if( Word[1] == '\0' ) {
-                            Link_Name = MemStrDup( TEMPFILE );
-                            cmp_option = false;
-                        } else if( (Word[1] == '=') || (Word[1] == '#') ) {
-                            MakeName( Word, "lnk" );    // add extension
-                            Link_Name = MemStrDup( Word + 2 );
-                            cmp_option = false;
+                        if( (Word[1] == '=') || (Word[1] == '#') ) {
+                            MakeName( Word + 2, "lnk" );    // add extension
+                            Link_Name = MemAlloc( strlen( Word + 2 ) + 2 );
+                            Link_Name[0] = '@';
+                            strcpy( Link_Name + 1, Word + 2 );
+                        } else {
+                            Link_Name = MemStrDup( "@" TEMPFILE );
                         }
+                        cmp_option = false;
                         break;
                     case 'e':   // name of exe file
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
