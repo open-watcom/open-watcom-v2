@@ -2,12 +2,6 @@
 #   define macro for OS's which need POSIX utilities
 #
 
-!ifdef bootstrap
-tree_depth = 3
-!else
-tree_depth = 4
-!endif
-
 !ifndef __UNIX__
 
 proj_name = posix_all

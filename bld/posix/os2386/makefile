@@ -3,4 +3,4 @@
 host_os  = os2
 host_cpu = 386
 
-!include ../../makeall.mif
+!include ../makeall.mif

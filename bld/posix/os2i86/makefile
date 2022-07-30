@@ -3,4 +3,4 @@
 host_os  = os2
 host_cpu = i86
 
-!include ../../makeall.mif
+!include ../makeall.mif

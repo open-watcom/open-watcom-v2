@@ -62,9 +62,9 @@ stdlibdir=$(std_subdir_$(host_cpu))
 altlibdir=$(alt_subdir_$(host_os)$(host_cpu)$(model))
 !endif
 !else
-stdlibdir=$(posix_dir)/misc/$(objs_subdir)/$(std_subdir_$(host_cpu))
+stdlibdir=../misc/$(objs_subdir)/$(std_subdir_$(host_cpu))
 !ifdef alt_posixlib
-altlibdir=$(posix_dir)/misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
+altlibdir=../misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
 !endif
 !endif
 

@@ -3,4 +3,4 @@
 host_os  = dos
 host_cpu = i86
 
-!include ../../makeall.mif
+!include ../makeall.mif
