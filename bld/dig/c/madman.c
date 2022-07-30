@@ -36,7 +36,6 @@
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <i64.h>
 #if defined( __WINDOWS__ )
 #elif defined( __NT__ )
 #include <windows.h>
@@ -1189,13 +1188,12 @@ static mad_status DUMMYIMPENTRY( TypeToString )( mad_radix radix, const mad_type
 static const char DigitTab[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 //NYI: big endian hosts & targets
-static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_length )
+static char *CvtNum( int_64 val, mad_radix radix, char *p, int bit_length )
 {
     size_t              len;
     char                save;
     int                 digits;
-    unsigned_64         rem;
-    unsigned_64         divisor;
+    lldiv_t             result;
 
     switch( radix ) {
     case 2:
@@ -1208,26 +1206,18 @@ static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_lengt
         digits = 0;
         break;
     }
-    U32ToU64( radix, &divisor );
+    result.quot = val;
     do {
-        U64Div( &val, &divisor, &val, &rem );
-        *--p = DigitTab[rem.u._32[I64LO32]];
+        result = lldiv( result.quot, radix );
+        *--p = DigitTab[result.rem];
         --digits;
-    } while( val.u._32[I64LO32] != 0 || val.u._32[I64HI32] != 0 || digits > 0 );
+    } while( result.quot != 0 || digits > 0 );
     len = MADCli( RadixPrefix )( radix, NULL, 0 );
     p -= len;
     save = p[len];
     MADCli( RadixPrefix )( radix, p, len + 1 );
     p[len] = save; /* got overwritten with a '\0' */
     return( p );
-}
-
-static char *CvtNum( unsigned long val, mad_radix radix, char *p, int bit_length )
-{
-    unsigned_64 tmp;
-
-    U32ToU64( val, &tmp );
-    return( U64CvtNum( tmp, radix, p, bit_length ) );
 }
 
 static mad_status IntTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
@@ -1240,16 +1230,15 @@ static mad_status IntTypeToString( mad_radix radix, mad_type_info const *mti, co
     size_t              len;
     mad_status          ms;
 
-
     ms = DecomposeInt( mti, d, &val );
     if( ms != MS_OK )
         return( ms );
     neg = false;
     if( mti->i.nr != MNR_UNSIGNED && val.i.u.sign.v ) {
         neg = true;
-        U64Neg( &val.i, &val.i );
+        val.i.u._64[0] = -val.i.u._64[0];
     }
-    p = U64CvtNum( val.i, radix, buff1 + sizeof( buff1 ), mti->b.bits );
+    p = CvtNum( val.i.u._64[0], radix, buff1 + sizeof( buff1 ), mti->b.bits );
     if( neg )
         *--p = '-';
     len = buff1 + sizeof( buff1 ) - p;
