@@ -18,20 +18,20 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay "<PROJDIR>"
-    <CPCMD> <OWOBJDIR>/bwrc.exe     "<OWBINDIR>/<OWOBJDIR>/bwrc<CMDEXT>"
-    <CCCMD> <OWOBJDIR>/bwrcd<DYEXT> "<OWBINDIR>/<OWOBJDIR>/bwrcd<DYEXT>"
-    <CPCMD> <OWOBJDIR>/kanji.uni    "<OWBINDIR>/<OWOBJDIR>/"
-    <CPCMD> <OWOBJDIR>/to932.uni    "<OWBINDIR>/<OWOBJDIR>/"
+    <CPCMD> <OWOBJDIR>/bwrc.exe     "<OWROOT>/build/<OWOBJDIR>/bwrc<CMDEXT>"
+    <CCCMD> <OWOBJDIR>/bwrcd<DYEXT> "<OWROOT>/build/<OWOBJDIR>/bwrcd<DYEXT>"
+    <CPCMD> <OWOBJDIR>/kanji.uni    "<OWROOT>/build/<OWOBJDIR>/"
+    <CPCMD> <OWOBJDIR>/to932.uni    "<OWROOT>/build/<OWOBJDIR>/"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/bwrc<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/bwrc<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/bwrcd<DYEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/kanji.uni"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/kanji.uni"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/to932.uni"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/to932.uni"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/bwrc<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/bwrc<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/bwrcd<DYEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/kanji.uni"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/kanji.uni"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/to932.uni"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/to932.uni"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

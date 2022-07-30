@@ -84,10 +84,10 @@ set PROJDIR=<CWD>
 #os2
 #    <CCCMD> nov/os2.trp/nov*.dll                    "<OWRELROOT>/binp/dll/"
 #    <CCCMD> nov/os2.srv/novserv1.exe                "<OWRELROOT>/binp/"
-#    <CCCMD> <OWSRCDIR>/bin/binp/dll/???.dll         "<OWRELROOT>/binp/dll/"
-#    <CCCMD> <OWSRCDIR>/bin/binp/dll/std??.dll       "<OWRELROOT>/binp/dll/"
-#    <CCCMD> <OWSRCDIR>/bin/binp/dll/???serv.exe     "<OWRELROOT>/binp/dll/"
-#    <CCCMD> <OWSRCDIR>/bin/binp/???serv1.exe        "<OWRELROOT>/binp/"
+#    <CCCMD> <OWROOT>/bld/bin/binp/dll/???.dll         "<OWRELROOT>/binp/dll/"
+#    <CCCMD> <OWROOT>/bld/bin/binp/dll/std??.dll       "<OWRELROOT>/binp/dll/"
+#    <CCCMD> <OWROOT>/bld/bin/binp/dll/???serv.exe     "<OWRELROOT>/binp/dll/"
+#    <CCCMD> <OWROOT>/bld/bin/binp/???serv1.exe        "<OWRELROOT>/binp/"
 
     <CCCMD> lcl/win/std/std*.dll                    "<OWRELROOT>/binw/"
     <CCCMD> net/win.trp/net*.dll                    "<OWRELROOT>/binw/"

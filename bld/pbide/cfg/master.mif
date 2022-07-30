@@ -1,16 +1,31 @@
+tree_depth = 4
+
 proj_name = pbide
 
 !include cproj.mif
 
-objs = pbidex.cfg pbide.cfg
+objs     = pbidex.cfg pbide.cfg
+objs_win = idepb.cfg
+objs_nt  = idepbnt.cfg
 
-all : $(objs) .symbolic
+.extensions : .cfg .sp
 
-pbidex.cfg : $(idecfg_dir)/idex.sp
-    $(wsplice) -k C_FOR_PB $(wsplice_opts) $[@ $@
+.sp: $(idecfg_dir)
 
-pbide.cfg : $(idecfg_dir)/ide.sp
-    $(wsplice) -k C_FOR_PB $(wsplice_opts) $[@ $@
+all: $(objs) $(objs_$(host_os)) .symbolic
+
+wsplice_opts_nt  = -k FOR_NT -k C_FOR_PB
+wsplice_opts_win = -k FOR_WIN -k C_FOR_PB
+
+.sp.cfg:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_$(host_os)) $[@ $@
+
+pbidex.cfg : idex.sp
+    $(wsplice) $(wsplice_opts_$(host_os)) $[@ $@
+
+pbide.cfg : ide.sp
+    $(wsplice) $(wsplice_opts_$(host_os)) $[@ $@
 
 clean : .symbolic
     rm -f *.cfg

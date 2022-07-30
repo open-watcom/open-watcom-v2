@@ -18,15 +18,15 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay "<PROJDIR>"
-    <CPCMD> <OWOBJDIR>/parsectl.exe "<OWBINDIR>/<OWOBJDIR>/parsectl<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/parsedyn.exe "<OWBINDIR>/<OWOBJDIR>/parsedyn<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/parsectl.exe "<OWROOT>/build/<OWOBJDIR>/parsectl<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/parsedyn.exe "<OWROOT>/build/<OWOBJDIR>/parsedyn<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/parsectl<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/parsectl<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/parsedyn<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/parsedyn<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/parsectl<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/parsectl<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/parsedyn<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/parsedyn<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

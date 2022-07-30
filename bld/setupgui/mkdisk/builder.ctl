@@ -14,21 +14,21 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay "<PROJDIR>"
-    <CPCMD> <OWOBJDIR>/mkexezip.exe "<OWBINDIR>/<OWOBJDIR>/mkexezip<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/uzip.exe "<OWBINDIR>/<OWOBJDIR>/uzip<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/langdat.exe "<OWBINDIR>/<OWOBJDIR>/langdat<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/mkinf.exe "<OWBINDIR>/<OWOBJDIR>/mkinf<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/mkexezip.exe "<OWROOT>/build/<OWOBJDIR>/mkexezip<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/uzip.exe "<OWROOT>/build/<OWOBJDIR>/uzip<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/langdat.exe "<OWROOT>/build/<OWOBJDIR>/langdat<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/mkinf.exe "<OWROOT>/build/<OWOBJDIR>/mkinf<CMDEXT>"
  
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/mkexezip<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/mkexezip<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/uzip<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/uzip<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/langdat<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/langdat<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/mkinf<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/mkinf<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/mkexezip<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/mkexezip<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/uzip<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/uzip<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/langdat<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/langdat<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/mkinf<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/mkinf<CMDEXT>"
  
 [ BLOCK . . ]
 

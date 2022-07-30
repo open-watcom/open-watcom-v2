@@ -561,7 +561,7 @@ $+$(t_rund4g)$- : .symbolic
     # not handle long PATH env vars; make PATH short for this test
     @set OPATH=$(%PATH)
 !ifdef buildtest
-    @set PATH=$(%OWSRCDIR)\redist\dos4gw
+    @set PATH=$(%OWROOT)\bld\redist\dos4gw
 !else
     @set PATH=$(%WATCOM)\binw
 !endif

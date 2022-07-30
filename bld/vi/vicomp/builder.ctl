@@ -18,12 +18,12 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay "<PROJDIR>"
-    <CPCMD> <OWOBJDIR>/vicomp.exe   "<OWBINDIR>/<OWOBJDIR>/vicomp<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/vicomp.exe   "<OWROOT>/build/<OWOBJDIR>/vicomp<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/vicomp<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/vicomp<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/vicomp<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/vicomp<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

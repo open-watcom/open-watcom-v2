@@ -3,6 +3,4 @@
 host_os = win
 host_cpu = i86
 
-wsplice_opts = -k FOR_WIN
-
 !include ../master.mif

@@ -993,7 +993,7 @@ targ_run_lnxmps =
 run = $(targ_run_$(targ_env_$(arch)))
 
 !ifdef buildtest
-wbind = $(%OWBINDIR)\$(%OWOBJDIR)\bwbind.exe
+wbind = $(%OWROOT)\build\$(%OWOBJDIR)\bwbind.exe
 win386ldr = $(src_dir)/win386/ext/win386.ext
 !else
 wbind = $(watcom_root)\binnt\wbind.exe

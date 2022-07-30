@@ -18,12 +18,12 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay "<PROJDIR>"
-    <CPCMD> <OWOBJDIR>/ide2make.exe "<OWBINDIR>/<OWOBJDIR>/bide2mak<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/ide2make.exe "<OWROOT>/build/<OWOBJDIR>/bide2mak<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/bide2mak<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/bide2mak<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/bide2mak<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/bide2mak<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

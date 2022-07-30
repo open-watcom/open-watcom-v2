@@ -18,12 +18,12 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay "<PROJDIR>"
-    <CPCMD> <OWOBJDIR>/bwclppc.exe "<OWBINDIR>/<OWOBJDIR>/bwclppc<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/bwclppc.exe "<OWROOT>/build/<OWOBJDIR>/bwclppc<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/bwclppc<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/bwclppc<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/bwclppc<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/bwclppc<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

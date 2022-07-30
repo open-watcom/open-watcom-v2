@@ -18,27 +18,27 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay "<PROJDIR>"
-    <CPCMD> <OWOBJDIR>/wsplice.exe  "<OWBINDIR>/<OWOBJDIR>/wsplice<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/sweep.exe    "<OWBINDIR>/<OWOBJDIR>/sweep<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/comstrip.exe "<OWBINDIR>/<OWOBJDIR>/comstrip<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/genverrc.exe "<OWBINDIR>/<OWOBJDIR>/genverrc<CMDEXT>"
-    <CCCMD> <OWOBJDIR>/diff.exe     "<OWBINDIR>/<OWOBJDIR>/diff<CMDEXT>"
-    <CCCMD> <OWOBJDIR>/crlf.exe     "<OWBINDIR>/<OWOBJDIR>/crlf<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/wsplice.exe  "<OWROOT>/build/<OWOBJDIR>/wsplice<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/sweep.exe    "<OWROOT>/build/<OWOBJDIR>/sweep<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/comstrip.exe "<OWROOT>/build/<OWOBJDIR>/comstrip<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/genverrc.exe "<OWROOT>/build/<OWOBJDIR>/genverrc<CMDEXT>"
+    <CCCMD> <OWOBJDIR>/diff.exe     "<OWROOT>/build/<OWOBJDIR>/diff<CMDEXT>"
+    <CCCMD> <OWOBJDIR>/crlf.exe     "<OWROOT>/build/<OWOBJDIR>/crlf<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/wsplice<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/wsplice<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/sweep<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/sweep<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/comstrip<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/comstrip<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/genverrc<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/genverrc<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/diff<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/diff<CMDEXT>"
-    echo rm -f "<OWBINDIR>/<OWOBJDIR>/crlf<CMDEXT>"
-    rm -f "<OWBINDIR>/<OWOBJDIR>/crlf<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/wsplice<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/wsplice<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/sweep<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/sweep<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/comstrip<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/comstrip<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/genverrc<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/genverrc<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/diff<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/diff<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/crlf<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/crlf<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
