@@ -245,20 +245,20 @@ cdsay .
 
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE "<OWDOCSDIR>/builder.ctl" ]
+[ INCLUDE "<OWROOT>/docs/builder.ctl" ]
 [ ENDIF ]
 # Build installers
 [ IFDEF <OWDISTRBUILD> 1 ]
-[ INCLUDE "<OWDISTRDIR>/ow/builder.ctl" ]
+[ INCLUDE "<OWROOT>/distrib/ow/builder.ctl" ]
 [ ENDIF ]
 
 [ BLOCK <BLDRULE> docsclean docs ]
 #=================================
-[ INCLUDE "<OWDOCSDIR>/builder.ctl" ]
+[ INCLUDE "<OWROOT>/docs/builder.ctl" ]
 
 [ BLOCK <BLDRULE> install missing instclean ]
 #============================================
-[ INCLUDE "<OWDISTRDIR>/ow/builder.ctl" ]
+[ INCLUDE "<OWROOT>/distrib/ow/builder.ctl" ]
 
 [ BLOCK <BLDRULE> testclean test cleanlog ]
 #==========================================
