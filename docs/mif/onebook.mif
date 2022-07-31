@@ -74,10 +74,20 @@ wine_hc_batch=winehc.bat
 #
 # define target and platform help compilers
 #
-hc_nt = "$(%OWWIN95HC:$(to_os_path))"
-hc_hh = "$(%OWHHC:$(to_os_path))"
-hc_chmcmd = "$(%OWCHMCMD)"
+!ifeq bld_os nt
+hc_nt = ..\..\ci\nt386\hcrtf
+hc_hh = ..\..\ci\nt386\hhc
 hc_pdf = ps2pdf12
+hc_pdf_path = ..\..\ci\nt386
+!else
+!ifdef %OWGHOSTSCRIPTPATH
+hc_pdf = ps2pdf12
+hc_pdf_path = $(%OWGHOSTSCRIPTPATH)
+!endif
+!ifdef %OWCHMCMD
+hc_chmcmd = $(%OWCHMCMD)
+!endif
+!endif
 
 hcdos   = hcdos
 whc     = bwhc
@@ -117,7 +127,7 @@ dep_chm = $(hbook).chm
 dep_chm = $(hbook).chm
 !endif
 dep_ps = $(hbook).ps
-!ifdef %OWGHOSTSCRIPTPATH
+!ifneq hc_pdf
 dep_pdf = $(hbook).pdf
 !endif
 
