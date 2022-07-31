@@ -59,8 +59,8 @@ GENDEVCMD = ..\gml\dos\gendev $(gendev_cmdl_params)
 
 !else ifeq bld_os os2
 
-WGMLCMD = ..\gml\dos\wgml $(wgml_cmdl_params)
-GENDEVCMD = ..\gml\dos\gendev $(gendev_cmdl_params)
+WGMLCMD = ..\gml\os2\wgml $(wgml_cmdl_params)
+GENDEVCMD = ..\gml\os2\gendev $(gendev_cmdl_params)
 
 !else ifdef dosbox
 
