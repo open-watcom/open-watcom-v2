@@ -20,20 +20,8 @@ set OWDEFWATCOM=%WATCOM%
 REM Subdirectory to be used for building OW build tools
 if '%OWOBJDIR%' == '' set OWOBJDIR=binbuild
 
-REM Subdirectory to be used for build binaries
-set OWBINDIR=%OWROOT%\build
-
-REM Subdirectory containing OW sources
-set OWSRCDIR=%OWROOT%\bld
-
-REM Subdirectory containing documentation sources
-set OWDOCSDIR=%OWROOT%\docs
-
-REM Subdirectory containing distribution sources
-set OWDISTRDIR=%OWROOT%\distrib
-
 REM Set environment variables
-set PATH=%OWBINDIR%\%OWOBJDIR%;%OWBINDIR%;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%;%OWDOSBOXPATH%
+set PATH=%OWROOT%\build\%OWOBJDIR%;%OWROOT%\build;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%;%OWDOSBOXPATH%
 set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 

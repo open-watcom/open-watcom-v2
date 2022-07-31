@@ -5,10 +5,10 @@
 #
 # Expects POSIX tools.
 
-mkdir $OWBINDIR/$OWOBJDIR
+mkdir $OWROOT/build/$OWOBJDIR
 
-mkdir $OWSRCDIR/wmake/$OWOBJDIR
-cd $OWSRCDIR/wmake/$OWOBJDIR
+mkdir $OWROOT/bld/wmake/$OWOBJDIR
+cd $OWROOT/bld/wmake/$OWOBJDIR
 if [ "$OWTOOLS" = "WATCOM" ]; then
     wmake -f ../wmake
 else
@@ -33,10 +33,10 @@ if [ $RC -ne 0 ]; then
     echo "wmake bootstrap build error"
 else
     export OWVERBOSE=1
-    mkdir $OWSRCDIR/builder/$OWOBJDIR
-    cd $OWSRCDIR/builder/$OWOBJDIR
-    $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1
-    cd $OWSRCDIR
+    mkdir $OWROOT/bld/builder/$OWOBJDIR
+    cd $OWROOT/bld/builder/$OWOBJDIR
+    $OWROOT/build/$OWOBJDIR/wmake -f ../binmake bootstrap=1
+    cd $OWROOT/bld
     builder boot
     RC=$?
     if [ $RC -ne 0 ]; then
