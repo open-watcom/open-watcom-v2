@@ -79,11 +79,16 @@ distrib_bindir = ../bin
 !ifdef missing
 
 all: .SYMBOLIC
+    @rm -f *.__c
     langdat -l filelist $(langdat_keys) -r $(bld_ver) c
-    mkinf -x -i../include $(mkinf_opt_$(host_os)) c filelist $(%OWRELROOT)
+    mkinf -x -i../include $(mkinf_opt_$(host_os)) c filelist "$(%OWRELROOT)"
     langdat -l filelist $(langdat_keys) -r $(bld_ver) f77
-    mkinf -x -i../include $(mkinf_opt_$(host_os)) f77 filelist $(%OWRELROOT)
+    mkinf -x -i../include $(mkinf_opt_$(host_os)) f77 filelist "$(%OWRELROOT)"
+!ifdef debug
+    @%ren filelist      filelist.__c
+!else
     @rm -rf filelist
+!endif
 
 !else
 
@@ -94,10 +99,10 @@ $(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .AL
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @copy $]@ setup.exe
-    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) c filelist $(%OWRELROOT)
-    @copy setup.inf $(%OWRELROOT)/setup.inf
-    uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm $(%OWRELROOT)/setup.inf
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) c filelist "$(%OWRELROOT)"
+    @copy setup.inf "$(%OWRELROOT)/setup.inf"
+    uzip setup.zip instarch.lst "$(%OWRELROOT)"
+    @rm "$(%OWRELROOT)/setup.inf"
     @rm setup.exe
 !ifdef debug
     @%ren filelist      filelist.__c
@@ -114,10 +119,10 @@ $(distrib_bindir)/$(installer_f77) : ../files.dat $(distrib_bindir) $(setup_f77)
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @copy $]@ setup.exe
-    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) f77 filelist $(%OWRELROOT)
-    @copy setup.inf $(%OWRELROOT)/setup.inf
-    uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm $(%OWRELROOT)/setup.inf
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) f77 filelist "$(%OWRELROOT)"
+    @copy setup.inf "$(%OWRELROOT)/setup.inf"
+    uzip setup.zip instarch.lst "$(%OWRELROOT)"
+    @rm "$(%OWRELROOT)/setup.inf"
     @rm setup.exe
 !ifdef debug
     @%ren filelist      filelist.__f
