@@ -107,7 +107,7 @@
 #define WCLENV      "OWCC"
 
 #define OUTPUTFILE  "a.out"
-#define TEMPFILE    "__owcc__" TOOL_LNK_EXT  /* temporary linker directive file    */
+#define TEMPFILE    "__owcc__" TOOL_LNK_EXT /* temporary linker directive file 8.3 */
 
 #define MAX_CC_OPTS 256
 
@@ -733,11 +733,10 @@ static  int  ParseArgs( int argc, char **argv )
                     MemFree( Link_Name );
                 if( Word[1] == '=' || Word[1] == '#' ) {
                     MakeName( Word + 2, TOOL_LNK_EXT );  /* add extension */
-                    Link_Name = MemAlloc( strlen( Word + 2 ) + 2 );
-                    Link_Name[0] = '@';
-                    strcpy( Link_Name + 1, Word + 2 );
+                    Link_Name = MemAlloc( strlen( Word + 2 ) + 1 );
+                    strcpy( Link_Name, Word + 2 );
                 } else {
-                    Link_Name = MemStrDup( "@" TEMPFILE );
+                    Link_Name = MemStrDup( TEMPFILE );
                 }
                 wcc_option = 0;
                 break;
@@ -1433,6 +1432,24 @@ void BuildSystemLink( FILE *fp )
     }
 }
 
+static FILE *OpenWlinkTmpFile( char *name )
+{
+    int     i;
+    int     fh;
+
+    for( i = 0; i < 100; i++ ) {
+        sprintf( name + 1 + 6, "%2.2d" TOOL_LNK_EXT, i );
+        fh = open( name + 1, O_RDWR | O_CREAT | O_EXCL | O_BINARY, S_IRUSR | S_IWUSR );
+        if( fh != -1 ) {
+            close( fh );
+            errno = 0; /* Standard C does not require fopen failure to set errno */
+            return( fopen( name + 1, "w" ) );
+        }
+    }
+    errno = EEXIST;
+    return( NULL );
+}
+
 static  int  CompLink( void )
 /***************************/
 {
@@ -1510,36 +1527,28 @@ static  int  CompLink( void )
         rc = 1;
     } else {
         FILE    *fp;
-        bool    remove_file;
+        char    tmp_name[1 + 12 + 1] = "@" TEMPFILE;
 
-        remove_file = false;
-        if( Link_Name == NULL ) {
-            Link_Name = MemStrDup( "@" TEMPFILE );
-            remove_file = true;
-        }
-        if( access( Link_Name + 1, F_OK ) == 0 ) {
-            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], Link_Name + 1, "file already exists" );
+        if( (fp = OpenWlinkTmpFile( tmp_name )) == NULL ) {
+            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], tmp_name + 1, strerror( errno ) );
             rc = 2;
         } else {
-            errno = 0; /* Standard C does not require fopen failure to set errno */
-            if( (fp = fopen( Link_Name + 1, "w" )) == NULL ) {
-                PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], Link_Name + 1, strerror( errno ) );
-                rc = 2;
-            } else {
-                rc = 0;
-                BuildLinkFile( fp );
-                fclose( fp );
-                if( ( Obj_List != NULL || Flags.do_link ) && !Flags.no_link ) {
-                    rc = tool_exec( TYPE_LINK, Link_Name, NULL );
-                    if( rc == 0 && Flags.do_cvpack ) {
-                        char fname[_MAX_PATH];
+            rc = 0;
+            BuildLinkFile( fp );
+            fclose( fp );
+            if( ( Obj_List != NULL || Flags.do_link ) && !Flags.no_link ) {
+                rc = tool_exec( TYPE_LINK, tmp_name, NULL );
+                if( rc == 0 && Flags.do_cvpack ) {
+                    char fname[_MAX_PATH];
 
-                        rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
-                    }
+                    rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
                 }
-                if( remove_file ) {
-                    remove( Link_Name + 1 );
-                }
+            }
+            if( Link_Name != NULL ) {
+                remove( Link_Name );
+                rename( tmp_name + 1, Link_Name );
+            } else {
+                remove( tmp_name + 1 );
             }
         }
     }
