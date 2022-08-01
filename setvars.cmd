@@ -35,10 +35,6 @@ REM ###############################
 REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
 REM set OWGHOSTSCRIPTPATH=%PATH%
 
-REM Change these variables to point Windows help compilers which you have installed
-REM set OWWIN95HC=hcrtf
-REM set OWHHC=hhc
-
 REM ###############################
 
 REM Subdirectory to be used for building OW build tools

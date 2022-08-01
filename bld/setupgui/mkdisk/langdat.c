@@ -768,13 +768,23 @@ static void ProcessCtlFile( const char *name )
             p = FirstWord( p + 1 );
             if( stricmp( p, "INCLUDE" ) == 0 ) {
                 if( IncludeStk->skipping == 0 ) {
-                    PushInclude( NextWord( p ) );
+                    char    inc_file[_MAX_PATH];
+
+                    p = GetPathOrFile( p, inc_file );
+                    PushInclude( inc_file );
                 }
             }
             else if( stricmp( p, "LOG" ) == 0 ) {
                 if( IncludeStk->skipping == 0 ) {
-                    log_name = NextWord( p );
-                    p = NextWord( log_name );
+                    char    log_name[_MAX_PATH];
+
+                    p = GetPathOrFile( p, &log_name );
+                    p = GetWord( p, &word );
+                    if( *word == '\0' || strcmp( word, "]" ) == 0 ) {
+                        BackupLog( log_name, LogBackup );
+                    } else {
+                        BackupLog( log_name, strtoul( word, NULL, 0 ) );
+                    }
                     if( LogFile == NULL ) {
                         OpenLog( log_name );
                     }
