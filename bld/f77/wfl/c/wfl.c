@@ -1102,9 +1102,8 @@ static  int     CompLink( void )
             if( Link_Name != NULL ) {
                 remove( Link_Name );
                 rename( temp_name + 1, Link_Name );
-            } else {
-                remove( temp_name + 1 );
             }
+            remove( temp_name + 1 );
         }
     }
     ListFree( Obj_List );
