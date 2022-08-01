@@ -1439,7 +1439,7 @@ static FILE *OpenWlinkTmpFile( char *name )
 
     for( i = 0; i < 100; i++ ) {
         sprintf( name + 1 + 6, "%2.2d" TOOL_LNK_EXT, i );
-        fh = open( name + 1, O_RDWR | O_CREAT | O_EXCL | O_BINARY, PMODE_USR_W );
+        fh = open( name + 1, O_RDWR | O_CREAT | O_EXCL | O_BINARY, PMODE_USR_RW );
         if( fh != -1 ) {
             close( fh );
             errno = 0; /* Standard C does not require fopen failure to set errno */
