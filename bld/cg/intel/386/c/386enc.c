@@ -58,7 +58,6 @@
 #include "tree.h"
 #include "treefold.h"
 #include "x86data.h"
-#include "envvar.h"
 #include "x86segs.h"
 #include "x86enc.h"
 #include "feprotos.h"

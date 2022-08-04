@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,23 +31,20 @@
 ****************************************************************************/
 
 
-#include "_cgstd.h"
-#include "coderep.h"
-#include "utils.h"
-#include "envvar.h"
-#include "feprotos.h"
+#include <i86.h>
+#include "realmod.h"
+#include "qtimer.h"
 
 
-bool    GetEnvVar( const char *what, char *buff, int len )
-/********************************************************/
+void GrabTimer( void )
 {
-    const char      *envvar;
+}
 
-    /* unused parameters */ (void)len;
+void ReleTimer( void )
+{
+}
 
-    envvar = FEGetEnv( what );
-    if( envvar == NULL )
-        return( false );
-    CopyStr( envvar, buff );
-    return( true );
+unsigned GetTickCnt( void )
+{
+    return( BIOSData( BDATA_SYSTEM_CLOCK, unsigned ) );
 }

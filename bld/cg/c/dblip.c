@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,4 +31,31 @@
 ****************************************************************************/
 
 
-extern  bool    GetEnvVar( const char *what, char *buff, int len );
+#include <i86.h>
+#include "bool.h"
+#include "_cgstd.h"
+#include "typclass.h"
+#include "hwreg.h"
+#include "bitset.h"
+#include "opcodes.h"
+#include "inslist.h"
+#include "blips.h"
+#include "int10.h"
+#include "realmod.h"
+
+
+static bool     mono;
+
+void BlipInit( void )
+{
+    mono = ( _BIOSVideoGetMode() == 7 );
+}
+
+void Blip( unsigned short location, char ch )
+{
+    if( mono ) {
+        VIDEOData( 0xB000, 0 + location * 2 ) = ch;
+    } else {
+        VIDEOData( 0xB000, 0x8000 + location * 2 ) = ch;
+    }
+}

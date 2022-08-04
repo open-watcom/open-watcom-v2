@@ -46,7 +46,6 @@
 #include "dumpio.h"
 #include "addrname.h"
 #include "inline.h"
-#include "envvar.h"
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -65,13 +64,15 @@ static  int     EchoAPIFlush = 0;
 static void     EchoAPIRedirect( void )
 /*************************************/
 {
-    char    tmpfile[PATH_MAX];
+    const char  *envvar;
 
-    if( GetEnvVar("echoapiflush", tmpfile, 11 ) ) {
+    envvar = FEGetEnv( "echoapiflush" );
+    if( envvar != NULL ) {
         EchoAPIFlush = 1;
     }
-    if( GetEnvVar("echoapifile", tmpfile, 11 ) ) {
-        EchoAPIFile = fopen( tmpfile, "wt" );
+    envvar = FEGetEnv( "echoapifile" );
+    if( envvar != NULL ) {
+        EchoAPIFile = fopen( envvar, "wt" );
     }
 }
 

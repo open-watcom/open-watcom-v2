@@ -77,7 +77,6 @@ essentially no worst case performance scenario.
 #include "utils.h"
 #include "onexit.h"
 #include "memsydep.h"
-#include "envvar.h"
 #include "feprotos.h"
 
 #ifdef __DOS__
@@ -169,8 +168,8 @@ static  void    NotEnoughMem( void )
 #endif
 
 
-static int myatoi( char *p )
-/**************************/
+static int myatoi( const char *p )
+/********************************/
 {
     int         i;
 
@@ -192,18 +191,21 @@ static  void    CalcMemSize( void )
     pointer_uint    size_requested;
     pointer_uint    memory_available;
     char            buff[80];
+    const char      *envvar;
 
     Initialized = 2;
     size_requested = 0;
     size_queried = false;
     max_size_queried = false;
-    if( GetEnvVar( "WCGMEMORY", buff, 9 ) ) {
-        if( buff[0] == '?' && buff[1] == '\0' ) {
+
+    envvar = FEGetEnv( "WCGMEMORY" );
+    if( envvar != NULL ) {
+        if( envvar[0] == '?' && envvar[1] == '\0' ) {
             max_size_queried = true;
-        } else if( buff[0] == '#' && buff[1] == '\0' ) {
+        } else if( envvar[0] == '#' && envvar[1] == '\0' ) {
             size_queried = true;
         } else {
-            size_requested = myatoi( buff ) * _1K;
+            size_requested = myatoi( envvar ) * _1K;
         }
     }
 #if defined( __DOS__ )
@@ -293,7 +295,7 @@ static  void    CalcMemSize( void )
     memory_available = _16M;
 #endif
     if( max_size_queried || size_queried ) {
-        sprintf( buff, "Maximum WCGMEMORY=%d\n", (int)(memory_available/_1K) );
+        sprintf( buff, "Maximum WCGMEMORY=%d\n", (int)( memory_available / _1K ) );
         FEMessage( MSG_INFO, buff );
     }
 }

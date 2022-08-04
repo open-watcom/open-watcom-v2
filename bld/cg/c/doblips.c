@@ -36,7 +36,6 @@
 #include "onexit.h"
 #include "qtimer.h"
 #include "blips.h"
-#include "envvar.h"
 #include "feprotos.h"
 
 #define Version         "WATCOM Code Generator --------"
@@ -150,7 +149,7 @@ void    FiniBlip( void )
 void    InitBlip( void )
 /**********************/
 {
-    char        buff[80];
+    const char  *envvar;
 
     LastBlipCount = GetTickCnt();
     NextTickCount = LastBlipCount;
@@ -161,10 +160,11 @@ void    InitBlip( void )
 #if defined( __NT__ )
     buff[0] = 0;
 #else
-    if( GetEnvVar( "WCGBLIPON", buff, 9 ) ) {
+    envvar = FEGetEnv( "WCGBLIPON" );
+    if( envvar != NULL ) {
         BlipInit();
         BlipsOn = true;
-        if( Length( buff ) == 7 && Equal( buff, "ALLERRS", 7 ) ) {
+        if( Length( envvar ) == 7 && Equal( envvar, "ALLERRS", 7 ) ) {
             Zoiks2 = true;
         }
     }
