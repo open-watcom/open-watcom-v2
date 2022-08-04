@@ -67,10 +67,10 @@ test : .symbolic start start_test test.lnk $(callconv_exes) test_set_result
 check_result : .procedure
     -diff -b error.out error.chk
 
-test_set_result : .symbolic ./chk_exec.exe
+test_set_result : .symbolic
     -diff -b $(%RUN_FILE) sym$(arch)$(alt_error).chk >error.out
     -%append error.out OK
-    -$]@ exec.out >>error.out
+    -chk_exec exec.out >>error.out
 
 start_test : .symbolic
     @set RUN_FILE=exec2.out

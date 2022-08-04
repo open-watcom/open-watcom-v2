@@ -58,9 +58,9 @@ test : .symbolic start test.lnk er01.lib er02b.obj er03.lib $(exes) test_set_res
 check_result : .procedure
     -diff -b error.out error.chk >$(nulldevice)
 
-test_set_result : ./chk_exec.exe .symbolic
+test_set_result : .symbolic
     -$(noecho)%write error.out OK
-    -$]@ exec.out >>error.out
+    -chk_exec exec.out >>error.out
 
 er01.lib : er01b.obj er01c.obj er01d.obj
     @%make set_path_wlib

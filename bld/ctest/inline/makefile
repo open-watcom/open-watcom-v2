@@ -24,9 +24,9 @@ test : .symbolic start start_test $($(arch)_inline_objs) test_set_result
 check_result : .procedure
     -diff -b error.out error.chk
 
-test_set_result : .symbolic ./chk_exec.exe
+test_set_result : .symbolic
     -@%write error.out OK
-    -$]@ exec.out >>error.out
+    -chk_exec -d exec.out >>error.out
 
 start_test : .symbolic
 !ifndef $(arch)_inline_objs

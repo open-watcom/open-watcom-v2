@@ -57,15 +57,11 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
     $(run) $(exec_prefix)$@ >>exec.out
     rm $[@
 
-./chk_exec.exe : chk_exec.c
-    @%make echo_bldcl
-    $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
-
-test : .symbolic start_test $(test_exes) ./chk_exec.exe
+test : .symbolic start_test $(test_exes)
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
     %write error.out OK
-    $]@ exec.out >>error.out
+    chk_exec exec.out >>error.out
     diff -b error.out error.chk
     @%make global
     %append $(log_file) PASS $(%__CWD__)

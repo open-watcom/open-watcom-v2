@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 
-#define PREFIX1 "PASS compiling "
 
-#if defined( WASM ) || defined( INLINETEST )
-#define PREFIX2 "PASS decoding "
-#else
-#define PREFIX2 "PASS executing "
-#endif
+#define PREFIX1     "PASS compiling "
+#define PREFIX2     "PASS executing "
+#define PREFIX2_d   "PASS decoding "
 
-char buff[2048];
+static char buff[2048];
 
 int main( int argc, char **argv )
 {
@@ -19,13 +17,37 @@ int main( int argc, char **argv )
     unsigned    line;
     unsigned    flip;
     int         rc;
+    int         i;
+    bool        decoding_format;
 
-    if( argc != 2 ) {
-        puts( "usage: chk_exec <file>" );
+    if( argc < 2 ) {
+        puts( "usage: chk_exec <options> <file>" );
+        puts( "options: -d WASM or INLINE tests decoding format" );
         puts( "FAIL" );
         return( EXIT_FAILURE );
     }
-    fp = fopen( argv[1], "r" );
+    decoding_format = false;
+    i = 1;
+    while( i < argc ) {
+        if( argv[i][0] != '-' ) {
+            break;
+        }
+        if( argv[i][1] == 'd' ) {
+            decoding_format = true;
+        } else {
+            puts( "unknown option, skip it" );
+        }
+        i++;
+    }
+    if( i == argc ) {
+        puts( "missing input file" );
+        puts( "" );
+        puts( "usage: chk_exec <options> <input file>" );
+        puts( "options: -d WASM or INLINE tests decoding format" );
+        puts( "FAIL" );
+        return( EXIT_FAILURE );
+    }
+    fp = fopen( argv[i], "r" );
     if( !fp ) {
         puts( "cannot open input file" );
         puts( "FAIL" );
@@ -33,13 +55,15 @@ int main( int argc, char **argv )
     }
     line = 0;
     flip = 0;
-    for( ; ; ) {
+    for( ;; ) {
         chk = fgets( buff, sizeof( buff ), fp );
         if( chk == NULL )
             break;
         ++line;
         if( flip == 0 ) {
             rc = memcmp( buff, PREFIX1, sizeof( PREFIX1 ) - 1 );
+        } else if( decoding_format ) {
+            rc = memcmp( buff, PREFIX2_d, sizeof( PREFIX2_d ) - 1 );
         } else {
             rc = memcmp( buff, PREFIX2, sizeof( PREFIX2 ) - 1 );
         }

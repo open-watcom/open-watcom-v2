@@ -20,9 +20,9 @@ tests = test00 test01
 test : .symbolic start $(tests)
     $(noecho)%make common_set_result
 
-test00 : .symbolic ./catfile.exe $(diags_0099) $(diags_0199) $(diags_0299) $(diags_0399) $(diags_sys_$(arch))
-    $[@ -a *.err | $(fix_source_path) >>exec.out
-    $[@ -a *.ser | $(fix_source_path) >>exec.out
+test00 : .symbolic $(diags_0099) $(diags_0199) $(diags_0299) $(diags_0399) $(diags_sys_$(arch))
+    catfile -a *.err | $(fix_source_path) >>exec.out
+    catfile -a *.ser | $(fix_source_path) >>exec.out
     @%make diag_clean
 
 test01 : .symbolic source/diag0001.c
