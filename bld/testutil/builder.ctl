@@ -20,6 +20,7 @@ set PROJDIR=<CWD>
     cdsay "<PROJDIR>"
     <CPCMD> <OWOBJDIR>/chk_exec.exe "<OWROOT>/build/<OWOBJDIR>/chk_exec<CMDEXT>"
     <CPCMD> <OWOBJDIR>/chktest.exe  "<OWROOT>/build/<OWOBJDIR>/chktest<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/catfile.exe  "<OWROOT>/build/<OWOBJDIR>/catfile<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
@@ -27,6 +28,8 @@ set PROJDIR=<CWD>
     rm -f "<OWROOT>/build/<OWOBJDIR>/chk_exec<CMDEXT>"
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/chktest<CMDEXT>"
     rm -f "<OWROOT>/build/<OWOBJDIR>/chktest<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/catfile<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/catfile<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
