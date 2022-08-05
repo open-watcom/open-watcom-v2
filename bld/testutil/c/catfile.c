@@ -342,7 +342,8 @@ static int processFilePattern   // PROCESS FILE PATTERN
                     if( stat( path, &buf ) == 0 && S_ISREG( buf.st_mode ) ) {
                         Text* tp;           // - current entry
                         retn = textAlloc( strlen( path ) + 1, &tp );
-                        if( retn != 0 ) break;
+                        if( retn != 0 )
+                            break;
                         textInsert( tp, &files );
                         strcpy( files->text, path );
                         files->time = buf.st_mtime;
@@ -350,8 +351,9 @@ static int processFilePattern   // PROCESS FILE PATTERN
                 }
             }
         }
+        closedir( dirp );
     }
-    return retn;
+    return( retn );
 }
 
 
