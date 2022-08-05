@@ -25,14 +25,6 @@ additional_clean = *.i *.rex setup.inf
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
-!ifeq sys_windowed 1
-!ifeq host_os win
-!ifeq host_cpu i86
-dosstub = dosstub.exe
-!endif
-!endif
-!endif
-
 #
 # cflags
 #
@@ -75,9 +67,6 @@ extra_l_flags_win = option manyautodata, stack=20K, heap=10K &
     SEGMENT CLASS 'CODE' MOVEABLE PRELOAD &
     SEGMENT CLASS 'DATA' MOVEABLE PRELOAD &
     LIBRARY ddeml.lib
-!endif
-!ifdef dosstub
-extra_l_flags_win += op stub=$(dosstub)
 !endif
 
 # explicit rules
@@ -145,7 +134,6 @@ libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_sub
 #
 # EXE's
 #
-exetarg_prebuild_objs = $(dosstub)
 exetarg_objs          = $(objs)
 exetarg_libs          = $(libs)
 exetarg_res_version_nt_386 = exever.res
@@ -219,6 +207,3 @@ jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFI
 ntmanif.res : ../res/nt/ntmanif.rc .EXPLICIT
     @%make echo_rc
     $(rc) $(rc_ui8_encoding) $(rc_flags) -I"../res/nt" $(inc_dirs_sys_nt) $< -fo=$@
-
-dosstub.exe : dosstub.c $(__MAKEFILES__)
-    $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_dos) -I"$(watcom_dir)/h" $[@
