@@ -1,5 +1,5 @@
-# vicomp Builder Control file
-# ============================
+# testutil Builder Control file
+# ==============================
 
 set PROJNAME=testutil
 
