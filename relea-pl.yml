@@ -128,7 +128,6 @@ stages:
     displayName: "GitHub Release"
     dependsOn:
       - installnx
-      - instalnt
     variables:
       owtools:      GCC
     jobs:
@@ -199,22 +198,5 @@ stages:
       - template: ci/docbuild.yml
         parameters:
           arch:     nt
-          image:    $(owimage_nt)
-          pscript:  $(owscript_nt)
-  - stage: instalnt
-    displayName: "Installers Build Windows"
-    dependsOn:
-      - testsnt
-      - testslnx
-      - docsnt
-    variables:
-      owbuild.stage: inst
-      owimage:      $(owimage_nt)
-      owtools:      VISUALC
-    jobs:
-      - template: ci/install.yml
-        parameters:
-          arch:     nt
-          title:    Installers Build Windows
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
