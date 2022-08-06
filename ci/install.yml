@@ -47,7 +47,28 @@ jobs:
           archiveFile: '$(owroot)/distrib/ow/bin/$(owsnapshotfile)'
           replaceExistingArchive: true
     # save all artifacts for distribution
+    # DOS installers
     - template: artfsave.yml
       parameters:
-        path:       distrib/ow/bin
-        artifname:  distrib-${{ parameters.arch }}
+        path:       distrib/ow/bin/open-watcom-*-dos*
+        artifname:  distrib-dos
+    # OS/2 installers
+    - template: artfsave.yml
+      parameters:
+        path:       distrib/ow/bin/open-watcom-*-os2*
+        artifname:  distrib-os2
+    # WIN16 installers
+    - template: artfsave.yml
+      parameters:
+        path:       distrib/ow/bin/open-watcom-*-win16*
+        artifname:  distrib-win16
+    # WINNT installers
+    - template: artfsave.yml
+      parameters:
+        path:       distrib/ow/bin/open-watcom-*-win-*
+        artifname:  distrib-nt
+    # Linux installers
+    - template: artfsave.yml
+      parameters:
+        path:       distrib/ow/bin/open-watcom-*-linux*
+        artifname:  distrib-lnx

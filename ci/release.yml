@@ -19,10 +19,27 @@ jobs:
       parameters:
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
+    # DOS installers
+    - template: artfload.yml
+      parameters:
+        path:       distrib/ow/bin
+        artifname:  distrib-dos
+    # OS/2 installers
+    - template: artfload.yml
+      parameters:
+        path:       distrib/ow/bin
+        artifname:  distrib-os2
+    # WIN16 installers
+    - template: artfload.yml
+      parameters:
+        path:       distrib/ow/bin
+        artifname:  distrib-win16
+    # WINNT installers
     - template: artfload.yml
       parameters:
         path:       distrib/ow/bin
         artifname:  distrib-nt
+    # Linux installers
     - template: artfload.yml
       parameters:
         path:       distrib/ow/bin
