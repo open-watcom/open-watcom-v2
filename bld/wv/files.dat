@@ -158,9 +158,9 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 # Windows NT - X64
 #
 [ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
-type="e" usr="wd.exe"            descr="Character mode debugger"
-type="e" usr="wdw.exe"           descr="GUI debugger"
-type="e" usr="rfx.exe"           descr="Remote File Exchange utility (RFX)"
+#type="e" usr="wd.exe"            descr="Character mode debugger"
+#type="e" usr="wdw.exe"           descr="GUI debugger"
+#type="e" usr="rfx.exe"           descr="Remote File Exchange utility (RFX)"
 type="s" usr="animate.dbg"       descr="Debugger command file"
 type="s" usr="bcnt.dbg"          descr="Debugger command file"
 type="s" usr="bif.dbg"           descr="Debugger command file"
@@ -232,7 +232,7 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 # Linux - X64
 #
 [ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
-type="e" usr="wd"                descr="Character-mode debugger"
+#type="e" usr="wd"                descr="Character-mode debugger"
 type="s" usr="animate.dbg"       descr="Debugger command file"
 type="s" usr="bcnt.dbg"          descr="Debugger command file"
 type="s" usr="bif.dbg"           descr="Debugger command file"

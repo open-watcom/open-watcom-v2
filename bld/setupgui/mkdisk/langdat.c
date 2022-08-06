@@ -625,7 +625,9 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "dstvar" ) ) {
             dstvar = str;
         } else if( !stricmp( cmd, "keys" ) ) {
-            keys = str;
+            keys = item_redef( keys, str );
+        } else if( !stricmp( cmd, "keysa" ) ) {
+            keys = item_append( keys, str );
         } else {
             printf( "langdat warning: unknown keyword %s\n", cmd );
             printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
@@ -652,6 +654,7 @@ static void ProcessLine( const char *line )
     }
     FREE_ITEM( cond );
     FREE_ITEM( where );
+    FREE_ITEM( keys );
     MFree( line_copy );
 }
 

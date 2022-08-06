@@ -143,17 +143,17 @@ usr="tcpserv.exe"
 #######################
 # Windows NT - X64
 #
-[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" ]
-usr="nov.dll"   keys="no_ntx64 !newdbg"
-usr="nov??.dll" keys="no_ntx64 newdbg"
-#usr="par.dll"   keys="no_ntx64 !newdbg"
-#usr="par??.dll" keys="no_ntx64 newdbg"
-usr="ser.dll"   keys="no_ntx64 !newdbg"
-usr="ser??.dll" keys="no_ntx64 newdbg"
-usr="tcp.dll"   keys="no_ntx64 !newdbg"
-usr="tcp??.dll" keys="no_ntx64 newdbg"
-#usr="vdm.dll"   keys="no_ntx64 !newdbg"
-#usr="vdm??.dll" keys="no_ntx64 newdbg"
+[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" keys="no_ntx64" ]
+usr="nov.dll"   keysa="!newdbg"
+usr="nov??.dll" keysa="newdbg"
+#usr="par.dll"   keysa="!newdbg"
+#usr="par??.dll" keysa="newdbg"
+usr="ser.dll"   keysa="!newdbg"
+usr="ser??.dll" keysa="newdbg"
+usr="tcp.dll"   keysa="!newdbg"
+usr="tcp??.dll" keysa="newdbg"
+#usr="vdm.dll"   keysa="!newdbg"
+#usr="vdm??.dll" keysa="newdbg"
 
 #######################
 # Linux - 386
@@ -173,11 +173,11 @@ usr="parserv"
 #######################
 # Linux - X64
 #
-[ DEFAULT type="e" dir="binl64" cond="lnx64host" where="c f77 jc jf77" ]
-usr="tcp.so"   keys="no_lx64 !newdbg"
-usr="tcp??.so" keys="no_lx64 newdbg"
-usr="par.so"   keys="no_lx64 !newdbg"
-usr="par??.so" keys="no_lx64 newdbg"
+[ DEFAULT type="e" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
+usr="tcp.so"   keysa="!newdbg"
+usr="tcp??.so" keysa="newdbg"
+usr="par.so"   keysa="!newdbg"
+usr="par??.so" keysa="newdbg"
 
 #######################
 # Novell - 386

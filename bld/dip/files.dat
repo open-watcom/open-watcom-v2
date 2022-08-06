@@ -75,17 +75,17 @@ usr="watcom??.dll"     keys="newdbg"
 #######################
 # Windows NT - X64
 #
-[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c jc f77 jf77" ]
-usr="codeview.dll"     keys="no_ntx64 !newdbg"
-usr="codevi??.dll"     keys="no_ntx64 newdbg"
-usr="dwarf.dll"        keys="no_ntx64 !newdbg"
-usr="dwarf??.dll"      keys="no_ntx64 newdbg"
-usr="export.dll"       keys="no_ntx64 !newdbg"
-usr="export??.dll"     keys="no_ntx64 newdbg"
-usr="mapsym.dll"       keys="no_ntx64 !newdbg"
-usr="mapsym??.dll"     keys="no_ntx64 newdbg"
-usr="watcom.dll"       keys="no_ntx64 !newdbg"
-usr="watcom??.dll"     keys="no_ntx64 newdbg"
+[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
+usr="codeview.dll"     keysa="!newdbg"
+usr="codevi??.dll"     keysa="newdbg"
+usr="dwarf.dll"        keysa="!newdbg"
+usr="dwarf??.dll"      keysa="newdbg"
+usr="export.dll"       keysa="!newdbg"
+usr="export??.dll"     keysa="newdbg"
+usr="mapsym.dll"       keysa="!newdbg"
+usr="mapsym??.dll"     keysa="newdbg"
+usr="watcom.dll"       keysa="!newdbg"
+usr="watcom??.dll"     keysa="newdbg"
 
 #######################
 # Linux - 386
@@ -105,17 +105,17 @@ usr="watcom??.dip"     keys="newdbg"
 #######################
 # Linux - X64
 #
-[ DEFAULT type="s" dir="binl64" cond="lnx64host" where="c f77 jc jf77" ]
-usr="codeview.so"     keys="no_lx64 !newdbg"
-usr="codevi??.so"     keys="no_lx64 newdbg"
-usr="dwarf.so"        keys="no_lx64 !newdbg"
-usr="dwarf??.so"      keys="no_lx64 newdbg"
-usr="export.so"       keys="no_lx64 !newdbg"
-usr="export??.so"     keys="no_lx64 newdbg"
-usr="mapsym.so"       keys="no_lx64 !newdbg"
-usr="mapsym??.so"     keys="no_lx64 newdbg"
-usr="watcom.so"       keys="no_lx64 !newdbg"
-usr="watcom??.so"     keys="no_lx64 newdbg"
+[ DEFAULT type="s" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
+usr="codeview.so"     keysa="!newdbg"
+usr="codevi??.so"     keysa="newdbg"
+usr="dwarf.so"        keysa="!newdbg"
+usr="dwarf??.so"      keysa="newdbg"
+usr="export.so"       keysa="!newdbg"
+usr="export??.so"     keysa="newdbg"
+usr="mapsym.so"       keysa="!newdbg"
+usr="mapsym??.so"     keysa="newdbg"
+usr="watcom.so"       keysa="!newdbg"
+usr="watcom??.so"     keysa="newdbg"
 
 #######################
 # RDOS
