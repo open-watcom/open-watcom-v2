@@ -49,9 +49,6 @@
 #define DEFCTLNAME      "files.dat"
 #define DEFCTLENV       "FILES_DAT"
 
-#define IS_WS(c)        ((c) == ' ' || (c) == '\t')
-#define SKIP_WS(p)      while(IS_WS(*(p))) (p)++
-
 typedef struct ctl_file {
     struct ctl_file     *next;
     char                name[_MAX_PATH];
@@ -539,17 +536,25 @@ static char *item_append( const char *old, const char *new )
 {
     char    *p;
 
-    if( old == NULL ) {
-        p = MStrdup( new );
+    if( *new == '\0' ) {
+        p = (char *)old;
     } else {
-        size_t  len;
+        if( old == NULL ) {
+            p = MStrdup( new );
+        } else {
+            if( *old == '\0' ) {
+                p = MStrdup( new );
+            } else {
+                size_t  len;
 
-        len = strlen( old ) + strlen( new ) + 1 + 1;
-        p = MAlloc( len );
-        strcpy( p, old );
-        MFree( (void *)old );
-        strcat( p, " " );
-        strcat( p, new );
+                len = strlen( old ) + strlen( new ) + 1 + 1;
+                p = MAlloc( len );
+                strcpy( p, old );
+                strcat( p, " " );
+                strcat( p, new );
+            }
+            MFree( (void *)old );
+        }
     }
     return( p );
 }
@@ -587,7 +592,7 @@ static void ProcessLine( const char *line )
     desc = DEFVAL( DefDesc );
     old = DEFVAL( DefOld );
     dstvar = DEFVAL( DefDstvar );
-    keys = DEFVAL( DefKeys );
+    keys = DEFVALA( DefKeys );
 
     p = line_copy = MStrdup( line );
     SKIP_BLANKS( p );
@@ -686,7 +691,7 @@ static void ProcessDefault( const char *line )
     SKIP_BLANKS( p );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
-    while( (q >= p) && IS_WS( *q ) )
+    while( (q >= p) && IS_BLANK( *q ) )
         --q;
     if( *q == '\"' )
         ++q;
@@ -695,6 +700,7 @@ static void ProcessDefault( const char *line )
     if( cmd != NULL ) {
         do {
             str = strtok( NULL, "\"" );
+            SKIP_BLANKS( str );
             if( !stricmp( cmd, "type" ) ) {
                 DefType = item_def( DefType, str, cmd );
             } else if( !stricmp( cmd, "redist" ) ) {
