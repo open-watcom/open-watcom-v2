@@ -50,22 +50,22 @@ jobs:
     # DOS installers
     - template: artfsave.yml
       parameters:
-        path:       distrib/ow/bin/open-watcom-*-dos*
+        path:       distrib/ow/bin/open-watcom-*-dos.exe
         artifname:  distrib-dos
     # OS/2 installers
     - template: artfsave.yml
       parameters:
-        path:       distrib/ow/bin/open-watcom-*-os2*
+        path:       distrib/ow/bin/open-watcom-*-os2.exe
         artifname:  distrib-os2
     # WIN16 installers
     - template: artfsave.yml
       parameters:
-        path:       distrib/ow/bin/open-watcom-*-win16*
+        path:       distrib/ow/bin/open-watcom-*-win16.exe
         artifname:  distrib-win16
     # WINNT installers
     - template: artfsave.yml
       parameters:
-        path:       distrib/ow/bin/open-watcom-*-win-*
+        path:       distrib/ow/bin/open-watcom-*-win-*.exe
         artifname:  distrib-nt
     # Linux installers
     - template: artfsave.yml
