@@ -19,31 +19,11 @@ jobs:
       parameters:
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
-    # DOS installers
+    # load all installers and snapshot from artifact
     - template: artfload.yml
       parameters:
         path:       distrib/ow/bin
-        artifname:  distrib-dos
-    # OS/2 installers
-    - template: artfload.yml
-      parameters:
-        path:       distrib/ow/bin
-        artifname:  distrib-os2
-    # WIN16 installers
-    - template: artfload.yml
-      parameters:
-        path:       distrib/ow/bin
-        artifname:  distrib-win16
-    # WINNT installers
-    - template: artfload.yml
-      parameters:
-        path:       distrib/ow/bin
-        artifname:  distrib-nt
-    # Linux installers
-    - template: artfload.yml
-      parameters:
-        path:       distrib/ow/bin
-        artifname:  distrib-lnx
+        artifname:  distrib-bin
     - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
       displayName: "Get current timestamp"
     - bash: echo "##vso[task.setvariable variable=owgitstamp;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${{ variables.owtag }}^{}:\1:p\"`"

@@ -36,7 +36,7 @@ jobs:
     # run build script
     - script: ${{ parameters.pscript }}
       displayName: "Build Installers"
-    # create full binary archive
+    # create full binary snapshot archive
     - ${{ if eq(parameters.arch, 'lnx') }}:
       - task: ArchiveFiles@2
         inputs:
@@ -47,28 +47,8 @@ jobs:
           archiveFile: '$(owroot)/distrib/ow/bin/$(owsnapshotfile)'
           replaceExistingArchive: true
     # save all artifacts for distribution
-    # DOS installers
+    # full content of directory, cannot specify files
     - template: artfsave.yml
       parameters:
-        path:       distrib/ow/bin/open-watcom-*-dos.exe
-        artifname:  distrib-dos
-    # OS/2 installers
-    - template: artfsave.yml
-      parameters:
-        path:       distrib/ow/bin/open-watcom-*-os2.exe
-        artifname:  distrib-os2
-    # WIN16 installers
-    - template: artfsave.yml
-      parameters:
-        path:       distrib/ow/bin/open-watcom-*-win16.exe
-        artifname:  distrib-win16
-    # WINNT installers
-    - template: artfsave.yml
-      parameters:
-        path:       distrib/ow/bin/open-watcom-*-win-*.exe
-        artifname:  distrib-nt
-    # Linux installers
-    - template: artfsave.yml
-      parameters:
-        path:       distrib/ow/bin/open-watcom-*-linux*
-        artifname:  distrib-lnx
+        path:       distrib/ow/bin
+        artifname:  distrib-bin
