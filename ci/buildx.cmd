@@ -76,7 +76,7 @@ if "%OWBUILD_STAGE%" == "docs" (
     set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "inst" (
-    builder install os_nt cpu_x64
+    builder install
     set RC=!ERRORLEVEL!
 )
 cd %OWROOT%
