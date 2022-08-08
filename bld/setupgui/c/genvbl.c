@@ -401,7 +401,7 @@ void SetDefaultGlobalVarList( void )
 #endif
 
 #if defined( __LINUX__ )
-  #if defined( _M_X64 ) && 0
+  #if defined( _M_X64 )
     // 64-bit Linux
     SetBoolVariableByName(      "IsLinux64",    true );
     SetBoolVariableByName(      "IsLinux32",    false );
