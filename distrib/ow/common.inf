@@ -36,7 +36,7 @@ autoset=nlmtarg=false
 autoset=rdoshost=false
 autoset=rdostarg=false
 autoset=lnxhost=IsLinux32
-autoset=lnxtarg=IsLinux32
+autoset=lnxtarg=IsLinux32 IsLinux64 |
 autoset=lnx64host=IsLinux64
 autoset=winhost=IsWin16
 autoset=wintarg=IsWin16
