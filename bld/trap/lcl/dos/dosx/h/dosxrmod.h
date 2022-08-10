@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,20 +31,13 @@
 
 
 
-#if defined(DOS4G)
-  #define GetDosByte(x)   (*(byte __far *)RMLinToPM(x,1))
-  #define GetDosLong(x)   (*(unsigned long __far *)RMLinToPM(x,1))
-  #define PutDosByte(x,d) (*(byte __far *)RMLinToPM(x,1)=d)
-  #define PutDosLong(x,d) (*(unsigned long __far *)RMLinToPM(x,1)=d)
-#else
-  #define GetDosByte(x)   (*(byte __far *)_MK_FP(Meg1,x))
-  #define GetDosLong(x)   (*(unsigned long __far *)_MK_FP(Meg1,x))
-  #define PutDosByte(x,d) (*(byte __far *)_MK_FP(Meg1,x)=d)
-  #define PutDosLong(x,d) (*(unsigned long __far *)_MK_FP(Meg1,x)=d)
-#endif
+#define GetDosByte(x)   (*(byte __far *)RMLinToPM(x,true))
+#define GetDosLong(x)   (*(unsigned long __far *)RMLinToPM(x,true))
+#define PutDosByte(x,d) (*(byte __far *)RMLinToPM(x,true)=d)
+#define PutDosLong(x,d) (*(unsigned long __far *)RMLinToPM(x,true)=d)
 
 #if defined(DOS4G)
-  extern void             __far *RMLinToPM( unsigned long linear_addr, int pool );
+  extern void             __far *RMLinToPM( unsigned long linear_addr, bool pool );
 #else
   #define RMLinToPM(x,y)  _MK_FP(Meg1,x)
 #endif

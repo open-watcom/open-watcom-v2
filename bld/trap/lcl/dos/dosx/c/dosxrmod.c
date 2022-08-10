@@ -74,7 +74,7 @@ typedef struct {
 } map;
 
 #define NONE            -1
-#define MAX_MAPPINGS    sizeof(Mappings_pool)/sizeof(Mappings_pool[0])
+#define MAX_MAPPINGS    sizeof( Mappings_pool ) / sizeof( Mappings_pool[0] )
 
 static map  Mappings_pool[] = {
     {NONE,NONE},
@@ -86,8 +86,8 @@ static map  Mappings_pool[] = {
 static int  Loser = 0;
 static long dummy = 0;
 
-void __far *RMLinToPM( unsigned long linear_addr, int pool )
-/**********************************************************/
+void __far *RMLinToPM( unsigned long linear_addr, bool pool )
+/***********************************************************/
 {
     int         i;
     short       real;

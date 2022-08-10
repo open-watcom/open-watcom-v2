@@ -63,10 +63,12 @@
 
 #define LINK_SIGNATURE      0xdeb0deb0L
 
-#if defined(DOS4G) || defined(CAUSEWAY)
+#if defined(DOS4G) || defined(CAUSEWAY) || defined(HX)
     #define LINK_VECTOR     0x06
-#else
+#elif defined(ACAD) || defined(PHARLAP)
     #define LINK_VECTOR     0x01
+#else
+    #error LINK_VECTOR not defined
 #endif
 
 #define LOW( c )        ((c) | 0x20)        /*Quick and dirty lower casing*/
@@ -98,6 +100,8 @@
     #define EXTENDER_NAMES  "DOS4GW.EXE\0" "4GWPRO.EXE\0" "DOS4G.EXE\0" "DOS4GX.EXE\0"
   #elif defined(CAUSEWAY)
     #define EXTENDER_NAMES  "CWSTUB.EXE\0"
+  #elif defined(HX)
+    #define EXTENDER_NAMES  "HXHELP.EXE\0"
   #else
     #error Extender and helper names not defined
   #endif
@@ -113,6 +117,8 @@
       #define HELPNAME      "RSIHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
     #elif defined(CAUSEWAY)
       #define HELPNAME      "CWHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
+    #elif defined(HX)
+      #define HELPNAME      "HXHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
     #endif
   #else
     #if defined(ACAD)
@@ -125,6 +131,8 @@
       #define HELPNAME      "RSIHELP.EXP"
     #elif defined(CAUSEWAY)
       #define HELPNAME      "CWHELP.EXE"
+    #elif defined(HX)
+      #define HELPNAME      "HXHELP.EXE"
     #endif
   #endif
 
@@ -156,7 +164,7 @@ typedef struct RMBuff {
     char                    XVersion;
   #endif
 
-  #if !defined(DOS4G)
+  #if defined( ACAD ) || defined(CAUSEWAY) || defined(PHARLAP) || defined(HX)
     static unsigned short   Meg1;
   #endif
 
@@ -196,7 +204,9 @@ trap_retval RemoteGet( void *data, trap_elen len )
     }
     _DBG(("Remote Get Done\n"));
 #else
-    (void)len;
+
+    /* unused parameters */ (void)len;
+
     _DBG_EnterFunc( "RemoteGet()" );
     Buff.ptr = MK_LINEAR( data );
     BackToProtMode();
@@ -243,12 +253,13 @@ char __far *GetScreenPointer( void )
 {
 #if defined( ACAD )
     return( _MK_FP( Meg1, 0xB0000 ) );
-#elif defined(CAUSEWAY)
+#elif defined( CAUSEWAY )
     return( _MK_FP( Meg1, 0xB0000 ) );
-#elif defined(PHARLAP)
+#elif defined( PHARLAP )
     return( _MK_FP( 0x1C, 0 ) );
 #elif defined( DOS4G )
     return( _MK_FP( 0x50, 0 ) );
+#elif defined( HX )
 #endif
 }
 #endif
@@ -441,13 +452,17 @@ const char *RemoteLink( const char *parms, bool server )
     }
   #elif defined(CAUSEWAY)
     Meg1 = GetZeroSel();
+  #elif defined(DOS4G)
+  #elif defined(HX)
   #endif
-    parms = parms;
+
+    /* unused parameters */ (void)parms;
+
     link = GetDosLong( LINK_VECTOR * 4 );
     if( link >= ( 1024UL * 1024UL ) || LINK( 0 ) != LINK_SIGNATURE ) {
         return( TRP_ERR_not_from_command );
     }
-    RMBuffPtr = RMLinToPM( LINK( 1 ), 0 );
+    RMBuffPtr = RMLinToPM( LINK( 1 ), false );
     RMProcAddr = LINK( 2 );
     PutDosLong( LINK_VECTOR * 4, LINK( 3 ) );
 #else
@@ -468,7 +483,7 @@ const char *RemoteLink( const char *parms, bool server )
     BackFromFork = 0;
     link_ptr = (void __far *)(LINK_VECTOR * 4);
     LINK( 3 ) = *link_ptr;
-    LINK( 2 ) = _MK_FP( GetCS(), (unsigned )BackFromProtMode );
+    LINK( 2 ) = _MK_FP( GetCS(), (unsigned)BackFromProtMode );
     LINK( 1 ) = (void __far *)MK_LINEAR( &Buff );
     LINK( 0 ) = (void __far *)LINK_SIGNATURE;
     *link_ptr = (void __far *)MK_LINEAR( &link );
