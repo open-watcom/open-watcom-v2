@@ -101,12 +101,7 @@ os_subdir = $(host_os)
 
 # srv_prefix
 ##############
-srv_prefix_tnt  = ped
-!ifdef srv_prefix_$(target_sys)
-srv_prefix = $(srv_prefix_$(target_sys))
-!else
 srv_prefix = $(srv)
-!endif
 
 # name
 ##############
@@ -185,7 +180,9 @@ extra_cppflags_nlm4 = -D__NW40__
 extra_cppflags_nlm3 = -D__NW30__
 extra_cppflags_ads  = -DACAD
 extra_cppflags_cw   = -DCAUSEWAY
+extra_cppflags_hx   = -DHX
 extra_cppflags_pls  = -DPHARLAP
+extra_cppflags_ped  = -DPHARLAP
 extra_cppflags_rsi  = -DDOS4G
 !ifeq srv lcl
 extra_cpp_flags += $(extra_cppflags_$(target_sys))
