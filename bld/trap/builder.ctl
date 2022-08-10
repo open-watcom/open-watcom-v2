@@ -32,6 +32,8 @@ set PROJDIR=<CWD>
     <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhel*.exe      "<OWRELROOT>/binw/"
     <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhelp.cfg      "<OWRELROOT>/binw/"
     <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhel*.sym      "<OWRELROOT>/binw/"
+    <CCCMD> lcl/dos/dosx/hx/dos.trp/hx*.trp         "<OWRELROOT>/binw/"
+    <CCCMD> lcl/dos/dosx/hx/dos.trp/hx*.sym         "<OWRELROOT>/binw/"
     <CCCMD> net/dos.trp/net*.trp                    "<OWRELROOT>/binw/"
     <CCCMD> net/dos.trp/net*.sym                    "<OWRELROOT>/binw/"
     <CCCMD> net/dos.srv/netserv.exe                 "<OWRELROOT>/binw/"

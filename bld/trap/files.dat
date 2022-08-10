@@ -22,6 +22,8 @@ usr="pls.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for Phar
 usr="pls??.trp"           keys="newdbg"       desc="Debugging trap file for Phar Lap"
 usr="rsi.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for DOS/4GW"
 usr="rsi??.trp"           keys="newdbg"       desc="Debugging trap file for DOS/4GW"
+usr="hx.trp"              keys="!newdbg"      desc="Debugging trap file for HX"
+usr="hx??.trp"            keys="newdbg"       desc="Debugging trap file for HX"
 usr="std.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for 16-bit DOS debugging"
 usr="std??.trp"           keys="newdbg"       desc="Debugging trap file for 16-bit DOS debugging"
 [ DEFAULT dir="binw" cond="dostarg" where="c f77 jc jf77" ]
