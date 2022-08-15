@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 #include "buffer.h"
 #include "memfuncs.h"
 #include "print.h"
-#include "cmdlhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -120,6 +119,34 @@ static char *skipBlanks( const char *cmd )
     return( (char *)cmd );
 }
 
+static char *FindNextSep( const char *str, bool (*chk_sep)(char) )
+/*****************************************************************
+ * Finds next free white space character, allowing doublequotes to
+ * be used to specify strings with white spaces.
+ */
+{
+    bool        string_open;
+    char        c;
+
+    string_open = false;
+    while( (c = *str) != '\0' ) {
+        if( c == '\"' ) {
+            string_open = !string_open;
+        } else if( c == '\\' ) {
+            if( string_open ) {
+                if( str[1] == '\"' || str[1] == '\\' ) {
+                    ++str;
+                }
+            }
+        } else if( !string_open && chk_sep( c ) ) {
+            break;
+        }
+        ++str;
+    }
+
+    return( (char *)str );
+}
+
 static char *findNextWS( const char *cmd )
 {
     return( FindNextSep( cmd, is_ws ) );
@@ -128,6 +155,42 @@ static char *findNextWS( const char *cmd )
 static char *findNextArg( const char *cmd )
 {
     return( skipBlanks( FindNextSep( cmd, is_ws_or_option ) ) );
+}
+
+static void UnquoteItem( char *dst, size_t maxlen, const char *src, bool (*chk_sep)(char) )
+/******************************************************************************************
+ * Removes doublequote characters from filename and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character. Returns value 1 when quotes was
+ * removed from orginal filename, 0 otherwise.
+ */
+{
+    size_t  pos;
+    char    c;
+    bool    string_open;
+
+    // leave space for NUL terminator
+    maxlen--;
+    pos = 0;
+    string_open = false;
+    while( pos < maxlen && (c = *src++) != '\0' ) {
+        if( c == '\"' ) {
+            string_open = !string_open;
+            continue;
+        }
+        if( c == '\\' ) {
+            if( string_open ) {
+                if( *src == '\"' || *src == '\\' ) {
+                    c = *src++;
+                }
+            }
+        } else if( !string_open && chk_sep( c ) ) {
+            break;
+        }
+        *dst++ = c;
+        pos++;
+    }
+    *dst = '\0';
 }
 
 static char *getFileName( const char *start, const char *following )
