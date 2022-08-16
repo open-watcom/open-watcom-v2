@@ -149,7 +149,7 @@ bool InitFileSupp( void )
     if( SuppFileId == 0 )
         return( false );
     SUPP_FILE_SERVICE( acc, REQ_FILE_GET_CONFIG );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
     return( true );
 }
 
@@ -458,7 +458,7 @@ unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
     acc.pos = pos;
     CONV_LE_64( acc.handle );
     CONV_LE_32( acc.pos );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
@@ -489,7 +489,7 @@ error_handle RemoteClose( sys_handle sh )
     SUPP_FILE_SERVICE( acc, REQ_FILE_CLOSE );
     acc.handle = sh;
     CONV_LE_64( acc.handle );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }

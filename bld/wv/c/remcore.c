@@ -106,7 +106,7 @@ static size_t MemRead( address addr, void *ptr, size_t size )
         CONV_LE_16( acc.len );
         if( int_tbl )
             RestoreHandlers();
-        read_len = (trap_retval)TrapSimpAccess( sizeof( acc ), &acc, piece_len, ptr );
+        read_len = (trap_retval)TrapSimpleAccess( sizeof( acc ), &acc, piece_len, ptr );
         if( int_tbl )
             GrabHandlers();
         left -= read_len;
@@ -228,7 +228,7 @@ unsigned long ProgChkSum( address addr, trap_elen len )
     AddrFix( &addr );
     acc.in_addr = addr.mach;
     acc.len = len;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.result );
 }
 
@@ -239,7 +239,7 @@ trap_retval PortPeek( unsigned port, void *data, uint_8 size )
     acc.req = REQ_READ_IO;
     acc.IO_offset = port;
     acc.len = size;
-    return( TrapSimpAccess( sizeof( acc ), &acc, size, data ) );
+    return( TrapSimpleAccess( sizeof( acc ), &acc, size, data ) );
 }
 
 trap_retval PortPoke( unsigned port, const void *data, uint_8 size )
@@ -266,7 +266,7 @@ static void ReadRegs( machine_state *state )
     read_regs_req       acc;
 
     acc.req = REQ_READ_REGS;
-    TrapSimpAccess( sizeof( acc ), &acc, CurrRegSize, &state->mr );
+    TrapSimpleAccess( sizeof( acc ), &acc, CurrRegSize, &state->mr );
     MADRegistersHost( &state->mr );
     if( state->ovl != NULL ) {
         RemoteSectTblRead( state->ovl );
@@ -389,7 +389,7 @@ bool KillProgOvlay( void )
     acc.task_id = TaskId;
     RestoreHandlers();
     FiniSuppServices();
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     InitSuppServices();
     _SwitchOff( SW_HAVE_TASK );
     GrabHandlers();
@@ -410,7 +410,7 @@ unsigned MakeProgRun( bool single )
     acc.req = single ? REQ_PROG_STEP : REQ_PROG_GO;
     RestoreHandlers();
     DUIExitCriticalSection();
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     DUIEnterCriticalSection();
     GrabHandlers();
     CONV_LE_32( ret.stack_pointer.offset );
@@ -467,7 +467,7 @@ void RemoteMapAddr( addr_ptr *addr, addr_off *lo_bound,
     CONV_LE_32( acc.in_addr.offset );
     CONV_LE_16( acc.in_addr.segment );
     CONV_LE_32( acc.mod_handle );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.out_addr.offset );
     CONV_LE_16( ret.out_addr.segment );
     CONV_LE_32( ret.lo_bound );
@@ -482,7 +482,7 @@ void RemoteSetUserScreen( void )
     set_user_screen_req         acc;
 
     acc.req = REQ_SET_USER_SCREEN;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteSetDebugScreen( void )
@@ -490,7 +490,7 @@ void RemoteSetDebugScreen( void )
     set_debug_screen_req        acc;
 
     acc.req = REQ_SET_DEBUG_SCREEN;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 unsigned RemoteReadUserKey( uint_16 wait )
@@ -501,7 +501,7 @@ unsigned RemoteReadUserKey( uint_16 wait )
     acc.req = REQ_READ_USER_KEYBOARD;
     acc.wait = wait;
     CONV_LE_16( acc.wait );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.key );
 }
 
@@ -604,7 +604,7 @@ dword RemoteSetBreak( address addr )
     acc.break_addr = addr.mach;
     CONV_LE_32( acc.break_addr.offset );
     CONV_LE_16( acc.break_addr.segment );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.old );
 }
 
@@ -618,7 +618,7 @@ void RemoteRestoreBreak( address addr, dword value )
     acc.old = value;
     CONV_LE_32( acc.break_addr.offset );
     CONV_LE_16( acc.break_addr.segment );
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 bool RemoteSetWatch( address addr, uint_8 size, unsigned long *mult )
@@ -630,7 +630,7 @@ bool RemoteSetWatch( address addr, uint_8 size, unsigned long *mult )
     AddrFix( &addr );
     acc.watch_addr = addr.mach;
     acc.size = size;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret ); //
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret ); //
     *mult = ret.multiplier & ~USING_DEBUG_REG;
     return( (ret.multiplier & USING_DEBUG_REG) != 0 );
 }
@@ -643,7 +643,7 @@ void RemoteRestoreWatch( address addr, uint_8 size )
     AddrFix( &addr );
     acc.watch_addr = addr.mach;
     acc.size = size;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteSplitCmd( char *cmd, char **end, char **parm )
@@ -678,7 +678,7 @@ void CheckSegAlias( void )
     for( ;; ) {
         ret.seg = 0;
         CONV_LE_16( acc.seg );
-        TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+        TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
         CONV_LE_16( ret.seg );
         CONV_LE_16( ret.alias );
         if( ret.seg == 0 )
@@ -693,7 +693,7 @@ void GetSysConfig( void )
     get_sys_config_req  acc;
 
     acc.req = REQ_GET_SYS_CONFIG;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
     CONV_LE_16( SysConfig.arch );
 }
 

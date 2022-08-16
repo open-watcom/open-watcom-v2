@@ -28,7 +28,7 @@ static bool CapabilitiesGetExactBreakpointSupport( void )
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
 
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
     }
@@ -48,7 +48,7 @@ static bool CapabilitiesSetExactBreakpointSupport( bool status )
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
     acc.status = status;
 
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
     }

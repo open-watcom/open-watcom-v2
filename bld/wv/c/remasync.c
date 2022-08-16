@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ unsigned MakeAsyncRun( bool single )
     } else {
         acc.req = REQ_ASYNC_GO;
     }
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_RUNNING ) {
@@ -128,7 +128,7 @@ unsigned PollAsync( void )
 
     acc.req = REQ_ASYNC_POLL;
 
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_RUNNING ) {
@@ -172,7 +172,7 @@ unsigned StopAsync( void )
 
     acc.req = REQ_ASYNC_STOP;
 
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_RUNNING ) {
@@ -220,7 +220,7 @@ bool AsyncAddBreak( address addr, bool local )
 
     acc.req = REQ_ASYNC_ADD_BREAK;
 
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, 0, NULL );
     return( true );
 }
 
@@ -242,5 +242,5 @@ void AsyncRemoveBreak( address addr, bool local )
 
     acc.req = REQ_ASYNC_REMOVE_BREAK;
 
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }

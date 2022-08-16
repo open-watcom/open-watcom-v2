@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -188,7 +189,7 @@ void RemoteSuspend( void )
     suspend_req         acc;
 
     acc.req = REQ_SUSPEND;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteResume( void )
@@ -196,7 +197,7 @@ void RemoteResume( void )
     resume_req          acc;
 
     acc.req = REQ_RESUME;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteErrMsg( sys_error err, char *msg )
@@ -205,7 +206,7 @@ void RemoteErrMsg( sys_error err, char *msg )
 
     acc.req = REQ_GET_ERR_TEXT;
     acc.err = err;
-    TrapSimpAccess( sizeof( acc ), &acc, MAX_ERR_MSG_SIZE, msg );
+    TrapSimpleAccess( sizeof( acc ), &acc, MAX_ERR_MSG_SIZE, msg );
 //    TrapErrTranslate( msg, MAX_ERR_MSG_SIZE );
 }
 
@@ -214,7 +215,7 @@ void FiniTrap( void )
     disconnect_req      acc;
 
     acc.req = REQ_DISCONNECT;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
     RestoreHandlers();
     KillTrap();
     GrabHandlers();
