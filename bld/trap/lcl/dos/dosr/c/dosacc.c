@@ -123,7 +123,7 @@ typedef enum {
 } trap_types;
 
 /* user modifiable flags */
-#define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
+#define USR_FLAGS (INTR_CF | INTR_PF | INTR_AF | INTR_ZF | INTR_SF | INTR_IF | INTR_DF | INTR_OF)
 
 extern void ReadMemory( unsigned, unsigned, void __far *, size_t );
 /*  ReadMemory( fromseg, fromoff, toptr, len ); */
@@ -938,7 +938,7 @@ static trap_elen ProgRun( bool step )
         SetSingleStep();
     }
     if( step ) {
-        TaskRegs.EFL |= FLG_T;
+        TaskRegs.EFL |= INTR_TF;
     } else  {
         watch386 = SetDebugRegs();
         if( WatchCount > 0 && !watch386 ) {
@@ -947,7 +947,7 @@ static trap_elen ProgRun( bool step )
             } else {
                 SetWatchPnt( WatchCount, WatchPoints );
             }
-            TaskRegs.EFL |= FLG_T;
+            TaskRegs.EFL |= INTR_TF;
         }
     }
     out( "in CS:EIP=" ); out( hex( TaskRegs.CS ) ); out(":" ); out( hex( TaskRegs.EIP ) );
@@ -963,7 +963,7 @@ static trap_elen ProgRun( bool step )
     ret->stack_pointer.offset  = TaskRegs.ESP;
     ret->program_counter.segment = TaskRegs.CS;
     ret->program_counter.offset  = TaskRegs.EIP;
-    TaskRegs.EFL &= ~FLG_T;
+    TaskRegs.EFL &= ~INTR_TF;
     WatchCount = 0;
     return( sizeof( *ret ) );
 }

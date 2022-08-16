@@ -51,7 +51,7 @@
 void SingleStepMode( void )
 {
 
-    IntResult.EFlags |= TRACE_BIT;
+    IntResult.EFlags |= INTR_TF;
     TraceOn = true;
 
 } /* SingleStepMode */
@@ -82,7 +82,7 @@ static trap_elen runProg( bool single_step )
         return( sizeof( *ret ) );
     }
 
-    IntResult.EFlags &= ~TRACE_BIT;
+    IntResult.EFlags &= ~INTR_TF;
     dowatch = false;
     watch386 = false;
 

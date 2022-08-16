@@ -14,6 +14,7 @@
 
 #include <ctype.h>
 #include <conio.h>
+#include <i86.h>
 #include "rsi1632.h"
 #include "loader.h"
 #include "brkptcpu.h"
@@ -440,7 +441,7 @@ analyze:
 #if OUTDATEDWINDOWSCRAP
         /* NEEDWORK */
         /* If the trace bit is not turned on, assume illegal OP code */
-        if( _d16info.swmode == 0 && (client->eflags & TRACE_BIT) == 0 ) {
+        if( _d16info.swmode == 0 && (client->eflags & INTR_TF) == 0 ) {
             /*
              * Running under Windows 3.00 and took illegal opcode
              *
@@ -710,7 +711,7 @@ bool D32DebugInit( TSF32 FarPtr process_regs, int hkey )
         back into the debugger.
     */
     tsf32_exec( &debugger_tsf, NULL );
-    debugger_tsf.eflags &= ~0x200;
+    debugger_tsf.eflags &= ~INTR_IF;
     return( false );
 }
 
@@ -744,7 +745,7 @@ void D32DebugRun( TSF32 FarPtr process_regs )
             we get the single-step interrupt we're expecting.
         */
 
-        if( need_fixtrap && (dbgregs.eflags & TRACE_BIT) )
+        if( need_fixtrap && (dbgregs.eflags & INTR_TF) )
             fixtrap();
 
         debugging = 1;              /* Tell debug_handler to be active */

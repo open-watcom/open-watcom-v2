@@ -794,9 +794,9 @@ static unsigned ProgRun( bool step )
     ret = GetOutPtr( 0 );
 
     if( step ) {
-        Proc.eflags |= TRACE_BIT;
+        Proc.eflags |= INTR_TF;
         ret->conditions = DoRun();
-        Proc.eflags &= ~TRACE_BIT;
+        Proc.eflags &= ~INTR_TF;
     } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = DoRun();
@@ -820,9 +820,9 @@ static unsigned ProgRun( bool step )
                     start_addr.offset = Proc.eip;
                     D32DebugSetBreak( &start_addr, false, &old_opcode, &old_opcode );
                 } else {
-                    Proc.eflags |= TRACE_BIT;
+                    Proc.eflags |= INTR_TF;
                     ret->conditions = DoRun();
-                    Proc.eflags &= ~TRACE_BIT;
+                    Proc.eflags &= ~INTR_TF;
                 }
                 if( (ret->conditions & (COND_TRACE | COND_BREAK)) == 0 )
                     break;

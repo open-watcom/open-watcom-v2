@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #define LFN_OK(x)           ((x) >= 0)
 #define LFN_INFO(x)         ((unsigned short)(x))
 
-#define LFN_DPMI_ERROR(x)   (((x).flags & 1) || (x).ax == 0x7100)
+#define LFN_DPMI_ERROR(x)   (((x).flags & INTR_CF) || (x).ax == 0x7100)
 #define LFN_RET_ERROR(e)    ((e) | ~0xFFFF)
 
 #define EX_LFN_OPEN         0x01

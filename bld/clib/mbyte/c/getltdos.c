@@ -127,7 +127,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0x6300;                /* get DBCS vector table */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
-        if( (dblock.flags & 1) == 0 && ((regx *)&dblock.eax)->b.l == 0 ) {
+        if( (dblock.flags & INTR_CF) == 0 && ((regx *)&dblock.eax)->b.l == 0 ) {
             if( dblock.ds ) {
                 return( EXTENDER_RM2PM( dblock.ds, dblock.esi ) );
             }

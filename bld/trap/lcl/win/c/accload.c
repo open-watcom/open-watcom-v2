@@ -311,7 +311,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     Out((OUT_LOAD,"KILL: DebugeeTask=%04x, WasStarted=%d",
         DebugeeTask, WasStarted ));
     if( DebugeeTask != NULL ) {
-        IntResult.EFlags &= ~TRACE_BIT;
+        IntResult.EFlags &= ~INTR_TF;
         if( WasStarted ) {
             Out((OUT_LOAD,"Doing Release Debugee"));
             DebuggerWaitForMessage( RELEASE_DEBUGEE, DebugeeTask, RESTART_APP );

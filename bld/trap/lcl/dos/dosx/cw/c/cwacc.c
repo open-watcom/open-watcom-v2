@@ -710,9 +710,9 @@ static unsigned ProgRun( bool step )
     _DBG1( "AccRunProg %X:%X\n", ProcRegs.CS, ProcRegs.EIP );
     ret = GetOutPtr( 0 );
     if( step ) {
-        ProcRegs.EFL |= TRACE_BIT;
+        ProcRegs.EFL |= INTR_TF;
         status = Execute();
-        ProcRegs.EFL &= ~TRACE_BIT;
+        ProcRegs.EFL &= ~INTR_TF;
     } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             status = Execute();
@@ -741,9 +741,9 @@ static unsigned ProgRun( bool step )
                     start_addr.offset = ProcRegs.EIP;
                     remove_breakpoint( &start_addr, old_opcode );
                 } else {
-                    ProcRegs.EFL |= TRACE_BIT;
+                    ProcRegs.EFL |= INTR_TF;
                     status = Execute();
-                    ProcRegs.EFL &= ~TRACE_BIT;
+                    ProcRegs.EFL &= ~INTR_TF;
                 }
                 if( (status & (ST_TRACE | ST_BREAK)) == 0 )
                     break;

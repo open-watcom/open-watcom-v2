@@ -35,6 +35,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <nwtypes.h>
+#include <i86.h>
 
 #include "miniproc.h"
 
@@ -69,8 +70,6 @@
 #define NO_DREG         ((byte)-1)
 #define NUM_DREG        4
 #define MAX_WATCHES     32
-
-#define FLG_T           0x0100UL
 
 #define MH2NLMENTRY(h)  ((nlm_entry *)(h))
 
@@ -538,7 +537,7 @@ static LONG DebugEntry( StackFrame *frame )
         if( DebuggerRunning ) {
             return( RETURN_TO_NEXT_DEBUGGER );
         } else {
-            FieldEFLAGS( frame ) |= FLG_T;
+            FieldEFLAGS( frame ) |= INTR_TF;
             FakeBreak = true;
             return( RETURN_TO_PROGRAM );
         }
@@ -744,9 +743,9 @@ void BigKludge( msb *m )
     if( NPX() != X86_NO ) {
         Write387( &m->fpu );
     }
-    if( ( m->cpu.EFL & FLG_T ) && m->cpu.EIP == (dword)DebugEntry ) {
+    if( ( m->cpu.EFL & INTR_TF ) && m->cpu.EIP == (dword)DebugEntry ) {
         /* If we are about to trace through this routine, don't! Ouch! */
-        m->cpu.EFL &= ~FLG_T;
+        m->cpu.EFL &= ~INTR_TF;
     }
     ActivateDebugRegs();
     UnBoobyTrapPID( m->os_id );
@@ -1569,7 +1568,7 @@ static trap_elen ProgRun( bool step )
     if( MSB == NULL ) {
         ret->conditions = COND_TERMINATE;
     } else if( step ) {
-        MSB->cpu.EFL |= FLG_T;
+        MSB->cpu.EFL |= INTR_TF;
         TrapInt1 = true;
         ret->conditions |= Execute( MSB );
         TrapInt1 = false;
@@ -1580,7 +1579,7 @@ static trap_elen ProgRun( bool step )
             TrapInt1 = false;
         } else {
             for( ;; ) {
-                MSB->cpu.EFL |= FLG_T;
+                MSB->cpu.EFL |= INTR_TF;
                 TrapInt1 = true;
                 ret->conditions |= Execute( MSB );
                 TrapInt1 = false;
@@ -1605,7 +1604,7 @@ static trap_elen ProgRun( bool step )
         ret->stack_pointer.offset = 0;
         ret->stack_pointer.segment = 0;
     } else {
-        MSB->cpu.EFL &= ~FLG_T;
+        MSB->cpu.EFL &= ~INTR_TF;
         ret->program_counter.offset = MSB->cpu.EIP;
         ret->program_counter.segment = MSB->cpu.CS;
         ret->stack_pointer.offset = MSB->cpu.ESP;

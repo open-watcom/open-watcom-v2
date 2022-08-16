@@ -35,6 +35,7 @@
 #include <string.h>
 #include <direct.h>
 #include <windows.h>
+#include <i86.h>
 #include "madregs.h"
 #include "trptypes.h"
 #include "trpld.h"
@@ -79,9 +80,9 @@ static void setATBit( thread_info *ti, set_t set )
     MyGetThreadContext( ti, &con );
 #if defined( MD_x86 ) || defined( MD_x64 )
     if( set != T_OFF ) {
-        con.EFlags |= TRACE_BIT;
+        con.EFlags |= INTR_TF;
     } else {
-        con.EFlags &= ~TRACE_BIT;
+        con.EFlags &= ~INTR_TF;
     }
     con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
@@ -101,9 +102,9 @@ static void setATBit( thread_info *ti, set_t set )
     }
 #elif defined( MD_ppc )
     if( set != T_OFF ) {
-        con.Msr |= TRACE_BIT;
+        con.Msr |= INTR_TF;
     } else {
-        con.Msr &= ~TRACE_BIT;
+        con.Msr &= ~INTR_TF;
     }
     con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
@@ -232,7 +233,7 @@ static trap_conditions handleInt3( DWORD state )
         BreakFixed = con.Eip;
         proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
         remove_breakpoint_lin( proc, (LPVOID)con.Eip, old_opcode );
-        con.EFlags |= TRACE_BIT;
+        con.EFlags |= INTR_TF;
         MySetThreadContext( ti, &con );
         CloseHandle( proc );
         return( 0 );

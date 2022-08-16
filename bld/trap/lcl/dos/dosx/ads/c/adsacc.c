@@ -820,7 +820,7 @@ static unsigned ProgRun( bool step )
     _DBG1(( "ProgRun" ));
     ret = GetOutPtr( 0 );
     ret->conditions = COND_CONFIG;
-    trace = step ? TRACE_BIT : 0;
+    trace = step ? INTR_TF : 0;
     Regs.EFL |= trace;
     if( AtEnd ) {
         _DBG2(("No RunProg"));
@@ -832,7 +832,7 @@ static unsigned ProgRun( bool step )
             SysRegs.dr7 = 0;
         } else {
             for( ;; ) {
-                Regs.EFL |= TRACE_BIT;
+                Regs.EFL |= INTR_TF;
                 MyRunProg();
                 if( DoneAutoCAD )
                     break;

@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <i86.h>
 #include "bool.h"
 #include "rdos.h"
 #include "debug.h"
@@ -310,8 +311,8 @@ static void SetupGo( struct TDebugThread *obj, struct TDebugBreak *b )
     } else {
         obj->FHasTempBp = false;
     }
-    if( ( tss.eflags & TRACE_BIT ) != 0 ) {
-        tss.eflags &= ~TRACE_BIT;
+    if( tss.eflags & INTR_TF ) {
+        tss.eflags &= ~INTR_TF;
         update = true;
     }
 
@@ -341,8 +342,8 @@ static void SetupTrace( struct TDebugThread *obj, struct TDebugBreak *b )
     } else {
         obj->FHasTempBp = false;
     }
-    if( ( tss.eflags & TRACE_BIT ) == 0 ) {
-        tss.eflags |= TRACE_BIT;
+    if( ( tss.eflags & INTR_TF ) == 0 ) {
+        tss.eflags |= INTR_TF;
         update = true;
     }
 
