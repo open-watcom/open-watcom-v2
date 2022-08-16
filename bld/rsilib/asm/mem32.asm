@@ -16,11 +16,19 @@
         .386
 
 ;
-; void peek32(unsigned long off32, unsigned sel, void FarPtr dest, size_t count)
+; void peek32(unsigned long off32, unsigned sel, size_t count, void FarPtr dest)
 ;
-peek32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:word, sel:word, dest:dword, count:word
+; input:
+;   offset32  dx:ax
+;   sel       bx
+;   count     cx
+;   dest      on stack
+;
+; output:
+;
+peek32 proc WATCOM_C public uses es ds esi edi, offs32_lo:word, offs32_hi:word, sel:word, count:word, dest:dword
         movzx   ecx,count
-        jcxz nocopy1
+        jcxz short nodata1
         mov     si,offs32_hi
         shl     esi,16
         mov     si,offs32_lo
@@ -28,23 +36,30 @@ peek32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:wo
         movzx   edi,di
         mov     ds,sel
         rep     movs byte ptr[edi],[esi]
-nocopy1:
+nodata1:
         ret
 peek32 endp
 
 ;
-; bool poke32(unsigned long offset32, unsigned sel, const void FarPtr dest, size_t count)
+; bool poke32(unsigned long offset32, unsigned sel, size_t count, const void FarPtr src)
 ;
-poke32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:word, sel:word, src:dword, count:word
+; input:
+;   offset32  dx:ax
+;   sel       bx
+;   count     cx
+;   src       on stack
+;
+; output:
+;   bool      ax
+;
+poke32 proc WATCOM_C public uses es ds esi edi, offs32_lo:word, offs32_hi:word, sel:word, count:word, src:dword
         movzx   ecx,count
-        jcxz short nodata
-        push    bx
-        mov     bx,sel
+        jcxz short nodata2
         mov     di,offs32_hi
         shl     edi,16
         mov     di,offs32_lo
         xor     ax,ax
-        verw    bx
+        verw    sel
         jz short writeable
         ;
         ; create segment alias descriptor (writable)
@@ -52,11 +67,11 @@ poke32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:wo
         mov     ax,0AH
         int 31H
         jc short finish
-        mov     bx,ax
+        mov     sel,ax
 writeable:
         lds     si,src
         movzx   esi,si
-        mov     es,bx
+        mov     es,sel
         rep     movs byte ptr[edi],[esi]
         or      ax,ax
         je short finish
@@ -67,8 +82,7 @@ writeable:
         int 31H
         clc
 finish:
-        pop     bx
-nodata:
+nodata2:
         sbb     ax,ax
         and     ax,1
         ret

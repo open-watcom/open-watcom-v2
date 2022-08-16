@@ -20,7 +20,7 @@
 bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_t len )
 {
     addr48_ptr  fp;
-    OFFSET32    new_len;
+    size_t      new_len;
     int         check;
 
     if( len == 0 )
@@ -38,7 +38,7 @@ bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_
         If the range is partially valid, we clip the address range to fit
         and read the memory.
     */
-    check = rsi_addr32_check( fp.offset, fp.segment, (OFFSET32)len, &new_len );
+    check = rsi_addr32_check( fp.offset, fp.segment, len, &new_len );
     if( check == MEMBLK_INVALID ) {
         far_setmem( to, len, 0xFF );
         return( true );
@@ -46,9 +46,8 @@ bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_
         if( check != MEMBLK_VALID ) {
             far_setmem( (unsigned char FarPtr)to + new_len, len - new_len, 0xFF );
         }
-        len = (size_t)new_len;
         page_fault = 0;
-        peek32( fp.offset, fp.segment, to, len );
+        peek32( fp.offset, fp.segment, new_len, to );
 
         /* If a page fault occurred while reading the range, recurse until
             we either read without getting a page fault, or reach a 1-byte
@@ -58,13 +57,13 @@ bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_
         if( page_fault ) {
             page_fault = 0;
 
-            if( len == 1 ) {
+            if( new_len == 1 ) {
                 *(unsigned char FarPtr)to = 0xFF;
             } else {
-                size_t  check_len = ( len >> 1 );
-                D32DebugRead( &fp, false, to, check_len );
-                fp.offset += check_len;
-                D32DebugRead( &fp, false, (unsigned char FarPtr)to + check_len, len - check_len );
+                len = ( new_len >> 1 );
+                D32DebugRead( &fp, false, to, len );
+                fp.offset += len;
+                D32DebugRead( &fp, false, (unsigned char FarPtr)to + len, new_len - len );
             }
         }
         return( false );

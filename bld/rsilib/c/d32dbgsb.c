@@ -25,13 +25,13 @@ void D32DebugSetBreak( addr48_ptr FarPtr addr, bool translate, opcode_type FarPt
     if( translate ) {
         D32Relocate( &fp );
     }
-    peek32( fp.offset, fp.segment, &temp, sizeof( temp ) );
+    peek32( fp.offset, fp.segment, sizeof( temp ), &temp );
 
     /* Don't set a breakpoint if there's already one there, or we lose
             the previously saved byte.
     */
     if( temp != *to ) {
         *from = temp;
-        poke32( fp.offset, fp.segment, to, sizeof( *to ) );
+        poke32( fp.offset, fp.segment, sizeof( *to ), to );
     }
 }

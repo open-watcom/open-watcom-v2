@@ -24,11 +24,13 @@
     If part of the range is valid, *valid_length is set to the length
     of the valid part.
 */
-int rsi_addr32_check( OFFSET32 off, SELECTOR sel, OFFSET32 for_length, OFFSET32 *valid_length )
+int rsi_addr32_check( OFFSET32 off, SELECTOR sel, size_t for_length, size_t *valid_length )
 {
     descriptor  g;
     OFFSET32    limit;
+    int         rc;
 
+    rc = MEMBLK_VALID;
     if( addr_mode == 0 && for_length != 0 ) {
         /* real or absolute address */
         if( !is_validselector( sel ) )
@@ -43,13 +45,11 @@ int rsi_addr32_check( OFFSET32 off, SELECTOR sel, OFFSET32 for_length, OFFSET32 
         }
         if( off + for_length - 1 < off          /* wrapped */
           || off + for_length - 1 > limit ) {   /* beyond end */
-            if( valid_length ) {
-                *valid_length = limit - off + 1;
-            }
-            return( MEMBLK_PARTIAL );
+            for_length = (size_t)( limit - off + 1 );
+            rc = MEMBLK_PARTIAL;
         }
     }
     if( valid_length != NULL )
         *valid_length = for_length;
-    return( MEMBLK_VALID );
+    return( rc );
 }

@@ -279,31 +279,31 @@ static bool fix_fpe_fault( unsigned short opcodew, TSF32 FarPtr client )
 
     switch( opcodew ) {
     case 0x04C7 :       /* mov ds:[si], imm16 */
-        peek32( client->eip + 2, client->cs, &imm16, 2 );
-        poke32( client->esi, client->ds, &imm16, 2 );
+        peek32( client->eip + 2, client->cs, 2, &imm16 );
+        poke32( client->esi, client->ds, 2, &imm16 );
         client->eip += 4;
         break;
     case 0x0429 :       /* sub ds:[si], ax */
-        peek32( client->esi, client->ds, &imm16, 2 );
+        peek32( client->esi, client->ds, 2, &imm16 );
         imm16 -= (int)client->eax;
-        poke32( client->esi, client->ds, &imm16, 2 );
+        poke32( client->esi, client->ds, 2, &imm16 );
         client->eip += 2;
         break;
     case 0x04C6 :       /*  mov ds:[si], imm8 */
-        peek32( client->eip + 2, client->cs, &imm8, 1 );
-        poke32( client->esi, client->ds, &imm8, 1 );
+        peek32( client->eip + 2, client->cs, 1, &imm8 );
+        poke32( client->esi, client->ds, 1, &imm8 );
         client->eip += 3;
         break;
     case 0x0C80 :       /* or  byte ptr[si], C0 */
-        peek32( client->esi, client->ds, &val8, 1 );
-        peek32( client->eip + 2, client->cs, &imm8, 1 );
+        peek32( client->esi, client->ds, 1, &val8 );
+        peek32( client->eip + 2, client->cs, 1, &imm8 );
         val8 |= imm8;
-        poke32( client->esi, client->ds, &val8, 1 );
+        poke32( client->esi, client->ds, 1, &val8 );
         client->eip += 3;
         break;
     case 0x0489 :       /* mov ds:[si], ax */
         imm16 = (int)client->eax;
-        poke32( client->esi, client->ds, &imm16, 2 );
+        poke32( client->esi, client->ds, 2, &imm16 );
         client->eip += 2;
         break;
     default :
@@ -319,7 +319,7 @@ static bool fixcrash( TSF32 FarPtr client )
     static unsigned short opcodew;
     static int zero = 0;
 
-    peek32( client->eip, client->cs, &opcodew, 2 );
+    peek32( client->eip, client->cs, 2, &opcodew );
     opcode = (unsigned char)( opcodew & 0xFF );
 
     /* We zero the word on the stack because we will return to the
@@ -331,7 +331,7 @@ static bool fixcrash( TSF32 FarPtr client )
     if( opcode == 0x07 ) {      /* POP ES */
         client->es = 0;
 coverup:
-        poke32( client->esp, client->ss, &zero, 2 );
+        poke32( client->esp, client->ss, 2, &zero );
         return( true );
     }
     if( opcode == 0x1F ) {      /* POP DS */
@@ -778,7 +778,7 @@ void D32DebugRun( TSF32 FarPtr process_regs )
             /* access rights aren't right under Windows?) but that */
             /* was clearly wrong when not in flat model            */
 
-            peek32( dbgregs.eip, dbgregs.cs, &brk_opcode, sizeof( brk_opcode ) );
+            peek32( dbgregs.eip, dbgregs.cs, sizeof( brk_opcode ), &brk_opcode );
             if( brk_opcode == FAKE_BRKPOINT ) {
                 dbgregs.int_id = 3; /* Fake breakpoint */
             }
