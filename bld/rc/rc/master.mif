@@ -125,7 +125,6 @@ common_objs = &
     $(_subdir_)preproc.obj &
     $(_subdir_)ppexpr.obj &
     $(_subdir_)ppmacro.obj &
-    $(_subdir_)tmpctl.obj &
     $(_subdir_)autodep.obj &
     $(_subdir_)rcldstr.obj &
     $(_subdir_)sharedio.obj &

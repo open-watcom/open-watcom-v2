@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,6 @@
 #include "rcldstr.h"
 #include "preproc.h"
 #include "dbtable.h"
-#include "tmpctl.h"
 #include "loadstr.h"
 #include "rcspawn.h"
 #include "semantic.h"
@@ -61,12 +61,10 @@ void InitGlobs( void )
     ErrorHasOccured = false;
     memset( CharSetLen, 0, sizeof( CharSetLen ) );
     memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
-    TmpCtlInitStatics();
     Layer0InitStatics();
     SemanticInitStatics();
     SemanticInitStaticsWIN();
     SemanticInitStaticsOS2();
-    ErrorInitStatics();
     SharedIOInitStatics();
     ScanInitStaticsWIN();
     ScanInitStaticsOS2();

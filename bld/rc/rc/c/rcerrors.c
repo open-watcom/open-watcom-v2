@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "global.h"
 #include "rcerrors.h"
 #include "reserr.h"
-#include "tmpctl.h"
 #include "errprt.h"
 #include "rcldstr.h"
 #include "preproc.h"
@@ -50,39 +49,42 @@
 static char             rcStrBuf[1024];
 static char             errBuffer[1024];
 
-static int checkForTmpFiles( unsigned errornum, va_list args )
+static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
+/***********************************************************************/
 {
-    char        *fname;
+    OutPutInfo          errinfo;
+#if !defined( INSIDE_WRDLL )
+    va_list             args1;
+    char                *fname;
 
+    va_copy( args1, args );
     switch( errornum ) {
     case ERR_CANT_OPEN_FILE:
     case ERR_UNEXPECTED_EOF:
     case ERR_READING_FILE:
     case ERR_WRITTING_FILE:
     case ERR_WRITTING_RES_FILE:
-        fname = va_arg( args, char * );
-        if( IsTmpFile( fname ) ) {
+        fname = va_arg( args1, char * );
+        if( strcmp( fname, TMPFILE0 ) == 0
+          || strcmp( fname, TMPFILE1 ) == 0
+          || strcmp( fname, TMPFILE2 ) == 0 ) {
             switch( errornum ) {
             case ERR_CANT_OPEN_FILE:
-                return( ERR_OPENING_TMP );
+                errornum = ERR_OPENING_TMP;
+                break;
             case ERR_UNEXPECTED_EOF:
             case ERR_READING_FILE:
-                return( ERR_READING_TMP );
+                errornum = ERR_READING_TMP;
+                break;
             case ERR_WRITTING_FILE:
-                return( ERR_WRITTING_TMP );
+                errornum = ERR_WRITTING_TMP;
+                break;
             }
         }
-        /* fall through */
-    default:
-        return( errornum );
+        break;
     }
-}
-
-static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
-/***************************************************************************/
-{
-    OutPutInfo          errinfo;
-
+    va_end( args1 );
+#endif
 
     InitOutPutInfo( &errinfo );
     errinfo.severity = sev;
@@ -159,10 +161,6 @@ void RcWarning( unsigned errornum, ... )
     va_list             args;
 
     va_start( args, errornum );
-    errornum = checkForTmpFiles( errornum, args );
-    va_end( args );
-
-    va_start( args, errornum );
     RcMsgV( errornum, SEV_WARNING, args );
     va_end( args );
 }
@@ -173,10 +171,6 @@ void RcError( unsigned errornum, ... )
     va_list             args;
 
     va_start( args, errornum );
-    errornum = checkForTmpFiles( errornum, args );
-    va_end( args );
-
-    va_start( args, errornum );
     RcMsgV( errornum, SEV_ERROR, args );
     va_end( args );
 }
@@ -185,10 +179,6 @@ void RcFatalError( unsigned int errornum, ... )
 /*********************************************/
 {
     va_list             args;
-
-    va_start( args, errornum );
-    errornum = checkForTmpFiles( errornum, args );
-    va_end( args );
 
     va_start( args, errornum );
     RcMsgV( errornum, SEV_FATAL_ERR, args );
@@ -205,12 +195,3 @@ void RcFatalError( unsigned int errornum, ... )
     PP_Fini();
     RCSuicide( -1 );
 }
-
-#if !defined( INSIDE_WRDLL )
-void ErrorInitStatics( void )
-/***************************/
-{
-    memset( rcStrBuf, 0, sizeof( rcStrBuf ) );
-    memset( errBuffer, 0, sizeof( errBuffer ) );
-}
-#endif

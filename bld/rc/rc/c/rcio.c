@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@
 #include "rcerrors.h"
 #include "preproc.h"
 #include "reserr.h"
-#include "tmpctl.h"
 #include "autodep.h"
 #include "errprt.h"
 #include "util.h"
@@ -473,7 +472,7 @@ static bool Pass1InitRes( void )
     memset( &CurrResFile, 0, sizeof( CurrResFile ) );
 
     /* open the temporary file */
-    CurrResFile.filename = "Temporary file 0 (res)";
+    CurrResFile.filename = TMPFILE0;
     CurrResFile.fp = ResOpenFileTmp( NULL );
     if( CurrResFile.fp == NULL ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
@@ -950,7 +949,7 @@ bool RcPass2IoInit( void )
 
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
-        Pass2Info.TmpFile.name = "Temporary file 2 (exe)";
+        Pass2Info.TmpFile.name = TMPFILE2;
         Pass2Info.TmpFile.fp = ResOpenFileTmp( NULL );
         if( Pass2Info.TmpFile.fp == NULL ) {
             RcError( ERR_OPENING_TMP, Pass2Info.TmpFile.name, strerror( errno ) );

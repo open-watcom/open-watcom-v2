@@ -71,7 +71,7 @@ dlltarg_objs_rc = &
     pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
     exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
     global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
-    rcerrors.obj tmpctl.obj autodep.obj &
+    rcerrors.obj autodep.obj &
     dbtable.obj sharedio.obj mergedir.obj rcspawn.obj
 dlltarg_objs          = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &

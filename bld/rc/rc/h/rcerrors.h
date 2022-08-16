@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +32,18 @@
 
 
 #ifdef INSIDE_WLINK
-#include "wlnkmsg.rh"
+    #include "wlnkmsg.rh"
 #elif defined( INSIDE_WR )
-#include "wrmsg.rh"
+    #include "wrmsg.rh"
 #else
-#include "rcmsg.rh"
+    #include "rcmsg.rh"
+#endif
+
+
+#if !defined( INSIDE_WLINK ) && !defined( INSIDE_WR )
+    #define TMPFILE0    "Temporary file 0 (res)"
+    #define TMPFILE1    "Temporary file 1 (res)"
+    #define TMPFILE2    "Temporary file 2 (exe)"
 #endif
 
 enum {
@@ -48,9 +55,8 @@ enum {
 };
 
 extern void RcWarning( unsigned errornum, ... );
-extern void RcError(unsigned int ,... );
+extern void RcError( unsigned int ,... );
 #if defined(__WATCOMC__)
 #pragma aux RcFatalError __aborts
 #endif
 extern void RcFatalError( unsigned int, ... );
-extern void ErrorInitStatics( void );

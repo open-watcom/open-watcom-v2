@@ -35,7 +35,6 @@
 #include "global.h"
 #include "rcerrors.h"
 #include "semantic.h"
-#include "tmpctl.h"
 #include "rcrtns.h"
 #include "rccore.h"
 #include "wres.h"
@@ -43,7 +42,7 @@
 
 /* used in the work around for MS format RES files */
 static FILE         *tmpResFile = NULL;     /* holding place for the RES file handle */
-static char         *tmpResFileName = "Temporary file 1 (res)";
+static char         *tmpResFileName = TMPFILE1;
 
 static FILE         *save_fp;               /* holding place for the RES file handle */
 static char         *save_name;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -260,7 +261,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         cmp.last = 0;
         diff = BlkOffSearch( &cmp );
         if( diff == 0 )
-            goto exit;
+            goto exit_rtn;
         if( diff > 0 ) {
             ++cmp.last; // if new > insert after
             ++cmp.base; //  last compare
@@ -288,7 +289,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
     }
     info[0] = *new;
     ++ctl->entry.count;
-exit:
+exit_rtn:
     return;
 }
 
