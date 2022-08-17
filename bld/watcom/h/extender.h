@@ -47,6 +47,7 @@
 #define DOSX_PHAR_V8    8
 #define DOSX_INTEL      9
 #define DOSX_WIN386     10
+#define DOSX_HX         11
 
 /*
  * Values for '_ExtenderSubtype'
@@ -62,6 +63,7 @@
 #define _IsRationalNonZeroBase() ( _Extender == DOSX_RATIONAL && _ExtenderSubtype == DOSX_RATIONAL_NONZEROBASE )
 #define _IsRationalZeroBase()    ( _Extender == DOSX_RATIONAL && _ExtenderSubtype == DOSX_RATIONAL_ZEROBASE )
 #define _IsFlashTek()            ( _Extender == DOSX_PHAR_V3 && __X32VM != 0 )
+#define _IsHX()                  ( _Extender == DOSX_HX )
 
 extern  char            _Extender;
 extern  char            _ExtenderSubtype;
