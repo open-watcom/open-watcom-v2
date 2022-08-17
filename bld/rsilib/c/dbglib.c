@@ -103,14 +103,15 @@ extern void outc( char );
     __value     \
     __modify    [__ax __bx]
 
-extern int _check_parrent_debugger( void );
+extern bool _check_parrent_debugger( void );
 #pragma aux _check_parrent_debugger = \
         "mov    ax,0FF00h" \
         "mov    dx,11FFh" \
         "int 21h" \
         "sbb    ax,ax" \
+        "and    ax,1" \
     __parm      [] \
-    __value     [__ax] \
+    __value     [__al] \
     __modify    [__dx]
 
 //extern char vmm_present;      /* Set if VMM 4G package is present */
@@ -130,10 +131,10 @@ static void ( CDECL_FP16 chain_interrupt )( unsigned, TSF32 FarPtr ) = NULL_PTR;
 
 static char timer_mult = 0;     /* Tells timer handler to take charge */
 static char timer_mod = 0;
-static char debugging = 0;      /* Tells crash handler to take charge */
-static char being_debugged = 0; /* Another D present? */
+static bool debugging = false;  /* Tells crash handler to take charge */
+static bool being_debugged = false; /* Another D present? */
 
-static int  first_time = 1;
+static bool first_time = true;
 
 /*
  * This is the list of exceptions which 4gw hooks when it starts up.
@@ -237,7 +238,7 @@ static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
 
 static opcode_type      hotkey_opcode;
 static opcode_type      old_hotkey_opcode;
-static unsigned char    hotkey_hit;
+static bool             hotkey_hit;
 static int              hotkey_int = INT_RM_PASSUP;
 
 static void set_hotkey_break( TSF32 FarPtr client )
@@ -249,7 +250,7 @@ static void set_hotkey_break( TSF32 FarPtr client )
     fp.offset = client->eip;
     D32DebugBreakOp( &hotkey_opcode );
     D32DebugSetBreak( &fp, false, &hotkey_opcode, &old_hotkey_opcode );
-    hotkey_hit = 1;
+    hotkey_hit = true;
 #ifdef DEBUGHOTKEY
     outs( "hotkey break set\r\n" );
 #endif
@@ -261,7 +262,7 @@ static void check_hotkey( int eip_mod, TSF32 FarPtr client )
     addr48_ptr  fp;
 
     if( hotkey_hit ) {
-        hotkey_hit = 0;
+        hotkey_hit = false;
 #ifdef DEBUGHOTKEY
         outs( "hotkey seen " );
         outi( _FP_OFF( client ) );
@@ -380,7 +381,7 @@ static unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hN
  */
 {
     int     eip_mod;
-    char    in_debuggee;
+    bool    in_debuggee;
 
     __asm   cld;        /* CLD to be safe */
 
@@ -396,12 +397,12 @@ static unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hN
         }
         hNext = 0;
         if( in_debuggee && find_user_code( client ) != client ) {
-            in_debuggee = 0;
+            in_debuggee = false;
         }
     }
 #endif
 
-    if( in_debuggee == 0 ) {
+    if( !in_debuggee ) {
         /*
          * Handler should get out of the way
          */
@@ -570,8 +571,12 @@ static int hook_debug_interrupts( void )
      */
     my_package_bind( DOS4G_KERNEL_PACKAGE_NAME, DOS4G_NULLP_ENTRY, &package, (ACTION **)&D32NullPtrCheck );
 
-    if( D32NullPtrCheck != NULL_PTR )
-        nullp_checks = D32NullPtrCheck( 0 );    /* Disable NULLP checking and query status */
+    /*
+     * Disable NULLP checking and query status
+     */
+    if( D32NullPtrCheck != NULL_PTR ) {
+        nullp_checks = D32NullPtrCheck( 0 );
+    }
 
     for( i = 0; i < sizeof( hook_exceptions ) / sizeof( hook_exceptions[0] ); i++ )
         debug_hook( hook_exceptions[i], 1, debug_handler );
@@ -652,9 +657,9 @@ bool D32DebugInit( TSF32 FarPtr process_regs, int hkey )
     farptr16    org15p;
     farptr16    hotkeyp;
 
-    first_time = 1;
+    first_time = true;
     process_regs->int_id = -1;
-    debugging = 0;              /* Tell debug handler to chain */
+    debugging = false;              /* Tell debug handler to chain */
     if( hkey != -1 ) {
         hotkey_int = hkey;
     }
@@ -770,21 +775,28 @@ void D32DebugRun( TSF32 FarPtr process_regs )
         /*
          * Tell debug_handler to be active
          */
-        debugging = 1;
-
-        if( D32NullPtrCheck != NULL_PTR )
-            D32NullPtrCheck( 1 );                   /* Reactivate NULLP checking */
+        debugging = true;
+        /*
+         * Reactivate NULLP checking
+         */
+        if( D32NullPtrCheck != NULL_PTR ) {
+            D32NullPtrCheck( 1 );
+        }
         if( first_time ) {
             tsf32_exec( &debugger_tsf, &dbgregs );
         } else {
             tsf32_exec( &debugger_tsf, &debug_handler_tsf );
         }
-        if( D32NullPtrCheck != NULL_PTR )
-            nullp_checks = D32NullPtrCheck( 0 );    /* Disable NULLP checking and query status */
+        /*
+         * Disable NULLP checking and query status
+         */
+        if( D32NullPtrCheck != NULL_PTR ) {
+            nullp_checks = D32NullPtrCheck( 0 );
+        }
         /*
          * Tell debug handler to chain
          */
-        debugging = 0;
+        debugging = false;
     }
 
     /*
@@ -792,8 +804,8 @@ void D32DebugRun( TSF32 FarPtr process_regs )
      *
      * Tell debug handler to chain
      */
-    debugging = 0;
-    first_time = 0;
+    debugging = false;
+    first_time = false;
 
     if( process_regs ) {
 #if OUTDATEDWINDOWSCRAP

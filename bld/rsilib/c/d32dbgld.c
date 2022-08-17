@@ -43,7 +43,7 @@ typedef struct {
 } MCB;
 #include "poppck.h"
 
-static char     exp_loaded;
+static bool     exp_loaded = false;;
 static SELECTOR exp_base;
 
 static bool abspath( const char *filename, char *fullpath )
@@ -345,13 +345,20 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
      * We need to load programs in the target interrupt space, in
      * case code such as a DLL initializer actually runs.
      */
-    if( D32NullPtrCheck != NULL_PTR )
-        D32NullPtrCheck( 1 );                   /* Reactivate NULLP checking */
 
+    /*
+     * Reactivate NULLP checking
+     */
+    if( D32NullPtrCheck != NULL_PTR ) {
+        D32NullPtrCheck( 1 );
+    }
     result = (int)LOADER_LOAD( &lv_temp )( (FDORNAME)filename, 0, tspv, &main_cookie, cmdline );
-
-    if( D32NullPtrCheck != NULL_PTR )
-        nullp_checks = D32NullPtrCheck( 0 );    /* Disable NULLP checking and query status */
+    /*
+     * Disable NULLP checking and query status
+     */
+    if( D32NullPtrCheck != NULL_PTR ) {
+        nullp_checks = D32NullPtrCheck( 0 );
+    }
 
     if( result )
         return( -2 );
@@ -382,7 +389,7 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
 
     lv_curr = lv_temp;          /* lv_curr now safe to use */
     D32SetCurrentObject( main_cookie );
-    tspv->eflags = 0x200;       /* interrupts enabled */
+    tspv->eflags = INTR_IF;     /* interrupts enabled */
     tspv->ebp = 0L;             /* for backtrace */
 
     cmdtail = lv_curr.loader_package->package_title;
@@ -392,7 +399,7 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
         cmdtail++;
     }
     if( *cmdtail == '\0' ) {
-        exp_loaded = 1;
+        exp_loaded = true;
         exp_base = user_sel_start - user_sel_const;
     }
     return( 0 );

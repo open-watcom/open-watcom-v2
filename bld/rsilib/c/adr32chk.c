@@ -33,7 +33,7 @@ int rsi_addr32_check( OFFSET32 off, SELECTOR sel, size_t for_length, size_t *val
     int         rc;
 
     rc = MEMBLK_VALID;
-    if( addr_mode == 0 && for_length != 0 ) {
+    if( addr_mode == 0 && for_length > 0 ) {
         /*
          * real or absolute address
          */

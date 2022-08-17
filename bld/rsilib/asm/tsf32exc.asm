@@ -37,6 +37,8 @@ ts32_proc       dw      ?
 ts32_eflags     dd      ?
 TSF32           ends
 
+INTR_IF equ     200h
+
         .CODE
         .386p
 
@@ -108,7 +110,7 @@ tsf32_load:
         push    eax
         push    es:[di].ts32_eflags
         pop     eax
-        and     eax, 200H
+        and     eax, INTR_IF
         jnz short setit
         cli
         jmp short popax

@@ -206,7 +206,7 @@ extern void         D32DebugSetBreak( addr48_ptr FarPtr, bool, opcode_type FarPt
  * global variables
  */
 extern int          addr_mode;
-extern char         page_fault;
+extern bool         page_fault;
 extern _null_checks FarPtr nullp_checks;
 extern void         FarPtr ( CDECL_FP16 D32NullPtrCheck )( int );
 extern void         (FarPtr FAR16 hotkey_passup)();
