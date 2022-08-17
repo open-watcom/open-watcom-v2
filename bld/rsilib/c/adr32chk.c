@@ -18,10 +18,10 @@
 
 int rsi_addr32_check( OFFSET32 off, SELECTOR sel, size_t for_length, size_t *valid_length )
 /*
- * Returns
- *   MEMBLK_INVALID if range is completely invalid,
- *   MEMBLK_PARTIAL if partially valid,
- *   MEMBLK_VALID if completely valid.
+ * Returns:
+ *   MEMBLK_INVALID     if range is completely invalid
+ *   MEMBLK_PARTIAL     if partially valid
+ *   MEMBLK_VALID       if completely valid
  * Assumes, of course, that valid segments are contiguous and begin at zero.
  *
  * If part of the range is valid, *valid_length is set to the length

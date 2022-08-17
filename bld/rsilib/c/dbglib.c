@@ -570,7 +570,6 @@ static int hook_debug_interrupts( void )
      * OK to not find this entry point
      */
     my_package_bind( DOS4G_KERNEL_PACKAGE_NAME, DOS4G_NULLP_ENTRY, &package, (ACTION **)&D32NullPtrCheck );
-
     /*
      * Disable NULLP checking and query status
      */
