@@ -114,7 +114,7 @@
       #define HELPNAME_DS   "PEDHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
       #define HELPNAME_NS   "PENHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
     #elif defined(DOS4G)
-      #define HELPNAME      "RSIHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME      "RSIHELP.EXP"
     #elif defined(CAUSEWAY)
       #define HELPNAME      "CWHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
     #elif defined(HX)
