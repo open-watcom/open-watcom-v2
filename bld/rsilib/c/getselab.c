@@ -13,6 +13,7 @@
 
 #include "rsi1632.h"
 
+
 SELECTOR rsi_sel_new_absolute( long base_addr, unsigned size )
 {
     if( USESDPMI() ) {

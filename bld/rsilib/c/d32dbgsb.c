@@ -15,6 +15,7 @@
 
 #include "rsi1632.h"
 
+
 void D32DebugSetBreak( addr48_ptr FarPtr addr, bool translate, opcode_type FarPtr to, opcode_type FarPtr from )
 {
     addr48_ptr  fp;
@@ -26,10 +27,10 @@ void D32DebugSetBreak( addr48_ptr FarPtr addr, bool translate, opcode_type FarPt
         D32Relocate( &fp );
     }
     peek32( fp.offset, fp.segment, sizeof( temp ), &temp );
-
-    /* Don't set a breakpoint if there's already one there, or we lose
-            the previously saved byte.
-    */
+    /*
+     * Don't set a breakpoint if there's already one there, or we lose
+     *     the previously saved byte.
+     */
     if( temp != *to ) {
         *from = temp;
         poke32( fp.offset, fp.segment, sizeof( *to ), to );

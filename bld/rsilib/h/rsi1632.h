@@ -153,39 +153,58 @@ extern PACKAGE      FarPtr rsi_find_package( char FarPtr );
 extern SELECTOR     rsi_seg_realloc( SELECTOR csel );
 extern void         FarPtr rsi_get_rm_ptr( void FarPtr );
 extern int          rsi_addr32_check( OFFSET32, SELECTOR, size_t, size_t * );
-
-/* dbglib.c */
+/*
+ * dbglib.c
+ */
 extern void         D32DebugBreakOp( opcode_type FarPtr );
 extern bool         D32DebugInit( TSF32 FarPtr, int );
 extern void         D32DebugTerm( void );
 extern void         D32DebugRun( TSF32 FarPtr );
 extern void         D32HookTimer( int );
 extern void         D32UnHookTimer( void );
-/* tsf32exc.asm */
+/*
+ * tsf32exc.asm
+ */
 extern void         __cdecl tsf32_exec( TSF32 FarPtr, TSF32 FarPtr );
-/* fixtrap.asm */
+/*
+ * fixtrap.asm
+ */
 extern int          init_fixtrap( void );
 extern void         fixtrap( void );
-/* rmhdlr.asm */
+/*
+ * rmhdlr.asm
+ */
 extern void         FAR16 rm15_handler( void );
 extern void         FAR16 rm1B_handler( void );
 extern void         FAR16 passup_hotkey( void );
-/* d32dbgld.c */
+/*
+ * d32dbgld.c
+ */
 extern void         D32SetCurrentObject( long cookie );
 extern int          D32DebugLoad( const char *, const char FarPtr, TSF32 FarPtr );
 extern bool         D32Relocate( addr48_ptr FarPtr fp );
 extern bool         D32Unrelocate( addr48_ptr FarPtr fp );
-/* mem32.asm */
+/*
+ * mem32.asm
+ */
 extern void         peek32( OFFSET32, SELECTOR, size_t, void FarPtr );
 extern bool         poke32( OFFSET32, SELECTOR, size_t, const void FarPtr );
-/* d32dbgrd.c */
+/*
+ * d32dbgrd.c
+ */
 extern bool         D32DebugRead( addr48_ptr FarPtr, bool, void FarPtr, size_t );
-/* d32dbgwr.c */
+/*
+ * d32dbgwr.c
+ */
 extern bool         D32DebugWrite( addr48_ptr FarPtr, bool, void FarPtr, size_t );
-/* d32dbgsb.c */
+/*
+ * d32dbgsb.c
+ */
 extern void         D32DebugSetBreak( addr48_ptr FarPtr, bool, opcode_type FarPtr, opcode_type FarPtr );
 
-// global variables
+/*
+ * global variables
+ */
 extern int          addr_mode;
 extern char         page_fault;
 extern _null_checks FarPtr nullp_checks;

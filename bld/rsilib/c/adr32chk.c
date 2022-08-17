@@ -15,16 +15,18 @@
 
 #include "rsi1632.h"
 
-/* Returns
-    MEMBLK_INVALID if range is completely invalid,
-    MEMBLK_PARTIAL if partially valid,
-    MEMBLK_VALID if completely valid.  Assumes, of course, that valid segments
-    are contiguous and begin at zero.
 
-    If part of the range is valid, *valid_length is set to the length
-    of the valid part.
-*/
 int rsi_addr32_check( OFFSET32 off, SELECTOR sel, size_t for_length, size_t *valid_length )
+/*
+ * Returns
+ *   MEMBLK_INVALID if range is completely invalid,
+ *   MEMBLK_PARTIAL if partially valid,
+ *   MEMBLK_VALID if completely valid.
+ * Assumes, of course, that valid segments are contiguous and begin at zero.
+ *
+ * If part of the range is valid, *valid_length is set to the length
+ * of the valid part.
+ */
 {
     descriptor  g;
     OFFSET32    limit;
@@ -32,16 +34,29 @@ int rsi_addr32_check( OFFSET32 off, SELECTOR sel, size_t for_length, size_t *val
 
     rc = MEMBLK_VALID;
     if( addr_mode == 0 && for_length != 0 ) {
-        /* real or absolute address */
-        if( !is_validselector( sel ) )
-            return( MEMBLK_INVALID );    /* Null or beyond end of GDT */
+        /*
+         * real or absolute address
+         */
+        if( !is_validselector( sel ) ) {
+            /*
+             * Null or beyond end of GDT
+             */
+            return( MEMBLK_INVALID );
+        }
         if( !rsi_get_descriptor( sel, &g ) )
             return( MEMBLK_INVALID );
         limit = GDT32LIMIT( g );
-        if( off > limit )
-            return( MEMBLK_INVALID );    /* Offset past end of segment */
+        if( off > limit ) {
+            /*
+             * Offset past end of segment
+             */
+            return( MEMBLK_INVALID );
+        }
         if( (sel & 3) > g.type.dpl || !g.type.present || !g.type.nonsystem ) {
-            return( MEMBLK_INVALID );    /* Bad access bits */
+            /*
+             * Bad access bits
+             */
+            return( MEMBLK_INVALID );
         }
         if( off + for_length - 1 < off          /* wrapped */
           || off + for_length - 1 > limit ) {   /* beyond end */

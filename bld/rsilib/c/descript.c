@@ -13,6 +13,7 @@
 
 #include "rsi1632.h"
 
+
 bool rsi_get_descriptor( SELECTOR sel, descriptor FarPtr g )
 {
     descriptor FarPtr  p;

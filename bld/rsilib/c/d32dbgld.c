@@ -20,7 +20,9 @@
 #include "rsi1632.h"
 #include "loader.h"
 
-/* DOS4G Entry points */
+/*
+ * DOS4G Entry points
+ */
 #define LOADER_INIT_ENTRY               "INIT"
 #define LOADER_LOAD_ENTRY               "LOADER"
 #define LOADER_UNLOAD_ENTRY             "UNLOAD"
@@ -57,7 +59,10 @@ static bool abspath( const char *filename, char *fullpath )
         *fp = fn[0];
         fn += 2;
     } else {
-        r.h.ah = 0x19;  /* get current drive */
+        /*
+         * get current drive
+         */
+        r.h.ah = 0x19;
         intdos( &r, &r );
         *fp = (char)( r.h.al + 'A' );
     }
@@ -65,7 +70,9 @@ static bool abspath( const char *filename, char *fullpath )
     *++fp = ':';
     ++fp;
     if( *fn != '\\' ) {
-        /* filename not abs, so get current directory */
+        /*
+         * filename not abs, so get current directory
+         */
         *fp++ = '\\';
         r.h.ah = 0x47;
         r.x.si = (unsigned short)fp;
@@ -77,7 +84,9 @@ static bool abspath( const char *filename, char *fullpath )
             *fp++ = '\\';
         }
     }
-    /* fullpath to fp is current dir for drive, fn is relative path */
+    /*
+     * fullpath to fp is current dir for drive, fn is relative path
+     */
     while( (*fp++ = *fn) != '\0' ) {
         if( *fn++ == '.' ) {
             if( *fn == '\\' ) {
@@ -97,7 +106,9 @@ static bool abspath( const char *filename, char *fullpath )
 }
 
 static void set_program_name( const char *filename )
-/* change name of current program (in environment) */
+/*
+ * change name of current program (in environment)
+ */
 {
     union {
         char FarPtr cip;
@@ -123,26 +134,28 @@ static void set_program_name( const char *filename )
     p = temp;
     abspath( filename, p );
 
-    /* Program name not kept before DOS 3.x
-    */
+    /*
+     * Program name not kept before DOS 3.x
+     */
     if( _osmajor < 3 )
         return;
-
-    /* Get a pointer to the MCB (arena header) which is always one
-        paragraph below the environment block, even in an OS/2 DOS box.
-    */
+    /*
+     * Get a pointer to the MCB (arena header) which is always one
+     * paragraph below the environment block, even in an OS/2 DOS box.
+     */
 retry:
     oldenv = rsi_abs_address( makeptr( env_sel, 0 ) );
     blockp = _MK_FP( rsi_sel_new_absolute( oldenv - 0x10, 0 ), 0 );
     blocksize = blockp->size;
     rsi_sel_free( _FP_SEG( blockp ) );
 
-    /* See if we have room to stuff the new name into the existing MCB;
-        if not, we will have to allocate a new, larger environment block.
-        maxp is the amount of room we have for a path name after subtracting
-        the current contents of the environment, a two-byte field between
-        the environment and the path name, and two pairs of null bytes.
-    */
+    /*
+     * See if we have room to stuff the new name into the existing MCB;
+     * if not, we will have to allocate a new, larger environment block.
+     * maxp is the amount of room we have for a path name after subtracting
+     * the current contents of the environment, a two-byte field between
+     * the environment and the path name, and two pairs of null bytes.
+     */
     maxp =( blocksize << 4 ) - 6;
     ep.ip = makeptr( env_sel, 0 );
     while( *ep.ip != 0 ) {
@@ -152,15 +165,17 @@ retry:
 
     if( (i = maxp - strlen( p )) < 0 ) {
 #ifdef  DSSI
-        /* Can't allocate low memory
-        */
+        /*
+         * Can't allocate low memory
+         */
         return;
 #else
-        /* The file name won't fit in the MCB, so we try to make a new
-            one.  The number of additional bytes needed is in i, and we
-            round up to a full paragraph.  Allocate using DOS so that we
-            can free using DOS; otherwise we can lose low memory.
-        */
+        /*
+         * The file name won't fit in the MCB, so we try to make a new
+         * one.  The number of additional bytes needed is in i, and we
+         * round up to a full paragraph.  Allocate using DOS so that we
+         * can free using DOS; otherwise we can lose low memory.
+         */
         oldstrat = rsi_mem_strategy( MForceLow );
         r.ax = 0x4800;
         r.bx = blocksize + ( ( -i + 15 ) >> 4 );
@@ -173,19 +188,19 @@ retry:
         rsi_mem_strategy( oldstrat );
         if( oldenv_sel == NULL_SEL )
             return;     /* Give up */
-
-        /* Copy the data from the old environment block into the new
-            memory, and prepare to update the old environment descriptor
-            with the new size and address.
-        */
+        /*
+         * Copy the data from the old environment block into the new
+         * memory, and prepare to update the old environment descriptor
+         * with the new size and address.
+         */
         movedata( env_sel, 0, oldenv_sel, 0, blocksize << 4 );
         rsi_get_descriptor( oldenv_sel, &g );
         rsi_sel_free( oldenv_sel );
-
-        /* Update the descriptor.  This call fails in an OS/2 2.0 DOS box.
-            Discard whichever one of the environment blocks will not be
-            referred to in the descriptor.
-        */
+        /*
+         * Update the descriptor.  This call fails in an OS/2 2.0 DOS box.
+         * Discard whichever one of the environment blocks will not be
+         * referred to in the descriptor.
+         */
         if( rsi_set_descriptor( env_sel, &g ) ) {
             r.es = oldenv >> 4;
         } else {
@@ -199,18 +214,20 @@ retry:
 #endif
     }
 
-    /* Skip over the two trailing null bytes and set the next word to 1,
-        because this word precedes the program name and indicates the
-        "number of items that follow".  Then copy the program name.
-    */
+    /*
+     * Skip over the two trailing null bytes and set the next word to 1,
+     * because this word precedes the program name and indicates the
+     * "number of items that follow".  Then copy the program name.
+     */
     ep.w.off += 2;
     *ep.ip++ = 1;
     while( (*ep.cip++ = *p++) != '\0' && --maxp > 0 )
         {}
     *ep.ip = 0;
 
-    /* Update debuggee's descriptor table as well as our own.
-    */
+    /*
+     * Update debuggee's descriptor table as well as our own.
+     */
     rsi_get_descriptor( env_sel, &g );
     g.limit_15_0 = ( blocksize << 4 ) - 1;
     g.limit_19_16 = (( blocksize << 4 ) - 1) / 256 / 256;
@@ -220,7 +237,9 @@ retry:
     rsi_set_descriptor( env_sel, &g );
 }
 
-/* Multiple processes should have multiple instances of these */
+/*
+ * Multiple processes should have multiple instances of these
+ */
 static LOADER_VECTOR    lv_curr;
 static long             main_cookie = -1L;
 static long             current_cookie = -1L;
@@ -241,15 +260,15 @@ static char *loader_entry_names[] = {
 };
 
 
-/* Given a package that might be a loader, look up all of the
-    potential loader entry points from the table above.  If the
-    first seven entry points are found, the package is a loader
-    and the function returns zero.  Otherwise, the package is not
-    a loader and it returns nonzero.
-
-    The names after the first seven are optional in a loader but
-    are also filled in by this function if they exist.
-*/
+/*
+ * Given a package that might be a loader, look up all of the potential
+ * loader entry points from the table above.  If the first seven entry
+ * points are found, the package is a loader and the function returns
+ * zero.  Otherwise, the package is not a loader and it returns nonzero.
+ *
+ * The names after the first seven are optional in a loader but are also
+ * filled in by this function if they exist.
+ */
 static int loader_bind_util( PACKAGE FarPtr p, LOADER_VECTOR *lv )
 {
     ACTION  *a;
@@ -271,11 +290,17 @@ static bool loader_for( FDORNAME filename, ULONG start_pos, LOADER_VECTOR *lv )
 
     /* unused parameters */ (void)start_pos;
 
-    /*** NEEDWORK: should check name before attempting binding */
+    /*
+     * NEEDWORK: should check name before attempting binding
+     */
     for( p = _d16info.package_info_p; p != NULL; p = PackageNext( p ) ) {
-        /* Loop over all packages */
+        /*
+         * Loop over all packages
+         */
         if( !loader_bind_util( p, lv ) ) {
-            /* When we find a loader, check it out */
+            /*
+             * When we find a loader, check it out
+             */
             if( LOADER_CANLOAD( lv )( filename, 0 ) ) {
                 return( false );
             }
@@ -291,9 +316,10 @@ void D32SetCurrentObject( long cookie )
     current_cookie = cookie;
 }
 
-/* Load an executable
-*/
 int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr tspv )
+/*
+ * Load an executable
+ */
 {
     int             result;
     char            cmdline[129];
@@ -307,29 +333,31 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
     if( (result = (int)LOADER_INIT( &lv_temp )()) != 0 )
         return( result );
 
-    /* Store the filename in the command line buffer and skip over
-        it.  We must construct a command line consisting of two
-        consecutive ASCII strings, with the second one being the
-        command tail.
-    */
+    /*
+     * Store the filename in the command line buffer and skip over it.
+     * We must construct a command line consisting of two consecutive
+     * ASCII strings, with the second one being the command tail.
+     */
     strcpy( cmdline, filename );
     far_strcpy( strchr( cmdline, '\0' ) + 1, cmdtail );
 
-    /* We need to load programs in the target interrupt space, in
-        case code such as a DLL initializer actually runs.
-    */
-    if( D32NullPtrCheck != NULL_PTR )   /* Disable NULLP checking, if possible */
-        D32NullPtrCheck( 1 );
+    /*
+     * We need to load programs in the target interrupt space, in
+     * case code such as a DLL initializer actually runs.
+     */
+    if( D32NullPtrCheck != NULL_PTR )
+        D32NullPtrCheck( 1 );                   /* Reactivate NULLP checking */
 
     result = (int)LOADER_LOAD( &lv_temp )( (FDORNAME)filename, 0, tspv, &main_cookie, cmdline );
 
-    if( D32NullPtrCheck != NULL_PTR )   /* Disable NULLP checking, if possible */
-        nullp_checks = D32NullPtrCheck( 0 );
+    if( D32NullPtrCheck != NULL_PTR )
+        nullp_checks = D32NullPtrCheck( 0 );    /* Disable NULLP checking and query status */
 
     if( result )
         return( -2 );
-
-    /* Loader bug - it's ignoring the 'cmdline' parm */
+    /*
+     * Loader bug - it's ignoring the 'cmdline' parm
+     */
     {
         unsigned        len;
         unsigned char   FarPtr dst;
@@ -340,11 +368,14 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
         dst[0] = len;
         dst[len + 1] = '\r';
     }
-    user_sel_start = (SELECTOR)tspv->esi;     /* Set user_sel to first user sel */
-
-/* KLUDGE UNTIL LINEXE LOADER IS FIXED -- it only sets low word of
-    cookie and looks at both words when called back
-*/
+    /*
+     * Set user_sel to first user sel
+     */
+    user_sel_start = (SELECTOR)tspv->esi;
+    /*
+     * KLUDGE UNTIL LINEXE LOADER IS FIXED -- it only sets low word of
+     * cookie and looks at both words when called back
+     */
     if( main_cookie != -1L )
         main_cookie &= 0xFFFF;
 
@@ -368,7 +399,9 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
 }
 
 #ifdef XXX0
-/* Unload a loaded executable -- not yet used anywhere */
+/*
+ * Unload a loaded executable -- not yet used anywhere
+ */
 int D32DebugUnLoad( void )
 {
     if( LOADER_UNLOAD( &lv_curr )( &current_cookie ) )
@@ -383,10 +416,10 @@ static SELECTOR exp_relocate( SELECTOR sel )
 {
     if( !sel )
         return( sel );
-
-    /* Look up system selectors (less than 0x80) in the __d16_selectors
-        table.
-    */
+    /*
+     * Look up system selectors (less than 0x80) in the __d16_selectors
+     * table.
+     */
     if( sel < user_sel_const )
         return( ((SELECTOR *)&__d16_selectors)[sel >> 3] );
     return( sel + exp_base );
@@ -396,11 +429,11 @@ static SELECTOR exp_unrelocate( SELECTOR sel )
 {
     if( !sel )
         return( sel );
-
-    /* Look for the selector in the system selectors table and compute
-        the unrelocated value from the index.  We only need to do this
-        for selectors that are out of range of the user program.
-    */
+    /*
+     * Look for the selector in the system selectors table and compute
+     * the unrelocated value from the index.  We only need to do this
+     * for selectors that are out of range of the user program.
+     */
     if( sel < user_sel_start ) {
         int     i;
 
@@ -435,7 +468,9 @@ bool D32Relocate( addr48_ptr FarPtr fptrp )
     if( exp_loaded ) {
         fptrp->segment = exp_relocate( fptrp->segment );
     } else if( LOADER_REL( &lv_curr ) ) {
-        /* Make sure there's a relo function */
+        /*
+         * Make sure there's a relo function
+         */
         LOADER_REL( &lv_curr )( fptrp, current_cookie );
     }
     return( ( fptrp->segment != old.segment ) || ( fptrp->offset != old.offset ) );

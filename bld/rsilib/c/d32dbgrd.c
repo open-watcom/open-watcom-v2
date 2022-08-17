@@ -15,9 +15,11 @@
 
 #include "rsi1632.h"
 
-/* Return value: not used.
-*/
+
 bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_t len )
+/*
+ * Return value: true if error.
+ */
 {
     addr48_ptr  fp;
     size_t      new_len;
@@ -31,13 +33,13 @@ bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_
 
     if( translate )
         D32Relocate( &fp );
-
-    /* If the range is at least partially invalid, we fill the buffer with
-        0xFF (which will show through after any real data has been read).
-
-        If the range is partially valid, we clip the address range to fit
-        and read the memory.
-    */
+    /*
+     * If the range is at least partially invalid, we fill the buffer with
+     * 0xFF (which will show through after any real data has been read).
+     *
+     * If the range is partially valid, we clip the address range to fit
+     * and read the memory.
+     */
     check = rsi_addr32_check( fp.offset, fp.segment, len, &new_len );
     if( check == MEMBLK_INVALID ) {
         far_setmem( to, len, 0xFF );
@@ -46,16 +48,16 @@ bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_
         if( check != MEMBLK_VALID ) {
             far_setmem( (unsigned char FarPtr)to + new_len, len - new_len, 0xFF );
         }
-        page_fault = 0;
+        page_fault = false;
         peek32( fp.offset, fp.segment, new_len, to );
-
-        /* If a page fault occurred while reading the range, recurse until
-            we either read without getting a page fault, or reach a 1-byte
-            region that causes a page fault.  In the latter case, we can
-            just return the byte as 0xFF.
-        */
+        /*
+         * If a page fault occurred while reading the range, recurse until
+         * we either read without getting a page fault, or reach a 1-byte
+         * region that causes a page fault.  In the latter case, we can
+         * just return the byte as 0xFF.
+         */
         if( page_fault ) {
-            page_fault = 0;
+            page_fault = false;
 
             if( new_len == 1 ) {
                 *(unsigned char FarPtr)to = 0xFF;
