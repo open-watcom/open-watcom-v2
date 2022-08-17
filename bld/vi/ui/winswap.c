@@ -83,7 +83,8 @@ static size_t buffSize( void )
  */
 void static windowSwap( window *w )
 {
-    int         i, size;
+    size_t      i;
+    size_t      size;
     long        pos;
 
     pos = (long)w->id * buffSize();

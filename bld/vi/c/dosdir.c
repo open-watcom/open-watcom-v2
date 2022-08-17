@@ -43,15 +43,21 @@
  */
 vi_rc MyGetFileSize( const char *name, long *size )
 {
-    DIR         *d;
+    DIR             *dirp;
+    struct dirent   *dire;
+    vi_rc           rc;
 
-    d = opendir( name );
-    if( d == NULL ) {
-        return( ERR_FILE_NOT_FOUND );
+    rc = ERR_FILE_NOT_FOUND;
+    dirp = opendir( name );
+    if( dirp != NULL ) {
+        dire = readdir( dirp );
+        if( dire != NULL ) {
+            *size = dire->d_size;
+            rc = ERR_NO_ERR;
+        }
+        closedir( dirp );
     }
-    *size = d->d_size;
-    closedir( d );
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* MyGetFileSize */
 
