@@ -37,7 +37,7 @@ ts32_proc       dw      ?
 ts32_eflags     dd      ?
 TSF32           ends
 
-INTR_IF equ     200h    /* interrupts enabled */
+INTR_IF equ     200h    ; interrupts enabled
 
         .CODE
         .386p
