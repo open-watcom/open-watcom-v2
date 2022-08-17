@@ -578,11 +578,11 @@ static char *__qnx_fullpath(char *fullpath, const char *path)
     if( fd != -1) {
         close(fd);
     } else if (errno != ENOENT) {
-        return 0;
+        return( 0 );
     } else {
         __resolve_net( 0, 0, &msg._io_open, path, 0, fullpath );
     }
-    return fullpath;
+    return( fullpath );
 }
 #endif
 
