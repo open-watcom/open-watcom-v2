@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -339,16 +340,14 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
 
     loc.start = SemStartResource();
     error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.fp );
-
     for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
         error = ResWriteIconDirEntry( &(entry->Entry.Res), CurrResFile.fp );
     }
-
-    if( !error ) {
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_GROUP_ICON ) ), flags, loc );
-    } else {
-        *err_code = LastWresErr();
     }
 
     return( error );
@@ -432,16 +431,14 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
 
     loc.start = SemStartResource();
     error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.fp );
-
     for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
         error = ResWriteCurDirEntry( &(entry->Entry.Res), CurrResFile.fp );
     }
-
-    if( !error ) {
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_GROUP_CURSOR ) ), flags, loc );
-    } else {
-        *err_code = LastWresErr();
     }
 
     return( error );
@@ -1002,39 +999,21 @@ void SemWINWriteFontDir( void )
     ResLocation         loc;
     bool                error;
 
-    if( CurrResFile.FontDir == NULL ) {
-        return;
-    }
-
-    loc.start = SemStartResource();
-
-    error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.fp );
-    if( error )
-        goto OUTPUT_WRITE_ERROR;
-
-    for( currentry = CurrResFile.FontDir->Head; currentry != NULL;
-                currentry = currentry->Next ) {
-        error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fp );
-        if( error ) {
-            goto OUTPUT_WRITE_ERROR;
+    if( CurrResFile.FontDir != NULL ) {
+        loc.start = SemStartResource();
+        error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.fp );
+        for( currentry = CurrResFile.FontDir->Head; !error && currentry != NULL; currentry = currentry->Next ) {
+            error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fp );
         }
+        if( error ) {
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( WResIDFromStr( FONT_DIR_NAME ),
+                    WResIDFromNum( RESOURCE2INT( RT_FONTDIR ) ), FONT_DIR_FLAGS, loc );
+        }
+        FreeFontDir( CurrResFile.FontDir );
+        CurrResFile.FontDir = NULL;
     }
-
-    loc.len = SemEndResource( loc.start );
-
-    SemAddResourceFree( WResIDFromStr( FONT_DIR_NAME ),
-                WResIDFromNum( RESOURCE2INT( RT_FONTDIR ) ), FONT_DIR_FLAGS, loc );
-
-    FreeFontDir( CurrResFile.FontDir );
-    CurrResFile.FontDir = NULL;
-
-    return;
-
-
-OUTPUT_WRITE_ERROR:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-    ErrorHasOccured = true;
-    FreeFontDir( CurrResFile.FontDir );
-    CurrResFile.FontDir = NULL;
-    return;
 }

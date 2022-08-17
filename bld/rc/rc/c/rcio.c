@@ -466,7 +466,6 @@ static bool Pass1InitRes( void )
 /******************************/
 {
     WResID        null_id;
-    ResMemFlags   null_memflags;
     ResLocation   null_loc;
 
     memset( &CurrResFile, 0, sizeof( CurrResFile ) );
@@ -504,8 +503,7 @@ static bool Pass1InitRes( void )
             null_loc.len = SemEndResource( null_loc.start );
             null_id.IsName = false;
             null_id.ID.Num = 0;
-            null_memflags = 0;
-            SemAddResource( &null_id, &null_id, null_memflags, null_loc );
+            SemAddResource( &null_id, &null_id, 0, null_loc );
         }
     } else {
         CurrResFile.IsWatcomRes = true;

@@ -145,13 +145,12 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
                         RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
                         ErrorHasOccured = true;
                         break;
-                    } else {
-                        error = ResWriteUint8( cur_byte, CurrResFile.fp );
-                        if( error ) {
-                            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                            ErrorHasOccured = true;
-                            break;
-                        }
+                    }
+                    error = ResWriteUint8( cur_byte, CurrResFile.fp );
+                    if( error ) {
+                        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+                        ErrorHasOccured = true;
+                        break;
                     }
                 }
             }
