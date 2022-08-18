@@ -177,66 +177,66 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     SYSTEM_INFO         info;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_NT;
+    ret->os = DIG_OS_NT;
 #if defined( __WATCOMC__ )
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
 #else
 #endif
-    ret->sys.huge_shift = 3;
+    ret->huge_shift = 3;
 
     GetSystemInfo( &info );
 #if defined( MD_x86 )
-    ret->sys.cpu = X86CPUType();
-    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+    ret->cpu = X86CPUType();
+    ret->fpu = ret->cpu & X86_CPU_MASK;
     if( IsWOW ) {
-        ret->sys.os = DIG_OS_WINDOWS;
+        ret->os = DIG_OS_WINDOWS;
     }
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->arch = DIG_ARCH_X86;
 #elif defined( MD_x64 )
-    ret->sys.cpu = X86_P4 | X86_MMX | X86_XMM;
-    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
-//    ret->sys.cpu = X64_CPU1;
-//    ret->sys.fpu = X64_FPU1;
+    ret->cpu = X86_P4 | X86_MMX | X86_XMM;
+    ret->fpu = ret->cpu & X86_CPU_MASK;
+//    ret->cpu = X64_CPU1;
+//    ret->fpu = X64_FPU1;
     if( !IsWOW ) {
-//        ret->sys.os = DIG_OS_NT64;
+//        ret->os = DIG_OS_NT64;
     }
-//    ret->sys.arch = DIG_ARCH_X64;
-    ret->sys.arch = DIG_ARCH_X86;
+//    ret->arch = DIG_ARCH_X64;
+    ret->arch = DIG_ARCH_X86;
 #elif defined( MD_axp )
     switch( info.dwProcessorType ) {
     case PROCESSOR_ALPHA_21064:
-        ret->sys.cpu = AXP_21064;
+        ret->cpu = AXP_21064;
         break;
     case 21164: /* guessing that this is the constant */
-        ret->sys.cpu = AXP_21164;
+        ret->cpu = AXP_21164;
         break;
     default:
-        ret->sys.cpu = AXP_DUNNO;
+        ret->cpu = AXP_DUNNO;
         break;
     }
-    ret->sys.fpu = 0;
-    ret->sys.arch = DIG_ARCH_AXP;
+    ret->fpu = 0;
+    ret->arch = DIG_ARCH_AXP;
 #elif defined( MD_ppc )
     switch( info.dwProcessorType ) {
     case PROCESSOR_PPC_601:
-        ret->sys.cpu = PPC_601;
+        ret->cpu = PPC_601;
         break;
     case PROCESSOR_PPC_603:
-        ret->sys.cpu = PPC_603;
+        ret->cpu = PPC_603;
         break;
     case PROCESSOR_PPC_604:
-        ret->sys.cpu = PPC_604;
+        ret->cpu = PPC_604;
         break;
     case PROCESSOR_PPC_620:
-        ret->sys.cpu = PPC_620;
+        ret->cpu = PPC_620;
         break;
     default:
-        ret->sys.cpu = AXP_DUNNO;
+        ret->cpu = AXP_DUNNO;
         break;
     }
-    ret->sys.fpu = 0;
-    ret->sys.arch = DIG_ARCH_PPC;
+    ret->fpu = 0;
+    ret->arch = DIG_ARCH_PPC;
 #else
     #error TRAP_CORE( Get_sys_config ) not configured
 #endif

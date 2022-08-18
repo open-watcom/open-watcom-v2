@@ -366,27 +366,27 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     char        tmp[108];
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_OS2;
+    ret->os = DIG_OS_OS2;
     DosGetVersion( &version );
-    ret->sys.osmajor = version >> 8;
-    ret->sys.osminor = version & 0xff;
-    ret->sys.cpu = X86CPUType();
+    ret->osmajor = version >> 8;
+    ret->osminor = version & 0xff;
+    ret->cpu = X86CPUType();
     DosDevConfig( &npx, 3, 0 );
     if( npx ) {
-        if( ret->sys.cpu >= X86_486 ) {
-            ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+        if( ret->cpu >= X86_486 ) {
+            ret->fpu = ret->cpu & X86_CPU_MASK;
         } else {
-            ret->sys.fpu = NPXType();
+            ret->fpu = NPXType();
         }
     } else {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NO;
     }
     emu = TaskExecute( (excfn)DoGetMSW );
     if( emu != -1 && (emu & 0x04) ) { /* if EM bit is on in the MSW */
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     }
     WriteRegs( &Buff );
-    if( ret->sys.fpu != X86_NO ) {
+    if( ret->fpu != X86_NO ) {
         buff.cmd = PT_CMD_READ_8087;
         buff.segv = _FP_SEG( tmp );
         buff.offv = _FP_OFF( tmp );
@@ -394,12 +394,12 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
         buff.pid = Pid;
         DosPTrace( &buff );
         if( buff.cmd != PT_RET_SUCCESS ) {
-            ret->sys.fpu = X86_NO;
+            ret->fpu = X86_NO;
         }
     }
     DosGetHugeShift( &shift );
-    ret->sys.huge_shift = shift;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = shift;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

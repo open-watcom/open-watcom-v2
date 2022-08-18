@@ -8,7 +8,7 @@
 #include "trpfile.h"
 
 
-dig_arch    read_mad_handle = DIG_ARCH_NIL;
+dig_arch    mad_arch = DIG_ARCH_NIL;
 
 void    DumpPacket( unsigned char * pkt, unsigned short len, int tabit = 0 );
 
@@ -489,7 +489,7 @@ int handle_REQ_GET_SYS_CONFIG( unsigned char * , unsigned short )
 
 int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short )
 {
-    system_config * pr = ( system_config * ) pkt;
+    get_sys_config_ret * pr = ( get_sys_config_ret * ) pkt;
 
     printf( "Trap reply: REQ_GET_SYS_CONFIG\n" );
 
@@ -506,11 +506,11 @@ int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short )
     if( pr->arch < DIG_ARCH_MAX ) {
         printf( "    MAD:        %s\n", dig_arch_desc[pr->arch] );
     } else {
-        printf( "    MAD:        0x%.04x\n", pr->arch );
+        printf( "    MAD:        %u\n", pr->arch );
     }
 
     /* Set so we can decode registers */
-    read_mad_handle = pr->arch;
+    mad_arch = (dig_arch)pr->arch;
 
     return 1;
 }
@@ -1098,7 +1098,7 @@ void DumpRegistersMAX_X86( mad_registers * pregs )
 
 void DumpRegisters( mad_registers * pregs )
 {
-    switch( read_mad_handle ) {
+    switch( mad_arch ) {
     case DIG_ARCH_X86:
         DumpRegistersMAX_X86( pregs );
         break;
@@ -1107,7 +1107,7 @@ void DumpRegisters( mad_registers * pregs )
     case DIG_ARCH_MIPS:
     case DIG_ARCH_MSJ:
     default:
-        printf( "Cannot currently handle registers for MAD type %u\n", read_mad_handle );
+        printf( "Cannot currently handle registers for MAD type %u\n", mad_arch );
         break;
     }
 }

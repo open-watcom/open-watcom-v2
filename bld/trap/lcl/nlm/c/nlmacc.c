@@ -820,13 +820,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.cpu = X86CPUType();
-    ret->sys.fpu = NPX();
-    ret->sys.osmajor = FileServerMajorVersionNumber;
-    ret->sys.osminor = FileServerMinorVersionNumber;
-    ret->sys.os = DIG_OS_NW386;
-    ret->sys.huge_shift = 12;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->cpu = X86CPUType();
+    ret->fpu = NPX();
+    ret->osmajor = FileServerMajorVersionNumber;
+    ret->osminor = FileServerMinorVersionNumber;
+    ret->os = DIG_OS_NW386;
+    ret->huge_shift = 12;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

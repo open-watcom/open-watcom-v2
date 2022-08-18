@@ -181,19 +181,19 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     ret = GetOutPtr( 0 );
     if( Core.loaded && Core.plat->qcfg( Core.ctx, &arch, &os, &cpu, &fpu ) ) {
-        ret->sys.arch = arch;
-        ret->sys.os   = os;
-        ret->sys.cpu  = cpu;
-        ret->sys.fpu  = fpu;
+        ret->arch = arch;
+        ret->os   = os;
+        ret->cpu  = cpu;
+        ret->fpu  = fpu;
     } else {
-        ret->sys.arch = DIG_ARCH_X86;
-        ret->sys.os   = DIG_OS_IDUNNO;
-        ret->sys.cpu  = X86_386;
-        ret->sys.fpu  = X86_387;
+        ret->arch = DIG_ARCH_X86;
+        ret->os   = DIG_OS_IDUNNO;
+        ret->cpu  = X86_386;
+        ret->fpu  = X86_387;
     }
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
-    ret->sys.huge_shift = 3;    // Not relevant for flat model
+    ret->osmajor = 1;
+    ret->osminor = 0;
+    ret->huge_shift = 3;    // Not relevant for flat model
     return( sizeof( *ret ) );
 }
 

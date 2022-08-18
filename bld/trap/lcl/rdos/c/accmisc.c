@@ -79,13 +79,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     ret = GetOutPtr( 0 );
 
-    ret->sys.cpu = 0x3F;
-    ret->sys.fpu = 0xF;
-    ret->sys.osmajor = (char)major;
-    ret->sys.osminor = (char)minor;
-    ret->sys.os = 0;
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->cpu = 0x3F;
+    ret->fpu = 0xF;
+    ret->osmajor = (char)major;
+    ret->osminor = (char)minor;
+    ret->os = 0;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_X86;
 
     return( sizeof( *ret ) );
 }

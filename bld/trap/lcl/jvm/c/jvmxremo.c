@@ -96,13 +96,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     if( !TaskLoaded ) {
         ret = GetOutPtr( 0 );
-        ret->sys.os = DIG_OS_IDUNNO;
-        ret->sys.osmajor = 0;
-        ret->sys.osminor = 0;
-        ret->sys.fpu = 0;
-        ret->sys.huge_shift = 12;
-        ret->sys.cpu = 0;
-        ret->sys.arch = DIG_ARCH_JVM;
+        ret->os = DIG_OS_IDUNNO;
+        ret->osmajor = 0;
+        ret->osminor = 0;
+        ret->fpu = 0;
+        ret->huge_shift = 12;
+        ret->cpu = 0;
+        ret->arch = DIG_ARCH_JVM;
         return( sizeof( *ret ) );
     }
     return( DoAccess() );

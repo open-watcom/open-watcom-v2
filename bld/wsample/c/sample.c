@@ -557,11 +557,7 @@ int sample_main( char *cmd_line )
     Info.pref.kind = SAMP_INFO;
     Info.d.timer_rate = TimerRate();
     /* could do a better job filling in this information */
-    Info.d.config.cpu           = 0;
-    Info.d.config.fpu           = 0;
-    Info.d.config.osmajor       = 0;
-    Info.d.config.osminor       = 0;
-    Info.d.config.os            = DIG_OS_IDUNNO;
+    memset( &Info.d.config, 0, sizeof( Info.d.config ) );
     Info.d.config.huge_shift    = 12;
 #if defined( _M_IX86 )
     Info.d.config.arch          = DIG_ARCH_X86;

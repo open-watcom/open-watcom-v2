@@ -158,17 +158,16 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_LINUX;
+    ret->os = DIG_OS_LINUX;
 
     // TODO: Detect OS version (kernel version?)!
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
+    ret->osmajor = 1;
+    ret->osminor = 0;
 
-    ret->sys.cpu = MIPS_R3000;
-    ret->sys.fpu = 0;
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_MIPS;
-    CONV_LE_16( ret->sys.arch );
+    ret->cpu = MIPS_R3000;
+    ret->fpu = 0;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_MIPS;
     return( sizeof( *ret ) );
 }
 

@@ -150,7 +150,6 @@ int main( int argc, char **argv )
                 count = &data->d.old_info.count[0];
                 l -= offsetof( samp_block, d.old_info.count );
             } else {
-                COND_SWAP_16( data->d.info.config.arch );
                 printf( "  cpu=%d, fpu=%d, os_maj=%d, os_min=%d, os=%d, arch=%d\n",
                         data->d.info.config.cpu, data->d.info.config.fpu,
                         data->d.info.config.osmajor, data->d.info.config.osminor,

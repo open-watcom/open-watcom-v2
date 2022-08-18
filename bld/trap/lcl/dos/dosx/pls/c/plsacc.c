@@ -186,21 +186,21 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     _DBG(("AccGetConfig\r\n"));
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_PHARLAP;
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.huge_shift = 12;
+    ret->os = DIG_OS_PHARLAP;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
+    ret->cpu = X86CPUType();
+    ret->huge_shift = 12;
     if( HavePSP && !AtEnd ) {
         if( Mach.msb_cr0 & MSW_EM ) {
-            ret->sys.fpu = X86_EMU;
+            ret->fpu = X86_EMU;
         } else {
-            ret->sys.fpu = RealNPXType;
+            ret->fpu = RealNPXType;
         }
     } else {
-        ret->sys.fpu = RealNPXType;
+        ret->fpu = RealNPXType;
     }
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

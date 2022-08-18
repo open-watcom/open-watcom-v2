@@ -220,13 +220,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.arch = DIG_ARCH_X86;
-    ret->sys.os  = DIG_OS_LINUX;
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
-    ret->sys.fpu = X86_387;
-    ret->sys.cpu = X86_686;
-    ret->sys.huge_shift = 3;
+    ret->arch = DIG_ARCH_X86;
+    ret->os  = DIG_OS_LINUX;
+    ret->osmajor = 1;
+    ret->osminor = 0;
+    ret->fpu = X86_387;
+    ret->cpu = X86_686;
+    ret->huge_shift = 3;
     return( sizeof( *ret ) );
 }
 

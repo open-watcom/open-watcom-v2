@@ -501,15 +501,15 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     _DBG( "AccGetConfig\r\n" );
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_RATIONAL;      // Pretend we're DOS/4G
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.huge_shift = 12;
-    ret->sys.fpu = NPXType();       //RealNPXType;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->os = DIG_OS_RATIONAL;      // Pretend we're DOS/4G
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
+    ret->cpu = X86CPUType();
+    ret->huge_shift = 12;
+    ret->fpu = NPXType();       //RealNPXType;
+    ret->arch = DIG_ARCH_X86;
     _DBG( "os = %d, cpu=%d, fpu=%d, osmajor=%d, osminor=%d\r\n",
-        ret->sys.os, ret->sys.cpu, ret->sys.fpu, ret->sys.osmajor, ret->sys.osminor );
+        ret->os, ret->cpu, ret->fpu, ret->osmajor, ret->osminor );
     return( sizeof( *ret ) );
 }
 

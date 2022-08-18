@@ -98,18 +98,18 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_QNX;
+    ret->os = DIG_OS_QNX;
 
-    get_nto_version( &ret->sys.osmajor, &ret->sys.osminor );
+    get_nto_version( &ret->osmajor, &ret->osminor );
 
-    ret->sys.cpu = X86CPUType();
+    ret->cpu = X86CPUType();
     if( HAVE_EMU ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else {
-        ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+        ret->fpu = ret->cpu & X86_CPU_MASK;
     }
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

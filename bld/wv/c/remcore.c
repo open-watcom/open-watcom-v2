@@ -691,10 +691,18 @@ void CheckSegAlias( void )
 void GetSysConfig( void )
 {
     get_sys_config_req  acc;
+    get_sys_config_ret  ret;
 
     acc.req = REQ_GET_SYS_CONFIG;
-    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
-    CONV_LE_16( SysConfig.arch );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    /* map trap format to internal format */
+    SysConfig.cpu        = ret.cpu;
+    SysConfig.fpu        = ret.fpu;
+    SysConfig.osmajor    = ret.osmajor;
+    SysConfig.osminor    = ret.osminor;
+    SysConfig.os         = ret.os;
+    SysConfig.huge_shift = ret.huge_shift;
+    SysConfig.arch       = ret.arch;
 }
 
 bool InitCoreSupp( void )

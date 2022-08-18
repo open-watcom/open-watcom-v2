@@ -157,17 +157,17 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     _DBG_Writeln( "AccGetConfig" );
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_RATIONAL;
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.huge_shift = 12;
+    ret->os = DIG_OS_RATIONAL;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
+    ret->cpu = X86CPUType();
+    ret->huge_shift = 12;
     if( !AtEnd && HAVE_EMU ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else {
-        ret->sys.fpu = RealNPXType;
+        ret->fpu = RealNPXType;
     }
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

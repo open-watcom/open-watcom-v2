@@ -371,13 +371,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     _DBG1(( "AccGetConfig" ));
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_AUTOCAD;
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.huge_shift = 12;
-    ret->sys.fpu = RealNPXType;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->os = DIG_OS_AUTOCAD;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
+    ret->cpu = X86CPUType();
+    ret->huge_shift = 12;
+    ret->fpu = RealNPXType;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

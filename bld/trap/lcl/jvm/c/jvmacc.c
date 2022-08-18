@@ -293,13 +293,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_NT;
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
-    ret->sys.huge_shift = 3;
-    ret->sys.cpu = 0;
-    ret->sys.fpu = 0;
-    ret->sys.arch = DIG_ARCH_JVM;
+    ret->os = DIG_OS_NT;
+    ret->osmajor = 1;
+    ret->osminor = 0;
+    ret->huge_shift = 3;
+    ret->cpu = 0;
+    ret->fpu = 0;
+    ret->arch = DIG_ARCH_JVM;
     return( sizeof( *ret ) );
 }
 

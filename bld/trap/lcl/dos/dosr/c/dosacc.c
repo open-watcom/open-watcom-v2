@@ -238,23 +238,23 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_DOS;
-    ret->sys.osmajor = DOS_major;
-    ret->sys.osminor = DOS_minor;
-    ret->sys.cpu = CPUType;
+    ret->os = DIG_OS_DOS;
+    ret->osmajor = DOS_major;
+    ret->osminor = DOS_minor;
+    ret->cpu = CPUType;
     if( Have87Emu() ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else if( RealNPXType != X86_NO ) {
         if( CPUType < X86_486 ) {
-            ret->sys.fpu = RealNPXType;
+            ret->fpu = RealNPXType;
         } else {
-            ret->sys.fpu = CPUType & X86_CPU_MASK;
+            ret->fpu = CPUType & X86_CPU_MASK;
         }
     } else {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NO;
     }
-    ret->sys.huge_shift = 12;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = 12;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

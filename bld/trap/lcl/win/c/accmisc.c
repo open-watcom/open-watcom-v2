@@ -84,22 +84,22 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     ret = GetOutPtr( 0 );
 
-    ret->sys.os = DIG_OS_WINDOWS;
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
+    ret->os = DIG_OS_WINDOWS;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
 
     if( WindowsFlags & WF_CPU086 ) {
-        ret->sys.cpu = X86_86;
+        ret->cpu = X86_86;
         fpu = X86_87;
     } else if( WindowsFlags & WF_CPU186 ) {
-        ret->sys.cpu = X86_186;
+        ret->cpu = X86_186;
         fpu = X86_87;
     } else if( WindowsFlags & WF_CPU286 ) {
-        ret->sys.cpu = X86_286;
+        ret->cpu = X86_286;
         fpu = X86_287;
     } else {
-        ret->sys.cpu = X86CPUType();
-        fpu = ret->sys.cpu & X86_CPU_MASK;
+        ret->cpu = X86CPUType();
+        fpu = ret->cpu & X86_CPU_MASK;
     }
 
     if( WindowsFlags & WF_80x87 ) {
@@ -107,9 +107,9 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     } else {
         FPUType = X86_NO;
     }
-    ret->sys.fpu = FPUType;
-    ret->sys.arch = DIG_ARCH_X86;
-    ret->sys.huge_shift = 3;
+    ret->fpu = FPUType;
+    ret->arch = DIG_ARCH_X86;
+    ret->huge_shift = 3;
     return( sizeof( *ret ) );
 }
 

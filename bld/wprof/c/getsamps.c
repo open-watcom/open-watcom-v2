@@ -143,12 +143,18 @@ STATIC void procInfoBlock( clicks_t ticks, samp_data *data )
     if( CurrSIOData->header.major_ver == 2 && CurrSIOData->header.minor_ver < 2 ) {
         /* pre-MAD sample file */
         CurrSIOData->config = DefSysConfig;
-    } else {
-        CurrSIOData->config = data->info.config;
+    } else if( data->info.config.arch == DIG_ARCH_NIL ) {
         /* sanity check for non-MADified sampler */
-        if( CurrSIOData->config.arch == DIG_ARCH_NIL ) {
-            CurrSIOData->config = DefSysConfig;
-        }
+        CurrSIOData->config = DefSysConfig;
+    } else {
+        /* map file format to internal format */
+        CurrSIOData->config.cpu         = data->info.config.cpu;
+        CurrSIOData->config.fpu         = data->info.config.fpu;
+        CurrSIOData->config.osmajor     = data->info.config.osmajor;
+        CurrSIOData->config.osminor     = data->info.config.osminor;
+        CurrSIOData->config.os          = data->info.config.os;
+        CurrSIOData->config.huge_shift  = data->info.config.huge_shift;
+        CurrSIOData->config.arch        = data->info.config.arch;
     }
     SetCurrentMAD( CurrSIOData->config.arch );
 

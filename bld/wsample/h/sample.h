@@ -58,7 +58,7 @@ notes:
 
 #include <sys/types.h>          /* for off_t */
 #include "bool.h"
-#include "digtypes.h"           /* for system config */
+#include "watcom.h"
 
 #define SAMP_SIGNATURE          0xDEED
 #define SAMP_MAJOR_VER          2
@@ -131,9 +131,20 @@ typedef struct samp_info_2_1 {
     count_info          count[NUM_BLOCK_KINDS];
 } samp_info_2_1;
 
+typedef struct samp_config {
+    uint_8              cpu;
+    uint_8              fpu;
+    uint_8              osmajor;
+    uint_8              osminor;
+    uint_8              os;
+    uint_8              huge_shift;
+    uint_8              arch;
+    uint_8              reserved;
+} samp_config;
+
 typedef struct samp_info {
     uint_32             timer_rate;  /* microseconds between ticks*/
-    system_config       config;
+    samp_config         config;
     count_info          count[NUM_BLOCK_KINDS];
 } samp_info;
 #define SIZE_INFO       (sizeof( samp_info ))

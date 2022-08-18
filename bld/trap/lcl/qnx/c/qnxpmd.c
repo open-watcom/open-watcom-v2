@@ -131,56 +131,56 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     } else {
         qnx_osinfo( 0, &info );
     }
-    ret->sys.arch = DIG_ARCH_X86;
-    ret->sys.os = DIG_OS_QNX;
-    ret->sys.osmajor = info.version / 100;
-    ret->sys.osminor = info.version % 100;
+    ret->arch = DIG_ARCH_X86;
+    ret->os = DIG_OS_QNX;
+    ret->osmajor = info.version / 100;
+    ret->osminor = info.version % 100;
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else if( (info.sflags & _PSF_NDP_INSTALLED) == 0 ) {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NO;
     } else {
         switch( info.fpu ) {
         case 87:
-            ret->sys.fpu = X86_87;
+            ret->fpu = X86_87;
             break;
         case 287:
-            ret->sys.fpu = X86_287;
+            ret->fpu = X86_287;
             break;
         case 387:
         default:
-            ret->sys.fpu = X86_387;
+            ret->fpu = X86_387;
             break;
         }
     }
     switch( info.cpu ) {
     case 8088:
-        ret->sys.cpu = X86_86;
+        ret->cpu = X86_86;
         break;
     case 186:
-        ret->sys.cpu = X86_186;
+        ret->cpu = X86_186;
         break;
     case 286:
-        ret->sys.cpu = X86_286;
+        ret->cpu = X86_286;
         break;
     case 386:
     default:
-        ret->sys.cpu = X86_386;
+        ret->cpu = X86_386;
         break;
     case 486:
-        ret->sys.cpu = X86_486;
+        ret->cpu = X86_486;
         break;
     case 586:
-        ret->sys.cpu = X86_586;
+        ret->cpu = X86_586;
         break;
     case 686:
-        ret->sys.cpu = X86_686;
+        ret->cpu = X86_686;
         break;
     }
     if( info.sflags & _PSF_PROTECTED ) {
-        ret->sys.huge_shift = 3;
+        ret->huge_shift = 3;
     } else {
-        ret->sys.huge_shift = 12;
+        ret->huge_shift = 12;
     }
     return( sizeof( *ret ) );
 }

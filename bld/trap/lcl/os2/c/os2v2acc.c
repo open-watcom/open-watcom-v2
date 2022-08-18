@@ -586,12 +586,12 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_OS2;
+    ret->os = DIG_OS_OS2;
     DosGetVersion( &version );
-    ret->sys.osminor = version & 0xff;
-    ret->sys.osmajor = version >> 8;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+    ret->osminor = version & 0xff;
+    ret->osmajor = version >> 8;
+    ret->cpu = X86CPUType();
+    ret->fpu = ret->cpu & X86_CPU_MASK;
     WriteRegs( &Buff );
 
     buff.Cmd = DBG_C_ReadCoRegs;
@@ -603,11 +603,11 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     buff.Index = 0;             /* for 2.0: must be 0 */
     CallDosDebug( &buff );
     if( buff.Cmd != DBG_N_Success ) {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NO;
     }
     DosGetHugeShift( &shift );
-    ret->sys.huge_shift = shift;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = shift;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

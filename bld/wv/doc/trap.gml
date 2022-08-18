@@ -642,29 +642,29 @@ unsigned_8  osmajor;
 unsigned_8  osminor;
 unsigned_8  os;
 unsigned_8  huge_shift;
-mad_handle  mad;
+unsigned_8  arch;
 .millust end
 .pp
 The
-.id mad
-field specifies the MAD (Machine Architecture Description) in use and
+.id arch
+field specifies the architecture in use and
 determines how the other fields will be interpreted.
-Currently the following MADs are used:
+Currently the following architectures are used:
 .millust begin
-MAD_X86  - Intel Architecture IA-32 compatible
-MAD_X64  - Intel Architecture X64 compatible
-MAD_AXP  - Alpha Architecture
-MAD_PPC  - PowerPC Architecture
-MAD_MIPS - MIPS Architecture
-MAD_MSJ  - Java Virtual Machine (Microsoft)
-MAD_JVM  - Java Virtual Machine (Sun)
+DIG_ARCH_X86  - Intel Architecture IA-32 compatible
+DIG_ARCH_X64  - Intel Architecture X64 compatible
+DIG_ARCH_AXP  - Alpha Architecture
+DIG_ARCH_PPC  - PowerPC Architecture
+DIG_ARCH_MIPS - MIPS Architecture
+DIG_ARCH_MSJ  - Java Virtual Machine (Microsoft)
+DIG_ARCH_JVM  - Java Virtual Machine (Sun)
 .millust end
 .pp
 The
 .id cpu
 fields returns the type of the remote CPU.
 The size of that field is unsigned_8.
-Possible CPU types for MAD_X86 are:
+Possible CPU types for DIG_ARCH_X86 are:
 .millust begin
 bits 0-3
    X86_86  = 0   - 8086
@@ -685,7 +685,7 @@ The
 .id fpu
 fields tells the type of FPU.
 The size of the field is unsigned_8.
-FPU types for MAD_X86 include:
+FPU types for DIG_ARCH_X86 include:
 .millust begin
 X86_EMU = -1     - Software emulated FPU
 X86_NO  =  0     - No FPU
@@ -710,22 +710,22 @@ field.
 The size of this field is unsigned_8.
 The OS can be:
 .millust begin
-OS_IDUNNO    =  0   - Unknown operating system
-OS_DOS       =  1   - DOS
-OS_OS2       =  2   - OS/2
-OS_PHAR      =  3   - Phar Lap 386 DOS Extender
-OS_ECLIPSE   =  4   - Eclipse 386 DOS Extender (obsolete)
-OS_NW386     =  5   - NetWare 386
-OS_QNX       =  6   - QNX 4.x
-OS_RATIONAL  =  7   - DOS/4G or compatible
-OS_WINDOWS   =  8   - Windows 3.x
-OS_PENPOINT  =  9   - PenPoint (obsolete)
-OS_NT        = 10   - Win32
-OS_AUTOCAD   = 11   - ADS/ADI development (obsolete)
-OS_NEUTRINO  = 12   - QNX 6.x
-OS_LINUX     = 13   - Linux
-OS_FREEBSD   = 14   - FreeBSD
-OS_WIN64     = 15   - Windows 64-bit
+DIG_OS_IDUNNO    =  0   - Unknown operating system
+DIG_OS_DOS       =  1   - DOS
+DIG_OS_OS2       =  2   - OS/2
+DIG_OS_PHAR      =  3   - Phar Lap 386 DOS Extender
+DIG_OS_ECLIPSE   =  4   - Eclipse 386 DOS Extender (obsolete)
+DIG_OS_NW386     =  5   - NetWare 386
+DIG_OS_QNX       =  6   - QNX 4.x
+DIG_OS_RATIONAL  =  7   - DOS/4G or compatible
+DIG_OS_WINDOWS   =  8   - Windows 3.x
+DIG_OS_PENPOINT  =  9   - PenPoint (obsolete)
+DIG_OS_NT        = 10   - Win32
+DIG_OS_AUTOCAD   = 11   - ADS/ADI development (obsolete)
+DIG_OS_NEUTRINO  = 12   - QNX 6.x
+DIG_OS_LINUX     = 13   - Linux
+DIG_OS_FREEBSD   = 14   - FreeBSD
+DIG_OS_WIN64     = 15   - Windows 64-bit
 .millust end
 .pp
 The

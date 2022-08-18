@@ -396,20 +396,20 @@ typedef enum {
     DIG_OPEN_SEARCH = 0x80
 } dig_open;
 
-enum archtypes {
+typedef enum {
     DIG_ARCH_NIL,
     #define pick(enum,file,desc) enum,
     #include "digarch.h"
     #undef pick
     DIG_ARCH_MAX
-};
+} dig_arch;
 
-enum ostypes {                  //NYI: redo these for PIL
+typedef enum {                  //NYI: redo these for PIL
     #define pick(enum,desc) enum,
     #include "digos.h"
     #undef pick
     DIG_OS_MAX
-};
+} dig_os;
 
 enum {
     MAP_FLAT_CODE_SELECTOR      = (unsigned_16)-1,
@@ -420,8 +420,6 @@ typedef unsigned_16     dig_elen;
 typedef unsigned        dig_info_type;
 
 typedef unsigned_16     dig_size_bits;
-
-typedef unsigned_16     dig_arch;
 
 /* these must be unsigned/signed type pair */
 typedef unsigned_32     dig_type_size;
@@ -436,16 +434,16 @@ typedef struct dig_type_info {
     bool                deref;
 } dig_type_info;
 
+#include "digunpck.h"
+
 typedef struct {                //NYI: redo this for PIL
     unsigned_8          cpu;
     unsigned_8          fpu;
     unsigned_8          osmajor;
     unsigned_8          osminor;
-    unsigned_8          os;
+    dig_os              os;
     unsigned_8          huge_shift;
     dig_arch            arch;
 } system_config;
-
-#include "digunpck.h"
 
 #endif
