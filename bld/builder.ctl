@@ -55,17 +55,13 @@ cdsay .
 # Build WASM assembler
 [ INCLUDE "<OWROOT>/bld/wasm/builder.ctl" ]
 # Now we also have everything to build wcl, owcc
-[ INCLUDE "<OWROOT>/bld/wcl/386/builder.ctl" ]
-[ INCLUDE "<OWROOT>/bld/wcl/i86/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wcl/builder.ctl" ]
 #[ INCLUDE "<OWROOT>/bld/wcl/owcc/builder.ctl" ]
 # Build the 16-bit and 32-bit x86 compilers
 [ INCLUDE "<OWROOT>/bld/cfloat/builder.ctl" ]
-[ INCLUDE "<OWROOT>/bld/cg/intel/386/builder.ctl" ]
-[ INCLUDE "<OWROOT>/bld/cg/intel/i86/builder.ctl" ]
-[ INCLUDE "<OWROOT>/bld/cc/386/builder.ctl" ]
-[ INCLUDE "<OWROOT>/bld/cc/i86/builder.ctl" ]
-[ INCLUDE "<OWROOT>/bld/plusplus/386/builder.ctl" ]
-[ INCLUDE "<OWROOT>/bld/plusplus/i86/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cg/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/plusplus/builder.ctl" ]
 # copy DOS4GW extender on build PATH for DOS build host
 [ IFDEF <BLD_HOST> DOS ]
 [ INCLUDE "<OWROOT>/bld/redist/builder.ctl" ]
