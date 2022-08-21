@@ -43,9 +43,11 @@
 //typedef void    *LPVDMCONTEXT;
   #endif
 #else
-typedef void            *LPMODULEENTRY;
-typedef void            (WINAPI *DEBUGEVENTPROC)();
-typedef BOOL            (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
+typedef void    *LPMODULEENTRY;
+typedef void    *LPVDMCONTEXT;
+typedef void    *LPVDMLDT_ENTRY;
+typedef void    (WINAPI *DEBUGEVENTPROC)();
+typedef BOOL    (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
 #endif
 
 TRPGLOBAL DWORD         DebugeePid;
@@ -82,10 +84,13 @@ TRPGLOBAL bool          Supporting8ByteBreakpoints TRPGLOBINIT( false );    /* S
 TRPGLOBAL bool          SupportingExactBreakpoints TRPGLOBINIT( false );    /* Start disabled */
 TRPGLOBAL opcode_type   BreakOpcode;
 
-#if defined( MD_x86 ) && defined( WOW )
+#if defined( WOW )
+  #if defined( MD_x86 )
 TRPGLOBAL wow_info      WOWAppInfo;
+  #endif
 #endif
 
+#if !defined( MD_x64 )
 TRPGLOBAL HANDLE
 (WINAPI*pOpenThread)(
     DWORD
@@ -124,7 +129,6 @@ TRPGLOBAL BOOL
     LPMODULEENTRY32 lpme
 );
 
-#if !defined( MD_x64 ) && defined( WOW )
 TRPGLOBAL BOOL
 (WINAPI*pVDMModuleFirst)(
     HANDLE          hProcess,
