@@ -1,3 +1,5 @@
+tree_depth = 4
+
 target_cpu = mps
 
 !include ../../master.mif

@@ -4,8 +4,6 @@ proj_name = was
 was_autodepends = .AUTODEPEND
 !endif
 
-tree_depth = 4
-
 was_trmem = 1
 
 subdir_stand = stand
