@@ -119,9 +119,9 @@ void PragmaInit( void )
     }
 
 #if _CPU == 8086
-    AsmInit( 0, cpu, fpu, GET_FPU_EMU( ProcRevision ) );
+    AsmEnvInit( 0, cpu, fpu, GET_FPU_EMU( ProcRevision ) );
 #else
-    AsmInit( 1, cpu, fpu, false );
+    AsmEnvInit( 1, cpu, fpu, false );
 #endif
 }
 
