@@ -186,9 +186,9 @@ static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
 #endif
     }
 #if _CPU == 8086
-    AsmInit( 0, cpu, fpu, GET_FPU_EMU( CpuSwitches ) );
+    AsmEnvInit( 0, cpu, fpu, GET_FPU_EMU( CpuSwitches ) );
 #else
-    AsmInit( 1, cpu, fpu, false );
+    AsmEnvInit( 1, cpu, fpu, false );
 #endif
 }
 
