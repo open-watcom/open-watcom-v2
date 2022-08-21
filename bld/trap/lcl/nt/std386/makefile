@@ -16,6 +16,8 @@ which = TRAP
 
 extra_objs = x86cpu.obj supphdlr.obj $(nt_trap_objs)
 
+extra_cppflags += -DWOW
+
 !include $(trap_dir)/lcl/nt/nt.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

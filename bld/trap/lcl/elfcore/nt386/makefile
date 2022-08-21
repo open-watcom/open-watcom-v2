@@ -21,6 +21,8 @@ extra_objs = &
     supp.obj &
     core.obj
 
+#extra_cppflags += -DWOW
+
 !include ../elfcore.mif
 !include $(trap_dir)/lcl/nt/nt.mif
 !include $(trap_dir)/lcl/lcl.mif
