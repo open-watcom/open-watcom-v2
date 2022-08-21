@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,6 +92,8 @@ static  bool    Allocated( void **arr, unsigned_16 flags )
         return( FAR2NEAR( *(void __far **)arr ) != NULL );
   #endif
     } else {
+#else
+    /* unused parameters */ (void)flags;
 #endif
         return( *arr != NULL );
 #if defined( _M_IX86 )
