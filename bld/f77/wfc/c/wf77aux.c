@@ -294,9 +294,9 @@ void InitPragmaAux( void )
     if( CPUOpts & CPUOPT_FPI87 ) {
         fpu_emu = false;
     }
-    AsmInit( 0, cpu, fpu, fpu_emu );
+    AsmEnvInit( 0, cpu, fpu, fpu_emu );
   #else
-    AsmInit( 1, cpu, fpu, false );
+    AsmEnvInit( 1, cpu, fpu, false );
   #endif
 #elif _CPU == _AXP || _CPU == _PPC
     AsmInit();

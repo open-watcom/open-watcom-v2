@@ -171,7 +171,7 @@ extern void                 AsmLine( const char * );
 extern void                 AsmSymInit( void );
 #else
 extern void                 AsmLine( const char *, bool );
-extern void                 AsmInit( int, int, int, bool );
+extern void                 AsmEnvInit( int, int, int, bool );
 extern void                 AsmSaveCPUInfo( void );
 extern void                 AsmRestoreCPUInfo( void );
 #endif
