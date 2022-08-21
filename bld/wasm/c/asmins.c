@@ -3091,8 +3091,8 @@ static bool check_size( void )
 
 #if !defined( _STANDALONE_ )
 
-void AsmInit( int use32, int cpu, int fpu, bool fpu_emu )
-/*******************************************************/
+void AsmEnvInit( int use32, int cpu, int fpu, bool fpu_emu )
+/**********************************************************/
 {
     Code->use32 = ( use32 != 0 );
     switch( cpu ) {
