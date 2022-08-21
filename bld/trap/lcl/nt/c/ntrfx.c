@@ -155,7 +155,7 @@ trap_retval TRAP_RFX( getfileattr )( void )
     rfx_getfileattr_ret *ret;
 
     ret = GetOutPtr( 0 );
-    h = __fixed_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffd );
+    h = __lib_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->attribute = (0xffff0000 | GetLastError());
     } else {
@@ -285,12 +285,17 @@ trap_retval TRAP_RFX( getcwd )( void )
 static void makeDTARFX( LPWIN32_FIND_DATA ffd, rfx_find *info, HANDLE h, unsigned nt_attribs )
 /********************************************************************************************/
 {
+    unsigned short  d;
+    unsigned short  t;
+
     DTARFX_HANDLE_OF( info ) = (pointer_uint)h;
     DTARFX_ATTRIB_OF( info ) = nt_attribs;
     info->attr = NT2DOSATTR( ffd->dwFileAttributes );
-    __MakeDOSDT( &ffd->ftLastWriteTime, &info->date, &info->time );
-    DTARFX_TIME_OF( info ) = info->time;
-    DTARFX_DATE_OF( info ) = info->date;
+    __MakeDOSDT( &ffd->ftLastWriteTime, &d, &t );
+    info->date = d;
+    info->time = t;
+    DTARFX_TIME_OF( info ) = d;
+    DTARFX_DATE_OF( info ) = t;
     info->size = ffd->nFileSizeLow;
 #if RFX_NAME_MAX < MAX_PATH
     strncpy( info->name, ffd->cFileName, RFX_NAME_MAX );
@@ -315,7 +320,7 @@ trap_retval TRAP_RFX( findfirst )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     info = GetOutPtr( sizeof( *ret ) );
-    h = __fixed_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
+    h = __lib_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
     if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
@@ -346,7 +351,7 @@ trap_retval TRAP_RFX( findnext )( void )
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attribs = DTARFX_ATTRIB_OF( info );
     info = GetOutPtr( sizeof( *ret ) );
-    if( !__fixed_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
+    if( !__lib_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;

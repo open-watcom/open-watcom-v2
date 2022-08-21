@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +176,7 @@ long LocalGetFileAttr( const char *name )
     HANDLE              h;
     WIN32_FIND_DATA     ffd;
 
-    h = __fixed_FindFirstFile( name, &ffd );
+    h = __lib_FindFirstFile( name, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         return( RFX_INVALID_FILE_ATTRIBUTES );
     }
@@ -265,7 +265,7 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
     /* unused parameters */ (void)info_len;
 
     nt_attrib = DOS2NTATTR( dos_attrib );
-    h = __fixed_FindFirstFile( pattern, &ffd );
+    h = __lib_FindFirstFile( pattern, &ffd );
     if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attrib, &ffd ) ) {
         error = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
@@ -294,7 +294,7 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
     }
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attrib = DTARFX_ATTRIB_OF( info );
-    if( !__fixed_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attrib, &ffd ) ) {
+    if( !__lib_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attrib, &ffd ) ) {
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( -1 );

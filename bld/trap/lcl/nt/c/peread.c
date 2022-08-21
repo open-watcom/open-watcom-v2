@@ -131,8 +131,10 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     hi->sig = EXE_MZ;
     return( true );
 #elif defined( MD_x64 )
+    /* unused parameters */ (void)stack;
     return( false );
 #elif defined( MD_axp ) || defined( MD_ppc )
+    /* unused parameters */ (void)stack;
     return( false );
 #else
     #error GetEXEHeader not configured

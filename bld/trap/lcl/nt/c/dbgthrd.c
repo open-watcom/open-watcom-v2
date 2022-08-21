@@ -39,6 +39,7 @@
 #include "trperr.h"
 #include "trpimp.h"
 #include "pathgrp2.h"
+#include "libwin32.h"
 
 #include "clibext.h"
 
@@ -525,7 +526,7 @@ static bool StartDebuggee( void )
             strcat( buff, "\\" );
         }
         strcat( buff, "." );
-        if( FindFirstFile( buff, &dat ) != INVALID_HANDLE_VALUE ) {
+        if( __lib_FindFirstFile( buff, &dat ) != INVALID_HANDLE_VALUE ) {
            if( dat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
                 _splitpath2( dll_name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
                 _makepath( buff, NULL, dll_destination, pg.fname, pg.ext );

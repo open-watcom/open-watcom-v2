@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 #include "stdnt.h"
+#include "libwin32.h"
+
 
 trap_retval TRAP_FILE_INFO( get_date )( void )
 {
@@ -46,7 +48,7 @@ trap_retval TRAP_FILE_INFO( get_date )( void )
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    h = FindFirstFile( name, &ffd );
+    h = __lib_FindFirstFile( name, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
