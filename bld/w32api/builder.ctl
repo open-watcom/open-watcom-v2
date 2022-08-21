@@ -26,7 +26,7 @@ set PROJDIR=<CWD>
     <CCCMD> nt386/lib/ddk/*               "<OWRELROOT>/lib386/nt/ddk/"
     <CCCMD> nt386/lib/directx/*           "<OWRELROOT>/lib386/nt/directx/"
 
-#    <CCCMD> ntaxp/lib/*                   "<OWRELROOT>/libaxp/nt/"
+    <CCCMD> ntaxp/lib/*                   "<OWRELROOT>/libaxp/nt/"
 
 [ BLOCK . . ]
 

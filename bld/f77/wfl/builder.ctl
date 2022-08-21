@@ -25,13 +25,13 @@ set PROJDIR=<CWD>
     <CCCMD> i86/os2386/wfl.sym          "<OWRELROOT>/binp/"
     <CCCMD> 386/os2386/wfl386.exe       "<OWRELROOT>/binp/"
     <CCCMD> 386/os2386/wfl386.sym       "<OWRELROOT>/binp/"
-#    <CCCMD> axp/os2386/wflaxp.exe       "<OWRELROOT>/binp/"
+    <CCCMD> axp/os2386/wflaxp.exe       "<OWRELROOT>/binp/"
 
     <CCCMD> i86/nt386/wfl.exe           "<OWRELROOT>/binnt/"
     <CCCMD> i86/nt386/wfl.sym           "<OWRELROOT>/binnt/"
     <CCCMD> 386/nt386/wfl386.exe        "<OWRELROOT>/binnt/"
     <CCCMD> 386/nt386/wfl386.sym        "<OWRELROOT>/binnt/"
-#    <CCCMD> axp/nt386/wflaxp.exe        "<OWRELROOT>/binnt/"
+    <CCCMD> axp/nt386/wflaxp.exe        "<OWRELROOT>/binnt/"
 
     <CCCMD> i86/linux386/wfl.exe        "<OWRELROOT>/binl/wfl"
     <CCCMD> i86/linux386/wfl.sym        "<OWRELROOT>/binl/"

@@ -25,13 +25,13 @@ set PROJDIR=<CWD>
     <CCCMD> i86/os2386/wfc.sym          "<OWRELROOT>/binp/wfc.sym"
     <CCCMD> 386/os2386/wfc386.exe       "<OWRELROOT>/binp/wfc386.exe"
     <CCCMD> 386/os2386/wfc386.sym       "<OWRELROOT>/binp/wfc386.sym"
-#    <CCCMD> axp/os2386/wfcaxp.exe       "<OWRELROOT>/binp/wfcaxp.exe"
+    <CCCMD> axp/os2386/wfcaxp.exe       "<OWRELROOT>/binp/wfcaxp.exe"
 
     <CCCMD> i86/nt386/wfc.exe           "<OWRELROOT>/binnt/wfc.exe"
     <CCCMD> i86/nt386/wfc.sym           "<OWRELROOT>/binnt/wfc.sym"
     <CCCMD> 386/nt386/wfc386.exe        "<OWRELROOT>/binnt/wfc386.exe"
     <CCCMD> 386/nt386/wfc386.sym        "<OWRELROOT>/binnt/wfc386.sym"
-#    <CCCMD> axp/nt386/wfcaxp.exe        "<OWRELROOT>/binnt/wfcaxp.exe"
+    <CCCMD> axp/nt386/wfcaxp.exe        "<OWRELROOT>/binnt/wfcaxp.exe"
 
     <CCCMD> i86/linux386/wfc.exe        "<OWRELROOT>/binl/wfc"
     <CCCMD> i86/linux386/wfc.sym        "<OWRELROOT>/binl/wfc.sym"
@@ -44,7 +44,7 @@ set PROJDIR=<CWD>
     <CCCMD> i86/ntx64/wfc.sym           "<OWRELROOT>/binnt64/wfc.sym"
     <CCCMD> 386/ntx64/wfc386.exe        "<OWRELROOT>/binnt64/wfc386.exe"
     <CCCMD> 386/ntx64/wfc386.sym        "<OWRELROOT>/binnt64/wfc386.sym"
-#    <CCCMD> axp/ntx64/wfcaxp.exe        "<OWRELROOT>/binnt64/wfcaxp.exe"
+    <CCCMD> axp/ntx64/wfcaxp.exe        "<OWRELROOT>/binnt64/wfcaxp.exe"
     <CCCMD> i86/linuxx64/wfc.exe        "<OWRELROOT>/binl64/wfc"
     <CCCMD> 386/linuxx64/wfc386.exe     "<OWRELROOT>/binl64/wfc386"
 
