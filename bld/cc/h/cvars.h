@@ -348,12 +348,12 @@ extern void         SetDBChar(int);
 extern bool         ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck );
 extern bool         ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 );
 extern void         TernChk( TYPEPTR typ1, TYPEPTR typ2 );
-extern void         ChkCallParms(void);
+extern void         ChkCallParms( void );
 extern void         ChkRetType(TREEPTR);
 extern void         ChkConst(TREEPTR);
-extern void         CompatiblePtrType(TYPEPTR,TYPEPTR,TOKEN);
-extern bool         IdenticalType(TYPEPTR,TYPEPTR);
-extern bool         VerifyType(TYPEPTR,TYPEPTR,SYMPTR);
+extern void         CompatiblePtrType( TYPEPTR, TYPEPTR, TOKEN );
+extern bool         IdenticalType( TYPEPTR, TYPEPTR );
+extern bool         VerifyType( TYPEPTR, TYPEPTR, SYMPTR );
 extern TYPEPTR      SkipTypeFluff( TYPEPTR typ );
 extern bool         AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 );
 extern void         ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
@@ -364,7 +364,7 @@ extern void         FrontEndInit( bool reuse );
 extern bool         FrontEnd(char **);
 extern void         FrontEndFini( void );
 extern void         CppComment(int);
-extern bool         CppPrinting(void);
+extern bool         CppPrinting( void );
 extern void         CppPuts(const char *);
 extern void         CppPutsQuoted(const char *);
 extern void         SetCppWidth(unsigned);
@@ -372,15 +372,15 @@ extern void         CppPrtChar(int);
 extern void         CppPrtToken(TOKEN);
 extern bool         OpenSrcFile(const char *, src_file_type);
 extern void         CloseSrcFile(FCB *);
-extern void         OpenDefFile(void);
-extern FILE         *OpenBrowseFile(void);
-extern void         CloseFiles(void);
+extern void         OpenDefFile( void );
+extern FILE         *OpenBrowseFile( void );
+extern void         CloseFiles( void );
 extern void         CClose( FILE *fp );
-extern void         FreeFNames(void);
-extern char         *ErrFileName(void);
-extern char         *DepFileName(void);
-extern char         *ObjFileName(void);
-extern char         *CppFileName(void);
+extern void         FreeFNames( void );
+extern char         *ErrFileName( void );
+extern char         *DepFileName( void );
+extern char         *ObjFileName( void );
+extern char         *CppFileName( void );
 extern char         *ForceSlash(char *, char );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
@@ -396,7 +396,7 @@ extern bool         SrcFileInRDir( FNAMEPTR flist );
 extern void         SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is_lib );
 extern int          SrcFileTime(char const *,time_t *);
 extern void         SetSrcFNameOnce( void );
-extern TOKEN        GetNextToken(void);
+extern TOKEN        GetNextToken( void );
 extern void         CppEmitPoundLine(unsigned,const char *,bool);
 
 extern void         AddIncFile( INCFILE * );
@@ -407,17 +407,17 @@ extern void         FreeIncFileList( void );
 extern void         InitGlobalVars( void );
 
 /* cdebug.c */
-extern dbug_type    DBType(TYPEPTR);
-extern void         EmitDBType(void);
+extern dbug_type    DBType( TYPEPTR );
+extern void         EmitDBType( void );
 
-extern void         ParsePgm(void);
+extern void         ParsePgm( void );
 extern bool         CheckFuncMain( const char *name );
 extern void         AdjParmType(SYMPTR sym);
-extern void         Chk_Struct_Union_Enum(TYPEPTR);
+extern void         Chk_Struct_Union_Enum( TYPEPTR );
 extern void         Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state );
 extern bool         DeclList(SYM_HANDLE *);
 extern FIELDPTR     FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state );
-extern TYPEPTR      TypeName(void);
+extern TYPEPTR      TypeName( void );
 
 /* cdecl2.c */
 extern void         InvDecl( void );
@@ -427,26 +427,26 @@ extern FIELDPTR     FieldCreate( const char *name );
 extern bool         LoopDecl( SYM_HANDLE *sym_head );
 
 /* cdinit */
-extern void         InitDataQuads(void);
-extern void         FreeDataQuads(void);
-extern bool         DataQuadsAvailable(void);
+extern void         InitDataQuads( void );
+extern void         FreeDataQuads( void );
+extern bool         DataQuadsAvailable( void );
 extern void         *StartDataQuadAccess( void );
 extern void         EndDataQuadAccess( void * );
-extern DATA_QUAD    *NextDataQuad(void);
-extern void         InitSymData(TYPEPTR,TYPEPTR,int);
+extern DATA_QUAD    *NextDataQuad( void );
+extern void         InitSymData( TYPEPTR, TYPEPTR, int );
 extern void         StaticInit(SYMPTR,SYM_HANDLE);
 extern void         VarDeclEquals(SYMPTR,SYM_HANDLE);
 
 /* cdump */
-extern void         DumpFuncDefn(void);
-extern void         SymDump(void);
-extern char         *DiagGetTypeName(TYPEPTR typ);
+extern void         DumpFuncDefn( void );
+extern void         SymDump( void );
+extern char         *DiagGetTypeName( TYPEPTR typ );
 
 /* cenum */
 extern TYPEPTR      EnumDecl(type_modifiers);
 extern ENUMPTR      EnumLookup(id_hash_idx,const char *);
-extern void         EnumInit(void);
-extern void         FreeEnums(void);
+extern void         EnumInit( void );
+extern void         FreeEnums( void );
 
 /* cerror.c */
 extern void         CErr1(msg_codes msgnum);
@@ -456,44 +456,44 @@ extern void         CErr3p(msg_codes msgnum,const char *,const char *);
 extern void         CErr4p(msg_codes msgnum,const char *,const char *,const char *);
 extern void         CErrP1(int parmno,msg_codes msgnum);
 extern void         SetErrLoc(source_loc *);
-extern void         InitErrLoc(void);
+extern void         InitErrLoc( void );
 extern void         CWarn1(int level,msg_codes msgnum);
 extern void         CWarn2(int level,msg_codes msgnum,int);
 extern void         CWarn2p(int level,msg_codes msgnum,const char *);
 extern void         CWarnP1(int parmno,int level,msg_codes msgnum);
 extern void         PCHNote( msg_codes msgnum, ... );
 extern void         CInfoMsg(msg_codes msgnum,...);
-extern void         CSuicide(void);
-extern void         OpenErrFile(void);
+extern void         CSuicide( void );
+extern void         OpenErrFile( void );
 extern void         FmtCMsg( char *buff, cmsg_info *info );
 extern void         SetDiagSymbol(SYMPTR sym, SYM_HANDLE handle);
 extern void         SetDiagEnum(ENUMPTR);
 extern void         SetDiagMacro(MEPTR);
-extern void         SetDiagType1(TYPEPTR typ_source);
-extern void         SetDiagType2(TYPEPTR typ_target, TYPEPTR typ_source);
-extern void         SetDiagType3(TYPEPTR typ_first, TYPEPTR typ_second, TOKEN opr);
-extern void         SetDiagPop(void);
+extern void         SetDiagType1( TYPEPTR typ_source );
+extern void         SetDiagType2( TYPEPTR typ_target, TYPEPTR typ_source );
+extern void         SetDiagType3( TYPEPTR typ_first, TYPEPTR typ_second, TOKEN opr );
+extern void         SetDiagPop( void );
 
 /* cexpr.c */
-extern void         ExprInit(void);
+extern void         ExprInit( void );
 extern void         ChkCallNode( TREEPTR tree );
-extern TREEPTR      Expr(void);
-extern TREEPTR      AddrExpr(void);
+extern TREEPTR      Expr( void );
+extern TREEPTR      AddrExpr( void );
 extern TREEPTR      BoolExpr(TREEPTR);
-extern TREEPTR      CommaExpr(void);
-extern int          ConstExpr(void);
+extern TREEPTR      CommaExpr( void );
+extern int          ConstExpr( void );
 typedef struct {
     int64     value;
     DATA_TYPE type;
 } const_val;
 extern bool         ConstExprAndType(const_val *);
-extern TREEPTR      SingleExpr(void);
+extern TREEPTR      SingleExpr( void );
 extern TREEPTR      IntLeaf(target_int);
 extern TREEPTR      RValue(TREEPTR);
 extern TREEPTR      LongLeaf(target_long);
 extern TREEPTR      UIntLeaf(target_uint);
 extern TREEPTR      VarLeaf(SYMPTR,SYM_HANDLE);
-extern TREEPTR      BasedPtrNode(TYPEPTR,TREEPTR);
+extern TREEPTR      BasedPtrNode( TYPEPTR, TREEPTR );
 extern bool         IsLValue(TREEPTR);
 extern op_flags     OpFlags( type_modifiers  flags );
 extern type_modifiers FlagOps( op_flags ops );
@@ -508,37 +508,37 @@ extern void         DoConstFold(TREEPTR);
 extern void         FoldExprTree(TREEPTR);
 
 /* cgen.c */
-extern void         DoCompile(void);
-extern void         EmitInit(void);
-extern void         EmitAbort(void);
+extern void         DoCompile( void );
+extern void         EmitInit( void );
+extern void         EmitAbort( void );
 extern target_size  EmitBytes(STR_HANDLE);
 extern void         GenInLineFunc( SYM_HANDLE sym_handle );
 extern bool         IsInLineFunc( SYM_HANDLE sym_handle );
 
 /* cgendata */
-extern void         EmitDataQuads(void);
+extern void         EmitDataQuads( void );
 extern void         EmitZeros(target_size);
-extern void         AlignIt(TYPEPTR);
+extern void         AlignIt( TYPEPTR );
 
 /* cgetch */
-extern int          GetNextChar(void);
+extern int          GetNextChar( void );
 extern void         GetNextCharUndo(int);
 extern int          GetCharCheckFile(int);
-extern int          getCharAfterBackSlash(void);
+extern int          getCharAfterBackSlash( void );
 extern bool         OpenFCB( FILE *fp, const char *filename, src_file_type typ );
 extern void         CloseFCB( FCB * );
 extern void         SrcPurge( void );
 extern void         InitIncFile( void );
 
 /* cinfo.c */
-extern void         SegInit(void);
-extern void         SegFini(void);
+extern void         SegInit( void );
+extern void         SegFini( void );
 extern segment_id   AddSegName(const char *,const char *,int);
 extern segment_id   DefThreadSeg( void );
-extern void         EmitSegLabels(void);
-extern void         FiniSegLabels(void);
-extern void         FiniSegBacks(void);
-extern void         SetSegs(void);
+extern void         EmitSegLabels( void );
+extern void         FiniSegLabels( void );
+extern void         FiniSegBacks( void );
+extern void         SetSegs( void );
 extern SYM_HANDLE   SegSymHandle(segment_id);
 extern void         SetFuncSegment(SYMPTR,segment_id);
 extern void         SetFarHuge(SYMPTR,bool);
@@ -565,21 +565,21 @@ extern void         MyExit( int ret );
 
 /* cmac1.c */
 extern void         InitTokenBuf( size_t );
-extern void         MacroInit(void);
-extern void         MacroAddComp(void);
-extern void         MacroFini(void);
-extern void         MacroPurge(void);
-extern TOKEN        GetMacroToken(void);
+extern void         MacroInit( void );
+extern void         MacroAddComp( void );
+extern void         MacroFini( void );
+extern void         MacroPurge( void );
+extern TOKEN        GetMacroToken( void );
 extern TOKEN        SpecialMacro( MEPTR );
 extern void         DoMacroExpansion( MEPTR );
 extern void         InsertReScanPragmaTokens( const char *pragma );
 extern void         InsertToken( TOKEN token, const char *str );
 
 /* cmac2.c */
-extern TOKEN        ChkControl(void);
+extern TOKEN        ChkControl( void );
 extern bool         MacroDel( const char *name );
 extern void         CppStackInit( void );
-extern void         CppStackFini(void);
+extern void         CppStackFini( void );
 extern MEPTR        MacroScan( void );
 extern TOKEN        Process_Pragma( void );
 
@@ -589,7 +589,7 @@ extern TREEPTR      InitAsgn( TYPEPTR,TREEPTR );
 extern TREEPTR      AsgnOp(TREEPTR,TOKEN,TREEPTR);
 extern TREEPTR      BinOp(TREEPTR,TOKEN,TREEPTR);
 extern bool         IsPtrConvSafe( TREEPTR, TYPEPTR, TYPEPTR );
-extern TREEPTR      CnvOp(TREEPTR,TYPEPTR,bool);
+extern TREEPTR      CnvOp( TREEPTR, TYPEPTR, bool );
 extern TREEPTR      FlowOp(TREEPTR,opr_code,TREEPTR);
 extern TREEPTR      IntOp(TREEPTR,TOKEN,TREEPTR);
 extern TREEPTR      RelOp(TREEPTR,TOKEN,TREEPTR);
@@ -598,9 +598,9 @@ extern TYPEPTR      TernType(TREEPTR,TREEPTR);
 extern TYPEPTR      TypeOf(TREEPTR);
 extern TREEPTR      UComplement(TREEPTR);
 extern TREEPTR      UMinus(TREEPTR);
-extern DATA_TYPE    BinExprType(TYPEPTR,TYPEPTR);
-extern DATA_TYPE    DataTypeOf(TYPEPTR);
-extern bool         IsFuncPtr(TYPEPTR);
+extern DATA_TYPE    BinExprType( TYPEPTR, TYPEPTR );
+extern DATA_TYPE    DataTypeOf( TYPEPTR );
+extern bool         IsFuncPtr( TYPEPTR );
 extern TREEPTR      FixupAss( TREEPTR opnd, TYPEPTR newtyp );
 extern pointer_class ExprTypeClass( TYPEPTR typ );
 extern TREEPTR      LCastAdj(  TREEPTR tree );
@@ -611,15 +611,15 @@ extern char         *Define_Macro(const char *);
 extern char         *Define_UserMacro(const char *);
 extern void         PreDefine_Macro(const char *);
 extern char         *AddUndefName(const char *);
-extern void         InitModInfo(void);
-extern void         MiscMacroDefs(void);
+extern void         InitModInfo( void );
+extern void         MiscMacroDefs( void );
 
 /* cmsg.c */
 extern char const   *CGetMsgStr( msg_codes msgnum );
 extern void         CGetMsg( char *msgbuf, msg_codes msgnum );
 extern void         InitMsg( void );
 extern void         FiniMsg( void );
-extern char const   *UsageText(void);   // GET INTERNATIONAL USAGE TEXT
+extern char const   *UsageText( void );   // GET INTERNATIONAL USAGE TEXT
 //extern msg_type     CGetMsgType( msg_codes msgnum );
 extern char const   *CGetMsgPrefix( msg_codes msgnum );
 extern int          GetMsgIndex( msg_codes msgnum );
@@ -630,32 +630,32 @@ extern int          NameCmp(const void *,const void *,size_t);
 /* coptions */
 extern bool         EqualChar(int);
 extern void         GenCOptions(char **);
-extern void         MergeInclude(void);
+extern void         MergeInclude( void );
 
 /* cpragma */
 extern void         CPragmaInit( void );
 extern void         CPragmaFini( void );
 extern void         SetToggleFlag( char const *name, int func, bool push );
-extern void         CPragma(void);
-extern textsegment  *LkSegName(const char *,const char *);
-extern textsegment  *NewTextSeg(const char *,const char *,const char *);
-extern void         PragmaInit(void);
-extern void         PragmaFini(void);
-extern void         PragmaAuxEnding(void);
-extern void         PragObjNameInfo(char **);
-extern bool         PragRecogId(const char *);
-extern bool         PragRecogName(const char *);
-extern hw_reg_set   PragRegList(void);
-extern int          PragRegIndex(const char *,const char *,size_t,bool);
+extern void         CPragma( void );
+extern textsegment  *LkSegName( const char *, const char * );
+extern textsegment  *NewTextSeg( const char *, const char *, const char * );
+extern void         PragmaInit( void );
+extern void         PragmaFini( void );
+extern void         PragmaAuxEnding( void );
+extern void         PragObjNameInfo( char ** );
+extern bool         PragRecogId( const char * );
+extern bool         PragRecogName( const char * );
+extern hw_reg_set   PragRegList( void );
+extern int          PragRegIndex( const char *, const char *, size_t, bool );
 extern int          PragRegNumIndex( const char *name, size_t len, int max_reg );
 extern void         PragRegNameErr( const char *regname, size_t regnamelen );
-extern hw_reg_set   *PragManyRegSets(void);
-extern TOKEN        PragRegSet(void);
-extern void         ChkPragmas(void);
-extern void         CreateAux(const char *);
-extern void         SetCurrInfo(const char *);
-extern void         XferPragInfo(const char*,const char*);
-extern void         WarnEnableDisable(bool enabled,msg_codes msgnum);
+extern hw_reg_set   *PragManyRegSets( void );
+extern TOKEN        PragRegSet( void );
+extern void         ChkPragmas( void );
+extern void         CreateAux( const char * );
+extern void         SetCurrInfo( const char * );
+extern void         XferPragInfo( const char *, const char * );
+extern void         WarnEnableDisable( bool enabled, msg_codes msgnum );
 extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
@@ -666,14 +666,14 @@ extern bool         GetPragmaAuxAlias( void );
 extern const char   *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names );
 
 /* cprag??? */
-extern void         AsmStmt(void);
-extern void         PragAux(void);
+extern void         AsmStmt( void );
+extern void         PragAux( void );
 extern hw_reg_set   PragRegName(const char *, size_t);
 extern hw_reg_set   PragReg( void );
 
 /* cpurge */
-extern void         InitPurge(void);
-extern void         PurgeMemory(void);
+extern void         InitPurge( void );
+extern void         PurgeMemory( void );
 
 /* cscan */
 extern void         NewLineStartPos( FCB *srcfile );
@@ -692,49 +692,49 @@ extern TOKEN        NextToken( void );
 extern TOKEN        PPNextToken( void );
 
 /* csizeof */
-extern target_size  SizeOfArg(TYPEPTR);
+extern target_size  SizeOfArg( TYPEPTR );
 
 /* cstats */
-extern void         InitStats(void);
-extern void         PrintStats(void);
+extern void         InitStats( void );
+extern void         PrintStats( void );
 
 /* cstmt */
-extern void         LookAhead(void);
-extern void         Statement(void);
+extern void         LookAhead( void );
+extern void         Statement( void );
 extern void         AddStmt(TREEPTR);
 extern void         GenFunctionNode(SYM_HANDLE);
-extern LABEL_INDEX  NextLabel(void);
+extern LABEL_INDEX  NextLabel( void );
 extern void         StmtInit( void );
 
 /* cstring */
 extern void         FreeLiteral(STR_HANDLE);
-extern STR_HANDLE   GetLiteral(void);
+extern STR_HANDLE   GetLiteral( void );
 extern void         LoadUnicodeTable(unsigned);
-extern void         StringInit(void);
+extern void         StringInit( void );
 extern TREEPTR      StringLeaf(string_flags);
 
 /* csym */
-extern void         SymInit(void);
-extern void         SpcSymInit(void);
-extern void         SymFini(void);
-extern void         SymCreate(SYMPTR,const char *);
-extern SYM_HANDLE   SegSymbol(const char *,segment_id);
-extern SYM_HANDLE   SpcSymbol(const char *,TYPEPTR,stg_classes);
-extern SYM_HANDLE   SymAdd(id_hash_idx,SYMPTR);
-extern SYM_HANDLE   SymAddL0(id_hash_idx,SYMPTR);
-extern SYM_HANDLE   SymLook(id_hash_idx,const char *);
-extern SYM_HANDLE   Sym0Look(id_hash_idx,const char *);
-extern SYM_HANDLE   SymLookTypedef(id_hash_idx,const char *,SYMPTR);
-extern void         SymGet(SYMPTR,SYM_HANDLE);
-extern SYMPTR       SymGetPtr(SYM_HANDLE);
-extern void         SymReplace(SYMPTR,SYM_HANDLE);
-extern void         EndBlock(void);
-extern SYM_HANDLE   MakeFunction(const char *,TYPEPTR);
-extern SYM_HANDLE   MakeNewSym(SYMPTR,char,TYPEPTR,stg_classes);
-extern LABELPTR     LkLabel(const char *);
-extern void         FreeLabels(void);
-extern XREFPTR      NewXref(XREFPTR);
-extern void         FreeXrefs(XREFPTR);
+extern void         SymInit( void );
+extern void         SpcSymInit( void );
+extern void         SymFini( void );
+extern void         SymCreate( SYMPTR, const char * );
+extern SYM_HANDLE   SegSymbol( const char *, segment_id );
+extern SYM_HANDLE   SpcSymbol( const char *, TYPEPTR, stg_classes );
+extern SYM_HANDLE   SymAdd( id_hash_idx, SYMPTR );
+extern SYM_HANDLE   SymAddL0( id_hash_idx, SYMPTR );
+extern SYM_HANDLE   SymLook( id_hash_idx, const char * );
+extern SYM_HANDLE   Sym0Look( id_hash_idx, const char * );
+extern SYM_HANDLE   SymLookTypedef( id_hash_idx, const char *, SYMPTR );
+extern void         SymGet( SYMPTR, SYM_HANDLE );
+extern SYMPTR       SymGetPtr( SYM_HANDLE );
+extern void         SymReplace( SYMPTR, SYM_HANDLE );
+extern void         EndBlock( void );
+extern SYM_HANDLE   MakeFunction( const char *, TYPEPTR );
+extern SYM_HANDLE   MakeNewSym( SYMPTR, char, TYPEPTR, stg_classes );
+extern LABELPTR     LkLabel( const char * );
+extern void         FreeLabels( void );
+extern XREFPTR      NewXref( XREFPTR );
+extern void         FreeXrefs( XREFPTR );
 extern unsigned     SymGetNumSyms( void );
 extern unsigned     SymGetNumSpecialSyms( void );
 extern SYM_HANDLE   SymGetFirst( void );
@@ -743,26 +743,26 @@ extern void         SymsPurge( void );
 extern void         SetNextSymHandle( unsigned val );
 
 /* ctimepc */
-extern void         TimeInit(void);
+extern void         TimeInit( void );
 
 /* ctype.c */
-extern void         CTypeInit(void);
-extern void         InitTypeHashTables(void);
-extern void         SetSignedChar(void);
-extern TYPEPTR      GetType(DATA_TYPE);
-extern TYPEPTR      ArrayNode(TYPEPTR);
-extern TYPEPTR      FuncNode(TYPEPTR, type_modifiers, TYPEPTR *);
-extern TYPEPTR      TypeDefault(void);
-extern TYPEPTR      PtrNode(TYPEPTR,type_modifiers,segment_id);
-extern TYPEPTR      BPtrNode(TYPEPTR,type_modifiers,segment_id,SYM_HANDLE, BASED_KIND);
-extern TYPEPTR      TypeNode(DATA_TYPE,TYPEPTR);
-extern type_modifiers TypeQualifier(void);
+extern void         CTypeInit( void );
+extern void         InitTypeHashTables( void );
+extern void         SetSignedChar( void );
+extern TYPEPTR      GetType( DATA_TYPE );
+extern TYPEPTR      ArrayNode( TYPEPTR );
+extern TYPEPTR      FuncNode( TYPEPTR, type_modifiers, TYPEPTR * );
+extern TYPEPTR      TypeDefault( void );
+extern TYPEPTR      PtrNode( TYPEPTR, type_modifiers, segment_id );
+extern TYPEPTR      BPtrNode( TYPEPTR, type_modifiers, segment_id, SYM_HANDLE, BASED_KIND );
+extern TYPEPTR      TypeNode( DATA_TYPE, TYPEPTR );
+extern type_modifiers TypeQualifier( void );
 extern void         TypeSpecifier( decl_info *info );
 extern void         FullDeclSpecifier( decl_info *info );
-extern TAGPTR       NullTag(void);
-extern TAGPTR       TagLookup(void);
-extern void         FreeTags(void);
-extern target_size  TypeSize(TYPEPTR);
+extern TAGPTR       NullTag( void );
+extern TAGPTR       TagLookup( void );
+extern void         FreeTags( void );
+extern target_size  TypeSize( TYPEPTR );
 extern target_size  TypeSizeEx( TYPEPTR, bitfield_width *pFieldWidth );
 extern TYPEPTR      GetIntTypeBySize( target_size size, bool sign, bool exact );
 extern TAGPTR       VfyNewTag( TAGPTR, DATA_TYPE );
@@ -777,7 +777,7 @@ extern void         AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYM
 extern void         CUsage( void );
 
 /* cutil */
-extern void         CErrSymName( int, SYMPTR,SYM_HANDLE );
+extern void         CErrSymName( int, SYMPTR, SYM_HANDLE );
 extern void         Expecting( const char * );
 extern bool         ExpectingToken( TOKEN );
 extern void         ExpectingAfter( TOKEN, TOKEN );
