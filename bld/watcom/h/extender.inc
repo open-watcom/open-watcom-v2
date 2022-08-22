@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -45,6 +45,7 @@ X_PHARLAP_V7            equ     7
 X_PHARLAP_V8            equ     8
 X_INTEL                 equ     9       ; Intel CodeBuilder (unsupported)
 X_WIN386                equ     10      ; Watcom Win386
+X_HX                    equ     11      ; HX DOS Extender
 ;
 ;       386 DOS Extender Equates for __ExtenderSubtype variable
 ;

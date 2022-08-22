@@ -114,6 +114,7 @@
       #define HELPNAME_DS   "PEDHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
       #define HELPNAME_NS   "PENHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
     #elif defined(DOS4G)
+      /* name must be RSIHELP, it is checked by DOS4G extender */
       #define HELPNAME      "RSIHELP.EXP"
     #elif defined(CAUSEWAY)
       #define HELPNAME      "CWHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
@@ -128,6 +129,7 @@
       #define HELPNAME_DS   "PEDHELP.EXP"
       #define HELPNAME_NS   "PENHELP.EXP"   /* not supported yet */
     #elif defined(DOS4G)
+      /* name must be RSIHELP, it is checked by DOS4G extender */
       #define HELPNAME      "RSIHELP.EXP"
     #elif defined(CAUSEWAY)
       #define HELPNAME      "CWHELP.EXE"
