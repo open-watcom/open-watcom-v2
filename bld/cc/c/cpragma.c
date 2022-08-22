@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,6 +71,7 @@ pragma_dbg_toggles      PragmaDbgToggles;
 static prag_stack       *TOGGLE_STK( pack );
 static prag_stack       *TOGGLE_STK( enum );
 static prag_stack       *FreePrags;
+static int              AsmFuncNum;
 
 static struct magic_words_data {
     const char      *name;
@@ -150,6 +151,7 @@ void CPragmaInit( void )
     TOGGLE_STK( pack ) = NULL;
     TOGGLE_STK( enum ) = NULL;
     FreePrags = NULL;
+    AsmFuncNum = 0;
 
     TextSegList = NULL;
     AliasHead = NULL;
@@ -362,6 +364,22 @@ void CreateAux( const char *id )
 #if _CPU == 370
     CurrEntry->offset = -1;
 #endif
+}
+
+
+const char *CreateAuxInlineAsmFunc( void )
+/****************************************/
+{
+    char        name[10];
+
+    sprintf( name, "F.%d", AsmFuncNum );
+    ++AsmFuncNum;
+    CreateAux( name );
+    CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
+    CurrEntry->info = CurrInfo;
+    *CurrInfo = WatcallInfo;
+    CurrInfo->use = 1;
+    return( CurrEntry->name );
 }
 
 

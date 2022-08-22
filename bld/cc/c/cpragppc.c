@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 #include <ctype.h>
 
 static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
-static  int             AsmFuncNum;
 static  aux_info        AuxInfo;
 
 //static struct {
@@ -58,7 +57,6 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
 void PragmaInit( void )
 /*********************/
 {
-    AsmFuncNum = 0;
 }
 
 void PragmaFini( void )
@@ -352,18 +350,13 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
-    char                name[8];
+    const char          *name;
 
     AsmFini();
     uses_auto = false;
     code_length = AsmCodeAddress;
     if( code_length != 0 ) {
-        sprintf( name, "F.%d", AsmFuncNum );
-        ++AsmFuncNum;
-        CreateAux( name );
-        CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
-        *CurrInfo = WatcallInfo;
-        CurrInfo->use = 1;
+        name = CreateAuxInlineAsmFunc();
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
         if( too_many_bytes ) {
              uses_auto = false;
@@ -384,7 +377,6 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
             */
 //          HW_CTurnOff( CurrInfo->save, HW_SP );
         }
-        CurrEntry->info = CurrInfo;
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;

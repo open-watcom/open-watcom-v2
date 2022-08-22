@@ -37,7 +37,6 @@
 #include "asmstmt.h"
 
 static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
-static  int             AsmFuncNum;
 static  aux_info        AuxInfo;
 
 #if _CPU == 386
@@ -89,7 +88,6 @@ void PragmaInit( void )
 
     pragmaAuxInfoInit();
 
-    AsmFuncNum = 0;
     switch( GET_CPU( ProcRevision ) ) {
     case CPU_86:    cpu = 0; break;
     case CPU_186:   cpu = 1; break;
@@ -980,18 +978,13 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
-    char                name[8];
+    const char          *name;
 
     /* unused parameters */ (void)too_many_bytes;
 
     code_length = AsmCodeAddress;
     if( code_length != 0 ) {
-        sprintf( name, "F.%d", AsmFuncNum );
-        ++AsmFuncNum;
-        CreateAux( name );
-        CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
-        *CurrInfo = WatcallInfo;
-        CurrInfo->use = 1;
+        name = CreateAuxInlineAsmFunc();
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
         uses_auto = InsertFixups( AsmCodeBuffer, code_length, &CurrInfo->code );
         if( uses_auto ) {
@@ -1003,7 +996,6 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
 //            CurrInfo->cclass |= GENERATE_STACK_FRAME;
             HW_CTurnOff( CurrInfo->save, HW_xSP );
         }
-        CurrEntry->info = CurrInfo;
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;
