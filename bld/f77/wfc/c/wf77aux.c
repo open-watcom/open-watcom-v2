@@ -53,6 +53,7 @@
 #include "types.h"
 #include "wf77defs.h"
 #include "wf77info.h"
+#include "symtab.h"
 #include "fctypes.h"
 #include "cgflags.h"
 #include "fcgmain.h"
@@ -69,8 +70,6 @@
 
 #if _INTEL_CPU
     #define REGNAME_MAX_LEN     4
-#elif _CPU == _AXP || _CPU == _PPC
-    #define AsmSymFini          AsmFini
 #endif
 
 
@@ -114,31 +113,43 @@ static char             SymName[MAX_SYMLEN+1];
 static size_t           SymLen;
 
 #if _CPU == 386
-static char    __Syscall[] = { "aux __syscall \"*\""
-                                "parm caller []"
-                                "value struct struct caller []"
-                                "modify [eax ecx edx]" };
-static char    __Cdecl[] =   { "aux __cdecl \"_*\""
-                                "parm caller loadds []"
-                                "value struct float struct routine [eax]"
-                                "modify [eax ebx ecx edx]" };
-static char    __Pascal[] =  { "aux __pascal \"^\""
-                                "parm reverse routine []"
-                                "value struct float struct caller []"
-                                "modify [eax ebx ecx edx]" };
-static char    __Stdcall[] = { "aux __stdcall \"_*#\""
-                                "parm routine []"
-                                "value struct []"
-                                "modify [eax ecx edx]" };
+static char    __Syscall[] = {
+    "aux __syscall \"*\" "
+    "parm caller [] "
+    "value struct struct caller [] "
+    "modify [eax ecx edx]"
+};
+static char    __Cdecl[] =   {
+    "aux __cdecl \"_*\" "
+    "parm caller loadds [] "
+    "value struct float struct routine [eax] "
+    "modify [eax ebx ecx edx]"
+};
+static char    __Pascal[] =  {
+    "aux __pascal \"^\" "
+    "parm reverse routine [] "
+    "value struct float struct caller [] "
+    "modify [eax ebx ecx edx]"
+};
+static char    __Stdcall[] = {
+    "aux __stdcall \"_*#\" "
+    "parm routine [] "
+    "value struct [] "
+    "modify [eax ecx edx]"
+};
 #elif _CPU == 8086
-static char    __Pascal[] =  { "aux __pascal \"^\""
-                                "parm routine reverse []"
-                                "value struct float struct caller []"
-                                "modify [ax bx cx dx]" };
-static char    __Cdecl[] =   { "aux __cdecl \"_*\""
-                                "parm caller []"
-                                "value struct float struct routine [ax]"
-                                "modify [ax bx cx dx]" };
+static char    __Pascal[] =  {
+    "aux __pascal \"^\" "
+    "parm routine reverse [] "
+    "value struct float struct caller [] "
+    "modify [ax bx cx dx]"
+};
+static char    __Cdecl[] =   {
+    "aux __cdecl \"_*\" "
+    "parm caller [] "
+    "value struct float struct routine [ax] "
+    "modify [ax bx cx dx]"
+};
 #endif
 
 static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
@@ -312,9 +323,8 @@ void InitPragmaAux( void )
   #else
     AsmEnvInit( 1, cpu, fpu, false );
   #endif
-#elif _CPU == _AXP || _CPU == _PPC
-    AsmInit();
 #endif
+    AsmInit();
 
     AuxList = NULL;
 #if _INTEL_CPU
@@ -452,7 +462,7 @@ void FiniPragmaAux( void )
         AuxList = next;
     }
     FreeAuxElements( &FortranInfo );
-    AsmSymFini();
+    AsmFini();
 }
 
 
@@ -883,9 +893,7 @@ static void GetByteSeq( void )
 #endif
 
     seq_len = 0;
-#if _INTEL_CPU
-    AsmSaveCPUInfo();
-#endif
+    AsmInit();
     for(;;) {
         if( *TokStart == '"' ) {
             if( TokStart == TokEnd - 1 )
@@ -945,14 +953,9 @@ static void GetByteSeq( void )
         }
     }
     InsertFixups( buff, seq_len );
-    AsmSymFini();
-#if _INTEL_CPU
-    AsmRestoreCPUInfo();
-#endif
+    AsmFini();
 }
 
-
-#if _INTEL_CPU
 
 static void ReqToken( const char *tok )
 //=====================================
@@ -969,6 +972,8 @@ static void ReqToken( const char *tok )
     }
 }
 
+
+#if _INTEL_CPU
 
 static hw_reg_set RegSet( void )
 //==============================
