@@ -57,7 +57,7 @@ extra_a_flags_axp = -oc
 #
 # EXE
 #
-exetarg_prebuild_objs = $(asminline_deps) wasmcmsg.grh usage.gh wfcmsgs.gh code$(target_cpu).gh
+exetarg_prebuild_objs = $(asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs          = $(asminline_lib) $(cg_libs) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
