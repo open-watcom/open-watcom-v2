@@ -323,8 +323,9 @@ void InitPragmaAux( void )
   #else
     AsmEnvInit( 1, cpu, fpu, false );
   #endif
-#endif
+#elif _CPU == _AXP || _CPU == _PPC
     AsmInit();
+#endif
 
     AuxList = NULL;
 #if _INTEL_CPU
@@ -462,7 +463,11 @@ void FiniPragmaAux( void )
         AuxList = next;
     }
     FreeAuxElements( &FortranInfo );
+#if _INTEL_CPU
+    AsmSymFini();
+#elif _CPU == _AXP || _CPU == _PPC
     AsmFini();
+#endif
 }
 
 
@@ -893,7 +898,9 @@ static void GetByteSeq( void )
 #endif
 
     seq_len = 0;
-    AsmInit();
+#if _INTEL_CPU
+    AsmSaveCPUInfo();
+#endif
     for(;;) {
         if( *TokStart == '"' ) {
             if( TokStart == TokEnd - 1 )
@@ -953,7 +960,12 @@ static void GetByteSeq( void )
         }
     }
     InsertFixups( buff, seq_len );
+#if _INTEL_CPU
+    AsmSymFini();
+    AsmRestoreCPUInfo();
+#elif _CPU == _AXP || _CPU == _PPC
     AsmFini();
+#endif
 }
 
 
