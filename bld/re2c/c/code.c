@@ -581,7 +581,7 @@ static uint merge( Span *x0, State *fg, State *bg )
 
 static void SCC_init( SCC *s, uint size )
 {
-    s->top = s->stk = (SCC **)malloc( size * sizeof( State ) );
+    s->top = s->stk = (State **)malloc( size * sizeof( State ) );
 }
 
 static void SCC_destroy( SCC *s )
