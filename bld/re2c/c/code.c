@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,8 @@ typedef struct BitMap {
 } BitMap;
 
 typedef struct SCC {
-    State       **top, **stk;
+    State       **top;
+    State       **stk;
 } SCC;
 
 static BitMap       *BitMap_first = NULL;
@@ -579,7 +581,7 @@ static uint merge( Span *x0, State *fg, State *bg )
 
 static void SCC_init( SCC *s, uint size )
 {
-    s->top = s->stk = malloc( size * sizeof( State ) );
+    s->top = s->stk = (SCC **)malloc( size * sizeof( State ) );
 }
 
 static void SCC_destroy( SCC *s )

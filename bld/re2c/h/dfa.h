@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +98,8 @@ typedef struct DFA {
     uint            lbChar;
     uint            ubChar;
     uint            nStates;
-    State           *head, **tail;
+    State           *head;
+    State           **tail;
     State           *toDo;
 } DFA;
 

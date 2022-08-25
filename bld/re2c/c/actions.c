@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -743,7 +744,7 @@ void genCode( FILE *o, RegExp *re )
 
     RegExp_calcSize( re, rep );
     ins = malloc( ( re->size + 1 ) * sizeof( Ins ) );
-    memset(ins, 0, ( re->size + 1 ) * sizeof( Ins ) );
+    memset( ins, 0, ( re->size + 1 ) * sizeof( Ins ) );
     RegExp_compile( re, rep, ins );
     eoi = &ins[re->size];
     eoi->i.tag = GOTO;
