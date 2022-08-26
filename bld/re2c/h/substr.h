@@ -37,15 +37,16 @@
 #include <stdlib.h>
 #include "basics.h"
 
+
 typedef struct SubStr {
     char    *str;
-    uint    len;
+    size_t  len;
 } SubStr;
 
 typedef struct SubStr Str;
 
 extern int      SubStr_eq( const SubStr *, const SubStr * );
-extern void     SubStr_init( SubStr *, char *, uint );
+extern void     SubStr_init( SubStr *, char *, size_t );
 extern void     SubStr_out( const SubStr *, FILE * );
 
 extern void     Str_init( Str *, const SubStr * );

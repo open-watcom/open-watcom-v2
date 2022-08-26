@@ -34,9 +34,10 @@
 #include "substr.h"
 #include "globals.h"
 
+
 void SubStr_out( const SubStr *s, FILE *o )
 {
-    uint    i;
+    size_t  i;
 
     fwrite( s->str, s->len, 1, o );
     for( i = 0; i < s->len; i++ ) {
@@ -51,7 +52,7 @@ int SubStr_eq( const SubStr *s1, const SubStr *s2 )
     return( s1->len == s2->len && memcmp( s1->str, s2->str, s1->len ) == 0 );
 }
 
-void SubStr_init( SubStr *r, char *s, uint l )
+void SubStr_init( SubStr *r, char *s, size_t l )
 {
     r->str = s;
     r->len = l;
