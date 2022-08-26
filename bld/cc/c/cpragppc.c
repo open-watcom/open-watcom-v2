@@ -208,6 +208,18 @@ static byte_seq_reloc *GetFixups( void )
     return( head );
 }
 
+static bool InsertFixups( byte_seq **code )
+{
+    byte_seq      *seq;
+
+    seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + AsmCodeAddress );
+    seq->relocs = GetFixups();
+    seq->length = AsmCodeAddress;
+    memcpy( &seq->data[0], AsmCodeBuffer, AsmCodeAddress );
+    *code = seq;
+    return( false );
+}
+
 void AsmSysLine( const char *buff )
 /*********************************/
 {
@@ -250,15 +262,7 @@ static bool GetByteSeq( byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        byte_seq      *seq;
-        byte_seq_len  len;
-
-        len = AsmCodeAddress;
-        seq = (byte_seq *) CMemAlloc( offsetof( byte_seq, data ) + len );
-        seq->relocs = GetFixups();
-        seq->length = len;
-        memcpy( &seq->data[0], buff, len );
-        *code = seq;
+        uses_auto = InsertFixups( code );
     }
     AsmFiniRelocs();
     AsmSysFini();
@@ -346,7 +350,6 @@ void AsmSysFini( void )
 void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
 /*************************************************/
 {
-    byte_seq_len        code_length;
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
@@ -354,20 +357,13 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
 
     AsmFini();
     uses_auto = false;
-    code_length = AsmCodeAddress;
-    if( code_length != 0 ) {
+    if( AsmCodeAddress != 0 ) {
         name = CreateAuxInlineAsmFunc();
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
         if( too_many_bytes ) {
-             uses_auto = false;
+            uses_auto = false;
         } else {
-            byte_seq    *seq;
-
-            seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + code_length );
-            seq->relocs = GetFixups();
-            seq->length = code_length;
-            memcpy( &seq->data[0], AsmCodeBuffer, code_length );
-            CurrInfo->code = seq;
+            uses_auto = InsertFixups( &CurrInfo->code );
         }
         if( uses_auto ) {
             /*

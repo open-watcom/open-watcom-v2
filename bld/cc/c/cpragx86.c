@@ -333,9 +333,11 @@ enum sym_type AsmQueryType( void *handle )
     return( AsmType( sym.sym_type, sym.mods ) );
 }
 
-static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code )
-/********************************************************************************/
+static bool InsertFixups( byte_seq **code )
+/*****************************************/
 {
+    byte_seq            *seq;
+    byte_seq_len        len;
                         /* additional slop in buffer to simplify the code */
     unsigned char       temp[MAXIMUM_BYTESEQ + 1 + 2 + sizeof( BYTE_SEQ_SYM ) + sizeof( BYTE_SEQ_OFF )];
     struct asmfixup     *fix;
@@ -346,7 +348,6 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
     unsigned char       *dst;
     unsigned char       *src;
     unsigned char       *end;
-    byte_seq            *seq;
     bool                perform_fixups;
     unsigned char       cg_fix;
     SYM_HANDLE          sym_handle;
@@ -359,6 +360,8 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
     bool                fixup_padding;
 #endif
 
+    src = AsmCodeBuffer;
+    len = AsmCodeAddress;
     sym_handle = SYM_NULL;
     uses_auto = false;
     perform_fixups = false;
@@ -377,13 +380,12 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
             *owner = fix;
         }
         dst = temp;
-        src = buff;
         end = src + len;
         fix = FixupHead;
         owner = &FixupHead;
         /* insert fixup escape sequences */
         while( src < end ) {
-            if( fix != NULL && fix->fixup_loc == (src - buff) ) {
+            if( fix != NULL && fix->fixup_loc == (src - AsmCodeBuffer) ) {
                 name = fix->name;
                 if( name != NULL ) {
                     sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
@@ -529,14 +531,14 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                 return( false );
             }
         }
-        buff = temp;
+        src = temp;
         len = (byte_seq_len)( dst - temp );
         perform_fixups = true;
     }
     seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
     seq->length = len;
-    memcpy( &seq->data[0], buff, len );
+    memcpy( &seq->data[0], src, len );
     *code = seq;
     return( uses_auto );
 }
@@ -689,7 +691,7 @@ static bool GetByteSeq( byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        uses_auto = InsertFixups( buff, AsmCodeAddress, code );
+        uses_auto = InsertFixups( code );
     }
     FreeAsmFixups();
     AsmSysFini();
@@ -974,7 +976,6 @@ void AsmSysFini( void )
 void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
 /*************************************************/
 {
-    int                 code_length;
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
@@ -982,11 +983,10 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
 
     /* unused parameters */ (void)too_many_bytes;
 
-    code_length = AsmCodeAddress;
-    if( code_length != 0 ) {
+    if( AsmCodeAddress != 0 ) {
         name = CreateAuxInlineAsmFunc();
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
-        uses_auto = InsertFixups( AsmCodeBuffer, code_length, &CurrInfo->code );
+        uses_auto = InsertFixups( &CurrInfo->code );
         if( uses_auto ) {
             /*
                We want to force the calling routine to set up a [E]BP frame
