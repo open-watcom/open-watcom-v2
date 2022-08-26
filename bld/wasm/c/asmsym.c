@@ -435,13 +435,14 @@ struct asm_sym *AsmGetSymbol( const char *name )
 }
 #endif
 
-#if defined( _STANDALONE_ )
 void AsmSymInit( void )
 /*********************/
 {
+#if defined( _STANDALONE_ )
     AsmLookup( "$" );    // create "$" symbol for current segment counter
-}
+#else
 #endif
+}
 
 void AsmSymFini( void )
 /*********************/
