@@ -36,7 +36,7 @@
 #include "asmstmt.h"
 #include <ctype.h>
 
-static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
+
 static  aux_info        AuxInfo;
 
 //static struct {
@@ -182,9 +182,22 @@ hw_reg_set PragReg( void )
     return( PragRegName( buffer, len ) );
 }
 
-static byte_seq_reloc *GetFixups( void )
-/**************************************/
+void AsmUsesAuto( void )
+/**********************/
 {
+    /*
+     * We want to force the calling routine to set up a [E]BP frame
+     * for the use of this pragma. This is done by saying the pragma
+     * modifies the [E]SP register. A kludge, but it works.
+     */
+//    AuxInfo.cclass |= GENERATE_STACK_FRAME;
+//    HW_CTurnOff( AuxInfo.save, HW_xSP );
+}
+
+bool AsmInsertFixups( byte_seq **code )
+/*************************************/
+{
+    byte_seq        *seq;
     asmreloc        *reloc;
     byte_seq_reloc  *head,*new;
     byte_seq_reloc  **lnk;
@@ -195,7 +208,7 @@ static byte_seq_reloc *GetFixups( void )
         sym_handle = SymLook( CalcHash( reloc->name, strlen( reloc->name ) ), reloc->name );
         if( sym_handle == SYM_NULL ) {
             CErr2p( ERR_UNDECLARED_SYM, reloc->name );
-            return( NULL );
+            break;
         }
         new = CMemAlloc( sizeof( byte_seq_reloc ) );
         new->off = reloc->offset;
@@ -205,15 +218,8 @@ static byte_seq_reloc *GetFixups( void )
         lnk = &new->next;
     }
     *lnk = NULL;
-    return( head );
-}
-
-static bool InsertFixups( byte_seq **code )
-{
-    byte_seq      *seq;
-
     seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + AsmCodeAddress );
-    seq->relocs = GetFixups();
+    seq->relocs = head;
     seq->length = AsmCodeAddress;
     memcpy( &seq->data[0], AsmCodeBuffer, AsmCodeAddress );
     *code = seq;
@@ -262,7 +268,7 @@ static bool GetByteSeq( byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        uses_auto = InsertFixups( code );
+        uses_auto = AsmInsertFixups( code );
     }
     AsmFiniRelocs();
     AsmSysFini();
@@ -320,12 +326,7 @@ void PragAux( void )
             }
         }
         if( have.uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//            HW_CTurnOff( AuxInfo.save, HW_SP );
+            AsmUsesAuto();
         }
         PragmaAuxEnd();
     }
@@ -347,43 +348,32 @@ void AsmSysFini( void )
     AsmFini();
 }
 
-void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
+void AsmMakeInlineFunc( bool too_many_bytes )
 /*************************************************/
 {
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
-    const char          *name;
 
-    AsmFini();
     uses_auto = false;
     if( AsmCodeAddress != 0 ) {
-        name = CreateAuxInlineAsmFunc();
-        CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
+        CreateAuxInlineFunc();
         if( too_many_bytes ) {
             uses_auto = false;
         } else {
-            uses_auto = InsertFixups( &CurrInfo->code );
+            uses_auto = AsmInsertFixups( &CurrInfo->code );
         }
         if( uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//          HW_CTurnOff( CurrInfo->save, HW_SP );
+            AsmUsesAuto();
         }
-        CurrEntry->next = AuxList;
-        AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
+        sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );
         tree->u.expr_type = GetType( TYP_VOID );
         AddStmt( tree );
     }
-    AsmFiniRelocs();
 }
 
 char const *AsmSysDefineByte( void )

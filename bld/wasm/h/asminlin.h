@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,6 +174,7 @@ extern void                 AsmLine( const char *, bool );
 extern void                 AsmEnvInit( int, int, int, bool );
 extern void                 AsmSaveCPUInfo( void );
 extern void                 AsmRestoreCPUInfo( void );
+extern void                 AsmFiniRelocs( void );
 #endif
 
 extern void                 AsmSymFini( void );

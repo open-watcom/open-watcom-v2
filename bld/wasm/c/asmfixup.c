@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -454,3 +454,19 @@ bool AddFPPatchAndFixups( fp_patches patch )
 #endif
     return( RC_OK );
 }
+
+#if !defined( _STANDALONE_ )
+void AsmFiniRelocs( void )
+{
+    struct asmfixup     *fixup;
+
+    for( ;; ) {
+        fixup = FixupHead;
+        if( fixup == NULL )
+            break;
+        FixupHead = fixup->next;
+        AsmFree( fixup );
+    }
+}
+#endif
+

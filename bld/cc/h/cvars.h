@@ -653,7 +653,7 @@ extern hw_reg_set   *PragManyRegSets( void );
 extern TOKEN        PragRegSet( void );
 extern void         ChkPragmas( void );
 extern void         CreateAux( const char * );
-extern const char   *CreateAuxInlineAsmFunc( void );
+extern void         CreateAuxInlineFunc( void );
 extern void         SetCurrInfo( const char * );
 extern void         XferPragInfo( const char *, const char * );
 extern void         WarnEnableDisable( bool enabled, msg_codes msgnum );
@@ -668,8 +668,10 @@ extern const char   *SkipUnderscorePrefix( const char *str, size_t *len, bool is
 
 /* cprag??? */
 extern void         AsmStmt( void );
+extern bool         AsmInsertFixups( byte_seq **code );
+extern void         AsmUsesAuto( void );
 extern void         PragAux( void );
-extern hw_reg_set   PragRegName(const char *, size_t);
+extern hw_reg_set   PragRegName( const char *, size_t );
 extern hw_reg_set   PragReg( void );
 
 /* cpurge */

@@ -36,7 +36,7 @@
 #include "pdefn2.h"
 #include "asmstmt.h"
 
-static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
+
 static  aux_info        AuxInfo;
 
 #if _CPU == 386
@@ -333,8 +333,20 @@ enum sym_type AsmQueryType( void *handle )
     return( AsmType( sym.sym_type, sym.mods ) );
 }
 
-static bool InsertFixups( byte_seq **code )
-/*****************************************/
+void AsmUsesAuto( void )
+/**********************/
+{
+    /*
+     * We want to force the calling routine to set up a [E]BP frame
+     * for the use of this pragma. This is done by saying the pragma
+     * modifies the [E]SP register. A kludge, but it works.
+     */
+//    AuxInfo.cclass |= GENERATE_STACK_FRAME;
+    HW_CTurnOff( AuxInfo.save, HW_xSP );
+}
+
+bool AsmInsertFixups( byte_seq **code )
+/*************************************/
 {
     byte_seq            *seq;
     byte_seq_len        len;
@@ -691,7 +703,7 @@ static bool GetByteSeq( byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        uses_auto = InsertFixups( code );
+        uses_auto = AsmInsertFixups( code );
     }
     FreeAsmFixups();
     AsmSysFini();
@@ -944,13 +956,7 @@ void PragAux( void )
             }
         }
         if( have.uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//            AuxInfo.cclass |= GENERATE_STACK_FRAME;
-            HW_CTurnOff( AuxInfo.save, HW_xSP );
+            AsmUsesAuto();
         }
         PragmaAuxEnd();
     }
@@ -973,33 +979,23 @@ void AsmSysFini( void )
     AsmRestoreCPUInfo();
 }
 
-void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
-/*************************************************/
+void AsmMakeInlineFunc( bool too_many_bytes )
+/*******************************************/
 {
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
-    const char          *name;
 
     /* unused parameters */ (void)too_many_bytes;
 
     if( AsmCodeAddress != 0 ) {
-        name = CreateAuxInlineAsmFunc();
-        CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
-        uses_auto = InsertFixups( &CurrInfo->code );
+        CreateAuxInlineFunc();
+        uses_auto = AsmInsertFixups( &CurrInfo->code );
         if( uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//            CurrInfo->cclass |= GENERATE_STACK_FRAME;
-            HW_CTurnOff( CurrInfo->save, HW_xSP );
+            AsmUsesAuto();
         }
-        CurrEntry->next = AuxList;
-        AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
+        sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );

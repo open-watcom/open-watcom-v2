@@ -60,6 +60,7 @@ typedef struct prag_stack {
     unsigned            value;
 } prag_stack;
 
+hw_reg_set              AsmRegsSaved = HW_D( HW_FULL );
 pragma_toggles          PragmaToggles;
 #ifndef NDEBUG
 pragma_dbg_toggles      PragmaDbgToggles;
@@ -367,8 +368,8 @@ void CreateAux( const char *id )
 }
 
 
-const char *CreateAuxInlineAsmFunc( void )
-/****************************************/
+void CreateAuxInlineFunc( void )
+/******************************/
 {
     char        name[10];
 
@@ -379,7 +380,9 @@ const char *CreateAuxInlineAsmFunc( void )
     CurrEntry->info = CurrInfo;
     *CurrInfo = WatcallInfo;
     CurrInfo->use = 1;
-    return( CurrEntry->name );
+    CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
+    CurrEntry->next = AuxList;
+    AuxList = CurrEntry;
 }
 
 

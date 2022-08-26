@@ -474,21 +474,12 @@ void AsmSymFini( void )
     myassert( AsmSymCount == 0 );
 
 #else
-    struct asmfixup     *fixup;
-
     for( ;; ) {
         sym = AsmSymHead;
         if( sym == NULL )
             break;
         AsmSymHead = sym->next;
         FreeASym( sym );
-    }
-    for( ;; ) {
-        fixup = FixupHead;
-        if( fixup == NULL )
-            break;
-        FixupHead = fixup->next;
-        AsmFree( fixup );
     }
 #endif
 }
