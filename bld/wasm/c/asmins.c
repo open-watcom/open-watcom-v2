@@ -3125,4 +3125,16 @@ void AsmRestoreCPUInfo( void )
     Code->info.cpu = CPUinfo;
 }
 
+void AsmInit( void )
+{
+    CPUinfo = Code->info.cpu;
+    AsmSymInit();
+}
+
+void AsmFini( void )
+{
+    AsmSymFini();
+    Code->info.cpu = CPUinfo;
+}
+
 #endif

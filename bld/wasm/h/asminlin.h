@@ -173,6 +173,8 @@ extern void                 AsmLine( const char *, bool );
 extern void                 AsmEnvInit( int, int, int, bool );
 extern void                 AsmSaveCPUInfo( void );
 extern void                 AsmRestoreCPUInfo( void );
+extern void                 AsmInit( void );
+extern void                 AsmFini( void );
 extern void                 AsmFiniRelocs( void );
 #endif
 
