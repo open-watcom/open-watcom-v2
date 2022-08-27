@@ -33,7 +33,7 @@ asct_r        _asctime          asctime_r                                       
 atoi64        atoll             _atoi64           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 chdir_        chdir             _chdir            d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 chmod_        chmod             _chmod            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
-chsize        _chsize           chsize            d16 d32 nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
+chsize        _chsize           chsize            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 chsiz0        chsize            _chsize                                   ncl     nll
 close_        close             _close            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 creat_        creat             _creat            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
