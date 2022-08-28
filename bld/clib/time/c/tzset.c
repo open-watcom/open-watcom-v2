@@ -131,6 +131,19 @@ static char *parse_number( char *tz, int *val )
     return( tz );
 }
 
+static char *parse_time( char *tz, int *hours, int *minutes, int *seconds )
+/*************************************************************************/
+{
+    tz = parse_number( tz, hours );
+    if( *tz == ':' ) {
+        tz = parse_number( tz + 1, minutes );
+        if( *tz == ':' ) {
+            tz = parse_number( tz + 1, seconds );
+        }
+    }
+    return( tz );
+}
+
 static char *parse_name( char *tz, char *name )
 /*********************************************/
 {
@@ -209,13 +222,7 @@ static char *parse_offset( char *tz, char *name, long *offset )
     ch = *tz;
     if( ch >= '0' && ch <= '9' ) {
         hours = minutes = seconds = 0;
-        tz = parse_number( tz, &hours );
-        if( *tz == ':' ) {
-            tz = parse_number( tz + 1, &minutes );
-            if( *tz == ':' ) {
-                tz = parse_number( tz + 1, &seconds );
-            }
-        }
+        tz = parse_time( tz, &hours, &minutes, &seconds );
         *offset = seconds + ( ( minutes + ( hours * 60 ) ) * 60L );
         if( neg ) {
             *offset = -*offset;
@@ -283,18 +290,24 @@ static char *parse_rule( char *tz, struct tm *timeptr )
     minutes = seconds = 0;
     if( *tz == '/' ) {
         tzFlag.format_TZ = TZFMT_POSIX;  /* OW format, can't be OS/2 format */
-        tz = parse_number( tz + 1, &hours );
-        if( *tz == ':' ) {
-            tz = parse_number( tz + 1, &minutes );
-            if( *tz == ':' ) {
-                tz = parse_number( tz + 1, &seconds );
-            }
-        }
+        tz = parse_time( tz, &hours, &minutes, &seconds );
     }
     timeptr->tm_sec = seconds;
     timeptr->tm_min = minutes;
     timeptr->tm_hour = hours;
     return( tz );
+}
+
+static void fix_rule( struct tm *tm, int adjust )
+/***********************************************/
+{
+    /*
+     * convert rule to be in terms of Standard Time
+     * rather than Daylight Time
+     */
+    tm->tm_hour -= adjust / 3600;
+    tm->tm_min -= ( adjust / 60 ) % 60;
+    tm->tm_sec -= adjust % 60;
 }
 
 static char *parse_rule_OS2( char *tz, struct tm *timeptr )
@@ -355,9 +368,7 @@ static char *parse_rule_OS2( char *tz, struct tm *timeptr )
         return( tzptr );
     }
 
-    timeptr->tm_hour = seconds / 3600;
-    timeptr->tm_min  = ( seconds / 60 ) % 60;
-    timeptr->tm_sec  = seconds % 60;
+    fix_rule( timeptr, -seconds );
 
     return( tz );
 }
@@ -411,18 +422,6 @@ static char *parse_OS2( char *tz, struct tm *time1, struct tm *time2, long *day_
     return( tz );
 }
 
-static void fix_dst_end( void )
-/*****************************/
-{
-    /*
-     * convert rule to be in terms of Standard Time
-     * rather than Daylight Time
-     */
-    __end_dst.tm_hour -= _RWD_dst_adjust / 3600;
-    __end_dst.tm_min -= ( _RWD_dst_adjust / 60 ) % 60;
-    __end_dst.tm_sec -= _RWD_dst_adjust % 60;
-}
-
 void __parse_tz( char *tz )
 /*************************/
 {
@@ -437,7 +436,8 @@ void __parse_tz( char *tz )
         return;
     }
     _RWD_daylight = 1;
-    dayzone = _RWD_timezone - ( 60 * 60 );
+    _RWD_dst_adjust = 60 * 60;
+    dayzone = _RWD_timezone - _RWD_dst_adjust;
 
     dststart = tz; /* remember for possible OS/2 format check */
 
@@ -446,10 +446,10 @@ void __parse_tz( char *tz )
 
     /* parse daylight changing rules */
     if( *tz == ',' )
-        tz = parse_rule( tz + 1, &__start_dst );
+        tz = parse_rule( tz + 1, &_RWD_start_dst );
     if( *tz == ',' ) {
-        tz = parse_rule( tz + 1, &__end_dst );
-        fix_dst_end();
+        tz = parse_rule( tz + 1, &_RWD_end_dst );
+        fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
     }
 
     if( tzFlag.format_TZ < TZFMT_POSIX && *tz != '\0' ) { /* not yet sure about tz format*/
@@ -462,11 +462,11 @@ void __parse_tz( char *tz )
             dststart++;
         }
         if( tzFlag.format_TZ < TZFMT_POSIX ) {
-            tz = parse_OS2( dststart + 1, &__start_dst, &__end_dst, &dayzone );
+            tz = parse_OS2( dststart + 1, &_RWD_start_dst, &_RWD_end_dst, &dayzone );
             if( *tz == '\0' ) {
                 tzFlag.format_TZ = TZFMT_OS2; /* correct OS/2 format */
                 _RWD_dst_adjust = _RWD_timezone - dayzone;
-                fix_dst_end();
+                fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
             }
         }
     }
@@ -543,28 +543,28 @@ static int tryOSTimeZone( const char *tz )
                 wMilliseconds = 0
             */
             st = &tz_info.DaylightDate;
-            __start_dst.tm_sec  = st->wSecond;
-            __start_dst.tm_min  = st->wMinute;
-            __start_dst.tm_hour = st->wHour;
-            __start_dst.tm_mday = st->wDay;         // 1st, 2nd, 3rd, 4th week
-            __start_dst.tm_mon  = st->wMonth - 1;   // 0-11
-            __start_dst.tm_year = st->wYear;
-            __start_dst.tm_wday = st->wDayOfWeek;   // 0-6
-            __start_dst.tm_yday = 0;                // 0-365 -> 0-365
-            __start_dst.tm_isdst= 0;
+            _RWD_start_dst.tm_sec  = st->wSecond;
+            _RWD_start_dst.tm_min  = st->wMinute;
+            _RWD_start_dst.tm_hour = st->wHour;
+            _RWD_start_dst.tm_mday = st->wDay;         // 1st, 2nd, 3rd, 4th week
+            _RWD_start_dst.tm_mon  = st->wMonth - 1;   // 0-11
+            _RWD_start_dst.tm_year = st->wYear;
+            _RWD_start_dst.tm_wday = st->wDayOfWeek;   // 0-6
+            _RWD_start_dst.tm_yday = 0;                // 0-365 -> 0-365
+            _RWD_start_dst.tm_isdst= 0;
 
             st = &tz_info.StandardDate;
-            __end_dst.tm_sec  = st->wSecond;
-            __end_dst.tm_min  = st->wMinute;
-            __end_dst.tm_hour = st->wHour;
-            __end_dst.tm_mday = st->wDay;           // 1st, 2nd, 3rd, 4th week
-            __end_dst.tm_mon  = st->wMonth - 1;     // 0-11
-            __end_dst.tm_year = st->wYear;
-            __end_dst.tm_wday = st->wDayOfWeek;     // 0-6
-            __end_dst.tm_yday = 0;                  // 0-365 -> 0-365
-            __end_dst.tm_isdst= 0;
+            _RWD_end_dst.tm_sec  = st->wSecond;
+            _RWD_end_dst.tm_min  = st->wMinute;
+            _RWD_end_dst.tm_hour = st->wHour;
+            _RWD_end_dst.tm_mday = st->wDay;           // 1st, 2nd, 3rd, 4th week
+            _RWD_end_dst.tm_mon  = st->wMonth - 1;     // 0-11
+            _RWD_end_dst.tm_year = st->wYear;
+            _RWD_end_dst.tm_wday = st->wDayOfWeek;     // 0-6
+            _RWD_end_dst.tm_yday = 0;                  // 0-365 -> 0-365
+            _RWD_end_dst.tm_isdst= 0;
 
-            fix_dst_end();
+            fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
             break;
 
         default:
