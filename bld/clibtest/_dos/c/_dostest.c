@@ -544,6 +544,7 @@ int main( int argc, char *argv[] )
 
 int main( int argc, char *argv[] )
 {
+    (void)argc;
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
     return( EXIT_SUCCESS );
 }
