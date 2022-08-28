@@ -57,7 +57,6 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
     long                tzh_leapcnt;
     long                tzh_charcnt;
 #endif
-    const char          *dstname;
     long                timidx;
     long                stdzon;
     long                dstzon;
@@ -73,10 +72,14 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
             return;
         }
     }
+    /*
+     * process headers
+     */
+//    signature      = pntohl( tzp );
     version        = *( tzp + 4 );
     if( version == '\0' )
         version = '1';
-    tzp += 4 + 16;
+    tzp += 4 + 1 + 15;
 //    tzh_ttisutccnt = pntohl( tzp );
 //    tzh_ttisstdcnt = pntohl( tzp + 4 );
 //    tzh_leapcnt    = pntohl( tzp + 8 );
@@ -95,7 +98,9 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
     if( timep != NULL )
         timep->tm_isdst = isdst;
     if( tzdata != NULL ) {
-        dstname = "\0";
+        if( tzfile != NULL )
+            free( tzfile );
+        tzfile = tzdata;
         dstzon = stdzon;
         if( timidx > 0 ) {
             if( isdst ) {
@@ -103,18 +108,17 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
             } else {
                 dstzon = tzh_timecnt + tzp[timidx - 1] * 6;
             }
-            dstname = (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6];
+        }
+        if( dstzon != stdzon ) {
+            _RWD_daylight = 1;
             _RWD_dst_adjust = pntohl( &tzp[dstzon] ) - pntohl( &tzp[stdzon] );
         } else {
-            _RWD_daylight = 0;  // daylight savings not supported
+            _RWD_daylight = 0;
             _RWD_dst_adjust = 0;
         }
         _RWD_timezone = -pntohl( &tzp[stdzon] );
         strcpy( _RWD_tzname[0], (char *)&tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
-        strcpy( _RWD_tzname[1], dstname );
-        if( tzfile != NULL )
-            free( tzfile );
-        tzfile = tzdata;
+        strcpy( _RWD_tzname[1], (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
     }
 #if 0
     tzp += tzh_timecnt;
@@ -129,36 +133,57 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
 #endif
 }
 
+#define DEFAULT_ZONEFILE    "/etc/localtime"
+#define DEFAULT_ZONEDIR     "/usr/share/zoneinfo/"
+
 int __read_tzfile( const char *tz )
 {
-    long        fsize;
-    int         fd;
-    char        *filename = ( char * ) "/etc/localtime";
+    long            fsize;
+    int             fd;
+    char            *filename = DEFAULT_ZONEFILE;
+    size_t          filenamelen;
+    int             rc;
+    unsigned char   *tzdata;
 
+    rc = 0;
     if( tz != NULL ) {
-        size_t const filenamelen = 21 + strlen( tz ) + 1;
-        filename = alloca( filenamelen );
-        if( filename == NULL )
-            return( 0 );
-        strcpy( filename, "/usr/share/zoneinfo/" );
-        strcat( filename, tz );
+        if( *tz == ':' )
+            tz++;
+        if( *tz != '\0' ) {
+            filenamelen = strlen( tz ) + 1;
+            if( *tz != '/' )
+                filenamelen += sizeof( DEFAULT_ZONEDIR ) - 1;
+            filename = alloca( filenamelen );
+            if( filename != NULL ) {
+                *filename = '\0';
+                if( *tz != '/' ) {
+                    strcpy( filename, DEFAULT_ZONEDIR );
+                }
+                strcat( filename, tz );
+            }
+        }
     }
 
-    fd = open( filename, O_RDONLY );
-    fsize = lseek( fd, 0, SEEK_END );
-    if( fsize == -1 )
-        return( 0 );
-    if( tzfile != NULL )
-        free( tzfile );
-    tzfile = malloc( (size_t)fsize );
-    lseek( fd, 0, SEEK_SET );
-    read( fd, tzfile, (unsigned int)fsize );
-    close( fd );
-    if( pntohl( tzfile ) != TZif ) {
-        free( tzfile );
-        tzfile = NULL;
-        return( 0 );
+    if( filename != NULL ) {
+        fd = open( filename, O_RDONLY );
+        if( fd != -1 ) {
+            fsize = lseek( fd, 0, SEEK_END );
+            if( fsize != -1 ) {
+                tzdata = malloc( (size_t)fsize );
+                if( tzdata != NULL ) {
+                    lseek( fd, 0, SEEK_SET );
+                    *tzdata = '\0';
+                    read( fd, tzdata, (size_t)fsize );
+                    if( pntohl( tzdata ) == TZif ) {
+                        __check_tzfile( tzdata, time( NULL ), NULL );
+                        rc = 1;
+                    } else {
+                        free( tzdata );
+                    }
+                }
+            }
+            close( fd );
+        }
     }
-    __check_tzfile( tzfile, time( NULL ), NULL );
-    return( 1 );
+    return( rc );
 }
