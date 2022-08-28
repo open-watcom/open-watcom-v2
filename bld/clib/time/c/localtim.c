@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ _WCRTLINK struct tm *_localtime( const time_t *timer, struct tm *t )
     tod = *timer;
     t->tm_isdst = -1;
 #ifdef __LINUX__
-    __check_tzfile( tod, t );
+    __check_tzfile( NULL, tod, t );
 #endif
     __brktime( DAYS_FROM_1900_TO_1970, tod, _RWD_timezone, t );
 

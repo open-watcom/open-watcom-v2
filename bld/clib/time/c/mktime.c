@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ _WCRTLINK time_t mktime( struct tm *t )
     seconds += _RWD_timezone; /* add in seconds from GMT */
 #ifdef __LINUX__
     if( t->tm_isdst < 0 )
-        __check_tzfile( seconds, t );
+        __check_tzfile( NULL, seconds, t );
 #endif
     /* if we are in d.s.t. then subtract __dst_adjust from seconds */
     if( __isindst( t ) )  /* - determine if we are in d.s.t. */

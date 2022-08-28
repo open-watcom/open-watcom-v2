@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ extern time_t           __local_mktime( const struct tm *, long *, long * );
 extern int              __leapyear( unsigned );
 extern int              __isindst( struct tm * );
 extern int              __read_tzfile( const char *tz );
-extern void             __check_tzfile( time_t t, struct tm *timep );
+extern void             __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep );
 
 extern short const      __diyr[];  /* days in normal year array */
 extern short const      __dilyr[]; /* days in leap year array */

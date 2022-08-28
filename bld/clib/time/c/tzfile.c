@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,12 +47,12 @@ static long pntohl( const unsigned char *p )
 
 static unsigned char *tzfile = NULL;
 
-void __check_tzfile( time_t t, struct tm *timep )
+void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
 {
     long                tzh_timecnt;
     long                tzh_typecnt;
 #if 0
-    long                tzh_ttisgmtcnt;
+    long                tzh_ttisutccnt;
     long                tzh_ttisstdcnt;
     long                tzh_leapcnt;
     long                tzh_charcnt;
@@ -63,18 +64,25 @@ void __check_tzfile( time_t t, struct tm *timep )
     long                i;
     const unsigned char *tzp;
     int                 isdst;
+    char                version;
 
-    if( tzfile == NULL )
-        return;
-    tzp = tzfile + 16 + 4;
-#if 0
-    tzh_ttisgmtcnt = pntohl( tzp );
-    tzh_ttisstdcnt = pntohl( tzp + 4 );
-    tzh_leapcnt    = pntohl( tzp + 8 );
-    tzh_charcnt    = pntohl( tzp + 20 );
-#endif
+    tzp = tzdata;
+    if( tzp == NULL ) {
+        tzp = tzfile;
+        if( tzp == NULL ) {
+            return;
+        }
+    }
+    version        = *( tzp + 4 );
+    if( version == '\0' )
+        version = '1';
+    tzp += 4 + 16;
+//    tzh_ttisutccnt = pntohl( tzp );
+//    tzh_ttisstdcnt = pntohl( tzp + 4 );
+//    tzh_leapcnt    = pntohl( tzp + 8 );
     tzh_timecnt    = pntohl( tzp + 12 );
     tzh_typecnt    = pntohl( tzp + 16 );
+//    tzh_charcnt    = pntohl( tzp + 20 );
     tzp += 24;
     timidx = 0;
     for( i = 0; i < tzh_timecnt; i++ ) {
@@ -86,22 +94,28 @@ void __check_tzfile( time_t t, struct tm *timep )
     isdst = tzp[stdzon + 4];
     if( timep != NULL )
         timep->tm_isdst = isdst;
-    dstname = "\0";
-    dstzon = stdzon;
-    if( timidx > 0 ) {
-        if( isdst )
-            stdzon = tzh_timecnt + tzp[timidx - 1] * 6;
-        else
-            dstzon = tzh_timecnt + tzp[timidx - 1] * 6;
-        dstname = (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6];
-        _RWD_dst_adjust = pntohl( &tzp[dstzon] ) - pntohl( &tzp[stdzon] );
-    } else {
-        _RWD_daylight = 0;  // daylight savings not supported
-        _RWD_dst_adjust = 0;
+    if( tzdata != NULL ) {
+        dstname = "\0";
+        dstzon = stdzon;
+        if( timidx > 0 ) {
+            if( isdst ) {
+                stdzon = tzh_timecnt + tzp[timidx - 1] * 6;
+            } else {
+                dstzon = tzh_timecnt + tzp[timidx - 1] * 6;
+            }
+            dstname = (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6];
+            _RWD_dst_adjust = pntohl( &tzp[dstzon] ) - pntohl( &tzp[stdzon] );
+        } else {
+            _RWD_daylight = 0;  // daylight savings not supported
+            _RWD_dst_adjust = 0;
+        }
+        _RWD_timezone = -pntohl( &tzp[stdzon] );
+        strcpy( _RWD_tzname[0], (char *)&tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
+        strcpy( _RWD_tzname[1], dstname );
+        if( tzfile != NULL )
+            free( tzfile );
+        tzfile = tzdata;
     }
-    _RWD_timezone = -pntohl( &tzp[stdzon] );
-    strcpy( _RWD_tzname[0], (char *)&tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
-    strcpy( _RWD_tzname[1], dstname );
 #if 0
     tzp += tzh_timecnt;
     tzp += tzh_typecnt * 6;
@@ -111,7 +125,7 @@ void __check_tzfile( time_t t, struct tm *timep )
     /* ignore standard/wall indicators for now */
     tzp += tzh_ttisstdcnt;
     /* ignore UTC/local indicators for now */
-    tzp += tzh_ttisgmtcnt;
+    tzp += tzh_ttisutccnt;
 #endif
 }
 
@@ -145,6 +159,6 @@ int __read_tzfile( const char *tz )
         tzfile = NULL;
         return( 0 );
     }
-    __check_tzfile( time( NULL ), NULL );
+    __check_tzfile( tzfile, time( NULL ), NULL );
     return( 1 );
 }
