@@ -93,6 +93,19 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
             timidx = i;
         tzp += 4;
     }
+    /*
+     * Version 1 data
+     *
+     * tzp += tzh_timecnt;
+     * tzp += tzh_typecnt * 6;
+     * tzp += tzh_charcnt;
+     * // ignore leap seconds for now
+     * tzp += tzh_leapcnt * 8;
+     * // ignore standard/wall indicators for now
+     * tzp += tzh_ttisstdcnt;
+     * // ignore UTC/local indicators for now
+     * tzp += tzh_ttisutcnt;
+     */
     stdzon = tzh_timecnt + tzp[timidx] * 6;
     isdst = tzp[stdzon + 4];
     if( timep != NULL )
@@ -120,17 +133,6 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
         strcpy( _RWD_tzname[0], (char *)&tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
         strcpy( _RWD_tzname[1], (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
     }
-#if 0
-    tzp += tzh_timecnt;
-    tzp += tzh_typecnt * 6;
-    tzp += tzh_charcnt;
-    /* ignore leap seconds for now */
-    tzp += tzh_leapcnt * 8;
-    /* ignore standard/wall indicators for now */
-    tzp += tzh_ttisstdcnt;
-    /* ignore UTC/local indicators for now */
-    tzp += tzh_ttisutccnt;
-#endif
 }
 
 #define DEFAULT_ZONEFILE    "/etc/localtime"
