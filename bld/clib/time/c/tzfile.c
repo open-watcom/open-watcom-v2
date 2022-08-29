@@ -49,14 +49,12 @@ static unsigned char *tzfile = NULL;
 
 void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
 {
+//    long                tzh_ttisutccnt;
+//    long                tzh_ttisstdcnt;
+//    long                tzh_leapcnt;
     long                tzh_timecnt;
     long                tzh_typecnt;
-#if 0
-    long                tzh_ttisutccnt;
-    long                tzh_ttisstdcnt;
-    long                tzh_leapcnt;
-    long                tzh_charcnt;
-#endif
+//    long                tzh_charcnt;
     long                timidx;
     long                stdzon;
     long                dstzon;
@@ -73,31 +71,30 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
         }
     }
     /*
-     * process headers
+     * process header
      */
 //    signature      = pntohl( tzp );
     version        = *( tzp + 4 );
-    if( version == '\0' )
+    if( version == 0 ) {
         version = '1';
-    tzp += 4 + 1 + 15;
-//    tzh_ttisutccnt = pntohl( tzp );
-//    tzh_ttisstdcnt = pntohl( tzp + 4 );
-//    tzh_leapcnt    = pntohl( tzp + 8 );
-    tzh_timecnt    = pntohl( tzp + 12 );
-    tzh_typecnt    = pntohl( tzp + 16 );
-//    tzh_charcnt    = pntohl( tzp + 20 );
-    tzp += 24;
-    timidx = 0;
-    for( i = 0; i < tzh_timecnt; i++ ) {
-        if( t >= (time_t)pntohl( tzp ) )
-            timidx = i;
-        tzp += 4;
     }
+//    tzh_ttisutccnt = pntohl( tzp + 20);
+//    tzh_ttisstdcnt = pntohl( tzp + 24 );
+//    tzh_leapcnt    = pntohl( tzp + 28 );
+    tzh_timecnt    = pntohl( tzp + 32 );
+    tzh_typecnt    = pntohl( tzp + 36 );
+//    tzh_charcnt    = pntohl( tzp + 40 );
+    tzp += 44;
     /*
      * Version 1 data
      *
+     * // transition times
+     * tzp += tzh_timecnt * 4;
+     * // transition types
      * tzp += tzh_timecnt;
+     * // local time types
      * tzp += tzh_typecnt * 6;
+     * // time zone designations
      * tzp += tzh_charcnt;
      * // ignore leap seconds for now
      * tzp += tzh_leapcnt * 8;
@@ -106,10 +103,26 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
      * // ignore UTC/local indicators for now
      * tzp += tzh_ttisutcnt;
      */
+
+    /*
+     * find time in transition times table
+     */
+    timidx = 0;
+    for( i = 0; i < tzh_timecnt; i++ ) {
+        if( t >= (time_t)pntohl( tzp ) )
+            timidx = i;
+        tzp += 4;
+    }
+    /*
+     * get timezone info
+     */
     stdzon = tzh_timecnt + tzp[timidx] * 6;
     isdst = tzp[stdzon + 4];
     if( timep != NULL )
         timep->tm_isdst = isdst;
+    /*
+     * update current timezone data
+     */
     if( tzdata != NULL ) {
         if( tzfile != NULL )
             free( tzfile );

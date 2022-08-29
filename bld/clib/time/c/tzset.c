@@ -84,7 +84,7 @@ int             __dst_adjust = 60 * 60;             /* daylight adjustment */
 static struct {
     unsigned    cache_OS_TZ : 1;
     unsigned    have_OS_TZ : 1;
-}               tzFlag = { 1, 0, 0 };
+}               tzFlag = { 1, 0 };
 
 int __DontCacheOSTZ( void )
 /*************************/
@@ -422,7 +422,6 @@ void __parse_tz( char *tz )
 /*************************/
 {
     long        dayzone;
-    char        *dststart;
 
     _RWD_daylight = 0;
     if( *tz == ':' ) {
