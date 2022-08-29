@@ -51,7 +51,8 @@ static void fatal( char *msg )
     exit( 1 );
 }
 
-static void tprintf( char const *f, ... ) {
+static void tprintf( char const *f, ... )
+{
     va_list args;
 
     if( !ofp ) {
@@ -69,125 +70,157 @@ static void tprintf( char const *f, ... ) {
     va_end( args );
 }
 
-static char *SkipSequenceOf( char *p, char c ) {
+static char *SkipSequenceOf( char *p, char c )
+{
     char *s = p;
-    while( *p ) {
-        if( *p != c ) break;
+    while( *p != '\0' ) {
+        if( *p != c )
+            break;
         ++p;
     }
-    if( s == p ) return( err );
+    if( s == p )
+        return( err );
     return( p );
 }
 
-static char *SkipTime( char *p ) {
+static char *SkipTime( char *p )
+{
     char *s;
+    p = SkipSequenceOf( p, ' ' );
     s = p;
-    while( *p ) {
-        if( ! isdigit( *p ) ) break;
+    while( *p != '\0' ) {
+        if( ! isdigit( *p ) )
+            break;
         ++p;
     }
-    if( s == p ) return( err );
+    if( s == p )
+        return( err );
     if( *p == ':' ) {
         ++p;
     } else {
         return( err );
     }
     s = p;
-    while( *p ) {
-        if( ! isdigit( *p ) ) break;
+    while( *p != '\0' ) {
+        if( ! isdigit( *p ) )
+            break;
         ++p;
     }
-    if( s == p ) return( err );
+    if( s == p )
+        return( err );
     if( *p == ':' ) {
         ++p;
     } else {
         return( err );
     }
     s = p;
-    while( *p ) {
-        if( ! isdigit( *p ) ) break;
+    while( *p != '\0' ) {
+        if( ! isdigit( *p ) )
+            break;
         ++p;
     }
-    if( s == p ) return( err );
+    if( s == p )
+        return( err );
     return( p );
 }
 
-static char *SkipTestDir( char *p, char *t ) {
-    char *s = p;
+static char *SkipTestDir( char *p, char *t )
+{
+    char *s;
+    char *sp;
 
-    while( *p ) {
-        if( isspace( *p ) ) break;
+    sp = NULL;
+    p = SkipSequenceOf( p, ' ' );
+    s = p;
+    while( *p != '\0' ) {
+        if( isspace( *p ) ) {
+            sp = p;
+            while( isspace( *p ) ) {
+                p++;
+            }
+            if( *p == '=' || *p == '\0' ) {
+                p = sp;
+                break;
+            }
+            while( sp != p ) {
+                *t++ = *sp++;
+            }
+        }
         *t++ = *p;
         ++p;
     }
     *t = '\0';
-    if( s == p ) return( err );
+    if( s == p )
+        return( err );
     return( p );
 }
 
-static char *SkipStr( char *p, char *s ) {
-    while( *p ) {
-        if( *s == '\0' ) break;
-        if( *p != *s ) return( err );
+static char *SkipStr( char *p, char *s )
+{
+    while( *p != '\0' ) {
+        if( *s == '\0' )
+            break;
+        if( *p != *s )
+            return( err );
         ++p;
         ++s;
     }
     return( p );
 }
 
-static int IsCdsayLine( char *t ) {
+static int IsCdsayLine( char *t )
+{
     char *p;
 
     p = SkipSequenceOf( buff, '=' );
-    if( *p == '\0' ) return( 0 );
-    p = SkipSequenceOf( p, ' ' );
-    if( *p == '\0' ) return( 0 );
+    if( *p == '\0' )
+        return( 0 );
     p = SkipTime( p );
-    if( *p == '\0' ) return( 0 );
-    p = SkipSequenceOf( p, ' ' );
-    if( *p == '\0' ) return( 0 );
+    if( *p == '\0' )
+        return( 0 );
     p = SkipTestDir( p, t );
-    if( *p == '\0' ) return( 0 );
+    if( *p == '\0' )
+        return( 0 );
     p = SkipSequenceOf( p, ' ' );
-    if( *p == '\0' ) return( 0 );
     p = SkipSequenceOf( p, '=' );
     return( *p == '\0' && p != err );
 }
 
-static int IsPassLine( char *t ) {
+static int IsPassLine( char *t )
+{
     char *p;
 
     p = SkipStr( buff, "PASS" );
-    if( *p == '\0' ) return( 0 );
-    p = SkipSequenceOf( p, ' ' );
-    if( *p == '\0' ) return( 0 );
+    if( *p == '\0' )
+        return( 0 );
     p = SkipTestDir( p, t );
     return( *p == '\0' && p != err );
 }
 
-static int IsFailLine( char *t ) {
+static int IsFailLine( char *t )
+{
     char *p;
 
     p = SkipStr( buff, "FAIL" );
-    if( *p == '\0' ) return( 0 );
-    p = SkipSequenceOf( p, ' ' );
-    if( *p == '\0' ) return( 0 );
+    if( *p == '\0' )
+        return( 0 );
     p = SkipTestDir( p, t );
     return( *p == '\0' && p != err );
 }
 
-static int IsTestLine( char *t ) {
+static int IsTestLine( char *t )
+{
     char *p;
 
     p = SkipStr( buff, "TEST" );
-    if( *p == '\0' ) return( 0 );
-    p = SkipSequenceOf( p, ' ' );
-    if( *p == '\0' ) return( 0 );
+    if( *p == '\0' )
+        return( 0 );
     p = SkipTestDir( p, t );
     return( *p == '\0' && p != err );
 }
 
-static void *my_fgets( FILE *fp ) {
+static void *my_fgets( FILE *fp )
+{
     char *p;
 
     if( feof( fp ) || fgets( buff, sizeof( buff ), fp ) == NULL )
@@ -199,7 +232,8 @@ static void *my_fgets( FILE *fp ) {
     return( buff );
 }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+{
     FILE    *fp;
     char    *p;
     int     state;
