@@ -588,7 +588,7 @@ static int ProcessCtlFile( const char *name )
                 if( includeStk->skipping == 0 ) {
                     char    log_name[_MAX_PATH];
 
-                    p = GetPathOrFile( p, &log_name );
+                    p = GetPathOrFile( p, log_name );
                     p = GetWord( p, &word );
                     if( *word == '\0' || strcmp( word, "]" ) == 0 ) {
                         BackupLog( log_name, LogBackup );
