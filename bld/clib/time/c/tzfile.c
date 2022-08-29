@@ -124,9 +124,15 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
      * update current timezone data
      */
     if( tzdata != NULL ) {
+        /*
+         * save new timezone data
+         */
         if( tzfile != NULL )
             free( tzfile );
         tzfile = tzdata;
+        /*
+         * update current timezone data by new one
+         */
         dstzon = stdzon;
         if( timidx > 0 ) {
             if( isdst ) {
@@ -152,6 +158,14 @@ void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
 #define DEFAULT_ZONEDIR     "/usr/share/zoneinfo/"
 
 int __read_tzfile( const char *tz )
+/**********************************
+ * - if no file name specified in TZ then
+ * use system default file "/etc/localtime"
+ * - if file name is specified with absolute path
+ * then use it
+ * - otherwise location "/usr/share/zoneinfo/"
+ * is used for specified file
+ */
 {
     long            fsize;
     int             fd;
@@ -166,12 +180,19 @@ int __read_tzfile( const char *tz )
             tz++;
         if( *tz != '\0' ) {
             filenamelen = strlen( tz ) + 1;
-            if( *tz != '/' )
+            if( *tz != '/' ) {
+                /*
+                 * relative path, add DEFAULT_ZONEDIR
+                 */
                 filenamelen += sizeof( DEFAULT_ZONEDIR ) - 1;
+            }
             filename = alloca( filenamelen );
             if( filename != NULL ) {
                 *filename = '\0';
                 if( *tz != '/' ) {
+                    /*
+                     * relative path, add DEFAULT_ZONEDIR
+                     */
                     strcpy( filename, DEFAULT_ZONEDIR );
                 }
                 strcat( filename, tz );

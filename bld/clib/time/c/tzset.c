@@ -108,6 +108,22 @@ int __CacheOSTZ( void )
     return( old_flag );
 }
 
+static char *parse_sign( char *tz, int *sign )
+/********************************************/
+{
+    int neg;
+
+    neg = 0;
+    if( *tz == '-' ) {
+        ++tz;
+        neg = 1;
+    } else if( *tz == '+' ) {
+        ++tz;
+    }
+    *sign = neg;
+    return( tz );
+}
+
 static char *parse_number( char *tz, int *val )
 /*********************************************/
 {
@@ -195,14 +211,7 @@ static char *parse_offset( char *tz, long *offset )
     int         neg;
     char        ch;
 
-    ch = *tz;
-    neg = 0;
-    if( ch == '-' ) {
-        neg = 1;
-        ++tz;
-    } else if( ch == '+' ) {
-        ++tz;
-    }
+    tz = parse_sign( tz, &neg );
     ch = *tz;
     if( ch >= '0' && ch <= '9' ) {
         hours = minutes = seconds = 0;
@@ -301,48 +310,45 @@ static char *parse_rule_OS2( char *tz, struct tm *timeptr )
     char        *tzptr;
     int         neg;
 
-    tzptr = tz;
     /*
      * month 1 - 12
      */
+    tzptr = tz;
     tz = parse_number( tz, &month );
     if( (tzptr == tz) || (*tz != ',') ) { /* parsing error */
         return( tzptr );
     }
-
-    if( *(tz + 1) == '-' ) {
-        neg = 1;
-        tz++;
-    } else {
-        neg = 0;
-        if( *(tz + 1) == '+' ) {
-            tz++;
-        }
-    }
-    tzptr = tz + 1;
+    tz++;   /* skip ',' character */
     /*
      * week -1, 0, 1, 2, 3, 4
      */
-    tz = parse_number( tzptr, &week );
+    tzptr = tz;
+    tz = parse_sign( tz, &neg );
+    tz = parse_number( tz, &week );
     if( (tzptr == tz) || (*tz != ',') || (neg && week != 1) ) {
         return( tzptr ); /* parsing error */
                          /* or unsupported: week -2, -3, -4 */
     }
+    tz++;   /* skip ',' character */
     /*
-     * convert to POSIX 1-5
+     * convert to POSIX week 1-5
      */
     if( neg && (week == 1) ) {
-        week = 5;   /* week -1 in OS/2 is week 5 in POSIX format */
+        /*
+         * week -1 in OS/2 is week 5 in POSIX format
+         */
+        week = 5;
     }
 
-    tzptr = tz + 1;
     /*
      * days 0-6 (week) or 1-31 (month)
      */
-    tz = parse_number( tzptr, &days );
+    tzptr = tz;
+    tz = parse_number( tz, &days );
     if( (tzptr == tz) || (*tz != ',') ) { /* parsing error */
         return( tzptr );
     }
+    tz++;   /* skip ',' character */
 
     if( week == 0 ) {   /* days is day of month */
         timeptr->tm_yday = days + __diyr[month - 1]; /*Julian day */
@@ -354,12 +360,11 @@ static char *parse_rule_OS2( char *tz, struct tm *timeptr )
         timeptr->tm_wday = days;
     }
 
-    tzptr = tz + 1;
     /*
-     * seconds after midnight
+     * parse seconds after midnight
      */
-    tz = parse_number( tzptr, &seconds );
-
+    tzptr = tz;
+    tz = parse_number( tz, &seconds );
     if( (tzptr == tz) || (*tz != ',') ) { /* parsing error */
         return( tzptr );
     }
@@ -397,19 +402,30 @@ static char *parse_OS2( char *tz, struct tm *time1, struct tm *time2, long *day_
     char        *tzptr;
     int         shift;
 
+    /*
+     * parse daylight starting time
+     */
     tzptr = tz;
-    tz = parse_rule_OS2( tz, &start_dst );  /* daylight starting time */
+    tz = parse_rule_OS2( tz, &start_dst );
     if( (tzptr == tz) || (*tz != ',') ) {   /* parsing error */
         return( tzptr );
     }
+    tz++;   /* skip ',' character */
 
-    tzptr = tz + 1;
-    tz = parse_rule_OS2( tzptr, &end_dst ); /* daylight ending time */
+    /*
+     * parse daylight ending time
+     */
+    tzptr = tz;
+    tz = parse_rule_OS2( tz, &end_dst );
     if( (tzptr == tz) || (*tz != ',') || (*(tz + 1) == '\0') ) { /* error */
         return( tzptr );
     }
+    tz++;   /* skip ',' character */
 
-    tz = parse_number( tz + 1, &shift );    /* shift value */
+    /*
+     * parse daylight shift value
+     */
+    tz = parse_number( tz, &shift );
     if( *tz == '\0' ) {                     /* format is ok */
         memcpy( time1, &start_dst, sizeof( *time1 ) );
         memcpy( time2, &end_dst, sizeof( *time2 ) );
@@ -438,28 +454,37 @@ void __parse_tz( char *tz )
     dayzone = _RWD_timezone - _RWD_dst_adjust;
 
     tz = parse_name( tz, dtzone );
-    if( *tz != ',' ) {
+    if( *tz == ',' ) {
         /*
-         * POSIX format
-         */
-        tz = parse_offset( tz, &dayzone );
-        _RWD_dst_adjust = _RWD_timezone - dayzone;
-
-        /* parse daylight changing rules */
-        if( *tz == ',' )
-            tz = parse_rule( tz + 1, &_RWD_start_dst );
-        if( *tz == ',' ) {
-            tz = parse_rule( tz + 1, &_RWD_end_dst );
-            fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
-        }
-    } else {
-        /*
-         * OS/2 format
+         * parse OS/2 format
+         *
+         * parse daylight info
          */
         tz = parse_OS2( tz + 1, &_RWD_start_dst, &_RWD_end_dst, &dayzone );
         if( *tz == '\0' ) {
             _RWD_dst_adjust = _RWD_timezone - dayzone;
             fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
+        }
+    } else {
+        /*
+         * parse POSIX format
+         *
+         * parse daylight ending offset
+         */
+        tz = parse_offset( tz, &dayzone );
+        _RWD_dst_adjust = _RWD_timezone - dayzone;
+        if( *tz == ',' ) {
+            /*
+             * parse daylight starting time
+             */
+            tz = parse_rule( tz + 1, &_RWD_start_dst );
+            if( *tz == ',' ) {
+                /*
+                 * parse daylight ending time
+                 */
+                tz = parse_rule( tz + 1, &_RWD_end_dst );
+                fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
+            }
         }
     }
 }
