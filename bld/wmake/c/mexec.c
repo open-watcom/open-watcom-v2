@@ -195,8 +195,8 @@ STATIC NKLIST   *noKeepList;            /* contains the list of files that
                                            needs to be cleaned when wmake
                                            exits */
 
-STATIC char *CmdGetFileName( char *src, char **fname, bool osname )
-/*****************************************************************/
+char *CmdGetFileName( char *src, char **fname, bool osname )
+/**********************************************************/
 {
     bool    dquote;
     char    *dst;
@@ -2053,23 +2053,26 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     UINT16      tmp_env = 0;        // for * commands
     RET_T       my_ret;             // return code for this function
     bool        dquote;             // true if inside double quotes
+    int         quotes_size;
 
     assert( cmd != NULL );
 
     percent_cmd = ( cmd[0] == '%' );
     /* split cmd name from args */
     dquote = false;     /* no double quotes yet */
-    for( arg = cmd + (percent_cmd ? 1 : 0); *arg != NULLCHAR; arg++ ) {
+    quotes_size = 0;
+    for( arg = cmd; *arg != NULLCHAR; arg++ ) {
         if( !dquote ) {
             if( cisws( *arg ) || *arg == Glob.swchar || *arg == '+' || *arg == '=' ) {
                 break;
             }
         }
         if( *arg == '\"' ) {
+            quotes_size = 2;
             dquote = !dquote;       /* found a double quote */
         }
     }
-    if( arg - cmd >= _MAX_PATH ) {
+    if( arg - cmd - ( quotes_size / 2 ) >= _MAX_PATH ) {
         PrtMsg( ERR | COMMAND_TOO_LONG );
         return( RET_ERROR );
     }
@@ -2079,8 +2082,8 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         return( RET_ERROR );
     }
 
-    memcpy( cmdname, cmd, arg - cmd );  /* copy command */
-    cmdname[arg - cmd] = NULLCHAR;      /* null terminate it */
+    memcpy( cmdname, cmd + ( quotes_size / 2 ), arg - cmd - quotes_size );  /* copy command */
+    cmdname[arg - cmd - quotes_size] = NULLCHAR;      /* null terminate it */
     if( *cmdname == NULLCHAR ) {
         // handle blank command by shell
         flags |= FLAG_SHELL;
