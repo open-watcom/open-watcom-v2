@@ -668,8 +668,8 @@ extern const char   *SkipUnderscorePrefix( const char *str, size_t *len, bool is
 
 /* cprag??? */
 extern void         AsmStmt( void );
-extern bool         AsmInsertFixups( byte_seq **code );
-extern void         AsmUsesAuto( void );
+extern bool         AsmInsertFixups( aux_info *info );
+extern void         AsmUsesAuto( aux_info *info );
 extern void         PragAux( void );
 extern hw_reg_set   PragRegName( const char *, size_t );
 extern hw_reg_set   PragReg( void );

@@ -333,20 +333,20 @@ enum sym_type AsmQueryType( void *handle )
     return( AsmType( sym.sym_type, sym.mods ) );
 }
 
-void AsmUsesAuto( void )
-/**********************/
+void AsmUsesAuto( aux_info *info )
+/********************************/
 {
     /*
      * We want to force the calling routine to set up a [E]BP frame
      * for the use of this pragma. This is done by saying the pragma
      * modifies the [E]SP register. A kludge, but it works.
      */
-//    AuxInfo.cclass |= GENERATE_STACK_FRAME;
-    HW_CTurnOff( AuxInfo.save, HW_xSP );
+//    info->cclass |= GENERATE_STACK_FRAME;
+    HW_CTurnOff( info->save, HW_xSP );
 }
 
-bool AsmInsertFixups( byte_seq **code )
-/*************************************/
+bool AsmInsertFixups( aux_info *info )
+/************************************/
 {
     byte_seq            *seq;
     byte_seq_len        len;
@@ -551,7 +551,7 @@ bool AsmInsertFixups( byte_seq **code )
     seq->relocs = perform_fixups;
     seq->length = len;
     memcpy( &seq->data[0], src, len );
-    *code = seq;
+    info->code = seq;
     return( uses_auto );
 }
 
@@ -593,7 +593,7 @@ void AsmSysLine( const char *buff )
 #endif
 }
 
-static bool GetByteSeq( byte_seq **code )
+static bool GetByteSeq( aux_info *info )
 /**************************************/
 {
     unsigned char       buff[MAXIMUM_BYTESEQ + 32];
@@ -703,7 +703,7 @@ static bool GetByteSeq( byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        uses_auto = AsmInsertFixups( code );
+        uses_auto = AsmInsertFixups( info );
     }
     FreeAsmFixups();
     AsmSysFini();
@@ -918,8 +918,8 @@ void PragAux( void )
         have.uses_auto = false;
         for( ;; ) {
             if( !have.f_call && CurToken == T_EQUAL ) {
-                have.uses_auto = GetByteSeq( &AuxInfo.code );
-                have.f_call = true;
+                have.uses_auto = GetByteSeq( &AuxInfo );
+                have.f_call = true
             } else if( !have.f_call && PragRecogId( "far" ) ) {
                 AuxInfo.cclass |= FAR_CALL;
                 have.f_call = true;
@@ -956,7 +956,7 @@ void PragAux( void )
             }
         }
         if( have.uses_auto ) {
-            AsmUsesAuto();
+            AsmUsesAuto( &AuxInfo );
         }
         PragmaAuxEnd();
     }
@@ -990,9 +990,9 @@ void AsmMakeInlineFunc( bool too_many_bytes )
 
     if( AsmCodeAddress != 0 ) {
         CreateAuxInlineFunc();
-        uses_auto = AsmInsertFixups( &CurrInfo->code );
+        uses_auto = AsmInsertFixups( CurrInfo );
         if( uses_auto ) {
-            AsmUsesAuto();
+            AsmUsesAuto( CurrInfo );
         }
         CurrEntry = NULL;
         sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );

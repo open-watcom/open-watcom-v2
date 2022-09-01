@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +99,7 @@ void PragAux()
     {
         call_class      linkage;
         struct {
-            unsigned f_equal  : 1;
+            unsigned f_call   : 1;
             unsigned f_parm   : 1;
             unsigned f_linkage: 1;
             unsigned f_value  : 1;
@@ -117,15 +117,15 @@ void PragAux()
         NextToken();
         PragInitCurrInfo( linkage );
         have.f_offset = 0;
-        have.f_equal = 0;
+        have.f_call = 0;
         have.f_parm = 0;
         have.f_linkage = 0;
         have.f_value = 0;
         have.f_modify = 0;
         for( ;; ) {
-            if( !have.f_equal && CurToken == T_EQUAL ) {
+            if( !have.f_call && CurToken == T_EQUAL ) {
                 // GetByteSeq();
-                have.f_equal = 1;
+                have.f_call = 1;
             } else if( !have.f_parm && PragRecog( "parm" ) ) {
                 GetParmInfo();
                 have.f_parm = 1;

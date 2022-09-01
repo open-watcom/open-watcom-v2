@@ -1324,8 +1324,7 @@ void     PragmaAux( void )
 // Process a pragma aux.
 {
     struct {
-        boolbit f_far    : 1;
-        boolbit f_far16  : 1;
+        boolbit f_call   : 1;
         boolbit f_loadds : 1;
         boolbit f_export : 1;
         boolbit f_parm   : 1;
@@ -1342,7 +1341,7 @@ void     PragmaAux( void )
     ProcessAlias();
     ObjectName();
 
-    have.f_far    = false;
+    have.f_call   = false;
     have.f_loadds = false;
     have.f_export = false;
     have.f_value  = false;
@@ -1352,21 +1351,21 @@ void     PragmaAux( void )
         if( !have.f_parm && RecToken( "PARM" ) ) {
             GetParmInfo();
             have.f_parm = true;
-        } else if( !have.f_far && RecToken( "=" ) ) {
+        } else if( !have.f_call && RecToken( "=" ) ) {
             GetByteSeq();
 #if _INTEL_CPU
-            have.f_far = true;
-        } else if( !have.f_far && RecToken( "FAR" ) ) {
+            have.f_call = true;
+        } else if( !have.f_call && RecToken( "FAR" ) ) {
             CurrAux->cclass |= FAR_CALL;
-            have.f_far = true;
+            have.f_call = true;
 #if _CPU == 386
-        } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
+        } else if( !have.f_call && RecToken( "FAR16" ) ) {
             CurrAux->cclass |= FAR16_CALL;
-            have.f_far16 = true;
+            have.f_call = true;
 #endif
-        } else if( !have.f_far && RecToken( "NEAR" ) ) {
+        } else if( !have.f_call && RecToken( "NEAR" ) ) {
             CurrAux->cclass &= ~FAR_CALL;
-            have.f_far = true;
+            have.f_call = true;
         } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
             CurrAux->cclass |= LOAD_DS_ON_ENTRY;
             have.f_loadds = true;

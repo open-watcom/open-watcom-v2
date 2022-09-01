@@ -55,20 +55,22 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
     return( 0 );
 }
 
-void AsmUsesAuto( void )
-/**********************/
+void AsmUsesAuto( aux_info *info )
+/********************************/
 {
+    /* unused parameters */ (void)info;
+
     /*
      * We want to force the calling routine to set up a [E]BP frame
      * for the use of this pragma. This is done by saying the pragma
      * modifies the [E]SP register. A kludge, but it works.
      */
-//    AuxInfo.cclass |= GENERATE_STACK_FRAME;
-//    HW_CTurnOff( AuxInfo.save, HW_xSP );
+//    info->cclass |= GENERATE_STACK_FRAME;
+//    HW_CTurnOff( info->save, HW_xSP );
 }
 
-bool AsmInsertFixups( byte_seq **code )
-/*************************************/
+bool AsmInsertFixups( aux_info *info )
+/************************************/
 {
     byte_seq            *seq;
     asmreloc            *reloc;
@@ -108,7 +110,7 @@ bool AsmInsertFixups( byte_seq **code )
     seq->relocs = head;
     seq->length = AsmCodeAddress;
     memcpy( &seq->data[0], AsmCodeBuffer, AsmCodeAddress );
-    *code = seq;
+    info->code = seq;
     return( false );
 }
 
@@ -118,8 +120,8 @@ void AsmSysLine( const char *buff )
     AsmLine( buff );
 }
 
-static bool GetByteSeq( byte_seq **code )
-/***************************************/
+static bool GetByteSeq( aux_info *info )
+/**************************************/
 {
     unsigned char   buff[MAXIMUM_BYTESEQ + 32];
     bool            uses_auto;
@@ -154,7 +156,7 @@ static bool GetByteSeq( byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        uses_auto = AsmInsertFixups( code );
+        uses_auto = AsmInsertFixups( info );
     }
     AsmFiniRelocs();
     AsmSysFini();
@@ -272,6 +274,7 @@ void PragAux( void )
 /******************/
 {
     struct {
+        boolbit     f_call      : 1;
         boolbit     f_export    : 1;
         boolbit     f_parm      : 1;
         boolbit     f_value     : 1;
@@ -296,8 +299,9 @@ void PragAux( void )
         have.f_except = false;
         have.uses_auto = false;
         for( ;; ) {
-            if( CurToken == T_EQUAL ) {
-                have.uses_auto = GetByteSeq( &AuxInfo.code );
+            if( !have.f_call && CurToken == T_EQUAL ) {
+                have.uses_auto = GetByteSeq( &AuxInfo );
+                have.f_call = true;
             } else if( !have.f_export && PragRecogId( "export" ) ) {
                 AuxInfo.cclass |= DLL_EXPORT;
                 have.f_export = true;
@@ -324,7 +328,7 @@ void PragAux( void )
             }
         }
         if( have.uses_auto ) {
-            AsmUsesAuto();
+            AsmUsesAuto( &AuxInfo );
         }
         PragmaAuxEnd();
     }
@@ -420,10 +424,10 @@ void AsmMakeInlineFunc( bool too_many_bytes )
         if( too_many_bytes ) {
             uses_auto = false;
         } else {
-            uses_auto = AsmInsertFixups( &CurrInfo->code );
+            uses_auto = AsmInsertFixups( CurrInfo );
         }
         if( uses_auto ) {
-            AsmUsesAuto();
+            AsmUsesAuto( CurrInfo );
         }
         CurrEntry = NULL;
         sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
