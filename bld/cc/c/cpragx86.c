@@ -919,7 +919,7 @@ void PragAux( void )
         for( ;; ) {
             if( !have.f_call && CurToken == T_EQUAL ) {
                 have.uses_auto = GetByteSeq( &AuxInfo );
-                have.f_call = true
+                have.f_call = true;
             } else if( !have.f_call && PragRecogId( "far" ) ) {
                 AuxInfo.cclass |= FAR_CALL;
                 have.f_call = true;
