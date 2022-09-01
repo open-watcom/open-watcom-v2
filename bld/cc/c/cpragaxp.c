@@ -291,6 +291,7 @@ void PragAux( void )
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
+        have.f_call = false;
         have.f_export = false;
         have.f_parm = false;
         have.f_value = false;
