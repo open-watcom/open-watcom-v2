@@ -64,9 +64,9 @@
 // esi  - source pointer
 // ecx  - number of characters to move
 static  char    __RTIStrBlastEqOS[] =  {
-    "aux __RTIStrBlastEq "
-    "parm reverse [edi] [esi] [ecx] = "
-    "\"rep   movsb\""
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsb\" "
+    "parm reverse [edi] [esi] [ecx]"
 };
 
 // edi  - destination pointer
@@ -74,12 +74,12 @@ static  char    __RTIStrBlastEqOS[] =  {
 // esi  - source pointer
 // ecx  - number of characters to move
 static  char    __RTIStrBlastNeOS[] =  {
-    "aux __RTIStrBlastNe "
-    "parm reverse [edi] [eax] [esi] [ecx] = "
-    "\"rep   movsb\" "
-    "\"mov   ecx, eax\" "
-    "\"mov   eax, 0x20202020\" "
-    "\"rep   stosb\""
+    "aux __RTIStrBlastNe = "
+        "\"rep   movsb\" "
+        "\"mov   ecx, eax\" "
+        "\"mov   eax, 0x20202020\" "
+        "\"rep   stosb\" "
+    "parm reverse [edi] [eax] [esi] [ecx]"
 };
 
 // Time Optimized pragmas
@@ -89,11 +89,11 @@ static  char    __RTIStrBlastNeOS[] =  {
 // ecx  - number of 4 character tuples to move (strlen >> 2)
 // eax  - number of characters left over after initial 4-tuple move (strlen & 3)
 static  char    __RTIStrBlastEqOT[] =  {
-    "aux __RTIStrBlastEq "
-    "parm reverse [edi] [esi] [ecx] [eax] = "
-    "\"rep   movsd\" "
-    "\"mov   ecx, eax\" "
-    "\"rep   movsb\""
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsd\" "
+        "\"mov   ecx, eax\" "
+        "\"rep   movsb\" "
+    "parm reverse [edi] [esi] [ecx] [eax]"
 };
 
 // edi  - destination pointer
@@ -101,22 +101,22 @@ static  char    __RTIStrBlastEqOT[] =  {
 // esi  - source pointer
 // ecx  - number of characters to move
 static  char    __RTIStrBlastNeOT[] =  {
-    "aux __RTIStrBlastNe "
+    "aux __RTIStrBlastNe = "
+        "\"mov   ecx, eax\" "
+        "\"shr   ecx, 2\" "
+        "\"rep   movsd\" "
+        "\"mov   ecx, eax\" "
+        "\"and   ecx, 3\" "
+        "\"rep   movsb\" "
+        "\"mov   ecx, edx\" "
+        "\"shr   ecx, 2\" "
+        "\"mov   eax, 0x20202020\" "
+        "\"rep   stosd\" "
+        "\"mov   ecx, edx\" "
+        "\"and   ecx, 3\" "
+        "\"rep   stosb\" "
     "parm reverse [edi] [edx] [esi] [eax] "
-    "modify [ecx] = "
-    "\"mov   ecx, eax\" "
-    "\"shr   ecx, 2\" "
-    "\"rep   movsd\" "
-    "\"mov   ecx, eax\" "
-    "\"and   ecx, 3\" "
-    "\"rep   movsb\" "
-    "\"mov   ecx, edx\" "
-    "\"shr   ecx, 2\" "
-    "\"mov   eax, 0x20202020\" "
-    "\"rep   stosd\" "
-    "\"mov   ecx, edx\" "
-    "\"and   ecx, 3\" "
-    "\"rep   stosb\""
+    "modify [ecx]"
 };
 
 #elif _CPU == 8086
@@ -127,10 +127,10 @@ static  char    __RTIStrBlastNeOT[] =  {
 // ds si - source pointer
 // cx    - number of characters to move
 static  char    __RTIStrBlastEqOS[] =  {
-    "aux __RTIStrBlastEq "
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsb\" "
     "parm reverse [es di] [ds si] [cx] "
-    "modify exact [di si cx] = "
-    "\"rep   movsb\""
+    "modify exact [di si cx]"
 };
 
 // es di - destination pointer
@@ -138,13 +138,13 @@ static  char    __RTIStrBlastEqOS[] =  {
 // ds si - source pointer
 // cx    - number of characters to move
 static  char    __RTIStrBlastNeOS[] =  {
-    "aux __RTIStrBlastNe "
+    "aux __RTIStrBlastNe = "
+        "\"rep   movsb\" "
+        "\"mov   cx, ax\" "
+        "\"mov   ax, 0x2020\" "
+        "\"rep   stosb\" "
     "parm reverse [es di] [ax] [ds si] [cx] "
-    "modify exact [di ax si cx] = "
-    "\"rep   movsb\" "
-    "\"mov   cx, ax\" "
-    "\"mov   ax, 0x2020\" "
-    "\"rep   stosb\" "
+    "modify exact [di ax si cx]"
 };
 
 // Time Optimized pragmas
@@ -154,12 +154,12 @@ static  char    __RTIStrBlastNeOS[] =  {
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
 static  char    __RTIStrBlastEqOT[] =  {
-    "aux __RTIStrBlastEq "
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsw\" "
+        "\"mov   cx, ax\" "
+        "\"rep   movsb\" "
     "parm reverse [es di] [ds si] [cx] [ax] "
-    "modify exact [cx si di] = "
-    "\"rep   movsw\" "
-    "\"mov   cx, ax\" "
-    "\"rep   movsb\""
+    "modify exact [cx si di]"
 };
 
 // es di - destination pointer
@@ -167,20 +167,20 @@ static  char    __RTIStrBlastEqOT[] =  {
 // ds si - source pointer
 // cx    - number of characters to move
 static  char    __RTIStrBlastNeOT[] =  {
-    "aux __RTIStrBlastNe "
+    "aux __RTIStrBlastNe = "
+        "\"mov   cx,ax\" "
+        "\"shr   cx,1\" "
+        "\"rep   movsw\" "
+        "\"adc   cx,0\" "
+        "\"rep   movsb\" "
+        "\"mov   cx,dx\" "
+        "\"mov   ax,0x2020\" "
+        "\"shr   cx,1\" "
+        "\"rep   stosw\" "
+        "\"adc   cx,0\" "
+        "\"rep   stosb\" "
     "parm reverse [es di] [dx] [ds si] [ax] "
-    "modify exact [di dx si ax cx] = "
-    "\"mov   cx,ax\" "
-    "\"shr   cx,1\" "
-    "\"rep   movsw\" "
-    "\"adc   cx,0\" "
-    "\"rep   movsb\" "
-    "\"mov   cx,dx\" "
-    "\"mov   ax,0x2020\" "
-    "\"shr   cx,1\" "
-    "\"rep   stosw\" "
-    "\"adc   cx,0\" "
-    "\"rep   stosb\""
+    "modify exact [di dx si ax cx]"
 };
 
 // Windows pragmas (can't use DS as an argument since DS is pegged)
@@ -191,14 +191,14 @@ static  char    __RTIStrBlastNeOT[] =  {
 // si bx - source pointer
 // cx    - number of characters to move
 static  char    __RTIStrBlastEqOSWin[] =  {
-    "aux __RTIStrBlastEq "
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"rep   movsb\" "
+        "\"pop   ds\" "
     "parm reverse [es di] [si bx] [cx] "
-    "modify exact [di si cx] = "
-    "\"push  ds\" "
-    "\"mov   ds,si\" "
-    "\"mov   si,bx\" "
-    "\"rep   movsb\" "
-    "\"pop   ds\""
+    "modify exact [di si cx]"
 };
 
 // es di - destination pointer
@@ -206,17 +206,17 @@ static  char    __RTIStrBlastEqOSWin[] =  {
 // si bx - source pointer
 // cx    - number of characters to move
 static  char    __RTIStrBlastNeOSWin[] =  {
-    "aux __RTIStrBlastNe "
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"rep   movsb\" "
+        "\"mov   cx, ax\" "
+        "\"mov   ax, 0x2020\" "
+        "\"rep   stosb\" "
+        "\"pop   ds\" "
     "parm reverse [es di] [ax] [si bx] [cx] "
-    "modify exact [di ax si cx] = "
-    "\"push  ds\" "
-    "\"mov   ds,si\" "
-    "\"mov   si,bx\" "
-    "\"rep   movsb\" "
-    "\"mov   cx, ax\" "
-    "\"mov   ax, 0x2020\" "
-    "\"rep   stosb\" "
-    "\"pop   ds\" "
+    "modify exact [di ax si cx]"
 };
 
 // Time Optimized pragmas
@@ -226,16 +226,16 @@ static  char    __RTIStrBlastNeOSWin[] =  {
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
 static  char    __RTIStrBlastEqOTWin[] =  {
-    "aux __RTIStrBlastEq "
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"rep   movsw\" "
+        "\"mov   cx,ax\" "
+        "\"rep   movsb\" "
+        "\"pop   ds\" "
     "parm reverse [es di] [si bx] [cx] [ax] "
-    "modify exact [cx si di] = "
-    "\"push  ds\" "
-    "\"mov   ds,si\" "
-    "\"mov   si,bx\" "
-    "\"rep   movsw\" "
-    "\"mov   cx,ax\" "
-    "\"rep   movsb\" "
-    "\"pop   ds\""
+    "modify exact [cx si di]"
 };
 
 // es di - destination pointer
@@ -243,24 +243,24 @@ static  char    __RTIStrBlastEqOTWin[] =  {
 // si bx - source pointer
 // cx    - number of characters to move
 static  char    __RTIStrBlastNeOTWin[] =  {
-    "aux __RTIStrBlastNe "
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"mov   cx,ax\" "
+        "\"shr   cx,1\" "
+        "\"rep   movsw\" "
+        "\"adc   cx,0\" "
+        "\"rep   movsb\" "
+        "\"mov   cx,dx\" "
+        "\"mov   ax,0x2020\" "
+        "\"shr   cx,1\" "
+        "\"rep   stosw\" "
+        "\"adc   cx,0\" "
+        "\"rep   stosb\" "
+        "\"pop   ds\" "
     "parm reverse [es di] [dx] [si bx] [ax] "
-    "modify exact [di dx si ax cx] = "
-    "\"push  ds\" "
-    "\"mov   ds,si\" "
-    "\"mov   si,bx\" "
-    "\"mov   cx,ax\" "
-    "\"shr   cx,1\" "
-    "\"rep   movsw\" "
-    "\"adc   cx,0\" "
-    "\"rep   movsb\" "
-    "\"mov   cx,dx\" "
-    "\"mov   ax,0x2020\" "
-    "\"shr   cx,1\" "
-    "\"rep   stosw\" "
-    "\"adc   cx,0\" "
-    "\"rep   stosb\" "
-    "\"pop   ds\""
+    "modify exact [di dx si ax cx]"
 };
 
 // Small memory pragmas.
@@ -271,12 +271,12 @@ static  char    __RTIStrBlastNeOTWin[] =  {
 // si   - source pointer
 // cx   - number of characters to move
 static  char    __RTIStrBlastEqOSS[] =  {
-    "aux __RTIStrBlastEq "
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"rep   movsb\" "
     "parm reverse [di] [si] [cx] "
-    "modify [es] = "
-    "\"push  ds\" "
-    "\"pop   es\" "
-    "\"rep   movsb\""
+    "modify [es]"
 };
 
 // di   - destination pointer
@@ -284,15 +284,15 @@ static  char    __RTIStrBlastEqOSS[] =  {
 // si   - source pointer
 // cx   - number of characters to move
 static  char    __RTIStrBlastNeOSS[] =  {
-    "aux __RTIStrBlastNe "
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"rep   movsb\" "
+        "\"mov   cx, ax\" "
+        "\"mov   ax, 0x2020\" "
+        "\"rep   stosb\" "
     "parm reverse [di] [ax] [si] [cx] "
-    "modify [es] = "
-    "\"push  ds\" "
-    "\"pop   es\" "
-    "\"rep   movsb\" "
-    "\"mov   cx, ax\" "
-    "\"mov   ax, 0x2020\" "
-    "\"rep   stosb\""
+    "modify [es]"
 };
 
 // Time Optimized pragmas
@@ -302,14 +302,14 @@ static  char    __RTIStrBlastNeOSS[] =  {
 // cx   - number of 2 character tuples to move (strlen >> 21
 // ax   - number of characters left over after initial 2-tuple move (strlen & 1)
 static  char    __RTIStrBlastEqOTS[] =  {
-    "aux __RTIStrBlastEq "
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"rep   movsw\" "
+        "\"mov   cx, ax\" "
+        "\"rep   movsb\" "
     "parm reverse [di] [si] [cx] [ax] "
-    "modify [es] = "
-    "\"push  ds\" "
-    "\"pop   es\" "
-    "\"rep   movsw\" "
-    "\"mov   cx, ax\" "
-    "\"rep   movsb\""
+    "modify [es]"
 };
 
 // di   - destination pointer
@@ -317,22 +317,22 @@ static  char    __RTIStrBlastEqOTS[] =  {
 // si   - source pointer
 // cx   - number of characters to move
 static  char    __RTIStrBlastNeOTS[] =  {
-    "aux __RTIStrBlastNe "
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"mov   cx, ax\" "
+        "\"shr   cx, 1\" "
+        "\"rep   movsw\" "
+        "\"adc   cx, 0\" "
+        "\"rep   movsb\" "
+        "\"mov   cx, dx\" "
+        "\"mov   ax, 0x2020\" "
+        "\"shr   cx, 1\" "
+        "\"rep   stosw\" "
+        "\"adc   cx, 0\" "
+        "\"rep   stosb\" "
     "parm reverse [di] [dx] [si] [ax] "
-    "modify [cx es] = "
-    "\"push  ds\" "
-    "\"pop   es\" "
-    "\"mov   cx, ax\" "
-    "\"shr   cx, 1\" "
-    "\"rep   movsw\" "
-    "\"adc   cx, 0\" "
-    "\"rep   movsb\" "
-    "\"mov   cx, dx\" "
-    "\"mov   ax, 0x2020\" "
-    "\"shr   cx, 1\" "
-    "\"rep   stosw\" "
-    "\"adc   cx, 0\" "
-    "\"rep   stosb\""
+    "modify [cx es]"
 };
 #endif
 

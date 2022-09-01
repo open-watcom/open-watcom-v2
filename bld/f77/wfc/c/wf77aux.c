@@ -323,8 +323,6 @@ void InitPragmaAux( void )
   #else
     AsmEnvInit( 1, cpu, fpu, false );
   #endif
-#elif _CPU == _AXP || _CPU == _PPC
-    AsmInit();
 #endif
 
     AuxList = NULL;
@@ -463,11 +461,6 @@ void FiniPragmaAux( void )
         AuxList = next;
     }
     FreeAuxElements( &FortranInfo );
-#if _INTEL_CPU
-    AsmSymFini();
-#elif _CPU == _AXP || _CPU == _PPC
-    AsmFini();
-#endif
 }
 
 
@@ -705,8 +698,8 @@ enum sym_type AsmQueryType( void *handle )
 }
 
 
-static void InsertFixups( unsigned char *buff, size_t len )
-//=========================================================
+static void AsmInsertFixups( unsigned char *buff, size_t len )
+//============================================================
 {
                         // additional slop in buffer to simplify the code
     unsigned char       temp[MAXIMUM_BYTESEQ + 2];
@@ -834,8 +827,8 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
 }
 
 
-static void InsertFixups( unsigned char *buff, size_t len )
-//=========================================================
+static void AsmInsertFixups( unsigned char *buff, size_t len )
+//============================================================
 {
     byte_seq            *seq;
     asmreloc            *reloc;
@@ -897,8 +890,8 @@ static void GetByteSeq( void )
     bool            use_fpu_emu = false;
 #endif
 
-    seq_len = 0;
     AsmInit();
+    seq_len = 0;
     for(;;) {
         if( *TokStart == '"' ) {
             if( TokStart == TokEnd - 1 )
@@ -957,7 +950,7 @@ static void GetByteSeq( void )
             ScanToken();
         }
     }
-    InsertFixups( buff, seq_len );
+    AsmInsertFixups( buff, seq_len );
     AsmFiniRelocs();
     AsmFini();
 }

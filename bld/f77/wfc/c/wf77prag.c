@@ -533,11 +533,6 @@ void DoPragma( const char *ptr )
             if( ProgSw & PS_FATAL_ERROR ) {
                 CSuicide();
             }
-#if _INTEL_CPU
-            AsmSymFini();
-#elif _CPU == _AXP || _CPU == _PPC
-            AsmFini();
-#endif
             break;
         }
         if( RecToken( "\0" ) ) {
