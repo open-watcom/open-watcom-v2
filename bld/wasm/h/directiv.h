@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -293,12 +293,12 @@ enum assume_reg {
     ASSUME_FS,
     ASSUME_GS,
     ASSUME_CS,
-    ASSUME_ERROR,
-    ASSUME_NOTHING
+    ASSUME_NOTHING,
+    ASSUME_ERROR
 };
 
 #define ASSUME_FIRST    ASSUME_DS
-#define ASSUME_LAST     ASSUME_ERROR
+#define ASSUME_LAST     ASSUME_NOTHING
 
 typedef struct {
     dist_type           distance;       // stack distance;

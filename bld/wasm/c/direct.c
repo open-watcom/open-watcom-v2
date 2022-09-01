@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2534,7 +2534,7 @@ static enum assume_reg search_assume( struct asm_sym *sym,
 {
     if( sym == NULL )
         return( ASSUME_NOTHING );
-    if( def != ASSUME_NOTHING ) {
+    if( def < ASSUME_NOTHING ) {
         if( AssumeTable[def].symbol != NULL ) {
             if( AssumeTable[def].symbol == sym )
                 return( def );
@@ -2639,7 +2639,7 @@ enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
 {
     enum assume_reg  reg;
 
-    if( ( def != ASSUME_NOTHING ) && AssumeTable[def].flat ) {
+    if( ( def < ASSUME_NOTHING ) && AssumeTable[def].flat ) {
         Frame = MAGIC_FLAT_GROUP;
         return( def );
     }
@@ -2653,7 +2653,7 @@ enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
             reg = def;
         }
     }
-    if( reg != ASSUME_NOTHING ) {
+    if( reg < ASSUME_NOTHING ) {
         if( AssumeTable[reg].symbol == NULL ) {
         } else if( AssumeTable[reg].symbol->state == SYM_SEG ) {
             Frame = AssumeTable[reg].symbol;

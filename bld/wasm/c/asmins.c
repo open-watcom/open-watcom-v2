@@ -237,6 +237,7 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
                 assume_seg = ASSUME_SS;
                 break;
             case PREFIX_DS:
+            default:
                 assume_seg = ASSUME_DS;
                 break;
             case PREFIX_FS:
@@ -244,9 +245,6 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
                 break;
             case PREFIX_GS:
                 assume_seg = ASSUME_GS;
-                break;
-            default:
-                assume_seg = 0;
                 break;
             }
             if( GetPrefixAssume( sym, assume_seg ) == ASSUME_NOTHING ) {
