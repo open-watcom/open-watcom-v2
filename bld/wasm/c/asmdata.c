@@ -64,7 +64,7 @@ static void little_endian( char *string, unsigned no_of_bytes )
 /*************************************************************/
 /* convert a string into little endian format - ( LSB 1st, LSW 1st ... etc ) */
 {
-    if( no_of_bytes >= 2 ) {
+    if( no_of_bytes > 1 ) {
         strrev( string );
     }
     return;
@@ -88,6 +88,7 @@ static void output_float( token_idx index, unsigned no_of_bytes, bool negative )
         switch( no_of_bytes ) {
         case BYTE_1:
         case BYTE_2:
+        default:
 #if defined( _STANDALONE_ )
             AsmWarn( 4, FLOAT_OPERAND );
 #endif

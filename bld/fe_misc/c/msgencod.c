@@ -1697,7 +1697,7 @@ static char *ReadIndirectFile( char *name )
 {
     char        *str;
     FILE        *fp;
-    int         len;
+    size_t      len;
     char        ch;
 
     str = NULL;

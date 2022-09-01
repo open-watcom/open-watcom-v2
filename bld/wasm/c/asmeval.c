@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -954,7 +954,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                 if( token_2->base_reg != INVALID_IDX ) {
                     reg_token = AsmBuffer[token_2->base_reg].u.token;
                     if( (reg_token == T_DI) || (reg_token == T_EDI) ) {
-                        if( AsmBuffer[token_1->base_reg].u.token == T_ES ) {
+                        if( token_1->base_reg != INVALID_IDX && AsmBuffer[token_1->base_reg].u.token == T_ES ) {
                             token_1->base_reg = token_2->override;
                             break;
                         }
