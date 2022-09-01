@@ -898,9 +898,7 @@ static void GetByteSeq( void )
 #endif
 
     seq_len = 0;
-#if _INTEL_CPU
-    AsmSaveCPUInfo();
-#endif
+    AsmInit();
     for(;;) {
         if( *TokStart == '"' ) {
             if( TokStart == TokEnd - 1 )
@@ -960,12 +958,8 @@ static void GetByteSeq( void )
         }
     }
     InsertFixups( buff, seq_len );
-#if _INTEL_CPU
-    AsmSymFini();
-    AsmRestoreCPUInfo();
-#elif _CPU == _AXP || _CPU == _PPC
+    AsmFiniRelocs();
     AsmFini();
-#endif
 }
 
 

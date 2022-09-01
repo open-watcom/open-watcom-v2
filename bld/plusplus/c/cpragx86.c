@@ -406,14 +406,14 @@ void PragAux(                   // #PRAGMA AUX ...
             NextToken();
             AuxCopy( CurrInfo, CurrAlias );
             PragObjNameInfo();
-            have.f_call   = 0;
-            have.f_loadds = 0;
+            have.f_call    = 0;
+            have.f_loadds  = 0;
             have.f_rdosdev = 0;
-            have.f_export = 0;
-            have.f_parm   = 0;
-            have.f_value  = 0;
-            have.f_modify = 0;
-            have.f_frame = 0;
+            have.f_export  = 0;
+            have.f_parm    = 0;
+            have.f_value   = 0;
+            have.f_modify  = 0;
+            have.f_frame   = 0;
             have.uses_auto = 0;
             for( ;; ) {
                 if( !have.f_call && CurToken == T_EQUAL ) {
@@ -916,14 +916,15 @@ void AsmSysDone( void )
 void AsmSysInit( void )
 /*********************/
 {
+    AsmInit();
     AsmCodeAddress = 0;
-    AsmSaveCPUInfo();
 }
 
 void AsmSysFini( void )
 /*********************/
 {
-    AsmRestoreCPUInfo();
+    AsmFiniRelocs();
+    AsmFini();
 }
 
 static byte *copyCodeLen( byte *d, void *v, unsigned len )
