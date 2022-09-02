@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ int SubStr_eq( const SubStr *s1, const SubStr *s2 )
     return( s1->len == s2->len && memcmp( s1->str, s2->str, s1->len ) == 0 );
 }
 
-void SubStr_init( SubStr *r, char *s, size_t l )
+void SubStr_init( SubStr *r, uchar *s, size_t l )
 {
     r->str = s;
     r->len = l;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -282,7 +283,8 @@ void parse( FILE *i, FILE *o )
 
 static int yyparse( void )
 {
-    int yym, yyn, yystate;
+    int yym, yyn;
+    short yystate;
 #if YYDEBUG
     char *yys;
 

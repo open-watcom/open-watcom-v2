@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +104,7 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
             i->i.marked = false;
         }
     }
-    kCount = cP - kernel;
+    kCount = (uint)( cP - kernel );
     kernel[kCount] = NULL;
     for( s = d->head; s != NULL; s = s->next ) {
         if( s->kCount == kCount ) {
@@ -132,7 +133,7 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
     return s;
 }
 
-DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep, uint nstate )
+DFA *DFA_new( Ins *ins, uint ni, Char lb, Char ub, Char *rep, uint nstate )
 {
     DFA     *d;
     Ins     **work;
@@ -152,7 +153,7 @@ DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep, uint nstate )
     d->head = NULL;
     d->nStates = nstate;
     d->toDo = NULL;
-    DFA_findState( d, work, closure( work, &ins[0] ) - work );
+    DFA_findState( d, work, (uint)( closure( work, &ins[0] ) - work ) );
     while( d->toDo != NULL ) {
         State   *s = d->toDo;
         Ins     **cP, **iP, *i;
@@ -183,7 +184,7 @@ DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep, uint nstate )
             for( cP = work; i != NULL; i = (Ins *)i->c.link ) {
                 cP = closure( cP, i + i->c.bump );
             }
-            go->to = DFA_findState( d, work, cP - work );
+            go->to = DFA_findState( d, work, (uint)( cP - work ) );
         }
 
         s->go.nSpans = 0;
@@ -191,7 +192,7 @@ DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep, uint nstate )
             State *to = (State *)goTo[rep[j]].to;
             while( ++j < nc && goTo[rep[j]].to == to )
                 ;
-            span[s->go.nSpans].ub = lb + j;
+            span[s->go.nSpans].ub = (Char)( lb + j );
             span[s->go.nSpans].to = to;
             s->go.nSpans++;
         }

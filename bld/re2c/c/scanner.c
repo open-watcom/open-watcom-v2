@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +55,8 @@ static void Scanner_init( Scanner *s, FILE *i )
 {
     s->in = i;
     s->bot = s->tok = s->ptr = s->cur = s->pos = s->lim = s->top = s->eof = NULL;
-    s->tchar = s->tline = 0;
+    s->tchar = 0;
+    s->tline = 0;
     s->cline = 1;
 }
 
@@ -62,14 +64,14 @@ static SubStr Scanner_token( Scanner *s )
 {
     SubStr  r;
 
-    SubStr_init( &r, (char *)s->tok, s->cur - s->tok );
+    SubStr_init( &r, s->tok, s->cur - s->tok );
     return( r );
 }
 
 static uchar *fill( Scanner *s, uchar *cursor )
 {
     if( s->eof == NULL ) {
-        uint cnt = s->tok - s->bot;
+        size_t cnt = s->tok - s->bot;
         if( cnt ) {
             memcpy( s->bot, s->tok, s->lim - s->tok );
             s->tok = s->bot;
@@ -91,7 +93,8 @@ static uchar *fill( Scanner *s, uchar *cursor )
             s->bot = buf;
         }
         if( (cnt = fread( s->lim, 1, BSIZE, s->in )) != BSIZE ) {
-            s->eof = &s->lim[cnt]; *s->eof++ = '\n';
+            s->eof = &s->lim[cnt];
+            *s->eof++ = '\n';
         }
         s->lim += cnt;
     }
@@ -101,7 +104,7 @@ static uchar *fill( Scanner *s, uchar *cursor )
 static Token *token( Scanner *s )
 {
     Token   *r = malloc( sizeof( Token ) );
-    uint    len = s->cur - s->tok;
+    size_t  len = s->cur - s->tok;
 
     r->line = s->tline;
     r->text.len = len;
@@ -144,7 +147,8 @@ yy4:    yych = *++YYCURSOR;
             if( cursor == s->eof )
                 RETURN(0);
             fwrite( s->tok, 1, cursor - s->tok, out );
-            s->tok = s->pos = cursor; s->cline++;
+            s->tok = s->pos = cursor;
+            s->cline++;
             goto echo;
         }
 yy6:    yych = *++YYCURSOR;
@@ -189,7 +193,7 @@ int Scanner_scan( Scanner *s )
     uint    depth;
 
 scan:
-    s->tchar = cursor - s->pos;
+    s->tchar = (uint)( cursor - s->pos );
     s->tline = s->cline;
     s->tok = cursor;
     {
@@ -315,7 +319,8 @@ yy33:   yych = *++YYCURSOR;
         {
             if( cursor == s->eof )
                 RETURN(0);
-            s->pos = cursor; s->cline++;
+            s->pos = cursor;
+            s->cline++;
             goto scan;
         }
 yy35:   yych = *++YYCURSOR;
@@ -485,7 +490,8 @@ yy62:   yych = *++YYCURSOR;
         {
             if( cursor == s->eof )
                 Scanner_fatal( s, "missing '}'" );
-            s->pos = cursor; s->cline++;
+            s->pos = cursor;
+            s->cline++;
             goto code;
         }
 yy64:   yych = *++YYCURSOR;
@@ -586,7 +592,8 @@ yy80:   yych = *++YYCURSOR;
         {
             if( cursor == s->eof )
                 RETURN(0);
-            s->tok = s->pos = cursor; s->cline++;
+            s->tok = s->pos = cursor;
+            s->cline++;
             goto comment;
         }
 yy82:   yych = *++YYCURSOR;
