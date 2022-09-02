@@ -331,8 +331,7 @@ ppchar"line "[0-9]*     { newlineno = atoi( yytext()+6 ); goto getfname; }
 
 [cC][rR][0-7]           { yylval.reg = MakeReg( RC_CRF, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 
-/* The following symbols are defined just for the BI field of the simplified
-   branch mnemonics. */
+/* The following symbols are defined just for the BI field of the simplified branch mnemonics. */
 "lt"                    { yylval.val = BI_LT; return( T_BI_OFFSET ); }
 "gt"                    { yylval.val = BI_GT; return( T_BI_OFFSET ); }
 "eq"                    { yylval.val = BI_EQ; return( T_BI_OFFSET ); }
@@ -424,7 +423,7 @@ nl                      { ++yylineno; return( T_NEWLINE ); }
 :endsegment
 any                     {
                             if( eofPtr && ( cursor == eofPtr ) ) {
-                                return( T_EOF ); // end of input
+                                return( T_EOF ); /* end of input */
                             }
                             return( T_ERROR );
                         }
