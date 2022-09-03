@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -341,6 +341,7 @@ static orl_return P1Note( orl_sec_handle sec )
     cb.export_fn = ExportCallback;
     cb.deflib_fn = DeflibCallback;
     cb.entry_fn = EntryCallback;
+    cb.scantab_fn = NULL;
     ORLNoteSecScan( sec, &cb, NULL );
     return( ORL_OKAY );
 }

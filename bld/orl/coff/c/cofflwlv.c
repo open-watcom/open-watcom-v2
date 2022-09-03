@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -495,8 +495,8 @@ static void EatWhite( const char **contents, size_t *len )
     }
 }
 
-static orl_return ParseExport( const char **contents, size_t *len, orl_note_callbacks *cbs, void *cookie )
-/********************************************************************************************************/
+static orl_return ParseExport( const char **contents, size_t *len, callback_export_fn *export_fn, void *cookie )
+/**************************************************************************************************************/
 {
     char        *arg;
     size_t      l;
@@ -507,7 +507,9 @@ static orl_return ParseExport( const char **contents, size_t *len, orl_note_call
     arg[l] = 0;
     *len -= l;
     *contents += l;
-    return( cbs->export_fn( arg, cookie ) );
+    if( export_fn == NULL )
+        return( ORL_OKAY );
+    return( export_fn( arg, cookie ) );
 }
 
 
@@ -526,8 +528,11 @@ static orl_return ParseDefLibEntry( const char **contents, size_t *len,
         arg[l] = 0;
         *len -= l;
         *contents += l;
-
-        retval = deflibentry_fn( arg, cookie );
+        if( deflibentry_fn == NULL ) {
+            retval = ORL_OKAY;
+        } else {
+            retval = deflibentry_fn( arg, cookie );
+        }
         if( retval != ORL_OKAY || **contents != ',' )
             break;
         (*contents)++;
@@ -551,7 +556,7 @@ orl_return CoffParseDrectve( const char *contents, size_t len, orl_note_callback
             break;
         contents++; len--;
         if( strnicmp( cmd, "export", 6 ) == 0 ) {
-            if( ParseExport( &contents, &len, cbs, cookie ) != ORL_OKAY ) {
+            if( ParseExport( &contents, &len, cbs->export_fn, cookie ) != ORL_OKAY ) {
                 break;
             }
         } else if( strnicmp( cmd, "defaultlib", 10 ) == 0 ) {

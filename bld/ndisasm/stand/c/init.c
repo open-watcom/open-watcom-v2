@@ -108,13 +108,6 @@ static long                     objFilePos;
 static unsigned long            objFileLen;
 
 
-static orl_return nopCallBack( const char *str, void *cookie  )
-{
-    /* unused parameters */ (void)str; (void)cookie;
-
-    return( ORL_OKAY );
-}
-
 static orl_return scanTabCallBack( orl_sec_handle shnd, const orl_sec_offset *pstart, const orl_sec_offset *pend, void *cookie )
 {
     section_ptr         section;
@@ -199,9 +192,9 @@ static return_val processDrectveSection( orl_sec_handle shnd )
     if( shnd == ORL_NULL_HANDLE )
         return( RC_OKAY );
 
-    cb.export_fn = nopCallBack;
-    cb.deflib_fn = nopCallBack;
-    cb.entry_fn = nopCallBack;
+    cb.export_fn = NULL;
+    cb.deflib_fn = NULL;
+    cb.entry_fn = NULL;
     cb.scantab_fn = scanTabCallBack;
 
     o_error = ORLNoteSecScan( shnd, &cb, NULL );
