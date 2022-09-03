@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -343,6 +343,7 @@ bool    ScoreLAInfo( score_info *info, name *op )
         info->offset = 0;
         info->index_reg = NO_INDEX;
         info->base = NULL;
+        info->scale = 0;
         return( true );
     default:
         return( false );
