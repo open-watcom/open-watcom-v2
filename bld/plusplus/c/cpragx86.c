@@ -649,12 +649,13 @@ static int insertFixups( VBUF *src_code )
 #endif
     VBUF                out_code;
 
-    len = VbufLen( src_code );
-    src_start = VbufBuffer( src_code );
     uses_auto = false;
     perform_fixups = false;
-    if( FixupHead != NULL ) {
-        head = FixupHead;
+    head = FixupHead;
+    if( head == NULL ) {
+        out_code = *src_code;
+    } else {
+        VbufInit( &out_code );
         FixupHead = NULL;
         /* sort the fixup list in increasing fixup_loc's */
         for( fix = head; fix != NULL; fix = next ) {
@@ -671,11 +672,11 @@ static int insertFixups( VBUF *src_code )
             fix->next = *owner;
             *owner = fix;
         }
-        src_end = src_start + len;
+        len = 0;
         cg_fix = 0;
         sym = NULL;
-        VbufInit( &out_code );
-        len = 0;
+        src_start = VbufBuffer( src_code );
+        src_end = src_start + VbufLen( src_code );
         fix = FixupHead;
         owner = &FixupHead;
         /* insert fixup escape sequences */
@@ -683,7 +684,7 @@ static int insertFixups( VBUF *src_code )
             /* reserve at least ASM_BLOCK bytes in the buffer */
             VbufReqd( &out_code, _RoundUp( len + ASM_BLOCK, ASM_BLOCK ) );
             dst = VbufBuffer( &out_code );
-            if( fix != NULL && fix->fixup_loc == ( src - src_start ) ) {
+            if( fix != NULL && fix->fixup_loc == (src - src_start) ) {
                 name = NULL;
                 if( fix->name != NULL ) {
                     name = NameCreateNoLen( fix->name );
@@ -813,13 +814,12 @@ static int insertFixups( VBUF *src_code )
             VbufSetLen( &out_code, len );
         }
         perform_fixups = true;
-        len = VbufLen( &out_code );
-        src_start = VbufBuffer( &out_code );
     }
+    len = VbufLen( &out_code );
     seq = CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
     seq->length = len;
-    memcpy( seq->data, src_start, len );
+    memcpy( seq->data, VbufBuffer( &out_code ), len );
     CurrInfo->code = seq;
     if( VbufBuffer( &out_code ) != VbufBuffer( src_code ) )
         VbufFree( &out_code );
