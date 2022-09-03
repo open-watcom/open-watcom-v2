@@ -1893,7 +1893,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                         }
                     }
                 } else if( *opt == '=' ) {      // collect an optional '='
-                    if( p[j] == '=' || p[j] == '#' ) {
+                    if( EqualChar( p[j] ) ) {
                         ++j;
                     }
                 } else {
