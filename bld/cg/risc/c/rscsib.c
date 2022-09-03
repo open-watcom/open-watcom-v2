@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,6 +103,7 @@ bool FoldIntoIndex( instruction * ins ) {
     other_reg = ins->operands[0]->r.reg;
     sib_head = NULL;
     dies = false;
+    sib.next = NULL;
     next = ins;
     do {
         curr_sib = NULL;

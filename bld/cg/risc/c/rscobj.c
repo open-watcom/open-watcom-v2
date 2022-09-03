@@ -282,13 +282,14 @@ static  void    EmitDependencyInfo( void )
         name = (char *)FEAuxInfo( depend, DEPENDENCY_NAME );
         info.time = *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP );
         info.len = strlen( name ) + 1;
-        OWLEmitData( sect, (char *)&info, sizeof( DepInfo ) - 1 );
-        OWLEmitData( sect, (char *)name, strlen( name ) + 1 );
+        OWLEmitData( sect, (char *)&info, offsetof( DepInfo, name ) );
+        OWLEmitData( sect, (char *)name, info.len );
     }
     /* put out a handy little sentinel value at the end */
     if( sect != NULL ) {
+        info.time = 0;
         info.len = 0;
-        OWLEmitData( sect, (char *)&info, sizeof( DepInfo ) );
+        OWLEmitData( sect, (char *)&info, offsetof( DepInfo, name ) );
     }
 }
 
