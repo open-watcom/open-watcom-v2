@@ -510,20 +510,20 @@ static void index_connect( expr_list *tok_1, expr_list *tok_2 )
 /*************************************************************/
 /* Connects the register lists */
 {
-    if( tok_1->base_reg == INVALID_IDX ) {
-        if( tok_2->base_reg != INVALID_IDX ) {
+    if( ISINVALID_IDX( tok_1->base_reg ) ) {
+        if( ISVALID_IDX( tok_2->base_reg ) ) {
             tok_1->base_reg = tok_2->base_reg;
             tok_2->base_reg = INVALID_IDX;
-        } else if( ( tok_2->idx_reg != INVALID_IDX ) && ( tok_2->scale == 1 ) ) {
+        } else if( ISVALID_IDX( tok_2->idx_reg ) && ( tok_2->scale == 1 ) ) {
             tok_1->base_reg = tok_2->idx_reg;
             tok_2->idx_reg = INVALID_IDX;
         }
     }
-    if( tok_1->idx_reg == INVALID_IDX ) {
-        if( tok_2->idx_reg != INVALID_IDX ) {
+    if( ISINVALID_IDX( tok_1->idx_reg ) ) {
+        if( ISVALID_IDX( tok_2->idx_reg ) ) {
             tok_1->idx_reg = tok_2->idx_reg;
             tok_1->scale = tok_2->scale;
-        } else if( tok_2->base_reg != INVALID_IDX ) {
+        } else if( ISVALID_IDX( tok_2->base_reg ) ) {
             tok_1->idx_reg = tok_2->base_reg;
             tok_1->scale = 1;
         }
@@ -551,11 +551,11 @@ static void MakeConst( expr_list *token )
         return;
 #endif
     }
-    if( token->base_reg != INVALID_IDX )
+    if( ISVALID_IDX( token->base_reg ) )
         return;
-    if( token->idx_reg != INVALID_IDX )
+    if( ISVALID_IDX( token->idx_reg ) )
         return;
-    if( token->override != INVALID_IDX )
+    if( ISVALID_IDX( token->override ) )
         return;
     token->instr = T_NULL;
     token->type = EXPR_CONST;
@@ -844,17 +844,17 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
 
             fix_struct_value( token_1 );
             fix_struct_value( token_2 );
-            if( token_2->base_reg != INVALID_IDX || token_2->idx_reg != INVALID_IDX ) {
+            if( ISVALID_IDX( token_2->base_reg ) || ISVALID_IDX( token_2->idx_reg ) ) {
                 if( error_msg )
                     AsmError( ILLEGAL_USE_OF_REGISTER );
                 token_1->type = EXPR_UNDEF;
                 return( RC_ERROR );
             }
-            if( token_2->label == INVALID_IDX ) {
+            if( ISINVALID_IDX( token_2->label ) ) {
                 token_1->value -= token_2->value;
                 token_1->indirect |= token_2->indirect;
             } else {
-                if( token_1->label == INVALID_IDX ) {
+                if( ISINVALID_IDX( token_1->label ) ) {
                     if( error_msg )
                         AsmError( SYNTAX_ERROR );
                     token_1->type = EXPR_UNDEF;
@@ -892,7 +892,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                 token_1->value -= token_2->value;
                 token_1->label = INVALID_IDX;
                 token_1->sym = NULL;
-                if( token_1->base_reg == INVALID_IDX && token_1->idx_reg == INVALID_IDX ) {
+                if( ISINVALID_IDX( token_1->base_reg ) && ISINVALID_IDX( token_1->idx_reg ) ) {
                     token_1->type = EXPR_CONST;
                     token_1->indirect = false;
                 } else {
@@ -927,7 +927,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
          *                             also only segment or group is
          *                             allowed. )
          */
-        if( token_2->override != INVALID_IDX ) {
+        if( ISVALID_IDX( token_2->override ) ) {
             /* Error */
             if( error_msg )
                 AsmError( MORE_THAN_ONE_OVERRIDE );
@@ -937,7 +937,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
 
         if( token_1->type == EXPR_REG ) {
 
-            if( token_1->base_reg != INVALID_IDX && token_1->idx_reg != INVALID_IDX ) {
+            if( ISVALID_IDX( token_1->base_reg ) && ISVALID_IDX( token_1->idx_reg ) ) {
                 if( error_msg )
                     AsmError( ILLEGAL_USE_OF_REGISTER );
                 token_1->type = EXPR_UNDEF;
@@ -951,10 +951,10 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
             case T_MOVS:
             case T_CMPS:
             case T_SCAS:
-                if( token_2->base_reg != INVALID_IDX ) {
+                if( ISVALID_IDX( token_2->base_reg ) ) {
                     reg_token = AsmBuffer[token_2->base_reg].u.token;
                     if( (reg_token == T_DI) || (reg_token == T_EDI) ) {
-                        if( token_1->base_reg != INVALID_IDX && AsmBuffer[token_1->base_reg].u.token == T_ES ) {
+                        if( ISVALID_IDX( token_1->base_reg ) && AsmBuffer[token_1->base_reg].u.token == T_ES ) {
                             token_1->base_reg = token_2->override;
                             break;
                         }
@@ -1881,7 +1881,7 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
 
     MakeConst( res );
     if( res->type == EXPR_CONST ) {
-        if( res->override != INVALID_IDX ) {
+        if( ISVALID_IDX( res->override ) ) {
             AsmBuffer[start++] = AsmBuffer[res->override];
             AsmBuffer[start++].class = TC_COLON;
         }
@@ -1896,7 +1896,7 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
 
     } else if( res->type == EXPR_REG && !res->indirect ) {
 
-        if( res->override != INVALID_IDX ) {
+        if( ISVALID_IDX( res->override ) ) {
             AsmBuffer[start++] = AsmBuffer[res->override];
             AsmBuffer[start++].class = TC_COLON;
             AsmBuffer[ start++ ].class = TC_OP_SQ_BRACKET;
@@ -1913,7 +1913,7 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
 //            AsmBuffer[start].string_ptr = ")";
 //            AsmBuffer[start++].class = TC_CL_BRACKET;
         }
-        if( res->override != INVALID_IDX ) {
+        if( ISVALID_IDX( res->override ) ) {
             AsmBuffer[ start++ ].class = TC_CL_SQ_BRACKET;
         }
 
@@ -1929,22 +1929,22 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
             size++;
         }
 
-        if( res->override != INVALID_IDX ) {
+        if( ISVALID_IDX( res->override ) ) {
             size += 2;
         }
         need_number = true;
         if( res->scale != 1 ) {
             size += 2;          // [ reg * 2 ] == 2 tokens more than [ reg ]
         }
-        if( res->base_reg != INVALID_IDX ) {
+        if( ISVALID_IDX( res->base_reg ) ) {
             size += 3;                  // e.g. [ ax ] == 3 tokens
             need_number = false;
         }
-        if( res->idx_reg != INVALID_IDX ) {
+        if( ISVALID_IDX( res->idx_reg ) ) {
             size += 3;                  // e.g. [ ax ] == 3 tokens
             need_number = false;
         }
-        if( res->label != INVALID_IDX ) {
+        if( ISVALID_IDX( res->label ) ) {
             need_number = false;
         }
         if( res->value != 0 ) {
@@ -1969,7 +1969,7 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
                 AsmBuffer[i + diff] = AsmBuffer[i];
             }
 
-            for( i = 0; TakeOut[i].idx != INVALID_IDX; i++ ) {
+            for( i = 0; ISVALID_IDX( TakeOut[i].idx ); i++ ) {
                 if( TakeOut[i].idx > end ) {
                     TakeOut[i].idx += diff;
                 }
@@ -2034,23 +2034,23 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
             AsmBuffer[start++].u.token = T_PTR;
         }
 
-        if( res->override != INVALID_IDX ) {
+        if( ISVALID_IDX( res->override ) ) {
             AsmBuffer[start++] = Store[res->override - old_start];
             AsmBuffer[start++].class = TC_COLON;
         }
 
-        if( res->label != INVALID_IDX && res->type != EXPR_REG ) {
+        if( ISVALID_IDX( res->label ) && res->type != EXPR_REG ) {
             AsmBuffer[start++] = Store[res->label - old_start];
         }
 
-        if( res->base_reg != INVALID_IDX ) {
+        if( ISVALID_IDX( res->base_reg ) ) {
             AsmBuffer[start++].class = TC_OP_SQ_BRACKET;
             AsmBuffer[start].class = TC_REG;
             AsmBuffer[start].string_ptr = Store[res->base_reg-old_start].string_ptr;
             AsmBuffer[start++].u.value = Store[res->base_reg-old_start].u.value;
             AsmBuffer[start++].class = TC_CL_SQ_BRACKET;
         }
-        if( res->idx_reg != INVALID_IDX ) {
+        if( ISVALID_IDX( res->idx_reg ) ) {
             AsmBuffer[start++].class = TC_OP_SQ_BRACKET;
             AsmBuffer[start].class = TC_REG;
             AsmBuffer[start].string_ptr = Store[res->idx_reg-old_start].string_ptr;
@@ -2096,7 +2096,7 @@ static void fix_final( void )
     int         dup_count = 0;
 
     for( i = 0;; i++ ) {
-        if( dup_count == 0 && TakeOut[i].idx == INVALID_IDX )
+        if( dup_count == 0 && ISINVALID_IDX( TakeOut[i].idx ) )
             break;
         if( TakeOut[i].close_bracket ) {
             AsmBuffer[TakeOut[i].idx].class = TC_CL_BRACKET;

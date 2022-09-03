@@ -191,7 +191,7 @@ bool LabelDirective( token_idx i )
     } else {
         n = INVALID_IDX;
     }
-    if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
+    if( ISINVALID_IDX( n ) || ( AsmBuffer[n].class != TC_ID ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );
     }

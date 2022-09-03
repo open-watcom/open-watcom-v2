@@ -468,7 +468,7 @@ bool AddFPPatchAndFixups( fp_patches patch )
 void AsmFiniRelocs( void )
 /************************/
 {
-    struct asmfixup     *fixup;
+    struct asmfixup *fixup;
 
     while( (fixup = FixupHead) != NULL ) {
         FixupHead = fixup->next;

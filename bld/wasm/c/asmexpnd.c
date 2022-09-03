@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,23 +67,21 @@ void AddTokens( asm_tok *buffer, token_idx start, token_idx count )
 {
     token_idx   i;
 
-    switch( count ) {
-    case 0:
+    if( count == 0 )
         return;
-    case INVALID_IDX:
+    if( ISINVALID_IDX( count ) ) {
         /* it's an empty expansion */
         for( i = start; i <= Token_Count; ++i ) {
             buffer[i] = buffer[i + 1];
         }
-        break;
-    default:
+        Token_Count += -1;      // ?????
+    } else {
         for( i = Token_Count; i > start; i-- ) {
             buffer[i + count] = buffer[i];
         }
         buffer[i + count] = buffer[i];
-        break;
+        Token_Count += count;
     }
-    Token_Count += count;
 }
 
 bool ExpandSymbol( token_idx i, bool early_only, bool *expanded )
@@ -555,7 +554,7 @@ bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
         return( RC_ERROR );
     if( !early_only ) {
         val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
-        if( val == INVALID_IDX )
+        if( ISINVALID_IDX( val ) )
             return( RC_ERROR );
         Token_Count = val;
     }
@@ -571,7 +570,7 @@ bool ExpandTheConstant( token_idx start_pos, bool early_only, bool flag_msg )
         return( RC_ERROR );
     if( !early_only ) {
         val = EvalConstant( Token_Count, start_pos + 2, Token_Count, flag_msg );
-        if( val == INVALID_IDX )
+        if( ISINVALID_IDX( val ) )
             return( RC_ERROR );
         Token_Count = val;
     }
@@ -588,7 +587,7 @@ bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
     /* unused parameters */ (void)early_only;
 
     val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
-    if( val == INVALID_IDX )
+    if( ISINVALID_IDX( val ) )
         return( RC_ERROR );
     Token_Count = val;
     return( RC_OK );

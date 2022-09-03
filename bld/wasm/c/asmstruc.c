@@ -75,7 +75,7 @@ bool StructDef( token_idx i )
         } else {
             n = INVALID_IDX;
         }
-        if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
+        if( ISINVALID_IDX( n ) || ( AsmBuffer[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -213,7 +213,7 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
 
     f = AsmAlloc( sizeof( field_list ) );
 
-    if( loc == INVALID_IDX ) {
+    if( ISINVALID_IDX( loc ) ) {
         for( loc = 0; AsmBuffer[loc].class != TC_FINAL; ++loc ) {
             /* nothing to do */
         }

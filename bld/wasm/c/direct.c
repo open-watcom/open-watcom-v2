@@ -1278,7 +1278,7 @@ bool GrpDef( token_idx i )
     } else {
         n = INVALID_IDX;
     }
-    if( n == INVALID_IDX ) {    /* name present? */
+    if( ISINVALID_IDX( n ) ) {    /* name present? */
         AsmError( GRP_NAME_MISSING );
         return( RC_ERROR );
     }
@@ -1511,7 +1511,7 @@ bool SegDef( token_idx i )
             n = INVALID_IDX;
         }
     }
-    if( n == INVALID_IDX ) {
+    if( ISINVALID_IDX( n ) ) {
         AsmError( SEG_NAME_MISSING );
         return( RC_ERROR );
     }
@@ -3221,7 +3221,7 @@ bool EnumDef( token_idx i )
     } else {
         n = INVALID_IDX;
     }
-    if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {    /* name present? */
+    if( ISINVALID_IDX( n ) || ( AsmBuffer[n].class != TC_ID ) ) {    /* name present? */
         AsmError( ENUM_NAME_MISSING );
         return( RC_ERROR );
     }
@@ -3565,7 +3565,7 @@ bool ProcDef( token_idx i, bool proc_def )
     }
 
     if( Parse_Pass == PASS_1 ) {
-        if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
+        if( ISINVALID_IDX( n ) || ( AsmBuffer[n].class != TC_ID ) ) {
             AsmError( PROC_MUST_HAVE_A_NAME );
             return( RC_ERROR );
         }
@@ -3594,8 +3594,8 @@ bool ProcDef( token_idx i, bool proc_def )
         }
     } else {
         // fixme -- nested procs can be ok /**/myassert( CurrProc == NULL );
-        /**/myassert( n != INVALID_IDX );
-        if( n == INVALID_IDX )
+        /**/myassert( ISVALID_IDX( n ) );
+        if( ISINVALID_IDX( n ) )
             return( RC_ERROR );
         dir = (dir_node *)AsmGetSymbol( AsmBuffer[n].string_ptr );
         /**/myassert( dir != NULL );

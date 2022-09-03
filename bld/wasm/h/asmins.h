@@ -43,8 +43,10 @@ enum regsize {
     A_DWORD,
 };
 
-typedef unsigned char   token_idx;
-#define INVALID_IDX     ((token_idx)-1)
+typedef unsigned char       token_idx;
+#define INVALID_IDX         ((token_idx)-1)
+#define ISVALID_IDX(x)      ((x)<=MAX_TOKEN)
+#define ISINVALID_IDX(x)    ((x)>MAX_TOKEN)
 
 typedef enum operand_idx {
     OPND1 = 0,

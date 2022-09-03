@@ -211,7 +211,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             if( AsmBuffer[cur_pos+1].class == TC_RES_ID &&
                 AsmBuffer[cur_pos+1].u.token == T_DUP ) {
                 cur_pos = dup_array( sym, struct_sym, cur_pos, no_of_bytes );
-                if( cur_pos == INVALID_IDX )
+                if( ISINVALID_IDX( cur_pos ) )
                     return( INVALID_IDX );
                 break;
             }
@@ -701,7 +701,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
                 first_init = was_first;
 #endif
                 returned_pos = array_element( sym, struct_sym, cur_pos, no_of_bytes );
-                if( returned_pos == INVALID_IDX ) {
+                if( ISINVALID_IDX( returned_pos ) ) {
                     return( INVALID_IDX );
                 }
             }
@@ -711,7 +711,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
             }
         } else {
             returned_pos = array_element( sym, struct_sym, cur_pos, no_of_bytes );
-            if( returned_pos == INVALID_IDX )
+            if( ISINVALID_IDX( returned_pos ) )
                 return( INVALID_IDX );
             if( AsmBuffer[returned_pos].class != TC_CL_BRACKET ) {
                 /* array_element hit TC_FINAL so stop */
@@ -747,7 +747,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     first_init = true;
 #endif
 
-    if( sym_loc != INVALID_IDX ) {
+    if( ISVALID_IDX( sym_loc ) ) {
         sym = AsmLookup( AsmBuffer[sym_loc].string_ptr );
         if( sym == NULL ) {
             return( RC_ERROR );
@@ -822,7 +822,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     }
 
 #if defined( _STANDALONE_ )
-    if( sym_loc != INVALID_IDX && AsmBuffer[sym_loc].u.token == T_LABEL ) {
+    if( ISVALID_IDX( sym_loc ) && AsmBuffer[sym_loc].u.token == T_LABEL ) {
         label_dir = true;
         if( sym_loc > 0 ) {
             sym_loc--;
@@ -830,7 +830,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
             sym_loc = INVALID_IDX;
         }
     }
-    if( sym_loc == INVALID_IDX ) {
+    if( ISINVALID_IDX( sym_loc ) ) {
         if( Definition.struct_depth != 0 ) {
             if( Parse_Pass == PASS_1 ) {
                 AddFieldToStruct( sym, initializer_loc );
@@ -844,7 +844,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
 
     if( More_Array_Element ) {
         More_Array_Element = false;
-    } else if( sym_loc != INVALID_IDX ) {
+    } else if( ISVALID_IDX( sym_loc ) ) {
 #if defined( _STANDALONE_ )
         /* defining a field in a structure */
         if( Parse_Pass == PASS_1 ) {
@@ -853,7 +853,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
                 struct_field = true;
                 sym->state = SYM_STRUCT_FIELD;
                 sym->mem_type = mem_type;
-                if( dup_array( sym, NULL, initializer_loc + 1, no_of_bytes ) == INVALID_IDX ) {
+                if( ISINVALID_IDX( dup_array( sym, NULL, initializer_loc + 1, no_of_bytes ) ) ) {
                     return( RC_ERROR );
                 }
                 return( RC_OK );
@@ -895,7 +895,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     if( label_dir )
         return( RC_OK );
 #endif
-    if( dup_array( sym, struct_sym, initializer_loc + 1, no_of_bytes ) == INVALID_IDX ) {
+    if( ISINVALID_IDX( dup_array( sym, struct_sym, initializer_loc + 1, no_of_bytes ) ) ) {
         return( RC_ERROR );
     }
     return( RC_OK );
@@ -909,7 +909,7 @@ bool NextArrayElement( bool *next )
     if( More_Array_Element ) {
         More_Array_Element = false;
         rc = dup_array( NULL, NULL, 0, Last_Element_Size );
-        if( rc == INVALID_IDX )
+        if( ISINVALID_IDX( rc ) )
             return( RC_ERROR );
         *next = true;
     }

@@ -1404,7 +1404,7 @@ static bool process_jumps( expr_list *opndx, int *jmp_flags )
 static bool segm_override_jumps( expr_list *opndx )
 /*************************************************/
 {
-    if( opndx->override != INVALID_IDX ) {
+    if( ISVALID_IDX( opndx->override ) ) {
         if( AsmBuffer[opndx->override].class == TC_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
         } else {
@@ -1421,7 +1421,7 @@ static bool segm_override_jumps( expr_list *opndx )
 static bool segm_override_idata( expr_list *opndx )
 /*************************************************/
 {
-    if( opndx->override != INVALID_IDX ) {
+    if( ISVALID_IDX( opndx->override ) ) {
         if( AsmBuffer[opndx->override].class == TC_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
         } else {
@@ -1438,7 +1438,7 @@ static bool segm_override_idata( expr_list *opndx )
 static bool segm_override_memory( expr_list *opndx )
 /**************************************************/
 {
-    if( opndx->override != INVALID_IDX ) {
+    if( ISVALID_IDX( opndx->override ) ) {
         if( AsmBuffer[opndx->override].class == TC_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
         } else {
@@ -1697,8 +1697,8 @@ static bool idata_fixup( expr_list *opndx )
     sym32 = Code->use32;
 #endif
     if( opndx->instr != T_NULL ) {
-        if( ( opndx->base_reg != INVALID_IDX )
-            || ( opndx->idx_reg != INVALID_IDX ) ) {
+        if( ISVALID_IDX( opndx->base_reg )
+            || ISVALID_IDX( opndx->idx_reg ) ) {
             AsmError( INVALID_MEMORY_POINTER );
             return( RC_ERROR );
         }
@@ -1852,7 +1852,7 @@ static bool memory_operand( expr_list *opndx )
             return( RC_ERROR );
         }
     }
-    if( opndx->base_reg != INVALID_IDX ) {
+    if( ISVALID_IDX( opndx->base_reg ) ) {
         base = AsmBuffer[opndx->base_reg].u.token;
         switch( base ) {     // check for base registers
         case T_EAX:
@@ -1881,7 +1881,7 @@ static bool memory_operand( expr_list *opndx )
             return( RC_ERROR );
         }
     }
-    if( opndx->idx_reg != INVALID_IDX ) {
+    if( ISVALID_IDX( opndx->idx_reg ) ) {
         index = AsmBuffer[opndx->idx_reg].u.token;
         switch( index ) {     // check for index registers
         case T_EAX:
@@ -2007,7 +2007,7 @@ static bool memory_operand( expr_list *opndx )
         } else {
             sym32 = SymIs32( sym );
         }
-        if( ( opndx->base_reg == INVALID_IDX ) && ( opndx->idx_reg == INVALID_IDX ) ) {
+        if( ISINVALID_IDX( opndx->base_reg ) && ISINVALID_IDX( opndx->idx_reg ) ) {
             SET_ADRSIZ( Code, sym32 );
             fixup_type = ( sym32 ) ? FIX_OFF32 : FIX_OFF16;
         } else {
@@ -2077,7 +2077,7 @@ static bool process_address( expr_list *opndx, int *jmp_flags )
             }
         } else {                      // direct operand only
             if( opndx->sym == NULL ) {       // without symbol
-                if( opndx->override != INVALID_IDX ) {
+                if( ISVALID_IDX( opndx->override ) ) {
                     // direct absolute memory without fixup ... DS:[0]
                     return( memory_operand( opndx ) );
                 } else if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing

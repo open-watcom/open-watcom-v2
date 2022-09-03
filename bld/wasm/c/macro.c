@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -673,7 +673,7 @@ bool MacroDef( token_idx i, bool hidden )
     } else {
         n = INVALID_IDX;
     }
-    if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
+    if( ISINVALID_IDX( n ) || ( AsmBuffer[n].class != TC_ID ) ) {
         if( Parse_Pass == PASS_1 )
             AsmError( PROC_MUST_HAVE_A_NAME );
         return( RC_ERROR );
