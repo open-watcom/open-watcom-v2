@@ -60,17 +60,17 @@ struct {                        // Program switches
 };
 
 typedef struct {                // Text
-    void* next;                 // - next in ring
+    void *next;                 // - next in ring
     time_t time;                // - date/time for file
     char text[1];               // - variable-sized text
 } Text;
 
                                 // static data
-static Text* file_patterns;     // - ring of file patterns
-static Text* files;             // - ring of files
+static Text *file_patterns;     // - ring of file patterns
+static Text *files;             // - ring of files
 
 
-static char* help_text[] = {    // help text
+static char *help_text[] = {    // help text
     "catfile switches pattern ... pattern >destination",
     "",
     "Concatenate all files matching the patterns into the destination file.",
@@ -89,7 +89,7 @@ static char* help_text[] = {    // help text
 
 
 static int errMsg               // PRINT ERROR MESSAGE
-    ( const char* text          // - text segments
+    ( const char *text          // - text segments
     , ... )
 {
     va_list args;               // - error list
@@ -118,7 +118,7 @@ static void turnOffOrder        // REMOVE ORDER SWITCHES
 static void help                // HELP TEXT
     ( void )
 {
-    char** hp;                  // - current help line
+    char **hp;                  // - current help line
 
     hp = help_text;
     for( ; *hp != NULL; ++hp ) {
@@ -130,7 +130,7 @@ static void help                // HELP TEXT
 
 static int textAlloc            // ALLOCATE TEXT ITEM
     ( size_t size               // - text size
-    , Text** a_text )           // - addr[ text entry ]
+    , Text **a_text )           // - addr[ text entry ]
 {
     int retn;                   // - return code
     Text *tp;                   // - new Text
@@ -148,12 +148,12 @@ static int textAlloc            // ALLOCATE TEXT ITEM
 
 
 static int textForAll           // PROCESS ALL ITEMS IN A TEXT RING
-    ( Text* ring                // - text ring
-    , void* data                // - data passed to routine
-    , int (*rtn)( Text*, void* )) // - routine
+    ( Text *ring                // - text ring
+    , void *data                // - data passed to routine
+    , int (*rtn)( Text *, void * )) // - routine
 {
     int retn;                   // - return code
-    Text* curr;                 // - current item
+    Text *curr;                 // - current item
 
     if( ring == NULL ) {
         retn = 0;
@@ -162,16 +162,18 @@ static int textForAll           // PROCESS ALL ITEMS IN A TEXT RING
         do {
             curr = curr->next;
             retn = rtn( curr, data );
-            if( retn != 0 ) break;
+            if( retn != 0 ) {
+                break;
+            }
         } while( curr != ring );
     }
-    return retn;
+    return( retn );
 }
 
 
-static Text* textInsert         // INSERT INTO RING
-    ( Text* tp                  // - Text entry
-    , Text** a_ring )           // - Text ring
+static Text *textInsert         // INSERT INTO RING
+    ( Text *tp                  // - Text entry
+    , Text **a_ring )           // - Text ring
 {
     Text *ring;                 // - ring
 
@@ -315,8 +317,8 @@ static int __fnmatch( char *pattern, char *string )
 
 
 static int processFilePattern   // PROCESS FILE PATTERN
-    ( Text* tp                  // - file pattern
-    , void* data )              // - not used
+    ( Text *tp                  // - file pattern
+    , void *data )              // - not used
 {
     int             retn;       // - return code
     DIR             *dirp;      // - directory stuff
@@ -340,13 +342,13 @@ static int processFilePattern   // PROCESS FILE PATTERN
                 if( __fnmatch( pattern, dire->d_name ) ) {
                     _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
                     if( stat( path, &buf ) == 0 && S_ISREG( buf.st_mode ) ) {
-                        Text* tp;           // - current entry
-                        retn = textAlloc( strlen( path ) + 1, &tp );
+                        Text *tp1;           // - current entry
+                        retn = textAlloc( strlen( path ) + 1, &tp1 );
                         if( retn != 0 )
                             break;
-                        textInsert( tp, &files );
-                        strcpy( files->text, path );
-                        files->time = buf.st_mtime;
+                        strcpy( tp1->text, path );
+                        tp1->time = buf.st_mtime;
+                        textInsert( tp1, &files );
                     }
                 }
             }
@@ -368,11 +370,11 @@ static void emitHdr             // EMIT HDR LINE
 
 
 static int concFile             // CONCATENATE A FILE
-    ( Text* tp                  // - file entry
-    , void* data )              // - date: unused
+    ( Text *tp                  // - file entry
+    , void *data )              // - date: unused
 {
     int retn;                   // - return code
-    FILE* fp;                   // - file stuff
+    FILE *fp;                   // - file stuff
     char rec[1024];             // - record
 
     data = data;
@@ -406,10 +408,10 @@ static int concFiles            // CONCATENATE FILES
 
 
 static int countFile            // INCREMENT FILE CTR
-    ( Text* tp                  // - text ptr.
-    , void* data )              // - data: addr[ ctr ]
+    ( Text *tp                  // - text ptr.
+    , void *data )              // - data: addr[ ctr ]
 {
-    unsigned* a_ctr = data;
+    unsigned *a_ctr = data;
     tp = tp;
     ++(*a_ctr);
     return 0;
@@ -417,10 +419,10 @@ static int countFile            // INCREMENT FILE CTR
 
 
 static int storeFile            // STORE FILE PTR
-    ( Text* tp                  // - text ptr.
-    , void* data )              // - data: addr[ ctr ]
+    ( Text *tp                  // - text ptr.
+    , void *data )              // - data: addr[ ctr ]
 {
-    Text*** a_tp = (Text***)data;
+    Text ***a_tp = (Text ***)data;
     **a_tp = tp;
     ++(*a_tp);
     return 0;
@@ -431,12 +433,16 @@ static int compareFileDates     // COMPARE TWO FILE DATES
     ( Text const *c1            // - comparand[1]
     , Text const *c2 )          // - comparand[2]
 {
-    return c1->time - c2->time;
+    if( c1->time == c2->time )
+        return( 0 );
+    if( c1->time > c2->time )
+        return( 1 );
+    return( -1 );
 }
 
 
 static unsigned extractDigs     // EXTRACT AS UNSIGNED THE DIGITS IN NAME
-    ( char const * name )       // - file name
+    ( char const *name )        // - file name
 {
     unsigned value;             // - returned value
 
@@ -456,15 +462,15 @@ static unsigned extractDigs     // EXTRACT AS UNSIGNED THE DIGITS IN NAME
 
 
 static int compareFiles         // COMPARE TWO FILES
-    ( void const * f1           // - file [1]
-    , void const * f2 )         // - file [2]
+    ( void const *f1            // - file [1]
+    , void const *f2 )          // - file [2]
 {
     int retn;                   // - return
     Text const *c1;             // - file [1]
     Text const *c2;             // - file [2]
 
-    c1 = *(Text**)f1;
-    c2 = *(Text**)f2;
+    c1 = *(Text **)f1;
+    c2 = *(Text **)f2;
     if( switches.sort_kluge ) {
         retn = compareFileDates( c1, c2 );
         if( retn == 0 ) {
@@ -486,10 +492,10 @@ static int sortFiles            // SORT FILES
     ( void )
 {
     unsigned count;             // - # of files
-    Text** array;               // - array of file ptrs
-    Text** store;               // - next storage point
+    Text **array;               // - array of file ptrs
+    Text **store;               // - next storage point
     int retn;                   // - return code
-    int index;                  // - index of "array"
+    unsigned index;             // - index of "array"
 
     count = 0;
     textForAll( files, &count, &countFile );
@@ -499,7 +505,7 @@ static int sortFiles            // SORT FILES
     } else {
         store = array;
         textForAll( files, &store, &storeFile );
-        qsort( array, count, sizeof( Text* ), &compareFiles );
+        qsort( array, count, sizeof( Text * ), &compareFiles );
         files = 0;
         for( index = 0; index < count; ++index ) {
             textInsert( array[ index ], &files );
@@ -517,7 +523,7 @@ static int processFilePatterns  // PROCESS FILE PATTERNS
 {
     int retn;                   // - return code
 
-    if( file_patterns == 0 ) {
+    if( file_patterns == NULL ) {
         retn = errMsg( "no file patterns", NULL );
     } else {
         retn = textForAll( file_patterns, NULL, &processFilePattern );
@@ -535,13 +541,14 @@ static int processFilePatterns  // PROCESS FILE PATTERNS
 
 static int processCmdLine       // PROCESS COMMAND LINE
     ( int arg_count             // - # args
-    , char const * args[] )     // - arguments
+    , char const *args[] )      // - arguments
 {
     int retn;                   // - return code
-    const char* cmd;            // - current command
+    const char *cmd;            // - current command
     int index;                  // - command-line index
     int any_options;
 
+    retn = 1;
     any_options = 0;
     for( index = 1; index < arg_count; ++ index ) {
         cmd = args[ index ];
@@ -552,22 +559,24 @@ static int processCmdLine       // PROCESS COMMAND LINE
             Text *tp;           // - text dire
             retn = textAlloc( strlen( cmd ), &tp );
             if( retn == 0 ) {
-                textInsert( tp, &file_patterns );
                 strcpy( file_patterns->text, cmd );
+                textInsert( tp, &file_patterns );
             }
         }
-        if( retn != 0 ) break;
+        if( retn != 0 ) {
+            break;
+        }
     }
-    if( ! any_options ) {
+    if( !any_options ) {
         switches.sort_kluge = true;
     }
-    return retn;
+    return( retn );
 }
 
 
 int main                        // MAIN-LINE
     ( int arg_count             // - # args
-    , char const * args[] )     // - arguments
+    , char const *args[] )      // - arguments
 {
     int retn;                   // - return code
 
