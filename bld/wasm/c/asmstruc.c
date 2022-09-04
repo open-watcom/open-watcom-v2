@@ -214,8 +214,10 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
     f = AsmAlloc( sizeof( field_list ) );
 
     if( ISINVALID_IDX( loc ) ) {
-        for( loc = 0; AsmBuffer[loc].class != TC_FINAL; ++loc ) {
-            /* nothing to do */
+        for( loc = 0; ISVALID_IDX( loc ); ++loc ) {
+            if( AsmBuffer[loc].class == TC_FINAL ) {
+                break;
+            }
         }
     }
     if( Options.mode & MODE_IDEAL ) {
@@ -228,7 +230,9 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
 
     /* now add the value to initialize the struct to */
     count = 0;
-    for( i = loc + 1; AsmBuffer[i].class != TC_FINAL; i++ ) {
+    for( i = loc + 1; ISVALID_IDX( i ); i++ ) {
+        if( AsmBuffer[i].class == TC_FINAL )
+            break;
         if( AsmBuffer[i].string_ptr != NULL ) {
             count += strlen( AsmBuffer[i].string_ptr ) + 1;
         }
@@ -239,8 +243,9 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
 
     f->value = AsmAlloc( count + 1 );
     f->value[0] = '\0';
-
-    for( i = loc + 1; AsmBuffer[i].class != TC_FINAL; i++ ) {
+    for( i = loc + 1; ISVALID_IDX( i ); i++ ) {
+        if( AsmBuffer[i].class == TC_FINAL )
+            break;
         if( AsmBuffer[i].class == TC_STRING ) {
             strcat( f->value, "<" );
         }
