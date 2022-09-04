@@ -237,7 +237,7 @@ void AsmSysLine( const char *buff )
 static bool GetByteSeq( aux_info *info )
 /**************************************/
 {
-    unsigned char       buff[MAXIMUM_BYTESEQ + 32];
+    unsigned char       buff[MAXIMUM_BYTESEQ + ASM_BLOCK];
     bool                uses_auto;
     bool                too_many_bytes;
 

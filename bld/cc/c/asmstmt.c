@@ -96,7 +96,7 @@ void AsmStmt( void )
 /******************/
 {
     bool            too_many_bytes;
-    unsigned char   buff[MAXIMUM_BYTESEQ + 32];
+    unsigned char   buff[MAXIMUM_BYTESEQ + ASM_BLOCK];
     TOKEN           skip_token;
     ppctl_t         old_ppctl;
 
