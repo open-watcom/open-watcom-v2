@@ -245,7 +245,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             if( !struct_field ) {
 #endif
                 for( count = 0; count < no_of_bytes; ++count ) {
-                    AsmDataByte( *(char_ptr++) );
+                    AsmDataByte( *char_ptr++ );
                 }
 #if defined( _STANDALONE_ )
             } else {
@@ -718,7 +718,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
                 return( returned_pos );
             }
         }
-        if( AsmBuffer[returned_pos+1].class != TC_COMMA ) {
+        if( AsmBuffer[returned_pos + 1].class != TC_COMMA ) {
             return( returned_pos );
         }
         cur_pos = returned_pos + 2;

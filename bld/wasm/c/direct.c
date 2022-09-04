@@ -1873,7 +1873,7 @@ bool Startup( token_idx i )
     case T_DOT_EXIT:
     case T_EXITCODE:
         i++;
-        if( ( AsmBuffer[i].string_ptr != NULL ) && ( *(AsmBuffer[i].string_ptr) != '\0' ) ) {
+        if( ( AsmBuffer[i].string_ptr != NULL ) && ( AsmBuffer[i].string_ptr[0] != '\0' ) ) {
             len = strlen( RetVal );
             p = CATSTR( buffer, RetVal, len );
             len = strlen( AsmBuffer[i].string_ptr );
@@ -4084,7 +4084,7 @@ bool Comment( int what_to_do, token_idx i, const char *line )
             AsmError( COMMENT_DELIMITER_EXPECTED );
             return( RC_ERROR );
         }
-        delim_char = *(AsmBuffer[i].string_ptr + strspn( AsmBuffer[i].string_ptr, " \t" ) );
+        delim_char = AsmBuffer[i].string_ptr[strspn( AsmBuffer[i].string_ptr, " \t" )] );
         if( ( delim_char == '\0' )
             || ( strchr( AsmBuffer[i].string_ptr, delim_char ) == NULL ) ) {
             AsmError( COMMENT_DELIMITER_EXPECTED );

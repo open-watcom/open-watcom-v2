@@ -106,12 +106,20 @@ static bool get_float( token_idx idx, const char **input, char **output )
     return( RC_OK );
 }
 
-static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsigned size )
+static void array_mul_add( unsigned char *buf, unsigned base, const char *dig, unsigned size )
 {
+    unsigned long   num;
+
+    if( isdigit( *dig ) ) {
+        num = *dig - '0';
+    } else {
+        num = tolower( *dig ) - 'a' + 10;
+    }
     while( size-- > 0 ) {
-        num += *buf * base;
-        *(buf++) = (unsigned char)num;
+        num = num + *buf * base;
+        *buf = (unsigned char)num;
         num >>= 8;
+        buf++;
     }
 }
 
@@ -195,7 +203,6 @@ static bool get_number( token_idx idx, const char **input, char **output )
     size_t              len;
     unsigned            base = 0;
     unsigned            digits_seen;
-    unsigned long       val;
     int                 c;
     int                 c2;
 
@@ -323,12 +330,7 @@ static bool get_number( token_idx idx, const char **input, char **output )
     *input = ptr + extra;
     memset( AsmBuffer[idx].u.bytes, 0, sizeof( AsmBuffer[idx].u.bytes ) );
     while( dig_start < ptr ) {
-        if( isdigit( *dig_start ) ) {
-            val = *dig_start - '0';
-        } else {
-            val = tolower( *dig_start ) - 'a' + 10;
-        }
-        array_mul_add( AsmBuffer[idx].u.bytes, base, val, sizeof( AsmBuffer[idx].u.bytes ) );
+        array_mul_add( AsmBuffer[idx].u.bytes, base, dig_start, sizeof( AsmBuffer[idx].u.bytes ) );
         ++dig_start;
     }
     return( RC_OK );
