@@ -10,11 +10,12 @@ variables:
   owgitverbose:     -v
   owartifactfile:   owartifact.tar.xz
   owsnapshotfile:   ow-snapshot.tar.xz
-
-  owimage_lnx:      'ubuntu-18.04'
-# owimage_nt:       'vs2017-win2016'
+#
+# this uses minimal supported VM image version
+#
+  owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'windows-2019'
-  owimage_osx:      'macOS-10.14'
+  owimage_osx:      'macOS-11'
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh

@@ -8,10 +8,12 @@ variables:
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild
   owcoverity.project: open-watcom/open-watcom-v2
-
-  owimage_lnx:      'ubuntu-20.04'
+#
+# this uses maximal supported VM image version
+#
+  owimage_lnx:      'ubuntu-22.04'
   owimage_nt:       'windows-2022'
-  owimage_osx:      'macOS-11'
+  owimage_osx:      'macOS-12'
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
