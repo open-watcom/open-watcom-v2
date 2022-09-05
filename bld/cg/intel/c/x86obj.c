@@ -104,7 +104,7 @@
 typedef struct lname_cache {
     struct lname_cache  *next;
     omf_idx             idx;
-    unsigned_8          name[1];        /* var sized, first byte is length */
+    char                name[1];        /* var sized, first byte is length */
 } lname_cache;
 
 typedef struct virt_func_ref_list {
@@ -292,7 +292,7 @@ static void FlushNames( void )
     used = 0;
     dmp = ( NameCacheDumped != NULL ) ? NameCacheDumped->next : NameCache;
     for( ; dmp != NULL; dmp = dmp->next ) {
-        if( (used + dmp->name[0]) > (sizeof( buff ) - 1) ) {
+        if( (used + *(unsigned char *)dmp->name) > ( sizeof( buff ) - 1 ) ) {
             PutObjOMFRec( CMD_LNAMES, buff, used );
             used = 0;
         }
