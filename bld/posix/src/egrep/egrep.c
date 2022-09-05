@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,15 +185,17 @@ static void errorExit( const char *msg, ... )
     exit( EXIT_FAILURE );
 }
 
-static int searchBuffer( char *buf )
+static bool searchBuffer( char *buf )
 {
     unsigned         ui;
 
 #ifdef FGREP
     if( Flags & M_SEARCH_EXACT ) {
-        for( ui = 0; ui < PatCount; ui++ )
-            if( strcmp( fPatterns[ui], buf ) == 0 )
-                return( 1 );
+        for( ui = 0; ui < PatCount; ui++ ) {
+            if( strcmp( fPatterns[ui], buf ) == 0 ) {
+                return( true );
+            }
+        }
     } else {
         for( ui = 0; ui < PatCount; ui++ ) {
             char       *s = buf;
@@ -206,7 +208,7 @@ static int searchBuffer( char *buf )
 
                     for( ; ; s++, p++ ) {
                         if( *p == '\0' )
-                            return( 1 );
+                            return( true );
                         if( CharTrans[*(unsigned char *)s] != *p ) {
                             if( *s == '\0' ) {
                                 goto outer;
@@ -229,24 +231,26 @@ static int searchBuffer( char *buf )
         }
     }
 #else
-    for( ui = 0; ui < PatCount; ui++ )
-        if( RegExec( ePatterns[ui], buf, 1 ) )
-            return( 1 );
+    for( ui = 0; ui < PatCount; ui++ ) {
+        if( RegExec( ePatterns[ui], buf, 1 ) ) {
+            return( true );
+        }
+    }
 #endif
-    return( 0 );
+    return( false );
 }
 
-static char *getNextLine( FILE *ifp, int newfile, const char *filename, unsigned lineno )
+static char *getNextLine( FILE *ifp, bool newfile, const char *filename, unsigned lineno )
 {
     static size_t       rd;
     static char         *offset;
     static char         *start;
     static char         *endbuf;
-    static int          finalread;
-    static int          done = 0;
+    static bool         finalread;
+    static bool         done = false;
 
     if( done ) {
-        done = 0;
+        done = false;
         return( NULL );
     }
     if( newfile ) {
@@ -271,16 +275,17 @@ static char *getNextLine( FILE *ifp, int newfile, const char *filename, unsigned
         }
         if( finalread ) {
             endbuf[0] = '\0';
-            done = 1;
+            done = true;
             return( start );
         }
         if( len >= IObsize ) {
             free( IObuffer );
             IObsize += IObsize >> 1;
             IObuffer = malloc( IObsize );
-            if( IObuffer == NULL || fseek( ifp, -(long)rd, SEEK_CUR ) )
+            if( IObuffer == NULL || fseek( ifp, -(long)rd, SEEK_CUR ) ) {
                 errorExit( "line too long: len (%lu) >= IObsize (%lu) at \"%s\":%u",
                     (unsigned long)len, (unsigned long)IObsize, filename, lineno );
+            }
             return( getNextLine( ifp, newfile, filename, lineno ) );
         }
         memmove( IObuffer, offset, len );
@@ -289,7 +294,7 @@ static char *getNextLine( FILE *ifp, int newfile, const char *filename, unsigned
         rd = fread( offset, 1, IObsize - len, ifp );
         if( ferror( ifp ) )
             errorExit( "I/O error" );
-        finalread = ( rd != IObsize - len );
+        finalread = ( rd != ( IObsize - len ) );
         endbuf = offset + rd;
     }
 }
@@ -297,16 +302,16 @@ static char *getNextLine( FILE *ifp, int newfile, const char *filename, unsigned
 static unsigned searchFile( const char *filename, FILE *ifp, int numfile )
 {
     char        *line;
-    char        match;
+    bool        match;
 
-    char const  invert  = ((Flags & M_SEARCH_INVERT) != 0);
+    const bool  invert  = ((Flags & M_SEARCH_INVERT) != 0);
     unsigned    lineno  = 1;
     unsigned    matches = 0;
-    int         new = 1;
+    bool        new = true;
 
     while( (line = getNextLine( ifp, new, filename, lineno )) != NULL ) {      // returns offset into IObuffer
-        new  = 0;
-        match = (char) searchBuffer( line );
+        new  = false;
+        match = searchBuffer( line );
         if( match ^ invert ) {
             matches++;
             if( Omode == OUT_LINES ) {
@@ -333,7 +338,7 @@ static void parsePatterns( void )
     char                *p;
 
     for( pat = fPatterns; *pat != NULL; pat++ ) {
-        for( p = *pat; *p; p++ ) {
+        for( p = *pat; *p != '\0'; p++ ) {
             *p = CharTrans[*(unsigned char *)p];
             CharExist[*(unsigned char *)p] = 1;
         }
@@ -371,7 +376,7 @@ static void readPatternFile( const char *filename )
         *cr = '\0';
         insertPattern( IObuffer );
     }
-    (void) fclose( fp );
+    (void)fclose( fp );
     if( patstart == PatCount ) {
         errorExit( "No pattern in \"%s\"", filename );
     }
@@ -381,8 +386,8 @@ static void changeTransTable( void )
 {
     int         ch;
 
-    for( ch = 'A'; ch <= 'Z'; ch++ ) {      // Change uppers to lowers in
-        CharTrans[ch] |= 0x20;            // translation table
+    for( ch = 'A'; ch <= 'Z'; ch++ ) {  // Change uppers to lowers in
+        CharTrans[ch] |= 0x20;          // translation table
     }
 }
 
@@ -448,7 +453,8 @@ int main( int argc, char **argv )
     if( PatCount == 0 ) {
         if( argc <= 1 )
             errorExit( "%s", usageMsg[0] );
-        argc--, argv++;
+        argc--;
+        argv++;
         insertPattern( *argv );
     }
 
