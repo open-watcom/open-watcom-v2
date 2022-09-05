@@ -62,10 +62,6 @@
 #include "feprotos.h"
 
 
-#if _TARGET & _TARG_80386
-    #define _OMF_32
-#endif
-
 #define _NIDX_NULL      1   // lname ""
 #define _NIDX_CODE      2   // lname "CODE"
 #define _NIDX_DATA      3   // lname "DATA"
@@ -154,7 +150,7 @@ static  omf_idx         FPPatchImp[FPP_NUMBER_OF_TYPES];
 static  int             segmentCount;
 static  bool            NoDGroup;
 static  short           CurrFNo;
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
 static  omf_idx         FlatGIndex;
 static  omf_idx         FlatNIndex;
 #endif
@@ -192,7 +188,7 @@ void    InitSegDefs( void )
     GroupIndex = 0;
     DGroupIndex = 0;
     TLSGIndex = 0;
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     FlatGIndex = 0;
 #endif
     segmentCount = 0;
@@ -376,7 +372,7 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
         attr = SEG_ALGN_BYTE;
     } else if( align <= 2 ) {
         attr = SEG_ALGN_WORD;
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     } else if( align <= 4 ) {
         attr = SEG_ALGN_DWORD;
 #endif
@@ -386,7 +382,7 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
         attr = SEG_ALGN_PAGE;
 #if 0
     // align is a byte - how can it be bigger than 4k - BBB
-  #ifdef _OMF_32
+  #if _TARGET & _TARG_80386
         if( _IsTargetModel( EZ_OMF ) ) {
             if( align > 256 ) {
                 attr = SEG_ALGN_4K;
@@ -402,7 +398,7 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
     } else { /* normal or a kludge for wsl front end ( PRIVATE | GLOBAL )*/
         attr |= SEG_COMB_NORMAL;
     }
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     if( _IsntTargetModel( EZ_OMF ) ) {
         if( _IsTargetModel( USE_32 ) ) {
             if( !use_16 ) {
@@ -502,7 +498,8 @@ static  void    OutOffset( offset value, array_control *dest )
     dest->used = need;
 }
 
-#ifndef _OMF_32  // 32bit debug seg support dwarf,codeview
+#if _TARGET & _TARG_8086
+// 32bit debug seg support dwarf,codeview
 static  void    OutLongOffset( long_offset value, array_control *dest )
 /*********************************************************************/
 {
@@ -539,16 +536,6 @@ static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
     dest->used = need;
 }
 
-static  omf_cmd    PickOMF( omf_cmd cmd )
-/***************************************/
-{
-#ifdef _OMF_32
-    if( _IsntTargetModel( EZ_OMF ) )
-        ++cmd;
-#endif
-    return( cmd );
-}
-
 static  void    DoASegDef( index_rec *rec, bool use_16 )
 /******************************************************/
 {
@@ -575,7 +562,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     obj->last_line = 0;
     obj->last_offset = 0;
     OutByte( rec->attr, &obj->data );
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     OutOffset( 0, &obj->data );         /* segment size (for now) */
 #else  //SEG32DBG dwarf, codeview
     if( rec->attr & SEG_USE_32 ) {
@@ -587,7 +574,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     OutIdx( rec->nidx, &obj->data );    /* segment name index */
     OutIdx( rec->cidx, &obj->data );    /* class name index */
     OutIdx( _NIDX_NULL, &obj->data );   /* overlay name index */
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     if( _IsTargetModel( EZ_OMF ) ) {
         if( _IsntTargetModel( USE_32 ) || use_16 ) {
             OutByte( 2, &obj->data );   /* to indicate USE16 EXECUTE/READ */
@@ -599,8 +586,12 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     if( ++segmentCount > 32000 ) {
         FatalError( "too many segments" );
     }
-#ifdef _OMF_32
-    cmd = PickOMF( CMD_SEGDEF );
+#if _TARGET & _TARG_80386
+    if( _IsntTargetModel( EZ_OMF ) ) {
+        cmd = CMD_SEGDEF32;
+    } else {
+        cmd = CMD_SEGDEF;
+    }
 #else //SEG32DBG dwarf, codeview
     if( (rec->attr & SEG_USE_32) && _IsntTargetModel( EZ_OMF ) ) {
         cmd = CMD_SEGDEF32;
@@ -969,7 +960,7 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     GetNameIdx( "BSS", "", true );  // _NIDX_BSS
     GetNameIdx( "TLS", "", true );  // _NIDX_TLS
 
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) ) {
         FlatNIndex = GetNameIdx( "FLAT", "", true );
     }
@@ -1051,7 +1042,7 @@ void    ObjInit( void )
     OutName( FEAuxInfo( NULL, SOURCE_NAME ), names );
     PutObjOMFRec( CMD_THEADR, names->array, names->used );
     names->used = 0;
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     if( _IsTargetModel( EZ_OMF ) || _IsTargetModel( FLAT_MODEL ) ) {
         OutShort( PHARLAP_OMF_COMMENT, names );
         if( _IsntTargetModel( EZ_OMF ) ) {
@@ -1116,7 +1107,7 @@ void    ObjInit( void )
         PutObjOMFRec( CMD_GRPDEF, tgroup_def->array, tgroup_def->used );
     }
     KillArray( tgroup_def );
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) ) {
         dgroup_def->used = 0;
         FlatGIndex = ++GroupIndex;
@@ -1381,15 +1372,27 @@ static void     EjectLEData( void )
         SetAbsPatches();
         obj = CurrSeg->obj;
         if( CurrSeg->comdat_label != NULL ) {
-            cmd = PickOMF( CMD_COMDAT );
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_COMDAT32;
+            } else {
+                cmd = CMD_COMDAT;
+            }
+#else
+            cmd = CMD_COMDAT;
+#endif
         } else {
-#ifdef _OMF_32
-            cmd = PickOMF( CMD_LEDATA );
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_LEDATA32;
+            } else {
+                cmd = CMD_LEDATA;
+            }
 #else //SEG32DBG dwarf, codeview
             if( (CurrSeg->attr & SEG_USE_32) && _IsntTargetModel( EZ_OMF ) ) {
                 cmd = CMD_LEDATA32;
             } else {
-                cmd = PickOMF( CMD_LEDATA );
+                cmd = CMD_LEDATA;
             }
 #endif
         }
@@ -1402,7 +1405,16 @@ static void     EjectLEData( void )
                 PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
                 obj->data.used = 0;
             }
-            PutObjOMFRec( PickOMF( CMD_FIXUPP ), obj->fixes.array, obj->fixes.used );
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_FIXUPP32;
+            } else {
+                cmd = CMD_FIXUPP;
+            }
+#else
+            cmd = CMD_FIXUPP;
+#endif
+            PutObjOMFRec( cmd, obj->fixes.array, obj->fixes.used );
             obj->fixes.used = 0;
         }
         CurrSeg->data_ptr_in_code = false;
@@ -1443,7 +1455,7 @@ void    OutSelect( bool starts )
             obj = CurrSeg->obj;
             obj->data.used = 0;
             OutShort( DISASM_COMMENT, &obj->data );
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
             OutByte( DDIR_SCAN_TABLE_32, &obj->data );
 #else
             OutByte( DDIR_SCAN_TABLE, &obj->data );
@@ -1497,7 +1509,7 @@ static  void    OutLEDataStart( bool iterated )
             OutIdx( NeedComdatNidx( NORMAL ), &obj->data );
         } else { // LEDATA
             OutIdx( rec->sidx, &obj->data );
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
             OutOffset( (offset)rec->location, &obj->data );
 #else  //SEG32DBG dwarf, codeview
             if( rec->attr & SEG_USE_32 ) {
@@ -1654,11 +1666,27 @@ static  void    EjectExports( void )
     obj = CurrSeg->obj;
     if( obj->exports != NULL && obj->exports->used > 0 ) {
         if( obj->gen_static_exports ) {
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_LPUBDEF32;
+            } else {
+                cmd = CMD_LPUBDEF;
+            }
+#else
             cmd = CMD_LPUBDEF;
+#endif
         } else {
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_PUBDEF32;
+            } else {
+                cmd = CMD_PUBDEF;
+            }
+#else
             cmd = CMD_PUBDEF;
+#endif
         }
-        PutObjOMFRec( PickOMF( cmd ), obj->exports->array, obj->exports->used );
+        PutObjOMFRec( cmd, obj->exports->array, obj->exports->used );
         obj->exports->used = 0;
     }
 }
@@ -1673,11 +1701,27 @@ static  void    FlushLineNum( object *obj )
         OutShort( obj->last_line, obj->lines );
         OutOffset( obj->last_offset, obj->lines );
         if( CurrSeg->comdat_label != NULL ) {
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_LINSYM32;
+            } else {
+                cmd = CMD_LINSYM;
+            }
+#else
             cmd = CMD_LINSYM;
+#endif
         } else {
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_LINNUM32;
+            } else {
+                cmd = CMD_LINNUM;
+            }
+#else
             cmd = CMD_LINNUM;
+#endif
         }
-        PutObjOMFRec( PickOMF( cmd ), obj->lines->array, obj->lines->used );
+        PutObjOMFRec( cmd, obj->lines->array, obj->lines->used );
         obj->lines->used = 0;
         obj->lines_generated = true;
         obj->last_line = 0;
@@ -1746,7 +1790,7 @@ static  void    FiniTarg( void )
         obj->exports = NULL;
     }
     rec = AskIndexRec( obj->index );
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     size.s = _TargetInt( rec->max_size );
 #else //SEG32DBG dwarf, codeview
     if( rec->attr & SEG_USE_32 ) {
@@ -1764,7 +1808,7 @@ static  void    FiniTarg( void )
         attr = rec->attr | SEG_BIG;
         PatchObj( obj->segfix, SEGDEF_ATTR, &attr, sizeof( byte ) );
     } else {
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
         PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size.s, sizeof( offset ) );
 #else   //SEG32DBG dwarf, codeview
         if( rec->attr & SEG_USE_32 ) {
@@ -1931,15 +1975,28 @@ static  void    EndModule( void )
 /*******************************/
 {
     byte        b;
+    omf_cmd     cmd;
 
     b = 0;                     /* non-main module, no start address*/
 //  There is a bug in MS's LINK386 program that causes it not to recognize a
 //  MODEND386 record in some situations. We can get around it by only outputing
 //  16-bit MODEND records. This causes us no pain, since we never need any
 //  features provided by the 32-bit form anyway. --- BJS
-//    PutObjOMFRec( PickOMF( CMD_MODEND ), &b, sizeof( byte ) );
-
-    PutObjOMFRec( CMD_MODEND, &b, sizeof( byte ) );
+//    PutObjOMFRec( CMD_MODEND/CMD_MODEND32 , &b, sizeof( byte ) );
+#if 0
+ #if _TARGET & _TARG_80386
+    if( _IsntTargetModel( EZ_OMF ) ) {
+        cmd = CMD_MODEND32;
+    } else {
+        cmd = CMD_MODEND;
+    }
+ #else
+    cmd = CMD_MODEND;
+ #endif
+#else
+    cmd = CMD_MODEND;
+#endif
+    PutObjOMFRec( cmd, &b, sizeof( byte ) );
 }
 
 
@@ -2099,7 +2156,7 @@ static  void    OutExport( cg_sym_handle sym )
         if( CurrSeg->btype == BASE_GRP ) {
             OutIdx( CurrSeg->base, exp );   /* group index*/
         } else {
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
             OutIdx( FlatGIndex, exp );      /* will be 0 if we have none */
 #else
             OutIdx( 0, exp );
@@ -2478,7 +2535,7 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
             base = BASE_IMP;
         }
     }
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
     if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) && ( F_CLASS( class ) != F_PTR) ) {
         omf_idx     grp_idx;
 
@@ -3006,7 +3063,7 @@ void    OutBckExport( const char *name, bool is_export )
         if( CurrSeg->btype == BASE_GRP ) {
             OutIdx( CurrSeg->base, exp );   /* group index*/
         } else {
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
             OutIdx( FlatGIndex, exp );      /* will be 0 if we have none */
 #else
             OutIdx( 0, exp );
@@ -3148,7 +3205,7 @@ void    OutIBytes( byte pat, offset len )
         EjectLEData();
         OutLEDataStart( true );
         obj = CurrSeg->obj;
-#ifdef _OMF_32
+#if _TARGET & _TARG_80386
         if( _IsntTargetModel( EZ_OMF ) ) {
             OutOffset( len, &obj->data );          /* repeat count */
         } else {
@@ -3161,11 +3218,27 @@ void    OutIBytes( byte pat, offset len )
         OutByte( 1, &obj->data );                  /* pattern length */
         OutByte( pat, &obj->data );
         if( CurrSeg->comdat_label != NULL ) {
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_COMDAT32;
+            } else {
+                cmd = CMD_COMDAT;
+            }
+#else
             cmd = CMD_COMDAT;
+#endif
         } else {
+#if _TARGET & _TARG_80386
+            if( _IsntTargetModel( EZ_OMF ) ) {
+                cmd = CMD_LIDATA32;
+            } else {
+                cmd = CMD_LIDATA;
+            }
+#else
             cmd = CMD_LIDATA;
+#endif
         }
-        PutObjOMFRec( PickOMF( cmd ), obj->data.array, obj->data.used );
+        PutObjOMFRec( cmd, obj->data.array, obj->data.used );
         obj->data.used = 0;
         IncLocation( len );
         SetMaxWritten();
