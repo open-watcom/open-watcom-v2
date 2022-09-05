@@ -8,7 +8,7 @@ the compiled commands in cmds[] on each line in turn.
    The function command() does most of the work. Match() and advance()
 are used for matching text against precompiled regular expressions and
 dosub() does right-hand-side substitution.  getinpline() does text input;
-readout() is output utility.
+readout() is output utility and memeql() is string-comparison utility.
 
 ==== Written for the GNU operating system by Eric S. Raymond ====
 
@@ -62,6 +62,19 @@ static char     *bracend[MAXTAGS+1];    /* tagged pattern start pointers */
 static char     *brastart[MAXTAGS+1];   /* tagged pattern end pointers */
 static sedcmd   *pending = NULL;        /* next command to be executed */
 
+/* return true if *a... == *b... for count chars, false otherwise */
+static bool memeql(
+    char const *a,
+    char const *b,
+    size_t     count )
+{
+    while( count-- ) {                  /* look at count characters */
+        if( *a++ != *b++ ) {            /* if any are nonequal   */
+            return( false );            /*    return false for false */
+        }
+    }
+    return( true );                     /* compare succeeded */
+}
 
 /* attempt to advance match pointer by one pattern element */
 static bool advance(
@@ -122,7 +135,7 @@ static bool advance(
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
-            if( memcmp( bbeg, lp, ct ) == 0 ) { /* match pattern tag value ? */
+            if( memeql( bbeg, lp, ct ) == 0 ) { /* match pattern tag value ? */
                 lp += ct;               /* skip over */
                 continue;               /* match and go to next element */
             }
@@ -135,7 +148,7 @@ static bool advance(
             curlp = lp;
             if( ct == 0 )
                 break;                  /* zero length match */
-            while( memcmp( bbeg, lp, ct ) == 0 ) { /* match pattern tag value ? */
+            while( memeql( bbeg, lp, ct ) == 0 ) { /* match pattern tag value ? */
                 lp += ct;
             }
             while( lp >= curlp ) {
@@ -298,7 +311,7 @@ static bool advance(
             ct = bracend[tagindex] - bbeg;
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
-            while( memcmp( bbeg, lp, ct ) == 0 && i1 ) { /* match pattern tag value ? */
+            while( memeql( bbeg, lp, ct ) == 0 && i1 ) { /* match pattern tag value ? */
                 lp += ct;
                 i1--;
             }
@@ -309,7 +322,7 @@ static bool advance(
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
-            while( memcmp( bbeg, lp, ct ) == 0 && i2 ) { /* match pattern tag value ? */
+            while( memeql( bbeg, lp, ct ) == 0 && i2 ) { /* match pattern tag value ? */
                 lp += ct;
                 i2--;
             }
