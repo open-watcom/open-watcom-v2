@@ -114,7 +114,8 @@ graph23s.lib : $(graph_path)r/graphi2.lib $(pgchart_path)s/chart2.lib $(__MAKEFI
 graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     @rm -f *.obj
   # find external references - and check for double precision usage
-    $(noecho)objxref -e=../except tmp.lib | sort >ref.tmp
+    $(noecho)objxref -e=../except tmp.lib >ref1.tmp
+    $(noecho)sort -o ref.tmp ref1.tmp
     $(noecho)egrep "__FD" ref.tmp >fdchk.tmp
     $(noecho)diff fdchk.tmp ../fd.ok
     @if errorlevel 1 echo ERROR - double precision floating point used
@@ -163,7 +164,8 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
 graph2.lib : $(clibdir) tmp2.lib
     @rm -f *.obj
   # find external references - and check for double precision usage
-    $(noecho)objxref -e=../except tmp2.lib | sort >ref2.tmp
+    $(noecho)objxref -e=../except tmp2.lib >ref21.tmp
+    $(noecho)sort -o ref2.tmp ref21.tmp
     $(noecho)egrep "__FD" ref2.tmp >fdchk2.tmp
     $(noecho)diff fdchk2.tmp ../fd.ok
     @if errorlevel 1 echo ERROR - double precision floating point used

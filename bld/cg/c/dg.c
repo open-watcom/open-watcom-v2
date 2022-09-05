@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -484,16 +484,16 @@ extern  uint    DBSrcFile( cchar_ptr fname )
     fname_lst   *curr, **lnk;
 
     index = 0;
-    len = strlen( fname ) + 1;
     for( lnk = &SrcFiles; (curr = *lnk) != NULL; lnk = &curr->next ){
-        if( memcmp( fname, curr->fname, len ) == 0 ){
+        if( strcmp( fname, curr->fname ) == 0 ){
             return( index );
         }
         ++index;
     }
+    len = strlen( fname ) + 1;
     curr = CGAlloc( sizeof( *curr ) - 1 + len );
     curr->next = NULL;
-    memcpy( curr->fname, fname, len );
+    strcpy( curr->fname, fname );
     *lnk = curr;
     return( index );
 }

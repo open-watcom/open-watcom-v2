@@ -196,34 +196,33 @@ void    InitSegDefs( void )
     backSegId = BACKSEGS;
 }
 
-static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
-/*************************************************************************/
+static omf_idx GetNameIdx( const char *name, const char *suff )
+/*************************************************************/
 {
     lname_cache         **owner;
     lname_cache         *curr;
-    unsigned            name_len;
-    unsigned            suff_len;
+    size_t              len;
+    char                idxname[256];
 
-    name_len = Length( name );
-    suff_len = Length( suff );
-    for( owner = &NameCache; (curr = *owner) != NULL; owner = &curr->next ) {
-        if( (name_len + suff_len) == curr->name[0]
-          && memcmp( name, &curr->name[1], name_len ) == 0
-          && memcmp( suff, &curr->name[name_len + 1], suff_len ) == 0 ) {
-            return( curr->idx );
+    len = strlen( name ) + strlen( suff );
+    assert( len < 256 );
+    if( len < 256 ) {
+        strcpy( idxname, name );
+        strcat( idxname, suff );
+        for( owner = &NameCache; (curr = *owner) != NULL; owner = &curr->next ) {
+            if( len == *(unsigned char *)curr->name && strcmp( idxname, curr->name + 1 ) == 0 ) {
+                return( curr->idx );
+            }
         }
+        curr = CGAlloc( sizeof( *curr ) + len + 1 );
+        *owner = curr;
+        curr->next = NULL;
+        curr->idx = ++NameIndex;
+        curr->name[0] = (unsigned char)len;
+        strcpy( curr->name + 1, idxname );
+        return( NameIndex );
     }
-    if( !alloc )
-        return( 0 );
-    curr = CGAlloc( sizeof( *curr ) + name_len + suff_len );
-    *owner = curr;
-    curr->next = NULL;
-    curr->idx = ++NameIndex;
-    assert(( name_len + suff_len ) < 256 );
-    curr->name[0] = name_len + suff_len;
-    memcpy( &curr->name[1], name, name_len );
-    memcpy( &curr->name[name_len + 1], suff, suff_len );
-    return( NameIndex );
+    return( 0 );
 }
 
 static  byte    DoSum( const byte *buff, size_t len )
@@ -287,6 +286,7 @@ static void FlushNames( void )
     */
     unsigned_8          buff[512];
     unsigned            used;
+    unsigned            len;
     lname_cache         *dmp;
 
     used = 0;
@@ -296,9 +296,10 @@ static void FlushNames( void )
             PutObjOMFRec( CMD_LNAMES, buff, used );
             used = 0;
         }
-        buff[used++] = dmp->name[0];
-        _CopyTrans( &dmp->name[1], &buff[used], dmp->name[0] );
-        used += dmp->name[0];
+        len = *(unsigned char *)dmp->name;
+        buff[used++] = len;
+        _CopyTrans( dmp->name + 1, buff + used, len );
+        used += len;
         NameCacheDumped = dmp;
     }
     if( used > 0 ) {
@@ -417,7 +418,7 @@ static  void    SegmentClass( index_rec *rec )
 
     class_name = FEAuxInfo( (pointer)(pointer_uint)rec->segid, CLASS_NAME );
     if( class_name != NULL ) {
-        rec->cidx = GetNameIdx( class_name, "", true );
+        rec->cidx = GetNameIdx( class_name, "" );
     }
 }
 
@@ -694,13 +695,13 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
         rec->rom = true;   /* code is alway ROM */
         rec->cidx = _NIDX_CODE;
         if( seg->attr & GIVEN_NAME ) {
-            rec->nidx = GetNameIdx( seg->str, "", true );
+            rec->nidx = GetNameIdx( seg->str, "" );
         } else if( CodeGroupGIdx != 0 ) {
-            rec->nidx = GetNameIdx( CodeGroup, seg->str, true );
+            rec->nidx = GetNameIdx( CodeGroup, seg->str );
         } else if( _IsTargetModel( BIG_CODE ) ) {
-            rec->nidx = GetNameIdx( FEModuleName(), seg->str, true );
+            rec->nidx = GetNameIdx( FEModuleName(), seg->str );
         } else {
-            rec->nidx = GetNameIdx( seg->str, "", true );
+            rec->nidx = GetNameIdx( seg->str, "" );
         }
         if( CodeGroupGIdx != 0 ) {
             rec->base = CodeGroupGIdx;
@@ -714,15 +715,15 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
         if( seg->attr & ROM )
             rec->rom = true;
         if( seg->attr & PRIVATE ) {
-            rec->nidx = GetNameIdx( seg->str, "", true );
+            rec->nidx = GetNameIdx( seg->str, "" );
             if( seg->attr & ROM ) {
                 if( PrivateIndexRO == 0 ) {
-                    PrivateIndexRO = GetNameIdx( "FAR_CONST", "", true );
+                    PrivateIndexRO = GetNameIdx( "FAR_CONST", "" );
                 }
                 rec->cidx = PrivateIndexRO;
             } else {
                 if( PrivateIndexRW == 0 ) {
-                    PrivateIndexRW = GetNameIdx( "FAR_DATA", "", true );
+                    PrivateIndexRW = GetNameIdx( "FAR_DATA", "" );
                 }
                 rec->cidx = PrivateIndexRW;
             }
@@ -753,7 +754,7 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
             } else {
                 rec->cidx = _NIDX_DATA;
             }
-            rec->nidx = GetNameIdx( DataGroup, seg->str, true );
+            rec->nidx = GetNameIdx( DataGroup, seg->str );
         }
     }
     SegmentClass( rec );
@@ -916,8 +917,8 @@ segment_id DbgSegDef( const char *seg_name, const char *seg_class, int seg_modif
 
     rec = AllocNewSegRec();
     rec->sidx = ++SegmentIndex;
-    rec->cidx = GetNameIdx( seg_class, "", true );
-    rec->nidx = GetNameIdx( seg_name, "", true );
+    rec->cidx = GetNameIdx( seg_class, "" );
+    rec->nidx = GetNameIdx( seg_name, "" );
     rec->location = 0;
     rec->big = 0;
     rec->need_base_set = true;
@@ -954,15 +955,15 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     char        *dgroup;
     omf_idx     dgroup_idx;
 
-    GetNameIdx( "", "", true );     // _NIDX_NULL
-    GetNameIdx( "CODE", "", true ); // _NIDX_CODE
-    GetNameIdx( "DATA", "", true ); // _NIDX_DATA
-    GetNameIdx( "BSS", "", true );  // _NIDX_BSS
-    GetNameIdx( "TLS", "", true );  // _NIDX_TLS
+    GetNameIdx( "", "" );       // _NIDX_NULL
+    GetNameIdx( "CODE", "" );   // _NIDX_CODE
+    GetNameIdx( "DATA", "" );   // _NIDX_DATA
+    GetNameIdx( "BSS", "" );    // _NIDX_BSS
+    GetNameIdx( "TLS", "" );    // _NIDX_TLS
 
 #if _TARGET & _TARG_80386
     if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) ) {
-        FlatNIndex = GetNameIdx( "FLAT", "", true );
+        FlatNIndex = GetNameIdx( "FLAT", "" );
     }
 #endif
     SegmentIndex = 0;
@@ -972,7 +973,7 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     if( CodeGroup[0] == NULLCHAR ) {
         CodeGroupGIdx = 0;
     } else {
-        CodeGroupNIdx = GetNameIdx( CodeGroup, "", true );
+        CodeGroupNIdx = GetNameIdx( CodeGroup, "" );
         CodeGroupGIdx = ++GroupIndex;
     }
     dgroup = FEAuxInfo( NULL, DATA_GROUP );
@@ -983,9 +984,9 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     }
     if( DataGroup[0] != NULLCHAR ) {
         TargetModel |= FLOATING_SS;
-        dgroup_idx = GetNameIdx( DataGroup, "_GROUP", true );
+        dgroup_idx = GetNameIdx( DataGroup, "_GROUP" );
     } else {
-        dgroup_idx = GetNameIdx( "DGROUP", "", true );
+        dgroup_idx = GetNameIdx( "DGROUP", "" );
     }
     OutIdx( dgroup_idx, dgroup_def );
     SegInfo = InitArray( sizeof( index_rec ), MODEST_INFO, INCREMENT_INFO );
@@ -1427,7 +1428,7 @@ static void     EjectLEData( void )
 static void GetSymLName( const char *name, omf_idx *nidx )
 /********************************************************/
 {
-    *nidx = GetNameIdx( name, "", true );
+    *nidx = GetNameIdx( name, "" );
 }
 
 static omf_idx NeedComdatNidx( import_type kind )

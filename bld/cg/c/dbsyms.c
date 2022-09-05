@@ -95,10 +95,9 @@ uint    _CGAPI DBSrcFile( cchar_ptr fname )
 #ifndef NDEBUG
     EchoAPI( "DBSrcFile( %c )", fname );
 #endif
-    len = strlen( fname ) + 1;
     index = 0;
     for( lnk = &DBFiles.lst; (curr = *lnk) != NULL; lnk = &curr->next ) {
-        if( memcmp( fname, curr->fname, len ) == 0 ) {
+        if( strcmp( fname, curr->fname ) == 0 ) {
 #ifndef NDEBUG
             EchoAPI( " -> %i\n", index );
 #endif
@@ -106,10 +105,11 @@ uint    _CGAPI DBSrcFile( cchar_ptr fname )
         }
         ++index;
     }
+    len = strlen( fname ) + 1;
     curr = CGAlloc( sizeof( *curr ) - 1 + len );
     curr->len = len;
     curr->next = NULL;
-    memcpy( curr->fname, fname, len );
+    strcpy( curr->fname, fname );
     ++DBFiles.count;
     *lnk = curr;
 #ifndef NDEBUG

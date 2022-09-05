@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,6 +83,26 @@ static int compareRevI( const void *p1, const void *p2 )
     return( stricmp( *cp2, *cp1 ) );
 }
 
+char *my_fgets( char *buffer, int size, FILE *fp )
+{
+    size_t  len;
+
+    if( fgets( buffer, size, fp ) == NULL ) {
+        return( NULL );
+    }
+    len = strlen( buffer );
+    while( len-- > 0 ) {
+        if( buffer[len] == '\n' ) {
+            buffer[len] = '\0';
+        } else if( buffer[len] == '\r' ) {
+            buffer[len] = '\0';
+        } else {
+            break;
+        }
+    }
+    return( buffer );
+}
+
 // main is allways int on windows
 int main( int argc, char **argv )
 {
@@ -93,7 +113,7 @@ int main( int argc, char **argv )
     int     i;
     FILE    *infile, *outfile;
     int     own_infile = 0, own_outfile = 0;
-        int     ret;
+    int     ret;
 
     infile = NULL;
     outfile = NULL;
@@ -109,7 +129,8 @@ int main( int argc, char **argv )
         } else if( ch == 'r' ) {
             rflag = 1;
         } else if( ch == 'o' ) {
-            outfile = fopen( OptArg, "w" );
+            // allways open output file in text mode
+            outfile = fopen( OptArg, "wt" );
             if( outfile == NULL ) {
                 fprintf( stderr, "sort: cannot open output file \"%s\"\n", OptArg );
                 ret = EXIT_FAILURE;
@@ -121,7 +142,7 @@ int main( int argc, char **argv )
     argv++;
 
     if( *argv != NULL ) {
-        // allways open in binary mode on windows
+        // allways open input file in binary mode
         infile = fopen( *argv, "rb" );
         if( infile == NULL ) {
             fprintf( stderr, "sort: cannot open input file \"%s\"\n", *argv );
@@ -139,11 +160,7 @@ int main( int argc, char **argv )
         outfile = stdout;
     }
 
-    for( ;; ) {
-        fgets( buffer, sizeof( buffer ), infile );
-        if( feof( infile ) ) {
-            break;
-        }
+    while( my_fgets( buffer, sizeof( buffer ), infile ) != NULL ) {
         lines[line_count] = (char *)malloc( sizeof( char ) * strlen( buffer ) + 1 );
         strcpy( lines[line_count], buffer );
         line_count++;
@@ -164,7 +181,7 @@ int main( int argc, char **argv )
     }
 
     for( i = 0; i < line_count; i++ ) {
-        fputs( lines[i], outfile );
+        fprintf( outfile, "%s\n", lines[i] );
         free( lines[i] );
     }
 
