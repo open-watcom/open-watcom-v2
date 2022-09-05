@@ -145,7 +145,7 @@ the operating system whenever a flush (
 .ct
 .reffunc fflush
 or
-.reffunc flushall
+.reffunc _flushall
 .ct )
 is done.
 .np

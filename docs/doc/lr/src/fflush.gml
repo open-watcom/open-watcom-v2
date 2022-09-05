@@ -33,7 +33,7 @@ if a write error occurs and zero otherwise.
 .im errnoref
 .return end
 .see begin
-.seelist fflush fgetc fgets flushall fopen getc gets setbuf setvbuf ungetc
+.seelist fflush fgetc fgets _flushall fopen getc gets setbuf setvbuf ungetc
 .see end
 .exmp begin
 #include <stdio.h>

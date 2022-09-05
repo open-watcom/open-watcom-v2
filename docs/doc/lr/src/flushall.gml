@@ -1,8 +1,12 @@
-.func flushall
+.func flushall _flushall
 .synop begin
 #include <stdio.h>
 int flushall( void );
 .ixfunc2 '&StrIo' &funcb
+.if &'length(&_func.) ne 0 .do begin
+int _flushall( void );
+.ixfunc2 '&StrIo' &_func
+.do end
 .synop end
 .desc begin
 The
@@ -27,7 +31,7 @@ When an output error occurs while writing to a file, the
 global variable will be set.
 .return end
 .see begin
-.seelist flushall fopen fflush
+.seelist fopen fflush
 .see end
 .exmp begin
 #include <stdio.h>
@@ -35,7 +39,7 @@ global variable will be set.
 void main()
   {
     printf( "The number of open files is %d\n",
-            flushall() );
+            _flushall() );
   }
 .exmp output
 The number of open files is 4

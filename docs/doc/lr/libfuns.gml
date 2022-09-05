@@ -351,6 +351,7 @@
 .fnc _floodfill_w             _floodfill               gr_flood.gml  DOS QNX W       GRAPH
 .fnc floor                    floor                    floor.gml     DOS QNX W WIN32
 .fnc flushall                 flushall                 flushall.gml  DOS QNX W WIN32
+.fnc _flushall                flushall                 flushall.gml  DOS QNX W WIN32
 .fnc fma                      fma                      fma.gml       DOS QNX W WIN32
 .fnc fmax                     fmax                     fmax.gml      DOS QNX W WIN32
 .fnc fmin                     fmin                     fmin.gml      DOS QNX W WIN32

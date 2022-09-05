@@ -58,6 +58,7 @@ fgetwc        fgetwchar         _fgetwchar        d16 d32 nt  nta ntp           
 fileno        fileno            _fileno           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 flelen        _filelength       filelength        d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 flele0        filelength        _filelength                               ncl     nll
+flusha        flushall          _flushall         d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 fputch        fputchar          _fputchar         d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 fedisa        fedisableexcept   __fedisableexcept d16 d32 nt          nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 feenab        feenableexcept    __feenableexcept  d16 d32 nt          nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk

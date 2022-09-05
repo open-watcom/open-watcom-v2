@@ -1811,7 +1811,7 @@ equivalent to "fgetc" with the argument "stdin"
 get current file position
 .fd fgets
 get a string
-.fd flushall
+.fd _flushall
 flush output buffers for all streams
 .fd fopen
 open a stream

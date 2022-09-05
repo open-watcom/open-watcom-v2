@@ -307,7 +307,7 @@ fgetpos~b~b~b~b~b~b~b~b~b~b~b~b
 fgets~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 _filelength~b~b~b~b~b~b~b~b
 fileno~b~b~b~b~b~b~b~b~b~b~b~b~b
-flushall~b~b~b~b~b~b~b~b~b~b~b
+_flushall~b~b~b~b~b~b~b~b~b~b
 _fmalloc~b~b~b~b~b~b~b~b~b~b~b
 fopen~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 fprintf~b~b~b~b~b~b~b~b~b~b~b~b
