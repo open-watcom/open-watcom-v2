@@ -40,7 +40,7 @@ char    *DupString( const char * );
 /* alias.c */
 vi_rc   SetAlias( const char * );
 alias_list *CheckAlias( const char *str );
-bool    CheckAbbrev( const char *, int * );
+bool    CheckAbbrev( char *, int * );
 vi_rc   Abbrev( const char * );
 vi_rc   UnAbbrev( const char * );
 vi_rc   UnAlias( const char * );

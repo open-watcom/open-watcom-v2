@@ -82,14 +82,12 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
 /*
  * checkGenericAlias - check command line for aliases/abbrevs
  */
-static alias_list *checkGenericAlias( const char *str, size_t len, alias_list *head )
+static alias_list *checkGenericAlias( const char *str, alias_list *head )
 {
     alias_list  *curr;
 
-    if( len == 0 )
-        len = strlen( str );
     for( curr = head; curr != NULL; curr = curr->next ) {
-        if( memcmp( str, curr->alias, len ) == 0 && curr->alias[len] == '\0' ) {
+        if( strcmp( str, curr->alias ) == 0 ) {
             break;
         }
     }
@@ -104,7 +102,7 @@ static vi_rc removeGenericAlias( const char *which, alias_list **head, alias_lis
 {
     alias_list  *curr;
 
-    curr = checkGenericAlias( which, 0, *head );
+    curr = checkGenericAlias( which, *head );
     if( curr == NULL ) {
         return( ERR_NO_SUCH_ALIAS );
     }
@@ -138,7 +136,7 @@ vi_rc UnAlias( const char *what )
  */
 alias_list *CheckAlias( const char *str )
 {
-    return( checkGenericAlias( str, 0, alHead ) );
+    return( checkGenericAlias( str, alHead ) );
 
 } /* CheckAlias */
 
@@ -175,7 +173,7 @@ vi_rc UnAbbrev( const char *abbrev )
 /*
  * CheckAbbrev - look for an abbreviation, and expand it
  */
-bool CheckAbbrev( const char *data, int *ccnt )
+bool CheckAbbrev( char *data, int *ccnt )
 {
     int         i, j, owl, col;
     alias_list  *curr;
@@ -193,7 +191,8 @@ bool CheckAbbrev( const char *data, int *ccnt )
     if( len == 0 ) {
         return( false );
     }
-    curr = checkGenericAlias( data, len, abHead );
+    data[len] = '\0';
+    curr = checkGenericAlias( data, abHead );
     if( curr == NULL ) {
         return( false );
     }
