@@ -31,7 +31,7 @@ variables:
 #  owimage_osx:      'macOS-10.14'
 #  owimage_osx:      'macOS-11'
   owimage_lnx:      'ubuntu-22.04'
-  owimage_nt:       'windows-2022'
+  owimage_nt:       'windows-2019'
   owimage_osx:      'macOS-12'
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
