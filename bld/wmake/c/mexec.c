@@ -920,6 +920,9 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
         }
     }
 #else
+  #ifdef _WIN64
+    fflush( NULL );
+  #endif
     retcode = system( cmd );
     lastErrorLevel = (UINT8)retcode;
     if( retcode < 0 ) {
