@@ -571,18 +571,6 @@ static void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
     FixupHead = fix;
 }
 
-static void FreeAsmFixups( void )
-/******************************/
-{
-    struct asmfixup     *fix;
-
-    for( ; (fix = FixupHead) != NULL; ) {
-        FixupHead = fix->next;
-        CMemFree( fix );
-    }
-}
-
-
 void AsmSysLine( const char *buff )
 /*********************************/
 {
@@ -705,7 +693,6 @@ static bool GetByteSeq( aux_info *info )
     } else {
         uses_auto = AsmInsertFixups( info );
     }
-    FreeAsmFixups();
     AsmSysFini();
     return( uses_auto );
 }
@@ -966,17 +953,17 @@ void PragAux( void )
 void AsmSysInit( unsigned char *buf )
 /***********************************/
 {
+    AsmInit();
     AsmCodeBuffer = buf;
     AsmCodeLimit = MAXIMUM_BYTESEQ;
     AsmCodeAddress = 0;
-    AsmSaveCPUInfo();
 }
 
 void AsmSysFini( void )
 /*********************/
 {
-    AsmSymFini();
-    AsmRestoreCPUInfo();
+    AsmFiniRelocs();
+    AsmFini();
 }
 
 void AsmMakeInlineFunc( bool too_many_bytes )

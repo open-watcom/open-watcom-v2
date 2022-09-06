@@ -152,13 +152,11 @@ static bool GetByteSeq( aux_info *info )
             AsmCodeAddress = 0; // reset index to we don't overrun buffer
         }
     }
-    AsmFini();
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
         uses_auto = AsmInsertFixups( info );
     }
-    AsmFiniRelocs();
     AsmSysFini();
     return( uses_auto );
 }
@@ -409,6 +407,7 @@ void AsmSysInit( unsigned char *buf )
 void AsmSysFini( void )
 /*********************/
 {
+    AsmFiniRelocs();
     AsmFini();
 }
 

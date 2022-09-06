@@ -133,7 +133,6 @@ void AsmStmt( void )
     }
     PPControl = old_ppctl;
     AsmMakeInlineFunc( too_many_bytes );
-    AsmFiniRelocs();
     AsmSysFini();
     if( CurToken == skip_token ) {
         NextToken();
