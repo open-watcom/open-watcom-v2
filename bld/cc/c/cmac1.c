@@ -248,6 +248,7 @@ TOKEN GetMacroToken( void )
     MACRO_TOKEN     *mtok;
     bool            keep_token;
     TOKEN           token;
+    char            c;
 
     for( ; (mtok = TokenList) != NULL; ) {
         if( (token = mtok->token) != T_NULL ) {
@@ -265,10 +266,11 @@ TOKEN GetMacroToken( void )
         token = T_NULL;
         Buffer[0] = '\0';
     } else {
-        /* size of Buffer is OK, token data was processed in Buffer before */
-        while( (Buffer[TokenLen] = mtok->data[TokenLen]) != '\0' ) {
-            TokenLen++;
+        while( (c = mtok->data[TokenLen]) != '\0' ) {
+            WriteBufferChar(c);
         }
+        WriteBufferNullChar();
+
         keep_token = false;
         switch( token ) {
         case T_SAVED_ID:
