@@ -49,11 +49,27 @@
     #define MEM_ALIGN   4
 #endif
 
-#define MCB_SHIFT   MEM_ALIGN
+#define MCB_SHIFT       MEM_ALIGN
 
-#define NEXT_MCB(x) (MCB *)((char *)(x) + (x)->len)
-#define PTR2MCB(x)  (MCB *)((char *)(x) - MCB_SHIFT)
-#define MCB2PTR(x)  (void *)((char *)(x) + MCB_SHIFT)
+#define NEXT_MCB(x)     (MCB *)((char *)(x) + (x)->len)
+#define PTR2MCB(x)      (MCB *)((char *)(x) - MCB_SHIFT)
+#define MCB2PTR(x)      (void *)((char *)(x) + MCB_SHIFT)
+
+/* Size of permanent area. Needs to be reasonably big to satisfy
+ * large allocation requests. Must by multiple of 0x20
+ */
+#define MAX_PERM_SIZE   0x100000        /* was 0xfff0 */
+
+#define PERM_END        (size_t)-1
+
+/* Mask to get real allocation size */
+#define SIZE_MASK       ~1u             /* was 0xfffe */
+
+enum cmem_kind {
+    CMEM_PERM,
+    CMEM_MEM,
+    CMEM_NONE,
+};
 
 typedef struct  mem_block {
     size_t              len;    /* length of stg */
@@ -69,14 +85,6 @@ typedef struct mem_blk {
     unsigned            pad;    // padding to get quadword aligned size
 #endif
 } mem_blk;
-
-/* Size of permanent area. Needs to be reasonably big to satisfy
- * large allocation requests. Must by multiple of 0x20
- */
-#define MAX_PERM_SIZE   0x100000        /* was 0xfff0 */
-
-/* Mask to get real allocation size */
-#define SIZE_MASK       ~1u             /* was 0xfffe */
 
 /*  variables used:
  *      char *PermArea;         pointer to start of permanent area
@@ -259,12 +267,6 @@ void *CMemRealloc( void *loc, size_t size )
     } /* else the current block is big enough -- nothing to do (very lazy realloc) */
     return( p );
 }
-
-enum cmem_kind {
-    CMEM_PERM,
-    CMEM_MEM,
-    CMEM_NONE,
-};
 
 static enum cmem_kind CMemKind( void *loc )
 {
