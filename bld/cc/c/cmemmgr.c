@@ -60,7 +60,7 @@
  */
 #define MAX_PERM_SIZE   0x100000        /* was 0xfff0 */
 
-#define PERM_END        (size_t)-1
+#define PERM_BLK_END    (size_t)-1
 
 /* Mask to get real allocation size */
 #define SIZE_MASK       ~1u             /* was 0xfffe */
@@ -137,7 +137,7 @@ static void AllocPermArea( void )
             blk->size = PermSize;
             Blks = blk;
             perm_area = (char *)blk + sizeof( mem_blk );
-            *(size_t *)(perm_area + PermSize) = (size_t)-1;     /* null length tag */
+            ((MCB *)(perm_area + PermSize))->len = PERM_BLK_END;    /* null length tag */
             break;
         }
     }
@@ -171,9 +171,9 @@ static void Ccoalesce( MCB *p1 )
 
     for( ;; ) {
         p2 = NEXT_MCB( p1 );
-        if( p2->len & 1 )   /* quit if next block not free */
+        if( p2->len & 1 )               /* quit if next block not free */
             break;
-        if( p2->len == 0 )  /* quit if no more blocks follow in permanet block */
+        if( p2->len == PERM_BLK_END )   /* quit if no more blocks follow in permanet block */
             break;
         /* coalesce p1 and p2 and remove p2 from free list */
         p1->len += p2->len;
