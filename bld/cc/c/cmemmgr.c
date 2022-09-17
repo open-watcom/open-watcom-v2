@@ -96,9 +96,6 @@ static  size_t      PermAvail;  /* # of bytes available in PermArea */
 static  MCB         CFreeList;
 static  mem_blk     *Blks;
 
-// local functions
-static void Ccoalesce( MCB *p1 );
-
 static void InitPermArea( void )
 {
     Blks = NULL;
@@ -157,6 +154,28 @@ void CMemFini( void )
     FiniPermArea();
 }
 
+static void Ccoalesce( MCB *p1 )
+/******************************/
+{
+    MCB *p2;
+    MCB *pnext;
+    MCB *pprev;
+
+    for( ;; ) {
+        p2 = NEXT_MCB( p1 );
+        if( p2->len & 1 )   /* quit if next block not free */
+            break;
+        if( p2->len == 0 )  /* quit if no more blocks follow in permanet block */
+            break;
+        /* coalesce p1 and p2 and remove p2 from free list */
+        p1->len += p2->len;
+        pnext = p2->next;
+        pprev = p2->prev;
+        pprev->next = pnext;
+        pnext->prev = pprev;
+    }
+}
+
 static void *CFastAlloc( size_t size )
 /************************************/
 {
@@ -196,28 +215,6 @@ static void *CFastAlloc( size_t size )
     p1 = (MCB *)( PermPtr + PermAvail );
     p1->len = amount | 1;
     return( MCB2PTR( p1 ) );
-}
-
-
-static void Ccoalesce( MCB *p1 )
-{
-    MCB *p2;
-    MCB *pnext;
-    MCB *pprev;
-
-    for( ;; ) {
-        p2 = NEXT_MCB( p1 );
-        if( p2->len & 1 )   /* quit if next block not free */
-            break;
-        if( p2->len == 0 )  /* quit if no more blocks follow in permanet block */
-            break;
-        /* coalesce p1 and p2 and remove p2 from free list */
-        p1->len += p2->len;
-        pnext = p2->next;
-        pprev = p2->prev;
-        pprev->next = pnext;
-        pnext->prev = pprev;
-    }
 }
 
 
