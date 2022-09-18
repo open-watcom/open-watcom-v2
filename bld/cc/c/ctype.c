@@ -533,25 +533,25 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                         CErr1( ERR_INVALID_DECLARATOR );
                         break;
                     }
-                    if( CMPLIT( Buffer, "dllimport" ) == 0 ) {
+                    if( strcmp( Buffer, "dllimport" ) == 0 ) {
                         decl = DECLSPEC_DLLIMPORT;
-                    } else if( CMPLIT( Buffer, "overridable" ) == 0 ) {
+                    } else if( strcmp( Buffer, "overridable" ) == 0 ) {
                         decl = DECLSPEC_DLLIMPORT;
-                    } else if( CMPLIT( Buffer, "dllexport" ) == 0 ) {
+                    } else if( strcmp( Buffer, "dllexport" ) == 0 ) {
                         decl = DECLSPEC_DLLEXPORT;
-                    } else if( CMPLIT( Buffer, "thread" ) == 0 ) {
+                    } else if( strcmp( Buffer, "thread" ) == 0 ) {
                         decl = DECLSPEC_THREAD;
-                    } else if( CMPLIT( Buffer, "naked" ) == 0 ) {
+                    } else if( strcmp( Buffer, "naked" ) == 0 ) {
                         if( info->naked ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             info->naked = true;
                         }
-                    } else if( CMPLIT( Buffer, "aborts" ) == 0 ) {
+                    } else if( strcmp( Buffer, "aborts" ) == 0 ) {
                         modifier = FLAG_ABORTS;
-                    } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
+                    } else if( strcmp( Buffer, "noreturn" ) == 0 ) {
                         modifier = FLAG_NORETURN;
-                    } else if( CMPLIT( Buffer, "farss" ) == 0 ) {
+                    } else if( strcmp( Buffer, "farss" ) == 0 ) {
                         modifier = FLAG_FARSS;
                     } else {
                         CErr1( ERR_INVALID_DECLSPEC );
