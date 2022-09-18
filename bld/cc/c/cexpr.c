@@ -2149,7 +2149,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                 if( functree->op.opr == OPR_PUSHADDR ) {
                     SymGet( &sym, functree->op.u2.sym_handle );
                     sym_name = SymName( &sym, functree->op.u2.sym_handle );
-                    if( CMPLIT( sym_name, "_inline_strcmp" ) == 0 ) {
+                    if( strcmp( sym_name, "_inline_strcmp" ) == 0 ) {
                         SymGet( &sym, SymMEMCMP );
                         tree = VarLeaf( &sym, SymMEMCMP );
                         optimized = true;
@@ -2185,15 +2185,15 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                     }
                 }
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
-                if( CMPLIT( sym_name, "__builtin_va_start" ) == 0 ) {
+                if( strcmp( sym_name, "__builtin_va_start" ) == 0 ) {
                     return( GenVaStartNode( last_parm ) );
                 }
-                if( CMPLIT( sym_name, "__builtin_alloca" ) == 0 ) {
+                if( strcmp( sym_name, "__builtin_alloca" ) == 0 ) {
                     return( GenAllocaNode( last_parm ) );
                 }
 #endif
 #if  _CPU == _PPC
-                if( CMPLIT( sym_name, "__builtin_varg" ) == 0 ) {
+                if( strcmp( sym_name, "__builtin_varg" ) == 0 ) {
                     return( GenVaArgNode( last_parm ) );
                 }
 #endif
@@ -2345,16 +2345,16 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
                 sym_handle = tree->op.u2.sym_handle;
                 SymGet( &sym, sym_handle );
                 func_name = SymName( &sym, sym_handle );
-                if( CMPLIT( func_name, "_exception_code" ) == 0 ) {
+                if( strcmp( func_name, "_exception_code" ) == 0 ) {
                     if( CompFlags.exception_filter_expr ||
                         CompFlags.exception_handler ) {
                         opr = OPR_EXCEPT_CODE;
                     }
-                } else if( CMPLIT( func_name, "_exception_info" ) == 0 ) {
+                } else if( strcmp( func_name, "_exception_info" ) == 0 ) {
                     if( CompFlags.exception_filter_expr ) {
                         opr = OPR_EXCEPT_INFO;
                     }
-                } else if( CMPLIT( func_name, "_abnormal_termination" ) == 0 ) {
+                } else if( strcmp( func_name, "_abnormal_termination" ) == 0 ) {
                     if( CompFlags.in_finally_block ) {
                         opr = OPR_ABNORMAL_TERMINATION;
                     }
