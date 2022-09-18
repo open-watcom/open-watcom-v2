@@ -592,7 +592,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
             if( parm_count_reqd > 0 ) {
                 CWarn2p( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
             }
-        } else if( CMPLIT( mentry->macro_name, "va_start" ) == 0 ) {
+        } else if( strcmp( mentry->macro_name, "va_start" ) == 0 ) {
             if( SymLevel != 0 && !VarParm( CurFunc ) ) {
                 CErr1( ERR_MUST_BE_VAR_PARM_FUNC );
             }
