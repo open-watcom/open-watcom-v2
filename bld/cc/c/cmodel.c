@@ -188,7 +188,7 @@ void PreDefine_Macro( const char *str )
 }
 
 
-char *AddUndefName( const char *str )
+void AddUndefName( const char *str )
 {
     size_t          len;
     undef_names     *uname;
@@ -204,10 +204,8 @@ char *AddUndefName( const char *str )
             uname->name = CMemAlloc( len + 1 );
             memcpy( uname->name, str, len + 1 );
             UndefNames = uname;
-            str += len;
         }
     }
-    return( (char *)str );
 }
 
 
