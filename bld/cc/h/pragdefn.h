@@ -83,6 +83,7 @@ global aux_info         STOSBInfo;
 #define MAXIMUM_BYTESEQ         4096
 #define MAXIMUM_PARMSETS        32
 #define ASM_BLOCK               64
+#define REG_BUFF_SIZE           20
 
 #if _CPU == 386
 #define DEFAULT_PCH_NAME        "wcc386.pch"

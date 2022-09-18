@@ -638,7 +638,7 @@ int PragRegNumIndex( const char *str, size_t len, int max_reg )
 void PragRegNameErr( const char *regname, size_t regnamelen )
 /***********************************************************/
 {
-    char            buffer[20];
+    char            buffer[REG_BUFF_SIZE];
 
     if( regnamelen > sizeof( buffer ) - 1 )
         regnamelen = sizeof( buffer ) - 1;

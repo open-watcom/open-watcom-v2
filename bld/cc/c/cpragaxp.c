@@ -370,7 +370,7 @@ hw_reg_set PragRegName( const char *regname, size_t regnamelen )
 
 hw_reg_set PragReg( void )
 {
-    char            buffer[20];
+    char            buffer[REG_BUFF_SIZE];
     size_t          len;
     bool            prefix;
 
