@@ -62,8 +62,7 @@
 
 #define BUF_SIZE                    512
 
-#define CPYLIT(s,c) memcpy( s, c, sizeof( c ) )
-#define LENLIT(c)   (sizeof( c ) - 1)
+#define LENLIT(c)                   (sizeof( c ) - 1)
 
 #define PPOPERATOR_DEFINED          "defined"
 #define PPOPERATOR_PRAGMA           "_Pragma"
