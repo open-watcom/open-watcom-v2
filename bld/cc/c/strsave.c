@@ -33,15 +33,20 @@
 #include "strsave.h"
 #include "cmemmgr.h"
 
+
+char *ToString( const char *buf, size_t len )
+{
+    char    *str;
+
+    str = CMemAlloc( len + 1 );
+    if( str != NULL ) {
+        memcpy( str, buf, len );
+        str[len] = '\0';
+    }
+    return( str );
+}
+
 char *CStrSave( const char *buf )
 {
-    char    *new;
-    size_t  len;
-
-    len = strlen( buf ) + 1;
-    new = CMemAlloc( len );
-    if( new != NULL ) {
-        memcpy( new, buf, len );
-    }
-    return( new );
+    return( ToString( buf, strlen( buf ) ) );
 }
