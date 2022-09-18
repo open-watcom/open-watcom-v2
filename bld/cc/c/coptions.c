@@ -2046,7 +2046,6 @@ static void ProcOptions( const char *str )
             } else {  /* collect  file name */
                 const char  *beg;
                 char        *p;
-                size_t      len;
                 char        c;
 
                 beg = str;
