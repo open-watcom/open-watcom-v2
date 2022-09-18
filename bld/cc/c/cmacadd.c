@@ -118,12 +118,10 @@ static void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
 
 static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 {
-    size_t      len;
     MEPTR       mentry;
 
-    len = strlen( name ) + 1;
     while( (mentry = *lnk) != NULL ) {
-        if( NameCmp( mentry->macro_name, name, len ) == 0 )
+        if( strcmp( mentry->macro_name, name ) == 0 )
             break;
         lnk = &mentry->next_macro;
     }
