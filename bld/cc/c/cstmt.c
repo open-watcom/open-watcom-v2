@@ -182,7 +182,7 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     tree->op.u2.func.flags = FUNC_NONE;
     if( TOGGLE( inline ) || (sym->mods & FLAG_INLINE) ) {
         if( !sym->attribs.naked ) {
-            if( CMPLIT( sym->name, "main" ) != 0 ) {
+            if( strcmp( sym->name, "main" ) != 0 ) {
                 tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
             }
         }
@@ -1414,7 +1414,7 @@ void Statement( void )
         }
     }
     /* C99 has special semantics for return value of main() */
-    if( CompFlags.c99_extensions && !CMPLIT( CurFunc->name, "main" ) ) {
+    if( CompFlags.c99_extensions && strcmp( CurFunc->name, "main" ) == 0 ) {
         if( !return_at_outer_level ) {
             FixupC99MainReturn( func_result_handle, &return_info );
             return_at_outer_level = true;
