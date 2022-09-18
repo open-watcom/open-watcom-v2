@@ -292,23 +292,23 @@ static void SetTargSystem( void )
 #endif
     }
 
-    if( CMPLIT( SwData.sys_name, "DOS" ) == 0 ) {
+    if( strcmp( SwData.sys_name, "DOS" ) == 0 ) {
         TargSys = TS_DOS;
-    } else if( CMPLIT( SwData.sys_name, "NETWARE" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "NETWARE" ) == 0 ) {
         TargSys = TS_NETWARE;
-    } else if( CMPLIT( SwData.sys_name, "NETWARE5" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
         TargSys = TS_NETWARE5;
-    } else if( CMPLIT( SwData.sys_name, "WINDOWS" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
         TargSys = TS_WINDOWS;
-    } else if( CMPLIT( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
         TargSys = TS_CHEAP_WINDOWS;
-    } else if( CMPLIT( SwData.sys_name, "NT" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
         TargSys = TS_NT;
-    } else if( CMPLIT( SwData.sys_name, "LINUX" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
         TargSys = TS_LINUX;
-    } else if( CMPLIT( SwData.sys_name, "QNX" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "QNX" ) == 0 ) {
         TargSys = TS_QNX;
-    } else if( CMPLIT( SwData.sys_name, "OS2" ) == 0 ) {
+    } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
         TargSys = TS_OS2;
     } else {
         TargSys = TS_OTHER;
