@@ -2166,26 +2166,26 @@ static void Define_Memory_Model( void )
     }
 #endif
 #if _CPU == 8086
-    CPYLIT( CLIB_Name, "1clib?" );
+    strcpy( CLIB_Name, "1clib?" );
     if( CompFlags.bm_switch_used ) {
-        CPYLIT( CLIB_Name, "1clibmt?" );
+        strcpy( CLIB_Name, "1clibmt?" );
     }
     if( CompFlags.bd_switch_used ) {
         if( TargSys == TS_WINDOWS ||
             TargSys == TS_CHEAP_WINDOWS ) {
-            CPYLIT( CLIB_Name, "1clib?" );
+            strcpy( CLIB_Name, "1clib?" );
         } else {
-            CPYLIT( CLIB_Name, "1clibdl?" );
+            strcpy( CLIB_Name, "1clibdl?" );
         }
     }
     if( GET_FPU_EMU( ProcRevision ) ) {
-        CPYLIT( MATHLIB_Name, "7math87?" );
+        strcpy( MATHLIB_Name, "7math87?" );
         EmuLib_Name = "8emu87";
     } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
-        CPYLIT( MATHLIB_Name, "5math?" );
+        strcpy( MATHLIB_Name, "5math?" );
         EmuLib_Name = NULL;
     } else {
-        CPYLIT( MATHLIB_Name, "7math87?" );
+        strcpy( MATHLIB_Name, "7math87?" );
         EmuLib_Name = "8noemu87";
     }
 #elif _CPU == 386
@@ -2193,39 +2193,39 @@ static void Define_Memory_Model( void )
     if( !CompFlags.register_conventions )
         model = 's';
     if( CompFlags.br_switch_used ) {
-        CPYLIT( CLIB_Name, "1clb?dll" );
+        strcpy( CLIB_Name, "1clb?dll" );
     } else {
-        CPYLIT( CLIB_Name, "1clib3?" );     // There is only 1 CLIB now!
+        strcpy( CLIB_Name, "1clib3?" );     // There is only 1 CLIB now!
     }
     if( GET_FPU_EMU( ProcRevision ) ) {
         if( CompFlags.br_switch_used ) {
-            CPYLIT( MATHLIB_Name, "7mt7?dll" );
+            strcpy( MATHLIB_Name, "7mt7?dll" );
         } else {
-            CPYLIT( MATHLIB_Name, "7math387?" );
+            strcpy( MATHLIB_Name, "7math387?" );
         }
         EmuLib_Name = "8emu387";
     } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
         if( CompFlags.br_switch_used ) {
-            CPYLIT( MATHLIB_Name, "5mth?dll" );
+            strcpy( MATHLIB_Name, "5mth?dll" );
         } else {
-            CPYLIT( MATHLIB_Name, "5math3?" );
+            strcpy( MATHLIB_Name, "5math3?" );
         }
         EmuLib_Name = NULL;
     } else {
         if( CompFlags.br_switch_used ) {
-            CPYLIT( MATHLIB_Name, "7mt7?dll" );
+            strcpy( MATHLIB_Name, "7mt7?dll" );
         } else {
-            CPYLIT( MATHLIB_Name, "7math387?" );
+            strcpy( MATHLIB_Name, "7math387?" );
         }
         EmuLib_Name = "8noemu387";
     }
 #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
     if( CompFlags.br_switch_used ) {
-        CPYLIT( CLIB_Name, "1clbdll" );
-        CPYLIT( MATHLIB_Name, "7mthdll" );
+        strcpy( CLIB_Name, "1clbdll" );
+        strcpy( MATHLIB_Name, "7mthdll" );
     } else {
-        CPYLIT( CLIB_Name, "1clib" );
-        CPYLIT( MATHLIB_Name, "7math" );
+        strcpy( CLIB_Name, "1clib" );
+        strcpy( MATHLIB_Name, "7math" );
     }
     EmuLib_Name = NULL;
 #else
