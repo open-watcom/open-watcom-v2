@@ -1120,7 +1120,7 @@ TOKEN Process_Pragma( bool internal )
         }
     } else {
         InsertToken( CurToken, Buffer, internal );
-        CPYLIT( Buffer, PPOPERATOR_PRAGMA );
+        strcpy( Buffer, PPOPERATOR_PRAGMA );
         TokenLen = LENLIT( PPOPERATOR_PRAGMA );
         CurToken = T_ID;
     }

@@ -1614,7 +1614,7 @@ static TREEPTR ExprOpnd( void )
             tree = LeafNode( OPR_PUSHFLOAT );
             tree->op.u1.const_type = TYP_DIMAGINARY;
             flt = CMemAlloc( sizeof( FLOATVAL ) + LENLIT( FLOAT_PLUS_ONE ) );
-            CPYLIT( flt->string, FLOAT_PLUS_ONE );
+            strcpy( flt->string, FLOAT_PLUS_ONE );
             flt->len = LENLIT( FLOAT_PLUS_ONE );
             flt->type = TYP_DIMAGINARY;
             flt->next = NULL;
