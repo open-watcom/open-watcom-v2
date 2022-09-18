@@ -624,9 +624,6 @@ extern char const   *UsageText( void );   // GET INTERNATIONAL USAGE TEXT
 extern char const   *CGetMsgPrefix( msg_codes msgnum );
 extern int          GetMsgIndex( msg_codes msgnum );
 
-/* cname */
-extern int          NameCmp(const void *,const void *,size_t);
-
 /* coptions */
 extern bool         EqualChar(int);
 extern void         GenCOptions(char **);
