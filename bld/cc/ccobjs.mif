@@ -42,7 +42,6 @@ common_objs = &
     $(_subdir_)cmemmgr.obj &
     $(_subdir_)cmodel.obj &
     $(_subdir_)cmsg.obj &
-    $(_subdir_)cname.obj &
     $(_subdir_)coptions.obj &
     $(_subdir_)caux.obj &
     $(_subdir_)cpragma.obj &
