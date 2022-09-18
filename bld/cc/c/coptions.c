@@ -858,7 +858,7 @@ void MergeInclude( void )
             memcpy( buff, SwData.sys_name, len );
             break;
         }
-        CPYLIT( buff + len, "_" INC_VAR );
+        strcpy( buff + len, "_" INC_VAR );
         AddIncList( FEGetEnv( buff ) );
 
 #if _CPU == 386
