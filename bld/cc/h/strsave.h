@@ -29,4 +29,5 @@
 ****************************************************************************/
 
 
-extern  char    *CStrSave(const char *);
+extern char     *ToString( const char *buf, size_t len );
+extern char     *CStrSave( const char *buf );
