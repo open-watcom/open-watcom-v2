@@ -379,9 +379,7 @@ static char *ExpandMacroToken( void )
     }
     buf = NULL;
     if( len > 0 ) {
-        len++;              /* account for terminating null character */
-        buf = CMemAlloc( len );
-        memcpy( buf, p, len );
+        buf = ToString( p, len );
     }
     return( buf );
 }

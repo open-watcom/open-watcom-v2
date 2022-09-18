@@ -214,8 +214,7 @@ STR_HANDLE GetLiteral( void )
         q = p;
         p->next_string = NULL;
         p->length = TokenLen + 1;
-        p->literal = CMemAlloc( TokenLen + 1 );
-        memcpy( p->literal, Buffer, TokenLen + 1 );
+        p->literal = ToString( Buffer, TokenLen );
     } while( NextToken() == T_STRING );
     CompFlags.wide_char_string = is_wide;
     /* then remove escapes (C99: translation phase 5), and only then

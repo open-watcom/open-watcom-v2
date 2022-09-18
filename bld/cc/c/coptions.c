@@ -1083,14 +1083,7 @@ static void StripQuotes( char *fname )
 
 static char *CopyOfParm( void )
 {
-    char        *p;
-    size_t      len;
-
-    len = OptScanPtr - OptParm;
-    p = (char *)CMemAlloc( len + 1 );
-    memcpy( p, OptParm, len );
-    p[len] = '\0';
-    return( p );
+    return( ToString( OptParm, OptScanPtr - OptParm ) );
 }
 
 static char *GetAFileName( void )
@@ -2081,10 +2074,7 @@ static void ProcOptions( const char *str )
 #endif
                     }
                 }
-                len = str - beg;
-                p = (char *)CMemAlloc( len + 1 );
-                memcpy( p, beg, len );
-                p[len] = '\0';
+                p = ToString( beg, str - beg );
                 StripQuotes( p );
                 if( WholeFName != NULL ) {
                     /* more than one file to compile ? */
