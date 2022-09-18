@@ -62,16 +62,15 @@
 
 #define BUF_SIZE                    512
 
-#define CMPLIT(s,c) memcmp( s, c, sizeof( c ) )
 #define CPYLIT(s,c) memcpy( s, c, sizeof( c ) )
 #define LENLIT(c)   (sizeof( c ) - 1)
 
 #define PPOPERATOR_DEFINED          "defined"
 #define PPOPERATOR_PRAGMA           "_Pragma"
 
-#define IS_PPOPERATOR_DEFINED(s)    (CMPLIT(s, PPOPERATOR_DEFINED) == 0)
+#define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
 #define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.c99_extensions) \
                                     && l == LENLIT(PPOPERATOR_PRAGMA) \
-                                    && CMPLIT(s, PPOPERATOR_PRAGMA) == 0)
+                                    && strcmp(s, PPOPERATOR_PRAGMA) == 0)
 
 #define ARRAY_SIZE(x)               (sizeof( x ) / sizeof( *x ))
