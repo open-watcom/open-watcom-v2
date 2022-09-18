@@ -419,11 +419,11 @@ TOKEN SpecialMacro( MEPTR mentry )
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
-            CPYLIT( Buffer, "199901L" );
+            strcpy( Buffer, "199901L" );
             TokenLen = LENLIT( "199901L" );
             Constant = 199901;
         } else {
-            CPYLIT( Buffer, "199409L" );
+            strcpy( Buffer, "199409L" );
             TokenLen = LENLIT( "199409L" );
             Constant = 199409;
         }
