@@ -87,19 +87,18 @@ typedef struct mem_blk {
 } mem_blk;
 
 /*  variables used:
- *      char *PermArea;         pointer to start of permanent area
- *      char *PermPtr;          next free byte in permanent area
- *      unsigned PermSize;      total size of permanent area
- *      unsigned PermAvail;     number of bytes available in permanent area
+ *      char *PermPtr;          first free byte in permanent area block
+ *      size_t PermSize;        total size of permanent area block
+ *      size_t PermAvail;       number of bytes available in permanent area block
  *
  *  Permanent memory is allocated from low to high.
  *  Memory allocated using CPermAlloc is never given back.
  *  Temporary allocations are made at the high end of permanent memory.
 */
 
-static  char        *PermPtr;   /* next free byte in PermArea */
-static  size_t      PermSize;   /* total size of permanent memory block */
-static  size_t      PermAvail;  /* # of bytes available in PermArea */
+static  char        *PermPtr;   /* first free byte in permanent area block */
+static  size_t      PermSize;   /* total size of permanent area block */
+static  size_t      PermAvail;  /* # of bytes available in permanent area block */
 
 static  MCB         CFreeList;
 static  mem_blk     *Blks;
@@ -196,7 +195,7 @@ static void *CFastAlloc( size_t size )
     if( amount < sizeof( MCB ) )
         amount = sizeof( MCB );
 
-/*      search free list before getting memory from PermArea */
+/*      search free list before getting memory from permanent area */
 
     for( p1 = CFreeList.prev; p1 != &CFreeList; p1 = p1->prev ) {
         Ccoalesce( p1 );
@@ -233,7 +232,7 @@ void *CMemAlloc( size_t size )
 
     p = CFastAlloc( size );
     if( p == NULL ) {
-        AllocPermArea();            /* allocate another permanent area */
+        AllocPermArea();            /* allocate another permanent area block */
         p = CFastAlloc( size );
         if( p == NULL ) {
             CErr1( ERR_OUT_OF_MEMORY );
@@ -264,7 +263,11 @@ void *CMemRealloc( void *loc, size_t size )
         p = CMemAlloc( size );
         memcpy( p, loc, len );
         CMemFree( loc );
-    } /* else the current block is big enough -- nothing to do (very lazy realloc) */
+#if 0
+    } else {
+        /* the current block is big enough -- nothing to do (very lazy realloc) */
+#endif
+    }
     return( p );
 }
 
@@ -359,7 +362,7 @@ void *CPermAlloc( size_t amount )
 
     amount = _RoundUp( amount, MEM_ALIGN );
     if( amount > PermAvail ) {
-        AllocPermArea();            /* allocate another permanent area */
+        AllocPermArea();            /* allocate another permanent area block */
         if( amount > PermAvail ) {
             return( CMemAlloc( amount ) );
         }
