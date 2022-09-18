@@ -130,7 +130,8 @@ static void FuncDefn( SYMPTR sym )
             TargetSwitches &= ~FLOATING_SS;
         }
     }
-    if( CMPLIT( CurFunc->name, "main" ) == 0 || CMPLIT( CurFunc->name, "wmain" ) == 0 ) {
+    if( strcmp( CurFunc->name, "main" ) == 0
+      || strcmp( CurFunc->name, "wmain" ) == 0 ) {
         sym->mods &= ~MASK_LANGUAGES;  // Turn off any language flags
         sym->mods |= LANG_WATCALL;     // Turn on __watcall calling convention for main
     }
