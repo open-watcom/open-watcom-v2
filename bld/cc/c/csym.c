@@ -825,7 +825,6 @@ static SYM_HASHPTR FreeSym( void )
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     next_hsymptr;
     SYM_HASHPTR     sym_list;
-    size_t          sym_len;
     int             bucket;
     SYM_HANDLE      prev_tail;
     SYM_ENTRY       sym;
