@@ -259,7 +259,7 @@ static TREEPTR ConstLeaf( void )
         flt = CMemAlloc( sizeof( FLOATVAL ) + TokenLen );
         flt->string[0] = '+';
         strcpy( flt->string + 1, Buffer );
-        flt->len = 1 + TokenLen;
+        flt->len = (unsigned char)( 1 + TokenLen );
         flt->type = ConstType;
         flt->next = NULL;
         leaf->op.u2.float_value = flt;
@@ -1944,18 +1944,18 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 }
 
 
-static bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, SYMPTR sym )
+static bool IntrinsicMathFunc( const char *sym_name, int i, SYMPTR sym )
 {
-    const unsigned char *p;
+    const char  *p;
 
     if( strcmp( sym_name, MathFuncs[i].name ) != 0 ) {
         if( (sym->flags & SYM_INTRINSIC) == 0 )
-            return( false );        /* indicate not a math intrinsic function */
-        p = MathFuncs[i].name + 2;
-        while( *p != '\0' ) {
-            if( *((const unsigned char *)sym_name)++ != tolower( *p ) ) {
+            return( false );            /* indicate not a math intrinsic function */
+        for( p = MathFuncs[i].name + 2; *p != '\0'; p++ ) {
+            if( (unsigned char)*sym_name != tolower( (unsigned char)*p ) ) {
                 return( false );        /* indicate not a math intrinsic function */
             }
+            sym_name++;
         }
     }
     return( true );
