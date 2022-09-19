@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,13 +203,10 @@ SYM_HANDLE SegSymbol( const char *name, segment_id segid )
 SYM_HANDLE SpcSymbol( const char *name, TYPEPTR typ, stg_classes stg_class )
 {
     SYM_ENTRY       sym;
-    size_t          len;
 
     NewSym();
-    len = strlen( name ) + 1;
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
-    sym.name = CMemAlloc( len );
-    memcpy( sym.name, name, len );
+    sym.name = CStrSave( name );
     sym.sym_type = typ;
     sym.attribs.stg_class = stg_class;
     SymReplace( &sym, CURR_SYM_HANDLE() );
@@ -281,12 +278,9 @@ void SpcSymInit( void )
 SYM_HANDLE MakeFunction( const char *id, TYPEPTR typ )
 {
     SYM_ENTRY   sym;
-    size_t      len;
 
-    len = strlen( id ) + 1;
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
-    sym.name = CMemAlloc( len );
-    memcpy( sym.name, id, len );
+    sym.name = CStrSave( id );
     sym.attribs.stg_class = SC_EXTERN;
     sym.flags = SYM_FUNCTION;
     sym.handle = SpecialSyms;
@@ -300,12 +294,8 @@ SYM_HANDLE MakeFunction( const char *id, TYPEPTR typ )
 
 void SymCreate( SYMPTR sym, const char *id )
 {
-    size_t  len;
-
-    len = strlen( id ) + 1;
     memset( sym, 0, sizeof( SYM_ENTRY ) );
-    sym->name = CMemAlloc( len );
-    memcpy( sym->name, id, len );
+    sym->name = CStrSave( id );
     sym->src_loc = TokenLoc;
 }
 
@@ -401,10 +391,8 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     SYM_HASHPTR     hsym;
     TYPEPTR         typ;
-    size_t          sym_len;
 
-    sym_len = strlen( sym->name ) + 1;
-    hsym = PermMemAlloc( offsetof( id_hash_entry, name ) + sym_len );
+    hsym = PermMemAlloc( offsetof( id_hash_entry, name ) + strlen( sym->name ) + 1 );
     hsym->sym_type = NULL;
     if( sym->attribs.stg_class == SC_TYPEDEF ) {
         typ = sym->sym_type;
@@ -414,7 +402,7 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
         hsym->sym_type = typ;
     }
     hsym->level = sym->level;
-    memcpy( hsym->name, sym->name, sym_len );
+    strcpy( hsym->name, sym->name );
     CMemFree( sym->name );
     sym->name = NULL;
     hsym->handle = sym_handle;
@@ -510,12 +498,10 @@ SYM_HANDLE MakeNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
 
 SYM_HANDLE SymLook( id_hash_idx h, const char *id )
 {
-    size_t          len;
     SYM_HASHPTR     hsym;
 
-    len = strlen( id ) + 1;
     for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
-        if( memcmp( hsym->name, id, len ) == 0 ) {
+        if( strcmp( hsym->name, id ) == 0 ) {
             return( hsym->handle );
         }
     }
@@ -525,12 +511,10 @@ SYM_HANDLE SymLook( id_hash_idx h, const char *id )
 
 SYM_HANDLE SymLookTypedef( id_hash_idx h, const char *id, SYMPTR sym )
 {
-    size_t          len;
     SYM_HASHPTR     hsym;
 
-    len = strlen( id ) + 1;
     for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
-        if( memcmp( hsym->name, id, len ) == 0 ) {
+        if( strcmp( hsym->name, id ) == 0 ) {
             if( hsym->sym_type == NULL )
                 break;
             sym->sym_type = hsym->sym_type;
@@ -546,12 +530,10 @@ SYM_HANDLE SymLookTypedef( id_hash_idx h, const char *id, SYMPTR sym )
 SYM_HANDLE Sym0Look( id_hash_idx h, const char *id )
 /* look for symbol on level 0 */
 {
-    size_t          len;
     SYM_HASHPTR     hsym;
 
-    len = strlen( id ) + 1;
     for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
-        if( memcmp( hsym->name, id, len ) == 0 ) {  /* name matches */
+        if( strcmp( hsym->name, id ) == 0 ) {  /* name matches */
             if( hsym->level == 0 ) {
                 return( hsym->handle );
             }
@@ -677,15 +659,14 @@ static void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
-    size_t          len;
 
     new =  CMemAlloc( sizeof ( struct xlist ) );
     Copy8( name, new->xname );
     strupr( new->xname );
-    len = strlen( new->xname ) + 1;
     for( ; (curr = *link) != NULL; link = &curr->next ) {
         int cmp;
-        cmp = memcmp( new->xname, curr->xname, len );
+
+        cmp = strcmp( new->xname, curr->xname );
         if( cmp == 0 ) {
             SetErrLoc( &sym->src_loc );
             CErr3p( ERR_DUPLICATE_ID, name, new->xname );
@@ -895,9 +876,8 @@ static SYM_HASHPTR FreeSym( void )
             }
 /* keep static names so that we can output static pubdefs and get nicer
    -d1 debugging */
-            sym_len = strlen( hsym->name ) + 1;
-            sym.name = CPermAlloc( sym_len );
-            memcpy( sym.name, hsym->name, sym_len );
+            sym.name = CPermAlloc( strlen( hsym->name ) + 1 );
+            strcpy( sym.name, hsym->name );
             sym.info.backinfo = NULL;
             SymReplace( &sym, hsym->handle );
         }
@@ -985,19 +965,17 @@ static void DumpWeights( SYMPTR sym )
 LABELPTR LkLabel( const char *name )
 {
     LABELPTR    label;
-    size_t      len;
 
-    len = strlen( name ) + 1;
     for( label = LabelHead; label != NULL; label = label->next_label ) {
-        if( memcmp( name, label->name, len ) == 0 ) {
+        if( strcmp( name, label->name ) == 0 ) {
             return( label );
         }
     }
-    label = (LABELPTR)CMemAlloc( sizeof( LABELDEFN ) - 1 + len );
+    label = (LABELPTR)CMemAlloc( sizeof( LABELDEFN ) + strlen( name ) );
     if( label != NULL ) {
         label->next_label = LabelHead;
         LabelHead = label;
-        memcpy( label->name, name, len );
+        strcpy( label->name, name );
         label->defined = false;
         label->referenced = false;
         label->ref_list = NextLabel();

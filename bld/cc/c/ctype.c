@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -766,7 +766,6 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     FIELDPTR    prev_field;
     TYPEPTR     typ;
     TAGPTR      tag;
-    size_t      len;
 
     ++FieldCount;
     typ = new_field->field_type;
@@ -793,13 +792,12 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     tag = decl->u.tag;
     new_field->hash = HashValue;
     if( new_field->name[0] != '\0' ) {  /* only check non-empty names */
-        len = strlen( new_field->name ) + 1;
         for( field = FieldHash[HashValue]; field != NULL; field = field->next_field_same_hash ) {
             /* fields were added at the front of the hash linked list --
                may as well stop if the level isn't the same anymore */
             if( field->level != new_field->level )
                 break;
-            if( memcmp( field->name, new_field->name, len ) == 0 ) {
+            if( strcmp( field->name, new_field->name ) == 0 ) {
                 CErr2p( ERR_DUPLICATE_FIELD_NAME, field->name );
             }
         }
@@ -1375,7 +1373,7 @@ TAGPTR TagLookup( void )
     TAGPTR          tag;
 
     for( tag = TagHash[HashValue]; tag != NULL; tag = tag->next_tag ) {
-        if( memcmp( Buffer, tag->name, TokenLen + 1 ) == 0 ) {
+        if( strcmp( Buffer, tag->name ) == 0 ) {
             return( tag );
         }
     }

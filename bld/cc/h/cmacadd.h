@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +34,12 @@
 #define _CMACADD_H
 
 extern void         *PermMemAlloc( size_t amount );
-extern void         InitMacroSegments(void);
-extern void         FreeMacroSegments(void);
-extern MEPTR        CreateMEntry(const char *, size_t len);
+extern void         InitMacroSegments( void );
+extern void         FreeMacroSegments( void );
+extern MEPTR        CreateMEntry( const char *, size_t len );
 extern MEPTR        MacroDefine( size_t len, macro_flags mflags );
-extern int          MacroCompare(MEPTR,MEPTR);
-extern MEPTR        MacroLookup(const char *);
+extern bool         MacroCompare( MEPTR, MEPTR );
+extern MEPTR        MacroLookup( const char * );
 
 void MacroSegmentAddChar(       // MacroSegment: ADD A CHARACTER
     size_t *mlen,               // - data length

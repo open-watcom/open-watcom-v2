@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -389,7 +389,7 @@ static void SetTargSystem( void )
     len = strlen( SwData.sys_name );
     buff[0] = '_';
     buff[1] = '_';
-    memcpy( buff + 2, SwData.sys_name, len );
+    strcpy( buff + 2, SwData.sys_name );
     buff[2 + len] = '_';
     buff[2 + len + 1] = '_';
     buff[2 + len + 2] = '\0';
@@ -820,7 +820,7 @@ static void AddIncList( const char *path_list )
         old_list = IncPathList;
         old_len = strlen( old_list );
         IncPathList = CMemAlloc( old_len + 1 + len + 1 );
-        memcpy( IncPathList, old_list, old_len );
+        strcpy( IncPathList, old_list );
         CMemFree( old_list );
         p = IncPathList + old_len;
         while( *path_list != '\0' ) {
@@ -839,26 +839,23 @@ void MergeInclude( void )
     /* must be called after GenCOptions to get req'd IncPathList */
     const char  *env_var;
     char        buff[128];
-    size_t      len;
+    char        *p;
 
     if( !CompFlags.cpp_ignore_env ) {
         switch( TargSys ) {
         case TS_CHEAP_WINDOWS:
         case TS_WINDOWS:
-            len = sizeof( "WINDOWS" ) - 1;
-            memcpy( buff, "WINDOWS", len );
+            p = strcpy( buff, "WINDOWS" ) + LENLIT( "WINDOWS" );
             break;
         case TS_NETWARE:
         case TS_NETWARE5:
-            len = sizeof( "NETWARE" ) - 1;
-            memcpy( buff, "NETWARE", len );
+            p = strcpy( buff, "NETWARE" ) + LENLIT( "NETWARE" );
             break;
         default:
-            len = strlen( SwData.sys_name );
-            memcpy( buff, SwData.sys_name, len );
+            p = strcpy( buff, SwData.sys_name ) + strlen( SwData.sys_name );
             break;
         }
-        strcpy( buff + len, "_" INC_VAR );
+        strcpy( p, "_" INC_VAR );
         AddIncList( FEGetEnv( buff ) );
 
 #if _CPU == 386

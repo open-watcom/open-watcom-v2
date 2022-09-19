@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -377,11 +377,9 @@ static struct spc_info InitFiniSegs[] = {
 static struct spc_info *InitFiniLookup( const char *name )
 {
     int     i;
-    size_t  len;
 
-    len = strlen( name ) + 1;
     for( i = 0; i < ARRAY_SIZE( InitFiniSegs ); ++i ) {
-        if( memcmp( InitFiniSegs[i].name, name, len ) == 0 ) {
+        if( strcmp( InitFiniSegs[i].name, name ) == 0 ) {
             i = (i / 3) * 3;
             return( &InitFiniSegs[i] );
         }
@@ -397,28 +395,32 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
 #if _INTEL_CPU
     hw_reg_set      reg;
     const char      *p;
-#endif
+    char            buffer[REG_BUFF_SIZE];
     size_t          len;
+#endif
 
-    len = strlen( segname ) + 1;
     for( i = 0; i < ARRAY_SIZE( Predefined_Segs ); i++ ) {
-        if( memcmp( segname, Predefined_Segs[i].name, len ) == 0 ) {
+        if( strcmp( segname, Predefined_Segs[i].name ) == 0 ) {
             return( Predefined_Segs[i].segid );
         }
     }
 #if _INTEL_CPU
     HW_CAsgn( reg, HW_EMPTY );
+    len = 0;
     for( p = segname; *p != '\0'; ++p ) {
+        if( len < sizeof( buffer ) - 1 ) {
+            buffer[len++] = *p;
+        }
         if( *p == ':' ) {
-            reg = PragRegName( segname, p - segname );
+            buffer[len] = '\0';
+            reg = PragRegName( buffer, len );
             segname = p + 1;
-            len = strlen( segname ) + 1;
             break;
         }
     }
 #endif
     for( lnk = &userSegments; (useg = *lnk) != NULL; lnk = &useg->next ) {
-        if( memcmp( segname, useg->name, len ) == 0 ) {
+        if( strcmp( segname, useg->name ) == 0 ) {
             return( useg->segid ); /* was return( segment ) */
         }
     }

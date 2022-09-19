@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,12 +174,10 @@ unsigned hashpjw( const char *s )
     return( h );
 }
 
-id_hash_idx CalcHash( const char *id, size_t len )
-/************************************************/
+id_hash_idx CalcHash( const char *id )
+/************************************/
 {
     unsigned    hash;
-
-    /* unused parameters */ (void)len;
 
     hash = hashpjw( id );
     HashValue = hash % ID_HASH_SIZE;
@@ -221,7 +219,7 @@ TOKEN KwLookup( const char *buf, size_t len )
 
     keyword = Tokens[token];
     if( *keyword == buf[0] ) {
-        if( memcmp( keyword, buf, len + 1 ) == 0 ) {
+        if( strcmp( keyword, buf ) == 0 ) {
             return( token );
         }
     }
@@ -254,7 +252,7 @@ static TOKEN doScanName( void )
 
     getIDName( CurrChar );
     WriteBufferNullChar();
-    CalcHash( Buffer, TokenLen );
+    CalcHash( Buffer );
     if( CompFlags.doing_macro_expansion )
         return( T_ID );
     if( PPControl & PPCTL_NO_EXPAND )

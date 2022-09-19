@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +176,7 @@ void PreDefine_Macro( const char *str )
                 ++len;
             }
             for( uname = UndefNames; uname != NULL; uname = uname->next ) {
-                if( memcmp( uname->name, str, len ) == 0 ) {
+                if( strncmp( uname->name, str, len ) == 0 ) {
                     if( uname->name[len] == '\0' ) {
                         return;
                     }
@@ -197,12 +197,11 @@ void AddUndefName( const char *str )
     if( len == 0 ) {
         CompFlags.undefine_all_macros = true;
     } else {
-        CalcHash( str, len );
+        CalcHash( str );
         if( !MacroDel( str ) ) {
             uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;
-            uname->name = CMemAlloc( len + 1 );
-            memcpy( uname->name, str, len + 1 );
+            uname->name = CStrSave( str );
             UndefNames = uname;
         }
     }

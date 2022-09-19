@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -258,7 +258,7 @@ static TREEPTR ConstLeaf( void )
     case TYP_LDIMAGINARY:
         flt = CMemAlloc( sizeof( FLOATVAL ) + TokenLen );
         flt->string[0] = '+';
-        memcpy( flt->string + 1, Buffer, TokenLen + 1 );
+        strcpy( flt->string + 1, Buffer );
         flt->len = 1 + TokenLen;
         flt->type = ConstType;
         flt->next = NULL;
@@ -932,9 +932,7 @@ FIELDPTR SearchFields( TYPEPTR *class_typ, target_size *field_offset, const char
     FIELDPTR    subfield;
     TYPEPTR     typ;
     TAGPTR      tag;
-    size_t      len;
 
-    len = strlen( name ) + 1;
     tag = (*class_typ)->u.tag;
     for( field = tag->u.field_list; field != NULL; field = field->next_field ) {
         typ = field->field_type;
@@ -948,7 +946,7 @@ FIELDPTR SearchFields( TYPEPTR *class_typ, target_size *field_offset, const char
                     return( subfield );
                 }
             }
-        } else if( memcmp( name, field->name, len ) == 0 ) {
+        } else if( strcmp( name, field->name ) == 0 ) {
             if( typ->decl_type != TYP_FUNCTION ) {
                 *field_offset += field->offset;
             }
@@ -1608,19 +1606,19 @@ static TREEPTR ExprOpnd( void )
             break;
         case T___OW_IMAGINARY_UNIT:
             {
-            FLOATVAL    *flt;
+                FLOATVAL    *flt;
 
 #define FLOAT_PLUS_ONE "+1.0"
-            tree = LeafNode( OPR_PUSHFLOAT );
-            tree->op.u1.const_type = TYP_DIMAGINARY;
-            flt = CMemAlloc( sizeof( FLOATVAL ) + LENLIT( FLOAT_PLUS_ONE ) );
-            strcpy( flt->string, FLOAT_PLUS_ONE );
-            flt->len = LENLIT( FLOAT_PLUS_ONE );
-            flt->type = TYP_DIMAGINARY;
-            flt->next = NULL;
-            tree->op.u2.float_value = flt;
-            tree->op.opr = OPR_PUSHFLOAT;
-            tree->u.expr_type = GetType( tree->op.u1.const_type );
+                tree = LeafNode( OPR_PUSHFLOAT );
+                tree->op.u1.const_type = TYP_DIMAGINARY;
+                flt = CMemAlloc( sizeof( FLOATVAL ) + LENLIT( FLOAT_PLUS_ONE ) );
+                strcpy( flt->string, FLOAT_PLUS_ONE );
+                flt->len = LENLIT( FLOAT_PLUS_ONE );
+                flt->type = TYP_DIMAGINARY;
+                flt->next = NULL;
+                tree->op.u2.float_value = flt;
+                tree->op.opr = OPR_PUSHFLOAT;
+                tree->u.expr_type = GetType( tree->op.u1.const_type );
             }
             NextToken();
             break;
@@ -1946,15 +1944,16 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 }
 
 
-static bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR sym )
+static bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, SYMPTR sym )
 {
-    size_t  j;
+    const unsigned char *p;
 
-    if( memcmp( sym_name, MathFuncs[i].name, len ) != 0 ) {
+    if( strcmp( sym_name, MathFuncs[i].name ) != 0 ) {
         if( (sym->flags & SYM_INTRINSIC) == 0 )
             return( false );        /* indicate not a math intrinsic function */
-        for( j = 0; j < len; ++j ) {
-            if( sym_name[j] != tolower( (unsigned char)MathFuncs[i].name[j + 2] ) ) {
+        p = MathFuncs[i].name + 2;
+        while( *p != '\0' ) {
+            if( *((const unsigned char *)sym_name)++ != tolower( *p ) ) {
                 return( false );        /* indicate not a math intrinsic function */
             }
         }
@@ -2088,7 +2087,6 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
     unsigned char   parm_count;
     SYM_NAMEPTR     sym_name;
     SYM_ENTRY       sym;
-    size_t          sym_len;
 
     flags = 0;
     parm_count = 1;
@@ -2165,11 +2163,10 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                 }
 #endif
                 sym_name = SymName( &sym, functree->op.u2.sym_handle );
-                sym_len = strlen( sym_name ) + 1;
                 if( (GenSwitches & NO_OPTIMIZATION) == 0 && CompFlags.extensions_enabled ) {
                     for( i = 0; MathFuncs[i].name != NULL; ++i ) {
                         if( parm_count == MathFuncs[i].parm_count
-                          && IntrinsicMathFunc( sym_name, i, sym_len, &sym ) ) {
+                          && IntrinsicMathFunc( sym_name, i, &sym ) ) {
                             FreeExprNode( functree );
                             if( parm_count == 1 ) {
                                 tree = ExprNode( NULL, OPR_MATHFUNC, last_parm );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,10 @@ static ENUMPTR EnumLkAdd( TAGPTR tag )
 
     VfyNewSym( HashValue, Buffer );
     len = sizeof( ENUMDEFN ) + TokenLen;
-    if( len > EnumRecSize )
+    if( EnumRecSize < len )
         EnumRecSize = len;
     esym = (ENUMPTR)CPermAlloc( len );
-    memcpy( esym->name, Buffer, TokenLen + 1 );
+    strcpy( esym->name, Buffer );
     esym->parent = tag;
     esym->hash = HashValue;
     esym->src_loc = TokenLoc;
@@ -315,11 +315,9 @@ TYPEPTR EnumDecl( type_modifiers flags )
 ENUMPTR EnumLookup( id_hash_idx h, const char *name )
 {
     ENUMPTR     esym;
-    size_t      len;
 
-    len = strlen( name ) + 1;
     for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
-        if( memcmp( esym->name, name, len ) == 0 ) {
+        if( strcmp( esym->name, name ) == 0 ) {
             break;
         }
     }

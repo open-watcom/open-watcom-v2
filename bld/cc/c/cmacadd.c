@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,27 +135,27 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
     MEPTR       new_mentry;
     macro_flags old_mflags;
     MEPTR       mentry;
-    const char  *mname;
+    const char  *name;
 
     new_mentry = NULL;
     mentry = (MEPTR)MacroOffset;
     mentry->macro_len = mlen;
-    mname = mentry->macro_name;
-    CalcHash( mname, strlen( mname ) );
+    name = mentry->macro_name;
+    CalcHash( name );
     lnk = &MacHash[MacHashValue];
-    lnk = MacroLkUp( mname, lnk );
+    lnk = MacroLkUp( name, lnk );
     old_mentry = *lnk;
     if( old_mentry != NULL ) {
         old_mflags = old_mentry->macro_flags;
         if( old_mflags & MFLAG_CAN_BE_REDEFINED ) {//delete old entry
             *lnk = old_mentry->next_macro;
             old_mentry = NULL;
-        } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
+        } else if( MacroCompare( mentry, old_mentry ) ) {
             if( MacroIsSpecial( old_mentry ) ) {
-                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, name );
             } else {
                 SetDiagMacro( old_mentry );
-                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, name );
                 SetDiagPop();
                 *lnk = old_mentry->next_macro;
                 old_mentry = NULL;
@@ -181,22 +181,21 @@ void *PermMemAlloc( size_t amount )
     return( MacroAllocateInSeg( amount ) );
 }
 
-int MacroCompare( MEPTR m1, MEPTR m2 )
+bool MacroCompare( MEPTR m1, MEPTR m2 )
 {
-    if( m1->macro_len != m2->macro_len )
-        return( -1 );
-    if( m1->macro_defn != m2->macro_defn )
-        return( -1 );
-    if( m1->parm_count != m2->parm_count )
-        return( -1 );
-    return( memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof(MEDEFN,macro_name) ) );
+    if( m1->macro_len == m2->macro_len
+      && m1->macro_defn == m2->macro_defn
+      && m1->parm_count == m2->parm_count
+      && strcmp( m1->macro_name, m2->macro_name ) == 0 )
+        return( false );
+    return( true );
 }
 
-MEPTR MacroLookup( const char *buf )
+MEPTR MacroLookup( const char *name )
 {
     MEPTR       mentry, *lnk;
 
-    lnk = MacroLkUp( buf, &MacHash[MacHashValue] );
+    lnk = MacroLkUp( name, &MacHash[MacHashValue] );
     mentry = *lnk;
     return( mentry );
 }

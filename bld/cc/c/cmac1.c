@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -278,7 +278,7 @@ TOKEN GetMacroToken( void )
             /* fall through */
         case T_ID:
         case T_UNEXPANDABLE_ID:
-            CalcHash( Buffer, TokenLen );
+            CalcHash( Buffer );
             if( !CompFlags.doing_macro_expansion ) {
                 if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
                     TokenList = mtok->next;
@@ -682,12 +682,10 @@ void DumpNestedMacros( void )
 static MACRO_TOKEN *BuildAToken( TOKEN token, const char *data )
 /**************************************************************/
 {
-    size_t      len;
     MACRO_TOKEN *mtok;
 
-    len = strlen( data ) + 1;
-    mtok = (MACRO_TOKEN *)CMemAlloc( sizeof( MACRO_TOKEN ) - 1 + len );
-    memcpy( mtok->data, data, len );
+    mtok = (MACRO_TOKEN *)CMemAlloc( sizeof( MACRO_TOKEN ) + strlen( data ) );
+    strcpy( mtok->data, data );
     mtok->token = token;
     mtok->next = NULL;
     return( mtok );
@@ -802,7 +800,7 @@ static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
         gluelen = strlen( gluebuf );
         tokenlen = strlen( buf );
         gluebuf = CMemRealloc( gluebuf, gluelen + tokenlen + 1 );
-        memcpy( gluebuf + gluelen, buf, tokenlen + 1 );
+        strcpy( gluebuf + gluelen, buf );
         CMemFree( buf );
         buf = gluebuf;
     }
@@ -1010,7 +1008,7 @@ static MACRO_TOKEN *BuildString( const char *p )
                 i = strlen( tokenstr );
                 if( len >= ( bufsize - i ) )
                     buf = CMemRealloc( buf, 2 * len );
-                memcpy( &buf[len], tokenstr, i );
+                strcpy( &buf[len], tokenstr );
                 len += i;
                 break;
             }
@@ -1157,13 +1155,11 @@ static void markUnexpandableIds( MACRO_TOKEN *head )
 {
     NESTED_MACRO    *nested;
     MACRO_TOKEN     *mtok;
-    size_t          len;
 
     for( mtok = head; mtok != NULL; mtok = mtok->next ) {
         if( mtok->token == T_ID ) {
-            len = strlen( mtok->data ) + 1;
             for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
-                if( memcmp( nested->mentry->macro_name, mtok->data, len ) == 0 ) {
+                if( strcmp( nested->mentry->macro_name, mtok->data ) == 0 ) {
                     if( !nested->substituting_parms ) {
                         // change token so it won't be considered a
                         // candidate as a macro
@@ -1228,7 +1224,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
             len = 0;
             while( (buf[len] = mtok->data[len]) != '\0' )
                 len++;
-            CalcHash( buf, len );
+            CalcHash( buf );
             mentry = MacroLookup( buf );
             if( mentry != NULL ) {
                 /* this is a macro */

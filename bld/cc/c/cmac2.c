@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +178,7 @@ static void PreProcStmt( void )
         hash = (TokenLen + PreProcWeights[Buffer[0] - 'a']
                  + PreProcWeights[Buffer[TokenLen - 1] - 'a']) & 15;
         pp = &PreProcTable[hash];
-        if( memcmp( pp->directive, Buffer, TokenLen + 1 ) == 0 ) {
+        if( strcmp( pp->directive, Buffer ) == 0 ) {
             if( SkipLevel == NestLevel ) {
                 pp->samelevel();
             } else {
@@ -550,7 +550,7 @@ static mac_parm_count FormalParm( MPPTR formal_parms )
 
     i = 1;
     for( ; formal_parms != NULL; formal_parms = formal_parms->next ) {
-        if( memcmp( formal_parms->parm, Buffer, TokenLen + 1 ) == 0 ) {
+        if( strcmp( formal_parms->parm, Buffer ) == 0 ) {
             return( i );
         }
         ++i;
@@ -698,7 +698,6 @@ bool MacroDel( const char *name )
 {
     MEPTR       mentry;
     MEPTR       prev_mentry;
-    size_t      len;
     bool        ret;
 
     ret = false;
@@ -707,9 +706,8 @@ bool MacroDel( const char *name )
         return( ret );
     }
     prev_mentry = NULL;
-    len = strlen( name ) + 1;
     for( mentry = MacHash[MacHashValue]; mentry != NULL; mentry = mentry->next_macro ) {
-        if( memcmp( mentry->macro_name, name, len ) == 0 )
+        if( strcmp( mentry->macro_name, name ) == 0 )
             break;
         prev_mentry = mentry;
     }

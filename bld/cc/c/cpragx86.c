@@ -400,7 +400,7 @@ bool AsmInsertFixups( aux_info *info )
             if( fix != NULL && fix->fixup_loc == (src - AsmCodeBuffer) ) {
                 name = fix->name;
                 if( name != NULL ) {
-                    sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
+                    sym_handle = SymLook( CalcHash( name ), name );
                     if( sym_handle == SYM_NULL ) {
                         CErr2p( ERR_UNDECLARED_SYM, name );
                         return( false );
@@ -714,11 +714,11 @@ hw_reg_set PragRegName( const char *regname, size_t regnamelen )
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
-        if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
+        if( len == 4 && strcmp( str, "8087" ) == 0 ) {
             HW_CAsgn( name, HW_FLTS );
             return( name );
         }
-        PragRegNameErr( regname, regnamelen );
+        PragRegNameErr( regname );
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );
@@ -726,7 +726,16 @@ hw_reg_set PragRegName( const char *regname, size_t regnamelen )
 
 hw_reg_set PragReg( void )
 {
-    return( PragRegName( Buffer, TokenLen ) );
+    char            buffer[REG_BUFF_SIZE];
+    size_t          len;
+
+    len = TokenLen;
+    if( len > sizeof( buffer ) - 1 ) {
+        len = sizeof( buffer ) - 1;
+    }
+    memcpy( buffer, Buffer, len );
+    buffer[len] = '\0';
+    return( PragRegName( buffer, len ) );
 }
 
 static void GetParmInfo( void )

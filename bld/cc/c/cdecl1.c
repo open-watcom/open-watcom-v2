@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,14 +90,11 @@ void ParsePgm( void )
 static void FuncDefn( SYMPTR sym )
 {
     SYM_NAMEPTR sym_name;
-    size_t      sym_len;
     TYPEPTR     typ;
 
     /* duplicate name in near space */
     sym_name = SymName( sym, CurFuncHandle );
-    sym_len = strlen( sym_name ) + 1;
-    sym->name = CMemAlloc( sym_len );
-    memcpy( sym->name, sym_name, sym_len );
+    sym->name = CStrSave( sym_name );
     if( sym->flags & SYM_DEFINED ) {
         CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
     }
@@ -171,7 +168,7 @@ static enum main_names checkMain( const char *name )
     enum main_names     main_entry;
 
     for( main_entry = MAIN_WMAIN; main_entry < MAIN_NUM; ++main_entry ) {
-       if( memcmp( name, MainNames[main_entry].name, MainNames[main_entry].len ) == 0 ) {
+       if( strcmp( name, MainNames[main_entry].name ) == 0 ) {
            break;
        }
     }
@@ -297,7 +294,6 @@ static void ParmDeclList( void )     /* process old style function definitions *
     decl_state          state;
     SYM_ENTRY           sym;
     decl_info           info;
-    size_t              len;
 
     while( CurToken != T_LEFT_BRACE ) {
         FullDeclSpecifier( &info );
@@ -328,10 +324,9 @@ static void ParmDeclList( void )     /* process old style function definitions *
                 if( sym.name == NULL || sym.name[0] == '\0' ) {
                     InvDecl();
                 } else {
-                    len = strlen( sym.name ) + 1;
                     for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
                         if( parm->sym.name != NULL ) {
-                            if( memcmp( parm->sym.name, sym.name, len ) == 0 ) {
+                            if( strcmp( parm->sym.name, sym.name ) == 0 ) {
                                 break;
                             }
                         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,7 +171,6 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
     TYPEPTR             old_typ;
     SYM_NAMEPTR         sym_name;
     char                *name;
-    size_t              sym_len;
     ENUMPTR             ep;
 
     PrevProtoType = NULL;
@@ -220,13 +219,11 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
                 if( sym->sym_type->u.fn.parms != NULL
                   || ( CurToken != T_COMMA && CurToken != T_SEMI_COLON ) ) {
                     old_typ = old_sym.sym_type;
-                    if( old_typ->decl_type == TYP_TYPEDEF &&
-                       old_typ->object->decl_type == TYP_FUNCTION ) {
+                    if( old_typ->decl_type == TYP_TYPEDEF
+                      && old_typ->object->decl_type == TYP_FUNCTION ) {
                         SymGet( &sym_typedef, old_typ->u.typedefn );
                         sym_name = SymName( &sym_typedef, old_typ->u.typedefn );
-                        sym_len = strlen( sym_name ) + 1;
-                        name = CMemAlloc( sym_len );
-                        memcpy( name, sym_name, sym_len );
+                        name = CStrSave( sym_name );
                         XferPragInfo( name, sym->name );
                         CMemFree( name );
                     }
@@ -1199,11 +1196,9 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
 FIELDPTR FieldCreate( const char *name )
 {
     FIELDPTR    field;
-    size_t      len;
 
-    len = strlen( name ) + 1;
-    field = (FIELDPTR)CPermAlloc( sizeof( FIELD_ENTRY ) - 1 + len );
-    memcpy( field->name, name, len );
+    field = (FIELDPTR)CPermAlloc( sizeof( FIELD_ENTRY ) + strlen( name ) );
+    strcpy( field->name, name );
     if( CompFlags.emit_browser_info ) {
         field->xref = NewXref( NULL );
     }
@@ -1395,17 +1390,12 @@ static TYPEPTR DeclPart2( TYPEPTR typ, type_modifiers mod )
 
 static void CheckUniqueName( PARMPTR parm, const char *name )
 {
-    size_t  len;
-
-    if( name != NULL ) {
-        if( *name != '\0' ) {
-            len = strlen( name ) + 1;
-            for( ; parm != NULL; parm = parm->next_parm ) {
-                if( parm->sym.name != NULL ) {
-                    if( memcmp( parm->sym.name, name, len ) == 0 ) {
-                        CErr2p( ERR_SYM_ALREADY_DEFINED, name );
-                        parm->sym.flags |= SYM_REFERENCED;
-                    }
+    if( name != NULL && *name != '\0' ) {
+        for( ; parm != NULL; parm = parm->next_parm ) {
+            if( parm->sym.name != NULL ) {
+                if( strcmp( parm->sym.name, name ) == 0 ) {
+                    CErr2p( ERR_SYM_ALREADY_DEFINED, name );
+                    parm->sym.flags |= SYM_REFERENCED;
                 }
             }
         }

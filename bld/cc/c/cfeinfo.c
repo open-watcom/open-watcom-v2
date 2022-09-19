@@ -176,8 +176,8 @@ bool VarFunc( SYMPTR sym )
         len = strlen( p );
         hash = (len + VarFuncWeights[p[0] - 'a'] + VarFuncWeights[p[len - 1] -'a']) & 31;
 
-        if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0
-            && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
+        if( strcmp( p, VarParmFuncs[hash] ) == 0
+          && ( CompFlags.extensions_enabled || (( 1 << hash ) & VAR_PARM_FUNCS_ANSI) ) )
             return( true );
 
         return( VarParm( sym ) );
@@ -206,12 +206,10 @@ static const inline_funcs *Flat( const inline_funcs *ifunc )
 static const inline_funcs *IF_Lookup( const char *name )
 {
     const inline_funcs  *ifunc;
-    size_t              len;
 
-    len = strlen( name ) + 1;
     if( GET_FPU( ProcRevision ) > FPU_NONE ) {
         for( ifunc = _8087_Functions; ifunc->name != NULL; ++ifunc ) {
-            if( memcmp( ifunc->name, name, len ) == 0 ) {
+            if( strcmp( ifunc->name, name ) == 0 ) {
                 return( Flat( ifunc ) );
             }
         }
@@ -234,7 +232,7 @@ static const inline_funcs *IF_Lookup( const char *name )
   #endif
         }
         for( ; ifunc->name != NULL; ++ifunc ) {
-            if( memcmp( ifunc->name, name, len ) == 0 ) {
+            if( strcmp( ifunc->name, name ) == 0 ) {
                 return( Flat( ifunc ) );
             }
         }
@@ -242,7 +240,7 @@ static const inline_funcs *IF_Lookup( const char *name )
   #if _CPU == 386
     if( TargetSwitches & FLAT_MODEL ) {
         for( ifunc = Flat_Functions; ifunc->name != NULL; ++ifunc ) {
-            if( memcmp( ifunc->name, name, len ) == 0 ) {
+            if( strcmp( ifunc->name, name ) == 0 ) {
                 return( ifunc );
             }
         }
@@ -265,12 +263,12 @@ static const inline_funcs *IF_Lookup( const char *name )
   #endif
     }
     for( ; ifunc->name != NULL; ++ifunc ) {
-        if( memcmp( ifunc->name, name, len ) == 0 ) {
+        if( strcmp( ifunc->name, name ) == 0 ) {
             return( Flat( ifunc ) );
         }
     }
     for( ifunc = Common_Functions; ifunc->name != NULL; ++ifunc ) {
-        if( memcmp( ifunc->name, name, len ) == 0 ) {
+        if( strcmp( ifunc->name, name ) == 0 ) {
             return( Flat( ifunc ) );
         }
     }
@@ -345,7 +343,7 @@ static aux_info *InfoLookup( SYMPTR sym )
         if( sym->flags & SYM_DEFINED )
             return( inf );
         if( (sym->flags & SYM_INTRINSIC) == 0 ) {
-            if( memcmp( name, "_inline_", 8 ) != 0 )
+            if( strncmp( name, "_inline_", 8 ) != 0 )
                 return( inf );
             name += 8;
         }

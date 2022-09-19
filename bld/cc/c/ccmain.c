@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,8 +268,8 @@ static IALIASPTR AddIAlias( const char *alias_name, const char *real_name, bool 
     alias->next = NULL;
     alias->is_lib = is_lib;
     alias->real_name = alias->alias_name + alias_len;
-    memcpy( alias->alias_name, alias_name, alias_len );
-    memcpy( alias->real_name, real_name, real_len );
+    strcpy( alias->alias_name, alias_name );
+    strcpy( alias->real_name, real_name );
     *lnk = alias;
     if( old_alias != NULL ) {
         /* Replace old alias if it exists */
@@ -339,7 +339,7 @@ static void MakePgmName( void )
         IsStdIn = true;
         CMemFree( WholeFName );
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
-        memcpy( WholeFName, STDIN_NAME, sizeof( STDIN_NAME ) );
+        strcpy( WholeFName, STDIN_NAME );
         pg.fname = WholeFName;
         len = sizeof( STDIN_NAME );
     } else {
@@ -352,7 +352,7 @@ static void MakePgmName( void )
         len = strlen( pg.fname ) + 1;
     }
     SrcFName = CMemAlloc( len );
-    memcpy( SrcFName, pg.fname, len );
+    strcpy( SrcFName, pg.fname );
     if( ModuleName == NULL ) {
         ModuleName = SrcFName;
     }
@@ -701,9 +701,9 @@ FNAMEPTR AddFlist( char const *filename )
         } else {
             len2 = strlen( DependHeaderPath );
             flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + len2 + len1 );
-            memcpy( flist->name, DependHeaderPath, len2 );
+            strcpy( flist->name, DependHeaderPath );
         }
-        memcpy( flist->name + len2, filename, len1 );
+        strcpy( flist->name + len2, filename );
         *lnk = flist;
         flist->next = NULL;
         flist->index = index;
@@ -796,11 +796,9 @@ void AddIncFile( INCFILE *ifile )
 void AddIncFileList( const char *filename )
 {
     INCFILE     *ifile;
-    size_t      len;
 
-    len = strlen( filename ) + 1;
-    ifile = (INCFILE *)CMemAlloc( offsetof( INCFILE, filename ) + len );
-    memcpy( ifile->filename, filename, len );
+    ifile = (INCFILE *)CMemAlloc( offsetof( INCFILE, filename ) + strlen( filename ) + 1 );
+    strcpy( ifile->filename, filename );
     AddIncFile( ifile );
 }
 
@@ -818,7 +816,6 @@ static RDIRPTR AddRDir( const char *path )
 {
     RDIRPTR     dirlist;
     RDIRPTR     *lnk;
-    size_t      len;
 
     for( lnk = &RDirNames; (dirlist = *lnk) != NULL; lnk = &dirlist->next ) {
         if( stricmp( path, dirlist->name ) == 0 ) {
@@ -826,10 +823,9 @@ static RDIRPTR AddRDir( const char *path )
         }
     }
     if( dirlist == NULL ) {
-        len = strlen( path ) + 1;
-        dirlist = (RDIRPTR)CMemAlloc( offsetof( rdir_list, name ) + len );
+        dirlist = (RDIRPTR)CMemAlloc( offsetof( rdir_list, name ) + strlen( path ) + 1 );
         dirlist->next = NULL;
-        memcpy( dirlist->name, path, len );
+        strcpy( dirlist->name, path );
         *lnk = dirlist;
     }
     return( dirlist );

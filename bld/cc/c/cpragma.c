@@ -315,7 +315,7 @@ bool GetPragmaAuxAliasInfo( void )
 void *AsmQuerySymbol( const char *name )
 /**************************************/
 {
-    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
+    return( SymLook( CalcHash( name ), name ) );
 }
 
 enum sym_state AsmQueryState( void *handle )
@@ -357,11 +357,8 @@ static aux_info *lookupMagicKeyword( const char *name )
 void CreateAux( const char *id )
 /******************************/
 {
-    size_t  len;
-
-    len = strlen( id ) + 1;
-    CurrEntry = (aux_entry *)CMemAlloc( offsetof( aux_entry, name ) + len );
-    memcpy( CurrEntry->name, id, len );
+    CurrEntry = (aux_entry *)CMemAlloc( offsetof( aux_entry, name ) + strlen( id ) + 1 );
+    strcpy( CurrEntry->name, id );
 #if _CPU == 370
     CurrEntry->offset = -1;
 #endif
@@ -551,7 +548,7 @@ void PragmaAuxEnding( void )
         SYM_HANDLE  sym_handle;
         SYM_ENTRY   sym;
 
-        if( SYM_NULL != (sym_handle = SymLook( CalcHash( CurrEntry->name, strlen( CurrEntry->name ) ), CurrEntry->name )) ) {
+        if( SYM_NULL != (sym_handle = SymLook( CalcHash( CurrEntry->name ), CurrEntry->name )) ) {
             SymGet( &sym, sym_handle );
             if( ( sym.flags & SYM_DEFINED ) && ( sym.flags & SYM_FUNCTION ) ) {
                 CErr2p( ERR_SYM_ALREADY_DEFINED, CurrEntry->name );
@@ -635,16 +632,10 @@ int PragRegNumIndex( const char *str, size_t len, int max_reg )
     return( -1 );
 }
 
-void PragRegNameErr( const char *regname, size_t regnamelen )
-/***********************************************************/
+void PragRegNameErr( const char *regname )
+/****************************************/
 {
-    char            buffer[REG_BUFF_SIZE];
-
-    if( regnamelen > sizeof( buffer ) - 1 )
-        regnamelen = sizeof( buffer ) - 1;
-    memcpy( buffer, regname, regnamelen );
-    buffer[regnamelen] = '\0';
-    CErr2p( ERR_BAD_REGISTER_NAME, buffer );
+    CErr2p( ERR_BAD_REGISTER_NAME, regname );
 }
 
 hw_reg_set PragRegList( void )
@@ -775,9 +766,8 @@ void AddLibraryName( const char *name, const char priority )
         }
     }
     if( lib == NULL ) {
-        len = strlen( name ) + 1;
-        lib = CMemAlloc( offsetof( library_list, libname ) + len + 1 );
-        memcpy( lib->libname + 1, name, len );
+        lib = CMemAlloc( offsetof( library_list, libname ) + strlen( name ) + 1 + 1 );
+        strcpy( lib->libname + 1, name );
     }
     lib->libname[0] = priority;
     lib->next = *new_owner;
@@ -912,13 +902,13 @@ textsegment *NewTextSeg( const char *name, const char *suffix, const char *class
     size_t          len3;
 
     len1 = strlen( name );
-    len2 = strlen( suffix ) + 1;
-    len3 = strlen( classname ) + 1;
-    tseg = CMemAlloc( offsetof( textsegment, segname ) + len1 + len2 + len3 );
-    tseg->class = len1 + len2;
-    memcpy( tseg->segname, name, len1 );
-    memcpy( tseg->segname + len1, suffix, len2 );
-    memcpy( tseg->segname + tseg->class, classname, len3 );
+    len2 = strlen( suffix );
+    len3 = strlen( classname );
+    tseg = CMemAlloc( offsetof( textsegment, segname ) + len1 + len2 + 1 + len3 + 1 );
+    tseg->class = len1 + len2 + 1;
+    strcpy( tseg->segname, name );
+    strcpy( tseg->segname + len1, suffix );
+    strcpy( tseg->segname + tseg->class, classname );
     tseg->next = TextSegList;
     TextSegList = tseg;
     return( tseg );
@@ -928,14 +918,10 @@ textsegment *LkSegName( const char *segname, const char *classname )
 /******************************************************************/
 {
     textsegment     *tseg;
-    size_t          len1;
-    size_t          len2;
 
-    len1 = strlen( segname ) + 1;
-    len2 = strlen( classname ) + 1;
     for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {
-        if( memcmp( tseg->segname, segname, len1 ) == 0 ) {
-            if( memcmp( tseg->segname + tseg->class, classname, len2 ) == 0 ) {
+        if( strcmp( tseg->segname, segname ) == 0 ) {
+            if( strcmp( tseg->segname + tseg->class, classname ) == 0 ) {
                 return( tseg );
             }
         }
@@ -964,7 +950,7 @@ static void pragAllocText( void )
         for( ;; ) {
             MustRecog( T_COMMA );
             /* current token can be an T_ID or a T_STRING */
-            sym_handle = Sym0Look( CalcHash( Buffer, TokenLen ), Buffer );
+            sym_handle = Sym0Look( CalcHash( Buffer ), Buffer );
             if( sym_handle == SYM_NULL ) {
                 /* error */
             } else {
@@ -1534,13 +1520,11 @@ void AddExtRefN ( const char *name )
 {
     extref_info     **extref;
     extref_info     *new_extref;
-    size_t          len;
 
     for( extref = &ExtrefInfo; *extref != NULL; extref = &(*extref)->next )
         ; /* nothing to do */
-    len = strlen( name ) + 1;
-    new_extref = CMemAlloc( sizeof( extref_info ) - 1 + len );
-    memcpy( new_extref->name, name, len );
+    new_extref = CMemAlloc( sizeof( extref_info ) + strlen( name ) );
+    strcpy( new_extref->name, name );
     new_extref->symbol = NULL;
     new_extref->next = NULL;
     *extref = new_extref;

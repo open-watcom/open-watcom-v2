@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +38,9 @@
 aux_entry *AuxLookup( const char *name )
 {
     aux_entry   *ent;
-    size_t      len;
 
-    len = strlen( name ) + 1;
     for( ent = AuxList; ent != NULL; ent = ent->next ) {
-        if( memcmp( ent->name, name, len ) == 0 ) {
+        if( strcmp( ent->name, name ) == 0 ) {
             break;
         }
     }
