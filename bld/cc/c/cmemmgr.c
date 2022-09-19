@@ -149,6 +149,18 @@ static void addMCBtoFreeList( MCB *p, size_t len )
     p->next = pnext;
 }
 
+static void removeMCBfromFreeList( MCB *p )
+/*****************************************/
+{
+    MCB     *pprev;
+    MCB     *pnext;
+
+    pnext = p->next;
+    pprev = p->prev;
+    pprev->next = pnext;
+    pnext->prev = pprev;
+}
+
 static void AllocPermArea( void )
 /*******************************/
 {
@@ -195,8 +207,6 @@ static void Ccoalesce( MCB *p1 )
 /******************************/
 {
     MCB *p2;
-    MCB *pnext;
-    MCB *pprev;
 
     for( ;; ) {
         p2 = NEXT_MCB( p1 );
@@ -208,10 +218,7 @@ static void Ccoalesce( MCB *p1 )
             break;
         /* coalesce p1 and p2 and remove p2 from free list */
         p1->len += p2->len;
-        pnext = p2->next;
-        pprev = p2->prev;
-        pprev->next = pnext;
-        pnext->prev = pprev;
+        removeMCBfromFreeList( p2 );
     }
 }
 
@@ -220,8 +227,6 @@ static void *CFastAlloc( size_t size )
 {
     size_t      amount;
     MCB         *p1;
-    MCB         *pnext;
-    MCB         *pprev;
 
     amount = _RoundUp( size + MCB_SHIFT, MEM_ALIGN );
     if( amount < sizeof( MCB ) )
@@ -238,11 +243,7 @@ static void *CFastAlloc( size_t size )
                 p1 = NEXT_MCB( p1 );
                 p1->len = amount;
             } else {
-                /* remove block from free list */
-                pnext = p1->next;
-                pprev = p1->prev;
-                pprev->next = pnext;
-                pnext->prev = pprev;
+                removeMCBfromFreeList( p1 );
             }
             p1->len |= ALLOC_FLAG;      /* indicate block allocated */
             return( MCB2PTR( p1 ) );
@@ -334,8 +335,6 @@ void CMemFree( void *loc )
 {
     size_t      len;
     MCB         *p1;
-    MCB         *pprev;
-    MCB         *pnext;
 
     if( loc == NULL ) { //Should try and get rid of these error cases
         return;
@@ -355,13 +354,9 @@ void CMemFree( void *loc )
                 Ccoalesce( CFreeList.next );
                 p1 = CFreeList.next;
                 if( (char *)p1 == PermPtr + PermAvail ) {
-                    /* remove block from free list */
-                    pnext = p1->next;
-                    pprev = p1->prev;
-                    pprev->next = pnext;
-                    pnext->prev = pprev;
                     len = p1->len;
                     PermAvail += len;
+                    removeMCBfromFreeList( p1 );
                 }
             }
         } else {
