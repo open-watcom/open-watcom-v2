@@ -42,7 +42,6 @@
 extern  void        AsmSysInit( unsigned char * );
 extern  void        AsmSysFini( void );
 extern  char const  *AsmSysDefineByte( void );
-extern  void        AsmMakeInlineFunc( bool );
 extern  void        AsmSysLine( const char * );
 
 #endif

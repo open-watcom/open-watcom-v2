@@ -99,6 +99,7 @@ void AsmStmt( void )
     unsigned char   buff[MAXIMUM_BYTESEQ + ASM_BLOCK];
     TOKEN           skip_token;
     ppctl_t         old_ppctl;
+    TREEPTR         tree;
 
     old_ppctl = PPControl;
     // indicate that we are inside an __asm statement so scanner will
@@ -132,7 +133,15 @@ void AsmStmt( void )
         skip_token = T_NULL;
     }
     PPControl = old_ppctl;
-    AsmMakeInlineFunc( too_many_bytes );
+    if( AsmCodeAddress > 0 ) {
+        CreateAuxInlineFunc( too_many_bytes );
+        CurrEntry = NULL;
+        tree = LeafNode( OPR_FUNCNAME );
+        tree->op.u2.sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
+        tree = ExprNode( tree, OPR_CALL, NULL );
+        tree->u.expr_type = GetType( TYP_VOID );
+        AddStmt( tree );
+    }
     AsmSysFini();
     if( CurToken == skip_token ) {
         NextToken();

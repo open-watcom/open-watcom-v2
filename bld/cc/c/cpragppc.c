@@ -351,24 +351,6 @@ void AsmSysFini( void )
     AsmFini();
 }
 
-void AsmMakeInlineFunc( bool too_many_bytes )
-/*************************************************/
-{
-    SYM_HANDLE          sym_handle;
-    TREEPTR             tree;
-
-    if( AsmCodeAddress != 0 ) {
-        CreateAuxInlineFunc( too_many_bytes );
-        CurrEntry = NULL;
-        sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
-        tree = LeafNode( OPR_FUNCNAME );
-        tree->op.u2.sym_handle = sym_handle;
-        tree = ExprNode( tree, OPR_CALL, NULL );
-        tree->u.expr_type = GetType( TYP_VOID );
-        AddStmt( tree );
-    }
-}
-
 char const *AsmSysDefineByte( void )
 /**********************************/
 {
