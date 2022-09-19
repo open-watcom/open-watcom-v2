@@ -106,6 +106,7 @@ static  MCB         CFreeList;
 static  mem_blk     *Blks;
 
 static void InitPermArea( void )
+/******************************/
 {
     Blks = NULL;
     PermAvail = 0;
@@ -114,6 +115,7 @@ static void InitPermArea( void )
 }
 
 static void FiniPermArea( void )
+/******************************/
 {
     mem_blk *curr, *next;
 
@@ -125,6 +127,7 @@ static void FiniPermArea( void )
 }
 
 static void AllocPermArea( void )
+/*******************************/
 {
     char    *perm_area;
 
@@ -148,6 +151,7 @@ static void AllocPermArea( void )
 
 
 void CMemInit( void )
+/*******************/
 {
     InitPermArea();
     CFreeList.len = 0;
@@ -156,6 +160,7 @@ void CMemInit( void )
 }
 
 void CMemFini( void )
+/*******************/
 {
     CFreeList.len = 0;
     CFreeList.next = &CFreeList;
@@ -276,6 +281,7 @@ void *CMemRealloc( void *loc, size_t size )
 }
 
 static enum cmem_kind CMemKind( void *loc )
+/*****************************************/
 {
     char            *ptr;
     size_t          size;
@@ -361,14 +367,19 @@ void CMemFree( void *loc )
 
 
 void *CPermAlloc( size_t amount )
+/*******************************/
 {
     char        *p;
 
     amount = _RoundUp( amount, MEM_ALIGN );
     if( amount > PermAvail ) {
-        AllocPermArea();            /* allocate another permanent area block */
+    	if( amount <= MAX_PERM_SIZE ) {
+            /* allocate another permanent area block */
+            AllocPermArea();
+    	}
         if( amount > PermAvail ) {
-            return( CMemAlloc( amount ) );
+            CErr1( ERR_OUT_OF_MEMORY );
+            CSuicide();
         }
     }
     PermAvail -= amount;
@@ -379,6 +390,7 @@ void *CPermAlloc( size_t amount )
 
 
 void *FEmalloc( size_t size )
+/***************************/
 {
     void    *p;
 
@@ -392,6 +404,7 @@ void *FEmalloc( size_t size )
 
 
 void FEfree( void *p )
+/********************/
 {
     if( p != NULL ) {
         free( p );
@@ -400,6 +413,7 @@ void FEfree( void *p )
 
 
 int FEMoreMem( size_t size )
+/**************************/
 {
     /* unused parameters */ (void)size;
 
