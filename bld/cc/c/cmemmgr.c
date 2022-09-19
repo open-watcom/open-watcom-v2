@@ -49,21 +49,23 @@
     #define MEM_ALIGN   4
 #endif
 
+#define ALLOC_FLAG      1
+
 #define MCB_SHIFT       MEM_ALIGN
 
-#define NEXT_MCB(x)     (MCB *)((char *)(x) + (x)->len)
+/* Mask to get real allocation size */
+#define SIZE_MASK       ~ALLOC_FLAG
+
+#define NEXT_MCB(x)     (MCB *)((char *)(x) + ((x)->len & SIZE_MASK))
 #define PTR2MCB(x)      (MCB *)((char *)(x) - MCB_SHIFT)
 #define MCB2PTR(x)      (void *)((char *)(x) + MCB_SHIFT)
 
 /* Size of permanent area. Needs to be reasonably big to satisfy
  * large allocation requests. Must by multiple of 0x20
  */
-#define MAX_PERM_SIZE   0x100000        /* was 0xfff0 */
+#define MAX_PERM_SIZE   0x00100000
 
-#define PERM_BLK_END    (size_t)-1
-
-/* Mask to get real allocation size */
-#define SIZE_MASK       ~1u             /* was 0xfffe */
+#define PERM_BLK_END    (0 | ALLOC_FLAG)
 
 enum cmem_kind {
     CMEM_PERM,
@@ -170,9 +172,11 @@ static void Ccoalesce( MCB *p1 )
 
     for( ;; ) {
         p2 = NEXT_MCB( p1 );
-        if( p2->len & 1 )               /* quit if next block not free */
-            break;
-        if( p2->len == PERM_BLK_END )   /* quit if no more blocks follow in permanet block */
+        /*
+         * quit if next block not free
+         * or if no more blocks follow in permanet block
+         */
+        if( p2->len & ALLOC_FLAG )
             break;
         /* coalesce p1 and p2 and remove p2 from free list */
         p1->len += p2->len;
@@ -212,7 +216,7 @@ static void *CFastAlloc( size_t size )
                 pprev->next = pnext;
                 pnext->prev = pprev;
             }
-            p1->len |= 1;           /* indicate block allocated */
+            p1->len |= ALLOC_FLAG;      /* indicate block allocated */
             return( MCB2PTR( p1 ) );
         }
     }
@@ -220,7 +224,7 @@ static void *CFastAlloc( size_t size )
         return( NULL );
     PermAvail -= amount;
     p1 = (MCB *)( PermPtr + PermAvail );
-    p1->len = amount | 1;
+    p1->len = amount | ALLOC_FLAG;
     return( MCB2PTR( p1 ) );
 }
 
