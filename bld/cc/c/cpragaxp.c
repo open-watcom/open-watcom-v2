@@ -402,7 +402,6 @@ void AsmSysInit( unsigned char *buf )
     AsmCodeAddress = 0;
 }
 
-
 void AsmSysFini( void )
 /*********************/
 {

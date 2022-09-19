@@ -141,6 +141,8 @@ void AsmStmt( void )
         tree = ExprNode( tree, OPR_CALL, NULL );
         tree->u.expr_type = GetType( TYP_VOID );
         AddStmt( tree );
+    } else {
+//        expr = NULL;
     }
     AsmSysFini();
     if( CurToken == skip_token ) {
