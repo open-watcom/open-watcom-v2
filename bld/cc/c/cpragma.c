@@ -748,7 +748,6 @@ void AddLibraryName( const char *name, const char priority )
     library_list    **new_owner;
     library_list    **owner;
     library_list    *lib;
-    size_t          len;
 
     for( owner = &HeadLibs; (lib = *owner) != NULL; owner = &lib->next ) {
         if( lib->libname[0] < priority ) {
