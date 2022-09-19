@@ -126,6 +126,29 @@ static void FiniPermArea( void )
     Blks = NULL;
 }
 
+static void addMCBtoFreeList( MCB *p, size_t len )
+/************************************************/
+{
+    MCB         *pprev;
+    MCB         *pnext;
+
+    p->len = len;
+    pprev = &CFreeList;
+    for( ;; ) {         /* insert in sorted order */
+        pnext = pprev;
+        pprev = pprev->prev;
+        if( pprev == &CFreeList )
+            break;
+        if( pprev < p ) {
+            break;
+        }
+    }
+    pnext->prev = p;
+    pprev->next = p;
+    p->prev = pprev;
+    p->next = pnext;
+}
+
 static void AllocPermArea( void )
 /*******************************/
 {
@@ -291,9 +314,11 @@ static enum cmem_kind CMemKind( void *loc )
     size = PermSize;
     for( blk = Blks; blk != NULL; blk = blk->next ) {
         if( (mem_blk *)loc > blk ) {
+            /* check if permanent memory (from beginning of block) */
             if( (char *)loc < ptr ) {
                 return( CMEM_PERM );
             }
+            /* check if dynamic memory (from end of block) */
             if( (char *)loc < (char *)blk + sizeof( mem_blk ) + size ) {
                 return( CMEM_MEM );
             }
@@ -303,7 +328,6 @@ static enum cmem_kind CMemKind( void *loc )
     }
     return( CMEM_NONE );
 }
-
 
 void CMemFree( void *loc )
 /************************/
@@ -341,21 +365,7 @@ void CMemFree( void *loc )
                 }
             }
         } else {
-            p1->len = len;
-            pprev = &CFreeList;
-            for( ;; ) {         /* insert in sorted order */
-                pnext = pprev;
-                pprev = pprev->prev;
-                if( pprev == &CFreeList )
-                    break;
-                if( pprev < p1 ) {
-                    break;
-                }
-            }
-            pnext->prev = p1;
-            pprev->next = p1;
-            p1->prev = pprev;
-            p1->next = pnext;
+            addMCBtoFreeList( p1, len );
             Ccoalesce( p1 );
         }
         break;
