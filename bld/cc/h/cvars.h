@@ -650,7 +650,7 @@ extern hw_reg_set   *PragManyRegSets( void );
 extern TOKEN        PragRegSet( void );
 extern void         ChkPragmas( void );
 extern void         CreateAux( const char * );
-extern void         CreateAuxInlineFunc( void );
+extern void         CreateAuxInlineFunc( bool too_many_bytes );
 extern void         SetCurrInfo( const char * );
 extern void         XferPragInfo( const char *, const char * );
 extern void         WarnEnableDisable( bool enabled, msg_codes msgnum );

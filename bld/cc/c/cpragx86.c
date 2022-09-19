@@ -597,7 +597,6 @@ static bool GetByteSeq( aux_info *info )
     AsmSysInit( buff );
     PPNextToken();
     too_many_bytes = false;
-    uses_auto = false;
     offset = 0;
     name = NULL;
     for( ;; ) {
@@ -980,16 +979,9 @@ void AsmMakeInlineFunc( bool too_many_bytes )
 {
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
-    bool                uses_auto;
-
-    /* unused parameters */ (void)too_many_bytes;
 
     if( AsmCodeAddress != 0 ) {
-        CreateAuxInlineFunc();
-        uses_auto = AsmInsertFixups( CurrInfo );
-        if( uses_auto ) {
-            AsmUsesAuto( CurrInfo );
-        }
+        CreateAuxInlineFunc( too_many_bytes );
         CurrEntry = NULL;
         sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );

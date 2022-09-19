@@ -365,8 +365,8 @@ void CreateAux( const char *id )
 }
 
 
-void CreateAuxInlineFunc( void )
-/******************************/
+void CreateAuxInlineFunc( bool too_many_bytes )
+/*********************************************/
 {
     char        name[10];
 
@@ -378,6 +378,11 @@ void CreateAuxInlineFunc( void )
     *CurrInfo = WatcallInfo;
     CurrInfo->use = 1;
     CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
+    if( !too_many_bytes ) {
+        if( AsmInsertFixups( CurrInfo ) ) {
+            AsmUsesAuto( CurrInfo );
+        }
+    }
     CurrEntry->next = AuxList;
     AuxList = CurrEntry;
 }
