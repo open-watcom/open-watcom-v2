@@ -56,9 +56,12 @@
 /* Mask to get real allocation size */
 #define SIZE_MASK       ~ALLOC_FLAG
 
-#define NEXT_MCB(x)     (MCB *)((char *)(x) + ((x)->len & SIZE_MASK))
-#define PTR2MCB(x)      (MCB *)((char *)(x) - MCB_SHIFT)
-#define MCB2PTR(x)      (void *)((char *)(x) + MCB_SHIFT)
+#define NEXT_MCB(x)     ((MCB *)((char *)(x) + ((x)->len & SIZE_MASK)))
+#define PTR2MCB(x)      ((MCB *)((char *)(x) - MCB_SHIFT))
+#define MCB2PTR(x)      ((void *)((char *)(x) + MCB_SHIFT))
+
+#define PTR2MCB_SIZE(x) ((x) + MCB_SHIFT)
+#define MCB2PTR_SIZE(x) ((x) - MCB_SHIFT)
 
 /* Size of permanent area. Needs to be reasonably big to satisfy
  * large allocation requests. Must by multiple of 0x20
@@ -228,7 +231,7 @@ static void *CFastAlloc( size_t size )
     size_t      amount;
     MCB         *p1;
 
-    amount = _RoundUp( size + MCB_SHIFT, MEM_ALIGN );
+    amount = _RoundUp( PTR2MCB_SIZE( size ), MEM_ALIGN );
     if( amount < sizeof( MCB ) )
         amount = sizeof( MCB );
 
@@ -279,23 +282,23 @@ void *CMemAlloc( size_t size )
 }
 
 
-void *CMemRealloc( void *loc, size_t size )
-/*****************************************/
+void *CMemRealloc( void *old_p, size_t size )
+/*******************************************/
 {
     void            *p;
     MCB             *p1;
     size_t          len;
 
-    if( loc == NULL )
+    if( old_p == NULL )
         return( CMemAlloc( size ) );
 
-    p = loc;
-    p1 = PTR2MCB( loc );
-    len = (p1->len & SIZE_MASK) - MCB_SHIFT;
+    p = old_p;
+    p1 = PTR2MCB( old_p );
+    len = MCB2PTR_SIZE( p1->len & SIZE_MASK );
     if( size > len ) {
         p = CMemAlloc( size );
-        memcpy( p, loc, len );
-        CMemFree( loc );
+        memcpy( p, old_p, len );
+        CMemFree( old_p );
 #if 0
     } else {
         /* the current block is big enough -- nothing to do (very lazy realloc) */
@@ -304,8 +307,8 @@ void *CMemRealloc( void *loc, size_t size )
     return( p );
 }
 
-static enum cmem_kind CMemKind( void *loc )
-/*****************************************/
+static enum cmem_kind CMemKind( void *p )
+/***************************************/
 {
     char            *ptr;
     size_t          size;
@@ -314,13 +317,13 @@ static enum cmem_kind CMemKind( void *loc )
     ptr = PermPtr;
     size = PermSize;
     for( blk = Blks; blk != NULL; blk = blk->next ) {
-        if( (mem_blk *)loc > blk ) {
+        if( (char *)p > (char *)blk ) {
             /* check if permanent memory (from beginning of block) */
-            if( (char *)loc < ptr ) {
+            if( (char *)p < ptr ) {
                 return( CMEM_PERM );
             }
             /* check if dynamic memory (from end of block) */
-            if( (char *)loc < (char *)blk + sizeof( mem_blk ) + size ) {
+            if( (char *)p < (char *)blk + sizeof( mem_blk ) + size ) {
                 return( CMEM_MEM );
             }
         }
@@ -330,23 +333,23 @@ static enum cmem_kind CMemKind( void *loc )
     return( CMEM_NONE );
 }
 
-void CMemFree( void *loc )
-/************************/
+void CMemFree( void *p )
+/**********************/
 {
     size_t      len;
     MCB         *p1;
 
-    if( loc == NULL ) { //Should try and get rid of these error cases
+    if( p == NULL ) { //Should try and get rid of these error cases
         return;
     }
-    if( ((char *)loc >= PCH_Start) && ((char *)loc < PCH_End) ) {
+    if( ((char *)p >= PCH_Start) && ((char *)p < PCH_End) ) {
         return;
     }
-    switch( CMemKind( loc ) ) {
+    switch( CMemKind( p ) ) {
     case CMEM_PERM:
         return;
     case CMEM_MEM:
-        p1 = PTR2MCB( loc );
+        p1 = PTR2MCB( p );
         len = p1->len & SIZE_MASK;
         if( (char *)p1 == PermPtr + PermAvail ) {
             PermAvail += len;
