@@ -120,7 +120,8 @@ static void InitPermArea( void )
 static void FiniPermArea( void )
 /******************************/
 {
-    mem_blk *curr, *next;
+    mem_blk *curr;
+    mem_blk *next;
 
     for( curr = Blks; curr != NULL; curr = next ) {
         next = curr->next;
@@ -129,39 +130,39 @@ static void FiniPermArea( void )
     Blks = NULL;
 }
 
-static void addMCBtoFreeList( MCB *p, size_t len )
-/************************************************/
+static void addMCBtoFreeList( MCB *mcb, size_t mcb_len )
+/******************************************************/
 {
-    MCB         *pprev;
-    MCB         *pnext;
+    MCB     *mcb_prev;
+    MCB     *mcb_next;
 
-    p->len = len;
-    pprev = &CFreeList;
+    mcb->len = mcb_len;
+    mcb_prev = &CFreeList;
     for( ;; ) {         /* insert in sorted order */
-        pnext = pprev;
-        pprev = pprev->prev;
-        if( pprev == &CFreeList )
+        mcb_next = mcb_prev;
+        mcb_prev = mcb_prev->prev;
+        if( mcb_prev == &CFreeList )
             break;
-        if( pprev < p ) {
+        if( mcb_prev < mcb ) {
             break;
         }
     }
-    pnext->prev = p;
-    pprev->next = p;
-    p->prev = pprev;
-    p->next = pnext;
+    mcb_next->prev = mcb;
+    mcb_prev->next = mcb;
+    mcb->prev = mcb_prev;
+    mcb->next = mcb_next;
 }
 
-static void removeMCBfromFreeList( MCB *p )
-/*****************************************/
+static void removeMCBfromFreeList( MCB *mcb )
+/*******************************************/
 {
-    MCB     *pprev;
-    MCB     *pnext;
+    MCB     *mcb_prev;
+    MCB     *mcb_next;
 
-    pnext = p->next;
-    pprev = p->prev;
-    pprev->next = pnext;
-    pnext->prev = pprev;
+    mcb_next = mcb->next;
+    mcb_prev = mcb->prev;
+    mcb_prev->next = mcb_next;
+    mcb_next->prev = mcb_prev;
 }
 
 static void AllocPermArea( void )
@@ -206,58 +207,58 @@ void CMemFini( void )
     FiniPermArea();
 }
 
-static void Ccoalesce( MCB *p1 )
-/******************************/
+static void Ccoalesce( MCB *mcb1 )
+/********************************/
 {
-    MCB *p2;
+    MCB *mcb2;
 
     for( ;; ) {
-        p2 = NEXT_MCB( p1 );
+        mcb2 = NEXT_MCB( mcb1 );
         /*
          * quit if next block not free
          * or if no more blocks follow in permanet block
          */
-        if( p2->len & ALLOC_FLAG )
+        if( mcb2->len & ALLOC_FLAG )
             break;
-        /* coalesce p1 and p2 and remove p2 from free list */
-        p1->len += p2->len;
-        removeMCBfromFreeList( p2 );
+        /* coalesce mcb1 and mcb2 and remove mcb2 from free list */
+        mcb1->len += mcb2->len;
+        removeMCBfromFreeList( mcb2 );
     }
 }
 
 static void *CFastAlloc( size_t size )
 /************************************/
 {
-    size_t      amount;
-    MCB         *p1;
+    size_t      mcb_len;
+    MCB         *mcb;
 
-    amount = _RoundUp( PTR2MCB_SIZE( size ), MEM_ALIGN );
-    if( amount < sizeof( MCB ) )
-        amount = sizeof( MCB );
-
-/*      search free list before getting memory from permanent area */
-
-    for( p1 = CFreeList.prev; p1 != &CFreeList; p1 = p1->prev ) {
-        Ccoalesce( p1 );
-        if( p1->len >= amount ) {
-            if( p1->len - amount > sizeof( MCB ) ) {
+    mcb_len = _RoundUp( PTR2MCB_SIZE( size ), MEM_ALIGN );
+    if( mcb_len < sizeof( MCB ) )
+        mcb_len = sizeof( MCB );
+    /*
+     * search free list before getting memory from permanent area
+     */
+    for( mcb = CFreeList.prev; mcb != &CFreeList; mcb = mcb->prev ) {
+        Ccoalesce( mcb );
+        if( mcb->len >= mcb_len ) {
+            if( mcb->len - mcb_len > sizeof( MCB ) ) {
                 /* block is big enough to split it */
-                p1->len -= amount;
-                p1 = NEXT_MCB( p1 );
-                p1->len = amount;
+                mcb->len -= mcb_len;
+                mcb = NEXT_MCB( mcb );
+                mcb->len = mcb_len;
             } else {
-                removeMCBfromFreeList( p1 );
+                removeMCBfromFreeList( mcb );
             }
-            p1->len |= ALLOC_FLAG;      /* indicate block allocated */
-            return( MCB2PTR( p1 ) );
+            mcb->len |= ALLOC_FLAG;      /* indicate block allocated */
+            return( MCB2PTR( mcb ) );
         }
     }
-    if( amount > PermAvail )
+    if( mcb_len > PermAvail )
         return( NULL );
-    PermAvail -= amount;
-    p1 = (MCB *)( PermPtr + PermAvail );
-    p1->len = amount | ALLOC_FLAG;
-    return( MCB2PTR( p1 ) );
+    PermAvail -= mcb_len;
+    mcb = (MCB *)( PermPtr + PermAvail );
+    mcb->len = mcb_len | ALLOC_FLAG;
+    return( MCB2PTR( mcb ) );
 }
 
 
@@ -286,18 +287,16 @@ void *CMemRealloc( void *old_p, size_t size )
 /*******************************************/
 {
     void            *p;
-    MCB             *p1;
-    size_t          len;
+    size_t          old_size;
 
     if( old_p == NULL )
         return( CMemAlloc( size ) );
 
     p = old_p;
-    p1 = PTR2MCB( old_p );
-    len = MCB2PTR_SIZE( p1->len & SIZE_MASK );
-    if( size > len ) {
+    old_size = MCB2PTR_SIZE( PTR2MCB( old_p )->len & SIZE_MASK );
+    if( size > old_size ) {
         p = CMemAlloc( size );
-        memcpy( p, old_p, len );
+        memcpy( p, old_p, old_size );
         CMemFree( old_p );
 #if 0
     } else {
@@ -336,8 +335,8 @@ static enum cmem_kind CMemKind( void *p )
 void CMemFree( void *p )
 /**********************/
 {
-    size_t      len;
-    MCB         *p1;
+    size_t      mcb_len;
+    MCB         *mcb;
 
     if( p == NULL ) { //Should try and get rid of these error cases
         return;
@@ -349,51 +348,49 @@ void CMemFree( void *p )
     case CMEM_PERM:
         return;
     case CMEM_MEM:
-        p1 = PTR2MCB( p );
-        len = p1->len & SIZE_MASK;
-        if( (char *)p1 == PermPtr + PermAvail ) {
-            PermAvail += len;
-            if( CFreeList.next != &CFreeList ) {
-                Ccoalesce( CFreeList.next );
-                p1 = CFreeList.next;
-                if( (char *)p1 == PermPtr + PermAvail ) {
-                    len = p1->len;
-                    PermAvail += len;
-                    removeMCBfromFreeList( p1 );
+        mcb = PTR2MCB( p );
+        mcb_len = mcb->len & SIZE_MASK;
+        if( (char *)mcb == PermPtr + PermAvail ) {
+            PermAvail += mcb_len;
+            mcb = (MCB *)( (char *)mcb + mcb_len );
+            if( (mcb->len & ALLOC_FLAG) == 0 ) {
+                if( (char *)mcb == PermPtr + PermAvail ) {
+                    PermAvail += mcb->len;
+                    removeMCBfromFreeList( mcb );
                 }
             }
         } else {
-            addMCBtoFreeList( p1, len );
-            Ccoalesce( p1 );
+            addMCBtoFreeList( mcb, mcb_len );
+            Ccoalesce( mcb );
         }
         break;
     case CMEM_NONE:
-        len = 0;
+        mcb_len = 0;
         return;
     }
 }
 
 
-void *CPermAlloc( size_t amount )
-/*******************************/
+void *CPermAlloc( size_t size )
+/*****************************/
 {
-    char        *p;
+    void    *p;
 
-    amount = _RoundUp( amount, MEM_ALIGN );
-    if( amount > PermAvail ) {
-    	if( amount <= MAX_PERM_SIZE ) {
+    size = _RoundUp( size, MEM_ALIGN );
+    if( size > PermAvail ) {
+        if( size <= MAX_PERM_SIZE ) {
             /* allocate another permanent area block */
             AllocPermArea();
-    	}
-        if( amount > PermAvail ) {
+        }
+        if( size > PermAvail ) {
             CErr1( ERR_OUT_OF_MEMORY );
             CSuicide();
         }
     }
-    PermAvail -= amount;
+    PermAvail -= size;
     p = PermPtr;
-    PermPtr += amount;
-    return( memset( p, 0, amount ) );
+    PermPtr += size;
+    return( memset( p, 0, size ) );
 }
 
 
