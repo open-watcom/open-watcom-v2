@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,8 +107,8 @@ static pointer_uint PeakAlloc    = 0;
 
 #define ALLOCATED       1
 
-#define MAX_SIZE        14 /* 16384 */
-#define MIN_SIZE        4  /* 16 */
+#define MAX_SIZE        14 /* 16384 (2 ^ 14) */
+#define MIN_SIZE        4  /* 16    (2 ^ 4) */
 #if defined( LONG_IS_64BITS ) || defined( _WIN64 )
 #define MEM_WORD_SIZE   8  /* Needed to keep alignment. */
 #else

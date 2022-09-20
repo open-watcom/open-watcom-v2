@@ -204,8 +204,7 @@ static void SetTargName( const char *name, size_t len )
 
 static void SetTargSystem( void )
 {
-    char        buff[128];
-    size_t      len;
+    char        *buff;
 
     if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == _AXP
@@ -386,14 +385,10 @@ static void SetTargSystem( void )
 #endif
         break;
     }
-    len = strlen( SwData.sys_name );
-    buff[0] = '_';
-    buff[1] = '_';
-    strcpy( buff + 2, SwData.sys_name );
-    buff[2 + len] = '_';
-    buff[2 + len + 1] = '_';
-    buff[2 + len + 2] = '\0';
+    buff = CMemAlloc( 2 + strlen( SwData.sys_name ) + 2 + 1 );
+    sprintf( buff, "__%s__", SwData.sys_name );
     PreDefine_Macro( buff );
+    CMemFree( buff );
 }
 
 #define SET_PEG( r ) if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
@@ -838,25 +833,26 @@ void MergeInclude( void )
 {
     /* must be called after GenCOptions to get req'd IncPathList */
     const char  *env_var;
-    char        buff[128];
-    char        *p;
+    char        *buff;
 
     if( !CompFlags.cpp_ignore_env ) {
         switch( TargSys ) {
         case TS_CHEAP_WINDOWS:
         case TS_WINDOWS:
-            p = strcpy( buff, "WINDOWS" ) + LENLIT( "WINDOWS" );
+            env_var = FEGetEnv( "WINDOWS_" INC_VAR );
             break;
         case TS_NETWARE:
         case TS_NETWARE5:
-            p = strcpy( buff, "NETWARE" ) + LENLIT( "NETWARE" );
+            env_var = FEGetEnv( "NETWARE_" INC_VAR );
             break;
         default:
-            p = strcpy( buff, SwData.sys_name ) + strlen( SwData.sys_name );
+            buff = CMemAlloc( strlen( SwData.sys_name ) + LENLIT( "_" INC_VAR ) + 1 );
+            sprintf( buff, "%s_" INC_VAR, SwData.sys_name );
+            env_var = FEGetEnv( buff );
+            CMemFree( buff );
             break;
         }
-        strcpy( p, "_" INC_VAR );
-        AddIncList( FEGetEnv( buff ) );
+        AddIncList( env_var );
 
 #if _CPU == 386
         env_var = FEGetEnv( "INC386" );

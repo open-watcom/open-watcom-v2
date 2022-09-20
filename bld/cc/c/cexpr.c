@@ -257,8 +257,7 @@ static TREEPTR ConstLeaf( void )
     case TYP_DIMAGINARY:
     case TYP_LDIMAGINARY:
         flt = CMemAlloc( sizeof( FLOATVAL ) + TokenLen );
-        flt->string[0] = '+';
-        strcpy( flt->string + 1, Buffer );
+        sprintf( flt->string, "+%s", Buffer );
         flt->len = (unsigned char)( 1 + TokenLen );
         flt->type = ConstType;
         flt->next = NULL;

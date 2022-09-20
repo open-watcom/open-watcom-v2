@@ -727,15 +727,13 @@ TYPEPTR TypeDefault( void )
 static TAGPTR NewTag( const char *name, id_hash_idx h )
 {
     TAGPTR      tag;
-    size_t      len;
 
-    len = strlen( name ) + 1;
-    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) - 1 + len );
+    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) + strlen( name ) );
     tag->level = (id_level_type)SymLevel;
     tag->hash = h;
     tag->next_tag = TagHash[h];
     TagHash[h] = tag;
-    memcpy( tag->name, name, len );
+    strcpy( tag->name, name );
     ++TagCount;
     return( tag );
 }
@@ -1433,7 +1431,7 @@ TYPEPTR TypeNode( DATA_TYPE type_spec, TYPEPTR the_object )
 {
     TYPEPTR     typ;
 
-    typ = (TYPEPTR) CPermAlloc( sizeof( TYPEDEFN ) );
+    typ = (TYPEPTR)CPermAlloc( sizeof( TYPEDEFN ) );
     typ->decl_type = type_spec;
     typ->object = the_object;
     typ->u.tag = NULL;
