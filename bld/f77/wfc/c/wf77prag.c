@@ -479,7 +479,7 @@ static void     Pragma( void )
             DefaultLibInfo();
         } else {
             while( !RecFnToken( "\0" ) ) {
-                const char  *p;
+                char        *p;
                 const char  *t;
                 size_t      len;
 
