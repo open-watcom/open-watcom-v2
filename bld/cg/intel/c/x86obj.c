@@ -2074,7 +2074,7 @@ void    ObjFini( void )
     /* Emit default library search records. */
     for( lib = NULL; (lib = FEAuxInfo( lib, NEXT_LIBRARY )) != NULL; ) {
         OutShort( LIBNAME_COMMENT, Imports );
-        OutString( ( (char *)FEAuxInfo( lib, LIBRARY_NAME ) ) + 1, Imports );
+        OutString( (char *)FEAuxInfo( lib, LIBRARY_NAME ), Imports );
         PutObjOMFRec( CMD_COMENT, Imports->array, Imports->used );
         Imports->used = 0;
     }
