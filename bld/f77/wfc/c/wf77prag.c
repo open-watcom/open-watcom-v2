@@ -480,13 +480,19 @@ static void     Pragma( void )
         } else {
             while( !RecFnToken( "\0" ) ) {
                 const char  *p;
-                
-                p = TokStart;
-                if( *p == '"' ) {
-                    p++;
-                    TokEnd[-1] = NULLCHAR;
+                size_t      len;
+
+                len = TokEnd - TokStart;
+                p = FMemAlloc( len + 1 );
+                arr = TokStart;
+                if( *arr == '"' ) {
+                    arr++;
+                    len -= 2;
                 }
+                strncpy( p, arr, len );
+                p[len] = NULLCHAR;
                 AddDefaultLib( p, '9' );
+                FMemFree( p );
                 ScanFnToken();
             }
         }
