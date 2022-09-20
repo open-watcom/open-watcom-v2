@@ -747,8 +747,8 @@ static void pragOptions( int func )
     PPCTL_DISABLE_MACROS();
 }
 
-void AddLibraryName( const char *name, const char priority )
-/**********************************************************/
+void AddLibraryName( const char *libname, char priority )
+/*******************************************************/
 {
     library_list    **new_owner;
     library_list    **owner;
@@ -758,20 +758,20 @@ void AddLibraryName( const char *name, const char priority )
         if( lib->priority < priority ) {
             break;
         }
-        if( FNAMECMPSTR( lib->libname, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->libname, libname ) == 0 ) {
             return;
         }
     }
     new_owner = owner;
     for( ; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( FNAMECMPSTR( lib->libname, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->libname, libname ) == 0 ) {
             *owner = lib->next;
             break;
         }
     }
     if( lib == NULL ) {
-        lib = CMemAlloc( offsetof( library_list, libname ) + strlen( name ) + 1 );
-        strcpy( lib->libname, name );
+        lib = CMemAlloc( offsetof( library_list, libname ) + strlen( libname ) + 1 );
+        strcpy( lib->libname, libname );
     }
     lib->priority = priority;
     lib->next = *new_owner;

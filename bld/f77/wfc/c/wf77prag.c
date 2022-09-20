@@ -480,16 +480,17 @@ static void     Pragma( void )
         } else {
             while( !RecFnToken( "\0" ) ) {
                 const char  *p;
+                const char  *t;
                 size_t      len;
 
                 len = TokEnd - TokStart;
                 p = FMemAlloc( len + 1 );
-                arr = TokStart;
-                if( *arr == '"' ) {
-                    arr++;
+                t = TokStart;
+                if( *t == '"' ) {
+                    t++;
                     len -= 2;
                 }
-                strncpy( p, arr, len );
+                strncpy( p, t, len );
                 p[len] = NULLCHAR;
                 AddDefaultLib( p, '9' );
                 FMemFree( p );
