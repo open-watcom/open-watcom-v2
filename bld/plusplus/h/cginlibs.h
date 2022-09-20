@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,8 @@
 
 extern void CgInfoFreeLibs( void );
 
-extern void CgInfoAddUserLib( char * );
-extern void CgInfoAddCompLib( char * );
+extern void CgInfoAddUserLib( const char * );
+extern void CgInfoAddCompLib( const char * );
 
 // CGINFO iterators
 extern void *CgInfoLibNext( void * );

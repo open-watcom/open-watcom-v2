@@ -189,21 +189,49 @@ void AddDependencyInfo( source_t *fi )
 static void AddDefaultLib( const char *libname, char priority )
 //=============================================================
 {
-    default_lib         **lib;
-    default_lib         *new_lib;
+    default_lib         **owner;
+    default_lib         *lib;
 
     if( (Options & OPT_DFLT_LIB) == 0 )
         return;
-    for( lib = &DefaultLibs; *lib != NULL; lib = &(*lib)->link ) {
-        if( strcmp( (*lib)->libname, libname ) == 0 ) {
+    for( owner = &DefaultLibs; (lib = *owner) != NULL; owner = &lib->link ) {
+        if( lib->priority < priority ) {
+            default_lib **tmp_owner;
+            /*
+             * search library entry with lower priority
+             */
+            for( tmp_owner = owner; (lib = *tmp_owner) != NULL; tmp_owner = &lib->link ) {
+                if( strcmp( lib->libname, libname ) == 0 ) {
+                    /*
+                     * remove library entry from linked list
+                     */
+                    *tmp_owner = lib->link;
+                    break;
+                }
+            }
+            break;
+        }
+        if( strcmp( lib->libname, libname ) == 0 ) {
+            /*
+             * library entry already exists with higher or equal priority
+             * no change required
+             */
             return;
         }
     }
-    new_lib = FMemAlloc( sizeof( default_lib ) + strlen( libname ) );
-    new_lib->link = NULL;
-    new_lib->priority = priority;
-    strcpy( new_lib->libname, libname );
-    *lib = new_lib;
+    /*
+     * if library entry not found then create new one
+     */
+    if( lib == NULL ) {
+        lib = FMemAlloc( sizeof( default_lib ) + strlen( libname ) );
+        strcpy( lib->libname, libname );
+    }
+    /*
+     * set priority and insert library entry to proper position
+     */
+    lib->priority = priority;
+    lib->link = *owner;
+    *owner = lib;
 }
 
 

@@ -750,32 +750,47 @@ static void pragOptions( int func )
 void AddLibraryName( const char *libname, char priority )
 /*******************************************************/
 {
-    library_list    **new_owner;
     library_list    **owner;
     library_list    *lib;
 
     for( owner = &HeadLibs; (lib = *owner) != NULL; owner = &lib->next ) {
         if( lib->priority < priority ) {
+            library_list    **tmp_owner;
+            /*
+             * search library entry with lower priority
+             */
+            for( tmp_owner = owner; (lib = *tmp_owner) != NULL; tmp_owner = &lib->next ) {
+                if( FNAMECMPSTR( lib->libname, libname ) == 0 ) {
+                    /*
+                     * remove library entry from linked list
+                     */
+                    *tmp_owner = lib->next;
+                    break;
+                }
+            }
             break;
         }
         if( FNAMECMPSTR( lib->libname, libname ) == 0 ) {
+            /*
+             * library entry already exists with higher or equal priority
+             * no change required
+             */
             return;
         }
     }
-    new_owner = owner;
-    for( ; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( FNAMECMPSTR( lib->libname, libname ) == 0 ) {
-            *owner = lib->next;
-            break;
-        }
-    }
+    /*
+     * if library entry not found then create new one
+     */
     if( lib == NULL ) {
-        lib = CMemAlloc( offsetof( library_list, libname ) + strlen( libname ) + 1 );
+        lib = CMemAlloc( sizeof( library_list ) + strlen( libname ) );
         strcpy( lib->libname, libname );
     }
+    /*
+     * set priority and insert library entry to proper position
+     */
     lib->priority = priority;
-    lib->next = *new_owner;
-    *new_owner = lib;
+    lib->next = *owner;
+    *owner = lib;
 }
 
 static void GetLibraryNames( void )
