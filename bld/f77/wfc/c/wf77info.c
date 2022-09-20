@@ -1954,7 +1954,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
             return( ((default_lib *)req_handle)->link );
         }
     case LIBRARY_NAME :
-        return( &((default_lib *)req_handle)->lib );
+        return( &((default_lib *)req_handle)->libname );
     case SOURCE_NAME :
         return( GetFullSrcName() );
     case AUX_LOOKUP :
