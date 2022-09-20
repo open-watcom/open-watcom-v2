@@ -179,7 +179,7 @@ static  void    DefaultLibs( void )
         lib = FEAuxInfo( lib, NEXT_LIBRARY );
         if( lib == NULL )
             break;
-        name =  (char *)FEAuxInfo( lib, LIBRARY_NAME ) + 1;
+        name =  (char *)FEAuxInfo( lib, LIBRARY_NAME );
         if( name == NULL || *name == '\0' )
             continue;
         if( comments == NULL ){

@@ -755,25 +755,25 @@ void AddLibraryName( const char *name, const char priority )
     library_list    *lib;
 
     for( owner = &HeadLibs; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( lib->libname[0] < priority ) {
+        if( lib->priority < priority ) {
             break;
         }
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->libname, name ) == 0 ) {
             return;
         }
     }
     new_owner = owner;
     for( ; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->libname, name ) == 0 ) {
             *owner = lib->next;
             break;
         }
     }
     if( lib == NULL ) {
-        lib = CMemAlloc( offsetof( library_list, libname ) + strlen( name ) + 1 + 1 );
-        strcpy( lib->libname + 1, name );
+        lib = CMemAlloc( offsetof( library_list, libname ) + strlen( name ) + 1 );
+        strcpy( lib->libname, name );
     }
-    lib->libname[0] = priority;
+    lib->priority = priority;
     lib->next = *new_owner;
     *new_owner = lib;
 }
