@@ -239,7 +239,8 @@ global char         *EmuLib_Name;       /* "9emu87" for -fpi, "9noemu87" for -fp
 
 typedef struct library_list {
     struct  library_list    *next;      // used by precompiled header
-    char                    libname[2]; // first char is priority '1'-'9' followed by library name
+    char                    priority;   // priority '1'-'9'
+    char                    libname[1]; // library name
 } library_list;
 
 global library_list *HeadLibs;
