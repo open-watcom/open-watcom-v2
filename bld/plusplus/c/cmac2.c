@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -670,18 +670,16 @@ static void CLine( void )
 
 static void CError( void )
 {
-    int i;
     bool save;
 
-    i = 0;
+    while( CurrChar == ' ' )
+        NextChar();
+    TokenLen = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != LCHR_EOF ) {
-        if( i != 0 || CurrChar != ' ' ) {
-            Buffer[i] = CurrChar;
-            ++i;
-        }
+        WriteBufferChar( CurrChar );
         NextChar();
     }
-    Buffer[i] = '\0';
+    WriteBufferNullChar();
     /* Force #error output to be reported, even with preprocessor */
     save = CompFlags.cpp_output;
     CompFlags.cpp_output = false;

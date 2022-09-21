@@ -794,16 +794,14 @@ static void CLine( void )
 
 static void CError( void )
 {
-    size_t      len;
-
-    len = 0;
+    while( CurrChar == ' ' )
+        NextChar();
+    TokenLen = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != LCHR_EOF ) {
-        if( len != 0 || CurrChar != ' ' ) {
-            Buffer[len++] = CurrChar;
-        }
+        WriteBufferChar( CurrChar );
         NextChar();
     }
-    Buffer[len] = '\0';
+    WriteBufferNullChar();
     /* Force #error output to be reported, even with preprocessor */
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
 }
