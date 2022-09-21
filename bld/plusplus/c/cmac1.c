@@ -198,7 +198,7 @@ static TOKEN doGetMacroToken(       // GET NEXT TOKEN
         }
         if( (token = mtok->token) != T_NULL ) {
             keep_token = false;
-            WriteBufferStr( mtok->data );
+            WriteBufferString( mtok->data );
             switch( token ) {
             case T_SAVED_ID:
                 if( doing_macro_expansion ) {
@@ -990,11 +990,10 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
 
 static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
 {
-    size_t      i;
     size_t      last_non_ws;
     TOKEN       tok;
 
-    i = 0;
+    TokenLen = 0;
     last_non_ws = 0;
     // skip leading whitespace
     while( *(TOKEN *)p == T_WHITE_SPACE ) {
@@ -1007,34 +1006,34 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
             while( *(TOKEN *)p == T_WHITE_SPACE ) {
                 p += sizeof( TOKEN );
             }
-            i = WriteBufferPosChar( i, ' ' );
+            WriteBufferChar( ' ' );
             break;
         case T_CONSTANT:
         case T_PPNUMBER:
         case T_ID:
         case T_UNEXPANDABLE_ID:
         case T_BAD_TOKEN:
-            i = WriteBufferPosEscStr( i, &p, false );
-            last_non_ws = i;
+            TokenLen = WriteBufferPosEscStr( TokenLen, &p, false );
+            last_non_ws = TokenLen;
             break;
         case T_LSTRING:
-            i = WriteBufferPosChar( i, 'L' );
+            WriteBufferChar( 'L' );
             /* fall through */
         case T_STRING:
-            i = WriteBufferPosChar( i, '\\' );
-            i = WriteBufferPosChar( i, '"' );
-            i = WriteBufferPosEscStr( i, &p, true );
-            i = WriteBufferPosChar( i, '\\' );
-            i = WriteBufferPosChar( i, '"' );
-            last_non_ws = i;
+            WriteBufferChar( '\\' );
+            WriteBufferChar( '"' );
+            TokenLen = WriteBufferPosEscStr( TokenLen, &p, true );
+            WriteBufferChar( '\\' );
+            WriteBufferChar( '"' );
+            last_non_ws = TokenLen;
             break;
         case T_BAD_CHAR:
-            i = WriteBufferPosChar( i, *p++ );
-            last_non_ws = i;
+            WriteBufferChar( *p++ );
+            last_non_ws = TokenLen;
             break;
         default:
-            i = WriteBufferPosStr( i, Tokens[tok] );
-            last_non_ws = i;
+            WriteBufferString( Tokens[tok] );
+            last_non_ws = TokenLen;
             break;
         }
     }
