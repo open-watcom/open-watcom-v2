@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 #include "defwin.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned share, va_list args )
+static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
 {
     DWORD               create_disp, exists_disp;
     mode_t              perm;
@@ -73,7 +73,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
     __GetNTAccessAttr( rwmode, &desired_access, &os_attr );
-    __GetNTShareAttr( share | rwmode, &share_mode );
+    __GetNTShareAttr( shflag | rwmode, &share_mode );
     fileattr = FILE_ATTRIBUTE_NORMAL;
 
     security.nLength = sizeof( SECURITY_ATTRIBUTES );
