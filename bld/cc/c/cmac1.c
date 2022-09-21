@@ -390,6 +390,7 @@ TOKEN SpecialMacro( MEPTR mentry )
 {
     const char      *p;
 
+    TokenLen = 0;
     CompFlags.wide_char_string = false;
     switch( (special_macros)mentry->parm_count ) {
     case MACRO_LINE:
@@ -402,29 +403,23 @@ TOKEN SpecialMacro( MEPTR mentry )
         TokenLen = WriteBufferPosEscStr( 0, &p, false );
         return( T_STRING );
     case MACRO_DATE:
-        strcpy( Buffer, __Date );
-        TokenLen = strlen( Buffer );
+        WriteBufferString( __Date );
         return( T_STRING );
     case MACRO_TIME:
-        strcpy( Buffer, __Time );
-        TokenLen = strlen( Buffer );
+        WriteBufferString( __Time );
         return( T_STRING );
     case MACRO_STDC:
     case MACRO_STDC_HOSTED:
-        Buffer[0] = '1';
-        Buffer[1] = '\0';
-        TokenLen = 1;
+        WriteBufferString( "1" );
         Constant = 1;
         ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
-            strcpy( Buffer, "199901L" );
-            TokenLen = LENLIT( "199901L" );
+            WriteBufferString( "199901L" );
             Constant = 199901;
         } else {
-            strcpy( Buffer, "199409L" );
-            TokenLen = LENLIT( "199409L" );
+            WriteBufferString( "199409L" );
             Constant = 199409;
         }
         ConstType = TYP_LONG;
@@ -432,16 +427,12 @@ TOKEN SpecialMacro( MEPTR mentry )
     case MACRO_FUNCTION:
     case MACRO_FUNC:
         Buffer[0] = '\0';
-        if( CurFunc != NULL ) {
-            if( CurFunc->name != NULL ) {
-                strcpy( Buffer, CurFunc->name );
-            }
+        if( CurFunc != NULL && CurFunc->name != NULL ) {
+            WriteBufferString( CurFunc->name );
         }
-        TokenLen = strlen( Buffer );
         return( T_STRING );
     default:
         Buffer[0] = '\0';
-        TokenLen = 0;
         return( T_NULL );   // shut up the compiler
     }
 }
@@ -988,10 +979,7 @@ static MACRO_TOKEN *BuildString( const char *p )
                 WriteBufferChar( *p++ );
                 break;
             default:
-                tokenstr = Tokens[tok];
-                while( (c = *tokenstr++) != '\0' ) {
-                    WriteBufferChar( c );
-                }
+                WriteBufferString( Tokens[tok] );
                 break;
             }
         }

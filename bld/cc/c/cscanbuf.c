@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2020-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2020-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -52,6 +52,18 @@ void WriteBufferNullChar( void )
 /******************************/
 {
     EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen] = '\0';
+}
+
+void WriteBufferString( const char *s )
+/*************************************/
+{
+    char    c;
+
+    EnlargeBuffer( TokenLen + strlen( s ) + 1 );
+    while( (c = *s++) != '\0' ) {
+        Buffer[TokenLen++] = c;
+    }
     Buffer[TokenLen] = '\0';
 }
 
