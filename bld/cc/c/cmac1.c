@@ -934,29 +934,19 @@ static MACRO_TOKEN *BuildString( const char *p )
 {
     MACRO_TOKEN     *head;
     MACRO_TOKEN     **ptail;
-    size_t          i;
     char            c;
     const char      *tokenstr;
-    size_t          len;
-    char            *buf;
-    size_t          bufsize;
     TOKEN           tok;
 
     head = NULL;
-    ptail = &head;
-
-    len = 0;
     if( p != NULL ) {
-        bufsize = BUF_SIZE;
-        buf = CMemAlloc( bufsize );
+        ptail = &head;
+        TokenLen = 0;
         while( MTOK( p ) == T_WHITE_SPACE ) {
             MTOKINC( p );   //eat leading white space
         }
         while( (tok = MTOK( p )) != T_NULL ) {
             MTOKINC( p );
-            if( len >= ( bufsize - 8 ) ) {
-                buf = CMemRealloc( buf, 2 * len );
-            }
             switch( tok ) {
             case T_CONSTANT:
             case T_PPNUMBER:
@@ -965,59 +955,50 @@ static MACRO_TOKEN *BuildString( const char *p )
             case T_BAD_TOKEN:
                 for( ; (c = *p++) != '\0'; ) {
                     if( c == '\\' )
-                        buf[len++] = c;
-                    buf[len++] = c;
-                    if( len >= ( bufsize - 8 ) ) {
-                        buf = CMemRealloc( buf, 2 * len );
-                    }
+                        WriteBufferChar( c );
+                    WriteBufferChar( c );
                 }
                 break;
             case T_LSTRING:
-                buf[len++] = 'L';
+                WriteBufferChar( 'L' );
                 /* fall through */
             case T_STRING:
-                buf[len++] = '\\';
-                buf[len++] = '"';
+                WriteBufferChar( '\\' );
+                WriteBufferChar( '"' );
                 for( ; (c = *p++) != '\0'; ) {
                     if( c == '\\' || c == '"' )
-                        buf[len++] = '\\';
-                    buf[len++] = c;
-                    if( len >= ( bufsize - 8 ) ) {
-                        buf = CMemRealloc( buf, 2 * len );
-                    }
+                        WriteBufferChar( '\\' );
+                    WriteBufferChar( c );
                 }
-                buf[len++] = '\\';
-                buf[len++] = '"';
+                WriteBufferChar( '\\' );
+                WriteBufferChar( '"' );
                 break;
             case T_WHITE_SPACE:
                 while( (tok = MTOK( p )) == T_WHITE_SPACE ) {
                     MTOKINC( p );
                 }
                 if( tok != T_NULL ) {
-                    buf[len++] = ' ';
+                    WriteBufferChar( ' ' );
                 }
                 break;
             case T_BAD_CHAR:
                 if( *p == '\\' && MTOK( p + 1 ) == T_NULL ) {
                     CErr1( ERR_INVALID_STRING_LITERAL );
                 }
-                buf[len++] = *p++;
+                WriteBufferChar( *p++ );
                 break;
             default:
                 tokenstr = Tokens[tok];
-                i = strlen( tokenstr );
-                if( len >= ( bufsize - i ) )
-                    buf = CMemRealloc( buf, 2 * len );
-                strcpy( &buf[len], tokenstr );
-                len += i;
+                while( (c = *tokenstr++) != '\0' ) {
+                    WriteBufferChar( c );
+                }
                 break;
             }
         }
-        if( len > 0 ) {
-            buf[len] = '\0';
-            ptail = BuildATokenOnEnd( ptail, T_STRING, buf );
+        if( TokenLen > 0 ) {
+            WriteBufferNullChar();
+            ptail = BuildATokenOnEnd( ptail, T_STRING, Buffer );
         }
-        CMemFree( buf );
     }
     return( head );
 }
