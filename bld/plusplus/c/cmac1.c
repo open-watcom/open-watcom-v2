@@ -264,7 +264,7 @@ TOKEN GetMacroToken(                // GET NEXT TOKEN
     return( doGetMacroToken( false, doing_macro_expansion ) );
 }
 
-static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
+static void expandMacroToken( MACRO_TOKEN *m )
 {
     switch( m->token ) {
     case T_CONSTANT:
@@ -273,47 +273,28 @@ static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
     case T_UNEXPANDABLE_ID:
     case T_SAVED_ID:
     case T_BAD_TOKEN:
-        i = WriteBufferPosStr( i, m->data );
+        WriteBufferString( m->data );
         break;
     case T_LSTRING:
-        i = WriteBufferPosChar( i, 'L' );
+        WriteBufferChar( 'L' );
         /* fall through */
     case T_STRING:
-        i = WriteBufferPosChar( i, '"' );
-        i = WriteBufferPosStr( i, m->data );
-        i = WriteBufferPosChar( i, '"' );
-        WriteBufferPosNullChar( i );
+        WriteBufferChar( '"' );
+        WriteBufferString( m->data );
+        WriteBufferChar( '"' );
+        WriteBufferNullChar();
         break;
     default:
-        i = WriteBufferPosStr( i, Tokens[m->token] );
+        WriteBufferString( Tokens[m->token] );
+        break;
     }
-    return( i );
-}
-
-static size_t genFUNCTION(
-    void )
-{
-    SYMBOL  sym;
-    size_t  len;
-    VBUF    buff;
-
-    sym = ParseCurrFunction();
-    if( sym != NULL ) {
-        FormatSymWithTypedefs( sym, &buff );
-        len = WriteBufferPosStr( 0, VbufString( &buff ) );
-        VbufFree( &buff );
-    } else {
-        Buffer[0] = '?';
-        Buffer[1] = '\0';
-        len = 1;
-    }
-    return( len );
 }
 
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
     MEPTR mentry )              // - macro entry
 {
-    const char *p;
+    const char  *p;
+    SYMBOL      sym;
 
     switch( mentry->parm_count ) {
     case MACRO_LINE:
@@ -323,28 +304,37 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         return( T_CONSTANT );
     case MACRO_FILE:
         p = SrcFileNameCurrent();
-        TokenLen = WriteBufferPosEscStr( 0, &p, false );
+        WriteBufferEscStr( &p, false );
         return( T_STRING );
     case MACRO_DATE:
-        strcpy( Buffer, __Date );
-        TokenLen = strlen( Buffer );
+        TokenLen = 0;
+        WriteBufferString( __Date );
         return( T_STRING );
     case MACRO_TIME:
-        strcpy( Buffer, __Time );
-        TokenLen = strlen( Buffer );
+        TokenLen = 0;
+        WriteBufferString( __Time );
         return( T_STRING );
     case MACRO_FUNCTION:
     case MACRO_FUNC:
+        TokenLen = 0;
         if( FUNCTION_not_expandable ) {
-            TokenLen = WriteBufferPosStr( 0, SpcMacros[mentry->parm_count].name );
+            WriteBufferString( SpcMacros[mentry->parm_count].name );
             return( T_ID );
         }
-        TokenLen = genFUNCTION();
+        sym = ParseCurrFunction();
+        if( sym != NULL ) {
+            VBUF    buff;
+
+            FormatSymWithTypedefs( sym, &buff );
+            WriteBufferString( VbufString( &buff ) );
+            VbufFree( &buff );
+        } else {
+            WriteBufferString( "?" );
+        }
         return( T_STRING );
     case MACRO_CPLUSPLUS:
-        Buffer[0] = '1';
-        Buffer[1] = '\0';
-        TokenLen = 1;
+        TokenLen = 0;
+        WriteBufferString( "1" );
         U32ToU64( 1, &Constant64 );
         ConstType = TYP_SINT;
         return( T_CONSTANT );
@@ -870,18 +860,16 @@ static MACRO_TOKEN *reTokenBuffer( const char *buffer )
 
 static MACRO_TOKEN *glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
 {
-    size_t      i;
-
     #define INPOUT_SHIFT    10
 
-    i = INPOUT_SHIFT;
-    Buffer[i] = '\0';
+    TokenLen = INPOUT_SHIFT;
     if( first != NULL ) {
-        i = expandMacroToken( i, first );
+        expandMacroToken( first );
     }
     if( second != NULL ) {
-        i = expandMacroToken( i, second );
+        expandMacroToken( second );
     }
+    WriteBufferNullChar();
     return( reTokenBuffer( Buffer + INPOUT_SHIFT ) );
 }
 
@@ -1013,7 +1001,7 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
         case T_ID:
         case T_UNEXPANDABLE_ID:
         case T_BAD_TOKEN:
-            TokenLen = WriteBufferPosEscStr( TokenLen, &p, false );
+            WriteBufferEscStr( &p, false );
             last_non_ws = TokenLen;
             break;
         case T_LSTRING:
@@ -1022,7 +1010,7 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
         case T_STRING:
             WriteBufferChar( '\\' );
             WriteBufferChar( '"' );
-            TokenLen = WriteBufferPosEscStr( TokenLen, &p, true );
+            WriteBufferEscStr( &p, true );
             WriteBufferChar( '\\' );
             WriteBufferChar( '"' );
             last_non_ws = TokenLen;
@@ -1037,7 +1025,8 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
             break;
         }
     }
-    WriteBufferPosNullChar( last_non_ws );
+    TokenLen = last_non_ws;
+    WriteBufferNullChar();
     ptail = buildTokenOnEnd( ptail, T_STRING, Buffer );
     return( ptail );
 }

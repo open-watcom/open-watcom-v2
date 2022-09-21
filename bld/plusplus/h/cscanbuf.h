@@ -36,8 +36,5 @@ extern int      WriteBufferCharNextChar( int c );
 extern void     WriteBufferNullChar( void );
 extern void     WriteBufferString( const char *src );
 extern void     WriteBufferMem( const char *src, size_t len );
-extern size_t   WriteBufferPosChar( size_t pos, int c );
-extern void     WriteBufferPosNullChar( size_t pos );
-extern size_t   WriteBufferPosStr( size_t pos, const char *src );
-extern size_t   WriteBufferPosEscStr( size_t pos, const char **src, bool quote );
+extern void     WriteBufferEscStr( const char **src, bool quote );
 

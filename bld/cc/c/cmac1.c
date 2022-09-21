@@ -400,7 +400,7 @@ TOKEN SpecialMacro( MEPTR mentry )
         return( T_CONSTANT );
     case MACRO_FILE:
         p = FileIndexToFName( TokenLoc.fno )->name;
-        TokenLen = WriteBufferPosEscStr( 0, &p, false );
+        WriteBufferEscStr( &p, false );
         return( T_STRING );
     case MACRO_DATE:
         WriteBufferString( __Date );
@@ -926,7 +926,6 @@ static MACRO_TOKEN *BuildString( const char *p )
     MACRO_TOKEN     *head;
     MACRO_TOKEN     **ptail;
     char            c;
-    const char      *tokenstr;
     TOKEN           tok;
 
     head = NULL;

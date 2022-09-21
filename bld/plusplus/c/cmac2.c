@@ -42,6 +42,7 @@
 #include "cgmisc.h"
 #include "name.h"
 #include "cmacadd.h"
+#include "cscanbuf.h"
 #include "brinfo.h"
 
 #include "clibext.h"

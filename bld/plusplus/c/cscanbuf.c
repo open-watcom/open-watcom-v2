@@ -81,6 +81,8 @@ void WriteBufferNullChar( void )
 void WriteBufferString( const char *src )
 /***************************************/
 {
+    char    c;
+
     EnlargeBuffer( TokenLen + strlen( src ) + 1 );
     while( (c = *src++) != '\0' ) {
         Buffer[TokenLen++] = c;
@@ -97,51 +99,24 @@ void WriteBufferMem( const char *src, size_t len )
     TokenLen += len;
 }
 
-size_t WriteBufferPosChar( size_t pos, int c )
-/********************************************/
-{
-    EnlargeBuffer( pos + 1 );
-    Buffer[pos++] = c;
-    return( pos );
-}
-
-void WriteBufferPosNullChar( size_t pos )
-/***************************************/
-{
-    EnlargeBuffer( pos + 1 );
-    Buffer[pos] = '\0';
-}
-
-size_t WriteBufferPosStr( size_t pos, const char *src )
-/*****************************************************/
-{
-    size_t  len;
-
-    len = strlen( src );
-    EnlargeBuffer( pos + len + 1 );
-    memcpy( Buffer + pos, src, len + 1 );
-    return( pos + len );
-}
-
-size_t WriteBufferPosEscStr( size_t pos, const char **src, bool quote )
-/*********************************************************************/
+void WriteBufferEscStr( const char **src, bool quote )
+/****************************************************/
 {
     const char  *p;
     char        c;
 
     p = *src;
     while( (c = *p++) != '\0' ) {
-        EnlargeBuffer( pos + 1 );
+        EnlargeBuffer( TokenLen + 1 );
         if( c == '\\' || quote && c == '"' ) {
-            Buffer[pos++] = '\\';
-            EnlargeBuffer( pos + 1 );
+            Buffer[TokenLen++] = '\\';
+            EnlargeBuffer( TokenLen + 1 );
         }
-        Buffer[pos++] = c;
+        Buffer[TokenLen++] = c;
     }
     *src = p;
-    EnlargeBuffer( pos + 1 );
-    Buffer[pos] = '\0';
-    return( pos );
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen] = '\0';
 }
 
 static void bufInit(            // INITIALIZATION

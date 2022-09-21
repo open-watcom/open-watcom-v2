@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include "cgmisc.h"
 #include "cmacadd.h"
+#include "cscanbuf.h"
 #include "ppexpn.h"
 
 

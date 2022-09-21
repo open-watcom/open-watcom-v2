@@ -67,25 +67,24 @@ void WriteBufferString( const char *s )
     Buffer[TokenLen] = '\0';
 }
 
-size_t WriteBufferPosEscStr( size_t pos, const char **src, bool quote )
-/*********************************************************************/
+void WriteBufferEscStr( const char **src, bool quote )
+/****************************************************/
 {
     const char  *p;
     char        c;
 
     p = *src;
     while( (c = *p++) != '\0' ) {
-        EnlargeBuffer( pos + 1 );
+        EnlargeBuffer( TokenLen + 1 );
         if( c == '\\' || quote && c == '"' ) {
-            Buffer[pos++] = '\\';
-            EnlargeBuffer( pos + 1 );
+            Buffer[TokenLen++] = '\\';
+            EnlargeBuffer( TokenLen + 1 );
         }
-        Buffer[pos++] = c;
+        Buffer[TokenLen++] = c;
     }
     *src = p;
-    EnlargeBuffer( pos + 1 );
-    Buffer[pos] = '\0';
-    return( pos );
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen] = '\0';
 }
 
 void InitBuffer( size_t size )
