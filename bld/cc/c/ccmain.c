@@ -1194,9 +1194,11 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
                     break;
                 *p++ = c;
             } while( (c = *s) != '\0' );
-            c = p[-1];
-            if( !IS_PATH_SEP( c ) ) {
-                *p++ = DIR_SEP;
+            if( p != fd.buffer ) {
+                c = p[-1];
+                if( !IS_PATH_SEP( c ) ) {
+                    *p++ = DIR_SEP;
+                }
             }
             *p = '\0';
             if( try_open_file( fd.buffer, fp, fa, typ ) ) {
