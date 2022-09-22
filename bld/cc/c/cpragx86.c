@@ -724,15 +724,17 @@ hw_reg_set PragRegName( const char *regname, size_t regnamelen )
 }
 
 hw_reg_set PragReg( void )
+/************************/
 {
     char            buffer[REG_BUFF_SIZE];
     size_t          len;
+    const char      *src;
 
-    len = TokenLen;
-    if( len > sizeof( buffer ) - 1 ) {
-        len = sizeof( buffer ) - 1;
+    len = 0;
+    src = Buffer;
+    while( *src != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
+        buffer[len++] = *src++;
     }
-    memcpy( buffer, Buffer, len );
     buffer[len] = '\0';
     return( PragRegName( buffer, len ) );
 }
