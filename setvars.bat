@@ -18,6 +18,11 @@ REM ###############################
 REM Set this variable to 0 to suppress documentation build
 set OWDOCBUILD=1
 
+REM Set this variable to 1 to not use WGML utility
+REM It doesn't requires appropriate DOS emulator
+REM and suppress documentation build
+REM set OWNOWGML=1
+
 REM Set this variable to 1 to suppress tools GUI version build
 REM If it is used then only tools character mode version is build
 REM set OWGUINOBUILD=1

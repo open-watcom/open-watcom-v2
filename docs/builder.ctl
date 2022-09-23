@@ -11,6 +11,8 @@ cdsay "<PROJDIR>"
 
 [ BLOCK .<OWGUINOBUILD> .1 ]
     set PROJPMAKE=guitool .not .and
+[ BLOCK .<OWNOWGML> .1 ]
+    set PROJPMAKE=0 .and
 
 [ BLOCK <BLDRULE> docs build rel ]
 #=================================

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,14 +78,18 @@ void TreeRootSelect::okButton( WWindow * )
 void TreeRootSelect::helpButton( WWindow * )
 //------------------------------------------
 {
+#ifndef NOWGML
     WBRWinBase::helpInfo()->sysHelpId( BRH_SELECT_ROOTS );
+#endif
 }
 
 bool TreeRootSelect::contextHelp( bool is_active_win )
 //----------------------------------------------------
 {
     if( is_active_win ) {
+#ifndef NOWGML
         WBRWinBase::helpInfo()->sysHelpId( BRH_SELECT_ROOTS );
+#endif
     }
     return( true );
 }
@@ -141,14 +145,18 @@ void OutlineRootSelect::okButton( WWindow * )
 void OutlineRootSelect::helpButton( WWindow * )
 //---------------------------------------------
 {
+#ifndef NOWGML
     WBRWinBase::helpInfo()->sysHelpId( BRH_SELECT_ROOTS );
+#endif
 }
 
 bool OutlineRootSelect::contextHelp( bool is_active_win )
 //-------------------------------------------------------
 {
     if( is_active_win ) {
+#ifndef NOWGML
         WBRWinBase::helpInfo()->sysHelpId( BRH_SELECT_ROOTS );
+#endif
     }
     return( true );
 }

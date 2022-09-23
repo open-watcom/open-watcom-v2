@@ -25,6 +25,11 @@ export OWTOOLS=GCC
 # Set this variable to 1 to enable documentation build
 export OWDOCBUILD=0
 
+# Set this variable to 1 to not use WGML utility
+# It doesn't requires appropriate DOS emulator
+# and suppress documentation build
+# set OWNOWGML=1
+
 # Set this variable to 1 to suppress tools GUI version build
 # If it is used then only tools character mode version is build
 # export OWGUINOBUILD=1

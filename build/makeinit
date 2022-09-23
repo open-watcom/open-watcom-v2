@@ -30,6 +30,14 @@ verbose       = 0
 !endif
 !endif
 
+!ifndef nowgml
+!ifdef %OWNOWGML
+nowgml        = $+$(%OWNOWGML)$-
+!else
+nowgml        = 0
+!endif
+!endif
+
 noecho = @
 !ifneq verbose 0
 noecho =

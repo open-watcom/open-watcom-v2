@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,15 +65,14 @@
 #include "wabout.hpp"
 #include "wmetrics.hpp"
 #include "wsystem.hpp"
-#include "wsyshelp.hpp"
 
 #include "wstatwin.hpp"
 #include "wflashp.hpp"
 #include "vhelpstk.hpp"
 #include "veditdlg.hpp"
-#include "ide.gh"
 #include "mitem.hpp"
 #include "inifile.hpp"
+#include "idewhelp.h"
 
 #define MAX_CMD_LINE            256
 

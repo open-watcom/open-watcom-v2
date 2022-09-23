@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,14 +63,13 @@
 
 #include "wabout.hpp"
 #include "wmetrics.hpp"
-#include "wsyshelp.hpp"
 
 #include "wstatwin.hpp"
 #include "wflashp.hpp"
 #include "vhelpstk.hpp"
 #include "veditdlg.hpp"
-#include "ide.gh"
 #include "autoenv.h"
+#include "idewhelp.h"
 
 #include "clibext.h"
 
@@ -228,10 +227,12 @@ WEXPORT VpeMain::VpeMain()
 #endif
 
     hookF1Key( true );
-#if defined( __OS2__ )
+#ifndef NOWGML
+  #if defined( __OS2__ )
     HelpStack.push( HLP_INDEX_OF_TOPICS );
-#else
+  #else
     HelpStack.push( HLP_TABLE_OF_CONTENTS );
+  #endif
 #endif
     _hotSpotList.addHotSpot( B_sourceOpen, "" );        //the order must not change
     _hotSpotList.addHotSpot( B_sourceClosed, "" );
@@ -1131,20 +1132,26 @@ bool VpeMain::kNewProject( WKeyCode )
 void VpeMain::newProject( WMenuItem* )
 {
     if( okToClear() ) {
+#ifndef NOWGML
         HelpStack.push( HLP_OPENING_A_PROJECT );
+#endif
         WFileDialog dlg( this, pFilter );
         WFileName fn( dlg.getOpenFileName( "noname.wpj", "Enter project filename", WFOpenNewAll ) );
         if( validateProjectName( fn ) ) {
             if( !fn.dirExists() ) {
                 if( !confirm( "Do you want to create directory for '%s'?", fn ) ) {
+#ifndef NOWGML
                     HelpStack.pop();
+#endif
                     return;
                 }
                 if( !fn.makeDir() ) {
                     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                 "Unable to create directory for '%s'",
                                 (const char *)fn );
+#ifndef NOWGML
                     HelpStack.pop();
+#endif
                     return;
                 }
             }
@@ -1156,7 +1163,9 @@ void VpeMain::newProject( WMenuItem* )
             }
         }
     }
+#ifndef NOWGML
     HelpStack.pop();
+#endif
 }
 
 bool VpeMain::loadProject( const WFileName& fn )
@@ -1238,7 +1247,9 @@ bool VpeMain::kOpenProject( WKeyCode ) {
 void VpeMain::openProject( WMenuItem* )
 {
     if( okToClear() ) {
+#ifndef NOWGML
         HelpStack.push( HLP_OPENING_A_PROJECT );
+#endif
         WFileDialog* fd = new WFileDialog( this, pFilter );
 //      WFileName fn( fd->getOpenFileName( NULL, "Open", WFOpenExisting ) );
         WFileName fn( fd->getOpenFileName( NULL, "Open", WFOpenNew ) );
@@ -1249,7 +1260,9 @@ void VpeMain::openProject( WMenuItem* )
             }
         }
         delete fd;
+#ifndef NOWGML
         HelpStack.pop();
+#endif
     }
 }
 
@@ -1342,40 +1355,56 @@ bool VpeMain::saveProjectAs( const WFileName& def )
 
 void VpeMain::setBefore( WMenuItem* )
 {
+#ifndef NOWGML
     HelpStack.push( HLP_EXECUTING_SPECIAL_COMMANDS );
+#endif
     WEditDialog ed( this, ".Before text" );
     MCommand txt( _project->before() );
     if( ed.edit( txt ) ) {
         _project->setBefore( txt );
     }
+#ifndef NOWGML
     HelpStack.pop();
+#endif
 }
 
 void VpeMain::setAfter( WMenuItem* )
 {
+#ifndef NOWGML
     HelpStack.push( HLP_EXECUTING_SPECIAL_COMMANDS );
+#endif
     WEditDialog ed( this, ".After text" );
     MCommand txt( _project->after() );
     if( ed.edit( txt ) ) {
         _project->setAfter( txt );
     }
+#ifndef NOWGML
     HelpStack.pop();
+#endif
 }
 
 void VpeMain::setCompBefore( WMenuItem* )
 {
+#ifndef NOWGML
     HelpStack.push( HLP_EXECUTING_SPECIAL_COMMANDS );
+#endif
     _activeVComp->setFocus();
     _activeVComp->setCompBefore();
+#ifndef NOWGML
     HelpStack.pop();
+#endif
 }
 
 void VpeMain::setCompAfter( WMenuItem* )
 {
+#ifndef NOWGML
     HelpStack.push( HLP_EXECUTING_SPECIAL_COMMANDS );
+#endif
     _activeVComp->setFocus();
     _activeVComp->setCompAfter();
+#ifndef NOWGML
     HelpStack.pop();
+#endif
 }
 
 bool VpeMain::optionToSave()
@@ -1561,7 +1590,9 @@ WStyle VpeMain::vCompStyle()
 bool VpeMain::addComponent( WMenuItem* )
 {
     bool ok = false;
+#ifndef NOWGML
     HelpStack.push( HLP_ADDING_A_TARGET );
+#endif
     VCompDialog dlg( this, "New Target", _project, cFilter );
     WFileName fn( _project->filename().fName() );
     MRule* rule;
@@ -1584,7 +1615,9 @@ bool VpeMain::addComponent( WMenuItem* )
         stopWait();
         setStatus( NULL );
     }
+#ifndef NOWGML
     HelpStack.pop();
+#endif
     return( ok );
 }
 
@@ -1621,7 +1654,9 @@ void VpeMain::removeComponent( WMenuItem* )
 
 void VpeMain::renameComponent( WMenuItem* )
 {
+#ifndef NOWGML
     HelpStack.push( HLP_RENAMING_A_TARGET );
+#endif
     _activeVComp->setFocus();
     VComponent* vcomp = _activeVComp;
     VCompDialog dlg( this, "Rename Target", _project, cFilter );
@@ -1645,7 +1680,9 @@ void VpeMain::renameComponent( WMenuItem* )
             vcomp->renameComponent( fn, rule, mask );
         }
     }
+#ifndef NOWGML
     HelpStack.pop();
+#endif
 }
 
 void VpeMain::setupComponent( WMenuItem* )
@@ -1700,11 +1737,15 @@ bool VpeMain::kAddItem( WKeyCode  )
 
     ret = false;
     if( _activeVComp ) {
+#ifndef NOWGML
         HelpStack.push( HLP_ADDING_SOURCE_FILES );
+#endif
         _activeVComp->setFocus();
         _activeVComp->mAddItem();
         ret = true;
+#ifndef NOWGML
         HelpStack.pop();
+#endif
     }
     return( ret );
 }
@@ -1777,7 +1818,9 @@ bool VpeMain::kRemoveItem( WKeyCode )
 
     ret = false;
     _refuseFileLists = true;
+#ifndef NOWGML
     HelpStack.push( HLP_REMOVING_A_SOURCE_FILE );
+#endif
     if( _activeVComp ) {
         _activeVComp->setFocus();
         if( _activeVComp->selectedItem() ) {
@@ -1786,18 +1829,24 @@ bool VpeMain::kRemoveItem( WKeyCode )
         }
     }
     _refuseFileLists = false;
+#ifndef NOWGML
     HelpStack.pop();
+#endif
     return( ret );
 }
 
 void VpeMain::mRenameItem( WMenuItem* )
 {
+#ifndef NOWGML
     HelpStack.push( HLP_RENAMING_A_SOURCE_FILE );
+#endif
     _refuseFileLists = true;
     _activeVComp->setFocus();
     _activeVComp->mRenameItem();
     _refuseFileLists = false;
+#ifndef NOWGML
     HelpStack.pop();
+#endif
 }
 
 void VpeMain::mSetupItem( WMenuItem* )
@@ -2121,8 +2170,12 @@ bool VpeMain::checkProject()
 }
 
 bool VpeMain::contextHelp( bool is_act_wnd ) {
-    if( !is_act_wnd && !HelpStack.isempty() ) {
-        _help->sysHelpId( (int)HelpStack.getTop() );
+    if( !is_act_wnd ) {
+#ifndef NOWGML
+        if( !HelpStack.isempty() ) {
+            _help->sysHelpId( (int)HelpStack.getTop() );
+        }
+#endif
     }
     return( true );
 }
