@@ -45,6 +45,10 @@
 #include "clibext.h"
 
 
+#define FIRST_USER_SEGMENT      10000
+
+#define CONSTANT( decl_flags ) 	((decl_flags & MASK_CV_QUALIFIERS) == FLAG_CONST)
+
 typedef struct user_seg {
     struct user_seg *next;
     char            *name;
@@ -59,10 +63,16 @@ typedef struct user_seg {
 } user_seg;
 
 typedef struct seg_name {
-    char            *name;
+    const char      *name;
     segment_id      segid;
     SYM_HANDLE      sym_handle;
 } seg_name;
+
+typedef struct spc_info {
+    const char      *name;
+    const char      *class_name;
+    seg_type        segtype;
+} spc_info;
 
 static seg_name Predefined_Segs[] = {
     { "_CODE",      SEG_CODE,       SYM_NULL },
@@ -71,7 +81,28 @@ static seg_name Predefined_Segs[] = {
     { "_STACK",     SEG_STACK,      SYM_NULL },
 };
 
-#define FIRST_USER_SEGMENT      10000
+static const spc_info InitFiniSegs[][3] = {
+    {
+        { TS_SEG_TIB, "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_TI,  "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_TIE, "DATA",           SEGTYPE_INITFINI }
+    },
+    {
+        { TS_SEG_XIB, "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_XI,  "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_XIE, "DATA",           SEGTYPE_INITFINI }
+    },
+    {
+        { TS_SEG_YIB, "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_YI,  "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_YIE, "DATA",           SEGTYPE_INITFINI }
+    },
+    {
+        { TS_SEG_TLSB, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
+        { TS_SEG_TLS,  TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
+        { TS_SEG_TLSE, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR }
+    }
+};
 
 static user_seg     *userSegments;
 static segment_id   userSegId;
@@ -156,10 +187,6 @@ void SetFarHuge( SYMPTR sym, bool report )
    }
 #endif
 }
-
-
-#define CONSTANT( decl_flags ) ( (decl_flags & MASK_CV_QUALIFIERS) == FLAG_CONST )
-
 
 
 static fe_attr FESymAttr( SYMPTR sym )
@@ -353,35 +380,16 @@ static user_seg *AllocUserSeg( const char *segname, const char *class_name, seg_
     return( useg );
 }
 
-struct spc_info {
-    char        *name;
-    char        *class_name;
-    seg_type    segtype;
-};
-
-static struct spc_info InitFiniSegs[] = {
-    { TS_SEG_TIB, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_TI,  "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_TIE, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_XIB, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_XI,  "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_XIE, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_YIB, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_YI,  "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_YIE, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_TLSB, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
-    { TS_SEG_TLS,  TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
-    { TS_SEG_TLSE, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
-};
-
-static struct spc_info *InitFiniLookup( const char *name )
+static const spc_info *InitFiniLookup( const char *name )
 {
     int     i;
+    int     j;
 
-    for( i = 0; i < ARRAY_SIZE( InitFiniSegs ); ++i ) {
-        if( strcmp( InitFiniSegs[i].name, name ) == 0 ) {
-            i = (i / 3) * 3;
-            return( &InitFiniSegs[i] );
+    for( j = 0; j < ARRAY_SIZE( InitFiniSegs ); j++ ) {
+        for( i = 0; i < ARRAY_SIZE( InitFiniSegs[0] ); i++ ) {
+            if( strcmp( InitFiniSegs[j][i].name, name ) == 0 ) {
+                return( &InitFiniSegs[j][0] );
+            }
         }
     }
     return( NULL );
@@ -436,14 +444,15 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
 
 segment_id AddSegName( const char *segname, const char *class_name, int segtype )
 {
-    struct spc_info     *initfini;
-    segment_id          segid;
+    const spc_info  *initfini;
+    segment_id      segid;
+    int             i;
 
     initfini = InitFiniLookup( segname );
     if( initfini != NULL ) {
-        AddSeg( initfini[0].name, initfini[0].class_name, initfini[0].segtype );
-        AddSeg( initfini[1].name, initfini[1].class_name, initfini[1].segtype );
-        AddSeg( initfini[2].name, initfini[2].class_name, initfini[2].segtype );
+        for( i = 0; i < ARRAY_SIZE( InitFiniSegs[0] ); i++ ) {
+            AddSeg( initfini[i].name, initfini[i].class_name, initfini[i].segtype );
+        }
     }
     segid = AddSeg( segname, class_name, segtype );
     return( segid );
