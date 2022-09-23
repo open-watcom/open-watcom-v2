@@ -113,8 +113,9 @@ static segment_id   import_near_segid = SEG_NULL;       /* data seg # for -nd op
 void AssignSeg( SYMPTR sym )
 {
     SetFarHuge( sym, true );
-    if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)
-     || (sym->attribs.stg_class == SC_TYPEDEF) ) {
+    if( (sym->attribs.stg_class == SC_AUTO)
+      || (sym->attribs.stg_class == SC_REGISTER)
+      || (sym->attribs.stg_class == SC_TYPEDEF) ) {
         /* if stack/register var, there is no segment */
         sym->u.var.segid = SEG_NULL;
     } else if( sym->attribs.stg_class != SC_EXTERN ) {  /* if not imported */
@@ -167,7 +168,7 @@ void SetFarHuge( SYMPTR sym, bool report )
                 }
             } else if( size > DataThreshold ) {
                 attrib |= FLAG_FAR;
-            } else if( CompFlags.strings_in_code_segment && ( sym->mods & FLAG_CONST ) ) {
+            } else if( CompFlags.strings_in_code_segment && (sym->mods & FLAG_CONST) ) {
                 attrib |= FLAG_FAR;
             }
 #if _CPU == 8086
@@ -187,7 +188,6 @@ void SetFarHuge( SYMPTR sym, bool report )
    }
 #endif
 }
-
 
 static fe_attr FESymAttr( SYMPTR sym )
 /************************************/
@@ -299,7 +299,7 @@ void SetSegment( SYMPTR sym )
 #if _CPU == 8086
     if( (sym->mods & FLAG_FAR) && CompFlags.zc_switch_used ) {
         if( CONSTANT( sym->mods )
-        || (sym->attribs.stg_class == SC_STATIC && (sym->flags & SYM_TEMP)) ) {
+          || (sym->attribs.stg_class == SC_STATIC && (sym->flags & SYM_TEMP)) ) {
             sym->u.var.segid = SEG_CODE;
             return;
         }
@@ -318,7 +318,7 @@ void SetSegment( SYMPTR sym )
          }
      }
 #endif
-    if( sym->mods & ( FLAG_FAR | FLAG_HUGE ) ) {
+    if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
         size = SizeOfArg( sym->sym_type );
         seg = NULL;
 #if _CPU == 8086
