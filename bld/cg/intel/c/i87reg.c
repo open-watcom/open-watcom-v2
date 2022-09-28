@@ -202,13 +202,13 @@ name    *ST( int num )
 }
 
 
-static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
+static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level )
 /*****************************************************************
     See if putting "conf" on the stack would blow the 8087 stack in the
     face of stack requirements for any complicated math operations in
     between.
 */
-
+{
     instruction *ins;
     instruction *last;
 
@@ -225,7 +225,7 @@ static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
 }
 
 
-static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
+static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level )
 /*******************************************************************************
     Try to assign a "stack" register to the result of instruction
     "ins"., updating "*stk_level" if we did.  These register given out
@@ -236,7 +236,7 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
     attribute is determined in TREE.C, and also in StackShortLivedTemps.
 
 */
-
+{
     name                *op;
     conflict_node       *conf;
     bool                need_live_update;
@@ -251,7 +251,7 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
     }
     if( op->n.class != N_TEMP )
         return( false );
-    if( ( op->t.temp_flags & CAN_STACK ) == 0 )
+    if( (op->t.temp_flags & CAN_STACK) == 0 )
         return( false );
     if( op->v.usage & (USE_ADDRESS | USE_IN_ANOTHER_BLOCK) )
         return( false );
@@ -259,7 +259,7 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
         return( false );
     if( *stk_level < 0 )
         return( false );
-    if( *stk_level >= (Max87Stk-1) )
+    if( *stk_level >= ( Max87Stk - 1 ) )
         return( false );
     conf = FindConflictNode( op, blk, ins );
     if( conf == NULL )
@@ -272,13 +272,13 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
 }
 
 
-static  void    AssignFPOps( instruction *ins, int *stk_level ) {
+static  void    AssignFPOps( instruction *ins, int *stk_level )
 /****************************************************************
     This checks for operands which are "stack" registers and for each
     one that is used, it bumps down "*stk_level" since we know that the
     use of the operand will "pop" the 8087 stack.
 */
-
+{
     int                 old_level;
     name                *op;
     opcnt               i;
@@ -306,12 +306,11 @@ static  void    AssignFPOps( instruction *ins, int *stk_level ) {
 }
 
 
-static  void    SetStackLevel( instruction *ins, int *stk_level ) {
+static  void    SetStackLevel( instruction *ins, int *stk_level )
 /******************************************************************
     Returns true if a call ignores a return value in ST(0)
 */
-
-
+{
     if( !_OpIsCall( ins->head.opcode ) )
         return;
     if( !HW_CEqual( ins->result->r.reg, HW_ST0 ) )
@@ -322,12 +321,12 @@ static  void    SetStackLevel( instruction *ins, int *stk_level ) {
 }
 
 
-static  void    ToMemory( instruction *ins, name *t ) {
+static  void    ToMemory( instruction *ins, name *t )
 /******************************************************
     Force "t" into memory (no register may be allocated for it) since we
     can't use 8086 registers in 8087 instructions.
 */
-
+{
     conflict_node       *conf;
 
     if( t->n.class == N_TEMP || t->n.class == N_MEMORY ) {
@@ -341,13 +340,13 @@ static  void    ToMemory( instruction *ins, name *t ) {
 }
 
 
-static  void    CnvOperand( instruction *ins ) {
+static  void    CnvOperand( instruction *ins )
 /***********************************************
     Turn op1 (operands[0]) of instruction "ins" into a variable of a
     type that can be used directly by an 8087 instruction like FLD or
     FILD.
 */
-
+{
     name                *t;
     instruction         *new_ins;
     type_class_def      type_class;
@@ -377,8 +376,8 @@ static  void    CnvOperand( instruction *ins ) {
     case I4:
     case I8:
     case U8:
-        if( ins->operands[0]->n.class == N_TEMP &&
-                ( ins->operands[0]->v.usage & HAS_MEMORY ) == 0 ) {
+        if( ins->operands[0]->n.class == N_TEMP
+          && (ins->operands[0]->v.usage & HAS_MEMORY) == 0 ) {
             t = AllocTemp( type_class );
             new_ins = MakeMove( ins->operands[0], t, type_class );
             ins->operands[0] = t;
@@ -403,12 +402,12 @@ static  void    CnvOperand( instruction *ins ) {
 }
 
 
-static  void    CnvResult( instruction *ins ) {
+static  void    CnvResult( instruction *ins )
 /**********************************************
     Convert the result of instruction "ins" into a variable of a type
     that can be directly used by an instruction like FSTP or FISTP.
 */
-
+{
     name                *t;
     instruction         *new_ins;
     type_class_def      type_class;
@@ -453,14 +452,13 @@ static  void    CnvResult( instruction *ins ) {
 }
 
 
-static  void    FPConvert( void ) {
+static  void    FPConvert( void )
 /****************************
     Make sure all operands of _IsFloating() instructions are a type that
     may be used in an FLD or FST instruction.
 
 */
-
-
+{
     block       *blk;
     instruction *ins;
     instruction *next;
@@ -479,7 +477,7 @@ static  void    FPConvert( void ) {
 }
 
 
-static  void    FPAlloc( void ) {
+static  void    FPAlloc( void )
 /**************************
    Pre allocate 8087 registers to temporarys that lend themselves
    to a stack architecture.  ST(0) is reserved as the floating top
@@ -489,9 +487,8 @@ static  void    FPAlloc( void ) {
    also set stk_entry, stk_exit to indicate the affect that each
    instruction has on the 8087 stack.  stk_extra indicates how much
    stack over and above stk_entry gets used.
-
-
 */
+{
     block               *blk;
     instruction         *ins;
     int                 stk_level;
@@ -516,24 +513,20 @@ static  void    FPAlloc( void ) {
              * if we have an ins which looks like "cnv FS FD t1 -> t1" we need to
              * split it up so that we can give it a register, since rDOCVT is so lame
              */
-            for( ;; ) { // not really a loop - forgive me
-                if( ins->head.opcode != OP_CONVERT )
-                    break;
-                if( !( ( ins->type_class == FS && ins->base_type_class == FD ) ||
-                      ( ins->type_class == FD && ins->base_type_class == FS ) ) )
-                    break;
-                if( ins->operands[0]->n.class == N_REGISTER )
-                    break;
-                if( ins->operands[0]->n.class == N_TEMP && ( ins->operands[0]->t.temp_flags & CAN_STACK ) )
-                    break;
-                name = AllocTemp( ins->base_type_class );
-                name->t.temp_flags |= CAN_STACK;
-                new_ins = MakeMove( ins->operands[0], name, ins->base_type_class );
-                ins->operands[0] = name;
-                MoveSegOp( ins, new_ins, 0 );
-                PrefixIns( ins, new_ins );
-                ins = new_ins;
-                break;
+            if( ins->head.opcode == OP_CONVERT ) {
+                if( ( ins->type_class == FS && ins->base_type_class == FD ) || ( ins->type_class == FD && ins->base_type_class == FS ) ) {
+                    if( ins->operands[0]->n.class != N_REGISTER ) {
+                        if( ins->operands[0]->n.class != N_TEMP || (ins->operands[0]->t.temp_flags & CAN_STACK) == 0 ) {
+                            name = AllocTemp( ins->base_type_class );
+                            name->t.temp_flags |= CAN_STACK;
+                            new_ins = MakeMove( ins->operands[0], name, ins->base_type_class );
+                            ins->operands[0] = name;
+                            MoveSegOp( ins, new_ins, 0 );
+                            PrefixIns( ins, new_ins );
+                            ins = new_ins;
+                        }
+                    }
+                }
             }
             /* check the result ... if it's top of stack, bump up stack level*/
             if( AssignFPResult( blk, ins, &stk_level ) ) {
@@ -541,9 +534,9 @@ static  void    FPAlloc( void ) {
             }
             ins->sequence = sequence;
             ins->stk_exit = stk_level;
-            // ins->s.stk_extra = FPStkReq( ins ); // BBB - Mar 22, 1994
-            if(  _FPULevel( FPU_586 ) &&
-                stk_level == 0 ) ++sequence; // NYI - overflow?
+            // ins->s.stk_extra = FPStkReq( ins );
+            if( _FPULevel( FPU_586 ) && stk_level == 0 )    // NYI - overflow?
+                ++sequence;
             ins = ins->head.next;
             if( ins->head.opcode == OP_BLOCK )
                 break;
@@ -565,11 +558,11 @@ static  void    FPAlloc( void ) {
 }
 
 
-static  bool    CanStack( name *name ) {
+static  bool    CanStack( name *name )
 /***************************************
     Return true if "name" is a candidate for an 8087 "stack" location.
 */
-
+{
     instruction         *first;
     instruction         *last;
     conflict_node       *conf;
@@ -599,16 +592,15 @@ static  bool    CanStack( name *name ) {
 }
 
 
-static  void    StackShortLivedTemps( void ) {
+static  void    StackShortLivedTemps( void )
 /***************************************
     Most temporaries are marked as CAN_STACK when they are back end
     generated temps which are used to hold an intermediate result from
     an expression tree.  Some user or front end temps also fall into the
     CAN_STACK category if they are defined once then used.  This catches
     temps that are defined in one instruction and used in the next one.
-
 */
-
+{
     conflict_node       *conf;
     instruction         *ins1;
     instruction         *ins2;
@@ -656,7 +648,7 @@ static  void    CheckForStack( name *temp )
 }
 
 
-static  void    NoStackAcrossCalls( void ) {
+static  void    NoStackAcrossCalls( void )
 /*************************************
     Since a call requires the stack of the 8087 to be empty, we can't
     hold a value in a stack register across a call instrution.  This
@@ -665,7 +657,7 @@ static  void    NoStackAcrossCalls( void ) {
     Run the block list, rather than the temp list for speed when we're
     BlockByBlock.
 */
-
+{
     block       *blk;
     instruction *ins;
     opcnt       i;
@@ -682,9 +674,9 @@ static  void    NoStackAcrossCalls( void ) {
     }
 }
 
-static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
-/*****************************************************************/
-
+static  void   FindSinCos( instruction *ins, opcode_defs next_op )
+/****************************************************************/
+{
     instruction *next;
     instruction *new_ins;
     name        *temp;
@@ -708,9 +700,9 @@ static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
     UpdateLive( ins, next );
 }
 
-static  void    FSinCos( void ) {
-/*************************/
-
+static  void    FSinCos( void )
+/*****************************/
+{
     block       *blk;
     instruction *ins;
 
@@ -854,7 +846,7 @@ bool    FPIsStack( name *name )
 {
     if( name->n.class != N_TEMP )
         return( false );
-    if( ( name->t.temp_flags & CAN_STACK ) == 0 )
+    if( (name->t.temp_flags & CAN_STACK) == 0 )
         return( false );
     return( true );
 }
