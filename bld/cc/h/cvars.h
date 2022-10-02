@@ -681,6 +681,7 @@ extern void         ScanInit( void );
 extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );
 extern id_hash_idx  CalcHash( const char * );
+extern mac_hash_idx CalcHashMacro( const char * );
 extern unsigned     hashpjw( const char * );
 extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
