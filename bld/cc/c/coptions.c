@@ -1236,7 +1236,7 @@ static void Set_U( void )
     char    *name;
 
     name = CopyOfParm();
-    AddUndefName( name );
+    AddUndefMacro( name );
     CMemFree( name );
 }
 static void Set_V( void )           { CompFlags.generate_prototypes = true; }
