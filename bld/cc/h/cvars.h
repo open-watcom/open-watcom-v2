@@ -110,7 +110,6 @@ global bool         Check_global_prototype;
 #define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
 #define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
 global id_hash_idx  HashValue;          /* hash value for identifier */
-global mac_hash_idx MacHashValue;       /* hash value for macro name */
 global char         *SavedId;           /* saved id when doing look ahead */
 global id_hash_idx  SavedHash;          /* hash value for saved id */
 global source_loc   SavedTokenLoc;      /* value of TokenLine when id saved */
