@@ -181,6 +181,15 @@ id_hash_idx CalcHash( const char *id )
 
     hash = hashpjw( id );
     HashValue = hash % ID_HASH_SIZE;
+    return( HashValue );
+}
+
+mac_hash_idx CalcHashMacro( const char *id )
+/******************************************/
+{
+    unsigned    hash;
+
+    hash = hashpjw( id );
 #if ( MACRO_HASH_SIZE > 0x0ff0 ) && ( MACRO_HASH_SIZE < 0x0fff )
     hash &= 0x0fff;
     if( hash >= MACRO_HASH_SIZE ) {
@@ -189,8 +198,7 @@ id_hash_idx CalcHash( const char *id )
 #else
     hash = hash % MACRO_HASH_SIZE;
 #endif
-    MacHashValue = (mac_hash_idx)hash;
-    return( HashValue );
+    return( (mac_hash_idx)hash );
 }
 
 TOKEN KwLookup( const char *buf, size_t len )
