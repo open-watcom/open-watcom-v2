@@ -1532,7 +1532,7 @@ TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
     parm_list           *next_parm;
     parm_list           *prev_parm;
     TYPEPTR             typ;
-    parm_hash_idx       h;
+    parm_hash_idx       hash;
     int                 parm_count;
 
     parm_types = NULL;
@@ -1554,11 +1554,11 @@ TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
         }
 
         /* try to find an existing parm list that matches */
-        h = MAX_PARM_LIST_HASH_SIZE;
+        hash = MAX_PARM_LIST_HASH_SIZE;
         if( parm_count < MAX_PARM_LIST_HASH_SIZE ) {
-            h = (parm_hash_idx)parm_count;
+            hash = (parm_hash_idx)parm_count;
         }
-        for( typ = FuncTypeHead[h]; typ != NULL; typ = typ->next_type ) {
+        for( typ = FuncTypeHead[hash]; typ != NULL; typ = typ->next_type ) {
             next_parm = parm;
             for( parm_types = typ->u.fn.parms; ; ++parm_types ) {
                 if( next_parm == NULL ) {
