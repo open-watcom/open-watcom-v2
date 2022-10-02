@@ -1353,7 +1353,7 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
             }
             next_mcur = mcur->next_macro;
             if( mpch == NULL ) {                    // if this macro not found in PCH
-                mcur->next_macro = PCHMacroHash[h]; // add it to PCH
+                mcur->next_macro = PCHMacroHash[hash]; // add it to PCH
                 PCHMacroHash[hash] = mcur;
             }
         }
