@@ -697,17 +697,19 @@ static void CEndif( void )
 bool MacroDel( const char *name )
 /*******************************/
 {
-    MEPTR       mentry;
-    MEPTR       prev_mentry;
-    bool        ret;
+    MEPTR           mentry;
+    MEPTR           prev_mentry;
+    bool            ret;
+    mac_hash_idx    hash;
 
     ret = false;
     if( IS_PPOPERATOR_DEFINED( name ) ) {
         CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name  );
         return( ret );
     }
+    hash = CalcHashMacro( name );
     prev_mentry = NULL;
-    for( mentry = MacHash[MacHashValue]; mentry != NULL; mentry = mentry->next_macro ) {
+    for( mentry = MacHash[hash]; mentry != NULL; mentry = mentry->next_macro ) {
         if( strcmp( mentry->macro_name, name ) == 0 )
             break;
         prev_mentry = mentry;
@@ -719,7 +721,7 @@ bool MacroDel( const char *name )
             if( prev_mentry != NULL ) {
                 prev_mentry->next_macro = mentry->next_macro;
             } else {
-                MacHash[MacHashValue] = mentry->next_macro;
+                MacHash[hash] = mentry->next_macro;
             }
             if( (InitialMacroFlags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE) == 0 ) {
                 /* remember macros that were defined before first include */
