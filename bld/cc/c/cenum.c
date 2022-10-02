@@ -39,10 +39,10 @@
 
 void EnumInit( void )
 {
-    id_hash_idx   h;
+    id_hash_idx   hash;
 
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        EnumTable[h] = NULL;
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        EnumTable[hash] = NULL;
     }
     EnumRecSize = 0;
 }
@@ -312,11 +312,11 @@ TYPEPTR EnumDecl( type_modifiers flags )
 }
 
 
-ENUMPTR EnumLookup( id_hash_idx h, const char *name )
+ENUMPTR EnumLookup( id_hash_idx hash, const char *name )
 {
     ENUMPTR     esym;
 
-    for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
+    for( esym = EnumTable[hash]; esym != NULL; esym = esym->next_enum ) {
         if( strcmp( esym->name, name ) == 0 ) {
             break;
         }
@@ -328,10 +328,10 @@ ENUMPTR EnumLookup( id_hash_idx h, const char *name )
 void FreeEnums( void )
 {
     ENUMPTR         esym;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        for( ; (esym = EnumTable[h]) != NULL; EnumTable[h] = esym->next_enum ) {
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        for( ; (esym = EnumTable[hash]) != NULL; EnumTable[hash] = esym->next_enum ) {
             if( !ChkEqSymLevel( esym->parent ) ) {
                 break;
             }
@@ -344,16 +344,16 @@ void FreeEnums( void )
 void DumpEnumTable( void )
 {
     ENUMPTR         esym;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
     puts( "ENUM TABLE DUMP" );
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        for( esym = EnumTable[hash]; esym != NULL; esym = esym->next_enum ) {
             if( ChkEqSymLevel( esym->parent ) ) {
                 printf( "%s = %lld\n", esym->name, esym->value.u._64[0] );
             }
         }
-        printf( "---------%d----------\n", h );
+        printf( "---------%d----------\n", hash );
     }
 }
 

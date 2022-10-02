@@ -1943,10 +1943,10 @@ static void FreeStrings( void )
 {
     STR_HANDLE      strlit;
     STR_HANDLE      strlit_next;
-    str_hash_idx    h;
+    str_hash_idx    hash;
 
-    for( h = 0; h < STRING_HASH_SIZE; ++h ) {
-        for( strlit = StringHash[h]; strlit != NULL; strlit = strlit_next ) {
+    for( hash = 0; hash < STRING_HASH_SIZE; hash++ ) {
+        for( strlit = StringHash[hash]; strlit != NULL; strlit = strlit_next ) {
             strlit_next = strlit->next_string;
             if( strlit->back_handle != NULL ) {
                 BEFiniBack( strlit->back_handle );
@@ -1955,7 +1955,7 @@ static void FreeStrings( void )
             }
             FreeLiteral( strlit );
         }
-        StringHash[h] = NULL;
+        StringHash[hash] = NULL;
     }
 }
 
@@ -1973,11 +1973,11 @@ static void DumpCS_Strings( STR_HANDLE strlit )
 
 static void EmitCS_Strings( void )
 {
-    str_hash_idx    h;
+    str_hash_idx    hash;
 
     if( CompFlags.strings_in_code_segment ) {
-        for( h = STRING_HASH_SIZE; h-- > 0; ) {
-            DumpCS_Strings( StringHash[h] );
+        for( hash = STRING_HASH_SIZE; hash-- > 0; ) {
+            DumpCS_Strings( StringHash[hash] );
         }
     }
 }

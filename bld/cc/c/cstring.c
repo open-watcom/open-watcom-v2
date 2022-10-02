@@ -103,10 +103,10 @@ void LoadUnicodeTable( unsigned codePage )
 
 void StringInit( void )
 {
-    str_hash_idx    h;
+    str_hash_idx    hash;
 
-    for( h = 0; h < STRING_HASH_SIZE; ++h ) {
-        StringHash[h] = 0;
+    for( hash = 0; hash < STRING_HASH_SIZE; hash++ ) {
+        StringHash[hash] = 0;
     }
 }
 
@@ -275,7 +275,7 @@ TREEPTR StringLeaf( string_flags flags )
     STR_HANDLE          new_lit;
     STR_HANDLE          strlit;
     TREEPTR             leaf_index;
-    str_hash_idx        h;
+    str_hash_idx        hash;
 
     strlit = NULL;
     new_lit = GetLiteral();
@@ -290,9 +290,9 @@ TREEPTR StringLeaf( string_flags flags )
         flags |= STRLIT_WIDE;
     if( flags & STRLIT_FAR )
         CompFlags.far_strings = true;
-    h = CalcStringHash( new_lit );
+    hash = CalcStringHash( new_lit );
     if( TOGGLE( reuse_duplicate_strings ) ) {
-        for( strlit = StringHash[h]; strlit != NULL; strlit = strlit->next_string ) {
+        for( strlit = StringHash[hash]; strlit != NULL; strlit = strlit->next_string ) {
             if( strlit->length == new_lit->length && strlit->flags == flags ) {
                 if( strcmp( strlit->literal, new_lit->literal ) == 0 ) {
                     break;
@@ -304,8 +304,8 @@ TREEPTR StringLeaf( string_flags flags )
         new_lit->flags = flags;
         ++LitCount;
         LitPoolSize += CLitLength;
-        new_lit->next_string = StringHash[h];
-        StringHash[h] = new_lit;
+        new_lit->next_string = StringHash[hash];
+        StringHash[hash] = new_lit;
     } else {            // we found a duplicate
         FreeLiteral( new_lit );
         new_lit = strlit;

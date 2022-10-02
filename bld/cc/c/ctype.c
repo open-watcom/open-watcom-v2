@@ -80,20 +80,20 @@ typedef enum {
 
 void InitTypeHashTables( void )
 {
-    parm_hash_idx   h1;
-    id_hash_idx     h2;
+    parm_hash_idx   hash1;
+    id_hash_idx     hash2;
     DATA_TYPE       base_type;
 
-    for( h1 = 0; h1 <= MAX_PARM_LIST_HASH_SIZE; ++h1 ) {
-        FuncTypeHead[h1] = NULL;
+    for( hash1 = 0; hash1 <= MAX_PARM_LIST_HASH_SIZE; hash1++ ) {
+        FuncTypeHead[hash1] = NULL;
     }
     for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
         CTypeHash[base_type] = NULL;
         PtrTypeHash[base_type] = NULL;
     }
-    for( h2 = 0; h2 < ID_HASH_SIZE; ++h2 ) {
-        TagHash[h2] = NULL;
-        FieldHash[h2] = NULL;
+    for( hash2 = 0; hash2 < ID_HASH_SIZE; hash2++ ) {
+        TagHash[hash2] = NULL;
+        FieldHash[hash2] = NULL;
     }
     TagHash[ID_HASH_SIZE] = NULL;
 }
@@ -145,11 +145,11 @@ TYPEPTR GetType( DATA_TYPE base_type )
 void WalkFuncTypeList( void (*func)(TYPEPTR,int) )
 {
     TYPEPTR         typ;
-    parm_hash_idx   h;
+    parm_hash_idx   hash;
 
-    for( h = 0; h <= MAX_PARM_LIST_HASH_SIZE; h++ ) {
-        for( typ = FuncTypeHead[h]; typ != NULL; typ = typ->next_type ) {
-            func( typ, h );
+    for( hash = 0; hash <= MAX_PARM_LIST_HASH_SIZE; hash++ ) {
+        for( typ = FuncTypeHead[hash]; typ != NULL; typ = typ->next_type ) {
+            func( typ, hash );
         }
     }
 }
@@ -724,15 +724,15 @@ TYPEPTR TypeDefault( void )
 }
 
 
-static TAGPTR NewTag( const char *name, id_hash_idx h )
+static TAGPTR NewTag( const char *name, id_hash_idx hash )
 {
     TAGPTR      tag;
 
     tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) + strlen( name ) );
     tag->level = (id_level_type)SymLevel;
-    tag->hash = h;
-    tag->next_tag = TagHash[h];
-    TagHash[h] = tag;
+    tag->hash = hash;
+    tag->next_tag = TagHash[hash];
+    TagHash[hash] = tag;
     strcpy( tag->name, name );
     ++TagCount;
     return( tag );
@@ -1342,19 +1342,19 @@ static void CheckBitfieldType( TYPEPTR typ )
 }
 
 
-void VfyNewSym( id_hash_idx h, const char *name )
+void VfyNewSym( id_hash_idx hash, const char *name )
 {
     SYM_HANDLE  sym_handle;
     SYM_ENTRY   sym;
     ENUMPTR     ep;
 
-    ep = EnumLookup( h, name );
+    ep = EnumLookup( hash, name );
     if( ep != NULL && ChkEqSymLevel( ep->parent ) ) {
         SetDiagEnum( ep );
         CErr2p( ERR_SYM_ALREADY_DEFINED, name );
         SetDiagPop();
     }
-    sym_handle = SymLook( h, name );
+    sym_handle = SymLook( hash, name );
     if( sym_handle != SYM_NULL ) {
         SymGet( &sym, sym_handle );
         if( ChkEqSymLevel( &sym ) ) {
@@ -1381,13 +1381,13 @@ TAGPTR TagLookup( void )
 void FreeTags( void )
 {
     TAGPTR          tag;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
-    for( h = 0; h <= ID_HASH_SIZE; ++h ) {
-        for( ; (tag = TagHash[h]) != NULL; ) {
+    for( hash = 0; hash <= ID_HASH_SIZE; hash++ ) {
+        for( ; (tag = TagHash[hash]) != NULL; ) {
             if( ChkLtSymLevel( tag ) )
                 break;
-            TagHash[h] = tag->next_tag;
+            TagHash[hash] = tag->next_tag;
             tag->next_tag = DeadTags;
             DeadTags = tag;
         }
@@ -1397,10 +1397,10 @@ void FreeTags( void )
 void WalkTagList( void (*func)(TAGPTR) )
 {
     TAGPTR          tag;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
-    for( h = 0; h <= ID_HASH_SIZE; ++h ) {
-        for( tag = TagHash[h]; tag != NULL; tag = tag->next_tag ) {
+    for( hash = 0; hash <= ID_HASH_SIZE; hash++ ) {
+        for( tag = TagHash[hash]; tag != NULL; tag = tag->next_tag ) {
             func( tag );
         }
     }
@@ -1489,27 +1489,27 @@ TYPEPTR BPtrNode( TYPEPTR typ, type_modifiers flags, segment_id segid, SYM_HANDL
 
 static parm_hash_idx FuncHeadIndex( TYPEPTR *parm_types )
 {
-    parm_hash_idx  h;
+    parm_hash_idx  hash;
 
     if( parm_types == NULL )
         return( 0 );
-    for( h = 0; h < MAX_PARM_LIST_HASH_SIZE; ++h ) {
+    for( hash = 0; hash < MAX_PARM_LIST_HASH_SIZE; hash++ ) {
         if( *parm_types == NULL ) {
             break;
         }
         ++parm_types;
     }
-    return( h );
+    return( hash );
 }
 
 TYPEPTR FuncNode( TYPEPTR return_typ, type_modifiers flag, TYPEPTR *parm_types )
 {
     TYPEPTR         typ;
-    parm_hash_idx   h;
+    parm_hash_idx   hash;
 
-    h = FuncHeadIndex( parm_types );
+    hash = FuncHeadIndex( parm_types );
     if( return_typ != NULL ) {
-        for( typ = FuncTypeHead[h]; typ != NULL; typ = typ->next_type ) {
+        for( typ = FuncTypeHead[hash]; typ != NULL; typ = typ->next_type ) {
             if( typ->object == return_typ &&
                 typ->u.fn.decl_flags == flag &&
                 typ->u.fn.parms == parm_types ) {
@@ -1520,8 +1520,8 @@ TYPEPTR FuncNode( TYPEPTR return_typ, type_modifiers flag, TYPEPTR *parm_types )
     typ = TypeNode( TYP_FUNCTION, return_typ );
     typ->u.fn.decl_flags = flag;
     typ->u.fn.parms = parm_types;
-    typ->next_type = FuncTypeHead[h];
-    FuncTypeHead[h] = typ;
+    typ->next_type = FuncTypeHead[hash];
+    FuncTypeHead[hash] = typ;
     return( typ );
 }
 

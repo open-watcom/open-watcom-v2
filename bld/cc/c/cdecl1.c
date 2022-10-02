@@ -417,7 +417,7 @@ static void AddParms( void )
     SYM_HANDLE          new_sym_handle;
     TYPEPTR             typ = NULL;
     int                 parm_count;
-    id_hash_idx         h;
+    id_hash_idx         hash;
     parm_list           *parmlist;
     SYM_ENTRY           new_sym;
 
@@ -431,7 +431,7 @@ static void AddParms( void )
         new_sym_handle = SYM_NULL;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
         parm->sym.attribs.is_parm = true;
-        h = parm->sym.info.hash;
+        hash = parm->sym.info.hash;
         if( parm->sym.name[0] == '\0' ) {
             /* no name ==> ... */
             parm->sym.sym_type = GetType( TYP_DOT_DOT_DOT );
@@ -440,11 +440,11 @@ static void AddParms( void )
             parm->sym.sym_type = TypeDefault();
             parm->sym.attribs.stg_class = SC_AUTO;
         } else {
-/*
-        go through ParmList again, looking for FLOAT parms
-        change the name to ".P" and duplicate the symbol with type
-        float and generate an assignment statement.
-*/
+            /*
+             * go through ParmList again, looking for FLOAT parms
+             * change the name to ".P" and duplicate the symbol with type
+             * float and generate an assignment statement.
+             */
             typ = parm->sym.sym_type;
             SKIP_TYPEDEFS( typ );
 
@@ -470,7 +470,7 @@ static void AddParms( void )
             case TYP_FLOAT:
                 memcpy( &new_sym, &parm->sym, sizeof( SYM_ENTRY ) );
                 new_sym.handle = CurFunc->u.func.locals;
-                new_sym_handle = SymAdd( h, &new_sym );
+                new_sym_handle = SymAdd( hash, &new_sym );
                 CurFunc->u.func.locals = new_sym_handle;
                 SymReplace( &new_sym, new_sym_handle );
                 parm->sym.name = ".P";
@@ -482,7 +482,7 @@ static void AddParms( void )
                 break;
             }
         }
-        sym_handle = SymAdd( h, &parm->sym );
+        sym_handle = SymAdd( hash, &parm->sym );
         if( new_sym_handle != SYM_NULL ) {
             TREEPTR         tree;
 

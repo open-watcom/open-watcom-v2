@@ -93,7 +93,7 @@ static void NewSym( void )
 
 void SymInit( void )
 {
-    id_hash_idx     h;
+    id_hash_idx     hash;
     unsigned        seg_num;
 
     NextSymHandle = 0;
@@ -102,8 +102,8 @@ void SymInit( void )
     GblSymCount = 0;
     LclSymCount = 0;
     HashTab = PermMemAlloc( ID_HASH_SIZE * sizeof( SYM_HASHPTR ) );
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        HashTab[h] = NULL;
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        HashTab[hash] = NULL;
     }
     TagHead = NULL;
     DeadTags = NULL;
@@ -410,7 +410,7 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
 }
 
 
-SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
+SYM_HANDLE SymAdd( id_hash_idx hash, SYMPTR sym )
 {
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     *head;
@@ -425,9 +425,9 @@ SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
     NewSym();
     sym->level = (id_level_type)SymLevel;
     hsym = SymHash( sym, CURR_SYM_HANDLE() );
-    sym->info.hash = h;
+    sym->info.hash = hash;
     /* add name to head of list */
-    for( head = &HashTab[h]; *head != NULL; head = &(*head)->next_sym ) {
+    for( head = &HashTab[hash]; *head != NULL; head = &(*head)->next_sym ) {
         if( ChkLtSymLevel( *head ) || ChkEqSymLevel( *head ) ) {
             break;
         }
@@ -438,7 +438,7 @@ SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
 }
 
 
-SYM_HANDLE SymAddL0( id_hash_idx h, SYMPTR new_sym )
+SYM_HANDLE SymAddL0( id_hash_idx hash, SYMPTR new_sym )
 /* add symbol to level 0 */
 {
     SYM_HASHPTR     hsym;
@@ -451,10 +451,10 @@ SYM_HANDLE SymAddL0( id_hash_idx h, SYMPTR new_sym )
     new_sym->level = 0;
     new_hsym = SymHash( new_sym, CURR_SYM_HANDLE() );
     new_hsym->next_sym = NULL;
-    new_sym->info.hash = h;
-    hsym = HashTab[h];
+    new_sym->info.hash = hash;
+    hsym = HashTab[hash];
     if( hsym == NULL ) {
-        HashTab[h] = new_hsym;
+        HashTab[hash] = new_hsym;
     } else {
         while( hsym->next_sym != NULL ) {
             hsym = hsym->next_sym;
@@ -496,11 +496,11 @@ SYM_HANDLE MakeNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
 }
 
 
-SYM_HANDLE SymLook( id_hash_idx h, const char *id )
+SYM_HANDLE SymLook( id_hash_idx hash, const char *id )
 {
     SYM_HASHPTR     hsym;
 
-    for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
+    for( hsym = HashTab[hash]; hsym != NULL; hsym = hsym->next_sym ) {
         if( strcmp( hsym->name, id ) == 0 ) {
             return( hsym->handle );
         }
@@ -509,11 +509,11 @@ SYM_HANDLE SymLook( id_hash_idx h, const char *id )
 }
 
 
-SYM_HANDLE SymLookTypedef( id_hash_idx h, const char *id, SYMPTR sym )
+SYM_HANDLE SymLookTypedef( id_hash_idx hash, const char *id, SYMPTR sym )
 {
     SYM_HASHPTR     hsym;
 
-    for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
+    for( hsym = HashTab[hash]; hsym != NULL; hsym = hsym->next_sym ) {
         if( strcmp( hsym->name, id ) == 0 ) {
             if( hsym->sym_type == NULL )
                 break;
@@ -527,12 +527,12 @@ SYM_HANDLE SymLookTypedef( id_hash_idx h, const char *id, SYMPTR sym )
 }
 
 
-SYM_HANDLE Sym0Look( id_hash_idx h, const char *id )
+SYM_HANDLE Sym0Look( id_hash_idx hash, const char *id )
 /* look for symbol on level 0 */
 {
     SYM_HASHPTR     hsym;
 
-    for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
+    for( hsym = HashTab[hash]; hsym != NULL; hsym = hsym->next_sym ) {
         if( strcmp( hsym->name, id ) == 0 ) {  /* name matches */
             if( hsym->level == 0 ) {
                 return( hsym->handle );
@@ -759,7 +759,7 @@ static SYM_HASHPTR GetSymList( void )
     SYM_HASHPTR     next_hsymptr;
     SYM_HASHPTR     sym_list;
     SYM_HASHPTR     sym_tail;
-    id_hash_idx     h;
+    id_hash_idx     hash;
     unsigned        i;
     unsigned        j;
     SYM_HASHPTR     sym_seglist[MAX_SYM_SEGS];
@@ -767,15 +767,15 @@ static SYM_HASHPTR GetSymList( void )
     SYM_HASHPTR     sym_buftail[SYMBUFS_PER_SEG];
 
     sym_list = NULL;
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        for( hsym = HashTab[h]; hsym != NULL; hsym = next_hsymptr ) {
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        for( hsym = HashTab[hash]; hsym != NULL; hsym = next_hsymptr ) {
             if( !ChkEqSymLevel( hsym ) )
                 break;
             next_hsymptr = hsym->next_sym;
             hsym->next_sym = sym_list;
             sym_list = hsym;
         }
-        HashTab[h] = hsym;
+        HashTab[hash] = hsym;
     }
     // if SymLevel == 0 then should sort the sym_list so that we don't do
     // a lot of page thrashing.
@@ -1040,12 +1040,12 @@ void SymsPurge( void )
 
 #if 0
     {
-        id_hash_idx     h;
+        id_hash_idx     hash;
         SYMPTR          tmp_sym, sym;
 
-        for( h = 0; h < ID_HASH_SIZE; h++ ) {
-            sym = HashTab[h];
-            HashTab[h] = NULL;
+        for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+            sym = HashTab[hash];
+            HashTab[hash] = NULL;
             while( sym != NULL ) {
                 tmp_sym = sym->next_sym;
                 DoSymPurge( sym );
