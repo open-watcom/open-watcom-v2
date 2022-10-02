@@ -92,7 +92,6 @@ void InitGlobalVars( void )
     SizeOfCount             = 0;        /* # of nested sizeof() expressions  */
     SymLevel                = 0;        /* current lex level (# of nested {) */
     HashValue               = 0;        /* hash value for identifier */
-    MacHashValue            = 0;        /* hash value for macro name */
     SavedId                 = NULL;     /* saved id when doing look ahead */
     SavedHash               = 0;        /* hash value for saved id */
     SavedTokenLoc.line      = 0;        /* value of TokenLine when id saved */
