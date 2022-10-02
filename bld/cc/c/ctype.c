@@ -724,7 +724,7 @@ TYPEPTR TypeDefault( void )
 }
 
 
-static TAGPTR NewTag( const char *name, id_hash_idx hash )
+static TAGPTR NewTag( id_hash_idx hash, const char *name )
 {
     TAGPTR      tag;
 
@@ -741,7 +741,7 @@ static TAGPTR NewTag( const char *name, id_hash_idx hash )
 
 TAGPTR NullTag( void )
 {
-    return( NewTag( "", ID_HASH_SIZE ) );
+    return( NewTag( ID_HASH_SIZE, "" ) );
 }
 
 
@@ -749,7 +749,7 @@ TAGPTR VfyNewTag( TAGPTR tag, DATA_TYPE tag_type )
 {
     if( tag->sym_type != NULL ) {               /* tag already exists */
         if( !ChkEqSymLevel( tag ) ) {
-            tag = NewTag( tag->name, tag->hash );
+            tag = NewTag( tag->hash, tag->name );
         } else if( tag->size != 0 || tag->sym_type->decl_type != tag_type ) {
             CErr2p( ERR_DUPLICATE_TAG, tag->name );
         }
@@ -1174,7 +1174,7 @@ static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
         if( CurToken != T_LEFT_BRACE ) {
             if( CurToken == T_SEMI_COLON ) {
                 if( !ChkEqSymLevel( tag ) ) {
-                    tag = NewTag( tag->name, tag->hash );
+                    tag = NewTag( tag->hash, tag->name );
                 }
             }
             typ = tag->sym_type;
@@ -1375,7 +1375,7 @@ TAGPTR TagLookup( void )
             return( tag );
         }
     }
-    return( NewTag( Buffer, HashValue ) );
+    return( NewTag( HashValue, Buffer ) );
 }
 
 void FreeTags( void )
