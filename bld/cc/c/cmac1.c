@@ -162,7 +162,7 @@ static void SpecialMacroAdd( special_macro_names *mac )
 void MacroInit( void )
 /********************/
 {
-    mac_hash_idx    h;
+    mac_hash_idx    hash;
     int             i;
 
     MacroCount = 0;
@@ -174,8 +174,8 @@ void MacroInit( void )
     UndefMacroList = NULL;
     InitialMacroFlags = MFLAG_DEFINED_BEFORE_FIRST_INCLUDE;
     MacHash = PermMemAlloc( MACRO_HASH_SIZE * sizeof( MEPTR ) );
-    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
-        MacHash[h] = NULL;
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
+        MacHash[hash] = NULL;
     }
     for( i = MACRO_FIRST; i <= MACRO_LAST; i++ ) {
         SpecialMacroAdd( &SpcMacros[i] );
@@ -207,12 +207,12 @@ void MacroPurge( void )
 /*********************/
 {
 #if 0
-    mac_hash_idx    h;
+    mac_hash_idx    hash;
     MEPTR           mentry;
 
-    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
-        for( ; mentry = MacHash[h]; ) {
-            MacHash[h] = mentry->next_macro;
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
+        for( ; mentry = MacHash[hash]; ) {
+            MacHash[hash] = mentry->next_macro;
             CMemFree( mentry );
         }
     }
