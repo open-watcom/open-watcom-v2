@@ -116,34 +116,35 @@ static void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
     }
 }
 
-static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
+static MEPTR *MacroLkUp( mac_hash_idx hash, const char *name )
 {
     MEPTR       mentry;
+    MEPTR       *lnk;
 
-    while( (mentry = *lnk) != NULL ) {
-        if( strcmp( mentry->macro_name, name ) == 0 )
+    for( lnk = &MacHash[hash]; (mentry = *lnk) != NULL; lnk = &mentry->next_macro ) {
+        if( strcmp( mentry->macro_name, name ) == 0 ) {
             break;
-        lnk = &mentry->next_macro;
+        }
     }
     return( lnk );
 }
 
 MEPTR MacroDefine( size_t mlen, macro_flags mflags )
 {
-    MEPTR       old_mentry;
-    MEPTR       *lnk;
-    MEPTR       new_mentry;
-    macro_flags old_mflags;
-    MEPTR       mentry;
-    const char  *name;
+    MEPTR           old_mentry;
+    MEPTR           *lnk;
+    MEPTR           new_mentry;
+    macro_flags     old_mflags;
+    MEPTR           mentry;
+    const char      *name;
+    mac_hash_idx    hash;
 
     new_mentry = NULL;
     mentry = (MEPTR)MacroOffset;
     mentry->macro_len = mlen;
     name = mentry->macro_name;
-    CalcHash( name );
-    lnk = &MacHash[MacHashValue];
-    lnk = MacroLkUp( name, lnk );
+    hash = CalcHashMacro( name );
+    lnk = MacroLkUp( hash, name );
     old_mentry = *lnk;
     if( old_mentry != NULL ) {
         old_mflags = old_mentry->macro_flags;
@@ -166,8 +167,8 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
         ++MacroCount;
         new_mentry = MacroAllocateInSeg( mlen );
         new_mentry->macro_flags = InitialMacroFlags | mflags;
-        new_mentry->next_macro = MacHash[MacHashValue];
-        MacHash[MacHashValue] = new_mentry;
+        new_mentry->next_macro = MacHash[hash];
+        MacHash[hash] = new_mentry;
     }
     return( new_mentry );
 }
@@ -193,11 +194,7 @@ bool MacroCompare( MEPTR m1, MEPTR m2 )
 
 MEPTR MacroLookup( const char *name )
 {
-    MEPTR       mentry, *lnk;
-
-    lnk = MacroLkUp( name, &MacHash[MacHashValue] );
-    mentry = *lnk;
-    return( mentry );
+    return( *MacroLkUp( CalcHashMacro( name ), name ) );
 }
 
 void MacroSegmentAddChar(           // MacroSegment: ADD A CHARACTER
