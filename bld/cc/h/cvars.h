@@ -610,7 +610,7 @@ extern char         *BadCmdLine(int,const char *);
 extern char         *Define_Macro(const char *);
 extern char         *Define_UserMacro(const char *);
 extern void         PreDefine_Macro(const char *);
-extern void         AddUndefName(const char *);
+extern void         AddUndefMacro(const char *);
 extern void         InitModInfo( void );
 extern void         MiscMacroDefs( void );
 

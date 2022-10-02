@@ -188,7 +188,7 @@ void PreDefine_Macro( const char *str )
 }
 
 
-void AddUndefName( const char *str )
+void AddUndefMacro( const char *str )
 {
     size_t          len;
     undef_names     *uname;
