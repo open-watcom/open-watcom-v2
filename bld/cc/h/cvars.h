@@ -109,9 +109,7 @@ global id_level_stype SymLevel;         /* current lex level (# of nested {) */
 global bool         Check_global_prototype;
 #define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
 #define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
-global id_hash_idx  HashValue;          /* hash value for identifier */
 global char         *SavedId;           /* saved id when doing look ahead */
-global id_hash_idx  SavedHash;          /* hash value for saved id */
 global source_loc   SavedTokenLoc;      /* value of TokenLine when id saved */
 global TOKEN        LAToken;            /* look ahead token */
 global LABELPTR     LabelHead;          /* list of all labels defined in function */
@@ -680,7 +678,7 @@ extern void         NewLineStartPos( FCB *srcfile );
 extern void         ScanInit( void );
 extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );
-extern id_hash_idx  CalcHash( const char * );
+extern id_hash_idx  CalcHashID( const char * );
 extern mac_hash_idx CalcHashMacro( const char * );
 extern unsigned     hashpjw( const char * );
 extern void         SkipAhead( void );
@@ -761,7 +759,7 @@ extern type_modifiers TypeQualifier( void );
 extern void         TypeSpecifier( decl_info *info );
 extern void         FullDeclSpecifier( decl_info *info );
 extern TAGPTR       NullTag( void );
-extern TAGPTR       TagLookup( void );
+extern TAGPTR       TagLookup( const char *name );
 extern void         FreeTags( void );
 extern target_size  TypeSize( TYPEPTR );
 extern target_size  TypeSizeEx( TYPEPTR, bitfield_width *pFieldWidth );

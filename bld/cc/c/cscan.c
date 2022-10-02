@@ -174,14 +174,13 @@ unsigned hashpjw( const char *s )
     return( h );
 }
 
-id_hash_idx CalcHash( const char *id )
-/************************************/
+id_hash_idx CalcHashID( const char *id )
+/**************************************/
 {
     unsigned    hash;
 
     hash = hashpjw( id );
-    HashValue = hash % ID_HASH_SIZE;
-    return( HashValue );
+    return( (id_hash_idx)( hash % ID_HASH_SIZE ) );
 }
 
 mac_hash_idx CalcHashMacro( const char *id )
@@ -260,7 +259,6 @@ static TOKEN doScanName( void )
 
     getIDName( CurrChar );
     WriteBufferNullChar();
-    CalcHash( Buffer );
     if( CompFlags.doing_macro_expansion )
         return( T_ID );
     if( PPControl & PPCTL_NO_EXPAND )

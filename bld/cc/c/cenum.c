@@ -52,17 +52,19 @@ static ENUMPTR EnumLkAdd( TAGPTR tag )
 {
     ENUMPTR     esym;
     size_t      len;
+    id_hash_idx hash;
 
-    VfyNewSym( HashValue, Buffer );
+    hash = CalcHashID( Buffer );
+    VfyNewSym( hash, Buffer );
     len = sizeof( ENUMDEFN ) + TokenLen;
     if( EnumRecSize < len )
         EnumRecSize = len;
     esym = (ENUMPTR)CPermAlloc( len );
     strcpy( esym->name, Buffer );
     esym->parent = tag;
-    esym->hash = HashValue;
+    esym->hash = hash;
     esym->src_loc = TokenLoc;
-    esym->next_enum = EnumTable[esym->hash];
+    esym->next_enum = EnumTable[hash];
     ++EnumCount;
     if( tag->u.enum_list == NULL ) {
         tag->u.enum_list = esym;
@@ -159,7 +161,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                      (2) "enum" <id> <variable_name> ";"
                      (3) "enum" <id> "{" <enum_const_decl> ... "}"
         */
-        tag = TagLookup();
+        tag = TagLookup( Buffer );
         NextToken();
         if( CurToken != T_LEFT_BRACE ) {
             typ = tag->sym_type;

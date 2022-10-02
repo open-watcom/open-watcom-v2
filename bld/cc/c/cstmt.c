@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -309,7 +309,6 @@ static void JumpTrue( TREEPTR expr, LABEL_INDEX label )
 void LookAhead( void )
 {
     SavedId = CStrSave( Buffer );       /* save current id */
-    SavedHash = HashValue;              /* and its hash value */
     SavedTokenLoc = TokenLoc;           /* save linenum and fno */
     NextToken();                        /* get next token */
     LAToken = CurToken;                 /* save it in look ahead */
@@ -1151,9 +1150,9 @@ static bool IsDeclarator( TOKEN token )
     /* If token is an ID, it might be a typedef */
     if( (CurToken == T_ID) || (CurToken == T_SAVED_ID) ) {
         if( CurToken == T_ID ) {
-            sym_handle = SymLookTypedef( HashValue, Buffer, &sym );
+            sym_handle = SymLookTypedef( CalcHashID( Buffer ), Buffer, &sym );
         } else {    /* T_SAVED_ID */
-            sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
+            sym_handle = SymLookTypedef( CalcHashID( SavedId ), SavedId, &sym );
         }
         if( sym_handle != SYM_NULL && sym.attribs.stg_class == SC_TYPEDEF ) {
             return( true );

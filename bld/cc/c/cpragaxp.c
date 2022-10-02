@@ -82,7 +82,7 @@ bool AsmInsertFixups( aux_info *info )
 
     lnk = &head;
     for( reloc = AsmRelocs; reloc != NULL; reloc = reloc->next ) {
-        sym_handle = SymLook( CalcHash( reloc->name ), reloc->name );
+        sym_handle = SymLook( CalcHashID( reloc->name ), reloc->name );
         if( sym_handle == SYM_NULL ) {
             CErr2p( ERR_UNDECLARED_SYM, reloc->name );
             break;

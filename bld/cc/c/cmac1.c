@@ -278,7 +278,6 @@ TOKEN GetMacroToken( void )
             /* fall through */
         case T_ID:
         case T_UNEXPANDABLE_ID:
-            CalcHash( Buffer );
             if( !CompFlags.doing_macro_expansion ) {
                 if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
                     TokenList = mtok->next;
@@ -1192,7 +1191,6 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
             len = 0;
             while( (buf[len] = mtok->data[len]) != '\0' )
                 len++;
-            CalcHash( buf );
             mentry = MacroLookup( buf );
             if( mentry != NULL ) {
                 /* this is a macro */

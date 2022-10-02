@@ -911,7 +911,8 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
         }
         info->modifier |= flags;
         if( CurToken == T___BASED ) {
-            bool    use_seg;
+            bool        use_seg;
+            id_hash_idx hash;
 
             use_seg = false;
             NextToken();
@@ -925,13 +926,14 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             }
             switch( CurToken ) {
             case T_ID:                                  /* __based(variable) */
-                sym_handle = SymLook( HashValue, Buffer );
+                hash = CalcHashID( Buffer );
+                sym_handle = SymLook( hash, Buffer );
                 if( sym_handle == SYM_NULL ) {
                     SymCreate( &sym, Buffer );
                     sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                     CErr2p( ERR_UNDECLARED_SYM, Buffer );
                     sym.sym_type = GetType( TYP_INT );
-                    sym_handle = SymAdd( HashValue, &sym );
+                    sym_handle = SymAdd( hash, &sym );
                 } else {
                     TYPEPTR     sym_typ;
 
@@ -996,13 +998,14 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                 }
                 NextToken();
                 if( CurToken == T_ID ) {
-                    sym_handle = SymLook( HashValue, Buffer );
+                    hash = CalcHashID( Buffer );
+                    sym_handle = SymLook( hash, Buffer );
                     if( sym_handle == SYM_NULL ) {
                         SymCreate( &sym, Buffer );
                         sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                         CErr2p( ERR_UNDECLARED_SYM, Buffer );
                         sym.sym_type = GetType( TYP_INT );
-                        sym_handle = SymAdd( HashValue, &sym );
+                        sym_handle = SymAdd( hash, &sym );
                     } else {
                         SymGet( &sym, sym_handle );
                     }
@@ -1146,11 +1149,11 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
             for( ;; ) {
                 if( CurToken == T_ID ) {
                     SymCreate( sym, Buffer );
-                    sym->info.hash = HashValue;
+                    sym->info.hash = CalcHashID( Buffer );
                     NextToken();
                 } else {
                     SymCreate( sym, SavedId );
-                    sym->info.hash = SavedHash;
+                    sym->info.hash = CalcHashID( SavedId );
                     CurToken = LAToken;
                 }
                 if( CurToken != T_ID && CurToken != T_TIMES )
@@ -1664,7 +1667,7 @@ static void GetFuncParmList( void )
             parm->next_parm = newparm;
             parm = newparm;
         }
-        parm->sym.info.hash = HashValue;
+        parm->sym.info.hash = CalcHashID( Buffer );
         if( !TOGGLE( unreferenced ) ) {
             parm->sym.flags |= SYM_REFERENCED;
         }

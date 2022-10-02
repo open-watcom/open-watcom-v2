@@ -399,11 +399,11 @@ static TREEPTR SymLeaf( void )
     SYM_ENTRY   sym;
 
     if( CurToken == T_SAVED_ID ) {
-        hash = SavedHash;
+        hash = CalcHashID( SavedId );
         CurToken = LAToken;
         tree = CheckSym( hash, SavedId, &sym, &sym_handle );
     } else {
-        hash = HashValue;
+        hash = CalcHashID( Buffer );
         tree = CheckSym( hash, Buffer, &sym, &sym_handle );
         NextToken();
     }

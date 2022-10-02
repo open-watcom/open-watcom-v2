@@ -197,7 +197,6 @@ void AddUndefMacro( const char *str )
     if( len == 0 ) {
         CompFlags.undefine_all_macros = true;
     } else {
-        CalcHash( str );
         if( !MacroDel( str ) ) {
             uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;

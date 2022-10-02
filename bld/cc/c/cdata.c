@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,9 +91,7 @@ void InitGlobalVars( void )
     FuncCount               = 0;        /* total # of functions defined in module */
     SizeOfCount             = 0;        /* # of nested sizeof() expressions  */
     SymLevel                = 0;        /* current lex level (# of nested {) */
-    HashValue               = 0;        /* hash value for identifier */
     SavedId                 = NULL;     /* saved id when doing look ahead */
-    SavedHash               = 0;        /* hash value for saved id */
     SavedTokenLoc.line      = 0;        /* value of TokenLine when id saved */
     SavedTokenLoc.column    = 0;        /* value of TokenColumn when id saved */
     SavedTokenLoc.fno       = 0;        /* value of TokenFno when id saved */

@@ -400,7 +400,7 @@ bool AsmInsertFixups( aux_info *info )
             if( fix != NULL && fix->fixup_loc == (src - AsmCodeBuffer) ) {
                 name = fix->name;
                 if( name != NULL ) {
-                    sym_handle = SymLook( CalcHash( name ), name );
+                    sym_handle = SymLook( CalcHashID( name ), name );
                     if( sym_handle == SYM_NULL ) {
                         CErr2p( ERR_UNDECLARED_SYM, name );
                         return( false );
@@ -554,7 +554,6 @@ bool AsmInsertFixups( aux_info *info )
     info->code = seq;
     return( uses_auto );
 }
-
 
 static void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
 /**************************************************************************/

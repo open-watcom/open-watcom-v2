@@ -298,7 +298,6 @@ bool GetPragmaAuxAliasInfo( void )
         PPNextToken();
         return( IS_ID_OR_KEYWORD( CurToken ) );
     } else if( LAToken == T_COMMA ) {       /* #pragma aux (symbol, alias) */
-        HashValue = SavedHash;
         SetCurrInfo( SavedId );
         advanceToken();
         PPNextToken();
@@ -315,7 +314,7 @@ bool GetPragmaAuxAliasInfo( void )
 void *AsmQuerySymbol( const char *name )
 /**************************************/
 {
-    return( SymLook( CalcHash( name ), name ) );
+    return( SymLook( CalcHashID( name ), name ) );
 }
 
 enum sym_state AsmQueryState( void *handle )
@@ -398,7 +397,7 @@ void SetCurrInfo( const char *name )
     CurrInfo = lookupMagicKeyword( name );
     if( CurrInfo == NULL ) {
         if( CurrAlias == NULL ) {
-            sym_handle = SymLook( HashValue, name );
+            sym_handle = SymLook( CalcHashID( name ), name );
             if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
                 sym_attrib = sym.mods;
@@ -553,7 +552,7 @@ void PragmaAuxEnding( void )
         SYM_HANDLE  sym_handle;
         SYM_ENTRY   sym;
 
-        if( SYM_NULL != (sym_handle = SymLook( CalcHash( CurrEntry->name ), CurrEntry->name )) ) {
+        if( SYM_NULL != (sym_handle = SymLook( CalcHashID( CurrEntry->name ), CurrEntry->name )) ) {
             SymGet( &sym, sym_handle );
             if( ( sym.flags & SYM_DEFINED ) && ( sym.flags & SYM_FUNCTION ) ) {
                 CErr2p( ERR_SYM_ALREADY_DEFINED, CurrEntry->name );
@@ -969,7 +968,7 @@ static void pragAllocText( void )
         for( ;; ) {
             MustRecog( T_COMMA );
             /* current token can be an T_ID or a T_STRING */
-            sym_handle = Sym0Look( CalcHash( Buffer ), Buffer );
+            sym_handle = Sym0Look( CalcHashID( Buffer ), Buffer );
             if( sym_handle == SYM_NULL ) {
                 /* error */
             } else {
@@ -1265,7 +1264,7 @@ static void pragIntrinsic( int intrinsic )
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         for( PPNextToken(); IS_ID_OR_KEYWORD( CurToken ); PPNextToken() ) {
-            sym_handle = SymLook( HashValue, Buffer );
+            sym_handle = SymLook( CalcHashID( Buffer ), Buffer );
             if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
                 sym.flags &= ~ SYM_INTRINSIC;
@@ -1572,7 +1571,7 @@ static void parseExtRef ( void )
     if( CurToken == T_STRING ) {
         AddExtRefN( Buffer );
     } else {
-        extref_sym = SymLook( HashValue, Buffer );
+        extref_sym = SymLook( CalcHashID( Buffer ), Buffer );
         if( extref_sym != NULL ) {
             AddExtRefS( extref_sym );
         } else {
@@ -1635,7 +1634,7 @@ static void pragAlias( void )
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         if( CurToken == T_ID ) {
-            alias_sym = SymLook( HashValue, Buffer );
+            alias_sym = SymLook( CalcHashID( Buffer ), Buffer );
             if( alias_sym == SYM_NULL ) {
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
@@ -1645,7 +1644,7 @@ static void pragAlias( void )
         PPNextToken();
         MustRecog( T_COMMA );
         if( CurToken == T_ID ) {
-            subst_sym = SymLook( HashValue, Buffer );
+            subst_sym = SymLook( CalcHashID( Buffer ), Buffer );
             if( subst_sym == 0 ) {
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }

@@ -608,9 +608,9 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             /* lookup id in symbol table */
             /* if valid type identifier then OK */
             if( CurToken == T_ID ) {
-                sym_handle = SymLookTypedef( HashValue, Buffer, &sym );
+                sym_handle = SymLookTypedef( CalcHashID( Buffer ), Buffer, &sym );
             } else {    /* T_SAVED_ID */
-                sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
+                sym_handle = SymLookTypedef( CalcHashID( SavedId ), SavedId, &sym );
             }
             if( sym_handle == SYM_NULL )
                 goto got_specifier;
@@ -764,6 +764,7 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     FIELDPTR    prev_field;
     TYPEPTR     typ;
     TAGPTR      tag;
+    id_hash_idx hash;
 
     ++FieldCount;
     typ = new_field->field_type;
@@ -788,9 +789,10 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         }
     }
     tag = decl->u.tag;
-    new_field->hash = HashValue;
+    hash = CalcHashID( new_field->name );
+    new_field->hash = hash;
     if( new_field->name[0] != '\0' ) {  /* only check non-empty names */
-        for( field = FieldHash[HashValue]; field != NULL; field = field->next_field_same_hash ) {
+        for( field = FieldHash[hash]; field != NULL; field = field->next_field_same_hash ) {
             /* fields were added at the front of the hash linked list --
                may as well stop if the level isn't the same anymore */
             if( field->level != new_field->level )
@@ -799,8 +801,8 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
                 CErr2p( ERR_DUPLICATE_FIELD_NAME, field->name );
             }
         }
-        new_field->next_field_same_hash = FieldHash[HashValue];
-        FieldHash[HashValue] = new_field;
+        new_field->next_field_same_hash = FieldHash[hash];
+        FieldHash[hash] = new_field;
     }
     if( tag->u.field_list == NULL ) {
         tag->u.field_list = new_field;
@@ -1166,7 +1168,7 @@ static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
             NextToken();
         }
         if( CurToken == T_ID ) {        /* structure or union tag */
-            tag = TagLookup();
+            tag = TagLookup( Buffer );
             NextToken();
         } else {
             tag = NullTag();
@@ -1366,16 +1368,18 @@ void VfyNewSym( id_hash_idx hash, const char *name )
 }
 
 
-TAGPTR TagLookup( void )
+TAGPTR TagLookup( const char *name )
 {
-    TAGPTR          tag;
+    TAGPTR      tag;
+    id_hash_idx hash;
 
-    for( tag = TagHash[HashValue]; tag != NULL; tag = tag->next_tag ) {
-        if( strcmp( Buffer, tag->name ) == 0 ) {
+    hash = CalcHashID( name );
+    for( tag = TagHash[hash]; tag != NULL; tag = tag->next_tag ) {
+        if( strcmp( name, tag->name ) == 0 ) {
             return( tag );
         }
     }
-    return( NewTag( HashValue, Buffer ) );
+    return( NewTag( hash, name ) );
 }
 
 void FreeTags( void )
