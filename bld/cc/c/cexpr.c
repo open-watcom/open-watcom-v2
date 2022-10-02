@@ -353,7 +353,7 @@ TREEPTR VarLeaf( SYMPTR sym, SYM_HANDLE sym_handle )
     return( leaf );
 }
 
-static TREEPTR CheckSym( id_hash_idx h, const char *id,
+static TREEPTR CheckSym( id_hash_idx hash, const char *id,
                         SYM_ENTRY *sym_out, SYM_HANDLE *symhandle )
 {
     SYM_HANDLE  sym_handle;
@@ -361,8 +361,8 @@ static TREEPTR CheckSym( id_hash_idx h, const char *id,
     ENUMPTR     ep;
     SYM_ENTRY   sym;
 
-    ep = EnumLookup( h, id );
-    sym_handle = SymLook( h, id );
+    ep = EnumLookup( hash, id );
+    sym_handle = SymLook( hash, id );
     if( sym_handle == SYM_NULL ) {
         if( ep != NULL )
             return( EnumLeaf( ep ) );
@@ -373,7 +373,7 @@ static TREEPTR CheckSym( id_hash_idx h, const char *id,
             return( EnumLeaf( ep ) );
 
         if( sym.attribs.stg_class == SC_EXTERN && sym.level > 0 ) {
-            sym_handle0 = Sym0Look( h, id );
+            sym_handle0 = Sym0Look( hash, id );
             if( sym_handle0 != SYM_NULL ) {
                 SymGet( &sym, sym_handle0 );
                 sym_handle = sym_handle0;
@@ -394,17 +394,17 @@ static TREEPTR CheckSym( id_hash_idx h, const char *id,
 static TREEPTR SymLeaf( void )
 {
     SYM_HANDLE  sym_handle;
-    id_hash_idx h;
+    id_hash_idx hash;
     TREEPTR     tree;
     SYM_ENTRY   sym;
 
     if( CurToken == T_SAVED_ID ) {
-        h = SavedHash;
+        hash = SavedHash;
         CurToken = LAToken;
-        tree = CheckSym( h, SavedId, &sym, &sym_handle );
+        tree = CheckSym( hash, SavedId, &sym, &sym_handle );
     } else {
-        h = HashValue;
-        tree = CheckSym( h, Buffer, &sym, &sym_handle );
+        hash = HashValue;
+        tree = CheckSym( hash, Buffer, &sym, &sym_handle );
         NextToken();
     }
 
@@ -418,13 +418,13 @@ static TREEPTR SymLeaf( void )
                 sym.attribs.stg_class = SC_FORWARD;     /* indicate forward decl */
                 /* Warn about unprototyped function */
                 CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym.name );
-                sym_handle = SymAddL0( h, &sym ); /* add symbol to level 0 */
+                sym_handle = SymAddL0( hash, &sym ); /* add symbol to level 0 */
                 sym.flags |= SYM_FUNCTION;
                 sym.sym_type = FuncNode( GetType( TYP_INT ), FLAG_NONE, NULL );
             } else {
                 sym.attribs.stg_class = SC_EXTERN;      /* indicate extern decl */
                 CErr2p( ERR_UNDECLARED_SYM, sym.name );
-                sym_handle = SymAdd( h, &sym ); /* add sym to current level*/
+                sym_handle = SymAdd( hash, &sym ); /* add sym to current level*/
                 sym.sym_type = GetType( TYP_INT );
             }
         }
