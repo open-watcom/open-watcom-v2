@@ -212,9 +212,9 @@ TOKEN KwLookup( const char *buf, size_t len )
     if( !CompFlags.c99_extensions ) {
         switch( token ) {
         case T_INLINE:
-            if( !CompFlags.extensions_enabled )
-                return( T_ID );
-            break;
+            if( CompFlags.extensions_enabled )
+                break;
+            /* fall through */
         case T_RESTRICT:
         case T__COMPLEX:
         case T__IMAGINARY:
@@ -259,10 +259,9 @@ static TOKEN doScanName( void )
 
     getIDName( CurrChar );
     WriteBufferNullChar();
-    if( CompFlags.doing_macro_expansion )
+    if( CompFlags.doing_macro_expansion || (PPControl & PPCTL_NO_EXPAND) ) {
         return( T_ID );
-    if( PPControl & PPCTL_NO_EXPAND )
-        return( T_ID );
+    }
     mentry = MacroLookup( Buffer );
     if( mentry == NULL ) {
         if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
