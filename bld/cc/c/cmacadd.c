@@ -187,7 +187,7 @@ bool MacroCompare( MEPTR m1, MEPTR m2 )
     if( m1->macro_len == m2->macro_len
       && m1->macro_defn == m2->macro_defn
       && m1->parm_count == m2->parm_count
-      && strcmp( m1->macro_name, m2->macro_name ) == 0 )
+      && memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof( MEDEFN, macro_name ) ) == 0 )
         return( false );
     return( true );
 }
