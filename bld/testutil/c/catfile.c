@@ -59,15 +59,15 @@ struct {                        // Program switches
     false
 };
 
-typedef struct {                // Text
-    void *next;                 // - next in ring
-    time_t time;                // - date/time for file
-    char text[1];               // - variable-sized text
+typedef struct {                    // Text
+    void *next;                     // - next in ring
+    time_t time;                    // - date/time for file
+    char text[1];                   // - variable-sized text
 } Text;
 
-                                // static data
-static Text *file_patterns;     // - ring of file patterns
-static Text *files;             // - ring of files
+                                    // static data
+static Text *file_patterns = NULL;  // - ring of file patterns
+static Text *files = NULL;          // - ring of files
 
 
 static char *help_text[] = {    // help text
@@ -559,7 +559,7 @@ static int processCmdLine       // PROCESS COMMAND LINE
             Text *tp;           // - text dire
             retn = textAlloc( strlen( cmd ), &tp );
             if( retn == 0 ) {
-                strcpy( file_patterns->text, cmd );
+                strcpy( tp->text, cmd );
                 textInsert( tp, &file_patterns );
             }
         }
