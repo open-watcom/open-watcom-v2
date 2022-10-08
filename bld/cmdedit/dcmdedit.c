@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +56,7 @@ int main( void )
         VioWrtCharStr( "hello>", 6, row, col, 0 );
         VioSetCurPos( row, col+6, 0 );
         l.input = LINE_WIDTH;
-        StringIn( &buff, &l, 1, 5 );
+        StringIn( buff, &l, 1, 5 );
         if( l.output == 1 && buff[0] == 'q' )
             break;
         DosWrite( 1, "\r\n", 2, &written );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,7 +189,7 @@ STATIC bool isWATCOM386Windows( FILE *fp )
     if( fseek( fp, MQ_offset, SEEK_SET ) ) {
         return( false );
     }
-    if( fread( &sig, 1, sizeof( sig ), fp ) != sizeof( sig ) ) {
+    if( fread( sig, 1, sizeof( sig ), fp ) != sizeof( sig ) ) {
         return( false );
     }
     if( sig[0] != 'M' || sig[1] != 'Q' ) {

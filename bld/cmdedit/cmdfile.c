@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -391,7 +392,7 @@ done:
             }
             ++i;
             if( FileLower )
-                ZapLower( &buff );
+                ZapLower( buff );
             if( AppendSlash ) {
                 alias = buff;
                 while( *alias != '\0' && *alias != '\r' )
@@ -399,7 +400,7 @@ done:
                 *alias++ = is_directory ? '\\' : ' ';
                 *alias = 0;
             }
-            ReplaceAlias( &buff, Line+i, Line+Cursor );
+            ReplaceAlias( buff, Line + i, Line + Cursor );
         } else if( PathCurr != NULL ) {
             RestoreLine();
             HaveDirent = FALSE;

@@ -244,7 +244,7 @@ void readBitMaps( FILE *in, FILE *out )
             fprintf( lzw, "  Planes:         %8.4x (%hu)\n", bm.hdr.info.planes, bm.hdr.info.planes );
             fprintf( lzw, "  Bits per Pixel: %8.4x (%hu)\n", bm.hdr.info.bitsPerPixel, bm.hdr.info.bitsPerPixel );
 #endif
-            memset( &rgb, 0, 256 * sizeof( RGB ) );
+            memset( rgb, 0, 256 * sizeof( RGB ) );
             if( bm.hdr.info.bitsPerPixel == 1 ) {
 #ifdef COLOR_PAL
                 unsigned int count;
