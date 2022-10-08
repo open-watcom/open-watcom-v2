@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1051,22 +1051,6 @@ extern TREEPTR LCastAdj( TREEPTR tree )
 }
 
 
-static void CheckAddrOfArray( TREEPTR opnd )
-{
-    TYPEPTR     typ;
-
-    if( opnd->op.opr == OPR_ADDROF ) {
-        typ = opnd->u.expr_type->object;
-        if( typ != NULL ) {
-            SKIP_TYPEDEFS( typ );
-            if( typ->decl_type == TYP_ARRAY ) {
-                CWarn1( WARN_ADDR_OF_ARRAY, ERR_ADDR_OF_ARRAY );
-            }
-        }
-    }
-}
-
-
 static TYPEPTR PtrofSym( SYM_HANDLE sym_handle, TYPEPTR typ )
 {
     SYM_ENTRY   sym;
@@ -1082,7 +1066,6 @@ static TREEPTR ArrayPlusConst( TREEPTR op1, TREEPTR op2 )
     TREEPTR     result;
     TYPEPTR     typ;
 
-    CheckAddrOfArray( op1 );
     if( op2->op.opr == OPR_PUSHINT ) {
         if( op1->op.opr == OPR_PUSHADDR ) {
             typ = op1->u.expr_type;
@@ -1107,7 +1090,6 @@ static TREEPTR ArrayMinusConst( TREEPTR op1, TREEPTR op2 )
     TREEPTR     result;
     TYPEPTR     typ;
 
-    CheckAddrOfArray( op1 );
     if( op2->op.opr == OPR_PUSHINT ) {
         if( op1->op.opr == OPR_PUSHADDR ) {
             typ = op1->u.expr_type;

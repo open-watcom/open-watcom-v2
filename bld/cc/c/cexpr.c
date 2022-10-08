@@ -662,6 +662,16 @@ TREEPTR RValue( TREEPTR tree )
     return( tree );
 }
 
+static void CheckAddrOfArray( TYPEPTR typ )
+{
+    if( typ != NULL ) {
+        SKIP_TYPEDEFS( typ );
+        if( typ->decl_type == TYP_ARRAY ) {
+            CWarn1( WARN_ADDR_OF_ARRAY, ERR_ADDR_OF_ARRAY );
+        }
+    }
+}
+
 //-----------------------------COPS------------------------------------
 static TREEPTR AddrOp( TREEPTR tree )
 {
@@ -727,6 +737,7 @@ static TREEPTR AddrOp( TREEPTR tree )
         SymReplace( &sym, leaf->op.u2.sym_handle );
     }
     if( tree->op.opr == OPR_PUSHADDR ) {
+        CheckAddrOfArray( typ );
         SymGet( &sym, leaf->op.u2.sym_handle );
         modifiers = sym.mods;
         if( sym.attribs.stg_class == SC_AUTO ) {
