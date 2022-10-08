@@ -45,7 +45,7 @@ int sock_scanf (sock_type *sk, const char *fmt, ...)
         if (status == -1)
             return (-1);
 
-        fields = sock_gets (sk, (BYTE*)&buffer, sizeof (buffer));
+        fields = sock_gets (sk, (BYTE*)buffer, sizeof (buffer));
         if (fields) {
             va_list args;
             va_start (args, fmt);

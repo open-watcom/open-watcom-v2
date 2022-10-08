@@ -718,7 +718,7 @@ static int InitSockets (void)
 #endif  /* __DJGPP__ */
 
     socket_list = NULL;
-    memset (&inuse, 0, sizeof(inuse));
+    memset (inuse, 0, sizeof(inuse));
     addwattcpd (sock_daemon);
 
 #if defined(USE_BSD_FORTIFY) && defined(USE_DEBUG)

@@ -221,7 +221,7 @@ static int iface_ioctrl (Socket *socket, long cmd, char *argp)
          if (_pktdevclass == PD_TOKEN ||  /* otherwise return MAC addr? */
              _pktdevclass == PD_ETHER ||
              _pktdevclass == PD_FDDI)
-              memcpy (&ifr->ifr_addr.sa_data, &_eth_addr, sizeof(_eth_addr));
+              memcpy (&ifr->ifr_addr.sa_data, _eth_addr, sizeof(_eth_addr));
          else memset (&ifr->ifr_addr.sa_data, 0, sizeof(ifr->ifr_addr.sa_data));
          break;
 
@@ -282,12 +282,12 @@ static int iface_ioctrl (Socket *socket, long cmd, char *argp)
     case OSIOCGIFBRDADDR:
       /* ifr->ifr_broadaddr.sa_family = ?? */
          memset (&ifr->ifr_broadaddr.sa_data, 0, sizeof(ifr->ifr_addr.sa_data));
-         memcpy (&ifr->ifr_broadaddr.sa_data, &_eth_brdcast, sizeof(_eth_brdcast));
+         memcpy (&ifr->ifr_broadaddr.sa_data, _eth_brdcast, sizeof(_eth_brdcast));
          get_ifname (ifr->ifr_name);
          break;
 
     case SIOCSIFBRDADDR:             /* set broadcast address */
-         memcpy (&_eth_brdcast, &ifr->ifr_broadaddr.sa_data, sizeof(_eth_brdcast));
+         memcpy (_eth_brdcast, &ifr->ifr_broadaddr.sa_data, sizeof(_eth_brdcast));
          break;
 
     case SIOCGIFMETRIC:              /* get interface meteric */
@@ -342,12 +342,12 @@ static int iface_ioctrl (Socket *socket, long cmd, char *argp)
          {
            case PD_ETHER:
                 ifr->ifr_hwaddr.sa_family = ARPHRD_ETHER;
-                memcpy (&ifr->ifr_hwaddr.sa_data, &_eth_addr,
+                memcpy (&ifr->ifr_hwaddr.sa_data, _eth_addr,
                         sizeof(ifr->ifr_hwaddr.sa_data));
                 break;
            case PD_TOKEN:
                 ifr->ifr_hwaddr.sa_family = ARPHRD_TOKEN;
-                memcpy (&ifr->ifr_hwaddr.sa_data, &_eth_addr,
+                memcpy (&ifr->ifr_hwaddr.sa_data, _eth_addr,
                         sizeof(ifr->ifr_hwaddr.sa_data));
                 break;
            case PD_SLIP:

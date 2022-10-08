@@ -31,7 +31,7 @@ int sock_printf (sock_type *sk, const char *fmt, ...)
     }
 #endif
 
-    sock_puts (sk, (const BYTE*)&buf);
+    sock_puts (sk, (const BYTE *)buf);
     va_end (args);
     return (len);
 }

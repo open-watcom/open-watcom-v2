@@ -110,7 +110,7 @@ void _arp_add_gateway (const char *value, DWORD ip)
     new_gw->subnet  = subnet;
     new_gw->mask    = mask;
     new_gw->metric  = 0;
-    qsort ((void*)&arp_gate_list, arp_last_gateway+1,
+    qsort ((void *)arp_gate_list, arp_last_gateway + 1,
            sizeof(*new_gw), _arp_compare);
 #else
     int i;
@@ -185,7 +185,7 @@ static int _arp_request (DWORD ip)
   arp->protoAddrLen = sizeof (ip);
   arp->opcode       = ARP_REQUEST;
 
-  memcpy (arp->srcEthAddr, &_eth_addr, sizeof(arp->srcEthAddr));
+  memcpy (arp->srcEthAddr, _eth_addr, sizeof(arp->srcEthAddr));
   arp->srcIPAddr = intel (my_ip_addr);
 
   memset (arp->dstEthAddr, 0, sizeof(arp->dstEthAddr));
@@ -268,7 +268,7 @@ int _arp_reply (const eth_address *mac_dst, DWORD src_ip, DWORD dst_ip)
   arp_Header *arp;
 
   if (!mac_dst)
-     mac_dst = (const eth_address*) &_eth_brdcast;
+     mac_dst = (const eth_address *)_eth_brdcast;
 
   arp = (arp_Header*) _eth_formatpacket (mac_dst, ARP_TYPE);
   arp->hwType       = intel16 (_eth_get_hwtype(NULL,NULL));
@@ -279,7 +279,7 @@ int _arp_reply (const eth_address *mac_dst, DWORD src_ip, DWORD dst_ip)
   arp->dstIPAddr    = src_ip;
   arp->srcIPAddr    = dst_ip;
 
-  memcpy (arp->srcEthAddr, &_eth_addr,sizeof(mac_address));
+  memcpy (arp->srcEthAddr, _eth_addr,sizeof(mac_address));
   memcpy (arp->dstEthAddr, mac_dst,   sizeof(mac_address));
   return _arp_send (arp, __LINE__);
 }

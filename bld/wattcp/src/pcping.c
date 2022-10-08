@@ -41,7 +41,7 @@ int _ping (DWORD host, DWORD countnum, const BYTE *pattern, int len)
     outsnl (_LANG("Cannot ping a network!"));
     return (0);
   }
-  if (!_arp_resolve(host,&dest,0))
+  if (!_arp_resolve(host,dest,0))
   {
     outsnl (_LANG("Cannot resolve host's hardware address"));
     return (0);
@@ -50,13 +50,13 @@ int _ping (DWORD host, DWORD countnum, const BYTE *pattern, int len)
   if (debug_on)
   {
     outs (_LANG("\n\rDEBUG: destination hardware :"));
-    outhexes ((char*)&dest, sizeof(dest));
+    outhexes ((char *)dest, sizeof(dest));
     outs ("\n");
   }
 
   /* make ether IP head
    */
-  pkt  = (struct ping_pkt*) _eth_formatpacket (&dest, IP_TYPE);
+  pkt  = (struct ping_pkt*) _eth_formatpacket (dest, IP_TYPE);
   ip   = &pkt->in;
   icmp = &pkt->icmp;
 

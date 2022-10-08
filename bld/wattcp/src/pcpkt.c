@@ -682,7 +682,7 @@ static int pkt_init (void)
     return (0);
   }
 
-  if (!pkt_get_addr(&eth_addr)) /* get our MAC address */
+  if (!pkt_get_addr(eth_addr)) /* get our MAC address */
   {
     release_handles (TRUE);
     return (0);
@@ -1212,7 +1212,7 @@ int pkt_set_addr (eth_address *eth)
   if (!PKT_API(&regs))
      return (0);
 
-  memcpy (&eth_addr, eth, sizeof(*eth));
+  memcpy (eth_addr, eth, sizeof(*eth));
   return (1);
 }
 
@@ -1362,7 +1362,7 @@ BOOL pkt_eth_init (eth_address *eth)
     if (!drvr_ok)
        return (FALSE);  /* no suitable driver found */
   }
-  memcpy (eth, &eth_addr, sizeof(*eth));
+  memcpy (eth, eth_addr, sizeof(*eth));
   return (TRUE);
 }
 
@@ -1448,7 +1448,7 @@ BOOL pkt_eth_init (eth_address *eth)
     {
       char _far *addr = (char _far *)getvect(vector);
 
-      if (addr && !_fmemcmp (addr+3, &pkt_sign, sizeof(pkt_sign)))
+      if (addr && !_fmemcmp (addr+3, pkt_sign, sizeof(pkt_sign)))
          return (vector);
     }
     return (0);

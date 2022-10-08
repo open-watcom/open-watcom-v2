@@ -458,7 +458,7 @@ DWORD resolve (const char *name)
     resolve_timeout = set_timeout (1000 * dns_timeout);
 
     count = 0;
-    memset (&timeout, 0, sizeof(timeout));
+    memset (timeout, 0, sizeof(timeout));
 
     question    = &qp;
     dom_sk      = (sock_type *)&udp_sk;

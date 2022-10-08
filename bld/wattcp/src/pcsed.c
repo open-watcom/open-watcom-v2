@@ -148,7 +148,7 @@ static BYTE *eth_mac_format (void *mac_buf, const void *mac_dest, WORD type)
   union link_Packet *buf = (union link_Packet*) mac_buf;
 
   memcpy (&buf->eth.head.destination, mac_dest, sizeof(mac_address));
-  memcpy (&buf->eth.head.source,    &_eth_addr, sizeof(mac_address));
+  memcpy (&buf->eth.head.source,     _eth_addr, sizeof(mac_address));
   buf->eth.head.type = type;
   proto = type;             /* remember protocol for _eth_send() */
   return (&buf->eth.data[0]);
@@ -159,7 +159,7 @@ static BYTE *tok_mac_format (void *mac_buf, const void *mac_dest, WORD type)
   union link_Packet *buf = (union link_Packet*) mac_buf;
 
   memcpy (&buf->tok.head.destination, mac_dest, sizeof(mac_address));
-  memcpy (&buf->tok.head.source,    &_eth_addr, sizeof(mac_address));
+  memcpy (&buf->tok.head.source,     _eth_addr, sizeof(mac_address));
   buf->tok.head.accessCtrl = TR_AC;
   buf->tok.head.frameCtrl  = TR_FC;
   buf->tok.head.DSAP       = TR_DSAP;
@@ -178,7 +178,7 @@ static BYTE *fddi_mac_format (void *mac_buf, const void *mac_dest, WORD type)
   union link_Packet *buf = (union link_Packet*) mac_buf;
 
   memcpy (&buf->fddi.head.destination, mac_dest, sizeof(mac_address));
-  memcpy (&buf->fddi.head.source,    &_eth_addr, sizeof(mac_address));
+  memcpy (&buf->fddi.head.source,     _eth_addr, sizeof(mac_address));
   buf->fddi.head.frameCtrl = FDDI_FC;
   buf->fddi.head.DSAP      = FDDI_DSAP;
   buf->fddi.head.SSAP      = FDDI_SSAP;
@@ -267,7 +267,7 @@ int _eth_init (void)
      return (WERR_ILL_DOSX);
 #endif
 
-  if (!pkt_eth_init(&_eth_addr))
+  if (!pkt_eth_init(_eth_addr))
      return (WERR_NO_DRIVER);  /* error message already printed */
 
   switch (_pktdevclass)
@@ -293,7 +293,7 @@ int _eth_init (void)
          break;
   }
   memset (&outbuf, 0, sizeof(outbuf));
-  memset (&_eth_brdcast, 0xFF, sizeof(_eth_brdcast));
+  memset (_eth_brdcast, 0xFF, sizeof(_eth_brdcast));
   _eth_loop_addr[0] = 0xCF;
   pkt_buf_wipe();
   _eth_is_init = 1;
@@ -320,7 +320,7 @@ int _eth_set_addr (mac_address *addr)
 {
   if (_pktserial || pkt_set_addr(addr))
   {
-    memcpy (&_eth_addr, addr, sizeof(_eth_addr));
+    memcpy (_eth_addr, addr, sizeof(_eth_addr));
     return (1);
   }
   return (0);
