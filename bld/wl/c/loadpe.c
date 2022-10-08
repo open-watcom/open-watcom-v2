@@ -274,7 +274,7 @@ static void *GetTransferGlueCode( void )
     case LS_HAVE_ALPHA_CODE:    return( &AlphaJump );
     case LS_HAVE_I86_CODE:      return( &I386Jump );
     case LS_HAVE_X64_CODE:      return( &X64Jump ); // TODO
-    case LS_HAVE_PPC_CODE:      return( &PPCJump );
+    case LS_HAVE_PPC_CODE:      return( PPCJump );
     default:                    DbgAssert( 0 ); return( NULL );
     }
 }

@@ -135,7 +135,7 @@ static pfun __old_int_ctrl_break = 0;
 static pfun __old_pm_int23 = 0;
 static pfun __old_pm_int_ctrl_break = 0;
 #define MY_STACK_SIZE 256
-static unsigned int my_stack[256];
+static unsigned int my_stack[MY_STACK_SIZE];
 
 #endif
 
@@ -147,7 +147,7 @@ static void _WCINTERRUPT _WCFAR __int23_handler( void )
 
     save_stack = set_stack( &(my_stack[MY_STACK_SIZE-1]) );
     save_stacklow = _STACKLOW;
-    _STACKLOW = (unsigned)&my_stack;
+    _STACKLOW = (unsigned)my_stack;
 #endif
     if(( _RWD_child == 0 )
       && ( __int23_exit != __null_int23_exit )
@@ -177,7 +177,7 @@ static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
 
     save_stack = set_stack( &(my_stack[(sizeof(my_stack)-sizeof(my_stack[0]))]) );
     save_stacklow = _STACKLOW;
-    _STACKLOW = (unsigned)&my_stack;
+    _STACKLOW = (unsigned)my_stack;
 #endif
     if(( _RWD_child == 0 )
      && ( __int23_exit != __null_int23_exit )

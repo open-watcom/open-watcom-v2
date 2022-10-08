@@ -998,7 +998,7 @@ static void DoCCompile( char **cmdline )
 {
     jmp_buf     env;
 
-    Environment = &env;
+    Environment = env;
     if( setjmp( env ) ) {           /* if fatal error has occurred */
         EmitAbort();                /* abort code generator */
         CPragmaFini();

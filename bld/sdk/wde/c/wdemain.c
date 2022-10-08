@@ -243,9 +243,9 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             WdeDisplayErrorMsg( WDE_EXCEPTIONDURINGABNORMALEXIT );
             exit( -1 );
         }
-        WdePushEnv( &WdeEnv );
+        WdePushEnv( WdeEnv );
     } else {
-        WdePushEnv( &WdeEnv );
+        WdePushEnv( WdeEnv );
         WdeProcessArgs( _argv, _argc );
     }
 
@@ -268,7 +268,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         WdeDDEEndConversation();
     }
 
-    WdePopEnv( &WdeEnv );
+    WdePopEnv( WdeEnv );
 
     if( IsDDE ) {
         WdeDDEEnd();

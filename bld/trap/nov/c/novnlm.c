@@ -364,9 +364,9 @@ static int FindPartner( void )
 
     if( ReadPropertyValue( (char *)SAPStruct.ASServerIDpacket.serverName,
                            DBG_SERVER_TYPE, "NET_ADDRESS",
-                           1, (BYTE *)&property_value ) != 0 )
+                           1, (BYTE *)property_value ) != 0 )
         return( false );
-    AssignArray( ServHead.destination, property_value );
+    AssignFromArray( ServHead.destination, property_value );
     if( CIPXGetLocalTarget( ServHead.destination.network,
                             ServECB.immediateAddress, &transport_time ) != 0 ) {
 _DBG_IPX(( "FindPartner -- nobody home\r\n" ));

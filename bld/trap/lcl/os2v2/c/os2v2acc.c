@@ -620,7 +620,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     ret = GetOutPtr( 0 );
     ret->os = DIG_OS_OS2;
-    DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR, &version, sizeof( version ) );
+    DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR, version, sizeof( version ) );
     ret->osminor = version[1];
     ret->osmajor = version[0];
     ret->cpu     = X86CPUType();

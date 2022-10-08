@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,8 @@
 #include <setjmp.h>
 #include "cspawn.h"
 
-static  jmp_buf *CSpawnStack;
 
+static  jmp_buf *CSpawnStack;
 
 int     CSpawn( void (*fn)( void ) )
 //=================================
@@ -43,7 +44,7 @@ int     CSpawn( void (*fn)( void ) )
     int         status;
 
     save_env = CSpawnStack;
-    CSpawnStack = &env;
+    CSpawnStack = env;
     status = setjmp( env );
     if( status == 0 ) {
         (*fn)();

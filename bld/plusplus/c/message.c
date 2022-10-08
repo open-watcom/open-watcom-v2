@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1078,7 +1078,7 @@ pch_status PCHReadErrWarnData( void )
     msg_level_info  *orig_levels;
     MSG_NUM         msgnum;
 
-    PCHReadVar( pch_levels );
+    PCHReadArray( pch_levels );
     if( NULL != orig_msg_level ) {
         orig_levels = orig_msg_level;
     } else {
@@ -1100,7 +1100,7 @@ pch_status PCHWriteErrWarnData( void )
     // so that we can write out a msg_level that indicates the
     // changes made by the header file
 
-    PCHWriteVar( msg_level );
+    PCHWriteArray( msg_level );
     return( PCHCB_OK );
 }
 

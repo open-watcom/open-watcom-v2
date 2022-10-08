@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +54,7 @@ int Spawn( wspawn_func *func )
     int     ret;
 
     old = ExitSP;
-    ExitSP = &env;
+    ExitSP = env;
     if( setjmp( env ) == 0 ) {
         func();
         ret = 0;
@@ -71,7 +72,7 @@ int SpawnP( wspawn_funcP *func, void *parm )
     int     ret;
 
     old = ExitSP;
-    ExitSP = &env;
+    ExitSP = env;
     if( setjmp( env ) == 0 ) {
         func( parm );
         ret = 0;
@@ -89,7 +90,7 @@ int SpawnPP( wspawn_funcPP *func, void *p1, void *p2 )
     int     ret;
 
     old = ExitSP;
-    ExitSP = &env;
+    ExitSP = env;
     if( setjmp( env ) == 0 ) {
         func( p1, p2 );
         ret = 0;

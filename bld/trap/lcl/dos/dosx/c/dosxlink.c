@@ -488,7 +488,7 @@ const char *RemoteLink( const char *parms, bool server )
     LINK( 2 ) = _MK_FP( GetCS(), (unsigned)BackFromProtMode );
     LINK( 1 ) = (void __far *)MK_LINEAR( &Buff );
     LINK( 0 ) = (void __far *)LINK_SIGNATURE;
-    *link_ptr = (void __far *)MK_LINEAR( &link );
+    *link_ptr = (void __far *)MK_LINEAR( link );
     // parms has following format
     // "trap parameters string"+"\0"+"command line string"+"\0"
     _DBG_Write( "Parms: " );

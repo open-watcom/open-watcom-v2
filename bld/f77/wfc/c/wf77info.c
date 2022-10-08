@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1975,7 +1975,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
             }
             MakeName( fn, fe, ptr );
         }
-        return( &TokenBuff );
+        return( TokenBuff );
     case FREE_SEGMENT :
         return( NULL );
     case REVISION_NUMBER :
@@ -1992,7 +1992,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
             if(( (segment_id)(pointer_uint)req_handle >= sym->u.ns.si.cb.segid )
               && ( (segment_id)(pointer_uint)req_handle <= sym->u.ns.si.cb.segid + idx )) {
                 MangleCommonBlockName( sym, MangleSymBuff, true );
-                return( &MangleSymBuff );
+                return( MangleSymBuff );
             }
         }
         return( NULL );

@@ -913,7 +913,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     fillInU32( 0x10 * ( numsyms + 1 ), &(ElfBase[0xc4]) );
     fillInU32( strtabsize + 0x128 + 0x10 * numsyms, &(ElfBase[0xe8]) );
     fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
-    LibWrite( io, &ElfBase, ElfBase_SIZE );
+    LibWrite( io, ElfBase, ElfBase_SIZE );
     LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);
     for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         LibWrite( io, temp->name, temp->len + 1 );
@@ -921,7 +921,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     if( padding ) {
         LibWrite( io, AR_FILE_PADDING_STRING, AR_FILE_PADDING_STRING_LEN );
     }
-    LibWrite( io, &ElfOSInfo, ElfOSInfo_SIZE );
+    LibWrite( io, ElfOSInfo, ElfOSInfo_SIZE );
 
     offset = 0;
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -500,7 +500,7 @@ void PCHeaderCreate( char *include_file )
     ioBuffer = CMemAlloc( IO_BUFFER_SIZE );
     bufferCursor = ioBuffer;
     amountLeft = IO_BUFFER_SIZE;
-    abortData = &restore_state;
+    abortData = restore_state;
     status = setjmp( restore_state );
     if( status == 0 ) {
         unsigned long brinf_posn;
@@ -802,7 +802,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     pch_buff_eob = ioBuffer + IO_BUFFER_SIZE;
     pch_buff_cur = pch_buff_eob;
     ret = PCHA_OK;
-    abortData = &restore_state;
+    abortData = restore_state;
     status = setjmp( restore_state );
     if( status == 0 ) {
         if( initialRead() == 0 ) {
@@ -1062,7 +1062,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     DbgAssert( ( stop_position - start_position ) < UINT_MAX );
     reloc_size = stop_position - start_position;
     ioBuffer = CMemAlloc( reloc_size );
-    abortData = &restore_state;
+    abortData = restore_state;
     status = setjmp( restore_state );
     if( status == 0 ) {
         if( lseek( pchFile, start_position, SEEK_SET ) != start_position ) {

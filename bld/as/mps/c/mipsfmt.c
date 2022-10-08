@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -721,7 +721,7 @@ static bool jmpOperandsValidate( instruction *ins, ins_opcount num_op, bool link
                                      { OP_GPR, OP_GPR, OP_NOTHING },
                                      { OP_GPR, OP_IMMED, OP_NOTHING }};
     ot_array        *verify;
-    ot_array        *verify_table[2] = { &verify1, &verify2 };
+    ot_array        *verify_table[2] = { verify1, verify2 };
     unsigned        num_var;
 
     if( num_op == 0 )
@@ -835,7 +835,7 @@ static bool retOperandsValidate( instruction *ins, ins_opcount num_op )
                                      { OP_REG_INDIRECT, OP_IMMED, OP_NOTHING }};
     static op_type  verify3[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
     ot_array        *verify;
-    ot_array        *verify_table[3] = { (ot_array *)&verify1, &verify2, (ot_array *)&verify3 };
+    ot_array        *verify_table[3] = { (ot_array *)verify1, verify2, (ot_array *)verify3 };
     unsigned        num_var;
 
     if( num_op == 0 )

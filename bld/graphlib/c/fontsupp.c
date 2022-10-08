@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -325,7 +325,7 @@ static short readfontfile( char *font_file )
     // read entries in resource table, looking for font definitions
     ne_offset += sizeof( short );   // skip over shift_count
     for( ;; ) {
-        if( seek_and_read( handle, ne_offset, &table, RS_HEADER ) == 0 ) {
+        if( seek_and_read( handle, ne_offset, table, RS_HEADER ) == 0 ) {
             return( 0 );
         }
         type = table[0];
@@ -334,7 +334,7 @@ static short readfontfile( char *font_file )
             break;
         } else if( type == 0x8008 ) {   // font
             for( i = 0; i < count; ++i ) {
-                if( seek_and_read( handle, ne_offset + RS_HEADER + i * RS_DESC, &table, RS_DESC ) == 0 ) {
+                if( seek_and_read( handle, ne_offset + RS_HEADER + i * RS_DESC, table, RS_DESC ) == 0 ) {
                     return( 0 );
                 }
                 if( addfont( (long) table[0] << shift_count, handle, font_file ) == 0 ) {

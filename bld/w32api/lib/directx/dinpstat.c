@@ -529,8 +529,8 @@ static DIOBJECTDATAFORMAT mouse2_data[11] = {
     { NULL, 19L, 0x80FFFF0CL, 0L },
 };
 
-const DIDATAFORMAT c_dfDIKeyboard = { 24L, 16L, 2L, 256L, 256L, &keyboard_data };
-const DIDATAFORMAT c_dfDIMouse = { 24L, 16L, 2L, 16L, 7L, &mouse_data };
-const DIDATAFORMAT c_dfDIJoystick = { 24L, 16L, 1L, 80L, 44L, &joystick_data };
-const DIDATAFORMAT c_dfDIJoystick2 = { 24L, 16L, 1L, 272L, 164L, &joystick2_data };
-const DIDATAFORMAT c_dfDIMouse2 = { 24L, 16L, 2L, 20L, 11L, &mouse2_data };
+const DIDATAFORMAT c_dfDIKeyboard = { 24L, 16L, 2L, 256L, 256L, keyboard_data };
+const DIDATAFORMAT c_dfDIMouse = { 24L, 16L, 2L, 16L, 7L, mouse_data };
+const DIDATAFORMAT c_dfDIJoystick = { 24L, 16L, 1L, 80L, 44L, joystick_data };
+const DIDATAFORMAT c_dfDIJoystick2 = { 24L, 16L, 1L, 272L, 164L, joystick2_data };
+const DIDATAFORMAT c_dfDIMouse2 = { 24L, 16L, 2L, 20L, 11L, mouse2_data };

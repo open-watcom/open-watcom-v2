@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -361,7 +361,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
     dest = start;
     stop = pointXferOffset( ctl, MAX_WRITE_AMT );
     for( ;; ) {
-        PCHReadVar( buff );
+        PCHReadArray( buff );
         p_instr = buff;
         s_instr = &p_instr[CGINTER_BLOCKING];
         do {

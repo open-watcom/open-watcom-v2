@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,7 +112,7 @@ char __hook387( D16INFO __far *_d16infop )
             if( !FPUPresent() ) {
                 has_wgod_emu = 1;
                 EMUInit();
-                EMURegister2( CS(), (unsigned long)&FPArea );
+                EMURegister2( CS(), (unsigned long)FPArea );
                 return( 1 );
             }
         }

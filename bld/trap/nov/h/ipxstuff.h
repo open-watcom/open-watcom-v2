@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,5 +101,6 @@
 #endif
 
 #define AssignArray( a,b ) memcpy( &(a), &(b), sizeof( a ) );
+#define AssignFromArray( a,b ) memcpy( &(a), b, sizeof( a ) );
 #define FillArray( a,b )   memset( &(a), b, sizeof( a ) );
 #define ZeroArray( a )     memset( &(a), 0, sizeof( a ) );

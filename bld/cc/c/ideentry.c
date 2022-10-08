@@ -300,7 +300,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
 
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
-    FatalEnv = &env;
+    FatalEnv = env;
     /* initialize argv array */
     argv[0] = (char *)opts;
     argv[1] = NULL;
@@ -361,7 +361,7 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
 
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
-    FatalEnv = &env;
+    FatalEnv = env;
     /* allocate and initialize argv array */
     argv = init_argv( args, argc, infile, outfile );
     if( setjmp( env ) != 0 ) {  /* if fatal error has occurred */

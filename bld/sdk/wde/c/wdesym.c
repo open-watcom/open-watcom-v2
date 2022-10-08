@@ -103,7 +103,7 @@ static jmp_buf Env;
 void PPENTRY PP_OutOfMemory( void )
 /*********************************/
 {
-    if( WdePopEnv( &Env ) ) {
+    if( WdePopEnv( Env ) ) {
         longjmp( Env, 1 );
     } else {
         WdeWriteTrail( "Wde PreProc: Fatal error!" );
@@ -549,7 +549,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
             ok = false;
             PP_FileFini();
         } else {
-            ok = pop_env = WdePushEnv( &SymEnv );
+            ok = pop_env = WdePushEnv( SymEnv );
         }
     }
 
@@ -585,7 +585,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
     }
 
     if( pop_env ) {
-        WdePopEnv( &SymEnv );
+        WdePopEnv( SymEnv );
     }
 
     if( !ok ) {

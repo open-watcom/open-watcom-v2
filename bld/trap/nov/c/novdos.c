@@ -504,7 +504,7 @@ static char FindPartner( void )
         ACC_WORD( ReqBuff[0] ) = i + (sizeof( "NET_ADDRESS" ) - 2);
         ACC_WORD( RepBuff[0] ) = 130;
 putstring( "read prop\r\n" );
-        if( ReadPropertyValue( &ReqBuff, &RepBuff ) != 0 )
+        if( ReadPropertyValue( ReqBuff, RepBuff ) != 0 )
             return( 0 );
 putstring( "assgn array\r\n" );
         AssignArray( ServHead.destination, RepBuff[2] );

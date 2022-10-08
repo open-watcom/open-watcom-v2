@@ -211,8 +211,8 @@ long TaskOpenFile( char *name, int mode, int flags )
     long        rc;
 
     saveRegs( &save );
-    WriteLinear( name, (ULONG)&XferBuff, strlen(name) + 1 );
-    Buff.EAX = (ULONG)&XferBuff;
+    WriteLinear( name, (ULONG)XferBuff, strlen(name) + 1 );
+    Buff.EAX = (ULONG)XferBuff;
     Buff.EDX = mode;
     Buff.ECX = flags;
     rc = TaskExecute( (excfn)DoOpen );
@@ -294,15 +294,15 @@ void TaskPrint( byte *ptr, unsigned len )
 
     saveRegs( &save );
     while( len > sizeof( XferBuff ) ) {
-        WriteLinear( ptr, (ULONG)&XferBuff, sizeof( XferBuff ) );
-        Buff.EAX = (ULONG)&XferBuff;
+        WriteLinear( ptr, (ULONG)XferBuff, sizeof( XferBuff ) );
+        Buff.EAX = (ULONG)XferBuff;
         Buff.EDX = sizeof( XferBuff );
         TaskExecute( (excfn)DoWritePgmScrn );
         ptr += sizeof( XferBuff );
         len -= sizeof( XferBuff );
     }
-    WriteLinear( ptr, (ULONG)&XferBuff, len );
-    Buff.EAX = (ULONG)&XferBuff;
+    WriteLinear( ptr, (ULONG)XferBuff, len );
+    Buff.EAX = (ULONG)XferBuff;
     Buff.EDX = len;
     TaskExecute( (excfn)DoWritePgmScrn );
     WriteRegs( &save );
@@ -314,9 +314,9 @@ void TaskReadXMMRegs( struct x86_xmm *xmm_regs )
     uDB_t       save;
 
     saveRegs( &save );
-    Buff.EAX = (ULONG)&XferBuff;
+    Buff.EAX = (ULONG)XferBuff;
     TaskExecute( (excfn)DoReadXMMRegs );
-    ReadLinear( (void*)xmm_regs, (ULONG)&XferBuff, sizeof( *xmm_regs ) );
+    ReadLinear( (void *)xmm_regs, (ULONG)XferBuff, sizeof( *xmm_regs ) );
     WriteRegs( &save );
 }
 
@@ -326,8 +326,8 @@ void TaskWriteXMMRegs( struct x86_xmm *xmm_regs )
     uDB_t       save;
 
     saveRegs( &save );
-    WriteLinear( (void*)xmm_regs, (ULONG)&XferBuff, sizeof( *xmm_regs ) );
-    Buff.EAX = (ULONG)&XferBuff;
+    WriteLinear( (void *)xmm_regs, (ULONG)XferBuff, sizeof( *xmm_regs ) );
+    Buff.EAX = (ULONG)XferBuff;
     TaskExecute( (excfn)DoWriteXMMRegs );
     WriteRegs( &save );
 }

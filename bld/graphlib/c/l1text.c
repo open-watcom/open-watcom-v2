@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -394,7 +394,7 @@ void _L1Text( short xpos, short ypos, char _WCI86FAR * str )
     CalcSpacing( &base, &up, &space );
     CalcSides( &length, &height, &base, &up, &space, str );
     CalcTranslation( &trans, &length, &height, &up, hor, vert );
-    CalcCorners( &corner, &length, &height, &trans, xpos, ypos );
+    CalcCorners( corner, &length, &height, &trans, xpos, ypos );
     if( _TextSettings.txpath == _PATH_UP ) {    /* select proper corner for */
         xpos = corner[0].xcoord;              /* text starting position   */
         ypos = corner[0].ycoord;

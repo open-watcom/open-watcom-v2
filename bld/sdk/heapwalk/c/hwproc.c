@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -264,7 +264,7 @@ LRESULT FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         CreateListBox( hwnd, &info->list, GLOBAL_LB );
         info->alloc_dlgproc = MakeProcInstance_DLG( AllocDlgProc, Instance );
         info->alloc_dialog = JCreateDialog( Instance, "ALLOC_DLG", hwnd, info->alloc_dlgproc );
-        memset( &ResHwnd, 0, MAX_RES * sizeof( HWND ) );
+        memset( ResHwnd, 0, MAX_RES * sizeof( HWND ) );
         break;
     case WM_MEASUREITEM:
         break;

@@ -361,7 +361,7 @@ void    OpenErr( void ) {
         MakeName( SDFName( SrcName ), ErrExtn, buffer );
         ErrFile = SDOpenText( buffer, "wt" );
         if( SDError( ErrFile, errmsg, sizeof( errmsg ) ) ) {
-            InfoError( SM_OPENING_FILE, &buffer, &errmsg );
+            InfoError( SM_OPENING_FILE, buffer, errmsg );
         }
         if( ErrFile != NULL ) {
             ErrCursor = 0;

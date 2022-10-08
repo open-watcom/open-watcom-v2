@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,18 @@
 #ifndef _FTHREAD_H_INCLUDED
 #define _FTHREAD_H_INCLUDED
 
+#include <setjmp.h>
 #include "trcback.h"
+
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+  #define __setjmp      Catch
+  #define __longjmp     Throw
+  #define __jmp_buf     CATCHBUF
+#else
+  #define __setjmp      setjmp
+  #define __longjmp     longjmp
+  #define __jmp_buf     jmp_buf
+#endif
 
 #ifdef __SW_BM
     extern      void    (*_AccessFIO)( void );
@@ -52,7 +63,7 @@
 // =====================
 
 typedef struct fthread_data {
-    void                *__SpawnStack;
+    __jmp_buf           *__SpawnStack;
     traceback           *__ExCurr;
     volatile unsigned short __XceptionFlags;
     void                (*__rtn)(void *);
