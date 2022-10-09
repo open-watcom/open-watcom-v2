@@ -163,12 +163,18 @@ source\diag0012.c(53): Warning! W112: Parameter 1: Pointer truncated
 source\diag0012.c(53): Note! I2003: source conversion type is 'void __far *'
 source\diag0012.c(53): Note! I2004: target conversion type is 'struct HMENU__ __near const **'
 source\diag0012.c(53): Note! I2002: 'foo' defined in: source\diag0012.c(26)
+source\diag0012.c(55): Warning! W115: &array may not produce intended result
 source\diag0012.c(55): Warning! W113: Pointer type mismatch
 source\diag0012.c(55): Note! I2003: source conversion type is 'int (*)[2]'
 source\diag0012.c(55): Note! I2004: target conversion type is 'int (*)[3]'
+source\diag0012.c(56): Warning! W115: &array may not produce intended result
+source\diag0012.c(57): Warning! W115: &array may not produce intended result
+source\diag0012.c(58): Warning! W115: &array may not produce intended result
 source\diag0012.c(58): Warning! W113: Pointer type mismatch
 source\diag0012.c(58): Note! I2003: source conversion type is 'int (*)[2][3]'
 source\diag0012.c(58): Note! I2004: target conversion type is 'int (*)[3][3]'
+source\diag0012.c(59): Warning! W115: &array may not produce intended result
+source\diag0012.c(60): Warning! W115: &array may not produce intended result
 source\diag0013.c(12): Error! E1034: Symbol 'foo' already defined
 source\diag0014.c(13): Warning! W107: Missing return value for function 'fn1'
 source\diag0014.c(17): Warning! W107: Missing return value for function 'fn2'
