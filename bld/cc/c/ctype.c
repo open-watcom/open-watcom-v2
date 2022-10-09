@@ -793,8 +793,10 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     new_field->hash = hash;
     if( new_field->name[0] != '\0' ) {  /* only check non-empty names */
         for( field = FieldHash[hash]; field != NULL; field = field->next_field_same_hash ) {
-            /* fields were added at the front of the hash linked list --
-               may as well stop if the level isn't the same anymore */
+            /*
+             * fields were added at the front of the hash linked list --
+             * may as well stop if the level isn't the same anymore
+             */
             if( field->level != new_field->level )
                 break;
             if( strcmp( field->name, new_field->name ) == 0 ) {
