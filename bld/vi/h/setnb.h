@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,7 @@ PICK(  "MAXFILTERHistory",      "SF", ,                 ,                      ,
 PICK(  "MAXFINDHistory",        "SF", ,                 ,                      ,                   MAXFINDHISTORY )
 PICK(  "MAXLASTFILESHistory",   "SF", ,                 ,                      ,                   MAXLASTFILESHISTORY )
 #endif
-PICK(  "MAXLINElen",            "SF", int,              MaxLine,               512,                MAXLINELEN )
+PICK(  "MAXLINElen",            "SF", int,              MaxLineLen,            1024,               MAXLINELEN )
 PICK(  "MAXPUSH",               "SF", int,              MaxPush,               15,                 MAXPUSH )
 PICK(  "MAXSWAPK",              "SF", int,              MaxSwapBlocks,         2048,               MAXSWAPK )
 PICK(  "MAXTILECOLORS",         "SF", int,              MaxTileColors,         10,                 MAXTILECOLORS )

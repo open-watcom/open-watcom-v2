@@ -89,7 +89,7 @@ static bool isOS2( void )
  */
 void InitCommandLine( void )
 {
-    dataBuff = _MemAllocArray( char, EditVars.MaxLine );
+    dataBuff = _MemAllocArray( char, EditVars.MaxLineLen );
 
 } /* InitCommandLine */
 
@@ -115,19 +115,19 @@ static vi_rc doProcessCommandLine( bool is_fancy )
     /*
      * open the window and get the string
      */
-    st = MemAllocUnsafe( EditVars.MaxLine );
+    st = MemAllocUnsafe( EditVars.MaxLineLen );
     if( st == NULL ) {
         return( ERR_NO_MEMORY );
     }
 #ifdef __WIN__
     if( is_fancy ) {
-        if( !GetCmdDialog( st, EditVars.MaxLine ) ) {
+        if( !GetCmdDialog( st, EditVars.MaxLineLen ) ) {
             _MemFreeArray( st );
             return( ERR_NO_ERR );
         }
     } else {
 #endif
-        rc = PromptForString( ":", st, EditVars.MaxLine, &EditVars.Hist[HIST_CMD] );
+        rc = PromptForString( ":", st, EditVars.MaxLineLen, &EditVars.Hist[HIST_CMD] );
         if( rc != ERR_NO_ERR ) {
             _MemFreeArray( st );
             if( rc == NO_VALUE_ENTERED ) {

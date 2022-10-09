@@ -308,7 +308,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     EditVars.FileEndString = DupString( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );
-    WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLine + 2 );
+    WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLineLen + 2 );
     WorkLine->len = -1;
 
     sline = 0;

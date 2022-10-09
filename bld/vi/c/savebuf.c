@@ -125,7 +125,7 @@ static vi_rc insertGenericSavebuf( int buf, bool afterflag )
          * get starting data
          */
         len = strlen( tmp->u.data );
-        if( len + CurrentLine->len >= EditVars.MaxLine ) {
+        if( len + CurrentLine->len >= EditVars.MaxLineLen ) {
             rc = ERR_LINE_FULL;
             break;
         }

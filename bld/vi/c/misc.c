@@ -666,7 +666,7 @@ vi_rc EnterHexKey( void )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( CurrentLine->len >= EditVars.MaxLine - 1 ) {
+    if( CurrentLine->len >= EditVars.MaxLineLen - 1 ) {
         return( ERR_LINE_FULL );
     }
 

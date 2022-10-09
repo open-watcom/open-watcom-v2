@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,7 +221,7 @@ static void globalTodlgData( void )
         dlgData.AutoSave = true;
     }
     dlgData.LastEOL = EditFlags.LastEOL;
-    // dlgData.MaxLineLen = MaxLine;
+    // dlgData.MaxLineLen = MaxLineLen;
     dlgData.SaveConfig = EditFlags.SaveConfig;
     dlgData.SaveOnBuild = EditFlags.SaveOnBuild;
     dlgData.BeepFlag = EditFlags.BeepFlag;
@@ -245,7 +245,7 @@ static void dlgDataToGlobal( void )
         UtilUpdateInt( EditVars.AutoSaveInterval, 0, "autosaveinterval" );
     }
     UtilUpdateBoolean( EditFlags.LastEOL, dlgData.LastEOL, "lasteol" );
-    // UtilUpdateInt( MaxLine, dlgData.MaxLineLen, "maxlinelen" );
+    // UtilUpdateInt( MaxLineLen, dlgData.MaxLineLen, "maxlinelen" );
     UtilUpdateBoolean( EditFlags.SaveConfig, dlgData.SaveConfig, "saveconfig" );
     UtilUpdateBoolean( EditFlags.SaveOnBuild, dlgData.SaveOnBuild, "saveonbuild" );
     UtilUpdateBoolean( EditFlags.BeepFlag, dlgData.BeepFlag, "beepflag" );
@@ -267,7 +267,7 @@ static void setdlgDataDefaults( void )
     dlgData.AutoSaveInterval = 30;
     dlgData.AutoSave = true;
     dlgData.LastEOL = false;
-    // dlgData.MaxLineLen = 512;
+    // dlgData.MaxLineLen = 1024;
     dlgData.SaveConfig = false;
     dlgData.SaveOnBuild = true;
     dlgData.BeepFlag = false;

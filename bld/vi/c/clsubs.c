@@ -395,7 +395,7 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
         if( rc != ERR_NO_ERR ) {
             break;
         }
-        if( CurrentLine->len + rlen - slen >= EditVars.MaxLine ) {
+        if( CurrentLine->len + rlen - slen >= EditVars.MaxLineLen ) {
             rc = ERR_LINE_FULL;
             break;
         }

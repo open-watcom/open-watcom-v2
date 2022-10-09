@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +72,7 @@ vi_rc ReplaceChar( void )
         GoToColumnOnCurrentLine( 1 );
         if( EditFlags.AutoIndent ) {
             ai = strlen( buff );
-            if( ai + CurrentLine->len < EditVars.MaxLine ) {
+            if( ai + CurrentLine->len < EditVars.MaxLineLen ) {
                 GetCurrentLine();
                 i = 0;
                 while( isspace( WorkLine->data[i] ) ) {

@@ -69,7 +69,7 @@ vi_rc EnterExMode( void )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    st = _MemAllocArray( char, EditVars.MaxLine );
+    st = _MemAllocArray( char, EditVars.MaxLineLen );
 
     for( ;; ) {
         if( EditFlags.Appending ) {
@@ -77,7 +77,7 @@ vi_rc EnterExMode( void )
         } else {
             prompt = ":";
         }
-        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLine, &EditVars.Hist[HIST_CMD] );
+        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLineLen, &EditVars.Hist[HIST_CMD] );
         MyPrintf( "\n" );
         if( !ret ) {
             continue;

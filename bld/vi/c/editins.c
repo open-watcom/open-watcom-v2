@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,7 +224,7 @@ static void checkWrapMargin( void )
  */
 static vi_rc insertChar( bool add_to_abbrev, bool move_to_new_col )
 {
-    if( WorkLine->len == EditVars.MaxLine ) {
+    if( WorkLine->len == EditVars.MaxLineLen ) {
         return( ERR_NO_ERR );
     }
     addChar( LastEvent );
@@ -613,7 +613,7 @@ vi_rc IMTabs( void )
     switch( LastEvent ) {
     case VI_KEY( TAB ):
         if( EditFlags.RealTabs ) {
-            if( WorkLine->len + 1 >= EditVars.MaxLine ) {
+            if( WorkLine->len + 1 >= EditVars.MaxLineLen ) {
                 break;
             }
             addChar( '\t' );
@@ -654,7 +654,7 @@ vi_rc IMTabs( void )
         }
         if( back && (vc - j < 1) ) {
             break;
-        } else if( VirtualLineLen( WorkLine->data ) + j >= EditVars.MaxLine ) {
+        } else if( VirtualLineLen( WorkLine->data ) + j >= EditVars.MaxLineLen ) {
             break;
         }
 
@@ -662,7 +662,7 @@ vi_rc IMTabs( void )
          * create a real version of the line
          */
         buff = StaticAlloc();
-        ExpandTabsInABufferUpToColumn( CurrentPos.column - 1, WorkLine->data, WorkLine->len, buff, EditVars.MaxLine + 1 );
+        ExpandTabsInABufferUpToColumn( CurrentPos.column - 1, WorkLine->data, WorkLine->len, buff, EditVars.MaxLineLen + 1 );
         len = strlen( buff );
 
         /*
@@ -693,7 +693,7 @@ vi_rc IMTabs( void )
             cp = vc + j;
         }
         if( EditFlags.RealTabs ) {
-            ConvertSpacesToTabsUpToColumn( cp, buff, len, WorkLine->data, EditVars.MaxLine );
+            ConvertSpacesToTabsUpToColumn( cp, buff, len, WorkLine->data, EditVars.MaxLineLen );
         } else {
             strcpy( WorkLine->data, buff );
         }

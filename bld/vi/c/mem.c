@@ -414,7 +414,7 @@ void StaticStart( void )
     int i, bs;
 
     _MemFreeArray( StaticBuffer );
-    bs = EditVars.MaxLine + 2;
+    bs = EditVars.MaxLineLen + 2;
     StaticBuffer = _MemAllocArray( char, MAX_STATIC_BUFFERS * bs );
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
         staticUse[i] = false;

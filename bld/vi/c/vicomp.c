@@ -50,7 +50,7 @@ const char  SingleDQuote[] = "\"";
 
 int         SourceErrCount = 0;
 line        *WorkLine;
-int         MaxLine = 512;
+int         MaxLineLen = 1024;
 
 vi_rc       LastRC      = ERR_NO_ERR;
 vi_rc       LastRetCode = ERR_NO_ERR;
@@ -315,7 +315,7 @@ static vi_rc Compile( const char *fn, const char *data )
     vi_rc       rc;
     srcline     sline = 0;
 
-    WorkLine = MemAlloc( sizeof( line ) + MaxLine + 2 );
+    WorkLine = MemAlloc( sizeof( line ) + MaxLineLen + 2 );
     WorkLine->len = -1;
     LastRC = LastRetCode;
     vl.head = vl.tail = NULL;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,14 +69,14 @@ static vi_rc doCompressExpand( bool compress )
 
         if( compress ) {
             otabcnt = TabCnt;
-            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, tmp, EditVars.MaxLine + 1 );
+            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, tmp, EditVars.MaxLineLen + 1 );
             TabCnt = otabcnt;
             k = strlen( tmp );
-            ConvertSpacesToTabsUpToColumn( k, tmp, k, WorkLine->data, EditVars.MaxLine );
+            ConvertSpacesToTabsUpToColumn( k, tmp, k, WorkLine->data, EditVars.MaxLineLen );
             WorkLine->len = strlen( WorkLine->data );
             bytes_saved += CurrentLine->len - WorkLine->len;
         } else {
-            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine + 1 );
+            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLineLen + 1 );
             WorkLine->len = strlen( WorkLine->data );
             bytes_added += WorkLine->len - CurrentLine->len;
         }

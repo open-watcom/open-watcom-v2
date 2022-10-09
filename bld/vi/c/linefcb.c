@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +55,7 @@ static int createLine( char *res, bool *crlf_reached )
                     int tb, i;
 
                     tb = Tab( len + 1, EditVars.HardTab );
-                    if( len + tb >= EditVars.MaxLine - 1 ) {
+                    if( len + tb >= EditVars.MaxLineLen - 1 ) {
                         *res = '\0';
                         buffPtr = buff;
                         return( len );
@@ -86,7 +87,7 @@ static int createLine( char *res, bool *crlf_reached )
                 }
             }
         }
-        if( len == EditVars.MaxLine - 1 ) {
+        if( len == EditVars.MaxLineLen - 1 ) {
             *res = '\0';
             buffPtr = buff;
             return( len );

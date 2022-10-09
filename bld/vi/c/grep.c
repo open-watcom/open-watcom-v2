@@ -697,7 +697,7 @@ static vi_rc eSearch( const char *fn, char *res )
     buff = StaticAlloc();
     if( buff != NULL ) {
         rc = ERR_NO_ERR;
-        while( fgets( buff, EditVars.MaxLine, fp ) != NULL ) {
+        while( fgets( buff, EditVars.MaxLineLen, fp ) != NULL ) {
             for( i = strlen( buff ); i > 0 && isEOL( buff[i - 1] ); --i ) {
                 buff[i - 1] = '\0';
             }

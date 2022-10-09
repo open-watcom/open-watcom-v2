@@ -277,7 +277,7 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
                 j = EditVars.Hist[HIST_LASTFILES].max;
                 break;
             case SETVAR_T_MAXLINELEN:
-                j = EditVars.MaxLine;
+                j = EditVars.MaxLineLen;
                 break;
             case SETVAR_T_PAGELINESEXPOSED:
                 j = EditVars.PageLinesExposed;
@@ -1020,9 +1020,9 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 /* file save fails if 1 line is > MAX_IO_BUFFER */
                 if( lval > MAX_IO_BUFFER )
                     lval = MAX_IO_BUFFER;
-                EditVars.MaxLine = lval;
+                EditVars.MaxLineLen = lval;
                 StaticStart();
-                WorkLine = MemRealloc( WorkLine, sizeof( line ) + EditVars.MaxLine + 2 );
+                WorkLine = MemRealloc( WorkLine, sizeof( line ) + EditVars.MaxLineLen + 2 );
                 break;
             case SETVAR_T_TOOLBARBUTTONHEIGHT:
                 EditVars.ToolBarButtonHeight = lval;
