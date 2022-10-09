@@ -202,7 +202,6 @@ bool AsmSysInsertFixups( VBUF *code )
     byte_seq        *seq;
     unsigned        len;
 
-    AsmFini();
     len = VbufLen( code );
     seq = CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->length = len;
@@ -223,7 +222,6 @@ bool AsmSysInsertFixups( VBUF *code )
     AsmRelocs = NULL;
     *lnk = NULL;
     CurrInfo->code = seq;
-    AsmFiniRelocs();
     return( uses_auto );
 }
 

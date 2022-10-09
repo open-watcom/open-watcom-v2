@@ -1262,8 +1262,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
 trap_retval TRAP_CORE( Prog_kill )( void )
 {
-    msb         *m;
-    prog_kill_ret       *ret;
+    msb             *m;
+    prog_kill_ret   *ret;
 
     FreeInvalidThreads();
     if( DebuggerLoadedNLM != NULL ) {
@@ -1507,6 +1507,7 @@ static void ActivateDebugRegs( void )
 static bool SetDR( dword linear, word size )
 {
     int     i;
+
     i = DoReserveBreakpoint();
     _DBG_DR(( "reserved %d addr=%8x\r\n", i, linear ));
     if( i < 0 ) {

@@ -874,7 +874,6 @@ bool AsmSysInsertFixups( VBUF *code )
     bool uses_auto;
 
     uses_auto = insertFixups( code );
-    AsmSymFini();
     return( uses_auto );
 }
 

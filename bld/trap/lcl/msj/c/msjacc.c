@@ -64,7 +64,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         strcpy( err, "unable to connect to debug manager" );
     }
     FakeHandle = (HANDLE)&TrapInit;
-    return ver;
+    return( ver );
 }
 
 void TRAPENTRY TrapFini( void )
@@ -93,7 +93,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
         ret->osmajor = 1;
         ret->osminor = 0;
     }
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Map_addr )( void )
@@ -107,7 +107,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     ret->out_addr = acc->in_addr;
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
@@ -141,8 +141,7 @@ unsigned DoRead( int addr, char *buff, unsigned length )
 {
     DWORD               bytes;
 
-    ReadProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff,
-                        length, (LPDWORD)&bytes );
+    ReadProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff, length, (LPDWORD)&bytes );
     return( bytes );
 }
 
@@ -152,7 +151,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req *acc;
 
     if( !TaskLoaded )
-        return 0;
+        return( 0 );
     acc = GetInPtr( 0 );
     switch( acc->mem_addr.segment ) {
     case JVM_DIP_GETCUE_SELECTOR:
@@ -207,7 +206,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
             break;
         }
     }
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Read_io )( void )
@@ -224,7 +223,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 
     ret = GetOutPtr( 0 );
     ret->len = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 static unsigned runProg( bool single_step )
@@ -235,7 +234,7 @@ static unsigned runProg( bool single_step )
     ret = GetOutPtr( 0 );
     if( !TaskLoaded ) {
         ret->conditions = COND_TERMINATE;
-        return sizeof( *ret );
+        return( sizeof( *ret ) );
     }
     if( single_step ) {
         TraceProc( &ret->program_counter );
@@ -245,19 +244,19 @@ static unsigned runProg( bool single_step )
     ret->conditions = ReadFlags() | COND_LIBRARIES;
     ret->stack_pointer.segment = 0;
     ret->stack_pointer.offset = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Prog_go )( void )
 /**************************************/
 {
-    return runProg( FALSE );
+    return( runProg( FALSE ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 /****************************************/
 {
-    return runProg( TRUE );
+    return( runProg( TRUE ) );
 }
 
 static char * TrimName( char * name )
@@ -273,7 +272,7 @@ static char * TrimName( char * name )
         *endptr = '\0';
         endptr--;
     }
-    return name;
+    return( name );
 }
 
 static size_t MergeArgvArray( const char *src, char *dst, size_t len )
@@ -348,7 +347,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     EndProc();
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 static void SetBreak( void )
@@ -378,14 +377,14 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;   // OK
     ret->multiplier = USING_DEBUG_REG;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 /******************************************/
 {
     ClearBreak();
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
@@ -396,14 +395,14 @@ trap_retval TRAP_CORE( Set_break )( void )
     SetBreak();
     ret = GetOutPtr( 0 );
     ret->old = 0;
-    return sizeof(*ret);
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 /******************************************/
 {
     ClearBreak();
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Get_next_alias )( void )
@@ -414,7 +413,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     ret = GetOutPtr( 0 );
     ret->seg = 0;
     ret->alias = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Set_user_screen )( void )
@@ -504,19 +503,19 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 trap_retval TRAP_CORE( Get_message_text )( void )
 /***********************************************/
 {
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 /*********************************************/
 {
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 /**********************************************/
 {
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Split_cmd )( void )
@@ -536,7 +535,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
         switch( *cmd ) {
         CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':
@@ -586,7 +585,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
 //    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 //    data = GetOutPtr( sizeof( *ret ) );
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( get_next )( void )
@@ -598,7 +597,7 @@ trap_retval TRAP_THREAD( get_next )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->thread = GetNextThread( acc->thread, &ret->state );
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( set )( void )
@@ -611,7 +610,7 @@ trap_retval TRAP_THREAD( set )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     ret->old_thread = SetThread( acc->thread );
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( freeze )( void )
@@ -627,7 +626,7 @@ trap_retval TRAP_THREAD( freeze )( void )
     // freeze the thread associated with acc->thread
 
     ret->err = ERR_MSJ_THREADS_NOT_SUPPORTED;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( thaw )( void )
@@ -641,7 +640,7 @@ trap_retval TRAP_THREAD( thaw )( void )
     ret = GetOutPtr( 0 );
     // thaw the thread associated with acc->thread
     ret->err = ERR_MSJ_THREADS_NOT_SUPPORTED;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( get_extra )( void )

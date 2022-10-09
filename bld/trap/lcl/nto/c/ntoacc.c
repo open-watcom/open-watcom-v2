@@ -748,7 +748,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
 }
 
 
-static int nto_watchpoint( int addr, int len, int type )
+static int nto_watchpoint( int addr, int size, int type )
 {
     procfs_break    brk;
 
@@ -765,7 +765,7 @@ static int nto_watchpoint( int addr, int len, int type )
     }
     brk.type |= _DEBUG_BREAK_HW;    /* Always ask for HW watchpoint */
     brk.addr = addr;
-    brk.size = len;
+    brk.size = size;
 
     if( devctl( ProcInfo.procfd, DCMD_PROC_BREAK, &brk, sizeof( brk ), 0 ) != EOK ) {
         dbg_print(( "Failed to manipulate hardware watchpoint\n" ));

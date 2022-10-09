@@ -269,7 +269,7 @@ int SetDebugRegs( void )
 }
 
 #if 0
-int CheckWatchPoints( void )
+bool CheckWatchPoints( void )
 {
     watch_point *wp;
     int         i;

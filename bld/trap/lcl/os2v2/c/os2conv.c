@@ -45,7 +45,8 @@
 
 
 /* Hardcoded selector values - extremely unlikely to change. */
-USHORT FlatCS = 0x5B, FlatDS = 0x53;
+USHORT                  FlatCS = 0x5B;
+USHORT                  FlatDS = 0x53;
 
 
 /*
