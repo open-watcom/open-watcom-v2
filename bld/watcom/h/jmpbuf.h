@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2022-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,38 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  RCSpawn() and RCSuicide() routines
+* Description:  jmp_buf related macros
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include "jmpbuf.h"
-#include "rcspawn.h"
-
-
-static  jmp_buf *RCSpawnStack = JMPBUF_PTR( jmpbuf_RCFatalError );
-
-
-int     RCSpawn( void (*fn)( void ) )
-/***********************************/
-{
-    jmp_buf     *save_env;
-    jmp_buf     env;
-    int         status;
-
-    save_env = RCSpawnStack;
-    RCSpawnStack = JMPBUF_PTR( env );
-    status = setjmp( env );
-    if( status == 0 ) {
-        (*fn)();
-    }
-    RCSpawnStack = save_env;
-    return( status );
-}
-
-void    RCSuicide( int rc )
-/*************************/
-{
-    longjmp( *RCSpawnStack, rc );
-}
+#if defined( __WATCOMC__ )
+#define JMPBUF_PTR(x)   x
+#else
+#define JMPBUF_PTR(x)   &(x)
+#endif

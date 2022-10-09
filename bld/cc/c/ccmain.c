@@ -36,6 +36,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include "jmpbuf.h"
 #include "cgdefs.h"
 #include "feprotos.h"
 #include "swchar.h"
@@ -998,7 +999,7 @@ static void DoCCompile( char **cmdline )
 {
     jmp_buf     env;
 
-    Environment = env;
+    Environment = JMPBUF_PTR( env );
     if( setjmp( env ) ) {           /* if fatal error has occurred */
         EmitAbort();                /* abort code generator */
         CPragmaFini();

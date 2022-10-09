@@ -41,6 +41,7 @@
 #endif
 #include "wio.h"
 #include "sopen.h"
+#include "jmpbuf.h"
 #include "memmgr.h"
 #include "carve.h"
 #include "hfile.h"
@@ -500,7 +501,7 @@ void PCHeaderCreate( char *include_file )
     ioBuffer = CMemAlloc( IO_BUFFER_SIZE );
     bufferCursor = ioBuffer;
     amountLeft = IO_BUFFER_SIZE;
-    abortData = restore_state;
+    abortData = JMPBUF_PTR( restore_state );
     status = setjmp( restore_state );
     if( status == 0 ) {
         unsigned long brinf_posn;
@@ -802,7 +803,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     pch_buff_eob = ioBuffer + IO_BUFFER_SIZE;
     pch_buff_cur = pch_buff_eob;
     ret = PCHA_OK;
-    abortData = restore_state;
+    abortData = JMPBUF_PTR( restore_state );
     status = setjmp( restore_state );
     if( status == 0 ) {
         if( initialRead() == 0 ) {
@@ -1062,7 +1063,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     DbgAssert( ( stop_position - start_position ) < UINT_MAX );
     reloc_size = stop_position - start_position;
     ioBuffer = CMemAlloc( reloc_size );
-    abortData = restore_state;
+    abortData = JMPBUF_PTR( restore_state );
     status = setjmp( restore_state );
     if( status == 0 ) {
         if( lseek( pchFile, start_position, SEEK_SET ) != start_position ) {

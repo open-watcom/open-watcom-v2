@@ -31,7 +31,9 @@
 
 
 #include <setjmp.h>
+#include "jmpbuf.h"
 #include "spawn.h"
+
 
 static  jmp_buf *SpawnStack;
 
@@ -44,7 +46,7 @@ int     Spawn( void (*fn)( void ) )
     int         status;
 
     save_env = SpawnStack;
-    SpawnStack = env;
+    SpawnStack = JMPBUF_PTR( env );
     status = setjmp( env );
     if( status == 0 ) {
         (*fn)();

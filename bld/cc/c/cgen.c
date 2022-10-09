@@ -31,6 +31,7 @@
 
 
 #include "cvars.h"
+#include "jmpbuf.h"
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
@@ -45,6 +46,7 @@
 #ifndef NDEBUG
 #include "togglesd.h"
 #endif
+
 
 #define PushCGName(name)        ValueStack[index++] = (TREEPTR)name
 #define PopCGName()             (cg_name)ValueStack[--index]
@@ -1371,7 +1373,7 @@ void DoCompile( void )
 
     old_env = Environment;
     if( setjmp( env ) == 0 ) {
-        Environment = env;
+        Environment = JMPBUF_PTR( env );
         if( BELoad( NULL ) ) {
             if( ! CompFlags.zu_switch_used ) {
                 TargetSwitches &= ~ FLOATING_SS;
