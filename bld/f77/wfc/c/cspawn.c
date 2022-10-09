@@ -31,6 +31,7 @@
 
 
 #include <setjmp.h>
+#include "jmpbuf.h"
 #include "cspawn.h"
 
 
@@ -44,7 +45,7 @@ int     CSpawn( void (*fn)( void ) )
     int         status;
 
     save_env = CSpawnStack;
-    CSpawnStack = env;
+    CSpawnStack = JMPBUF_PTR( env );
     status = setjmp( env );
     if( status == 0 ) {
         (*fn)();

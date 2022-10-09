@@ -33,6 +33,7 @@
 
 #include "_aui.h"
 #include <setjmp.h>
+#include "jmpbuf.h"
 #include "wspawn.h"
 
 static jmp_buf          *ExitSP;
@@ -48,7 +49,7 @@ int Spawn( wspawn_func *func )
     int     ret;
 
     old = ExitSP;
-    ExitSP = env;
+    ExitSP = JMPBUF_PTR( env );
     if( setjmp( env ) == 0 ) {
         func();
         ret = 0;
@@ -67,7 +68,7 @@ int SpawnP( wspawn_funcP *func, void *parm )
     int     ret;
 
     old = ExitSP;
-    ExitSP = env;
+    ExitSP = JMPBUF_PTR( env );
     if( setjmp( env ) == 0 ) {
         func( parm );
         ret = 0;
