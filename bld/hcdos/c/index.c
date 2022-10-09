@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -385,7 +385,7 @@ static void writeStrings( FILE *fout, const char **helpstr )
                 tmp[i + 1] = 0;
             }
         }
-        fwrite( &tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ), 1, fout );
+        fwrite( tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ), 1, fout );
         for( i = 0; i < STR_CNT; i++ ) {
             if( helpstr[i] != NULL ) {
                 fwrite( helpstr[i], tmp[i + 1], 1, fout );
