@@ -43,7 +43,9 @@
  * NB: MEM_ALIGN must be at least int-sized
  */
 
-#if defined( LONG_IS_64BITS ) || defined( _WIN64 ) || defined( __AXP__ )
+#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
+    #define MEM_ALIGN   8
+#elif defined( __AXP__ )
     #define MEM_ALIGN   8
 #else
     #define MEM_ALIGN   4
@@ -84,8 +86,8 @@ typedef struct  mem_block {
 
 typedef struct mem_blk {
     struct mem_blk      *next;
-    char                *ptr;   // old perm pointer
-    size_t              size;   // old perm size
+    char                *ptr;   // old permanent area block pointer
+    size_t              size;   // old permanent area block size
 #ifdef __AXP__
     unsigned            pad;    // padding to get quadword aligned size
 #endif
@@ -306,8 +308,8 @@ void *CMemRealloc( void *old_p, size_t size )
     return( p );
 }
 
-static enum cmem_kind CMemKind( void *p )
-/***************************************/
+static enum cmem_kind CMemKind( const char *p )
+/*********************************************/
 {
     char            *ptr;
     size_t          size;
@@ -316,13 +318,13 @@ static enum cmem_kind CMemKind( void *p )
     ptr = PermPtr;
     size = PermSize;
     for( blk = Blks; blk != NULL; blk = blk->next ) {
-        if( (char *)p > (char *)blk ) {
+        if( p > (char *)blk ) {
             /* check if permanent memory (from beginning of block) */
-            if( (char *)p < ptr ) {
+            if( p < ptr ) {
                 return( CMEM_PERM );
             }
             /* check if dynamic memory (from end of block) */
-            if( (char *)p < (char *)blk + sizeof( mem_blk ) + size ) {
+            if( p < ( (char *)blk + sizeof( mem_blk ) + size ) ) {
                 return( CMEM_MEM );
             }
         }
@@ -338,35 +340,29 @@ void CMemFree( void *p )
     size_t      mcb_len;
     MCB         *mcb;
 
-    if( p == NULL ) { //Should try and get rid of these error cases
-        return;
-    }
-    if( ((char *)p >= PCH_Start) && ((char *)p < PCH_End) ) {
-        return;
-    }
-    switch( CMemKind( p ) ) {
-    case CMEM_PERM:
-        return;
-    case CMEM_MEM:
-        mcb = PTR2MCB( p );
-        mcb_len = mcb->len & SIZE_MASK;
-        if( (char *)mcb == PermPtr + PermAvail ) {
-            PermAvail += mcb_len;
-            mcb = (MCB *)( (char *)mcb + mcb_len );
-            if( (mcb->len & ALLOC_FLAG) == 0 ) {
-                if( (char *)mcb == PermPtr + PermAvail ) {
-                    PermAvail += mcb->len;
-                    removeMCBfromFreeList( mcb );
+    /*
+     * Should try and get rid of these error cases
+     *
+     * ignore precompiled header memory block
+     */
+    if( p != NULL && ( PCH_Start == NULL || (char *)p < PCH_Start || (char *)p >= PCH_End ) ) {
+        if( CMemKind( (char *)p ) == CMEM_MEM ) {
+            mcb = PTR2MCB( p );
+            mcb_len = mcb->len & SIZE_MASK;
+            if( (char *)mcb == PermPtr + PermAvail ) {
+                PermAvail += mcb_len;
+                mcb = (MCB *)( (char *)mcb + mcb_len );
+                if( (mcb->len & ALLOC_FLAG) == 0 ) {
+                    if( (char *)mcb == PermPtr + PermAvail ) {
+                        PermAvail += mcb->len;
+                        removeMCBfromFreeList( mcb );
+                    }
                 }
+            } else {
+                addMCBtoFreeList( mcb, mcb_len );
+                Ccoalesce( mcb );
             }
-        } else {
-            addMCBtoFreeList( mcb, mcb_len );
-            Ccoalesce( mcb );
         }
-        break;
-    case CMEM_NONE:
-        mcb_len = 0;
-        return;
     }
 }
 
