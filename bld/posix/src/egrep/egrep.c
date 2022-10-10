@@ -174,11 +174,11 @@ static void errorExit( const char *msg, ... )
     va_list args;
 
     if( (Flags & M_SUPPRESS_ERROR) == 0 ) {
-        printf( "%s: ", OptEnvVar );
+        fprintf( stderr, "%s: ", OptEnvVar );
         va_start( args, msg );
-        vprintf( msg, args );
+        vfprintf( stderr, msg, args );
         va_end( args );
-        printf( "%s", "\n" );
+        fprintf( stderr, "%s", "\n" );
     }
     free( IObuffer );
     freePatterns( );
@@ -480,6 +480,7 @@ int main( int argc, char **argv )
     }
     if( Omode == OUT_COUNT )
         printf( "%u\n", matches );
+    fflush( stdout );
     free( IObuffer );
     freePatterns( );
 
