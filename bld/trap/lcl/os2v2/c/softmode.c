@@ -62,8 +62,8 @@ HAB                     HabDebugger;
 HWND                    HwndDebugger;
 
 static HWND             HwndDummy;
-static BOOL             InHardMode;
-static BOOL             NeedHardMode = FALSE;
+static bool             InHardMode = false;
+static char             NeedHardMode = 0;
 static HOOKPROC         *PSendMsgHookProc;
 static SETHMQPROC       *PSetHmqDebugee;
 static HMODULE          HookDLL;
@@ -182,7 +182,7 @@ char SetHardMode( char hard )
     return old;
 }
 
-BOOL IsPMDebugger( void )
+bool IsPMDebugger( void )
 {
     return( HabDebugger != NULLHANDLE );
 }
@@ -295,7 +295,7 @@ static void EnterHardMode( void )
     if( InHardMode )
         return;
     WinLockInput( 0, TRUE );
-    InHardMode = TRUE;
+    InHardMode = true;
 }
 
 static void ExitHardMode( void )
@@ -303,7 +303,7 @@ static void ExitHardMode( void )
     if( !InHardMode )
         return;
     WinLockInput( 0, FALSE );
-    InHardMode = FALSE;
+    InHardMode = false;
 }
 
 void AssumeQueue( PID pid, TID tid )
@@ -311,7 +311,7 @@ void AssumeQueue( PID pid, TID tid )
     tid = tid;
     if( !IsPMDebugger() )
         return;
-    if( NeedHardMode == (char) - 1 )
+    if( NeedHardMode == (char)-1 )
         return;
     if( NeedHardMode ) {
         EnterHardMode();
@@ -325,7 +325,7 @@ void ReleaseQueue( PID pid, TID tid )
     tid = tid;
     if( !IsPMDebugger() )
         return;
-    if( NeedHardMode == (char) - 1 )
+    if( NeedHardMode == (char)-1 )
         return;
     if( NeedHardMode ) {
         ExitHardMode();

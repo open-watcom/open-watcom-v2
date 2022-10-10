@@ -35,4 +35,4 @@
 #define DBG_N_Signal            -102
 
 extern ULONG     MakeFlatPointer( PVOID ptr );
-extern int       IsFlatSeg( USHORT seg );
+extern bool      IsFlatSeg( USHORT seg );

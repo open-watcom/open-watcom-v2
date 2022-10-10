@@ -42,6 +42,7 @@
 #define INCL_WINMESSAGEMGR
 #include <os2.h>
 #include <os2dbg.h>
+#include "bool.h"
 #include "os2v2acc.h"
 #include "softmode.h"
 #include "trpimp.h"
@@ -59,7 +60,7 @@ static unsigned int     DebugReqResult;
 static HEV              DebugReqSem = NULLHANDLE;
 static HEV              DebugDoneSem = NULLHANDLE;
 static HEV              StopDoneSem = NULLHANDLE;
-static BOOL             InDosDebug;
+static bool             InDosDebug;
 
 static void APIENTRY StopApplication( ULONG arg )
 {
@@ -206,9 +207,9 @@ static void APIENTRY DoDebugRequests( ULONG arg )
     for ( ; ; ) {
         DosWaitEventSem(DebugReqSem, SEM_INDEFINITE_WAIT);
         DosResetEventSem(DebugReqSem, &ulCount);
-        InDosDebug = TRUE;
+        InDosDebug = true;
         DebugReqResult = DosDebug(DebugReqBuff);
-        InDosDebug = FALSE;
+        InDosDebug = false;
         if (IsPMDebugger()) {
             WinPostMsg(HwndDebugger, WM_QUIT, 0, 0);
         } else {

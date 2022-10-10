@@ -38,16 +38,18 @@
 
 #include <os2.h>                        /* PM header file               */
 #include <string.h>                     /* C/2 string functions         */
-#include "pmdbg.h"                     /* Resource symbolic identifiers*/
+#include "bool.h"
+#include "pmdbg.h"                      /* Resource symbolic identifiers*/
 #include "trpimp.h"
+
 
 extern InitIt( char *trp, HAB, HWND );
 extern int LoadIt();
 extern int RunIt();
 extern KillIt();
 extern FiniIt();
-extern char TellHardMode( char );
 extern BOOL APIENTRY WinLockInput( HWND, USHORT );
+
 enum {
     RUNNING,
     LOADED,
@@ -56,8 +58,8 @@ enum {
     NONE,
 } State = NONE;
 
-int HardMode = 0;
-int InHardMode = 0;
+bool HardMode = false;
+bool InHardMode = false;
 
 #define HARD_POS 17
 char *IsHardMode[] = {
@@ -195,12 +197,12 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
             ReDraw( hwnd );
             if( InHardMode ) {
                 WinLockInput( 0, FALSE );
-                InHardMode = FALSE;
+                InHardMode = false;
             }
             State = RunIt() ? BROKE : TERMINATED;
             if( HardMode ) {
                 WinLockInput( 0, TRUE );
-                InHardMode = TRUE;
+                InHardMode = true;
             }
             ReDraw( hwnd );
             break;
@@ -209,7 +211,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
                 break;
             if( InHardMode ) {
                 WinLockInput( 0, FALSE );
-                InHardMode = FALSE;
+                InHardMode = false;
             }
             if( State != NONE ) {
                 KillIt();
@@ -221,13 +223,13 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
             if( State == RUNNING )
                 break;
             HardMode = !HardMode;
-            TellHardMode( HardMode ? (char)-1 : 0 );
+            TRAPENTRY_FUNC( TellHardMode )( HardMode ? (char)-1 : 0 );
             ReDraw( hwnd );
             break;
         case ID_EXITPROG:
             if( InHardMode ) {
                 WinLockInput( 0, FALSE );
-                InHardMode = FALSE;
+                InHardMode = false;
             }
             if( State == RUNNING )
                 break;
@@ -254,7 +256,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         GpiSetBackColor( hps, CLR_BACKGROUND );  /* its background and    */
         GpiSetBackMix( hps, BM_OVERPAINT );      /* how it mixes,         */
                                                /* and draw the string...*/
-        strcpy( WhatItIs[State] +HARD_POS, IsHardMode[HardMode] );
+        strcpy( WhatItIs[State] +HARD_POS, IsHardMode[( HardMode ? 1 : 0 )] );
         GpiCharStringAt( hps, &pt, (LONG)strlen( WhatItIs[State] ), WhatItIs[State] );
         WinEndPaint( hps );                      /* Drawing is complete   */
         break;

@@ -91,17 +91,17 @@ typedef struct watch_point {
 uDB_t                   Buff;
 USHORT                  TaskFS;
 ULONG                   ExceptNum;
-bool                    ExpectingAFault;
+bool                    ExpectingAFault = false;
 
-static BOOL             stopOnSecond;
-static BOOL             isAttached;
+static bool             stopOnSecond = false;
+static bool             isAttached;
 static byte             saved_opcode;
-static BOOL             splice_bp_set;
+static bool             splice_bp_set;
 static ULONG            splice_bp_lin_addr;
 
 static ULONG            ExceptLinear;
 static UCHAR            TypeProcess;
-static BOOL             Is32Bit;
+static bool             Is32Bit;
 static watch_point      WatchPoints[MAX_WATCHES];
 static int              WatchCount = 0;
 static unsigned_16      lastCS;
@@ -193,47 +193,46 @@ static bool SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
 /*
  * FindNewHeader - get a pointer to the new exe header
  */
-static BOOL FindNewHeader( char *name, HFILE *hdl,
+static bool FindNewHeader( char *name, HFILE *hdl,
                           ULONG *new_head, USHORT *id )
 {
     long        open_rc;
     HFILE       h;
-    BOOL        rc;
+    bool        rc;
     USHORT      data; /* MUST be 16-bit! */
 
-    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
-    if( open_rc < 0 ) {
-        return( false );
-    }
-    h = open_rc;
     rc = false;
-    for( ;; ) {
-        if( !SeekRead( h, 0x00, &data, sizeof( data ) ) ) {
-            break;
-        }
-        if( data != EXE_MZ )
-            break;   /* MZ */
+    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
+    if( open_rc >= 0 ) {
+        h = open_rc;
+        for( ;; ) {
+            if( !SeekRead( h, 0x00, &data, sizeof( data ) ) ) {
+                break;
+            }
+            if( data != EXE_MZ )
+                break;   /* MZ */
 
-        if( !SeekRead( h, 0x18, &data, sizeof( data ) ) ) {
-            break;
-        }
-        if( data < 0x40 )       /* offset of relocation header */
-            break;
+            if( !SeekRead( h, 0x18, &data, sizeof( data ) ) ) {
+                break;
+            }
+            if( data < 0x40 )       /* offset of relocation header */
+                break;
 
-        if( !SeekRead( h, 0x3c, new_head, sizeof( ULONG ) ) ) {
-            break;
-        }
+            if( !SeekRead( h, 0x3c, new_head, sizeof( ULONG ) ) ) {
+                break;
+            }
 
-        if( !SeekRead( h, *new_head, id, sizeof( USHORT ) ) ) {
+            if( !SeekRead( h, *new_head, id, sizeof( USHORT ) ) ) {
+                break;
+            }
+            rc = true;
             break;
         }
-        rc = true;
-        break;
+        if( !rc ) {
+            DosClose( h );
+        }
+        *hdl = h;
     }
-    if( !rc ) {
-        DosClose( h );
-    }
-    *hdl = h;
     return( rc );
 
 } /* FindNewHeader */
@@ -278,7 +277,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
     ULONG                       value;
     ULONG                       stopvalue;
     ULONG                       notify = 0;
-    BOOL                        got_second_notification;
+    bool                        got_second_notification;
     ULONG                       fcp;
     CONTEXTRECORD               fcr;
 
@@ -288,7 +287,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
         value = 0;
     }
     stopvalue = XCPT_CONTINUE_EXECUTION;
-    got_second_notification = FALSE;
+    got_second_notification = false;
     if( cmd == DBG_C_Stop ) {
         stopvalue = XCPT_CONTINUE_STOP;
     }
@@ -406,7 +405,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
             }
             if( stopOnSecond ) {
                 value = XCPT_CONTINUE_EXECUTION;
-                got_second_notification = TRUE;
+                got_second_notification = true;
             }
             break;
         default:
@@ -418,19 +417,19 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
 
                     // Remove breakpoint
                     WriteLinear( &saved_opcode, splice_bp_lin_addr, sizeof( saved_opcode ) );
-                    splice_bp_set = FALSE;
+                    splice_bp_set = false;
                     splice_bp_lin_addr = 0;
 
                     // Attempt to load helper DLL
                     save.Pid = Pid;
                     save.Tid = 1;
                     ReadRegs( &save );
-                    ExpectingAFault = TRUE;
+                    ExpectingAFault = true;
                     // NB - the following will recursively call DebugExecute!
                     if( !CausePgmToLoadHelperDLL( ExceptLinear ) ) {
-                        CanExecTask = FALSE;
+                        CanExecTask = false;
                     } else {
-                        CanExecTask = TRUE;
+                        CanExecTask = true;
                     }
                     WriteRegs( &save );
                     break;
@@ -950,7 +949,7 @@ static bool FindLinearStartAddress( ULONG *pLin, char *name )
                 break;
             }
 
-            Is32Bit = TRUE;
+            Is32Bit = true;
         } else {
             break;
         }
@@ -973,20 +972,20 @@ static bool FindLinearStartAddress( ULONG *pLin, char *name )
     return( rc );
 } /* FindLinearStartAddress */
 
-static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
+static bool ExecuteUntilLinearAddressHit( ULONG lin )
 {
     opcode_type brk_opcode = BRKPOINT;
-    BOOL        rc = TRUE;
+    bool        rc = true;
 
     ReadLinear( &saved_opcode, lin, sizeof( saved_opcode ) );
     WriteLinear( &brk_opcode, lin, sizeof( brk_opcode ) );
-    splice_bp_set = TRUE;
+    splice_bp_set = true;
     splice_bp_lin_addr = lin;
     do {
         ExceptNum = 0;
         DebugExecute( &Buff, DBG_C_Go, TRUE );
         if( ExceptNum == 0 ) {
-            rc = TRUE; // DLL loaded
+            rc = true; // DLL loaded
             /* Breaking on DLL load means that this routine does not
              * necessarily stop when the linear address is truly hit;
              * this seemingly strange behaviour is desirable if we
@@ -1005,14 +1004,16 @@ static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
 
 void AppSession( void )
 {
-    if( !IsPMDebugger() )
+    if( !IsPMDebugger() ) {
         DosSelectSession( SID );
+    }
 }
 
 void DebugSession( void )
 {
-    if( !IsPMDebugger() )
+    if( !IsPMDebugger() ) {
         DosSelectSession( 0 );
+    }
 }
 
 static unsigned StartProcess( const char *exe_name, char *parms )
@@ -1106,7 +1107,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     /* If PID was not specified, start the debuggee process */
     if( attach_pid == -1 ) {
-        isAttached = FALSE;
+        isAttached = false;
         if( FindFilePath( DIG_FILETYPE_EXE, name, exe_name ) ) {
             exe_name[0] = '\0';
         }
@@ -1117,7 +1118,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         MergeArgvArray( src, parms, GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name ) );
         ret->err = StartProcess( exe_name, parms );
     } else {
-        isAttached = TRUE;
+        isAttached = true;
         Buff.Addr  = 0; // Sever connection
         Buff.Pid   = attach_pid;
         Buff.Tid   = 0;
@@ -1151,7 +1152,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         } else {
             ret->flags |= LD_FLAG_IS_STARTED;
             // TODO: figure out if 32-bit process
-            Is32Bit = TRUE;
+            Is32Bit = true;
         }
 
         Buff.Pid = Pid;
@@ -1165,12 +1166,11 @@ trap_retval TRAP_CORE( Prog_load )( void )
         }
 
         ReadRegs( &Buff );
-        CanExecTask = FALSE;
-        splice_bp_set = FALSE;
+        CanExecTask = false;
+        splice_bp_set = false;
         splice_bp_lin_addr = 0;
 
-        if( isAttached ) {
-        } else {
+        if( !isAttached ) {
             if( FindLinearStartAddress( &startLinear, UtilBuff ) ) {
                 CanExecTask = ExecuteUntilLinearAddressHit( startLinear );
                 ReadRegs( &Buff );
@@ -1184,13 +1184,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
             save.Tid = 1;
             ReadRegs( &save );
             if( !CausePgmToLoadHelperDLL( startLinear ) ) {
-                CanExecTask = FALSE;
+                CanExecTask = false;
                 // Note - the breakpoint is still set; we'll likely hit
                 // it later
             } else {
                 // Remove breakpoint
                 WriteLinear( &saved_opcode, startLinear, sizeof( saved_opcode ) );
-                splice_bp_set = FALSE;
+                splice_bp_set = false;
                 splice_bp_lin_addr = 0;
             }
             WriteRegs( &save );
@@ -1219,10 +1219,11 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     SaveStdIn  = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     if( Pid != 0 ) {
-        if( isAttached )
+        if( isAttached ) {
             Buff.Cmd = DBG_C_Detach;
-        else
+        } else {
             Buff.Cmd = DBG_C_Term;
+        }
         Buff.Pid = Pid;
         CallDosDebug( &Buff );
     }
@@ -1397,7 +1398,7 @@ static trap_conditions MapReturn( trap_conditions conditions )
         CallDosDebug( &Buff );
     default:
         AtEnd = TRUE;
-        CanExecTask = FALSE;
+        CanExecTask = false;
         return( conditions | COND_TERMINATE );
     }
 }
@@ -1541,7 +1542,7 @@ static unsigned progRun( bool step )
     //runret->thread = Buff.Tid;
     //if( runret->returnvalue == TRAP_TERMINATE ) {
     //    AtEnd = TRUE;
-    //    CanExecTask = FALSE;
+    //    CanExecTask = false;
     //}
     return( sizeof( *ret ) );
 }
@@ -1772,7 +1773,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     SaveStdOut = NIL_DOS_HANDLE;
     Screen     = DEBUG_SCREEN;
     if( *parms == '2' ) {
-        stopOnSecond = TRUE;
+        stopOnSecond = true;
     }
 
     DosGetInfoBlocks( &ptib, &ppib );

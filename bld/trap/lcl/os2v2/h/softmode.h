@@ -37,6 +37,6 @@ extern void TellSoftModeHandles( HAB, HWND );
 extern void AssumeQueue( PID pid, TID tid );
 extern void ReleaseQueue( PID pid, TID tid );
 extern void InitSoftDebug( void );
-extern BOOL IsPMDebugger( void );
+extern bool IsPMDebugger( void );
 extern char SetHardMode( char hard );
 extern void WakeThreads( PID pid );

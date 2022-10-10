@@ -87,7 +87,7 @@ extern ULONG        MakeSegmentedPointer( ULONG val );
 extern int          GetDos32Debug( PCHAR err );
 extern void         SetTaskDirectories( void );
 extern bool         DebugExecute( uDB_t *buff, ULONG cmd, bool );
-extern int          IsUnknownGDTSeg( USHORT seg );
+extern bool         IsUnknownGDTSeg( USHORT seg );
 
 extern void         LoadHelperDLL( void );
 extern void         EndLoadHelperDLL( void );
