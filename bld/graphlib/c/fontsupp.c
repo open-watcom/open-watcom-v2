@@ -651,7 +651,7 @@ static char _WCI86FAR *getnumber( char _WCI86FAR *str, short *num )
 
 
 #if defined( __OS2__ )
-static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char* facename )
+static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char *facename )
 /*=====================================================================
   This function is used to get all suitable the public fonts fontmetric. */
 {
@@ -1245,7 +1245,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
     if( escape != 0 ) {
         // Create the window font for the current escape
         GetTextMetrics( dc, &fmet );
-        GetTextFace( dc, 30, &facename );
+        GetTextFace( dc, 30, facename );
         _CurFnt = CreateFont( fmet.tmHeight, fmet.tmAveCharWidth,
                                 escape, 0, fmet.tmWeight, fmet.tmItalic,
                                 fmet.tmUnderlined, fmet.tmStruckOut,
