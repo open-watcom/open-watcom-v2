@@ -2161,7 +2161,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                     for( i = 0; MathFuncs[i].name != NULL; ++i ) {
                         if( parm_count == MathFuncs[i].parm_count
                           && ( strcmp( sym_name, MathFuncs[i].name ) == 0
-                          || (sym->flags & SYM_INTRINSIC) && strcmp( sym_name, MathFuncs[i].iname ) == 0 ) ) {
+                          || (sym.flags & SYM_INTRINSIC) && strcmp( sym_name, MathFuncs[i].iname ) == 0 ) ) {
                             FreeExprNode( functree );
                             if( parm_count == 1 ) {
                                 tree = ExprNode( NULL, OPR_MATHFUNC, last_parm );
