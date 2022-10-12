@@ -50,13 +50,14 @@ call_list           *CallNodeList;
 
 static struct mathfuncs {
     const char      *name;
+    const char      *iname;
     unsigned char   parm_count;
     unsigned char   mathop;
 } MathFuncs[] = {
-    #define mathfunc(name,num,op) {name,num,op}
+    #define mathfunc(name,iname,num,op) {name,iname,num,op}
     #include "cmathfun.h"
     #undef mathfunc
-    { NULL,      0, 0 }
+    { NULL, NULL,   0, 0 }
 };
 
 static TREEPTR      GenNextParm(TREEPTR,TYPEPTR **);
@@ -1954,23 +1955,6 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 }
 
 
-static bool IntrinsicMathFunc( const char *sym_name, int i, SYMPTR sym )
-{
-    const char  *p;
-
-    if( strcmp( sym_name, MathFuncs[i].name ) != 0 ) {
-        if( (sym->flags & SYM_INTRINSIC) == 0 )
-            return( false );            /* indicate not a math intrinsic function */
-        for( p = MathFuncs[i].name + 2; *p != '\0'; p++ ) {
-            if( (unsigned char)*sym_name != tolower( (unsigned char)*p ) ) {
-                return( false );        /* indicate not a math intrinsic function */
-            }
-            sym_name++;
-        }
-    }
-    return( true );
-}
-
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
 // This really ought to be defined somewhere else...
 #if (_CPU == _AXP)
@@ -2176,7 +2160,8 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                 if( (GenSwitches & NO_OPTIMIZATION) == 0 && CompFlags.extensions_enabled ) {
                     for( i = 0; MathFuncs[i].name != NULL; ++i ) {
                         if( parm_count == MathFuncs[i].parm_count
-                          && IntrinsicMathFunc( sym_name, i, &sym ) ) {
+                          && ( strcmp( sym_name, MathFuncs[i].name ) == 0
+                          || (sym->flags & SYM_INTRINSIC) && strcmp( sym_name, MathFuncs[i].iname ) == 0 ) ) {
                             FreeExprNode( functree );
                             if( parm_count == 1 ) {
                                 tree = ExprNode( NULL, OPR_MATHFUNC, last_parm );
