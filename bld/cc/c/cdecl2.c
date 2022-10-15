@@ -185,11 +185,11 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
     if( (sym->mods & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
         sym->mods |= FLAG_FARSS;    /* interrupts always use far stack */
     }
-    if( stg_class == SC_REGISTER ||
-        stg_class == SC_AUTO ||
-        stg_class == SC_TYPEDEF ) {
-            CErr1( ERR_INVALID_STG_CLASS_FOR_FUNC );
-            stg_class = SC_NONE;
+    if( stg_class == SC_REGISTER
+      || stg_class == SC_AUTO
+      || stg_class == SC_TYPEDEF ) {
+        CErr1( ERR_INVALID_STG_CLASS_FOR_FUNC );
+        stg_class = SC_NONE;
     }
     old_sym_handle = SymLook( sym->info.hash, sym->name );
     if( old_sym_handle == SYM_NULL ) {
@@ -603,7 +603,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
         } else if( sym->mods & FLAG_EXPORT ) {
             if( sym->attribs.declspec == DECLSPEC_NONE ) {
                 sym->attribs.declspec = DECLSPEC_DLLEXPORT;
-            } else if( sym->attribs.declspec  != DECLSPEC_DLLEXPORT ) {
+            } else if( sym->attribs.declspec != DECLSPEC_DLLEXPORT ) {
                  CErr1( ERR_INVALID_DECLSPEC );
             }
         }

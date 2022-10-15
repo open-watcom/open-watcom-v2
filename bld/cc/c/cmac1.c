@@ -211,7 +211,7 @@ void MacroPurge( void )
     MEPTR           mentry;
 
     for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
-        for( ; mentry = MacHash[hash]; ) {
+        for( ; (mentry = MacHash[hash]) != NULL; ) {
             MacHash[hash] = mentry->next_macro;
             CMemFree( mentry );
         }

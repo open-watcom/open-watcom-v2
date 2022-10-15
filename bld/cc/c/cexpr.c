@@ -48,7 +48,7 @@ extern int64        LongValue64( TREEPTR leaf );
 
 call_list           *CallNodeList;
 
-static struct mathfuncs {
+static const struct mathfuncs {
     const char      *name;
     const char      *iname;
     unsigned char   parm_count;
