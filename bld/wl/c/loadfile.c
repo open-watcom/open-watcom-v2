@@ -74,7 +74,7 @@
 #include "clibext.h"
 
 
-#define IMPLIB_BUFSIZE  _4KB
+#define IMPLIB_BUFSIZE  _4K
 
 typedef struct {
     f_handle    handle;
@@ -1049,7 +1049,7 @@ unsigned long NullAlign( unsigned align )
     size_t          pad;
 
     off = PosLoad();
-    pad = ROUND_UP( off, align ) - off;
+    pad = __ROUND_UP_SIZE( off, align ) - off;
     PadLoad( pad );
     return( off + pad );
 }
@@ -1060,7 +1060,7 @@ unsigned long OffsetAlign( unsigned long off, unsigned long align )
 {
     size_t          pad;
 
-    pad = ROUND_UP( off, align ) - off;
+    pad = __ROUND_UP_SIZE( off, align ) - off;
     PadLoad( pad );
     return( off + pad );
 }
@@ -1199,7 +1199,7 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
     return( (void *)dummy );
 }
 
-#define BUFF_BLOCK_SIZE _16KB
+#define BUFF_BLOCK_SIZE _16K
 
 static void WriteBuffer( const char *data, size_t len, outfilelist *outfile, writebuffer_fn *rtn )
 /************************************************************************************************/

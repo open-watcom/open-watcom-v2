@@ -74,7 +74,7 @@ void SetOS2Fmt( void )
     if( FmtData.type & MK_WINDOWS ) {
         FmtData.def_seg_flags |= SEG_PRELOAD;
     }
-    ChkBase( _64KB );
+    ChkBase( _64K );
 }
 
 void FreeOS2Fmt( void )

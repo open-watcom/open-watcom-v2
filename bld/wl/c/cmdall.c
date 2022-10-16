@@ -1339,9 +1339,9 @@ static bool ProcObjAlign( void )
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
     }                                            /* value not a power of 2 */
-    if( value < 16 || value > _256MB || (value & (value - 1)) ) {
+    if( value < 16 || value > _256M || (value & (value - 1)) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "OBJALIGN" );
-        value = _64KB;
+        value = _64K;
     }
     FmtData.objalign = value;
     ChkBase( value );
@@ -1371,7 +1371,7 @@ void ChkBase( offset align )
     }
     if( FmtData.base != NO_BASE_SPEC && (FmtData.base & (align - 1)) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
-        FmtData.base = ROUND_UP( FmtData.base, align );
+        FmtData.base = __ROUND_UP_SIZE( FmtData.base, align );
     }
 }
 
@@ -1515,13 +1515,13 @@ static bool ProcOffset( void )
     }
 #ifdef _PHARLAP
     if( FmtData.type & MK_PHAR_LAP ) {
-        ChkBase( _4KB );
+        ChkBase( _4K );
         return( true );
     }
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX_FLAT ) {
-        ChkBase( _4KB );
+        ChkBase( _4K );
         return( true );
     }
 #endif
@@ -1533,17 +1533,17 @@ static bool ProcOffset( void )
 #endif
 //#ifdef _OS2
 //    if( FmtData.type & (MK_OS2 | MK_PE) ) {
-//        ChkBase( _64KB );
+//        ChkBase( _64K );
 //        return( true );
 //    }
 //#endif
 //#ifdef _ELF
 //    if( FmtData.type & MK_ELF ) {
-//        ChkBase( _4KB );
+//        ChkBase( _4K );
 //        return( true );
 //    }
 //#endif
-    ChkBase( _64KB );
+    ChkBase( _64K );
     return( true );
 }
 #endif

@@ -32,6 +32,7 @@
 
 #include "exp.h"
 #include "walloca.h"
+#include "roundmac.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exeflat.h"
@@ -132,14 +133,12 @@ static size_t BRead( FILE *fp, void *b, size_t s )
     return( s );
 }
 
-#define ROUND_UP( d, r ) (((d)+(r)-1) & ~((r)-1))
-
 static void *HunkAlloc( imp_image_handle *iih, size_t size )
 {
     exp_hunk    *hunk;
     size_t      alloc;
 
-    size = ROUND_UP( size, sizeof( void * ) );
+    size = __ROUND_UP_SIZE( size, sizeof( void * ) );
     hunk = iih->hunks;
     if( hunk == NULL || size > hunk->left ) {
         alloc = HUNK_SIZE;

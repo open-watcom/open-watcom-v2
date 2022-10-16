@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include <time.h>
 #include "watcom.h"
 #include "bool.h"
+#include "roundmac.h"
 #include "iopath.h"
 #include "wlinkcfg.h"
 
@@ -51,23 +52,8 @@
 #define CONSTU32(x)     x ## U
 #endif
 
-#define _1KB            CONSTU32( 1024 )
-#define _2KB            (2 * _1KB)
-#define _4KB            (4 * _1KB)
-#define _5KB            (5 * _1KB)
-#define _8KB            (8 * _1KB)
-#define _16KB           (16 * _1KB)
-#define _32KB           (32 * _1KB)
-#define _64KB           (64 * _1KB)
-#define _1MB            (_1KB * _1KB)
-#define _256MB          (256 * _1MB)
-
 /* round up by a power of 2 */
-#define ROUND_UP( x, r )        (((x)+((r)-1))&~((r)-1))
-#define ROUND_SHIFT( x, r )     ROUND_UP( x, 1 << (r) )
-
-#define MAKE_EVEN( x ) ROUND_UP( x, 2 )
-#define MAKE_PARA( x ) ROUND_UP( x, 16 )
+#define ROUND_SHIFT(x,r)    __ROUND_UP_SIZE(x, PWROF2((r)))
 
 // useful for stringizing tokens
 #define __str( m )      #m
@@ -75,9 +61,9 @@
 
 #ifndef NDEBUG
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
-    #define DbgVerify( cond, msg ) if( ! ( cond ) ) LnkFatal( msg __location );
-    #define DbgDefault( msg ) default: LnkFatal( msg __location )
-    #define DbgAssert( cond )   if( !(cond) ) LnkFatal( #cond __location );
+    #define DbgVerify( cond, msg )  if( !(cond) ) LnkFatal( msg __location )
+    #define DbgDefault( msg )       default: LnkFatal( msg __location )
+    #define DbgAssert( cond )       if( !(cond) ) LnkFatal( #cond __location )
 #else
     #define DbgVerify( cond, msg )
     #define DbgDefault( msg )

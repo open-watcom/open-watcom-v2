@@ -36,6 +36,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <i86.h>
+#include "roundmac.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"
@@ -64,8 +65,6 @@
 #define ST_TERMINATE        0x20
 #define ST_LOAD_MODULE      0x40
 #define ST_UNLOAD_MODULE    0x80
-
-#define ALIGN4K(x)          (((x)+0x0fffL)&~0x0fffL)
 
 #define FLAT_SEL            0x73
 
@@ -427,7 +426,7 @@ static void AddModHandle( const char *name, epsp_t *epsp )
         mod->ObjInfo[i].base = obj.addr;
         mod->ObjInfo[i].size = obj.size;
         mod->ObjInfo[i].new_base = new_base;
-        new_base += ALIGN4K( obj.size );
+        new_base += __ROUND_UP_SIZE_4K( obj.size );
         if( NumModHandles == 1 ) {      // main executable
             if( obj.flags & OBJ_BIG ) {
                 if( obj.flags & OBJ_EXECUTABLE ) {

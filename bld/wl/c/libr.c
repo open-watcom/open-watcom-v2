@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,11 +311,11 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
             *loc += sizeof( ar_header );
             if( makedict )
                 ReadARDictData( list, loc, size, numdicts );
-            *loc += MAKE_EVEN( size );
+            *loc += __ROUND_UP_SIZE_EVEN( size );
         } else if( ar_hdr->name[0] == '/' && ar_hdr->name[1] == '/' ) {
             *loc += sizeof( ar_header );
             ReadARStringTable( list, loc, size );
-            *loc += MAKE_EVEN( size );
+            *loc += __ROUND_UP_SIZE_EVEN( size );
         } else {
             break;         // found an actual object file
         }
@@ -351,7 +351,7 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
         if( reclength < 0 ) {
             return( -1 );
         }
-        *loc += ROUND_UP( sizeof( omf_lib_header ), reclength );
+        *loc += __ROUND_UP_SIZE( sizeof( omf_lib_header ), reclength );
     } else if( memcmp( header, AR_IDENT, AR_IDENT_LEN ) == 0 ) {
         list->flags |= STAT_AR_LIB;
         reclength = 2;

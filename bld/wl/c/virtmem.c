@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "linkstd.h"
+#include "roundmac.h"
 #include "alloc.h"
 #include "virtmem.h"
 #if defined( USE_VIRTMEM )
@@ -165,7 +166,7 @@ typedef union {
 
 #else
 
-#define TINY_ALLOC_CUTOFF _2KB
+#define TINY_ALLOC_CUTOFF _2K
 
 typedef struct vmemblock {
     struct vmemblock    *next;
@@ -635,7 +636,7 @@ virt_mem AllocStg( virt_mem_size size )
 #if defined( USE_VIRTMEM )
     if( size == 0 )
         return( 0 );
-    size = MAKE_EVEN( size );
+    size = __ROUND_UP_SIZE_EVEN( size );
     if( size <= TINY_BLOCK_CUTOFF ) {
         return( AllocTinyStg( size ) );
     } else if( size >= MAX_BIGNODE_SIZE ) {

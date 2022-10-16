@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -599,7 +599,7 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
     *size = 0;
     ar_loc = 0;
     if( list->flags & STAT_AR_LIB ) {
-        ar_loc = MAKE_EVEN( *loc );     /* AR headers are word aligned. */
+        ar_loc = __ROUND_UP_SIZE_EVEN( *loc );     /* AR headers are word aligned. */
         ar_hdr = CacheRead( list, ar_loc, sizeof( ar_header ) );
         ar_loc += sizeof( ar_header );
         name = GetARName( ar_hdr, list, &ar_loc );

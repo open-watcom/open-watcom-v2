@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#include "roundmac.h"
+
+
 /* @(#)ndir.h   1.4     4/16/85 */
 #ifndef DEV_BSIZE
 #define DEV_BSIZE       512
@@ -55,7 +58,7 @@ struct direct {
 #ifdef DIRSIZ
 #undef DIRSIZ
 #endif  /* DIRSIZ */
-#define DIRSIZ(dp) ((sizeof( struct direct ) - ( MAXNAMLEN + 1 )) + (((dp)->d_namlen + 1 + 3) &~ 3))
+#define DIRSIZ(dp) (offsetof( struct direct, d_name) + __ROUND_UP_SIZE( (dp)->d_namlen + 1, 4 ))
 
 /*
  * Definitions for library routines operating on directories.

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,7 @@
 #elif defined(__DOS__)
     #include "tinyio.h"
 #endif
+#include "roundmac.h"
 #include "rtdata.h"
 #include "rterrno.h"
 #include "liballoc.h"
@@ -242,7 +243,7 @@ _WCRTLINK int _grow_handles( int num )
             tiny_ret_t  rc;
 
             /* may allocate a segment of memory! */
-            num = __ROUND_UP_SIZE( num, 2 );    /* make even */
+            num = __ROUND_UP_SIZE_EVEN( num );  /* make even */
             rc = TinySetMaxHandleCount( num );
             if( TINY_ERROR( rc ) ) {
                 __set_errno_dos( TINY_INFO( rc ) );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,6 +60,7 @@
 #if defined(__OS2__) && !defined(_M_I86)
   #include "rtinit.h"
 #endif
+#include "roundmac.h"
 #include "heapacc.h"
 #include "heap.h"
 
@@ -157,7 +158,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
             frl_new = __LinkUpNewNHeap( heap );
             heap->numalloc = 1;
 
-            req_size = __ROUND_UP_SIZE( req_size, 2 );  /* make even */
+            req_size = __ROUND_UP_SIZE_EVEN( req_size );  /* make even */
             size = frl_new->len - req_size;
             if( size >= FRL_SIZE ) {    // Enough to spare a free block
                 SET_BLK_SIZE_INUSE( frl_new, req_size );// adjust size and set allocated bit
@@ -298,7 +299,7 @@ static int __AdjustAmount( unsigned *amount )
           nb. pathological case: where _RWD_amblksiz == 0xffff, we don't
                                  want the usual round up to even
         */
-        amt = __ROUND_DOWN_SIZE( _RWD_amblksiz, 2 );
+        amt = __ROUND_DOWN_SIZE_EVEN( _RWD_amblksiz );
     }
 #if defined(__OS2__) && !defined(_M_I86)
     /* make sure amount is a multiple of 64k */

@@ -35,6 +35,7 @@
 #if defined( __WATCOMC__ ) && defined( DEBUG_OUT )
     #include <malloc.h>
 #endif
+#include "roundmac.h"
 #include "asmalloc.h"
 #include "directiv.h"
 #include "queues.h"
@@ -303,8 +304,6 @@ static const_info   info_Model = { true, 0, 0, true, &const_Model };
 static const_info   info_Interface = { true, 0, 0, true, &const_Interface };
 static const_info   info_data = { true, 0, 0, true, &const_data };
 static const_info   info_code = { true, 0, 0, true, &const_code };
-
-#define ROUND_UP( i, r ) (((i)+((r)-1)) & ~((r)-1))
 
 static bool AddPredefinedConstant( char *name, const_info *info )
 /***************************************************************/
@@ -3087,17 +3086,17 @@ bool ArgDef( token_idx i )
         if( parameter_on_stack ) {
             paranode->is_register = false;
             if( Use32 ) {
-                info->parasize += ROUND_UP( parameter_size, 4 );
+                info->parasize += __ROUND_UP_SIZE( parameter_size, 4 );
             } else {
-                info->parasize += ROUND_UP( parameter_size, 2 );
+                info->parasize += __ROUND_UP_SIZE( parameter_size, 2 );
             }
         } else {
             paranode->is_register = true;
             register_count++;
             if( Use32 ) {
-                unused_stack_space += ROUND_UP( parameter_size, 4 );
+                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 4 );
             } else {
-                unused_stack_space += ROUND_UP( parameter_size, 2 );
+                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 2 );
             }
         }
 
@@ -3494,17 +3493,17 @@ parms:
         if( parameter_on_stack ) {
             paranode->is_register = false;
             if( Use32 ) {
-                info->parasize += ROUND_UP( parameter_size, 4 );
+                info->parasize += __ROUND_UP_SIZE( parameter_size, 4 );
             } else {
-                info->parasize += ROUND_UP( parameter_size, 2 );
+                info->parasize += __ROUND_UP_SIZE( parameter_size, 2 );
             }
         } else {
             paranode->is_register = true;
             register_count++;
             if( Use32 ) {
-                unused_stack_space += ROUND_UP( parameter_size, 4 );
+                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 4 );
             } else {
-                unused_stack_space += ROUND_UP( parameter_size, 2 );
+                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 2 );
             }
         }
 
@@ -3734,7 +3733,7 @@ bool WritePrologue( const char *curline )
         offset = 0;
         for( curr = info->locallist; curr != NULL; curr = curr->next ) {
             size = curr->size * curr->factor;
-            offset += ROUND_UP( size, align );
+            offset += __ROUND_UP_SIZE( size, align );
             size_override( buffer, curr->size );
             if( Options.mode & MODE_IDEAL ) {
                 if( curr->sym != NULL ) {
@@ -3801,7 +3800,7 @@ bool WritePrologue( const char *curline )
                                  ARGUMENT_STRING, offset );
                     }
                 }
-                offset += ROUND_UP( curr->size, align );
+                offset += __ROUND_UP_SIZE( curr->size, align );
             } else {
                 register_count++;
             }

@@ -73,6 +73,7 @@ essentially no worst case performance scenario.
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
 #endif
+#include "roundmac.h"
 #include "_cg.h"
 #include "utils.h"
 #include "onexit.h"
@@ -87,13 +88,6 @@ extern short    __psp;
 #endif
 
 typedef pointer_uint    tag;
-
-#define _1K             1024L
-#define _4K             (4 * _1K)
-#define _64K            (64 * _1K)
-#define _1M             (_1K * _1K)
-#define _4M             (4 * _1M)
-#define _16M            (16 * _1M)
 
 static  pointer     MemFromSys( size_t );
 

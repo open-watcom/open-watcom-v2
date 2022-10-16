@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +38,11 @@
 #include <string.h>
 #include <time.h>
 #include <sys/types.h>
+#include "roundmac.h"
 
 /*---------------------- Macros and type definitions ----------------------*/
 
 #include "pushpck1.h"
-
-/* Macro to round a value to a 4Kb boundary */
-
-#define ROUND_4K(s) (((u_long)(s) + 0xFFF) & ~0xFFF)
 
 /* Don't include these definitions if we have already included
  * <windows.h>
@@ -265,4 +263,3 @@ typedef struct {
 #include "poppck.h"
 
 #endif  /* __PE_H */
-

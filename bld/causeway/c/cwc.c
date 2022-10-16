@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,17 +33,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "watcom.h"
 #include "bool.h"
+#include "roundmac.h"
 #include "exedos.h"
+
 
 #define RepMinSize      2
 #define BUFFER_LEN      0x1000
 #define CWCStackSize    1024    // cannot exceed EXECopyStubLen size (1135 bytes)
 
-#define ALLIGN_LEN_PARA(x)      ((x+15)&~15)
-#define PADDING_LEN_PARA(x)     (ALLIGN_LEN_PARA(x)-x)
+#define PADDING_LEN_PARA(x)     (__ROUND_UP_SIZE_PARA(x)-x)
 
 #include "pushpck1.h"
 
@@ -577,7 +578,7 @@ static int ProcessEXE( const char *fname, const char *oname )
     fwrite( padding, 1, PADDING_LEN_PARA( sizeof( decomp_stub ) ), fo );
     // update exe header
     TotalLen = ftell( fo );
-    mem_req = ImageLen + exe_header.num_relocs * 4 + sizeof( exe_header ) - 1 + ALLIGN_LEN_PARA( sizeof( decomp_stub ) ) + CWCStackSize;
+    mem_req = ImageLen + exe_header.num_relocs * 4 + sizeof( exe_header ) - 1 + __ROUND_UP_SIZE_PARA( sizeof( decomp_stub ) ) + CWCStackSize;
     mem_req -= TotalLen - 0x20;
     if( mem_req < 0 )
         mem_req = TotalLen - 0x20;
@@ -586,7 +587,7 @@ static int ProcessEXE( const char *fname, const char *oname )
     exe_header.num_relocs = 0;
     exe_header.hdr_size = 2;
     exe_header.min_16 += ( mem_req >> 4 ) + 1;
-    exe_header.SS_offset = ( ALLIGN_LEN_PARA( sizeof( copy_stub ) ) - CWCStackSize ) >> 4;
+    exe_header.SS_offset = ( __ROUND_UP_SIZE_PARA( sizeof( copy_stub ) ) - CWCStackSize ) >> 4;
     exe_header.SP = CWCStackSize - 0x0010;
     exe_header.IP = 0;
     exe_header.CS_offset = 0;
@@ -594,11 +595,11 @@ static int ProcessEXE( const char *fname, const char *oname )
     fseek( fo, 0, SEEK_SET );
     fwrite( &exe_header, 1, sizeof( exe_header ), fo );
     // update copy stub data
-    fseek( fo, ALLIGN_LEN_PARA( sizeof( copy_stub ) + 0x20 ) - 16, SEEK_SET );
-    cwc_data.SourceSeg = ( ALLIGN_LEN_PARA( sizeof( copy_stub ) ) + ALLIGN_LEN_PARA( CompressLen ) + ALLIGN_LEN_PARA( sizeof( decomp_stub ) ) ) >> 4;
-    cwc_data.CopyLen = ( ALLIGN_LEN_PARA( CompressLen ) + ALLIGN_LEN_PARA( sizeof( decomp_stub ) ) ) >> 4;
+    fseek( fo, __ROUND_UP_SIZE_PARA( sizeof( copy_stub ) + 0x20 ) - 16, SEEK_SET );
+    cwc_data.SourceSeg = ( __ROUND_UP_SIZE_PARA( sizeof( copy_stub ) ) + __ROUND_UP_SIZE_PARA( CompressLen ) + __ROUND_UP_SIZE_PARA( sizeof( decomp_stub ) ) ) >> 4;
+    cwc_data.CopyLen = ( __ROUND_UP_SIZE_PARA( CompressLen ) + __ROUND_UP_SIZE_PARA( sizeof( decomp_stub ) ) ) >> 4;
     cwc_data.EntryIP = 0;
-    cwc_data.EntryCS = ALLIGN_LEN_PARA( CompressLen ) >> 4;
+    cwc_data.EntryCS = __ROUND_UP_SIZE_PARA( CompressLen ) >> 4;
     cwc_data.ImageLen = ImageLen;
     cwc_data.EntryES = 0;
     fwrite( &cwc_data, 1, sizeof( cwc_data ), fo );

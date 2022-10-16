@@ -105,11 +105,11 @@ static void WritePharSimple( unsigned_32 start )
     if( FmtData.type & MK_PHAR_REX ) {
         SeekLoad( start + sizeof( simple_header ) );
         extra = start + sizeof( simple_header ) + WritePharRelocs();
-        header_size = MAKE_PARA( extra );
+        header_size = __ROUND_UP_SIZE_PARA( extra );
         PadLoad( header_size - extra );
     } else {
-        SeekLoad( start + MAKE_PARA( sizeof( simple_header ) ) );
-        header_size = MAKE_PARA( sizeof( simple_header ) );    // para align.
+        SeekLoad( start + __ROUND_UP_SIZE_PARA( sizeof( simple_header ) ) );
+        header_size = __ROUND_UP_SIZE_PARA( sizeof( simple_header ) );    // para align.
     }
     file_size = header_size + WritePharData( start + header_size );
     DBIWrite();
@@ -177,7 +177,7 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
     }
     if( limit > 0 )
         limit--;
-    if( limit >= _1MB ) {
+    if( limit >= _1M ) {
         limit >>= 12;
         desc.xtype.page_granular = 1;
     }

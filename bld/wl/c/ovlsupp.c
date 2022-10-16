@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -789,7 +789,7 @@ void OvlPadOvlFiles( void )
     size_t          pad;
 
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
-        pad = MAKE_PARA( fnode->file_loc ) - fnode->file_loc;
+        pad = __ROUND_UP_SIZE_PARA( fnode->file_loc ) - fnode->file_loc;
         if( pad ) {
             PadBuffFile( fnode, pad );
         }

@@ -93,7 +93,7 @@ static bool ProcBuffer( void )
 
     if( !GetLong( &value ) )
         return( false );
-    if( value < _1KB || value > _32KB ) {
+    if( value < _1K || value > _32K ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "BUFFER" );
     } else {
         FmtData.u.d16m.buffer = value;
@@ -185,7 +185,7 @@ static bool ProcDataSize( void )
 
     if( !GetLong( &value ) )
         return( false );
-    if( value > _64KB ) {
+    if( value > _64K ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "DATASIZE" );
     } else {
         FmtData.u.d16m.datasize = (value + 15) >> 4;

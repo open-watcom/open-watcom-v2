@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -281,8 +281,8 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
             continue;   // DANGER DANGER DANGER <--!!!
         segrec.info = group->segflags;
         // write segment
-        segrec.min = MAKE_EVEN( group->totalsize );
-        segrec.size = MAKE_EVEN( group->size );
+        segrec.min = __ROUND_UP_SIZE_EVEN( group->totalsize );
+        segrec.size = __ROUND_UP_SIZE_EVEN( group->size );
         if( segrec.size != 0 ) {
             off = NullAlign( 1 << FmtData.u.os2fam.segment_shift );
             seg_addr = off >> FmtData.u.os2fam.segment_shift;
@@ -972,7 +972,7 @@ static unsigned_32 ComputeResourceSize( WResDir dir )
     return( length );
 }
 
-#define MAX_DGROUP_SIZE _64KB
+#define MAX_DGROUP_SIZE _64K
 
 void FiniOS2LoadFile( void )
 /***************************/
@@ -1246,14 +1246,14 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
             code_start = dosheader.hdr_size * 16ul;
             read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
             // make sure reloc_size is a multiple of 16.
-            reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
+            reloc_size = __ROUND_UP_SIZE_PARA( dosheader.num_relocs * 4ul );
             dosheader.hdr_size = 4 + reloc_size / 16;
             stub_len = read_len + dosheader.hdr_size * 16ul;
             dosheader.file_size = ( stub_len + 511 ) / 512;  // round up.
             dosheader.mod_size = stub_len % 512;
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
             PadLoad( NH_OFFSET - sizeof( dos_exe_header ) );
-            stub_len = ROUND_UP( stub_len, stub_align );
+            stub_len = __ROUND_UP_SIZE( stub_len, stub_align );
             WriteLoadU32( stub_len );
             for( num_relocs = dosheader.num_relocs; num_relocs > 0; num_relocs-- ) {
                 QRead( the_file, &the_reloc, sizeof( unsigned_32 ), FmtData.u.os2fam.stub_file_name );

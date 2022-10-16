@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,12 +86,12 @@ static void WriteGDT( unsigned_32 reloc_size )
     gdt.gdtaddr_hi = 0;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
         if( currgrp->size > 0 ) {
-            gdt.gdtlen = MAKE_PARA( currgrp->size ) - 1; // para align.
+            gdt.gdtlen = __ROUND_UP_SIZE_PARA( currgrp->size ) - 1; // para align.
         } else {
             gdt.gdtlen = 0;
         }
         gdt.gdtaddr = 0; // currgrp->u.dos_segment;
-        gdt.gdtreserved = MAKE_PARA( (unsigned_32)currgrp->totalsize ) >> 4;   // mem size in paras
+        gdt.gdtreserved = __ROUND_UP_SIZE_PARA( (unsigned_32)currgrp->totalsize ) >> 4;   // mem size in paras
         if( gdt.gdtreserved == 0 && currgrp->size == 0 )
             gdt.gdtreserved |= 0x2000;
         if( currgrp->segflags & SEG_DATA ) {
@@ -303,7 +303,7 @@ void Fini16MLoadFile( void )
     stub_size = WriteStubProg();
     memset( &exe_head, 0, sizeof( exe_head ) );
     hdr_size = sizeof( exe_head ) + (NumGroups + extra_sels) * sizeof( gdt_info );
-    hdr_size = MAKE_PARA( hdr_size );
+    hdr_size = __ROUND_UP_SIZE_PARA( hdr_size );
     reloc_size = 0;
     exe_size = Write16MData( hdr_size );
     if( extra_sels ) {
@@ -342,7 +342,7 @@ void Fini16MLoadFile( void )
     }
     _HostU16toTarg( FmtData.u.d16m.options, exe_head.options );
     temp = NUM_RESERVED_SELS + NumGroups + extra_sels;
-    _HostU16toTarg( MAKE_PARA( temp * sizeof( gdt_info ) ) - 1, exe_head.gdtimage_size );
+    _HostU16toTarg( __ROUND_UP_SIZE_PARA( temp * sizeof( gdt_info ) ) - 1, exe_head.gdtimage_size );
     exe_head.reserved5 = D16M_ACC_DATA;
     _HostU16toTarg( FmtData.u.d16m.selstart, exe_head.first_selector );
     _HostU16toTarg( FmtData.u.d16m.buffer, exe_head.transfer_buffer_size );
@@ -410,7 +410,7 @@ void CalcGrpSegs( void )
 
     addr = 0;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-        addr = MAKE_PARA( addr );       // addr is paragraph aligned.
+        addr = __ROUND_UP_SIZE_PARA( addr );       // addr is paragraph aligned.
         currgrp->u.dos_segment = addr >> 4;
         addr += currgrp->totalsize;
     }

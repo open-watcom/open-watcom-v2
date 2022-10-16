@@ -38,7 +38,7 @@
 #endif
 
 #define SECTOR_SIZE     512
-#define MAX_HEADROOM    _4KB
+#define MAX_HEADROOM    _4K
 
 /* linker global variables */
 GLOB outfilelist    *OutFiles;      /* list of files which will be written to   */

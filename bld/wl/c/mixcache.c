@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
 #include "objcache.h"
 
 
-#define CACHE_PAGE_SIZE _8KB
+#define CACHE_PAGE_SIZE _8K
 
 static bool             Multipage;
 
@@ -252,7 +252,7 @@ void *CacheRead( file_list *list, unsigned long pos, size_t len )
         result = cache[startnum] + offset;
     } else {
         if( len > TokSize ) {
-            TokSize = ROUND_UP( len, SECTOR_SIZE );
+            TokSize = __ROUND_UP_SIZE( len, SECTOR_SIZE );
             _LnkRealloc( TokBuff, TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;

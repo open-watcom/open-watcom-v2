@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ static unsigned_32 WriteDOSRootRelocs( unsigned_32 mz_hdr_size )
     NullAlign( 0x10 );
     header_size = (unsigned long)Root->relocs * sizeof( dos_addr )
                     + mz_hdr_size;
-    return( MAKE_PARA( header_size ) );
+    return( __ROUND_UP_SIZE_PARA( header_size ) );
 }
 
 static void WriteDOSSectRelocs( section *sect, bool repos )
@@ -76,7 +76,7 @@ static void WriteDOSSectRelocs( section *sect, bool repos )
     OUTFILELIST         *out;
 
     if( sect->relocs != 0 ) {
-        file_loc = sect->u.file_loc + MAKE_PARA( sect->size );
+        file_loc = sect->u.file_loc + __ROUND_UP_SIZE_PARA( sect->size );
         out = sect->outfile;
         if( out->file_loc > file_loc ) {
             SeekLoad( file_loc );
@@ -101,11 +101,11 @@ static void AssignFileLocs( section *sect )
 /*****************************************/
 {
     if( FmtData.u.dos.pad_sections ) {
-        sect->outfile->file_loc = ROUND_UP( sect->outfile->file_loc, SECTOR_SIZE );
+        sect->outfile->file_loc = __ROUND_UP_SIZE( sect->outfile->file_loc, SECTOR_SIZE );
     }
     sect->u.file_loc = sect->outfile->file_loc;
-    sect->outfile->file_loc += MAKE_PARA( sect->size )
-                            + MAKE_PARA( sect->relocs * sizeof( dos_addr ) );
+    sect->outfile->file_loc += __ROUND_UP_SIZE_PARA( sect->size )
+                            + __ROUND_UP_SIZE_PARA( sect->relocs * sizeof( dos_addr ) );
     DEBUG((DBG_LOADDOS, "section %d assigned to %l in %s",
             sect->ovlref, sect->u.file_loc, sect->outfile->fname ));
 }
@@ -279,7 +279,7 @@ static void WriteCOMFile( void )
             }
         }
     }
-    if( fnode->file_loc > (_64KB - 0x200) ) {
+    if( fnode->file_loc > (_64K - 0x200) ) {
         LnkMsg( ERR+MSG_COM_TOO_LARGE, NULL );
     }
     DBIWrite();
@@ -314,7 +314,7 @@ void FiniDOSLoadFile( void )
     /* output debug info into root main output file */
     CurrSect = Root;
     DBIWrite();
-    hdr_size = MAKE_PARA( Root->relocs * sizeof( dos_addr ) + mz_hdr_size );
+    hdr_size = __ROUND_UP_SIZE_PARA( Root->relocs * sizeof( dos_addr ) + mz_hdr_size );
     DEBUG((DBG_LOADDOS, "root size %l, hdr size %l", root_size, hdr_size ));
     SeekLoad( 0 );
     _HostU16toTarg( DOS_SIGNATURE, exe_head.signature );

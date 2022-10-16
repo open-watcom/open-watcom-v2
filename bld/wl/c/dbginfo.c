@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@
 #include "clibext.h"
 
 
-#define DEMAND_INFO_SPLIT   _16KB
+#define DEMAND_INFO_SPLIT   _16K
 
 #define NON_SECT_INFO 0x8000
 
@@ -830,7 +830,7 @@ static unsigned_16 WriteSegValues( void )
         DBIWriteLocal( segarray, sizeof( unsigned_16 ) * 2 );
         return( sizeof( unsigned_16 ) * 2 );
     } else {
-        buffer = (unsigned_16 *) TokBuff;
+        buffer = (unsigned_16 *)TokBuff;
         buflen = 0;
         for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
             *buffer++ = currgrp->grp_addr.seg;

@@ -186,7 +186,7 @@ static void SetHeaders( ElfHdr *hdr )
     AddCharStringTable( &hdr->secstrtab, '\0' );
     InitSections( hdr );
     hdr->curr_off = hdr->eh.e_ehsize + hdr->ph_size;
-    hdr->curr_off = ROUND_UP( hdr->curr_off, 0x100 );
+    hdr->curr_off = __ROUND_UP_SIZE_PAGE( hdr->curr_off );
     SeekLoad( hdr->curr_off );
 }
 
@@ -196,7 +196,7 @@ unsigned GetElfHeaderSize( void )
     unsigned    size;
 
     size = sizeof( Elf32_Ehdr ) + sizeof( Elf32_Phdr ) * ( NumGroups + NumPhdr );
-    return( ROUND_UP( size, 0x100 ) );
+    return( __ROUND_UP_SIZE_PAGE( size ) );
 }
 
 size_t AddSecName( ElfHdr *hdr, const char *name )
@@ -296,9 +296,9 @@ static void WriteELFGroups( ElfHdr *hdr )
         sh++;
         if( group == DataGroup && FmtData.dgroupsplitseg != NULL ) {
             sh->sh_name = AddSecName( hdr, ".bss" );
-            linear = ph->p_vaddr + ROUND_UP( ph->p_filesz, FmtData.objalign );
+            linear = ph->p_vaddr + __ROUND_UP_SIZE( ph->p_filesz, FmtData.objalign );
             InitBSSSect( sh, off, CalcSplitSize(), linear );
-            linear = ROUND_UP( linear + sh->sh_size, FmtData.objalign);
+            linear = __ROUND_UP_SIZE( linear + sh->sh_size, FmtData.objalign);
             sh++;
             if( StackSegPtr != NULL ) {
                 sh->sh_name = AddSecName( hdr, ".stack" );

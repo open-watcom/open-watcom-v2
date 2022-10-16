@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -291,7 +292,7 @@ PE_MODULE * PE_loadLibraryExt(
     }
 
     /* Setup all the pointers into our loaded executeable image */
-    image_ptr = (u_char *)ROUND_4K( (u_long)hMod + sizeof( PE_MODULE ) );
+    image_ptr = (u_char *)__ROUND_UP_SIZE_4K( (u_long)hMod + sizeof( PE_MODULE ) );
     hMod->pbase = image_ptr;
     hMod->ptext = image_ptr + ( text_base - image_base );
     hMod->pdata = image_ptr + ( data_base - image_base );
