@@ -101,7 +101,7 @@ char *WRAPI WRConvertStringFrom( const char *_str, const char *_from, const char
             new[pos++] = to[s - from];
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -136,7 +136,7 @@ char *WRAPI WRConvertFrom( const char *_str, char from, char to )
             new[pos++] = to;
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -166,13 +166,13 @@ char *WRAPI WRConvertTo( const char *_str, char to, char from )
 
     pos = 0;
     for( ; *str != '\0'; str = _mbsinc( str ) ) {
-        if( !_mbislead( str[0] ) && !_mbislead( str[1] ) &&
+        if( !_ismbblead( str[0] ) && !_ismbblead( str[1] ) &&
             str[0] == '\\' && str[1] == from ) {
             new[pos++] = to;
             str++;
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -204,13 +204,13 @@ char * WRAPI WRConvertStringTo( const char *_str, const char *to, const char *_f
 
     pos = 0;
     for( ; *str != '\0'; str = _mbsinc( str ) ) {
-        if( !_mbislead( str[0] ) && !_mbislead( str[1] ) &&
+        if( !_ismbblead( str[0] ) && !_ismbblead( str[1] ) &&
             str[0] == '\\' && (s = _mbschr( from, str[1] )) != NULL ) {
             new[pos++] = to[s - from];
             str++;
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -611,7 +611,7 @@ size_t WRAPI WRFindFnOffset( const char *_name )
     cp = name;
     last = name;
     while( *cp != 0 ) {
-        if( !_mbislead( *cp ) && (*cp == ':' || *cp == '\\') ) {
+        if( !_ismbblead( *cp ) && (*cp == ':' || *cp == '\\') ) {
             last = cp + 1;
         }
         cp = _mbsinc( cp );
