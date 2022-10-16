@@ -27,11 +27,15 @@
 #define _DIRENT_HAVE_D_OFF
 #undef  _DIRENT_HAVE_D_TYPE
 
+:keep NAMEMAX
+:include maxpath.sp
+:remove NAMEMAX
+
 struct dirent {
     ino_t           d_ino;
     off_t           d_off;
     unsigned short  d_reclen;
-    char            d_name[256];    /* We must not include limits.h! */
+    char            d_name[NAME_MAX + 1];
 };
 #define d_fileno    d_ino       /* Backwards compatibility.  */
 #define d_offset    d_off       /* Backwards compatibility.  */
