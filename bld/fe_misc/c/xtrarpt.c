@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,10 +311,10 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
         total -= integ * count;
         fract = ( total * 2000 + count ) / count / 2;
     }
-    itoa( fract + 1000, frac_part, 10 );
+    sprintf( frac_part, "%d", fract + 1000 );
     frac_part[0] = '.';
-    itoa( integ + 100000, int_part, 10 );
-    for( p = int_part+1; *p == '0'; ++p ) *p = ' ';
+    sprintf( int_part, "%d", integ + 100000 );
+    for( p = int_part + 1; *p == '0'; ++p ) *p = ' ';
     outputLineArgs( fp
                   , int_part+1
                   , frac_part

@@ -635,7 +635,7 @@ void SetEditInt( HWND hwnd, UINT id, int value )
 {
     char        buff[16];
 
-    itoa( value, buff, 10 );
+    sprintf( buff, "%d", value );
     SetDlgItemText( hwnd, id, buff );
 
 } /* SetEditInt */

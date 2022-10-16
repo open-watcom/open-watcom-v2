@@ -427,7 +427,7 @@ static  void   DefineGlobalSeg( global_seg *seg )
 
     seg->segid = AllocSegId();
     memcpy( g_name, GData, G_DATA_LEN );
-    itoa( seg->segid - GlobalSeg->segid, &g_name[G_DATA_LEN], 10 );
+    sprintf( &g_name[G_DATA_LEN], "%d", (int)( seg->segid - GlobalSeg->segid ) );
 
 #if _CPU == 386 || _CPU == 8086
     if( _SmallDataModel( CGOpts ) ) {

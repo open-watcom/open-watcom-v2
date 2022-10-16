@@ -178,8 +178,7 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 
                 memset( StatusBarBuf, ' ', StatusBarLen );
                 StatusBarBuf[StatusBarLen] = '\0';
-                itoa( Percent, num, 10 );
-                strcat( num, "%" );
+                sprintf( num, "%d%%", Percent );
                 memcpy( StatusBarBuf + StatusBarLen / 2 - 1, num, strlen( num ) );
                 // draw bar in two parts
                 len1 = (StatusBarLen * (long)Percent) / 100;

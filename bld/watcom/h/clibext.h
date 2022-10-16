@@ -102,8 +102,6 @@
 #define NAME_MAX FILENAME_MAX
 #define PATH_MAX FILENAME_MAX
 #define _grow_handles _setmaxstdio
-#define gmtime_r(a,b) gmtime_s(b,a)
-#define localtime_r(a,b) localtime_s(b,a)
 
 #endif
 
