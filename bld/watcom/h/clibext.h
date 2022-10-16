@@ -112,7 +112,6 @@
 //#ifndef getch
 //#define getch getchar
 //#endif
-#define __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
 
 #ifndef __cplusplus

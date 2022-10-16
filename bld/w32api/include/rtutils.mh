@@ -58,8 +58,8 @@ VOID __cdecl    RouterLogEventExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, ... );
 VOID __cdecl    RouterLogEventExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, ... );
 VOID APIENTRY   RouterLogEventStringA( HANDLE, DWORD, DWORD, DWORD, LPSTR *, DWORD, DWORD );
 VOID APIENTRY   RouterLogEventStringW( HANDLE, DWORD, DWORD, DWORD, LPWSTR *, DWORD, DWORD );
-VOID APIENTRY   RouterLogEventValistExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, __va_list );
-VOID APIENTRY   RouterLogEventValistExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, __va_list );
+VOID APIENTRY   RouterLogEventValistExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, va_list );
+VOID APIENTRY   RouterLogEventValistExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, va_list );
 VOID APIENTRY   RouterLogEventW( HANDLE, DWORD, DWORD, DWORD, LPWSTR *, DWORD );
 HANDLE APIENTRY RouterLogRegisterA( LPCSTR );
 HANDLE APIENTRY RouterLogRegisterW( LPCWSTR );
@@ -79,8 +79,8 @@ DWORD APIENTRY  TracePutsExA( DWORD, DWORD, LPCSTR );
 DWORD APIENTRY  TracePutsExW( DWORD, DWORD, LPCWSTR );
 DWORD APIENTRY  TraceRegisterExA( LPCSTR, DWORD );
 DWORD APIENTRY  TraceRegisterExW( LPCWSTR, DWORD );
-DWORD APIENTRY  TraceVprintfExA( DWORD, DWORD, LPCSTR, __va_list );
-DWORD APIENTRY  TraceVprintfExW( DWORD, DWORD, LPCWSTR, __va_list );
+DWORD APIENTRY  TraceVprintfExA( DWORD, DWORD, LPCSTR, va_list );
+DWORD APIENTRY  TraceVprintfExW( DWORD, DWORD, LPCWSTR, va_list );
 
 /* Functions implemented as macros */
 #define RouterLogErrorA( p1, p2, p3, p4, p5 ) \
