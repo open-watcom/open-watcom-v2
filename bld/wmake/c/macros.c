@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#if !defined( __UNIX__ )    // NAME_MAX clashes with that in UNIX <limits.h>
-    #include <direct.h>     // Needed for getcwd()
-#else
+#if defined( __UNIX__ )
     #include <sys/types.h>  // Implicitly included by <direct.h>
+#else
+    #include <direct.h>     // Needed for getcwd()
 #endif
 #include <stdlib.h>
 #include <ctype.h>

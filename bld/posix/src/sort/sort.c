@@ -83,7 +83,7 @@ static int compareRevI( const void *p1, const void *p2 )
     return( stricmp( *cp2, *cp1 ) );
 }
 
-char *my_fgets( char *buffer, int size, FILE *fp )
+static char *my_fgets( char *buffer, int size, FILE *fp )
 {
     size_t  len;
 

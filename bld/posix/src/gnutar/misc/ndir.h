@@ -80,6 +80,7 @@ typedef struct _dirdesc {
 #ifndef NULL
 #define NULL 0
 #endif
+
 extern DIR              *opendir( char * );
 extern struct direct    *readdir( DIR * );
 extern void             closedir( DIR * );

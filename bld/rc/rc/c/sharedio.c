@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -280,7 +280,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
             break;
         default:
             type = typebuf;
-            utoa( typeid->ID.Num, type, 10 );
+            sprintf( type, "%u", (unsigned)typeid->ID.Num );
             break;
         }
     }
@@ -289,7 +289,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         name = WResIDToStr( nameid );
     } else {
         name = namebuf;
-        utoa( nameid->ID.Num, name, 10 );
+        sprintf( name, "%u", (unsigned)nameid->ID.Num );
     }
     if( !typeid->IsName && typeid->ID.Num == RESOURCE2INT( RT_STRING ) ) {
         strbase = ( nameid->ID.Num - 1 ) * 16;

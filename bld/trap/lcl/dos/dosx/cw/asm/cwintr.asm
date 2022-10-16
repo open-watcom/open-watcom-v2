@@ -40,7 +40,7 @@ w       equ     word ptr
 d       equ     dword ptr
 f       equ     fword ptr
 
-CPU_FLAG_SINGLE_STEP        equ 100h
+INTR_TF equ     100h
 
 ;*******************************************************************************
 ;Execution status symbolic constants
@@ -242,7 +242,7 @@ SwitchToDebuggerIntFrame:
         mov     ProcCS,ax
 ;
         mov     eax,[esp+INTFRM.i_flags]
-        and     ah,not (CPU_FLAG_SINGLE_STEP shr 8)
+        and     ah,not (INTR_TF shr 8)
         mov     ProcEFL,eax
 ;
 ;Now modify original CS:EIP,SS:ESP values and return control
@@ -282,7 +282,7 @@ SwitchToDebuggerExcFrame:
 ;Fetch original Flags
 ;
         mov     eax,[esp+EXCPFRM.e_flags]
-        and     ah,not (CPU_FLAG_SINGLE_STEP shr 8)
+        and     ah,not (INTR_TF shr 8)
         mov     ProcEFL,eax
 ;
 ;Now modify origional CS:EIP,SS:ESP values and return control

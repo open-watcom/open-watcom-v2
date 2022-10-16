@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -93,7 +93,7 @@ static void ix_out_pagenos( ix_e_blk * e, int spaces )
             }
             ix_out( ew->u.page_text, 0 );
         } else {
-            utoa( ew->u.page_no, str, 10 );
+            sprintf( str, "%lu", ew->u.page_no );
             if( first ) {
                 ix_out( " ", 0 );
             } else {

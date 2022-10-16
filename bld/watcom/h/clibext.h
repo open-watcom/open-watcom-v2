@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -101,11 +101,8 @@
 #define FNM_LEADING_DIR 0x10
 #define NAME_MAX FILENAME_MAX
 #define PATH_MAX FILENAME_MAX
-#define fseeko fseek
-#define strcasecmp stricmp
 #define _grow_handles _setmaxstdio
 #define _mbislead _ismbblead
-#define utoa ultoa
 #define gmtime_r(a,b) gmtime_s(b,a)
 #define localtime_r(a,b) localtime_s(b,a)
 
@@ -171,7 +168,6 @@ typedef int     mode_t;
 #if defined( __UNIX__ )
 
 extern char     *itoa( int value, char *buf, int radix );
-extern char     *utoa( unsigned int value, char *buf, int radix );
 extern char     *ltoa( long value, char *buf, int radix );
 extern char     *ultoa( unsigned long value, char *buf, int radix );
 extern void     _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );

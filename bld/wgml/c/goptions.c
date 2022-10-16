@@ -416,7 +416,7 @@ static void set_cpinch( option * opt )
         } else {
             CPI = opt_value;
         }
-        ltoa( CPI, wkstring, 10 );
+        sprintf( wkstring, "%d", CPI );
         add_symvar( &global_dict, "$cpi", wkstring, no_subscript, 0 );
         tokennext = tokennext->nxt;
     }
@@ -447,7 +447,7 @@ static void set_lpinch( option * opt )
             LPI = opt_value;
         }
     /*    LPI (in contrast to CPI) is not stored as global symbol
-     *  ltoa( LPI, wkstring, 10 );
+     *  sprintf( wkstring, "%d", LPI );
      *  add_symvar( &global_dict, "$lpi", wkstring, no_subscript, 0 );
      */
         tokennext = tokennext->nxt;
@@ -1734,7 +1734,7 @@ int proc_options( char * string )
         }
     }
     tokcount = split_tokens( s_after_dq );
-    utoa( tokcount, linestr, 10 );
+    sprintf( linestr, "%d", tokcount );
     g_info_lm( inf_cmdline_tok_cnt, linestr );
 
     tok = cmd_tokens[level];
@@ -1790,8 +1790,8 @@ int proc_options( char * string )
     if( print_to < print_from  ) {
         g_banner();
         err_count++;
-        utoa( print_from, linestr, 10 );
-        utoa( print_to, linestr2, 10 );
+        sprintf( linestr, "%lu", print_from );
+        sprintf( linestr2, "%lu", print_to );
         g_err( err_inv_page_range, linestr, linestr2 );
     }
     return( tokcount );

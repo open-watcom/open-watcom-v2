@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -282,14 +282,13 @@ void AssertionFailed( char * file, unsigned line )
 /************************************************/
 {
     pgroup2     pg;
-    char        buff[ 13 + _MAX_FNAME ];
+    char        buff[13 + _MAX_FNAME];
     size_t      size;
 
     _splitpath2( file, pg.buffer, NULL, NULL, &pg.fname, NULL ); /* _MAX_FNAME */
     size = strlen( pg.fname );
     memcpy( buff, pg.fname, size );
-    buff[size] = ' ';                                   /*   1 */
-    utoa( line, &buff[size + 1], 10 );                  /*  10 */
+    sprintf( buff + size, " %u", line );                /*  10 */
                                                         /* '\0' + 1 */
                                                         /* --- */
                                                         /*  12+_MAX_FNAME */

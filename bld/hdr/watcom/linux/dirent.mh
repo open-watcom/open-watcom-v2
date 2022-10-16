@@ -35,7 +35,7 @@ struct dirent {
     ino_t           d_ino;
     off_t           d_off;
     unsigned short  d_reclen;
-    char            d_name[NAME_MAX + 1];
+    char            d_name[NAME_MAX+1];
 };
 #define d_fileno    d_ino       /* Backwards compatibility.  */
 #define d_offset    d_off       /* Backwards compatibility.  */
