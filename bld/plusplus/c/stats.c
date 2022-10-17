@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -477,7 +477,7 @@ static void extraRptPrintCtr(   // PRINT A COUNTER
     if( reg->ctr.text != NULL ) {
         char buffer[32];
         memset( buffer, ' ', sizeof(buffer) );
-        sprintf( buffer + 16, "%u", *reg->ctr.a_ctr );
+        sprintf( buffer + 16, "%d", *reg->ctr.a_ctr );
         MsgDisplayLineArgs( buffer + strlen(buffer) - 9
                           , " = "
                           , reg->ctr.text
@@ -551,9 +551,9 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
     sprintf( frac_part, "%d", fract + 1000 );
     frac_part[0] = '.';
     sprintf( int_part, "%d", integ + 100000 );
-    for( p = int_part+1; *p == '0'; ++p )
+    for( p = int_part + 1; *p == '0'; ++p )
         *p = ' ';
-    MsgDisplayLineArgs( int_part+1
+    MsgDisplayLineArgs( int_part + 1
                       , frac_part
                       , " = "
                       , reg->avg.text
@@ -614,15 +614,12 @@ static void extraRptTable(      // PRINT A TABLE
         MsgDisplayLine( "" );
         MsgDisplayLine( (char*)reg->tab.title );
         MsgDisplayLine( "" );
-        sprintf( fmt, "%%%dd", digits + 1 );
+        sprintf( fmt, "%%%ud", digits + 1 );
         for( r = 0; r < reg->tab.dim_row; ++r ) {
             int *row = &reg->tab.table[r * reg->tab.dim_col];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
-                sprintf( buf, "%4d", r );
-                buf[4] = ':';
-                buf[5] = ' ';
-                buf[6] = '\0';
+                sprintf( buf, "%4u: ", r );
                 VbufConcStr( &buffer, buf );
             } else {
                 char const *l = row_lbl[r];

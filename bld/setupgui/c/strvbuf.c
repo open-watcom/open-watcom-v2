@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -382,7 +382,7 @@ void VbufConcDecimal(           // CONCATENATE A DECIMAL TO VBUF
 {
     char    buffer[16];         // - temp buffer
 
-    ultoa( value, buffer, 10 );
+    sprintf( buffer, "%u", value );
     VbufConcStr( vbuf, buffer );
 }
 #endif
@@ -398,7 +398,7 @@ void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
         VbufConcChr( vbuf, '-' );
         value = -value;
     }
-    ltoa( value, buffer, 10 );
+    sprintf( buffer, "%d", value );
     digits -= (int)strlen( buffer );
     /* add leading '0' if necessary */
     while( digits-- > 0 ) {
