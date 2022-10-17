@@ -36,11 +36,9 @@
 #define __NO_STACK_CHECKING__
 #endif
 
-#if 0 || defined( TEST ) || defined( DUMP )
-#include <stdio.h>
-#endif
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "watcom.h"
