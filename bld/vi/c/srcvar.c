@@ -185,7 +185,8 @@ void GlobVarAddLong( const char *name, long val )
 {
     char ibuff[MAX_NUM_STR];
 
-    var_add( name, ltoa( val, ibuff, 10 ), &GlobVars, true );
+    sprintf( ibuff, "%ld", val );
+    var_add( name, ibuff, &GlobVars, true );
 
 } /* GlobVarAddLong */
 
@@ -196,7 +197,8 @@ void VarAddLong( const char *name, long val, vars_list *vl )
 {
     char ibuff[MAX_NUM_STR];
 
-    VarAddStr( name, ltoa( val, ibuff, 10 ), vl );
+    sprintf( ibuff, "%ld", val );
+    VarAddStr( name, ibuff, vl );
 
 } /* VarAddLong */
 

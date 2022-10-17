@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -579,7 +579,7 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         {
             char buff[12];
 
-            ltoa( (long)value, buff, 10 );
+            sprintf( buff, "%ld", (long)value );
             emitStr( data, buff );
         }
         break;
@@ -587,7 +587,7 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         if( value != 0 ) {
             char buff[12];
 
-            ultoa( (unsigned long)value, buff, 10 );
+            sprintf( buff, "%lu", (unsigned long)value );
             emitStr( data, buff );
         }
         break;

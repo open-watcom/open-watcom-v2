@@ -214,8 +214,8 @@ static void extraRptPrintCtr(   // PRINT A COUNTER
 {
     if( reg->ctr.text != NULL ) {
         char buffer[32];
-        memset( buffer, ' ', sizeof(buffer) );
-        ltoa( *reg->ctr.a_ctr, buffer + 16, 10 );
+        memset( buffer, ' ', sizeof( buffer ) );
+        sprintf( buffer + 16, "%d", *reg->ctr.a_ctr );
         outputLineArgs( fp
                       , buffer + strlen(buffer) - 9
                       , " = "
@@ -383,10 +383,7 @@ static void extraRptTable(      // PRINT A TABLE
             int *row = &reg->tab.table[ r * reg->tab.dim_col ];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
-                sprintf( buf, "%4d", r );
-                buf[4] = ':';
-                buf[5] = ' ';
-                buf[6] = '\0';
+                sprintf( buf, "%4u: ", r );
                 VbufConcStr( &buffer, buf );
             } else {
                 char const *l = row_lbl[r];

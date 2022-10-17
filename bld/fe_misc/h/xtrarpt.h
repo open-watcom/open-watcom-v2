@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,22 +42,22 @@ void ExtraRptDumpReport(        // DUMP REPORT INTO FILE
     const char *name )          // - name to use for generating file name
 ;
 void ExtraRptRegisterCtr(       // REGISTER A COUNTER
-    long* a_ctr,                // - addr( counter )
-    const char* rpt_line )      // - report line
+    int *a_ctr,                 // - addr( counter )
+    const char *rpt_line )      // - report line
 ;
 void ExtraRptRegisterMax(       // REGISTER A MAXIMUM
-    long* a_ctr,                // - addr( counter )
-    const char* rpt_line )      // - report line
+    int *a_ctr,                 // - addr( counter )
+    const char *rpt_line )      // - report line
 ;
 void ExtraRptRegisterAvg(       // REGISTER AVERAGING
-    long* a_total,              // - addr[ total ]
-    long* a_count,              // - addr[ count ]
-    const char* rpt_line )      // - report line
+    int *a_total,               // - addr[ total ]
+    int *a_count,               // - addr[ count ]
+    const char *rpt_line )      // - report line
 ;
 void ExtraRptRegisterTab(       // REGISTER TABLE
     char const* title,          // - title
     char const * const *row_labels,//- row labels
-    long* table,                // - table
+    int *table,                 // - table
     unsigned rows,              // - # rows
     unsigned cols )             // - # columns
 ;

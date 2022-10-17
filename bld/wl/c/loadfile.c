@@ -1006,7 +1006,7 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
         currpos += otherlen;
         *currpos++ = '\'';
     } else {
-        ultoa( ordinal, currpos, 10 );
+        sprintf( currpos, "%ld", (long)ordinal );
         currpos += strlen( currpos );
     }
 #if !defined( __UNIX__ )

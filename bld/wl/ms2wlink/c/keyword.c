@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -795,8 +795,7 @@ static void GetExport( void )
     strncpy( currloc, name, namelen );
     currloc += namelen;
     if( value <= _64KB ) {   // if an ordinal was specified....
-        *currloc++ = '.';
-        ultoa( value, currloc, 10 );
+        sprintf( currloc, ".%lu", value );
         while( *currloc != '\0' ) {    // find end of string.
             currloc++;
         }
@@ -812,8 +811,7 @@ static void GetExport( void )
         currloc += 8;
     }
     if( iopl <= 31 ) {
-        *currloc++ = ' ';
-        ultoa( iopl * 2, currloc, 10 ); // convert iopl value to a byte value
+        sprintf( currloc, " %lu", iopl * 2 ); // convert iopl value to a byte value
     } else {
         *currloc = '\0';
     }
@@ -917,8 +915,7 @@ static void GetImport( void )
     strncpy( currloc, first, firstlen );   // module name
     currloc += firstlen;
     if( value < _64KB ) {
-        *currloc++ = '.';
-        ultoa( value, currloc, 10 );
+        sprintf( currloc, ".%lu", value );
     } else {
         if( second != NULL ) {
             *currloc++ = '.';

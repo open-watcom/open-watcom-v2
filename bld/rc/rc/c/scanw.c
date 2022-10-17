@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,8 @@
 
 #ifdef SCANDEBUG
 
-#define DEBUGPUTS(s) PutScanString(s);
+#define DEBUGPUTS(s)        PutScanString(s)
+#define DEBUGPUTS_NEWINT    sprintf(debugstring,"%ld",newint);PutScanString(debugstring)
 
 static void PutScanString( const char *string )
 {
@@ -54,7 +56,10 @@ static void PutScanString( const char *string )
 } /* PutScanString */
 
 #else
-    #define DEBUGPUTS(s)
+
+#define DEBUGPUTS(s)
+#define DEBUGPUTS_NEWINT
+
 #endif
 
 /*** Macros to implement the parts of a finite state machine ***/
@@ -223,7 +228,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
                 VarStringAddChar( newstring, LookAhead );
                 do_transition( S_DOS_FILENAME );
             case EOF:
-                DEBUGPUTS("EOF")
+                DEBUGPUTS("EOF");
                 return( 0 );                /* yacc wants 0 on EOF */
             case '#':           do_transition( S_POUND_SIGN );
             case '(':           do_transition( S_LPAREN );
@@ -277,63 +282,63 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         }
 
     state( S_POUND_SIGN ):
-        DEBUGPUTS( "#" )
+        DEBUGPUTS( "#" );
         return( Y_POUND_SIGN );
 
     state( S_LPAREN ):
-        DEBUGPUTS( "(" )
+        DEBUGPUTS( "(" );
         return( Y_LPAREN );
 
     state( S_RPAREN ):
-        DEBUGPUTS( ")" )
+        DEBUGPUTS( ")" );
         return( Y_RPAREN );
 
     state( S_LSQ_BRACKET ):
-        DEBUGPUTS( "[" )
+        DEBUGPUTS( "[" );
         return( Y_LSQ_BRACKET );
 
     state( S_RSQ_BRACKET ):
-        DEBUGPUTS( "]" )
+        DEBUGPUTS( "]" );
         return( Y_RSQ_BRACKET );
 
     state( S_LBRACE ):
-        DEBUGPUTS( "{" )
+        DEBUGPUTS( "{" );
         return( Y_LBRACE );
 
     state( S_RBRACE ):
-        DEBUGPUTS( "}" )
+        DEBUGPUTS( "}" );
         return( Y_RBRACE );
 
     state( S_PLUS ):
-        DEBUGPUTS( "+" )
+        DEBUGPUTS( "+" );
         return( Y_PLUS );
 
     state( S_MINUS ):
-        DEBUGPUTS( "-" )
+        DEBUGPUTS( "-" );
         return( Y_MINUS );
 
     state( S_BITNOT ):
-        DEBUGPUTS( "~" )
+        DEBUGPUTS( "~" );
         return( Y_BITNOT );
 
     state( S_NOT ):
         if( LookAhead == '=' ) {
             do_transition( S_NE );
         } else {
-            DEBUGPUTS( "!" )
+            DEBUGPUTS( "!" );
             return( Y_NOT );
         }
 
     state( S_TIMES ):
-        DEBUGPUTS( "*" )
+        DEBUGPUTS( "*" );
         return( Y_TIMES );
 
     state( S_DIVIDE ):
-        DEBUGPUTS( "/" )
+        DEBUGPUTS( "/" );
         return( Y_DIVIDE );
 
     state( S_MOD ):
-        DEBUGPUTS( "%" )
+        DEBUGPUTS( "%" );
         return( Y_MOD );
 
     state( S_GT ):
@@ -341,7 +346,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         case '>':       do_transition( S_SHIFTR );
         case '=':       do_transition( S_GE );
         default:
-            DEBUGPUTS( ">" )
+            DEBUGPUTS( ">" );
             return( Y_GT );
         }
 
@@ -350,7 +355,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         case '<':       do_transition( S_SHIFTL );
         case '=':       do_transition( S_LE );
         default:
-            DEBUGPUTS( "<" )
+            DEBUGPUTS( "<" );
             return( Y_LT );
         }
 
@@ -358,7 +363,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         if( LookAhead == '=' ) {
             do_transition( S_ENDEQ );
         } else {
-            DEBUGPUTS( "=" )
+            DEBUGPUTS( "=" );
             return( Y_SINGLE_EQ );
         }
 
@@ -366,64 +371,64 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         if( LookAhead == '&' ) {
             do_transition( S_AND );
         } else {
-            DEBUGPUTS( "&" )
+            DEBUGPUTS( "&" );
             return( Y_BITAND );
         }
 
     state( S_BITXOR ):
-        DEBUGPUTS( "^" )
+        DEBUGPUTS( "^" );
         return( Y_BITXOR );
 
     state( S_BITOR ):
         if( LookAhead == '|' ) {
             do_transition( S_OR );
         } else {
-            DEBUGPUTS( "|" )
+            DEBUGPUTS( "|" );
             return( Y_BITOR );
         }
 
     state( S_QUESTION ):
-        DEBUGPUTS( "?" )
+        DEBUGPUTS( "?" );
         return( Y_QUESTION );
 
     state( S_COLON ):
-        DEBUGPUTS( ":" )
+        DEBUGPUTS( ":" );
         return( Y_COLON );
 
     state( S_COMMA ):
-        DEBUGPUTS( "," )
+        DEBUGPUTS( "," );
         return( Y_COMMA );
 
     state( S_NE ):
-        DEBUGPUTS( "!=" )
+        DEBUGPUTS( "!=" );
         return( Y_NE );
 
     state( S_SHIFTR ):
-        DEBUGPUTS( ">>" )
+        DEBUGPUTS( ">>" );
         return( Y_SHIFTR );
 
     state( S_GE ):
-        DEBUGPUTS( ">=" )
+        DEBUGPUTS( ">=" );
         return( Y_GE );
 
     state( S_SHIFTL ):
-        DEBUGPUTS( "<<" )
+        DEBUGPUTS( "<<" );
         return( Y_SHIFTL );
 
     state( S_LE ):
-        DEBUGPUTS( "<=" )
+        DEBUGPUTS( "<=" );
         return( Y_LE );
 
     state( S_ENDEQ ):
-        DEBUGPUTS( "==" )
+        DEBUGPUTS( "==" );
         return( Y_EQ );
 
     state( S_AND ):
-        DEBUGPUTS( "&&" )
+        DEBUGPUTS( "&&" );
         return( Y_AND );
 
     state( S_OR ):
-        DEBUGPUTS( "||" )
+        DEBUGPUTS( "||" );
         return( Y_OR );
 
     state( S_STRING ):
@@ -455,7 +460,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         case '\n':
             if( RcIoIsCOrHFile() ) {
                 value->string.string = VarStringEnd( newstring, &(value->string.length) );
-                DEBUGPUTS( "STRING" )
+                DEBUGPUTS( "STRING" );
                 return( Y_STRING );
             } else {
                 // MSVC's RC uses this obscure way of handling newline in strings and we follow.
@@ -583,7 +588,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
                 RcWarning( ERR_LSTRING_IGNORED_FOR_WINDOWS );
                 value->string.lstring = false;
             }
-            DEBUGPUTS( value->string.string )
+            DEBUGPUTS( value->string.string );
             return( Y_STRING );
         }
 
@@ -602,7 +607,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -618,7 +623,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -634,7 +639,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -646,7 +651,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -670,7 +675,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             return( Y_INTEGER );
         }
@@ -694,7 +699,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -713,7 +718,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -726,7 +731,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->string.string = VarStringEnd( newstring, &(value->string.length) );
-            DEBUGPUTS( value->string.string )
+            DEBUGPUTS( value->string.string );
             token = LookupKeywordWIN( value->string );
             if( token != Y_NAME ) {
                 /* release the string if it is a keyword */
@@ -747,7 +752,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->string.string = VarStringEnd( newstring, &(value->string.length) );
-            DEBUGPUTS( value->string.string )
+            DEBUGPUTS( value->string.string );
             return( Y_DOS_FILENAME );
         }
 } /* ScanDFA */

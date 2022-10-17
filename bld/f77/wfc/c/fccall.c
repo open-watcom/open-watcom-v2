@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,8 +153,7 @@ void    FCPrologue( void ) {
         }
         main_entry_label = BENewLabel();
         CGSelOther( sel, main_entry_label );
-        CGSelect( sel, CGUnary( O_POINTS, CGFEName( EPValue, TY_INTEGER ),
-                                TY_INTEGER ) );
+        CGSelect( sel, CGUnary( O_POINTS, CGFEName( EPValue, TY_INTEGER ), TY_INTEGER ) );
         CGControl( O_LABEL, NULL, main_entry_label );
         BEFiniLabel( main_entry_label );
     }

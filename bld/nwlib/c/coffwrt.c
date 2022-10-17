@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,8 +126,7 @@ static void AddCoffSection( coff_lib_file *c_file, const char *name, unsigned_32
     len = strlen( name );
     memset( section, 0, COFF_SECTION_HEADER_SIZE );
     if( len > COFF_SEC_NAME_LEN ) {
-        section->name[0] = '/';
-        ultoa( c_file->string_table_size + 4, section->name + 1, 10 );
+        sprintf( section->name, "/%lu", (unsigned long)( c_file->string_table_size + 4 ) );
         AddCoffString( c_file, name, len );
     } else {
         memcpy( section->name, name, len );
