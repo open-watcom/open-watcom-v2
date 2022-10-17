@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,6 @@
 #include "standalo.h"
 
 
-void                    OpenErrFile( void );
-
 //    WngLvls[level] // warning levels associated with warning messages
 //    CompFlags.errout_redirected
 
@@ -51,7 +49,6 @@ void                    OpenErrFile( void );
 #define WngLevel Options.warning_level
 
 static bool             Errfile_Written = false;
-static FILE             *ErrFile = NULL;
 
 static void             AsmSuicide( void );
 static void             PutMsg( FILE *fp, char *prefix, unsigned msgnum, va_list args );
@@ -169,13 +166,16 @@ static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2
 // print standard WASM messages
 {
     PrintBanner();
-    if( ErrFile == NULL )
-        OpenErrFile();
+    if( AsmFiles.file[ERR] == NULL ) {
+        if( AsmFiles.fname[ERR] != NULL ) {
+            AsmFiles.file[ERR] = fopen( AsmFiles.fname[ERR], "w" );
+        }
+    }
     PutMsg( errout, prefix, msgnum, args1 );
     fflush( errout );
-    if( ErrFile ) {
+    if( AsmFiles.file[ERR] != NULL ) {
         Errfile_Written = true;
-        PutMsg( ErrFile, prefix, msgnum, args2 );
+        PutMsg( AsmFiles.file[ERR], prefix, msgnum, args2 );
     }
 }
 
@@ -184,15 +184,6 @@ void DelErrFile( void )
 {
     // fixme if( CompFlags.errout_redirected ) return;
     remove( AsmFiles.fname[ERR] );
-}
-
-void OpenErrFile( void )
-/**********************/
-{
-//    if( !isatty( fileno( errout ) ) ) return;
-    if( AsmFiles.fname[ERR] != NULL ) {
-        ErrFile = fopen( AsmFiles.fname[ERR], "w" );
-    }
 }
 
 void LstMsg( const char *format, ... )

@@ -3124,12 +3124,14 @@ void AsmRestoreCPUInfo( void )
 }
 
 void AsmInit( void )
+/******************/
 {
     CPUinfo = Code->info.cpu;
     AsmSymInit();
 }
 
 void AsmFini( void )
+/******************/
 {
     AsmSymFini();
     Code->info.cpu = CPUinfo;

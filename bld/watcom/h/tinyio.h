@@ -206,12 +206,12 @@ typedef struct {
  */
 #define TIO_NAME_MAX    13  /* filename.ext\0 */
 typedef struct {
-    char                reserved[ 21 ]; /* dos uses this area */
+    char                reserved[21];   /* dos uses this area */
     uint_8              attr;           /* attribute of file */
     tiny_ftime_t        time;
     tiny_fdate_t        date;
     uint_32             size;
-    char                name[ TIO_NAME_MAX ];
+    char                name[TIO_NAME_MAX];
 } tiny_find_t;
 
 /*
@@ -389,34 +389,34 @@ typedef union {
     /* from MSDOS Encyclopedia pg 1473 */
     struct {
         uint_8          drive_identifier;   /* != TIO_EXTFCB_FLAG */
-        char            filename[ 8 ];
-        char            file_extension[ 3 ];
+        char            filename[8];
+        char            file_extension[3];
         uint_16         current_block_num;
         uint_16         record_size;
         uint_32         file_size;
         tiny_fdate_t    date_stamp;
         tiny_ftime_t    time_stamp;
-        char            reserved[ 8 ];
+        char            reserved[8];
         uint_8          current_record_num;
-        uint_8          random_record_number[ 4 ];
+        uint_8          random_record_number[4];
     } normal;
 
     /* from MSDOS Encyclopedia pg 1476 */
     struct {
         uint_8          extended_fcb_flag;  /* == TIO_EXTFCB_FLAG */
-        char            reserved1[ 5 ];
+        char            reserved1[5];
         uint_8          file_attribute;
         uint_8          drive_identifier;
-        char            filename[ 8 ];
-        char            file_extension[ 3 ];
+        char            filename[8];
+        char            file_extension[3];
         uint_16         current_block_num;
         uint_16         record_size;
         uint_32         file_size;
         tiny_fdate_t    date_stamp;
         tiny_ftime_t    time_stamp;
-        char            reserved2[ 8 ];
+        char            reserved2[8];
         uint_8          current_record_num;
-        uint_8          random_record_number[ 4 ];
+        uint_8          random_record_number[4];
     } extended;
 } tiny_fcb_t;
 
