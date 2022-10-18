@@ -577,7 +577,11 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         {
             char buff[12];
 
+#if defined( __WATCOMC__ )
+            ltoa( (long)value, buff, 10 );
+#else
             sprintf( buff, "%ld", (long)value );
+#endif
             emitStr( data, buff );
         }
         break;
@@ -585,7 +589,11 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         if( value != 0 ) {
             char buff[12];
 
+#if defined( __WATCOMC__ )
+            ultoa( (unsigned long)value, buff, 10 );
+#else
             sprintf( buff, "%lu", (unsigned long)value );
+#endif
             emitStr( data, buff );
         }
         break;
