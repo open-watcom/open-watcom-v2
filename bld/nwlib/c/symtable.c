@@ -676,7 +676,7 @@ static void WriteArMlibFileTable( void )
                 if( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) {
                     append_name = true;
                     arch.size += sfile->name_length;
-                    sprintf( buff, AR_NAME_CONTINUED_AFTER "%d", sfile->name_length );
+                    sprintf( buff, AR_NAME_CONTINUED_AFTER "%lu", (unsigned long)sfile->name_length );
                     arch.name = buff;
                 } else {
                     arch.name = sfile->arch.name;
@@ -688,7 +688,7 @@ static void WriteArMlibFileTable( void )
                 arch.name = buff;
             }
         } else {
-            sprintf( buff, "/%d", sfile->name_offset );
+            sprintf( buff, "/%ld", sfile->name_offset );
             arch.name = buff;
         }
         WriteFileHeader( &arch );
