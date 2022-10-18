@@ -1063,8 +1063,8 @@ void ReadInfFile( void )
 }
 
 
-static void encode36( char *buffer, unsigned long value )
-/*******************************************************/
+static char *encode36( char *buffer, unsigned long value )
+/********************************************************/
 {
     char        *p = buffer;
     char        *q;
@@ -1093,8 +1093,7 @@ static void fput36( FILE *fp, long value )
         fprintf( fp, "-" );
         value = -value;
     }
-    encode36( buff, value );
-    fprintf( fp, "%s", buff );
+    fprintf( fp, "%s", encode36( buff, value ) );
 }
 
 void DumpSizes( FILE *fp, FILE_INFO *curr )
