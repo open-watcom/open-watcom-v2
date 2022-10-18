@@ -1159,7 +1159,7 @@ void ReadInfFile( void )
     fclose( fp );
 }
 
-static void encode36( char *buffer, unsigned long value )
+static char *encode36( char *buffer, unsigned long value )
 {
     char        *p = buffer;
     char        *q;
