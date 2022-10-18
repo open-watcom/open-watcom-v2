@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,9 +45,6 @@
 #define AR_GID_LEN      6
 #define AR_MODE_LEN     8
 #define AR_SIZE_LEN     10
-
-#define AR_ELEMENT_BASE 10
-#define AR_MODE_BASE    8
 
 #define AR_NAME_CONTINUED_AFTER     "#1/"
 #define AR_NAME_CONTINUED_AFTER_LEN 3
