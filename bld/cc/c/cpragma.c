@@ -46,7 +46,7 @@
 
 
 #define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
-#define pragmaIdRecog(what)     (stricmp(what, SkipUnderscorePrefix(Buffer, NULL, true)) == 0)
+#define pragmaIdRecog(what)     (stricmp(what, SkipUnderscorePrefix(Buffer, true)) == 0)
 
 typedef enum {
     #define pick(a,b,c,d)   a,
@@ -216,8 +216,8 @@ static void endOfPragma( bool check_end )
     }
 }
 
-const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names )
-/****************************************************************************************/
+const char *SkipUnderscorePrefix( const char *str, bool iso_compliant_names )
+/***************************************************************************/
 {
     const char  *start;
 
@@ -233,14 +233,8 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_complia
         if( str[0] == '_' && str[1] == '_' ) {
             str += 2;
         } else {
-            if( len != NULL ) {
-                *len = 0;
-            }
             return( "" );
         }
-    }
-    if( len != NULL ) {
-        *len -= str - start;
     }
     return( str );
 }
@@ -343,7 +337,7 @@ static aux_info *lookupMagicKeyword( const char *name )
 {
     magic_words     mword;
 
-    name = SkipUnderscorePrefix( name, NULL, true );
+    name = SkipUnderscorePrefix( name, true );
     for( mword = 0; mword < M_SIZE; mword++ ) {
         if( strcmp( name, magicWords[mword].name + 2 ) == 0 ) {
             return( magicWords[mword].info );
@@ -584,15 +578,17 @@ TOKEN PragRegSet( void )
     return( T_NULL );
 }
 
-int PragRegIndex( const char *registers, const char *name, size_t len, bool ignorecase )
-/**************************************************************************************/
+int PragRegIndex( const char *registers, const char *name, bool ignorecase )
+/**************************************************************************/
 {
     int             index;
     const char      *p;
     unsigned char   c;
     unsigned char   c2;
     size_t          i;
+    size_t          len;
 
+    len = strlen( name );
     index = 0;
     for( p = registers; *p != '\0'; ) {
         i = 0;
@@ -614,23 +610,21 @@ int PragRegIndex( const char *registers, const char *name, size_t len, bool igno
     return( -1 );
 }
 
-int PragRegNumIndex( const char *str, size_t len, int max_reg )
-/*************************************************************/
+int PragRegNumIndex( const char *str, int max_reg )
+/*************************************************/
 {
-    int             index;
+    int         index;
 
     /* decode regular register index, max 2 digit */
-    if( len > 0 && isdigit( (unsigned char)str[0] ) ) {
-        if( len == 1 ) {
-            index = str[0] - '0';
-            if( index < max_reg ) {
+    if( isdigit( (unsigned char)str[0] ) ) {
+        index = str[0] - '0';
+        if( isdigit( (unsigned char)str[1] ) ) {
+            index = index * 10 + ( str[1] - '0' );
+            if( str[2] == '\0' && index < max_reg ) {
                 return( index );
             }
-        } else if( len == 2 && isdigit( (unsigned char)str[1] ) ) {
-            index = ( str[1] - '0' ) * 10 + ( str[0] - '0' );
-            if( index < max_reg ) {
-                return( index );
-            }
+        } else if( str[1] == '\0' && index < max_reg ) {
+            return( index );
         }
     }
     return( -1 );

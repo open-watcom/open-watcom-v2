@@ -47,7 +47,7 @@
 
 #define FIRST_USER_SEGMENT      10000
 
-#define CONSTANT( decl_flags ) 	((decl_flags & MASK_CV_QUALIFIERS) == FLAG_CONST)
+#define CONSTANT( decl_flags )  ((decl_flags & MASK_CV_QUALIFIERS) == FLAG_CONST)
 
 typedef struct user_seg {
     struct user_seg *next;
@@ -414,14 +414,14 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
     }
 #if _INTEL_CPU
     HW_CAsgn( reg, HW_EMPTY );
-    len = 0;
     for( p = segname; *p != '\0'; ++p ) {
-        if( len < sizeof( buffer ) - 1 ) {
-            buffer[len++] = *p;
-        }
         if( *p == ':' ) {
+            len = 0;
+            while( segname != p && len < ( sizeof( buffer ) - 1 ) ) {
+                buffer[len++] = *segname++;
+            }
             buffer[len] = '\0';
-            reg = PragRegName( buffer, len );
+            reg = PragRegName( buffer );
             segname = p + 1;
             break;
         }

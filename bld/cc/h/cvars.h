@@ -641,8 +641,8 @@ extern void         PragObjNameInfo( char ** );
 extern bool         PragRecogId( const char * );
 extern bool         PragRecogName( const char * );
 extern hw_reg_set   PragRegList( void );
-extern int          PragRegIndex( const char *, const char *, size_t, bool );
-extern int          PragRegNumIndex( const char *name, size_t len, int max_reg );
+extern int          PragRegIndex( const char *, const char *, bool );
+extern int          PragRegNumIndex( const char *name, int max_reg );
 extern void         PragRegNameErr( const char *regname );
 extern hw_reg_set   *PragManyRegSets( void );
 extern TOKEN        PragRegSet( void );
@@ -659,14 +659,14 @@ extern void         SetPackAmount( unsigned amount );
 extern bool         GetPragmaAuxAliasInfo( void );
 extern aux_info     *PragmaAuxAlias( const char *name );
 extern bool         GetPragmaAuxAlias( void );
-extern const char   *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names );
+extern const char   *SkipUnderscorePrefix( const char *str, bool iso_compliant_names );
 
 /* cprag??? */
 extern void         AsmStmt( void );
 extern bool         AsmInsertFixups( aux_info *info );
 extern void         AsmUsesAuto( aux_info *info );
 extern void         PragAux( void );
-extern hw_reg_set   PragRegName( const char *, size_t );
+extern hw_reg_set   PragRegName( const char * );
 extern hw_reg_set   PragReg( void );
 
 /* cpurge */

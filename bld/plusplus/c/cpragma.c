@@ -63,7 +63,7 @@
 
 
 #define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
-#define pragmaIdRecog(what)     (stricmp(SkipUnderscorePrefix(Buffer, NULL, true), what) == 0)
+#define pragmaIdRecog(what)     (stricmp(SkipUnderscorePrefix(Buffer, true), what) == 0)
 
 #define PCH_LIST_TERM       ((unsigned)-1)
 #define PCH_GLOBAL_PACK     ((unsigned)-1)
@@ -155,8 +155,8 @@ static void endOfPragma( bool check_end )
     }
 }
 
-const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names )
-/****************************************************************************************/
+const char *SkipUnderscorePrefix( const char *str, bool iso_compliant_names )
+/***************************************************************************/
 {
     const char  *start;
 
@@ -172,14 +172,8 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_complia
         if( str[0] == '_' && str[1] == '_' ) {
             str += 2;
         } else {
-            if( len != NULL ) {
-                *len = 0;
-            }
             return( "" );
         }
-    }
-    if( len != NULL ) {
-        *len -= str - start;
     }
     return( str );
 }
@@ -1417,7 +1411,7 @@ static AUX_INFO *lookupMagicKeyword(        // LOOKUP A MAGIC KEYWORD
 {
     magic_words     mword;
 
-    name = SkipUnderscorePrefix( name, NULL, true );
+    name = SkipUnderscorePrefix( name, true );
     for( mword = 0; mword < M_SIZE; mword++ ) {
         if( strcmp( magicWords[mword].name + 2, name ) == 0 ) {
             return( magicWords[mword].info );
@@ -1609,15 +1603,17 @@ AUX_INFO *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
 }
 
 
-int PragRegIndex( const char *registers, const char *name, size_t len, bool ignorecase )
-/**************************************************************************************/
+int PragRegIndex( const char *registers, const char *name, bool ignorecase )
+/**************************************************************************/
 {
     int             index;
     const char      *p;
     unsigned char   c;
     unsigned char   c2;
     size_t          i;
+    size_t          len;
 
+    len = strlen( name );
     index = 0;
     for( p = registers; *p != '\0'; ) {
         i = 0;
@@ -1639,38 +1635,30 @@ int PragRegIndex( const char *registers, const char *name, size_t len, bool igno
     return( -1 );
 }
 
-int PragRegNumIndex( const char *str, size_t len, int max_reg )
-/*************************************************************/
+int PragRegNumIndex( const char *str, int max_reg )
+/*************************************************/
 {
-    int             index;
+    int         index;
 
     /* decode regular register index, max 2 digit */
-    if( len > 0 && isdigit( (unsigned char)str[0] ) ) {
-        if( len == 1 ) {
-            index = str[0] - '0';
-            if( index < max_reg ) {
+    if( isdigit( (unsigned char)str[0] ) ) {
+        index = str[0] - '0';
+        if( isdigit( (unsigned char)str[1] ) ) {
+            index = index * 10 + ( str[1] - '0' );
+            if( str[2] == '\0' && index < max_reg ) {
                 return( index );
             }
-        } else if( len == 2 && isdigit( (unsigned char)str[1] ) ) {
-            index = ( str[1] - '0' ) * 10 + ( str[0] - '0' );
-            if( index < max_reg ) {
-                return( index );
-            }
+        } else if( str[1] == '\0' && index < max_reg ) {
+            return( index );
         }
     }
     return( -1 );
 }
 
-void PragRegNameErr( const char *regname, size_t regnamelen )
-/***********************************************************/
+void PragRegNameErr( const char *regname )
+/****************************************/
 {
-    char            buffer[20];
-
-    if( regnamelen > sizeof( buffer ) - 1 )
-        regnamelen = sizeof( buffer ) - 1;
-    memcpy( buffer, regname, regnamelen );
-    buffer[regnamelen] = '\0';
-    CErr2p( ERR_BAD_REGISTER_NAME, buffer );
+    CErr2p( ERR_BAD_REGISTER_NAME, regname );
 }
 
 
@@ -1692,7 +1680,7 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     }
     NextToken();
     for( ; CurToken != close_token; ) {
-        reg = PragRegName( Buffer, strlen( Buffer ) );
+        reg = PragRegName( Buffer );
         HW_TurnOn( res, reg );
         NextToken();
     }

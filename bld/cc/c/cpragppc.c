@@ -113,38 +113,34 @@ bool GetPragmaAuxAlias( void )
     return( true );
 }
 
-hw_reg_set PragRegName( const char *regname, size_t regnamelen )
-/**************************************************************/
+hw_reg_set PragRegName( const char *regname )
+/*******************************************/
 {
     int             index;
     const char      *str;
     hw_reg_set      name;
-    size_t          len;
 
-    if( regnamelen > 0 ) {
-        len = regnamelen;
-        str = SkipUnderscorePrefix( regname, &len, false );
-        if( len > 0 && *str == '$' ) {
+    if( *regname != '\0' ) {
+        str = SkipUnderscorePrefix( regname, false );
+        if( *str == '$' ) {
             str++;
-            len--;
-            if( len > 0 ) {
+            if( *str != '\0' ) {
                 // search register or alias name
-                index = PragRegIndex( Registers, str, len, false );
+                index = PragRegIndex( Registers, str, false );
                 if( index != -1 ) {
                     return( RegBits[RegMap[index]] );
                 }
                 // decode regular register index
-                index = PragRegNumIndex( str, len, 32 );
+                index = PragRegNumIndex( str, 32 );
                 if( index != -1 ) {
                     return( RegBits[index] );
                 }
             }
-        } else if( len > 0 && ( *str == 'r' || *str == 'R' ) ) {
+        } else if( *str == 'r' || *str == 'R' ) {
             // decode regular register name [rR]nn
             str++;
-            len--;
-            if( len > 0 ) {
-                index = PragRegNumIndex( str, len, 32 );
+            if( *str != '\0' ) {
+                index = PragRegNumIndex( str, 32 );
                 if( index != -1 ) {
                     return( RegBits[index] );
                 }
@@ -173,7 +169,7 @@ hw_reg_set PragReg( void )
         buffer[len++] = *src++;
     }
     buffer[len] = '\0';
-    return( PragRegName( buffer, len ) );
+    return( PragRegName( buffer ) );
 }
 
 void AsmUsesAuto( aux_info *info )

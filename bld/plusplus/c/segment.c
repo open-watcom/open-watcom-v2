@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -563,14 +563,21 @@ static PC_SEGMENT *segmentDefine(// SEGMENT: DEFINE IF REQUIRED
     PC_SEGMENT *curr;           // - current segment
     struct seg_look lk;         // - look-up structure
 #if _INTEL_CPU
-    const char *ptr;            // - scans register bound to segment
+    const char *p;              // - scans register bound to segment
     hw_reg_set seg_reg;
+    char       buffer[REG_BUFF_SIZE];
+    size_t     len;
 
     HW_CAsgn( seg_reg, HW_EMPTY );
-    for( ptr = seg_name; *ptr != '\0'; ++ptr ) {
-        if( *ptr == ':' ) {
-            seg_reg = PragRegName( seg_name, ptr - seg_name );
-            seg_name = ptr + 1;
+    for( p = seg_name; *p != '\0'; ++p ) {
+        if( *p == ':' ) {
+            len = 0;
+            while( seg_name != p && len < ( sizeof( buffer ) - 1 ) ) {
+                buffer[len++] = *seg_name++;
+            }
+            buffer[len] = '\0';
+            seg_reg = PragRegName( buffer );
+            seg_name = p + 1;
             break;
         }
     }

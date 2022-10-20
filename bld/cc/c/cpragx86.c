@@ -696,23 +696,21 @@ static bool GetByteSeq( aux_info *info )
 }
 
 
-hw_reg_set PragRegName( const char *regname, size_t regnamelen )
-/**************************************************************/
+hw_reg_set PragRegName( const char *regname )
+/*******************************************/
 {
     int             index;
     const char      *str;
     hw_reg_set      name;
-    size_t          len;
 
-    if( regnamelen > 0 ) {
-        len = regnamelen;
-        str = SkipUnderscorePrefix( regname, &len, true );
+    if( *regname != '\0' ) {
+        str = SkipUnderscorePrefix( regname, true );
         // search register or alias name
-        index = PragRegIndex( Registers, str, len, true );
+        index = PragRegIndex( Registers, str, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
-        if( len == 4 && strcmp( str, "8087" ) == 0 ) {
+        if( strcmp( str, "8087" ) == 0 ) {
             HW_CAsgn( name, HW_FLTS );
             return( name );
         }
@@ -735,7 +733,7 @@ hw_reg_set PragReg( void )
         buffer[len++] = *src++;
     }
     buffer[len] = '\0';
-    return( PragRegName( buffer, len ) );
+    return( PragRegName( buffer ) );
 }
 
 static void GetParmInfo( void )
