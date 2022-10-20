@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -3082,9 +3082,7 @@ void ClassMakeUniqueName( TYPE class_type, NAME signature )
         len = strlen( NameStr( signature ) );
     }
     hash *= len + 1;
-    buff[0] = '_';
-    buff[1] = '_';
-    ultoa( hash, &buff[2], 31 );
+    EncodeClassHash( hash, buff );
     if( len != 0 ) {
         VBUF big_buff;
 

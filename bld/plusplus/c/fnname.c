@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1356,6 +1356,17 @@ NAME CppTsName(                 // MANGLED NAME FOR TYPE SIGNATURE
     TYPE type )                 // - type being signified
 {
     return( CppNameTypeSig( type ) );
+}
+
+
+char *EncodeClassHash(          // ENCODE CLASS HASH
+    unsigned hash,              // - class hash value
+    char *buffer )              // - output buffer
+{
+    buffer[0] = '_';
+    buffer[1] = '_';
+    my_ultoa( hash, buffer + 2, 31 );
+    return( buffer );
 }
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +66,10 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
 ;
 const char *GetMangledName(     // MANGLE SYMBOL NAME
     SYMBOL sym )                // - symbol to mangle
+;
+char *EncodeClassHash(          // ENCODE CLASS HASH
+    unsigned hash,              // - class hash value
+    char *buffer )              // - output buffer
 ;
 NAME CppMembPtrOffsetName(      // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
     SYMBOL sym )                // - field for offsetting
