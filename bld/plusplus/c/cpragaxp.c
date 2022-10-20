@@ -268,6 +268,7 @@ void AsmSysDone( void )
 }
 
 void *AsmQuerySymbol( const char *name )
+/**************************************/
 {
     return( ScopeASMLookup( NameCreateNoLen( name ) ) );
 }

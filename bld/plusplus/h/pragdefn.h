@@ -179,6 +179,9 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
 hw_reg_set PragRegName(         // GET REGISTER NAME
     const char *regname )       // - register name
 ;
+hw_reg_set PragReg(             // GET REGISTER
+    void )
+;
 bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
@@ -193,8 +196,7 @@ void AsmSysPCHReadCode(         // read code sequence from PCH
     AUX_INFO *info )            // - code sequence
 ;
 const char *SkipUnderscorePrefix(
-    const char *str,
-    bool iso_compliant_names )
+    const char *str )
 ;
 bool GetPragmaAuxAliasInfo(
     void )

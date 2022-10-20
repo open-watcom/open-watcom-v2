@@ -63,7 +63,6 @@
 
 
 #define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
-#define pragmaIdRecog(what)     (stricmp(SkipUnderscorePrefix(Buffer, true), what) == 0)
 
 #define PCH_LIST_TERM       ((unsigned)-1)
 #define PCH_GLOBAL_PACK     ((unsigned)-1)
@@ -155,25 +154,20 @@ static void endOfPragma( bool check_end )
     }
 }
 
-const char *SkipUnderscorePrefix( const char *str, bool iso_compliant_names )
-/***************************************************************************/
+const char *SkipUnderscorePrefix( const char *str )
+/*************************************************/
 {
-    const char  *start;
-
-    start = str;
-    if( !iso_compliant_names || CompFlags.non_iso_compliant_names_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
         if( *str == '_' ) {
             str++;
             if( *str == '_' ) {
                 str++;
             }
         }
+    } else if( str[0] == '_' && str[1] == '_' ) {
+        str += 2;
     } else {
-        if( str[0] == '_' && str[1] == '_' ) {
-            str += 2;
-        } else {
-            return( "" );
-        }
+        str = NULL;
     }
     return( str );
 }
@@ -182,10 +176,12 @@ bool PragRecogId(               // RECOGNIZE PRAGMA ID
     const char *what )          // - id
 {
     bool ok;
+    const char *p;
 
     ok = IS_ID_OR_KEYWORD( CurToken );
     if( ok ) {
-        ok = pragmaIdRecog( what );
+        p = SkipUnderscorePrefix( Buffer );
+        ok = ( p != NULL && stricmp( p, what ) == 0 );
         if( ok ) {
             NextToken();
         }
@@ -1411,10 +1407,11 @@ static AUX_INFO *lookupMagicKeyword(        // LOOKUP A MAGIC KEYWORD
 {
     magic_words     mword;
 
-    name = SkipUnderscorePrefix( name, true );
-    for( mword = 0; mword < M_SIZE; mword++ ) {
-        if( strcmp( magicWords[mword].name + 2, name ) == 0 ) {
-            return( magicWords[mword].info );
+    if( (name = SkipUnderscorePrefix( name )) != NULL ) {
+        for( mword = 0; mword < M_SIZE; mword++ ) {
+            if( strcmp( magicWords[mword].name + 2, name ) == 0 ) {
+                return( magicWords[mword].info );
+            }
         }
     }
     return( NULL );
@@ -1680,7 +1677,7 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     }
     NextToken();
     for( ; CurToken != close_token; ) {
-        reg = PragRegName( Buffer );
+        reg = PragReg();
         HW_TurnOn( res, reg );
         NextToken();
     }

@@ -399,12 +399,11 @@ static const spc_info *InitFiniLookup( const char *name )
 static segment_id AddSeg( const char *segname, const char *class_name, int segtype )
 {
     int             i;
-    user_seg        *useg, **lnk;
+    user_seg        *useg;
+    user_seg        **lnk;
 #if _INTEL_CPU
     hw_reg_set      reg;
     const char      *p;
-    char            buffer[REG_BUFF_SIZE];
-    size_t          len;
 #endif
 
     for( i = 0; i < ARRAY_SIZE( Predefined_Segs ); i++ ) {
@@ -416,9 +415,19 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
     HW_CAsgn( reg, HW_EMPTY );
     for( p = segname; *p != '\0'; ++p ) {
         if( *p == ':' ) {
+            char        buffer[REG_BUFF_SIZE];
+            const char  *p1;
+            size_t      len;
+
+            p1 = SkipUnderscorePrefix( segname );
+            if( p1 == NULL ) {
+                /* error missing underscore prefix */
+                PragRegNameErr( segname );
+                p1 = segname;
+            }
             len = 0;
-            while( segname != p && len < ( sizeof( buffer ) - 1 ) ) {
-                buffer[len++] = *segname++;
+            while( p1 != p && len < ( sizeof( buffer ) - 1 ) ) {
+                buffer[len++] = *p1++;
             }
             buffer[len] = '\0';
             reg = PragRegName( buffer );

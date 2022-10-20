@@ -565,15 +565,22 @@ static PC_SEGMENT *segmentDefine(// SEGMENT: DEFINE IF REQUIRED
 #if _INTEL_CPU
     const char *p;              // - scans register bound to segment
     hw_reg_set seg_reg;
-    char       buffer[REG_BUFF_SIZE];
-    size_t     len;
 
     HW_CAsgn( seg_reg, HW_EMPTY );
     for( p = seg_name; *p != '\0'; ++p ) {
         if( *p == ':' ) {
+            char       buffer[REG_BUFF_SIZE];
+            const char *p1;
+            size_t     len;
+
+            p1 = SkipUnderscorePrefix( seg_name );
+            if( p1 == NULL ) {
+                PragRegNameErr( seg_name );
+                p1 = seg_name;
+            }
             len = 0;
-            while( seg_name != p && len < ( sizeof( buffer ) - 1 ) ) {
-                buffer[len++] = *seg_name++;
+            while( p1 != p && len < ( sizeof( buffer ) - 1 ) ) {
+                buffer[len++] = *p1++;
             }
             buffer[len] = '\0';
             seg_reg = PragRegName( buffer );

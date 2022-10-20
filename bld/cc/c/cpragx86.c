@@ -700,17 +700,15 @@ hw_reg_set PragRegName( const char *regname )
 /*******************************************/
 {
     int             index;
-    const char      *str;
     hw_reg_set      name;
 
     if( *regname != '\0' ) {
-        str = SkipUnderscorePrefix( regname, true );
         // search register or alias name
-        index = PragRegIndex( Registers, str, true );
+        index = PragRegIndex( Registers, regname, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
-        if( strcmp( str, "8087" ) == 0 ) {
+        if( strcmp( regname, "8087" ) == 0 ) {
             HW_CAsgn( name, HW_FLTS );
             return( name );
         }
@@ -725,12 +723,17 @@ hw_reg_set PragReg( void )
 {
     char            buffer[REG_BUFF_SIZE];
     size_t          len;
-    const char      *src;
+    const char      *p;
 
+    p = SkipUnderscorePrefix( Buffer );
+    if( p == NULL ) {
+        /* error, missing undercore prefix */
+        PragRegNameErr( Buffer );
+        p = Buffer;
+    }
     len = 0;
-    src = Buffer;
-    while( *src != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
-        buffer[len++] = *src++;
+    while( *p != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
+        buffer[len++] = *p++;
     }
     buffer[len] = '\0';
     return( PragRegName( buffer ) );

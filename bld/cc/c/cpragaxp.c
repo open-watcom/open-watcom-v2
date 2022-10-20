@@ -338,21 +338,18 @@ hw_reg_set PragRegName( const char *regname )
 /*******************************************/
 {
     int             index;
-    const char      *str;
     hw_reg_set      name;
 
     if( *regname != '\0' ) {
-        str = SkipUnderscorePrefix( regname, false );
-        if( *str == '$' ) {
-            str++;
-            if( *str != '\0' ) {
+        if( *regname == '$' ) {
+            if( regname[1] != '\0' ) {
                 // search register or alias name
-                index = PragRegIndex( Registers, str, false );
+                index = PragRegIndex( Registers, regname + 1, false );
                 if( index != -1 ) {
                     return( RegBits[RegMap[index]] );
                 }
                 // decode regular register index
-                index = PragRegNumIndex( str, 32 );
+                index = PragRegNumIndex( regname + 1, 32 );
                 if( index != -1 ) {
                     return( RegBits[index] );
                 }
@@ -369,16 +366,25 @@ hw_reg_set PragReg( void )
 {
     char            buffer[REG_BUFF_SIZE];
     size_t          len;
-    const char      *src;
+    const char      *p;
 
+    p = SkipUnderscorePrefix( Buffer );
+    if( p == NULL ) {
+        /* error, missing underscores prefix */
+        PragRegNameErr( Buffer );
+        p = Buffer;
+    } else if( *p == '\0' ) {
+        NextToken();
+        p = Buffer;
+    }
     len = 0;
     if( CurToken == T_BAD_CHAR && Buffer[0] == '$' ) {
         buffer[len++] = '$';
         NextToken();
+        p = Buffer;
     }
-    src = Buffer;
-    while( *src != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
-        buffer[len++] = *src++;
+    while( *p != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
+        buffer[len++] = *p++;
     }
     buffer[len] = '\0';
     return( PragRegName( buffer ) );

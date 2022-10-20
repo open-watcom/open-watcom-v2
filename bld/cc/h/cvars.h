@@ -659,7 +659,7 @@ extern void         SetPackAmount( unsigned amount );
 extern bool         GetPragmaAuxAliasInfo( void );
 extern aux_info     *PragmaAuxAlias( const char *name );
 extern bool         GetPragmaAuxAlias( void );
-extern const char   *SkipUnderscorePrefix( const char *str, bool iso_compliant_names );
+extern const char   *SkipUnderscorePrefix( const char *str );
 
 /* cprag??? */
 extern void         AsmStmt( void );

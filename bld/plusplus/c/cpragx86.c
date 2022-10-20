@@ -1181,20 +1181,17 @@ static int GetByteSeq( void )
 }
 
 
-hw_reg_set PragRegName(         // GET REGISTER NAME
-    const char *regname )       // - register name
+hw_reg_set PragRegName( const char *regname )
 {
     int             index;
     hw_reg_set      name;
-    const char      *str;
 
     if( *regname != '\0' ) {
-        str = SkipUnderscorePrefix( regname, true );
-        index = PragRegIndex( Registers, str, true );
+        index = PragRegIndex( Registers, regname, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
-        if( strcmp( str, "8087" ) == 0 ) {
+        if( strcmp( regname, "8087" ) == 0 ) {
             HW_CAsgn( name, HW_FLTS );
             return( name );
         }
@@ -1202,6 +1199,26 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );
+}
+
+hw_reg_set PragReg( void )      // GET REGISTER
+{
+    char            buffer[REG_BUFF_SIZE];
+    size_t          len;
+    const char      *p;
+    hw_reg_set      name;
+
+    p = SkipUnderscorePrefix( Buffer );
+    if( p == NULL ) {
+        PragRegNameErr( Buffer );
+        p = Buffer;
+    }
+    len = 0;
+    while( *p != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
+        buffer[len++] = *p++;
+    }
+    buffer[len] = '\0';
+    return( PragRegName( buffer ) );
 }
 
 static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
