@@ -1206,7 +1206,6 @@ hw_reg_set PragReg( void )      // GET REGISTER
     char            buffer[REG_BUFF_SIZE];
     size_t          len;
     const char      *p;
-    hw_reg_set      name;
 
     p = SkipUnderscorePrefix( Buffer );
     if( p == NULL ) {
