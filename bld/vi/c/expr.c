@@ -688,3 +688,29 @@ static long _NEAR cExpr12( void )
     }
     return( value );
 }
+
+char *EvalRadix( char *buffer, long value )
+{
+    char            *p;
+    char            *q;
+    char            buf[34];    // only holds ASCII so 'char' is OK
+    unsigned long   uvalue;
+
+    p = buffer;
+    uvalue = value;
+    if( EditVars.Radix == 10 ) {
+        if( value < 0 ) {
+            *p++ = '-';
+            uvalue = - value;
+        }
+    }
+    q = buf;
+    *q++ = '\0';
+    do {
+        *q++ = Encode36Table[(unsigned char)( uvalue % EditVars.Radix )];
+        uvalue /= EditVars.Radix;
+    } while( uvalue != 0 );
+    while( (*p++ = (char)*--q) != '\0' )
+        ;
+    return( buffer );
+}

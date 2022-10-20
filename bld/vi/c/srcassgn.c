@@ -237,7 +237,7 @@ vi_rc SrcAssign( const char *data, vars_list *vl )
                 v1 = "";
             }
         } else {
-            v1 = ltoa( val, tmp1, EditVars.Radix );
+            v1 = EvalRadix( tmp1, val );
         }
     } else {
         v1 = tmp1;

@@ -392,7 +392,7 @@ vi_rc RunCommandLine( const char *cmdl )
         } else {
             StartExprParse( data, jmpaddr );
             val = GetConstExpr();
-            ltoa( val, st, EditVars.Radix );
+            EvalRadix( st, val );
             Message1( "%s", st );
             rc = ERR_NO_ERR;
         }

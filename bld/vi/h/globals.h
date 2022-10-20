@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@ extern const char _NEAR   SingleBlank[];
 extern const char _NEAR   SingleSlash[];
 extern const char _NEAR   SingleDQuote[];
 extern const char _NEAR   SpinData[];
+extern const char _NEAR   Encode36Table[];
 
 /* mouse data */
 #if defined( __LINUX__ )        /* compatible with the ui lib */
