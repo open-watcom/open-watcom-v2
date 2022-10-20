@@ -1185,7 +1185,7 @@ wfc_axp = "$(comp_wfc_axp)" $(wfc_any) $(targ_bld_wfc_$(targ_env_axp))
 wfc_ppc = "$(comp_wfc_ppc)" $(wfc_any) $(targ_bld_wfc_$(targ_env_ppc))
 wfc_mps = "$(comp_wfc_mps)" $(wfc_any) $(targ_bld_wfc_$(targ_env_mps))
 
-librarian = $(wlib_any) $(lib_any) -n -b
+librarian = "$(wlib_any)" $(lib_any) -n -b
 
 !ifdef buildtest
 !ifdef __OS2__
