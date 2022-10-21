@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1346,7 +1347,11 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
 
         buf[0] = '\0';
         strncat( buf, ArrayLeftKwd.s, ArrayLeftKwd.l );
+#ifdef __WATCOMC__
         ltoa( upper_bd, indx, 10 );
+#else
+        sprintf( indx, "%ld", (long)upper_bd );
+#endif
         strcat( buf, indx );
         strncat( buf, ArrayRightKwd.s, ArrayRightKwd.l );
 
@@ -1575,13 +1580,25 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_signed:
                 switch( len ) {
                 case sizeof(signed_32):
+#ifdef __WATCOMC__
                     ltoa( *(signed_32 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%ld", (long)*(signed_32 *)buf );
+#endif
                     break;
                 case sizeof(signed_16):
+#ifdef __WATCOMC__
                     ltoa( *(signed_16 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%ld", (long)*(signed_16 *)buf );
+#endif
                     break;
                 case sizeof(signed_8):
+#ifdef __WATCOMC__
                     ltoa( *(signed_8 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%ld", (long)*(signed_8 *)buf );
+#endif
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1590,13 +1607,25 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_unsigned:
                 switch( len ) {
                 case sizeof(unsigned_32):
+#ifdef __WATCOMC__
                     ultoa( *(unsigned_32 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%lu", (unsigned long)*(signed_32 *)buf );
+#endif
                     break;
                 case sizeof(unsigned_16):
+#ifdef __WATCOMC__
                     ultoa( *(unsigned_16 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%lu", (unsigned long)*(signed_16 *)buf );
+#endif
                     break;
                 case sizeof(unsigned_8):
+#ifdef __WATCOMC__
                     ultoa( *(unsigned_8 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%lu", (unsigned long)*(signed_16 *)buf );
+#endif
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1961,13 +1990,21 @@ static bool FORAddArrayIndex( drmem_hdl abbrev, drmem_hdl entry, void *data )
         strncat( bounds->s, add->s, add->l );
     } else {
         if( lower_bd != 1 ) {
+#ifdef __WATCOMC__
             ltoa( lower_bd, buf, 10 );
+#else
+            sprintf( buf, "%ld", (long)lower_bd );
+#endif
             bounds->l += strlen( buf ) + 1;
             ReallocStr( bounds );
             strcat( bounds->s, buf );
             strcat( bounds->s, ":" );
         }
+#ifdef __WATCOMC__
         ltoa( upper_bd, buf, 10 );
+#else
+        sprintf( buf, "%ld", (long)upper_bd );
+#endif
         bounds->l += strlen( buf );
         ReallocStr( bounds );
         strcat( bounds->s, buf );
@@ -2083,27 +2120,30 @@ static void FORDecType( BrokenName_T *decname, Loc_T *loc )
 static void FORDecString( BrokenName_T *decname, Loc_T *loc )
 /***********************************************************/
 {
-    uint_32     len = 0;
+    uint_32     len;
     drmem_hdl   tmp_abbrev;
     drmem_hdl   tmp_entry;
     char        buf[64];  // "(2147483647)"
-    char        size[62]; // "2147483647"
     String      sizeExpr;
 
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
+    len = 0;
     if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_byte_size ) ) {
         len = DWRReadConstant( tmp_abbrev, tmp_entry );
     }
 
-    strcpy( buf, "(" );
     if( len ) {
-        ltoa( len, size, 10 );
+#ifdef __WATCOMC__
+        *buf = '(';
+        ltoa( len, buf + 1, 10 );
+        strcat( buf, ")" );
+#else
+        sprintf( buf, "(%ld)", (long)len );
+#endif
     } else {
-        strcpy( size, "*" );
+        strcpy( buf, "(*)" );
     }
-    strcat( buf, size );
-    strcat( buf, ")" );
 
     sizeExpr.s = strrev( buf );
     sizeExpr.l = strlen( buf );
