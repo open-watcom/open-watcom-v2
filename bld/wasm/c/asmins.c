@@ -3113,16 +3113,6 @@ void AsmEnvInit( int use32, int cpu, int fpu, bool fpu_emu )
 
 static enum asm_cpu CPUinfo;
 
-void AsmSaveCPUInfo( void )
-{
-    CPUinfo = Code->info.cpu;
-}
-
-void AsmRestoreCPUInfo( void )
-{
-    Code->info.cpu = CPUinfo;
-}
-
 void AsmInit( void )
 /******************/
 {
