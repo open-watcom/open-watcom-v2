@@ -1,3 +1,18 @@
+#include "as.h"
+#include "lexyacc.h"
+#include "asparser.h"
+
+typedef uint_16         YYACTIONBASETYPE;
+typedef uint_16         YYACTIONTYPE;
+typedef uint_16         YYBITBASETYPE;
+typedef uint_8          YYBITTYPE;
+typedef uint_8          YYPLENTYPE;
+typedef uint_16         YYPLHSTYPE;
+
+instruction             *AsCurrIns;
+
+static directive_t      *AsCurrDir;
+
 #ifndef NDEBUG
     #define YYDEBUG
 #endif

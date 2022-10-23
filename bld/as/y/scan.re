@@ -13,6 +13,8 @@
 #define YYMARKER        marker
 #define YYFILL( n )     {fill();}
 
+extern YYSTYPE          yylval;
+
 #ifdef _STANDALONE_
 int CurrLineno = 1;             // This pair is used by the parser and the
 char *CurrFilename = NULL;      // outside world.
