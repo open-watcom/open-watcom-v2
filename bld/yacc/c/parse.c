@@ -981,15 +981,18 @@ void close_header( FILE *fp )
         fprintf( fp, "typedef union %s yystype;\n", union_name );
         fprintf( fp, "#define YYSTYPE yystype\n" );
         fprintf( fp, "#endif\n" );
-        FREE( union_name );
+        fflush( fp );
     }
-    fclose( fp );
 }
 
-void free_header_tokens( void )
+void free_header_data( void )
 {
     y_token     *tmp;
 
+    if( union_name != NULL ) {
+        FREE( union_name );
+        union_name = NULL;
+    }
     while( tokens_head != NULL ) {
         tmp = tokens_head;
         tokens_head = tokens_head->next;

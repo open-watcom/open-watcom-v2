@@ -267,7 +267,7 @@ extern void     parsestats( void );
 extern void     tail( FILE * );
 extern void     dump_header( FILE * );
 extern void     close_header( FILE * );
-extern void     free_header_tokens( void );
+extern void     free_header_data( void );
 
 extern void     genobj( FILE * );
 

@@ -397,7 +397,7 @@ int main( int argc, char **argv )
     }
     /* copy token defs */
     dump_header( actout );
-    free_header_tokens();
+    free_header_data();
     rewind( temp1 );
     /* copy defs */
     copy_part( temp1, actout );
