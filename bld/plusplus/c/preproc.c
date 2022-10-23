@@ -86,6 +86,8 @@ void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
+            char    c;
+
             if( CompFlags.cpp_line_comments ) {
                 fputc( '/', CppFile );
                 fputc( '/', CppFile );
@@ -125,6 +127,8 @@ void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
                        , fname
                        , line );
             } else {
+                char    c;
+
                 if( line == 0 ) {
                     line = 1;
                 }
