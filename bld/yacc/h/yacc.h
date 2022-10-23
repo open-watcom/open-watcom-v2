@@ -267,11 +267,14 @@ extern void     parsestats( void );
 extern void     tail( FILE * );
 extern void     dump_header( FILE * );
 extern void     close_header( FILE * );
+extern void     free_header_tokens( void );
 
 extern void     genobj( FILE * );
 
 extern void     msg( char *, ... );
 extern void     warn( char *, ... );
+extern void     srcinfo_msg( char *, ... );
+extern void     srcinfo_warn( char *, ... );
 extern void     dumpstatistic( char *name, unsigned stat );
 
 extern void     MarkNoUnitRuleOptimizationStates( void );

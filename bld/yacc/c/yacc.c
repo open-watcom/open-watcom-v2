@@ -157,9 +157,6 @@ void warn( char *fmt, ... )
 {
     va_list args;
 
-    if( srcname_norm != NULL ) {
-        printf( "%s(%d): ", srcname_norm, lineno );
-    }
     printf( "Warning! " );
     va_start( args, fmt );
     vprintf( fmt, args );
@@ -171,9 +168,30 @@ void msg( char *fmt, ... )
 {
     va_list args;
 
-    if( srcname_norm != NULL ) {
-        printf( "%s(%d): ", srcname_norm, lineno );
-    }
+    printf( "Error! " );
+    va_start( args, fmt );
+    vprintf( fmt, args );
+    va_end( args );
+    exit( 1 );
+}
+
+void srcinfo_warn( char *fmt, ... )
+{
+    va_list args;
+
+    printf( "%s(%d): ", srcname_norm, lineno );
+    printf( "Warning! " );
+    va_start( args, fmt );
+    vprintf( fmt, args );
+    va_end( args );
+    ++warnings;
+}
+
+void srcinfo_msg( char *fmt, ... )
+{
+    va_list args;
+
+    printf( "%s(%d): ", srcname_norm, lineno );
     printf( "Error! " );
     va_start( args, fmt );
     vprintf( fmt, args );
@@ -356,11 +374,10 @@ int main( int argc, char **argv )
     }
     if( warnings ) {
         if( warnings == 1 ) {
-            printf( "%s: 1 warning\n", srcname );
+            msg( "%s: 1 warning\n", srcname );
         } else {
-            printf( "%s: %d warnings\n", srcname, warnings );
+            msg( "%s: %d warnings\n", srcname, warnings );
         }
-        exit( 1 );
     }
     parsestats();
     dumpstatistic( "parser states", nstate );
@@ -380,6 +397,7 @@ int main( int argc, char **argv )
     }
     /* copy token defs */
     dump_header( actout );
+    free_header_tokens();
     rewind( temp1 );
     /* copy defs */
     copy_part( temp1, actout );
@@ -397,6 +415,7 @@ int main( int argc, char **argv )
         fclose( skeleton );
     }
     tail( actout );
+    fclose( yaccin );
     fclose( actout );
     FREE( codefilename );
     FREE( headerfilename );
