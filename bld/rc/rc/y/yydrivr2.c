@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +51,19 @@ typedef struct IntOpt {
     uint_32     Value;
 } IntOpt;
 
+#ifdef _I86FAR
+#define YYFAR           _I86FAR
+#elif defined( _M_I86 )
+#define YYFAR           __far
+#else
+#define YYFAR
+#endif
+
+#define STACK_MAX       100
+
+/* definitions and tables here */
+
+
 typedef union {
     ScanInt                     intinfo;
     unsigned long               integral;
@@ -88,17 +102,8 @@ typedef union {
     uint_16                     residnum;
     uint_16                     ressizenum;
     uint_8                      resbyte;
-} YYSTYPE;
-
-#ifdef _I86FAR
-#define YYFAR           _I86FAR
-#elif defined( _M_I86 )
-#define YYFAR           __far
-#else
-#define YYFAR
-#endif
-
-#define STACK_MAX       100
+} yystype;
+#define YYSTYPE		yystype
 
 /* define value and state stacks for both expressions and declarations */
 
@@ -119,9 +124,6 @@ typedef enum {
     P_SYNTAX,
     P_ERROR
 } p_action;
-
-/* definitions and tables here */
-
 
 #ifdef YYDEBUG
 
