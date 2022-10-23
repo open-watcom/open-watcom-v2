@@ -26,20 +26,20 @@ static void usage( void )
         "        need this assist to generate better code.\n" );
 }
 
-static char *fname_normalize( char *name )
+static char *fname_normalize( const char *name )
 {
     char    *p;
     char    *dst;
 
-    for( dst = p = strdup( fileName ); (c = *p) != '\0'; p++ ) {
-        if( c != '\\' )
+    for( dst = p = strdup( name ); *p != '\0'; p++ ) {
+        if( *p != '\\' )
             continue;
         *p = '/';
     }
     return( dst );
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
     FILE    *fi;
     char    *p;
