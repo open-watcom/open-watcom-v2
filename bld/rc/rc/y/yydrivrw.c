@@ -45,7 +45,7 @@
 #define YYCHKTYPE       uint_16
 #define YYACTTYPE       uint_16
 #define YYPLHSTYPE      uint_16
-#define YYPLENTYPE	    uint_8
+#define YYPLENTYPE      uint_8
 
 #ifdef _I86FAR
 #define YYFAR           _I86FAR
@@ -57,9 +57,15 @@
 
 #define STACK_MAX       100
 
+typedef enum {
+    P_SHIFT,
+    P_ACCEPT,
+    P_SYNTAX,
+    P_ERROR
+} p_action;
+
 /* definitions and tables here */
-            /*  */
-/* */
+
 
 typedef union {
     ScanInt                     intinfo;
@@ -117,13 +123,6 @@ typedef struct {
 static YYSTYPE yylval;
 static bool    yysyntaxerror;   /* boolean variable */
 #define YYERRORTHRESHOLD    5   /* no. of tokens to accept before restarting */
-
-typedef enum {
-    P_SHIFT,
-    P_ACCEPT,
-    P_SYNTAX,
-    P_ERROR
-} p_action;
 
 #ifdef YYDEBUG
 

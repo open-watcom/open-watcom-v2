@@ -41,7 +41,7 @@ static Scanner *in;
 #define YYSTYPE         int
 #endif
 
-YYSTYPE yyval, yylval;
+YYSTYPE                 yylval;
 
 #define yyerrok         yyerrflag = 0
 #define yyclearin       yytoken = yyscan()
@@ -53,6 +53,8 @@ YYSTYPE yyval, yylval;
 #define YYABORT         return(1)
 #define YYACCEPT        return(0)
 #define YYERROR         goto yyerrlab
+
+static YYSTYPE          yyval;
 
 static void yyerror( const char *s )
 {
