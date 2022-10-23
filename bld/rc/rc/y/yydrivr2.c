@@ -41,15 +41,10 @@
 #include "rccore.h"
 
 
-typedef uint_16         YYCHKTYPE;
-typedef uint_16         YYACTTYPE;
-typedef uint_16         YYPLHSTYPE;
-typedef uint_8          YYPLENTYPE;
-
-typedef struct IntOpt {
-    YYTOKENTYPE Option;
-    uint_32     Value;
-} IntOpt;
+#define YYCHKTYPE       uint_16
+#define YYACTTYPE       uint_16
+#define YYPLHSTYPE      uint_16
+#define YYPLENTYPE	    uint_8
 
 #ifdef _I86FAR
 #define YYFAR           _I86FAR
@@ -63,6 +58,11 @@ typedef struct IntOpt {
 
 /* definitions and tables here */
 
+
+typedef struct IntOpt {
+    YYTOKENTYPE Option;
+    uint_32     Value;
+} IntOpt;
 
 typedef union {
     ScanInt                     intinfo;

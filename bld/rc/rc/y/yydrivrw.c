@@ -42,10 +42,10 @@
 #include "rccore.h"
 
 
-typedef uint_16         YYCHKTYPE;
-typedef uint_16         YYACTTYPE;
-typedef uint_16         YYPLHSTYPE;
-typedef uint_8          YYPLENTYPE;
+#define YYCHKTYPE       uint_16
+#define YYACTTYPE       uint_16
+#define YYPLHSTYPE      uint_16
+#define YYPLENTYPE	    uint_8
 
 #ifdef _I86FAR
 #define YYFAR           _I86FAR
