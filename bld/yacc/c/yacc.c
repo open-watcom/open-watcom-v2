@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,8 @@
 #include "walloca.h"
 
 FILE *yaccin;
-char *loadpath, *srcname;
+char *loadpath;
+char *srcname_norm = NULL;
 char *codefilename;
 char *headerfilename;
 char *descfilename;
@@ -156,8 +157,8 @@ void warn( char *fmt, ... )
 {
     va_list args;
 
-    if( srcname != NULL ) {
-        printf( "%s(%d): ", srcname, lineno );
+    if( srcname_norm != NULL ) {
+        printf( "%s(%d): ", srcname_norm, lineno );
     }
     printf( "Warning! " );
     va_start( args, fmt );
@@ -170,8 +171,8 @@ void msg( char *fmt, ... )
 {
     va_list args;
 
-    if( srcname != NULL ) {
-        printf( "%s(%d): ", srcname, lineno );
+    if( srcname_norm != NULL ) {
+        printf( "%s(%d): ", srcname_norm, lineno );
     }
     printf( "Error! " );
     va_start( args, fmt );
@@ -211,12 +212,32 @@ void copy_rest( FILE *fi, FILE *fo )
     }
 }
 
+static char *fname_normalize( char *name )
+{
+    char    c;
+    char    *p;
+    char    *dst;
+
+    p = dst = malloc( strlen( name ) + 1 );
+    while( (c = *name++) != '\0' ) {
+        if( c == '\\' )
+            c = '/';
+        *p++ = c;
+    }
+    *p = '\0';
+    return( dst );
+}
+
 int main( int argc, char **argv )
 {
     int     i;
-    FILE    *skeleton, *temp, *tokout, *actout;
+    FILE    *skeleton;
+    FILE    *temp1;
+    FILE    *temp2;
+    FILE    *tokout;
+    FILE    *actout;
     int     ch;
-    char    tempfname[10];
+    char    *srcname;
     char    *fileprefix = "y";
     size_t  size;
 
@@ -283,6 +304,7 @@ int main( int argc, char **argv )
         srcname = strcat( strcpy( srcname, argv[i] ), ".y" );
     }
     yaccin = openr( srcname );
+    srcname_norm = fname_normalize( srcname );
 
     size = strlen( fileprefix);
     codefilename   = MALLOC( size + 6, char );
@@ -292,18 +314,20 @@ int main( int argc, char **argv )
     descfilename   = MALLOC( size + 5, char );
     strcat( strcpy( descfilename, fileprefix), ".out" );
     actout = openw( codefilename );
-    defs( actout );
     tokout = openw( headerfilename );
-    dump_header( tokout );
-    temp = NULL;
-    for( i = 0; i < 1000 && temp == NULL; ++i ) {
-        sprintf( tempfname, "ytab.%3d", i );
-        temp = fopen( tempfname, "w+" );
-    }
-    if( temp == NULL ) {
+    temp1 = tmpfile();
+    if( temp1 == NULL ) {
         msg( "Cannot create temporary file\n" );
     }
-    rules( temp );
+    defs( temp1 );
+    dump_header( tokout );
+    close_header( tokout );
+    fclose( tokout );
+    temp2 = tmpfile();
+    if( temp2 == NULL ) {
+        msg( "Cannot create temporary file\n" );
+    }
+    rules( temp2 );
     buildpro();
     CalcMinSentence();
     if( proflag || showflag ) {
@@ -351,20 +375,22 @@ int main( int argc, char **argv )
         }
     }
     /* copy first part of skeleton */
-    if( skeleton != NULL )
+    if( skeleton != NULL ) {
         copy_part( skeleton, actout );
-    rewind( tokout );
-    /* copy tokens */
-    copy_rest( tokout, actout );
-    close_header( tokout );
+    }
+    /* copy token defs */
+    dump_header( actout );
+    rewind( temp1 );
+    /* copy defs */
+    copy_part( temp1, actout );
+    fclose( temp1 );
     genobj( actout );
     /* copy middle part of skeleton */
     if( skeleton != NULL )
         copy_part( skeleton, actout );
-    rewind( temp );
-    copy_rest( temp, actout );
-    fclose( temp );
-    remove( tempfname );
+    rewind( temp2 );
+    copy_rest( temp2, actout );
+    fclose( temp2 );
     /* copy last part of skeleton */
     if( skeleton != NULL ) {
         copy_rest( skeleton, actout );
@@ -375,5 +401,6 @@ int main( int argc, char **argv )
     FREE( codefilename );
     FREE( headerfilename );
     FREE( descfilename );
+    FREE( srcname_norm );
     return( 0 );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -855,7 +856,7 @@ static char *strpcpy( char *d, char *s )
 static void lineinfo( FILE *fp )
 {
     if( lineflag ) {
-        fprintf( fp, "\n#line %d \"%s\"\n", lineno, srcname );
+        fprintf( fp, "\n#line %d \"%s\"\n", lineno, srcname_norm );
     }
 }
 
@@ -949,7 +950,6 @@ void dump_header( FILE *fp )
     y_token     *tmp;
 
     fprintf( fp, "#ifndef YYTOKENTYPE\n" );
-    fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
     if( fastflag || bigflag || compactflag ) {
         ttype = "unsigned short";
     } else {
@@ -974,6 +974,7 @@ void dump_header( FILE *fp )
     } else {
         fprintf( fp, "typedef %s yytokentype;\n", ttype );
     }
+    fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
     fprintf( fp, "#endif\n" );
     fflush( fp );
 }
@@ -981,8 +982,10 @@ void dump_header( FILE *fp )
 void close_header( FILE *fp )
 {
     if( union_name != NULL ) {
-        fprintf( fp, "typedef union %s YYSTYPE;\n", union_name );
-        fprintf( fp, "extern YYSTYPE yylval;\n" );
+        fprintf( fp, "#ifndef YYSTYPE\n" );
+        fprintf( fp, "typedef union %s yystype;\n", union_name );
+        fprintf( fp, "#define YYSTYPE yystype\n" );
+        fprintf( fp, "#endif\n" );
         FREE( union_name );
     }
     fclose( fp );
@@ -1019,9 +1022,12 @@ void defs( FILE *fp )
             if( scan( 0 ) != '{' ) {
                 msg( "Need '{' after %%union.\n" );
             }
+            fprintf( fp, "#ifndef YYSTYPE\n" );
             fprintf( fp, "typedef union " );
             lineinfo( fp );
-            fprintf( fp, "%s YYSTYPE;\n", buf );
+            fprintf( fp, "%s yystype;\n", buf );
+            fprintf( fp, "#define YYSTYPE yystype\n" );
+            fprintf( fp, "#endif\n" );
             if( union_name == NULL ) {
                 union_name = MALLOC( strlen( buf ) + 1, char );
                 strcpy( union_name, buf );
