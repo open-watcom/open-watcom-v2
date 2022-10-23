@@ -39,7 +39,7 @@
 #include "ins.h"
 
 typedef struct extop {
-    char    op;
+    uchar   op;
     int     minsize;
     int     maxsize;
 } ExtOp;
@@ -111,6 +111,7 @@ extern RegExp   *RegExp_new_NullOp( void );
 extern RegExp   *RegExp_new_CatOp( RegExp *e1, RegExp *e2 );
 extern RegExp   *RegExp_new_RuleOp( RegExp *, RegExp *, Token *, uint );
 extern RegExp   *RegExp_new_CloseOp( RegExp *e );
+extern RegExp   *RegExp_new_CloseVOp( RegExp *e, int lb, int ub );
 extern void     genCode( FILE *, RegExp * );
 extern RegExp   *mkAlt( RegExp *, RegExp * );
 extern RegExp   *mkDiff( RegExp *, RegExp * );

@@ -149,7 +149,8 @@ static Range *doDiff( Range *r1, Range *r2 )
     rP = &r;
     for( ; r1 != NULL ; r1 = r1->next ) {
         Char lb = r1->lb;
-        for( ; r2 != NULL && r2->ub <= r1->lb; r2 = r2->next ) ;
+        for( ; r2 != NULL && r2->ub <= r1->lb; r2 = r2->next )
+            ;
         for( ; r2 != NULL && r2->lb <  r1->ub; r2 = r2->next ) {
             if( lb < r2->lb ) {
                 *rP = s = Range_new( lb, r2->lb );
@@ -192,13 +193,19 @@ static Char unescape( SubStr *s )
         return( '\f' );
     case 'a':
         return( '\a' );
-    case '0': case '1': case '2': case '3':
-    case '4': case '5': case '6': case '7': {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
         v = c - '0';
         for( ; s->len != 0 && '0' <= (c = *s->str) && c <= '7'; s->len--, s->str++ )
             v = v * 8 + ( c - '0' );
         return( v );
-    } default:
+    default:
         return( c );
     }
 }
@@ -518,6 +525,18 @@ RegExp *RegExp_new_CloseOp( RegExp *e )
     r = malloc( sizeof( RegExp ) );
     r->type = CLOSEOP;
     r->u.CloseOp.exp = e;
+    return( r );
+}
+
+RegExp *RegExp_new_CloseVOp( RegExp *e, int lb, int ub )
+{
+    RegExp  *r;
+
+    r = malloc( sizeof( RegExp ) );
+    r->type = CLOSEVOP;
+    r->u.CloseVOp.exp = e;
+    r->u.CloseVOp.min = lb;
+    r->u.CloseVOp.max = ub;
     return( r );
 }
 
