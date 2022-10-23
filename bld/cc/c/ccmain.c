@@ -330,12 +330,14 @@ static bool openForcePreInclude( void )
 
 static void MakePgmName( void )
 {
-// Get fname, if file name has no extension whack ".c" on
-// if stdin a "." then replace with "stdin" don't whack ".c"
-// If no module name make the same as fname
     size_t      len;
     pgroup2     pg;
 
+    /*
+     * Get fname, if file name has no extension whack ".c" on
+     * if stdin a "." then replace with "stdin" don't whack ".c"
+     * If no module name make the same as fname
+     */
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
         IsStdIn = true;
         CMemFree( WholeFName );
@@ -951,10 +953,12 @@ static bool OpenPgmFile( void )
 static void Parse( void )
 {
     EmitInit();
-    // The first token in a file should be #include if a user wants to
-    // use pre-compiled headers. The following call to NextToken() to
-    // get the very first token of the file will load the pre-compiled
-    // header if the user requested such and it is a #include directive.
+    /*
+     * The first token in a file should be #include if a user wants to
+     * use pre-compiled headers. The following call to NextToken() to
+     * get the very first token of the file will load the pre-compiled
+     * header if the user requested such and it is a #include directive.
+     */
     if( ForceInclude != NULL ) {
         if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
             PrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
@@ -965,8 +969,10 @@ static void Parse( void )
     }
     CompFlags.ok_to_use_precompiled_hdr = true;
     NextToken();
-    // If we didn't get a #include with the above call to NextToken()
-    // it's too late to use pre-compiled header now.
+    /*
+     * If we didn't get a #include with the above call to NextToken()
+     * it's too late to use pre-compiled header now.
+     */
     CompFlags.ok_to_use_precompiled_hdr = false;
     ParsePgm();
     if( DefFile != NULL ) {
@@ -1148,8 +1154,10 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
         return( false );
     }
     if( fp->drive[0] != '\0' || IS_DIR_SEP( fp->dir[0] ) ) {
-        // try absolute path
-        // if drive letter given or path from root given
+        /*
+         * try absolute path
+         * if drive letter given or path from root given
+         */
         if( try_open_file( "", fp, fa, typ ) ) {
             return( true );
         }
@@ -1162,21 +1170,27 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
         case FT_HEADER_FORCED:
             if( CompFlags.ignore_default_dirs ) {
                 try[0] = '\0';
-                // physical file name must be used, not logical
+                /*
+                 * physical file name must be used, not logical
+                 */
                 _splitpath2( SrcFile->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
                 _makepath( try, fd.drive, fd.dir, NULL, NULL );
                 if( try_open_file( try, fp, fa, typ ) ) {
                     return( true );
                 }
             } else {
-                // try current directory
+                /*
+                 * try current directory
+                 */
                 if( !GlobalCompFlags.ignore_current_dir ) {
                     if( try_open_file( "", fp, fa, typ ) ) {
                         return( true );
                     }
                 }
                 for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
-                    // physical file name must be used, not logical
+                    /*
+                     * physical file name must be used, not logical
+                     */
                     _splitpath2( curr->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
                     _makepath( try, fd.drive, fd.dir, NULL, NULL );
                     if( try_open_file( try, fp, fa, typ ) ) {
@@ -1213,7 +1227,9 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
         case FT_HEADER:
         case FT_HEADER_FORCED:
             if( !CompFlags.ignore_default_dirs ) {
-                // try current ../h directory
+                /*
+                 * try current ../h directory
+                 */
                 if( try_open_file( H_PATH, fp, fa, typ ) ) {
                     return( true );
                 }
@@ -1273,11 +1289,17 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
 void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
 {
     char    buf[30];
+    char    c;
 
     if( CompFlags.cpp_line_wanted && CppPrinting() && CompFlags.cpp_output ) {
-        sprintf( buf, "#line %u ", line_num );
+        sprintf( buf, "#line %u \"", line_num );
         CppPuts( buf );
-        CppPutsQuoted( filename );
+        while( (c = *filename++) != '\0' ) {
+        	if( c == '\\' )
+            	c = '/';
+        	CppPutc( c );
+    	}
+    	CppPutc( '"' );
         if( newline ) {
             CppPutc( '\n' );
         }

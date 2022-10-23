@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,13 @@ void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
                 fputc( '/', CppFile );
                 fputc( ' ', CppFile );
             }
-            fprintf( CppFile, "#line %u \"%s\"", line, fname );
+            fprintf( CppFile, "#line %u \"", line );
+            while( (c = *fname++) != '\0' ) {
+                if( c == '\\' )
+                    c = '/';
+                fputc( c, CppFile );
+            }
+            fputc( '"', CppFile );
             if( control & EL_NEW_LINE ) {
                 fputc( '\n', CppFile );
             }
@@ -107,7 +113,7 @@ void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
                 if( control & EL_NEW_LINE ) {
                     // do zip: the correct position is immediately after comment
                 } else {
-                    -- line;
+                    --line;
                 }
                 if( line == 0 ) {
                     line = 1;
@@ -122,7 +128,13 @@ void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
                 if( line == 0 ) {
                     line = 1;
                 }
-                fprintf( CppFile, "#line %u \"%s\"", line, fname );
+                fprintf( CppFile, "#line %u \"", line );
+                while( (c = *fname++) != '\0' ) {
+                    if( c == '\\' )
+                        c = '/';
+                    fputc( c, CppFile );
+                }
+                fputc( '"', CppFile );
                 if( control & EL_NEW_LINE ) {
                     fputc( '\n', CppFile );
                 }
