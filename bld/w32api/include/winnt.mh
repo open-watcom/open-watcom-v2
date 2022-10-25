@@ -5896,77 +5896,7 @@ typedef struct _MESSAGE_RESOURCE_DATA {
 } MESSAGE_RESOURCE_DATA;
 typedef MESSAGE_RESOURCE_DATA   *PMESSAGE_RESOURCE_DATA;
 
-/* Operating system version information */
-typedef struct _OSVERSIONINFOA {
-    DWORD   dwOSVersionInfoSize;
-    DWORD   dwMajorVersion;
-    DWORD   dwMinorVersion;
-    DWORD   dwBuildNumber;
-    DWORD   dwPlatformId;
-    CHAR    szCSDVersion[128];
-} OSVERSIONINFOA;
-typedef OSVERSIONINFOA      *POSVERSIONINFOA;
-typedef OSVERSIONINFOA      *LPOSVERSIONINFOA;
-typedef struct _OSVERSIONINFOW {
-    DWORD   dwOSVersionInfoSize;
-    DWORD   dwMajorVersion;
-    DWORD   dwMinorVersion;
-    DWORD   dwBuildNumber;
-    DWORD   dwPlatformId;
-    WCHAR   szCSDVersion[128];
-} OSVERSIONINFOW;
-typedef OSVERSIONINFOW      *POSVERSIONINFOW;
-typedef OSVERSIONINFOW      *LPOSVERSIONINFOW;
-#ifdef UNICODE
-typedef OSVERSIONINFOW      OSVERSIONINFO;
-typedef POSVERSIONINFOW     POSVERSIONINFO;
-typedef LPOSVERSIONINFOW    LPOSVERSIONINFO;
-#else
-typedef OSVERSIONINFOA      OSVERSIONINFO;
-typedef POSVERSIONINFOA     POSVERSIONINFO;
-typedef LPOSVERSIONINFOA    LPOSVERSIONINFO;
-#endif
-
-/* Operating system version information (extended version) */
-typedef struct _OSVERSIONINFOEXA {
-    DWORD   dwOSVersionInfoSize;
-    DWORD   dwMajorVersion;
-    DWORD   dwMinorVersion;
-    DWORD   dwBuildNumber;
-    DWORD   dwPlatformId;
-    CHAR    szCSDVersion[128];
-    WORD    wServicePackMajor;
-    WORD    wServicePackMinor;
-    WORD    wSuiteMask;
-    BYTE    wProductType;
-    BYTE    wReserved;
-} OSVERSIONINFOEXA;
-typedef OSVERSIONINFOEXA    *POSVERSIONINFOEXA;
-typedef OSVERSIONINFOEXA    *LPOSVERSIONINFOEXA;
-typedef struct _OSVERSIONINFOEXW {
-    DWORD   dwOSVersionInfoSize;
-    DWORD   dwMajorVersion;
-    DWORD   dwMinorVersion;
-    DWORD   dwBuildNumber;
-    DWORD   dwPlatformId;
-    WCHAR   szCSDVersion[128];
-    WORD    wServicePackMajor;
-    WORD    wServicePackMinor;
-    WORD    wSuiteMask;
-    BYTE    wProductType;
-    BYTE    wReserved;
-} OSVERSIONINFOEXW;
-typedef OSVERSIONINFOEXW    *POSVERSIONINFOEXW;
-typedef OSVERSIONINFOEXW    *LPOSVERSIONINFOEXW;
-#ifdef UNICODE
-typedef OSVERSIONINFOEXW    OSVERSIONINFOEX;
-typedef POSVERSIONINFOEXW   POSVERSIONINFOEX;
-typedef LPOSVERSIONINFOEXW  LPOSVERSIONINFOEX;
-#else
-typedef OSVERSIONINFOEXA    OSVERSIONINFOEX;
-typedef POSVERSIONINFOEXA   POSVERSIONINFOEX;
-typedef LPOSVERSIONINFOEXA  LPOSVERSIONINFOEX;
-#endif
+:include osverinf.sp
 
 /* Critical section debugging information */
 typedef struct _RTL_CRITICAL_SECTION_DEBUG {
