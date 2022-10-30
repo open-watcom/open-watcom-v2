@@ -3,6 +3,4 @@
 host_os  = osx
 host_cpu = arm
 
-target_cpu = all
-
 !include ../master.mif

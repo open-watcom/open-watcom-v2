@@ -3,6 +3,4 @@
 host_os  = linux
 host_cpu = arm
 
-target_cpu = all
-
 !include ../master.mif

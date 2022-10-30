@@ -16,6 +16,8 @@ drwatcom_autodepends = .AUTODEPEND
 !include $(wdisasm_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
+dig_arch = $(host_cpu)
+
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
@@ -33,7 +35,7 @@ common_dir = ../../common
 
 inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
 
-extra_cpp_flags =
+extra_cpp_flags = $(dig_arch_cpp_flags)
 !ifeq drwatcom_95 1
 extra_cpp_flags += -DCHICAGO
 !endif

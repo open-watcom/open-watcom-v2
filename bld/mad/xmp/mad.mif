@@ -4,7 +4,7 @@
 
 tree_depth = 4
 
-target_cpu = xmp
+dig_arch = xmp
 
 imp_objs = &
         xmpaddr.obj &

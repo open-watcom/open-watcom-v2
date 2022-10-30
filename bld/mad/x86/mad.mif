@@ -1,6 +1,6 @@
 tree_depth = 4
 
-target_cpu = x86
+dig_arch = x86
 
 imp_objs = &
         x86addr.obj &

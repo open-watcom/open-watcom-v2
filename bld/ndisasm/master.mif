@@ -13,7 +13,11 @@ wdis_trmem = 1
 !include trmem.mif
 
 !include $(orl_dir)/client.mif
-!include ../dis.mif
+
+dig_arch = all
+
+!include $(dig_dir)/digcli.mif
+!include ../discli.mif
 
 #
 # cflags
@@ -23,7 +27,7 @@ wdis_trmem = 1
 inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
     -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
 
-extra_cpp_flags = -DINSIDE_WDIS
+extra_cpp_flags = -DINSIDE_WDIS $(dig_arch_cpp_flags)
 
 extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
 
@@ -90,7 +94,7 @@ distbls.gh : ./disbuild.exe $(__MAKEFILES__)
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers) $(__MAKEFILES__)
     @%make echo_bldcl
-    $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
 msg.grh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk

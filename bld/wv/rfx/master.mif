@@ -12,6 +12,8 @@ rfx_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+dig_arch = $(host_cpu)
+
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
 

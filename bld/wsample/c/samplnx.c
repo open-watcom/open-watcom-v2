@@ -45,17 +45,11 @@
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
-// Helper functions shared with debugger
-#if defined( __386__ )
-    #define MD_x86
-#elif defined( __PPC__ )
-    #define MD_ppc
-#else
-    #error Unsupported CPU architecture
-#endif
 #include "exeelf.h"
 #include "lnxcomm.h"
 #include "brkptcpu.h"
+// Helper functions shared with debugger
+
 
 #if 0
     #define dbg_printf( ... ) printf( __VA_ARGS__ )
@@ -518,7 +512,8 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
     ptrace( PTRACE_GETREGS, pid, NULL, &regs );
 
     if( ip == Rdebug.r_brk + sizeof( opcode_type ) ) {
-#elif defined( MD_ppc )
+//#elif defined( MD_ppc )
+#else
     if( ip == Rdebug.r_brk ) {
 #endif
         opcode_type         brk_opcode = BRKPOINT;

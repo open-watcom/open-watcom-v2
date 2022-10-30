@@ -38,7 +38,7 @@
 #elif defined( ENABLE_TRAP_LOGGING )
     #include <windows.h>
 #endif
-#include "madregs.h"
+//#include "madregs.h"
 #include "trptypes.h"
 #include "trpld.h"
 #if defined( __WINDOWS__ ) && !defined( SERVER )

@@ -20,6 +20,10 @@ sys_dll  = 1
 !include defrule.mif
 !include deftarg.mif
 
+dig_arch = $(host_cpu)
+
+!include $(dig_dir)/digcli.mif
+
 #
 # cflags
 #
@@ -27,7 +31,7 @@ sys_dll  = 1
 
 inc_dirs = -I"../h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 
-extra_cpp_flags = -DMD_x86
+extra_cpp_flags = $(dig_arch_cpp_flags)
 
 #
 # lflags

@@ -1,3 +1,3 @@
-target_cpu = test
+dig_arch = test
 
 !include ../master.mif

@@ -1,6 +1,6 @@
 tree_depth = 4
 
-target_cpu = jvm
+dig_arch = jvm
 
 imp_objs = &
         jvmaddr.obj &

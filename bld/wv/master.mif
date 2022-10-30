@@ -21,6 +21,8 @@ wv_dos_extender = dos4g	#causeway
 !include wres.mif
 !include trmem.mif
 
+dig_arch = all
+
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
@@ -70,6 +72,7 @@ inc_dirs += -I"$(gui_dir)/ui/h"
 inc_dirs += -I"$(ncurses_dir)/h"
 !endif
 
+extra_cpp_flags = $(dig_arch_cpp_flags)
 !ifdef wv_engine_noui
 extra_cpp_flags += -D__NOUI__
 !endif

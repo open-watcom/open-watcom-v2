@@ -49,9 +49,6 @@
 #include "utils.h"
 #include "wpdata.h"
 #include "memutil.h"
-
-#define MD_x86
-#define MD_axp
 #include "madcli.h"
 #include "mad.h"
 #include "madregs.h"

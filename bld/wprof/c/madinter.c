@@ -37,14 +37,10 @@
 #include <limits.h>
 #include "bool.h"
 #include "wio.h"
-#define MD_x86
-#define MD_axp
 #include "madcli.h"
 #include "mad.h"
 #include "madregs.h"
-
 #include "dip.h"
-
 #include "aui.h"
 #include "common.h"
 #include "sampinfo.h"

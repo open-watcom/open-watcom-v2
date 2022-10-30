@@ -96,6 +96,8 @@ target          = $(serv_basename)$(server_ext_$(host_os))
 target          = $(serv_basename).exe
 !endif
 
+dig_arch = $(target_cpu)
+
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
 

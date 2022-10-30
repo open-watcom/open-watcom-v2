@@ -17,6 +17,8 @@ wprof_trmem = 1
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
+dig_arch = all
+
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
@@ -31,7 +33,7 @@ wprof_trmem = 1
 inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) &
     $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(dig_dir)/h"
 
-extra_cpp_flags =
+extra_cpp_flags = $(dig_arch_cpp_flags)
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif

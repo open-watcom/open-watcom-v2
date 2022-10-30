@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,25 +45,30 @@
 #define DISCPU_mips     0x20
 #define DISCPU_x64      0x40
 
-#if defined( NDIS_axp )
+#if defined( MD_axp )
 #define DISCPU DISCPU_axp
-#elif defined( NDIS_ppc )
+#elif defined( MD_ppc )
 #define DISCPU DISCPU_ppc
-#elif defined( NDIS_x86 )
+#elif defined( MD_x86 )
 #define DISCPU DISCPU_x86
-#elif defined( NDIS_x64 )
+#elif defined( MD_x64 )
 #define DISCPU DISCPU_x64
-#elif defined( NDIS_jvm )
+#elif defined( MD_jvm )
 #define DISCPU DISCPU_jvm
-#elif defined( NDIS_sparc )
+#elif defined( MD_sparc )
 #define DISCPU DISCPU_sparc
-#elif defined( NDIS_mps )
+#elif defined( MD_mps )
 #define DISCPU DISCPU_mips
-#elif defined( NDIS_test )
+#elif defined( MD_test )
 #define DISCPU ( DISCPU_axp | DISCPU_ppc | DISCPU_x86 | DISCPU_jvm | DISCPU_sparc | DISCPU_mips | DISCPU_x64 )
-#else
+#elif defined( MD_all )
 #define DISCPU ( DISCPU_axp | DISCPU_ppc | DISCPU_x86 | DISCPU_sparc | DISCPU_mips | DISCPU_x64 )
 #endif
+
+#ifndef DISCPU
+#error "madregs.h undefined DIG Architecture"
+#endif
+
 
 typedef struct dis_range        dis_range;
 

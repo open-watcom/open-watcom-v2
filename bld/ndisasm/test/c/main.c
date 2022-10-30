@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,8 @@ unsigned DisCliGetAlign( void *d, unsigned off, unsigned align )
 {
     unsigned mod;
 
+    /* unused parameter */ (void)d;
+
     mod = off % align;
     return( off + ((align - mod) % align) );
 }
@@ -52,14 +55,16 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
 {
     char        *p = buff;
 
+    /* unused parameter */ (void)buff_len; (void)d;
+
     p[0] = '\0';
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
     case DO_MEMORY_REL:
         *p++ = '.';
-        if( ins->op[op].value < 0 ) {
+        if( ins->op[op].value.s._64[0] < 0 ) {
             *p++ = '-';
-            ins->op[op].value = -ins->op[op].value;
+            ins->op[op].value.s._64[0] = -ins->op[op].value.s._64[0];
         } else {
             *p++ = '+';
         }
@@ -67,7 +72,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        sprintf( p, "0x%8.8lx", ins->op[op].value );
+        sprintf( p, "0x%8.8lx", ins->op[op].value.u._64[0] );
         break;
     }
     return( strlen( buff ) );
@@ -179,7 +184,7 @@ int main( void )
             printf("\n");
             DisDecodeInit( &handle, &ins );
             ins.flags = flag;
-            if( DisDecode( &handle, &data, &ins ) == DR_OK ) {
+            if( DisDecode( &handle, data, &ins ) == DR_OK ) {
                 DisFormat( &handle, NULL, &ins, format, name_buff, sizeof( name_buff ), op_buff, sizeof( op_buff ) );
                 printf( "size:%d <%s> <%s>\n", ins.size, name_buff, op_buff );
             } else {

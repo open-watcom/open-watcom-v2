@@ -35,29 +35,52 @@
 
 #include "madtypes.h"
 
-#ifdef MD_x86
-#include "madx86.h"
+#undef MADREGSOK
+
+#if defined( MD_all ) || defined( MD_test )
+    #define MD_x86
+//    #define MD_x64
+    #define MD_axp
+    #define MD_ppc
+    #define MD_mps
+  #if defined( MD_test )
+    #define MD_jvm
+  #endif
 #endif
 
-#ifdef MD_x64
-#include "madx86.h"
-//#include "madx64.h"
+#if defined( MD_x86 )
+    #include "madx86.h"
+    #define MADREGSOK
+#endif
+
+#if defined( MD_x64 )
+    #include "madx86.h"
+//    #include "madx64.h"
+    #define MADREGSOK
 #endif
 
 #ifdef MD_axp
-#include "madaxp.h"
+    #include "madaxp.h"
+    #define MADREGSOK
 #endif
 
 #ifdef MD_ppc
-#include "madppc.h"
+    #include "madppc.h"
+    #define MADREGSOK
 #endif
 
 #ifdef MD_mps
-#include "madmips.h"
+    #include "madmips.h"
+    #define MADREGSOK
 #endif
 
 #ifdef MD_jvm
-#include "madjvm.h"
+    #include "madjvm.h"
+    #define MADREGSOK
+#endif
+
+#ifndef MADREGSOK
+    #error "madregs.h undefined DIG Architecture"
 #endif
 
 #include "digpck.h"

@@ -15,13 +15,17 @@ dig_objs_qnx386   = $(_subdir_)ldimp.obj
 !endif
 dig_objs = $(dig_objs_$(objs_subdir))
 
-dig_arch_cpp_flags_i86 =-DMD_x86
-dig_arch_cpp_flags_386 =-DMD_x86
-dig_arch_cpp_flags_x64 =-DMD_x64
-dig_arch_cpp_flags_axp =-DMD_axp
-dig_arch_cpp_flags_ppc =-DMD_ppc
-dig_arch_cpp_flags_mps =-DMD_mps
-dig_arch_cpp_flags_jvm =-DMD_jvm
-!ifdef dig_arch_cpp_flags_$(target_cpu)
-dig_arch_cpp_flags =$(dig_arch_cpp_flags_$(target_cpu))
+dig_arch_cpp_flags_i86   =-DMD_x86
+dig_arch_cpp_flags_386   =-DMD_x86
+dig_arch_cpp_flags_x86   =-DMD_x86
+dig_arch_cpp_flags_x64   =-DMD_x64
+dig_arch_cpp_flags_axp   =-DMD_axp
+dig_arch_cpp_flags_ppc   =-DMD_ppc
+dig_arch_cpp_flags_mps   =-DMD_mps
+dig_arch_cpp_flags_jvm   =-DMD_jvm
+dig_arch_cpp_flags_sparc =-DMD_sparc
+dig_arch_cpp_flags_test  =-DMD_test
+dig_arch_cpp_flags_all   =-DMD_all
+!ifdef dig_arch_cpp_flags_$(dig_arch)
+dig_arch_cpp_flags =$(dig_arch_cpp_flags_$(dig_arch))
 !endif

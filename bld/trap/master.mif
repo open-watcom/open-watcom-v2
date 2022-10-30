@@ -155,9 +155,13 @@ xname = $(name)
 !include $(trap_dir)/trap.mif
 !endif
 
+dig_arch = $(target_cpu)
+
+!include $(dig_dir)/digcli.mif
+
 # cflags stuff
 ###############
-extra_cpp_flags = -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
+extra_cpp_flags = -D$(which) $(dig_arch_cpp_flags) $(extra_cppflags)
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
