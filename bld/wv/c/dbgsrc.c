@@ -31,13 +31,11 @@
 
 
 #include <ctype.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
 #include "dui.h"
-#include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgsrc.h"

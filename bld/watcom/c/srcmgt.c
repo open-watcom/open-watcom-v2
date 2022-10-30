@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,6 @@
 ****************************************************************************/
 
 
-#ifdef __header1
-#include __header1
-#endif
 #include <limits.h>
 #include <string.h>
 #include "watcom.h"

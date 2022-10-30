@@ -32,16 +32,14 @@
 
 #include <stdio.h>
 #include <limits.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
 #include "wspawn.h"
 #include "dbglit.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
 #include "dbghook.h"
 #include "mad.h"
 #include "dui.h"
-#include "srcmgt.h"
 #include "tistrail.h"
 #include "strutil.h"
 #include "dbgscan.h"

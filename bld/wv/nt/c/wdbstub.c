@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,15 +75,13 @@ Done:
 #include <os2.h>
 #elif defined( __LINUX__ )
 #endif
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
 #include "modlist.h"
-#include "srcmgt.h"
 #include "dbgscrn.h"
 #include "dbgscan.h"
 #include "dbgutil.h"

@@ -35,15 +35,13 @@
 #include <process.h>
 #define INCL_DOS
 #include <os2.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
 #include "dbgstk.h"
-#include "srcmgt.h"
 #include "trapaccs.h"
 #include "dbgscrn.h"
 #include "strutil.h"

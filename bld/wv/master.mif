@@ -96,7 +96,6 @@ extra_c_flags_os2_i86 = -zc
 !endif
 
 extra_c_flags_dynmem = $(trmem_cover_cflags)
-extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 
 #
 # aflags

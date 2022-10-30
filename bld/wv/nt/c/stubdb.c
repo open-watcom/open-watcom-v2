@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +34,12 @@
 #include <ctype.h>
 #include <process.h>
 #include <windows.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
-#include "srcmgt.h"
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "dbgscan.h"

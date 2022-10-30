@@ -31,15 +31,13 @@
 
 
 #include <limits.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
 #include "dbgitem.h"
 #include "dbgstk.h"
-#include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
