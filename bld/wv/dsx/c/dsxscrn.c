@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -341,7 +341,7 @@ static void GetDispConfig( void )
 static bool ChkForColour( hw_display_type display )
 {
     if( ColourAdapters[display] == ADAPTER_COLOUR ) {
-        ScrnMode = MD_COLOUR;
+        ScrnMode = VMODE_COLOUR;
         return( true );
     }
     return( false );
@@ -372,7 +372,7 @@ static bool ChkColour( void )
 static bool ChkForMono( hw_display_type display )
 {
     if( ColourAdapters[display] == ADAPTER_MONO ) {
-        ScrnMode = MD_MONO;
+        ScrnMode = VMODE_MONO;
         return( true );
     }
     return( false );
@@ -397,7 +397,7 @@ static bool ChkForEGA( hw_display_type display )
     case DISP_VGA_COLOUR:
     case DISP_EGA_MONO:
     case DISP_VGA_MONO:
-        ScrnMode = MD_EGA;
+        ScrnMode = VMODE_EGA;
         return( true );
     default:
         return( false );
@@ -442,11 +442,11 @@ static void GetDefault( void )
 static void ChkPage( void )
 {
     switch( ScrnMode ) {
-    case MD_MONO:
+    case VMODE_MONO:
         FlipMech = FLIP_SWAP;
         break;
-    case MD_EGA:
-    case MD_COLOUR:
+    case VMODE_EGA:
+    case VMODE_COLOUR:
         break;
     default:
         FlipMech = FLIP_SWAP; /* for now */
@@ -482,7 +482,7 @@ static unsigned char GetCharPattSet( unsigned char rows )
 
 static void SetEGA_VGA( unsigned char double_rows )
 {
-    if( ScrnMode == MD_EGA ) {
+    if( ScrnMode == VMODE_EGA ) {
         DbgRows = double_rows;
         DbgCharPattSet = DOUBLE_DOT_CHAR_PATTSET;
     } else if( FlipMech == FLIP_SWAP || FlipMech == FLIP_CHEAPSWAP ) {
@@ -569,21 +569,21 @@ static void SaveBIOSSettings( void )
 static void GetAdapter( void )
 {
     switch( ScrnMode ) {
-    case MD_HERC: /* temp */
-    case MD_DEFAULT:
+    case VMODE_HERC: /* temp */
+    case VMODE_DEFAULT:
         GetDefault();
         break;
-    case MD_MONO:
+    case VMODE_MONO:
         if( !ChkMono() ) {
             GetDefault();
         }
         break;
-    case MD_COLOUR:
+    case VMODE_COLOUR:
         if( !ChkColour() ) {
             GetDefault();
         }
         break;
-    case MD_EGA:
+    case VMODE_EGA:
         if( !ChkEGA() ) {
             GetDefault();
         }
@@ -1215,7 +1215,7 @@ void UIAPI uirefresh( void )
 void SetNumLines( int num )
 {
     if( num >= 43 ) {
-        ScrnMode = MD_EGA;
+        ScrnMode = VMODE_EGA;
     }
 }
 
@@ -1237,17 +1237,17 @@ bool ScreenOption( const char *start, unsigned len, int pass )
     pass=pass;
     switch( Lookup( ScreenOptNameTab, start, len ) ) {
     case OPT_MONO:
-        ScrnMode = MD_MONO;
+        ScrnMode = VMODE_MONO;
         GetLines();
         break;
     case OPT_COLOR:
     case OPT_COLOUR:
-        ScrnMode = MD_COLOUR;
+        ScrnMode = VMODE_COLOUR;
         GetLines();
         break;
     case OPT_EGA43:
     case OPT_VGA50:
-        ScrnMode = MD_EGA;
+        ScrnMode = VMODE_EGA;
         break;
     case OPT_OVERWRITE:
         FlipMech = FLIP_OVERWRITE;
@@ -1271,6 +1271,6 @@ bool ScreenOption( const char *start, unsigned len, int pass )
 
 void ScreenOptInit( void )
 {
-    ScrnMode = MD_DEFAULT;
+    ScrnMode = VMODE_DEFAULT;
     FlipMech = FLIP_TWO;
 }
