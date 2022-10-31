@@ -81,11 +81,10 @@ extern sys_error        GetSystemErrCode( error_handle );
 
 extern const char       *SkipPathInfo( char const *, obj_attrs );
 extern const char       *ExtPointer( char const *, obj_attrs );
-extern char             *AppendPathDelim( char *, obj_attrs );
+extern char             *AppendPathDelim( char *path, obj_attrs oattrs );
 extern size_t           MakeFileName( char *result, const char *name, const char *ext, obj_attrs oattrs );
 extern const char       *RealFName( char const *name, obj_attrs *oattrs );
 extern bool             IsAbsolutePath( const char *path );
-extern char             *AppendPathDelim( char *path, obj_attrs oattrs );
 extern const char       *ExtPointer( char const *path, obj_attrs oattrs );
 extern file_handle      LclStringToFullName( const char *name, size_t len, char *full );
 extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
