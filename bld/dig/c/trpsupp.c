@@ -39,7 +39,6 @@
     #include <windows.h>
 #endif
 //#include "madregs.h"
-#include "trptypes.h"
 #include "trpld.h"
 #if defined( __WINDOWS__ ) && !defined( SERVER )
     #include "trpsys.h"

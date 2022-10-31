@@ -38,9 +38,8 @@
 #include <i86.h>
 #include "dsxutil.h"
 #include "exedos.h"
-#include "trptypes.h"
-#include "trpcore.h"
 #include "trpld.h"
+#include "trpcore.h"
 #include "trpsys.h"
 #include "tcerr.h"
 #include "digcli.h"

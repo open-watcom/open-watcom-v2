@@ -37,7 +37,6 @@
 #include <stdlib.h>
 #include "tinyio.h"
 #include "exedos.h"
-#include "trptypes.h"
 #include "trpld.h"
 #include "tcerr.h"
 #include "digld.h"

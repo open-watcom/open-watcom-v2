@@ -41,6 +41,7 @@
 #endif
 #include "dbgmem.h"
 #include "trpld.h"
+#include "trpcore.h"
 #include "dbgio.h"
 #include "strutil.h"
 #include "trapglbl.h"

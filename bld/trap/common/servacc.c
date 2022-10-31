@@ -33,9 +33,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "trptypes.h"
-#include "trpcore.h"
 #include "trpld.h"
+#include "trpcore.h"
 #include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"

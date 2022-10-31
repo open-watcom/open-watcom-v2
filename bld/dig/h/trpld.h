@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "trptypes.h"
+
+
 #define TRAP_PARM_SEPARATOR ';'
 
 #define DEFAULT_TRP_NAME    "std"

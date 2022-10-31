@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include <rdos.h>
 #include <string.h>
 #include <stdlib.h>
-#include "trptypes.h"
 #include "trpld.h"
 #include "tcerr.h"
 
