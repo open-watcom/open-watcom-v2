@@ -70,19 +70,19 @@ enum                                    // INDICES FOR STATE-TABLE COMMANDS
 // see the AlignPad... macros in RTEXCEPT.H and CPPLIB.H
 //
 #if ( _CPU == 8086 )
-    #define DG_ALIGN 2
+    #define DATA_ALIGN 2
 #else
-    #define DG_ALIGN 4
+    #define DATA_ALIGN 4
 #endif
 
-#define CMD_SIZE DG_ALIGN
+#define CMD_SIZE DATA_ALIGN
 
 static void DgAlignPad(         // INSERT PADDING IN A STRUCTURE
     unsigned total )            // - number of bytes emitted so far
 {
     unsigned left;
 
-    left = _RoundUp( total, DG_ALIGN ) - total;
+    left = _RoundUp( total, DATA_ALIGN ) - total;
     if( left > 0 ) {
         DgUninitBytes( left );
     }
