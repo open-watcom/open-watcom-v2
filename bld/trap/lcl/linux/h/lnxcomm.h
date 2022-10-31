@@ -33,8 +33,10 @@
 #ifndef _LINUXCOMM_H
 #define _LINUXCOMM_H
 
+#include "madconf.h"
 #include "machtype.h"
 #include "exeelf.h"
+
 
 //#define DEBUG_OUT
 
@@ -45,7 +47,7 @@
 /* Options set using PTRACE_SETOPTIONS */
 #define PTRACE_O_TRACESYSGOOD   0x00000001
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 
 /* This defines the structure used to read and write the entire
  * set of general purpose CPU registers using sys_ptrace().
@@ -133,7 +135,7 @@ typedef struct {
 
 #endif
 
-#if defined( MD_ppc )
+#if MADARCH & MADARCH_PPC
 
 typedef struct {
     u_long eax;
@@ -182,7 +184,7 @@ typedef struct user {
 
 #endif
 
-#if defined( MD_mps )
+#if MADARCH & MADARCH_MIPS
 
 typedef struct {
     unsigned long eax;

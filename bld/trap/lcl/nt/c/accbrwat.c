@@ -33,8 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <direct.h>
+#include "madconf.h"
 #include "stdnt.h"
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
   #include "dbg386.h"
 #endif
 
@@ -127,7 +128,7 @@ bool FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode )
     return( false );
 }
 
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
 /*
  * setDR6 - set value of debug register 6
  */
@@ -196,7 +197,7 @@ static dword setDRn( int i, dword linear, word type )
  */
 void ClearDebugRegs( void )
 {
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
     int i;
 
     for( i = 0; i < 4; i++ ) {
@@ -204,7 +205,7 @@ void ClearDebugRegs( void )
     }
     setDR6( 0 );
     SetDR7( 0 );
-#elif defined( MD_axp ) || defined( MD_ppc )
+#elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
     /* nothing to do */
 #else
     #error ClearDebugRegs not configured
@@ -233,7 +234,7 @@ static int DRegsCount( void )
  */
 bool SetDebugRegs( void )
 {
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
     int         i;
     int         dr;
     dword       dr7;
@@ -367,7 +368,7 @@ bool SetDebugRegs( void )
 
     SetDR7( dr7 );
     return( true );
-#elif defined( MD_axp ) || defined( MD_ppc )
+#elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
     return( false );
 #else
     #error SetDebugRegs not configured
@@ -393,7 +394,7 @@ bool CheckWatchPoints( void )
     return( false );
 }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
 {
     word        dregs;
@@ -482,7 +483,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->value = 0;
         ReadMemory( &wp->addr, &wp->value, wp->size );
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
         if( wp->dregs == 0 )
             /* Error */

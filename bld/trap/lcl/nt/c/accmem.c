@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "madconf.h"
 #include "stdnt.h"
 
 /*
@@ -39,12 +40,12 @@
  */
 static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *pend )
 {
-#if defined( MD_axp ) || defined( MD_ppc )
+#if MADARCH & (MADARCH_AXP | MADARCH_PPC)
 
     *pend = (ULONG_PTR)-1L;
     return( addr->offset );
 
-#elif defined( MD_x86 ) || defined( MD_x64 )
+#elif MADARCH & (MADARCH_X86 | MADARCH_X64)
 
     LDT_ENTRY   ldt;
     ULONG_PTR   limit;

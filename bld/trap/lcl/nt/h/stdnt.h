@@ -34,6 +34,7 @@
 #include <windows.h>
 #undef WIN32_LEAN_AND_MEAN
 #include <tlhelp32.h>
+#include "madconf.h"
 #include "brkptcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
@@ -41,7 +42,7 @@
 #include "exepe.h"
 #include "exeos2.h"
 #include "exedos.h"
-#if defined( MD_x86 ) && defined( WOW )
+#if ( MADARCH & MADARCH_X86 ) && defined( WOW )
 #include "vdmdbg.h"
 #endif
 
@@ -50,7 +51,7 @@
 #define EXE_NE  OS2_SIGNATURE_WORD
 #define EXE_MZ  DOS_SIGNATURE
 
-#if defined( MD_x64 )
+#if MADARCH & MADARCH_X64
     #define MYCONTEXT           WOW64_CONTEXT
     // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
@@ -68,7 +69,7 @@
     #define MYCONTEXT_XMM       (10 * 16)
 
     #define MYCONTEXT_CONTROL   CONTEXT_CONTROL;
-  #if defined( MD_x86 )
+  #if MADARCH & MADARCH_X86
     #define MYCONTEXT_TO_USE    (CONTEXT_FULL | CONTEXT_FLOATING_POINT | \
                         CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
   #else
@@ -76,7 +77,7 @@
   #endif
 #endif
 
-#if defined( MD_x64 )
+#if MADARCH & MADARCH_X64
     #define WOW64CONTEXT           WOW64_CONTEXT
     // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
@@ -88,13 +89,13 @@
                         WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
 #endif
 
-#if defined( MD_x64 )
+#if MADARCH & MADARCH_X64
 #define RDWORD  DWORD64
 #else
 #define RDWORD  DWORD
 #endif
 
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
 #define GET_LDT_BASE(d) \
     ((ULONG_PTR)(d).BaseLow + ((ULONG_PTR)(d).HighWord.Bytes.BaseMid << 16L) + \
     ((ULONG_PTR)(d).HighWord.Bytes.BaseHi << 24L))
@@ -114,7 +115,7 @@ typedef struct {
     char                modname[16];
 } header_info;
 
-#if defined( MD_x86 ) && defined( WOW )
+#if ( MADARCH & MADARCH_X86 ) && defined( WOW )
 typedef struct {
     addr48_ptr  addr;
     DWORD       tid;
@@ -172,7 +173,7 @@ typedef struct msg_list {
 
 typedef unsigned        myconditions;
 
-#if !defined( WOW ) || defined( MD_x64 )
+#if !defined( WOW ) || ( MADARCH & MADARCH_X64 )
 typedef void            IMAGE_NOTE;
 #endif
 

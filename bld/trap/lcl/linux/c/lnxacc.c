@@ -46,6 +46,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/ptrace.h>
+#include "madconf.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"
@@ -133,7 +134,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     return( sizeof( *ret ) );
 }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 static bool GetFlatSegs( addr_seg *cs, addr_seg *ds )
 {
     user_regs_struct    regs;
@@ -288,7 +289,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
         }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         if( !GetFlatSegs( &flatCS, &flatDS ) ) {
             goto fail;
         }
@@ -444,12 +445,12 @@ static trap_elen ProgRun( bool step )
         waitpid( pid, &status, 0 );
         setsig( SIGINT, old );
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         ptrace( PTRACE_GETREGS, pid, NULL, &regs );
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
         regs.eip = ptrace( PTRACE_PEEKUSER, pid, REGSIZE * PT_NIP, NULL );
         regs.esp = ptrace( PTRACE_PEEKUSER, pid, REGSIZE * PT_R1, NULL );
-#elif defined( MD_mps )
+#elif MADARCH & MADARCH_MIPS
         regs.eip = ptrace( PTRACE_PEEKUSER, pid, (void *)PC, NULL );
         regs.esp = ptrace( PTRACE_PEEKUSER, pid, (void *)29, NULL );
 #endif
@@ -501,9 +502,9 @@ static trap_elen ProgRun( bool step )
     } while( debug_continue );
 
     if( ret->conditions == COND_BREAK ) {
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         if( regs.eip == rdebug.r_brk + sizeof( opcode_type ) ) {
-#elif defined( MD_ppc ) || defined( MD_mps )
+#elif MADARCH & (MADARCH_PPC | MADARCH_MIPS)
         if( regs.eip == rdebug.r_brk ) {
 #endif
             int         psig = 0;
@@ -539,7 +540,7 @@ static trap_elen ProgRun( bool step )
                 break;
             }
             regs.orig_eax = -1;
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
             regs.eip--;
             ptrace( PTRACE_SETREGS, pid, NULL, &regs );
 #endif
@@ -553,7 +554,7 @@ static trap_elen ProgRun( bool step )
             place_breakpoint( rdebug.r_brk );
             ret->conditions = COND_LIBRARIES;
         } else {
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
             Out( "decrease eip(sigtrap)\n" );
             regs.orig_eax = -1;
             regs.eip--;

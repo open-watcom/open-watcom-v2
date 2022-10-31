@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+#include "madconf.h"
 #include "stdnt.h"
 
 /*
@@ -92,7 +93,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     if( sig == EXE_PE ) {
         return( SeekRead( handle, nh_offset, &hi->u.peh, sizeof( exe_pe_header ) ) );
     }
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     if( sig == EXE_NE ) {
         if( !SeekRead( handle, nh_offset, &hi->u.neh, sizeof( os2_exe_header ) ) ) {
             return( false );
@@ -130,10 +131,10 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     }
     hi->sig = EXE_MZ;
     return( true );
-#elif defined( MD_x64 )
+#elif MADARCH & MADARCH_X64
     /* unused parameters */ (void)stack;
     return( false );
-#elif defined( MD_axp ) || defined( MD_ppc )
+#elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
     /* unused parameters */ (void)stack;
     return( false );
 #else

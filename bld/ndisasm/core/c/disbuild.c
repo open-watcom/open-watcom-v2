@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,7 @@ typedef struct range {
 
 #define INCLUDE_ASM_REGS
 
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
 
 ins_decode_data AXPDecodeTable1[] = {
     #define inspick( id, name, opcode, mask, handler ) { opcode, mask, DI_AXP_##id, #id, #handler },
@@ -138,7 +138,7 @@ string_data *AXPInsTable[] = {
 
 #endif
 
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
 
 ins_decode_data PPCDecodeTable1[] = {
     #define inspick( id, name, opcode, mask, handler ) { opcode, mask, DI_PPC_##id, #id, #handler },
@@ -181,7 +181,7 @@ string_data *PPCInsTable[] = {
 
 #endif
 
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
 
 ins_decode_data X86DecodeTable1[] = {
     #define inspick( id, name, opcode, mask, handler ) { opcode, mask, DI_X86_##id, #id, #handler },
@@ -284,7 +284,7 @@ string_data *X86InsTable[] = {
 
 #endif
 
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
 
 ins_decode_data X64DecodeTable1[] = {
     #define inspick( id, name, opcode, mask, handler ) { opcode, mask, DI_X64_##id, #id, #handler },
@@ -327,7 +327,7 @@ string_data *X64InsTable[] = {
 
 #endif
 
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
 
 ins_decode_data JVMDecodeTable1[] = {
     #define inspick( id, name, opcode, mask, handler ) { opcode, mask, DI_JVM_##id, #id, #handler },
@@ -370,7 +370,7 @@ string_data *JVMInsTable[] = {
 
 #endif
 
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
 
 ins_decode_data SPARCDecodeTable1[] = {
     #define inspick( id, name, opcode, mask, handler ) { opcode, mask, DI_SPARC_##id, #id, #handler },
@@ -413,7 +413,7 @@ string_data *SPARCInsTable[] = {
 
 #endif
 
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
 
 ins_decode_data MIPSDecodeTable1[] = {
     #define inspick( id, name, opcode, mask, handler ) { opcode, mask, DI_MIPS_##id, #id, #handler },
@@ -459,25 +459,25 @@ string_data *MIPSInsTable[] = {
 #undef INCLUDE_ASM_REGS
 
 machine_data AMachine[] = {
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
     TABLE( AXP ),
 #endif
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
     TABLE( PPC ),
 #endif
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
     TABLE( X86 ),
 #endif
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
     TABLE( X64 ),
 #endif
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
     TABLE( JVM ),
 #endif
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
     TABLE( SPARC ),
 #endif
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
     TABLE( MIPS ),
 #endif
 };

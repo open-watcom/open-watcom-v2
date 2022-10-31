@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "madconf.h"
 #include "srvcdbg.h"
 #include "stdnt.h"
 #include "trperr.h"
@@ -117,7 +118,7 @@ static void StopDebuggee( void )
          * terminated
          */
         Slaying = true;
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
         if( IsWin32s ) {
             DoContinueDebugEvent( DBG_TERMINATE_PROCESS );
             DoWaitForDebugEvent();
@@ -599,7 +600,7 @@ static bool StartDebuggee( void )
     }
     if( Shared.pid != 0 && Shared.pid != -1 ) {
         rc = MyDebugActiveProcess( Shared.pid );
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
         if( IsWOW ) {
             /*
              * WOW was already running, so we start up wowdeb (this
@@ -674,7 +675,7 @@ static bool DoWaitForDebugEvent( void )
 
     done = false;
 
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
     UseVDMStuff = false;
 #endif
     while( !done ) {
@@ -686,7 +687,7 @@ static bool DoWaitForDebugEvent( void )
             if( DebugEvent.dwDebugEventCode == EXCEPTION_DEBUG_EVENT ) {
                 code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
 #ifdef WOW
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
                 if( code == STATUS_VDM_EVENT ) {
                     if( pVDMProcessException( &DebugEvent ) ) {
                         UseVDMStuff = true;
@@ -758,7 +759,7 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
     Shared.flags = cr_flags;
     Shared.name = name;
     Shared.control_thread_running = false;
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
     if( !IsWin32s ) {
 #else
     {

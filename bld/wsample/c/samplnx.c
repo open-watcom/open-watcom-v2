@@ -42,6 +42,7 @@
 #include <sys/stat.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
+#include "madconf.h"
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
@@ -463,7 +464,7 @@ static void internalErrorMsg( int msg )
     _exit( -1 );
 }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 
 /* Handle profiler marks (hardcoded breakpoints with a string) */
 static bool ProcessMark( pid_t pid, user_regs_struct *regs )
@@ -504,7 +505,7 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
     static int  ld_state = RT_CONSISTENT;   // This ought to be per-pid
     int         ptrace_sig = 0;
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     user_regs_struct    regs;
 
     // on x86, when breakpoint was hit the EIP points to the next
@@ -512,7 +513,7 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
     ptrace( PTRACE_GETREGS, pid, NULL, &regs );
 
     if( ip == Rdebug.r_brk + sizeof( opcode_type ) ) {
-//#elif defined( MD_ppc )
+//#elif MADARCH & MADARCH_PPC
 #else
     if( ip == Rdebug.r_brk ) {
 #endif
@@ -550,7 +551,7 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
             dbg_printf( "error!\n" );
             break;
         }
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         regs.eip--;
         ptrace( PTRACE_SETREGS, pid, NULL, &regs );
 #endif
@@ -567,7 +568,7 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
         return( true ); // indicate this was our breakpoint
     } else {
         dbg_printf( "Not an ld breakpoint, assuming mark\n" );
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         return( ProcessMark( pid, &regs ) );
 #endif
     }
@@ -654,9 +655,9 @@ static void SampleLoop( pid_t pid )
         do_cont = true;
 
         /* record current execution point */
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         ptrace( PTRACE_GETREGS, pid, NULL, &regs );
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
         regs.eip = ptrace( PTRACE_PEEKUSER, pid, REGSIZE * PT_NIP, NULL );
 #endif
         if( WIFSTOPPED( status ) ) {

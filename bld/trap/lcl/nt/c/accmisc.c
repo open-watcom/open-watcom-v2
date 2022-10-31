@@ -33,10 +33,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "madconf.h"
 #include "stdnt.h"
 #include "trperr.h"
 #include "madregs.h"
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 #include "x86cpu.h"
 #endif
 
@@ -56,9 +57,9 @@ bool GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt )
 
 bool IsBigSel( WORD sel )
 {
-#if defined( MD_axp ) | defined( MD_ppc )
+#if MADARCH & (MADARCH_AXP | MADARCH_PPC)
     return( true );
-#elif defined( MD_x86 ) || defined( MD_x64 )
+#elif MADARCH & (MADARCH_X86 | MADARCH_X64)
     LDT_ENTRY   ldt;
 
     if( sel == FlatCS || sel == FlatDS ) {
@@ -72,7 +73,7 @@ bool IsBigSel( WORD sel )
 #endif
 }
 
-#if defined( MD_axp )
+#if MADARCH & MADARCH_AXP
 typedef struct {
     unsigned_32 beg_addr;
     unsigned_32 end_addr;
@@ -131,7 +132,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
@@ -139,7 +140,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
         data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : (( IsDOS ) ? X86AC_REAL : 0);
         return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-#elif defined( MD_x64 )
+#elif MADARCH & MADARCH_X64
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
     if( acc->info_type == X64MD_ADDR_CHARACTERISTICS ) {
@@ -147,7 +148,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
         data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X64AC_BIG : 0;
         return( sizeof( *ret ) + sizeof( data->x64_addr_flags ) );
     }
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_AXP
     if( acc->info_type == AXPMD_PDATA ) {
         data = GetOutPtr( sizeof( *ret ) );
         memset( &data->axp_pdata, 0, sizeof( data->axp_pdata ) );
@@ -162,7 +163,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
     }
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
 #else
@@ -186,14 +187,14 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     ret->huge_shift = 3;
 
     GetSystemInfo( &info );
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     ret->cpu = X86CPUType();
     ret->fpu = ret->cpu & X86_CPU_MASK;
     if( IsWOW ) {
         ret->os = DIG_OS_WINDOWS;
     }
     ret->arch = DIG_ARCH_X86;
-#elif defined( MD_x64 )
+#elif MADARCH & MADARCH_X64
     ret->cpu = X86_P4 | X86_MMX | X86_XMM;
     ret->fpu = ret->cpu & X86_CPU_MASK;
 //    ret->cpu = X64_CPU1;
@@ -203,7 +204,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     }
 //    ret->arch = DIG_ARCH_X64;
     ret->arch = DIG_ARCH_X86;
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_AXP
     switch( info.dwProcessorType ) {
     case PROCESSOR_ALPHA_21064:
         ret->cpu = AXP_21064;
@@ -217,7 +218,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     }
     ret->fpu = 0;
     ret->arch = DIG_ARCH_AXP;
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     switch( info.dwProcessorType ) {
     case PROCESSOR_PPC_601:
         ret->cpu = PPC_601;

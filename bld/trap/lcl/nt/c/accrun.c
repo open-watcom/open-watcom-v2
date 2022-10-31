@@ -36,6 +36,7 @@
 #include <direct.h>
 #include <windows.h>
 #include <i86.h>
+#include "madconf.h"
 #include "madregs.h"
 #include "trptypes.h"
 #include "trpld.h"
@@ -78,7 +79,7 @@ static void setATBit( thread_info *ti, set_t set )
 
     con.ContextFlags = MYCONTEXT_CONTROL;
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
     if( set != T_OFF ) {
         con.EFlags |= INTR_TF;
     } else {
@@ -86,7 +87,7 @@ static void setATBit( thread_info *ti, set_t set )
     }
     con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_AXP
     if( set != T_OFF ) {
         ti->brk_addr = AdjustIP( &con, 0 );
         if( set == T_ON_NEXT ) {
@@ -100,7 +101,7 @@ static void setATBit( thread_info *ti, set_t set )
         remove_breakpoint_lin( ProcessInfo.process_handle, ti->brk_addr, ti->old_opcode );
         ti->brk_addr = 0;
     }
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     if( set != T_OFF ) {
         con.Msr |= INTR_TF;
     } else {
@@ -197,13 +198,13 @@ static void setTBit( set_t set )
 /*
  * handleInt3 - process an encountered break point
  */
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
 static DWORD    BreakFixed;
 #endif
 
 static trap_conditions handleInt3( DWORD state )
 {
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
     thread_info *ti;
     MYCONTEXT   con;
 
@@ -242,7 +243,7 @@ static trap_conditions handleInt3( DWORD state )
         con.Eip--;
         MySetThreadContext( ti, &con );
     }
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_AXP
     thread_info *ti;
     MYCONTEXT   con;
 
@@ -251,7 +252,7 @@ static trap_conditions handleInt3( DWORD state )
     if( ti->brk_addr != 0 && AdjustIP( &con, 0 ) == ti->brk_addr ) {
         return( handleInt1( state ) );
     }
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     /* nothing special to do */
 #else
     #error handleInt3 not configured
@@ -274,7 +275,7 @@ static trap_conditions handleInt1( DWORD state )
         return( COND_USER );
     }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     if( state & STATE_WATCH_386 ) {
         if( GetDR6() & 0xf ) {
             return( COND_WATCH );
@@ -286,7 +287,7 @@ static trap_conditions handleInt1( DWORD state )
             return( COND_WATCH );
         }
     } else {
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
         HANDLE      proc;
         thread_info *ti;
 
@@ -310,7 +311,7 @@ static trap_conditions handleInt1( DWORD state )
 }
 
 #ifdef WOW
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
 /*
  * getImageNote - get current image note structure (WOW)
  */
@@ -340,7 +341,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
     char            *q;
     bool            rc;
 #ifdef WOW
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
     thread_info     *ti;
     DWORD           subcode;
     IMAGE_NOTE      imgnote;
@@ -369,7 +370,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
         PendingProgramInterrupt = false;
         if( (state & STATE_WATCH) && (state & STATE_WATCH_386) == 0 ) {
             setTBit( T_OFF ); /* turn off previous T-bit */
-#if defined( MD_axp )
+#if MADARCH & MADARCH_AXP
             /*
                We're doing watch points on an Alpha. If we run into a
                control transfer instruction, return a spurious watchpoint
@@ -401,7 +402,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
         continue_how = DBG_CONTINUE;
         rc = MyWaitForDebugEvent();
         LastDebugEventTid = DebugEvent.dwThreadId;
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
         if( IsWin32s && !rc ) {
             returnCode = COND_LIBRARIES;
             goto done;
@@ -412,7 +413,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
             switch( code ) {
 #ifdef WOW
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
             case STATUS_VDM_EVENT:
                 subcode = W1( DebugEvent.u.Exception.ExceptionRecord );
                 switch( subcode ) {
@@ -537,7 +538,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     strcat( new->msg, " at 0x" );
                     a = DebugEvent.u.Exception.ExceptionRecord.ExceptionAddress;
 #if 0
-#if defined( MD_x64 )
+#if MADARCH & MADARCH_X64
                     ultoa( (unsigned long)((pointer_uint)a >> 32), buff, 16 );
                     strcat( new->msg, buff );
                     strcat( new->msg, ":0x" );
@@ -689,7 +690,7 @@ static trap_elen runProg( bool single_step )
         setTBit( T_OFF );
         if( IsWatch() ) {
             state |= STATE_WATCH;
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
             if( SetDebugRegs() ) {
                 state |= STATE_WATCH_386;
             }
@@ -712,17 +713,17 @@ static trap_elen runProg( bool single_step )
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
     ret->program_counter.offset = con.Eip;
     ret->stack_pointer.offset = con.Esp;
     ret->program_counter.segment = con.SegCs;
     ret->stack_pointer.segment = con.SegSs;
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_AXP
     ret->program_counter.offset = ( (unsigned_64 *)&con.Fir )->u._32[0];
     ret->stack_pointer.offset = ( (unsigned_64 *)&con.IntSp )->u._32[0];
     ret->program_counter.segment = 0;
     ret->stack_pointer.segment = 0;
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     ret->program_counter.offset = con.Iar;
     ret->stack_pointer.offset = con.Gpr2;
     ret->program_counter.segment = 0;

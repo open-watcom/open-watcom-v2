@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "madconf.h"
 #include "stdnt.h"
 #include "trperr.h"
 #include "srvcdbg.h"
@@ -110,7 +111,7 @@ static bool executeUntilStart( bool was_running )
     }
 }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 #ifdef WOW
 /*
  * addKERNEL - add the KERNEL module to the library load (WOW)
@@ -325,7 +326,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
      */
     handle = INVALID_HANDLE_VALUE;
     IsWOW = false;
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
     IsDOS = false;
 #endif
     if( pid == 0 ) {
@@ -372,14 +373,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
                 DebugeeSubsystem = PE64( hi.u.peh ).subsystem;
             } else {
                 DebugeeSubsystem = PE32( hi.u.peh ).subsystem;
-#if defined( MD_x64 )
+#if MADARCH & MADARCH_X64
                 IsWOW = true;
 #endif
             }
             if( DebugeeSubsystem == SS_WINDOWS_CHAR ) {
                 cr_flags |= CREATE_NEW_CONSOLE;
             }
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
         } else if( hi.sig == EXE_NE ) {
             IsWOW = true;
             /*
@@ -461,7 +462,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     DebugeeTid = DebugEvent.dwThreadId;
     LastDebugEventTid = DebugEvent.dwThreadId;
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 #ifdef WOW
     if( IsWOW ) {
         ret->flags = LD_FLAG_IS_PROT;
@@ -563,7 +564,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         }
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         FlatCS = con.SegCs;
         FlatDS = con.SegDs;
 #endif

@@ -631,14 +631,14 @@ static return_val initORL( void )
             // matter; there are some object files like this.
             case ORL_MACHINE_TYPE_NONE:
             case ORL_MACHINE_TYPE_ALPHA:
-                if( DisInit( DISCPU_axp, &DHnd, byte_swap ) != DR_OK ) {
+                if( DisInit( DISCPU_AXP, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );
                 }
                 break;
             case ORL_MACHINE_TYPE_PPC601:
-                if( DisInit( DISCPU_ppc, &DHnd, byte_swap ) != DR_OK ) {
+                if( DisInit( DISCPU_PPC, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );
@@ -650,7 +650,7 @@ static return_val initORL( void )
                 break;
             case ORL_MACHINE_TYPE_R3000:
             case ORL_MACHINE_TYPE_R4000:
-                if( DisInit( DISCPU_mips, &DHnd, byte_swap ) != DR_OK ) {
+                if( DisInit( DISCPU_MIPS, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );
@@ -658,7 +658,7 @@ static return_val initORL( void )
                 break;
             case ORL_MACHINE_TYPE_I386:
             case ORL_MACHINE_TYPE_I8086:
-                if( DisInit( DISCPU_x86, &DHnd, byte_swap ) != DR_OK ) {
+                if( DisInit( DISCPU_X86, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );
@@ -666,7 +666,7 @@ static return_val initORL( void )
                 IsIntelx86 = true;
                 break;
             case ORL_MACHINE_TYPE_AMD64:
-                if( DisInit( DISCPU_x64, &DHnd, byte_swap ) != DR_OK ) {
+                if( DisInit( DISCPU_X64, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );
@@ -675,7 +675,7 @@ static return_val initORL( void )
                 break;
             case ORL_MACHINE_TYPE_SPARC:
             case ORL_MACHINE_TYPE_SPARCPLUS:
-                if( DisInit( DISCPU_sparc, &DHnd, byte_swap ) != DR_OK ) {
+                if( DisInit( DISCPU_SPARC, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );

@@ -101,7 +101,7 @@ msg.grh : ../stand/wdis.msg $(__MAKEFILES__)
     $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
+optencod_opt_qnx = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
 !ifeq release 0

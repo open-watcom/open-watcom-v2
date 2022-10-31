@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+#include "madconf.h"
 #include "stdnt.h"
 
 
@@ -243,7 +244,7 @@ void AddProcess( header_info *hi )
 
     llo = moduleInfo;
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     if( IsWOW || IsDOS ) {
         llo->is_16 = true;
         llo->file_handle = 0;
@@ -415,7 +416,7 @@ void AddLib( bool is_16, IMAGE_NOTE *im )
     moduleInfo = llo;
     llo = &moduleInfo[ModuleTop - 1];
 
-#if !defined( WOW ) || defined( MD_x64 )
+#if !defined( WOW ) || ( MADARCH & MADARCH_X64 )
     (void)im, (void)is_16; // Unused
 #else
     if( is_16 ) {
@@ -493,7 +494,7 @@ void DelProcess( bool closeHandles )
  *                      will be loaded into memory.
  */
 #if defined( WOW )
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
 
 #define INS_BYTES 7
 
@@ -527,7 +528,7 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
     WriteMemory( &WOWAppInfo.addr, origBytes, INS_BYTES );
 }
 
-#endif  /* !defined( MD_x64 ) */
+#endif  /* !( MADARCH & MADARCH_X64 ) */
 #endif  /* defined( WOW ) */
 
 trap_retval TRAP_CORE( Map_addr )( void )
@@ -560,7 +561,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
     llo = &moduleInfo[acc->mod_handle];
 
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
 #ifdef WOW
     if( llo->is_16 ) {
         LDT_ENTRY   ldt;

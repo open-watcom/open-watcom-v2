@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "madconf.h"
+
+
 #ifdef TRPGLOBINIT
 #define TRPGLOBAL
 #else
@@ -37,9 +40,8 @@
 #define TRPGLOBINIT(x)
 #endif
 
-
 #if defined( WOW )
-  #if defined( MD_x86 )
+  #if MADARCH & MADARCH_X86
 //typedef void    *LPVDMCONTEXT;
   #endif
 #else
@@ -65,7 +67,7 @@ TRPGLOBAL subsystems    DebugeeSubsystem;
 TRPGLOBAL msg_list      *DebugString;
 TRPGLOBAL DEBUG_EVENT   DebugEvent;
 TRPGLOBAL bool          IsWOW;
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
 TRPGLOBAL bool          IsDOS;
 TRPGLOBAL bool          IsWin32s;
 TRPGLOBAL bool          IsWin95;
@@ -85,12 +87,12 @@ TRPGLOBAL bool          SupportingExactBreakpoints TRPGLOBINIT( false );    /* S
 TRPGLOBAL opcode_type   BreakOpcode;
 
 #if defined( WOW )
-  #if defined( MD_x86 )
+  #if MADARCH & MADARCH_X86
 TRPGLOBAL wow_info      WOWAppInfo;
   #endif
 #endif
 
-#if !defined( MD_x64 )
+#if !( MADARCH & MADARCH_X64 )
 TRPGLOBAL HANDLE
 (WINAPI*pOpenThread)(
     DWORD

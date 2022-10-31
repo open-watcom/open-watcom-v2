@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -204,7 +205,7 @@ static void dumpCodeBuff( void (*output)( char ),
     DisInit( buff->cpu, &handle );
     while( buff->offset < buff->length ){
         DisDecodeInit( &handle, &ins );
-        if( buff->cpu == DISCPU_x86 ) {
+        if( buff->cpu == DISCPU_X86 ) {
             ins.flags |= DIF_X86_USE32_FLAGS;
         }
         DisDecode( &handle, buff, &ins );
@@ -221,9 +222,9 @@ static void dumpCode( void (*output)( char ), jit_code_str *header )
 {
     code_buff           buff;
 
-    buff.cpu = DISCPU_x86;
+    buff.cpu = DISCPU_X86;
     if( header->arch == JIT_ARCH_SPARC ) {
-        buff.cpu = DISCPU_sparc;
+        buff.cpu = DISCPU_SPARC;
     }
     buff.offset = 0;
     buff.length = header->code.size;
@@ -238,7 +239,7 @@ extern void DumpCodeStr(
 {
     code_buff           buff;
 
-    buff.cpu = DISCPU_x86;
+    buff.cpu = DISCPU_X86;
     buff.offset = 0;
     buff.length = len;
     buff.start = buffer;

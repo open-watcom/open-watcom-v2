@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "madconf.h"
 #include "stdnt.h"
 #include "trptypes.h"
 #include "trpld.h"
@@ -49,7 +50,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     IsWin32s = false;
     IsWin95 = false;
     IsWinNT = false;
-#if defined( MD_x64 )
+#if MADARCH & MADARCH_X64
     IsWinNT = true;
 #else
     osver = GetVersion();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,25 +64,25 @@ struct dis_cpu_data {
     unsigned char       inssize_inc;
 };
 
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
 #include "disaxp.h"
 #endif
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
 #include "disppc.h"
 #endif
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
 #include "disx86.h"
 #endif
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
 #include "disx64.h"
 #endif
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
 #include "disjvm.h"
 #endif
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
 #include "dissparc.h"
 #endif
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
 #include "dismips.h"
 #endif
 

@@ -81,26 +81,26 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
 static void print_cpu_types( void )
 {
     printf( "supported CPU types:\n" );
-#if DISCPU & DISCPU_axp
-    printf( "    %2x   - Alpha AXP\n", DISCPU_axp );
+#if DISCPU & DISCPU_AXP
+    printf( "    %2x   - Alpha AXP\n", DISCPU_AXP );
 #endif
-#if DISCPU & DISCPU_ppc
-    printf( "    %2x   - PowerPC\n", DISCPU_ppc );
+#if DISCPU & DISCPU_PPC
+    printf( "    %2x   - PowerPC\n", DISCPU_PPC );
 #endif
-#if DISCPU & DISCPU_x86
-    printf( "    %2x   - x86\n", DISCPU_x86 );
+#if DISCPU & DISCPU_X86
+    printf( "    %2x   - x86\n", DISCPU_X86 );
 #endif
-#if DISCPU & DISCPU_jvm
-    printf( "    %2x   - Java bytecode\n", DISCPU_jvm );
+#if DISCPU & DISCPU_JVM
+    printf( "    %2x   - Java bytecode\n", DISCPU_JVM );
 #endif
-#if DISCPU & DISCPU_sparc
-    printf( "    %2x   - Sun SPARC\n", DISCPU_sparc );
+#if DISCPU & DISCPU_SPARC
+    printf( "    %2x   - Sun SPARC\n", DISCPU_SPARC );
 #endif
-#if DISCPU & DISCPU_mips
-    printf( "    %2x   - MIPS\n", DISCPU_mips );
+#if DISCPU & DISCPU_MIPS
+    printf( "    %2x   - MIPS\n", DISCPU_MIPS );
 #endif
-#if DISCPU & DISCPU_x64
-    printf( "    %2x   - AMD64\n", DISCPU_x64 );
+#if DISCPU & DISCPU_X64
+    printf( "    %2x   - AMD64\n", DISCPU_X64 );
 #endif
 }
 
@@ -121,7 +121,7 @@ int main( void )
     unsigned            radix;
 
     radix = 16;
-    cpu = DISCPU_none;
+    cpu = DISCPU_NONE;
     format = DFF_NONE;
     flag.u.all = DIF_NONE;
     for( ;; ) {
@@ -136,13 +136,13 @@ int main( void )
         } else if( strcmp( op_buff, "end" ) == 0 ) {
             break;
         } else if( memcmp( op_buff, "cpu", 3 ) == 0 ) {
-            if( cpu != DISCPU_none )
+            if( cpu != DISCPU_NONE )
                 DisFini( &handle );
             cpu = strtoul( &op_buff[4], NULL, 16 );
             if( DisInit( cpu, &handle, 0 ) != DR_OK ) {
                 printf("Init Failed\n");
                 print_cpu_types();
-                cpu = DISCPU_none;
+                cpu = DISCPU_NONE;
             }
         } else if( memcmp( op_buff, "flag", 4 ) == 0 ) {
             flag.u.all = strtoul( &op_buff[5], NULL, 16 );
@@ -150,7 +150,7 @@ int main( void )
             format = strtoul( &op_buff[7], NULL, 16 );
         } else if( memcmp( op_buff, "radix", 5 ) == 0 ) {
             radix = strtoul( &op_buff[6], NULL, 10 );
-        } else if( cpu == DISCPU_none ) {
+        } else if( cpu == DISCPU_NONE ) {
             printf( "CPU has not been established\n" );
         } else {
             charp = op_buff;
@@ -193,7 +193,7 @@ int main( void )
         }
         printf("\n");
     }
-    if( cpu != DISCPU_none ) {
+    if( cpu != DISCPU_NONE ) {
         DisFini( &handle );
     }
     return( 0 );
