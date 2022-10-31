@@ -31,6 +31,7 @@
 
 
 #ifndef PILCORE_H
+#define PILCORE_H
 
 #define PIL_CORE_VERSION_MAJOR  1
 #define PIL_CORE_VERSION_MINOR  0
@@ -97,5 +98,4 @@ enum pil_thread_state {
     PTS_PROC_TERM
 };
 
-#define PILCORE_H
 #endif

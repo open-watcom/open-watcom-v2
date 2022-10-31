@@ -33,6 +33,7 @@
 
 #ifndef MADX86_H
 #define MADX86_H
+
 #include "digpck.h"
 enum x86_cputypes {
         X86_86,

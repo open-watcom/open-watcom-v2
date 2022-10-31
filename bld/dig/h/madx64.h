@@ -33,6 +33,7 @@
 
 #ifndef MADX64_H
 #define MADX64_H
+
 #include "digpck.h"
 enum x64_cputypes {
         X64_CPU1 = 0x01,

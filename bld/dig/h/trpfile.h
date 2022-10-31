@@ -31,6 +31,7 @@
 
 
 #ifndef TRPFILE_H
+#define TRPFILE_H
 
 #include "trptypes.h"
 
@@ -176,7 +177,5 @@ typedef struct {
 } file_run_cmd_ret;
 
 #include "poppck.h"
-
-#define TRPFILE_H
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #ifndef TRPENV_H
+#define TRPENV_H
 
 #include "trptypes.h"
 #include <time.h>
@@ -79,7 +80,5 @@ typedef struct {
 } env_set_var_ret;
 
 #include "poppck.h"
-
-#define TRPENV_H
 
 #endif
