@@ -35,6 +35,7 @@
 #include <time.h>
 #include "dbgdefn.h"
 #include "dbgio.h"
+#include "digsyscf.h"
 #include "trpcore.h"
 #include "trprfx.h"
 #include "remote.h"

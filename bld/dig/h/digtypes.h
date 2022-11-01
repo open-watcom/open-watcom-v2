@@ -436,14 +436,4 @@ typedef struct dig_type_info {
 
 #include "digunpck.h"
 
-typedef struct {                //NYI: redo this for PIL
-    unsigned_8          cpu;
-    unsigned_8          fpu;
-    unsigned_8          osmajor;
-    unsigned_8          osminor;
-    dig_os              os;
-    unsigned_8          huge_shift;
-    dig_arch            arch;
-} system_config;
-
 #endif

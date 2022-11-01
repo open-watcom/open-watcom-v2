@@ -25,27 +25,25 @@
 *
 *  ========================================================================
 *
-* Description:  DIG client callback function prototypes.
+* Description:  Debugger interface types.
 *
 ****************************************************************************/
 
 
-#ifndef DIGCLI_H_INCLUDED
-#define DIGCLI_H_INCLUDED
+#ifndef DIGSYSCF_H_INCLUDED
+#define DIGSYSCF_H_INCLUDED
 
 #include "digtypes.h"
 
-#define DIGCli(n)       DIGCli ## n
-#define _DIGCli(n)      _DIGCli ## n n
 
-#define DIGCLIENTRY(n)  DIGCLIENT DIGCli(n)
-
-#define pick(r,n,p) typedef r (DIGCLIENT *_DIGCli ## n) p;
-#include "_digcli.h"
-#undef pick
-
-#define pick(r,n,p) extern r DIGCLIENTRY( n ) p;
-#include "_digcli.h"
-#undef pick
+typedef struct {                //NYI: redo this for PIL
+    unsigned_8          cpu;
+    unsigned_8          fpu;
+    unsigned_8          osmajor;
+    unsigned_8          osminor;
+    dig_os              os;
+    unsigned_8          huge_shift;
+    dig_arch            arch;
+} system_config;
 
 #endif

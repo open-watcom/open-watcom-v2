@@ -49,6 +49,7 @@
 #include "ldstr.h"
 #include "rvalue.h"
 #include "madregs.h"
+#include "digsyscf.h"
 #include "listbox.h"
 
 
