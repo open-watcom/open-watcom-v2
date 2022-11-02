@@ -33,8 +33,8 @@
 #ifndef TRPENV_H
 #define TRPENV_H
 
-#include "trptypes.h"
 #include <time.h>
+#include "trptypes.h"
 
 #define ENV_SUPP_NAME   Environment
 #define TRAP_ENV(s)     TRAP_SYM( ENV_SUPP_NAME, s )

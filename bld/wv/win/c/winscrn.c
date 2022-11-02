@@ -45,7 +45,6 @@
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "dbginit.h"

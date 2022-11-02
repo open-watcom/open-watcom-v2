@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include "madconf.h"
 #include "stdnt.h"
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "globals.h"

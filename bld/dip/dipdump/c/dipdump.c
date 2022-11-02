@@ -38,8 +38,8 @@
 #include <unistd.h>
 #include "walloca.h"
 #include "bool.h"
-#include "dip.h"
 #include "digcli.h"
+#include "dip.h"
 #include "dipdump.h"
 
 

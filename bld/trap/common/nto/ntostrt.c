@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <signal.h>
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpcomm.h"
 #include "ntostrt.h"

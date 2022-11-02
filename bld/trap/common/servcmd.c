@@ -38,10 +38,9 @@
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 #endif
-#include "trptypes.h"
 #include "trpld.h"
-#include "packet.h"
 #include "trperr.h"
+#include "packet.h"
 #include "tcerr.h"
 #include "servio.h"
 

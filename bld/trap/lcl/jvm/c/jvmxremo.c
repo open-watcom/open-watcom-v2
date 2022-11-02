@@ -34,8 +34,8 @@
 #include <windows.h>
 #include <string.h>
 #include "trpimp.h"
-#include "trperr.h"
 #include "trpcomm.h"
+#include "trperr.h"
 #include "packet.h"
 #include "jvmerr.h"
 #include "madregs.h"

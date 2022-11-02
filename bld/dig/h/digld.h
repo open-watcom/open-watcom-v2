@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "digtypes.h"
 
 
 #define DIGLoader(n)    DIGLoader ## n

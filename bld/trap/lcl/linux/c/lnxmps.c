@@ -35,10 +35,10 @@
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "mad.h"
 #include "madregs.h"
-#include "trpcomm.h"
 #include "lnxcomm.h"
 
 /* Implementation notes:

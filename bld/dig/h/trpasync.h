@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,8 @@
 #ifndef TRPASYNC_H
 #define TRPASYNC_H
 
-#include "trptypes.h"
 #include <time.h>
+#include "trptypes.h"
 
 #define ASYNC_SUPP_NAME     Asynch
 #define TRAP_ASYNC(s)       TRAP_SYM( ASYNC_SUPP_NAME, s )

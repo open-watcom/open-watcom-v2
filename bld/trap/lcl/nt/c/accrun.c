@@ -38,7 +38,6 @@
 #include <i86.h>
 #include "madconf.h"
 #include "madregs.h"
-#include "trptypes.h"
 #include "trpld.h"
 #include "stdnt.h"
 

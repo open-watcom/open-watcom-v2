@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "digtypes.h"
 #include "digld.h"
 #include "tinyio.h"
 #include "dospath.h"

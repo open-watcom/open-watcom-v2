@@ -35,11 +35,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-#include "trpld.h"
-#include "tcerr.h"
 #include "digcli.h"
-#include "trpimp.h"
 #include "digld.h"
+#include "trpld.h"
+#include "trpimp.h"
+#include "tcerr.h"
 #include "ldimp.h"
 
 

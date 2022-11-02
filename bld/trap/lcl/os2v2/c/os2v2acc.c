@@ -42,8 +42,8 @@
 #include <os2.h>
 #include "brkptcpu.h"
 #include "os2v2acc.h"
-#include "trpcomm.h"
 #include "trpld.h"
+#include "trpcomm.h"
 #include "trpsys.h"
 #include "bsexcpt.h"
 #include "wdpmhelp.h"

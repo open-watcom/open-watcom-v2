@@ -39,8 +39,6 @@
 //#define INCL_DOSSESMGR
 #include <wos2.h>
 #include <os2dbg.h>
-#include "trptypes.h"
-#include "trpcomm.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"

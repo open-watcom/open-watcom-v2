@@ -34,7 +34,6 @@
 #include <process.h>
 #include <wwindows.h>
 #include "wserver.h"
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "trperr.h"

@@ -56,8 +56,8 @@
 #include <sys/dev.h>
 #include <string.h>
 #include "trpimp.h"
-#include "trperr.h"
 #include "trpcomm.h"
+#include "trperr.h"
 #include "qnxcomm.h"
 #include "qnxpath.h"
 #include "miscx87.h"

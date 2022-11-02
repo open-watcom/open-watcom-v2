@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "digtypes.h"
 #include "digld.h"
 #include "lnxpath.h"
 #include "servio.h"

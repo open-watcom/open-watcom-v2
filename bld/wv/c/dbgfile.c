@@ -46,6 +46,7 @@
 #endif
 #include "dbgmem.h"
 #include "dbgio.h"
+#include "digcli.h"
 #include "digld.h"
 #include "strutil.h"
 #include "filelcl.h"
@@ -54,7 +55,6 @@
 #include "dbgsrc.h"
 #include "remfile.h"
 #include "dbgerr.h"
-#include "digcli.h"
 
 #include "clibext.h"
 

@@ -32,8 +32,8 @@
 
 #ifndef TRPCAPB_H
 
-#include "trptypes.h"
 #include <time.h>
+#include "trptypes.h"
 
 #define CAPABILITIES_SUPP_NAME  Capabilities
 #define TRAP_CAPABILITIES(s)    TRAP_SYM( CAPABILITIES_SUPP_NAME, s )
