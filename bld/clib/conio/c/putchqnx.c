@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,6 @@ _WCRTLINK int (putch)( int c )
     char buf[1];
 
     buf[0] = c;
-    write( STDOUT_FILENO, &buf, 1 );
+    write( STDOUT_FILENO, buf, 1 );
     return( c );
 }

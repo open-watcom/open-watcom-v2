@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +41,12 @@
 #include "heapacc.h"
 #include "heap.h"
 #include "thread.h"
+#include "roundmac.h"
+
+
 #ifndef _M_I86
     extern int  _brk( void * );
 #endif
-
 
 _WCRTLINK void_nptr __brk( unsigned brk_value )
 {
