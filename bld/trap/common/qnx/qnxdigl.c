@@ -37,7 +37,6 @@
 #include <limits.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include "digtypes.h"
 #include "digcli.h"
 #include "digld.h"
 #include "qnxpath.h"

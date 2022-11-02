@@ -36,7 +36,6 @@
 #include <process.h>
 #include "bool.h"
 #include "iopath.h"
-#include "digtypes.h"
 #include "digcli.h"
 #include "digld.h"
 #include "pathlist.h"

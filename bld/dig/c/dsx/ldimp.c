@@ -50,7 +50,6 @@
 #endif
 #include "watcom.h"
 #include "exephar.h"
-#include "digtypes.h"
 #include "digcli.h"
 #include "digld.h"
 #include "ldimp.h"
