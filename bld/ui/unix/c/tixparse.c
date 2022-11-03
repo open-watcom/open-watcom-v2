@@ -250,6 +250,16 @@ static int do_default( void )
 }
 
 
+void ti_map_display_code( char c, bool alt_map )
+{
+    if( alt_map ) {
+        ti_char_map[TT_CODE][0] = set_ti_alt_map( TT_CODE, c );
+    } else {
+        ti_char_map[TT_CODE][0] = c;
+    }
+    ti_char_map[TT_CODE][1] = 0;
+}
+
 void tix_error( const char *str )
 {
     uiwritec( "\nError in " );
