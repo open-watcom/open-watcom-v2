@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1080,9 +1080,8 @@ static int ti_hwcursor( void )
 // there are multiple chars
 #define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol ); rcount = 0;}
 
-#define TI_SLURPCHAR( __ch ) \
+#define TI_SLURPCHAR( __c ) \
 { \
-    unsigned char __c = __ch; \
     if( rcount != 0 && ( rchar != ti_char_map[__c][0] || ralt != ti_alt_map_chk( __c ) ) ) \
         TI_DUMPCHARS(); \
     rcol = ( rcount == 0 ) ? j : rcol; \

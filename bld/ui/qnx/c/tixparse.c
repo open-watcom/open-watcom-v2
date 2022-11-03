@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,8 @@
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "trie.h"
+#include "uiintern.h"
+#include "uiextrn.h"
 #include "doparse.h"
 
 
@@ -55,50 +57,108 @@
 ****************************************************************************
 ***************************************************************************/
 
+// macros for getting/setting bits in alt-char map
+#define ti_alt_map_set( x ) ( _ti_alt_map[( x ) / 8] |= ( 1 << ( ( x ) % 8 ) ) )
+
 extern struct _console_ctrl *UIConCtrl;
 
-char            ti_char_map[256][MB_MAP_MAX];
+unsigned char   _ti_alt_map[32];
+char            ti_char_map[256][MB_LEN_MAX];
 
-static tix_status init_tix_scanner( const char *termname )
+static const char acs_default[] = "q-x|l.m`k.j\'n+w-v-t|u|~*+>,<-^.vO#f`g?a#h#";
+
+static char find_acs_map( char c, const char *acs )
+{
+    char    ch;
+
+    while( (ch = *acs++) != '\0' ) {
+        if( ch == c )
+            return( *acs );
+        if( *acs++ == '\0' ) {
+            break;
+        }
+    }
+    return( '\0' );
+}
+
+static char set_ti_alt_map( unsigned i, char c )
+{
+    char    cmap;
+
+    cmap = find_acs_map( c, acs_chars );
+    if( cmap != '\0' ) {
+        ti_alt_map_set( i );
+    } else {
+        cmap = find_acs_map( c, acs_default );
+        if( cmap == '\0' ) {
+            cmap = c;
+            ti_alt_map_set( i );
+        }
+    }
+    return( cmap );
+}
+
+static tix_status init_tix_scanner( const char *termname, FILE **in_file )
 {
     char        *tix_name;
     size_t      len;
     tix_status  rc;
+    FILE        *fp;
 
-    in_file = NULL;
+    fp = NULL;
     rc = TIX_OK;
     if( *termname != '\0' ) {
         len = strlen( termname ) + 5;
         tix_name = uimalloc( len );
         strcpy( tix_name, termname );
         strcat( tix_name, ".tix" );
-        in_file = ti_fopen( tix_name );
+        fp = ti_fopen( tix_name );
         uifree( tix_name );
-        if( in_file == NULL ) {
+        if( fp == NULL ) {
             if( strstr( termname, "qnx" ) != 0 ) {
-                in_file = ti_fopen( "qnx.tix" );
+                fp = ti_fopen( "qnx.tix" );
             } else if( strstr( termname, "ansi" ) != 0 || strcmp( termname, "xterm" ) == 0 ) {
-                in_file = ti_fopen( "ansi.tix" );
+                fp = ti_fopen( "ansi.tix" );
             }
         }
     }
-    if( in_file == NULL ) {
+    if( fp == NULL ) {
         rc = TIX_NOFILE;
         if( UIConCtrl == NULL ) {
-            in_file = ti_fopen( "default.tix" );
-            if( in_file != NULL ) {
+            fp = ti_fopen( "default.tix" );
+            if( fp != NULL ) {
                 rc = TIX_DEFAULT;
             }
         }
     }
+    *in_file = fp;
     return( rc );
 }
 
-static void close_tix_scanner( void )
+static void close_tix_scanner( FILE *in_file )
 {
     if( in_file != NULL ) {
         fclose( in_file );
     }
+}
+
+void ti_map_display_code( char c, bool alt_map )
+{
+    if( alt_map ) {
+        ti_char_map[TT_CODE][0] = set_ti_alt_map( TT_CODE, c );
+    } else {
+        ti_char_map[TT_CODE][0] = c;
+    }
+    ti_char_map[TT_CODE][1] = 0;
+}
+
+void tix_error( const char *str )
+{
+    uiwritec( "\nError in " );
+    uiwrite( GetTermType() );
+    uiwritec( ": " );
+    uiwrite( str );
+    uiwritec( "\n" );
 }
 
 tix_status ti_read_tix( const char *termname )
@@ -106,21 +166,23 @@ tix_status ti_read_tix( const char *termname )
 {
     int         i;
     tix_status  ret;
+    FILE        *in_file;
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
-    for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ )
+    for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ ) {
         ti_char_map[i][0] = i;
-
-    ret = init_tix_scanner( termname );
+        ti_char_map[i][1] = 0;
+    }
+    ret = init_tix_scanner( termname, &in_file );
     switch( ret ) {
     case TIX_NOFILE:
         if( UIConCtrl != NULL )
             return( ret );
         return( ui_tix_missing( termname ) ? TIX_OK : TIX_FAIL );
     }
-    if( !do_parse() )
+    if( !do_parse( in_file ) )
         ret = TIX_FAIL;
-    close_tix_scanner();
+    close_tix_scanner( in_file );
     return( ret );
 }

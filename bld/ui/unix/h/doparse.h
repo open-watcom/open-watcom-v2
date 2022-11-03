@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,13 @@
 // macros for getting/setting bits in alt-char map
 #define ti_alt_map_chk( x ) ( _ti_alt_map[( x ) / 8] != 0 && (( _ti_alt_map[( x ) / 8] >> ( ( x ) % 8 ) ) & 1) )
 
+typedef enum {
+    TT_CODE,
+    TT_STRING,
+    TT_EOF,
+} tix_token;
+
 // array of bits set for chars in alternate char-set
 extern unsigned char    _ti_alt_map[32];
 
-extern FILE             *in_file;
-
-extern bool             do_parse( void );
-extern char             set_ti_alt_map( unsigned i, char c );
+extern bool             do_parse( FILE *in_file );
