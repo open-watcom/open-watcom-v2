@@ -34,6 +34,7 @@
 #include <string.h>
 #include <conio.h>
 #include <io.h>
+#include <i86.h>
 #include <fcntl.h>
 #include "pltypes.h"
 #include "hw386.h"
@@ -922,9 +923,9 @@ static unsigned ProgRun( bool step )
     if( AtEnd ) {
         ret->conditions = COND_TERMINATE;
     } else if( step ) {
-        Mach.msb_eflags |= EF_TF;
+        Mach.msb_eflags |= INTR_TF;
         ret->conditions = Execute();
-        Mach.msb_eflags &= ~EF_TF;
+        Mach.msb_eflags &= ~INTR_TF;
     } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = Execute();
@@ -932,7 +933,7 @@ static unsigned ProgRun( bool step )
             Mach.msb_dreg[7] = 0;
         } else {
             for( ;; ) {
-                Mach.msb_eflags |= EF_TF;
+                Mach.msb_eflags |= INTR_TF;
                 ret->conditions = Execute();
                 if( ret->conditions & COND_TERMINATE )
                     break;
@@ -942,7 +943,7 @@ static unsigned ProgRun( bool step )
                     break;
                 if( CheckWatchPoints() ) {
                     ret->conditions = COND_WATCH;
-                    Mach.msb_eflags &= ~EF_TF;
+                    Mach.msb_eflags &= ~INTR_TF;
                     break;
                 }
             }
