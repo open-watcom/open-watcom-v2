@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#include "digtypes.h"
 #include "trpimp.h"
 #include "os2trap.h"
 #include "dosdebug.h"

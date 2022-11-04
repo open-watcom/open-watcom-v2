@@ -38,11 +38,10 @@
 #define INCL_DOSPROCESS
 #include <os2.h>
 #include <os2dbg.h>
-#include "digtypes.h"
-#include "os2trap.h"
-#include "dosdebug.h"
 #include "trpimp.h"
 #include "trperr.h"
+#include "os2trap.h"
+#include "dosdebug.h"
 #include "wdpmhelp.h"
 
 

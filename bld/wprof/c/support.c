@@ -42,7 +42,6 @@
 #include "aui.h"
 #include "myassert.h"
 #include "exedefs.h"
-#include "machtype.h"
 #include "sampinfo.h"
 #include "ovltab.h"
 #include "msg.h"
