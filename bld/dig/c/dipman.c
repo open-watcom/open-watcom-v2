@@ -42,7 +42,6 @@
 #include "walloca.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "dipsys.h"
 
 

@@ -65,6 +65,16 @@ typedef struct process_info     process_info;
 typedef struct dip_imp_routines dip_imp_routines;
 typedef struct location_context location_context;
 
+struct imp_image_handle;
+struct imp_type_handle;
+struct imp_cue_handle;
+struct imp_sym_handle;
+
+typedef struct imp_image_handle imp_image_handle;
+typedef struct imp_type_handle  imp_type_handle;
+typedef struct imp_cue_handle   imp_cue_handle;
+typedef struct imp_sym_handle   imp_sym_handle;
+
 typedef signed_16               dip_priority;
 
 typedef unsigned_32             mod_handle;

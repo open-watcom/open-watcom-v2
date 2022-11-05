@@ -38,8 +38,8 @@
 #include <i86.h>
 #endif
 #include "bool.h"
-#include "diptypes.h"
 #include "dipimp.h"
+
 
 #ifndef DIP_PRIORITY
 #define DIP_PRIORITY DIP_PRIOR_NORMAL

@@ -42,7 +42,6 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "mad.h"
 #include "strutil.h"
 #include "dbgloc.h"

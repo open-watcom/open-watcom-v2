@@ -38,7 +38,6 @@
 #include <fcntl.h>
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "madregs.h"
 
 

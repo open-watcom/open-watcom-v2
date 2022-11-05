@@ -33,7 +33,7 @@
 #ifndef DIPIMP_H_INCLUDED
 #define DIPIMP_H_INCLUDED
 
-#include "digtypes.h"
+#include "dipcli.h"
 
 #define DIP_MAJOR       2
 #define DIP_MINOR       0
@@ -54,20 +54,8 @@
 
 #define DIPIMPENTRY(n)  DIGENTRY DIPImp( n )
 
-struct imp_image_handle;
-struct imp_type_handle;
-struct imp_cue_handle;
-struct imp_sym_handle;
-
-typedef struct imp_image_handle imp_image_handle;
-typedef struct imp_type_handle  imp_type_handle;
-typedef struct imp_cue_handle   imp_cue_handle;
-typedef struct imp_sym_handle   imp_sym_handle;
-
 typedef int strcomp_fn( const char *, const char * );
 typedef int strcompn_fn( const char *, const char *, size_t );
-
-#include "dipcli.h"
 
 typedef unsigned_16     imp_mod_handle;
 typedef unsigned_16     image_index;

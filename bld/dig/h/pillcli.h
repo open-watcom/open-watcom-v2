@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 #ifndef PILLCLI_H_INCLUDED
 #define PILLCLI_H_INCLUDED
 
-#include "piltypes.h"
 #include "digcli.h"
+#include "piltypes.h"
 
 #define LinkCli(n)      LinkCli ## n
 #define _LinkCli(n)     _LinkCli ## n n
