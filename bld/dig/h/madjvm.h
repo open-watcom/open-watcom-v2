@@ -41,6 +41,6 @@ struct jvm_mad_registers {
     unsigned_32         optop;  /* operand stack pointer */
     addr_ptr            frame;  /* execution environment pointer */
 };
-
 #include "digunpck.h"
+
 #endif

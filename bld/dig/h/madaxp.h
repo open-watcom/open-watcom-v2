@@ -34,7 +34,6 @@
 #ifndef MADAXP_H
 #define MADAXP_H
 
-#include "digpck.h"
 enum axp_cputypes {
     AXP_DUNNO,
     AXP_21064,
@@ -45,25 +44,6 @@ enum axp_machine_data {
     AXPMD_PDATA
 };
 
-typedef struct {
-    unsigned_64         beg_addr;
-    unsigned_64         end_addr;
-    unsigned_64         except_handler;
-    unsigned_64         handler_data;
-    unsigned_64         pro_end_addr;
-} axp_pdata_struct;
-
-typedef lreal   gfloat; //NYI: dummy definition
-typedef lreal   dfloat; //NYI: dummy definition
-
-typedef union {
-    unsigned_64         u64;
-      signed_64         s64;
-    lreal               t;
-    gfloat              g;
-    dfloat              d;
-} axpreg;
-
 /* axp_pal */
 enum {
     PAL_all,
@@ -72,7 +52,27 @@ enum {
     PAL_vms
 };
 
-typedef unsigned_8 axp_pal;
+#include "digpck.h"
+typedef unsigned_8  axp_pal;
+
+typedef lreal       gfloat; //NYI: dummy definition
+typedef lreal       dfloat; //NYI: dummy definition
+
+typedef struct {
+    unsigned_64         beg_addr;
+    unsigned_64         end_addr;
+    unsigned_64         except_handler;
+    unsigned_64         handler_data;
+    unsigned_64         pro_end_addr;
+} axp_pdata_struct;
+
+typedef union {
+    unsigned_64         u64;
+      signed_64         s64;
+    lreal               t;
+    gfloat              g;
+    dfloat              d;
+} axpreg;
 
 struct axp_mad_registers {
     axpreg          f0;
@@ -257,6 +257,6 @@ struct axp_mad_registers {
     }           pal;
     axp_pal                     active_pal;
 };
-
 #include "digunpck.h"
+
 #endif

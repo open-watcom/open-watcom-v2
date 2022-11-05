@@ -34,7 +34,25 @@
 #ifndef MADPPC_H
 #define MADPPC_H
 
-#include "digpck.h"
+#define PPC_BF          31 /* bit flipper */
+#define MSR_L_le        (PPC_BF-31)
+#define MSR_L_ri        (PPC_BF-30)
+#define MSR_L_dr        (PPC_BF-27)
+#define MSR_L_ir        (PPC_BF-26)
+#define MSR_L_ip        (PPC_BF-25)
+#define MSR_L_fe1       (PPC_BF-23)
+#define MSR_L_be        (PPC_BF-22)
+#define MSR_L_se        (PPC_BF-21)
+#define MSR_L_fe0       (PPC_BF-20)
+#define MSR_L_me        (PPC_BF-19)
+#define MSR_L_fp        (PPC_BF-18)
+#define MSR_L_pr        (PPC_BF-17)
+#define MSR_L_ee        (PPC_BF-16)
+#define MSR_L_ile       (PPC_BF-15)
+#define MSR_L_pow       (PPC_BF-13)
+
+#define MSR_H_sf        (PPC_BF-0)
+
 enum ppc_cputypes {
     PPC_DUNNO,
     PPC_601,
@@ -43,6 +61,7 @@ enum ppc_cputypes {
     PPC_620
 };
 
+#include "digpck.h"
 typedef union {
     unsigned_64         u64;
     lreal               f;
@@ -132,25 +151,6 @@ struct ppc_mad_registers {
     ppcfloat    f30;
     ppcfloat    f31;
 };
-
-#define PPC_BF          31 /* bit flipper */
-#define MSR_L_le        (PPC_BF-31)
-#define MSR_L_ri        (PPC_BF-30)
-#define MSR_L_dr        (PPC_BF-27)
-#define MSR_L_ir        (PPC_BF-26)
-#define MSR_L_ip        (PPC_BF-25)
-#define MSR_L_fe1       (PPC_BF-23)
-#define MSR_L_be        (PPC_BF-22)
-#define MSR_L_se        (PPC_BF-21)
-#define MSR_L_fe0       (PPC_BF-20)
-#define MSR_L_me        (PPC_BF-19)
-#define MSR_L_fp        (PPC_BF-18)
-#define MSR_L_pr        (PPC_BF-17)
-#define MSR_L_ee        (PPC_BF-16)
-#define MSR_L_ile       (PPC_BF-15)
-#define MSR_L_pow       (PPC_BF-13)
-
-#define MSR_H_sf        (PPC_BF-0)
-
 #include "digunpck.h"
+
 #endif

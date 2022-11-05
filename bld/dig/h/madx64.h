@@ -34,13 +34,12 @@
 #ifndef MADX64_H
 #define MADX64_H
 
-#include "digpck.h"
 enum x64_cputypes {
-        X64_CPU1 = 0x01,
+    X64_CPU1    = 0x01,
 };
 
 enum x64_fputypes {
-        X64_FPU1 = 0x01,
+    X64_FPU1    = 0x01,
 };
 
 enum x64_machine_data {
@@ -51,6 +50,88 @@ enum x64_addr_characteristics {
     X64AC_BIG   = 0x01
 };
 
+enum {
+    TAG_VALID   = 0x0,
+    TAG_ZERO    = 0x1,
+    TAG_INVALID = 0x2,
+    TAG_EMPTY   = 0x3
+};
+
+#define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len
+#define BIT_MXCSR( name, shift, len ) SHIFT_mxcsr_##name = shift, LEN_mxcsr_##name = len
+enum {
+    /* [E]FL flag bit definitions */
+    BIT( c,     0,  1 ),
+    BIT( p,     2,  1 ),
+    BIT( a,     4,  1 ),
+    BIT( z,     6,  1 ),
+    BIT( s,     7,  1 ),
+    BIT( t,     8,  1 ),
+    BIT( i,     9,  1 ),
+    BIT( d,     10, 1 ),
+    BIT( o,     11, 1 ),
+    BIT( iopl,  13, 2 ),
+    BIT( nt,    14, 1 ),
+    BIT( rf,    16, 1 ),
+    BIT( vm,    17, 1 ),
+
+    FLG_C       = 1 << SHIFT_c,
+    FLG_P       = 1 << SHIFT_p,
+    FLG_A       = 1 << SHIFT_a,
+    FLG_Z       = 1 << SHIFT_z,
+    FLG_S       = 1 << SHIFT_s,
+    FLG_T       = 1 << SHIFT_t,
+    FLG_I       = 1 << SHIFT_i,
+    FLG_D       = 1 << SHIFT_d,
+    FLG_O       = 1 << SHIFT_o,
+
+    /* SW flag bit definitions */
+    BIT( ie,    0,  1 ),
+    BIT( de,    1,  1 ),
+    BIT( ze,    2,  1 ),
+    BIT( oe,    3,  1 ),
+    BIT( ue,    4,  1 ),
+    BIT( pe,    5,  1 ),
+    BIT( sf,    6,  1 ),
+    BIT( es,    7,  1 ),
+    BIT( c0,    8,  1 ),
+    BIT( c1,    9,  1 ),
+    BIT( c2,    10, 1 ),
+    BIT( st,    11, 3 ),
+    BIT( c3,    14, 1 ),
+    BIT( b,     15, 1 ),
+
+    /* CW flag bit definitions */
+    BIT( im,    0,  1 ),
+    BIT( dm,    1,  1 ),
+    BIT( zm,    2,  1 ),
+    BIT( om,    3,  1 ),
+    BIT( um,    4,  1 ),
+    BIT( pm,    5,  1 ),
+    BIT( iem,   7,  1 ),
+    BIT( pc,    8,  2 ),
+    BIT( rc,    10, 2 ),
+    BIT( ic,    12, 1 ),
+
+    /* MXCSR flag bit definitions */
+    BIT_MXCSR( ie,    0,  1 ),
+    BIT_MXCSR( de,    1,  1 ),
+    BIT_MXCSR( ze,    2,  1 ),
+    BIT_MXCSR( oe,    3,  1 ),
+    BIT_MXCSR( ue,    4,  1 ),
+    BIT_MXCSR( pe,    5,  1 ),
+    BIT_MXCSR( daz,   6,  1 ),
+    BIT_MXCSR( im,    7,  1 ),
+    BIT_MXCSR( dm,    8,  1 ),
+    BIT_MXCSR( zm,    9,  1 ),
+    BIT_MXCSR( om,    10, 1 ),
+    BIT_MXCSR( um,    11, 1 ),
+    BIT_MXCSR( pm,    12, 1 ),
+    BIT_MXCSR( rc,    13, 2 ),
+    BIT_MXCSR( fz,    15, 1 )
+};
+
+#include "digpck.h"
 typedef unsigned_8      x64_addrflags;
 
 typedef struct {
@@ -154,85 +235,6 @@ struct x64_mad_registers {
     } u;
     struct x64_xmm      xmm;
 };
-
-#define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len
-#define BIT_MXCSR( name, shift, len ) SHIFT_mxcsr_##name = shift, LEN_mxcsr_##name = len
-enum {
-    /* [E]FL flag bit definitions */
-    BIT( c,     0,  1 ),
-    BIT( p,     2,  1 ),
-    BIT( a,     4,  1 ),
-    BIT( z,     6,  1 ),
-    BIT( s,     7,  1 ),
-    BIT( t,     8,  1 ),
-    BIT( i,     9,  1 ),
-    BIT( d,     10, 1 ),
-    BIT( o,     11, 1 ),
-    BIT( iopl,  13, 2 ),
-    BIT( nt,    14, 1 ),
-    BIT( rf,    16, 1 ),
-    BIT( vm,    17, 1 ),
-
-    FLG_C       = 1 << SHIFT_c,
-    FLG_P       = 1 << SHIFT_p,
-    FLG_A       = 1 << SHIFT_a,
-    FLG_Z       = 1 << SHIFT_z,
-    FLG_S       = 1 << SHIFT_s,
-    FLG_T       = 1 << SHIFT_t,
-    FLG_I       = 1 << SHIFT_i,
-    FLG_D       = 1 << SHIFT_d,
-    FLG_O       = 1 << SHIFT_o,
-
-    /* SW flag bit definitions */
-    BIT( ie,    0,  1 ),
-    BIT( de,    1,  1 ),
-    BIT( ze,    2,  1 ),
-    BIT( oe,    3,  1 ),
-    BIT( ue,    4,  1 ),
-    BIT( pe,    5,  1 ),
-    BIT( sf,    6,  1 ),
-    BIT( es,    7,  1 ),
-    BIT( c0,    8,  1 ),
-    BIT( c1,    9,  1 ),
-    BIT( c2,    10, 1 ),
-    BIT( st,    11, 3 ),
-    BIT( c3,    14, 1 ),
-    BIT( b,     15, 1 ),
-
-    /* CW flag bit definitions */
-    BIT( im,    0,  1 ),
-    BIT( dm,    1,  1 ),
-    BIT( zm,    2,  1 ),
-    BIT( om,    3,  1 ),
-    BIT( um,    4,  1 ),
-    BIT( pm,    5,  1 ),
-    BIT( iem,   7,  1 ),
-    BIT( pc,    8,  2 ),
-    BIT( rc,    10, 2 ),
-    BIT( ic,    12, 1 ),
-
-    /* MXCSR flag bit definitions */
-    BIT_MXCSR( ie,    0,  1 ),
-    BIT_MXCSR( de,    1,  1 ),
-    BIT_MXCSR( ze,    2,  1 ),
-    BIT_MXCSR( oe,    3,  1 ),
-    BIT_MXCSR( ue,    4,  1 ),
-    BIT_MXCSR( pe,    5,  1 ),
-    BIT_MXCSR( daz,   6,  1 ),
-    BIT_MXCSR( im,    7,  1 ),
-    BIT_MXCSR( dm,    8,  1 ),
-    BIT_MXCSR( zm,    9,  1 ),
-    BIT_MXCSR( om,    10, 1 ),
-    BIT_MXCSR( um,    11, 1 ),
-    BIT_MXCSR( pm,    12, 1 ),
-    BIT_MXCSR( rc,    13, 2 ),
-    BIT_MXCSR( fz,    15, 1 )
-};
-
-enum {  TAG_VALID       = 0x0,
-        TAG_ZERO        = 0x1,
-        TAG_INVALID     = 0x2,
-        TAG_EMPTY       = 0x3 };
-
 #include "digunpck.h"
+
 #endif
