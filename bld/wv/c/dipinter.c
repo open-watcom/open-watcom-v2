@@ -1037,7 +1037,7 @@ void InitDbgInfo( void )
             CheckDIPLoad( *dip, false );
             _Free( *dip );
             *dip = NULL;
-        } while( *++dip != NULLCHAR );
+        } while( *++dip != NULL );
     }
 }
 
