@@ -64,12 +64,15 @@ typedef union {
     dfloat              d;
 } axpreg;
 
-typedef unsigned_8 axp_pal; enum {
+/* axp_pal */
+enum {
     PAL_all,
     PAL_nt,
     PAL_unix,
     PAL_vms
 };
+
+typedef unsigned_8 axp_pal;
 
 struct axp_mad_registers {
     axpreg          f0;

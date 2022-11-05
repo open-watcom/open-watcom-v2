@@ -79,7 +79,8 @@ typedef enum {
     WR_LAST
 } walk_result;
 
-typedef unsigned context_item; enum {
+/* context_item */
+enum {
     /* common */
     CI_FRAME,
     CI_STACK,
@@ -327,7 +328,8 @@ typedef unsigned context_item; enum {
     CI_LAST
 };
 
-typedef unsigned_8 type_kind; enum {
+/* type_kind */
+enum {
     TK_NONE,
     TK_DATA,
     TK_CODE,
@@ -415,6 +417,9 @@ enum {
     MAP_FLAT_CODE_SELECTOR      = (unsigned_16)-1,
     MAP_FLAT_DATA_SELECTOR      = (unsigned_16)-2,
 };
+
+typedef unsigned        context_item;
+typedef unsigned_8      type_kind;
 
 typedef unsigned_16     dig_elen;
 typedef unsigned        dig_info_type;

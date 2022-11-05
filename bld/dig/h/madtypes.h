@@ -37,28 +37,11 @@
 #include "madstr.h"
 
 #define SIGNTYPE_SIZE(x)        (-(int)(x))
+#define MAD_NIL_TYPE_HANDLE     ((mad_type_handle)-1)
+#define MAD_DEFAULT_HANDLING    0
 
-#include "digpck.h"
-
-struct mad_reg_set_data;
-struct mad_state_data;
-struct mad_disasm_data;
-struct mad_trace_data;
-union  mad_registers;
-
-typedef unsigned_16             mad_string;
-typedef unsigned_16             mad_type_handle;
-typedef struct mad_reg_set_data mad_reg_set_data;
-typedef struct mad_state_data   mad_state_data;
-typedef struct mad_disasm_data  mad_disasm_data;
-typedef struct mad_trace_data   mad_trace_data;
-typedef struct mad_call_up_data mad_call_up_data;
-typedef union  mad_registers    mad_registers;
-typedef unsigned char           mad_radix;
-
-#define MAD_NIL_TYPE_HANDLE ((mad_type_handle)-1)
-
-typedef unsigned_16 mad_status; enum {
+/* mad_status */
+enum {
     MS_OK,
     MS_FAIL,
     MS_UNSUPPORTED,
@@ -76,12 +59,14 @@ typedef unsigned_16 mad_status; enum {
     MS_ERR      = 0x4000
 };
 
-typedef unsigned_8 mad_address_format; enum {
+/* mad_address_format */
+enum {
     MAF_OFFSET,
     MAF_FULL
 };
 
-typedef unsigned_8 mad_type_kind; enum {
+/* mad_type_kind */
+enum {
     MTK_BASIC   = 0x00,
     MTK_INTEGER = 0x01,
     MTK_ADDRESS = 0x02,
@@ -96,19 +81,130 @@ typedef unsigned_8 mad_type_kind; enum {
     MAS_ALL     = (MAS_MEMORY|MAS_IO)
 };
 
-typedef unsigned_8 mad_numeric_representation; enum {
+/* mad_numeric_representation */
+enum {
     MNR_UNSIGNED,
     MNR_TWOS_COMP,
     MNR_ONES_COMP,
     MNR_SIGN_MAG
 };
 
-typedef unsigned_8 mad_endianness; enum {
+/* mad_endianness */
+enum {
     ME_LITTLE,
     ME_BIG
 };
 
-#define MAD_DEFAULT_HANDLING    0
+/* mad_special_reg */
+enum {
+    MSR_IP,
+    MSR_SP,
+    MSR_FP
+};
+
+/* mad_disasm_piece */
+enum {
+    MDP_INSTRUCTION     = 0x1,
+    MDP_OPERANDS        = 0x2,
+    MDP_ALL             = MDP_INSTRUCTION|MDP_OPERANDS
+};
+
+/* mad_disasm_control */
+enum {
+    MDC_TAKEN_NOT       = 0x00,
+    MDC_TAKEN_BACK      = 0x01,
+    MDC_TAKEN_FORWARD   = 0x02,
+    MDC_TAKEN           = 0x03,
+    MDC_TAKEN_MASK      = 0x03,
+
+    MDC_OPER            = 0x00,
+    MDC_JUMP            = 0x10,
+    MDC_CALL            = 0x20,
+    MDC_SYSCALL         = 0x30,
+    MDC_RET             = 0x40,
+    MDC_SYSRET          = 0x50,
+    MDC_TYPE_MASK       = 0x70,
+
+    MDC_UNCONDITIONAL   = 0x00,
+    MDC_CONDITIONAL     = 0x80,
+    MDC_CONDITIONAL_MASK= 0x80
+};
+
+/* mad_memref_kind */
+enum {
+    MMK_READ            = 0x01,
+    MMK_WRITE           = 0x02,
+    MMK_IMPLICIT        = 0x04,
+    MMK_VOLATILE        = 0x08
+};
+
+/* mad_trace_kind */
+enum {
+    MTRK_INTO,
+    MTRK_OVER,
+    MTRK_OUT,
+    MTRK_NEXT
+};
+
+/* mad_trace_how */
+enum {
+    MTRH_STOP,
+    MTRH_SIMULATE,
+    MTRH_STEP,
+    MTRH_STEPBREAK,
+    MTRH_BREAK
+};
+
+/* mad_notify_type */
+enum {
+    MNT_ERROR,
+    MNT_MODIFY_REG,
+    MNT_MODIFY_IP,
+    MNT_MODIFY_SP,
+    MNT_MODIFY_FP,
+    MNT_EXECUTE_TOUCH_SCREEN_BUFF,
+    MNT_EXECUTE_LONG,
+    MNT_REDRAW_DISASM,
+    MNT_REDRAW_REG
+};
+
+/* mad_label_kind */
+enum {
+    MLK_CODE,
+    MLK_DATA,
+    MLK_MEMORY
+};
+
+#include "digpck.h"
+struct mad_reg_set_data;
+struct mad_state_data;
+struct mad_disasm_data;
+struct mad_trace_data;
+union  mad_registers;
+
+typedef unsigned_16             mad_string;
+typedef unsigned_16             mad_type_handle;
+typedef struct mad_reg_set_data mad_reg_set_data;
+typedef struct mad_state_data   mad_state_data;
+typedef struct mad_disasm_data  mad_disasm_data;
+typedef struct mad_trace_data   mad_trace_data;
+typedef struct mad_call_up_data mad_call_up_data;
+typedef union  mad_registers    mad_registers;
+typedef unsigned char           mad_radix;
+
+typedef unsigned_16     mad_status;
+typedef unsigned_8      mad_address_format;
+typedef unsigned_8      mad_type_kind;
+typedef unsigned_8      mad_numeric_representation;
+typedef unsigned_8      mad_endianness;
+typedef unsigned_8      mad_disasm_piece;
+typedef unsigned_8      mad_disasm_control;
+typedef unsigned_8      mad_memref_kind;
+typedef unsigned_8      mad_trace_kind;
+typedef unsigned_8      mad_trace_how;
+typedef unsigned_8      mad_notify_type;
+typedef unsigned_8      mad_label_kind;
+typedef unsigned_8      mad_special_reg;
 
 typedef struct {
     mad_type_kind       kind;
@@ -158,91 +254,17 @@ typedef struct {
     unsigned_8                  flags;
 } mad_reg_info;
 
-typedef unsigned_8 mad_special_reg; enum {
-    MSR_IP,
-    MSR_SP,
-    MSR_FP
-};
-
 typedef struct {
     const void          *data;
     mad_type_handle     mth;
     mad_string          name;
 } mad_modify_list;
 
-typedef unsigned_8 mad_disasm_piece; enum {
-    MDP_INSTRUCTION     = 0x1,
-    MDP_OPERANDS        = 0x2,
-    MDP_ALL             = MDP_INSTRUCTION|MDP_OPERANDS
-};
-
-typedef unsigned_8 mad_disasm_control; enum {
-    MDC_TAKEN_NOT       = 0x00,
-    MDC_TAKEN_BACK      = 0x01,
-    MDC_TAKEN_FORWARD   = 0x02,
-    MDC_TAKEN           = 0x03,
-    MDC_TAKEN_MASK      = 0x03,
-
-    MDC_OPER            = 0x00,
-    MDC_JUMP            = 0x10,
-    MDC_CALL            = 0x20,
-    MDC_SYSCALL         = 0x30,
-    MDC_RET             = 0x40,
-    MDC_SYSRET          = 0x50,
-    MDC_TYPE_MASK       = 0x70,
-
-    MDC_UNCONDITIONAL   = 0x00,
-    MDC_CONDITIONAL     = 0x80,
-    MDC_CONDITIONAL_MASK= 0x80
-};
-
-typedef unsigned_8 mad_memref_kind; enum {
-    MMK_READ            = 0x01,
-    MMK_WRITE           = 0x02,
-    MMK_IMPLICIT        = 0x04,
-    MMK_VOLATILE        = 0x08
-};
-
-typedef unsigned_8 mad_trace_kind; enum {
-    MTRK_INTO,
-    MTRK_OVER,
-    MTRK_OUT,
-    MTRK_NEXT
-};
-
-typedef unsigned_8 mad_trace_how; enum {
-    MTRH_STOP,
-    MTRH_SIMULATE,
-    MTRH_STEP,
-    MTRH_STEPBREAK,
-    MTRH_BREAK
-};
-
-
-typedef unsigned_8 mad_notify_type; enum {
-    MNT_ERROR,
-    MNT_MODIFY_REG,
-    MNT_MODIFY_IP,
-    MNT_MODIFY_SP,
-    MNT_MODIFY_FP,
-    MNT_EXECUTE_TOUCH_SCREEN_BUFF,
-    MNT_EXECUTE_LONG,
-    MNT_REDRAW_DISASM,
-    MNT_REDRAW_REG
-};
-
-
-typedef unsigned_8 mad_label_kind; enum {
-    MLK_CODE,
-    MLK_DATA,
-    MLK_MEMORY
-};
-
 typedef struct {
     mad_string  menu;
     mad_string  on;
     mad_string  off;
 } mad_toggle_strings;
-
 #include "digunpck.h"
+
 #endif
