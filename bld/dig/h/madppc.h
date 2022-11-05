@@ -53,13 +53,13 @@
 
 #define MSR_H_sf        (PPC_BF-0)
 
-enum ppc_cputypes {
+typedef enum {
     PPC_DUNNO,
     PPC_601,
     PPC_603,
     PPC_604,
     PPC_620
-};
+} ppc_cputypes;
 
 #include "digpck.h"
 typedef union {

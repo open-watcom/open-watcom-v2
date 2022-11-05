@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +33,13 @@
 #ifndef MADMIPS_H
 #define MADMIPS_H
 
-enum mips_cputypes {
+typedef enum {
     MIPS_DUNNO,
     MIPS_R2000,
     MIPS_R3000,
     MIPS_R4000,
     MIPS_R5000
-};
+} mips_cputypes;
 
 #include "digpck.h"
 typedef union {

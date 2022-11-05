@@ -34,7 +34,7 @@
 #ifndef MADX86_H
 #define MADX86_H
 
-enum x86_cputypes {
+typedef enum {
     X86_86,
     X86_186,
     X86_286,
@@ -46,9 +46,9 @@ enum x86_cputypes {
     X86_CPU_MASK = 0x0f,
     X86_MMX = 0x10,
     X86_XMM = 0x20
-};
+} x86_cputypes;
 
-enum x86_fputypes {
+typedef enum {
     X86_NO,
     X86_87,
     X86_287,
@@ -58,16 +58,16 @@ enum x86_fputypes {
     X86_687,
     X86_P47 = 0x0f,
     X86_EMU = (unsigned_8)-1
-};
+} x86_fputypes;
 
-enum x86_machine_data {
+typedef enum {
     X86MD_ADDR_CHARACTERISTICS
-};
+} x86_machine_data;
 
-enum x86_addr_characteristics {
+typedef enum {
     X86AC_BIG   = 0x01,
     X86AC_REAL  = 0x02
-};
+} x86_addr_characteristics;
 
 #define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len
 #define BIT_MXCSR( name, shift, len ) SHIFT_mxcsr_##name = shift, LEN_mxcsr_##name = len

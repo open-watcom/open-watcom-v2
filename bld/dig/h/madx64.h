@@ -34,21 +34,21 @@
 #ifndef MADX64_H
 #define MADX64_H
 
-enum x64_cputypes {
+typedef enum {
     X64_CPU1    = 0x01,
-};
+} x64_cputypes;
 
-enum x64_fputypes {
+typedef enum {
     X64_FPU1    = 0x01,
-};
+} x64_fputypes;
 
-enum x64_machine_data {
+typedef enum {
     X64MD_ADDR_CHARACTERISTICS
-};
+} x64_machine_data;
 
-enum x64_addr_characteristics {
+typedef enum {
     X64AC_BIG   = 0x01
-};
+} x64_addr_characteristics;
 
 enum {
     TAG_VALID   = 0x0,
@@ -177,7 +177,6 @@ struct x64_cpu {
     unsigned_64 r15;
 
     unsigned_64 rip;
-
 };
 
 typedef struct {

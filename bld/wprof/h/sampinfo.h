@@ -269,4 +269,6 @@ typedef struct sio_data {
 #define RAW_BUCKET_IDX( idx )   ((idx) / MAX_RAW_BUCKET_INDEX)
 #define MSG_BUCKET_IDX( idx )   ((idx) / MAX_MASSGD_BUCKET_INDEX)
 
+extern system_config        DefSysConfig;
+
 #endif

@@ -34,15 +34,15 @@
 #ifndef MADAXP_H
 #define MADAXP_H
 
-enum axp_cputypes {
+typedef enum {
     AXP_DUNNO,
     AXP_21064,
     AXP_21164
-};
+} axp_cputypes;
 
-enum axp_machine_data {
+typedef enum {
     AXPMD_PDATA
-};
+} axp_machine_data;
 
 /* axp_pal */
 enum {
