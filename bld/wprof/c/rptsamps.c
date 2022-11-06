@@ -34,7 +34,6 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "msg.h"

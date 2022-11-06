@@ -34,8 +34,8 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "walloca.h"
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "mad.h"
@@ -982,6 +982,7 @@ STATIC bool LoadOverlayInfo( void )
     size_t                  len;
     pgroup2                 pg1;
     pgroup2                 pg2;
+    struct stat             file_stat;
 
     image = CurrSIOData->curr_image;
     fp = ExeOpen( image->name );
@@ -1052,7 +1053,7 @@ STATIC bool LoadOverlayInfo( void )
                 return( false );
             }
             /* find overlay file */
-            if( access( buffer1, 0 ) != 0 ) {
+            if( stat( buffer1, &file_stat ) == -1 ) {
                 strcpy( buffer2, buffer1 );
                 _searchenv( buffer2, "PATH", buffer1 );
                 if( buffer1[0] == '\0' ) {

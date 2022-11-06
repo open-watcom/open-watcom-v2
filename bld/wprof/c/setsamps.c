@@ -33,8 +33,8 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "walloca.h"
-#include "wio.h"
 #include "common.h"
 #include "aui.h"
 #include "dip.h"

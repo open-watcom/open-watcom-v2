@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "dipimp.h"
@@ -72,19 +71,19 @@ void DIGCLIENTRY( Free )( void *p )
     ProfFree( p );
 }
 
-FILE * DIGCLIENTRY( Open )( const char *name, dig_open mode )
-/***********************************************************/
+FILE * DIGCLIENTRY( Open )( const char *name, dig_open dig_mode )
+/***************************************************************/
 {
-    const char  *access;
+    const char  *mode;
 
-    if( mode & DIG_OPEN_APPEND ) {
-        access = "ab";
-    } else if( mode & (DIG_OPEN_WRITE | DIG_OPEN_CREATE) ) {
-        access = "wb";
+    if( dig_mode & DIG_OPEN_APPEND ) {
+        mode = "ab";
+    } else if( dig_mode & (DIG_OPEN_WRITE | DIG_OPEN_CREATE) ) {
+        mode = "wb";
     } else {
-        access = "rb";
+        mode = "rb";
     }
-    return( fopen( name, access ) );
+    return( fopen( name, mode ) );
 }
 
 int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek where )
@@ -117,10 +116,10 @@ void DIGCLIENTRY( Close )( FILE *fp )
     fclose( fp );
 }
 
-void DIGCLIENTRY( Remove )( const char *name, dig_open mode )
-/***********************************************************/
+void DIGCLIENTRY( Remove )( const char *name, dig_open dig_mode )
+/***************************************************************/
 {
-    /* unused parameters */ (void)mode;
+    /* unused parameters */ (void)dig_mode;
 
     remove( name );
 }

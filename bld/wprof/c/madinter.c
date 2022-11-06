@@ -36,7 +36,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include "bool.h"
-#include "wio.h"
 #include "madcli.h"
 #include "mad.h"
 #include "madregs.h"

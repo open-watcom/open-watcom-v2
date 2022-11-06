@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "aui.h"
