@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +130,7 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
 
     iol = LN;
     meml = LN;
-    if( ( MCSystemConfig()->cpu & X86_CPU_MASK ) < X86_386 ) {
+    if( ( MCSystemConfig()->cpu.x86 & X86_CPU_MASK ) < X86_386 ) {
         if( tk & MAS_IO ) iol = L1;
         if( tk & MAS_MEMORY ) meml = L1;
     } else {
@@ -185,7 +186,7 @@ mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format
     } else if( mr != NULL ) {
         big = BIG_SEG( GetRegIP( mr ) );
     } else {
-        big = ( ( MCSystemConfig()->cpu & X86_CPU_MASK ) >= X86_386);
+        big = ( ( MCSystemConfig()->cpu.x86 & X86_CPU_MASK ) >= X86_386);
     }
     switch( tk & MTK_ALL ) {
     case MTK_BASIC:

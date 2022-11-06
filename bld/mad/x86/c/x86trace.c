@@ -232,7 +232,7 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
         switch( dd->ins.op[0].base ) {
         case DR_X86_es:
         case DR_X86_ds:
-            if( ( MCSystemConfig()->cpu & X86_CPU_MASK ) < X86_386 )
+            if( ( MCSystemConfig()->cpu.x86 & X86_CPU_MASK ) < X86_386 )
                 break;
             /* fall through */
         default:
@@ -245,14 +245,14 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
     case DI_X86_popfd:
         break;
     case DI_X86_fwait:
-        if( MCSystemConfig()->fpu != X86_EMU )
+        if( MCSystemConfig()->fpu.x86 != X86_EMU )
             return( MTRH_STEP );
         break;
     default:
         if( dd->ins.flags.u.x86 & DIF_X86_EMU_INT )
             break;
         if( ( dd->ins.flags.u.x86 & DIF_X86_FPU_INS )
-            && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT ) || ( MCSystemConfig()->fpu == X86_EMU ) ) )
+            && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT ) || ( MCSystemConfig()->fpu.x86 == X86_EMU ) ) )
             break;
         return( MTRH_STEP );
     }

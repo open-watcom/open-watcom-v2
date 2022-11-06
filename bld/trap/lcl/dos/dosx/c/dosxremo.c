@@ -33,6 +33,8 @@
 //#define DEBUG_TRAP
 #include <stdlib.h>
 #include <string.h>
+#include "digcpu.h"
+#include "digfpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"

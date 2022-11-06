@@ -35,11 +35,13 @@
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include <asm/ptrace.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "mad.h"
 #include "madregs.h"
 #include "lnxcomm.h"
+
 
 /* Implementation notes:
  *

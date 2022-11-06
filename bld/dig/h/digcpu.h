@@ -25,27 +25,63 @@
 *
 *  ========================================================================
 *
-* Description:  DIG system configuration structure declaration.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef DIGSYSCF_H_INCLUDED
-#define DIGSYSCF_H_INCLUDED
+#ifndef DIGCPU_H_INCLUDED
+#define DIGCPU_H_INCLUDED
 
-#include "digtypes.h"
-#include "digcpu.h"
-#include "digfpu.h"
+typedef enum {
+    X86_86,
+    X86_186,
+    X86_286,
+    X86_386,
+    X86_486,
+    X86_586,
+    X86_686,
+    X86_P4          = 15,
+    X86_CPU_MASK    = 0x0f,
+    X86_MMX         = 0x10,
+    X86_XMM         = 0x20
+} x86_cputypes;
 
+typedef enum {
+    X64_CPU1        = 1
+} x64_cputypes;
 
-typedef struct {                //NYI: redo this for PIL
-    dig_cputypes        cpu;
-    dig_fputypes        fpu;
-    unsigned_8          osmajor;
-    unsigned_8          osminor;
-    dig_os              os;
-    unsigned_8          huge_shift;
-    dig_arch            arch;
-} system_config;
+typedef enum {
+    AXP_DUNNO,
+    AXP_21064,
+    AXP_21164
+} axp_cputypes;
+
+typedef enum {
+    MIPS_DUNNO,
+    MIPS_R2000,
+    MIPS_R3000,
+    MIPS_R4000,
+    MIPS_R5000
+} mips_cputypes;
+
+typedef enum {
+    PPC_DUNNO,
+    PPC_601,
+    PPC_603,
+    PPC_604,
+    PPC_620
+} ppc_cputypes;
+
+typedef union dig_cputypes {
+    unsigned char       byte;
+    x86_cputypes        x86;
+    x64_cputypes        x64;
+    axp_cputypes        axp;
+    ppc_cputypes        ppc;
+    mips_cputypes       mips;
+//    jvm_cputypes        jvm;
+} dig_cputypes;
 
 #endif

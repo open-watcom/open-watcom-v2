@@ -34,6 +34,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/ptrace.h>
+#include "digcpu.h"
+#include "digfpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"

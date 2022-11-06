@@ -33,14 +33,6 @@
 #ifndef MADMIPS_H
 #define MADMIPS_H
 
-typedef enum {
-    MIPS_DUNNO,
-    MIPS_R2000,
-    MIPS_R3000,
-    MIPS_R4000,
-    MIPS_R5000
-} mips_cputypes;
-
 #include "digpck.h"
 typedef union {
     unsigned_64         u64;

@@ -696,8 +696,8 @@ void GetSysConfig( void )
     acc.req = REQ_GET_SYS_CONFIG;
     TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     /* map trap format to internal format */
-    SysConfig.cpu        = ret.cpu;
-    SysConfig.fpu        = ret.fpu;
+    SysConfig.cpu.byte   = ret.cpu;
+    SysConfig.fpu.byte   = ret.fpu;
     SysConfig.osmajor    = ret.osmajor;
     SysConfig.osminor    = ret.osminor;
     SysConfig.os         = ret.os;

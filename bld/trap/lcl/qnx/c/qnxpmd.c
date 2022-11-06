@@ -54,6 +54,8 @@
 #include <sys/console.h>
 #include <sys/dev.h>
 #include <sys/name.h>
+#include "digcpu.h"
+#include "digfpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "qnxpath.h"

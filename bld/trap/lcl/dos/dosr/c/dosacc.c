@@ -40,6 +40,8 @@
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
+#include "digcpu.h"
+#include "digfpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"

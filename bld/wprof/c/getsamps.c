@@ -146,8 +146,8 @@ STATIC void procInfoBlock( clicks_t ticks, samp_data *data )
         CurrSIOData->config = DefSysConfig;
     } else {
         /* map file format to internal format */
-        CurrSIOData->config.cpu         = data->info.config.cpu;
-        CurrSIOData->config.fpu         = data->info.config.fpu;
+        CurrSIOData->config.cpu.byte    = data->info.config.cpu;
+        CurrSIOData->config.fpu.byte    = data->info.config.fpu;
         CurrSIOData->config.osmajor     = data->info.config.osmajor;
         CurrSIOData->config.osminor     = data->info.config.osminor;
         CurrSIOData->config.os          = data->info.config.os;

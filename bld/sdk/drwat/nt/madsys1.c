@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,16 +45,16 @@ void GetSysConfig(void)
     GetSystemInfo( &sys );
     switch( sys.dwProcessorType ) {
     case PROCESSOR_INTEL_386:
-        SysConfig.cpu = X86_386;
-        SysConfig.fpu = X86_387;
+        SysConfig.cpu.x86 = X86_386;
+        SysConfig.fpu.x86 = X86_387;
         break;
     case PROCESSOR_INTEL_486:
-        SysConfig.cpu = X86_486;
-        SysConfig.fpu = X86_487;
+        SysConfig.cpu.x86 = X86_486;
+        SysConfig.fpu.x86 = X86_487;
         break;
     case PROCESSOR_INTEL_PENTIUM:
-        SysConfig.cpu = X86_586;
-        SysConfig.fpu = X86_587;
+        SysConfig.cpu.x86 = X86_586;
+        SysConfig.fpu.x86 = X86_587;
         break;
     }
     SysConfig.os = DIG_OS_NT;

@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "digcpu.h"
 #include "madconf.h"
 #include "stdnt.h"
 #include "trperr.h"

@@ -31,7 +31,7 @@
 
 
 #include "mad.h"
-#include "madx86.h"
+#include "digcpu.h"
 #include "x86cpu.h"
 
 #ifdef __WATCOMC__

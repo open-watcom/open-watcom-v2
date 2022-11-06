@@ -35,6 +35,7 @@
 #include <string.h>
 #include "wdebug.h"
 #include "stdwin.h"
+#include "digfpu.h"
 #include "mad.h"
 #include "madregs.h"
 #include "miscx87.h"

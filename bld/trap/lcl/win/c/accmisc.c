@@ -39,6 +39,8 @@
 #include <dos.h>
 #include "stdwin.h"
 #include "wdebug.h"
+#include "digcpu.h"
+#include "digfpu.h"
 #include "trperr.h"
 #include "madregs.h"
 #include "x86cpu.h"

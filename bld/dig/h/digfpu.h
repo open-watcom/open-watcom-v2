@@ -25,27 +25,39 @@
 *
 *  ========================================================================
 *
-* Description:  DIG system configuration structure declaration.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef DIGSYSCF_H_INCLUDED
-#define DIGSYSCF_H_INCLUDED
+#ifndef DIGFPU_H_INCLUDED
+#define DIGFPU_H_INCLUDED
 
-#include "digtypes.h"
-#include "digcpu.h"
-#include "digfpu.h"
+typedef enum {
+    X86_EMU         = -1,
+    X86_NO,
+    X86_87,
+    X86_287,
+    X86_387,
+    X86_487,
+    X86_587,
+    X86_687,
+    X86_P47         = 15
+} x86_fputypes;
 
+typedef enum {
+    X64_FPU1        = 1
+} x64_fputypes;
 
-typedef struct {                //NYI: redo this for PIL
-    dig_cputypes        cpu;
-    dig_fputypes        fpu;
-    unsigned_8          osmajor;
-    unsigned_8          osminor;
-    dig_os              os;
-    unsigned_8          huge_shift;
-    dig_arch            arch;
-} system_config;
+typedef union dig_fputypes {
+    unsigned char   byte;
+    x86_fputypes    x86;
+    x64_fputypes    x64;
+//    axp_fputypes    axp;
+//    ppc_fputypes    ppc;
+//    mips_fputypes   mips;
+//    jvm_fputypes    jvm;
+} dig_fputypes;
 
 #endif

@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "digcpu.h"
+#include "digfpu.h"
 #include "stdrdos.h"
 #include "rdos.h"
 #include "debug.h"
@@ -79,8 +81,8 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     ret = GetOutPtr( 0 );
 
-    ret->cpu = 0x3F;
-    ret->fpu = 0xF;
+    ret->cpu = X86_P4 | X86_MMX | X86_XMM;
+    ret->fpu = X86_P47;
     ret->osmajor = (char)major;
     ret->osminor = (char)minor;
     ret->os = 0;

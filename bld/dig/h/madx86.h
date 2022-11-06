@@ -35,32 +35,6 @@
 #define MADX86_H
 
 typedef enum {
-    X86_86,
-    X86_186,
-    X86_286,
-    X86_386,
-    X86_486,
-    X86_586,
-    X86_686,
-    X86_P4          = 0x0f,
-    X86_CPU_MASK    = 0x0f,
-    X86_MMX         = 0x10,
-    X86_XMM         = 0x20
-} x86_cputypes;
-
-typedef enum {
-    X86_NO,
-    X86_87,
-    X86_287,
-    X86_387,
-    X86_487,
-    X86_587,
-    X86_687,
-    X86_P47         = 0x0f,
-    X86_EMU         = (unsigned_8)-1
-} x86_fputypes;
-
-typedef enum {
     X86MD_ADDR_CHARACTERISTICS
 } x86_machine_data;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -281,7 +282,7 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
     size_t      len;
 
     if( rsd == &RegSet[CPU_REG_SET] ) {
-        switch( MCSystemConfig()->cpu ) {
+        switch( MCSystemConfig()->cpu.ppc ) {
         case PPC_601:
             strcpy( str, "601" );
             break;

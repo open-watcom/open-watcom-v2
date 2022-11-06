@@ -35,14 +35,6 @@
 #define MADX64_H
 
 typedef enum {
-    X64_CPU1        = 0x01,
-} x64_cputypes;
-
-typedef enum {
-    X64_FPU1        = 0x01,
-} x64_fputypes;
-
-typedef enum {
     X64MD_ADDR_CHARACTERISTICS
 } x64_machine_data;
 

@@ -340,7 +340,7 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
 
     str = "";
     if( rsd == &RegSet[CPU_REG_SET] ) {
-        switch( MCSystemConfig()->cpu ) {
+        switch( MCSystemConfig()->cpu.axp ) {
         case AXP_21064:
             str = "21064";
             break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -288,11 +288,11 @@ void InternalValue( internal_idx index, void *d )
         *(unsigned_16 *)d = SysConfig.arch;
         break;
     case INTERNAL_cpu:
-        *(unsigned_16 *)d = SysConfig.cpu;
+        *(unsigned_16 *)d = SysConfig.cpu.byte;
         break;
     case INTERNAL_fpu:
         GetNPXType();
-        *(signed_16 *)d = SysConfig.fpu;
+        *(signed_16 *)d = SysConfig.fpu.byte;
         break;
     case INTERNAL_os:
         *(unsigned_16 *)d = SysConfig.os;

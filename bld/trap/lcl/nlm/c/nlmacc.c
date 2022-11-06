@@ -49,6 +49,7 @@
 #include "brkptcpu.h"
 #include "segmcpu.h"
 #include "dbg386.h"
+#include "digfpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"

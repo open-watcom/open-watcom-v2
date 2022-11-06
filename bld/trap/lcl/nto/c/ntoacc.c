@@ -40,6 +40,8 @@
 #include <sys/netmgr.h>
 #include <sys/neutrino.h>
 #include <sys/resource.h>
+#include "digcpu.h"
+#include "digfpu.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "mad.h"

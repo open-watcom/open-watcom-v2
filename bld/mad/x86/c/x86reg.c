@@ -494,13 +494,13 @@ walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
             return( wr );
         }
     }
-    if( (tk & MTK_MMX) && (MCSystemConfig()->cpu & X86_MMX) ) {
+    if( (tk & MTK_MMX) && (MCSystemConfig()->cpu.x86 & X86_MMX) ) {
         wr = wk( &RegSet[MMX_REG_SET], d );
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
     }
-    if( (tk & MTK_XMM) && (MCSystemConfig()->cpu & X86_XMM) ) {
+    if( (tk & MTK_XMM) && (MCSystemConfig()->cpu.x86 & X86_XMM) ) {
         wr = wk( &RegSet[XMM_REG_SET], d );
         if( wr != WR_CONTINUE ) {
             return( wr );
@@ -521,7 +521,7 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
 
     switch( rsd - RegSet ) {
     case CPU_REG_SET:
-        switch( MCSystemConfig()->cpu & X86_CPU_MASK ) {
+        switch( MCSystemConfig()->cpu.x86 & X86_CPU_MASK ) {
         case X86_86:
             strcpy( str, "8086" );
             break;
@@ -535,13 +535,13 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
             strcpy( str, "Pentium 4/Xeon" );
             break;
         default:
-            str[0] = MCSystemConfig()->cpu + '0';
+            str[0] = MCSystemConfig()->cpu.x86 + '0';
             strcpy( &str[1], "86" );
             break;
         }
         break;
     case FPU_REG_SET:
-        switch( MCSystemConfig()->fpu ) {
+        switch( MCSystemConfig()->fpu.x86 ) {
         case X86_NO:
             MCString( MAD_MSTR_NONE, str, sizeof( str ) );
             break;
@@ -561,7 +561,7 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
             strcpy( str, "Pentium 4/Xeon" );
             break;
         default:
-            str[0] = MCSystemConfig()->fpu + '0';
+            str[0] = MCSystemConfig()->fpu.x86 + '0';
             strcpy( &str[1], "87" );
             break;
         }
@@ -850,7 +850,7 @@ static mad_status FPUGetPiece(
         *p++ = '0' + (char)row;
         *p++ = ')';
         *p++ = '\0';
-        if( MCSystemConfig()->fpu == X86_NO )
+        if( MCSystemConfig()->fpu.x86 == X86_NO )
             break;
         *reg_p = &list0[row]->info;
         if( MADState->reg_state[FPU_REG_SET] & FT_HEX ) {
@@ -870,7 +870,7 @@ static mad_status FPUGetPiece(
         }
         break;
     case 1: /* tag registers */
-        if( MCSystemConfig()->fpu == X86_NO )
+        if( MCSystemConfig()->fpu.x86 == X86_NO )
             break;
         *p++ = 'T';
         *p++ = 'A';
@@ -899,7 +899,7 @@ static mad_status FPUGetPiece(
         }
         strcpy( p, (*reg_p)->name );
         *max_value_p = 1;
-        if( MCSystemConfig()->fpu == X86_NO )
+        if( MCSystemConfig()->fpu.x86 == X86_NO )
             break;
         *disp_type_p = X86T_BIT;
         break;
@@ -908,14 +908,14 @@ static mad_status FPUGetPiece(
         switch( row ) {
         case 0:
             strcpy( p, "status" );
-            if( MCSystemConfig()->fpu == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NO )
                 break;
             *max_value_p = 0;
             *disp_type_p = X86T_WORD;
             break;
         case 1:
             strcpy( p, "control" );
-            if( MCSystemConfig()->fpu == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NO )
                 break;
             *max_value_p = 0;
             *disp_type_p = X86T_WORD;
@@ -923,28 +923,28 @@ static mad_status FPUGetPiece(
         case 2:
             strcpy( p, (*reg_p)->name );
             *max_value_p = MODLEN( ModFPUPc );
-            if( MCSystemConfig()->fpu == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NO )
                 break;
             *disp_type_p = X86T_PC;
             break;
         case 3:
             strcpy( p, (*reg_p)->name );
             *max_value_p = MODLEN( ModFPURc );
-            if( MCSystemConfig()->fpu == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NO )
                 break;
             *disp_type_p = X86T_RC;
             break;
         case 4:
             strcpy( p, (*reg_p)->name );
             *max_value_p = MODLEN( ModFPUIc );
-            if( MCSystemConfig()->fpu == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NO )
                 break;
             *disp_type_p = X86T_IC;
             break;
         case 5: /* iptr */
         case 6: /* optr */
             strcpy( p, (*reg_p)->name );
-            if( MCSystemConfig()->fpu == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NO )
                 break;
             addr_characteristics = AddrCharacteristics( GetRegIP( mr ) );
             if( addr_characteristics & X86AC_BIG ) {
@@ -1038,7 +1038,7 @@ static mad_status MMXGetPiece(
     DescriptBuff[0] = '\0';
     *descript_p = DescriptBuff;
     *max_value_p = 0;
-    if( ( MCSystemConfig()->cpu & X86_MMX ) == 0 )
+    if( ( MCSystemConfig()->cpu.x86 & X86_MMX ) == 0 )
         return( MS_FAIL );
 
     if( MADState->reg_state[MMX_REG_SET] & MT_BYTE ) {
@@ -1196,7 +1196,7 @@ static mad_status XMMGetPiece(
     DescriptBuff[0] = '\0';
     *descript_p = DescriptBuff;
     *max_value_p = 0;
-    if( ( MCSystemConfig()->cpu & X86_XMM ) == 0 )
+    if( ( MCSystemConfig()->cpu.x86 & X86_XMM ) == 0 )
         return( MS_FAIL );
 
     if( MADState->reg_state[XMM_REG_SET] & XT_BYTE ) {
@@ -1699,7 +1699,7 @@ walk_result MADIMPENTRY( RegWalk )(
     list = ( ri == NULL ) ? rsd->reglist : ((const x86_reg_info *)ri)->sublist;
     if( list == NULL )
         return( WR_CONTINUE );
-    level = MCSystemConfig()->cpu & X86_CPU_MASK;
+    level = MCSystemConfig()->cpu.x86 & X86_CPU_MASK;
     if( level >= X86_686 ) {
         cpulevel = L6;
     } else if( level >= X86_586 ) {
@@ -1711,7 +1711,7 @@ walk_result MADIMPENTRY( RegWalk )(
     } else {
         cpulevel = L1;
     }
-    level = MCSystemConfig()->fpu;
+    level = MCSystemConfig()->fpu.x86;
     if( level >= X86_387 ) {
         fpulevel = L3;
     } else if( level >= X86_287 ) {
