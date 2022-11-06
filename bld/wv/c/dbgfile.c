@@ -816,7 +816,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, 
             }
         }
     }
-    if( buff_size > 0 ) { 
+    if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > 0 )
             strncpy( buff, buffer, buff_size );
