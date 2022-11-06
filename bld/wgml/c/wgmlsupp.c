@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -517,12 +518,12 @@ void    show_include_stack( void )
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            ultoa( input_cbs->s.m->mac->lineno, linemac, 10 );
+            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
+            sprintf( linemac, "%lu", (unsigned long)input_cbs->s.m->mac->lineno );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
 //      } else {
-//          ultoa( input_cbs->s.f->lineno, linestr, 10 );
+//          sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
 //          g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
         ip = input_cbs->prev;
@@ -533,15 +534,15 @@ void    show_include_stack( void )
     while( ip != NULL ) {
         switch( ip->fmflags & II_input ) {
         case    II_file:
-            ultoa( ip->s.f->lineno, linestr, 10 );
+            sprintf( linestr, "%lu", (unsigned long)ip->s.f->lineno );
             g_info( err_inf_line_file, linestr, ip->s.f->filename );
             break;
         case    II_tag :
             g_info( err_inf_tag, ip->s.m->tag->name );
             // fallthrough
         case    II_macro :
-            ultoa( ip->s.m->lineno, linestr, 10 );
-            ultoa( ip->s.m->mac->lineno, linemac, 10 );
+            sprintf( linestr, "%lu", (unsigned long)ip->s.m->lineno );
+            sprintf( linemac, "%lu", (unsigned long)ip->s.m->mac->lineno );
             g_info( err_inf_mac_def, linestr, ip->s.m->mac->name,
                     linemac, ip->s.m->mac->mac_file_name);
             break;

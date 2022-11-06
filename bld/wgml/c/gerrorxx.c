@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -84,12 +84,12 @@ void    file_mac_info( void )
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            ultoa( input_cbs->s.m->mac->lineno, linemac, 10 );
+            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
+            sprintf( linemac, "%lu", (unsigned long)input_cbs->s.m->mac->lineno );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
-            ultoa( input_cbs->s.f->lineno, linestr, 10 );
+            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
     }
@@ -112,12 +112,12 @@ void    file_mac_info_nest( void )
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            ultoa( input_cbs->s.m->mac->lineno, linemac, 10 );
+            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
+            sprintf( linemac, "%lu", (unsigned long)input_cbs->s.m->mac->lineno );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
-            ultoa( input_cbs->s.f->lineno, linestr, 10 );
+            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
 
@@ -127,15 +127,15 @@ void    file_mac_info_nest( void )
         while( nw != NULL ) {
             switch( nw->nest_flag & II_input ) {
             case    II_file:
-                ultoa( nw->lineno, linestr, 10 );
+                sprintf( linestr, "%lu", (unsigned long)nw->lineno );
                 g_info( inf_file_line, linestr, nw->s.filename );
                 break;
             case    II_tag :
                 g_info( err_inf_tag, nw->s.mt.tag_m->name );
                 // fallthrough
             case    II_macro :
-                ultoa( nw->lineno, linestr, 10 );
-                ultoa( nw->s.mt.m->lineno, linemac, 10 );
+                sprintf( linestr, "%lu", (unsigned long)nw->lineno );
+                sprintf( linemac, "%lu", (unsigned long)nw->s.mt.m->lineno );
                 g_info( err_inf_mac_def, linestr, nw->s.mt.m->name,
                         linemac, nw->s.mt.m->mac_file_name);
                 break;
@@ -232,10 +232,10 @@ void    numb_err( void )
 
     err_count++;
     if( input_cbs->fmflags & II_tag_mac ) {
-        ultoa( input_cbs->s.m->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
         g_err( ERR_PU_NUM, linestr, "macro", input_cbs->s.m->mac->name );
     } else {
-        ultoa( input_cbs->s.f->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
         g_err( ERR_PU_NUM, linestr, "file", input_cbs->s.f->filename );
     }
     show_include_stack();
@@ -426,7 +426,6 @@ void    g_err_tag( const char *tag )
 
 void    g_err_tag_nest( gml_tag gtag )
 {
-    
     g_err_tag_common( gml_tagname( tag2etag( gtag ) ), true );      // nested tag stack display
     return;
 }

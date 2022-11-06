@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -828,7 +828,7 @@ char *  format_num( uint32_t n, char * r, size_t rsize, num_style ns )
         }
         break;
     case h_style :                      // arabic
-        ultoa( n, p, 10 );
+        sprintf( p, "%lu", (unsigned long)n );
         pos1 = strlen( p );
         pos += pos1;
         if( pos >= rsize ) {
