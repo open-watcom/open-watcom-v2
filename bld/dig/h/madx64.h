@@ -35,11 +35,11 @@
 #define MADX64_H
 
 typedef enum {
-    X64_CPU1    = 0x01,
+    X64_CPU1        = 0x01,
 } x64_cputypes;
 
 typedef enum {
-    X64_FPU1    = 0x01,
+    X64_FPU1        = 0x01,
 } x64_fputypes;
 
 typedef enum {
@@ -47,14 +47,14 @@ typedef enum {
 } x64_machine_data;
 
 typedef enum {
-    X64AC_BIG   = 0x01
+    X64AC_BIG       = 0x01
 } x64_addr_characteristics;
 
 enum {
-    TAG_VALID   = 0x0,
-    TAG_ZERO    = 0x1,
-    TAG_INVALID = 0x2,
-    TAG_EMPTY   = 0x3
+    TAG_VALID       = 0x0,
+    TAG_ZERO        = 0x1,
+    TAG_INVALID     = 0x2,
+    TAG_EMPTY       = 0x3
 };
 
 #define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len
@@ -144,39 +144,39 @@ typedef struct {
 } xmm_reg;
 
 struct x64_cpu {
-    unsigned_16 cs;
-    unsigned_16 ds;
-    unsigned_16 es;
-    unsigned_16 fs;
-    unsigned_16 gs;
-    unsigned_16 ss;
-    unsigned_32 eflags;
+    unsigned_16         cs;
+    unsigned_16         ds;
+    unsigned_16         es;
+    unsigned_16         fs;
+    unsigned_16         gs;
+    unsigned_16         ss;
+    unsigned_32         eflags;
 
-    unsigned_64 dr0;
-    unsigned_64 dr1;
-    unsigned_64 dr2;
-    unsigned_64 dr3;
-    unsigned_64 dr6;
-    unsigned_64 dr7;
+    unsigned_64         dr0;
+    unsigned_64         dr1;
+    unsigned_64         dr2;
+    unsigned_64         dr3;
+    unsigned_64         dr6;
+    unsigned_64         dr7;
 
-    unsigned_64 rax;
-    unsigned_64 rcx;
-    unsigned_64 rdx;
-    unsigned_64 rbx;
-    unsigned_64 rsp;
-    unsigned_64 rbp;
-    unsigned_64 rsi;
-    unsigned_64 rdi;
-    unsigned_64 r8;
-    unsigned_64 r9;
-    unsigned_64 r10;
-    unsigned_64 r11;
-    unsigned_64 r12;
-    unsigned_64 r13;
-    unsigned_64 r14;
-    unsigned_64 r15;
+    unsigned_64         rax;
+    unsigned_64         rcx;
+    unsigned_64         rdx;
+    unsigned_64         rbx;
+    unsigned_64         rsp;
+    unsigned_64         rbp;
+    unsigned_64         rsi;
+    unsigned_64         rdi;
+    unsigned_64         r8;
+    unsigned_64         r9;
+    unsigned_64         r10;
+    unsigned_64         r11;
+    unsigned_64         r12;
+    unsigned_64         r13;
+    unsigned_64         r14;
+    unsigned_64         r15;
 
-    unsigned_64 rip;
+    unsigned_64         rip;
 };
 
 typedef struct {

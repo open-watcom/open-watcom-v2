@@ -42,10 +42,10 @@ typedef enum {
     X86_486,
     X86_586,
     X86_686,
-    X86_P4 = 0x0f,
-    X86_CPU_MASK = 0x0f,
-    X86_MMX = 0x10,
-    X86_XMM = 0x20
+    X86_P4          = 0x0f,
+    X86_CPU_MASK    = 0x0f,
+    X86_MMX         = 0x10,
+    X86_XMM         = 0x20
 } x86_cputypes;
 
 typedef enum {
@@ -56,8 +56,8 @@ typedef enum {
     X86_487,
     X86_587,
     X86_687,
-    X86_P47 = 0x0f,
-    X86_EMU = (unsigned_8)-1
+    X86_P47         = 0x0f,
+    X86_EMU         = (unsigned_8)-1
 } x86_fputypes;
 
 typedef enum {
@@ -65,9 +65,16 @@ typedef enum {
 } x86_machine_data;
 
 typedef enum {
-    X86AC_BIG   = 0x01,
-    X86AC_REAL  = 0x02
+    X86AC_BIG       = 0x01,
+    X86AC_REAL      = 0x02
 } x86_addr_characteristics;
+
+enum {
+    TAG_VALID       = 0x0,
+    TAG_ZERO        = 0x1,
+    TAG_INVALID     = 0x2,
+    TAG_EMPTY       = 0x3
+};
 
 #define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len
 #define BIT_MXCSR( name, shift, len ) SHIFT_mxcsr_##name = shift, LEN_mxcsr_##name = len
@@ -141,13 +148,6 @@ enum {
     BIT_MXCSR( pm,    12, 1 ),
     BIT_MXCSR( rc,    13, 2 ),
     BIT_MXCSR( fz,    15, 1 )
-};
-
-enum {
-    TAG_VALID       = 0x0,
-    TAG_ZERO        = 0x1,
-    TAG_INVALID     = 0x2,
-    TAG_EMPTY       = 0x3
 };
 
 #include "digpck.h"
