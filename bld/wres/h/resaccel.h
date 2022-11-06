@@ -41,7 +41,7 @@ typedef struct AccelTableEntry32 {
     uint_16     Unknown;            /* I don't know what this field is for. */
 } AccelTableEntry32;                /* MS makes it 0. (padding?) */
 
-#define AccelTableEntry32_SIZE  (4 * sizeof( uint_16 ))
+#define RES_SIZE_AccelTableEntry32  (4 * sizeof( uint_16 ))
 
 typedef struct AccelTableEntry {
     uint_8      Flags;
@@ -49,7 +49,7 @@ typedef struct AccelTableEntry {
     uint_16     Id;
 } AccelTableEntry;
 
-#define AccelTableEntry_SIZE    (1 + 2 * sizeof( uint_16 ))
+#define RES_SIZE_AccelTableEntry    (1 + 2 * sizeof( uint_16 ))
 
 typedef uint_8  AccelFlags;
 #define ACCEL_ASCII     0x00        /* last bit is 0 */
@@ -69,5 +69,19 @@ extern bool ResWriteAccelEntry32( AccelTableEntry32 *, FILE *fp );
 
 extern bool ResReadAccelEntry( AccelTableEntry * currentry, FILE *fp );
 extern bool ResReadAccelEntry32( AccelTableEntry32 *, FILE *fp );
+
+/* rmwaccl.c */
+
+extern void SetAccelTableLastEntry32( char *data );
+extern void SetAccelTableLastEntry( char *data );
+extern char *ResWriteDataAccelTableEntry32( char *data, AccelTableEntry32 *entry );
+extern char *ResWriteDataAccelTableEntry( char *data, AccelTableEntry *entry );
+
+/* rmraccl.c */
+
+extern bool IsAccelTableLastEntry32( const char *data );
+extern bool IsAccelTableLastEntry( const char *data );
+extern char *ResReadDataAccelTableEntry32( const char *data, AccelTableEntry32 *entry );
+extern char *ResReadDataAccelTableEntry( const char *data, AccelTableEntry *entry );
 
 #endif

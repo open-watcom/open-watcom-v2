@@ -132,27 +132,15 @@ static void WInitDataFromAccelTable( WAccelTable *tbl, char *data )
     if( tbl->is32bit ) {
         for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
             last = data;
-            VALU16( data ) = entry->u.entry32.Flags;
-            INCU16( data );
-            VALU16( data ) = entry->u.entry32.Ascii;
-            INCU16( data );
-            VALU16( data ) = entry->u.entry32.Id;
-            INCU16( data );
-            VALU16( data ) = entry->u.entry32.Unknown;
-            INCU16( data );
+            data = ResWriteDataAccelTableEntry32( data, &entry->u.entry32 );
         }
-        VALU16( last ) |= ACCEL_LAST;
+        SetAccelTableLastEntry32( last );
     } else {
         for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
             last = data;
-            VALU8( data ) = entry->u.entry.Flags;
-            INCU8( data );
-            VALU16( data ) = entry->u.entry.Ascii;
-            INCU16( data );
-            VALU16( data ) = entry->u.entry.Id;
-            INCU16( data );
+            data = ResWriteDataAccelTableEntry( data, &entry->u.entry );
         }
-        VALU8( last ) |= ACCEL_LAST;
+        SetAccelTableLastEntry( last );
     }
 }
 
@@ -165,9 +153,9 @@ static size_t WCalcAccelTableSize( WAccelTable *tbl )
     }
 
     if( tbl->is32bit ) {
-        size = AccelTableEntry32_SIZE;
+        size = RES_SIZE_AccelTableEntry32;
     } else {
-        size = AccelTableEntry_SIZE;
+        size = RES_SIZE_AccelTableEntry;
     }
 
     size *= tbl->num;
@@ -245,9 +233,9 @@ static size_t WCalcNumAccelEntries( WAccelInfo *info )
     }
 
     if( info->is32bit ) {
-        size = AccelTableEntry32_SIZE;
+        size = RES_SIZE_AccelTableEntry32;
     } else {
-        size = AccelTableEntry_SIZE;
+        size = RES_SIZE_AccelTableEntry;
     }
 
     num = info->data_size / size;
@@ -264,7 +252,7 @@ static void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
     WAccelEntry         *entry;
     const char          *data;
     int                 i;
-    unsigned            last;
+    bool                last;
 
     entry = tbl->first_entry;
     if( entry == NULL ) {
@@ -273,29 +261,19 @@ static void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
 
     data = info->data;
     i = 0;
-    last = 0;
+    last = false;
     if( info->is32bit ) {
-        for( ; entry != NULL && (last & ACCEL_LAST) == 0; entry = entry->next ) {
+        for( ; entry != NULL && !last; entry = entry->next ) {
             entry->is32bit = true;
-            entry->u.entry32.Flags = (last = VALU16( data )) & ~ACCEL_LAST;
-            INCU16( data );
-            entry->u.entry32.Ascii = VALU16( data );
-            INCU16( data );
-            entry->u.entry32.Id = VALU16( data );
-            INCU16( data );
-            entry->u.entry32.Unknown = VALU16( data );
-            INCU16( data );
+            last = IsAccelTableLastEntry32( data );
+            data = ResReadDataAccelTableEntry32( data, &entry->u.entry32 );
             i++;
         }
     } else {
-        for( ; entry != NULL && (last & ACCEL_LAST) == 0; entry = entry->next ) {
+        for( ; entry != NULL && !last; entry = entry->next ) {
             entry->is32bit = false;
-            entry->u.entry.Flags = (last = VALU8( data )) & ~ACCEL_LAST;
-            INCU8( data );
-            entry->u.entry.Ascii = VALU16( data );
-            INCU16( data );
-            entry->u.entry.Id = VALU16( data );
-            INCU16( data );
+            last = IsAccelTableLastEntry( data );
+            data = ResReadDataAccelTableEntry( data, &entry->u.entry );
             i++;
         }
     }
