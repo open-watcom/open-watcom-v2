@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -459,7 +460,7 @@ unsigned_16 DWRVMReadWord( drmem_hdl hdl )
     if( off <= MAX_NODE_SIZE - 2 ) {
         // we can read both bytes now.
         // must not swap bytes in source buffer!
-        off = *((unsigned_16 *)( node->mem + off ));
+        off = *(unsigned_16 *)( node->mem + off );
     } else {
         off = *(unsigned_8 *)( node->mem + off );
         vm.l++;
@@ -488,7 +489,7 @@ unsigned_32 DWRVMReadDWord( drmem_hdl hdl )
     if( len >= sizeof( unsigned_32 ) ) {
         // we can read all bytes now.
         // must not swap bytes in source buffer!
-        result = *((unsigned_32 *)( node->mem + off ));
+        result = *(unsigned_32 *)( node->mem + off );
     } else {
         memcpy( &result, node->mem + off, len );
         vm.l += sizeof( unsigned_32 );
