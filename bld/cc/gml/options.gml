@@ -1252,7 +1252,7 @@
 
 :option. zt
 :target. i86 386
-:number. CmdX86CheckThreshold 256
+:number. SetDataThreshold 256
 :usage. far data threshold (i.e., larger objects go in far memory)
 :jusage. farデータ敷居値(つまり, 敷居値より大きいオブジェクトをfarメモリに置きます)
 

@@ -465,9 +465,6 @@ static void SetGenSwitches( void )
         TargetSwitches |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
         break;
     case SW_MH:
-  #if _CPU == 386
-        TargetSwitches |= CHEAP_POINTER;
-  #endif
         TargetSwitches |= BIG_CODE | BIG_DATA;
         break;
     default:
@@ -1229,7 +1226,13 @@ static void Set_TP( void )
     CMemFree( togname );
 }
 
-static void SetDataThreshHold( void ) { DataThreshold = OptValue; }
+static void SetDataThreshHold( void )
+{
+    if( OptValue > TARGET_INT_MAX ) {
+        OptValue = 256;
+    }
+    DataThreshold = OptValue;
+}
 
 static void Set_U( void )
 {

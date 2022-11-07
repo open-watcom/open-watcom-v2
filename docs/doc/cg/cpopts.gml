@@ -3714,15 +3714,17 @@ For example, the option "zt100" causes all data objects larger than
 .kwm far
 and grouped in other data segments.
 .np
-The default data threshold value is 32767.
-Thus, by default, all objects greater than 32767 bytes in size are
+The default data threshold value is 32767 for 16-bit target and 
+2147483647 for 32-bit target.
+Thus, by default, all objects greater than default size are 
 implicitly declared as
 .kwm far
 and will be placed in other data segments.
 If the "zt" option is specified without a size, the data threshold
 value is 256.
-The largest value that can be specified is 32767 (a larger value will
-result in 256 being selected).
+The largest value that can be specified is 32767 for 16-bit target 
+and 2147483647 for 32-bit target (a larger value will result in 256
+being selected).
 .np
 If the "zt" option is used to compile any module in a program, then
 you must compile all the other modules in the program with the same
@@ -3754,7 +3756,8 @@ The extra code required to reference the object in another data
 segment would not be generated.
 .np
 Note that this problem can also occur even when the "zt" option
-is not used (i.e., for objects greater than 32767 bytes in size).
+is not used (i.e., for objects greater than 32767 bytes for 16-bit 
+target and 2147483647 bytes for 32-bit target in size).
 There are two solutions to this problem: (1) be consistent when
 declaring an object's size, or, (2) do not specify the size in data
 reference declarations.

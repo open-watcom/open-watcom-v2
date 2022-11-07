@@ -1009,7 +1009,8 @@ syntax check only
 .*
 .note zt<number>
 :CMT. .ix 'options' 'zt'
-set data threshold (default is zt32767)
+set data threshold
+(default is 32767 for 16-bit and 2147483647 for 32-bit)
 :optref refid='SWzt'.
 .*
 .note zu&optdag.

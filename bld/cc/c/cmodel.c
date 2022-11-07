@@ -293,7 +293,7 @@ void InitModInfo( void )
 {
     GenSwitches = 0;
     TargetSwitches = 0;
-    DataThreshold = 32767;
+    DataThreshold = TARGET_INT_MAX;
     OptSize = 50;
     UndefNames = NULL;
     WholeFName = NULL;
