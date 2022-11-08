@@ -3,6 +3,7 @@
 !inject aborthnd.obj    d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 !inject assert.obj      d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 !inject assert99.obj    d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
+!inject assertrk.obj                                                                                    rdk
 !inject basename.obj    d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject cvtwc2mb.obj    d16 d32     nt                  o16 o32         w16 w32
 !inject dbgbreak.obj    d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
