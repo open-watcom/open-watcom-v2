@@ -345,9 +345,7 @@
 
 #define usergate_update_time 0x00000131
 
-#define usergate_allocate_static_drive 0x00000132
 #define usergate_allocate_fixed_drive 0x00000133
-#define usergate_allocate_dynamic_drive 0x00000134
 
 #define usergate_add_wait_for_tcp_listen 0x00000136
 #define usergate_create_tcp_listen 0x00000137
@@ -368,21 +366,9 @@
 #define usergate_get_usb_device 0x00000141
 #define usergate_get_usb_config 0x00000142
 
-#define usergate_open_usb_pipe 0x00000143
-#define usergate_close_usb_pipe 0x00000144
-#define usergate_add_wait_for_usb_pipe 0x00000145
-#define usergate_req_usb_data 0x00000146
-#define usergate_get_usb_data_size 0x00000147
-#define usergate_write_usb_data 0x00000148
-#define usergate_req_usb_status 0x00000149
-#define usergate_write_usb_status 0x0000014A
-#define usergate_write_usb_control 0x0000014B
-
 #define usergate_get_max_com_port 0x0000014F
 
 #define usergate_config_usb_device 0x00000150
-
-#define usergate_start_usb_transaction 0x00000151
 
 #define usergate_open_ini 0x00000152
 
@@ -439,9 +425,6 @@
 #define usergate_show_exception_text 0x00000177
 
 #define usergate_get_watchdog_tics 0x00000178
-
-#define usergate_is_usb_trans_done 0x00000179
-#define usergate_was_usb_trans_ok 0x0000017A
 
 #define usergate_is_tcp_connection_idle 0x0000017B
 
@@ -556,19 +539,12 @@
 #define usergate_get_pci_device_class 0x000001C9
 #define usergate_get_pci_device_irq 0x000001CA
 
-#define usergate_open_hid 0x000001CB
-#define usergate_close_hid 0x000001CC
-#define usergate_get_hid_pipe 0x000001CD
-
 #define usergate_get_core_load 0x000001CE
 #define usergate_get_core_duty 0x000001CF
 
 #define usergate_has_global_timer 0x000001D0
 
 #define usergate_remote_debug 0x000001D1
-
-#define usergate_read_hid 0x000001D2
-#define usergate_write_hid 0x000001D3
 
 #define usergate_ansi_to_utf8 0x000001D4
 #define usergate_utf8_to_ansi 0x000001D5
@@ -695,8 +671,6 @@
 #define usergate_create_named_user_section 0x0000022B
 #define usergate_acquire_named_futex 0x0000022C
 
-#define usergate_is_usb_pipe_stalled 0x0000022D
-
 #define usergate_get_lon_modules 0x0000022F
 #define usergate_open_lon_module 0x00000230
 #define usergate_close_lon_module 0x00000231
@@ -709,9 +683,6 @@
 
 #define usergate_ansi_to_utf16 0x00000237
 #define usergate_utf16_to_ansi 0x00000238
-
-#define usergate_get_usb_interface 0x00000239
-#define usergate_set_usb_interface 0x0000023A
 
 #define usergate_remote_gui 0x0000023B
 
@@ -818,9 +789,6 @@
 #define usergate_sub_signed_bignum 0x00000287
 #define usergate_sub_unsigned_bignum 0x00000288
 
-#define usergate_is_usb_connected 0x00000289
-#define usergate_start_one_usb_trans 0x0000028A
-
 #define usergate_get_thread_count 0x0000028B
 
 #define usergate_is_can_online 0x0000028C
@@ -866,8 +834,7 @@
 #define usergate_get_disc_cache_size 0x000002AA
 #define usergate_get_file_cache_size 0x000002AB
 
-#define usergate_open_disc 0x000002AC
-#define usergate_close_disc 0x000002AD
+#define usergate_reset_disc 0x000002AD
 
 #define usergate_create_tcp_socket 0x000002AE
 #define usergate_create_udp_socket 0x000002AF
@@ -906,6 +873,104 @@
 #define usergate_select 0x000002C6
 #define usergate_set_handle_blocking_mode 0x000002C7
 #define usergate_set_handle_nonblocking_mode 0x000002C8
+
+#define usergate_create_realtime 0x000002C9
+#define usergate_add_realtime_core 0x000002CA
+#define usergate_wait_for_realtime_signal 0x000002CB
+#define usergate_get_realtime_signal 0x000002CC
+
+#define usergate_allocate_realtime_buf 0x000002CD
+#define usergate_map_realtime_buf 0x000002CE
+#define usergate_unmap_realtime_buf 0x000002CF
+
+#define usergate_is_can_module_online 0x000002D2
+#define usergate_has_usb_card_reader_error 0x000002D5
+
+#define usergate_wait_anio 0x000002D6
+
+#define usergate_setup_adc 0x000002D7
+#define usergate_start_adc 0x000002D8
+#define usergate_stop_adc 0x000002D9
+#define usergate_map_adc_block 0x000002DA
+#define usergate_set_adc_trigger 0x000002DB
+
+#define usergate_create_can_module_bitmap 0x000002DC
+#define usergate_move_to_new_core 0x000002DD
+
+#define usergate_has_usb_card_dev_reset 0x000002DE
+#define usergate_has_usb_card_usb_reset 0x000002DF
+
+#define usergate_ip_to_mac 0x000002E0
+
+#define usergate_get_ac_voltage 0x000002E1
+#define usergate_get_ac_current 0x000002E2
+#define usergate_get_ac_consume_power 0x000002E3
+#define usergate_get_ac_produce_power 0x000002E4
+#define usergate_get_ac_consume_energy 0x000002E5
+#define usergate_get_ac_produce_energy 0x000002E6
+#define usergate_wait_ac_meassure 0x000002E7
+
+#define usergate_open_usb_dev 0x000002E8
+#define usergate_close_usb_dev 0x000002E9
+#define usergate_send_usb_dev_control_msg 0x000002EA
+
+#define usergate_get_hid_device 0x000002EB
+
+#define usergate_reset_usb_dev 0x000002EC
+#define usergate_add_wait_for_usb_dev_pipe 0x000002F0
+#define usergate_get_used_usb_buffers 0x000002F1
+#define usergate_get_free_usb_buffers 0x000002F2
+#define usergate_get_usb_buffer_size 0x000002F3
+#define usergate_get_usb_packet_pipe 0x000002F4
+
+#define usergate_open_usb_event 0x000002F6
+#define usergate_close_usb_event 0x000002F7
+#define usergate_add_wait_for_usb_event 0x000002F8
+#define usergate_get_usb_event 0x000002F9
+
+#define usergate_get_usb_address 0x000002FA
+#define usergate_is_usb_dev_connected 0x000002FB
+
+#define usergate_open_usb_packet_pipe 0x000002FC
+#define usergate_close_usb_pipe 0x000002FE
+
+#define usergate_sync_disc_part 0x000002FF
+#define usergate_remove_drive 0x00000300
+
+#define usergate_get_net_hw_id 0x00000301
+
+#define usergate_get_carddev_track1 0x00000302
+
+#define usergate_get_disc_cache 0x00000303
+#define usergate_get_disc_locked 0x00000304
+
+#define usergate_get_usb_com_dev 0x00000305
+#define usergate_get_usb_cdc_com_dev 0x00000306
+
+#define usergate_get_vfs_drive_disc 0x00000307
+#define usergate_get_vfs_drive_start 0x00000308
+#define usergate_get_vfs_drive_size 0x00000309
+#define usergate_get_vfs_drive_free 0x0000030A
+#define usergate_is_vfs_path 0x0000030B
+#define usergate_open_vfs_dir 0x0000030C
+#define usergate_close_vfs_dir 0x0000030D
+
+#define usergate_create_thread_block 0x0000030E
+#define usergate_wait_thread_block 0x0000030F
+#define usergate_close_thread_block 0x00000310
+
+#define usergate_read_file_legacy 0x00000311
+
+#define usergate_read_vfs_file 0x00000312
+
+#define usergate_used_user_sections 0x00000313
+
+#define usergate_user_get_system_time 0x00000314
+#define usergate_user_get_time 0x00000315
+
+#define usergate_has_power_card 0x00000316
+
+#define usergate_create_secure_connection 0x00000317
 
 
 
@@ -1257,9 +1322,7 @@
 
 #define CallGate_update_time 0x55 0x67 0x9a 49 1 0 0 3 0 0x5d
 
-#define CallGate_allocate_static_drive 0x55 0x67 0x9a 50 1 0 0 3 0 0x5d
 #define CallGate_allocate_fixed_drive 0x55 0x67 0x9a 51 1 0 0 3 0 0x5d
-#define CallGate_allocate_dynamic_drive 0x55 0x67 0x9a 52 1 0 0 3 0 0x5d
 
 #define CallGate_add_wait_for_tcp_listen 0x55 0x67 0x9a 54 1 0 0 3 0 0x5d
 #define CallGate_create_tcp_listen 0x55 0x67 0x9a 55 1 0 0 3 0 0x5d
@@ -1280,21 +1343,9 @@
 #define CallGate_get_usb_device 0x55 0x67 0x9a 65 1 0 0 3 0 0x5d
 #define CallGate_get_usb_config 0x55 0x67 0x9a 66 1 0 0 3 0 0x5d
 
-#define CallGate_open_usb_pipe 0x55 0x67 0x9a 67 1 0 0 3 0 0x5d
-#define CallGate_close_usb_pipe 0x55 0x67 0x9a 68 1 0 0 3 0 0x5d
-#define CallGate_add_wait_for_usb_pipe 0x55 0x67 0x9a 69 1 0 0 3 0 0x5d
-#define CallGate_req_usb_data 0x55 0x67 0x9a 70 1 0 0 3 0 0x5d
-#define CallGate_get_usb_data_size 0x55 0x67 0x9a 71 1 0 0 3 0 0x5d
-#define CallGate_write_usb_data 0x55 0x67 0x9a 72 1 0 0 3 0 0x5d
-#define CallGate_req_usb_status 0x55 0x67 0x9a 73 1 0 0 3 0 0x5d
-#define CallGate_write_usb_status 0x55 0x67 0x9a 74 1 0 0 3 0 0x5d
-#define CallGate_write_usb_control 0x55 0x67 0x9a 75 1 0 0 3 0 0x5d
-
 #define CallGate_get_max_com_port 0x55 0x67 0x9a 79 1 0 0 3 0 0x5d
 
 #define CallGate_config_usb_device 0x55 0x67 0x9a 80 1 0 0 3 0 0x5d
-
-#define CallGate_start_usb_transaction 0x55 0x67 0x9a 81 1 0 0 3 0 0x5d
 
 #define CallGate_open_ini 0x55 0x67 0x9a 82 1 0 0 3 0 0x5d
 
@@ -1351,9 +1402,6 @@
 #define CallGate_show_exception_text 0x55 0x67 0x9a 119 1 0 0 3 0 0x5d
 
 #define CallGate_get_watchdog_tics 0x55 0x67 0x9a 120 1 0 0 3 0 0x5d
-
-#define CallGate_is_usb_trans_done 0x55 0x67 0x9a 121 1 0 0 3 0 0x5d
-#define CallGate_was_usb_trans_ok 0x55 0x67 0x9a 122 1 0 0 3 0 0x5d
 
 #define CallGate_is_tcp_connection_idle 0x55 0x67 0x9a 123 1 0 0 3 0 0x5d
 
@@ -1468,19 +1516,12 @@
 #define CallGate_get_pci_device_class 0x55 0x67 0x9a 201 1 0 0 3 0 0x5d
 #define CallGate_get_pci_device_irq 0x55 0x67 0x9a 202 1 0 0 3 0 0x5d
 
-#define CallGate_open_hid 0x55 0x67 0x9a 203 1 0 0 3 0 0x5d
-#define CallGate_close_hid 0x55 0x67 0x9a 204 1 0 0 3 0 0x5d
-#define CallGate_get_hid_pipe 0x55 0x67 0x9a 205 1 0 0 3 0 0x5d
-
 #define CallGate_get_core_load 0x55 0x67 0x9a 206 1 0 0 3 0 0x5d
 #define CallGate_get_core_duty 0x55 0x67 0x9a 207 1 0 0 3 0 0x5d
 
 #define CallGate_has_global_timer 0x55 0x67 0x9a 208 1 0 0 3 0 0x5d
 
 #define CallGate_remote_debug 0x55 0x67 0x9a 209 1 0 0 3 0 0x5d
-
-#define CallGate_read_hid 0x55 0x67 0x9a 210 1 0 0 3 0 0x5d
-#define CallGate_write_hid 0x55 0x67 0x9a 211 1 0 0 3 0 0x5d
 
 #define CallGate_ansi_to_utf8 0x55 0x67 0x9a 212 1 0 0 3 0 0x5d
 #define CallGate_utf8_to_ansi 0x55 0x67 0x9a 213 1 0 0 3 0 0x5d
@@ -1607,8 +1648,6 @@
 #define CallGate_create_named_user_section 0x55 0x67 0x9a 43 2 0 0 3 0 0x5d
 #define CallGate_acquire_named_futex 0x55 0x67 0x9a 44 2 0 0 3 0 0x5d
 
-#define CallGate_is_usb_pipe_stalled 0x55 0x67 0x9a 45 2 0 0 3 0 0x5d
-
 #define CallGate_get_lon_modules 0x55 0x67 0x9a 47 2 0 0 3 0 0x5d
 #define CallGate_open_lon_module 0x55 0x67 0x9a 48 2 0 0 3 0 0x5d
 #define CallGate_close_lon_module 0x55 0x67 0x9a 49 2 0 0 3 0 0x5d
@@ -1621,9 +1660,6 @@
 
 #define CallGate_ansi_to_utf16 0x55 0x67 0x9a 55 2 0 0 3 0 0x5d
 #define CallGate_utf16_to_ansi 0x55 0x67 0x9a 56 2 0 0 3 0 0x5d
-
-#define CallGate_get_usb_interface 0x55 0x67 0x9a 57 2 0 0 3 0 0x5d
-#define CallGate_set_usb_interface 0x55 0x67 0x9a 58 2 0 0 3 0 0x5d
 
 #define CallGate_remote_gui 0x55 0x67 0x9a 59 2 0 0 3 0 0x5d
 
@@ -1730,9 +1766,6 @@
 #define CallGate_sub_signed_bignum 0x55 0x67 0x9a 135 2 0 0 3 0 0x5d
 #define CallGate_sub_unsigned_bignum 0x55 0x67 0x9a 136 2 0 0 3 0 0x5d
 
-#define CallGate_is_usb_connected 0x55 0x67 0x9a 137 2 0 0 3 0 0x5d
-#define CallGate_start_one_usb_trans 0x55 0x67 0x9a 138 2 0 0 3 0 0x5d
-
 #define CallGate_get_thread_count 0x55 0x67 0x9a 139 2 0 0 3 0 0x5d
 
 #define CallGate_is_can_online 0x55 0x67 0x9a 140 2 0 0 3 0 0x5d
@@ -1778,8 +1811,7 @@
 #define CallGate_get_disc_cache_size 0x55 0x67 0x9a 170 2 0 0 3 0 0x5d
 #define CallGate_get_file_cache_size 0x55 0x67 0x9a 171 2 0 0 3 0 0x5d
 
-#define CallGate_open_disc 0x55 0x67 0x9a 172 2 0 0 3 0 0x5d
-#define CallGate_close_disc 0x55 0x67 0x9a 173 2 0 0 3 0 0x5d
+#define CallGate_reset_disc 0x55 0x67 0x9a 173 2 0 0 3 0 0x5d
 
 #define CallGate_create_tcp_socket 0x55 0x67 0x9a 174 2 0 0 3 0 0x5d
 #define CallGate_create_udp_socket 0x55 0x67 0x9a 175 2 0 0 3 0 0x5d
@@ -1818,6 +1850,104 @@
 #define CallGate_select 0x55 0x67 0x9a 198 2 0 0 3 0 0x5d
 #define CallGate_set_handle_blocking_mode 0x55 0x67 0x9a 199 2 0 0 3 0 0x5d
 #define CallGate_set_handle_nonblocking_mode 0x55 0x67 0x9a 200 2 0 0 3 0 0x5d
+
+#define CallGate_create_realtime 0x55 0x67 0x9a 201 2 0 0 3 0 0x5d
+#define CallGate_add_realtime_core 0x55 0x67 0x9a 202 2 0 0 3 0 0x5d
+#define CallGate_wait_for_realtime_signal 0x55 0x67 0x9a 203 2 0 0 3 0 0x5d
+#define CallGate_get_realtime_signal 0x55 0x67 0x9a 204 2 0 0 3 0 0x5d
+
+#define CallGate_allocate_realtime_buf 0x55 0x67 0x9a 205 2 0 0 3 0 0x5d
+#define CallGate_map_realtime_buf 0x55 0x67 0x9a 206 2 0 0 3 0 0x5d
+#define CallGate_unmap_realtime_buf 0x55 0x67 0x9a 207 2 0 0 3 0 0x5d
+
+#define CallGate_is_can_module_online 0x55 0x67 0x9a 210 2 0 0 3 0 0x5d
+#define CallGate_has_usb_card_reader_error 0x55 0x67 0x9a 213 2 0 0 3 0 0x5d
+
+#define CallGate_wait_anio 0x55 0x67 0x9a 214 2 0 0 3 0 0x5d
+
+#define CallGate_setup_adc 0x55 0x67 0x9a 215 2 0 0 3 0 0x5d
+#define CallGate_start_adc 0x55 0x67 0x9a 216 2 0 0 3 0 0x5d
+#define CallGate_stop_adc 0x55 0x67 0x9a 217 2 0 0 3 0 0x5d
+#define CallGate_map_adc_block 0x55 0x67 0x9a 218 2 0 0 3 0 0x5d
+#define CallGate_set_adc_trigger 0x55 0x67 0x9a 219 2 0 0 3 0 0x5d
+
+#define CallGate_create_can_module_bitmap 0x55 0x67 0x9a 220 2 0 0 3 0 0x5d
+#define CallGate_move_to_new_core 0x55 0x67 0x9a 221 2 0 0 3 0 0x5d
+
+#define CallGate_has_usb_card_dev_reset 0x55 0x67 0x9a 222 2 0 0 3 0 0x5d
+#define CallGate_has_usb_card_usb_reset 0x55 0x67 0x9a 223 2 0 0 3 0 0x5d
+
+#define CallGate_ip_to_mac 0x55 0x67 0x9a 224 2 0 0 3 0 0x5d
+
+#define CallGate_get_ac_voltage 0x55 0x67 0x9a 225 2 0 0 3 0 0x5d
+#define CallGate_get_ac_current 0x55 0x67 0x9a 226 2 0 0 3 0 0x5d
+#define CallGate_get_ac_consume_power 0x55 0x67 0x9a 227 2 0 0 3 0 0x5d
+#define CallGate_get_ac_produce_power 0x55 0x67 0x9a 228 2 0 0 3 0 0x5d
+#define CallGate_get_ac_consume_energy 0x55 0x67 0x9a 229 2 0 0 3 0 0x5d
+#define CallGate_get_ac_produce_energy 0x55 0x67 0x9a 230 2 0 0 3 0 0x5d
+#define CallGate_wait_ac_meassure 0x55 0x67 0x9a 231 2 0 0 3 0 0x5d
+
+#define CallGate_open_usb_dev 0x55 0x67 0x9a 232 2 0 0 3 0 0x5d
+#define CallGate_close_usb_dev 0x55 0x67 0x9a 233 2 0 0 3 0 0x5d
+#define CallGate_send_usb_dev_control_msg 0x55 0x67 0x9a 234 2 0 0 3 0 0x5d
+
+#define CallGate_get_hid_device 0x55 0x67 0x9a 235 2 0 0 3 0 0x5d
+
+#define CallGate_reset_usb_dev 0x55 0x67 0x9a 236 2 0 0 3 0 0x5d
+#define CallGate_add_wait_for_usb_dev_pipe 0x55 0x67 0x9a 240 2 0 0 3 0 0x5d
+#define CallGate_get_used_usb_buffers 0x55 0x67 0x9a 241 2 0 0 3 0 0x5d
+#define CallGate_get_free_usb_buffers 0x55 0x67 0x9a 242 2 0 0 3 0 0x5d
+#define CallGate_get_usb_buffer_size 0x55 0x67 0x9a 243 2 0 0 3 0 0x5d
+#define CallGate_get_usb_packet_pipe 0x55 0x67 0x9a 244 2 0 0 3 0 0x5d
+
+#define CallGate_open_usb_event 0x55 0x67 0x9a 246 2 0 0 3 0 0x5d
+#define CallGate_close_usb_event 0x55 0x67 0x9a 247 2 0 0 3 0 0x5d
+#define CallGate_add_wait_for_usb_event 0x55 0x67 0x9a 248 2 0 0 3 0 0x5d
+#define CallGate_get_usb_event 0x55 0x67 0x9a 249 2 0 0 3 0 0x5d
+
+#define CallGate_get_usb_address 0x55 0x67 0x9a 250 2 0 0 3 0 0x5d
+#define CallGate_is_usb_dev_connected 0x55 0x67 0x9a 251 2 0 0 3 0 0x5d
+
+#define CallGate_open_usb_packet_pipe 0x55 0x67 0x9a 252 2 0 0 3 0 0x5d
+#define CallGate_close_usb_pipe 0x55 0x67 0x9a 254 2 0 0 3 0 0x5d
+
+#define CallGate_sync_disc_part 0x55 0x67 0x9a 255 2 0 0 3 0 0x5d
+#define CallGate_remove_drive 0x55 0x67 0x9a 0 3 0 0 3 0 0x5d
+
+#define CallGate_get_net_hw_id 0x55 0x67 0x9a 1 3 0 0 3 0 0x5d
+
+#define CallGate_get_carddev_track1 0x55 0x67 0x9a 2 3 0 0 3 0 0x5d
+
+#define CallGate_get_disc_cache 0x55 0x67 0x9a 3 3 0 0 3 0 0x5d
+#define CallGate_get_disc_locked 0x55 0x67 0x9a 4 3 0 0 3 0 0x5d
+
+#define CallGate_get_usb_com_dev 0x55 0x67 0x9a 5 3 0 0 3 0 0x5d
+#define CallGate_get_usb_cdc_com_dev 0x55 0x67 0x9a 6 3 0 0 3 0 0x5d
+
+#define CallGate_get_vfs_drive_disc 0x55 0x67 0x9a 7 3 0 0 3 0 0x5d
+#define CallGate_get_vfs_drive_start 0x55 0x67 0x9a 8 3 0 0 3 0 0x5d
+#define CallGate_get_vfs_drive_size 0x55 0x67 0x9a 9 3 0 0 3 0 0x5d
+#define CallGate_get_vfs_drive_free 0x55 0x67 0x9a 10 3 0 0 3 0 0x5d
+#define CallGate_is_vfs_path 0x55 0x67 0x9a 11 3 0 0 3 0 0x5d
+#define CallGate_open_vfs_dir 0x55 0x67 0x9a 12 3 0 0 3 0 0x5d
+#define CallGate_close_vfs_dir 0x55 0x67 0x9a 13 3 0 0 3 0 0x5d
+
+#define CallGate_create_thread_block 0x55 0x67 0x9a 14 3 0 0 3 0 0x5d
+#define CallGate_wait_thread_block 0x55 0x67 0x9a 15 3 0 0 3 0 0x5d
+#define CallGate_close_thread_block 0x55 0x67 0x9a 16 3 0 0 3 0 0x5d
+
+#define CallGate_read_file_legacy 0x55 0x67 0x9a 17 3 0 0 3 0 0x5d
+
+#define CallGate_read_vfs_file 0x55 0x67 0x9a 18 3 0 0 3 0 0x5d
+
+#define CallGate_used_user_sections 0x55 0x67 0x9a 19 3 0 0 3 0 0x5d
+
+#define CallGate_user_get_system_time 0x55 0x67 0x9a 20 3 0 0 3 0 0x5d
+#define CallGate_user_get_time 0x55 0x67 0x9a 21 3 0 0 3 0 0x5d
+
+#define CallGate_has_power_card 0x55 0x67 0x9a 22 3 0 0 3 0 0x5d
+
+#define CallGate_create_secure_connection 0x55 0x67 0x9a 23 3 0 0 3 0 0x5d
 
 #else
 
@@ -2167,9 +2297,7 @@
 
 #define CallGate_update_time 0x3e 0x67 0x9a 49 1 0 0 3 0
 
-#define CallGate_allocate_static_drive 0x3e 0x67 0x9a 50 1 0 0 3 0
 #define CallGate_allocate_fixed_drive 0x3e 0x67 0x9a 51 1 0 0 3 0
-#define CallGate_allocate_dynamic_drive 0x3e 0x67 0x9a 52 1 0 0 3 0
 
 #define CallGate_add_wait_for_tcp_listen 0x3e 0x67 0x9a 54 1 0 0 3 0
 #define CallGate_create_tcp_listen 0x3e 0x67 0x9a 55 1 0 0 3 0
@@ -2190,21 +2318,9 @@
 #define CallGate_get_usb_device 0x3e 0x67 0x9a 65 1 0 0 3 0
 #define CallGate_get_usb_config 0x3e 0x67 0x9a 66 1 0 0 3 0
 
-#define CallGate_open_usb_pipe 0x3e 0x67 0x9a 67 1 0 0 3 0
-#define CallGate_close_usb_pipe 0x3e 0x67 0x9a 68 1 0 0 3 0
-#define CallGate_add_wait_for_usb_pipe 0x3e 0x67 0x9a 69 1 0 0 3 0
-#define CallGate_req_usb_data 0x3e 0x67 0x9a 70 1 0 0 3 0
-#define CallGate_get_usb_data_size 0x3e 0x67 0x9a 71 1 0 0 3 0
-#define CallGate_write_usb_data 0x3e 0x67 0x9a 72 1 0 0 3 0
-#define CallGate_req_usb_status 0x3e 0x67 0x9a 73 1 0 0 3 0
-#define CallGate_write_usb_status 0x3e 0x67 0x9a 74 1 0 0 3 0
-#define CallGate_write_usb_control 0x3e 0x67 0x9a 75 1 0 0 3 0
-
 #define CallGate_get_max_com_port 0x3e 0x67 0x9a 79 1 0 0 3 0
 
 #define CallGate_config_usb_device 0x3e 0x67 0x9a 80 1 0 0 3 0
-
-#define CallGate_start_usb_transaction 0x3e 0x67 0x9a 81 1 0 0 3 0
 
 #define CallGate_open_ini 0x3e 0x67 0x9a 82 1 0 0 3 0
 
@@ -2261,9 +2377,6 @@
 #define CallGate_show_exception_text 0x3e 0x67 0x9a 119 1 0 0 3 0
 
 #define CallGate_get_watchdog_tics 0x3e 0x67 0x9a 120 1 0 0 3 0
-
-#define CallGate_is_usb_trans_done 0x3e 0x67 0x9a 121 1 0 0 3 0
-#define CallGate_was_usb_trans_ok 0x3e 0x67 0x9a 122 1 0 0 3 0
 
 #define CallGate_is_tcp_connection_idle 0x3e 0x67 0x9a 123 1 0 0 3 0
 
@@ -2378,19 +2491,12 @@
 #define CallGate_get_pci_device_class 0x3e 0x67 0x9a 201 1 0 0 3 0
 #define CallGate_get_pci_device_irq 0x3e 0x67 0x9a 202 1 0 0 3 0
 
-#define CallGate_open_hid 0x3e 0x67 0x9a 203 1 0 0 3 0
-#define CallGate_close_hid 0x3e 0x67 0x9a 204 1 0 0 3 0
-#define CallGate_get_hid_pipe 0x3e 0x67 0x9a 205 1 0 0 3 0
-
 #define CallGate_get_core_load 0x3e 0x67 0x9a 206 1 0 0 3 0
 #define CallGate_get_core_duty 0x3e 0x67 0x9a 207 1 0 0 3 0
 
 #define CallGate_has_global_timer 0x3e 0x67 0x9a 208 1 0 0 3 0
 
 #define CallGate_remote_debug 0x3e 0x67 0x9a 209 1 0 0 3 0
-
-#define CallGate_read_hid 0x3e 0x67 0x9a 210 1 0 0 3 0
-#define CallGate_write_hid 0x3e 0x67 0x9a 211 1 0 0 3 0
 
 #define CallGate_ansi_to_utf8 0x3e 0x67 0x9a 212 1 0 0 3 0
 #define CallGate_utf8_to_ansi 0x3e 0x67 0x9a 213 1 0 0 3 0
@@ -2517,8 +2623,6 @@
 #define CallGate_create_named_user_section 0x3e 0x67 0x9a 43 2 0 0 3 0
 #define CallGate_acquire_named_futex 0x3e 0x67 0x9a 44 2 0 0 3 0
 
-#define CallGate_is_usb_pipe_stalled 0x3e 0x67 0x9a 45 2 0 0 3 0
-
 #define CallGate_get_lon_modules 0x3e 0x67 0x9a 47 2 0 0 3 0
 #define CallGate_open_lon_module 0x3e 0x67 0x9a 48 2 0 0 3 0
 #define CallGate_close_lon_module 0x3e 0x67 0x9a 49 2 0 0 3 0
@@ -2531,9 +2635,6 @@
 
 #define CallGate_ansi_to_utf16 0x3e 0x67 0x9a 55 2 0 0 3 0
 #define CallGate_utf16_to_ansi 0x3e 0x67 0x9a 56 2 0 0 3 0
-
-#define CallGate_get_usb_interface 0x3e 0x67 0x9a 57 2 0 0 3 0
-#define CallGate_set_usb_interface 0x3e 0x67 0x9a 58 2 0 0 3 0
 
 #define CallGate_remote_gui 0x3e 0x67 0x9a 59 2 0 0 3 0
 
@@ -2640,9 +2741,6 @@
 #define CallGate_sub_signed_bignum 0x3e 0x67 0x9a 135 2 0 0 3 0
 #define CallGate_sub_unsigned_bignum 0x3e 0x67 0x9a 136 2 0 0 3 0
 
-#define CallGate_is_usb_connected 0x3e 0x67 0x9a 137 2 0 0 3 0
-#define CallGate_start_one_usb_trans 0x3e 0x67 0x9a 138 2 0 0 3 0
-
 #define CallGate_get_thread_count 0x3e 0x67 0x9a 139 2 0 0 3 0
 
 #define CallGate_is_can_online 0x3e 0x67 0x9a 140 2 0 0 3 0
@@ -2688,8 +2786,7 @@
 #define CallGate_get_disc_cache_size 0x3e 0x67 0x9a 170 2 0 0 3 0
 #define CallGate_get_file_cache_size 0x3e 0x67 0x9a 171 2 0 0 3 0
 
-#define CallGate_open_disc 0x3e 0x67 0x9a 172 2 0 0 3 0
-#define CallGate_close_disc 0x3e 0x67 0x9a 173 2 0 0 3 0
+#define CallGate_reset_disc 0x3e 0x67 0x9a 173 2 0 0 3 0
 
 #define CallGate_create_tcp_socket 0x3e 0x67 0x9a 174 2 0 0 3 0
 #define CallGate_create_udp_socket 0x3e 0x67 0x9a 175 2 0 0 3 0
@@ -2728,5 +2825,103 @@
 #define CallGate_select 0x3e 0x67 0x9a 198 2 0 0 3 0
 #define CallGate_set_handle_blocking_mode 0x3e 0x67 0x9a 199 2 0 0 3 0
 #define CallGate_set_handle_nonblocking_mode 0x3e 0x67 0x9a 200 2 0 0 3 0
+
+#define CallGate_create_realtime 0x3e 0x67 0x9a 201 2 0 0 3 0
+#define CallGate_add_realtime_core 0x3e 0x67 0x9a 202 2 0 0 3 0
+#define CallGate_wait_for_realtime_signal 0x3e 0x67 0x9a 203 2 0 0 3 0
+#define CallGate_get_realtime_signal 0x3e 0x67 0x9a 204 2 0 0 3 0
+
+#define CallGate_allocate_realtime_buf 0x3e 0x67 0x9a 205 2 0 0 3 0
+#define CallGate_map_realtime_buf 0x3e 0x67 0x9a 206 2 0 0 3 0
+#define CallGate_unmap_realtime_buf 0x3e 0x67 0x9a 207 2 0 0 3 0
+
+#define CallGate_is_can_module_online 0x3e 0x67 0x9a 210 2 0 0 3 0
+#define CallGate_has_usb_card_reader_error 0x3e 0x67 0x9a 213 2 0 0 3 0
+
+#define CallGate_wait_anio 0x3e 0x67 0x9a 214 2 0 0 3 0
+
+#define CallGate_setup_adc 0x3e 0x67 0x9a 215 2 0 0 3 0
+#define CallGate_start_adc 0x3e 0x67 0x9a 216 2 0 0 3 0
+#define CallGate_stop_adc 0x3e 0x67 0x9a 217 2 0 0 3 0
+#define CallGate_map_adc_block 0x3e 0x67 0x9a 218 2 0 0 3 0
+#define CallGate_set_adc_trigger 0x3e 0x67 0x9a 219 2 0 0 3 0
+
+#define CallGate_create_can_module_bitmap 0x3e 0x67 0x9a 220 2 0 0 3 0
+#define CallGate_move_to_new_core 0x3e 0x67 0x9a 221 2 0 0 3 0
+
+#define CallGate_has_usb_card_dev_reset 0x3e 0x67 0x9a 222 2 0 0 3 0
+#define CallGate_has_usb_card_usb_reset 0x3e 0x67 0x9a 223 2 0 0 3 0
+
+#define CallGate_ip_to_mac 0x3e 0x67 0x9a 224 2 0 0 3 0
+
+#define CallGate_get_ac_voltage 0x3e 0x67 0x9a 225 2 0 0 3 0
+#define CallGate_get_ac_current 0x3e 0x67 0x9a 226 2 0 0 3 0
+#define CallGate_get_ac_consume_power 0x3e 0x67 0x9a 227 2 0 0 3 0
+#define CallGate_get_ac_produce_power 0x3e 0x67 0x9a 228 2 0 0 3 0
+#define CallGate_get_ac_consume_energy 0x3e 0x67 0x9a 229 2 0 0 3 0
+#define CallGate_get_ac_produce_energy 0x3e 0x67 0x9a 230 2 0 0 3 0
+#define CallGate_wait_ac_meassure 0x3e 0x67 0x9a 231 2 0 0 3 0
+
+#define CallGate_open_usb_dev 0x3e 0x67 0x9a 232 2 0 0 3 0
+#define CallGate_close_usb_dev 0x3e 0x67 0x9a 233 2 0 0 3 0
+#define CallGate_send_usb_dev_control_msg 0x3e 0x67 0x9a 234 2 0 0 3 0
+
+#define CallGate_get_hid_device 0x3e 0x67 0x9a 235 2 0 0 3 0
+
+#define CallGate_reset_usb_dev 0x3e 0x67 0x9a 236 2 0 0 3 0
+#define CallGate_add_wait_for_usb_dev_pipe 0x3e 0x67 0x9a 240 2 0 0 3 0
+#define CallGate_get_used_usb_buffers 0x3e 0x67 0x9a 241 2 0 0 3 0
+#define CallGate_get_free_usb_buffers 0x3e 0x67 0x9a 242 2 0 0 3 0
+#define CallGate_get_usb_buffer_size 0x3e 0x67 0x9a 243 2 0 0 3 0
+#define CallGate_get_usb_packet_pipe 0x3e 0x67 0x9a 244 2 0 0 3 0
+
+#define CallGate_open_usb_event 0x3e 0x67 0x9a 246 2 0 0 3 0
+#define CallGate_close_usb_event 0x3e 0x67 0x9a 247 2 0 0 3 0
+#define CallGate_add_wait_for_usb_event 0x3e 0x67 0x9a 248 2 0 0 3 0
+#define CallGate_get_usb_event 0x3e 0x67 0x9a 249 2 0 0 3 0
+
+#define CallGate_get_usb_address 0x3e 0x67 0x9a 250 2 0 0 3 0
+#define CallGate_is_usb_dev_connected 0x3e 0x67 0x9a 251 2 0 0 3 0
+
+#define CallGate_open_usb_packet_pipe 0x3e 0x67 0x9a 252 2 0 0 3 0
+#define CallGate_close_usb_pipe 0x3e 0x67 0x9a 254 2 0 0 3 0
+
+#define CallGate_sync_disc_part 0x3e 0x67 0x9a 255 2 0 0 3 0
+#define CallGate_remove_drive 0x3e 0x67 0x9a 0 3 0 0 3 0
+
+#define CallGate_get_net_hw_id 0x3e 0x67 0x9a 1 3 0 0 3 0
+
+#define CallGate_get_carddev_track1 0x3e 0x67 0x9a 2 3 0 0 3 0
+
+#define CallGate_get_disc_cache 0x3e 0x67 0x9a 3 3 0 0 3 0
+#define CallGate_get_disc_locked 0x3e 0x67 0x9a 4 3 0 0 3 0
+
+#define CallGate_get_usb_com_dev 0x3e 0x67 0x9a 5 3 0 0 3 0
+#define CallGate_get_usb_cdc_com_dev 0x3e 0x67 0x9a 6 3 0 0 3 0
+
+#define CallGate_get_vfs_drive_disc 0x3e 0x67 0x9a 7 3 0 0 3 0
+#define CallGate_get_vfs_drive_start 0x3e 0x67 0x9a 8 3 0 0 3 0
+#define CallGate_get_vfs_drive_size 0x3e 0x67 0x9a 9 3 0 0 3 0
+#define CallGate_get_vfs_drive_free 0x3e 0x67 0x9a 10 3 0 0 3 0
+#define CallGate_is_vfs_path 0x3e 0x67 0x9a 11 3 0 0 3 0
+#define CallGate_open_vfs_dir 0x3e 0x67 0x9a 12 3 0 0 3 0
+#define CallGate_close_vfs_dir 0x3e 0x67 0x9a 13 3 0 0 3 0
+
+#define CallGate_create_thread_block 0x3e 0x67 0x9a 14 3 0 0 3 0
+#define CallGate_wait_thread_block 0x3e 0x67 0x9a 15 3 0 0 3 0
+#define CallGate_close_thread_block 0x3e 0x67 0x9a 16 3 0 0 3 0
+
+#define CallGate_read_file_legacy 0x3e 0x67 0x9a 17 3 0 0 3 0
+
+#define CallGate_read_vfs_file 0x3e 0x67 0x9a 18 3 0 0 3 0
+
+#define CallGate_used_user_sections 0x3e 0x67 0x9a 19 3 0 0 3 0
+
+#define CallGate_user_get_system_time 0x3e 0x67 0x9a 20 3 0 0 3 0
+#define CallGate_user_get_time 0x3e 0x67 0x9a 21 3 0 0 3 0
+
+#define CallGate_has_power_card 0x3e 0x67 0x9a 22 3 0 0 3 0
+
+#define CallGate_create_secure_connection 0x3e 0x67 0x9a 23 3 0 0 3 0
 
 #endif

@@ -1,15 +1,3 @@
-/****************************************************************************
-*
-*                            Open Watcom Project
-*
-* Copyright (c) 2009-2013 The Open Watcom Contributors. All Rights Reserved.
-*
-*  ========================================================================
-*
-* Description:  RDOS device-driver in-line assembly code definition. This file
-*               is generated automatically, do not edit it.
-*
-****************************************************************************/
 
 #define osgate_register_osgate 0
 #define osgate_is_valid_osgate 1
@@ -200,8 +188,7 @@
 #define osgate_find_pci_class 196
 #define osgate_find_pci_device 197
 
-#define osgate_hook_init_disc 198
-#define osgate_install_disc 199
+#define osgate_install_static_disc 199
 #define osgate_register_disc_change 200
 #define osgate_start_disc 201
 #define osgate_stop_disc 202
@@ -226,9 +213,7 @@
 #define osgate_wait_for_sector 227
 #define osgate_reset_drive 228
 
-#define osgate_hook_init_file_system 229
 #define osgate_register_file_system 230
-#define osgate_define_media_check 231
 #define osgate_demand_load_file_system 232
 #define osgate_is_file_system_available 233
 #define osgate_install_file_system 234
@@ -315,9 +300,7 @@
 
 #define osgate_notify_ethernet_packet 300
 
-#define osgate_init_usb_device 301
-#define osgate_notify_usb_attach 302
-#define osgate_notify_usb_detach 304
+#define osgate_init_usb_function 301
 
 #define osgate_add_com_port 305
 
@@ -328,19 +311,6 @@
 #define osgate_set_mouse_limit 309
 
 #define osgate_get_net_driver 310
-
-#define osgate_create_usb_req 311
-#define osgate_add_write_usb_control_req 312
-#define osgate_add_write_usb_data_req 313
-#define osgate_add_read_usb_data_req 314
-#define osgate_add_usb_status_in_req 315
-#define osgate_add_usb_status_out_req 316
-#define osgate_start_usb_req 317
-#define osgate_is_usb_req_started 318
-#define osgate_is_usb_req_ready 319
-#define osgate_get_usb_req_data 320
-#define osgate_usb_req_done 321
-#define osgate_close_usb_req 322
 
 #define osgate_notify_ir_data 323
 
@@ -364,8 +334,6 @@
 #define osgate_alias_module_handle 341
 
 #define osgate_thread_to_sel 342
-
-#define osgate_stop_usb_req 344
 
 #define osgate_reserve_com_line 346
 
@@ -436,8 +404,6 @@
 #define osgate_start_sys_preempt_timer 400
 #define osgate_reload_sys_preempt_timer 401
 
-#define osgate_is_valid_usb_pipe_sel 403
-
 #define osgate_hook_net_link_up 404
 #define osgate_req_arp 405
 
@@ -487,7 +453,6 @@
 
 #define osgate_has_page_entry 438
 #define osgate_free_page_entries 439
-#define osgate_free_global_page_entries 439
 #define osgate_allocate_page_entries 440
 #define osgate_reserve_page_entries 441
 
@@ -574,8 +539,6 @@
 
 #define osgate_has_long_mode 516
 
-#define osgate_is_usb_hub_port_connected 517
-
 #define osgate_wait_for_ehci 518
 #define osgate_wait_for_ohci 519
 #define osgate_wait_for_uhci 520
@@ -589,11 +552,7 @@
 #define osgate_update_hid_output 528
 #define osgate_get_hid_log_min 529
 #define osgate_get_hid_log_max 530
-#define osgate_cond_begin_disc_handler 531
 #define osgate_stop_disc_request 532
-
-#define osgate_lock_usb 533
-#define osgate_unlock_usb 534
 
 #define osgate_restart_can_modules 535
 
@@ -602,7 +561,6 @@
 #define osgate_create_can_id_hook 538
 #define osgate_delete_can_id_hook 539
 
-#define osgate_reset_usb_hub_port 540
 #define osgate_add_lon_module 541
 
 #define osgate_get_acpi_pnp_device_mem 542
@@ -632,8 +590,6 @@
 
 #define osgate_init_freq 557
 #define osgate_update_freq 558
-
-#define osgate_add_thread_int 559
 
 #define osgate_do_flush_tlb 561
 
@@ -692,9 +648,6 @@
 
 #define osgate_notify_can_offline 615
 
-#define osgate_req_usb_data_no_copy 616
-#define osgate_write_usb_data_no_copy 617
-
 #define osgate_notify_can_modules_up 619
 #define osgate_notify_can_online 620
 
@@ -736,7 +689,7 @@
 #define osgate_process_id_to_sel 649
 #define osgate_get_process_id 650
 
-#define osgate_create_ldt 651
+#define osgate_create_private_ldt 651
 #define osgate_destroy_ldt 652
 
 #define osgate_create_c_handle 653
@@ -822,6 +775,130 @@
 #define osgate_get_hid_report_buf 710
 #define osgate_read_hid_feature 711
 #define osgate_write_hid_feature 712
+#define osgate_reset_hid 713
+
+#define osgate_get_device_cmd_line 714
+
+#define osgate_set_disc_lba_param 715
+
+#define osgate_pci_power_on 716
+
+#define osgate_setup_nmi_handler 717
+
+#define osgate_allocate_usb_address 720
+#define osgate_free_usb_address 721
+#define osgate_init_usb_dev 722
+#define osgate_address_usb_dev 723
+
+#define osgate_get_usb_hub_descriptor 727
+#define osgate_config_usb_hub 728
+
+#define osgate_boot_realtime_core 729
+#define osgate_get_highest_physical 730
+
+#define osgate_allocate_realtime_core 731
+#define osgate_free_realtime_core 732
+#define osgate_debug_realtime 733
+#define osgate_run_realtime 734
+
+#define osgate_allocate_2m_physical_64 735
+#define osgate_free_2m_physical 736
+
+#define osgate_get_pci_msi_info 740
+#define osgate_move_pci_msi 741
+
+#define osgate_create_phys_bitmap 742
+
+#define osgate_get_net_address 743
+
+#define osgate_allocate_2m_physical_32 744
+
+#define osgate_create_mem_blk32 745
+#define osgate_create_mem_blk64 746
+#define osgate_allocate_mem_blk 747
+#define osgate_physical_to_linear_mem_blk 748
+#define osgate_linear_to_physical_mem_blk 749
+#define osgate_free_physical_mem_blk 750
+#define osgate_free_linear_mem_blk 751
+
+#define osgate_free_mem_blk 754
+
+#define osgate_get_usb_dev_sel 755
+#define osgate_open_usb_dev_sel 756
+
+#define osgate_add_wait_del 759
+
+#define osgate_report_usb_func_event 760
+#define osgate_report_usb_dev_event 761
+#define osgate_report_usb_pipe_event 762
+#define osgate_report_usb_reg_pipe_event 763
+
+#define osgate_notify_usb_port_state 764
+
+#define osgate_notify_ap_video_mode 765
+
+#define osgate_open_usb_raw_pipe 766
+#define osgate_post_usb_raw_pipe 767
+
+#define osgate_create_wait_dev 768
+#define osgate_close_wait_dev 769
+#define osgate_prepare_wait_dev 770
+#define osgate_wait_for_dev 771
+#define osgate_signal_wait_dev 772
+
+#define osgate_install_dynamic_disc 773
+#define osgate_install_fixed_disc 774
+#define osgate_register_demand_mount 775
+#define osgate_check_drive 776
+#define osgate_create_serv_dir 777
+#define osgate_get_flat_size 778
+#define osgate_allocate_small_serv 779
+
+#define osgate_register_serv_gate 780
+
+#define osgate_create_serv_proc 781
+#define osgate_load_serv 782
+#define osgate_create_serv_app 783
+#define osgate_exec_serv 784
+
+#define osgate_create_shared_ldt 785
+#define osgate_destroy_shared_ldt 786
+
+#define osgate_start_vfs 787
+#define osgate_stop_vfs 788
+
+#define osgate_allocate_big_serv 789
+#define osgate_map_serv_entry 790
+#define osgate_free_small_serv 791
+#define osgate_free_big_serv 792
+#define osgate_free_serv_page_entries 793
+#define osgate_allocate_big_serv_sel 794
+#define osgate_free_big_serv_sel 795
+
+#define osgate_install_vfs_disc 796
+#define osgate_get_vfs_disc_info 797
+#define osgate_get_vfs_disc_vendor_info 798
+#define osgate_read_vfs_disc 799
+#define osgate_remove_vfs_disc 800
+#define osgate_allocate_vfs_drive 801
+#define osgate_check_vfs_drive 802
+#define osgate_get_vfs_cur_dir 803
+
+#define osgate_clear_page_entries 804
+#define osgate_get_vfs_dir_entry_attrib 805
+#define osgate_set_vfs_cur_dir 806
+#define osgate_clone_vfs_cur_dir 807
+#define osgate_free_vfs_cur_dir 808
+
+#define osgate_create_share_block 809
+#define osgate_grow_share_block 810
+#define osgate_free_share_block 811
+#define osgate_create_fixed_share_block 812
+
+#define osgate_get_net_mac 813
+#define osgate_setup_net_cachable 814
+
+#define osgate_link_usergate 815
 
 
 
@@ -1015,8 +1092,7 @@
 #define OsGate_find_pci_class 0x3E 0x67 0x9a 196 0 0 0 2 0
 #define OsGate_find_pci_device 0x3E 0x67 0x9a 197 0 0 0 2 0
 
-#define OsGate_hook_init_disc 0x3E 0x67 0x9a 198 0 0 0 2 0
-#define OsGate_install_disc 0x3E 0x67 0x9a 199 0 0 0 2 0
+#define OsGate_install_static_disc 0x3E 0x67 0x9a 199 0 0 0 2 0
 #define OsGate_register_disc_change 0x3E 0x67 0x9a 200 0 0 0 2 0
 #define OsGate_start_disc 0x3E 0x67 0x9a 201 0 0 0 2 0
 #define OsGate_stop_disc 0x3E 0x67 0x9a 202 0 0 0 2 0
@@ -1041,9 +1117,7 @@
 #define OsGate_wait_for_sector 0x3E 0x67 0x9a 227 0 0 0 2 0
 #define OsGate_reset_drive 0x3E 0x67 0x9a 228 0 0 0 2 0
 
-#define OsGate_hook_init_file_system 0x3E 0x67 0x9a 229 0 0 0 2 0
 #define OsGate_register_file_system 0x3E 0x67 0x9a 230 0 0 0 2 0
-#define OsGate_define_media_check 0x3E 0x67 0x9a 231 0 0 0 2 0
 #define OsGate_demand_load_file_system 0x3E 0x67 0x9a 232 0 0 0 2 0
 #define OsGate_is_file_system_available 0x3E 0x67 0x9a 233 0 0 0 2 0
 #define OsGate_install_file_system 0x3E 0x67 0x9a 234 0 0 0 2 0
@@ -1130,9 +1204,7 @@
 
 #define OsGate_notify_ethernet_packet 0x3E 0x67 0x9a 44 1 0 0 2 0
 
-#define OsGate_init_usb_device 0x3E 0x67 0x9a 45 1 0 0 2 0
-#define OsGate_notify_usb_attach 0x3E 0x67 0x9a 46 1 0 0 2 0
-#define OsGate_notify_usb_detach 0x3E 0x67 0x9a 48 1 0 0 2 0
+#define OsGate_init_usb_function 0x3E 0x67 0x9a 45 1 0 0 2 0
 
 #define OsGate_add_com_port 0x3E 0x67 0x9a 49 1 0 0 2 0
 
@@ -1143,19 +1215,6 @@
 #define OsGate_set_mouse_limit 0x3E 0x67 0x9a 53 1 0 0 2 0
 
 #define OsGate_get_net_driver 0x3E 0x67 0x9a 54 1 0 0 2 0
-
-#define OsGate_create_usb_req 0x3E 0x67 0x9a 55 1 0 0 2 0
-#define OsGate_add_write_usb_control_req 0x3E 0x67 0x9a 56 1 0 0 2 0
-#define OsGate_add_write_usb_data_req 0x3E 0x67 0x9a 57 1 0 0 2 0
-#define OsGate_add_read_usb_data_req 0x3E 0x67 0x9a 58 1 0 0 2 0
-#define OsGate_add_usb_status_in_req 0x3E 0x67 0x9a 59 1 0 0 2 0
-#define OsGate_add_usb_status_out_req 0x3E 0x67 0x9a 60 1 0 0 2 0
-#define OsGate_start_usb_req 0x3E 0x67 0x9a 61 1 0 0 2 0
-#define OsGate_is_usb_req_started 0x3E 0x67 0x9a 62 1 0 0 2 0
-#define OsGate_is_usb_req_ready 0x3E 0x67 0x9a 63 1 0 0 2 0
-#define OsGate_get_usb_req_data 0x3E 0x67 0x9a 64 1 0 0 2 0
-#define OsGate_usb_req_done 0x3E 0x67 0x9a 65 1 0 0 2 0
-#define OsGate_close_usb_req 0x3E 0x67 0x9a 66 1 0 0 2 0
 
 #define OsGate_notify_ir_data 0x3E 0x67 0x9a 67 1 0 0 2 0
 
@@ -1179,8 +1238,6 @@
 #define OsGate_alias_module_handle 0x3E 0x67 0x9a 85 1 0 0 2 0
 
 #define OsGate_thread_to_sel 0x3E 0x67 0x9a 86 1 0 0 2 0
-
-#define OsGate_stop_usb_req 0x3E 0x67 0x9a 88 1 0 0 2 0
 
 #define OsGate_reserve_com_line 0x3E 0x67 0x9a 90 1 0 0 2 0
 
@@ -1251,8 +1308,6 @@
 #define OsGate_start_sys_preempt_timer 0x3E 0x67 0x9a 144 1 0 0 2 0
 #define OsGate_reload_sys_preempt_timer 0x3E 0x67 0x9a 145 1 0 0 2 0
 
-#define OsGate_is_valid_usb_pipe_sel 0x3E 0x67 0x9a 147 1 0 0 2 0
-
 #define OsGate_hook_net_link_up 0x3E 0x67 0x9a 148 1 0 0 2 0
 #define OsGate_req_arp 0x3E 0x67 0x9a 149 1 0 0 2 0
 
@@ -1302,7 +1357,6 @@
 
 #define OsGate_has_page_entry 0x3E 0x67 0x9a 182 1 0 0 2 0
 #define OsGate_free_page_entries 0x3E 0x67 0x9a 183 1 0 0 2 0
-#define OsGate_free_global_page_entries 0x3E 0x67 0x9a 183 1 0 0 2 0
 #define OsGate_allocate_page_entries 0x3E 0x67 0x9a 184 1 0 0 2 0
 #define OsGate_reserve_page_entries 0x3E 0x67 0x9a 185 1 0 0 2 0
 
@@ -1389,8 +1443,6 @@
 
 #define OsGate_has_long_mode 0x3E 0x67 0x9a 4 2 0 0 2 0
 
-#define OsGate_is_usb_hub_port_connected 0x3E 0x67 0x9a 5 2 0 0 2 0
-
 #define OsGate_wait_for_ehci 0x3E 0x67 0x9a 6 2 0 0 2 0
 #define OsGate_wait_for_ohci 0x3E 0x67 0x9a 7 2 0 0 2 0
 #define OsGate_wait_for_uhci 0x3E 0x67 0x9a 8 2 0 0 2 0
@@ -1404,11 +1456,7 @@
 #define OsGate_update_hid_output 0x3E 0x67 0x9a 16 2 0 0 2 0
 #define OsGate_get_hid_log_min 0x3E 0x67 0x9a 17 2 0 0 2 0
 #define OsGate_get_hid_log_max 0x3E 0x67 0x9a 18 2 0 0 2 0
-#define OsGate_cond_begin_disc_handler 0x3E 0x67 0x9a 19 2 0 0 2 0
 #define OsGate_stop_disc_request 0x3E 0x67 0x9a 20 2 0 0 2 0
-
-#define OsGate_lock_usb 0x3E 0x67 0x9a 21 2 0 0 2 0
-#define OsGate_unlock_usb 0x3E 0x67 0x9a 22 2 0 0 2 0
 
 #define OsGate_restart_can_modules 0x3E 0x67 0x9a 23 2 0 0 2 0
 
@@ -1417,7 +1465,6 @@
 #define OsGate_create_can_id_hook 0x3E 0x67 0x9a 26 2 0 0 2 0
 #define OsGate_delete_can_id_hook 0x3E 0x67 0x9a 27 2 0 0 2 0
 
-#define OsGate_reset_usb_hub_port 0x3E 0x67 0x9a 28 2 0 0 2 0
 #define OsGate_add_lon_module 0x3E 0x67 0x9a 29 2 0 0 2 0
 
 #define OsGate_get_acpi_pnp_device_mem 0x3E 0x67 0x9a 30 2 0 0 2 0
@@ -1447,8 +1494,6 @@
 
 #define OsGate_init_freq 0x3E 0x67 0x9a 45 2 0 0 2 0
 #define OsGate_update_freq 0x3E 0x67 0x9a 46 2 0 0 2 0
-
-#define OsGate_add_thread_int 0x3E 0x67 0x9a 47 2 0 0 2 0
 
 #define OsGate_do_flush_tlb 0x3E 0x67 0x9a 49 2 0 0 2 0
 
@@ -1507,9 +1552,6 @@
 
 #define OsGate_notify_can_offline 0x3E 0x67 0x9a 103 2 0 0 2 0
 
-#define OsGate_req_usb_data_no_copy 0x3E 0x67 0x9a 104 2 0 0 2 0
-#define OsGate_write_usb_data_no_copy 0x3E 0x67 0x9a 105 2 0 0 2 0
-
 #define OsGate_notify_can_modules_up 0x3E 0x67 0x9a 107 2 0 0 2 0
 #define OsGate_notify_can_online 0x3E 0x67 0x9a 108 2 0 0 2 0
 
@@ -1551,7 +1593,7 @@
 #define OsGate_process_id_to_sel 0x3E 0x67 0x9a 137 2 0 0 2 0
 #define OsGate_get_process_id 0x3E 0x67 0x9a 138 2 0 0 2 0
 
-#define OsGate_create_ldt 0x3E 0x67 0x9a 139 2 0 0 2 0
+#define OsGate_create_private_ldt 0x3E 0x67 0x9a 139 2 0 0 2 0
 #define OsGate_destroy_ldt 0x3E 0x67 0x9a 140 2 0 0 2 0
 
 #define OsGate_create_c_handle 0x3E 0x67 0x9a 141 2 0 0 2 0
@@ -1637,4 +1679,128 @@
 #define OsGate_get_hid_report_buf 0x3E 0x67 0x9a 198 2 0 0 2 0
 #define OsGate_read_hid_feature 0x3E 0x67 0x9a 199 2 0 0 2 0
 #define OsGate_write_hid_feature 0x3E 0x67 0x9a 200 2 0 0 2 0
+#define OsGate_reset_hid 0x3E 0x67 0x9a 201 2 0 0 2 0
+
+#define OsGate_get_device_cmd_line 0x3E 0x67 0x9a 202 2 0 0 2 0
+
+#define OsGate_set_disc_lba_param 0x3E 0x67 0x9a 203 2 0 0 2 0
+
+#define OsGate_pci_power_on 0x3E 0x67 0x9a 204 2 0 0 2 0
+
+#define OsGate_setup_nmi_handler 0x3E 0x67 0x9a 205 2 0 0 2 0
+
+#define OsGate_allocate_usb_address 0x3E 0x67 0x9a 208 2 0 0 2 0
+#define OsGate_free_usb_address 0x3E 0x67 0x9a 209 2 0 0 2 0
+#define OsGate_init_usb_dev 0x3E 0x67 0x9a 210 2 0 0 2 0
+#define OsGate_address_usb_dev 0x3E 0x67 0x9a 211 2 0 0 2 0
+
+#define OsGate_get_usb_hub_descriptor 0x3E 0x67 0x9a 215 2 0 0 2 0
+#define OsGate_config_usb_hub 0x3E 0x67 0x9a 216 2 0 0 2 0
+
+#define OsGate_boot_realtime_core 0x3E 0x67 0x9a 217 2 0 0 2 0
+#define OsGate_get_highest_physical 0x3E 0x67 0x9a 218 2 0 0 2 0
+
+#define OsGate_allocate_realtime_core 0x3E 0x67 0x9a 219 2 0 0 2 0
+#define OsGate_free_realtime_core 0x3E 0x67 0x9a 220 2 0 0 2 0
+#define OsGate_debug_realtime 0x3E 0x67 0x9a 221 2 0 0 2 0
+#define OsGate_run_realtime 0x3E 0x67 0x9a 222 2 0 0 2 0
+
+#define OsGate_allocate_2m_physical_64 0x3E 0x67 0x9a 223 2 0 0 2 0
+#define OsGate_free_2m_physical 0x3E 0x67 0x9a 224 2 0 0 2 0
+
+#define OsGate_get_pci_msi_info 0x3E 0x67 0x9a 228 2 0 0 2 0
+#define OsGate_move_pci_msi 0x3E 0x67 0x9a 229 2 0 0 2 0
+
+#define OsGate_create_phys_bitmap 0x3E 0x67 0x9a 230 2 0 0 2 0
+
+#define OsGate_get_net_address 0x3E 0x67 0x9a 231 2 0 0 2 0
+
+#define OsGate_allocate_2m_physical_32 0x3E 0x67 0x9a 232 2 0 0 2 0
+
+#define OsGate_create_mem_blk32 0x3E 0x67 0x9a 233 2 0 0 2 0
+#define OsGate_create_mem_blk64 0x3E 0x67 0x9a 234 2 0 0 2 0
+#define OsGate_allocate_mem_blk 0x3E 0x67 0x9a 235 2 0 0 2 0
+#define OsGate_physical_to_linear_mem_blk 0x3E 0x67 0x9a 236 2 0 0 2 0
+#define OsGate_linear_to_physical_mem_blk 0x3E 0x67 0x9a 237 2 0 0 2 0
+#define OsGate_free_physical_mem_blk 0x3E 0x67 0x9a 238 2 0 0 2 0
+#define OsGate_free_linear_mem_blk 0x3E 0x67 0x9a 239 2 0 0 2 0
+
+#define OsGate_free_mem_blk 0x3E 0x67 0x9a 242 2 0 0 2 0
+
+#define OsGate_get_usb_dev_sel 0x3E 0x67 0x9a 243 2 0 0 2 0
+#define OsGate_open_usb_dev_sel 0x3E 0x67 0x9a 244 2 0 0 2 0
+
+#define OsGate_add_wait_del 0x3E 0x67 0x9a 247 2 0 0 2 0
+
+#define OsGate_report_usb_func_event 0x3E 0x67 0x9a 248 2 0 0 2 0
+#define OsGate_report_usb_dev_event 0x3E 0x67 0x9a 249 2 0 0 2 0
+#define OsGate_report_usb_pipe_event 0x3E 0x67 0x9a 250 2 0 0 2 0
+#define OsGate_report_usb_reg_pipe_event 0x3E 0x67 0x9a 251 2 0 0 2 0
+
+#define OsGate_notify_usb_port_state 0x3E 0x67 0x9a 252 2 0 0 2 0
+
+#define OsGate_notify_ap_video_mode 0x3E 0x67 0x9a 253 2 0 0 2 0
+
+#define OsGate_open_usb_raw_pipe 0x3E 0x67 0x9a 254 2 0 0 2 0
+#define OsGate_post_usb_raw_pipe 0x3E 0x67 0x9a 255 2 0 0 2 0
+
+#define OsGate_create_wait_dev 0x3E 0x67 0x9a 0 3 0 0 2 0
+#define OsGate_close_wait_dev 0x3E 0x67 0x9a 1 3 0 0 2 0
+#define OsGate_prepare_wait_dev 0x3E 0x67 0x9a 2 3 0 0 2 0
+#define OsGate_wait_for_dev 0x3E 0x67 0x9a 3 3 0 0 2 0
+#define OsGate_signal_wait_dev 0x3E 0x67 0x9a 4 3 0 0 2 0
+
+#define OsGate_install_dynamic_disc 0x3E 0x67 0x9a 5 3 0 0 2 0
+#define OsGate_install_fixed_disc 0x3E 0x67 0x9a 6 3 0 0 2 0
+#define OsGate_register_demand_mount 0x3E 0x67 0x9a 7 3 0 0 2 0
+#define OsGate_check_drive 0x3E 0x67 0x9a 8 3 0 0 2 0
+#define OsGate_create_serv_dir 0x3E 0x67 0x9a 9 3 0 0 2 0
+#define OsGate_get_flat_size 0x3E 0x67 0x9a 10 3 0 0 2 0
+#define OsGate_allocate_small_serv 0x3E 0x67 0x9a 11 3 0 0 2 0
+
+#define OsGate_register_serv_gate 0x3E 0x67 0x9a 12 3 0 0 2 0
+
+#define OsGate_create_serv_proc 0x3E 0x67 0x9a 13 3 0 0 2 0
+#define OsGate_load_serv 0x3E 0x67 0x9a 14 3 0 0 2 0
+#define OsGate_create_serv_app 0x3E 0x67 0x9a 15 3 0 0 2 0
+#define OsGate_exec_serv 0x3E 0x67 0x9a 16 3 0 0 2 0
+
+#define OsGate_create_shared_ldt 0x3E 0x67 0x9a 17 3 0 0 2 0
+#define OsGate_destroy_shared_ldt 0x3E 0x67 0x9a 18 3 0 0 2 0
+
+#define OsGate_start_vfs 0x3E 0x67 0x9a 19 3 0 0 2 0
+#define OsGate_stop_vfs 0x3E 0x67 0x9a 20 3 0 0 2 0
+
+#define OsGate_allocate_big_serv 0x3E 0x67 0x9a 21 3 0 0 2 0
+#define OsGate_map_serv_entry 0x3E 0x67 0x9a 22 3 0 0 2 0
+#define OsGate_free_small_serv 0x3E 0x67 0x9a 23 3 0 0 2 0
+#define OsGate_free_big_serv 0x3E 0x67 0x9a 24 3 0 0 2 0
+#define OsGate_free_serv_page_entries 0x3E 0x67 0x9a 25 3 0 0 2 0
+#define OsGate_allocate_big_serv_sel 0x3E 0x67 0x9a 26 3 0 0 2 0
+#define OsGate_free_big_serv_sel 0x3E 0x67 0x9a 27 3 0 0 2 0
+
+#define OsGate_install_vfs_disc 0x3E 0x67 0x9a 28 3 0 0 2 0
+#define OsGate_get_vfs_disc_info 0x3E 0x67 0x9a 29 3 0 0 2 0
+#define OsGate_get_vfs_disc_vendor_info 0x3E 0x67 0x9a 30 3 0 0 2 0
+#define OsGate_read_vfs_disc 0x3E 0x67 0x9a 31 3 0 0 2 0
+#define OsGate_remove_vfs_disc 0x3E 0x67 0x9a 32 3 0 0 2 0
+#define OsGate_allocate_vfs_drive 0x3E 0x67 0x9a 33 3 0 0 2 0
+#define OsGate_check_vfs_drive 0x3E 0x67 0x9a 34 3 0 0 2 0
+#define OsGate_get_vfs_cur_dir 0x3E 0x67 0x9a 35 3 0 0 2 0
+
+#define OsGate_clear_page_entries 0x3E 0x67 0x9a 36 3 0 0 2 0
+#define OsGate_get_vfs_dir_entry_attrib 0x3E 0x67 0x9a 37 3 0 0 2 0
+#define OsGate_set_vfs_cur_dir 0x3E 0x67 0x9a 38 3 0 0 2 0
+#define OsGate_clone_vfs_cur_dir 0x3E 0x67 0x9a 39 3 0 0 2 0
+#define OsGate_free_vfs_cur_dir 0x3E 0x67 0x9a 40 3 0 0 2 0
+
+#define OsGate_create_share_block 0x3E 0x67 0x9a 41 3 0 0 2 0
+#define OsGate_grow_share_block 0x3E 0x67 0x9a 42 3 0 0 2 0
+#define OsGate_free_share_block 0x3E 0x67 0x9a 43 3 0 0 2 0
+#define OsGate_create_fixed_share_block 0x3E 0x67 0x9a 44 3 0 0 2 0
+
+#define OsGate_get_net_mac 0x3E 0x67 0x9a 45 3 0 0 2 0
+#define OsGate_setup_net_cachable 0x3E 0x67 0x9a 46 3 0 0 2 0
+
+#define OsGate_link_usergate 0x3E 0x67 0x9a 47 3 0 0 2 0
 

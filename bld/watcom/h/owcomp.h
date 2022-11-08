@@ -903,6 +903,13 @@
     __parm [__fs __esi] [__es __edi] \
     __modify [__eax __edx]
 
+#pragma aux RdosGetLongTime = \
+    CallGate_user_get_time  \
+    "jnc ok" \
+    CallGate_get_time  \
+    "ok: " \
+    __value [__edx __eax]
+
 #pragma aux RdosSetTime = \
     CallGate_get_system_time  \
     "sub esi,eax" \
@@ -1681,16 +1688,6 @@
     __parm [__eax] \
     __value [__eax]
 
-#pragma aux RdosAllocateStaticDrive = \
-    CallGate_allocate_static_drive  \
-    ValidateDisc \
-    __value [__eax]
-
-#pragma aux RdosAllocateDynamicDrive = \
-    CallGate_allocate_dynamic_drive  \
-    ValidateDisc \
-    __value [__eax]
-
 #pragma aux RdosGetDriveInfo = \
     CallGate_get_drive_info  \
     "mov gs:[ebx],eax" \
@@ -1977,74 +1974,10 @@
 #pragma aux RdosStopNetCapture = \
     CallGate_stop_net_capture
 
-#pragma aux RdosGetUsbDevice = \
-    CallGate_get_usb_device \
-    __parm [__ebx] [__eax] [__es __edi] [__ecx] \
-    __value [__eax]
 
 #pragma aux RdosGetUsbConfig = \
     CallGate_get_usb_config \
     __parm [__ebx] [__eax] [__edx] [__es __edi] [__ecx] \
-    __value [__eax]
-
-#pragma aux RdosOpenUsbPipe = \
-    CallGate_open_usb_pipe \
-    ValidateHandle \
-    __parm [__ebx] [__eax] [__edx] \
-    __value [__ebx]
-
-#pragma aux RdosCloseUsbPipe = \
-    CallGate_close_usb_pipe \
-    __parm [__ebx]
-
-#pragma aux RdosResetUsbPipe = \
-    CallGate_reset_usb_pipe \
-    __parm [__ebx]
-
-#pragma aux RdosAddWaitForUsbPipe = \
-    CallGate_add_wait_for_usb_pipe \
-    __parm [__ebx] [__eax] [__ecx]
-
-#pragma aux RdosWriteUsbControl = \
-    CallGate_write_usb_control \
-    __parm [__ebx] [__es __edi] [__ecx]
-
-#pragma aux RdosReqUsbData = \
-    CallGate_req_usb_data \
-    __parm [__ebx] [__es __edi] [__ecx]
-
-#pragma aux RdosGetUsbDataSize = \
-    CallGate_get_usb_data_size \
-    "movzx eax,ax" \
-    __parm [__ebx] \
-    __value [__eax]
-
-#pragma aux RdosWriteUsbData = \
-    CallGate_write_usb_data \
-    __parm [__ebx] [__es __edi] [__ecx]
-
-#pragma aux RdosReqUsbStatus = \
-    CallGate_req_usb_status \
-    __parm [__ebx]
-
-#pragma aux RdosWriteUsbStatus = \
-    CallGate_write_usb_status \
-    __parm [__ebx]
-
-#pragma aux RdosIsUsbTransactionDone = \
-    CallGate_is_usb_trans_done \
-    CarryToBool \
-    __parm [__ebx] \
-    __value [__eax]
-
-#pragma aux RdosWasUsbTransactionOk = \
-    CallGate_was_usb_trans_ok \
-    CarryToBool \
-    __parm [__ebx] \
-    __value [__eax]
-
-#pragma aux RdosGetUsbCloseCount = \
-    CallGate_get_usb_close_count \
     __value [__eax]
 
 #pragma aux RdosOpenICSP = \

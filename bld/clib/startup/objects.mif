@@ -1,6 +1,6 @@
 #                       d16 d32 dpm nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 #===========================================================================================================
-!inject 8087cw.obj      d16 d32     nt          nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32         rdu
+!inject 8087cw.obj      d16 d32     nt          nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32         rdu rdk
 !inject _8087086.obj    d16                                     o16     q16     w16
 !inject _8087386.obj        d32     nt          nvc ncl nvl nll     o32     q32     w32 l32         rdu rdk
 !inject argcv.obj       d16 d32     nt  nta ntp                 o16 o32         w16 w32             rdu rdk
@@ -63,9 +63,9 @@
 !inject errnovar.obj                                                        q32
 !inject _exit.obj       d16 d32     nt  nta ntp                 o16 o32 q16 q32     w32 l32 lpc lmp rdu rdk
 !inject exit.obj        d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject fltused.obj     d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
-!inject fltuse80.obj    d16 d32     nt          nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu
-!inject fpexcept.obj    d16 d32 dpm nt          nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32         rdu
+!inject fltused.obj     d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject fltuse80.obj    d16 d32     nt          nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+!inject fpexcept.obj    d16 d32 dpm nt          nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32         rdu rdk
 !inject _getds.obj                                              o16
 !inject getds.obj                                                       q16 q32         l32
 !inject getdsint.obj                nt                              o32
