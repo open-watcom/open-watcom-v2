@@ -632,7 +632,7 @@ static bool WriteType( TYPEPTR typ )
 }
 
 typedef struct type_indices {
-    int     basetype_index[TYP_LAST_ENTRY];
+    int     basetype_index[DATA_TYPE_SIZE];
     int     stringtype_index;
     int     constchartype_index;
 } type_indices;
@@ -644,7 +644,7 @@ static void OutPutTypeIndexes( void )
     int                 i;
     type_indices        typ_index;
 
-    for( i = TYP_BOOL; i < TYP_LAST_ENTRY; i++ ) {
+    for( i = 0; i < DATA_TYPE_SIZE; i++ ) {
         typ = BaseTypes[i];
         if( typ == NULL ) {
             typ_index.basetype_index[i] = 0;
@@ -1411,7 +1411,7 @@ static void FixupTypeIndexes( type_indices *typ_index )
     DATA_TYPE   i;
     int         index;
 
-    for( i = TYP_BOOL; i < TYP_LAST_ENTRY; ++i ) {
+    for( i = 0; i < DATA_TYPE_SIZE; ++i ) {
         index = typ_index->basetype_index[i];
         if( index != 0 ) {
             BaseTypes[i] = TypeArray + index;

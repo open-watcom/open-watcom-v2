@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,14 +211,18 @@ typedef enum DATA_TYPE {
     #define pick1(enum,cgtype,asmtype,name,size)    TYP_##enum,
     #include "cdatatyp.h"
     #undef pick1
-    TYP_LAST_ENTRY,         /* make sure this is always last */
+    TYP_ERROR,          /* make sure this is always last */
 } DATA_TYPE;
+
+#define DATA_TYPE_SIZE                  (TYP_ERROR - TYP_BOOL)
+#define DATA_TYPE_BOOL_TO_VOID          (TYP_VOID - TYP_BOOL + 1)
+#define DATA_TYPE_BOOL_TO_LONG_DOUBLE   (TYP_LONG_DOUBLE - TYP_BOOL + 1)
 
 // values for type->type_flags
 enum type_state {
-    TF2_DWARF_DEF =  0x01,            // dwarf type has been defined
-    TF2_DWARF_FWD =  0x02,            // dwarf forward reference
-    TF2_DWARF     =  (TF2_DWARF_DEF|TF2_DWARF_FWD),  // dwarf is active
+    TF2_DWARF_DEF   = 0x01,         // dwarf type has been defined
+    TF2_DWARF_FWD   = 0x02,         // dwarf forward reference
+    TF2_DWARF       = (TF2_DWARF_DEF | TF2_DWARF_FWD), // dwarf is active
 //  If the following flag is on, then it indicates a dummy typedef
 //  It is used to record modifiers such as const, volatile
 //  e.g.

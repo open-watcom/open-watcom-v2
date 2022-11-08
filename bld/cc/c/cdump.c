@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ void DumpTypeCounts( void )
 {
     int     i;
 
-    for( i = TYP_BOOL; i <= TYP_VOID; ++i ) {
+    for( i = 0; i < DATA_TYPE_BOOL_TO_VOID; ++i ) {
         printf( "%3u %s\n", CTypeCounts[i], CTypeNames[i] );
     }
     printf( "%u pointer nodes\n", CTypeCounts[TYPE_POINTER] );

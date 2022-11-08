@@ -160,8 +160,8 @@ global MEPTR        UndefMacroList;
 global MEPTR        *MacHash;           /* [MACRO_HASH_SIZE] */
 global ENUMPTR      EnumTable[ID_HASH_SIZE];
 global SYM_HASHPTR  *HashTab;
-global TYPEPTR      BaseTypes[TYP_LAST_ENTRY];
-global unsigned     CTypeCounts[TYP_LAST_ENTRY];
+global TYPEPTR      BaseTypes[DATA_TYPE_SIZE];
+global unsigned     CTypeCounts[DATA_TYPE_SIZE];
 
 global char         *Buffer;
 global char         *TokenBuf;

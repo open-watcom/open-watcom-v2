@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ extern call_list    *CallNodeList;
 
 #define __  NO
 
-static cmp_type const   CompTable[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
+static cmp_type const   CompTable[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*               BL,CH,UC,SH,US,IN,UI,LO,UL,DL,DU,FL,DB,LD,FI,DI,LI,PO,AR,ST,UN,FU,FI,VO,EN,TY,UF,DD,PC,WC,FC,DC,LC, */
 /* BOOL     */ { OK,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,__,__,__,__,AC,__,AC,__,AC,__,__,__,__,__,__, },
 /* CHAR     */ { AC,OK,OK,OK,OK,OK,OK,AC,AC,AC,AC,AC,AC,AC,__,__,__,PC,__,__,__,__,OK,__,OK,__,OK,__,__,__,__,__,__, },
@@ -413,7 +413,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                 ret_val = PM;
             }
         }
-    } else if( typ1->decl_type >= TYP_LAST_ENTRY || typ2->decl_type >= TYP_LAST_ENTRY ) {
+    } else if( typ1->decl_type >= DATA_TYPE_SIZE || typ2->decl_type >= DATA_TYPE_SIZE ) {
         ret_val = NO;
     } else if( ptr_indir_level == 0 ) {
         ret_val = CompTable[typ1->decl_type][typ2->decl_type];

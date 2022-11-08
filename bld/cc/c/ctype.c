@@ -55,8 +55,8 @@ static unsigned char  CTypeSizes[] = {
     #undef  pick1
 };
 
-TYPEPTR CTypeHash[TYP_LAST_ENTRY];
-TYPEPTR PtrTypeHash[TYP_LAST_ENTRY];
+TYPEPTR CTypeHash[DATA_TYPE_SIZE];
+TYPEPTR PtrTypeHash[DATA_TYPE_SIZE];
 
 TAGPTR  TagHash[ID_HASH_SIZE + 1];
 FIELDPTR FieldHash[ID_HASH_SIZE];
@@ -87,7 +87,7 @@ void InitTypeHashTables( void )
     for( hash1 = 0; hash1 <= MAX_PARM_LIST_HASH_SIZE; hash1++ ) {
         FuncTypeHead[hash1] = NULL;
     }
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         CTypeHash[base_type] = NULL;
         PtrTypeHash[base_type] = NULL;
     }
@@ -107,7 +107,7 @@ void CTypeInit( void )
     FieldCount = 0;
     EnumCount = 0;
     InitTypeHashTables();
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         CTypeCounts[base_type] = 0;
 #if 0
         if ( base_type == TYP_FCOMPLEX || base_type == TYP_DCOMPLEX || base_type == TYP_LDCOMPLEX ) {
@@ -159,12 +159,12 @@ void WalkTypeList( void (*func)(TYPEPTR) )
     TYPEPTR     typ;
     DATA_TYPE   base_type;
 
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         for( typ = CTypeHash[base_type]; typ != NULL; typ = typ->next_type ) {
             func( typ );
         }
     }
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         for( typ = PtrTypeHash[base_type]; typ != NULL; typ = typ->next_type ) {
             func( typ );
         }

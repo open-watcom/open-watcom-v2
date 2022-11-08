@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -654,7 +654,7 @@ static void dwarfEmit( void )
     DATA_TYPE   i;
 
     dwarfInitTypes();
-    for( i = TYP_BOOL; i <= TYP_LONG_DOUBLE; i++ ) {
+    for( i = 0; i < DATA_TYPE_BOOL_TO_LONG_DOUBLE; i++ ) {
         dwarfType( GetType( i ), DC_DEFAULT );
     }
     WalkTypeList( EmitAType );

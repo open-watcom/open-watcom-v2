@@ -61,7 +61,7 @@
 #define DCX     TYP_DCOMPLEX
 #define LCX     TYP_LDCOMPLEX
 
-#define ERR     TYP_LAST_ENTRY  /* no real type behind this value */
+#define ERR     TYP_ERROR       /* no real type behind this value */
 
 /* define macros for promoted types */
 #if TARGET_INT == 4
@@ -81,7 +81,7 @@
 #endif
 
 /* matches enum DATA_TYPE in ctypes.h */
-static const unsigned char  AddResult[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
+static const unsigned char  AddResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
 /* CHR */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
@@ -119,7 +119,7 @@ static const unsigned char  AddResult[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-static const unsigned char  SubResult[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
+static const unsigned char  SubResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
 /* CHR */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
@@ -157,7 +157,7 @@ static const unsigned char  SubResult[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-static const unsigned char  IntResult[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
+static const unsigned char  IntResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX,  */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 /* CHR */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
@@ -195,7 +195,7 @@ static const unsigned char  IntResult[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-static char ShiftResult[TYP_LAST_ENTRY] = {
+static char ShiftResult[DATA_TYPE_SIZE] = {
 /* >>      op2 */
 /* BOL */  INT,
 /* CHR */  INT,
@@ -233,7 +233,7 @@ static char ShiftResult[TYP_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-static const unsigned char  BinResult[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
+static const unsigned char  BinResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { BOL,INT,UCH,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 /* CHR */ { INT,CHR,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
@@ -370,7 +370,7 @@ enum    conv_types {
 
 /* matches enum DATA_TYPE in ctypes.h */
 /* When indexing, row is the source type, column is the target. */
-static enum  conv_types const CnvTable[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
+static enum  conv_types const CnvTable[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*          BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { NIL,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* CHR */ { S2B,NIL,C2U,C2S,C2S,C2I,C2U,C2L,C2L,C2M,C2M,C2F,C2D,C2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
