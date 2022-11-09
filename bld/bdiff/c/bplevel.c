@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@ static void Usage( void )
     puts( "Usage: bplevel <executable> <patch_file>" );
     puts( "       Set the executable's patch level to that indicated" );
     puts( "       by the patch file." );
-    exit( EXIT_FAILURE );
 }
 
 int main( int argc, char **argv )
@@ -54,33 +53,37 @@ int main( int argc, char **argv )
     struct stat     info;
     struct utimbuf  uinfo;
     pgroup2         pg;
+    int             rc;
 
-    if( argc != 3 )
+    rc = EXIT_FAILURE;
+    if( argc != 3 ) {
         Usage();
-
-    stat( argv[1], &info );
-    fd = fopen( argv[1], "wb" );
-    if( fd == NULL ) {
-        puts( "Can not open executable" );
-        return( EXIT_FAILURE );
+    } else {
+        stat( argv[1], &info );
+        fd = fopen( argv[1], "wb" );
+        if( fd != NULL ) {
+            if( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
+                fclose( fd );
+                puts( "Error seeking on executable" );
+            } else {
+                pos = ftell( fd );
+                if( fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL )
+                  || memcmp( buffer, LevelBuff, PATCH_LEVEL_HEAD_SIZE ) != 0 ) {
+                    pos += sizeof( PATCH_LEVEL );
+                }
+                fseek( fd, pos, SEEK_SET );
+                _splitpath2( argv[2], pg.buffer, NULL, NULL, NULL, &pg.ext );
+                strcpy( LevelBuff + PATCH_LEVEL_HEAD_SIZE, pg.ext );
+                fwrite( LevelBuff, 1, sizeof( LevelBuff ), fd );
+                fclose( fd );
+                uinfo.actime = info.st_atime;
+                uinfo.modtime = info.st_mtime;
+                utime( argv[1], &uinfo );
+                rc = EXIT_SUCCESS;
+            }
+        } else {
+            puts( "Can not open executable" );
+        }
     }
-    if( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != 0  ) {
-        puts( "Error seeking on executable" );
-        return( EXIT_FAILURE );
-    }
-    pos = ftell( fd );
-    if( fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL )
-      || memcmp( buffer, LevelBuff, PATCH_LEVEL_HEAD_SIZE ) != 0 ) {
-        pos += sizeof( PATCH_LEVEL );
-    }
-    fseek( fd, pos, SEEK_SET );
-    _splitpath2( argv[2], pg.buffer, NULL, NULL, NULL, &pg.ext );
-    strcpy( LevelBuff + PATCH_LEVEL_HEAD_SIZE, pg.ext );
-    fwrite( LevelBuff, 1, sizeof( LevelBuff ), fd );
-    fclose( fd );
-    uinfo.actime = info.st_atime;
-    uinfo.modtime = info.st_mtime;
-    utime( argv[1], &uinfo );
-
-    return( EXIT_SUCCESS );
+    return( rc );
 }
