@@ -72,6 +72,8 @@ int __atomic_compare_and_swap( volatile int *dest, int expected, int source )
 #ifdef __386__
     ret = cmpxchg( dest, expected, source );
 #else
+    /* unuused parameters */ (void)dest; (void)expected; (void)source;
+
     ret = (unsigned)0;
 #endif
     return( ret == (unsigned)1 );
