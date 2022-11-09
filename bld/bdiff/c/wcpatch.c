@@ -268,10 +268,15 @@ static int DirRecurse( const char *srcDir, const char *tgtDir )
 
 static int WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
 {
-    PatchWriteOpen( patch_name );
-    DirRecurse( SrcDirName, TgtDirName );
-    PatchWriteClose();
-    return( EXIT_SUCCESS );
+    int     rc;
+
+    rc = EXIT_FAILURE;
+    if( PatchWriteOpen( patch_name ) ) {
+        rc = DirRecurse( SrcDirName, TgtDirName );
+        PatchWriteClose();
+//        rc = EXIT_SUCCESS;
+    }
+    return( rc );
 }
 
 int main( int argc, char *argv[] )

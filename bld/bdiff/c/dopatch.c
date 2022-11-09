@@ -44,10 +44,11 @@
 
 #ifdef BDIFF
 
+    #define InputPatch( p, s )          (p=pat,pat+=s)
+
     #define InNew( offset )             (*(hole *)(dest+offset))
     #define OutNew( offset, x, type )   *(type *)(dest+(offset))=(x)
     #define InOld( offset )             OldFile[offset]
-    #define InPatch( type )             (tmp=pat,pat+=sizeof( type ),*(type *)tmp)
 
     #define Dump( x )
     #define DOPROMPT                    true
@@ -92,24 +93,22 @@
 
   #endif
 
-    #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), *(type *)tmp )
-
 #endif
 
-#ifdef BDIFF
+#define InPatch( type )                 ( InputPatch( tmp, sizeof( type ) ), *(type *)tmp )
 
-static byte     *pat;
-
-#else
-
-static char CurrLevel[sizeof( PATCH_LEVEL_LEVEL )];
-
+#ifndef BDIFF
 const char      *PatchName;
 const char      *NewName;
 bool            DoPrompt;
 bool            DoBackup;
 bool            PrintLevel;
+#endif
 
+#ifdef BDIFF
+static byte     *pat;
+#else
+static char     CurrLevel[sizeof( PATCH_LEVEL_LEVEL )];
 #endif
 
 #if defined( _M_I86 ) && !defined( BDIFF ) && !defined( BDUMP )
@@ -227,9 +226,9 @@ static PATCH_RET_CODE InitPatch( const char **target_given )
 #ifdef BDIFF
     byte            *tmp;
 #else
+    byte            tmp[4];
     char            *temp;
     PATCH_RET_CODE  ret;
-    byte            tmp[4];
 #endif
 
 #ifdef BDIFF
@@ -249,8 +248,9 @@ static PATCH_RET_CODE InitPatch( const char **target_given )
             if( ch != *p ) {
 #ifndef BDIFF
                 PatchError( ERR_NOT_PATCHFILE, PatchName );
+                ClosePatch();
 #endif
-                return( PATCH_RET_OKAY );
+                return( PATCH_BAD_PATCH_FILE );
             }
             ++p;
             if( ch == END_SIG_CHAR ) {
@@ -264,36 +264,31 @@ static PATCH_RET_CODE InitPatch( const char **target_given )
 #ifdef BDIFF
     return( PATCH_RET_OKAY );
 #else
-    if( *target_given != NULL ) {
-        temp = SetOld( *target_given );
-    } else {
-        temp = FindOld( target );
-    }
-    if( temp != NULL ) {
-        *target_given = temp;
-        return( PATCH_RET_OKAY );
-    } else {
+    if( target_given != NULL ) {
+        if( *target_given != NULL ) {
+            temp = SetOld( *target_given );
+        } else {
+            temp = FindOld( target );
+        }
+        if( temp != NULL ) {
+            *target_given = temp;
+            return( PATCH_RET_OKAY );
+        }
         *target_given = NULL;
-        ClosePatch();
-        return( PATCH_CANT_OPEN_FILE );
     }
+    ClosePatch();
+    return( PATCH_CANT_OPEN_FILE );
 #endif
 }
 
-#ifdef BDIFF
 
 PATCH_RET_CODE Execute( byte *dest )
 {
+#ifdef BDIFF
     byte            *tmp;
-
 #else
-
-PATCH_RET_CODE Execute( void )
-{
     byte            tmp[4];
-
 #endif
-
     patch_cmd       cmd;
     byte            next;
     hole            diff;
@@ -313,10 +308,15 @@ PATCH_RET_CODE Execute( void )
     PATCH_RET_CODE  ret2;
   #endif
 #endif
-#ifdef BDIFF
-    const char      *dummy = NULL;
 
-    InitPatch( &dummy );
+#ifdef BDIFF
+    ret = InitPatch( NULL );
+    if( ret != PATCH_RET_OKAY )
+        return( ret );
+#else
+
+    /* unused parameters */ (void)dest;
+
 #endif
     havenew = true;
     old_size = InPatch( foff );
@@ -393,14 +393,14 @@ PATCH_RET_CODE Execute( void )
                 if( next == 0 )
                     break;
                 if( ( next & 0x80 ) == 0  ) {
-                    new_offset += (foff)next & 0x7f;
+                    new_offset += next & 0x7f;
                 } else if( ( next & 0x40 ) == 0 ) {
-                    new_offset += ( (foff)next & 0x3f ) << 8;
+                    new_offset += ((foff)( next & 0x3f )) << 8;
                     new_offset += (foff)InPatch( byte );
                 } else {
-                    new_offset += ( (foff)next & 0x3f ) << 16;
-                    new_offset += (foff)InPatch(byte) << 8;
-                    new_offset += (foff)InPatch(byte);
+                    new_offset += ((foff)( next & 0x3f )) << 16;
+                    new_offset += (foff)InPatch( byte ) << 8;
+                    new_offset += (foff)InPatch( byte );
                 }
             }
             break;
@@ -498,7 +498,7 @@ PATCH_RET_CODE DoPatch(
         return( PATCH_ALREADY_PATCHED );
     } else {
   #endif
-        ret = Execute();
+        ret = Execute( NULL );
         if( ret != PATCH_RET_OKAY ) {
             return( ret );
         }

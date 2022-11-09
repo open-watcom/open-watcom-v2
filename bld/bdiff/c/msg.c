@@ -132,8 +132,6 @@ void PatchError( int format, ... )
     Err( format, args );
     puts( "" );
     va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
 }
 
 void FilePatchError( int format, ... )
@@ -146,20 +144,26 @@ void FilePatchError( int format, ... )
     Err( format, args );
     printf( ": %s\n", strerror( err ) );
     va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
 }
 
-void FileCheck( FILE *fd, const char *name )
+bool FileCheck( FILE *fd, const char *name )
 {
-    if( fd == NULL ) {
+    bool    ok;
+
+    ok = ( fd != NULL );
+    if( !ok ) {
         FilePatchError( ERR_CANT_OPEN, name );
     }
+    return( ok );
 }
 
-void SeekCheck( int rc, const char *name )
+bool SeekCheck( int ret, const char *name )
 {
-    if( rc != 0 ) {
+    bool    ok;
+
+    ok = ( ret == 0 );
+    if( !ok ) {
         FilePatchError( ERR_IO_ERROR, name );
     }
+    return( ok );
 }

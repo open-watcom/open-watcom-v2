@@ -132,18 +132,21 @@ static int WPatchApply( const char *patch_name, const char *TgtPath )
     char    RelPath[PATCH_MAX_PATH_SIZE];
     char    FullPath[PATCH_MAX_PATH_SIZE];
 
-    PatchReadOpen( patch_name );
-    for( ;; ) {
-        PatchReadFile( &flag, RelPath );
-        if( flag == PATCH_EOF )
-            break;
-        strcpy( FullPath, TgtPath );
-        strcat( FullPath, "\\" );
-        strcat( FullPath, RelPath );
-        switch( flag ) {
+    if( PatchReadOpen( patch_name ) ) {
+        for( ;; ) {
+            PatchReadFile( &flag, RelPath );
+            if( flag == PATCH_EOF )
+                break;
+            strcpy( FullPath, TgtPath );
+            strcat( FullPath, "\\" );
+            strcat( FullPath, RelPath );
+            switch( flag ) {
             case PATCH_FILE_PATCHED:
                 printf( "Patching file %s\n", FullPath );
-                DoPatch( "", 0, 0, 0, FullPath );
+                if( DoPatch( "", 0, 0, 0, FullPath ) != PATCH_RET_OKAY ) {
+                    PatchReadClose();
+                    return( EXIT_FAILURE );
+                }
                 break;
             case PATCH_DIR_DELETED:
                 printf( "Deleting directory %s\n", FullPath );
@@ -161,10 +164,12 @@ static int WPatchApply( const char *patch_name, const char *TgtPath )
                 printf( "Adding file %s\n", FullPath );
                 PatchGetFile( FullPath );
                 break;
+            }
         }
+        PatchReadClose();
+        return( EXIT_SUCCESS );
     }
-    PatchReadClose();
-    return( EXIT_SUCCESS );
+    return( EXIT_FAILURE );
 }
 
 int main( int argc, char *argv[] )

@@ -44,23 +44,25 @@ The following functions are used by the wpatch utility to create patches,
 and then to read in the created patches.
 *************************************************************************/
 
-void PatchWriteOpen( const char *patch_name )
+bool PatchWriteOpen( const char *patch_name )
 {
     PatchName = patch_name;
     PatchF = fopen( patch_name, "wb" );
-    if( PatchF == NULL ) {
-        FilePatchError( ERR_CANT_OPEN, patch_name );
-    }
+    if( PatchF != NULL )
+        return( true );
+    FilePatchError( ERR_CANT_OPEN, patch_name );
+    return( false );
 }
 
 
-void PatchReadOpen( const char *patch_name )
+bool PatchReadOpen( const char *patch_name )
 {
     PatchName = patch_name;
     PatchF = fopen ( patch_name, "rb" );
-    if( PatchF == NULL ) {
-        FilePatchError( ERR_CANT_OPEN, patch_name );
-    }
+    if( PatchF != NULL )
+        return( true );
+    FilePatchError( ERR_CANT_OPEN, patch_name );
+    return( false );
 }
 
 void PatchWriteClose( void )

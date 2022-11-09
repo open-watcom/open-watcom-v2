@@ -37,10 +37,8 @@ extern bool             DoBackup;
 extern bool             PrintLevel;
 #endif
 
-extern void             GetLevel( const char *name );
-#ifdef BDIFF
-extern PATCH_RET_CODE   Execute( byte *dest );
-#else
-extern PATCH_RET_CODE   Execute( void );
+#ifndef BDIFF
 extern PATCH_RET_CODE   DoPatch( const char *patchname, bool doprompt, bool dobackup, bool printlevel, const char *outfilename );
 #endif
+extern void             GetLevel( const char *name );
+extern PATCH_RET_CODE   Execute( byte *dest );

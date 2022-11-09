@@ -161,11 +161,15 @@ static void stats( const char *format, ... )
 }
 
 
-static void NotNull( void *p, char *str )
+static bool NotNull( void *p, char *str )
 {
-    if( p == NULL ) {
+    bool    ok;
+
+    ok = ( p != NULL );
+    if( !ok ) {
         PatchError( ERR_NO_MEMORY, str );
     }
+    return( ok );
 }
 
 static void *ReadIn( const char *name, size_t buff_size, size_t read_size )
@@ -174,14 +178,20 @@ static void *ReadIn( const char *name, size_t buff_size, size_t read_size )
     void        *buff;
 
     buff = bdiff_malloc( buff_size );
-    NotNull( buff, "file buffer" );
-    fd = fopen( name, "rb" );
-    FileCheck( fd, name );
-    if( fread( buff, 1, read_size, fd ) != read_size ) {
-        FilePatchError( ERR_CANT_READ, name );
+    if( NotNull( buff, "file buffer" ) ) {
+        fd = fopen( name, "rb" );
+        if( FileCheck( fd, name ) ) {
+            if( fread( buff, 1, read_size, fd ) != read_size ) {
+                FilePatchError( ERR_CANT_READ, name );
+                bdiff_free( buff );
+                buff = NULL;
+            }
+            fclose( fd );
+            return( buff );
+        }
+        bdiff_free( buff );
     }
-    fclose( fd );
-    return( buff );
+    return( NULL );
 }
 
 
@@ -196,21 +206,26 @@ static foff FileSize( const char *name, int *correction )
         PatchError( ERR_CANT_FIND, name );
     } else {
         fd = fopen( name, "rb" );
-        FileCheck( fd, name );
-        SeekCheck( fseek( fd, 0, SEEK_END ), name );
-        size = ftell( fd );
-        *correction = 0;
-        if( size > sizeof( PATCH_LEVEL ) ) {
-            SeekCheck( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ), name );
-            if( fread( buff, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL ) ) {
-                FilePatchError( ERR_CANT_READ, name );
+        if( FileCheck( fd, name ) ) {
+            if( SeekCheck( fseek( fd, 0, SEEK_END ), name ) ) {
+                size = ftell( fd );
+                *correction = 0;
+                if( size > sizeof( PATCH_LEVEL ) ) {
+                    if( SeekCheck( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ), name ) ) {
+                        if( fread( buff, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL ) ) {
+                            FilePatchError( ERR_CANT_READ, name );
+                            size = 0;
+                        } else {
+                            if( memcmp( buff, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+                                size -= sizeof( PATCH_LEVEL ); /* lie about size */
+                                *correction = sizeof( PATCH_LEVEL );
+                            }
+                        }
+                    }
+                }
             }
-            if( memcmp( buff, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
-                size -= sizeof( PATCH_LEVEL ); /* lie about size */
-                *correction = sizeof( PATCH_LEVEL );
-            }
+            fclose( fd );
         }
-        fclose( fd );
     }
     return( size );
 }
@@ -225,12 +240,13 @@ static void AddRegion( region **owner, foff old_start, foff new_start, foff size
     region      *reg;
 
     reg = bdiff_malloc( sizeof( region ) );
-    NotNull( reg, "region" );
-    reg->next = *owner;
-    reg->old_start = old_start;
-    reg->new_start = new_start;
-    reg->size = size;
-    *owner = reg;
+    if( NotNull( reg, "region" ) ) {
+        reg->next = *owner;
+        reg->old_start = old_start;
+        reg->new_start = new_start;
+        reg->size = size;
+        *owner = reg;
+    }
 }
 
 static void AddSimilar( foff old_start, foff new_start, foff size )
@@ -539,38 +555,41 @@ static void fatal( int p )
 
     GetMsg( msgbuf, p );
     puts( msgbuf );
-    MsgFini();
-    exit( EXIT_FAILURE );
 }
 
-static void VerifyCorrect( const char *name )
+static int VerifyCorrect( const char *name )
+/*******************************************
+ * Try the patch file and ensure it produces new from old
+ */
 {
+    char            *real_new;
+    foff            offset;
+    PATCH_RET_CODE  rc;
 
-    /* Try the patch file and ensure it produces new from old */
-
-    char        *real_new;
-    foff        offset;
-
-    memset( NewFile, 0x00, EndNew );
-    Execute( NewFile );
+    memset( NewFile, 0, EndNew );
+    rc = Execute( NewFile );
     bdiff_free( OldFile );
-    real_new = ReadIn( name, EndNew, EndNew );
-    if( real_new != NULL ) {
-        if( memcmp( real_new, NewFile, EndNew ) != 0 ) {
-            offset = 0;
-            for( ;; ) {
-                if( *real_new != *NewFile ) {
-                    PatchError( ERR_PATCH_BUNGLED, offset, *real_new, *NewFile );
+    if( rc == PATCH_RET_OKAY ) {
+        real_new = ReadIn( name, EndNew, EndNew );
+        if( real_new != NULL ) {
+            if( memcmp( real_new, NewFile, EndNew ) != 0 ) {
+                offset = 0;
+                for( ;; ) {
+                    if( *real_new != *NewFile ) {
+                        PatchError( ERR_PATCH_BUNGLED, offset, *real_new, *NewFile );
+                        rc = PATCH_BAD_PATCH;
+                    }
+                    ++offset;
+                    if( offset >= EndNew )
+                        break;
+                    ++real_new;
+                    ++NewFile;
                 }
-                ++offset;
-                if( offset >= EndNew )
-                    break;
-                ++real_new;
-                ++NewFile;
             }
+            bdiff_free( real_new );
         }
-        bdiff_free( real_new );
     }
+    return( rc != PATCH_RET_OKAY );
 }
 
 static int HoleCompare( const void *_h1, const void *_h2 )
@@ -598,8 +617,9 @@ static void CheckPatch( int size )
         oldpatch = PatchBuffer;
         PatchSize += 10 * 1024;
         PatchBuffer = bdiff_realloc( PatchBuffer, PatchSize );
-        NotNull( PatchBuffer, "patch file" );
-        CurrPatch = PatchBuffer + ( CurrPatch - oldpatch );
+        if( NotNull( PatchBuffer, "patch file" ) ) {
+            CurrPatch = PatchBuffer + ( CurrPatch - oldpatch );
+        }
     }
 }
 
@@ -944,18 +964,24 @@ static void CopyComment( void )
 
     if( CommentFile != NULL ) {
         fd = fopen( CommentFile, "rb" );
-        FileCheck( fd, CommentFile );
-        SeekCheck( fseek( fd, 0, SEEK_END ), CommentFile );
-        size = ftell( fd );
-        SeekCheck( fseek( fd, 0, SEEK_SET ), CommentFile );
-        comment = bdiff_malloc( size + 1 );
-        NotNull( comment, "comment file" );
-        if( fread( comment, 1, size, fd ) != size ) {
-            FilePatchError( ERR_CANT_READ, CommentFile );
+        if( FileCheck( fd, CommentFile ) ) {
+            if( SeekCheck( fseek( fd, 0, SEEK_END ), CommentFile ) ) {
+                size = ftell( fd );
+                if( SeekCheck( fseek( fd, 0, SEEK_SET ), CommentFile ) ) {
+                    comment = bdiff_malloc( size + 1 );
+                    if( NotNull( comment, "comment file" ) ) {
+                        if( fread( comment, 1, size, fd ) != size ) {
+                            FilePatchError( ERR_CANT_READ, CommentFile );
+                        } else {
+                            comment[size] = '\0';
+                            OutStr( comment );
+                        }
+                        bdiff_free( comment );
+                    }
+                }
+            }
+            fclose( fd );
         }
-        fclose( fd );
-        comment[size] = '\0';
-        OutStr( comment );
     }
 }
 
@@ -965,42 +991,50 @@ static void WritePatchFile( const char *name, const char *new_name )
     size_t      size;
     FILE        *fd;
 
-    PatchSize = EndNew;
-    PatchBuffer = bdiff_malloc( PatchSize );
-    NotNull( PatchBuffer, "patch file" );
-    CurrPatch = PatchBuffer;
+    PatchSize = 0;
+    CurrPatch = NULL;
+    PatchBuffer = bdiff_malloc( EndNew );
+    if( NotNull( PatchBuffer, "patch file" ) ) {
+        PatchSize = EndNew;
+        CurrPatch = PatchBuffer;
 
-    if( AppendPatchLevel )
-        AddLevel( name );
+        if( AppendPatchLevel )
+            AddLevel( name );
 
-    OutStr( PATCH_SIGNATURE );
-    CopyComment();
+        OutStr( PATCH_SIGNATURE );
+        CopyComment();
 
-    OutPatch( EOF_CHAR, byte );
-    OutStr( new_name );
-    OutPatch( '\0', char );
-    OutPatch( EndOld + OldCorrection, foff );
-    len = EndNew;
-    if( AppendPatchLevel )
-        len += sizeof( PATCH_LEVEL );
-    OutPatch( len, foff );
-    OutPatch( Sum(), foff );
+        OutPatch( EOF_CHAR, byte );
+        OutStr( new_name );
+        OutPatch( '\0', char );
+        OutPatch( EndOld + OldCorrection, foff );
+        len = EndNew;
+        if( AppendPatchLevel )
+            len += sizeof( PATCH_LEVEL );
+        OutPatch( len, foff );
+        OutPatch( Sum(), foff );
 
-    WriteSimilars();
-    WriteDiffs();
-    if( AppendPatchLevel )
-        WriteLevel();
-    ProcessHoleArray( 1 );
+        WriteSimilars();
+        WriteDiffs();
+        if( AppendPatchLevel )
+            WriteLevel();
+        ProcessHoleArray( 1 );
 
-    OutPatch( CMD_DONE, byte );
+        OutPatch( CMD_DONE, byte );
 
-    fd = fopen( name, "wb" );
-    FileCheck( fd, name );
-    size = CurrPatch - PatchBuffer;
-    if( fwrite( PatchBuffer, 1, size, fd ) != size ) {
-        FilePatchError( ERR_CANT_WRITE, name );
+        PatchSize = CurrPatch - PatchBuffer;
+        fd = fopen( name, "wb" );
+        if( FileCheck( fd, name ) ) {
+            size = fwrite( PatchBuffer, 1, PatchSize, fd );
+            if( PatchSize != size ) {
+                FilePatchError( ERR_CANT_WRITE, name );
+                PatchSize = size;
+            }
+            fclose( fd );
+        }
+        bdiff_free( PatchBuffer );
+        PatchBuffer = NULL;
     }
-    fclose( fd );
 }
 
 
@@ -1012,12 +1046,13 @@ static void MakeHoleArray( void )
     if( NumHoles == 0 )
         return;
     HoleArray = bdiff_malloc( sizeof( region ) * NumHoles );
-    NotNull( HoleArray, "sorted holes" );
-    new_hole = HoleArray;
-    while( (curr = HoleRegions) != NULL ) {
-        HoleRegions = curr->next;
-        *new_hole++ = *curr;
-        bdiff_free( curr );
+    if( NotNull( HoleArray, "sorted holes" ) ) {
+        new_hole = HoleArray;
+        while( (curr = HoleRegions) != NULL ) {
+            HoleRegions = curr->next;
+            *new_hole++ = *curr;
+            bdiff_free( curr );
+        }
     }
 }
 
@@ -1045,13 +1080,14 @@ static foff FindSyncString( byte *file, foff end, const char *syncString )
     return( (foff)-1 );
 }
 
-static void ScanSyncString( const char *syncString )
+static bool ScanSyncString( const char *syncString )
 {
     if( syncString != NULL ) {
         SyncOld = FindSyncString( OldFile, EndOld, syncString );
         SyncNew = FindSyncString( NewFile, EndNew, syncString );
         if( SyncOld == (foff)-1 || SyncNew == (foff)-1 ) {
             fatal( ERR_NO_SYNCSTRING );
+            return( false );
         }
         while( OldFile[SyncOld] == NewFile[SyncNew] ) {
             ++SyncOld; ++SyncNew;
@@ -1062,25 +1098,26 @@ static void ScanSyncString( const char *syncString )
             }
         }
     }
+    return( true );
 }
 
 static void print_stats( long savings )
 {
     foff        best_from_new;
 
+    best_from_new = 0;
+    if( EndNew > EndOld ) {
+        best_from_new = EndNew - EndOld;
+    }
     stats( "similar regions:    %8lu bytes (%lu chunks)\n", SimilarSize, NumSimilarities);
     stats( "different regions:  %8lu bytes (%lu chunks)\n", DiffSize, NumDiffs );
     stats( "hole->diff savings: %8lu bytes\n", savings );
     stats( "number of holes:    %8lu\n", NumHoles );
     stats( "(%lu headers + %lu single + %lu double + %lu triple)\n\n", HoleHeaders, HoleCount[0], HoleCount[1], HoleCount[2] );
     stats( "old file: %8lu bytes   new file: %8lu bytes\n", EndOld, EndNew );
-    stats( "%lu%% of old executable referenced in patch file (largest amount is 100%%)\n", (SimilarSize*100) / EndOld );
-    best_from_new = 0;
-    if( EndNew > EndOld ) {
-        best_from_new = EndNew - EndOld;
-    }
-    stats( "%lu%% of new executable output to patch file (least amount is %lu%%)\n", (DiffSize*100) / EndNew, (best_from_new*100) / EndNew );
-    stats( "%lu total patch file size (%lu%%)\n", CurrPatch - PatchBuffer, ( ( CurrPatch - PatchBuffer ) * 100 ) / EndNew );
+    stats( "%lu%% of old executable referenced in patch file (largest amount is 100%%)\n", ( SimilarSize * 100 ) / EndOld );
+    stats( "%lu%% of new executable output to patch file (least amount is %lu%%)\n", ( DiffSize * 100 ) / EndNew, ( best_from_new * 100 ) / EndNew );
+    stats( "%lu total patch file size (%lu%%)\n", PatchSize, ( PatchSize * 100 ) / EndNew );
 }
 
 /*
@@ -1142,23 +1179,22 @@ int DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name, con
     OldFile = ReadIn( srcPath, buffsize, EndOld );
     NewFile = ReadIn( tgtPath, buffsize, EndNew );
 
-    ScanSyncString( SyncString );
+    if( ScanSyncString( SyncString ) ) {
+        FindRegions();
 
-    FindRegions();
-
-    if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
-        puts( "Patch file not created - files are identical" );
-        return( 1 );
+        if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
+            puts( "Patch file not created - files are identical" );
+            return( 1 );
+        }
+        MakeHoleArray();
+        SortHoleArray();
+        ProcessHoleArray( 0 );
+        savings = HolesToDiffs();
+        WritePatchFile( name, new_name );
+        FreeHoleArray();
+        i = VerifyCorrect( tgtPath );
+        print_stats( savings );
+        return( i );
     }
-    MakeHoleArray();
-    SortHoleArray();
-    ProcessHoleArray( 0 );
-    savings = HolesToDiffs();
-    WritePatchFile( name, new_name );
-    FreeHoleArray();
-    VerifyCorrect( tgtPath );
-
-    print_stats( savings );
-
-    return( 0 );
+    return( 1 );
 }

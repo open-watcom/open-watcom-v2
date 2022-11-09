@@ -59,11 +59,9 @@ static void Usage( void )
         GetMsg( msgbuf, i );
         puts( msgbuf );
     }
-    MsgFini();
-    exit( EXIT_FAILURE );
 }
 
-static void ParseArgs( int argc, char **argv )
+static bool ParseArgs( int argc, char **argv )
 {
     char        **arg;
     char        *curr;
@@ -71,6 +69,7 @@ static void ParseArgs( int argc, char **argv )
     newName = NULL;
     if( argc < 4 ) {
         Usage();
+        return( false );
     }
     OldSymName = NULL;
     NewSymName = NULL;
@@ -79,8 +78,10 @@ static void ParseArgs( int argc, char **argv )
     Verbose = false;
     AppendPatchLevel = true;
     for( arg = argv + 4; (curr = *arg) != NULL; ++arg ) {
-        if( *curr != '-' && *curr != '/' )
+        if( *curr != '-' && *curr != '/' ) {
             Usage();
+            return( false );
+        }
         ++curr;
         switch( tolower( curr[0] ) ) {
         case 's':
@@ -109,9 +110,10 @@ static void ParseArgs( int argc, char **argv )
             /* fall through */
         default:
             Usage();
-            break;
+            return( false );
         }
     }
+    return( true );
 }
 
 
@@ -121,11 +123,12 @@ int main( int argc, char **argv )
 
     rc = EXIT_FAILURE;
     if( MsgInit() ) {
-        ParseArgs( argc, argv );
-        SrcPath = argv[1];
-        TgtPath = argv[2];
-        if( DoBdiff( SrcPath, TgtPath, newName, argv[3], false ) == 0 ) {
-            rc = EXIT_SUCCESS;
+        if( ParseArgs( argc, argv ) ) {
+            SrcPath = argv[1];
+            TgtPath = argv[2];
+            if( DoBdiff( SrcPath, TgtPath, newName, argv[3], false ) == 0 ) {
+                rc = EXIT_SUCCESS;
+            }
         }
         MsgFini();
     }

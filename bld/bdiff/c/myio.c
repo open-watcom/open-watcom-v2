@@ -60,9 +60,10 @@ void MyOpen( MY_FILE *file, FILE *fd, const char *name )
 void MyClose( MY_FILE *file )
 {
     if( file->dirty ) {
-        SeekCheck( fseek( file->fd, file->start, SEEK_SET ), file->name );
-        if( fwrite( file->buff, 1, file->len, file->fd ) != file->len ) {
-            PatchError( ERR_CANT_WRITE, file->name );
+        if( SeekCheck( fseek( file->fd, file->start, SEEK_SET ), file->name ) ) {
+            if( fwrite( file->buff, 1, file->len, file->fd ) != file->len ) {
+                PatchError( ERR_CANT_WRITE, file->name );
+            }
         }
     }
     fclose( file->fd );
@@ -76,18 +77,20 @@ void InBuffer( MY_FILE *file, foff off, size_t len, size_t eob )
 {
     if( off < file->start || off+len > file->start+eob ) {
         if( file->dirty ) {
-            SeekCheck( fseek( file->fd, file->start, SEEK_SET), file->name );
-            if( fwrite( file->buff, 1, file->len, file->fd ) != file->len ) {
-                PatchError( ERR_CANT_WRITE, file->name );
+            if( SeekCheck( fseek( file->fd, file->start, SEEK_SET), file->name ) ) {
+                if( fwrite( file->buff, 1, file->len, file->fd ) != file->len ) {
+                    PatchError( ERR_CANT_WRITE, file->name );
+                }
             }
         }
         if( ( off & ~(SECTOR_SIZE - 1) ) + BUFFER_SIZE > off + len ) {
             off &= ~(SECTOR_SIZE - 1);
         }
-        SeekCheck( fseek( file->fd, off, SEEK_SET ), file->name );
-        file->start = off;
-        file->len = fread( file->buff, 1, BUFFER_SIZE, file->fd );
-        file->dirty = false;
+        if( SeekCheck( fseek( file->fd, off, SEEK_SET ), file->name ) ) {
+            file->start = off;
+            file->len = fread( file->buff, 1, BUFFER_SIZE, file->fd );
+            file->dirty = false;
+        }
     }
 }
 

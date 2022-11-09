@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,5 +39,5 @@ extern void MsgPrintf( int resourceid, va_list args );
 extern void Message( int format, ... );
 extern void PatchError( int format, ... );
 extern void FilePatchError( int format, ... );
-extern void FileCheck( FILE *fd, const char *name );
-extern void SeekCheck( int rc, const char *name );
+extern bool FileCheck( FILE *fd, const char *name );
+extern bool SeekCheck( int rc, const char *name );
