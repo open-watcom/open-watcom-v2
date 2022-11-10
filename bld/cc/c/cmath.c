@@ -663,8 +663,10 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
 }
 
 
-// map opr to commuted operand equivalent
-static int CommRelOp( int opr )
+static int ReverseRelOp( int opr )
+/*
+ * map opr to reversed operand equivalent
+ */
 {
     switch( opr ) {
     case T_NE:  // a != b => b != a
@@ -847,7 +849,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         if( op2->op.opr == OPR_PUSHINT ) {
             cmp_cc = IsMeaninglessCompare( op2->op.u2.long64_value, typ1, typ2, opr );
         } else if( op1->op.opr == OPR_PUSHINT ) {
-            cmp_cc = IsMeaninglessCompare( op1->op.u2.long64_value, typ2, typ1, CommRelOp( opr ) );
+            cmp_cc = IsMeaninglessCompare( op1->op.u2.long64_value, typ2, typ1, ReverseRelOp( opr ) );
         }
         if( cmp_cc != CMP_VOID ) {
             if( cmp_cc == CMP_COMPLEX ) {
