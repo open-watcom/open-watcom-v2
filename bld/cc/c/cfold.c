@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +36,7 @@
 #include "clibext.h"
 
 
-#if ( _INTEGRAL_MAX_BITS >= 64 )
 #define U64_DOUBLE_CORRECTION   (2.0 * ( (double)9223372036854775807LL + 1.0 ))
-#endif
 
 
 static bool IsConstantZero( TREEPTR tree );
@@ -401,13 +399,10 @@ int64 LongValue64( TREEPTR leaf )
 #ifdef _LONG_DOUBLE_
         __LDI8( &ld, &value );
         return( value );
-#elif ( _INTEGRAL_MAX_BITS >= 64 )
+#else
         value.u._64[0] = (uint_64)(int_64)ld.u.value;
         return( value );
-#else
-        val32 = ld.u.value;
 #endif
-        break;
     default:
         sign = false;
         val32 = 0;
@@ -561,19 +556,15 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #ifdef _LONG_DOUBLE_
             value = leaf->op.u2.long64_value;
             __I8LD( &value, &ld );
-#elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.u.value = (double)(int_64)leaf->op.u2.long64_value.u._64[0];
 #else
-
-    #error not implemented for compiler with integral max bits < 64
-            ld.u.value = 0;
+            ld.u.value = (double)(int_64)leaf->op.u2.long64_value.u._64[0];
 #endif
             break;
         case TYP_ULONG64:
 #ifdef _LONG_DOUBLE_
             value = leaf->op.u2.long64_value;
             __U8LD( &value, &ld );
-#elif ( _INTEGRAL_MAX_BITS >= 64 )
+#else
   #if 0
             ld.u.value = (double)leaf->op.u2.ulong64_value.u._64[0];
   #else
@@ -584,10 +575,6 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
                 ld.u.value += U64_DOUBLE_CORRECTION;
             }
   #endif
-#else
-
-    #error not implemented for compiler with integral max bits < 64
-            ld.u.value = 0;
 #endif
             break;
         case TYP_CHAR:
@@ -605,10 +592,8 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
             // unsigned types
 #ifdef _LONG_DOUBLE_
             __U4LD( leaf->op.u2.ulong_value, &ld );
-#elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.u.value = (double)(int_64)leaf->op.u2.ulong_value;
 #else
-            ld.u.value = (double)leaf->op.u2.ulong_value;
+            ld.u.value = (double)(int_64)leaf->op.u2.ulong_value;
 #endif
             break;
         }

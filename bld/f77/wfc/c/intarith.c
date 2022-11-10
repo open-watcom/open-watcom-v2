@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,6 @@ static bool __Sub( intstar4 *arg1, intstar4 *arg2 )
 
 static bool __Mul( intstar4 *arg1, intstar4 *arg2 )
 {
-#if _INTEGRAL_MAX_BITS >= 64
     long long arg1v = *arg1;
     long long arg2v = *arg2;
     long long result = arg1v * arg2v;
@@ -94,9 +93,6 @@ static bool __Mul( intstar4 *arg1, intstar4 *arg2 )
     *arg1 = result;
     result >>= 31;
     return( result != 0 && result != -1 );
-#else
-    #error "compiler doesn't support 64-bit integral type"
-#endif
 }
 #endif
 

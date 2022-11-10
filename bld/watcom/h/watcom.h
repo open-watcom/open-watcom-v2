@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,6 @@
 #endif
 
 #ifndef __WATCOMC__
-#if defined( __GNUC__ ) || defined( __SUNPRO_C )
-#define _INTEGRAL_MAX_BITS  64
-#endif
 /* An equivalent of the __unaligned keyword may be necessary on RISC
  * architectures, but on x86/x64 it's useless
  */
@@ -86,7 +83,6 @@ typedef signed long     signed_32;
 typedef signed int      signed_32;
 #endif
 
-#if _INTEGRAL_MAX_BITS >= 64
 #if defined( _MSC_VER )
 typedef unsigned __int64    uint_64;
 typedef __int64             int_64;
@@ -94,31 +90,28 @@ typedef __int64             int_64;
 typedef unsigned long long  uint_64;
 typedef long long           int_64;
 #endif
-#endif
 
 typedef struct {
     union {
+        uint_64         _64[1];
         unsigned_32     _32[2];
         unsigned_16     _16[4];
-        unsigned_8       _8[8];
+        unsigned_8      _8[8];
         struct {
 #if defined( __BIG_ENDIAN__ )
-            unsigned    v       : 1;
-            unsigned            : 15;
-            unsigned            : 16;
-            unsigned            : 16;
-            unsigned            : 16;
+            unsigned    v: 1;
+            unsigned     : 15;
+            unsigned     : 16;
+            unsigned     : 16;
+            unsigned     : 16;
 #else
-            unsigned            : 16;
-            unsigned            : 16;
-            unsigned            : 16;
-            unsigned            : 15;
-            unsigned    v       : 1;
+            unsigned     : 16;
+            unsigned     : 16;
+            unsigned     : 16;
+            unsigned     : 15;
+            unsigned    v: 1;
 #endif
         }       sign;
-#if _INTEGRAL_MAX_BITS >= 64
-        uint_64         _64[1];
-#endif
     } u;
 } unsigned_64;
 typedef unsigned_64     signed_64;
@@ -209,9 +202,9 @@ typedef unsigned long       pointer_uint;
     #define CONV_BE_32(w)
     #define CONV_BE_64(w)
     /* Macros to swap byte order */
-    #define SWAP_16     CONV_LE_16
-    #define SWAP_32     CONV_LE_32
-    #define SWAP_64     CONV_LE_64
+    #define SWAP_16         CONV_LE_16
+    #define SWAP_32         CONV_LE_32
+    #define SWAP_64         CONV_LE_64
 #else
     /* Macros to get little endian data */
     #define GET_LE_16(w)    (w)
@@ -230,26 +223,18 @@ typedef unsigned long       pointer_uint;
     #define CONV_BE_32(w)   (w) = SWAPNC_32(w)
     #define CONV_BE_64(w)   (w) = SWAPNC_64(w)
     /* Macros to swap byte order */
-    #define SWAP_16     CONV_BE_16
-    #define SWAP_32     CONV_BE_32
-    #define SWAP_64     CONV_BE_64
+    #define SWAP_16         CONV_BE_16
+    #define SWAP_32         CONV_BE_32
+    #define SWAP_64         CONV_BE_64
 #endif
 
 /* Macros to swap byte order in 64-bit structure */
 #if defined( __BIG_ENDIAN__ )
-  #if _INTEGRAL_MAX_BITS >= 64
-    #define SCONV_LE_64(w)   (w).u._64[0] = SWAPNC_64((w).u._64[0])
-  #else
-    #define SCONV_LE_64(w)   {unsigned_32 x = SWAPNC_32(w.u._32[I64LO32]);w.u._32[I64LO32]=SWAPNC_32(w.u._32[I64HI32]);w.u._32[I64HI32] = x;}
-  #endif
+    #define SCONV_LE_64(w)  (w).u._64[0] = SWAPNC_64((w).u._64[0])
     #define SCONV_BE_64(w)
 #else
     #define SCONV_LE_64(w)
-  #if _INTEGRAL_MAX_BITS >= 64
-    #define SCONV_BE_64(w)   (w).u._64[0] = SWAPNC_64((w).u._64[0])
-  #else
-    #define SCONV_BE_64(w)   {unsigned_32 x = SWAPNC_32(w.u._32[I64LO32]);w.u._32[I64LO32]=SWAPNC_32(w.u._32[I64HI32]);w.u._32[I64HI32] = x;}
-  #endif
+    #define SCONV_BE_64(w)  (w).u._64[0] = SWAPNC_64((w).u._64[0])
 #endif
 
 #endif
