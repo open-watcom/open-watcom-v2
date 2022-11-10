@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,39 +64,57 @@ void AlignIt( TYPEPTR typ )
 #endif
 }
 
+target_size GetDQuadPointerSize( enum quad_flags dq_flags )
+{
+    target_size         size;
+
+    if( dq_flags & Q_NEAR_POINTER ) {
+        size = TARGET_NEAR_POINTER;
+    } else if( dq_flags & Q_FAR_POINTER ) {
+        size = TARGET_FAR_POINTER;
+    } else if( dq_flags & Q_CODE_POINTER ) {
+        size = TARGET_POINTER;
+#if _INTEL_CPU
+        if( TargetSwitches & BIG_CODE ) {
+            size = TARGET_FAR_POINTER;
+        }
+#endif
+    } else {
+        size = TARGET_POINTER;
+#if _INTEL_CPU
+        if( TargetSwitches & BIG_DATA ) {
+            size = TARGET_FAR_POINTER;
+        }
+#endif
+    }
+    return( size );
+}
+
+static cg_type GetDQuadPointerCGType( enum quad_flags dq_flags )
+{
+    cg_type             cgtype;
+
+    if( dq_flags & Q_NEAR_POINTER ) {
+        cgtype = TY_NEAR_POINTER;
+    } else if( dq_flags & Q_FAR_POINTER ) {
+        cgtype = TY_LONG_POINTER;
+    } else if( dq_flags & Q_CODE_POINTER ) {
+        cgtype = TY_CODE_PTR;
+    } else {
+        cgtype = TY_POINTER;
+    }
+    return( cgtype );
+}
+
 static void EmitDQuad( DATA_QUAD *dq )
 {
     cg_type             data_type;
-    target_size         size_of_item;
     target_size         amount;
     SYM_ENTRY           sym;
 
     static segment_id   segid = SEG_NULL;
     static target_size  size = 0;
 
-    if( dq->flags & Q_NEAR_POINTER ) {
-        data_type = TY_NEAR_POINTER;
-        size_of_item = TARGET_NEAR_POINTER;
-    } else if( dq->flags & Q_FAR_POINTER ) {
-        data_type = TY_LONG_POINTER;
-        size_of_item = TARGET_FAR_POINTER;
-    } else if( dq->flags & Q_CODE_POINTER ) {
-        data_type = TY_CODE_PTR;
-        size_of_item = TARGET_POINTER;
-#if _CPU == 8086
-        if( TargetSwitches & BIG_CODE ) {
-            size_of_item = TARGET_FAR_POINTER;
-        }
-#endif
-    } else {
-        data_type = TY_POINTER;
-        size_of_item = TARGET_POINTER;
-#if _CPU == 8086
-        if( TargetSwitches & BIG_DATA ) {
-            size_of_item = TARGET_FAR_POINTER;
-        }
-#endif
-    }
 #if _CPU == 8086
     if( size >= 0x10000 ) {
         if( segid != SEG_CONST && segid != SEG_DATA ) {
@@ -189,17 +207,19 @@ static void EmitDQuad( DATA_QUAD *dq )
         size += TARGET_LDOUBLE;
         break;
     case QDT_STRING:
+        data_type = GetDQuadPointerCGType( dq->flags );
         EmitStrPtr( dq->u.string_leaf, data_type );
-        size += size_of_item;
+        size += GetDQuadPointerSize( dq->flags );
         break;
     case QDT_POINTER:
     case QDT_ID:
+        data_type = GetDQuadPointerCGType( dq->flags );
         if( dq->u.var.sym_handle == SYM_NULL ) {
             DGInteger( dq->u.var.offset, data_type );
         } else {
             DGFEPtr( (CGSYM_HANDLE)dq->u.var.sym_handle, data_type, dq->u.var.offset );
         }
-        size += size_of_item;
+        size += GetDQuadPointerSize( dq->flags );
         break;
     case QDT_CONST:                       /* array of characters */
         size += EmitBytes( dq->u.string_leaf );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -298,29 +299,9 @@ void DumpProgram( void )
 
 static void DumpDQuad( DATA_QUAD *dq, target_size *psize )
 {
-    target_size         size_of_item;
     target_size         amount;
     SYM_ENTRY           sym;
 
-    if( dq->flags & Q_NEAR_POINTER ) {
-        size_of_item = TARGET_NEAR_POINTER;
-    } else if( dq->flags & Q_FAR_POINTER ) {
-        size_of_item = TARGET_FAR_POINTER;
-    } else if( dq->flags & Q_CODE_POINTER ) {
-        size_of_item = TARGET_POINTER;
-#if _CPU == 8086
-        if( TargetSwitches & BIG_CODE ) {
-            size_of_item = TARGET_FAR_POINTER;
-        }
-#endif
-    } else {
-        size_of_item = TARGET_POINTER;
-#if _CPU == 8086
-        if( TargetSwitches & BIG_DATA ) {
-            size_of_item = TARGET_FAR_POINTER;
-        }
-#endif
-    }
     switch( dq->type ) {
     case QDT_STATIC:
         SymGet( &sym, dq->u.var.sym_handle );
@@ -410,14 +391,14 @@ static void DumpDQuad( DATA_QUAD *dq, target_size *psize )
         *psize += amount;
         break;
     case QDT_STRING:
-        amount = size_of_item;
+        amount = GetDQuadPointerSize( dq->flags );
         printf( "%6u byte string (QDT_STRING): \"%s\"\n", amount,
                 dq->u.string_leaf->literal );
         *psize += amount;
         break;
     case QDT_POINTER:
     case QDT_ID:
-        amount = size_of_item;
+        amount = GetDQuadPointerSize( dq->flags );
         printf( "%6u byte pointer (%s): offset %x\n",
                 amount, dq->type == QDT_POINTER ? "QDT_POINTER" :
                 "QDT_ID", dq->u.var.offset );

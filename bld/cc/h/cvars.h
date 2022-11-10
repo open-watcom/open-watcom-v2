@@ -514,6 +514,7 @@ extern void         GenInLineFunc( SYM_HANDLE sym_handle );
 extern bool         IsInLineFunc( SYM_HANDLE sym_handle );
 
 /* cgendata */
+extern target_size  GetDQuadPointerSize( enum quad_flags dq_flags );
 extern void         EmitDataQuads( void );
 extern void         EmitZeros(target_size);
 extern void         AlignIt( TYPEPTR );
