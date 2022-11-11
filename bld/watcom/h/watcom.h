@@ -93,7 +93,6 @@ typedef long long           int_64;
 
 typedef struct {
     union {
-        uint_64         _64[1];
         unsigned_32     _32[2];
         unsigned_16     _16[4];
         unsigned_8      _8[8];
@@ -112,6 +111,7 @@ typedef struct {
             unsigned    v: 1;
 #endif
         }       sign;
+        uint_64         _64[1];
     } u;
 } unsigned_64;
 typedef unsigned_64     signed_64;
