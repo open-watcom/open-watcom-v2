@@ -69,8 +69,14 @@ endif
 BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
+ifdef __RDOSDEV__
+        ret
+#else
         int     3h
+#endif
+
         jmp short forever
+
         ; NOTE that ___begtext needs to be at offset 3
         ; don't move it.  i.e. don't change any code before here.
         public ___begtext
