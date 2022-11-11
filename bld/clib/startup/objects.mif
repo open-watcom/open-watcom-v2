@@ -126,7 +126,7 @@
 !inject seg086.obj      d16                                     o16             w16
 !inject seg16.obj                                                   o32
 !inject seg386.obj          d32     nt                              o32             w32 l32         rdu rdk
-!inject segdefns.obj                nt                              o32                 l32         rdu
+!inject segdefns.obj                nt                              o32                 l32         rdu rdk
 !inject segq16.obj                                                      q16
 !inject segq32.obj                                                          q32
 !inject seh386.obj                  nt                              o32
