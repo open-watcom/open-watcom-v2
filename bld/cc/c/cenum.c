@@ -37,6 +37,73 @@
 #include "i64.h"
 #include "dumpapi.h"
 
+
+#if defined( WATCOM_BIG_ENDIAN )
+#   define i64val(h,l) { h, l }
+#else
+#   define i64val(h,l) { l, h }
+#endif
+
+enum enum_rng {
+    ENUM_UNDEF = -1,
+    ENUM_S8,
+    ENUM_U8,
+    ENUM_S16,
+#if TARGET_INT == 2
+    ENUM_INT = ENUM_S16,
+#endif
+    ENUM_U16,
+    ENUM_S32,
+#if TARGET_INT == 4
+    ENUM_INT = ENUM_S32,
+#endif
+    ENUM_U32,
+    ENUM_S64,
+    ENUM_U64,
+    ENUM_SIZE,
+};
+
+enum low_high {
+    LOW  =  0,
+    HIGH =  1,
+};
+
+static uint64 const RangeTable[ENUM_SIZE][2] =
+{ //  low                              high
+    { i64val( 0xFFFFFFFF, 0xFFFFFF80 ),i64val( 0x00000000, 0x0000007F ) },//s8
+    { i64val( 0x00000000, 0x00000000 ),i64val( 0x00000000, 0x000000FF ) },//u8
+    { i64val( 0xFFFFFFFF, 0xFFFF8000 ),i64val( 0x00000000, 0x00007FFF ) },//s16
+    { i64val( 0x00000000, 0x00000000 ),i64val( 0x00000000, 0x0000FFFF ) },//u16
+    { i64val( 0xFFFFFFFF, 0x80000000 ),i64val( 0x00000000, 0x7FFFFFFF ) },//s32
+    { i64val( 0x00000000, 0x00000000 ),i64val( 0x00000000, 0xFFFFFFFF ) },//u32
+    { i64val( 0x80000000, 0x00000000 ),i64val( 0x7FFFFFFF, 0xFFFFFFFF ) },//s64
+    { i64val( 0x00000000, 0x00000000 ),i64val( 0xFFFFFFFF, 0xFFFFFFFF ) },//u64
+};
+
+struct {
+    DATA_TYPE decl_type;
+    target_size size;
+} ItypeTable[ENUM_SIZE] = {
+    { TYP_CHAR, TARGET_CHAR  },    //S8
+    { TYP_UCHAR,TARGET_CHAR  },    //U8
+#if TARGET_INT == 2
+    { TYP_INT,  TARGET_INT  },     //S16
+    { TYP_UINT, TARGET_INT  },     //U16
+#else
+    { TYP_SHORT, TARGET_SHORT },   //S16
+    { TYP_USHORT,TARGET_SHORT },   //U16
+#endif
+#if TARGET_INT == 4
+    { TYP_INT,   TARGET_INT  },    //S32
+    { TYP_UINT,  TARGET_INT  },    //U32
+#else
+    { TYP_LONG,  TARGET_LONG },    //S32
+    { TYP_ULONG, TARGET_LONG },    //U32
+#endif
+    { TYP_LONG64, TARGET_LONG64  },//S64
+    { TYP_ULONG64, TARGET_LONG64 },//U64
+};
+
 void EnumInit( void )
 {
     id_hash_idx   hash;
@@ -76,68 +143,6 @@ static ENUMPTR EnumLkAdd( TAGPTR tag )
 #endif
     return( esym );
 }
-
-#if defined( WATCOM_BIG_ENDIAN )
-#   define i64val(h,l) { h, l }
-#else
-#   define i64val(h,l) { l, h }
-#endif
-
-enum enum_rng {
-    ENUM_UNDEF = -1,
-    ENUM_S8,
-    ENUM_U8,
-    ENUM_S16,
-#if TARGET_INT == 2
-    ENUM_INT = ENUM_S16,
-#endif
-    ENUM_U16,
-    ENUM_S32,
-#if TARGET_INT == 4
-    ENUM_INT = ENUM_S32,
-#endif
-    ENUM_U32,
-    ENUM_S64,
-    ENUM_U64,
-    ENUM_SIZE,
-};
-enum low_high {
-    LOW  =  0,
-    HIGH =  1,
-};
-static uint64 const RangeTable[ENUM_SIZE][2] =
-{ //  low                              high
-    { i64val( 0xFFFFFFFF, 0xFFFFFF80 ),i64val( 0x00000000, 0x0000007F ) },//s8
-    { i64val( 0x00000000, 0x00000000 ),i64val( 0x00000000, 0x000000FF ) },//u8
-    { i64val( 0xFFFFFFFF, 0xFFFF8000 ),i64val( 0x00000000, 0x00007FFF ) },//s16
-    { i64val( 0x00000000, 0x00000000 ),i64val( 0x00000000, 0x0000FFFF ) },//u16
-    { i64val( 0xFFFFFFFF, 0x80000000 ),i64val( 0x00000000, 0x7FFFFFFF ) },//s32
-    { i64val( 0x00000000, 0x00000000 ),i64val( 0x00000000, 0xFFFFFFFF ) },//u32
-    { i64val( 0x80000000, 0x00000000 ),i64val( 0x7FFFFFFF, 0xFFFFFFFF ) },//s64
-    { i64val( 0x00000000, 0x00000000 ),i64val( 0xFFFFFFFF, 0xFFFFFFFF ) },//u64
-};
-
-struct { DATA_TYPE decl_type; target_size size; } ItypeTable[ENUM_SIZE] =
-{
-    { TYP_CHAR, TARGET_CHAR  },    //S8
-    { TYP_UCHAR,TARGET_CHAR  },    //U8
-#if TARGET_INT == 2
-    { TYP_INT,  TARGET_INT  },     //S16
-    { TYP_UINT, TARGET_INT  },     //U16
-#else
-    { TYP_SHORT, TARGET_SHORT },   //S16
-    { TYP_USHORT,TARGET_SHORT },   //U16
-#endif
-#if TARGET_INT == 4
-    { TYP_INT,   TARGET_INT  },    //S32
-    { TYP_UINT,  TARGET_INT  },    //U32
-#else
-    { TYP_LONG,  TARGET_LONG },    //S32
-    { TYP_ULONG, TARGET_LONG },    //U32
-#endif
-    { TYP_LONG64, TARGET_LONG64  },//S64
-    { TYP_ULONG64, TARGET_LONG64 },//U64
-};
 
 static void get_msg_range( char *buff, enum enum_rng index )
 {
