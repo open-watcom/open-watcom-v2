@@ -738,7 +738,7 @@ static dw_handle dwarfEnum( TYPE type, DC_CONTROL control )
         dh = DWBeginEnumeration( Client, CgTypeSize( type->of ), NameStr( SimpleTypeName( type ) ), 0, 0 );
         for( sym = type->u.t.sym->thread; SymIsEnumeration( sym ); sym = sym->thread ) {
             // fixme: enums need to be in reverse order
-            DWAddConstant( Client, sym->u.sval, NameStr( sym->name->name ) );
+            DWAddEnumerationConstant( Client, sym->u.sval, NameStr( sym->name->name ) );
         }
         DWEndEnumeration( Client );
     }
