@@ -25,44 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  signed/unsigned LEB128 reading procedures
 *
 ****************************************************************************/
 
 
-#ifndef __DRGETREF_H__
-#define __DRGETREF_H__
-
-#include "dr.h"
-#include "drsrchdf.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct {
-    int         size;   /* available room */
-    int         free;   /* next free entry */
-    drmem_hdl   *stack; /* values */
-} dr_scope_stack;
-
-typedef struct {
-    dr_scope_stack  scope;
-    drmem_hdl       dependent;
-    char            *file;
-    unsigned_32     line;
-    unsigned_16     column;
-} dr_ref_info;
-
-typedef bool (*DRSYMREF)( drmem_hdl, dr_ref_info *, char *, void * );
-
-extern void DRRefersTo( drmem_hdl, void *, DRSYMREF callback );
-extern void DRReferredToBy( drmem_hdl, void *, DRSYMREF callback );
-extern void DRReferencedSymbols( dr_sym_type, void *, DRSYMREF callback );
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // __DRGETREF_H__
+extern int_64   SLEB128( void **h, uint_8 (*ifn)(void **h) );
+extern uint_64  ULEB128( void **h, uint_8 (*ifn)(void **h) );

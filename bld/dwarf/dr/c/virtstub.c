@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,9 @@
 
 
 #include <string.h>
-
 #include "drpriv.h"
+#include "drleb128.h"
+
 
 typedef struct alloc_struct {
     struct alloc_struct *next;
@@ -123,30 +125,22 @@ bool DRSwap( void )
     return( false );
 }
 
-
-unsigned_32 ReadLEB128( drmem_hdl *vmptr, bool issigned )
-/*******************************************************/
-// works for signed or unsigned
+static uint_8 readLEB( void **h )
+/*******************************/
 {
-    drmem_hdl       src;
-    unsigned_32     result;
-    unsigned        shift;
-    char            b;
+    return( *(*(drmem_hdl *)h)++ );
+}
 
-    src = *vmptr;
-    result = 0;
-    shift = 0;
-    do {
-        b = *src++;
-        result |= (b & 0x7f) << shift;
-        shift += 7;
-    } while( (b & 0x80) != 0 );
-    *vmptr = src;
-    if( issigned && (b & 0x40) != 0 && shift < 32 ) {
-        // we have to sign extend
-        result |= - ((signed_32)( 1 << shift ));
-    }
-    return( result );
+int_64 DWRVMReadSLEB128( drmem_hdl *vmptr )
+/*****************************************/
+{
+    return( SLEB128( (void **)vmptr, readLEB ) );
+}
+
+uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
+/******************************************/
+{
+    return( ULEB128( (void **)vmptr, readLEB ) );
 }
 
 #if 0

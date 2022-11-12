@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 typedef struct { /* current state of stmt prog */
     uint_32 offset;
     uint_32 line;
-    uint_16 col;
+    uint_16 column;
     uint_16 file;
     uint_16 seg;
     uint_8  is_stmt   :1;
