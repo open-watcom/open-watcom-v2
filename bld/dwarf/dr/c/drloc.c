@@ -31,8 +31,10 @@
 
 #include "drpriv.h"
 #include "drutils.h"
+#include "drleb128.h"
 #include <stdlib.h>
 #include <string.h>
+
 
 static dw_locop_op const LocOpr[] = {
 #define DW_LOC_OP( __n, __v )    __v,
@@ -40,42 +42,23 @@ static dw_locop_op const LocOpr[] = {
 #undef DW_LOC_OP
 };
 
-static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
+static uint_8 readLEB( void **h )
+/*******************************/
+{
+    return( *(*(uint_8 **)h)++ );
+}
+
+static uint_8 *DecodeULEB128( const uint_8 *input, uint_64 *value )
 /*****************************************************************/
 {
-    uint_32     result;
-    uint        shift;
-    uint_8      in;
-
-    result = 0;
-    shift = 0;
-    do {
-        in = *input++;
-        result |= (in & 0x7f) << shift;
-        shift += 7;
-    } while( (in & 0x80) != 0 );
-    *value = result;
+    *value = ULEB128( (void **)&input, readLEB );
     return( (uint_8 *)input );
 }
 
-static uint_8 *DecodeSLEB128( const uint_8 *input, int_32 *value )
+static uint_8 *DecodeSLEB128( const uint_8 *input, int_64 *value )
 /****************************************************************/
 {
-    int_32      result;
-    uint        shift;
-    uint_8      in;
-
-    result = 0;
-    shift = 0;
-    do {
-        in = *input++;
-        result |= ( in & 0x7f ) << shift;
-        shift += 7;
-    } while( (in & 0x80) != 0 );
-    if( ( shift < 32 ) && (in & 0x40) != 0 ) {
-        result |= - ((int_32)( 1 << shift ));
-    }
-    *value = result;
+    *value = SLEB128( (void **)&input, readLEB );
     return( (uint_8 *)input );
 }
 
@@ -94,12 +77,13 @@ static void DoLocExpr( unsigned_8       *p,
     uint_32         op2;
     uint_32         stk1;
     uint_32         stk2;
-    uint_32         utmp;
-    int_32          stmp;
+    uint_64         utmp;
+    int_64          stmp;
     uint_32         stack[101];
     uint_32         *top;
     uint_32         *stk_top;
     dr_loc_kind     kind;
+    unsigned_32     utmp32;
 
 #define Pop( a )     (++a)
 #define Push( a )    (--a)
@@ -112,7 +96,7 @@ static void DoLocExpr( unsigned_8       *p,
     stack[100] = 0;
     top = stk_top;
     if( callbck->init!= NULL  ) {
-        kind = callbck->init( d, &utmp );
+        kind = callbck->init( d, &utmp32 );
         switch( kind ){
         case DR_LOC_NONE:
              kind = DR_LOC_ADDR;
@@ -120,7 +104,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DR_LOC_REG:
         case DR_LOC_ADDR:
             Push( top );
-            top[0] = utmp;
+            top[0] = utmp32;
         }
     } else {
         kind = DR_LOC_ADDR;
