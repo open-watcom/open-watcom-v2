@@ -406,7 +406,7 @@ void            DWENTRY DWEndStruct( dw_client );
 /* enumeration types */
 dw_handle       DWENTRY DWBeginEnumeration( dw_client, dw_size_t __byte_size,
                             char const *__name, dw_addr_offset __scope, uint __flags );
-void            DWENTRY DWAddConstant( dw_client, dw_uconst __constant_value, char const *__name );
+void            DWENTRY DWAddEnumerationConstant( dw_client, dw_uconst __constant_value, char const *__name );
 void            DWENTRY DWEndEnumeration( dw_client );
 
 

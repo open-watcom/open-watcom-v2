@@ -495,7 +495,7 @@ dw_handle DWENTRY DWBeginEnumeration( dw_client cli, dw_size_t byte_size, const 
 }
 
 
-void DWENTRY DWAddConstant( dw_client cli, dw_uconst value, const char *name )
+void DWENTRY DWAddEnumerationConstant( dw_client cli, dw_uconst value, const char *name )
 {
     StartDIE( cli, AB_ENUMERATOR );
     InfoULEB128( cli, value );

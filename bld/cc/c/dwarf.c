@@ -209,7 +209,7 @@ static dw_handle dwarfEnum( TYPEPTR typ )
                              0 );
     enum_list = ReverseEnums( typ->u.tag->u.enum_list );
     for( esym = enum_list; esym != NULL; esym = esym->thread ) {
-        DWAddConstant( Client, esym->value.u._32[I64LO32], esym->name );
+        DWAddEnumerationConstant( Client, esym->value.u._32[I64LO32], esym->name );
     }
     ReverseEnums( enum_list );
     DWEndEnumeration( Client );

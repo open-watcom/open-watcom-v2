@@ -767,9 +767,9 @@ dbg_type        DFEndEnum( dbg_enum en )
             break;
         val = cons->val;
         if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ){
-            DWAddConstant( Client, val.u._32[I64LO32], cons->name );
+            DWAddEnumerationConstant( Client, val.u._32[I64LO32], cons->name );
         } else {
-            DWAddConstant( Client, val.u._32[I64LO32], cons->name );
+            DWAddEnumerationConstant( Client, val.u._32[I64LO32], cons->name );
         }
         en->list = cons->next;
         CGFree( cons );
