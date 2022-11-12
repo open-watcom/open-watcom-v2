@@ -644,7 +644,7 @@ It is followed by a uint operand which is an index.
 The stack entry with the specified index (0 through 255, inclusive; 0
 means the top) is pushed on the stack.
 .note DW_LOC_PLUS_UCONST
-It is followed an dw_sconst operand.
+It is followed an dw_uconst operand.
 It pops the top stack entry, adds it to the operand and pushes the
 result.
 .note DW_LOC_SKIP
