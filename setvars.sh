@@ -15,9 +15,22 @@
 
 export OWROOT=$(realpath `pwd`)
 
-# Set this entry to identify your toolchain used by build process
-# supported values are WATCOM GCC CLANG
-export OWTOOLS=GCC
+# Automatically try to determine appropriate toolchain
+
+case `uname` in
+	FreeBSD)
+		# FreeBSD does not ship with GCC anymore by default so needs clang
+		export OWTOOLS=CLANG
+		;;
+	Darwin)
+		# Darwin/macOS does not ship with GCC anymore so needs clang.
+		export OWTOOLS=CLANG
+		;;
+	*)
+		export OWTOOLS=GCC
+		;;
+esac
+
 
 # Build control related variables
 ##################################
