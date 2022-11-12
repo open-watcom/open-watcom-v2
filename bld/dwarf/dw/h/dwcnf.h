@@ -81,7 +81,7 @@ typedef int_16          dw_column_delta;
 
 /*
     dw_size_t is used for sizes of various things such as block constants
-    (i.e. for DWAddConstant)
+    (i.e. for DWAddEnumerationConstant)
 */
 typedef uint_32         dw_size_t;
 
