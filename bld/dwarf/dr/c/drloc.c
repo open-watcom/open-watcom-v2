@@ -83,6 +83,7 @@ static void DoLocExpr( unsigned_8       *p,
     uint_32         *top;
     uint_32         *stk_top;
     dr_loc_kind     kind;
+    unsigned_32     utmp32;
 
 #define Pop( a )     (++a)
 #define Push( a )    (--a)
@@ -95,9 +96,7 @@ static void DoLocExpr( unsigned_8       *p,
     stack[100] = 0;
     top = stk_top;
     if( callbck->init!= NULL  ) {
-        unsigned_32 tmp32;
-
-        kind = callbck->init( d, &tmp32 );
+        kind = callbck->init( d, &utmp32 );
         switch( kind ){
         case DR_LOC_NONE:
              kind = DR_LOC_ADDR;
@@ -105,7 +104,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DR_LOC_REG:
         case DR_LOC_ADDR:
             Push( top );
-            top[0] = tmp32;
+            top[0] = utmp32;
         }
     } else {
         kind = DR_LOC_ADDR;
