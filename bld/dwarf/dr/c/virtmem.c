@@ -33,6 +33,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include "drpriv.h"
+#include "drleb128.h"
+
+
+#define OFFSET_SHIFT    12
+#define MAX_NODE_SIZE   (1UL << OFFSET_SHIFT)
+#define MAX_LEAFS       16            // maximum # of leafs per branch
+#define SEG_LIMIT       16200         // maximum # of 4K pages.
+
+/* find the node for MEM_ADDR or FILE_ADDR */
+#define NODE( stg )     (&PageTab[stg.w.high][stg.w.low >> OFFSET_SHIFT])
+
+#define OFFSET_MASK     (MAX_NODE_SIZE - 1)
+#define NODE_OFF( stg ) ( stg.w.low & OFFSET_MASK )
+
+#define ACCESSPAGE( __nd, __vm )    \
+    __nd = NODE( (__vm) );          \
+    __nd->refd = 1;                 \
+    if( !__nd->inmem ) {            \
+        ReadPage( (__nd), (__vm) ); \
+    }
+
 /*
  * this virtual memory system has been set up in such a way that when
  * running under a 32-bit operating system with effective paging, the
@@ -93,23 +114,11 @@ typedef union {
     wordpick        w;
 } virt_struct;
 
-#define OFFSET_SHIFT      12
-#define MAX_NODE_SIZE     (1U << OFFSET_SHIFT)
-#define MAX_LEAFS         16            // maximum # of leafs per branch
-#define SEG_LIMIT         16200         // maximum # of 4K pages.
-
-/* find the node for MEM_ADDR or FILE_ADDR */
-#define NODE( stg )        (&PageTab[stg.w.high][stg.w.low >> OFFSET_SHIFT])
-
-#define OFFSET_MASK        (MAX_NODE_SIZE - 1)
-#define NODE_OFF( stg )    ( stg.w.low & OFFSET_MASK )
-
-#define ACCESSPAGE( __nd, __vm )    \
-    __nd = NODE( (__vm) );          \
-    __nd->refd = 1;                 \
-    if( !__nd->inmem ) {            \
-        ReadPage( (__nd), (__vm) ); \
-    }
+typedef struct {
+    drmem_hdl   *vmptr;
+    page_entry  *node;
+    unsigned_16 off;
+} id;
 
 static page_entry       **PageTab   = NULL;
 static unsigned_16      NumBranches = 15;
@@ -388,39 +397,47 @@ unsigned_8 DWRVMReadByte( drmem_hdl hdl )
     return( *(node->mem + NODE_OFF(vm)) );
 }
 
-unsigned_32 ReadLEB128( drmem_hdl *vmptr, bool issigned )
-/*******************************************************/
-/* read and advance the vm pointer */
+static uint_8 readLEB( void **h )
+/*******************************/
 {
+    id          *i = (id *)h;
+    uint_8      inbyte;
     virt_struct vm;
-    page_entry  *node;
-    unsigned_16 off;
-    unsigned_32 result;
-    unsigned_8  inbyte;
-    unsigned    shift;
+
+    vm.l = *i->vmptr++;
+    if( i->off == MAX_NODE_SIZE ) {
+        ACCESSPAGE( i->node, vm );
+        i->off = 0;
+    }
+    inbyte = *(i->node->mem + i->off);
+    i->off++;
+    return( inbyte );
+}
+
+int_64 DWRVMReadSLEB128( drmem_hdl *vmptr )
+/*****************************************/
+{
+    id          i;
+    virt_struct vm;
 
     vm.l = *vmptr;
-    ACCESSPAGE( node, vm );
-    off = NODE_OFF( vm );
-    shift = 0;
-    result = 0;
-    do {
-        if( off == MAX_NODE_SIZE ) {
-            ACCESSPAGE( node, vm );
-            off = 0;
-        }
-        inbyte = *(node->mem + off);
-        result |= (unsigned_32)(inbyte & 0x7F) << shift;
-        off++;
-        vm.l++;
-        shift += 7;
-    } while( inbyte & 0x80 );
-    *vmptr = vm.l;
-    if( issigned && (inbyte & 0x40) != 0 && shift < 32 ) {
-        // we have to sign extend
-        result |= - ((signed_32)(1 << shift));
-    }
-    return( result );
+    i.vmptr = vmptr;
+    ACCESSPAGE( i.node, vm );
+    i.off = NODE_OFF( vm );
+    return( SLEB128( (void **)&i, readLEB ) );
+}
+
+uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
+/******************************************/
+{
+    id          i;
+    virt_struct vm;
+
+    vm.l = *vmptr;
+    i.vmptr = vmptr;
+    ACCESSPAGE( i.node, vm );
+    i.off = NODE_OFF( vm );
+    return( ULEB128( (void **)&i, readLEB ) );
 }
 
 void DWRVMSkipLEB128( drmem_hdl *hdl )

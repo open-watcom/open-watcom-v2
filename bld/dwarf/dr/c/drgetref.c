@@ -164,7 +164,7 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
             break;
 
         case REF_SET_COLUMN:
-            registers.column = (unsigned_8)DWRVMReadULEB128( &loc );
+            registers.column = DWRVMReadULEB128( &loc );
             break;
 
         case REF_ADD_LINE:
@@ -173,7 +173,7 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
             break;
 
         case REF_ADD_COLUMN:
-            registers.column += (signed_8)DWRVMReadSLEB128( &loc );
+            registers.column += DWRVMReadSLEB128( &loc );
             break;
 
         case REF_COPY:

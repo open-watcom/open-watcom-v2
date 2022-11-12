@@ -62,6 +62,7 @@ libtarg_objs = &
     drstack.obj  &
     drtype.obj   &
     drutils.obj  &
+    drleb128.obj &
     $(libtarg_objs_virt)
 !include libtarg.mif
 

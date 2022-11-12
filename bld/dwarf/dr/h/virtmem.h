@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,6 @@
 ****************************************************************************/
 
 
-extern unsigned_32      ReadLEB128( drmem_hdl *, bool );
-
 extern void             DWRVMInit( void );
 extern void             DWRVMDestroy( void );
 extern void             DWRVMReset( void );
@@ -42,8 +41,8 @@ extern char             *DWRVMCopyString( drmem_hdl * );
 extern size_t           DWRVMGetStrBuff( drmem_hdl drstr, char *buf, size_t max );
 extern unsigned_16      DWRVMReadWord( drmem_hdl );
 extern unsigned_32      DWRVMReadDWord( drmem_hdl );
-
-#define DWRVMReadSLEB128(__h) (signed_32)ReadLEB128( __h, true )
+extern int_64           DWRVMReadSLEB128( drmem_hdl *vmptr );
+extern uint_64          DWRVMReadULEB128( drmem_hdl *vmptr );
 
 #if defined( USE_VIRTMEM )
 
@@ -53,11 +52,9 @@ extern void             DWRVMSkipLEB128( drmem_hdl * );
 extern void             DWRVMRead( drmem_hdl, void *, size_t );
 extern unsigned_8       DWRVMReadByte( drmem_hdl );
 
-#define DWRVMReadULEB128(__h) ReadLEB128( __h, false )
-
 #else   /* !USE_VIRTMEM */
 
-#define DWRVMStrLen(__h)          strlen((const char *)__h)
+#define DWRVMStrLen(__h)        strlen((const char *)__h)
 #define DWRVMSwap(__ig1,__ig2,__ig3)
 #define DWRVMSkipLEB128(__h)          \
     {                                 \
@@ -97,10 +94,6 @@ extern unsigned_32      ReadULEB128( drmem_hdl * );         /* inline */
     __parm          [__edx] \
     __value         [__eax] \
     __modify __nomemory
-
-#else
-
-#define DWRVMReadULEB128(__h)   ReadLEB128( __h, false )
 
 #endif
 

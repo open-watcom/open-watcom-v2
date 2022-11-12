@@ -101,21 +101,6 @@ typedef struct {
     List_T func_elg;    /* elg for function parms " )" */
 } BrokenName_T;
 
-static BrokenName_T Empty_Broken_Name = {
-    { NULL, NULL, LIST_TAIL },     /* dec_plg */
-    { NULL, NULL, LIST_HEAD },     /* type_plg */
-    { NULL, NULL, LIST_HEAD },     /* type_bas */
-    { NULL, NULL, LIST_HEAD },     /* type_ptr */
-    { NULL, NULL, LIST_TAIL },     /* type_elg */
-    { NULL, NULL, LIST_TAIL },     /* type_inh */
-    { NULL, NULL, LIST_HEAD },     /* var_plg */
-    { NULL, NULL, LIST_HEAD },     /* var_bas */
-    { NULL, NULL, LIST_HEAD },     /* var_elg */
-    { NULL, NULL, LIST_TAIL },     /* func_plg */
-    { NULL, NULL, LIST_TAIL },     /* func_bas */
-    { NULL, NULL, LIST_TAIL }      /* func_elg*/
-};
-
 /*
  * this structure holds the current location
  */
@@ -266,6 +251,21 @@ static const char *LBLClass =               "Class";
 static const char *LBLCommonBlock =         "Common Block";
 static const char *LBLVariable =            "Variable";
 static const char *LBLParameter =           "Parameter";
+
+static BrokenName_T Empty_Broken_Name = {
+    { NULL, NULL, LIST_TAIL },     /* dec_plg */
+    { NULL, NULL, LIST_HEAD },     /* type_plg */
+    { NULL, NULL, LIST_HEAD },     /* type_bas */
+    { NULL, NULL, LIST_HEAD },     /* type_ptr */
+    { NULL, NULL, LIST_TAIL },     /* type_elg */
+    { NULL, NULL, LIST_TAIL },     /* type_inh */
+    { NULL, NULL, LIST_HEAD },     /* var_plg */
+    { NULL, NULL, LIST_HEAD },     /* var_bas */
+    { NULL, NULL, LIST_HEAD },     /* var_elg */
+    { NULL, NULL, LIST_TAIL },     /* func_plg */
+    { NULL, NULL, LIST_TAIL },     /* func_bas */
+    { NULL, NULL, LIST_TAIL }      /* func_elg*/
+};
 
 void DRDecorateLabel( drmem_hdl die, char *buf )
 /**********************************************/
