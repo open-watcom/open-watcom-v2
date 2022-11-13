@@ -240,43 +240,41 @@ static void dump_hex( const unsigned_8 *input, unsigned length )
     }
 }
 
-unsigned_8 *DecodeULEB128( const unsigned_8 *input, unsigned_32 *value )
-/**********************************************************************/
+uint_64 DecodeULEB128( const unsigned_8 **input )
+/***********************************************/
 {
-    unsigned_32 result;
+    uint_64     result;
     unsigned    shift;
     unsigned_8  byte;
 
     result = 0;
     shift = 0;
     do {
-        byte = *input++;
+        byte = *(*input)++;
         result |= ( byte & 0x7f ) << shift;
         shift += 7;
     } while( byte & 0x80 );
-    *value = result;
-    return( (unsigned_8 *)input );
+    return( result );
 }
 
-unsigned_8 *DecodeSLEB128( const unsigned_8 *input, signed_32 *value )
-/********************************************************************/
+int_64 DecodeSLEB128( const unsigned_8 **input )
+/**********************************************/
 {
-    signed_32       result;
+    int_64          result;
     unsigned        shift;
     unsigned_8      byte;
 
     result = 0;
     shift = 0;
     do {
-        byte = *input++;
+        byte = *(*input)++;
         result |= ( byte & 0x7f ) << shift;
         shift += 7;
     } while( byte & 0x80 );
-    if( ( shift < 32 ) && ( byte & 0x40 ) ) {
-        result |= - ( 1 << shift );
+    if( ( shift < 64 ) && ( byte & 0x40 ) ) {
+        result |= ~0ULL << shift;
     }
-    *value = result;
-    return( (unsigned_8 *)input );
+    return( result );
 }
 
 unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code )
@@ -293,20 +291,20 @@ unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code )
     for( ;; ) {
         if( p >= stop )
             return( NULL );
-        p = DecodeULEB128( p, &tmp );
+        tmp = DecodeULEB128( &p );
         if( tmp == code )
             return( p );
         if( p >= stop )
             return( NULL );
-        p = DecodeULEB128( p, &tmp );
+        tmp = DecodeULEB128( &p );
         if( p >= stop )
             return( NULL );
         p++;
         for( ;; ) {
-            p = DecodeULEB128( p, &attr );
+            attr = DecodeULEB128( &p );
             if( p >= stop )
                 return( NULL );
-            p = DecodeULEB128( p, &tmp );
+            tmp = DecodeULEB128( &p );
             if( p >= stop )
                 return( NULL );
             if( attr == 0 ) {
@@ -432,16 +430,16 @@ static void DmpLoc( unsigned_8 const *p, unsigned length, unsigned_16 addr_size 
             Putdec( op1s );
             break;
         case DW_LOP_U128:
-            p = DecodeULEB128( p, &op1u );
+            op1u = DecodeULEB128( &p );
             Putdec( op1u );
             break;
         case DW_LOP_S128:
-            p = DecodeSLEB128( p, &op1s );
+            op1s = DecodeSLEB128( &p );
             Putdecs( op1s );
             break;
         case DW_LOP_U128_S128:
-            p = DecodeULEB128( p, &op1u );
-            p = DecodeSLEB128( p, &op2s );
+            op1u = DecodeULEB128( &p );
+            op2s = DecodeSLEB128( &p );
             Putdec( op1u );
             Wdputs( "," );
             Putdecs( op2s );
@@ -457,7 +455,7 @@ static void DmpLoc( unsigned_8 const *p, unsigned length, unsigned_16 addr_size 
             break;
         case DW_LOP_BRG1:
             op1u = op-DW_OP_breg0;
-            p = DecodeSLEB128( p, &op2s );
+            op2s = DecodeSLEB128( &p );
             Wdputs( RegName[op1u] );
             if( op2s < 0 ) {
                 Wdputs( " -" );
@@ -530,8 +528,8 @@ static bool dump_tag( info_state *info )
     p = info->p;
     abbrev = info->abbrev;
     for( ;; ) {
-        abbrev = DecodeULEB128( abbrev, &attr );
-        abbrev = DecodeULEB128( abbrev, &form );
+        attr = DecodeULEB128( &abbrev );
+        form = DecodeULEB128( &abbrev );
         if( attr == 0 ) break;
         Wdputs( "        " );
         getAT( attr );
@@ -567,7 +565,7 @@ decode_form:
             Wdputslc( "\n" );
             break;
         case DW_FORM_block:
-            p = DecodeULEB128( p, &len );
+            len = DecodeULEB128( &p );
             if( is_loc ) {
                 DmpLoc( p, len, info->addr_size );
             } else {
@@ -645,13 +643,13 @@ decode_form:
             Wdputslc( "\n" );
             break;
         case DW_FORM_indirect:
-            p = DecodeULEB128( p, &form );
+            form = DecodeULEB128( &p );
             Wdputc( '(' );
             getFORM( form );
             Wdputc( ')' );
             goto decode_form;
         case DW_FORM_sdata:
-            p = DecodeSLEB128( p, &itmp );
+            itmp = DecodeSLEB128( &p );
             Puthex( itmp, 8 );
             Wdputslc( "\n" );
             break;
@@ -672,12 +670,12 @@ decode_form:
             p += sizeof( unsigned_32 );
             break;
         case DW_FORM_udata:
-            p = DecodeULEB128( p, &tmp );
+            tmp = DecodeULEB128( &p );
             Puthex( tmp, 8 );
             Wdputslc( "\n" );
             break;
         case DW_FORM_ref_udata:
-            p = DecodeULEB128( p, &tmp );
+            tmp = DecodeULEB128( &p );
             Puthex( info->cu_header + tmp, 8 );
             Wdputslc( "\n" );
             break;
@@ -736,7 +734,7 @@ static void dump_info( const unsigned_8 *input, unsigned length )
         while( p - unit_base < unit_length ) {
             Wdputs( "Offset: " );
             Puthex( (unsigned_32)( p - input ), 8 );
-            p = DecodeULEB128( p, &abbrev_code );
+            abbrev_code = DecodeULEB128( &p );
             Wdputs( "  Code: " );
             Puthex( abbrev_code, 8 );
             Wdputslc( "\n" );
@@ -751,7 +749,7 @@ static void dump_info( const unsigned_8 *input, unsigned length )
             }
             if( p >= input + length )
                 break;
-            abbrev = DecodeULEB128( abbrev, &tag );
+            tag = DecodeULEB128( &abbrev );
             Wdputs( "        " );
             getTAG( tag );
             Wdputslc( "\n" );
@@ -781,8 +779,8 @@ static bool skip_tag( info_state *info )
     p = info->p;
     abbrev = info->abbrev;
     for( ;; ) {
-        abbrev = DecodeULEB128( abbrev, &attr );
-        abbrev = DecodeULEB128( abbrev, &form );
+        attr = DecodeULEB128( &abbrev );
+        form = DecodeULEB128( &abbrev );
         if( attr == 0 ) break;
         if( attr == DW_AT_location
          || attr == DW_AT_segment
@@ -812,7 +810,7 @@ decode_form:
             p += info->addr_size;
             break;
         case DW_FORM_block:
-            p = DecodeULEB128( p, &len );
+            len = DecodeULEB128( &p );
             p += len;
             break;
         case DW_FORM_block1:
@@ -851,10 +849,10 @@ decode_form:
             ++p;
             break;
         case DW_FORM_indirect:
-            p = DecodeULEB128( p, &form );
+            form = DecodeULEB128( &p );
             goto decode_form;
         case DW_FORM_sdata:
-            p = DecodeSLEB128( p, &itmp );
+            itmp = DecodeSLEB128( &p );
             break;
         case DW_FORM_string:
             p += strlen( p ) + 1;
@@ -863,10 +861,10 @@ decode_form:
             abort();
             break;
         case DW_FORM_udata:
-            p = DecodeULEB128( p, &tmp );
+            tmp = DecodeULEB128( &p );
             break;
         case DW_FORM_ref_udata:
-            p = DecodeULEB128( p, &tmp );
+            tmp = DecodeULEB128( &p );
             break;
         case DW_FORM_ref_addr:
             p += sizeof( unsigned_32 );
@@ -916,7 +914,7 @@ static void dump_info_headers( const char *input, unsigned length )
         p += 11;
         while( p - unit_base < unit_length ) {
             tag_offset = p - input;
-            p = DecodeULEB128( p, &abbrev_code );
+            abbrev_code = DecodeULEB128( &p );
             if( abbrev_code == 0 ) continue;
             abbrev = find_abbrev( abbrev_offset, abbrev_code );
             if( abbrev == NULL ) {
@@ -926,7 +924,7 @@ static void dump_info_headers( const char *input, unsigned length )
                 break;
             }
             if( p >= input + length ) break;
-            abbrev = DecodeULEB128( abbrev, &tag );
+            tag = DecodeULEB128( &abbrev );
             abbrev++;
             state.abbrev = abbrev;
             state.p = p;
@@ -972,7 +970,7 @@ void dump_abbrevs( const unsigned_8 *input, unsigned length )
         if( p > input + length )
             break;
         abbr_off = tmp = (unsigned_32)( p - input );
-        p = DecodeULEB128( p, &tmp );
+        tmp = DecodeULEB128( &p );
         if( tmp == 0 ) {
             Wdputslc( "End_CU\n" );
 //            start = true;
@@ -987,7 +985,7 @@ void dump_abbrevs( const unsigned_8 *input, unsigned length )
             break;
         if( tmp == 0 )
             continue; /* compile unit separator */
-        p = DecodeULEB128( p, &tmp );
+        tmp = DecodeULEB128( &p );
         Wdputs( "        " );
         getTAG( tmp );
         Wdputslc( "\n" );
@@ -1000,10 +998,10 @@ void dump_abbrevs( const unsigned_8 *input, unsigned length )
         for( ;; ) {
             if( p > input + length )
                 break;
-            p = DecodeULEB128( p, &attr );
+            attr = DecodeULEB128( &p );
             if( p > input + length )
                 break;
-            p = DecodeULEB128( p, &tmp );
+            tmp = DecodeULEB128( &p );
             if( attr == 0 && tmp == 0 ) {
                 Wdputslc( "        End_form\n" );
                 break;
@@ -1139,28 +1137,28 @@ static void dump_ref( const unsigned_8 *input, uint length )
                     PutRefRegisters( &registers );
                     break;
                 case REF_SET_FILE:
-                    p = DecodeULEB128( p, &tmp );
+                    tmp = DecodeULEB128( &p );
                     Putdec( tmp );
                     registers.file = tmp;
                     break;
                 case REF_SET_LINE:
-                    p = DecodeULEB128( p, &tmp );
+                    tmp = DecodeULEB128( &p );
                     Putdec( tmp );
                     registers.line = tmp;
                     registers.column = 0;
                     break;
                 case REF_SET_COLUMN:
-                    p = DecodeULEB128( p, &tmp );
+                    tmp = DecodeULEB128( &p );
                     Putdec( tmp );
                     registers.column = (unsigned_8)tmp;
                     break;
                 case REF_ADD_LINE:
-                    p = DecodeSLEB128( p, &itmp );
+                    itmp = DecodeSLEB128( &p );
                     Putdecs( itmp );
                     registers.line += itmp;
                     break;
                 case REF_ADD_COLUMN:
-                    p = DecodeULEB128( p, &tmp );
+                    tmp = DecodeULEB128( &p );
                     Putdec( tmp );
                     registers.column += (unsigned_8)tmp;
                     break;

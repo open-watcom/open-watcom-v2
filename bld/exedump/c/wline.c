@@ -231,9 +231,9 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
             ++file_index;
             name = p;
             p += strlen( (char *)p ) + 1;
-            p = DecodeULEB128( p, &directory );
-            p = DecodeULEB128( p, &mod_time );
-            p = DecodeULEB128( p, &file_length );
+            directory = DecodeULEB128( &p );
+            mod_time = DecodeULEB128( &p );
+            file_length = DecodeULEB128( &p );
             Wdputs( "file " );
                 Putdec( file_index );
             Wdputs( ": '" );
@@ -260,7 +260,7 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
             ++p;
             if( op_code == 0 ) {
                 /* extended op_code */
-                p = DecodeULEB128( p, &tmp32 );
+                tmp32 = DecodeULEB128( &p );
                 op_len = (unsigned_16)tmp32;
                 Wdputs( "len: " );
                 Putdecl( op_len, 3 );
@@ -309,9 +309,9 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
                     ++file_index;
                     name = p;
                     p += strlen( (char *)p ) + 1;
-                    p = DecodeULEB128( p, &directory );
-                    p = DecodeULEB128( p, &mod_time );
-                    p = DecodeULEB128( p, &file_length );
+                    directory = DecodeULEB128( &p );
+                    mod_time = DecodeULEB128( &p );
+                    file_length = DecodeULEB128( &p );
                     Wdputs( "DEFINE_FILE " );
                     Putdec( file_index );
                     Wdputs( ": '" );
@@ -339,22 +339,22 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
                     state.basic_block = false;
                     break;
                 case DW_LNS_advance_pc:
-                    p = DecodeULEB128( p, &tmp32 );
+                    tmp32 = DecodeULEB128( &p );
                     Putdec( tmp32 );
                     state.address += tmp32 * min_instr;
                     break;
                 case DW_LNS_advance_line:
-                    p = DecodeSLEB128( p, &itmp32 );
+                    itmp32 = DecodeSLEB128( &p );
                     Putdecs( itmp32 );
                     state.line += itmp32;
                     break;
                 case DW_LNS_set_file:
-                    p = DecodeULEB128( p, &tmp32 );
+                    tmp32 = DecodeULEB128( &p );
                     Putdec( tmp32 );
                     state.file = tmp32;
                     break;
                 case DW_LNS_set_column:
-                    p = DecodeULEB128( p, &tmp32 );
+                    tmp32 = DecodeULEB128( &p );
                     Putdec( tmp32 );
                     state.column = tmp32;
                     break;
@@ -375,7 +375,7 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
                     break;
                 default:
                     for( u = 0; u < opcode_lengths[ op_code - 1 ]; ++u ) {
-                        p = DecodeULEB128( p, &tmp32 );
+                        tmp32 = DecodeULEB128( &p );
                         Puthex( tmp32, 8 );
                     }
                 }
