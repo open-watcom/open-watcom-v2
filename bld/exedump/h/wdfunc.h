@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,64 +33,64 @@
 /*
  * os2exe.c
  */
-extern bool Dmp_os2_head( void );
-extern bool Dmp_386_head( void );
+extern bool         Dmp_os2_head( void );
+extern bool         Dmp_386_head( void );
 
 /*
  * peexe.c
  */
-extern bool Dmp_pe_head( void );
-extern void dmp_objects( unsigned );
-extern void DumpCoffHdrFlags( unsigned_16 );
-extern bool Dmp_pe_tab( void );
+extern bool         Dmp_pe_head( void );
+extern void         dmp_objects( unsigned );
+extern void         DumpCoffHdrFlags( unsigned_16 );
+extern bool         Dmp_pe_tab( void );
 
 /*
  * novexe.c
  */
-extern bool Dmp_nlm_head( void );
+extern bool         Dmp_nlm_head( void );
 
 /*
  * pharexe.c
  */
-extern bool Dmp_phar_head( void );
+extern bool         Dmp_phar_head( void );
 
 /*
  * qnxexe.c
  */
-extern bool Dmp_qnx_head( void );
+extern bool         Dmp_qnx_head( void );
 
 /*
  * elfexe.c
  */
-extern bool Dmp_elf_head( void );
-extern bool Dmp_elf_header( unsigned long );
-extern bool Dmp_lib_head( void );
+extern bool         Dmp_elf_head( void );
+extern bool         Dmp_elf_header( unsigned long );
+extern bool         Dmp_lib_head( void );
 
 /*
  * machoexe.c
  */
-extern bool Dmp_macho_header( unsigned long );
-extern bool Dmp_macho_head( void );
+extern bool         Dmp_macho_header( unsigned long );
+extern bool         Dmp_macho_head( void );
 
 /*
  * wdwarf.c
  */
-extern bool Dmp_dwarf( void );
-extern bool Dmp_mdbg_head( void );
+extern bool         Dmp_dwarf( void );
+extern bool         Dmp_mdbg_head( void );
 
 /*
  * wsect.c
  */
-extern const char   *Getname( unsigned_32, readable_name *, size_t );
-extern uint_64      DecodeULEB128( const unsigned_8 ** );
-extern int_64       DecodeSLEB128( const unsigned_8 ** );
-unsigned_8          *find_abbrev( unsigned_32 start, unsigned_32 code );
-extern void         dump_abbrevs( const unsigned_8 *input, unsigned length );
-extern void         Dump_specific_section( unsigned, const unsigned_8 *, unsigned );
-extern void         Dump_all_sections( void );
-extern void         Free_dwarf_sections( void );
-extern void         Dump_lines( const unsigned_8 *, unsigned );
-extern unsigned     Lookup_section_name( const char * );
+extern const char       *Getname( unsigned_32, readable_name *, size_t );
+extern uint_64          DecodeULEB128( const unsigned_8 ** );
+extern int_64           DecodeSLEB128( const unsigned_8 ** );
+extern const unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code );
+extern void             dump_abbrevs( const unsigned_8 *input, unsigned length );
+extern void             Dump_specific_section( unsigned, const unsigned_8 *, unsigned );
+extern void             Dump_all_sections( void );
+extern void             Free_dwarf_sections( void );
+extern void             Dump_lines( const unsigned_8 *, unsigned );
+extern unsigned         Lookup_section_name( const char * );
 
 /*
  * dumpwv.c
