@@ -260,8 +260,7 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
             ++p;
             if( op_code == 0 ) {
                 /* extended op_code */
-                tmp32 = DecodeULEB128( &p );
-                op_len = (unsigned_16)tmp32;
+                op_len = (unsigned_16)DecodeULEB128( &p );
                 Wdputs( "len: " );
                 Putdecl( op_len, 3 );
                 Wdputc( ' ' );
