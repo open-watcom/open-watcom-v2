@@ -280,10 +280,10 @@ int_64 DecodeSLEB128( const unsigned_8 **input )
 unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code )
 /************************************************************/
 {
-    unsigned_8      *p;
-    unsigned_8      *stop;
-    unsigned_32     tmp;
-    unsigned_32     attr;
+    const unsigned_8    *p;
+    const unsigned_8    *stop;
+    unsigned_32         tmp;
+    unsigned_32         attr;
 
     p = Sections[DW_DEBUG_ABBREV].data;
     p += start;
