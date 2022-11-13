@@ -101,12 +101,30 @@ typedef struct {
 } descriptor;
 
 #define GET_DESC_BASE( desc ) \
-    ((unsigned long)(desc).base_15_0 + ((unsigned long)(desc).base_23_16 << 16L) + \
-    ((unsigned long)(desc).base_31_24 << 24L))
+    ( (unsigned long)(desc).base_15_0 \
+    | ((unsigned long)(desc).base_23_16 << 16L) \
+    | ((unsigned long)(desc).base_31_24 << 24L) \
+    )
+
+#define SET_DESC_BASE( desc, base ) \
+    (desc).base_15_0 = (base); \
+    (desc).base_23_16 = (unsigned long)(base) >> 16; \
+    (desc).base_31_24 = ((unsigned long)(base) >> 24)
+
+#define GET_DESC_LIMIT_NUM( desc ) \
+    ((desc).limit_15_0 | ((unsigned long)(desc).limit_19_16 << 16))
+
+#define GET_DESC_LIMIT_4K( desc ) \
+    ((GET_DESC_LIMIT_NUM( desc ) << 12) | 0xfffL)
 
 #define GET_DESC_LIMIT( desc ) \
-    ((desc).xtype.page_granular ? \
-    ((((unsigned long)(desc).limit_15_0 + ((unsigned long)(desc).limit_19_16 << 16L)) << 12L) + 0xfffL) : \
-    ((unsigned long)(desc).limit_15_0 + ((unsigned long)(desc).limit_19_16 << 16L)))
+    ( (desc).xtype.page_granular \
+    ? GET_DESC_LIMIT_4K( desc ) \
+    : GET_DESC_LIMIT_NUM( desc ) \
+    )
+
+#define SET_DESC_LIMIT( desc, limit ) \
+    (desc).limit_15_0 = (limit); \
+    (desc).limit_19_16 = ((unsigned long)(limit) >> 16)
 
 #endif /* _DESCRIPT_H_INCLUDED */
