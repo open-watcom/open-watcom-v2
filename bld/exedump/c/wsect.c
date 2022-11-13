@@ -277,8 +277,8 @@ int_64 DecodeSLEB128( const unsigned_8 **input )
     return( result );
 }
 
-unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code )
-/************************************************************/
+const unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code )
+/******************************************************************/
 {
     const unsigned_8    *p;
     const unsigned_8    *stop;
@@ -506,8 +506,8 @@ static void DmpLocList( unsigned_32 start, unsigned_16 addr_size )
 }
 
 typedef struct {
-    unsigned_8 const    *p;
-    unsigned_8          *abbrev;
+    const unsigned_8    *p;
+    const unsigned_8    *abbrev;
     unsigned_16         addr_size;
     unsigned_32         cu_header;
 } info_state;
@@ -515,7 +515,7 @@ typedef struct {
 static bool dump_tag( info_state *info )
 /**************************************/
 {
-    unsigned_8          *abbrev;
+    const unsigned_8    *abbrev;
     unsigned_32         attr;
     unsigned_32         offset;
     unsigned_32         form;
@@ -705,7 +705,7 @@ static void dump_info( const unsigned_8 *input, unsigned length )
     const unsigned_8    *p;
     unsigned_32         abbrev_code;
     unsigned_32         abbrev_offset;
-    unsigned_8          *abbrev;
+    const unsigned_8    *abbrev;
     unsigned_32         tag;
     unsigned_32         unit_length;
     const unsigned_8    *unit_base;
@@ -885,7 +885,7 @@ static void dump_info_headers( const char *input, unsigned length )
     const unsigned_8    *p;
     unsigned_32         abbrev_code;
     unsigned_32         abbrev_offset;
-    unsigned_8          *abbrev;
+    const unsigned_8    *abbrev;
     unsigned_32         tag;
     unsigned_32         unit_length;
     unsigned_32         tag_offset;
