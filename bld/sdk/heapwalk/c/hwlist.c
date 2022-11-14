@@ -131,10 +131,10 @@ int SortByGlobType( heap_list **p1, heap_list **p2 )
         }
         return( ret );
     } else {
-        nonsystem = (*p1)->info.mem.desc.type.nonsystem;
-        execute = (*p1)->info.mem.desc.type.execute;
-        if( nonsystem == (*p2)->info.mem.desc.type.nonsystem ) {
-            if( execute == (*p2)->info.mem.desc.type.execute ) {
+        nonsystem = (*p1)->info.mem.desc.type.u.nonsystem;
+        execute = (*p1)->info.mem.desc.type.u.execute;
+        if( nonsystem == (*p2)->info.mem.desc.type.u.nonsystem ) {
+            if( execute == (*p2)->info.mem.desc.type.u.execute ) {
                 return( 0 );
             }
         }
@@ -212,29 +212,29 @@ static void FormatSel( char *which, WORD sel, char *buff )
     base = GET_DESC_BASE( desc );
     limit = GET_DESC_LIMIT( desc );
     AddToBuff( "%08lx  %08lx  ", base, limit );
-    if( desc.xtype.page_granular ) {
+    if( desc.xtype.u.page_granular ) {
         AddToBuff( "page  " );
     } else {
         AddToBuff( "byte  " );
     }
-    if( desc.type.nonsystem && !desc.type.execute ) {
+    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
         AddToBuff( "data  " );
     } else {
         AddToBuff( "code  " );
     }
-    AddToBuff( "%1d   ", (WORD)desc.type.dpl );
-    if( desc.type.nonsystem && !desc.type.execute ) {
+    AddToBuff( "%1d   ", (WORD)desc.type.u.dpl );
+    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
         AddToBuff( "R" );
-        if( desc.type.d.writeable ) AddToBuff( "/W" );
+        if( desc.type.ud.writeable ) AddToBuff( "/W" );
         else AddToBuff( "  " );
         AddToBuff( "    " );
     } else {
         AddToBuff( "Ex" );
-        if( desc.type.x.readable ) AddToBuff( "/R" );
+        if( desc.type.ux.readable ) AddToBuff( "/R" );
         else AddToBuff( "  " );
         AddToBuff( "   " );
     }
-    if( desc.xtype.use32 ) {
+    if( desc.xtype.u.use32 ) {
         AddToBuff( "Y" );
     } else {
         AddToBuff( " " );

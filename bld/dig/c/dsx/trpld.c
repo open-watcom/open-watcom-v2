@@ -352,8 +352,8 @@ static char *SetTrapHandler( void )
             }
             DPMIGetDescriptor( _FP_SEG( PMData ), &desc );
             PMData->pmode_cs = sel;
-            desc.xtype.use32 = 0;
-            desc.type.execute = 1;
+            desc.xtype.u.use32 = 0;
+            desc.type.u.execute = 1;
             DPMISetDescriptor( sel, &desc );
             PMData->pmode_eip = RM_OFF( BackFromRealMode );
             PMData->pmode_ds  = _FP_SEG( &PMData );

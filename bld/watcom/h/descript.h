@@ -48,44 +48,44 @@
 
 typedef union {
     struct {
-        unsigned char               : 1;
-        unsigned char   writeable   : 1;
-        unsigned char   expand_down : 1;
-    } d;
-    struct {
-        unsigned char               : 1;
-        unsigned char   readable    : 1;
-        unsigned char   conforming  : 1;
-    } x;
-    struct {
-        unsigned char   type        : 2;
-        unsigned char   gate        : 1;
-        unsigned char   use32       : 1;
-    } s;
-    struct {
         unsigned char   accessed    : 1;
         unsigned char               : 2;
         unsigned char   execute     : 1;
         unsigned char   nonsystem   : 1;
         unsigned char   dpl         : 2;
         unsigned char   present     : 1;
-    };
+    } u;
+    struct {
+        unsigned char               : 1;
+        unsigned char   writeable   : 1;
+        unsigned char   expand_down : 1;
+    } ud;
+    struct {
+        unsigned char               : 1;
+        unsigned char   readable    : 1;
+        unsigned char   conforming  : 1;
+    } ux;
+    struct {
+        unsigned char   type        : 2;
+        unsigned char   gate        : 1;
+        unsigned char   use32       : 1;
+    } us;
     unsigned char   val;
 } descriptor_type;
 
 typedef union {
     struct {
-        unsigned char                 : 4;
+        unsigned char   limit_19_16   : 4;
         unsigned char   available     : 1;
         unsigned char   use64         : 1;
         unsigned char   use32         : 1;
         unsigned char   page_granular : 1;
-    };
-    unsigned char       val;
+    } u;
     struct {
         unsigned char               : 4;
         unsigned char   flags       : 4;
-    };
+    } uf;
+    unsigned char       val;
 } descriptor_xtype;
 
 typedef struct {
@@ -93,10 +93,7 @@ typedef struct {
     unsigned short      base_15_0;
     unsigned char       base_23_16;
     descriptor_type     type;
-    union {
-        unsigned char       limit_19_16 : 4;
-        descriptor_xtype    xtype;
-    };
+    descriptor_xtype    xtype;
     unsigned char       base_31_24;
 } descriptor;
 
@@ -112,19 +109,19 @@ typedef struct {
     (desc).base_31_24 = ((unsigned long)(base) >> 24)
 
 #define GET_DESC_LIMIT_NUM( desc ) \
-    ((desc).limit_15_0 | ((unsigned long)(desc).limit_19_16 << 16))
+    ((desc).limit_15_0 | ((unsigned long)(desc).xtype.u.limit_19_16 << 16))
 
 #define GET_DESC_LIMIT_4K( desc ) \
     ((GET_DESC_LIMIT_NUM( desc ) << 12) | 0xfffL)
 
 #define GET_DESC_LIMIT( desc ) \
-    ( (desc).xtype.page_granular \
+    ( (desc).xtype.u.page_granular \
     ? GET_DESC_LIMIT_4K( desc ) \
     : GET_DESC_LIMIT_NUM( desc ) \
     )
 
 #define SET_DESC_LIMIT( desc, limit ) \
     (desc).limit_15_0 = (limit); \
-    (desc).limit_19_16 = ((unsigned long)(limit) >> 16)
+    (desc).xtype.u.limit_19_16 = ((unsigned long)(limit) >> 16)
 
 #endif /* _DESCRIPT_H_INCLUDED */

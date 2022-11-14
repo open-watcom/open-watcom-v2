@@ -309,7 +309,7 @@ static void dmp_descriptor( unsigned_32 size )
         Wdputs( "H        " );
         Puthex( desc.type.val, 2 );
         Wdputs( "H           " );
-        Puthex( desc.xtype.flags, 1 );
+        Puthex( desc.xtype.uf.flags, 1 );
         Wdputslc( "H\n" );
     }
 }

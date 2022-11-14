@@ -154,16 +154,16 @@ ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
  */
 static void createAccessString( char *ptr, descriptor *desc )
 {
-    if( desc->type.nonsystem && !desc->type.execute )  {
+    if( desc->type.u.nonsystem && !desc->type.u.execute )  {
         *ptr++ =  'R';
-        if( desc->type.d.writeable ) {
+        if( desc->type.ud.writeable ) {
             *ptr++ = '/';
             *ptr++ = 'W';
         }
     } else {
         *ptr++ = 'E';
         *ptr++ = 'x';
-        if( desc->type.x.readable ) {
+        if( desc->type.ux.readable ) {
             *ptr++ = '/';
             *ptr++ = 'R';
         }
@@ -207,15 +207,15 @@ static void memDumpHeader( int hdl, MemWndInfo *info )
         write( hdl, buf, len );
         RCsprintf( buf, MWND_LIMIT, GET_DESC_LIMIT( desc), &len );
         write( hdl, buf, len );
-        if( desc.type.nonsystem && !desc.type.execute )  {
+        if( desc.type.u.nonsystem && !desc.type.u.execute )  {
             RCsprintf( buf, MWND_TYPE_DATA, &len );
         } else {
             RCsprintf( buf, MWND_TYPE_CODE, &len );
         }
         write( hdl, buf, len );
-        sprintf( buf, "DPL:         \t%1d\n%n", desc.type.dpl, &len );
+        sprintf( buf, "DPL:         \t%1d\n%n", desc.type.u.dpl, &len );
         write( hdl, buf, len );
-        if( desc.xtype.page_granular ) {
+        if( desc.xtype.u.page_granular ) {
             RCsprintf( buf, MWND_GRANULARITY_PAGE, &len );
         } else {
             RCsprintf( buf, MWND_GRANULARITY_BYTE, &len );
@@ -1224,16 +1224,16 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
         SetDlgItemText( hwnd, SEL_INFO_LIMIT, buf );
 //      SetDWORDStaticField( hwnd, SEL_INFO_LIMIT, GET_DESC_LIMIT( desc ) );
 
-        if( desc.type.nonsystem && !desc.type.execute )  {
+        if( desc.type.u.nonsystem && !desc.type.u.execute )  {
             rcstr = AllocRCString( MWND_DATA );
         } else {
             rcstr = AllocRCString( MWND_CODE );
         }
         SetDlgItemText( hwnd, SEL_INFO_TYPE, rcstr );
         FreeRCString( rcstr );
-        sprintf( buf, "%1d", desc.type.dpl );
+        sprintf( buf, "%1d", desc.type.u.dpl );
         SetDlgItemText( hwnd, SEL_INFO_DPL, buf );
-        if( desc.xtype.page_granular ) {
+        if( desc.xtype.u.page_granular ) {
             rcstr = AllocRCString( MWND_PAGE );
         } else {
             rcstr = AllocRCString( MWND_BYTE );
@@ -1325,7 +1325,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
 #ifndef __NT__
     if( isdpmi ) {
         GetADescriptor( seg, &desc );
-        if( desc.type.nonsystem && !desc.type.execute )  {
+        if( desc.type.u.nonsystem && !desc.type.u.execute )  {
             info->disp_type = MemConfigInfo.data_type;
         } else {
             info->disp_type = MemConfigInfo.code_type;

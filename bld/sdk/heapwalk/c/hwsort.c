@@ -121,12 +121,12 @@ static int SortByHandle( heap_list **p1, heap_list **p2 )
 
 static int SortByGran( heap_list **p1, heap_list **p2 )
 {
-    return( (*p1)->info.mem.desc.xtype.page_granular - (*p2)->info.mem.desc.xtype.page_granular );
+    return( (*p1)->info.mem.desc.xtype.u.page_granular - (*p2)->info.mem.desc.xtype.u.page_granular );
 } /* SortByGran */
 
 static int SortByDPL( heap_list **p1, heap_list **p2 )
 {
-    return( (*p1)->info.mem.desc.type.dpl - (*p2)->info.mem.desc.type.dpl );
+    return( (*p1)->info.mem.desc.type.u.dpl - (*p2)->info.mem.desc.type.u.dpl );
 } /* SortByDPL */
 
 static int SortByFlag( heap_list **p1, heap_list **p2 )

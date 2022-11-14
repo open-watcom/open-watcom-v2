@@ -337,20 +337,20 @@ static void formatSel( char *which, WORD sel )
     base = GET_DESC_BASE( desc );
     limit = GET_DESC_LIMIT( desc );
     logPrint( "%08lx  %08lx  ", base, limit );
-    if( desc.xtype.page_granular ) {
+    if( desc.xtype.u.page_granular ) {
         logPrint( "page  " );
     } else {
         logPrint( "byte  " );
     }
-    if( desc.type.nonsystem && !desc.type.execute ) {
+    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
         logPrint( "data  " );
     } else {
         logPrint( "code  " );
     }
-    logPrint( "%1d   ", (WORD)desc.type.dpl );
-    if( desc.type.nonsystem && !desc.type.execute ) {
+    logPrint( "%1d   ", (WORD)desc.type.u.dpl );
+    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
         logPrint( "R" );
-        if( desc.type.d.writeable ) {
+        if( desc.type.ud.writeable ) {
             logPrint( "/W" );
         } else {
             logPrint( "  " );
@@ -358,14 +358,14 @@ static void formatSel( char *which, WORD sel )
         logPrint( "    " );
     } else {
         logPrint( "Ex" );
-        if( desc.type.x.readable ) {
+        if( desc.type.ux.readable ) {
             logPrint( "/R" );
         } else {
             logPrint( "  " );
         }
         logPrint( "   " );
     }
-    if( desc.xtype.use32 ) {
+    if( desc.xtype.u.use32 ) {
         logPrint( "Y\n" );
     } else {
         logPrint( " \n" );
