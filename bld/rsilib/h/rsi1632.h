@@ -38,10 +38,6 @@
 #define far_strcpy(d,s)     _fstrcpy( d, s )
 #define far_setmem(p,l,w)   _fmemset( p, w, l )
 
-#define GETLIMIT(g)     (((ULONG)(g).limit_19_16)<<16 | (g).limit_15_0)
-#define GDT32LIMIT(g)   ((g).xtype.page_granular ? (ULONG)GETLIMIT(g)<<12 | 0xFFF : (ULONG)GETLIMIT(g))
-#define GDT32BASE(g)    makelong(((g).base_31_24 << 8)|(g).base_23_16,(g).base_15_0)
-
 #define MEMBLK_INVALID  0
 #define MEMBLK_PARTIAL  1
 #define MEMBLK_VALID    2

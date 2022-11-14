@@ -327,7 +327,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
     setLimitAndAddr( StackSelector, baseaddr, len, DESC_ACCESS_DATA );
     WrapAround = false;
     if( DPMIGetDescriptor( DataSelector, &desc ) == 0 ) {
-        if( desc.limit_19_16 == 0x0F && desc.limit_15_0 == 0xFFFF ) {
+        if( GET_DESC_LIMIT_NUM( desc ) == 0x000FFFFF ) {
             WrapAround = true;
         } else {
             WrapAround = false;

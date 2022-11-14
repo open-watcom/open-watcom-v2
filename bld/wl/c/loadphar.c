@@ -151,9 +151,7 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
 {
     descriptor  desc;
 
-    desc.base_15_0 = base;
-    desc.base_23_16 = base >> 16;
-    desc.base_31_24 = base >> 24;
+    SET_DESC_BASE( desc, base );
     desc.type.val = 0;
     if( flags & DR_BASE ) {
         desc.type.d.writeable = 1;
@@ -181,8 +179,7 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
         limit >>= 12;
         desc.xtype.page_granular = 1;
     }
-    desc.limit_15_0 = limit;
-    desc.limit_19_16 = (limit >> 16);
+    SET_DESC_LIMIT( desc, limit );
     WriteLoad( &desc, sizeof( descriptor ) );
 }
 

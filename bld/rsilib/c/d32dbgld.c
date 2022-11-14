@@ -229,11 +229,8 @@ retry:
      * Update debuggee's descriptor table as well as our own.
      */
     rsi_get_descriptor( env_sel, &g );
-    g.limit_15_0 = ( blocksize << 4 ) - 1;
-    g.limit_19_16 = (( blocksize << 4 ) - 1) / 256 / 256;
-    g.base_15_0 = oldenv;
-    g.base_23_16 = oldenv >> 16;
-    g.base_31_24 = oldenv >> 24;
+    SET_DESC_LIMIT( g, ( blocksize << 4 ) - 1 );
+    SET_DESC_BASE( g, oldenv );
     rsi_set_descriptor( env_sel, &g );
 }
 

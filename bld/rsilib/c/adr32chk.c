@@ -45,7 +45,7 @@ int rsi_addr32_check( OFFSET32 off, SELECTOR sel, size_t for_length, size_t *val
         }
         if( !rsi_get_descriptor( sel, &g ) )
             return( MEMBLK_INVALID );
-        limit = GDT32LIMIT( g );
+        limit = GET_DESC_LIMIT( g );
         if( off > limit ) {
             /*
              * Offset past end of segment
