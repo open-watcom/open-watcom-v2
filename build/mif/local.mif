@@ -338,7 +338,8 @@ target_cflags_386   =
 !ifdef bootstrap
 target_cflags_x64   =
 !else
-target_cflags_x64   = -march=core2 -msse2
+target_cflags_x64   =
+#target_cflags_x64   = -march=core2 -msse2
 !endif
 target_cflags_ppc   =
 target_cflags_mps   =
