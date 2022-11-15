@@ -62,7 +62,7 @@ GENDEVCMD = ..\gml\os2\gendev $(gendev_cmdl_params)
 WGMLCMD = $(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c \"$(%OWROOT)\"" -c "c:$(wgml_subdir)\$(dos_wgml_tmp_batch)"
 GENDEVCMD = $(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:$(gendev_subdir)\$(dos_gendev_tmp_batch)"
 # only DOSBOX use upper cased file name
-wgml_ucase = 1 
+wgml_ucase = 1
 use_dosbox = 1
 
 !else ifeq bld_os nt
@@ -70,7 +70,7 @@ use_dosbox = 1
 WGMLCMD = ..\gml\dos\wgml $(wgml_cmdl_params)
 GENDEVCMD = ..\gml\dos\gendev $(gendev_cmdl_params)
 # NT DOSX use upper cased file name
-wgml_ucase=1
+wgml_ucase = 1
 
 !else
 !error !!! Missing DOSBOX configuration or unsupported building platform !!!

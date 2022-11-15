@@ -46,8 +46,8 @@ del getversi.*
 
 REM OS specifics
 REM re-register our HHC compiler DLL
-if '%OS%' == 'Windows_NT' regsvr32 -u -s "%OWROOT\ci\nt386\itcc.dll"
-if '%OS%' == 'Windows_NT' regsvr32 -s "%OWROOT\ci\nt386\itcc.dll"
+if '%OS%' == 'Windows_NT' regsvr32 -u -s "%OWROOT%\ci\nt386\itcc.dll"
+if '%OS%' == 'Windows_NT' regsvr32 -s "%OWROOT%\ci\nt386\itcc.dll"
 
 REM setup right COMSPEC for non-standard COMSPEC setting on NT based systems
 if not '%OS%' == 'Windows_NT' goto nowinnt

@@ -8,7 +8,7 @@
 # Change this to point your Open Watcom source tree
 #
 # Note: '=' sign in path is not allowed (build will fail).
-# Try to keep a OWROOT path short and simple like
+
 # /tmp/ow There is dosemu used to build some parts
 # of the software. dosemu can hang if OWROOT is long
 # or contain long names of the directories.
@@ -17,28 +17,34 @@ export OWROOT=$(realpath "`pwd`")
 
 # Set this entry to identify your toolchain used by build process
 # supported values are WATCOM GCC CLANG
+
 export OWTOOLS=GCC
 
 # Build control related variables
 ##################################
 
 # Set this variable to 1 to enable documentation build
+
 export OWDOCBUILD=0
 
 # Set this variable to 1 to not use WGML utility
 # It doesn't requires appropriate DOS emulator
 # and suppress documentation build
+
 # set OWNOWGML=1
 
 # Set this variable to 1 to suppress tools GUI version build
 # If it is used then only tools character mode version is build
+
 # export OWGUINOBUILD=1
 
 # Set this variable to list of OW projects to suppress their build
 # Example export OWNOBUILD=ide browser dlgprs
+
 # export OWNOBUILD=
 
 # Set this variable to 1 to enable build all installers
+
 export OWDISTRBUILD=0
 
 # Documentation related variables
@@ -58,7 +64,6 @@ export OWDISTRBUILD=0
 # build process requires WGML utility which is available only as DOS executable
 # it is necessary to have some DOS emulator installed
 # DOSBOX emulator is available on most platforms
-# DOSEMU emulator is available on Linux (Intel platform)
 # if DOSBOX emulator is used then OWDOSBOX variable must be set
 # Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator executable
 
@@ -67,7 +72,8 @@ export OWDISTRBUILD=0
 ##################################
 
 # Subdirectory to be used for building OW build tools
-export OWOBJDIR=binbuild
+# default is 'binbuild'
+# export OWOBJDIR=binbuild
 
 # Invoke the script for the common environment
 . "$OWROOT/cmnvars.sh"
