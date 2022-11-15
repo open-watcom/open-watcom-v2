@@ -131,10 +131,10 @@ int SortByGlobType( heap_list **p1, heap_list **p2 )
         }
         return( ret );
     } else {
-        nonsystem = (*p1)->info.mem.desc.type.u.nonsystem;
-        execute = (*p1)->info.mem.desc.type.u.execute;
-        if( nonsystem == (*p2)->info.mem.desc.type.u.nonsystem ) {
-            if( execute == (*p2)->info.mem.desc.type.u.execute ) {
+        nonsystem = (*p1)->info.mem.desc.u1.flags.nonsystem;
+        execute = (*p1)->info.mem.desc.u1.flags.execute;
+        if( nonsystem == (*p2)->info.mem.desc.u1.flags.nonsystem ) {
+            if( execute == (*p2)->info.mem.desc.u1.flags.execute ) {
                 return( 0 );
             }
         }
@@ -212,29 +212,29 @@ static void FormatSel( char *which, WORD sel, char *buff )
     base = GET_DESC_BASE( desc );
     limit = GET_DESC_LIMIT( desc );
     AddToBuff( "%08lx  %08lx  ", base, limit );
-    if( desc.xtype.u.page_granular ) {
+    if( desc.u2.flags.page_granular ) {
         AddToBuff( "page  " );
     } else {
         AddToBuff( "byte  " );
     }
-    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         AddToBuff( "data  " );
     } else {
         AddToBuff( "code  " );
     }
-    AddToBuff( "%1d   ", (WORD)desc.type.u.dpl );
-    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
+    AddToBuff( "%1d   ", (WORD)desc.u1.flags.dpl );
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         AddToBuff( "R" );
-        if( desc.type.ud.writeable ) AddToBuff( "/W" );
+        if( desc.u1.flags_data.writeable ) AddToBuff( "/W" );
         else AddToBuff( "  " );
         AddToBuff( "    " );
     } else {
         AddToBuff( "Ex" );
-        if( desc.type.ux.readable ) AddToBuff( "/R" );
+        if( desc.u1.flags_exec.readable ) AddToBuff( "/R" );
         else AddToBuff( "  " );
         AddToBuff( "   " );
     }
-    if( desc.xtype.u.use32 ) {
+    if( desc.u2.flags.use32 ) {
         AddToBuff( "Y" );
     } else {
         AddToBuff( " " );

@@ -52,7 +52,7 @@ int rsi_addr32_check( OFFSET32 off, SELECTOR sel, size_t for_length, size_t *val
              */
             return( MEMBLK_INVALID );
         }
-        if( (sel & 3) > g.type.u.dpl || !g.type.u.present || !g.type.u.nonsystem ) {
+        if( (sel & 3) > g.u1.flags.dpl || !g.u1.flags.present || !g.u1.flags.nonsystem ) {
             /*
              * Bad access bits
              */

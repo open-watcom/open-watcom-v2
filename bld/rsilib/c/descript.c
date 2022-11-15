@@ -23,7 +23,7 @@ bool rsi_get_descriptor( SELECTOR sel, descriptor FarPtr g )
     } else {
         p = makeptr( gdt_sel, sel & SelMask );
         *g = *p;
-        return( p->type.u.accessed != 0 );
+        return( p->u1.flags.accessed != 0 );
     }
 }
 

@@ -54,7 +54,7 @@ bool IsSegSize32( WORD seg )
 
     if( WDebug386 ) {
         GetDescriptor( seg, &desc );
-        if( desc.xtype.u.use32 ) {
+        if( desc.u2.flags.use32 ) {
             return( true );
         }
     }

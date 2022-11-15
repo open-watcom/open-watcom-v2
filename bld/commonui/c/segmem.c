@@ -111,7 +111,7 @@ bool IsSeg32( WORD seg )
     descriptor  desc;
 
     GetADescriptor( seg, &desc );
-    return( desc.xtype.u.use32 );
+    return( desc.u2.flags.use32 );
 
 } /* IsSeg32 */
 

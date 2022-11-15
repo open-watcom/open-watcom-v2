@@ -54,22 +54,22 @@ typedef union {
         unsigned char   nonsystem   : 1;
         unsigned char   dpl         : 2;
         unsigned char   present     : 1;
-    } u;
+    } flags;
     struct {
         unsigned char               : 1;
         unsigned char   writeable   : 1;
         unsigned char   expand_down : 1;
-    } ud;
+    } flags_data;
     struct {
         unsigned char               : 1;
         unsigned char   readable    : 1;
         unsigned char   conforming  : 1;
-    } ux;
+    } flags_exec;
     struct {
         unsigned char   type        : 2;
         unsigned char   gate        : 1;
         unsigned char   use32       : 1;
-    } us;
+    } flags_sys;
     unsigned char   val;
 } descriptor_type;
 
@@ -80,11 +80,7 @@ typedef union {
         unsigned char   use64         : 1;
         unsigned char   use32         : 1;
         unsigned char   page_granular : 1;
-    } u;
-    struct {
-        unsigned char               : 4;
-        unsigned char   flags       : 4;
-    } uf;
+    } flags;
     unsigned char       val;
 } descriptor_xtype;
 
@@ -92,15 +88,15 @@ typedef struct {
     unsigned short      limit_15_0;
     unsigned short      base_15_0;
     unsigned char       base_23_16;
-    descriptor_type     type;
-    descriptor_xtype    xtype;
+    descriptor_type     u1;
+    descriptor_xtype    u2;
     unsigned char       base_31_24;
 } descriptor;
 
 #define GET_DESC_BASE( desc ) \
     ( (unsigned long)(desc).base_15_0 \
-    | ((unsigned long)(desc).base_23_16 << 16L) \
-    | ((unsigned long)(desc).base_31_24 << 24L) \
+    | ((unsigned long)(desc).base_23_16 << 16) \
+    | ((unsigned long)(desc).base_31_24 << 24) \
     )
 
 #define SET_DESC_BASE( desc, base ) \
@@ -109,19 +105,19 @@ typedef struct {
     (desc).base_31_24 = ((unsigned long)(base) >> 24)
 
 #define GET_DESC_LIMIT_NUM( desc ) \
-    ((desc).limit_15_0 | ((unsigned long)(desc).xtype.u.limit_19_16 << 16))
+    ((desc).limit_15_0 | ((unsigned long)(desc).u2.flags.limit_19_16 << 16))
 
 #define GET_DESC_LIMIT_4K( desc ) \
-    ((GET_DESC_LIMIT_NUM( desc ) << 12) | 0xfffL)
+    ((GET_DESC_LIMIT_NUM( desc ) << 12) | 0x0fffL)
 
 #define GET_DESC_LIMIT( desc ) \
-    ( (desc).xtype.u.page_granular \
+    ( (desc).u2.flags.page_granular \
     ? GET_DESC_LIMIT_4K( desc ) \
     : GET_DESC_LIMIT_NUM( desc ) \
     )
 
 #define SET_DESC_LIMIT( desc, limit ) \
     (desc).limit_15_0 = (limit); \
-    (desc).xtype.u.limit_19_16 = ((unsigned long)(limit) >> 16)
+    (desc).u2.flags.limit_19_16 = ((unsigned long)(limit) >> 16)
 
 #endif /* _DESCRIPT_H_INCLUDED */

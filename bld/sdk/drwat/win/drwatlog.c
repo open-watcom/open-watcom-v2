@@ -337,20 +337,20 @@ static void formatSel( char *which, WORD sel )
     base = GET_DESC_BASE( desc );
     limit = GET_DESC_LIMIT( desc );
     logPrint( "%08lx  %08lx  ", base, limit );
-    if( desc.xtype.u.page_granular ) {
+    if( desc.u2.flags.page_granular ) {
         logPrint( "page  " );
     } else {
         logPrint( "byte  " );
     }
-    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         logPrint( "data  " );
     } else {
         logPrint( "code  " );
     }
-    logPrint( "%1d   ", (WORD)desc.type.u.dpl );
-    if( desc.type.u.nonsystem && !desc.type.u.execute ) {
+    logPrint( "%1d   ", (WORD)desc.u1.flags.dpl );
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         logPrint( "R" );
-        if( desc.type.ud.writeable ) {
+        if( desc.u1.flags_data.writeable ) {
             logPrint( "/W" );
         } else {
             logPrint( "  " );
@@ -358,14 +358,14 @@ static void formatSel( char *which, WORD sel )
         logPrint( "    " );
     } else {
         logPrint( "Ex" );
-        if( desc.type.ux.readable ) {
+        if( desc.u1.flags_exec.readable ) {
             logPrint( "/R" );
         } else {
             logPrint( "  " );
         }
         logPrint( "   " );
     }
-    if( desc.xtype.u.use32 ) {
+    if( desc.u2.flags.use32 ) {
         logPrint( "Y\n" );
     } else {
         logPrint( " \n" );

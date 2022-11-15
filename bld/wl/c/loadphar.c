@@ -152,32 +152,32 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
     descriptor  desc;
 
     SET_DESC_BASE( desc, base );
-    desc.type.val = 0;
+    desc.u1.val = 0;
     if( flags & DR_BASE ) {
-        desc.type.ud.writeable = 1;
-        desc.type.u.present = 1;
+        desc.u1.flags_data.writeable = 1;
+        desc.u1.flags.present = 1;
     }
     if( flags & DR_TSS ) {
-        desc.type.us.type = 1;
-//        desc.type.us.gate = 0;
-        desc.type.us.use32 = 1;
-        desc.type.u.present = 1;
+        desc.u1.flags_sys.type = 1;
+//        desc.u1.flags_sys.gate = 0;
+        desc.u1.flags_sys.use32 = 1;
+        desc.u1.flags.present = 1;
     }
     if( flags & DR_IS_CODE ) {
-        desc.type.u.execute = 1;
+        desc.u1.flags.execute = 1;
     }
     if( flags & DR_IS_APP ) {
-        desc.type.u.nonsystem = 1;
+        desc.u1.flags.nonsystem = 1;
     }
-    desc.xtype.uf.flags = 0;
+    desc.u2.val = 0;
     if( flags & DR_IS_USER ) {
-        desc.xtype.u.use32 = 1;
+        desc.u2.flags.use32 = 1;
     }
     if( limit > 0 )
         limit--;
     if( limit >= _1M ) {
         limit >>= 12;
-        desc.xtype.u.page_granular = 1;
+        desc.u2.flags.page_granular = 1;
     }
     SET_DESC_LIMIT( desc, limit );
     WriteLoad( &desc, sizeof( descriptor ) );

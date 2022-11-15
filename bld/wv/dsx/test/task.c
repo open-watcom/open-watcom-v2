@@ -139,15 +139,15 @@ static void dump_selec( uint_16 sel )
     } else {
         strcpy( buff, "selector=" );
         itoa( sel, buff + strlen( buff ), 16 );
-        strcat( buff, d.type.accessed ? " accessed|" : " not accessed|" );
-        strcat( buff, d.type.d.writeable ? "read/write|" : "read only|" );
-        strcat( buff, d.type.execute ? "code|" : "data|" );
-        strcat( buff, d.type.expand_down ? "expand down|" : "expand up|" );
-        strcat( buff, d.type.present ? "present|" : "not present|" );
-        strcat( buff, d.xtype.use32 ? "use32|" : "use16|" );
-        strcat( buff, d.xtype.page_granular ? "page granular" : "byte granular" );
+        strcat( buff, d.u1.flags.accessed ? " accessed|" : " not accessed|" );
+        strcat( buff, d.u1.flags_data.writeable ? "read/write|" : "read only|" );
+        strcat( buff, d.u1.flags.execute ? "code|" : "data|" );
+        strcat( buff, d.u1.flags.expand_down ? "expand down|" : "expand up|" );
+        strcat( buff, d.u1.flags.present ? "present|" : "not present|" );
+        strcat( buff, d.u2.flags.use32 ? "use32|" : "use16|" );
+        strcat( buff, d.u2.flags.page_granular ? "page granular" : "byte granular" );
         strcat( buff, " dpl=" );
-        itoa( d.type.dpl, buff + strlen( buff ), 10 );
+        itoa( d.u1.flags.dpl, buff + strlen( buff ), 10 );
         _debug( buff );
     }
 }
@@ -164,9 +164,9 @@ static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
     if( TinyDPMIGetDescriptor( _FP_SEG( &setup_sel ), &d ) ) {
         _debug( "error obtaining descriptor for new cs selector" );
     }
-    d.xtype.use32 = 0;
-    d.xtype.page_granular = 0;
-    if( TinyDPMISetRights( *pmcs, ( (unsigned short)d.xtype.val << 8 ) | d.type.val ) ) {
+    d.u2.flags.use32 = 0;
+    d.u2.flags.page_granular = 0;
+    if( TinyDPMISetRights( *pmcs, ( (unsigned short)d.u2.val << 8 ) | d.u1.val ) ) {
         _debug( "error setting segment rights for new cs selector" );
     }
     if( TinyDPMISetBase( *pmcs, (unsigned)cs << 4 ) ) {
@@ -178,9 +178,9 @@ static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
     if( TinyDPMIGetDescriptor( _FP_SEG( &SavePMVTable ), &d ) ) {
         _debug( "error obtaining descriptor for new ds selector" );
     }
-    d.xtype.use32 = 0;
-    d.xtype.page_granular = 0;
-    if( TinyDPMISetRights( *pmds, ( (unsigned short)d.xtype.val << 8 ) | d.type.val ) ) {
+    d.u2.flags.use32 = 0;
+    d.u2.flags.page_granular = 0;
+    if( TinyDPMISetRights( *pmds, ( (unsigned short)d.u2.val << 8 ) | d.u1.val ) ) {
         _debug( "error setting segment rights for new ds selector" );
     }
     if( TinyDPMISetBase( *pmds, (unsigned)ds << 4 ) ) {

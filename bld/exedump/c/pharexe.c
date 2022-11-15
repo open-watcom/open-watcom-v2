@@ -307,9 +307,9 @@ static void dmp_descriptor( unsigned_32 size )
         Wdputs( "H      " );
         Puthex( GET_DESC_LIMIT( desc ), 8 );
         Wdputs( "H        " );
-        Puthex( desc.type.val, 2 );
+        Puthex( desc.u1.val, 2 );
         Wdputs( "H           " );
-        Puthex( desc.xtype.uf.flags, 1 );
+        Puthex( desc.u2.val >> 4, 1 );
         Wdputslc( "H\n" );
     }
 }
