@@ -1,20 +1,19 @@
 #
-# Watcom GML Script Tools related definition Makefile
+# Watcom GML Script Tools related definition Makefile.
 #
 # Because source code for wgml and gendev tools are not available
 # it is necessary to run binary versions of these tools.
 # They exist only for the DOS and the OS/2 Operating systems.
 # For platforms which can not run them natively, the DOS version
-# is used with suitable DOS Emulator
-# DOSBOX is available on many platforms
-# DOSEMU is available only on Linux, but is faster then DOSBOX
+# is used with DOSBOX DOS Emulator which is available on many
+# platforms.
 #
 # Microsoft Windows Help Compiler run only on Windows platform.
 # On UNIX like platforms where Wine environment is available,
-# Wine is used to run this compiler
+# Wine is used to run this compiler.
 
 #
-# There should be settings for supported building platforms
+# There should be settings for supported building platforms.
 #
 
 !ifdef %OWDOSBOX
@@ -43,13 +42,9 @@ dosbox_cfg = $(%OWROOT)\build\dosbox.cfg
 !ifdef %WGMLDEBUG
 dosbox_options_nt =
 dosbox_options_osx = -c "config -set cpu core=normal"
-
-dosemu_options = -I 'keyboard {layout us}'
 !else
 dosbox_options_nt = -noconsole
 dosbox_options_osx = -c "config -set cpu core=normal"
-
-dosemu_options = -dumb -quiet -I 'keyboard {layout us}'
 !endif
 
 !ifeq bld_os dos
@@ -67,8 +62,8 @@ GENDEVCMD = ..\gml\os2\gendev $(gendev_cmdl_params)
 WGMLCMD = $(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c \"$(%OWROOT)\"" -c "c:$(wgml_subdir)\$(dos_wgml_tmp_batch)"
 GENDEVCMD = $(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:$(gendev_subdir)\$(dos_gendev_tmp_batch)"
 # only DOSBOX use upper cased file name
-wgml_ucase=1
-use_dosemu = dosbox
+wgml_ucase = 1 
+use_dosbox = 1
 
 !else ifeq bld_os nt
 
@@ -77,36 +72,15 @@ GENDEVCMD = ..\gml\dos\gendev $(gendev_cmdl_params)
 # NT DOSX use upper cased file name
 wgml_ucase=1
 
-!else ifeq bld_os linux
-
-WGMLCMD = dosemu $(dosemu_options) $(dos_wgml_tmp_batch)
-GENDEVCMD = dosemu $(dosemu_options) $(dos_gendev_tmp_batch)
-use_dosemu = dosemu
-
 !else
-!error Unsupported building platform !!!!!!
+!error !!! Missing DOSBOX configuration or unsupported building platform !!!
 !endif
 
 #-------------------------------------------------------
 # create DOS batch file to run wgml utility
 #-------------------------------------------------------
 prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
-!ifeq use_dosemu dosemu
-#-------------------------------------------------------
-# DOSEMU version
-#-------------------------------------------------------
-    @%create $(wgml_tmp_batchfile)
-    @%append $(wgml_tmp_batchfile) lredir w: linux\fs$(docs_dir)
-!ifeq wgml_target ps
-    @%append $(wgml_tmp_batchfile) $(noecho)set GMLLIB=$(%GMLLIB)
-!endif
-    @%append $(wgml_tmp_batchfile) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(wgml_tmp_batchfile) w:\gml\dos\wgml.exe $(wgml_cmdl_params)
-!ifndef %WGMLDEBUG
-    @%append $(wgml_tmp_batchfile) exitemu
-!endif
-    @crlf -d $(wgml_tmp_batchfile) $(dos_wgml_tmp_batch)
-!else ifeq use_dosemu dosbox
+!ifdef use_dosbox
 #-------------------------------------------------------
 # DOSBOX version
 #-------------------------------------------------------
@@ -134,19 +108,7 @@ prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
 # create DOS batch file to run gendev utility
 #-------------------------------------------------------
 prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
-!ifeq use_dosemu dosemu
-#-------------------------------------------------------
-# DOSEMU version
-#-------------------------------------------------------
-    @%create $(gendev_tmp_batchfile)
-    @%append $(gendev_tmp_batchfile) lredir w: linux\fs$(docs_dir)
-    @%append $(gendev_tmp_batchfile) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(gendev_tmp_batchfile) w:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\)
-!ifndef %WGMLDEBUG
-    @%append $(gendev_tmp_batchfile) exitemu
-!endif
-    @crlf -d $(gendev_tmp_batchfile) $(dos_gendev_tmp_batch)
-!else ifeq use_dosemu dosbox
+!ifdef use_dosbox
 #-------------------------------------------------------
 # DOSBOX version
 #-------------------------------------------------------

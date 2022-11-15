@@ -24,8 +24,7 @@ Bellow is list of tools used by documentation build which have some limitation.
 
 - WGML OW tool is still only available as DOS and OS/2 version.
   It is running only on DOS, 16 and 32-bit Windows and OS/2.
-  On Linux it can be run in DOSEMU.
-  On 64-bit Windows it can be run in DOSBOX.
+  On other platforms as Linux, 64-bit Windows or OSX DOSBOX is used.
 
 - Windows Help Compiler is available from Miscosoft 
   ( http://support.microsoft.com/kb/171958/en-us or ftp://ftp.microsoft.com/softlib/mslfiles/hcwsetup.exe )
@@ -98,7 +97,7 @@ Windows 64-bit
 Linux x86/x64
 -------------
   You must install
-  - DOSEMU with FreeDOS
+  - DOSBOX
   - WINE
   - Windows "Help Compiler" (under WINE)
   - Window "Html Help Compiler" (under WINE)
@@ -108,7 +107,12 @@ Linux x86/x64
   - OWWIN95HC must point to "Help Compiler" (hcrtf.exe)
   - OWGHOSTSCRIPTPATH to path where your GhostScript installation is located
 
-A Win32/64, OS/2 or Linux x86/x64 system can be used to produce most of 
+OSX
+-------------
+  You must install
+  - DOSBOX
+
+A Win32/64, OS/2, OSX or Linux x86/x64 system can be used to produce most of 
 the documentation. Win32/64 or Linux x86/x64(with WINE) system is needed for 
 producing Windows help files (unless you can run the required Windows help 
 compilers under your host OS).

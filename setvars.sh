@@ -13,7 +13,7 @@
 # of the software. dosemu can hang if OWROOT is long
 # or contain long names of the directories.
 
-export OWROOT=$(realpath `pwd`)
+export OWROOT=$(realpath "`pwd`")
 
 # Set this entry to identify your toolchain used by build process
 # supported values are WATCOM GCC CLANG

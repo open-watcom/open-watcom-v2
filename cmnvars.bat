@@ -29,17 +29,14 @@ REM Set the toolchain version to OWTOOLSVER variable
 set OWTOOLSVER=0
 if not '%OWTOOLS%' == 'WATCOM' goto nowatcom
 echo set OWTOOLSVER=__WATCOMC__>getversi.gc
-echo set OWCYEAR=__DATE__>>getversi.gc
 wcc386 -p getversi.gc >getversi.bat
 :nowatcom
 if not '%OWTOOLS%' == 'VISUALC' goto novisualc
 echo set OWTOOLSVER=_MSC_VER>getversi.gc
-echo set OWCYEAR=__DATE__>>getversi.gc
 cl -nologo -EP getversi.gc>getversi.bat
 :novisualc
 if not '%OWTOOLS%' == 'INTEL' goto nointel
 echo set OWTOOLSVER=__INTEL_COMPILER>getversi.gc
-echo set OWCYEAR=__DATE__>>getversi.gc
 icl -nologo -EP getversi.gc>getversi.bat
 :nointel
 if not exist getversi.bat goto notoolsver
@@ -57,7 +54,6 @@ if not '%OS%' == 'Windows_NT' goto nowinnt
 if '%NTDOS%' == '1' goto nowinnt
 set COMSPEC=%WINDIR%\system32\cmd.exe
 set COPYCMD=/y
-set OWCYEAR=%OWCYEAR:~8,4%
 :nowinnt
 
-echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%, CYEAR=%OWCYEAR%)
+echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%)
