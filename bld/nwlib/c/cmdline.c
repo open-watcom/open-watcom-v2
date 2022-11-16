@@ -50,6 +50,12 @@
 
 #define my_tolower( c ) tolower( (unsigned char)(c) )
 
+typedef struct {
+    FILE    *fp;
+    char    *buffer;
+    size_t  size;
+} getline_data;
+
 options_def     Options;
 lib_cmd         *CmdList;
 
@@ -496,7 +502,74 @@ static const char *ParseCommand( const char *c )
     return( c );
 }
 
-static void ParseOneLine( const char *c )
+static void my_getline_init( const char *name, getline_data *fd )
+{
+    fd->fp = fopen( name, "rb" );
+    if( fd->fp == NULL ) {
+        FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
+    }
+    fd->size = MAX_TOKEN_LEN;
+    fd->buffer = MemAlloc( MAX_TOKEN_LEN );
+    if( fd->buffer == NULL ) {
+        fd->size = 0;
+    }
+}
+
+static char *my_getline( getline_data *fd )
+{
+    char    *p;
+    size_t  len_used;
+    size_t  maxlen;
+    size_t  len;
+
+    p = fd->buffer;
+    maxlen = fd->size;
+    len_used = 0;
+    while( fgets( p, maxlen, fd->fp ) != NULL ) {
+        len = strlen( p );
+        if( len == 0 )
+            continue;
+        len_used += len;
+        if( p[len - 1] == '\n' ) {
+            break;
+        }
+        if( len < maxlen - 1 ) {
+            break;
+        }
+        if( feof( fd->fp ) ) {
+            break;
+        }
+        len = fd->size + MAX_TOKEN_LEN;
+        p = MemAlloc( len );
+        memcpy( p, fd->buffer, len_used + 1 );
+        MemFree( fd->buffer );
+        fd->buffer = p;
+        fd->size = len;
+        p += len_used;
+        maxlen = len - len_used;
+    }
+    if( len_used ) {
+        p = fd->buffer;
+        if( p[len_used - 1] == '\n' ) {
+            len_used--;
+            p[len_used] = '\0';
+        }
+        if( len_used && p[len_used - 1] == '\r' ) {
+            len_used--;
+            p[len_used] = '\0';
+        }
+        return( p );
+    }
+    return( NULL );
+}
+
+static void my_getline_fini( getline_data *fd )
+{
+    fclose( fd->fp );
+    MemFree( fd->buffer );
+}
+
+static void ParseOneLineWlib( const char *c )
 {
     char        token_buff[MAX_TOKEN_LEN];
     const char  *start;
@@ -532,36 +605,21 @@ static void ParseOneLine( const char *c )
             ++c;
             c = GetString( c, token_buff, true, false );
             {
-                const char *env = WlibGetEnv( token_buff );
+                const char *env;
 
-
+                env = WlibGetEnv( token_buff );
                 if( env != NULL ) {
-                    ParseOneLine( env );
+                    ParseOneLineWlib( env );
                 } else {
-                    FILE    *io;
-                    char    *file_buff;
-                    size_t  len;
-                    size_t  i;
+                    getline_data    fd;
+                    char            *p;
 
                     DefaultExtension( token_buff, EXT_CMD );
-                    io = fopen( token_buff, "rb" );
-                    if( io == NULL ) {
-                        FatalError( ERR_CANT_OPEN, token_buff, strerror( errno ) );
+                    my_getline_init( token_buff, &fd );
+                    while( (p = my_getline( &fd )) != NULL ) {
+                        ParseOneLineWlib( p );
                     }
-                    fseek( io, 0, SEEK_END );
-                    len = ftell( io );
-                    fseek( io, 0, SEEK_SET );
-                    file_buff = MemAlloc( len + 1 );
-                    fread( file_buff, 1, len, io );
-                    fclose( io );
-                    for( i = 0; i < len; i++ ) {
-                        if( file_buff[i] == '\r' || file_buff[i] == '\n' ) {
-                            file_buff[i] = ' ';
-                        }
-                    }
-                    file_buff[i] = '\0';
-                    ParseOneLine( file_buff );
-                    MemFree( file_buff );
+                    my_getline_fini( &fd );
                 }
             }
             break;
@@ -650,7 +708,7 @@ static const char *ParseArOption( const char *c, operation *ar_mode )
     return( c );
 }
 
-static void ParseOneArLine( const char *c, operation *ar_mode )
+static void ParseOneLineAr( const char *c, operation *ar_mode )
 {
     char        token_buff[MAX_TOKEN_LEN];
     bool        done_options;
@@ -729,9 +787,9 @@ void ProcessCmdLine( char *argv[] )
     if( env != NULL && *env != '\0' ) {
         parse = DupStr( env );
         if( Options.ar ) {
-            ParseOneArLine( parse, &ar_mode );
+            ParseOneLineAr( parse, &ar_mode );
         } else {
-            ParseOneLine( parse );
+            ParseOneLineWlib( parse );
         }
         MemFree( parse );
     }
@@ -740,9 +798,9 @@ void ProcessCmdLine( char *argv[] )
         if( **argv != '\0' ) {
             parse = DupStr( *argv );
             if( Options.ar ) {
-                ParseOneArLine( parse, &ar_mode );
+                ParseOneLineAr( parse, &ar_mode );
             } else {
-                ParseOneLine( parse );
+                ParseOneLineWlib( parse );
             }
             MemFree( parse );
         }
