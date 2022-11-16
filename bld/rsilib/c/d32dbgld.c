@@ -19,6 +19,8 @@
 #include <string.h>
 #include "rsi1632.h"
 #include "loader.h"
+#include "roundmac.h"
+#include "dosfuncx.h"
 
 /*
  * DOS4G Entry points
@@ -52,6 +54,9 @@ static bool abspath( const char *filename, char *fullpath )
     const char *fn;
     char *fp;
     union REGS r;
+#if defined( __COMPACT__ ) || defined( __LARGE__ )
+    struct SREGS s;
+#endif
 
     fn = filename;
     fp = fullpath;
@@ -62,7 +67,7 @@ static bool abspath( const char *filename, char *fullpath )
         /*
          * get current drive
          */
-        r.h.ah = 0x19;
+        r.h.ah = DOS_CUR_DISK;
         intdos( &r, &r );
         *fp = (char)( r.h.al + 'A' );
     }
@@ -74,9 +79,15 @@ static bool abspath( const char *filename, char *fullpath )
          * filename not abs, so get current directory
          */
         *fp++ = '\\';
-        r.h.ah = 0x47;
+        r.h.ah = DOS_GETCWD;
         r.x.si = (unsigned short)fp;
+#if defined( __COMPACT__ ) || defined( __LARGE__ )
+        s.ds = _FP_SEG( fp );
+        s.es = 0;
+        intdosx( &r, &r, &s );
+#else
         intdos( &r, &r );
+#endif
         if( r.x.cflag )
             return( false );
         if( i = strlen( fp ) ) {
@@ -118,18 +129,18 @@ static void set_program_name( const char *filename )
             unsigned sel;
         } w;
     } ep;
-    D16REGS     r;
-    char        *p;
-    char        temp[70];
-    unsigned    maxp;
-    int         i;
-    int         blocksize;
-    MCB FarPtr  blockp;
-    unsigned    newenv;
-    int         oldstrat;
-    descriptor  g;
-    ULONG       oldenv;
-    SELECTOR    oldenv_sel;
+    D16REGS         r;
+    char            *p;
+    char            temp[70];
+    unsigned long   maxp;
+    unsigned long   len;
+    unsigned long   blocksize;
+    MCB FarPtr      blockp;
+    unsigned        newenv;
+    int             oldstrat;
+    descriptor      g;
+    ULONG           oldenv;
+    SELECTOR        oldenv_sel;
 
     p = temp;
     abspath( filename, p );
@@ -146,7 +157,7 @@ static void set_program_name( const char *filename )
 retry:
     oldenv = rsi_abs_address( makeptr( env_sel, 0 ) );
     blockp = _MK_FP( rsi_sel_new_absolute( oldenv - 0x10, 0 ), 0 );
-    blocksize = blockp->size;
+    blocksize = (long)blockp->size << 4;
     rsi_sel_free( _FP_SEG( blockp ) );
 
     /*
@@ -156,14 +167,15 @@ retry:
      * the current contents of the environment, a two-byte field between
      * the environment and the path name, and two pairs of null bytes.
      */
-    maxp =( blocksize << 4 ) - 6;
+    maxp = blocksize - 6;
     ep.ip = makeptr( env_sel, 0 );
     while( *ep.ip != 0 ) {
         ++ep.w.off;
         --maxp;
     }
 
-    if( (i = maxp - strlen( p )) < 0 ) {
+    len = strlen( p );
+    if( len > maxp ) {
 #ifdef  DSSI
         /*
          * Can't allocate low memory
@@ -176,14 +188,15 @@ retry:
          * round up to a full paragraph.  Allocate using DOS so that we
          * can free using DOS; otherwise we can lose low memory.
          */
+        len -= maxp;
         oldstrat = rsi_mem_strategy( MForceLow );
-        r.ax = 0x4800;
-        r.bx = blocksize + ( ( -i + 15 ) >> 4 );
-        i = r.bx << 4;  /* i == size in bytes of new block */
+        r.ax = DOS_ALLOC_SEG << 8;
+        r.bx = __ROUND_UP_SIZE_TO_PARA( blocksize + len );
+        len = (long)r.bx << 4;  /* len is size in bytes of new block */
         oldenv_sel = NULL_SEL;
         if( rsi_rm_interrupt( 0x21, &r, &r ) == 0 ) {
             newenv = r.ax;
-            oldenv_sel = rsi_sel_new_absolute( (long)newenv << 4, i );
+            oldenv_sel = rsi_sel_new_absolute( (long)newenv << 4, len );
         }
         rsi_mem_strategy( oldstrat );
         if( oldenv_sel == NULL_SEL )
@@ -193,7 +206,7 @@ retry:
          * memory, and prepare to update the old environment descriptor
          * with the new size and address.
          */
-        movedata( env_sel, 0, oldenv_sel, 0, blocksize << 4 );
+        movedata( env_sel, 0, oldenv_sel, 0, blocksize );
         rsi_get_descriptor( oldenv_sel, &g );
         rsi_sel_free( oldenv_sel );
         /*
@@ -206,7 +219,7 @@ retry:
         } else {
             r.es = newenv;
         }
-        r.ax = 0x4900;
+        r.ax = DOS_FREE_SEG << 8;
         rsi_rm_interrupt( 0x21, &r, &r );
         if( r.es == newenv )
             return;     /* Give up */
@@ -229,7 +242,7 @@ retry:
      * Update debuggee's descriptor table as well as our own.
      */
     rsi_get_descriptor( env_sel, &g );
-    SET_DESC_LIMIT( g, ( blocksize << 4 ) - 1 );
+    SET_DESC_LIMIT( g, blocksize - 1 );
     SET_DESC_BASE( g, oldenv );
     rsi_set_descriptor( env_sel, &g );
 }
