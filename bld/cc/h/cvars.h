@@ -519,7 +519,6 @@ extern FIELDPTR     SearchFields( TYPEPTR *class_typ, target_size *field_offset,
 
 /* cfold.c */
 extern int64        LongValue64( TREEPTR leaf );
-extern void         CastFloatValue( TREEPTR leaf, DATA_TYPE newtype );
 extern void         CastConstValue(TREEPTR,DATA_TYPE);
 extern void         CastConstNode( TREEPTR leaf, TYPEPTR newtyp );
 extern void         DoConstFold(TREEPTR);

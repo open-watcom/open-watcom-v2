@@ -532,7 +532,7 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     return( 1 );
 }
 
-void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
+static void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 {
     FLOATVAL    *flt;
     char        *endptr;
