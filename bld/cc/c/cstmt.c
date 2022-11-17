@@ -811,10 +811,14 @@ static void CaseStmt( void )
     NextToken();
     if( SwitchStack ) {
         if( ConstExprAndType( &val ) ) {
-            if( ( val.type == TYP_ULONG64 ) && !U64IsU32( val.value ) ) {
-                CErr1( ERR_CONSTANT_TOO_BIG );
-            } else if( ( val.type == TYP_LONG64 ) && !I64IsI32( val.value ) ) {
-                CErr1( ERR_CONSTANT_TOO_BIG );
+            if( val.type == TYP_ULONG64 ) {
+                if( !U64IsU32( val.value ) ) {
+                    CErr1( ERR_CONSTANT_TOO_BIG );
+                }
+            } else if( val.type == TYP_LONG64 ) {
+                if( !I64IsI32( val.value ) ) {
+                    CErr1( ERR_CONSTANT_TOO_BIG );
+                }
             }
             AddCaseLabel( U32FetchTrunc( val.value) );
         }
