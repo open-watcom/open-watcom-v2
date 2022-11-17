@@ -51,6 +51,76 @@
 #include "cmsg.h"
 #include "pragdefn.h"
 
+
+#define MAX_LEVEL       1024
+#define USER_LIB_PRIO   '9'
+#define ERRLIMIT_NOMAX  ((unsigned)-1)
+
+#define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
+#define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
+
+/* Macros to skip all typedefs and arrive at the underlying type */
+#define SKIP_TYPEDEFS( typeptr )                    \
+    while( typeptr->decl_type == TYP_TYPEDEF ) {    \
+        typeptr = typeptr->object;                  \
+    }
+#define SKIP_DUMMY_TYPEDEFS( typeptr )              \
+    while( typeptr->decl_type == TYP_TYPEDEF && (typeptr->type_flags & TF2_DUMMY_TYPEDEF) ) { \
+        typeptr = typeptr->object;                  \
+    }
+#define SKIP_ENUM( typeptr )                        \
+    if( typeptr->decl_type == TYP_ENUM ) {          \
+        typeptr = typeptr->object;                  \
+    }
+#define SKIP_ARRAYS( typeptr )                      \
+    while( typeptr->decl_type == TYP_ARRAY ) {      \
+        typeptr = typeptr->object;                  \
+    }
+
+typedef enum {
+    SEGTYPE_CODE       = 1,             /* #pragma code_seg("segname","class") */
+    SEGTYPE_DATA       = 2,             /* #pragma data_seg("segname","class") */
+    SEGTYPE_BASED      = 3,             /* __based(__segname("segname")) */
+    SEGTYPE_INITFINI   = 4,             /* "XI" or "YI" segment */
+    SEGTYPE_INITFINITR = 5,             /* thread data */
+} seg_type;
+
+typedef struct library_list {
+    struct  library_list    *next;      // used by precompiled header
+    char                    priority;   // priority '1'-'9'
+    char                    libname[1]; // library name
+} library_list;
+
+typedef struct alias_list {
+    struct  alias_list      *next;
+    const char              *name;      /* one of 'name', 'a_sym' is valid */
+    SYM_HANDLE              a_sym;
+    const char              *subst;
+    SYM_HANDLE              s_sym;      /* one of 'subst', 's_sym' is valid */
+    char                    names[1];
+} alias_list;
+
+typedef struct nested_parm_lists {
+    struct nested_parm_lists    *prev_list;
+    TYPEPTR                     *next_parm_type;
+} nested_parm_lists;
+
+typedef struct extref_info {
+    struct extref_info  *next;
+    SYM_HANDLE          symbol;
+    char                name[1];
+} extref_info;
+
+typedef struct undef_names {
+    struct undef_names  *next;
+    char                *name;
+} undef_names;
+
+typedef struct {
+    int64     value;
+    DATA_TYPE type;
+} const_val;
+
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
 global char         *PCH_Macros;        // macros loaded from pre-compiled header
@@ -107,8 +177,6 @@ global int          NestLevel;          /* pre-processing level of #if */
 global int          SkipLevel;          /* pre-processing level of #if to skip to */
 global id_level_stype SymLevel;         /* current lex level (# of nested {) */
 global bool         Check_global_prototype;
-#define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
-#define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
 global char         *SavedId;           /* saved id when doing look ahead */
 global source_loc   SavedTokenLoc;      /* value of TokenLine when id saved */
 global TOKEN        LAToken;            /* look ahead token */
@@ -174,7 +242,6 @@ global char         *GenCodeGroup;      /* pointer to code group name */
 global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
 
 global unsigned     ErrLimit;
-#define ERRLIMIT_NOMAX  ((unsigned)-1)
 
 global target_size  DataThreshold;      /* sizeof(obj) > this ==> separate segment */
 global unsigned     Inline_Threshold;   /* -oe=num for function inlining */
@@ -193,8 +260,6 @@ global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
 global segment_id   FarStringSegId;
 
 global jmp_buf      *Environment;       /* var for Suicide() */
-
-#define MAX_LEVEL   1024
 
 /* The ValueStack array is also used by CGEN for saving _try block info */
 global TREEPTR      ValueStack[MAX_LEVEL];
@@ -232,24 +297,7 @@ global char         CLIB_Name[10];      /* "1CLIBMT3x" */
 global char         MATHLIB_Name[10];   /* "5MATHx" or "8MATH87x" */
 global char         *EmuLib_Name;       /* "9emu87" for -fpi, "9noemu87" for -fpi */
 
-#define USER_LIB_PRIO '9'
-
-typedef struct library_list {
-    struct  library_list    *next;      // used by precompiled header
-    char                    priority;   // priority '1'-'9'
-    char                    libname[1]; // library name
-} library_list;
-
 global library_list *HeadLibs;
-
-typedef struct alias_list {
-    struct  alias_list      *next;
-    const char              *name;      /* one of 'name', 'a_sym' is valid */
-    SYM_HANDLE              a_sym;
-    const char              *subst;
-    SYM_HANDLE              s_sym;      /* one of 'subst', 's_sym' is valid */
-    char                    names[1];
-} alias_list;
 
 global alias_list   *AliasHead;
 
@@ -268,11 +316,6 @@ global TYPEPTR      StringType;         /* "unsigned char *" for use by literals
 global TYPEPTR      ConstCharType;      /* "const char" type */
 global TYPEPTR      StringArrayType;    /* "unsigned char []" used by literals */
 
-typedef struct nested_parm_lists {
-    struct nested_parm_lists    *prev_list;
-    TYPEPTR                     *next_parm_type;
-} nested_parm_lists;
-
 global nested_parm_lists    *NestedParms;
 
 global STR_HANDLE   StringHash[STRING_HASH_SIZE]; /* string literals */
@@ -289,20 +332,6 @@ global char         DependForceSlash;   /* type of slash to force to in depend o
 global align_type   PackAmount;         /* current packing alignment */
 global align_type   GblPackAmount;      /* packing alignment given on command line */
 global textsegment  *TextSegList;       /* list of #pragma alloc_text segs*/
-
-typedef enum {
-    SEGTYPE_CODE       = 1,             /* #pragma code_seg("segname","class") */
-    SEGTYPE_DATA       = 2,             /* #pragma data_seg("segname","class") */
-    SEGTYPE_BASED      = 3,             /* __based(__segname("segname")) */
-    SEGTYPE_INITFINI   = 4,             /* "XI" or "YI" segment */
-    SEGTYPE_INITFINITR = 5,             /* thread data */
-} seg_type;
-
-typedef struct extref_info {
-    struct extref_info  *next;
-    SYM_HANDLE          symbol;
-    char                name[1];
-} extref_info;
 
 global extref_info  *ExtrefInfo;
 
@@ -327,11 +356,6 @@ global unroll_type  UnrollCount;        /* #pragma unroll(#); */
 global macro_flags  InitialMacroFlags;
 global unsigned char Stack87;
 global char         *ErrorFileName;
-
-typedef struct undef_names {
-    struct undef_names  *next;
-    char                *name;
-} undef_names;
 
 global undef_names  *UndefNames;
 
@@ -480,10 +504,6 @@ extern TREEPTR      AddrExpr( void );
 extern TREEPTR      BoolExpr(TREEPTR);
 extern TREEPTR      CommaExpr( void );
 extern int          ConstExpr( void );
-typedef struct {
-    int64     value;
-    DATA_TYPE type;
-} const_val;
 extern bool         ConstExprAndType(const_val *);
 extern TREEPTR      SingleExpr( void );
 extern TREEPTR      IntLeaf(target_int);
@@ -811,21 +831,3 @@ extern void         CBanner( void );
 extern SYM_HANDLE   GetBlockSymList( void );
 extern void         InitStmt( void );
 extern void         SwitchPurge( void );
-
-/* Macros to skip all typedefs and arrive at the underlying type */
-#define SKIP_TYPEDEFS( typeptr )                    \
-    while( typeptr->decl_type == TYP_TYPEDEF ) {    \
-        typeptr = typeptr->object;                  \
-    }
-#define SKIP_DUMMY_TYPEDEFS( typeptr )              \
-    while( typeptr->decl_type == TYP_TYPEDEF && (typeptr->type_flags & TF2_DUMMY_TYPEDEF) ) { \
-        typeptr = typeptr->object;                  \
-    }
-#define SKIP_ENUM( typeptr )                        \
-    if( typeptr->decl_type == TYP_ENUM ) {          \
-        typeptr = typeptr->object;                  \
-    }
-#define SKIP_ARRAYS( typeptr )                      \
-    while( typeptr->decl_type == TYP_ARRAY ) {      \
-        typeptr = typeptr->object;                  \
-    }
