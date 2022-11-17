@@ -156,12 +156,6 @@ char * GetEnvString( const char *envname )
     return( retval );
 }
 
-bool IsStdOutConsole( void )
-/*********************************/
-{
-    return( InitInfo.console_output );
-}
-
 void GetExtraCommands( void )
 /***************************/
 {

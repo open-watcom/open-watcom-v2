@@ -44,7 +44,6 @@
 
 
 #define NLCHAR          '\n'
-#define CTRLZ           '\32'
 
 #ifdef _M_I86
 #define CONSTU32(x)     x ## UL

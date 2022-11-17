@@ -56,8 +56,6 @@
 #include "clibext.h"
 
 
-#define _LinkerPrompt "WLINK>"
-
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
 cmdfilelist     *CmdFile = NULL;
@@ -619,7 +617,6 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
         case '\0':
         case '\r':
         case '\n':
-        case CTRLZ:
             quit = true;
             break;
         default:
@@ -670,14 +667,6 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
     _LnkFree( envname );
 }
 
-static void OutPutPrompt( const char *str )
-/*****************************************/
-{
-    if( QIsDevice( CmdFile->file ) ) {
-        WriteStdOut( str );
-    }
-}
-
 static void GetNewLine( void )
 /****************************/
 {
@@ -688,7 +677,7 @@ static void GetNewLine( void )
         Token.where = MIDST;
         //go until next line found;
         for( ; *Token.next != '\n'; Token.next++ ) {
-            if( *Token.next == '\0' || *Token.next == CTRLZ ) {
+            if( *Token.next == '\0' ) {
                 Token.where = ENDOFFILE;
                 break;
             }
@@ -705,16 +694,7 @@ static void GetNewLine( void )
         break;
     default:
     case COMMANDLINE:
-        Token.how = INTERACTIVE;
-        /* fall through */
-    case INTERACTIVE:
-        /* interactive prompt with entry */
-        OutPutPrompt( _LinkerPrompt );
-        if( QReadStr( STDIN_FILENO, Token.buff, MAX_REC, "console" ) ) {
-            Token.where = ENDOFCMD;
-        } else {
-            Token.where = MIDST;
-        }
+        Token.where = ENDOFCMD;
         Token.next = Token.buff;
         break;
     }
@@ -818,9 +798,6 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             EatWhite();
             hmm = *Token.next;
             switch( hmm ) {
-            case CTRLZ:
-                Token.where = ENDOFFILE;
-                break;
             case '\0':
                 if( Token.how == BUFFERED
                  || Token.how == ENVIRONMENT

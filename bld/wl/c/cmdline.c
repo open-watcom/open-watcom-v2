@@ -74,8 +74,6 @@
 #endif
 #define INIT_FILE_ENV   "WLINK_LNK"
 
-#define HELP_FILE_NAME  "wlink.hlp"
-
 typedef struct {
     exe_format      bits;
     char            *lib_var_name;
@@ -184,6 +182,7 @@ static bool sysHelp( void )
     } else if( ( p[0] == '-' || p[0] == '/' ) && p[1] == '?' ) {
 #endif
         p += 2;         // skip '-?' or '/?'
+    } else if( p[0] == '\0' ) {
     } else {
         help = false;
     }
@@ -216,51 +215,6 @@ void Syntax( void )
         ((char *)Token.this)[Token.len] = '\0';
         LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR, "s", Token.this );
     }
-}
-
-void PressKey( void )
-/*******************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         result;
-
-    Msg_Get( MSG_PRESS_KEY, msg_buffer );
-    WriteStdOut( msg_buffer );
-    result = WaitForKey();
-    WriteStdOutNL();
-    if( result == 'q' || result == 'Q' ) {
-        Ignite();
-        Suicide();
-    }
-}
-
-#define HELPLINE_SIZE   80
-
-static void Crash( bool check_file )
-/**********************************/
-{
-    char        buff[HELPLINE_SIZE + 1];
-    size_t      len;
-    f_handle    fp;
-
-    if( check_file ) {
-        fp = FindPath( HELP_FILE_NAME, NULL );
-        if( fp != NIL_FHANDLE ) {
-            WLPrtBanner();
-            len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
-            for( ; len != 0 && len != IOERROR; ) {
-                buff[len] = '\0';
-                WriteStdOut( buff );
-                len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
-            }
-            QClose( fp, HELP_FILE_NAME );
-            Ignite();
-            Suicide();
-        }
-    }
-    DisplayOptions();
-    Ignite();
-    Suicide();
 }
 
 static void DoCmdParse( void )
@@ -325,13 +279,10 @@ static void Help( void )
  */
 {
     EatWhite();
-    if( *Token.next == '?' ) {
-        Crash( false );
-    } else if( *Token.next == '\0' || !DoHelp() ) {
-        Crash( true );
-    } else {
-        Ignite();
-        Suicide();
+    if( *Token.next == '?'
+      || *Token.next == '\0'
+      || !DoHelp() ) {
+        DisplayOptions();
     }
 }
 
@@ -352,16 +303,10 @@ void DoCmdFile( const char *fname )
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
     }
-    if( IsStdOutConsole() ) {
-        CmdFlags |= CF_TO_STDOUT;
-    }
     if( sysHelp() ) {
         Help();
-    }
-    if( *Token.next == '\0' ) {     // go into interactive mode.
-        Token.how = INTERACTIVE;
-        Token.where = ENDOFLINE;
-        LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
+        Ignite();
+        Suicide();
     }
     file = NIL_FHANDLE;
     namelnk = GetEnvString( INIT_FILE_ENV );
