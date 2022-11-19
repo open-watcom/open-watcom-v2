@@ -13,7 +13,7 @@ dwarfw_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c : $(dwarfw_dir)/c
+.c : $(dwarfw_dir)/c;$(watcom_dir)/c
 
 inc_dirs = -I. -I"$(dwarfw_dir)/h"
 
@@ -43,7 +43,8 @@ libtarg_objs = &
     dwrefer.obj &
     dwsym.obj &
     dwtype.obj &
-    dwutils.obj
+    dwutils.obj &
+    leb128wr.obj
 !include libtarg.mif
 
 #

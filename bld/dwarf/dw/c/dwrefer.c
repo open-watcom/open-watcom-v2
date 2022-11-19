@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ static void emitDelayed( dw_client cli )
     cli->references.delayed = 0;
     if( cli->references.delayed_file ) {
         buf[0] = REF_SET_FILE;
-        end = ULEB128( buf + 1, cli->references.delayed_file );
+        end = WriteULEB128( buf + 1, cli->references.delayed_file );
         CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
         cli->references.delayed_file = 0;
     }
@@ -128,7 +128,7 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
     end = buf;
     if( line_delta < 0 || line_delta >= ( 255 - REF_CODE_BASE ) / REF_COLUMN_RANGE ) {
         *end++ = REF_ADD_LINE;
-        end = LEB128( end, line_delta );
+        end = WriteSLEB128( end, line_delta );
         cli->references.column = 0;
         line_delta = 0;
     } else if( line_delta != 0 ) {
@@ -138,7 +138,7 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
     cli->references.column = column;
     if( column_delta < 0 || column_delta >= REF_COLUMN_RANGE ) {
         *end++ = REF_ADD_COLUMN;
-        end = LEB128( end, column_delta );
+        end = WriteSLEB128( end, column_delta );
         column_delta = 0;
     }
     _Assert( line_delta >= 0

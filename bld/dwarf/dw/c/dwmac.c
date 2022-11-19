@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +58,8 @@ void DWENTRY DWMacStartFile( dw_client cli, dw_linenum line, const char *name )
     uint_8              *end;
 
     buf[0] = DW_MACINFO_start_file;
-    end = ULEB128( buf + 1, line );
-    end = ULEB128( end, GetFileNumber( cli, name ) );
+    end = WriteULEB128( buf + 1, line );
+    end = WriteULEB128( end, GetFileNumber( cli, name ) );
     CLIWrite( cli, DW_DEBUG_MACINFO, buf, end - buf );
 }
 
@@ -112,7 +112,7 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
     _Validate( mac != NULL );
 
     buf[0] = DW_MACINFO_define;
-    end = ULEB128( buf + 1, mac->line );
+    end = WriteULEB128( buf + 1, mac->line );
     CLIWrite( cli, DW_DEBUG_MACINFO, buf, end - buf );
     CLIWrite( cli, DW_DEBUG_MACINFO, mac->name, mac->len );
     parm = mac->parms;
@@ -144,7 +144,7 @@ void DWENTRY DWMacUnDef( dw_client cli, dw_linenum line, const char *name )
     _Validate( name != NULL );
 
     buf[0] = DW_MACINFO_undef;
-    end = ULEB128( buf + 1, line );
+    end = WriteULEB128( buf + 1, line );
     CLIWrite( cli, DW_DEBUG_MACINFO, buf, end - buf );
     CLIWriteString( cli, DW_DEBUG_MACINFO, name );
 }
@@ -158,7 +158,7 @@ void DWENTRY DWMacUse( dw_client cli, dw_linenum line, const char *name )
     _Validate( name != NULL );
 
     buf[0] = DW_MACINFO_vendor_ext;
-    end = ULEB128( buf + 1, line );
+    end = WriteULEB128( buf + 1, line );
     *end++ = 1;
     CLIWrite( cli, DW_DEBUG_MACINFO, buf, end - buf );
     CLIWriteString( cli, DW_DEBUG_MACINFO, name );

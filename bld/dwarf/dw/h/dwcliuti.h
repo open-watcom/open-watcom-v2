@@ -33,8 +33,6 @@
 #ifndef DWCLIUTI_H_INCLUDED
 #define DWCLIUTI_H_INCLUDED
 
-#include "dwcnf.h"
-
 #ifndef __BIG_ENDIAN__
 #define WriteU16( __p, __v )    ( *(uint_16 *)(__p) = (__v) )
 #define WriteU32( __p, __v )    ( *(uint_32 *)(__p) = (__v) )

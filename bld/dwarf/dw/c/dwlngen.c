@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,9 @@
 #include "dwpriv.h"
 #include "dwutils.h"
 #include "dwline.h"
-#include "dwlngen.h"
 
 
-uint_8 * DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *end )
+uint_8 * DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *end )
 {
     uint                opcode;
     dw_addr_delta       addr;
@@ -44,13 +43,13 @@ uint_8 * DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 
     if( line_incr < DWLINE_BASE || line_incr > DWLINE_BASE + DWLINE_RANGE - 1 ) {
         /* line_incr is out of bounds... emit standard opcode */
         *end++ = DW_LNS_advance_line;
-        end = LEB128( end, line_incr );
+        end = WriteSLEB128( end, line_incr );
         line_incr = 0;
     }
 
     if( addr_incr < 0 ) {
         *end++ = DW_LNS_advance_pc;
-        end = LEB128( end, addr_incr );
+        end = WriteSLEB128( end, addr_incr );
         addr_incr = 0;
     } else {
         addr_incr /= DW_MIN_INSTR_LENGTH;
@@ -107,7 +106,7 @@ overflow:
         addr_incr -= addr;
         opcode = line_incr + ( DWLINE_RANGE * addr ) + DWLINE_OPCODE_BASE;
     }
-    end = LEB128( end, addr_incr );
+    end = WriteSLEB128( end, addr_incr );
     *end++ = opcode;
     return( end );
 }

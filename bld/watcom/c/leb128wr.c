@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,16 +25,52 @@
 *
 *  ========================================================================
 *
-* Description:  Generate line information.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef DWLNGEN_H_INCLUDED
-#define DWLNGEN_H_INCLUDED
+#include "leb128wr.h"
 
-#include "dwcnf.h"
 
-extern uint_8 *DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *end );
+void *EncodeSLEB128( void *h, void (*ofn)(void **h, unsigned char), long long value )
+{
+    unsigned char   byte;
 
-#endif
+    /* we can only handle an arithmetic right shift */
+    if( value >= 0 ) {
+        for( ;; ) {
+            byte = value & 0x7f;
+            value >>= 7;
+            if( value == 0 && ( byte & 0x40 ) == 0 )
+                break;
+            ofn( &h, byte | 0x80 );
+        }
+    } else {
+        for( ;; ) {
+            byte = value & 0x7f;
+            value >>= 7;
+            if( value == -1 && ( byte & 0x40 ) )
+                break;
+            ofn( &h, byte | 0x80 );
+        }
+    }
+    ofn( &h, byte );
+    return( h );
+}
+
+void *EncodeULEB128( void *h, void (*ofn)(void **h, unsigned char), unsigned long long value )
+{
+    unsigned char   byte;
+
+    for( ;; ) {
+        byte = value & 0x7f;
+        value >>= 7;
+        if( value == 0 )
+            break;
+        ofn( &h, byte | 0x80 );
+    }
+    ofn( &h, byte );
+    return( h );
+}

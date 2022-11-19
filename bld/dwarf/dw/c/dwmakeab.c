@@ -612,10 +612,10 @@ static abbrev_data const abbrevInfo[] = {
 };
 #define AB_MAX  ( sizeof( abbrevInfo ) / sizeof( abbrevInfo[0] ) )
 
-static extra_info abbrevExtra[AB_MAX];
-static size_t topOfEncoding;
-static uint_8 encodingBuf[AB_MAX * MAX_LEB128 * MAX_CODES];
-static uint_8 tempEncoding[MAX_LEB128 * MAX_CODES];
+static extra_info       abbrevExtra[AB_MAX];
+static size_t           topOfEncoding;
+static uint_8           encodingBuf[AB_MAX * MAX_LEB128 * MAX_CODES];
+static uint_8           tempEncoding[MAX_LEB128 * MAX_CODES];
 
 static uint_8 *WriteULEB128( uint_8 *buf, uint_32 value )
 {
@@ -624,7 +624,7 @@ static uint_8 *WriteULEB128( uint_8 *buf, uint_32 value )
     for( ;; ) {
         byte = value & 0x7f;
         value >>= 7;
-        if( value == 0 ) 
+        if( value == 0 )
             break;
         *buf++ = byte | 0x80;
     }
@@ -691,7 +691,6 @@ static size_t addToEncoding( size_t this_size )
     }
     return( anchor );
 }
-
 
 static void emitEncodings( FILE *fp )
 {

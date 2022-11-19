@@ -39,7 +39,7 @@ void CLIWriteLEB128( dw_client cli, dw_sectnum sect, dw_sconst value )
 {
     uint_8              buf[MAX_LEB128];
 
-    CLIWrite( cli, sect, buf, LEB128( buf, value ) - buf );
+    CLIWrite( cli, sect, buf, WriteSLEB128( buf, value ) - buf );
 }
 
 
@@ -47,7 +47,7 @@ void CLIWriteULEB128( dw_client cli, dw_sectnum sect, dw_uconst value )
 {
     uint_8              buf[MAX_LEB128];
 
-    CLIWrite( cli, sect, buf, ULEB128( buf, value ) - buf );
+    CLIWrite( cli, sect, buf, WriteULEB128( buf, value ) - buf );
 }
 
 void CLISectionSetSize( dw_client cli, dw_sectnum sect )

@@ -115,8 +115,8 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     if( cli->compiler_options & DW_CM_ABBREV_PRE )
         return( code );
     /* emit the abbrev number, and tag */
-    end = ULEB128( buf, code );
-    end = ULEB128( end, data->tag );
+    end = WriteULEB128( buf, code );
+    end = WriteULEB128( end, data->tag );
     CLIWrite( cli, DW_DEBUG_ABBREV, buf, end - buf );
 
     /* add in the attributes that are always emitted */

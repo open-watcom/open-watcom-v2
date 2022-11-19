@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,19 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  Client independent utility functions for DWARF writer lib.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef DWUTILS_H_INCLUDED
-#define DWUTILS_H_INCLUDED
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "leb128wr.h"
+extern void     *EncodeSLEB128( void *h, void (*ofn)(void **h, unsigned char), long long value );
+extern void     *EncodeULEB128( void *h, void (*ofn)(void **h, unsigned char), unsigned long long value );
 
-#define WriteSLEB128(h,v)   (unsigned char *)EncodeSLEB128((h), OutputLEB128, (v))
-#define WriteULEB128(h,v)   (unsigned char *)EncodeULEB128((h), OutputLEB128, (v))
-
-extern void     OutputLEB128( void **h, unsigned char byte );
-
+#ifdef __cplusplus
+}
 #endif
