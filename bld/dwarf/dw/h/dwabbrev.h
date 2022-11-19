@@ -35,7 +35,9 @@
 #define DWABBREV_H_INCLUDED
 
 #include "abbrevco.h"
+
 #include "dwabenum.gh"
+
 
 typedef uint_32	abbrev_code;
 

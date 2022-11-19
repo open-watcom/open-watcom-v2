@@ -38,29 +38,34 @@
 #include <stdlib.h>
 #include "watcom.h"
 #include "dwarf.h"
-#include "dwcnf.h"
-#include "dwutils.h"
 #include "abbrevco.h"
 
-#include "dwutils.c"
 
 #define MAX_CODES       29
+#define ANCHOR_NONE     ((size_t)-1)
 
-typedef struct {
-    char                *name;          // enumerated name
-    uint_32             tag;            // tag for this abbreviation
-    uint_32             valid_mask;     // valid bits for this abbreviation
-    uint_32             data[MAX_CODES]; // attr/form pairs
-} abbrev_data;
+/* max storage req'd in LEB128 form to store a 32 bit int/uint */
+#define MAX_LEB128      5
 
 /*
     Some useful combinations of bits
 */
-#define DECL                    AB_DECL
-#define COMMON_NBITS            AB_ACCESSIBILITY
+#define DECL            AB_DECL
+#define COMMON_NBITS    AB_ACCESSIBILITY
 
+typedef struct {
+    char                *name;              /* enumerated name */
+    uint_32             tag;                /* tag for this abbreviation */
+    uint_32             valid_mask;         /* valid bits for this abbreviation */
+    uint_32             data[MAX_CODES];    /* attr/form pairs */
+} abbrev_data;
 
-abbrev_data const abbrevInfo[] = {
+typedef struct {
+    size_t              data_offset;
+    size_t              data_len;
+} extra_info;
+
+static abbrev_data const abbrevInfo[] = {
 
     {
         "AB_COMPILE_UNIT",
@@ -607,18 +612,29 @@ abbrev_data const abbrevInfo[] = {
 };
 #define AB_MAX  ( sizeof( abbrevInfo ) / sizeof( abbrevInfo[0] ) )
 
+static extra_info abbrevExtra[AB_MAX];
+static size_t topOfEncoding;
+static uint_8 encodingBuf[AB_MAX * MAX_LEB128 * MAX_CODES];
+static uint_8 tempEncoding[MAX_LEB128 * MAX_CODES];
 
-typedef struct {
-    size_t              data_offset;
-    size_t              data_len;
-} extra_info;
+static uint_8 *WriteULEB128( uint_8 *buf, uint_32 value )
+{
+    uint_8              byte;
 
-extra_info abbrevExtra[AB_MAX];
-
+    for( ;; ) {
+        byte = value & 0x7f;
+        value >>= 7;
+        if( value == 0 ) 
+            break;
+        *buf++ = byte | 0x80;
+    }
+    *buf++ = byte;
+    return( buf );
+}
 
 static void emitEnum( FILE *fp )
 {
-    uint                        u;
+    uint                u;
 
     fprintf( fp, "enum {\n    AB_PADDING,\n" );
     for( u = 0; u < AB_MAX; ++u ) {
@@ -627,17 +643,11 @@ static void emitEnum( FILE *fp )
     fprintf( fp, "    AB_MAX\n};" );
 }
 
-size_t topOfEncoding;
-uint_8 encodingBuf[AB_MAX * MAX_LEB128 * MAX_CODES];
-uint_8 tempEncoding[MAX_LEB128 * MAX_CODES];
-
-#define ANCHOR_NONE ((size_t)-1)
-
 static size_t addToEncoding( size_t this_size )
 {
-    size_t                      anchor;
-    size_t                      dest;
-    size_t                      src;
+    size_t              anchor;
+    size_t              dest;
+    size_t              src;
 
     if( this_size == 0 ) {
         return( 0 );
@@ -687,7 +697,7 @@ static void emitEncodings( FILE *fp )
 {
 /*
     The plan is to take the above table and compress it into a smaller
-    form.  The first obvious thing is to do the ULEB128 encodings now
+    form.  The first obvious thing is to do the WriteULEB128 encodings now
     since they are compile-time constant, and much smaller.
 */
     uint                u;
@@ -702,7 +712,7 @@ static void emitEncodings( FILE *fp )
         */
         end = tempEncoding;
         for( data = abbrevInfo[u].data; *data; ++data ) {
-            end = ULEB128( end, *data );
+            end = WriteULEB128( end, *data );
         }
         abbrevExtra[u].data_len = end - tempEncoding;
         abbrevExtra[u].data_offset = addToEncoding( end - tempEncoding );
@@ -711,7 +721,7 @@ static void emitEncodings( FILE *fp )
     fprintf( fp, "\nstatic const uint_8 encodings[] = {\n    /* 0x00 */ " );
     end = encodingBuf + topOfEncoding;
     p = encodingBuf;
-    for(;;) {
+    for( ;; ) {
         fprintf( fp, "0x%02x", *p );
         ++p;
         if( p == end ) break;
@@ -726,7 +736,7 @@ static void emitEncodings( FILE *fp )
 
 static uint CountBits( uint_32 value )
 {
-    uint                        number;
+    uint                number;
 
     number = 0;
     while( value ) {
@@ -797,8 +807,8 @@ static uint CountBits( uint_32 value )
 
 static uint_32 emitInfo( FILE *fp )
 {
-    uint_32                     total;
-    uint                        u;
+    uint_32             total;
+    uint                u;
 
     fprintf( fp,"\nstatic const struct abbrev_info {\n"
                 "    abbrev_code        valid_mask;\n"
@@ -809,7 +819,7 @@ static uint_32 emitInfo( FILE *fp )
                 "} abbrevInfo[] = {\n" );
     total = 1;
     u = 0;
-    for(;;) {
+    for( ;; ) {
         fprintf( fp, "/*%-32s*/{ 0x%08lx, 0x%04x, 0x%02x, 0x%02x, 0x%02x }",
             abbrevInfo[u].name,
             (unsigned long)abbrevInfo[u].valid_mask,
@@ -835,7 +845,8 @@ static uint_32 emitInfo( FILE *fp )
         }
         total += 1 << CountBits( abbrevInfo[u].valid_mask & ~AB_ALWAYS );
         ++u;
-        if( u == AB_MAX ) break;
+        if( u == AB_MAX )
+            break;
         if( total > 0xffff ) {
             /* just change the uint_16 bit_index in the above structure */
             fprintf( stderr, "Index too large, must increase size of index field\n" );
@@ -851,8 +862,8 @@ static uint_32 emitInfo( FILE *fp )
 int main( void )
 {
 
-    FILE *                      fp;
-    uint_32                     total;
+    FILE                *fp;
+    uint_32             total;
 
     fp = fopen( "dwabinfo.gh", "w" );
     if( fp == NULL ) {
