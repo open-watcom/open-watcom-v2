@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,20 +36,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define NO_ENUM
-#define AB_BITVECT_SIZE 1
-#include "dwpriv.h"
+#include "watcom.h"
+#include "dwarf.h"
+#include "dwcnf.h"
 #include "dwutils.h"
-#include "dwabbrev.h"
+#include "abbrevco.h"
 
 #include "dwutils.c"
 
 #define MAX_CODES       29
 
 typedef struct {
-    char *              name;           // enumerated name
+    char                *name;          // enumerated name
     uint_32             tag;            // tag for this abbreviation
-    abbrev_code         valid_mask;     // valid bits for this abbreviation
+    uint_32             valid_mask;     // valid bits for this abbreviation
     uint_32             data[MAX_CODES]; // attr/form pairs
 } abbrev_data;
 
