@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,34 +37,7 @@
  * dr_search_context
  */
 
-typedef struct {
-    int         size;   /* available room */
-    int         free;   /* next free entry */
-    drmem_hdl   *stack; /* values */
-} dr_context_stack;
-
-typedef struct {
-    dr_cu_handle        compunit;       /* current compile unit */
-    drmem_hdl           start;          /* die to start from */
-    drmem_hdl           end;            /* end of compile unit */
-    drmem_hdl           functionhdl;    /* containing function */
-    drmem_hdl           classhdl;       /* containing class */
-    dr_context_stack    stack;          /* stack of classes / functions */
-} dr_search_context;
-
-typedef struct {
-    drmem_hdl           handle;         /* symbol's handle */
-    dr_sym_type         type;           /* symbol's type */
-    char                *name;          /* symbol's name */
-    dr_search_context   *context;       /* context to resume search */
-} dr_sym_context;
-
-typedef bool (*DRSYMSRCH)( dr_sym_context *, void * );
-
 /* function prototypes */
 
-extern bool DRSymSearch( dr_search, dr_depth, void *, void *, DRSYMSRCH );
-extern bool DRResumeSymSearch( dr_search_context *, dr_search, dr_depth, void *, void *, DRSYMSRCH );
-
-extern dr_search_context * DRDuplicateSearchContext( dr_search_context * );
-extern void                DRFreeSearchContext( dr_search_context * );
+extern dr_search_context    *DRDuplicateSearchContext( dr_search_context * );
+extern void                 DRFreeSearchContext( dr_search_context * );

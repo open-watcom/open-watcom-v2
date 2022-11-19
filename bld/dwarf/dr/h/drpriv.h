@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dr.h"
 #include "virtmem.h"
 #include "drrtns.h"
@@ -41,8 +42,6 @@ enum {
     TAB_IDX_PATH
 };
 
-typedef unsigned_16     filetab_idx;
-
 typedef struct {
     filetab_idx         fnameidx;
     filetab_idx         pathidx;
@@ -54,8 +53,6 @@ typedef struct {
         char            *name;
     } u;
 } filetab_entry;
-
-typedef unsigned_16     file_tab_idx;
 
 typedef struct {
     filetab_idx         len;

@@ -31,7 +31,6 @@
 
 
 #include "drpriv.h"
-#include <string.h>
 #include "drutils.h"
 #include "walloca.h"
 
@@ -272,9 +271,11 @@ static void FiniProgInfo( prog_rdr *rdr )
     DWRFREE( rdr->op_lens );
 }
 
-drmem_hdl  DRGetStmtList( drmem_hdl ccu )
-/***************************************/
-// Return the start of the statement list or 0 if no lines
+drmem_hdl DRENTRY DRGetStmtList( drmem_hdl ccu )
+/***********************************************
+ * Return the start of the statement list from ccu
+ * or NULL if no statements
+ */
 {
     drmem_hdl   abbrev;
 
@@ -287,9 +288,11 @@ drmem_hdl  DRGetStmtList( drmem_hdl ccu )
     return( ccu );
 }
 
-bool DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
-/********************************************************************/
-// Run the statement program
+bool DRENTRY DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
+/*****************************************************************************
+ * Run the statement program
+ * walk lines given statement list handle
+ */
 {
     line_info   info;
     bool        ret;
@@ -300,10 +303,12 @@ bool DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
     return( ret );
 }
 
-bool DRWalkLFiles( drmem_hdl stmt, DRLFILEWLK file, void *file_data,
-                                        DRLDIRWLK dir, void *dir_data )
-/*********************************************************************/
-// Run the statement program
+bool DRENTRY DRWalkLFiles( drmem_hdl stmt, DRLFILEWLK file,
+                        void *file_data, DRLDIRWLK dir, void *dir_data )
+/***********************************************************************
+ * Run the statement program
+ * walk files given statement list handle
+ */
 {
     line_info       info;
     unsigned_8      value;

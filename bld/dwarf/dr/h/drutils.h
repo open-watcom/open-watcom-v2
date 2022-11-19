@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +30,6 @@
 ****************************************************************************/
 
 
-/* data types */
-
-typedef enum {
-    DO_NOTHING,
-    SET_CLASS,
-    SET_FUNCTION
-} stack_op;
-
 #define OP2HDL(x)   ((drmem_hdl)(pointer_uint)(x))
 #define HDL2OP(x)   ((stack_op)(pointer_uint)(x))
 
@@ -45,14 +37,13 @@ typedef enum {
 #define DWRContextPushOP(x,y)   DWRContextPush(x,OP2HDL(y))
 #define DWRContextPopOP(x)      HDL2OP(DWRContextPop(x))
 
-typedef struct {
-    drmem_hdl           handle;         // original handle
-    dr_search_context   *context;       // context to resume search
-    unsigned            tag;            // the actual tag.
-} mod_scan_info;
+/* data types */
 
-typedef bool (*DWRCUWLK)( drmem_hdl, drmem_hdl, mod_scan_info *, void * );
-typedef bool (*DWRCHILDCB)( drmem_hdl, drmem_hdl, void * );
+typedef enum {
+    DO_NOTHING,
+    SET_CLASS,
+    SET_FUNCTION
+} stack_op;
 
 typedef enum {
     DWR_FORMCL_address,
@@ -64,6 +55,15 @@ typedef enum {
     DWR_FORMCL_string,
     DWR_FORMCL_indirect,
 } dwr_formcl;
+
+typedef struct {
+    drmem_hdl               handle;     // original handle
+    dr_search_context       *context;    // context to resume search
+    unsigned                tag;        // the actual tag.
+} mod_scan_info;
+
+typedef bool (*DWRCUWLK)( drmem_hdl, drmem_hdl, mod_scan_info *, void * );
+typedef bool (*DWRCHILDCB)( drmem_hdl, drmem_hdl, void * );
 
 /* function prototypes */
 extern long         DWRInfoLength( drmem_hdl  );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 #include "drpriv.h"
 #include "drutils.h"
 
+
 typedef struct {
     void        *data;  /* caller wants this back */
     DRCLSSRCH   callback;
@@ -44,11 +46,12 @@ typedef struct {
     void        *data;
 } FriendInfo;
 
-void DRKidsSearch( drmem_hdl clhandle, dr_search search, void *data, DRCLSSRCH callback )
-/***************************************************************************************/
-// search the children of a given entry for particular tags ..
-// callback is called with a found entry's type, handle,
-// name, parent, and data.  If it returns false, searching stops.
+void DRENTRY DRKidsSearch( drmem_hdl clhandle, dr_search search, void *data, DRCLSSRCH callback )
+/************************************************************************************************
+ * search the children of a given entry for particular tags ..
+ * callback is called with a found entry's type, handle,
+ * name, parent, and data.  If it returns false, searching stops.
+ */
 {
     dr_sym_type     symtype;
     drmem_hdl       prt = clhandle;
@@ -145,8 +148,8 @@ static bool baseHook( dr_sym_type notused1, drmem_hdl handle,
     return( true );
 }
 
-void DRBaseSearch( drmem_hdl clhandle, void * data, DRCLSSRCH callback )
-/**********************************************************************/
+void DRENTRY DRBaseSearch( drmem_hdl clhandle, void * data, DRCLSSRCH callback )
+/******************************************************************************/
 {
     BaseInfo binfo;
     binfo.data = data;
@@ -188,11 +191,12 @@ static bool CheckEntry( drmem_hdl abbrev, drmem_hdl handle, mod_scan_info *minfo
     return( true );
 }
 
-void DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
-/**********************************************************************/
-// Warning!! KLUDGE! this searches the compile unit for entries that have a
-// DW_TAG_inheritance child that references handle -- not that fast.
-// also, only checks the compile unit the base class is in.
+void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
+/*******************************************************************************
+ * Warning!! KLUDGE! this searches the compile unit for entries that have a
+ * DW_TAG_inheritance child that references handle -- not that fast.
+ * also, only checks the compile unit the base class is in.
+ */
 {
     BaseInfo            info;
     compunit_info       *compunit;
@@ -245,8 +249,8 @@ static bool friendHook( dr_sym_type st, drmem_hdl handle, char *name,
     return( true );
 }
 
-void DRFriendsSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
-/**********************************************************************/
+void DRENTRY DRFriendsSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
+/******************************************************************************/
 {
     FriendInfo info;
 
@@ -255,8 +259,8 @@ void DRFriendsSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
     DRKidsSearch( handle, DR_SEARCH_FRIENDS, &info, friendHook );
 }
 
-dr_sym_type DRGetSymType( drmem_hdl entry )
-/*****************************************/
+dr_sym_type DRENTRY DRGetSymType( drmem_hdl entry )
+/*************************************************/
 {
     dr_sym_type     symtype = DR_SYM_NOT_SYM;
     int             index;

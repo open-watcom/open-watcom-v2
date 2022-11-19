@@ -1,7 +1,8 @@
 /****************************************************************************
 *
-*                         Open Watcom Project
+*                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,30 +31,13 @@
 ****************************************************************************/
 
 
-/*  evaluate location  expr*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef enum {
-    DR_LOC_NONE,
-    DR_LOC_REG,
-    DR_LOC_ADDR
-} dr_loc_kind;
+extern long long            DecodeSLEB128( void **h, unsigned char (*ifn)(void **h) );
+extern unsigned long long   DecodeULEB128( void **h, unsigned char (*ifn)(void **h) );
 
-typedef struct {
-    dr_loc_kind (*init)( void *, uint_32 * );                            //Init Stk
-    bool (*ref)( void *d, uint_32 ref, uint_32 size, dr_loc_kind kind ); //grab ref, size of kind
-    bool (*dref)( void *d, uint_32 *, uint_32, uint_32 );                //dref addr
-    bool (*drefx)( void *d, uint_32 *, uint_32, uint_32, uint_16 );      //dref addr seg
-    bool (*frame)( void *d, uint_32 * );                                 //get frame val
-    bool (*reg)( void *d, uint_32 *, uint_16 );                          //get reg val
-    bool (*acon)( void *d, uint_32 *, bool );                            //address constant
-    bool (*live)( void *d, uint_32 * );                                  //get pc line range
-} dr_loc_callbck_def;
-
-typedef dr_loc_callbck_def const dr_loc_callbck;
-
-extern bool         DRLocationAT( drmem_hdl var, dr_loc_callbck *callbck, void *d );
-extern bool         DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d );
-extern bool         DRLocBasedAT( drmem_hdl var, dr_loc_callbck *callbck, void *d );
-extern bool         DRRetAddrLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d );
-extern bool         DRSegLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d );
-extern drmem_hdl    DRStringLengthAT( drmem_hdl str );
+#ifdef __cplusplus
+}
+#endif

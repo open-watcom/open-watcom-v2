@@ -31,8 +31,6 @@
 
 
 #include <string.h>
-#include <drgetref.h>
-
 #include "assure.h"
 #include "module.h"
 #include "gtcycle.h"

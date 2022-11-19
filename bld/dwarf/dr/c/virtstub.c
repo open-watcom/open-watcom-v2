@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "drpriv.h"
-#include "drleb128.h"
+#include "leb128rd.h"
 
 
 typedef struct alloc_struct {
@@ -117,16 +116,16 @@ void DWRVMDestroy( void )
     AllocHead = NULL;
 }
 
-bool DRSwap( void )
-/*****************/
+bool DRENTRY DRSwap( void )
+/*************************/
 {
     // swap requests are ignored.
 
     return( false );
 }
 
-static uint_8 readLEB( void **h )
-/*******************************/
+static unsigned char readLEB( void **h )
+/**************************************/
 {
     return( *(*(drmem_hdl *)h)++ );
 }
@@ -134,13 +133,13 @@ static uint_8 readLEB( void **h )
 int_64 DWRVMReadSLEB128( drmem_hdl *vmptr )
 /*****************************************/
 {
-    return( SLEB128( (void **)vmptr, readLEB ) );
+    return( DecodeSLEB128( (void **)vmptr, readLEB ) );
 }
 
 uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
 /******************************************/
 {
-    return( ULEB128( (void **)vmptr, readLEB ) );
+    return( DecodeULEB128( (void **)vmptr, readLEB ) );
 }
 
 #if 0

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
-#include "drstack.h"
 #include "drpriv.h"
+#include "drstack.h"
+
 
 void DWRStackCreate(                        // INITIALIZE A STACK
     dr_stack *stk,                          // -- stack to initialize

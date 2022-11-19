@@ -30,6 +30,12 @@
 ****************************************************************************/
 
 
+#include "leb128rd.h"
+
+
+#define ReadSLEB128(h)   DecodeSLEB128((void **)&(h), ReadLEB)
+#define ReadULEB128(h)   DecodeULEB128((void **)&(h), ReadLEB)
+
 /*
  * os2exe.c
  */
@@ -82,8 +88,7 @@ extern bool         Dmp_mdbg_head( void );
  * wsect.c
  */
 extern const char       *Getname( unsigned_32, readable_name *, size_t );
-extern uint_64          DecodeULEB128( const unsigned_8 ** );
-extern int_64           DecodeSLEB128( const unsigned_8 ** );
+extern unsigned char    ReadLEB( void **h );
 extern const unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code );
 extern void             dump_abbrevs( const unsigned_8 *input, unsigned length );
 extern void             Dump_specific_section( unsigned, const unsigned_8 *, unsigned );

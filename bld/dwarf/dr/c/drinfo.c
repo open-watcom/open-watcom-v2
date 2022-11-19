@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +71,8 @@ static bool CheckLanguage( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, vo
     return( false );        // do not continue processing
 }
 
-dr_language DRGetLanguageAT( drmem_hdl entry )
-/********************************************/
+dr_language DRENTRY DRGetLanguageAT( drmem_hdl entry )
+/****************************************************/
 {
     drmem_hdl   abbrev;
     dr_language result;
@@ -81,8 +82,8 @@ dr_language DRGetLanguageAT( drmem_hdl entry )
     return( result );
 }
 
-dr_model DRGetMemModelAT( drmem_hdl entry )
-/*****************************************/
+dr_model DRENTRY DRGetMemModelAT( drmem_hdl entry )
+/*************************************************/
 {
     drmem_hdl   abbrev;
     dr_model    retval;
@@ -96,8 +97,8 @@ dr_model DRGetMemModelAT( drmem_hdl entry )
     return( retval );
 }
 
-char *DRGetProducer( drmem_hdl entry )
-/************************************/
+char * DRENTRY DRGetProducer( drmem_hdl entry )
+/*********************************************/
 {
     drmem_hdl   abbrev;
     char       *name;
@@ -111,8 +112,8 @@ char *DRGetProducer( drmem_hdl entry )
     return( name );
 }
 
-dr_language DRGetLanguage( void )
-/*******************************/
+dr_language DRENTRY DRGetLanguage( void )
+/***************************************/
 {
     dr_language result;
     drmem_hdl   start;
@@ -155,14 +156,14 @@ static size_t GetNameBuffAttr( drmem_hdl entry, char *buff, size_t length, dw_at
     return( length );
 }
 
-size_t DRGetCompDirBuff( drmem_hdl entry, char *buff, size_t length )
-/*******************************************************************/
+size_t DRENTRY DRGetCompDirBuff( drmem_hdl entry, char *buff, size_t length )
+/***************************************************************************/
 {
     return( GetNameBuffAttr( entry, buff, length, DW_AT_comp_dir ) );
 }
 
-char *DRGetName( drmem_hdl entry )
-/********************************/
+char * DRENTRY DRGetName( drmem_hdl entry )
+/*****************************************/
 {
     drmem_hdl   abbrev;
 
@@ -170,14 +171,14 @@ char *DRGetName( drmem_hdl entry )
     return( DWRGetName( abbrev, entry ) );
 }
 
-size_t DRGetNameBuff( drmem_hdl entry, char *buff, size_t length )
-/****************************************************************/
+size_t DRENTRY DRGetNameBuff( drmem_hdl entry, char *buff, size_t length )
+/************************************************************************/
 {
     return( GetNameBuffAttr( entry, buff, length, DW_AT_name ) );
 }
 
-size_t DRGetScopedNameBuff( drmem_hdl entry, char *buff, size_t max )
-/*******************************************************************/
+size_t DRENTRY DRGetScopedNameBuff( drmem_hdl entry, char *buff, size_t max )
+/***************************************************************************/
 {
     drmem_hdl       of;
     dr_scope_trail  container;
@@ -246,9 +247,10 @@ done_loop:
     return( total );
 }
 
-long DRGetColumn( drmem_hdl entry )
-/*********************************/
-// NYI: this is not going to work for macros.
+long DRENTRY DRGetColumn( drmem_hdl entry )
+/******************************************
+ * NYI: this is not going to work for macros.
+ */
 {
     long        retval;
     drmem_hdl   abbrev;
@@ -261,9 +263,10 @@ long DRGetColumn( drmem_hdl entry )
     return( retval );
 }
 
-long DRGetLine( drmem_hdl entry )
-/**************************************/
-// NYI: this is not going to work for macros.
+long DRENTRY DRGetLine( drmem_hdl entry )
+/****************************************
+ * NYI: this is not going to work for macros.
+ */
 {
     long        retval;
     drmem_hdl   abbrev;
@@ -276,8 +279,8 @@ long DRGetLine( drmem_hdl entry )
     return( retval );
 }
 
-char *DRGetFileName( drmem_hdl entry )
-/************************************/
+char * DRENTRY DRGetFileName( drmem_hdl entry )
+/*********************************************/
 {
     drmem_hdl           abbrev;
     char *              name;
@@ -292,8 +295,8 @@ char *DRGetFileName( drmem_hdl entry )
     return( name );
 }
 
-void DRGetFileNameList( DRFNAMECB callback, void *data )
-/******************************************************/
+void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
+/**************************************************************/
 {
     compunit_info       *compunit;
     dr_fileidx          fileidx;
@@ -315,8 +318,8 @@ void DRGetFileNameList( DRFNAMECB callback, void *data )
     } while( compunit != NULL );
 }
 
-char *DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
-/********************************************************/
+char * DRENTRY DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
+/******************************************************************/
 {
     compunit_info       *compunit;
     char                *name;
@@ -328,8 +331,8 @@ char *DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
     return( name );
 }
 
-dr_access DRGetAccess( drmem_hdl entry )
-/**************************************/
+dr_access DRENTRY DRGetAccess( drmem_hdl entry )
+/**********************************************/
 {
     drmem_hdl   abbrev;
 
@@ -340,8 +343,8 @@ dr_access DRGetAccess( drmem_hdl entry )
     return( DR_ACCESS_PUBLIC );
 }
 
-bool DRIsStatic( drmem_hdl entry )
-/********************************/
+bool DRENTRY DRIsStatic( drmem_hdl entry )
+/****************************************/
 {
     drmem_hdl   abbrev;
 
@@ -352,8 +355,8 @@ bool DRIsStatic( drmem_hdl entry )
     return( false );
 }
 
-bool DRIsArtificial( drmem_hdl entry )
-/************************************/
+bool DRENTRY DRIsArtificial( drmem_hdl entry )
+/********************************************/
 {
     drmem_hdl   abbrev;
 
@@ -364,8 +367,8 @@ bool DRIsArtificial( drmem_hdl entry )
     return( false );
 }
 
-bool DRIsSymDefined( drmem_hdl entry )
-/************************************/
+bool DRENTRY DRIsSymDefined( drmem_hdl entry )
+/********************************************/
 {
     drmem_hdl   abbrev;
 
@@ -373,8 +376,8 @@ bool DRIsSymDefined( drmem_hdl entry )
     return( !DWRScanForAttrib( &abbrev, &entry, DW_AT_declaration ) );
 }
 
-bool DRIsMemberStatic( drmem_hdl entry )
-/**************************************/
+bool DRENTRY DRIsMemberStatic( drmem_hdl entry )
+/**********************************************/
 {
     dw_tagnum       tag;
 
@@ -382,8 +385,8 @@ bool DRIsMemberStatic( drmem_hdl entry )
     return( tag == DW_TAG_variable );
 }
 
-bool DRIsFunc( drmem_hdl entry )
-/******************************/
+bool DRENTRY DRIsFunc( drmem_hdl entry )
+/**************************************/
 {
     dw_tagnum       tag;
 
@@ -391,8 +394,8 @@ bool DRIsFunc( drmem_hdl entry )
     return( tag == DW_TAG_subprogram );
 }
 
-bool DRIsParm( drmem_hdl entry )
-/******************************/
+bool DRENTRY DRIsParm( drmem_hdl entry )
+/**************************************/
 {
     dw_tagnum       tag;
 
@@ -400,8 +403,8 @@ bool DRIsParm( drmem_hdl entry )
     return( tag == DW_TAG_formal_parameter );
 }
 
-dr_virtuality DRGetVirtuality( drmem_hdl entry )
-/**********************************************/
+dr_virtuality DRENTRY DRGetVirtuality( drmem_hdl entry )
+/******************************************************/
 {
     drmem_hdl   abbrev;
 
@@ -412,8 +415,8 @@ dr_virtuality DRGetVirtuality( drmem_hdl entry )
     return( DR_VIRTUALITY_NONE );
 }
 
-unsigned DRGetByteSize( drmem_hdl entry )
-/***************************************/
+unsigned DRENTRY DRGetByteSize( drmem_hdl entry )
+/***********************************************/
 {
     drmem_hdl   abbrev;
 
@@ -424,8 +427,8 @@ unsigned DRGetByteSize( drmem_hdl entry )
     return( 0 );
 }
 
-bool DRGetLowPc( drmem_hdl entry, uint_32 *num )
-/**********************************************/
+bool DRENTRY DRGetLowPc( drmem_hdl entry, uint_32 *num )
+/******************************************************/
 {
     drmem_hdl   abbrev;
     uint_32     offset;
@@ -442,8 +445,8 @@ bool DRGetLowPc( drmem_hdl entry, uint_32 *num )
     return( ret );
 }
 
-bool DRGetHighPc( drmem_hdl entry, uint_32 *num )
-/***********************************************/
+bool DRENTRY DRGetHighPc( drmem_hdl entry, uint_32 *num )
+/*******************************************************/
 {
     drmem_hdl   abbrev;
     uint_32     offset;
@@ -460,8 +463,8 @@ bool DRGetHighPc( drmem_hdl entry, uint_32 *num )
     return( ret );
 }
 
-drmem_hdl DRGetContaining( drmem_hdl entry )
-/******************************************/
+drmem_hdl DRENTRY DRGetContaining( drmem_hdl entry )
+/**************************************************/
 {
     drmem_hdl   abbrev;
     drmem_hdl   ret;
@@ -475,9 +478,10 @@ drmem_hdl DRGetContaining( drmem_hdl entry )
     return( ret );
 }
 
-drmem_hdl DRWalkParent( dr_search_context * context )
-/**********************************************************/
-// get past relative
+drmem_hdl DRENTRY DRWalkParent( dr_search_context *context )
+/***********************************************************
+ * get past relative
+ */
 {
     drmem_hdl   prev;
     stack_op    op;
@@ -524,8 +528,8 @@ static const dw_tagnum EntryTags[] = {
     DW_TAG_subprogram, DW_TAG_label, DW_TAG_variable, 0
 };
 
-bool DRWalkModFunc( drmem_hdl mod, bool blocks, DRWLKMODF wlk, void *d )
-/**********************************************************************/
+bool DRENTRY DRWalkModFunc( drmem_hdl mod, bool blocks, DRWLKMODF wlk, void *d )
+/******************************************************************************/
 {
     bool            ret;
     struct wlk_wlk  dat;
@@ -563,8 +567,8 @@ static const dw_tagnum TypeTags[] = { // any type
     DW_TAG_typedef,
 };
 
-bool DRWalkModTypes( drmem_hdl mod, DRWLKMODF wlk, void *d )
-/**********************************************************/
+bool DRENTRY DRWalkModTypes( drmem_hdl mod, DRWLKMODF wlk, void *d )
+/******************************************************************/
 {
     struct wlk_wlk  dat;
 
@@ -573,8 +577,8 @@ bool DRWalkModTypes( drmem_hdl mod, DRWLKMODF wlk, void *d )
     return( DWRWalkCompileUnit( mod, CheckAFunc, TypeTags, DR_DEPTH_FUNCTIONS | DR_DEPTH_CLASSES, &dat ) );
 }
 
-bool DRWalkScope( drmem_hdl mod, DRWLKBLK wlk, void *d )
-/******************************************************/
+bool DRENTRY DRWalkScope( drmem_hdl mod, DRWLKBLK wlk, void *d )
+/**************************************************************/
 {
     return( DWRWalkScope( mod, &BlockTags[1], wlk, d ) );
 }
@@ -612,8 +616,8 @@ static const dw_tagnum * const SrchTags[DR_SRCH_LAST] = {
 };
 
 #define MAX_TAG_WLK   8   //check max size of tag search array
-bool DRWalkBlock( drmem_hdl mod, dr_srch what, DRWLKBLK wlk, void *d )
-/********************************************************************/
+bool DRENTRY DRWalkBlock( drmem_hdl mod, dr_srch what, DRWLKBLK wlk, void *d )
+/****************************************************************************/
 {
     const dw_tagnum     *tags;
     DRWLKBLK            wlks[MAX_TAG_WLK];
@@ -629,8 +633,8 @@ bool DRWalkBlock( drmem_hdl mod, dr_srch what, DRWLKBLK wlk, void *d )
     return( DWRWalkChildren( mod, tags, wlks, d ) );
 }
 
-bool DRStartScopeAT( drmem_hdl entry, uint_32 *num )
-/**************************************************/
+bool DRENTRY DRStartScopeAT( drmem_hdl entry, uint_32 *num )
+/**********************************************************/
 {
     drmem_hdl   abbrev;
     uint_32     offset;
@@ -647,15 +651,16 @@ bool DRStartScopeAT( drmem_hdl entry, uint_32 *num )
     return( ret );
 }
 
-unsigned DRGetAddrSize( drmem_hdl mod )
-/*************************************/
-// returns the size of the address for the compile unit
+unsigned DRENTRY DRGetAddrSize( drmem_hdl mod )
+/**********************************************
+ * returns the size of the address for the compile unit
+ */
 {
     return( DWRVMReadByte( mod + 10 ) );
 }
 
-drmem_hdl DRDebugPCHDef( drmem_hdl entry )
-/****************************************/
+drmem_hdl DRENTRY DRDebugPCHDef( drmem_hdl entry )
+/************************************************/
 {
     drmem_hdl   abbrev;
     drmem_hdl   ret;
@@ -669,8 +674,8 @@ drmem_hdl DRDebugPCHDef( drmem_hdl entry )
     return( ret );
 }
 
-dr_tag_type DRGetTagType( drmem_hdl entry )
-/*****************************************/
+dr_tag_type DRENTRY DRGetTagType( drmem_hdl entry )
+/*************************************************/
 {
     dr_tag_type tagtype;
     dw_tagnum   tag;

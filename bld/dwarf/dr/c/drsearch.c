@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,9 @@
 
 #include "drpriv.h"
 #include "drutils.h"
+#include "drsearch.h"
 #include <regexp.h>
-#include <string.h>
+
 
 typedef struct {
     DRSYMSRCH   callback;
@@ -77,11 +79,13 @@ static bool CheckEntry( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *minfo, v
     return( sinfo->callback( &symctxt, sinfo->data ) );
 }
 
-bool DRSymSearch( dr_search search, dr_depth depth, void *_name, void *data, DRSYMSRCH callback )
-/***********************************************************************************************/
-// search the debugging information for interesting symbols (of type dr_search)
-// optionally search inside lexical blocks or classes (dr_depth)
-// optionally look for a particular name.
+bool DRENTRY DRSymSearch( dr_search search, dr_depth depth, void *_name,
+                                        void *data, DRSYMSRCH callback )
+/***********************************************************************
+ * search the debugging information for interesting symbols (of type dr_search)
+ * optionally search inside lexical blocks or classes (dr_depth)
+ * optionally look for a particular name.
+ */
 {
     sym_search_data info;
     bool            done = false;
@@ -102,9 +106,9 @@ bool DRSymSearch( dr_search search, dr_depth depth, void *_name, void *data, DRS
     return( done );
 }
 
-bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
-                               dr_depth depth, void *_name, void *data, DRSYMSRCH callback )
-/************************************************************************/
+bool DRENTRY DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
+            dr_depth depth, void *_name, void *data, DRSYMSRCH callback )
+/***********************************************************************/
 // resume a search from context information in ctxt
 {
     sym_search_data info;
@@ -136,11 +140,11 @@ static bool DRSearchMacro( regexp *name, void * data, DRSYMSRCH callback )
     return( false );        // more info, in case anyone checks
 }
 
-dr_search_context * DRDuplicateSearchContext( dr_search_context *cxt )
-/********************************************************************/
+dr_search_context *DRDuplicateSearchContext( dr_search_context *cxt )
+/*******************************************************************/
 {
-    int                 i;
-    dr_search_context   *newCtxt;
+    int                     i;
+    dr_search_context       *newCtxt;
 
     newCtxt = DWRALLOC( sizeof( dr_search_context ) );
     *newCtxt = *cxt; /* structure copy */

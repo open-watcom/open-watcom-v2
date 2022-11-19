@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,17 +38,7 @@
 #include "wdglb.h"
 #include "wdfunc.h"
 
-static readable_name readableStandardOps[] = {
-    table( DW_LNS_copy ),
-    table( DW_LNS_advance_pc ),
-    table( DW_LNS_advance_line ),
-    table( DW_LNS_set_file ),
-    table( DW_LNS_set_column ),
-    table( DW_LNS_negate_stmt ),
-    table( DW_LNS_set_basic_block ),
-    table( DW_LNS_const_add_pc ),
-    table( DW_LNS_fixed_advance_pc )
-};
+
 #define NUM_STANDARD_OPS \
     ( sizeof( readableStandardOps ) / sizeof( readableStandardOps[0] ) )
 
@@ -61,6 +52,18 @@ typedef struct {
     bool                basic_block;
     bool                end_sequence;
 } state_info;
+
+static readable_name readableStandardOps[] = {
+    table( DW_LNS_copy ),
+    table( DW_LNS_advance_pc ),
+    table( DW_LNS_advance_line ),
+    table( DW_LNS_set_file ),
+    table( DW_LNS_set_column ),
+    table( DW_LNS_negate_stmt ),
+    table( DW_LNS_set_basic_block ),
+    table( DW_LNS_const_add_pc ),
+    table( DW_LNS_fixed_advance_pc )
+};
 
 
 static void init_state( state_info *state, bool default_is_stmt )
@@ -231,9 +234,9 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
             ++file_index;
             name = p;
             p += strlen( (char *)p ) + 1;
-            directory = DecodeULEB128( &p );
-            mod_time = DecodeULEB128( &p );
-            file_length = DecodeULEB128( &p );
+            directory = ReadULEB128( p );
+            mod_time = ReadULEB128( p );
+            file_length = ReadULEB128( p );
             Wdputs( "file " );
                 Putdec( file_index );
             Wdputs( ": '" );
@@ -260,7 +263,7 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
             ++p;
             if( op_code == 0 ) {
                 /* extended op_code */
-                op_len = (unsigned_16)DecodeULEB128( &p );
+                op_len = ReadULEB128( p );
                 Wdputs( "len: " );
                 Putdecl( op_len, 3 );
                 Wdputc( ' ' );
@@ -308,9 +311,9 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
                     ++file_index;
                     name = p;
                     p += strlen( (char *)p ) + 1;
-                    directory = DecodeULEB128( &p );
-                    mod_time = DecodeULEB128( &p );
-                    file_length = DecodeULEB128( &p );
+                    directory = ReadULEB128( p );
+                    mod_time = ReadULEB128( p );
+                    file_length = ReadULEB128( p );
                     Wdputs( "DEFINE_FILE " );
                     Putdec( file_index );
                     Wdputs( ": '" );
@@ -338,22 +341,22 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
                     state.basic_block = false;
                     break;
                 case DW_LNS_advance_pc:
-                    tmp32 = DecodeULEB128( &p );
+                    tmp32 = ReadULEB128( p );
                     Putdec( tmp32 );
                     state.address += tmp32 * min_instr;
                     break;
                 case DW_LNS_advance_line:
-                    itmp32 = DecodeSLEB128( &p );
+                    itmp32 = ReadSLEB128( p );
                     Putdecs( itmp32 );
                     state.line += itmp32;
                     break;
                 case DW_LNS_set_file:
-                    tmp32 = DecodeULEB128( &p );
+                    tmp32 = ReadULEB128( p );
                     Putdec( tmp32 );
                     state.file = tmp32;
                     break;
                 case DW_LNS_set_column:
-                    tmp32 = DecodeULEB128( &p );
+                    tmp32 = ReadULEB128( p );
                     Putdec( tmp32 );
                     state.column = tmp32;
                     break;
@@ -374,7 +377,7 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
                     break;
                 default:
                     for( u = 0; u < opcode_lengths[ op_code - 1 ]; ++u ) {
-                        tmp32 = DecodeULEB128( &p );
+                        tmp32 = ReadULEB128( p );
                         Puthex( tmp32, 8 );
                     }
                 }

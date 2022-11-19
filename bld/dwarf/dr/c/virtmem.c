@@ -31,9 +31,8 @@
 
 
 #include <stdlib.h>
-#include <string.h>
 #include "drpriv.h"
-#include "drleb128.h"
+#include "leb128rd.h"
 
 
 #define OFFSET_SHIFT    12
@@ -223,11 +222,12 @@ void DWRVMFree( drmem_hdl hdl )
     hdl = hdl;
 }
 
-bool DRSwap( void )
-/*****************/
-// this uses the second-chance cyclic algorithm for page replacement.
-// NOTE: this tends to degenerate into FIFO under very tight memory
-// requirements, which is rather bad for the current usage.  Any better ideas?
+bool DRENTRY DRSwap( void )
+/**************************
+ * this uses the second-chance cyclic algorithm for page replacement.
+ * NOTE: this tends to degenerate into FIFO under very tight memory
+ * requirements, which is rather bad for the current usage.  Any better ideas?
+ */
 {
     unsigned_16         startbranch;
     unsigned_16         startleaf;
@@ -424,7 +424,7 @@ int_64 DWRVMReadSLEB128( drmem_hdl *vmptr )
     i.vmptr = vmptr;
     ACCESSPAGE( i.node, vm );
     i.off = NODE_OFF( vm );
-    return( SLEB128( (void **)&i, readLEB ) );
+    return( DecodeSLEB128( (void **)&i, readLEB ) );
 }
 
 uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
@@ -437,7 +437,7 @@ uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
     i.vmptr = vmptr;
     ACCESSPAGE( i.node, vm );
     i.off = NODE_OFF( vm );
-    return( ULEB128( (void **)&i, readLEB ) );
+    return( DecodeULEB128( (void **)&i, readLEB ) );
 }
 
 void DWRVMSkipLEB128( drmem_hdl *hdl )

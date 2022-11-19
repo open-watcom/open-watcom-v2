@@ -32,7 +32,7 @@
 #include "drpriv.h"
 #include "drgettab.h"
 #include "drutils.h"
-#include <string.h>
+
 
 #define DEBUG_PUBNAMES_VERSION   2
 
@@ -45,8 +45,8 @@ typedef struct pubname_header {
 } _WCUNALIGNED pubname_header;
 #include "poppck.h"
 
-void DRWalkPubName( DRPUBWLK callback, void *data )
-/*************************************************/
+void DRENTRY DRWalkPubName( DRPUBWLK callback, void *data )
+/*********************************************************/
 {
     dr_pubname_data     pubname;
     pubname_header      header;

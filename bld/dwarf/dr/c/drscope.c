@@ -34,6 +34,7 @@
 #include "drgettab.h"
 #include "drscope.h"
 
+
 static void ScopeBlockInit( dr_scope_block *block )
 //************************************************************
 // link list of free entries together with entries[0] as first

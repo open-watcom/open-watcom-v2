@@ -25,47 +25,47 @@
 *
 *  ========================================================================
 *
-* Description:  signed/unsigned LEB128 reading procedures
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "drpriv.h"
-#include "drleb128.h"
+#include "leb128rd.h"
 
 
-int_64 SLEB128( void **h, uint_8 (*ifn)(void **h) )
-/*************************************************/
+long long DecodeSLEB128( void **h, unsigned char (*ifn)(void **h) )
+/*****************************************************************/
 {
-    uint_64     value;
-    uint        shift;
-    uint_8      byte;
+    unsigned long long  value;
+    unsigned            shift;
+    unsigned char       byte;
 
     value = 0;
     shift = 0;
     do {
         byte = ifn( h );
-        value |= (uint_64)( byte & 0x7f ) << shift;
+        value |= (unsigned long long)( byte & 0x7f ) << shift;
         shift += 7;
     } while( byte & 0x80 );
     if( (byte & 0x40) && ( shift < 64 ) ) {
         value |= ~0ULL << shift;
     }
-    return( (int_64)value );
+    return( (long long)value );
 }
 
-uint_64 ULEB128( void **h, uint_8 (*ifn)(void **h) )
-/**************************************************/
+unsigned long long DecodeULEB128( void **h, unsigned char (*ifn)(void **h) )
+/**************************************************************************/
 {
-    uint_64     value;
-    uint        shift;
-    uint_8      byte;
+    unsigned long long  value;
+    unsigned            shift;
+    unsigned char       byte;
 
     value = 0;
     shift = 0;
     do {
         byte = ifn( h );
-        value |= (uint_64)( byte & 0x7f ) << shift;
+        value |= (unsigned long long)( byte & 0x7f ) << shift;
         shift += 7;
     } while( byte & 0x80 );
     return( value );

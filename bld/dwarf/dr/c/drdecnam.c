@@ -32,9 +32,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include "watcom.h"
-#include "dwarf.h"
 #include "drpriv.h"
 #include "drutils.h"
 #include "drscope.h"
@@ -349,8 +347,11 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
     strncpy( buf, label, DRDECLABELLEN );
 }
 
-char * DRDecoratedName( drmem_hdl die, drmem_hdl parent )
-/*******************************************************/
+char * DRENTRY DRDecoratedName( drmem_hdl die, drmem_hdl parent )
+/****************************************************************
+ * given a handle to a dwarf debug-info-entry, decorate the name
+ * of the entry and return it as a char *.
+ */
 {
     BrokenName_T    decstruct;
     char            *retstr;
@@ -361,8 +362,14 @@ char * DRDecoratedName( drmem_hdl die, drmem_hdl parent )
     return( retstr );
 }
 
-void DRDecoratedNameList( void *obj, drmem_hdl die, drmem_hdl parent, DRDECORCB cb )
-/**********************************************************************************/
+void DRENTRY DRDecoratedNameList( void *obj, drmem_hdl die, drmem_hdl parent, DRDECORCB cb )
+/*******************************************************************************************
+ * given a handle to a dwarf die, decorate its name.  the string
+ * is returned via a callback function, which is called with a string,
+ * a flag telling whether it was user defined, and a handle to the die
+ * for the name if it was user defined. the last call to the callback
+ * has a NULL string. obj gets passed to the callback.
+ */
 {
     BrokenName_T    decstruct;
     List_T          list;
