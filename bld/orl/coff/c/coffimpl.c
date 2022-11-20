@@ -134,19 +134,33 @@ static void AddCoffString( coff_lib_file *c_file, const char *name, size_t len )
     c_file->string_table_size += (unsigned_32)len;
 }
 
+static char *formatDigit( char *buf, size_t len, unsigned long value )
+{
+    ldiv_t x;
+
+    if( len > 0 && value > 0 ) {
+        x = ldiv( value, 10 );
+        buf = formatDigit( buf, len - 1, x.quot );
+        *buf++ = x.rem + '0';
+    }
+    return( buf );
+}
+
 static signed_16 AddCoffSection( coff_lib_file *c_file, const char *name, unsigned_32 size,
     unsigned_16 num_relocs, unsigned_32 flags )
 {
     coff_section_header *section;
     size_t              len;
 
-// Sections numbering has index base 1
-
+    /*
+     * Sections numbering has index base 1
+     */
     section = c_file->section + c_file->header.num_sections;
     len = strlen( name );
     memset( section, 0, COFF_SECTION_HEADER_SIZE );
     if( len > COFF_SEC_NAME_LEN ) {
-        sprintf( section->name, "/%lu", (unsigned long)( c_file->string_table_size + 4 ) );
+        section->name[0] = '/';
+        formatDigit( section->name + 1, COFF_SEC_NAME_LEN - 1, c_file->string_table_size + 4 );
         AddCoffString( c_file, name, len );
     } else {
         memcpy( section->name, name, len );
@@ -163,8 +177,9 @@ static coff_quantity AddCoffSymbol( coff_lib_file *c_file, const char *name, uns
     coff_symbol *sym;
     size_t      len;
 
-// Symbols numbering has index base 0
-
+    /*
+     * Symbols numbering has index base 0
+     */
     sym = c_file->symbol + c_file->header.num_symbols;
     len = strlen( name );
     if( len > COFF_SYM_NAME_LEN ) {
@@ -191,8 +206,8 @@ static coff_quantity AddCoffSymSec( coff_lib_file *c_file, unsigned_8 selection,
     coff_quantity       symbol_no;
 
     section = c_file->section + section_no - 1;
-    memcpy( name, section->name, 8 );
-    name[8] = '\0';
+    memcpy( name, section->name, COFF_SEC_NAME_LEN );
+    name[COFF_SEC_NAME_LEN] = '\0';
     symbol_no = AddCoffSymbol( c_file, name, 0x0, section_no, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
     sym = (coff_sym_section *)( c_file->symbol + c_file->header.num_symbols );
     sym->length = section->size;
