@@ -14,7 +14,7 @@ wcpp_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c : ../c;$(posix_dir)/misc
+.c : ../c;$(posix_dir)/misc;$(watcom_dir)/c
 
 inc_dirs = -I"../h" -I"$(posix_dir)/h"
 
