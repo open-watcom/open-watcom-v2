@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2019-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2019-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -128,18 +128,31 @@ static bool filecopy( void )
     return( ok );
 }
 
+static void formatYear( char *buf, int value )
+{
+    div_t res;
+
+    buf += 3;
+    res = div( value, 10 );
+    *buf-- = res.rem + '0';
+    res = div( res.quot, 10 );
+    *buf-- = res.rem + '0';
+    res = div( res.quot, 10 );
+    *buf-- = res.rem + '0';
+    res = div( res.quot, 10 );
+    *buf = res.rem + '0';
+}
+
 int main( int argc, char *argv[] )
 {
     size_t          len;
-    char            cyear[6];
     time_t          ltime;
     const struct tm *t;
     int             c;
 
     time( &ltime );
     t = localtime( &ltime );
-    sprintf( cyear, "%4.4d", 1900 + t->tm_year );
-    memcpy( cpyright + CPYRIGHT1_LEN, cyear, 4 );
+    formatYear( cpyright + CPYRIGHT1_LEN, 1900 + t->tm_year );
     if( argc > 1 ) {
         fi = fopen( argv[1], "rt" );
     } else {
