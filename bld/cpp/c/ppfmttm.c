@@ -25,24 +25,64 @@
 *
 *  ========================================================================
 *
-* Description:  Set up current time information for __TIME__ and __DATE__.
+* Description:  Format information for __TIME__ and __DATE__.
 *
 ****************************************************************************/
 
 
-#include "cvars.h"
+#include <stdlib.h>
 #include "ppfmttm.h"
 
 
-void TimeInit( void )
-{
-    struct tm   *tod;
-    time_t      time_of_day;
+static const char * const Months[] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
 
-    time_of_day = time( &time_of_day );
-    tod = localtime( &time_of_day );
-    strcpy( __Time, "00:00:00" );
-    FormatTime_tm( __Time, tod );
-    strcpy( __Date, "Jan  1 1970" );
-    FormatDate_tm( __Date, tod );
+void FormatTime_tm( char *buf, struct tm *t )
+{
+    div_t x;
+
+    /*  01234567  */
+    /* '00:00:00' */
+    x = div( t->tm_sec, 10 );
+    buf[7] = x.rem + '0';
+    x = div( x.quot, 10 );
+    buf[6] = x.rem + '0';
+    x = div( t->tm_min, 10 );
+    buf[4] = x.rem + '0';
+    x = div( x.quot, 10 );
+    buf[3] = x.rem + '0';
+    x = div( t->tm_hour, 10 );
+    buf[1] = x.rem + '0';
+    x = div( x.quot, 10 );
+    buf[0] = x.rem + '0';
 }
+
+void FormatDate_tm( char *buf, struct tm *t )
+{
+    div_t x;
+
+    /*  01234567890  */
+    /* 'Dec 00 0000' */
+    x = div( t->tm_year + 1900, 10 );
+    buf[10] = x.rem + '0';
+    x = div( x.quot, 10 );
+    buf[9] = x.rem + '0';
+    x = div( x.quot, 10 );
+    buf[8] = x.rem + '0';
+    x = div( x.quot, 10 );
+    buf[7] = x.rem + '0';
+    x = div( t->tm_mday, 10 );
+    buf[5] = x.rem + '0';
+    if( t->tm_mday < 10 ) {
+        buf[4] = ' ';
+    } else {
+        x = div( x.quot, 10 );
+        buf[4] = x.rem + '0';
+    }
+    buf[2] = Months[t->tm_mon][2];
+    buf[1] = Months[t->tm_mon][1];
+    buf[0] = Months[t->tm_mon][0];
+}
+

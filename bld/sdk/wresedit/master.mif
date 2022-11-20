@@ -57,7 +57,7 @@ dlltarg_objs          = $(sys_object) &
     winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
     wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
     wclip.obj wisedit.obj weditsym.obj &
-    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
+    $(cpp_objs) ppenv.obj
 dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res

@@ -122,9 +122,6 @@ common_objs = &
     $(_subdir_)semstrw.obj &
     $(_subdir_)dbtable.obj &
     $(_subdir_)unitable.obj &
-    $(_subdir_)preproc.obj &
-    $(_subdir_)ppexpr.obj &
-    $(_subdir_)ppmacro.obj &
     $(_subdir_)autodep.obj &
     $(_subdir_)rcldstr.obj &
     $(_subdir_)sharedio.obj &
@@ -133,8 +130,8 @@ common_objs = &
     $(_subdir_)leadbyte.obj &
     $(_subdir_)ideentry.obj &
     $(_subdir_)idemsgpr.obj &
-    $(_subdir_)pathlist.obj &
-    $(_subdir_)rcspawn.obj
+    $(_subdir_)rcspawn.obj &
+    $(cpp_objs)
 
 misc_objs = &
     1250.uni &

@@ -62,7 +62,6 @@ extra_l_flags_win  = op stack=32k, rwr library commdlg, ddeml
 # EXE
 #
 exetarg_prebuild_objs = rcstr.grh
-exetarg_cpp_objs      = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj
 exetarg_objs = &
     wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
     wdedefin.obj wdeedit.obj  wdefbase.obj wdefbutt.obj wdefcbox.obj &
@@ -82,7 +81,9 @@ exetarg_objs = &
     wdeclear.obj wdecurr.obj wdegoto.obj &
     wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
     wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
-    windlg.obj windlg32.obj pathlist.obj $(exetarg_cpp_objs) $(objs_$(host_os))
+    windlg.obj windlg32.obj &
+    $(cpp_objs) ppenv.obj &
+    $(objs_$(host_os))
 exetarg_libs          = $(fmedit_dir)/$(objs_subdir)/fmedit.lib &
     $(wr_lib) $(wpi_lib) $(commonui_lib) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res

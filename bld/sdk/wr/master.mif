@@ -66,7 +66,6 @@ extra_l_flags_dll_win = op rwr, stack=16k export WEP RESIDENT lib ddeml.lib &
 # DLL
 #
 dlltarg_prebuild_objs = $(win_yacc_file).h rcmsg.grh wrmsg.grh
-dlltarg_objs_cpp      = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 dlltarg_objs_rc = &
     pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
     exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
@@ -82,7 +81,9 @@ dlltarg_objs          = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj 
     wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
     wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
     wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
-    wrstubs.obj rcerrprt.obj rcgetenv.obj $(dlltarg_objs_cpp) $(dlltarg_objs_rc)
+    wrstubs.obj rcerrprt.obj rcgetenv.obj &
+    $(cpp_objs) ppenv.obj &
+    $(dlltarg_objs_rc)
 dlltarg_libs          = $(wres_lib) $(commonui_lib)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res

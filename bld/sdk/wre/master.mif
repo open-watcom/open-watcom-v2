@@ -72,7 +72,7 @@ exetarg_objs = &
     wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
     wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
     wreclip.obj wresym.obj &
-    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj &
+    $(cpp_objs) ppenv.obj &
     $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs = &
     $(commonui_lib) $(wr_lib) $(wres_lib) $(wpi_lib) &

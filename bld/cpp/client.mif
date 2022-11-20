@@ -1,2 +1,8 @@
 cpp_c_dirs = $(cpp_dir)/c
 cpp_inc_dirs = -I"$(cpp_dir)/h"
+cpp_objs = &
+    $(_subdir_)preproc.obj &
+    $(_subdir_)ppfmttm.obj &
+    $(_subdir_)ppexpr.obj &
+    $(_subdir_)ppmacro.obj &
+    $(_subdir_)pathlist.obj

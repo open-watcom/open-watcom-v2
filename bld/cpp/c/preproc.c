@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "pathgrp2.h"
+#include "ppfmttm.h"
 
 #include "clibext.h"
 
@@ -95,11 +96,6 @@ static char         *IncludePath2 = NULL;           // include path from env
 
 static char         *macro_buf = NULL;
 static size_t       macro_buf_size = 0;
-
-static const char * const Months[] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-};
 
 static char *str_dup( const char *str )
 {
@@ -417,8 +413,8 @@ static void PP_TimeInit( void )
 
     time_of_day = time( &time_of_day );
     tod = localtime( &time_of_day );
-    sprintf( PP__TIME__, "\"%.2d:%.2d:%.2d\"", tod->tm_hour, tod->tm_min, tod->tm_sec );
-    sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
+    FormatTime_tm( PP__TIME__ + 1, tod ); 
+    FormatDate_tm( PP__DATE__ + 1, tod ); 
 }
 
 int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )

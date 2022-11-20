@@ -25,24 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Set up current time information for __TIME__ and __DATE__.
+* Description:  Format information for __TIME__ and __DATE__.
 *
 ****************************************************************************/
 
 
-#include "cvars.h"
-#include "ppfmttm.h"
+#include <time.h>
 
 
-void TimeInit( void )
-{
-    struct tm   *tod;
-    time_t      time_of_day;
+extern void 	FormatTime_tm( char *buf, struct tm *t );
+extern void 	FormatDate_tm( char *buf, struct tm *t );
 
-    time_of_day = time( &time_of_day );
-    tod = localtime( &time_of_day );
-    strcpy( __Time, "00:00:00" );
-    FormatTime_tm( __Time, tod );
-    strcpy( __Date, "Jan  1 1970" );
-    FormatDate_tm( __Date, tod );
-}

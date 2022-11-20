@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +33,10 @@
 
 #include "plusplus.h"
 #include "preproc.h"
+#include "ppfmttm.h"
+
 
 static time_t timeOfDay;
-static const char * const Months[] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-};
-
 
 void TimeInit( void )
 /*******************/
@@ -47,8 +45,10 @@ void TimeInit( void )
 
     timeOfDay = time( NULL );
     tod = localtime( &timeOfDay );
-    sprintf( __Time, "%.2d:%.2d:%.2d", tod->tm_hour, tod->tm_min, tod->tm_sec );
-    sprintf( __Date, "%3s %2d %d", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
+    strcpy( __Time, "00:00:00" );
+    FormatTime_tm( __Time, tod );
+    strcpy( __Date, "Jan  1 1970" );
+    FormatDate_tm( __Date, tod );
 }
 
 time_t TimeOfCompilation( void )

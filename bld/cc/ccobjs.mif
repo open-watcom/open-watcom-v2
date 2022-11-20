@@ -53,6 +53,7 @@ common_objs = &
     $(_subdir_)cstring.obj &
     $(_subdir_)csym.obj &
     $(_subdir_)ctimepc.obj &
+    $(_subdir_)ppfmttm.obj &
     $(_subdir_)ctoken.obj &
     $(_subdir_)ctype.obj &
     $(_subdir_)cusage.obj &
