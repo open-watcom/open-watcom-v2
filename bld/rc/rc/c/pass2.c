@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "rcerrors.h"
 #include "rcstrblk.h"
 #include "rcrtns.h"
-#include "rccore.h"
+#include "rccore_2.h"
 #include "exeutil.h"
 #include "exeseg.h"
 #include "exeres.h"
@@ -45,6 +46,8 @@
 
 #include "clibext.h"
 
+
+bool    StopInvoked = false;
 
 /*
  * copyStubFile - copy from the begining of the file to the start of
@@ -671,7 +674,7 @@ REPORT_ERROR:
     case RS_NO_MEM:
         break;
     default:
-       RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
     /* fall through */
 HANDLE_ERROR:

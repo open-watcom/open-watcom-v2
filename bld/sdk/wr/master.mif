@@ -25,17 +25,16 @@ win_yacc_file   = $(win_yacc_prefix)tab
 !include trmem.mif
 
 !include $(commonui_dir)/client.mif
-!include $(cpp_dir)/client.mif
 
 #
 # cflags
 #
-.c:   ../c;$(trmem_dir);$(cpp_c_dirs);$(wrc_dir)/c;$(watcom_dir)/c
+.c:   ../c;$(trmem_dir);$(wrc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(cpp_inc_dirs) $(wres_inc_dirs) -I"$(wrc_dir)/h" &
+inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(wrc_dir)/h" &
     $(commonui_inc_dirs)
 
-extra_cpp_flags   = -DINSIDE_WRDLL
+extra_cpp_flags   = -DINSIDE_WR
 
 extra_cpp_flags_wrmem = $(trmem_cpp_flags)
 
@@ -67,12 +66,10 @@ extra_l_flags_dll_win = op rwr, stack=16k export WEP RESIDENT lib ddeml.lib &
 #
 dlltarg_prebuild_objs = $(win_yacc_file).h rcmsg.grh wrmsg.grh
 dlltarg_objs_rc = &
-    pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
-    exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
-    global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
-    rcerrors.obj autodep.obj &
-    dbtable.obj sharedio.obj mergedir.obj rcspawn.obj
-dlltarg_objs          = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
+    pass2.obj exeseg.obj exeresw.obj rcstr.obj &
+    exeutil.obj exeobj.obj exerespe.obj rcio_2.obj &
+    global_2.obj rcerrors.obj sharedio.obj mergedir.obj rcspawn.obj
+dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
     wrsvexe.obj wrsvres.obj wrdde.obj &
     wridfile.obj wrinfo.obj wrstrdup.obj &
@@ -81,13 +78,12 @@ dlltarg_objs          = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj 
     wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
     wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
     wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
-    wrstubs.obj rcerrprt.obj rcgetenv.obj &
-    $(cpp_objs) ppenv.obj &
+    wrstubs.obj rcerrprt.obj &
     $(dlltarg_objs_rc)
-dlltarg_libs          = $(wres_lib) $(commonui_lib)
+dlltarg_libs = $(wres_lib) $(commonui_lib)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-dlltarg_res           = $(proj_name).res
+dlltarg_res = $(proj_name).res
 !include dlltarg.mif
 
 #
@@ -103,7 +99,7 @@ exetarg_name = test
 #
 !include verrc.mif
 
-rc_inc_dirs = -I"$(wrc_dir)/h" #$(cpp_inc_dirs) $(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
+rc_inc_dirs = -I"$(wrc_dir)/h" #$(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
 
 $(proj_name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc

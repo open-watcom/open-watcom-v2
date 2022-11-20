@@ -67,8 +67,6 @@ typedef struct RcResFileID {
 
 extern bool         RcPass1IoInit( void );
 extern void         RcPass1IoShutdown( void );
-extern bool         RcPass2IoInit( void );
-extern void         RcPass2IoShutdown( bool noerror );
 extern int          RcIoGetChar( void );
 extern bool         RcIoIsCOrHFile( void );
 extern const char   *RcIoGetCurrentFileName( void );

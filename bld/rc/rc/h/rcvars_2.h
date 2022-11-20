@@ -25,29 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  Resource Compiler pass 2 structures and constants.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef EXEFMT_INCLUDED
-#define EXEFMT_INCLUDED
+#ifndef RCVARS_2_INCLUDED
+#define RCVARS_2_INCLUDED
 
-#include "pass2l1.h"
+#ifndef RCEXTERN
+#define RCEXTERN extern
+#endif
 
-typedef struct RcPass2Info {
-    ExeFileInfo     TmpFile;
-    ExeFileInfo     OldFile;
-    ResFileInfo     *ResFile;
-    bool            AllResFilesOpen;
-    void            *IoBuffer;
-} RcPass2Info;
+RCEXTERN RCParams           CmdLineParms;
+RCEXTERN RcPass2Info        Pass2Info;
 
-extern bool     StopInvoked;
-
-extern bool     MergeResExePE( void );
-extern bool     MergeResExeLX( void );
-extern bool     MergeResExeWINNE( void );
-extern bool     MergeResExeOS2NE( void );
+#undef RCEXTERN
 
 #endif

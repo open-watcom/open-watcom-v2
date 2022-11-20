@@ -91,12 +91,14 @@ common_objs = &
     $(_subdir_)exeseg.obj &
     $(_subdir_)exeutil.obj &
     $(_subdir_)global.obj &
+    $(_subdir_)global_2.obj &
     $(_subdir_)layer0.obj &
     $(_subdir_)mergedir.obj &
     $(_subdir_)param.obj &
     $(_subdir_)pass2.obj &
     $(_subdir_)rc.obj &
     $(_subdir_)rcio.obj &
+    $(_subdir_)rcio_2.obj &
     $(_subdir_)rcmem.obj &
     $(_subdir_)rcstr.obj &
     $(_subdir_)ppalloc.obj &

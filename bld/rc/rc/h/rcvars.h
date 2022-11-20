@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,11 +48,8 @@ RCEXTERN bool               ErrorHasOccured = false;
 #endif
 
 /****** uninitialized global data ******/
-RCEXTERN RCParams           CmdLineParms;
 RCEXTERN RcResFileID        CurrResFile;
-RCEXTERN RcPass2Info        Pass2Info;
 RCEXTERN char               CharSetLen[256];
-RCEXTERN bool               StopInvoked;
 RCEXTERN bool               IgnoreINCLUDE;
 RCEXTERN bool               IgnoreCWD;
 

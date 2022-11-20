@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include <stdarg.h>
 #ifdef INSIDE_WLINK
     #include "wlnkmsg.rh"
 #elif defined( INSIDE_WR )
@@ -40,7 +41,10 @@
 #endif
 
 
-#if !defined( INSIDE_WLINK ) && !defined( INSIDE_WR )
+#if defined( INSIDE_WLINK )
+#elif defined( INSIDE_WR )
+    #define TMPFILE2    "Temporary file 2 (exe)"
+#else
     #define TMPFILE0    "Temporary file 0 (res)"
     #define TMPFILE1    "Temporary file 1 (res)"
     #define TMPFILE2    "Temporary file 2 (exe)"
@@ -59,4 +63,4 @@ extern void RcError( unsigned int ,... );
 #if defined(__WATCOMC__)
 #pragma aux RcFatalError __aborts
 #endif
-extern void RcFatalError( unsigned int, ... );
+extern void RcFatalError( unsigned int errornum, ... );

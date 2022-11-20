@@ -25,29 +25,11 @@
 *
 *  ========================================================================
 *
-* Description:  Resource Compiler pass 2 structures and constants.
+* Description:  Global variables, pass 2.
 *
 ****************************************************************************/
 
 
-#ifndef EXEFMT_INCLUDED
-#define EXEFMT_INCLUDED
-
-#include "pass2l1.h"
-
-typedef struct RcPass2Info {
-    ExeFileInfo     TmpFile;
-    ExeFileInfo     OldFile;
-    ResFileInfo     *ResFile;
-    bool            AllResFilesOpen;
-    void            *IoBuffer;
-} RcPass2Info;
-
-extern bool     StopInvoked;
-
-extern bool     MergeResExePE( void );
-extern bool     MergeResExeLX( void );
-extern bool     MergeResExeWINNE( void );
-extern bool     MergeResExeOS2NE( void );
-
-#endif
+#include "global.h"
+#define RCEXTERN            /* nothing */
+#include "rccore_2.h"

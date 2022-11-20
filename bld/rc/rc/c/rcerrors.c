@@ -38,12 +38,14 @@
 #include "reserr.h"
 #include "errprt.h"
 #include "rcldstr.h"
-#include "preproc.h"
 #include "rcspawn.h"
 #include "iortns.h"
 #include "rccore.h"
 #include "rcmem.h"
 #include "rcrtns.h"
+#if !defined( INSIDE_WLINK ) && !defined( INSIDE_WR )
+    #include "preproc.h"
+#endif
 
 
 static char             rcStrBuf[1024];
@@ -53,7 +55,6 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
 /***********************************************************************/
 {
     OutPutInfo          errinfo;
-#if !defined( INSIDE_WRDLL )
     va_list             args1;
     char                *fname;
 
@@ -65,9 +66,14 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     case ERR_WRITTING_FILE:
     case ERR_WRITTING_RES_FILE:
         fname = va_arg( args1, char * );
+#if defined( INSIDE_WLINK )
+#elif defined( INSIDE_WR )
+        if( strcmp( fname, TMPFILE2 ) == 0 ) {
+#else
         if( strcmp( fname, TMPFILE0 ) == 0
           || strcmp( fname, TMPFILE1 ) == 0
           || strcmp( fname, TMPFILE2 ) == 0 ) {
+#endif
             switch( errornum ) {
             case ERR_CANT_OPEN_FILE:
                 errornum = ERR_OPENING_TMP;
@@ -84,7 +90,6 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
         break;
     }
     va_end( args1 );
-#endif
 
     InitOutPutInfo( &errinfo );
     errinfo.severity = sev;
@@ -143,12 +148,14 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     default:
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, args );
+#if !defined( INSIDE_WLINK ) && !defined( INSIDE_WR )
         errinfo.file = RcIoGetCurrentFileName();
         if( errinfo.file != NULL )
             errinfo.flags |= OUTFLAG_FILE;
         errinfo.lineno = RcIoGetCurrentFileLineNo();
         if( errinfo.lineno != 0 )
             errinfo.flags |= OUTFLAG_LINE;
+#endif
         sprintf( errBuffer, "%s", rcStrBuf );
         break;
     }
@@ -184,14 +191,14 @@ void RcFatalError( unsigned int errornum, ... )
     RcMsgV( errornum, SEV_FATAL_ERR, args );
     va_end( args );
 
+#if !defined( INSIDE_WLINK ) && !defined( INSIDE_WR )
     if( CurrResFile.fp != NULL ) {
         ResCloseFile( CurrResFile.fp );
         CurrResFile.fp = NULL;
     }
-#if !defined( INSIDE_WRDLL )
     CloseAllFiles();
-#endif
     PP_FileFini();
     PP_Fini();
+#endif
     RCSuicide( -1 );
 }

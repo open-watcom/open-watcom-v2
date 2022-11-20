@@ -34,7 +34,7 @@
 #ifndef WRDLL_INCLUDED
 #define WRDLL_INCLUDED
 
-#ifdef INSIDE_WRDLL
+#ifdef INSIDE_WR
     #define WRDLLENTRY    __declspec(dllexport)
 #elif defined( __NT__ )
     #define WRDLLENTRY    __declspec(dllimport)

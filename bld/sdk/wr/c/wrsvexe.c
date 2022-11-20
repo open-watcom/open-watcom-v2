@@ -35,7 +35,7 @@
 #include <stdarg.h>
 #include "global.h"     /* this is a WRC header file */
 #include "rcspawn.h"    /* this is a WRC header file */
-#include "rccore.h"     /* this is a WRC header file */
+#include "rccore_2.h"     /* this is a WRC header file */
 #include "wresset2.h"
 #include "wrsvres.h"
 #include "wrmsg.h"
@@ -57,22 +57,20 @@
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
+jmp_buf     jmpbuf_RCFatalError;
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
 static int  WRExecRCPass2( void );
-static int  WRPass2( void );
 static bool WRSaveResourceToEXE( WRInfo *, bool backup, WRFileType );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-jmp_buf     jmpbuf_RCFatalError;
-
 /* this function duplicates Pass2 in rc.c of the WRC project */
-int WRPass2( void )
+static void WRPass2( void )
 {
     int rc;
 
@@ -90,24 +88,11 @@ int WRPass2( void )
 
         RcPass2IoShutdown( rc );
     }
-
-    return( rc );
 }
 
-int WRExecRCPass2( void )
+static int WRExecRCPass2( void )
 {
-    int ret;
-    int rc;
-
-    ret = setjmp( jmpbuf_RCFatalError );
-
-    if( ret ) {
-        rc = 0;
-    } else {
-        rc = WRPass2();
-    }
-
-    return( rc );
+    return( RCSpawn( WRPass2 ) );
 }
 
 bool WRSaveResourceToWin16EXE( WRInfo *info, bool backup )

@@ -25,29 +25,17 @@
 *
 *  ========================================================================
 *
-* Description:  Resource Compiler pass 2 structures and constants.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef EXEFMT_INCLUDED
-#define EXEFMT_INCLUDED
+#ifndef RCIO_2_INCLUDED
+#define RCIO_2_INCLUDED
 
-#include "pass2l1.h"
-
-typedef struct RcPass2Info {
-    ExeFileInfo     TmpFile;
-    ExeFileInfo     OldFile;
-    ResFileInfo     *ResFile;
-    bool            AllResFilesOpen;
-    void            *IoBuffer;
-} RcPass2Info;
-
-extern bool     StopInvoked;
-
-extern bool     MergeResExePE( void );
-extern bool     MergeResExeLX( void );
-extern bool     MergeResExeWINNE( void );
-extern bool     MergeResExeOS2NE( void );
+extern bool         CopyTmpToOutFile( FILE *tmpfile, const char *out_name );
+extern bool         RcPass2IoInit( void );
+extern void         RcPass2IoShutdown( bool noerror );
 
 #endif
