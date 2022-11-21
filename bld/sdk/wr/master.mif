@@ -31,8 +31,7 @@ win_yacc_file   = $(win_yacc_prefix)tab
 #
 .c:   ../c;$(trmem_dir);$(wrc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(wrc_dir)/h" &
-    $(commonui_inc_dirs)
+inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
 
 extra_cpp_flags   = -DINSIDE_WR
 
@@ -77,9 +76,9 @@ dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrdata.obj wrnamoor.obj wrwresid.obj &
     wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
     wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
-    wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
+    wrrnames.obj wrhash.obj wredit.obj wrutil.obj &
     wrstubs.obj rcerrprt.obj &
-    $(dlltarg_objs_rc)
+    $(trmem_objs) $(dlltarg_objs_rc)
 dlltarg_libs = $(wres_lib) $(commonui_lib)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res

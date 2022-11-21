@@ -35,7 +35,6 @@
 #include <stdarg.h>
 #include "global.h"
 #include "rcerrors.h"
-#include "reserr.h"
 #include "errprt.h"
 #include "rcldstr.h"
 #include "rcspawn.h"
@@ -58,6 +57,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     va_list             args1;
     char                *fname;
 
+#if !defined( INSIDE_WLINK )
     va_copy( args1, args );
     switch( errornum ) {
     case ERR_CANT_OPEN_FILE:
@@ -66,8 +66,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     case ERR_WRITTING_FILE:
     case ERR_WRITTING_RES_FILE:
         fname = va_arg( args1, char * );
-#if defined( INSIDE_WLINK )
-#elif defined( INSIDE_WR )
+#if defined( INSIDE_WR )
         if( strcmp( fname, TMPFILE2 ) == 0 ) {
 #else
         if( strcmp( fname, TMPFILE0 ) == 0
@@ -90,6 +89,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
         break;
     }
     va_end( args1 );
+#endif
 
     InitOutPutInfo( &errinfo );
     errinfo.severity = sev;
