@@ -28,6 +28,7 @@
 !inject fstat64.obj                                                                     l32     lmp
 !inject fsync.obj                                                                       l32 lpc lmp
 !inject ftrunc.obj                                                                      l32 lpc lmp
+!inject ftrunc64.obj                                                                    l32 lpc lmp
 !inject getdents.obj                                                                    l32 lpc lmp
 !inject getegid.obj                                                                     l32 lpc lmp
 !inject geteuid.obj                                                                     l32 lpc lmp
@@ -123,7 +124,8 @@
 !inject time.obj                                                                        l32 lpc lmp
 !inject timer.obj                                                                       l32 lpc lmp
 !inject times.obj                                                                       l32 lpc lmp
-!inject truncate.obj                                                                    l32 lpc lmp
+!inject trunc.obj                                                                       l32 lpc lmp
+!inject trunc64.obj                                                                     l32 lpc lmp
 !inject ttyname.obj                                                                     l32 lpc lmp
 !inject umask.obj                                                                       l32 lpc lmp
 !inject uname.obj                                                                       l32 lpc lmp

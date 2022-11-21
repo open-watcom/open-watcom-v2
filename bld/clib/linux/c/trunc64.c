@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,13 @@
 #include "variety.h"
 #include <unistd.h>
 #include "linuxsys.h"
+#include "watcom.h"
 
 
-_WCRTLINK int truncate( const char *__path, off_t __length )
+_WCRTLINK int truncate64( const char *__path, off64_t __length )
 {
-    syscall_res res = sys_call2( SYS_truncate, (u_long)__path, __length );
+    syscall_res res = sys_call3( SYS_truncate64, (u_long)__path,
+                        ((unsigned_64 *)&__length)->u._32[I64LO32],
+                        ((unsigned_64 *)&__length)->u._32[I64HI32] );
     __syscall_return( int, res );
 }
