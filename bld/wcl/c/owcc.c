@@ -562,6 +562,7 @@ static void initialize_Flags( void )
     Flags.keep_exename    = 0;
 }
 
+#if 0
 static unsigned ParseEnvVar( const char *env, char **argv, char *buf )
 /********************************************************************/
 {
@@ -617,6 +618,7 @@ static unsigned ParseEnvVar( const char *env, char **argv, char *buf )
     }
     return( argc );
 }
+#endif
 
 typedef struct stack {
     struct stack    *next;
@@ -1069,6 +1071,19 @@ static  int  ParseArgs( int argc, char **argv )
             MemFree( Word );
         }
     }
+    for( i = 1; i < argc ; i++ ) {
+        Word = argv[i];
+        if( Word == NULL || Word[0] == '\0' )
+            continue;
+        new_item = MemAlloc( sizeof( list ) );
+        new_item->next = NULL;
+        new_item->item = strfdup( Word );
+        if( IS_LIB( Word ) ) {
+            ListAppend( &Libs_List, new_item );
+        } else {
+            ListAppend( &Files_List, new_item );
+        }
+    }
 
     if( preprocess_only ) {
         Flags.no_link = true;
@@ -1153,19 +1168,6 @@ static  int  ParseArgs( int argc, char **argv )
     if( !Flags.want_errfile ) {
         addcclongopt( "fr", NULL );
     }
-    for( i = 1; i < argc ; i++ ) {
-        Word = argv[i];
-        if( Word == NULL || Word[0] == '\0' )
-            continue;
-        new_item = MemAlloc( sizeof( list ) );
-        new_item->next = NULL;
-        new_item->item = strfdup( Word );
-        if( IS_LIB( Word ) ) {
-            ListAppend( &Libs_List, new_item );
-        } else {
-            ListAppend( &Files_List, new_item );
-        }
-    }
     MemFree( cpp_linewrap );
     return( 0 );
 }
@@ -1173,32 +1175,9 @@ static  int  ParseArgs( int argc, char **argv )
 static  int  Parse( int argc, char **argv )
 /*****************************************/
 {
-    int         old_argc;
-    char        **old_argv;
-    char        *cmdbuf;
-    const char  *env;
     int         ret;
-    int         i;
 
-    env = getenv( WCLENV );
-    if( env != NULL ) {
-        old_argc = argc;
-        old_argv = argv;
-        argc = ParseEnvVar( env, NULL, NULL ) + 1;
-        argv = MemAlloc( ( argc + old_argc ) * sizeof( char * ) );
-        cmdbuf = MemAlloc( strlen( env ) + argc );
-        argv[0] = old_argv[0];
-        ParseEnvVar( env, argv + 1, cmdbuf );
-        for( i = 1; i < old_argc; ++i, ++argc ) {
-            argv[argc] = old_argv[i];
-        }
-        argv[argc] = NULL;        // last element of the array must be NULL
-        ret = ParseArgs( argc, argv );
-        MemFree( argv );
-        MemFree( cmdbuf );
-    } else {
-        ret = ParseArgs( argc, argv );
-    }
+    ret = ParseArgs( argc, argv );
     return( ret );
 }
 
