@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +55,6 @@ typedef DWORD       fattrs;
 typedef unsigned    fattrs;
 #endif
 
-char *OptEnvVar = "chmod";
-
 static const char *usageMsg[] = {
     "Usage: chmod [-?X] -|+[ahsr] [@env] [files...]",
     "\tenv         : environment variable to expand",
@@ -87,7 +85,7 @@ int main( int argc, char *argv[] )
     AltOptChar = '+';
     rxflag = false;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "CHMOD" );
 
     while( (ch = GetOpt( &argc, argv, "Xarhs", usageMsg )) != -1 ) {
         attr = 0;
@@ -148,5 +146,7 @@ int main( int argc, char *argv[] )
         _dos_setfileattr( argv[i], (attr | attrToAdd) & ~attrToRemove );
 #endif
     }
+    MemFree( argv );
+
     return( 0 );
 }

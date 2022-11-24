@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,18 +34,19 @@
 #ifndef MISC_H_INCLUDED
 #define MISC_H_INCLUDED
 
-void    Error( const char *str, ... );
-void    Quit( const char *usage_msg[], const char *msg, ... );
-void    Die( const char *str, ... );
+extern void    Error( const char *str, ... );
+extern void    Quit( const char *usage_msg[], const char *msg, ... );
+extern void    Die( const char *str, ... );
 #if defined( __WATCOMC__ ) && !defined( __AXP__ )
 #pragma aux Quit __aborts
 #pragma aux Die __aborts
 #endif
 
-long    GetClusterSize( int drive );
+extern long    GetClusterSize( int drive );
 
-void    *MemAlloc( size_t size );
-void    *MemRealloc( void *orig, size_t size );
-void    MemFree( void *ptr );
+extern void    *MemAlloc( size_t size );
+extern char    *MemStrdup( const char *str );
+extern void    *MemRealloc( void *orig, size_t size );
+extern void    MemFree( void *ptr );
 
 #endif

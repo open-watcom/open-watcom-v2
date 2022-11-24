@@ -37,11 +37,10 @@
 #include <string.h>
 #include "bool.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "misc.h"
 #include "argvrx.h"
 
-
-char *OptEnvVar = "fold";
 
 const char *usageTxt[] = {
     "Usage: fold [-?X] [-<width>] [files]",
@@ -87,6 +86,8 @@ int main( int argc, char **argv )
     int         i;
     bool        rxflag;
 
+    argv = ExpandEnv( &argc, argv, "FOLD" );
+
     lineWidth = 70;
     rxflag = false;
     for(;;) {
@@ -103,7 +104,7 @@ int main( int argc, char **argv )
             }
         }
     }
-    lineBuffer = malloc( lineWidth + 1 );
+    lineBuffer = MemAlloc( lineWidth + 1 );
     if( lineBuffer == NULL ) {
         Die( "not enough memory to hold a line\n" );
     }
@@ -122,5 +123,7 @@ int main( int argc, char **argv )
             fclose( fh );
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

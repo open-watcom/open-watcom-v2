@@ -40,7 +40,6 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-char *OptEnvVar = "sort";
 
 static const char *usageMsg[] = {
     "Usage: sort [-?fr] [-o outfile] [infile]",
@@ -117,8 +116,9 @@ int main( int argc, char **argv )
 
     infile = NULL;
     outfile = NULL;
-    argv = ExpandEnv( &argc, argv );
-        ret = EXIT_SUCCESS;
+    argv = ExpandEnv( &argc, argv, "SORT" );
+
+    ret = EXIT_SUCCESS;
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "o:fr", usageMsg );
@@ -159,9 +159,10 @@ int main( int argc, char **argv )
     if( !own_outfile ) {
         outfile = stdout;
     }
+    MemFree( argv );
 
     while( my_fgets( buffer, sizeof( buffer ), infile ) != NULL ) {
-        lines[line_count] = (char *)malloc( sizeof( char ) * strlen( buffer ) + 1 );
+        lines[line_count] = (char *)MemAlloc( sizeof( char ) * strlen( buffer ) + 1 );
         strcpy( lines[line_count], buffer );
         line_count++;
     }
@@ -182,7 +183,7 @@ int main( int argc, char **argv )
 
     for( i = 0; i < line_count; i++ ) {
         fprintf( outfile, "%s\n", lines[i] );
-        free( lines[i] );
+        MemFree( lines[i] );
     }
 
     if( own_infile ) {

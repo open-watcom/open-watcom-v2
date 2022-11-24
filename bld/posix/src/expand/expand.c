@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-char *OptEnvVar="expand";
 
 static const char *usageMsg[] = {
     "Usage: expand [-?X] [-number[,number...]] [@env] [files...]",
@@ -110,14 +109,14 @@ static int parseList( char *list, unsigned **tabs )
     }
 
     size = 10 * sizeof( unsigned );
-    *tabs = (unsigned *) malloc( size );
+    *tabs = (unsigned *)MemAlloc( size );
     cnt = 0;
     old = 0;
 
     do {
         if( cnt >= size - 1 ) {
             size += 10 * sizeof( unsigned );
-            *tabs = (unsigned *) realloc( *tabs, size );
+            *tabs = (unsigned *)MemRealloc( *tabs, size );
         }
         p = strchr( list, ',' );
         if( p != NULL ) {
@@ -151,14 +150,14 @@ int main( int argc, char **argv )
     arg    = false;                     // Flag for finding # parameter
     regexp = false;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "EXPAND" );
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "#X", usageMsg );
         if( ch == -1 ) {
             break;
         } else if( ch == '#' ) {
-            list = (char *) realloc( list, strlen( OptArg )*sizeof( char ) + 1);
+            list = (char *)MemRealloc( list, strlen( OptArg )*sizeof( char ) + 1);
             strcpy( list, OptArg );
             arg = true;
         } else if( ch == 'X' ) {
@@ -167,12 +166,12 @@ int main( int argc, char **argv )
     }
 
     if( !arg ) {
-        tabs = (unsigned *) malloc( 2 * sizeof( unsigned ) );
+        tabs = (unsigned *)MemAlloc( 2 * sizeof( unsigned ) );
         tabs[0] = 8;
         tabs[1] = 0;
     } else if( parseList( list, &tabs ) ) {
-        free( tabs );
-        free( list );
+        MemFree( tabs );
+        MemFree( list );
         Die( "expand: invalid tab stop specification\n" );
     }
 
@@ -195,7 +194,9 @@ int main( int argc, char **argv )
             argv++;
         }
     }
-    free( tabs );
-    free( list );
+    MemFree( tabs );
+    MemFree( list );
+    MemFree( argv );
+
     return( 0 );
 }

@@ -42,9 +42,8 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-#define  MIN_LINE_LEN   80
 
-char *OptEnvVar="rev";
+#define  MIN_LINE_LEN   80
 
 static const char *usageMsg[] = {
     "Usage: rev [-?X] [@env] [files...]",
@@ -67,12 +66,12 @@ static void reverseFile( FILE *fp )
     char       *buff;
 
     size = MIN_LINE_LEN * sizeof( char );
-    buff = (char *) malloc( size );
+    buff = (char *)MemAlloc( size );
 
     for( ;; ) {
         if( os >= size - 1 ) {
             size += MIN_LINE_LEN * sizeof( char );
-            buff  = (char *) realloc( buff, size );
+            buff  = (char *)MemRealloc( buff, size );
         }
         ch = fgetc( fp );
 
@@ -89,7 +88,7 @@ static void reverseFile( FILE *fp )
         }
     }
 
-    free( buff );
+    MemFree( buff );
 }
 
 int main( int argc, char **argv )
@@ -97,7 +96,8 @@ int main( int argc, char **argv )
     FILE    *fp;
     bool    regexp;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "REV" );
+
     regexp = ( GetOpt( &argc, argv, "X", usageMsg ) == 'X' );
 
     argv = ExpandArgv( &argc, argv, regexp );
@@ -119,5 +119,7 @@ int main( int argc, char **argv )
             argv++;
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

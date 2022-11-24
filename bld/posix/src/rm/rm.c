@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,13 +46,12 @@
 #include "lineprt.h"
 #include "misc.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "fnutils.h"
 #include "filerx.h"
 
 #include "clibext.h"
 
-
-char                    *OptEnvVar = "rm";
 
 static const char       *usageMsg[] = {
     "Usage: rm [-?firRsvX] [files]",
@@ -92,6 +91,8 @@ int main( int argc, char *argv[] )
     int ch;
     DIR *dirp;
     bool isdir;
+
+    argv = ExpandEnv( &argc, argv, "RM" );
 
     /* process options */
     while( ( ch = GetOpt( &argc, argv, "firRsvX", usageMsg ) ) != -1 ) {
@@ -149,6 +150,8 @@ int main( int argc, char *argv[] )
     DropALine();
 
     EndPrint();
+
+    MemFree( argv );
 
     return( error_occured );
 }

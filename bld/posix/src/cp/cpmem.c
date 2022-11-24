@@ -75,7 +75,7 @@ void *FarAlloc( size_t size )
 {
     void        *ptr;
 
-    ptr = malloc( size );
+    ptr = MemAlloc( size );
     if( ptr == NULL ) {
         return( NULL );
     }
@@ -88,7 +88,7 @@ void *FarAlloc( size_t size )
  */
 void FarFree( void *ptr )
 {
-    free( ptr );
+    MemFree( ptr );
     far_allocs--;
 
 } /* FarFree */
@@ -133,10 +133,10 @@ void *NearAlloc( size_t size )
 {
     void        *tmp;
 
-    tmp = malloc( size );
+    tmp = MemAlloc( size );
     if( tmp == NULL ) {
         FlushMemoryBlocks();
-        tmp = malloc( size );
+        tmp = MemAlloc( size );
         if( tmp == NULL ) {
             Die( OutOfMemory );
         }
@@ -151,7 +151,7 @@ void *NearAlloc( size_t size )
  */
 void NearFree( void *ptr )
 {
-    free( ptr );
+    MemFree( ptr );
     near_allocs--;
 
 } /* NearFree */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ExpandEnv - expand environment vars. into argv array
 *
 ****************************************************************************/
 
@@ -34,6 +33,6 @@
 #ifndef _INCLUDED_ARGVENV_H
 #define _INCLUDED_ARGVENV_H
 
-extern char **ExpandEnv( int *oargc, char *oargv[] );
+extern char **ExpandEnv( int *oargc, char *oargv[], const char *env_name );
 
 #endif

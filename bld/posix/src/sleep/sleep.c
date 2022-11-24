@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,6 @@
 #include "clibext.h"
 
 
-char *OptEnvVar="sleep";
-
 static const char *usageMsg[] = {
     "Usage: sleep [-?] [@env] time",
     "\tenv                : environment variable to expand",
@@ -59,7 +57,7 @@ int main( int argc, char **argv )
     unsigned    secs, mins, hours;
     char       *p, *op;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "SLEEP" );
 
     GetOpt( &argc, argv, "", usageMsg );
 
@@ -97,5 +95,7 @@ int main( int argc, char **argv )
         secs += atoi( op ) + 60*mins + 3600*hours;
         sleep( secs );
     }
+    MemFree( argv );
+
     return( 0 );
 }

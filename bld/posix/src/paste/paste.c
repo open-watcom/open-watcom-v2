@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "misc.h"
 #include "argvrx.h"
 #include "getopt.h"
+#include "argvenv.h"
 
 
 typedef struct inpfile {
@@ -47,8 +48,6 @@ typedef struct inpfile {
 } inpfile;
 
 inpfile *inputFile;
-
-char *OptEnvVar="paste";
 
 static const char *usageMsg[] = {
     "Usage: paste [-?X] [files]",
@@ -66,7 +65,7 @@ static void free_list( void )
     while( inputFile != NULL ) {
         curr = inputFile;
         inputFile = inputFile->next;
-        free( curr );
+        MemFree( curr );
     }
 }
 
@@ -83,6 +82,8 @@ int main( int argc, char **argv )
         int something_read : 1;
         int something_before : 1;
     } flags;
+
+    argv = ExpandEnv( &argc, argv, "PASTE" );
 
     rxflag = false;
     for( ;; ) {
@@ -113,7 +114,7 @@ int main( int argc, char **argv )
                 Die( "could not open: '%s'\n", *argv );
             }
         }
-        *curr = malloc( sizeof( inpfile ) );
+        *curr = MemAlloc( sizeof( inpfile ) );
         (*curr)->file = fp;
         curr = &((*curr)->next);
         ++nfiles;
@@ -153,5 +154,7 @@ int main( int argc, char **argv )
         putchar( '\n' );
     }
     free_list();
+    MemFree( argv );
+
     return(EXIT_SUCCESS);
 }

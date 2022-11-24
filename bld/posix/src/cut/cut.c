@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +43,8 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-#define  MIN_LINE_LEN   80
 
-char *OptEnvVar="cut";
+#define  MIN_LINE_LEN   80
 
 static const char *usageMsg[] = {
     "Usage: cut -f|c list [-d char] [-?Xs] [@env] [files...]",
@@ -88,7 +87,7 @@ static void  treeFree( node *n )
         treeFree( n->left );
         treeFree( n->right );
     } else {
-        free( n );
+        MemFree( n );
     }
 }
 
@@ -96,7 +95,7 @@ static node *treeNode( int val, node *l, node *r )
 {
     node        *n;
 
-    n = (node *)malloc( sizeof( node ) );
+    n = (node *)MemAlloc( sizeof( node ) );
 
     n->left  = l;
     n->right = r;
@@ -116,8 +115,8 @@ static void treePlace( node *n, int val )
         } else {
             temp = *n;
             *n = *n->right;
-            free( temp.right );
-            free( temp.left );
+            MemFree( temp.right );
+            MemFree( temp.left );
 
             if( val <= n->v ) {
                 break;
@@ -193,13 +192,13 @@ static int getNextLine( FILE *fp, line *l )
 
     if( l->size == 0 ) {
         l->size = MIN_LINE_LEN * sizeof( char );
-        l->buff = (char *)malloc( l->size );
+        l->buff = (char *)MemAlloc( l->size );
     }
 
     for( ;; ) {
         if( os >= l->size - 1 ) {                   // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff  = (char *)realloc( l->buff, l->size );
+            l->buff  = (char *)MemRealloc( l->buff, l->size );
         }
         ch = fgetc( fp );
 
@@ -294,7 +293,7 @@ static void cutFile( FILE *fp, node *list, mode m, char delim, bool suppress )
         }
     }
 
-    free( ln.buff );
+    MemFree( ln.buff );
 }
 
 int main( int argc, char **argv )
@@ -311,7 +310,8 @@ int main( int argc, char **argv )
     suppress = false;
     regexp = false;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "CUT" );
+
     for( ;; ) {
         ch = GetOpt( &argc, argv, "f:c:d:sX", usageMsg );
         if( ch == -1 ) {
@@ -320,12 +320,12 @@ int main( int argc, char **argv )
         switch( ch ) {
         case 'f':
             m = FIELD;
-            list = (char *)realloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
+            list = (char *)MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
             strcpy( list, OptArg );
             break;
         case 'c':
             m = CHAR;
-            list = (char *)realloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
+            list = (char *)MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
             strcpy( list, OptArg );
             break;
         case 'd':
@@ -349,7 +349,7 @@ int main( int argc, char **argv )
 
     if( parseList( list, head ) ) {
         treeFree( head );
-        free( list );
+        MemFree( list );
         Die( "cut: invalid list or range\n" );
     }
 
@@ -372,6 +372,8 @@ int main( int argc, char **argv )
         }
     }
     treeFree( head );
-    free( list );
+    MemFree( list );
+    MemFree( argv );
+
     return( 0 );
 }

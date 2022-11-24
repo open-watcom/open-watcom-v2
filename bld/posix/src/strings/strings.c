@@ -38,10 +38,10 @@
 #include <string.h>
 #include "bool.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "misc.h"
 #include "argvrx.h"
 
-char *OptEnvVar = "STRINGS";
 
 #define STATIC  static
 
@@ -119,6 +119,8 @@ int main( int argc, char **argv )
     int         i;
     FILE        *fp;
 
+    argv = ExpandEnv( &argc, argv, "STRINGS" );
+
     rxflag = false;
     threshold = 4;
     gimmeHexOffsets = false;
@@ -142,7 +144,7 @@ int main( int argc, char **argv )
         }
     }
 
-    thresholdBuf = malloc( threshold + 1 );
+    thresholdBuf = MemAlloc( threshold + 1 );
     if( thresholdBuf == NULL ) {
         Die( "not enough memory\n" );
     }
@@ -166,5 +168,7 @@ int main( int argc, char **argv )
             }
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

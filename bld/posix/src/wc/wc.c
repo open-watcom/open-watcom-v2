@@ -38,9 +38,10 @@
 #include <stdlib.h>
 #include "bool.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "argvrx.h"
+#include "misc.h"
 
-char *OptEnvVar="wc";
 
 bool    line_flag = false;
 bool    word_flag = false;
@@ -125,6 +126,8 @@ int main( int argc, char **argv )
     bool        more_than_one;
     bool        rxflag;
 
+    argv = ExpandEnv( &argc, argv, "WC" );
+
     rxflag = false;
     while( (ch = GetOpt( &argc, argv, "Xwlc", usageMsg )) != -1 ) {
         switch( ch ) {
@@ -171,5 +174,7 @@ int main( int argc, char **argv )
             PrintLine( total_lines, total_words, total_chars, "--Total" );
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

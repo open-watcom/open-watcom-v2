@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,13 +42,12 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
+
 #define  MIN_LINE_LEN   80
 
 #define  MODE_UNIQUE    0x01
 #define  MODE_REPEAT    0x02
 #define  MODE_COUNT     0x04
-
-char *OptEnvVar="uniq";
 
 static const char *usageMsg[] = {
     "Usage: uniq [-?ud] [-c] [-number] [+number] [@env] [input [output]]",
@@ -81,7 +80,7 @@ static int getNextLine( FILE *fp, line *l )
 
     if( l->size == 0 ) {
         l->size = MIN_LINE_LEN * sizeof( char );
-        l->buff = (char *) malloc( l->size );
+        l->buff = (char *)MemAlloc( l->size );
     }
 
     while( (ch = fgetc( fp )) != EOF ) {
@@ -92,7 +91,7 @@ static int getNextLine( FILE *fp, line *l )
         os++;
         if( os >= l->size ) {       // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff = (char *)realloc( l->buff, l->size );
+            l->buff = (char *)MemRealloc( l->buff, l->size );
         }
     }
     *(l->buff + os) = '\0';
@@ -138,7 +137,7 @@ static void copyLines( line *dest, line *src )
 {
     if( src->size > dest->size ) {
         dest->size = src->size;
-        dest->buff = (char *) realloc( dest->buff, dest->size * sizeof(char) );
+        dest->buff = (char *)MemRealloc( dest->buff, dest->size * sizeof(char) );
     }
     strcpy( dest->buff, src->buff );
 }
@@ -178,8 +177,8 @@ static void displayUniq( FILE *in, FILE *out, int mode, int fldos, int chros )
         }
     }
 
-    free( ln1.buff );
-    free( ln2.buff );
+    MemFree( ln1.buff );
+    MemFree( ln2.buff );
 }
 
 static int isNumber( char *s )
@@ -205,7 +204,7 @@ int main( int argc, char **argv )
     int         fld_os = 0;
     int         chr_os = 0;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "UNIQ" );
 
     while( (ch = GetOpt( &argc, argv, "#udc", usageMsg )) != -1 ) {
         switch( ch ) {
@@ -260,5 +259,7 @@ int main( int argc, char **argv )
         }
         fclose( in );
     }
+    MemFree( argv );
+
     return( 0 );
 }

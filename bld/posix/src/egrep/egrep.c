@@ -41,6 +41,14 @@
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+#include "misc.h"
+
+
+#ifdef FGREP
+#define GREP_NAME       "FGREP"
+#else
+#define GREP_NAME       "EGREP"
+#endif
                                         // Search flags:
 #define  M_SEARCH_INVERT        0x01    //      - invert sense of search
 #define  M_SEARCH_EXACT         0x02    //      - pattern must match entire line
@@ -62,12 +70,6 @@ typedef enum outmode {                  // Output modes:
 /**********************************************************
  * Global Data.
  **********************************************************/
-
-#ifdef FGREP
-char *OptEnvVar = "fgrep";
-#else
-char *OptEnvVar = "egrep";
-#endif
 
 static const char *usageMsg[] = {
 #ifdef FGREP
@@ -165,7 +167,7 @@ static void freePatterns( void )
     unsigned    ui;
 
     for( ui = 0; ui < PatCount; ui++ ) {
-        free( ePatterns[ui] );
+        MemFree( ePatterns[ui] );
     }
 }
 
@@ -174,13 +176,13 @@ static void errorExit( const char *msg, ... )
     va_list args;
 
     if( (Flags & M_SUPPRESS_ERROR) == 0 ) {
-        fprintf( stderr, "%s: ", OptEnvVar );
+        fprintf( stderr, GREP_NAME ": " );
         va_start( args, msg );
         vfprintf( stderr, msg, args );
         va_end( args );
         fprintf( stderr, "%s", "\n" );
     }
-    free( IObuffer );
+    MemFree( IObuffer );
     freePatterns( );
     exit( EXIT_FAILURE );
 }
@@ -279,9 +281,9 @@ static char *getNextLine( FILE *ifp, bool newfile, const char *filename, unsigne
             return( start );
         }
         if( len >= IObsize ) {
-            free( IObuffer );
+            MemFree( IObuffer );
             IObsize += IObsize >> 1;
-            IObuffer = malloc( IObsize );
+            IObuffer = MemAlloc( IObsize );
             if( IObuffer == NULL || fseek( ifp, -(long)rd, SEEK_CUR ) ) {
                 errorExit( "line too long: len (%lu) >= IObsize (%lu) at \"%s\":%u",
                     (unsigned long)len, (unsigned long)IObsize, filename, lineno );
@@ -351,7 +353,7 @@ static void insertPattern( const char *pat )
         errorExit( "too many search patterns" );
     }
 #ifdef FGREP
-    fPatterns[PatCount] = strdup( pat );
+    fPatterns[PatCount] = MemStrdup( pat );
 #else
     ePatterns[PatCount] = RegComp( pat );
     if( ePatterns[PatCount] == NULL ) {
@@ -441,13 +443,14 @@ int main( int argc, char **argv )
     unsigned    matches = 0;    // number of matches
     FILE        *ifp;
 
-    IObuffer = malloc( IObsize );
+    IObuffer = MemAlloc( IObsize );
     if( IObuffer == NULL )
         errorExit( "insufficient memory for file buffer" );
     CaseIgnore = false;         // case sensitive match by default
     rematch = false;            // regexp file matching is OFF
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, GREP_NAME );
+
     handle_options( &argc, argv, &rematch );
 
     if( PatCount == 0 ) {
@@ -469,7 +472,7 @@ int main( int argc, char **argv )
             ifp = fopen( *argv, "rb" );      // input file handle
             if( ifp == NULL ) {
                 if( !(Flags & M_SUPPRESS_ERROR) ) {
-                    fprintf( stderr, "%s: cannot open input file \"%s\"\n", OptEnvVar, *argv );
+                    fprintf( stderr, GREP_NAME ": cannot open input file \"%s\"\n", *argv );
                 }
             } else {
                 matches += searchFile( *argv, ifp, argc - 1 );
@@ -481,8 +484,9 @@ int main( int argc, char **argv )
     if( Omode == OUT_COUNT )
         printf( "%u\n", matches );
     fflush( stdout );
-    free( IObuffer );
+    MemFree( IObuffer );
     freePatterns( );
+    MemFree( argv );
 
     return( matches == 0 );
 }

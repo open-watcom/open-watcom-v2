@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +49,6 @@
 #include "clibext.h"
 
 
-char *OptEnvVar = "trunc";
-
 static const char *usageMsg[] = {
     "Usage: trunc [-?qX] [@env] [files]",
     "\tenv         : environment variable to expand",
@@ -72,7 +70,8 @@ int main( int argc, char **argv )
     struct utimbuf  utb;
     mode_t          st_mode;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "TRUNC" );
+
     rxflag = false;
     quietflag = false;
     for( ;; ) {
@@ -123,5 +122,7 @@ int main( int argc, char **argv )
             }
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

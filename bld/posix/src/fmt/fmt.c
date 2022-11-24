@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,6 @@
 #define  END_PARA       0x02
 #define  END_FILE       0x04
 #define  OUT_OF_MEM     0x08
-
-char *OptEnvVar="fmt";
 
 static const char *usageMsg[] = {
     "Usage: fmt [-?Xcnj] [-l length] [-p offset] [@env] [files...]",
@@ -203,7 +201,7 @@ static void formatParagraph( para *p, unsigned width, unsigned offset, int err )
     unsigned long   inicost = width;
     unsigned long   length  = p->offset;
 
-    r = (range *)malloc( p->len * sizeof( range ) );
+    r = (range *)MemAlloc( p->len * sizeof( range ) );
 
     if( err ) {
         comp++;
@@ -273,7 +271,7 @@ static void formatParagraph( para *p, unsigned width, unsigned offset, int err )
 
     outputParagraph( p, r + i, p->len - i );
 
-    free( r );
+    MemFree( r );
 }
 
 static void freeWordlist( wordlist *list )
@@ -282,7 +280,7 @@ static void freeWordlist( wordlist *list )
 
     while( list != NULL ) {
         temp = list->next;              // free up all the text memory
-        free( list );
+        MemFree( list );
         list = temp;
     }
 }
@@ -312,7 +310,7 @@ static void trimParagraph( para *p )
 {
     if( p->size > p->len ) {
         p->size  = p->len + 1;
-        p->words = (word *) realloc( p->words, p->size * sizeof( word ) );
+        p->words = (word *)MemRealloc( p->words, p->size * sizeof( word ) );
     }
 }
 
@@ -322,7 +320,7 @@ static int expandParagraph( para *p, unsigned inc )
 
     if( p->len >= p->size ) {
         p->size += inc;
-        tmp = (word *) realloc( p->words, p->size * sizeof( word ) );
+        tmp = (word *)MemRealloc( p->words, p->size * sizeof( word ) );
         if( tmp != NULL ) {
             p->words = tmp;
             for( tmp += p->len; tmp < p->words + p->size; tmp++ ) {
@@ -381,7 +379,7 @@ static char *insertWord( wordlist **list, char *wtext, unsigned wlen )
     if( size < DEF_LIST_LEN )
         size = DEF_LIST_LEN;
     while( size > wlen ) {
-        temp = (wordlist *) realloc( temp, sizeof( wordlist ) + size - sizeof( char ) );
+        temp = (wordlist *)MemRealloc( temp, sizeof( wordlist ) + size - sizeof( char ) );
         if( temp != NULL ) {
             break;
         } else {
@@ -415,7 +413,7 @@ static int getWord( FILE *fp, wordlist **list, word *w, unsigned *os )
         for( ;; ) {
             if( w->len >= w_size ) {
                 w_size += MIN_WORD_LEN;
-                tmp  = (char *) realloc( w_buff, w_size );
+                tmp  = (char *)MemRealloc( w_buff, w_size );
                 if( tmp == NULL ) {
                     w_size -= MIN_WORD_LEN;
                     return( OUT_OF_MEM );
@@ -575,7 +573,7 @@ static void formatFile( FILE *fp, unsigned width, unsigned offset )
         }
         erros = (unsigned)-1;
     }
-    free( p.words );                    // free the paragraph space
+    MemFree( p.words );                    // free the paragraph space
     freeWordlist( list );               // free the text space
 }
 
@@ -589,7 +587,7 @@ int main( int argc, char **argv )
     bool        regexp;
     int         value;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "FMT" );
 
     regexp = false;
     for( ;; ) {
@@ -647,6 +645,8 @@ int main( int argc, char **argv )
             argv++;
         }
     }
-    free( w_buff );                     // free the word space
+    MemFree( w_buff );                     // free the word space
+    MemFree( argv );
+
     return( EXIT_SUCCESS );
 }

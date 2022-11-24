@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,10 @@
 #include "clibext.h"
 
 
-char *OptEnvVar = "du";
+typedef struct ack {
+    struct dirent df;
+    struct ack *next;
+} dfs;
 
 char    numbuff[14];
 long    clsize;
@@ -79,10 +82,13 @@ static const char *usageMsg[] = {
  */
 int main( int argc, char *argv[] )
 {
-    int         i,ch,j;
-    unsigned long   csum=0,ssum=0;
+    int             i;
+    int             ch;
+    int             j;
+    unsigned long   csum = 0;
+    unsigned long   ssum = 0;
 
-    argv = ExpandEnv( &argc, argv );    // Expand env. variables
+    argv = ExpandEnv( &argc, argv, "DU" );    // Expand env. variables
 
     /*
      * process options
@@ -112,6 +118,7 @@ int main( int argc, char *argv[] )
         }
         fmtPrint( csum );
         printf( " .\n" );
+        MemFree( argv );
         exit(0);
     }
 
@@ -134,13 +141,10 @@ int main( int argc, char *argv[] )
         fmtPrint( csum );
         printf( " %s\n", argv[i] );
     }
+    MemFree( argv );
+
     return( 0 );
 } /* main */
-
-typedef struct ack {
-    struct dirent df;
-    struct ack *next;
-} dfs;
 
 /*
  * fmtPrint - format a number for output
@@ -229,7 +233,7 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     while( (dire = readdir( dirp )) != NULL ) {
         if( skip_entry( dire ) )
             continue;               // skip special directory entries
-        if( (temp = malloc( sizeof( dfs ) )) == NULL )
+        if( (temp = MemAlloc( sizeof( dfs ) )) == NULL )
             break;
         temp->df = *dire;
         temp->next = NULL;
@@ -300,7 +304,7 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
             fmtPrint( kk );
             printf( " %s\\%s\n", dir, temp->df.d_name );
         }
-        free( temp );
+        MemFree( temp );
     }
 
 } /* DoDU */

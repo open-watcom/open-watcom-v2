@@ -54,8 +54,6 @@
 
 #define  MAX_BYTES      16              // Number of bytes to read in
 
-char *OptEnvVar="od";
-
 static const char *usageMsg[] = {
     "Usage: od [-?bcdDhoOsSxX] [@env] [file] [[+]offset[.][b]]",
     "\tenv                : environment variable to expand",
@@ -234,8 +232,8 @@ static void dumpFile( FILE *fp, format *fmt )
     int         repeat = 0;
     int         size   = 0;
 
-    buf = (char *)malloc( MAX_BYTES );
-    prv = (char *)malloc( MAX_BYTES );
+    buf = (char *)MemAlloc( MAX_BYTES );
+    prv = (char *)MemAlloc( MAX_BYTES );
 
     fseek( fp, fmt->offset, SEEK_SET );
 
@@ -321,7 +319,7 @@ int main( int argc, char **argv )
     format      fmt     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     char        fmtset  = 0;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "OD" );
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "bcdDhoOsSxX", usageMsg );
@@ -394,5 +392,7 @@ int main( int argc, char **argv )
         dumpFile( fp, &fmt );
         fclose( fp );
     }
+    MemFree( argv );
+
     return( 0 );
 }

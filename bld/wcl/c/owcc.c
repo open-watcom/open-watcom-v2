@@ -47,6 +47,7 @@
 #endif
 #include "wio.h"
 #include "watcom.h"
+#include "argvenv.h"
 #include "getopt.h"
 #include "bool.h"
 #include "swchar.h"
@@ -104,7 +105,7 @@
 #define DIS               "wdis"        /* Open Watcom disassembler           */
 #define SPECS_FILE  BPRFX "specs.owc"   /* spec file with target definition   */
 
-#define WCLENV      "OWCC"
+#define OWCCENV     "OWCC"
 
 #define OUTPUTFILE  "a.out"
 #define TEMPFILE    "__owcc__" TOOL_LNK_EXT /* temporary linker directive file 8.3 */
@@ -125,7 +126,22 @@ typedef enum {
     TARGET_ARCH_COUNT
 } owcc_target_arch;
 
-char *OptEnvVar = WCLENV;                   /* Data interface for GetOpt()        */
+typedef struct {
+    char    *LongName;  /* if ending in ':', copy rest to OW option */
+    char    *WatcomName;
+} option_mapping;
+
+typedef struct stack {
+    struct stack    *next;
+    char            *cmdbuf;
+    char            **argv;
+} stack;
+
+const char *WclMsgs[] = {
+    #define pick(code,english)      english
+    #include "wclmsg.h"
+    #undef pick
+};
 
 static  char        *SystemName;            /* system to link for                 */
 static  list        *Files_List;            /* list of filenames from Cmd         */
@@ -136,31 +152,20 @@ static  owcc_target_arch CPU_Arch;          /* CPU architecture TARGET_ARCH_... 
 static  char        Conventions[2];         /* 'r' for -3r or 's' for -3s         */
 static  char        *O_Name;                /* name of -o option                  */
 
-static  char        preprocess_only;        /* flag: -E option used?              */
-static  char        cpp_want_lines;         /* flag: want #lines output?          */
-static  char        cpp_keep_comments;      /* flag: keep comments in output?     */
-static  char        cpp_encrypt_names;      /* flag: encrypt C++ names?           */
+static  bool        preprocess_only;        /* flag: -E option used?              */
+static  bool        cpp_want_lines;         /* flag: want #lines output?          */
+static  bool        cpp_keep_comments;      /* flag: keep comments in output?     */
+static  bool        cpp_encrypt_names;      /* flag: encrypt C++ names?           */
 static  char        *cpp_linewrap;          /* line length for cpp output         */
 
 /*
  *  Static function prototypes
  */
 
-const char *WclMsgs[] = {
-    #define pick(code,english)      english
-    #include "wclmsg.h"
-    #undef pick
-};
-
 static const char *UsageText[] = {
     #include "usage.gh"
     NULL
 };
-
-typedef struct {
-    char    *LongName;  /* if ending in ':', copy rest to OW option */
-    char    *WatcomName;
-} option_mapping;
 
 /* Map of options which don't need special treatment */
 static option_mapping mappings[] = {
@@ -562,72 +567,8 @@ static void initialize_Flags( void )
     Flags.keep_exename    = 0;
 }
 
-#if 0
-static unsigned ParseEnvVar( const char *env, char **argv, char *buf )
-/********************************************************************/
-{
-    /*
-     * Returns a count of the "command line" parameters in *env.
-     * Unless argv is NULL, both argv and buf are completed.
-     *
-     * This function ought to be fairly similar to clib(initargv@_SplitParms).
-     * Parameterisation does the same as _SplitParms with historical = 0.
-     */
-
-    const char  *start;
-    int         switchchar;
-    unsigned    argc;
-    char        *bufend;
-    bool        got_quote;
-
-    switchchar = _dos_switch_char();
-    bufend = buf;
-    argc = 0;
-    for( ; *env != '\0'; ) {
-        got_quote = false;
-        while( isspace( *env ) && *env != '\0' )
-            env++;
-        start = env;
-        if( buf != NULL ) {
-            argv[ argc ] = bufend;
-        }
-        if( *env == switchchar || *env == '-' ) {
-            if( buf != NULL ) {
-                *bufend = *env;
-                bufend++;
-            }
-            env ++;
-        }
-        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
-            if( *env == '\"' ) {
-                got_quote = !got_quote;
-            }
-            if( buf != NULL ) {
-                *bufend = *env;
-                bufend++;
-            }
-            env++;
-        }
-        if( start != env ) {
-            argc++;
-            if( buf != NULL ) {
-                *bufend = '\0';
-                bufend++;
-            }
-        }
-    }
-    return( argc );
-}
-#endif
-
-typedef struct stack {
-    struct stack    *next;
-    char            *cmdbuf;
-    char            **argv;
-} stack;
-
 static bool find_mapping( char c )
-/*******************************/
+/********************************/
 {
     int     i;
 
@@ -659,17 +600,8 @@ static bool find_mapping( char c )
     return( false );
 }
 
-static  int  ParseArgs( int argc, char **argv )
-/*********************************************/
+static void  ParseInit( void )
 {
-    char        *p;
-    int         wcc_option;
-    char        c;
-    int         i;
-    list        *new_item;
-    char        pelc[5];
-    char        *Word;
-
     initialize_Flags();
     DebugFlag          = DBG_LINES;
     DebugFormat        = DBG_FMT_DWARF;
@@ -678,14 +610,25 @@ static  int  ParseArgs( int argc, char **argv )
     Conventions[1]     = '\0';
     CPU_Arch           = TARGET_ARCH_DEFAULT;
     CPU_Class          = -1;
-    preprocess_only    = 0;
-    cpp_want_lines     = 1; /* NB: wcc and wcl default to 0 here */
-    cpp_keep_comments  = 0;
-    cpp_encrypt_names  = 0;
+    preprocess_only    = false;
+    cpp_want_lines     = true; /* NB: wcc and wcl default to 0 here */
+    cpp_keep_comments  = false;
+    cpp_encrypt_names  = false;
     cpp_linewrap       = NULL;
     O_Name             = NULL;
+    AltOptChar         = '-'; /* Suppress '/' as option herald */
+}
 
-    AltOptChar = '-'; /* Suppress '/' as option herald */
+static  int  ParseArgs( int argc, char **argv )
+/*********************************************/
+{
+    char        *p;
+    bool        wcc_option;
+    char        c;
+    int         i;
+    list        *new_item;
+    char        *Word;
+
     while( (i = GetOpt( &argc, argv,
 #if 0
                         "b:Cc::D:Ef:g::"
@@ -708,7 +651,7 @@ static  int  ParseArgs( int argc, char **argv )
             strcpy( Word, OptArg );
         }
 
-        wcc_option = 1;
+        wcc_option = true;
         switch( c ) {
         case 'f':
             if( strcmp( Word, "syntax-only" ) == 0 ) {
@@ -721,12 +664,12 @@ static  int  ParseArgs( int argc, char **argv )
                 Word[7] = 'w';
                 MemFree( cpp_linewrap );
                 cpp_linewrap = MemStrDup( Word + 7 );
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             }
             if( strcmp( Word, "mangle-cpp" ) == 0 ) {
-                cpp_encrypt_names = 1;
-                wcc_option = 0;
+                cpp_encrypt_names = true;
+                wcc_option = false;
                 break;
             }
             switch( Word[0] ) {
@@ -740,7 +683,7 @@ static  int  ParseArgs( int argc, char **argv )
                 } else {
                     Link_Name = MemStrDup( TEMPFILE );
                 }
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             case 'm':           /* name of map file */
                 Flags.map_wanted = true;
@@ -748,7 +691,7 @@ static  int  ParseArgs( int argc, char **argv )
                     MemFree( Map_Name );
                     Map_Name = strfdup( Word + 2 );
                 }
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             case 'o':           /* name of object file */
                 /* parse off argument, so we get right filename
@@ -764,13 +707,13 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             }
             /* avoid passing on unknown options */
-            wcc_option = 0;
+            wcc_option = false;
             break;
 
         /* compiler options that affect the linker */
         case 'c':           /* compile only */
             Flags.no_link = true;
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 'x':           /* change source language */
             if( strcmp( Word, "c" ) == 0 ) {
@@ -780,7 +723,7 @@ static  int  ParseArgs( int argc, char **argv )
             } else {
                 Flags.no_link = true;
             }
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 'm':
             if( ( strncmp( "cmodel=", Word, 7 ) == 0 ) && ( Word[8] == '\0' ) ) {
@@ -799,7 +742,7 @@ static  int  ParseArgs( int argc, char **argv )
                 } else {
                     Conventions[0] = 'r';
                 }
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             }
             if( strncmp( "arch=", Word, 5 ) == 0 ) {
@@ -834,7 +777,7 @@ static  int  ParseArgs( int argc, char **argv )
                 default:
                     CPU_Arch = TARGET_ARCH_DEFAULT;
                 }
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             }
             if( strncmp( "tune=i", Word, 6 ) == 0 ) {
@@ -850,15 +793,15 @@ static  int  ParseArgs( int argc, char **argv )
                      * option */
                     CPU_Class = -1;
                 }
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             }
             if( strncmp( "stack-size=", Word, 11) == 0 ) {
                 MemFree( StackSize );
                 StackSize = MemStrDup( Word + 11 );
-                wcc_option = 0;
+                wcc_option = false;
             }
-            wcc_option = 0;     /* dont' pass on unknown options */
+            wcc_option = false;     /* dont' pass on unknown options */
             break;
         case 'z':
             switch( tolower( Word[0] ) ) {
@@ -873,21 +816,21 @@ static  int  ParseArgs( int argc, char **argv )
             }
             break;
         case 'E':
-            preprocess_only = 1;
-            wcc_option = 0;
+            preprocess_only = true;
+            wcc_option = false;
             break;
         case 'P':
-            cpp_want_lines = 0;
-            wcc_option = 0;
+            cpp_want_lines = false;
+            wcc_option = false;
             break;
         case 'C':
-            cpp_keep_comments = 1;
-            wcc_option = 0;
+            cpp_keep_comments = true;
+            wcc_option = false;
             break;
         case 'o':
             MemFree( O_Name );
             O_Name = strfdup( Word );
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 'g':
             if( Word[0] == '\0' ) {
@@ -944,26 +887,26 @@ static  int  ParseArgs( int argc, char **argv )
                 DebugFlag = DBG_LINES;
                 break;
             }
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 's':
             if( Word[0] != '\0' ) {
                 /* leave -shared to mapping table */
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             }
             Flags.strip_all = 1;
             DebugFlag = DBG_NONE;
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 'v':
             Flags.be_quiet = 0;
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 'W':
             if( strncmp( Word, "l,", 2 ) == 0 ) {
                 AddDirective( Word + 2 );
-                wcc_option = 0;
+                wcc_option = false;
             }
             /* other cases handled by table */
             break;
@@ -977,7 +920,7 @@ static  int  ParseArgs( int argc, char **argv )
             /* if Word found in specs.owc, add options from there: */
             if( ConsultSpecsFile( Word ) ) {
                 /* all set */
-                wcc_option = 0;
+                wcc_option = false;
             } else {
                 /* not found --- default to bt=<system> */
                 strcpy( Word, "t=" );
@@ -993,22 +936,21 @@ static  int  ParseArgs( int argc, char **argv )
             new_item->item = strfdup( p );
             MemFree( p );
             ListAppend( &Libs_List, new_item );
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 'L':
             AddDirectivePath( "libpath ", Word );
-            wcc_option = 0;
+            wcc_option = false;
             break;
         case 'i':       /* -include <file> --> -fi=<file> */
             if( Word[0] == '\0' ) {
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             }
             if( strcmp( Word, "nclude" ) == 0 ) {
                 c = 'f';
                 Word = MemRealloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
-                    MemFree( cpp_linewrap );
                     MemFree( Word );
                     PrintMsg( "Argument of -include missing\n", OptArg );
                     return( 1 );
@@ -1019,12 +961,12 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             }
             /* avoid passing un unknown options */
-            wcc_option = 0;
+            wcc_option = false;
             break;
 
         case 'M':               /* autodepend information for Unix makes */
             if( Word[0] == '\0' ) {
-                wcc_option = 0;
+                wcc_option = false;
                 break;
             }
             c = 'a';
@@ -1036,7 +978,6 @@ static  int  ParseArgs( int argc, char **argv )
             } else if( strcmp( Word, "F" ) == 0 ) {
                 Word = MemRealloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
-                    MemFree( cpp_linewrap );
                     MemFree( Word );
                     PrintMsg( "Argument of -MF missing\n", OptArg );
                     return( 1 );
@@ -1047,7 +988,6 @@ static  int  ParseArgs( int argc, char **argv )
             } else if( strcmp( Word, "T" ) == 0 ) {
                 Word = MemRealloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
-                    MemFree( cpp_linewrap );
                     MemFree( Word );
                     PrintMsg( "Argument of -M%s missing\n", OptArg );
                     return( 1 );
@@ -1057,7 +997,7 @@ static  int  ParseArgs( int argc, char **argv )
                 argv[OptInd++][0] = '\0';
             } else {
                 /* avoid passing on incompatible options */
-                wcc_option = 0;
+                wcc_option = false;
             }
             break;
         }
@@ -1071,7 +1011,7 @@ static  int  ParseArgs( int argc, char **argv )
             MemFree( Word );
         }
     }
-    for( i = 1; i < argc ; i++ ) {
+    for( i = 0; i < argc ; i++ ) {
         Word = argv[i];
         if( Word == NULL || Word[0] == '\0' )
             continue;
@@ -1084,6 +1024,14 @@ static  int  ParseArgs( int argc, char **argv )
             ListAppend( &Files_List, new_item );
         }
     }
+
+    return( 0 );
+}
+
+static int  ParseFini( void )
+{
+    char        *p;
+    char        pelc[5];
 
     if( preprocess_only ) {
         Flags.no_link = true;
@@ -1177,7 +1125,11 @@ static  int  Parse( int argc, char **argv )
 {
     int         ret;
 
+    argv = ExpandEnv( &argc, argv, OWCCENV );
+    ParseInit();
     ret = ParseArgs( argc, argv );
+    ParseFini();
+    MemFree( argv );
     return( ret );
 }
 

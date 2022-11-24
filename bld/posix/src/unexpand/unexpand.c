@@ -43,8 +43,6 @@
 #include "argvenv.h"
 
 
-char *OptEnvVar="unexpand";
-
 static const char *usageMsg[] = {
     "Usage: unexpand [-?Xa] [@env] [files...]",
     "\tenv                : environment variable to expand",
@@ -127,7 +125,7 @@ int main( int argc, char **argv )
     bool        regexp;
     mode        m = LEADING;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "UNEXPAND" );
 
     regexp = false;
     for( ;; ) {
@@ -161,5 +159,7 @@ int main( int argc, char **argv )
             argv++;
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

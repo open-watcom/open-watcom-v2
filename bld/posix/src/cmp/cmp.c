@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,6 @@ static const char *usageTxt[] = {
     "\t\t -x : Display differences in hex",
     NULL
 };
-
-char *OptEnvVar = "cmp";
 
 int     flagKeepGoing;
 int     flagSayNothing;
@@ -133,8 +131,9 @@ int main( int argc, char **argv )
     long        offs[2];
     int         i;
     int         fh[2];
+    int         rc;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "CMP" );
 
     for(;;) {
         ch = GetOpt( &argc, argv, "lsx", usageTxt );
@@ -182,5 +181,8 @@ int main( int argc, char **argv )
             }
         }
     }
-    return( cmp( fh, argv, offs ) );
+    rc = cmp( fh, argv, offs );
+    MemFree( argv );
+
+    return( rc );
 }

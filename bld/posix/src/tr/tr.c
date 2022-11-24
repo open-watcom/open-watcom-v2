@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,9 @@
 #include "wio.h"
 #include "bool.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "misc.h"
 
-char *OptEnvVar = "tr";
 
 static const char *usageTxt[] = {
     "Usage: tr [-?bcds] string1 [string2]",
@@ -249,6 +249,8 @@ int main( int argc, char **argv )
     unsigned char   string2[MAX_STR];
     size_t          string2_len;
 
+    argv = ExpandEnv( &argc, argv, "TR" );
+
     for( ;; ) {
         ch = GetOpt( &argc, argv, "cds", usageTxt );
         if( ch == -1 ) break;
@@ -273,6 +275,9 @@ int main( int argc, char **argv )
     } else {
         string2_len = 0;
     }
+
+    MemFree( argv );
+
     /* We ALWAYS open the input and output streams in binary mode
      * to don't do CRLF translations.
      */

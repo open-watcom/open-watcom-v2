@@ -40,9 +40,9 @@
 #endif
 #include "wio.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "misc.h"
 
-char *OptEnvVar = "tee";
 
 static const char *usageTxt[] = {
     "Usage: tee [-?a] [files]",
@@ -67,6 +67,8 @@ int main( int argc, char *argv[] )
     int         append_flag;
     int         ret;
 
+    argv = ExpandEnv( &argc, argv, "TEE" );
+
     append_flag = 0;
     for(;;) {
         ch = GetOpt( &argc, argv, "a", usageTxt );
@@ -83,7 +85,7 @@ int main( int argc, char *argv[] )
     ++argv;
     setmode( STDIN_FILENO, O_BINARY );
     setmode( STDOUT_FILENO, O_BINARY );
-    out_fh = malloc( sizeof( int ) * argc );
+    out_fh = MemAlloc( sizeof( int ) * argc );
     if( out_fh == NULL ) {
         Die( "not enough memory for file handles\n" );
     }
@@ -100,6 +102,7 @@ int main( int argc, char *argv[] )
             break;
         }
     }
+    MemFree( argv );
 
     /* do the tee-ing */
     for( ; ret == EXIT_SUCCESS; ) {
@@ -135,6 +138,6 @@ int main( int argc, char *argv[] )
             break;
         close( out_fh[i] );
     }
-    free( out_fh );
+    MemFree( out_fh );
     return( ret );
 }

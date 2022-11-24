@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +37,13 @@
 #include <stdlib.h>
 #include "wio.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "misc.h"
 #include "fnutils.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
 
-
-char    *OptEnvVar = "which";
 
 static int          foundAFile;
 static int          findAll;
@@ -151,6 +150,8 @@ int main( int argc, char **argv )
     int     i;
     char    *env_value;
 
+    argv = ExpandEnv( &argc, argv, "WHICH" );
+
     findAll = 0;
     env_value = getenv( "PATH" );
     for( ;; ) {
@@ -176,6 +177,8 @@ int main( int argc, char **argv )
     for( i = 1; i < argc; ++i ) {
         work( env_value, argv[i] );
     }
+
+    MemFree( argv );
 
     return( ( foundAFile ) ? EXIT_SUCCESS : EXIT_FAILURE );
 }

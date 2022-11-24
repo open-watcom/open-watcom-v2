@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "watcom.h"
 #include "misc.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "fnutils.h"
 #include "console.h"
 #include "filerx.h"
@@ -54,8 +55,6 @@
 
 #define LINE_WIDTH      80
 #define GUTTER_WIDTH    2
-
-char *OptEnvVar="ls";
 
 typedef struct {
     unsigned    sec:5;
@@ -128,6 +127,8 @@ int main( int argc, char *argv[] )
 #else
     line_width = LINE_WIDTH;            /* for now */
 #endif
+
+    argv = ExpandEnv( &argc, argv, "LS" );
 
     if( !isatty( fileno( stdout ) ) ) {
         N1flag = true;
@@ -207,7 +208,7 @@ int main( int argc, char *argv[] )
             }
             printf( "\n" );
         } else {
-            todo = realloc( todo, ( todocnt + 1 ) * sizeof( char * ) );
+            todo = MemRealloc( todo, ( todocnt + 1 ) * sizeof( char * ) );
             if( todo == NULL ) {
                 printf( "Out of memory!\n" );
                 exit( 1 );
@@ -218,14 +219,15 @@ int main( int argc, char *argv[] )
             closedir( dirp );
         }
     }
-
     /*
      * run through all specified files
      */
     for( i = 0 ; i < todocnt ; i++ ) {
         DoLS( NULL, todo[i] );
     }
-    free( todo );
+    MemFree( todo );
+    MemFree( argv );
+
     return( 0 );
 } /* main */
 
@@ -376,12 +378,12 @@ static void DoLS( char *path, char *name )
         if( (dire->d_attr & _A_SUBDIR) && IsDotOrDotDot( dire->d_name ) ) {
             continue;
         }
-        files = realloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
+        files = MemRealloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
         if( files == NULL ) {
             printf( "Out of memory!\n" );
             exit( 1 );
         }
-        files[ filecnt ] = malloc( sizeof( struct dirent ) );
+        files[ filecnt ] = MemAlloc( sizeof( struct dirent ) );
         if( files[filecnt] == NULL ) {
             break;
         }
@@ -458,10 +460,10 @@ static void DoLS( char *path, char *name )
                     printf( "\n%s:\n", filename );
                     DoLS( filename, name );
                 }
-                free( files[i] );
+                MemFree( files[i] );
             }
         }
-        free( files );
+        MemFree( files );
 
     }
 

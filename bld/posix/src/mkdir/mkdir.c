@@ -45,8 +45,6 @@
 #include "argvenv.h"
 
 
-char *OptEnvVar="mkdir";
-
 static const char *usageMsg[] = {
     "Usage: mkdir [-?] [@env] directory [directories...]",
     "\tenv                : environment variable to expand",
@@ -59,7 +57,8 @@ int main( int argc, char **argv )
 {
     int     ret = EXIT_SUCCESS;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "MKDIR" );
+
     GetOpt( &argc, argv, "", usageMsg );
 
     argv++;
@@ -79,5 +78,7 @@ int main( int argc, char **argv )
             argv++;
         }
     }
+    MemFree( argv );
+
     return( ret );
 }

@@ -64,6 +64,7 @@
 #endif
 #include "bool.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "misc.h"
 #include "fnutils.h"
 #include "console.h"
@@ -74,8 +75,6 @@
 #define LINE_WIDTH      80      /* FIXME: should really determine screen width*/
 #define COLUMN_WIDTH    16
 #define GUTTER_WIDTH    2
-
-char *OptEnvVar="lc";
 
 #define DIR_PASS        1
 #define FILE_PASS       2
@@ -119,6 +118,8 @@ int main( int argc, char *argv[] )
 #endif
     maxwidth /= COLUMN_WIDTH;
 
+    argv = ExpandEnv( &argc, argv, "LC" );
+
     for( ;; ) {
         ch = GetOpt( &argc, argv, "dfr", usageMsg );
         if( ch == -1 ) {
@@ -148,6 +149,8 @@ int main( int argc, char *argv[] )
             DoLC( argv[i] );
         }
     }
+    MemFree( argv );
+
     return( 0 );
 } /* main */
 
@@ -226,12 +229,12 @@ void DoLC( char *dir )
             continue;
         }
 #endif
-        files = realloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
+        files = MemRealloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
         if( files == NULL ) {
             printf( "Out of memory!\n" );
             exit( 1 );
         }
-        files[ filecnt ] = malloc( sizeof( struct dirent ) );
+        files[ filecnt ] = MemAlloc( sizeof( struct dirent ) );
         if( files[ filecnt ] == NULL ) {
             break;
         }

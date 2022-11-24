@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,6 @@
 #include "argvenv.h"
 
 
-char *OptEnvVar="head";
-
 static const char *usageMsg[] = {
     "Usage: head [-?X] [-<number>] [@env] [files...]",
     "\tenv                : environment variable to expand",
@@ -84,7 +82,7 @@ int main( int argc, char **argv )
     int         ch;
     bool        rxflag;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "HEAD" );
 
     head = 10;
     rxflag = false;
@@ -121,5 +119,7 @@ int main( int argc, char **argv )
             argv++;
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

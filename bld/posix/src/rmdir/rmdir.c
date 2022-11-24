@@ -43,8 +43,6 @@
 #include "argvenv.h"
 
 
-char *OptEnvVar="rmdir";
-
 static const char *usageMsg[] = {
     "Usage: rmdir [-?] [@env] directory [directories...]",
     "\tenv                : environment variable to expand",
@@ -57,7 +55,8 @@ int main( int argc, char **argv )
 {
     int     ret = EXIT_SUCCESS;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "RMDIR" );
+
     GetOpt( &argc, argv, "", usageMsg );
     argv++;
     if( argc == 1 ) {
@@ -71,5 +70,7 @@ int main( int argc, char **argv )
             argv++;
         }
     }
+    MemFree( argv );
+
     return( ret );
 }
