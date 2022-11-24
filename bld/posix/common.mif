@@ -72,3 +72,5 @@ altlibdir=../misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
 
 extra_cppflags_ntaxp = -DWIN32 -D_WIN32
 extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu)) $(extra_cppflags)
+
+extra_c_flags_i86 = -zt=10000
