@@ -47,6 +47,7 @@
 #include "pathgrp2.h"
 #include "ctags.h"
 #include "banner.h"
+#include "argvenv.h"
 
 #include "clibext.h"
 
@@ -87,13 +88,21 @@ static const char       *usageMsg[] = {
     NULL
 };
 
-static char optStr[] = "acdempstqvxyf:z:";
-
 static bool             quietFlag;
 static bool             appendFlag;
 static char             *fileName = "tags";
 static char             tmpFileName[_MAX_PATH];
 static file_type        fileType = TYPE_NONE;
+
+void *MemAlloc( size_t size )
+{
+    return( malloc( size ) );
+}
+
+void MemFree( void *ptr )
+{
+    free( ptr );
+}
 
 #if defined( __UNIX__ )
 static int _stat2( const char *path, const char *name, struct stat *st )
@@ -427,7 +436,8 @@ int main( int argc, char *argv[] )
 {
     int         ch, i;
 
-    while( (ch = getopt( argc, argv, optStr )) != -1 ) {
+    argv = ExpandEnv( &argc, argv, "CTAGS" );
+    while( (ch = getopt( argc, argv, "acdempstqvxyf:z:" )) != -1 ) {
         if( ch == '?' ) {
             Quit( usageMsg, NULL );
         }
@@ -435,7 +445,7 @@ int main( int argc, char *argv[] )
     }
     displayBanner();
 
-    if( argc < 2 ) {
+    if( argc - optind < 1 ) {
         Quit( usageMsg, "No files specified\n" );
     }
 
@@ -443,7 +453,7 @@ int main( int argc, char *argv[] )
         VerboseFlag = false;
     }
 
-    for( i = 1; i < argc; i++ ) {
+    for( i = optind; i < argc; i++ ) {
         if( argv[i][0] == '@' ) {
             processOptionFile( &argv[i][1] );
         } else {
@@ -457,6 +467,8 @@ int main( int argc, char *argv[] )
         ReadExtraTags( fileName );
     }
     GenerateTagsFile( fileName );
+    MemFree( argv );
+
     return( 0 );
 
 } /* main */

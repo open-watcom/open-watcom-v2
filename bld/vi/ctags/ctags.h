@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,6 +68,8 @@ extern bool     VerboseFlag;
  * function prototypes
  */
 /* ctags.c */
+extern void     *MemAlloc( size_t size );
+extern void     MemFree( void *ptr );
 extern bool     IsTokenChar( int ch );
 extern int      MyStricmp( char **buf, char *literal );
 extern void     ErrorMsgExit( const char *, ... );

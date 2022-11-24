@@ -52,10 +52,12 @@
 #include "autoenv.h"
 #include "iopath.h"
 #include "tempio.h"
+#include "argvenv.h"
 
 #include "clibext.h"
 #include "clibint.h"
 
+#define VIENV   "VI"
 
 static char     nullFN[] = "no_name";
 static char     *cFN = NULL;
@@ -285,7 +287,10 @@ static void doInitializeEditor( int argc, char *argv[] )
         cfgFN = DupString( CFG_NAME );
     }
 
+    argv = ExpandEnv( &argc, argv, VIENV );
+
     checkFlags( &argc, argv, startup, startup_parms, &startcnt );
+
     ScreenInit();
     SetWindowSizes();
     EditFlags.ClockActive = false;
@@ -608,6 +613,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         SetConsoleActiveScreenBuffer( OutputHandle );
     }
 #endif
+    MemFree( argv );
 
 } /* doInitializeEditor */
 

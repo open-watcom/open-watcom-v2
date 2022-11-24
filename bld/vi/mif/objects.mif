@@ -22,7 +22,7 @@ objtime = &
 
 objtime += rcs.obj
 
-objinit = init.obj getopt.obj autoenv.obj
+objinit = init.obj getopt.obj argvenv.obj argvstr.obj autoenv.obj
 
 objsizeroot = &
     name.obj key.obj &

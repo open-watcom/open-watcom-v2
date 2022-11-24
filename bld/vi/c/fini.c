@@ -86,8 +86,6 @@ char * UsageMsg[] = {
 #endif
 };
 
-char *OptEnvVar = "VI";
-
 /*
  * Quit - print usage messages
  */
