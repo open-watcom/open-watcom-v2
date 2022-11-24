@@ -39,7 +39,6 @@ extra_l_flags = lib $(wres_lib)
 extra_l_flags_qnx = option offset=16k, stack=12k
 extra_l_flags_dos_i86 = option stack=6k
 extra_l_flags_dos_386 = option stack=12k
-extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
 extra_l_flags_linux = option stack=12k
 
 # explicit rules

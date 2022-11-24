@@ -33,9 +33,7 @@ inc_dirs = -I"../src/$(name)" -I"../h"
 # lflags
 #
 extra_l_flags = debug all option quiet,map
-!ifeq host_cpu i86
-extra_l_flags_os2 = option heapsize=17k, newfiles, stack=8k
-!endif
+extra_l_flags_os2_i86 = option heapsize=17k, newfiles, stack=8k
 
 #
 #       define the main target

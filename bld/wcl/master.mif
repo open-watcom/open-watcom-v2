@@ -34,9 +34,7 @@ extra_c_flags_clcommon = $(trmem_cover_cflags)
 #
 # lflags
 #
-!ifeq host_cpu i86
-extra_l_flags_dos = option stack=4k
-!endif
+extra_l_flags_dos_i86 = option stack=4k
 
 # explicit rules
 #################

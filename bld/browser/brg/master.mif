@@ -37,7 +37,6 @@ extra_c_flags_brmem  = $(trmem_cover_cflags)
 #
 extra_l_flags        = op stack=16k
 extra_l_flags_nt_axp = op undefsok
-extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
 # explicit rules
 #################

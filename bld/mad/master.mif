@@ -53,7 +53,6 @@ lflags_dll_win_i86   = sys windows
 
 extra_l_flags_dll         = $(mad_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt_axp  = op dosseg
-extra_l_flags_dll_nt = $(extra_l_flags_dll_nt_$(host_cpu))
 
 #
 # names

@@ -115,7 +115,6 @@ extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESUR
 !else
 extra_l_flags_win_i86 = op stack=15K, heap=10K, align=512
 !endif
-extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos = op stack=24k #export DOS4GOPTIONS=_DOS4GOPTIONS
 !ifeq sys_windowed 1
@@ -124,9 +123,7 @@ extra_l_flags_os2_386 = imp WinThreadAssocQueue PMMERGE.5398
 !else
 extra_l_flags_os2_i86 = op stack=16k, newfile
 !endif
-extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000
-extra_l_flags_qnx = $(extra_l_flags_qnx_$(host_cpu))
 extra_l_flags_rdos =
 
 # explicit rules

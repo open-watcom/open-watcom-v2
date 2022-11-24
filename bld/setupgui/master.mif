@@ -55,19 +55,14 @@ extra_c_flags_loadfind = $(wres_inc_dirs)
 extra_l_flags_dos = option stack=30K
 extra_l_flags_os2 = option stack=30K
 extra_l_flags_nt = option stack=30K, heap=20K
-!ifneq host_cpu axp
-extra_l_flags_nt += lib {shell32.lib uuid.lib}
-!endif
-!ifdef win386
-extra_l_flags_win = option stack=24K
-!else
+extra_l_flags_nt_axp = lib {shell32.lib uuid.lib}
+extra_l_flags_win_386 = option stack=24K
 # Segments must be NONDISCARDABLE so that Windows will not attempt
 # to load a segment after the user has swapped diskettes.
-extra_l_flags_win = option manyautodata, stack=20K, heap=10K &
+extra_l_flags_win_i86 = option manyautodata, stack=20K, heap=10K &
     SEGMENT CLASS 'CODE' MOVEABLE PRELOAD &
     SEGMENT CLASS 'DATA' MOVEABLE PRELOAD &
     LIBRARY ddeml.lib
-!endif
 
 # explicit rules
 ##################

@@ -561,8 +561,8 @@ lflags_dll_win_386     = $(lflags_win_386)
 lflags_dll_win_i86     = sys windows_dll
 lflags_dll_zdos_386    = $(lflags_zdos_386)
 
-proj_l_flags     = $(extra_l_flags_$(host_os)) $(extra_l_flags)
-proj_l_flags_dll = $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll)
+proj_l_flags     = $(extra_l_flags_$(host_os)) $(extra_l_flags_$(host_os)_$(host_cpu)) $(extra_l_flags)
+proj_l_flags_dll = $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll_$(host_os)_$(host_cpu)) $(extra_l_flags_dll)
 
 lflags_gen       = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(proj_l_flags)
 
