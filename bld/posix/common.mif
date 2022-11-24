@@ -41,6 +41,7 @@ alt_posixlib = 1
 posixlib_objs = &
     $(_subdir_)alloc.obj &
     $(_subdir_)argvenv.obj &
+    $(_subdir_)argvstr.obj &
     $(_subdir_)argvrx.obj &
     $(_subdir_)console.obj &
     $(_subdir_)die.obj &
