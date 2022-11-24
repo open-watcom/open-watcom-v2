@@ -81,13 +81,14 @@ int main( int argc, char *argv[] )
     int         i;
     fattrs      attr;
     bool        rxflag;
+    char        **argv1;
 
     AltOptChar = '+';
     rxflag = false;
 
-    argv = ExpandEnv( &argc, argv, "CHMOD" );
+    argv1 = ExpandEnv( &argc, argv, "CHMOD" );
 
-    while( (ch = GetOpt( &argc, argv, "Xarhs", usageMsg )) != -1 ) {
+    while( (ch = GetOpt( &argc, argv1, "Xarhs", usageMsg )) != -1 ) {
         attr = 0;
         switch( ch ) {
 #ifdef __NT__
@@ -127,9 +128,8 @@ int main( int argc, char *argv[] )
             attrToAdd |= attr;
         }
     }
-    argv = ExpandArgv( &argc, argv, rxflag );
-
-    if( argc == 1 ) {
+    argv = ExpandArgv( &argc, argv1, rxflag );
+    if( argc < 2 ) {
         Quit( usageMsg, "No filename specified\n" );
     }
     for( i = 1; i < argc; i++ ) {
@@ -147,6 +147,7 @@ int main( int argc, char *argv[] )
 #endif
     }
     MemFree( argv );
+    MemFree( argv1 );
 
     return( 0 );
 }

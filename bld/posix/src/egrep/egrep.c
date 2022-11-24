@@ -442,6 +442,8 @@ int main( int argc, char **argv )
     bool        rematch;
     unsigned    matches = 0;    // number of matches
     FILE        *ifp;
+    int         i;
+    char        **argv1;
 
     IObuffer = MemAlloc( IObsize );
     if( IObuffer == NULL )
@@ -449,44 +451,44 @@ int main( int argc, char **argv )
     CaseIgnore = false;         // case sensitive match by default
     rematch = false;            // regexp file matching is OFF
 
-    argv = ExpandEnv( &argc, argv, GREP_NAME );
+    argv1 = ExpandEnv( &argc, argv, GREP_NAME );
 
-    handle_options( &argc, argv, &rematch );
+    handle_options( &argc, argv1, &rematch );
 
+    i = 0;
     if( PatCount == 0 ) {
-        if( argc <= 1 )
+        if( argc < 2 )
             errorExit( "%s", usageMsg[0] );
         argc--;
-        argv++;
-        insertPattern( *argv );
+        i++;
+        insertPattern( argv1[i] );
     }
 
-    parsePatterns( );
-    argv = ExpandArgv( &argc, argv, rematch );
-
-    if( *++argv == NULL ) {
+    parsePatterns();
+    argv = ExpandArgv( &argc, argv1 + i, rematch );
+    if( argc < 2 ) {
         ifp = freopen( "stdin", "rb", stdin );
         matches = searchFile( "stdin", ifp, 1 );
     } else {
-        while( *argv != NULL ) {
-            ifp = fopen( *argv, "rb" );      // input file handle
+        for( i = 1; i < argc; i++ ) {
+            ifp = fopen( argv[i], "rb" );      // input file handle
             if( ifp == NULL ) {
                 if( !(Flags & M_SUPPRESS_ERROR) ) {
-                    fprintf( stderr, GREP_NAME ": cannot open input file \"%s\"\n", *argv );
+                    fprintf( stderr, GREP_NAME ": cannot open input file \"%s\"\n", argv[i] );
                 }
             } else {
-                matches += searchFile( *argv, ifp, argc - 1 );
+                matches += searchFile( argv[i], ifp, argc - 1 );
                 fclose( ifp );
             }
-            argv++;
         }
     }
     if( Omode == OUT_COUNT )
         printf( "%u\n", matches );
     fflush( stdout );
     MemFree( IObuffer );
-    freePatterns( );
+    freePatterns();
     MemFree( argv );
+    MemFree( argv1 );
 
     return( matches == 0 );
 }

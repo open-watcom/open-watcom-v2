@@ -73,7 +73,7 @@ long    clsize;
 unsigned fileperlinecnt;
 unsigned maxfileperline;
 unsigned columnwidth;
-int     N1flag=false,
+bool    N1flag=false,
         Fflag=false,
         pflag=false,
         rxflag=false,

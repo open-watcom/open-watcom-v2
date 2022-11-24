@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,13 +85,14 @@ int main( int argc, char **argv )
     FILE        *fh;
     int         i;
     bool        rxflag;
+    char        **argv1;
 
-    argv = ExpandEnv( &argc, argv, "FOLD" );
+    argv1 = ExpandEnv( &argc, argv, "FOLD" );
 
     lineWidth = 70;
     rxflag = false;
     for(;;) {
-        ch = GetOpt( &argc, argv, "#", usageTxt );
+        ch = GetOpt( &argc, argv1, "#", usageTxt );
         if( ch == -1 )
             break;
         if( ch == 'X' ) {
@@ -109,13 +110,13 @@ int main( int argc, char **argv )
         Die( "not enough memory to hold a line\n" );
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
+    argv = ExpandArgv( &argc, argv1, rxflag );
 
     if( argc < 2 ) {
         fold( stdin );
     } else {
         for( i = 1; i < argc; ++i ) {
-            fh = fopen( argv[ i ], "rt" );
+            fh = fopen( argv[i], "rt" );
             if( fh == NULL ) {
                 Die( "error opening %s: %s\n", argv[i], strerror( errno ) );
             }
@@ -124,6 +125,7 @@ int main( int argc, char **argv )
         }
     }
     MemFree( argv );
+    MemFree( argv1 );
 
     return( 0 );
 }

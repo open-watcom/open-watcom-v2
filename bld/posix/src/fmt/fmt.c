@@ -581,17 +581,19 @@ int main( int argc, char **argv )
 {
     FILE       *fp;
     int         ch;
+    int         i;
+    char        **argv1;
 
     unsigned    width  = DEF_LINE_LEN;
     unsigned    offset = 0;
     bool        regexp;
     int         value;
 
-    argv = ExpandEnv( &argc, argv, "FMT" );
+    argv1 = ExpandEnv( &argc, argv, "FMT" );
 
     regexp = false;
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "Xcjnl:p:", usageMsg );
+        ch = GetOpt( &argc, argv1, "Xcjnl:p:", usageMsg );
         if( ch == -1 ) {
             break;
         }
@@ -625,28 +627,26 @@ int main( int argc, char **argv )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, regexp );
-    argv++;
-
-    if( *argv == NULL ) {
+    argv = ExpandArgv( &argc, argv1, regexp );
+    if( argc < 2 ) {
         formatFile( stdin, width, offset );
     } else {
-        while( *argv != NULL ) {
-            fp = fopen( *argv, "r" );
+        for( i = 1; i < argc; i++ ) {
+            fp = fopen( argv[i], "r" );
             if( fp == NULL ) {
-                fprintf( stderr, "fmt: cannot open input file \"%s\"\n", *argv );
+                fprintf( stderr, "fmt: cannot open input file \"%s\"\n", argv[i] );
             } else {
                 if( argc > 2 ) {
-                    fprintf( stdout, "%s:\n", *argv );
+                    fprintf( stdout, "%s:\n", argv[i] );
                 }
                 formatFile( fp, width, offset );
                 fclose( fp );
             }
-            argv++;
         }
     }
     MemFree( w_buff );                     // free the word space
     MemFree( argv );
+    MemFree( argv1 );
 
     return( EXIT_SUCCESS );
 }

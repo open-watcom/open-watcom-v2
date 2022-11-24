@@ -75,12 +75,14 @@ int main( int argc, char **argv )
     bool        rxflag;
     int         ch;
     int         fh;
+    int         i;
+    char        **argv1;
 
-    argv = ExpandEnv( &argc, argv, "CAT" );
+    argv1 = ExpandEnv( &argc, argv, "CAT" );
 
     rxflag = false;
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "X", usageMsg );
+        ch = GetOpt( &argc, argv1, "X", usageMsg );
         if( ch == -1 ) {
             break;
         } else if( ch == 'X' ) {
@@ -88,25 +90,24 @@ int main( int argc, char **argv )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
-    argv++;
+    argv = ExpandArgv( &argc, argv1, rxflag );
     setmode( STDOUT_FILENO, O_BINARY );
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         setmode( STDIN_FILENO, O_BINARY );
         DoCAT( STDIN_FILENO );
     } else {
-        while( *argv != NULL ) {
-            fh = open( *argv, O_RDONLY | O_BINARY );
+        for( i = 1; i < argc; i++ ) {
+            fh = open( argv[i], O_RDONLY | O_BINARY );
             if( fh == -1 ) {
-                fprintf( stderr, "cat: cannot open input file \"%s\"\n", *argv );
+                fprintf( stderr, "cat: cannot open input file \"%s\"\n", argv[i] );
             } else {
                 DoCAT( fh );
                 close( fh );
             }
-            argv++;
         }
     }
     MemFree( argv );
+    MemFree( argv1 );
 
     return( EXIT_SUCCESS );
 }

@@ -68,11 +68,11 @@ static const char       *usageMsg[] = {
     NULL
 };
 
-int                     rflag = false;
-int                     iflag = false;
-int                     fflag = false;
-int                     sflag = true;
-int                     rxflag = false;
+bool                    rflag = false;
+bool                    iflag = false;
+bool                    fflag = false;
+bool                    sflag = true;
+bool                    rxflag = false;
 int                     error_occured = 0;
 
 typedef struct dd {

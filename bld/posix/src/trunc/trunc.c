@@ -69,13 +69,14 @@ int main( int argc, char **argv )
     struct stat     statbuf;
     struct utimbuf  utb;
     mode_t          st_mode;
+    char            **argv1;
 
-    argv = ExpandEnv( &argc, argv, "TRUNC" );
+    argv1 = ExpandEnv( &argc, argv, "TRUNC" );
 
     rxflag = false;
     quietflag = false;
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "qX", usageMsg );
+        ch = GetOpt( &argc, argv1, "qX", usageMsg );
         if( ch == -1 ) {
             break;
         }
@@ -89,9 +90,9 @@ int main( int argc, char **argv )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
+    argv = ExpandArgv( &argc, argv1, rxflag );
 
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         Quit( usageMsg, NULL );
     } else {
         for( i = 1; i < argc; ++i ) {
@@ -123,6 +124,7 @@ int main( int argc, char **argv )
         }
     }
     MemFree( argv );
+    MemFree( argv1 );
 
     return( 0 );
 }

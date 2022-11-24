@@ -306,14 +306,16 @@ int main( int argc, char **argv )
     char        delim = '\t';
     bool        suppress;
     bool        regexp;                 // Don't to reg.exp. file matching.
+    int         i;
+    char        **argv1;
 
     suppress = false;
     regexp = false;
 
-    argv = ExpandEnv( &argc, argv, "CUT" );
+    argv1 = ExpandEnv( &argc, argv, "CUT" );
 
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "f:c:d:sX", usageMsg );
+        ch = GetOpt( &argc, argv1, "f:c:d:sX", usageMsg );
         if( ch == -1 ) {
             break;
         }
@@ -344,7 +346,7 @@ int main( int argc, char **argv )
         Die( "%s\n", usageMsg[0] );
     }
 
-    argv = ExpandArgv( &argc, argv, regexp );
+    argv = ExpandArgv( &argc, argv1, regexp );
     head = treeNode( 0, NULL, NULL );
 
     if( parseList( list, head ) ) {
@@ -353,27 +355,26 @@ int main( int argc, char **argv )
         Die( "cut: invalid list or range\n" );
     }
 
-    argv++;
-    if( argv[0] == NULL ) {
+    if( argc < 2 ) {
         cutFile( stdin, head, m, delim, suppress );
     } else {
-        while( *argv != NULL ) {
-            fp = fopen( *argv, "r" );
+        for( i = 1; i < argc; i++ ) {
+            fp = fopen( argv[i], "r" );
             if( fp == NULL ) {
-                fprintf( stderr,"cut: cannot open input file \"%s\"\n", *argv );
+                fprintf( stderr,"cut: cannot open input file \"%s\"\n", argv[i] );
             } else {
                 if( argc > 2 ) {
-                    fprintf( stdout, "%s:\n", *argv );
+                    fprintf( stdout, "%s:\n", argv[i] );
                 }
                 cutFile( fp, head, m, delim, suppress );
                 fclose( fp );
             }
-            argv++;
         }
     }
     treeFree( head );
     MemFree( list );
     MemFree( argv );
+    MemFree( argv1 );
 
     return( 0 );
 }

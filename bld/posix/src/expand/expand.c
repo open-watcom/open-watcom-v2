@@ -144,16 +144,18 @@ int main( int argc, char **argv )
     unsigned   *tabs;                   // List of fields to be retained.
     bool        arg;
     bool        regexp;
+    int         i;
+    char        **argv1;
 
     tabs   = NULL;
     list   = NULL;                      // Setup for realloc.
     arg    = false;                     // Flag for finding # parameter
     regexp = false;
 
-    argv = ExpandEnv( &argc, argv, "EXPAND" );
+    argv1 = ExpandEnv( &argc, argv, "EXPAND" );
 
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "#X", usageMsg );
+        ch = GetOpt( &argc, argv1, "#X", usageMsg );
         if( ch == -1 ) {
             break;
         } else if( ch == '#' ) {
@@ -175,28 +177,27 @@ int main( int argc, char **argv )
         Die( "expand: invalid tab stop specification\n" );
     }
 
-    argv = ExpandArgv( &argc, argv, regexp );
-    argv++;
-    if( argv[0] == NULL ) {
+    argv = ExpandArgv( &argc, argv1, regexp );
+    if( argc < 2 ) {
         expandFile( stdin, tabs );
     } else {
-        while( *argv != NULL ) {
-            fp = fopen( *argv, "r" );
+        for( i = 1; i < argc; i++ ) {
+            fp = fopen( argv[i], "r" );
             if( fp == NULL ) {
-                fprintf( stderr, "expand: cannot open input file \"%s\"\n", *argv );
+                fprintf( stderr, "expand: cannot open input file \"%s\"\n", argv[i] );
             } else {
                 if( argc > 2 ) {
-                    fprintf( stdout, "%s:\n", *argv );
+                    fprintf( stdout, "%s:\n", argv[i] );
                 }
                 expandFile( fp, tabs );
                 fclose( fp );
             }
-            argv++;
         }
     }
     MemFree( tabs );
     MemFree( list );
     MemFree( argv );
+    MemFree( argv1 );
 
     return( 0 );
 }
