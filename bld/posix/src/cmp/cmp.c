@@ -132,11 +132,12 @@ int main( int argc, char **argv )
     int         i;
     int         fh[2];
     int         rc;
+    char        **argv1;
 
-    argv = ExpandEnv( &argc, argv, "CMP" );
+    argv1 = ExpandEnv( &argc, argv, "CMP" );
 
     for(;;) {
-        ch = GetOpt( &argc, argv, "lsx", usageTxt );
+        ch = GetOpt( &argc, argv1, "lsx", usageTxt );
         if( ch == -1 ) break;
         switch( ch ) {
         case 'l':
@@ -160,7 +161,7 @@ int main( int argc, char **argv )
             offs[1] = strtol( argv[4], NULL, 0 );
         }
     }
-    ++argv;             // don't care about argv[0]
+    argv = argv1 + 1;
     for( i = 0; i < 2; ++i ) {
         if( argv[i][0] == '-' && argv[i][1] == 0 ) {
             if( i == 1 && fh[0] == STDIN_FILENO ) {
@@ -182,7 +183,7 @@ int main( int argc, char **argv )
         }
     }
     rc = cmp( fh, argv, offs );
-    MemFree( argv );
+    MemFree( argv1 );
 
     return( rc );
 }

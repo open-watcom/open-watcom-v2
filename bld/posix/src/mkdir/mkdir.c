@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,27 +55,26 @@ static const char *usageMsg[] = {
 
 int main( int argc, char **argv )
 {
+    int     i;
     int     ret = EXIT_SUCCESS;
 
     argv = ExpandEnv( &argc, argv, "MKDIR" );
 
     GetOpt( &argc, argv, "", usageMsg );
 
-    argv++;
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         Die( "%s\n", usageMsg[0] );
     } else {
-        while( *argv != NULL ) {
+        for( i = 1; i < argc; i++ ) {
             errno = 0;
-            mkdir( *argv );
+            mkdir( argv[i] );
             if( errno == EACCES ) {
-                fprintf( stderr, "mkdir: access denied \"%s\"\n", *argv );
+                fprintf( stderr, "mkdir: access denied \"%s\"\n", argv[i] );
                 ret = EXIT_FAILURE;
             } else if( errno == ENOENT ) {
                 ret = EXIT_FAILURE;
-                fprintf( stderr, "mkdir: invalid pathname \"%s\"\n", *argv );
+                fprintf( stderr, "mkdir: invalid pathname \"%s\"\n", argv[i] );
             }
-            argv++;
         }
     }
     MemFree( argv );

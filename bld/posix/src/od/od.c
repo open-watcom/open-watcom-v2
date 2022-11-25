@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -313,66 +313,69 @@ static void parseOffset( char *str, format *fmt )
 
 int main( int argc, char **argv )
 {
-    FILE       *fp;
+    FILE        *fp;
     int         ch;
 
     format      fmt     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    char        fmtset  = 0;
+    char        fmtset;
+    char        set;
 
     argv = ExpandEnv( &argc, argv, "OD" );
 
+    fmtset = 0;
     for( ;; ) {
         ch = GetOpt( &argc, argv, "bcdDhoOsSxX", usageMsg );
         if( ch == -1 ) {
             break;
         }
-        if( strchr( "bcdDhoOsSxX", ch ) != NULL ) {
-            fmtset = 1;
-            switch( ch ) {                      // switch to set format type
-            case 'h':
-                fmt.b_hex = 1;
-                break;
-            case 'b':
-                fmt.b_oct = 1;
-                break;
-            case 'c':
-                fmt.b_asc = 1;
-                break;
-            case 'd':
-                fmt.w_dec = 1;
-                break;
-            case 'D':
-                fmt.dw_dec = 1;
-                break;
-            case 'o':
-                fmt.w_oct = 1;
-                break;
-            case 'O':
-                fmt.dw_oct = 1;
-                break;
-            case 's':
-                fmt.w_sgn = 1;
-                break;
-            case 'S':
-                fmt.dw_sgn = 1;
-                break;
-            case 'x':
-                fmt.w_hex = 1;
-                break;
-            case 'X':
-                fmt.dw_hex = 1;
-                break;
-            }
+        set = 1;
+        switch( ch ) {                      // switch to set format type
+        case 'h':
+            fmt.b_hex = 1;
+            break;
+        case 'b':
+            fmt.b_oct = 1;
+            break;
+        case 'c':
+            fmt.b_asc = 1;
+            break;
+        case 'd':
+            fmt.w_dec = 1;
+            break;
+        case 'D':
+            fmt.dw_dec = 1;
+            break;
+        case 'o':
+            fmt.w_oct = 1;
+            break;
+        case 'O':
+            fmt.dw_oct = 1;
+            break;
+        case 's':
+            fmt.w_sgn = 1;
+            break;
+        case 'S':
+            fmt.dw_sgn = 1;
+            break;
+        case 'x':
+            fmt.w_hex = 1;
+            break;
+        case 'X':
+            fmt.dw_hex = 1;
+            break;
+        default:
+            set = 0;
+            break;
         }
+        fmtset |= set;
     }
     if( !fmtset ) {
         fmt.w_oct = 1;                          // set default (octal words)
     }
 
-    argv++;
-    if( *argv == NULL || **argv == '+' ) {
-        if( *argv != NULL ) {
-            parseOffset( *argv, &fmt );         // get specified offset
+    if( argc < 2 || *argv[1] == '+' ) {
+        if( argc > 1 ) {
+            parseOffset( argv[1], &fmt );       // get specified offset
             if( fmt.offset < 0 ) {
                 Die( "od: invalid offset\n" );  // error
             }
@@ -380,14 +383,14 @@ int main( int argc, char **argv )
         setmode( STDIN_FILENO, O_BINARY );      // switch stdin to binary mode
         dumpFile( stdin, &fmt );
     } else {
-        if( argc == 3 ) {
-            parseOffset( *(argv + 1), &fmt );   // get specified offset
+        if( argc > 2 ) {
+            parseOffset( argv[2], &fmt );       // get specified offset
             if( fmt.offset < 0 ) {
                 Die( "od: invalid offset\n" );  // error
             }
         }
-        if( (fp = fopen( *argv, "rb" )) == NULL ) {
-            Die( "od: cannot open input file \"%s\"\n", *argv );
+        if( (fp = fopen( argv[1], "rb" )) == NULL ) {
+            Die( "od: cannot open input file \"%s\"\n", argv[1] );
         }
         dumpFile( fp, &fmt );
         fclose( fp );

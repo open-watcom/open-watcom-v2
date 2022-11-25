@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +83,6 @@ int main( int argc, char *argv[] )
         Quit( usageTxt, "must specify at least 1 output file\n" );
     }
     --argc;             /* ignore argv[0] */
-    ++argv;
     setmode( STDIN_FILENO, O_BINARY );
     setmode( STDOUT_FILENO, O_BINARY );
     out_fh = MemAlloc( sizeof( int ) * argc );
@@ -92,13 +92,13 @@ int main( int argc, char *argv[] )
     ret = EXIT_SUCCESS;
     /* open output files */
     for( i = 0; i < argc; ++i ) {
-        out_fh[i] = open( argv[i], append_flag ?
+        out_fh[i] = open( argv[i + 1], append_flag ?
                 ( O_WRONLY | O_APPEND | O_CREAT | O_BINARY ) :
                 ( O_WRONLY | O_TRUNC | O_CREAT | O_BINARY ),
                 S_IREAD | S_IWRITE );
         if( out_fh[i] == -1 ) {
             ret = EXIT_FAILURE;
-            Error( "unable to open %s for writing: %s\n", argv[i], strerror( errno ) );
+            Error( "unable to open %s for writing: %s\n", argv[i + 1], strerror( errno ) );
             break;
         }
     }

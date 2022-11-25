@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,21 +53,21 @@ static const char *usageMsg[] = {
 
 int main( int argc, char **argv )
 {
+    int     i;
     int     ret = EXIT_SUCCESS;
 
     argv = ExpandEnv( &argc, argv, "RMDIR" );
 
     GetOpt( &argc, argv, "", usageMsg );
-    argv++;
-    if( argc == 1 ) {
+
+    if( argc < 2 ) {
         Die( "%s\n", usageMsg[0] );
     } else {
-        while( *argv != NULL ) {
-            if( rmdir( *argv ) ) {
-                fprintf( stderr, "rmdir: access denied \"%s\"\n", *argv );
+        for( i = 1; i < argc; i++ ) {
+            if( rmdir( argv[i] ) ) {
+                fprintf( stderr, "rmdir: access denied \"%s\"\n", argv[i] );
                 ret = EXIT_FAILURE;
             }
-            argv++;
         }
     }
     MemFree( argv );

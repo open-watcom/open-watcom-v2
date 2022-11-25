@@ -197,8 +197,10 @@ static int isNumber( char *s )
 
 int main( int argc, char **argv )
 {
-    FILE       *in, *out;
+    FILE        *in;
+    FILE        *out;
     int         ch;
+    int         i;
 
     int         mode   = 0;
     int         fld_os = 0;
@@ -231,26 +233,23 @@ int main( int argc, char **argv )
         mode = MODE_UNIQUE | MODE_REPEAT;
     }
 
-    argv++;
-    argc--;
-    if( *argv != NULL  &&  **argv == '+' ) {
-        if( !isNumber( *argv + 1 ) ) {
+    i = 1;
+    if( argc > 1 && *argv[1] == '+' ) {
+        if( !isNumber( argv[1] + 1 ) ) {
             Die( "uniq: invalid character offset\n" );
         }
-        chr_os = atoi( *argv + 1 );
-        argv++;
+        chr_os = atoi( argv[1] + 1 );
+        i++;
         argc--;
     }
-    if( *argv == NULL ) {
-        displayUniq( stdin, stdout, mode, fld_os, chr_os );
-    } else {
-        if( (in = fopen( *argv, "r" )) == NULL ) {
-            Die( "uniq: cannot open input file \"%s\"\n", *argv );
+    if( argc > 1 ) {
+        if( (in = fopen( argv[i], "r" )) == NULL ) {
+            Die( "uniq: cannot open input file \"%s\"\n", argv[i] );
         }
-        argv++;
-        if( *argv != NULL ) {
-            if( (out = fopen( *argv, "w" )) == NULL ) {
-                Die( "uniq: cannot open output file \"%s\"\n", *argv );
+        if( argc > 2 ) {
+            i++;
+            if( (out = fopen( argv[i], "w" )) == NULL ) {
+                Die( "uniq: cannot open output file \"%s\"\n", argv[i] );
             }
             displayUniq( in, out, mode, fld_os, chr_os );
             fclose( out );
@@ -258,6 +257,8 @@ int main( int argc, char **argv )
             displayUniq( in, stdout, mode, fld_os, chr_os );
         }
         fclose( in );
+    } else {
+        displayUniq( stdin, stdout, mode, fld_os, chr_os );
     }
     MemFree( argv );
 

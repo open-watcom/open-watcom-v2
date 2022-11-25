@@ -139,22 +139,22 @@ int main( int argc, char **argv )
             own_outfile = 1;
         }
     }
-    argv++;
 
-    if( *argv != NULL ) {
+    if( argc < 2 ) {
+        infile = stdin;
+    } else {
         // allways open input file in binary mode
-        infile = fopen( *argv, "rb" );
+        infile = fopen( argv[1], "rb" );
         if( infile == NULL ) {
-            fprintf( stderr, "sort: cannot open input file \"%s\"\n", *argv );
+            fprintf( stderr, "sort: cannot open input file \"%s\"\n", argv[1] );
             if( own_outfile ) {
                 fclose( outfile );
             }
+            MemFree( argv );
             ret = EXIT_FAILURE;
             goto done;
         }
         own_infile = 1;
-    } else {
-        infile = stdin;
     }
     if( !own_outfile ) {
         outfile = stdout;
@@ -195,4 +195,3 @@ int main( int argc, char **argv )
 done:; // a goto! flee in terror...
     return( ret );
 }
-
