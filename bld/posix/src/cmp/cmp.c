@@ -132,13 +132,13 @@ int main( int argc, char **argv )
     int         i;
     int         fh[2];
     int         rc;
-    char        **argv1;
 
-    argv1 = ExpandEnv( &argc, argv, "CMP" );
+    argv = ExpandEnv( &argc, argv, "CMP" );
 
     for(;;) {
-        ch = GetOpt( &argc, argv1, "lsx", usageTxt );
-        if( ch == -1 ) break;
+        ch = GetOpt( &argc, argv, "lsx", usageTxt );
+        if( ch == -1 )
+            break;
         switch( ch ) {
         case 'l':
             flagKeepGoing = 1;
@@ -161,29 +161,28 @@ int main( int argc, char **argv )
             offs[1] = strtol( argv[4], NULL, 0 );
         }
     }
-    argv = argv1 + 1;
     for( i = 0; i < 2; ++i ) {
-        if( argv[i][0] == '-' && argv[i][1] == 0 ) {
+        if( argv[i + 1][0] == '-' && argv[i + 1][1] == 0 ) {
             if( i == 1 && fh[0] == STDIN_FILENO ) {
                 Die( "cmp: only one argument can be stdin\n" );
             }
             fh[i] = STDIN_FILENO;
-            argv[i] = "(stdin)";
+            argv[i + 1] = "(stdin)";
         } else {
-            fh[i] = open( argv[i], O_RDONLY | O_BINARY );
+            fh[i] = open( argv[i + 1], O_RDONLY | O_BINARY );
             if( fh[i] == -1 ) {
-                Die( "unable to open %s: %s\n", argv[i], strerror( errno ) );
+                Die( "unable to open %s: %s\n", argv[i + 1], strerror( errno ) );
             }
         }
         if( offs[i] ) {
             if( lseek( fh[i], offs[i], SEEK_SET ) == -1L ) {
-                Die( "error seeking to %s in %s: %s\n", argv[i+2], argv[i],
+                Die( "error seeking to %s in %s: %s\n", argv[i + 3], argv[i + 1],
                             strerror( errno ) );
             }
         }
     }
-    rc = cmp( fh, argv, offs );
-    MemFree( argv1 );
+    rc = cmp( fh, argv - 1, offs );
+    MemFree( argv );
 
     return( rc );
 }
