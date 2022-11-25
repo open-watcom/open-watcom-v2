@@ -128,9 +128,10 @@ static int cmp( int fh[2], char *names[2], long offs[2] ) {
 int main( int argc, char **argv )
 {
     int         ch;
-    long        offs[2];
     int         i;
     int         fh[2];
+    long        offs[2];
+    char        *names[2];
     int         rc;
 
     argv = ExpandEnv( &argc, argv, "CMP" );
@@ -154,6 +155,8 @@ int main( int argc, char **argv )
     if( argc < 3 || argc > 5 ) {
         Quit( usageTxt, "invalid number of arguments\n" );
     }
+    names[0] = argv[1];
+    names[1] = argv[2];
     offs[0] = offs[1] = 0;
     if( argc > 3 ) {
         offs[0] = strtol( argv[3], NULL, 0 );
@@ -162,26 +165,25 @@ int main( int argc, char **argv )
         }
     }
     for( i = 0; i < 2; ++i ) {
-        if( argv[i + 1][0] == '-' && argv[i + 1][1] == 0 ) {
+        if( names[i][0] == '-' && names[i][1] == 0 ) {
             if( i == 1 && fh[0] == STDIN_FILENO ) {
                 Die( "cmp: only one argument can be stdin\n" );
             }
             fh[i] = STDIN_FILENO;
-            argv[i + 1] = "(stdin)";
+            names[i] = "(stdin)";
         } else {
-            fh[i] = open( argv[i + 1], O_RDONLY | O_BINARY );
+            fh[i] = open( names[i], O_RDONLY | O_BINARY );
             if( fh[i] == -1 ) {
-                Die( "unable to open %s: %s\n", argv[i + 1], strerror( errno ) );
+                Die( "unable to open %s: %s\n", names[i], strerror( errno ) );
             }
         }
         if( offs[i] ) {
             if( lseek( fh[i], offs[i], SEEK_SET ) == -1L ) {
-                Die( "error seeking to %s in %s: %s\n", argv[i + 3], argv[i + 1],
-                            strerror( errno ) );
+                Die( "error seeking to %ld in %s: %s\n", offs[i], names[i], strerror( errno ) );
             }
         }
     }
-    rc = cmp( fh, argv - 1, offs );
+    rc = cmp( fh, names, offs );
     MemFree( argv );
 
     return( rc );
