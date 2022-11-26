@@ -147,13 +147,7 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
         }
     }
 
-    FixName( sufname );
-
-#ifdef __UNIX__
-    return( (SUFFIX *)FindHashNode( sufTab, sufname, CASESENSITIVE ) );
-#else
-    return( (SUFFIX *)FindHashNode( sufTab, sufname, NOCASESENSITIVE ) );
-#endif
+    return( (SUFFIX *)FindHashNode( sufTab, FixName( sufname ), FILENAMESENSITIVE ) );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);

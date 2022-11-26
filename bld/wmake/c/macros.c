@@ -230,7 +230,7 @@ STATIC MACRO *getMacroNode( const char *name )
  * returns: pointer to MACRO with this name
  */
 {
-    bool    caseSensitive;
+    case_sensitivity    caseSensitive;
 
     assert( name != NULL && *name != ENVVAR_C );
 
@@ -566,9 +566,9 @@ void UnDefMacro( const char *name )
  * post:    MACRO node deallocated
  */
 {
-    char    macro[MAX_MAC_NAME];
-    MACRO   *dead;
-    bool    caseSensitive;
+    char                macro[MAX_MAC_NAME];
+    MACRO               *dead;
+    case_sensitivity    caseSensitive;
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,13 +127,18 @@ TLIST *NewTList( void )
     return( (TLIST *)CallocSafe( sizeof( TLIST ) ) );
 }
 
+STATIC TARGET *RemoveTarget( const char *name )
+/*********************************************/
+{
+    return( (TARGET *)RemHashNode( targTab, name, FILENAMESENSITIVE ) );
+}
 
 void RenameTarget( const char *oldname, const char *newname )
 /***********************************************************/
 {
     TARGET *targ;
 
-    targ = (TARGET *)RemHashNode( targTab, oldname, NOCASESENSITIVE );
+    targ = RemoveTarget( oldname );
     if( targ != NULL ) {
         if( targ->node.name != NULL ) {
             FreeSafe( targ->node.name );
@@ -168,7 +173,7 @@ TARGET *FindTarget( const char *name )
 {
     assert( name != NULL );
 
-    return( (TARGET *)FindHashNode( targTab, name, NOCASESENSITIVE ) );
+    return( (TARGET *)FindHashNode( targTab, name, FILENAMESENSITIVE ) );
 }
 
 
@@ -462,9 +467,9 @@ void KillTarget( const char *name )
  * function that the target is not a member of some TLIST
  */
 {
-    void    *mykill;
+    TARGET  *mykill;
 
-    mykill = RemHashNode( targTab, name, NOCASESENSITIVE );
+    mykill = RemoveTarget( name );
     if( mykill != NULL ) {
         freeTarget( mykill );
     }

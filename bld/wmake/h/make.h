@@ -42,12 +42,15 @@
 #include "massert.h"
 
 
+#ifdef DEVELOPMENT
+#define STATIC
+#else
+#define STATIC static
+#endif
+
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
 #define USE_DIR_CACHE
 #endif
-
-#define CASESENSITIVE       true    /* Is Name case sensitive                   */
-#define NOCASESENSITIVE     false   /* Is not Name case sensitive               */
 
 #define LINECONT_C          '&'     /* line continuation                        */
 #define UNIX_LINECONT_C     '\\'    /* UNIX line continuation                   */
@@ -115,11 +118,11 @@ struct Glob {
 #endif
 };
 
-#ifdef DEVELOPMENT
-#define STATIC
-#else
-#define STATIC static
-#endif
+typedef enum {
+    NOCASESENSITIVE,    /* is always not case sensitive */
+    CASESENSITIVE,      /* is always case sensitive */
+    FILENAMESENSITIVE   /* depend on host file name case sensitivity */
+} case_sensitivity;
 
 extern struct Glob      Glob;
 extern const char FAR   BuiltIns[];

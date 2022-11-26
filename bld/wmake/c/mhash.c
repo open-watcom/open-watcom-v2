@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,8 +174,8 @@ void FreeHashTab( HASHTAB *tab )
 }
 
 
-HASHNODE *FindHashNode( HASHTAB *tab, const char *name, bool caseSensitive )
-/***************************************************************************
+HASHNODE *FindHashNode( HASHTAB *tab, const char *name, case_sensitivity caseSensitive )
+/***************************************************************************************
  * Find node named name
  */
 {
@@ -182,9 +183,20 @@ HASHNODE *FindHashNode( HASHTAB *tab, const char *name, bool caseSensitive )
     HASHNODE    *cur;
     int         (*cmp)( const char *s1, const char *s2 );
 
-    cmp = ( caseSensitive ) ? strcmp : stricmp;
     h = Hash( name, tab->prime );
 
+    if( caseSensitive == NOCASESENSITIVE ) {
+        cmp = stricmp;
+    } else if( caseSensitive == CASESENSITIVE ) {
+        cmp = strcmp;
+    } else {
+        /* FILENAMESENSITIVE */
+#ifdef __UNIX__
+        cmp = strcmp;
+#else
+        cmp = stricmp;
+#endif
+    }
     for( cur = tab->nodes[h]; cur != NULL; cur = cur->next ) {
         if( cmp( cur->name, name ) == 0 ) {
             return( cur );
@@ -194,8 +206,8 @@ HASHNODE *FindHashNode( HASHTAB *tab, const char *name, bool caseSensitive )
 }
 
 
-HASHNODE *RemHashNode( HASHTAB *tab, const char *name, bool caseSensitive )
-/**************************************************************************
+HASHNODE *RemHashNode( HASHTAB *tab, const char *name, case_sensitivity caseSensitive )
+/**************************************************************************************
  * unlink a node named name, and return pointer to unlinked node.
  * return NULL if node doesn't exist.
  */
@@ -205,10 +217,20 @@ HASHNODE *RemHashNode( HASHTAB *tab, const char *name, bool caseSensitive )
     HASHNODE    *old;
     int         (*cmp)( const char *s1, const char *s2 );
 
-    cmp = ( caseSensitive ) ? strcmp : stricmp;
-
     h = Hash( name, tab->prime );
 
+    if( caseSensitive == NOCASESENSITIVE ) {
+        cmp = stricmp;
+    } else if( caseSensitive == CASESENSITIVE ) {
+        cmp = strcmp;
+    } else {
+        /* FILENAMESENSITIVE */
+#ifdef __UNIX__
+        cmp = strcmp;
+#else
+        cmp = stricmp;
+#endif
+    }
     for( cur = &(tab->nodes[h]); *cur != NULL; cur = &(*cur)->next ) {
         if( cmp( (*cur)->name, name ) == 0 ) {
             break;
