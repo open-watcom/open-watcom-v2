@@ -794,8 +794,9 @@ STATIC void bangUnDef( void )
     }
 
     UnDefMacro( name );
-    FreeSafe( name );
+
     FreeSafe( value );
+    FreeSafe( name );
 }
 
 

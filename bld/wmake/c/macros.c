@@ -63,6 +63,14 @@
  */
 #define HASH_PRIME  37
 
+typedef enum {
+    M_CWD    = 1 << 0,
+    M_CDRIVE = 1 << 1,
+    M_CTIME  = 1 << 2,
+    M_CDATE  = 1 << 3,
+    M_CYEAR  = 1 << 4,
+} predef_macro;
+
 typedef struct Macro {
     HASHNODE    node;       /* name is at name.node */
     const char  *value;
@@ -307,6 +315,22 @@ STATIC char *doStringSubstitute( const char *name, const char *oldString, const 
     return( FinishVec( output ) );
 }
 
+STATIC predef_macro checkPseudoMacro( const char *name )
+{
+    if( strcmp( name, "CDRIVE" ) == 0
+      || strcmp( name, "__CDRIVE__" ) == 0 )
+        return( M_CDRIVE );
+    if( strcmp( name, "CWD" ) == 0
+      || strcmp( name, "__CWD__" ) == 0 )
+        return( M_CWD );
+    if( strcmp( name, "__CTIME__" ) == 0 )
+        return( M_CTIME );
+    if( strcmp( name, "__CDATE__" ) == 0 )
+        return( M_CDATE );
+    if( strcmp( name, "__CYEAR__" ) == 0 )
+        return( M_CYEAR );
+    return( 0 );
+}
 
 #ifdef __WATCOMC__
 #pragma on (check_stack);
@@ -316,16 +340,12 @@ STATIC const char *GetMacroValueProcess( const char *name )
  * returns: pointer to text of macro (incl. environment vars)
  */
 {
-    char    macro[MAX_MAC_NAME];
-    MACRO   *cur;
-    char    *env;
-    bool    cdrive;
-    bool    cwd;
-    bool    ctime;
-    bool    cdate;
-    bool    cyear;
-    char    *p;
-    int     pos;
+    char            macro[MAX_MAC_NAME];
+    MACRO           *cur;
+    char            *env;
+    char            *p;
+    int             pos;
+    predef_macro    predef;
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
@@ -334,39 +354,33 @@ STATIC const char *GetMacroValueProcess( const char *name )
         if( env != NULL ) {
             return( env );
         }
-        cdrive = strcmp( macro + 1, "CDRIVE" ) == 0 ||
-                 strcmp( macro + 1, "__CDRIVE__" ) == 0;
-        cwd    = strcmp( macro + 1, "CWD" ) == 0 ||
-                 strcmp( macro + 1, "__CWD__" ) == 0;
-        ctime  = strcmp( macro + 1, "__CTIME__" ) == 0;
-        cdate  = strcmp( macro + 1, "__CDATE__" ) == 0;
-        cyear  = strcmp( macro + 1, "__CYEAR__" ) == 0;
-        if( cdrive || cwd ) {
+        predef = checkPseudoMacro( macro + 1 );
+        if( predef & (M_CDRIVE | M_CWD) ) {
             if( getcwd( getDirBuf(), _MAX_PATH ) == NULL ) {
                 return( NULL );
             }
             p = strchr( dirBuf, ':' );
-            if( cdrive ) {
+            if( predef & M_CDRIVE ) {
                 if( p != NULL ) {
                     *p = NULLCHAR;
                 } else {
                     dirBuf[0] = NULLCHAR;
                 }
-            } else {    /* cwd */
+            } else {    /* M_CWD */
                 if( p != NULL ) {
                     return( p + 1 );
                 }
             }
             return( dirBuf );
-        } else if( ctime || cdate || cyear ) {
+        } else if( predef & (M_CTIME | M_CDATE | M_CYEAR) ) {
             struct tm   *tm;
 
             tm = localtime( &start_time );
-            if( ctime ) {
+            if( predef & M_CTIME ) {
                 FmtStr( getDirBuf(), "%D:%D:%D", tm->tm_hour, tm->tm_min, tm->tm_sec );
-            } else if( cdate ) {
+            } else if( predef & M_CDATE ) {
                 FmtStr( getDirBuf(), "%d-%D-%D", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday );
-            } else if( cyear ) {
+            } else if( predef & M_CYEAR ) {
                 FmtStr( getDirBuf(), "%d", tm->tm_year + 1900 );
             }
             return( dirBuf );
@@ -582,7 +596,6 @@ void UnDefMacro( const char *name )
     } else {
         caseSensitive = NOCASESENSITIVE;
     }
-
     dead = (MACRO *)RemHashNode( macTab, macro, caseSensitive );
 
     assert( dead != NULL );
