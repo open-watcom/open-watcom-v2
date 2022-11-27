@@ -119,8 +119,8 @@ struct Glob {
 };
 
 typedef enum {
-    NOCASESENSITIVE,    /* is always not case sensitive */
-    CASESENSITIVE,      /* is always case sensitive */
+    NOCASESENSITIVE,    /* always non case sensitive */
+    CASESENSITIVE,      /* always case sensitive */
     FILENAMESENSITIVE   /* depend on host file name case sensitivity */
 } case_sensitivity;
 

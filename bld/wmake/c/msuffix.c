@@ -49,7 +49,7 @@
 
 STATIC HASHTAB          *sufTab;
 STATIC UINT16           nextId;
-STATIC UINT16           prevId;     // Has to be one less than nextId
+STATIC UINT16           prevId;     /* Has to be one less than nextId */
 
 
 STATIC void freePathRing( PATHRING pathring )
