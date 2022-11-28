@@ -605,7 +605,6 @@ void UnDefMacro( const char *name )
 {
     char                macro[MAX_MAC_NAME];
     MACRO               *dead;
-    case_sensitivity    caseSensitive;
 
     makeMacroName( macro, name );   /* Does assert( IsMacroName( name ) ); */
 
