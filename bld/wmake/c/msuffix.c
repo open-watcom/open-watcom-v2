@@ -112,35 +112,34 @@ void ClearSuffixes( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
-/****************************************************************
- * returns: pointer to SUFFIX named name, or NULL.  If p != NULL, then
- *          *p will be the pointer to the first dot not in the first
- *          position of name.  ie:
- *          .src.dest   returns SUFFIX src, and p = ".dest"
- *          .src        returns SUFFIX src, and p = NULL
+STATIC SUFFIX *findSuffixNode( const char *name, const char **sufdest )
+/**********************************************************************
+ * returns: pointer to SUFFIX named name, or NULL.  If sufdest != NULL,
+ *          then *sufdest will be the pointer to the first dot not in
+ *          the first position of name.  ie:
+ *          .src.dest   returns SUFFIX src, and sufdest = ".dest"
+ *          .src        returns SUFFIX src, and sufdest = NULL
  */
 {
     char        sufname[MAX_SUFFIX];
-    char        *d;
+    char        *p;
 
-    assert( name != NULL );
+    assert( name != NULL && ( name[0] == '.' || name[0] == NULLCHAR ) );
 
-    if( name[0] == '.' ) {
-        ++name;
+    if( name[0] != NULLCHAR ) {
+        name++; /* skip leading '.' */
     }
-
-    d = sufname;
+    p = sufname;
     while( *name != NULLCHAR && *name != '.' ) {
-        *d++ = *name++;
+        *p++ = *name++;
     }
-    *d = NULLCHAR;
+    *p = NULLCHAR;
 
-    if( p != NULL ) {
+    if( sufdest != NULL ) {
         if( *name == '.' ) {
-            *p = name;
+            *sufdest = name;
         } else {
-            *p = NULL;
+            *sufdest = NULL;
         }
     }
 
@@ -321,13 +320,6 @@ void SetSufPath( const char *sufname, const char *path )
 }
 
 
-STATIC CREATOR *newCreator( void )
-/********************************/
-{
-    return( (CREATOR *)CallocSafe( sizeof( CREATOR ) ) );
-}
-
-
 STATIC char *getFullSufSuf( const SUFFIX *deps, const char *dep, const SUFFIX *targs, const char *targ )
 /******************************************************************************************************/
 {
@@ -415,7 +407,7 @@ char *AddCreator( const char *sufsuf )
         }
     }
     if( pslist == NULL ) {
-        new = newCreator();
+        new = (CREATOR *)CallocSafe( sizeof( CREATOR ) );
         new->suffix = src;
         new->slist = NULL;
         pslist = &new->slist;

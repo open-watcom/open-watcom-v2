@@ -739,8 +739,11 @@ STATIC RET_T tryImply( TARGET *targ, bool must )
 
     _splitpath2( targ->node.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
+    /*
+     * skip leading dot of extension
+     */
     p = pg.ext;
-    if( p != NULL && p[0] == '.' )
+    if( p != NULL && *p == '.' )
         p++;
     ret = imply( targ, pg.drive, pg.dir, pg.fname, p, must );
 
