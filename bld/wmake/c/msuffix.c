@@ -154,36 +154,39 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 #endif
 
 
-SUFFIX *FindSuffix( const char *name )
-/************************************/
+SUFFIX *FindSuffix( const char *sufname )
+/***************************************/
 {
-    return( findSuffixNode( name, NULL ) );
+    return( findSuffixNode( sufname, NULL ) );
 }
 
 
-bool SufExists( const char *name )    /* with . */
-/********************************/
+bool SufExists( const char *sufname )
+/************************************
+ * sufname with leading dot
+ */
 {
-    assert( name != NULL && name[0] == '.' );
+    assert( sufname != NULL && sufname[0] == '.' );
 
-    return( FindSuffix( name ) != NULL );
+    return( FindSuffix( sufname ) != NULL );
 }
 
 
-STATIC void AddFrontSuffix( char const *name )
-/*********************************************
- * pass name with leading .; adds name to suffix table and assigns id
- * retains use of name after call
+STATIC void AddFrontSuffix( char const *sufname )
+/************************************************
+ * pass sufname with leading dot
+ * adds sufname to suffix table and assigns id
+ * retains use of sufname after call
  * adds the suffix to the front of the extensions list by giving an id
  * that is decremented instead of incremented for microsoft option only
  */
 {
     SUFFIX  *new;
 
-    assert( (name + 1) != NULL && name[0] == '.' && !SufExists( name ) );
+    assert( sufname != NULL && sufname[0] == '.' && !SufExists( sufname ) );
 
     new = CallocSafe( sizeof( *new ) );
-    new->node.name = FixName( StrDupSafe( name + 1 ) );
+    new->node.name = FixName( StrDupSafe( sufname + 1 ) );
     new->id = prevId;
     --prevId;
 
@@ -197,17 +200,17 @@ bool SufBothExist( const char *sufsuf )   /* .src.dest */
  *  so no need for checking the target suffix if it exists
  */
 {
-    char const  *ptr;
+    char const  *sufdest;
 
     assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
 
-    if( findSuffixNode( sufsuf, &ptr ) == NULL ) {
+    if( findSuffixNode( sufsuf, &sufdest ) == NULL ) {
         return( false );
     }
 
-    if( FindSuffix( ptr ) == NULL ) {
+    if( FindSuffix( sufdest ) == NULL ) {
         if( Glob.compat_nmake ) {
-            AddFrontSuffix( ptr );
+            AddFrontSuffix( sufdest );
             return( true );
         } else {
             return( false );
@@ -220,20 +223,21 @@ bool SufBothExist( const char *sufsuf )   /* .src.dest */
 }
 
 
-void AddSuffix( const char *name )
-/*********************************
- * pass name with leading .; adds name to suffix table and assigns id
- * retains use of name after call
+void AddSuffix( const char *sufname )
+/************************************
+ * pass sufname with leading dot
+ * adds sufname to suffix table and assigns id
+ * retains use of sufname after call
  */
 {
     SUFFIX  *new;
 
-    assert( ( name != NULL && name[0] == '.' && !SufExists( name ) ) ||
-            ( name != NULL && name[0] == '.' && SufExists( name ) &&
+    assert( ( sufname != NULL && sufname[0] == '.' && !SufExists( sufname ) ) ||
+            ( sufname != NULL && sufname[0] == '.' && SufExists( sufname ) &&
             Glob.compat_nmake ) );
 
     new = CallocSafe( sizeof( *new ) );
-    new->node.name = FixName( StrDupSafe( name + 1 ) ); /* skip leading dot */
+    new->node.name = FixName( StrDupSafe( sufname + 1 ) ); /* skip leading dot */
     new->id = nextId;
     ++nextId;
 
@@ -285,15 +289,16 @@ STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
 }
 
 
-void SetSufPath( const char *name, const char *path )
-/***************************************************/
-/* name with . */
+void SetSufPath( const char *sufname, const char *path )
+/*******************************************************
+ * sufname with leading dot
+ */
 {
     SUFFIX      *suffix;
 
-    assert( name != NULL && name[0] == '.' );
+    assert( sufname != NULL && sufname[0] == '.' );
 
-    suffix = FindSuffix( name );
+    suffix = FindSuffix( sufname );
 
     assert( suffix != NULL );
 
