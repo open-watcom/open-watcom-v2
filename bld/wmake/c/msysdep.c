@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -450,7 +450,7 @@ char *GetEnvExt( const char *str )
     if( strcmp( str, BEGPATHNAME ) == 0 ) {
         if( ensure_loaded( ORD_DOS32QUERYEXTLIBPATH, (PFN *)&fnDosQueryExtLIBPATH ) ) {
             rc = os2BegLibPath;
-            if( os2BegLibPath[0] == '\0' ) {
+            if( os2BegLibPath[0] == NULLCHAR ) {
                 if( fnDosQueryExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) ) {
                     rc = NULL;
                 }
@@ -461,7 +461,7 @@ char *GetEnvExt( const char *str )
     if( strcmp( str, ENDPATHNAME ) == 0 ) {
         if( ensure_loaded( ORD_DOS32QUERYEXTLIBPATH, (PFN *)&fnDosQueryExtLIBPATH ) ) {
             rc = os2EndLibPath;
-            if( os2EndLibPath[0] == '\0' ) {
+            if( os2EndLibPath[0] == NULLCHAR ) {
                 if( fnDosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
                     rc = NULL;
                 }

@@ -213,17 +213,12 @@ bool SufBothExist( const char *sufsuf )   /* .src.dest */
     }
 
     if( findSuffixNode( sufdest, NULL ) == NULL ) {
-        if( Glob.compat_nmake ) {
-            AddFrontSuffix( sufdest );
-            return( true );
-        } else {
+        if( !Glob.compat_nmake ) {
             return( false );
         }
-
-    } else {
-        return( true );
+        AddFrontSuffix( sufdest );
     }
-
+    return( true );
 }
 
 
@@ -486,7 +481,7 @@ STATIC bool printSuf( void *node, void *ptr )
 
 
 void PrintSuffixes( void )
-/*******************************/
+/************************/
 {
     WalkHashTab( sufTab, printSuf, NULL );
 }

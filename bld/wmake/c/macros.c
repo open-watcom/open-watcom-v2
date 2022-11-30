@@ -224,10 +224,14 @@ STATIC void makeMacroName( char *buffer, const char *name )
     assert( IsMacroName( name ) );
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
-        /* copy string (case-sensitive) */
+        /*
+         * case sensitive name
+         */
         strcpy( buffer, name );
     } else {
-        /* convert string (upper-cased) */
+        /*
+         * upper-case name
+         */
         while( (*buffer = ctoupper( *name )) != NULLCHAR ) {
             ++buffer, ++name;
         }
@@ -255,7 +259,9 @@ STATIC MACRO *findMacro( const char *name )
 
 
 STATIC MACRO *removeMacro( const char *name )
-/*******************************************/
+/*********************************************
+ * returns: pointer to removed MACRO structure
+ */
 {
     case_sensitivity    caseSensitive;
 
@@ -411,7 +417,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
         return( cur->value );
     }
 
-    /* 
+    /*
      * If not defined as a macro then get it as a Environment variable
      */
     if( Glob.compat_nmake || Glob.compat_posix ) {
@@ -627,7 +633,7 @@ void UnDefMacro( const char *name )
 
 
 char *WrnGetMacroValue( const char *name )
-/***********************************************/
+/****************************************/
 {
     char    *p;
 
