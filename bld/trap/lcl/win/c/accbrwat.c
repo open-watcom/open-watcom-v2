@@ -160,8 +160,8 @@ trap_retval TRAP_CORE( Set_break )( void )
     brk = findBrkEntry();
     brk->old_opcode = place_breakpoint( &acc->break_addr );
     brk->addr = acc->break_addr;
-    brk->in_use = TRUE;
-    brk->hard_mode = TRUE;
+    brk->in_use = true;
+    brk->hard_mode = true;
 
     ret = GetOutPtr( 0 );
     ret->old = brk->old_opcode;
@@ -182,7 +182,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].addr.segment == acc->break_addr.segment &&
                         brkList[i].addr.offset == acc->break_addr.offset ) {
-            brkList[i].in_use = FALSE;
+            brkList[i].in_use = false;
             break;
         }
     }

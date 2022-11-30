@@ -193,11 +193,11 @@ static trap_elen runProg( bool single_step )
 trap_retval TRAP_CORE( Prog_go )( void )
 {
     Out(( OUT_RUN, "ReqProg_go" ));
-    return( runProg( FALSE ) );
+    return( runProg( false ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 {
     Out(( OUT_RUN, "ReqProg_step" ));
-    return( runProg( TRUE ) );
+    return( runProg( true ) );
 }

@@ -82,9 +82,9 @@ void SetInputLock( bool lock_status )
 char *InitDebugging( void )
 {
 
-    DebuggerState=ACTIVE;
+    DebuggerState = ACTIVE;
     if( CheckWin386Debug() == WGOD_VERSION ) {
-        WDebug386 = TRUE;
+        WDebug386 = true;
         UseHotKey( 1 );
     }
     fault_fn = MakeProcInstance_INTH( IntHandler, Instance );
@@ -151,7 +151,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
 
     DebuggerTask = GetCurrentTask();
 
@@ -226,7 +226,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = 0;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
 
     return( ver );
 }

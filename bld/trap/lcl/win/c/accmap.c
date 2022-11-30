@@ -163,7 +163,7 @@ void AddDebugeeModule( void )
     ModuleTop++;
     Out((OUT_MAP,"AddDebugeeModule - ModuleTop=%d",ModuleTop));
     moduleIDs[0] = DebugeeModule;
-    moduleIsDLL[0] = FALSE;
+    moduleIsDLL[0] = false;
     try32( DebugeeModule );
 
 } /* AddDebugeeModule */

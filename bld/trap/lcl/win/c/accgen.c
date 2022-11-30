@@ -59,7 +59,7 @@ static event_hook_fn    DebuggerHookRtn;
 static void __far __loadds DebuggerHookRtn( unsigned event, unsigned info )
 {
     if( event == WM_KEYDOWN ) {
-        HaveKey = TRUE;
+        HaveKey = true;
         _info = info;
     }
     set_carry();
@@ -74,7 +74,7 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->key = 0;
-    HaveKey = FALSE;
+    HaveKey = false;
     SetEventHook( DebuggerHookRtn );
     end_time = GetTickCount() + acc->wait*1000L;
     for( ;; ) {
