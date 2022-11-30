@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -566,7 +566,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
  * drive    is the drive of the target
  * dir      is the path of the target
  * fname    is the portion of targ's name without the extension
- * ext      is the extension of targ's name
+ * ext      is the extension of targ's name without leading dot
  * must     must we make this target?
  *
  * RET_SUCCESS - performed cmds,
@@ -574,7 +574,6 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
  * RET_ERROR - perform failed
  */
 {
-    SUFFIX      *srcsuf;
     CREATOR     *cur;
     SUFFIX      *cursuf;
     TARGET      *imptarg = NULL;
@@ -590,15 +589,15 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
     bool        UseDefaultSList;
     int         slistCount;
 
-    srcsuf = FindSuffix( ext );
-    if( srcsuf == NULL || srcsuf->creator == NULL ) {
+    cur = FindSuffixCreator( ext );
+    if( cur == NULL ) {
         PrtMsg( DBG | INF | IMP_ENV_M, targ->node.name, M_HAS_NO_IMPLICIT );
         return( RET_WARN );
     }
     PrtMsg( DBG | INF | IMP_ENV_M, targ->node.name, M_CHECKING_IMPLICIT );
     startcount = cListCount;
 
-    for( cur = srcsuf->creator; cur != NULL; cur = cur->next ) {
+    for( ; cur != NULL; cur = cur->next ) {
         cursuf = cur->suffix;
 
         /* allocate a buffer */
@@ -732,6 +731,7 @@ STATIC RET_T tryImply( TARGET *targ, bool must )
 {
     pgroup2     pg;
     RET_T       ret;
+    const char  *p;
 
     if( Glob.block ) {
         return( RET_WARN );
@@ -739,7 +739,10 @@ STATIC RET_T tryImply( TARGET *targ, bool must )
 
     _splitpath2( targ->node.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    ret = imply( targ, pg.drive, pg.dir, pg.fname, pg.ext, must );
+    p = pg.ext;
+    if( p != NULL && p[0] == '.' )
+        p++;
+    ret = imply( targ, pg.drive, pg.dir, pg.fname, p, must );
 
     return( ret );
 }

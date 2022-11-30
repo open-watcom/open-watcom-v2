@@ -118,12 +118,10 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
  *          *p will be the pointer to the first dot not in the first
  *          position of name.  ie:
  *          .src.dest   returns SUFFIX src, and p = ".dest"
- *          src.dest    same
- *          .src or src returns SUFFIX src, and p = NULL
+ *          .src        returns SUFFIX src, and p = NULL
  */
 {
     char        sufname[MAX_SUFFIX];
-    const char  *n;
     char        *d;
 
     assert( name != NULL );
@@ -133,15 +131,14 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
     }
 
     d = sufname;
-    n = name;
-    while( *n != NULLCHAR && *n != '.' ) {
-        *d++ = *n++;
+    while( *name != NULLCHAR && *name != '.' ) {
+        *d++ = *name++;
     }
     *d = NULLCHAR;
 
     if( p != NULL ) {
-        if( *n == '.' ) {
-            *p = n;
+        if( *name == '.' ) {
+            *p = name;
         } else {
             *p = NULL;
         }
@@ -154,10 +151,18 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 #endif
 
 
-SUFFIX *FindSuffix( const char *sufname )
-/***************************************/
+CREATOR *FindSuffixCreator( const char *sufname )
+/************************************************
+ * sufname without leading dot
+ */
 {
-    return( findSuffixNode( sufname, NULL ) );
+    SUFFIX  *suffix;
+
+    suffix = (SUFFIX *)FindHashNode( sufTab, sufname, FILENAMESENSITIVE );
+    if( suffix == NULL || suffix->creator == NULL ) {
+        return( NULL );
+    }
+    return( suffix->creator );
 }
 
 
@@ -168,7 +173,7 @@ bool SufExists( const char *sufname )
 {
     assert( sufname != NULL && sufname[0] == '.' );
 
-    return( FindSuffix( sufname ) != NULL );
+    return( findSuffixNode( sufname, NULL ) != NULL );
 }
 
 
@@ -208,7 +213,7 @@ bool SufBothExist( const char *sufsuf )   /* .src.dest */
         return( false );
     }
 
-    if( FindSuffix( sufdest ) == NULL ) {
+    if( findSuffixNode( sufdest, NULL ) == NULL ) {
         if( Glob.compat_nmake ) {
             AddFrontSuffix( sufdest );
             return( true );
@@ -298,7 +303,7 @@ void SetSufPath( const char *sufname, const char *path )
 
     assert( sufname != NULL && sufname[0] == '.' );
 
-    suffix = FindSuffix( sufname );
+    suffix = findSuffixNode( sufname, NULL );
 
     assert( suffix != NULL );
 
@@ -354,7 +359,7 @@ char *AddCreator( const char *sufsuf )
 {
     SUFFIX      *src;
     SUFFIX      *dest;
-    char const  *ptr;
+    char const  *sufdest;
     CREATOR     *new;
     CREATOR     **cur;
     SLIST       *slist;
@@ -366,8 +371,8 @@ char *AddCreator( const char *sufsuf )
 
     assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
 
-    src = findSuffixNode( sufsuf, &ptr );
-    dest = FindSuffix( ptr );
+    src = findSuffixNode( sufsuf, &sufdest );
+    dest = findSuffixNode( sufdest, NULL );
 
     assert( src != NULL && dest != NULL );
 
@@ -581,7 +586,7 @@ bool TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool trye
         return( false );
     }
 
-    suffix = FindSuffix( pg.ext );
+    suffix = findSuffixNode( pg.ext, NULL );
 
     ok = false;
     if( suffix == NULL || suffix->currpath == NULL ) {
