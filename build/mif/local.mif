@@ -245,7 +245,7 @@ incl_file_opts = -FI
 !if defined("__LINUX__") || defined("__BSD__") || defined("__HAIKU__") || defined("__OSX__")
 
 !ifdef __LINUX__
-!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm"
+!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm" || "$(bld_cpu)" == "a64"
 use_for_build = 1
 !endif
 !else ifdef __BSD__
@@ -272,12 +272,14 @@ common_cppflags_x64     = -D_M_X64
 common_cppflags_ppc     = -D__PPC__
 common_cppflags_mps     = -D__MIPS__ -Umips
 common_cppflags_arm     = -D_M_ARM
+common_cppflags_a64     = -D_M_ARM64
 
 common_cppflags_linux_386   = -D__LINUX_386__
 common_cppflags_linux_x64   = -D__LINUX_X64__
 common_cppflags_linux_ppc   =
 common_cppflags_linux_mps   =
 common_cppflags_linux_arm   = -D__LINUX_ARM__
+common_cppflags_linux_a64   = -D__LINUX_ARM64__
 
 common_cppflags_bsd_386     = -D__BSD_386__
 common_cppflags_bsd_x64     = -D__BSD_X64__
@@ -291,6 +293,7 @@ common_cppflags_osx_386     = -D__OSX_386__
 common_cppflags_osx_x64     = -D__OSX_X64__
 common_cppflags_osx_ppc     =
 common_cppflags_osx_arm     = -D__OSX_ARM__
+common_cppflags_osx_a64     = -D__OSX_ARM64__
 
 # common release/debug options
 common_flags_rel = -O -g
@@ -344,6 +347,7 @@ target_cflags_x64   =
 target_cflags_ppc   =
 target_cflags_mps   =
 target_cflags_arm   =
+target_cflags_a64   =
 
 # DLL/shared library file extension
 ext_lib_shared = .so
@@ -464,6 +468,7 @@ cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
 cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)_mps)
 cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
+cppflags_a64    = $(common_cppflags_a64) $(common_cppflags_$(host_os)_a64)
 
 c_flags   =
 cxx_flags = -std=c++98

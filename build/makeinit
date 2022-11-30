@@ -108,6 +108,10 @@ bld_os = linux
 bld_cpu = arm
 bld_os = linux
 bldonly_linux = 1
+!else ifdef __LINUXARM64__
+bld_cpu = a64
+bld_os = linux
+bldonly_linux = 1
 !else ifdef __BSD386__
 bld_cpu = 386
 bld_os = bsd
@@ -140,6 +144,10 @@ bld_cpu = ppc
 bld_os = osx
 !else ifdef __OSXARM__
 bld_cpu = arm
+bld_os = osx
+bldonly_osx = 1
+!else ifdef __OSXARM64__
+bld_cpu = a64
 bld_os = osx
 bldonly_osx = 1
 !endif
