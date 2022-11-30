@@ -46,7 +46,7 @@
 #include <os2.h>
 #include <os2dbg.h>
 #include <i86.h>
-#include "pmhook.h"//
+#include "pmhook.h"
 #include "trpimp.h"
 #include "softmode.h"
 
@@ -136,7 +136,7 @@ static void BeginSoftModeThread( thread_data *arglist )
     DosSemRequest( &BeginThreadSem, -1L );
     DosAllocSeg( STACK_SIZE + sizeof( thread_data ), (PSEL)&sel, 0 );
     stack = _MK_FP( sel, 0 );
-    BeginThreadArg = (thread_data*)stack;
+    BeginThreadArg = (thread_data *)stack;
     stack += sizeof( thread_data );
     *BeginThreadArg = *arglist;
     DosCreateThread( BeginThreadHelper, &tid, stack + STACK_SIZE );

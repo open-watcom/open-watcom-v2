@@ -166,5 +166,5 @@ typedef struct  {
 /* 94 */unsigned short  segv;
 } dos_debug;
 
-extern ULONG     MakeFlatPointer( PVOID ptr );
-extern int       IsFlatSeg( USHORT seg );
+extern ULONG    MakeFlatPointer( PVOID ptr );
+extern int      IsFlatSeg( USHORT seg );

@@ -134,6 +134,7 @@ void OutNum( ULONG i )
     }
     Out( ptr );
 }
+
 #endif
 
 static bool Is32BitSeg( unsigned seg )
@@ -148,7 +149,7 @@ static bool Is32BitSeg( unsigned seg )
 /*
  * RecordModHandle - save module handle for later reference
  */
-static void RecordModHandle( ULONG value )
+static void RecordModHandle( HMODULE value )
 {
     SEL         sel;
 
