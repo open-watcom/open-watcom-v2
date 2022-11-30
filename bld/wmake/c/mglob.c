@@ -111,8 +111,10 @@ const char FAR BuiltIns[] = {
         "__OSX386__=\n"
     #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
         "__OSXPPC__=\n"
-    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ ) || defined( __arm64__ )
+    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
         "__OSXARM__=\n"
+    #elif defined( _M_ARM64 ) || defined( __arm64__ ) || defined( __aarch64__ )
+        "__OSXARM64__=\n"
     #else
         #error Unknown CPU architecture
     #endif
@@ -128,8 +130,10 @@ const char FAR BuiltIns[] = {
         "__LINUXPPC__=\n"
     #elif defined( __MIPS__ ) || defined( __mips__ )
         "__LINUXMIPS__=\n"
-    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ ) || defined( __arm64__ )
+    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
         "__LINUXARM__=\n"
+    #elif defined( _M_ARM64 ) || defined( __arm64__ ) || defined( __aarch64__ )
+        "__LINUXARM64__=\n"
     #else
         #error Unknown CPU architecture
     #endif
