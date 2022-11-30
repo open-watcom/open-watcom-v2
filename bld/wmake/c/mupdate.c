@@ -731,7 +731,6 @@ STATIC RET_T tryImply( TARGET *targ, bool must )
 {
     pgroup2     pg;
     RET_T       ret;
-    const char  *p;
 
     if( Glob.block ) {
         return( RET_WARN );
@@ -742,10 +741,9 @@ STATIC RET_T tryImply( TARGET *targ, bool must )
     /*
      * skip leading dot of extension
      */
-    p = pg.ext;
-    if( p != NULL && *p == '.' )
-        p++;
-    ret = imply( targ, pg.drive, pg.dir, pg.fname, p, must );
+    if( pg.ext[0] == '.' )
+        pg.ext++;
+    ret = imply( targ, pg.drive, pg.dir, pg.fname, pg.ext, must );
 
     return( ret );
 }

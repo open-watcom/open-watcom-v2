@@ -232,6 +232,7 @@ void AddSuffix( const char *sufname )
  * pass sufname with leading dot
  * adds sufname to suffix table and assigns id
  * retains use of sufname after call
+ * in suffix table suffix name without leading dot is used
  */
 {
     SUFFIX  *new;
