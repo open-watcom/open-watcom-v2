@@ -55,7 +55,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x32
+#define PHH_MINOR               0x33
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__
@@ -82,6 +82,7 @@ enum {
 #define PHH_ARCHITECTURE_PPC    0x04
 #define PHH_ARCHITECTURE_X64    0x05
 #define PHH_ARCHITECTURE_ARM    0x06
+#define PHH_ARCHITECTURE_ARM64  0x07
 
 #if _CPU == 386
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_386
@@ -112,6 +113,8 @@ enum {
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_AXP
 #elif defined( _M_ARM )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM
+#elif defined( _M_ARM64 )
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM64
 #else
 #error missing host architecture check
 #endif
