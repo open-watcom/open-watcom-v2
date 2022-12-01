@@ -18,6 +18,7 @@ name_model_386 = m$(memory_model_386)_r
 !endif
 
 name_model_arm = _s
+name_model_a64 = _s
 name_model_axp = _s
 name_model_ppc = _s
 name_model_mps = _s
@@ -48,14 +49,14 @@ wres_dir_nt386      = nt386/$(name_model_386)
 wres_dir_ntaxp      = ntaxp/$(name_model_axp)
 
 wres_dir_linuxarm   = linuxarm/$(name_model_arm)
-wres_dir_linuxa64   = linuxa64/$(name_model_arm)
+wres_dir_linuxa64   = linuxa64/$(name_model_a64)
 wres_dir_linuxmps   = linuxmps/$(name_model_mps)
 wres_dir_linuxppc   = linuxppc/$(name_model_ppc)
 wres_dir_linuxx64   = linuxx64/$(name_model_x64)
 wres_dir_ntx64      = ntx64/$(name_model_x64)
 wres_dir_osxx64     = osxx64/$(name_model_x64)
 wres_dir_osxarm     = osxarm/$(name_model_arm)
-wres_dir_osxa64     = osxa64/$(name_model_arm)
+wres_dir_osxa64     = osxa64/$(name_model_a64)
 
 !ifdef bootstrap
 wres_lib = $(wres_dir)/$(objs_subdir)/wres.lib

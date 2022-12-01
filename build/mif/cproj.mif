@@ -31,6 +31,17 @@ skip_build: .SYMBOLIC
 !else ifndef bootstrap
 !undef __WATCOM_TOOLS__
 !endif
+# use native tools for a64 cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!else ifeq host_cpu a64
+!ifneq bld_cpu a64
+skip_build: .SYMBOLIC
+!else ifndef bldonly_$(host_os)
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
 !endif
 
 ###################################
