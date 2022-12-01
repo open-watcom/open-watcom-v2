@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,6 +167,7 @@ typedef unsigned_8      sbit;
 #define PR_SH4                  0
 #define PR_ARM                  0
 #define PR_X64                  0
+#define PR_ARM64                0
 
 #if defined( _M_I86 )
     #undef  PR_i86
@@ -242,6 +243,9 @@ typedef unsigned_8      sbit;
 #elif defined( _M_ARM ) || defined( _ARM_ ) || defined( __ARM__ ) || defined( __arm__ )
     #undef PR_ARM
     #define PR_ARM              1
+#elif defined( _M_ARM64 ) || defined( __arm64__ ) || defined( __aarch64__ )
+    #undef PR_ARM64
+    #define PR_ARM64            1
 #elif defined( __hppa ) || defined( __hppa__ )
     #undef PR_HPPA
     #define PR_HPPA             1
@@ -362,6 +366,7 @@ typedef unsigned_8      sbit;
 ||    PR_SH3    \
 ||    PR_SH4    \
 ||    PR_ARM    \
+||    PR_ARM64  \
 ||    PR_X64    \
 ||    defined( UNIX )
     #undef  CS_ASCII_PLUS
