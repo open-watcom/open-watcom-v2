@@ -24,8 +24,10 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wtouch.exe     "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wtouch.exe  "<OWRELROOT>/binl64/wtouch"
     <CCCMD> linuxarm/wtouch.exe  "<OWRELROOT>/arml/wtouch"
+    <CCCMD> linuxa64/wtouch.exe  "<OWRELROOT>/arml64/wtouch"
     <CCCMD> osxx64/wtouch.exe    "<OWRELROOT>/bino64/wtouch"
     <CCCMD> osxarm/wtouch.exe    "<OWRELROOT>/armo/wtouch"
+    <CCCMD> osxa64/wtouch.exe    "<OWRELROOT>/armo64/wtouch"
 
 [ BLOCK . . ]
 

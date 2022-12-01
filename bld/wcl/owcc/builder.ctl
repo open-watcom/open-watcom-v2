@@ -49,10 +49,14 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/owcc.exe    "<OWRELROOT>/binl64/owcc"
     <CCCMD> linuxarm/specs.owc   "<OWRELROOT>/arml/"
     <CCCMD> linuxarm/owcc.exe    "<OWRELROOT>/arml/owcc"
+    <CCCMD> linuxa64/specs.owc   "<OWRELROOT>/arml64/"
+    <CCCMD> linuxa64/owcc.exe    "<OWRELROOT>/arml64/owcc"
     <CCCMD> osxx64/specs.owc     "<OWRELROOT>/bino64/"
     <CCCMD> osxx64/owcc.exe      "<OWRELROOT>/bino64/owcc"
     <CCCMD> osxarm/specs.owc     "<OWRELROOT>/armo/"
     <CCCMD> osxarm/owcc.exe      "<OWRELROOT>/armo/owcc"
+    <CCCMD> osxa64/specs.owc     "<OWRELROOT>/armo64/"
+    <CCCMD> osxa64/owcc.exe      "<OWRELROOT>/armo64/owcc"
 
 [ BLOCK . . ]
 

@@ -61,10 +61,14 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/wppi8601.int   "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/wpp.exe        "<OWRELROOT>/arml/wpp"
     <CCCMD> linuxarm/wppi8601.int   "<OWRELROOT>/arml/"
+    <CCCMD> linuxa64/wpp.exe        "<OWRELROOT>/arml64/wpp"
+    <CCCMD> linuxa64/wppi8601.int   "<OWRELROOT>/arml64/"
     <CCCMD> osxx64/wpp.exe          "<OWRELROOT>/bino64/wpp"
     <CCCMD> osxx64/wppi8601.int     "<OWRELROOT>/bino64/"
     <CCCMD> osxarm/wpp.exe          "<OWRELROOT>/armo/wpp"
     <CCCMD> osxarm/wppi8601.int     "<OWRELROOT>/armo/"
+    <CCCMD> osxa64/wpp.exe          "<OWRELROOT>/armo64/wpp"
+    <CCCMD> osxa64/wppi8601.int     "<OWRELROOT>/armo64/"
 
 [ BLOCK . . ]
 

@@ -61,10 +61,14 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/<OWOBJDIR>/wccaxp01.int    "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/<OWOBJDIR>/wccaxp.exe      "<OWRELROOT>/arml/wccaxp"
     <CCCMD> linuxarm/<OWOBJDIR>/wccaxp01.int    "<OWRELROOT>/arml/"
+    <CCCMD> linuxa64/<OWOBJDIR>/wccaxp.exe      "<OWRELROOT>/arml64/wccaxp"
+    <CCCMD> linuxa64/<OWOBJDIR>/wccaxp01.int    "<OWRELROOT>/arml64/"
     <CCCMD> osxx64/<OWOBJDIR>/wccaxp.exe        "<OWRELROOT>/bino64/wccaxp"
     <CCCMD> osxx64/<OWOBJDIR>/wccaxp01.int      "<OWRELROOT>/bino64/"
     <CCCMD> osxarm/<OWOBJDIR>/wccaxp.exe        "<OWRELROOT>/armo/wccaxp"
     <CCCMD> osxarm/<OWOBJDIR>/wccaxp01.int      "<OWRELROOT>/armo/"
+    <CCCMD> osxa64/<OWOBJDIR>/wccaxp.exe        "<OWRELROOT>/armo64/wccaxp"
+    <CCCMD> osxa64/<OWOBJDIR>/wccaxp01.int      "<OWRELROOT>/armo64/"
 
 [ BLOCK . . ]
 

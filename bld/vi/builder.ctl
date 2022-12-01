@@ -66,14 +66,20 @@ set PROJDIR=<CWD>
     <CCCMD> ctags/linuxx64/ctags.exe  "<OWRELROOT>/binl64/ctags"
     <CCCMD> bind/linuxx64/edbind.exe  "<OWRELROOT>/binl64/edbind"
     <CCCMD> linuxarm/vi.exe           "<OWRELROOT>/arml/vi"
+    <CCCMD> linuxa64/vi.exe           "<OWRELROOT>/arml64/vi"
     <CCCMD> ctags/linuxarm/ctags.exe  "<OWRELROOT>/arml/ctags"
     <CCCMD> bind/linuxarm/edbind.exe  "<OWRELROOT>/arml/edbind"
+    <CCCMD> ctags/linuxa64/ctags.exe  "<OWRELROOT>/arml64/ctags"
+    <CCCMD> bind/linuxa64/edbind.exe  "<OWRELROOT>/arml64/edbind"
     <CCCMD> osxx64/vi.exe             "<OWRELROOT>/bino64/vi"
     <CCCMD> ctags/osxx64/ctags.exe    "<OWRELROOT>/bino64/ctags"
     <CCCMD> bind/osxx64/edbind.exe    "<OWRELROOT>/bino64/edbind"
     <CCCMD> osxarm/vi.exe             "<OWRELROOT>/armo/vi"
+    <CCCMD> osxa64/vi.exe             "<OWRELROOT>/armo64/vi"
     <CCCMD> ctags/osxarm/ctags.exe    "<OWRELROOT>/armo/ctags"
     <CCCMD> bind/osxarm/edbind.exe    "<OWRELROOT>/armo/edbind"
+    <CCCMD> ctags/osxa64/ctags.exe    "<OWRELROOT>/armo64/ctags"
+    <CCCMD> bind/osxa64/edbind.exe    "<OWRELROOT>/armo64/edbind"
 
 [ BLOCK . . ]
 

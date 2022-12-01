@@ -47,8 +47,10 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wasm.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wasm.exe   "<OWRELROOT>/binl64/wasm"
     <CCCMD> linuxarm/wasm.exe   "<OWRELROOT>/arml/wasm"
+    <CCCMD> linuxa64/wasm.exe   "<OWRELROOT>/arml64/wasm"
     <CCCMD> osxx64/wasm.exe     "<OWRELROOT>/bino64/wasm"
     <CCCMD> osxarm/wasm.exe     "<OWRELROOT>/armo/wasm"
+    <CCCMD> osxa64/wasm.exe     "<OWRELROOT>/armo64/wasm"
 
 [ BLOCK . . ]
 

@@ -32,8 +32,10 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wmk.exe     "<OWRELROOT>/binnt64/wmake.exe"
     <CCCMD> linuxx64/wmk.exe  "<OWRELROOT>/binl64/wmake"
     <CCCMD> linuxarm/wmk.exe  "<OWRELROOT>/arml/wmake"
+    <CCCMD> linuxa64/wmk.exe  "<OWRELROOT>/arml64/wmake"
     <CCCMD> osxx64/wmk.exe    "<OWRELROOT>/bino64/wmake"
     <CCCMD> osxarm/wmk.exe    "<OWRELROOT>/armo/wmake"
+    <CCCMD> osxa64/wmk.exe    "<OWRELROOT>/armo64/wmake"
 
 [ BLOCK . . ]
 

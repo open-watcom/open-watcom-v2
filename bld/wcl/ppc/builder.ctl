@@ -37,8 +37,10 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wclppc.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wclppc.exe   "<OWRELROOT>/binl64/wclppc"
     <CCCMD> linuxarm/wclppc.exe   "<OWRELROOT>/arml/wclppc"
+    <CCCMD> linuxa64/wclppc.exe   "<OWRELROOT>/arml64/wclppc"
     <CCCMD> osxx64/wclppc.exe     "<OWRELROOT>/bino64/wclppc"
     <CCCMD> osxarm/wclppc.exe     "<OWRELROOT>/armo/wclppc"
+    <CCCMD> osxa64/wclppc.exe     "<OWRELROOT>/armo64/wclppc"
 
 [ BLOCK . . ]
 

@@ -92,6 +92,11 @@ set PROJDIR=<CWD>
 #    <CCCMD> fcenable/linuxarm/fcenable.exe  "<OWRELROOT>/arml/fcenable"
 #    <CCCMD> exe2bin/linuxarm/exe2bin.exe    "<OWRELROOT>/arml/exe2bin"
     <CCCMD> lnk/linuxarm/wlink.lnk          "<OWRELROOT>/arml/"
+    <CCCMD> linuxa64/wlink.exe              "<OWRELROOT>/arml64/wlink"
+#    <CCCMD> ms2wlink/linuxa64/ms2wlink.exe  "<OWRELROOT>/arml64/ms2wlink"
+#    <CCCMD> fcenable/linuxa64/fcenable.exe  "<OWRELROOT>/arml64/fcenable"
+#    <CCCMD> exe2bin/linuxa64/exe2bin.exe    "<OWRELROOT>/arml64/exe2bin"
+    <CCCMD> lnk/linuxa64/wlink.lnk          "<OWRELROOT>/arml64/"
 
     <CCCMD> rdos386/wlink.exe               "<OWRELROOT>/rdos/"
     <CCCMD> rdos386/wlink.sym               "<OWRELROOT>/rdos/"
@@ -108,6 +113,11 @@ set PROJDIR=<CWD>
 #    <CCCMD> fcenable/osxarm/fcenable.exe    "<OWRELROOT>/armo/fcenable"
 #    <CCCMD> exe2bin/osxarm/exe2bin.exe      "<OWRELROOT>/armo/exe2bin"
     <CCCMD> lnk/osxarm/wlink.lnk            "<OWRELROOT>/armo/"
+    <CCCMD> osxa64/wlink.exe                "<OWRELROOT>/armo64/wlink"
+#    <CCCMD> ms2wlink/osxa64/ms2wlink.exe    "<OWRELROOT>/armo64/ms2wlink"
+#    <CCCMD> fcenable/osxa64/fcenable.exe    "<OWRELROOT>/armo64/fcenable"
+#    <CCCMD> exe2bin/osxa64/exe2bin.exe      "<OWRELROOT>/armo64/exe2bin"
+    <CCCMD> lnk/osxa64/wlink.lnk            "<OWRELROOT>/armo64/"
 
 [ BLOCK . . ]
 
