@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,22 +61,15 @@ VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
     VSCREEN             *vs;
 
     vs = uimalloc( sizeof( VSCREEN ) );
-    if( vs == NULL ) {
-        return( vs );
+    if( vs != NULL ) {
+        uiscreeninit( vs, area, flags );
+        if( title != NULL ) {
+            vs->title = uimalloc( strlen( title ) + 1 );
+            strcpy( vs->title, title );
+            vs->dynamic_title = true;
+        }
+        uivopen( vs );
     }
-    uiscreeninit( vs, area, flags );
-    if( title != NULL ) {
-        unsigned    len;
-        char        *str;
-
-        len = strlen( title );
-        str = uimalloc( len + 1 );
-        memcpy( str, title, len );
-        str[len] = '\0';
-        vs->title = str;
-        vs->dynamic_title = true;
-    }
-    uivopen( vs );
     return( vs );
 }
 
