@@ -53,10 +53,10 @@ static void     finiSourceErrFile( const char * );
 
 static void freeSource( sfile *sf )
 {
-    sfile   *curr, *next;
+    sfile   *curr;
 
-    for( curr = sf; curr != NULL; curr = next ) {
-        next = curr->next;
+    while( (curr = sf) != NULL ) {
+        sf = curr->next;
         _MemFreeArray( curr->data );
         _MemFreeArray( curr->arg1 );
         _MemFreeArray( curr->arg2 );
@@ -617,13 +617,13 @@ static void addResidentScript( const char *fn, sfile *sf, labels *lab )
  */
 void DeleteResidentScripts( void )
 {
-    resident    *tmp, *tmp_next;
+    resident    *tmp;
 
-    for( tmp = resHead; tmp != NULL; tmp = tmp_next ) {
-        tmp_next = tmp->next;
+    while( (tmp = resHead) != NULL ) {
+        resHead = tmp->next;
         freeSource( tmp->sf );
         _MemFreePtrArray( tmp->lab.name, tmp->lab.cnt, MemFree );
-        _MemFreePtrArray( tmp->lab.pos, tmp->lab.cnt, MemFree );
+        _MemFreePtrArray( tmp->lab.pos, 0, NULL );
         _MemFreeArray( tmp->fn );
         MemFree( tmp );
     }
