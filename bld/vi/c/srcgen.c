@@ -127,7 +127,7 @@ void GenJmpIf( branch_cond when, const char *where )
 } /* GenJmpIf */
 
 /*
- * GenJmp - stick a jump before current statment
+ * GenJmp - stick a jump before current statement
  */
 void GenJmp( const char *where )
 {
@@ -138,7 +138,7 @@ void GenJmp( const char *where )
 } /* GenJmp */
 
 /*
- * GenLabel1 - stick a label before current statment
+ * GenLabel1 - stick a label before current statement
  */
 static const char *GenLabel1( const char *where )
 {
@@ -154,7 +154,7 @@ static const char *GenLabel1( const char *where )
 } /* GenLabel */
 
 /*
- * GenLabel - stick a label before current statment
+ * GenLabel - stick a label before current statement
  */
 void GenLabel( char *where )
 {
