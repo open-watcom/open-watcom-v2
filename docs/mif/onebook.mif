@@ -87,6 +87,12 @@ hc_pdf_path = $(%OWGHOSTSCRIPTPATH)
 !ifdef %OWCHMCMD
 hc_chmcmd = $(%OWCHMCMD)
 !endif
+!ifeq bld_os linux
+!ifdef %OWUSEWINE
+hc_nt = hcrtf
+hc_hh = hhc
+!endif
+!endif
 !endif
 
 hcdos   = hcdos

@@ -69,6 +69,16 @@ export OWDISTRBUILD=0
 
 # export OWDOSBOX=dosbox
 
+# Windows documentation build process requires Microsoft Help Compilers which can
+# work only on Windows host therefore by default this build is disabled on non-Windows
+# hosts
+# On Linux is possible to use WINE (Windows emulation) to run these compilers
+# This is experimental stuff to enable build Windows documentation on Linux host
+# it requires fully functional WINE installation including Miscrosoft Help Compilers
+# To enable this stuff uncomment following line
+
+# export OWUSEWINE=1
+
 ##################################
 
 # Subdirectory to be used for building OW build tools
