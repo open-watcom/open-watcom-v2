@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 #define Info8                   DW_Info8
 #define Info16                  DW_Info16
 #define Info32                  DW_Info32
-#define InfoLEB128              DW_InfoLEB128
+#define InfoSLEB128             DW_InfoSLEB128
 #define InfoULEB128             DW_InfoULEB128
 #define InfoBytes               DW_InfoBytes
 #define InfoString              DW_InfoString
@@ -56,7 +57,7 @@ extern void         InfoReloc( dw_client, uint );
 extern void         Info8( dw_client, uint_8 );
 extern void         Info16( dw_client, uint_16 );
 extern void         Info32( dw_client, uint_32 );
-extern void         InfoLEB128( dw_client, dw_sconst );
+extern void         InfoSLEB128( dw_client, dw_sconst );
 extern void         InfoULEB128( dw_client, dw_uconst );
 extern void         InfoBytes( dw_client, const void *, size_t );
 extern void         InfoString( dw_client, const char * );

@@ -62,9 +62,9 @@ void Info32( dw_client cli, uint_32 value )
 }
 
 
-void InfoLEB128( dw_client cli, dw_sconst value )
+void InfoSLEB128( dw_client cli, dw_sconst value )
 {
-    CLIWriteLEB128( cli, DW_DEBUG_INFO, value );
+    CLIWriteSLEB128( cli, DW_DEBUG_INFO, value );
 }
 
 
