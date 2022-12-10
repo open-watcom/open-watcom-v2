@@ -105,7 +105,7 @@ hw_reg_set   PushRegs[] = {
 
 
 static  bool    ScanInstructions( void )
-/**********************************/
+/**************************************/
 {
     block       *blk;
     instruction     *ins;
@@ -195,9 +195,9 @@ static  void    ScanForFDOps( void )
 
 
 #if _TARGET & _TARG_80386
-static  block *ScanForLabelReturn( block *blk ) {
-/***********************************************/
-
+static  block *ScanForLabelReturn( block *blk )
+/*********************************************/
+{
     block       *son;
     block_num   i;
 
@@ -220,15 +220,14 @@ static  block *ScanForLabelReturn( block *blk ) {
 
 
 #if _TARGET & _TARG_80386
-static  bool    ScanLabelCalls( void ) {
-/*********************************
-
-    Make sure that all blocks that are called are only called
-    one level deep. Mark output edges of all such blocks as
-    DOWN_ONE_CALL. This is so we can adjust our x[esp] offsets
-    accordingly.
-*/
-
+static  bool    ScanLabelCalls( void )
+/*************************************
+ * Make sure that all blocks that are called are only called
+ * one level deep. Mark output edges of all such blocks as
+ * DOWN_ONE_CALL. This is so we can adjust our x[esp] offsets
+ * accordingly.
+ */
+{
     block   *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -243,9 +242,9 @@ static  bool    ScanLabelCalls( void ) {
 #endif
 
 
-static  void    AdjustPushLocals( void ) {
-/**********************************/
-
+static  void    AdjustPushLocals( void )
+/**************************************/
+{
     instruction *ins;
 
     for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -258,9 +257,9 @@ static  void    AdjustPushLocals( void ) {
     }
 }
 
-static  bool    NeedBPProlog( void ) {
-/******************************/
-
+static  bool    NeedBPProlog( void )
+/**********************************/
+{
     if( CurrProc->parms.size != 0 )
         return( true );
     if( CurrProc->locals.size != 0 )
@@ -284,9 +283,9 @@ static  bool    NeedBPProlog( void ) {
 }
 
 
-static void FindIfExported( void ) {
-/****************************/
-
+static void FindIfExported( void )
+/********************************/
+{
     cg_sym_handle sym;
 
     sym = AskForLblSym( CurrProc->label );
@@ -299,15 +298,15 @@ static void FindIfExported( void ) {
 
 
 static  bool    NeedStackCheck( void )
-/******************************/
+/************************************/
 {
     return( FEStackChk( AskForLblSym( CurrProc->label ) ) != 0 );
 }
 
 
-static void DoStackCheck( void ) {
-/**************************/
-
+static void DoStackCheck( void )
+/******************************/
+{
     if( CurrProc->prolog_state & ( GENERATE_THUNK_PROLOG | GENERATE_RDOSDEV_PROLOG ) )
         return;
 #if _TARGET & _TARG_80386
@@ -402,6 +401,7 @@ static  void    EpilogHook( void )
 
 
 static  void    DoLoadDS( void )
+/******************************/
 {
 #if _TARGET & _TARG_80386
     if( _IsntTargetModel( LOAD_DS_DIRECTLY ) ) {
@@ -492,8 +492,8 @@ static  void    AllocStack( void )
 
 
 static  int PushAll( void )
-/*************************/
-/* Save all registers and establish somewhat sane environment.
+/**************************
+ * Save all registers and establish somewhat sane environment.
  * Used for __interrupt routines only.
  */
 {
@@ -535,9 +535,9 @@ static  int PushAll( void )
 }
 
 
-static  void    PopAll( void ) {
-/************************/
-
+static  void    PopAll( void )
+/****************************/
+{
     if( CurrProc->locals.size != 0 ) {
         GenRegMove( HW_xBP, HW_xSP );
     }
@@ -589,9 +589,9 @@ static  void    DoEnter( level_depth level )
 }
 
 
-static  void    Enter( void ) {
-/***********************/
-
+static  void    Enter( void )
+/***************************/
+{
     level_depth lex_level;
     int         i;
 
@@ -632,9 +632,9 @@ static  void    Enter( void ) {
 }
 
 
-static  void    CalcUsedRegs( void ) {
-/******************************/
-
+static  void    CalcUsedRegs( void )
+/**********************************/
+{
     block   *blk;
     instruction *ins;
     name    *result;
@@ -705,8 +705,8 @@ static  void        Pop( hw_reg_set to_pop )
 
 static void    GenLeaSP( int offset )
 /************************************
-    LEA         [e]sp,[[e]bp+offset]
-*/
+ * LEA         [e]sp,[[e]bp+offset]
+ */
 {
     _Code;
     LayOpword( M_LEA );

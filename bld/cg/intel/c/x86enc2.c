@@ -66,62 +66,66 @@ static  void            Pushf(void);
 
 static byte UCondTable[] = {
 /***************************
-    the 8086 code for an unsigned jmp
-*/
-        5,              /* OP_BIT_TEST_TRUE */
-        4,              /* OP_BIT_TEST_FALSE */
-        4,              /* OP_CMP_EQUAL */
-        5,              /* OP_CMP_NOT_EQUAL */
-        7,              /* OP_CMP_GREATER */
-        6,              /* OP_CMP_LESS_EQUAL */
-        2,              /* OP_CMP_LESS */
-        3 };            /* OP_CMP_GREATER_EQUAL */
+ * the 8086 code for an unsigned jmp
+ */
+    5,              /* OP_BIT_TEST_TRUE */
+    4,              /* OP_BIT_TEST_FALSE */
+    4,              /* OP_CMP_EQUAL */
+    5,              /* OP_CMP_NOT_EQUAL */
+    7,              /* OP_CMP_GREATER */
+    6,              /* OP_CMP_LESS_EQUAL */
+    2,              /* OP_CMP_LESS */
+    3               /* OP_CMP_GREATER_EQUAL */
+};
 
 static byte SCondTable[] = {
 /***************************
-    the 8086 code for a signed jmp
-*/
-        5,              /* OP_BIT_TEST_TRUE */
-        4,              /* OP_BIT_TEST_FALSE */
-        4,              /* OP_CMP_EQUAL */
-        5,              /* OP_CMP_NOT_EQUAL */
-        15,             /* OP_CMP_GREATER */
-        14,             /* OP_CMP_LESS_EQUAL */
-        12,             /* OP_CMP_LESS */
-        13 };           /* OP_CMP_GREATER_EQUAL */
+ * the 8086 code for a signed jmp
+ */
+    5,              /* OP_BIT_TEST_TRUE */
+    4,              /* OP_BIT_TEST_FALSE */
+    4,              /* OP_CMP_EQUAL */
+    5,              /* OP_CMP_NOT_EQUAL */
+    15,             /* OP_CMP_GREATER */
+    14,             /* OP_CMP_LESS_EQUAL */
+    12,             /* OP_CMP_LESS */
+    13              /* OP_CMP_GREATER_EQUAL */
+};
 
 static byte rev_condition[] = {
-/************************
-    reverse the sense of an 8086 jmp (ie: ja -> jbe)
-*/
-        1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14 };        /* i.e. XOR 1*/
+/******************************
+ * reverse the sense of an 8086 jmp (ie: ja -> jbe)
+ * i.e. XOR 1
+ */
+    1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14
+};
 
 typedef enum {
-        UNSIGNED,               /* always an unsigned jump */
-        SIGNED_86,              /* signed if 8086 instruction, else unsigned */
-        SIGNED_87,              /* signed if 8087 instruction, else unsigned */
-        SIGNED_BOTH             /* always signed */
+    UNSIGNED,               /* always an unsigned jump */
+    SIGNED_86,              /* signed if 8086 instruction, else unsigned */
+    SIGNED_87,              /* signed if 8087 instruction, else unsigned */
+    SIGNED_BOTH             /* always signed */
 } issigned;
 
 static issigned signed_type[] = {
 /********************************
-    what kind of a jump does the instruction need following it
-*/
-        UNSIGNED,       /* U1*/
-        SIGNED_BOTH,    /* I1*/
-        UNSIGNED,       /* U2*/
-        SIGNED_BOTH,    /* I2*/
-        UNSIGNED,       /* U4*/
-        SIGNED_BOTH,    /* I4*/
-        UNSIGNED,       /* U8*/
-        SIGNED_BOTH,    /* I8*/
-        UNSIGNED,       /* CP*/
-        UNSIGNED,       /* PT*/
-        SIGNED_86,      /* FS*/
-        SIGNED_86,      /* FD*/
-        SIGNED_86,      /* FL*/
-        UNSIGNED };     /* XX*/
-
+ * what kind of a jump does the instruction need following it
+ */
+    UNSIGNED,       /* U1*/
+    SIGNED_BOTH,    /* I1*/
+    UNSIGNED,       /* U2*/
+    SIGNED_BOTH,    /* I2*/
+    UNSIGNED,       /* U4*/
+    SIGNED_BOTH,    /* I4*/
+    UNSIGNED,       /* U8*/
+    SIGNED_BOTH,    /* I8*/
+    UNSIGNED,       /* CP*/
+    UNSIGNED,       /* PT*/
+    SIGNED_86,      /* FS*/
+    SIGNED_86,      /* FD*/
+    SIGNED_86,      /* FL*/
+    UNSIGNED        /* XX*/
+};
 
 unsigned DepthAlign( unsigned depth )
 /***********************************/
@@ -155,11 +159,11 @@ unsigned DepthAlign( unsigned depth )
     return( AlignArray[depth + 1] );
 }
 
-byte    CondCode( instruction *cond ) {
-/**************************************
-    Return the condition code number for the encoding, associated with "cond"
-*/
-
+byte    CondCode( instruction *cond )
+/************************************
+ * Return the condition code number for the encoding, associated with "cond"
+ */
+{
     issigned            is_signed;
 
     if( _FPULevel( FPU_87 ) ) {
@@ -174,11 +178,11 @@ byte    CondCode( instruction *cond ) {
     }
 }
 
-void    GenSetCC( instruction *cond ) {
-/**************************************
-    given a conditional "cond", generate the correct setxx instruction
-*/
-
+void    GenSetCC( instruction *cond )
+/************************************
+ * given a conditional "cond", generate the correct setxx instruction
+ */
+{
     _Code;
     LayOpword( M_SETCC | CondCode( cond ) );
     if( cond->result->n.class == N_REGISTER ) {
@@ -190,18 +194,18 @@ void    GenSetCC( instruction *cond ) {
     _Emit;
 }
 
-byte    ReverseCondition( byte cond ) {
-/**************************************
-    reverse the sense of a conditional jump (already encoded)
-*/
-
+byte    ReverseCondition( byte cond )
+/************************************
+ * reverse the sense of a conditional jump (already encoded)
+ */
+{
     return( rev_condition[cond] );
 }
 
 void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
 /********************************************************************
-    call routine "lbl".
-*/
+ * call routine "lbl".
+ */
 {
     oc_class    occlass;
     obj_length  len;
@@ -228,9 +232,9 @@ void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
 
 static  void    CodeSequence( const byte *p, byte_seq_len len )
 /**************************************************************
-    Dump an inline sequence, taking into account the floating fixups and
-    the "seg foo", "offset foo" sequences.
-*/
+ * Dump an inline sequence, taking into account the floating fixups and
+ * the "seg foo", "offset foo" sequences.
+ */
 {
     bool        first;
     const byte  *endp;
@@ -324,11 +328,11 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
 }
 
 
-static  void    GenNoReturn( void ) {
-/************************************
-    Generate a noreturn instruction (pseudo instruction)
-*/
-
+static  void    GenNoReturn( void )
+/**********************************
+ * Generate a noreturn instruction (pseudo instruction)
+ */
+{
     any_oc      oc;
 
     oc.oc_entry.hdr.class = OC_NORET;
@@ -337,11 +341,11 @@ static  void    GenNoReturn( void ) {
     InputOC( &oc );
 }
 
-void    GenCall( instruction *ins ) {
-/************************************
-    Generate a call for "ins". (eg: call foo, or call far ptr foo)
-*/
-
+void    GenCall( instruction *ins )
+/**********************************
+ * Generate a call for "ins". (eg: call foo, or call far ptr foo)
+ */
+{
     name                *op;
     cg_sym_handle       sym;
     bool                imp;
@@ -379,7 +383,9 @@ void    GenCall( instruction *ins ) {
             lbl = FEBack( sym )->lbl;
             imp = ( (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0 );
         } else {
-            // handles mismatch Fix it!
+            /*
+             * handles mismatch Fix it!
+             */
             lbl = (label_handle)sym;
             imp = true;
         }
@@ -388,11 +394,11 @@ void    GenCall( instruction *ins ) {
 }
 
 
-void    GenICall( instruction *ins ) {
-/*************************************
-    Generate an indirect call for "ins" (eg: call dword ptr [eax])
-*/
-
+void    GenICall( instruction *ins )
+/***********************************
+ * Generate an indirect call for "ins" (eg: call dword ptr [eax])
+ */
+{
     oc_class    entry;
     gen_opcode  opcode;
 
@@ -423,9 +429,9 @@ void    GenICall( instruction *ins ) {
 
 
 void    GenRCall( instruction *ins )
-/*****************************************
-    generate a call to a register (eg: call eax)
-*/
+/***********************************
+ * generate a call to a register (eg: call eax)
+ */
 {
     name                *op;
 
@@ -440,9 +446,9 @@ void    GenRCall( instruction *ins )
 }
 
 
-static  void    Pushf( void ) {
-/***********************/
-
+static  void    Pushf( void )
+/***************************/
+{
     LayOpbyte( 0x9c ); /* PUSHF*/
     _Emit;
     _Code;
@@ -450,10 +456,10 @@ static  void    Pushf( void ) {
 
 
 void    GenSelEntry( bool starts )
-/*******************************************
-    dump a queue that a select table is starting/ending ("starts") into
-    the code segment queue.
-*/
+/*********************************
+ * dump a queue that a select table is starting/ending ("starts") into
+ * the code segment queue.
+ */
 {
     any_oc      oc;
 
@@ -466,9 +472,9 @@ void    GenSelEntry( bool starts )
 
 
 void    Gen1ByteValue( byte value )
-/****************************************
-    drop an 8 bit integer into the queue.
-*/
+/**********************************
+ * drop an 8 bit integer into the queue.
+ */
 {
     _Code;
     AddByte( value );
@@ -476,11 +482,11 @@ void    Gen1ByteValue( byte value )
 }
 
 
-void    Gen2ByteValue( unsigned_16 value ) {
-/***************************************************
-    drop a 16 bit integer into the queue.
-*/
-
+void    Gen2ByteValue( unsigned_16 value )
+/*****************************************
+ * drop a 16 bit integer into the queue.
+ */
+{
     _Code;
     AddByte( value & 0xFF );
     AddByte( ( value >> 8 ) & 0xFF );
@@ -488,11 +494,11 @@ void    Gen2ByteValue( unsigned_16 value ) {
 }
 
 
-void    Gen4ByteValue( unsigned_32 value ) {
-/***************************************************
-    drop a 32 bit integer into the queue.
-*/
-
+void    Gen4ByteValue( unsigned_32 value )
+/*****************************************
+ * drop a 32 bit integer into the queue.
+ */
+{
     _Code;
     AddByte( value & 0xFF );
     AddByte( ( value >> 8 ) & 0xFF );
@@ -502,36 +508,36 @@ void    Gen4ByteValue( unsigned_32 value ) {
 }
 
 
-void    GenCodePtr( pointer label ) {
-/********************************************
-    Dump a near reference to a label into the code segment.
-*/
-
+void    GenCodePtr( pointer label )
+/**********************************
+ * Dump a near reference to a label into the code segment.
+ */
+{
     CodeHandle( OC_LREF, TypeAddress( TY_NEAR_CODE_PTR )->length, label );
 }
 
 
 void    GenCallLabel( pointer label )
 /************************************
-    generate a call to a label within the procedure (near call)
-*/
+ * generate a call to a label within the procedure (near call)
+ */
 {
     DoCall( label, false, false, false );
 }
 
 
-void    GenLabelReturn( void ) {
-/*********************************
-    generate a return from CALL_LABEL instruction (near return)
-*/
-
+void    GenLabelReturn( void )
+/*****************************
+ * generate a return from CALL_LABEL instruction (near return)
+ */
+{
     GenReturn( 0, false );
 }
 
 void    GenReturn( int pop, bool is_long )
 /*****************************************
-    Generate a return instruction
-*/
+ * Generate a return instruction
+ */
 {
     any_oc      oc;
 
@@ -551,9 +557,9 @@ void    GenReturn( int pop, bool is_long )
 }
 
 void    GenIRET( void )
-/*******************************
-    Generate a IRET instruction
-*/
+/**********************
+ * Generate a IRET instruction
+ */
 {
     any_oc      oc;
 
@@ -565,11 +571,11 @@ void    GenIRET( void )
     InputOC( &oc );
 }
 
-void    GenMJmp( instruction *ins ) {
-/********************************************
-    Generate a jump indirect through memory instruction.
-*/
-
+void    GenMJmp( instruction *ins )
+/**********************************
+ * Generate a jump indirect through memory instruction.
+ */
+{
     label_handle    lbl;
     name            *base;
 
@@ -593,20 +599,20 @@ void    GenMJmp( instruction *ins ) {
     }
 }
 
-void    GenRJmp( instruction *ins ) {
-/********************************************
-    Generate a jump to register instruction (eg: jmp eax)
-*/
-
+void    GenRJmp( instruction *ins )
+/**********************************
+ * Generate a jump to register instruction (eg: jmp eax)
+ */
+{
     JumpReg( ins, ins->operands[0] );
 }
 
 
-static  void    JumpReg( instruction *ins, name *reg_name ) {
-/************************************************************
-    Generate a jump to register instruction (eg: jmp eax)
-*/
-
+static  void    JumpReg( instruction *ins, name *reg_name )
+/**********************************************************
+ * Generate a jump to register instruction (eg: jmp eax)
+ */
+{
     hw_reg_set  regs;
 
     /* unused parameters */ (void)ins;
@@ -630,10 +636,11 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
     }
 }
 
-static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class ) {
+static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class )
 /*******************************************************************************
-    Dump bytes "src" directly into the queue, for length "len".
-*/
+ * Dump bytes "src" directly into the queue, for length "len".
+ */
+{
     any_oc    *oc;
     uint      addlen;
 
