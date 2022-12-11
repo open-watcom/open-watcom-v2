@@ -61,9 +61,6 @@
 #include "feprotos.h"
 
 
-static  void            JumpReg( instruction *ins, name *reg_name );
-static  void            Pushf(void);
-
 static byte UCondTable[] = {
 /***************************
  * the 8086 code for an unsigned jmp
@@ -341,6 +338,15 @@ static  void    GenNoReturn( void )
     InputOC( &oc );
 }
 
+static  void    Pushf( void )
+/***************************/
+{
+    LayOpbyte( 0x9c ); /* PUSHF*/
+    _Emit;
+    _Code;
+}
+
+
 void    GenCall( instruction *ins )
 /**********************************
  * Generate a call for "ins". (eg: call foo, or call far ptr foo)
@@ -394,8 +400,8 @@ void    GenCall( instruction *ins )
 }
 
 
-void    GenICall( instruction *ins )
-/***********************************
+void    GenCallIndirect( instruction *ins )
+/******************************************
  * Generate an indirect call for "ins" (eg: call dword ptr [eax])
  */
 {
@@ -428,8 +434,8 @@ void    GenICall( instruction *ins )
 }
 
 
-void    GenRCall( instruction *ins )
-/***********************************
+void    GenCallRegister( instruction *ins )
+/******************************************
  * generate a call to a register (eg: call eax)
  */
 {
@@ -443,15 +449,6 @@ void    GenRCall( instruction *ins )
     op = ins->operands[CALL_OP_ADDR];
     LayRegRM( op->r.reg );
     _Emit;
-}
-
-
-static  void    Pushf( void )
-/***************************/
-{
-    LayOpbyte( 0x9c ); /* PUSHF*/
-    _Emit;
-    _Code;
 }
 
 
@@ -571,8 +568,8 @@ void    GenIRET( void )
     InputOC( &oc );
 }
 
-void    GenMJmp( instruction *ins )
-/**********************************
+void    GenJmpMemory( instruction *ins )
+/***************************************
  * Generate a jump indirect through memory instruction.
  */
 {
@@ -598,15 +595,6 @@ void    GenMJmp( instruction *ins )
         }
     }
 }
-
-void    GenRJmp( instruction *ins )
-/**********************************
- * Generate a jump to register instruction (eg: jmp eax)
- */
-{
-    JumpReg( ins, ins->operands[0] );
-}
-
 
 static  void    JumpReg( instruction *ins, name *reg_name )
 /**********************************************************
@@ -635,6 +623,15 @@ static  void    JumpReg( instruction *ins, name *reg_name )
         _Emit;
     }
 }
+
+void    GenJmpRegister( instruction *ins )
+/*****************************************
+ * Generate a jump to register instruction (eg: jmp eax)
+ */
+{
+    JumpReg( ins, ins->operands[0] );
+}
+
 
 static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class )
 /*******************************************************************************

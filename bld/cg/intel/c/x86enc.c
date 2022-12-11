@@ -2085,11 +2085,11 @@ void    GenObjCode( instruction *ins ) {
                 _Emit;
             }
             return;
-        case G_ICALL:
+        case G_CALLI:
             if( ins->operands[CALL_OP_ADDR]->n.class == N_REGISTER ) {
-                GenRCall( ins );
+                GenCallRegister( ins );
             } else {
-                GenICall( ins );
+                GenCallIndirect( ins );
             }
             AdjustStackDepth( ins );
             if( _IsTargetModel( NEW_P5_PROFILING ) ) {
@@ -2110,12 +2110,12 @@ void    GenObjCode( instruction *ins ) {
                 _Emit;
             }
             return;
-        case G_RJMP:
-            GenRJmp( ins );
+        case G_JMPR:
+            GenJmpRegister( ins );
             AdjustStackDepth( ins );
             return;
-        case G_MJMP:
-            GenMJmp( ins );
+        case G_JMPM:
+            GenJmpMemory( ins );
             break;
         case G_SIGNEX:
             switch( ins->type_class ) {

@@ -33,15 +33,15 @@
 
 extern void     DoCall( label_handle lbl, bool imported, bool big, bool pop );
 extern void     GenCall( instruction *ins );
-extern void     GenICall( instruction *ins );
-extern void     GenRCall( instruction *ins );
+extern void     GenCallIndirect( instruction *ins );
+extern void     GenCallRegister( instruction *ins );
 extern void     GenSelEntry( bool starts );
 extern void     Gen1ByteValue( byte value );
 extern void     Gen2ByteValue( unsigned_16 value );
 extern void     Gen4ByteValue( unsigned_32 value );
 extern void     GenCodePtr( pointer label );
-extern void     GenMJmp( instruction *ins );
-extern void     GenRJmp( instruction *ins );
+extern void     GenJmpMemory( instruction *ins );
+extern void     GenJmpRegister( instruction *ins );
 extern void     EyeCatchBytes( const void *src, byte_seq_len len );
 extern void     GenReturn( int pop, bool is_long );
 extern void     GenIRET( void );

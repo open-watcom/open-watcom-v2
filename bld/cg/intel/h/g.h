@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,12 +112,12 @@ _G_( G_FNEG ),
 _G_( G_RFNEG ),
 _G_( G_ENTER ),
 _G_( G_CALL ),
-_G_( G_RCALL ),
-_G_( G_ICALL ),
-_G_( G_CCALL ),
-_G_( G_RJMP ),
-_G_( G_MJMP ),
-_G_( G_CJMP ),
+_G_( G_CALLR ),
+_G_( G_CALLI ),
+_G_( G_CALLC ),
+_G_( G_JMPR ),
+_G_( G_JMPM ),
+_G_( G_JMPC ),
 _G_( G_SIGNEX ),
 _G_( G_186MUL ),
 _G_( G_186RMUL ),
