@@ -59,87 +59,138 @@
 #include "feprotos.h"
 
 
-#define _NameReg( op )                  ( (op)->r.arch_index )
-#define _EmitIns( ins )                 ObjBytes( &(ins), sizeof( ppc_ins ) )
-#define _ObjEmitSeq( code )             ObjBytes( code->data, code->length )
+#define _NameReg( op )              ( (op)->r.arch_index )
+#define _EmitIns( ins )             ObjBytes( &(ins), sizeof( ppc_ins ) )
+#define _ObjEmitSeq( code )         ObjBytes( code->data, code->length )
 
 #define ZERO_SINK       0
 #define STACK_REG       1
 #define TOC_REG         2
 #define VOLATILE_REG    12
 
-#ifdef __WATCOMC__
-#pragma off (unreferenced);
-#endif
+#define _BinaryOpcode( a, b )       { { a, b }, { a, b } }
+#define _SignedOpcode( a, b, c, d ) { { a, b }, { c, d } }
 
-#define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
-#define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
+#define MAX_ALIGNMENT   16
 
-// Our table for gen_opcode values is really a list of pairs of
-// primary opcode / function code pairs. Their is two entries
-// for each opcode in case the sign of the instruction matters;
-// for example, for OP_RSHIFT we need to generate either srw or
-// sraw. If the sign of the type of the instruction doesn't
-// matter, we can just use the _BinaryOpcode macro to create
-// identical cases, otherwise we give each pair explicitly.
+#define LT              0x00
+#define GT              0x01
+#define EQ              0x02
+
+#define NORMAL          0x0C
+#define INVERT          0x04
+
+/*
+ * Our table for gen_opcode values is really a list of pairs of
+ * primary opcode / function code pairs. Their is two entries
+ * for each opcode in case the sign of the instruction matters;
+ * for example, for OP_RSHIFT we need to generate either srw or
+ * sraw. If the sign of the type of the instruction doesn't
+ * matter, we can just use the _BinaryOpcode macro to create
+ * identical cases, otherwise we give each pair explicitly.
+ */
 
 static  gen_opcode  BinaryOpcodes[][2][2] = {
-        _BinaryOpcode( 31, 266 ),                       /* OP_ADD */
-        _BinaryOpcode( 31, 266 ),                       /* OP_EXT_ADD */
-        _BinaryOpcode( 31, 8 ),                         /* OP_SUB */
-        _BinaryOpcode( 31, 8 ),                         /* OP_EXT_SUB */
-        _BinaryOpcode( 31, 235 ),                       /* OP_MUL */
-        _BinaryOpcode( 31, 235 ),                       /* OP_EXT_MUL */
-        _SignedOpcode( 31, 459, 31, 491 ),              /* OP_DIV */
-        _BinaryOpcode( 0, 0 ),                          /* OP_MOD */
-        _BinaryOpcode( 31, 28 ),                        /* OP_AND */
-        _BinaryOpcode( 31, 444 ),                       /* OP_OR */
-        _BinaryOpcode( 31, 316 ),                       /* OP_XOR */
-        _SignedOpcode( 31, 536, 31, 792 ),              /* OP_RSHIFT */
-        _BinaryOpcode( 31, 24 ),                        /* OP_LSHIFT */
-        _BinaryOpcode( 0, 0 ),                          /* OP_POW */
-        _BinaryOpcode( 0, 0 ),                          /* OP_ATAN2 */
-        _BinaryOpcode( 0, 0 ),                          /* OP_FMOD */
+    _BinaryOpcode( 31, 266 ),           /* OP_ADD */
+    _BinaryOpcode( 31, 266 ),           /* OP_EXT_ADD */
+    _BinaryOpcode( 31, 8 ),             /* OP_SUB */
+    _BinaryOpcode( 31, 8 ),             /* OP_EXT_SUB */
+    _BinaryOpcode( 31, 235 ),           /* OP_MUL */
+    _BinaryOpcode( 31, 235 ),           /* OP_EXT_MUL */
+    _SignedOpcode( 31, 459, 31, 491 ),  /* OP_DIV */
+    _BinaryOpcode( 0, 0 ),              /* OP_MOD */
+    _BinaryOpcode( 31, 28 ),            /* OP_AND */
+    _BinaryOpcode( 31, 444 ),           /* OP_OR */
+    _BinaryOpcode( 31, 316 ),           /* OP_XOR */
+    _SignedOpcode( 31, 536, 31, 792 ),  /* OP_RSHIFT */
+    _BinaryOpcode( 31, 24 ),            /* OP_LSHIFT */
+    _BinaryOpcode( 0, 0 ),              /* OP_POW */
+    _BinaryOpcode( 0, 0 ),              /* OP_ATAN2 */
+    _BinaryOpcode( 0, 0 ),              /* OP_FMOD */
 };
 
 static  gen_opcode  FPOpcodes[][2] = {
-        { 63, 21 },                                     /* OP_ADD */
-        { 63, 21 },                                     /* OP_EXT_ADD */
-        { 63, 20 },                                     /* OP_SUB */
-        { 63, 20 },                                     /* OP_EXT_SUB */
-        { 63, 25 },                                     /* OP_MUL */
-        { 63, 25 },                                     /* OP_EXT_MUL */
-        { 63, 18 },                                     /* OP_DIV */
-        { 0, 0 },                                       /* OP_MOD */
-        { 0, 0 },                                       /* OP_AND */
-        { 0, 0 },                                       /* OP_OR */
-        { 0, 0 },                                       /* OP_XOR */
-        { 0, 0 },                                       /* OP_RSHIFT */
-        { 0, 0 },                                       /* OP_LSHIFT */
-        { 0, 0 },                                       /* OP_POW */
-        { 0, 0 },                                       /* OP_ATAN2 */
-        { 0, 0 },                                       /* OP_FMOD */
+    { 63, 21 },         /* OP_ADD */
+    { 63, 21 },         /* OP_EXT_ADD */
+    { 63, 20 },         /* OP_SUB */
+    { 63, 20 },         /* OP_EXT_SUB */
+    { 63, 25 },         /* OP_MUL */
+    { 63, 25 },         /* OP_EXT_MUL */
+    { 63, 18 },         /* OP_DIV */
+    { 0, 0 },           /* OP_MOD */
+    { 0, 0 },           /* OP_AND */
+    { 0, 0 },           /* OP_OR */
+    { 0, 0 },           /* OP_XOR */
+    { 0, 0 },           /* OP_RSHIFT */
+    { 0, 0 },           /* OP_LSHIFT */
+    { 0, 0 },           /* OP_POW */
+    { 0, 0 },           /* OP_ATAN2 */
+    { 0, 0 },           /* OP_FMOD */
 };
 
 static  gen_opcode  BinaryImmedOpcodes[] = {
-        14,                     /* OP_ADD */
-        14,                     /* OP_EXT_ADD */
-        8,                      /* OP_SUB */
-        8,                      /* OP_EXT_SUB */
-        7,                      /* OP_MUL */
-        7,                      /* OP_EXT_MUL */
-        0,                      /* OP_DIV */
-        0,                      /* OP_MOD */
-        28,                     /* OP_AND */
-        24,                     /* OP_OR */
-        26,                     /* OP_XOR */
-        0,                      /* OP_RSHIFT */
-        0,                      /* OP_LSHIFT */
-        0,                      /* OP_POW */
-        0,                      /* OP_ATAN2 */
-        0,                      /* OP_FMOD */
+    14,                 /* OP_ADD */
+    14,                 /* OP_EXT_ADD */
+    8,                  /* OP_SUB */
+    8,                  /* OP_EXT_SUB */
+    7,                  /* OP_MUL */
+    7,                  /* OP_EXT_MUL */
+    0,                  /* OP_DIV */
+    0,                  /* OP_MOD */
+    28,                 /* OP_AND */
+    24,                 /* OP_OR */
+    26,                 /* OP_XOR */
+    0,                  /* OP_RSHIFT */
+    0,                  /* OP_LSHIFT */
+    0,                  /* OP_POW */
+    0,                  /* OP_ATAN2 */
+    0,                  /* OP_FMOD */
 };
 
+static  gen_opcode  loadOpcodes[] = {
+    34,                 /* U1 */
+    34,                 /* I1 */
+    40,                 /* U2 */
+    42,                 /* I2 */
+    32,                 /* U4 */
+    32,                 /* I4 */
+    00,                 /* U8 */
+    00,                 /* I8 */
+    32,                 /* CP */
+    32,                 /* PT */
+    48,                 /* FS */
+    50,                 /* FD */
+    50,                 /* FL */
+};
+
+static  gen_opcode  storeOpcodes[] = {
+    38,                 /* U1 */
+    38,                 /* I1 */
+    44,                 /* U2 */
+    44,                 /* I2 */
+    36,                 /* U4 */
+    36,                 /* I4 */
+    00,                 /* U8 */
+    00,                 /* I8 */
+    36,                 /* CP */
+    36,                 /* PT */
+    52,                 /* FS */
+    54,                 /* FD */
+    54,                 /* FL */
+};
+
+static  gen_opcode  BranchOpcodes[][2] = {
+    // page 3-68 for a real description
+    // BO     BI
+    { NORMAL, EQ },     /* OP_CMP_EQUAL */
+    { INVERT, EQ },     /* OP_CMP_NOT_EQUAL */
+    { NORMAL, GT },     /* OP_CMP_GREATER */
+    { INVERT, GT },     /* OP_CMP_LESS_EQUAL */
+    { NORMAL, LT },     /* OP_CMP_LESS */
+    { INVERT, LT },     /* OP_CMP_GREATER_EQUAL */
+};
+
+static byte     Zeros[MAX_ALIGNMENT];
 
 static ppc_ins  ins_encoding = 0;
 
@@ -340,19 +391,21 @@ static  void    GenNoReturn( void ) {
 static  void    doCall( instruction *ins )
 /****************************************/
 {
-    cg_sym_handle   sym;
+    call_class      cclass;
     byte_seq        *code;
     label_handle    lbl;
+    name            *op;
 
-    sym = ins->operands[CALL_OP_ADDR]->v.symbol;
-    code = FindAuxInfoSym( sym, CALL_BYTES );
+    op = ins->operands[CALL_OP_ADDR];
+    cclass = *(call_class *)FindAuxInfo( op, CALL_CLASS );
+    code = FindAuxInfo( op, CALL_BYTES );
     if( code != NULL ) {
         _ObjEmitSeq( code );
-        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
+        if( cclass & SUICIDAL ) {
             GenNoReturn();
         }
     } else {
-        lbl = symLabel( ins->operands[CALL_OP_ADDR] );
+        lbl = symLabel( op );
         lbl = GetWeirdPPCDotDotLabel( lbl );
         GenBRANCH( 18, lbl, true, false );
         OutReloc( lbl, PPC_RELOC_GLUE, 0 );
@@ -386,39 +439,6 @@ static  void    getMemEncoding( name *mem, reg_idx *index, int_16 *offset )
         break;
     }
 }
-
-
-static  gen_opcode  loadOpcodes[] = {
-    34,                 /* U1 */
-    34,                 /* I1 */
-    40,                 /* U2 */
-    42,                 /* I2 */
-    32,                 /* U4 */
-    32,                 /* I4 */
-    00,                 /* U8 */
-    00,                 /* I8 */
-    32,                 /* CP */
-    32,                 /* PT */
-    48,                 /* FS */
-    50,                 /* FD */
-    50,                 /* FL */
-};
-
-static  gen_opcode  storeOpcodes[] = {
-    38,                 /* U1 */
-    38,                 /* I1 */
-    44,                 /* U2 */
-    44,                 /* I2 */
-    36,                 /* U4 */
-    36,                 /* I4 */
-    00,                 /* U8 */
-    00,                 /* I8 */
-    36,                 /* CP */
-    36,                 /* PT */
-    52,                 /* FS */
-    54,                 /* FD */
-    54,                 /* FL */
-};
 
 
 static  void    doLoadStore( instruction *ins, bool load )
@@ -822,10 +842,6 @@ void    GenObjCode( instruction *ins )
     }
 }
 
-#define MAX_ALIGNMENT   16
-
-static byte Zeros[MAX_ALIGNMENT];
-
 void    CodeLabel( label_handle label, unsigned alignment )
 /*********************************************************/
 {
@@ -876,24 +892,6 @@ void    GenJumpLabel( label_handle label )
     }
 #endif
 }
-
-#define LT      0x00
-#define GT      0x01
-#define EQ      0x02
-
-#define NORMAL  0x0C
-#define INVERT  0x04
-
-static  gen_opcode  BranchOpcodes[][2] = {
-    // page 3-68 for a real description
-    // BO     BI
-    { NORMAL, EQ },                     /* OP_CMP_EQUAL */
-    { INVERT, EQ },                     /* OP_CMP_NOT_EQUAL */
-    { NORMAL, GT },                     /* OP_CMP_GREATER */
-    { INVERT, GT },                     /* OP_CMP_LESS_EQUAL */
-    { NORMAL, LT },                     /* OP_CMP_LESS */
-    { INVERT, LT },                     /* OP_CMP_GREATER_EQUAL */
-};
 
 static void    GenJumpIf( instruction *ins, pointer label )
 /*********************************************************/

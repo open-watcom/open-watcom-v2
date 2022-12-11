@@ -63,7 +63,7 @@
 
 static byte UCondTable[] = {
 /***************************
- * the 8086 code for an unsigned jmp
+ * The 8086 code for an unsigned jmp
  */
     5,              /* OP_BIT_TEST_TRUE */
     4,              /* OP_BIT_TEST_FALSE */
@@ -77,7 +77,7 @@ static byte UCondTable[] = {
 
 static byte SCondTable[] = {
 /***************************
- * the 8086 code for a signed jmp
+ * The 8086 code for a signed jmp
  */
     5,              /* OP_BIT_TEST_TRUE */
     4,              /* OP_BIT_TEST_FALSE */
@@ -91,7 +91,7 @@ static byte SCondTable[] = {
 
 static byte rev_condition[] = {
 /******************************
- * reverse the sense of an 8086 jmp (ie: ja -> jbe)
+ * Reverse the sense of an 8086 jmp (ie: ja -> jbe)
  * i.e. XOR 1
  */
     1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14
@@ -106,7 +106,7 @@ typedef enum {
 
 static issigned signed_type[] = {
 /********************************
- * what kind of a jump does the instruction need following it
+ * What kind of a jump does the instruction need following it
  */
     UNSIGNED,       /* U1*/
     SIGNED_BOTH,    /* I1*/
@@ -177,7 +177,7 @@ byte    CondCode( instruction *cond )
 
 void    GenSetCC( instruction *cond )
 /************************************
- * given a conditional "cond", generate the correct setxx instruction
+ * Given a conditional "cond", generate the correct setxx instruction
  */
 {
     _Code;
@@ -193,7 +193,7 @@ void    GenSetCC( instruction *cond )
 
 byte    ReverseCondition( byte cond )
 /************************************
- * reverse the sense of a conditional jump (already encoded)
+ * Reverse the sense of a conditional jump (already encoded)
  */
 {
     return( rev_condition[cond] );
@@ -201,11 +201,11 @@ byte    ReverseCondition( byte cond )
 
 void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
 /********************************************************************
- * call routine "lbl".
+ * Call routine "lbl".
  */
 {
-    oc_class    occlass;
-    obj_length  len;
+    oc_class        occlass;
+    oc_dest_attr    destattr;
 
     /* unused parameters */ (void)imported;
 
@@ -215,15 +215,15 @@ void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
     if( big )
         occlass |= OC_ATTR_FAR;
     if( !big ) {
-        len = OptInsSize( OC_CALL, OC_DEST_NEAR );
+        destattr = OC_DEST_NEAR;
     } else if( AskIfRTLabel( lbl )
             || imported //NYI:multi-code-segment, this can go when FORTRAN is fixed up
             || AskCodeSeg() != FESegID( AskForLblSym( lbl ) ) ) {
-        len = OptInsSize( OC_CALL, OC_DEST_FAR );
+        destattr = OC_DEST_FAR;
     } else {
-        len = OptInsSize( OC_CALL, OC_DEST_CHEAP );
+        destattr = OC_DEST_CHEAP;
     }
-    CodeHandle( occlass, len, lbl );
+    CodeHandle( occlass, OptInsSize( occlass, destattr ), lbl );
 }
 
 
@@ -405,48 +405,53 @@ void    GenCallIndirect( instruction *ins )
  * Generate an indirect call for "ins" (eg: call dword ptr [eax])
  */
 {
-    oc_class    entry;
+    oc_class    occlass;
     gen_opcode  opcode;
+    name        *op;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    entry = 0;
-    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
-        entry |= OC_ATTR_POP;
-    }
     if( ( ins->flags.call_flags & CALL_ABORTS ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
-        entry |= OC_JMPI;
+        occlass = OC_JMPI;
     } else {
-        entry |= OC_CALLI;
+        occlass = OC_CALLI;
     }
-    if( ins->operands[CALL_OP_ADDR]->n.type_class == PT
-     || ins->operands[CALL_OP_ADDR]->n.type_class == CP ) {
-        entry |= OC_ATTR_FAR;
+    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+        occlass |= OC_ATTR_POP;
+    }
+    op = ins->operands[CALL_OP_ADDR];
+    opcode = M_CJINEAR;
+    if( op->n.type_class == PT
+      || op->n.type_class == CP ) {
         opcode = M_CJILONG;
-    } else {
-        opcode = M_CJINEAR;
+        occlass |= OC_ATTR_FAR;
     }
-    ReFormat( entry );
+    ReFormat( occlass );
     LayOpword( opcode );
-    LayModRM( ins->operands[CALL_OP_ADDR] );
+    LayModRM( op );
     _Emit;
 }
 
 
 void    GenCallRegister( instruction *ins )
 /******************************************
- * generate a call to a register (eg: call eax)
+ * Generate a call to a register (eg: call eax)
  */
 {
-    name                *op;
+    name        *op;
+    oc_class    occlass;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    ReFormat( ( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ) ? OC_CALLI | OC_ATTR_POP : OC_CALLI );
-    LayOpword( M_CJINEAR );
     op = ins->operands[CALL_OP_ADDR];
+    occlass = OC_CALLI;
+    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+        occlass |= OC_ATTR_POP;
+    }
+    ReFormat( occlass );
+    LayOpword( M_CJINEAR );
     LayRegRM( op->r.reg );
     _Emit;
 }
@@ -454,7 +459,7 @@ void    GenCallRegister( instruction *ins )
 
 void    GenSelEntry( bool starts )
 /*********************************
- * dump a queue that a select table is starting/ending ("starts") into
+ * Dump a queue that a select table is starting/ending ("starts") into
  * the code segment queue.
  */
 {
@@ -470,7 +475,7 @@ void    GenSelEntry( bool starts )
 
 void    Gen1ByteValue( byte value )
 /**********************************
- * drop an 8 bit integer into the queue.
+ * Drop an 8 bit integer into the queue.
  */
 {
     _Code;
@@ -481,7 +486,7 @@ void    Gen1ByteValue( byte value )
 
 void    Gen2ByteValue( unsigned_16 value )
 /*****************************************
- * drop a 16 bit integer into the queue.
+ * Drop a 16 bit integer into the queue.
  */
 {
     _Code;
@@ -493,7 +498,7 @@ void    Gen2ByteValue( unsigned_16 value )
 
 void    Gen4ByteValue( unsigned_32 value )
 /*****************************************
- * drop a 32 bit integer into the queue.
+ * Drop a 32 bit integer into the queue.
  */
 {
     _Code;
@@ -516,7 +521,7 @@ void    GenCodePtr( pointer label )
 
 void    GenCallLabel( pointer label )
 /************************************
- * generate a call to a label within the procedure (near call)
+ * Generate a call to a label within the procedure (near call)
  */
 {
     DoCall( label, false, false, false );
@@ -525,7 +530,7 @@ void    GenCallLabel( pointer label )
 
 void    GenLabelReturn( void )
 /*****************************
- * generate a return from CALL_LABEL instruction (near return)
+ * Generate a return from CALL_LABEL instruction (near return)
  */
 {
     GenReturn( 0, false );
