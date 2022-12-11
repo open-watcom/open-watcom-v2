@@ -61,6 +61,13 @@
 #include "feprotos.h"
 
 
+typedef enum {
+    UNSIGNED,               /* always an unsigned jump */
+    SIGNED_86,              /* signed if 8086 instruction, else unsigned */
+    SIGNED_87,              /* signed if 8087 instruction, else unsigned */
+    SIGNED_BOTH             /* always signed */
+} issigned;
+
 static byte UCondTable[] = {
 /***************************
  * The 8086 code for an unsigned jmp
@@ -97,13 +104,6 @@ static byte rev_condition[] = {
     1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14
 };
 
-typedef enum {
-    UNSIGNED,               /* always an unsigned jump */
-    SIGNED_86,              /* signed if 8086 instruction, else unsigned */
-    SIGNED_87,              /* signed if 8087 instruction, else unsigned */
-    SIGNED_BOTH             /* always signed */
-} issigned;
-
 static issigned signed_type[] = {
 /********************************
  * What kind of a jump does the instruction need following it
@@ -127,7 +127,7 @@ static issigned signed_type[] = {
 unsigned DepthAlign( unsigned depth )
 /***********************************/
 {
-    static unsigned char AlignArray[10] = { 0 };
+    static unsigned char    AlignArray[10] = { 0 };
 
     if( AlignArray[0] == 0 || depth == PROC_ALIGN ) {
         unsigned char *align_info_bytes = FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT );
@@ -161,7 +161,7 @@ byte    CondCode( instruction *cond )
  * Return the condition code number for the encoding, associated with "cond"
  */
 {
-    issigned            is_signed;
+    issigned        is_signed;
 
     if( _FPULevel( FPU_87 ) ) {
         is_signed = SIGNED_87;
@@ -233,14 +233,14 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
  * the "seg foo", "offset foo" sequences.
  */
 {
-    bool        first;
-    const byte  *endp;
-    const byte  *startp;
-    byte        type;
-    cg_sym_handle sym = 0;
-    offset      off = 0;
-    fe_attr     attr = 0;
-    name        *temp;
+    bool            first;
+    const byte      *endp;
+    const byte      *startp;
+    byte            type;
+    cg_sym_handle   sym = 0;
+    offset          off = 0;
+    fe_attr         attr = 0;
+    name            *temp;
 
     first = false;
     endp = p + len;
@@ -330,7 +330,7 @@ static  void    GenNoReturn( void )
  * Generate a noreturn instruction (pseudo instruction)
  */
 {
-    any_oc      oc;
+    any_oc          oc;
 
     oc.oc_entry.hdr.class = OC_NORET;
     oc.oc_entry.hdr.reclen = offsetof( oc_entry, data );
@@ -352,12 +352,12 @@ void    GenCall( instruction *ins )
  * Generate a call for "ins". (eg: call foo, or call far ptr foo)
  */
 {
-    name                *op;
-    cg_sym_handle       sym;
-    bool                imp;
-    call_class          cclass;
-    byte_seq            *code;
-    label_handle        lbl;
+    name            *op;
+    cg_sym_handle   sym;
+    bool            imp;
+    call_class      cclass;
+    byte_seq        *code;
+    label_handle    lbl;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
@@ -405,9 +405,9 @@ void    GenCallIndirect( instruction *ins )
  * Generate an indirect call for "ins" (eg: call dword ptr [eax])
  */
 {
-    oc_class    occlass;
-    gen_opcode  opcode;
-    name        *op;
+    oc_class        occlass;
+    gen_opcode      opcode;
+    name            *op;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
@@ -439,8 +439,8 @@ void    GenCallRegister( instruction *ins )
  * Generate a call to a register (eg: call eax)
  */
 {
-    name        *op;
-    oc_class    occlass;
+    name            *op;
+    oc_class        occlass;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
@@ -463,7 +463,7 @@ void    GenSelEntry( bool starts )
  * the code segment queue.
  */
 {
-    any_oc      oc;
+    any_oc          oc;
 
     oc.oc_select.hdr.class = OC_INFO + OC_INFO_SELECT;
     oc.oc_select.hdr.reclen = sizeof( oc_select );
@@ -541,7 +541,7 @@ void    GenReturn( int pop, bool is_long )
  * Generate a return instruction
  */
 {
-    any_oc      oc;
+    any_oc          oc;
 
     oc.oc_ret.hdr.class = OC_RET;
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
@@ -563,7 +563,7 @@ void    GenIRET( void )
  * Generate a IRET instruction
  */
 {
-    any_oc      oc;
+    any_oc          oc;
 
     oc.oc_ret.hdr.class = OC_RET | OC_ATTR_IRET;
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
@@ -606,7 +606,7 @@ static  void    JumpReg( instruction *ins, name *reg_name )
  * Generate a jump to register instruction (eg: jmp eax)
  */
 {
-    hw_reg_set  regs;
+    hw_reg_set      regs;
 
     /* unused parameters */ (void)ins;
 
@@ -643,8 +643,8 @@ static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class )
  * Dump bytes "src" directly into the queue, for length "len".
  */
 {
-    any_oc    *oc;
-    uint      addlen;
+    any_oc          *oc;
+    uint            addlen;
 
     oc = CGAlloc( offsetof( oc_entry, data ) + MAX_OBJ_LEN );
     oc->oc_entry.hdr.class = class;
