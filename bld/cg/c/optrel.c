@@ -199,14 +199,14 @@ static  void    SetShort( void )
     if( _Class( FirstIns ) == OC_JMP ) {
         _Savings( OPT_JUMPS, _ObjLen( FirstIns ) - size );
         _ObjLen( FirstIns ) = size;
-        _SetClass( FirstIns, OC_JMP );
+        _ResetClass( FirstIns, OC_JMP );
         if( floating ) {
             _SetAttr( FirstIns, OC_ATTR_FLOAT );
         }
     } else {
         _Savings( OPT_JCONDS, _ObjLen( FirstIns ) - size );
         _ObjLen( FirstIns ) = size;
-        _SetClass( FirstIns, OC_JCOND );
+        _ResetClass( FirstIns, OC_JCOND );
         if( floating ) {
             _SetAttr( FirstIns, OC_ATTR_FLOAT );
         }

@@ -141,7 +141,7 @@ void    MultiLineNums( ins_entry *ins )
             if( _ClassInfo( prev ) == OC_LINENUM ) {
                 ins = prev->ins.next;
                 UnLinkInstr( prev );
-                _SetClass( prev, OC_DEAD );
+                _ResetClass( prev, OC_DEAD );
                 prev = ins->ins.prev;
             } else {
                 prev = prev->ins.prev;

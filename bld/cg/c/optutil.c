@@ -227,7 +227,7 @@ static  ins_entry *DelInstr_Helper( ins_entry *old )
         DelRef( &NoRetList, old );
         break;
     }
-    _SetClass( old, OC_DEAD );
+    _ResetClass( old, OC_DEAD );
     next = ValidIns( old->ins.next );
     for(;;) {
         if( next == NULL )
