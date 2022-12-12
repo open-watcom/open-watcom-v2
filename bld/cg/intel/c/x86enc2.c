@@ -372,17 +372,6 @@ void    GenCall( instruction *ins )
         } else {
             CodeBytes( code->data, code->length );
         }
-        if( cclass & SUICIDAL ) {
-            GenNoReturn();
-        }
-    } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
-        sym = op->v.symbol;
-        lbl = FEBack( sym )->lbl;
-        if( cclass & FAR_CALL ) {
-            CodeHandle( OC_JMP | OC_ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
-        } else {
-            CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
-        }
     } else {
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
@@ -396,6 +385,9 @@ void    GenCall( instruction *ins )
             imp = true;
         }
         DoCall( lbl, imp, (cclass & FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
+    }
+    if( (cclass & SUICIDAL) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+        GenNoReturn();
     }
 }
 
@@ -412,11 +404,7 @@ void    GenCallIndirect( instruction *ins )
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    if( ( ins->flags.call_flags & CALL_ABORTS ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
-        occlass = OC_JMPI;
-    } else {
-        occlass = OC_CALLI;
-    }
+    occlass = OC_CALLI;
     if( ins->flags.call_flags & CALL_POPS_PARMS ) {
         occlass |= OC_ATTR_POP;
     }
@@ -431,6 +419,9 @@ void    GenCallIndirect( instruction *ins )
     LayOpword( opcode );
     LayModRM( op );
     _Emit;
+    if( (ins->flags.call_flags & CALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+        GenNoReturn();
+    }
 }
 
 
@@ -454,6 +445,9 @@ void    GenCallRegister( instruction *ins )
     LayOpword( M_CJINEAR );
     LayRegRM( op->r.reg );
     _Emit;
+    if( (ins->flags.call_flags & CALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+        GenNoReturn();
+    }
 }
 
 
