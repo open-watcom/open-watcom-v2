@@ -139,7 +139,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     td->argument = arglist;
 
     th = CreateThread( NULL, stack_size, (LPTHREAD_START_ROUTINE)&begin_thread_helper,
-                (LPVOID) td, CREATE_SUSPENDED, &tid );
+                (LPVOID)td, CREATE_SUSPENDED, &tid );
     if( th != NULL ) {
         td->thread_handle = th;
         ResumeThread( th );

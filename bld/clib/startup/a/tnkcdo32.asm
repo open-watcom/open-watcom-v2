@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -50,7 +51,7 @@ __do_thunk:
                 shl     eax,010h
                 mov     ax,sp
                 and     esp,0ffffh
-                call    DOSSELTOFLAT
+                call    DosSelToFlat
                 push    ds
                 push    eax
                 lss     esp,pword ptr [esp]

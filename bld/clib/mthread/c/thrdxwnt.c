@@ -59,7 +59,7 @@ typedef struct thread_args {
 } thread_args;
 
 static DWORD WINAPI begin_thread_helper( thread_args *td )
-/***********************************************************/
+/********************************************************/
 {
     thread_fnex         *start_addr;
     void                *arg;
