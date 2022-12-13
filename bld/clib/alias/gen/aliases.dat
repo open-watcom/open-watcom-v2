@@ -52,6 +52,7 @@ excv__        execv             _execv            d16     nt  nta ntp           
 excve_        execve            _execve           d16     nt  nta ntp                 o16 o32 q16 q32                     rdu
 excvp_        execvp            _execvp           d16     nt  nta ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 excvpe        execvpe           _execvpe          d16     nt  nta ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
+_exit_        _exit             _Exit             d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 fdopen        fdopen            _fdopen           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 fgetch        fgetchar          _fgetchar         d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 fgetwc        fgetwchar         _fgetwchar        d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32
