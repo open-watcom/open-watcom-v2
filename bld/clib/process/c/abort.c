@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ void (*__abort)( void ) = NULL;
  */
 #include "initfini.h"
 
-_WCRTLINK void abort( void )
+_WCRTLINK _WCNORETURN void abort( void )
 {
     struct sigaction    oact;
     sigset_t            mask;
@@ -70,7 +71,7 @@ _WCRTLINK void abort( void )
 }
 #else
 
-_WCRTLINK void abort( void )
+_WCRTLINK _WCNORETURN void abort( void )
 {
     if( _RWD_abort != NULL ) {
         (*_RWD_abort)();
@@ -81,7 +82,7 @@ _WCRTLINK void abort( void )
 
 #endif
 
-void __terminate( void )
+_WCNORETURN void __terminate( void )
 {
     __fatal_runtime_error( "ABNORMAL TERMINATION", EXIT_FAILURE );
     // never return
