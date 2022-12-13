@@ -300,7 +300,7 @@ around:
         inc     ax                      ; DOS/16M returns -1 in ax
         jz      setup                   ; okay, DOS/16M active
         mov     ah, 9                   ; not DOS/16M, display error
-        mov     dx, offset _text:msg_notPM
+        mov     dx, offset _TEXT:msg_notPM
         push    cs
         pop     ds
         int     21h                     ; with a message
