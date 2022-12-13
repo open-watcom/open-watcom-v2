@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -334,9 +334,9 @@ _BSS            ends
 
 alias_function  macro   alias, function
                 ifb <function>
-                    xrefp   "C",_&alias
+                    xrefp   "C",`_&alias`
                 else
-                    xrefp   "C",function
+                    xrefp   "C",`function`
                 endif
                 .code
                 public      "C",`alias`
@@ -346,7 +346,7 @@ alias_function  macro   alias, function
          `alias`    proc
                 endif
                 ifb <function>
-                    jmp     _&alias
+                    jmp     `_&alias`
                 else
                     jmp     `function`
                 endif

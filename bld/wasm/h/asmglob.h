@@ -146,6 +146,7 @@ typedef struct global_options {
     bool        banner_printed;
     bool        debug_info;
     bool        output_comment_data_in_code_records;
+    bool        symbols_nocasesensitive;
 
     /* error handling stuff */
     int         error_count;

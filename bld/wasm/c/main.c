@@ -88,6 +88,7 @@ global_options Options = {
     false,              // banner_printed
     false,              // debug_info
     true,               // output_comment_data_in_code_records
+    true,               // symbols_nocasesensitive
 
     0,                  // error_count
     0,                  // warning_count
@@ -513,6 +514,8 @@ static void Set_BT( void ) { SetTargName( OptParm,  OptScanPtr - OptParm ); }
 
 static void Set_C( void ) { Options.output_comment_data_in_code_records = false; }
 
+static void Set_CX( void ) { Options.symbols_nocasesensitive = false; }
+
 static void Set_D( void ) { Options.debug_info = (OptValue != 0); }
 
 static void DefineMacro( void ) { add_constant( CopyOfParm(), false ); }
@@ -592,6 +595,7 @@ static struct option const cmdl_options[] = {
     { "?",      0,        HelpUsage },
     { "bt=$",   0,        Set_BT },
     { "c",      0,        Set_C },
+    { "cx",     0,        Set_CX },
     { "d0",     0,        Set_D },
     { "d1",     1,        Set_D },
     { "d2",     2,        Set_D },

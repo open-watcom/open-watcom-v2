@@ -158,7 +158,7 @@ extra_clib_c_flags =
 #####################
 # ASSEMBLERS SETINGS
 ######
-sw_a_common = -we
+sw_a_common = -we -cx
 !ifdef __UNIX__
 sw_a_common += -fo=.obj
 !endif

@@ -152,8 +152,9 @@ static struct asm_sym *AllocASym( const char *name )
 }
 
 static struct asm_sym **AsmFind( const char *name )
-/*************************************************/
-/* find a symbol in the symbol table, return NULL if not found */
+/**************************************************
+ * find a symbol in the symbol table, return NULL if not found
+ */
 {
     struct asm_sym      **sym;
 
@@ -168,9 +169,13 @@ static struct asm_sym **AsmFind( const char *name )
             if( strcmp( name, (*sym)->name ) == 0 ) {
                 break;
             }
+        } else if( Options.symbols_nocasesensitive ) {
+            if( stricmp( name, (*sym)->name ) == 0 ) {
+                break;
+            }
         } else {
 #endif
-            if( stricmp( name, (*sym)->name ) == 0 ) {
+            if( strcmp( name, (*sym)->name ) == 0 ) {
                 break;
             }
 #if defined( _STANDALONE_ )
