@@ -186,8 +186,8 @@ code$(target_cpu).gh : ./mkcode.exe xcode$(target_cpu).tmp
 !endif
 
 target_as_axp   = bwasaxp -zq -w8
-target_as_i86   = bwasm -zq -w8
-target_as_386   = bwasm -zq -w8 -3
+target_as_i86   = bwasm -zq -w8-cx
+target_as_386   = bwasm -zq -w8-cx -3
 target_as_ppc   = bwasppc -zq -w8
 target_as_mps   = bwasmps -zq -w8
 

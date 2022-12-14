@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -344,12 +345,12 @@ Declare_Virtual_Device macro Name, Major_Ver, Minor_Ver, Ctrl_Proc, Device_Num, 
   VxD_LOCKED_DATA_ENDS
 endm
 
-VxDcall macro P
+VxDCall macro P
   int 20h
   dd  P
 endm
 
-VxDcall3 macro P, Param1, Param2, Param3
+VxDCall3 macro P, Param1, Param2, Param3
   push Param3
   push Param2
   push Param1
@@ -358,7 +359,7 @@ VxDcall3 macro P, Param1, Param2, Param3
   add esp,0ch
 endm
 
-VxDcall3a macro P, Param1, Param2, Param3
+VxDCall3a macro P, Param1, Param2, Param3
   push OFFSET Param3
   push Param2
   push Param1

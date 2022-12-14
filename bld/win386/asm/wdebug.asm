@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -84,8 +85,8 @@ C_PutPending    db ?
 C_ServerName    db MAX_SERVER_NAME dup(?)
 Conv_struct     ends
 
-;Declare_Virtual_Device WDEBUG, 3, 0, WGod_Control, Debug_Device_ID, 0f0000000h
-Declare_Watcom_Debug_Virtual_Device 3, 0, WGod_Control, Debug_Device_ID, 00000001h
+;Declare_Virtual_Device WDEBUG, 3, 0, WGod_Control, DEBUG_DEVICE_ID, 0f0000000h
+Declare_Watcom_Debug_Virtual_Device 3, 0, WGod_Control, DEBUG_DEVICE_ID, 00000001h
 
 extrn __Win387_emulator:PROC
 
@@ -251,25 +252,25 @@ BeginProc WGod_Sys_Critical_Init
 ;*** hook PM int 2f
 ;*
         mov     eax, 2Fh
-        VxDcall Get_PM_Int_Vector
+        VxDCall Get_PM_Int_Vector
         mov     [PM_Int2FNextCS], ecx
         mov     [PM_Int2FNextEIP], edx
 
         mov     esi, OFFSET WDebugPM_Int2F
-        VxDcall Allocate_PM_Call_Back
+        VxDCall Allocate_PM_Call_Back
 
         movzx   edx, ax                         ;eax has cs:ip
         mov     ecx, eax
         shr     ecx, 16
         mov     eax, 2Fh
-        VxDcall Set_PM_Int_Vector
+        VxDCall Set_PM_Int_Vector
 
 ;*
 ;*** hook gp fault
 ;*
         mov     eax,0dh
         mov     esi,OFFSET Fault0DHandler
-        VxDcall Hook_PM_Fault
+        VxDCall Hook_PM_Fault
         test    esi,esi
         jne     short aretd
         mov     esi,OFFSET JustReturn
@@ -302,10 +303,10 @@ VxD_ICODE_ENDS
 VxD_LOCKED_CODE_SEG
 BeginProc WGod_Control
 
-        Control_Dispatch Sys_Critical_Init, WGod_Sys_Critical_Init
-        Control_Dispatch Device_Init, WGod_Device_Init
-        Control_Dispatch VM_Suspend, WGod_Suspend
-        Control_Dispatch VM_Resume, WGod_Resume
+        Control_Dispatch SYS_CRITICAL_INIT, WGod_Sys_Critical_Init
+        Control_Dispatch DEVICE_INIT, WGod_Device_Init
+        Control_Dispatch VM_SUSPEND, WGod_Suspend
+        Control_Dispatch VM_RESUME, WGod_Resume
         clc
         ret
 
@@ -325,9 +326,9 @@ ReflectTo16Bit PROC near
         cmp     ax,257
         jne     short no_cancel
         push    edx
-        VxDcall Get_Sys_VM_Handle
+        VxDCall Get_Sys_VM_Handle
         mov     esi,HotEventHandle
-        VxDcall Cancel_VM_Event
+        VxDCall Cancel_VM_Event
         pop     edx
 
 no_cancel:
@@ -403,7 +404,7 @@ was_special:
 ReflectTo16Bit ENDP
 
 Is32BitSel PROC NEAR
-        VxDcall3 _GetDescriptor, eax, ebx, 0
+        VxDCall3 _GetDescriptor, eax, ebx, 0
         mov     dword ptr Descriptor+4,edx
         test    Desc4,040h
         ret
@@ -458,7 +459,7 @@ again102:
         jmp     [Old07Handler]
 
 fnd102:
-        VxDcall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
+        VxDCall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
         mov     ecx,ebx                         ; VM Handle
         mov     ebx,dword ptr [edi.E_8087]      ; 8087 ptr
         add     ebx,eax                         ; add linear offset
@@ -604,14 +605,14 @@ BeginProc WGod_Device_Init
 ;*
         mov     eax,02fh
         mov     esi,OFFSET WDebugV86_Int2F
-        VxDcall Hook_V86_Int_Chain
+        VxDCall Hook_V86_Int_Chain
 
 ;*
 ;*** hook div by 0 fault
 ;*
         xor     eax,eax
         mov     esi,OFFSET Fault00Handler
-        VxDcall Hook_PM_Fault
+        VxDCall Hook_PM_Fault
         test    esi,esi
         jne     short aret0
         mov     esi,OFFSET JustReturn
@@ -623,7 +624,7 @@ aret0:
 ;*
         mov     eax,6
         mov     esi,OFFSET Fault06Handler
-        VxDcall Hook_PM_Fault
+        VxDCall Hook_PM_Fault
         test    esi,esi
         jne     short aret6
         mov     esi,OFFSET JustReturn
@@ -635,7 +636,7 @@ aret6:
 ;*
 ;       mov     eax,0eh
 ;       mov     esi,OFFSET Fault0EHandler
-;       VxDcall Hook_PM_Fault
+;       VxDCall Hook_PM_Fault
 ;       test    esi,esi
 ;       jne     short arete
 ;       mov     esi,OFFSET JustReturn
@@ -650,7 +651,7 @@ aret6:
         mov     cl,CallOnPress
         mov     esi,OFFSET HotKeyPressed
         xor     edi,edi
-        VxDcall VKD_Define_Hot_Key
+        VxDCall VKD_Define_Hot_Key
 
         clc
         ret
@@ -677,9 +678,9 @@ BeginProc HotKeyPressed
         jne     short useit
         ret
 useit:
-        VxDcall Get_Sys_VM_Handle
+        VxDCall Get_Sys_VM_Handle
         mov     esi,OFFSET HotStop
-        VxDcall Schedule_VM_Event
+        VxDCall Schedule_VM_Event
         mov     HotEventHandle,esi
         ret
 EndProc HotKeyPressed
@@ -749,7 +750,7 @@ GetFlatAddr PROC near
         ret
 pm_string:
         movzx   edx,MapSeg                      ; selector
-        VxDcall3 _SelectorMapFlat, ebx, edx, 0
+        VxDCall3 _SelectorMapFlat, ebx, edx, 0
         movzx   edx,MapOff                      ; offset
         add     eax,edx                         ; ring 0 addr
         ret
@@ -935,7 +936,7 @@ FindEmptySlot ENDP
 ;***                                 ***
 ;***************************************
 GetLimit PROC NEAR
-        VxDcall3 _GetDescriptor, edx, ebx, 0    ; ebx contains VM handle
+        VxDCall3 _GetDescriptor, edx, ebx, 0    ; ebx contains VM handle
         mov     dword ptr Descriptor,eax
         mov     dword ptr Descriptor+4,edx
         mov     dx,Desc1                        ; get low word
@@ -1087,14 +1088,14 @@ exitcm2:jmp     exitcm
 
 ok2c:
         movzx   edx,[ebp.Client_CX]     ; destination selector
-        VxDcall3 _SelectorMapFlat, ebx, edx, 0
+        VxDCall3 _SelectorMapFlat, ebx, edx, 0
         cmp     eax,0ffffffffh          ; could we do it?
         je      short exitcm2           ; no, leave
         mov     edi,eax                 ; save flat address
         add     edi,[ebp.Client_EDX]    ; add offset of destination
 
         movzx   edx,[ebp.Client_SI]     ; source selector
-        VxDcall3 _SelectorMapFlat, ebx, edx, 0
+        VxDCall3 _SelectorMapFlat, ebx, edx, 0
         cmp     eax,0ffffffffh          ; could we do it?
         je      short exitcm2           ; no, leave
         mov     esi,eax                 ; save flat address
@@ -1129,7 +1130,7 @@ trydest:
 docopy:
         mov     eax,esi                 ; get source address
         shr     eax,12                  ; calc page number
-        VxDcall3a _CopyPageTable, eax, 1, PageTableBuf
+        VxDCall3a _CopyPageTable, eax, 1, PageTableBuf
         or      eax,eax                 ; eax = 0 if invalid page table entry
         je      short exitcm            ; ...
         mov     eax,PageTableBuf        ; get entry
@@ -1137,7 +1138,7 @@ docopy:
         je      short exitcm            ; ...
         mov     eax,edi                 ; get destination address
         shr     eax,12                  ; calc page number
-        VxDcall3a _CopyPageTable, eax, 1, PageTableBuf
+        VxDCall3a _CopyPageTable, eax, 1, PageTableBuf
         or      eax,eax                 ; eax = 0 if invalid page table entry
         je      short exitcm            ; ...
         mov     eax,PageTableBuf        ; get entry
@@ -1167,7 +1168,7 @@ EndProc SVC_CopyMemory
 BeginProc SVC_GetDescriptor
 
         movzx  ecx,[ebp.Client_CX]      ; get descriptor
-        VxDcall3 _GetDescriptor, ecx, ebx, 0    ; ebx contains VM handle
+        VxDCall3 _GetDescriptor, ecx, ebx, 0    ; ebx contains VM handle
 
         Client_Ptr_Flat edi,ES,BX       ; get destination
         mov     [edi+4],edx             ; store high word
@@ -1291,7 +1292,7 @@ SetTimer PROC near
         mov     eax,TimeOutTime
         mov     edx,eax                     ; reference data
         mov     esi,OFFSET SampleStuff    ; callback routine
-        VxDcall Set_Global_Time_Out
+        VxDCall Set_Global_Time_Out
         mov     TimerHandle,esi
         ret
 SetTimer ENDP
@@ -1323,7 +1324,7 @@ testindex:
 roomleft:
         mov     edx,SampleUserSel               ; get flat pointer to buff
         mov     ebx,SampleUserVM
-        VxDcall3 _SelectorMapFlat, ebx, edx, 0
+        VxDCall3 _SelectorMapFlat, ebx, edx, 0
         cmp     eax,0ffffffffh
         jne     short ok_map
         ret
@@ -1361,7 +1362,7 @@ BeginProc SVC_InitSampler
         mov     MaxSamples,eax              ; save it
 
         mov     ebx,VMHandle
-        VxDcall Get_VM_Exec_Time
+        VxDCall Get_VM_Exec_Time
         mov     StartTime,eax               ; time windows has been active
 
         mov     SampleUserVM,ebx            ; save VM
@@ -1391,16 +1392,16 @@ EndProc SVC_InitSampler
 ;*************************************************************
 BeginProc SVC_QuitSampler
         mov     esi,TimerHandle
-        VxDcall Cancel_Time_Out
+        VxDCall Cancel_Time_Out
 
         mov     eax,IntPeriod
         test    eax,eax
         je      short skiprip
-        VxDcall VTD_End_Min_Int_Period
+        VxDCall VTD_End_Min_Int_Period
 
 skiprip:
         mov     ebx,WinVMHandle
-        VxDcall Get_VM_Exec_Time
+        VxDCall Get_VM_Exec_Time
         sub     eax,StartTime
         mov     [ebp.Client_EAX],eax
         ret
@@ -1459,7 +1460,7 @@ EndProc SVC_GetCurrTick
 BeginProc SVC_SetTimerRate
         movzx   eax,[ebp.Client_BX]
         mov     IntPeriod,eax
-        VxDcall VTD_Begin_Min_Int_Period
+        VxDCall VTD_Begin_Min_Int_Period
         ret
 EndProc SVC_SetTimerRate
 
@@ -1469,7 +1470,7 @@ EndProc SVC_SetTimerRate
 ;***                                                 ***
 ;*******************************************************
 BeginProc SVC_GetTimerRate
-        VxDcall VTD_Get_Interrupt_Period
+        VxDCall VTD_Get_Interrupt_Period
         mov     [ebp.Client_AX],ax
         ret
 EndProc SVC_GetTimerRate
@@ -1645,7 +1646,7 @@ testforclients:
         test    eax,eax
         je      short oktokill
         pop     eax
-        mov     [ebp.client_AX],ERR_HAS_CLIENTS
+        mov     [ebp.Client_AX],ERR_HAS_CLIENTS
         ret
 oktokill:
         pop     eax
@@ -1812,7 +1813,7 @@ EndProc SVC_EndConv
 BeginProc MySuspend
         push    ebx
         mov     ebx,edx
-        VxDcall Suspend_VM
+        VxDCall Suspend_VM
         pop     ebx
         ret
 EndProc MySuspend
@@ -1921,7 +1922,7 @@ put4:
         mov     [ebp.Client_AX],NO_BLOCK
         mov     esi,OFFSET MySuspend
         mov     edx,VMHandle
-        VxDcall Schedule_Global_Event
+        VxDCall Schedule_Global_Event
         ret
 
         ;*
@@ -1982,12 +1983,12 @@ put8:
 
         mov     eax,IDAddr                      ; cancel timer of requestor
         mov     esi,[eax.C_TimerHandle]
-        VxDcall Cancel_Time_Out
+        VxDCall Cancel_Time_Out
         mov     [eax.C_TimerHandle],0
 
         mov     eax,OtherIDAddr
         mov     esi,[eax.C_TimerHandle]         ; cancel timer of other guy
-        VxDcall Cancel_Time_Out
+        VxDCall Cancel_Time_Out
         mov     [eax.C_TimerHandle],0
 
         mov     [eax.C_PutBlocked],0            ; turn off for Resume Handler
@@ -1997,7 +1998,7 @@ put8:
         mov     ebx,[eax.C_Regs]
         mov     [ebx.Client_DX],cx              ; give guy we unblock bytes
         mov     ebx,[eax.C_MyID]                ; resume other guy
-        VxDcall Resume_VM
+        VxDCall Resume_VM
         jnc     short gr1                       ; did it work?
         cmp     IsGet,1                         ; no, are we doing ConvGet
         jne     short put5                      ; no, then doing put
@@ -2051,7 +2052,7 @@ EndProc SVC_ConvPut
 SetDataTimeOut PROC near
         mov     edx,IDAddr                  ; reference data - ID ptr
         mov     esi,OFFSET DataTimedOut   ; callback routine
-        VxDcall Set_Global_Time_Out
+        VxDCall Set_Global_Time_Out
         ret
 SetDataTimeOut ENDP
 
@@ -2075,7 +2076,7 @@ isblocked:
         mov     [edx.C_PutBlocked],0            ; turn off blocked flag
         mov     [edx.C_GetBlocked],0
         mov     ebx,[edx.C_MyID]                ; resume VM
-        VxDcall Resume_VM
+        VxDCall Resume_VM
                                                 ; this is bad news
 notblocked:
         ret
@@ -2154,8 +2155,8 @@ BeginProc SVC_SetExecutionFocus
         call    GetIDFrom_CX_BX
         mov     ebx,eax
         mov     eax,200
-        VxDcall Adjust_Execution_Time
-        ;VxDcall        Set_Execution_Focus
+        VxDCall Adjust_Execution_Time
+        ;VxDCall        Set_Execution_Focus
         ret
 EndProc SVC_SetExecutionFocus
 
@@ -2243,7 +2244,7 @@ again_ts:
         ret
 fnd_ts:
         mov     esi,OFFSET SetCR0
-        VxDcall Schedule_Global_Event
+        VxDCall Schedule_Global_Event
         ret
 TaskSwitched ENDP
 
@@ -2273,7 +2274,7 @@ yes_active:
 
         mov     eax,07h
         mov     esi,OFFSET Fault07Handler
-        VxDcall Hook_PM_Fault                   ; grab int
+        VxDCall Hook_PM_Fault                   ; grab int
         jnc     short ok07
         mov     [ebp.Client_AX],1
         ret
@@ -2321,7 +2322,7 @@ BeginProc SVC_EMUShutdown
 shutmedownbaby:
         mov     eax,07h
         mov     esi,Old07Handler
-        VxDcall Hook_PM_Fault                   ; reset interrupt
+        VxDCall Hook_PM_Fault                   ; reset interrupt
 
         mov     eax,OldCR0                      ; put CR0 back
         mov     cr0,eax
@@ -2487,7 +2488,7 @@ fnd103:
 label199:
         mov     ebx,VMHandle
         movzx   edx,[edi.E_CS]
-        VxDcall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
+        VxDCall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
         mov     ebx,dword ptr [edi.E_8087]      ; 8087 ptr
         add     ebx,eax                         ; add linear base addr
 
@@ -2900,10 +2901,10 @@ EndProc SVC_UseHotKey
 
 BeginProc RaiseInterrupt
         Push_Client_State
-        VxDcall Begin_Nest_Exec
+        VxDCall Begin_Nest_Exec
         mov     eax,edx
-        VxDcall Exec_Int
-        VxDcall End_Nest_Exec
+        VxDCall Exec_Int
+        VxDCall End_Nest_Exec
         Pop_Client_State
         ret
 EndProc RaiseInterrupt
@@ -2921,7 +2922,7 @@ BeginProc SVC_RaiseInterruptInVM
         mov     ebx,eax
         movzx   edx,[ebp.Client_DX]
         mov     esi, OFFSET RaiseInterrupt
-        VxDcall Schedule_VM_Event
+        VxDCall Schedule_VM_Event
         mov     [ebp.Client_AX],0
         ret
 EndProc SVC_RaiseInterruptInVM

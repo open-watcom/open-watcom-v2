@@ -1571,7 +1571,7 @@ static void FunctionCode( FILE *f )
 
     fprintf( f, "_TEXT segment\n" );
     fprintf( f, "\tassume cs:_TEXT\n" );
-    fprintf( f, "\tassume ds:dgroup\n" );
+    fprintf( f, "\tassume ds:DGROUP\n" );
     fprintf( f, "\n" );
     fprintf( f, "public __ThunkTable\n" );
     fprintf( f, "__ThunkTable LABEL WORD\n" );

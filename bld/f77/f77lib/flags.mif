@@ -146,7 +146,7 @@ sw_a_axp_   =
 sw_a_ppc_   =
 
 # sw_a_(processor)
-sw_a_intel    = -w8-e
+sw_a_intel    = -w8-cx-e
 sw_a_register = -5r
 sw_a_stack    = -5s
 

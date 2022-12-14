@@ -358,8 +358,12 @@ cppflags_all    += -DBOOTSTRAP
 !endif
 
 cppflags_win    = -DSTRICT
+cppflags_dos    =
 !ifndef $(proj_name)_nodoslfn
-cppflags_dos    = -D__WATCOM_LFN__
+cppflags_dos    += -D__WATCOM_LFN__
+!endif
+!ifndef $(proj_name)_nodospc98
+cppflags_dos    += -D__WATCOM_PC98__
 !endif
 
 ##########################
@@ -499,8 +503,10 @@ clflags_wind     = $(clflags_gen)
 ######
 aflags_all      = -we $(mode_aflags) -fo=$@
 
-aflags_386      = -3-w8
-aflags_i86      = -w8
+aflags_intel    = -w8-cx
+
+aflags_386      = -3$(aflags_intel)
+aflags_i86      = $(aflags_intel)
 aflags_axp      =
 aflags_ppc      =
 aflags_mps      =

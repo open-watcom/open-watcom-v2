@@ -158,7 +158,7 @@ extra_clib_c_flags =
 #####################
 # ASSEMBLERS SETINGS
 ######
-sw_a_common = -we -cx
+sw_a_common = -we
 !ifdef __UNIX__
 sw_a_common += -fo=.obj
 !endif
@@ -195,7 +195,7 @@ sw_a_ppc_   =
 sw_a_mps_   =
 
 # sw_a_(processor)
-sw_a_intel    = -fpc-w8-e
+sw_a_intel    = -w8-cx-e-fpc
 sw_a_register = -5r
 sw_a_stack    = -5s
 
