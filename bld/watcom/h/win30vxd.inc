@@ -345,22 +345,13 @@ Declare_Virtual_Device macro Name, Major_Ver, Minor_Ver, Ctrl_Proc, Device_Num, 
   VxD_LOCKED_DATA_ENDS
 endm
 
-VxDCall macro P
+VxDcall macro P
   int 20h
   dd  P
 endm
 
-VxDCall3 macro P, Param1, Param2, Param3
+VxDcall3 macro P, Param1, Param2, Param3
   push Param3
-  push Param2
-  push Param1
-  int 20h
-  dd  P
-  add esp,0ch
-endm
-
-VxDCall3a macro P, Param1, Param2, Param3
-  push OFFSET Param3
   push Param2
   push Param1
   int 20h
@@ -386,14 +377,14 @@ Push_Client_State macro
   sub  esp, SIZE Client_Reg_Struc
   push edi
   lea  edi, [esp+4]
-  VxDCall Save_Client_State
+  VxDcall Save_Client_State
   pop  edi
 endm
 
 Pop_Client_State macro
   push esi
   lea  esi, [esp+4]
-  VxDCall Restore_Client_State
+  VxDcall Restore_Client_State
   pop  esi
   add  esp, SIZE Client_Reg_Struc
 endm
@@ -407,7 +398,7 @@ Client_Ptr_Flat MACRO Reg_32, Cli_Seg, Cli_Off, Can_Trash_EAX
   ELSE
     mov ax, (Client_&Cli_Seg * 100h) + Client_&Cli_Off
   ENDIF
-    VxDCall Map_Flat
+    VxDcall Map_Flat
 
   IFDIFI <Reg_32>, <EAX>
     xchg Reg_32, eax

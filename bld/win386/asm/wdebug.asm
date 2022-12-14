@@ -247,30 +247,30 @@ VxD_ICODE_SEG
 ;*** WGod_Sys_Critical_Init - hook int 2f here, for PM apps ***
 ;***                                                        ***
 ;**************************************************************
-BeginProc WGod_Sys_Critical_Init
+VxDBeginProc WGod_Sys_Critical_Init
 ;*
 ;*** hook PM int 2f
 ;*
         mov     eax, 2Fh
-        VxDCall Get_PM_Int_Vector
+        VxDcall Get_PM_Int_Vector
         mov     [PM_Int2FNextCS], ecx
         mov     [PM_Int2FNextEIP], edx
 
         mov     esi, OFFSET WDebugPM_Int2F
-        VxDCall Allocate_PM_Call_Back
+        VxDcall Allocate_PM_Call_Back
 
         movzx   edx, ax                         ;eax has cs:ip
         mov     ecx, eax
         shr     ecx, 16
         mov     eax, 2Fh
-        VxDCall Set_PM_Int_Vector
+        VxDcall Set_PM_Int_Vector
 
 ;*
 ;*** hook gp fault
 ;*
         mov     eax,0dh
         mov     esi,OFFSET Fault0DHandler
-        VxDCall Hook_PM_Fault
+        VxDcall Hook_PM_Fault
         test    esi,esi
         jne     short aretd
         mov     esi,OFFSET JustReturn
@@ -292,7 +292,7 @@ nofpu:
         clc
         ret
 
-EndProc WGod_Sys_Critical_Init
+VxDEndProc WGod_Sys_Critical_Init
 
 VxD_ICODE_ENDS
 
@@ -301,7 +301,7 @@ VxD_ICODE_ENDS
 ;** locked code
 ;*
 VxD_LOCKED_CODE_SEG
-BeginProc WGod_Control
+VxDBeginProc WGod_Control
 
         Control_Dispatch SYS_CRITICAL_INIT, WGod_Sys_Critical_Init
         Control_Dispatch DEVICE_INIT, WGod_Device_Init
@@ -310,7 +310,7 @@ BeginProc WGod_Control
         clc
         ret
 
-EndProc WGod_Control
+VxDEndProc WGod_Control
 ;*
 ;*** ReflectTo16Bit - pass state to 16-bit application
 ;*
@@ -326,9 +326,9 @@ ReflectTo16Bit PROC near
         cmp     ax,257
         jne     short no_cancel
         push    edx
-        VxDCall Get_Sys_VM_Handle
+        VxDcall Get_Sys_VM_Handle
         mov     esi,HotEventHandle
-        VxDCall Cancel_VM_Event
+        VxDcall Cancel_VM_Event
         pop     edx
 
 no_cancel:
@@ -404,7 +404,7 @@ was_special:
 ReflectTo16Bit ENDP
 
 Is32BitSel PROC NEAR
-        VxDCall3 _GetDescriptor, eax, ebx, 0
+        VxDcall3 _GetDescriptor, eax, ebx, 0
         mov     dword ptr Descriptor+4,edx
         test    Desc4,040h
         ret
@@ -413,7 +413,7 @@ Is32BitSel ENDP
 ;*
 ;*** various fault handlers
 ;*
-BeginProc Fault00Handler
+VxDBeginProc Fault00Handler
         mov     FaultType,0h
         cmp     ICVM,ebx
         jne     short ret00
@@ -423,9 +423,9 @@ BeginProc Fault00Handler
         jmp     ReflectTo16Bit
 ret00:
         jmp     [Old00Handler]
-EndProc Fault00Handler
+VxDEndProc Fault00Handler
 
-BeginProc Fault06Handler
+VxDBeginProc Fault06Handler
         mov     FaultType,6h
         cmp     ICVM,ebx
         jne     short ret06
@@ -437,9 +437,9 @@ BeginProc Fault06Handler
         jmp     ReflectTo16Bit
 ret06:
         jmp     [Old06Handler]
-EndProc Fault06Handler
+VxDEndProc Fault06Handler
 
-BeginProc Fault07Handler
+VxDBeginProc Fault07Handler
         pushad
         movzx   edx,[ebp.Client_CS]
         xor     ecx,ecx
@@ -459,7 +459,7 @@ again102:
         jmp     [Old07Handler]
 
 fnd102:
-        VxDCall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
+        VxDcall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
         mov     ecx,ebx                         ; VM Handle
         mov     ebx,dword ptr [edi.E_8087]      ; 8087 ptr
         add     ebx,eax                         ; add linear offset
@@ -529,10 +529,10 @@ skip0:
         popad
         ret
 
-EndProc Fault07Handler
+VxDEndProc Fault07Handler
 
 
-BeginProc Fault0DHandler
+VxDBeginProc Fault0DHandler
         mov     FaultType,0dh
         cmp     ICVM,ebx
         jne     short ret0d
@@ -542,7 +542,7 @@ BeginProc Fault0DHandler
         jmp     ReflectTo16Bit
 ret0d:
         jmp     [Old0DHandler]
-EndProc Fault0DHandler
+VxDEndProc Fault0DHandler
 
 
 JustReturn: ret
@@ -599,7 +599,7 @@ Int03IDT:
 ;*** WGod_Device_Init - do V86 initialization ***
 ;***                                          ***
 ;************************************************
-BeginProc WGod_Device_Init
+VxDBeginProc WGod_Device_Init
 ;*
 ;*** hook into V86 int 2f chain
 ;*
@@ -655,25 +655,25 @@ aret6:
 
         clc
         ret
-EndProc WGod_Device_Init
+VxDEndProc WGod_Device_Init
 
 ;*********************************************
 ;***                                       ***
 ;*** HotStop - stop the system VM          ***
 ;***                                       ***
 ;*********************************************
-BeginProc HotStop
+VxDBeginProc HotStop
         or      [ebp.Client_EFlags],0100h
         mov     WasHotKey,1
         ret
-EndProc HotStop
+VxDEndProc HotStop
 
 ;****************************************************;
 ;***                                              ***;
 ;*** HotKeyPressed - someone tried an asynch stop ***;
 ;***                                              ***;
 ;****************************************************;
-BeginProc HotKeyPressed
+VxDBeginProc HotKeyPressed
         cmp     UseHotKey,0
         jne     short useit
         ret
@@ -683,7 +683,7 @@ useit:
         VxDCall Schedule_VM_Event
         mov     HotEventHandle,esi
         ret
-EndProc HotKeyPressed
+VxDEndProc HotKeyPressed
 
 ;***********************************
 ;***                             ***
@@ -750,7 +750,7 @@ GetFlatAddr PROC near
         ret
 pm_string:
         movzx   edx,MapSeg                      ; selector
-        VxDCall3 _SelectorMapFlat, ebx, edx, 0
+        VxDcall3 _SelectorMapFlat, ebx, edx, 0
         movzx   edx,MapOff                      ; offset
         add     eax,edx                         ; ring 0 addr
         ret
@@ -936,7 +936,7 @@ FindEmptySlot ENDP
 ;***                                 ***
 ;***************************************
 GetLimit PROC NEAR
-        VxDCall3 _GetDescriptor, edx, ebx, 0    ; ebx contains VM handle
+        VxDcall3 _GetDescriptor, edx, ebx, 0    ; ebx contains VM handle
         mov     dword ptr Descriptor,eax
         mov     dword ptr Descriptor+4,edx
         mov     dx,Desc1                        ; get low word
@@ -959,16 +959,16 @@ GetLimit ENDP
 ;*** WGod_Suspend - process suspend requests for a V86 ***
 ;***                                                     ***
 ;***********************************************************
-BeginProc WGod_Suspend
+VxDBeginProc WGod_Suspend
         ret
-EndProc WGod_Suspend
+VxDEndProc WGod_Suspend
 
 ;*********************************************************
 ;***                                                   ***
 ;*** WGod_Resume - process resume requests for a V86 ***
 ;***                                                   ***
 ;*********************************************************
-BeginProc WGod_Resume
+VxDBeginProc WGod_Resume
         mov     VMHandle,ebx
         mov     eax,ebx                 ; handle to search for
         mov     IsServer,2              ; no server test
@@ -989,7 +989,7 @@ gotrdata:
 notoktoresume:
         stc
         ret
-EndProc WGod_Resume
+VxDEndProc WGod_Resume
 
 
 ;**********************************************************
@@ -997,13 +997,13 @@ EndProc WGod_Resume
 ;*** WDebugPM_Int01 - int 01 handler for protected mode ***
 ;***                                                    ***
 ;**********************************************************
-BeginProc WDebugPM_Int01, High_Freq, PUBLIC
+VxDBeginProc WDebugPM_Int01, High_Freq, PUBLIC
 
         mov     eax,[ebp.Client_ESP]
         mov     [ebp.Client_EAX],eax
         VxDjmp  Simulate_Iret
 
-EndProc WDebugPM_Int01
+VxDEndProc WDebugPM_Int01
 
 
 ;**********************************************************
@@ -1011,7 +1011,7 @@ EndProc WDebugPM_Int01
 ;*** WDebugPM_Int2F - int 2F handler for protected mode ***
 ;***                                                    ***
 ;**********************************************************
-BeginProc WDebugPM_Int2F, High_Freq, PUBLIC
+VxDBeginProc WDebugPM_Int2F, High_Freq, PUBLIC
 
         mov     eax,[ebp.Client_EAX]
         cmp     ah,0FAh                         ; is it ours?
@@ -1030,14 +1030,14 @@ process:
 exit2:
         VxDjmp  Simulate_Iret
 
-EndProc WDebugPM_Int2F
+VxDEndProc WDebugPM_Int2F
 
 ;**************************************************
 ;***                                            ***
 ;*** WDebugV86_Int2F - int 2F handler for V86's ***
 ;***                                            ***
 ;**************************************************
-BeginProc WDebugV86_Int2F, High_Freq, PUBLIC
+VxDBeginProc WDebugV86_Int2F, High_Freq, PUBLIC
 
         mov     eax,[ebp.Client_EAX]
         cmp     ah,0FAh                         ; is it ours?
@@ -1056,17 +1056,17 @@ exit3:
         clc                                     ; swallow interrupt
         ret
 
-EndProc WDebugV86_Int2F
+VxDEndProc WDebugV86_Int2F
 
 ;****************************************************
 ;***                                              ***
 ;*** SVC_GetVersion - gets current version of API ***
 ;***                                              ***
 ;****************************************************
-BeginProc SVC_GetVersion
+VxDBeginProc SVC_GetVersion
         mov     [ebp.Client_AX], WGOD_VERSION
         ret
-EndProc SVC_GetVersion
+VxDEndProc SVC_GetVersion
 
 ;********************************************************
 ;***                                                  ***
@@ -1078,7 +1078,7 @@ EndProc SVC_GetVersion
 ;***                                                  ***
 ;*** return number of bytes copied in Client_AX       ***
 ;********************************************************
-BeginProc SVC_CopyMemory
+VxDBeginProc SVC_CopyMemory
 
         mov     [ebp.Client_AX],0       ; nothing yet
 
@@ -1088,14 +1088,14 @@ exitcm2:jmp     exitcm
 
 ok2c:
         movzx   edx,[ebp.Client_CX]     ; destination selector
-        VxDCall3 _SelectorMapFlat, ebx, edx, 0
+        VxDcall3 _SelectorMapFlat, ebx, edx, 0
         cmp     eax,0ffffffffh          ; could we do it?
         je      short exitcm2           ; no, leave
         mov     edi,eax                 ; save flat address
         add     edi,[ebp.Client_EDX]    ; add offset of destination
 
         movzx   edx,[ebp.Client_SI]     ; source selector
-        VxDCall3 _SelectorMapFlat, ebx, edx, 0
+        VxDcall3 _SelectorMapFlat, ebx, edx, 0
         cmp     eax,0ffffffffh          ; could we do it?
         je      short exitcm2           ; no, leave
         mov     esi,eax                 ; save flat address
@@ -1130,7 +1130,7 @@ trydest:
 docopy:
         mov     eax,esi                 ; get source address
         shr     eax,12                  ; calc page number
-        VxDCall3a _CopyPageTable, eax, 1, PageTableBuf
+        VxDcall3 _CopyPageTable, eax, 1, <OFFSET PageTableBuf>
         or      eax,eax                 ; eax = 0 if invalid page table entry
         je      short exitcm            ; ...
         mov     eax,PageTableBuf        ; get entry
@@ -1138,7 +1138,7 @@ docopy:
         je      short exitcm            ; ...
         mov     eax,edi                 ; get destination address
         shr     eax,12                  ; calc page number
-        VxDCall3a _CopyPageTable, eax, 1, PageTableBuf
+        VxDcall3 _CopyPageTable, eax, 1, <OFFSET PageTableBuf>
         or      eax,eax                 ; eax = 0 if invalid page table entry
         je      short exitcm            ; ...
         mov     eax,PageTableBuf        ; get entry
@@ -1155,7 +1155,7 @@ docopy:
         rep     movsb                   ; copy the bytes
 exitcm:
         ret
-EndProc SVC_CopyMemory
+VxDEndProc SVC_CopyMemory
 
 ;********************************************************
 ;***                                                  ***
@@ -1165,17 +1165,17 @@ EndProc SVC_CopyMemory
 ;***        cx     contains selector                  ***
 ;***                                                  ***
 ;********************************************************
-BeginProc SVC_GetDescriptor
+VxDBeginProc SVC_GetDescriptor
 
         movzx  ecx,[ebp.Client_CX]      ; get descriptor
-        VxDCall3 _GetDescriptor, ecx, ebx, 0    ; ebx contains VM handle
+        VxDcall3 _GetDescriptor, ecx, ebx, 0    ; ebx contains VM handle
 
         Client_Ptr_Flat edi,ES,BX       ; get destination
         mov     [edi+4],edx             ; store high word
         mov     [edi],eax               ; store low word
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_GetDescriptor
+VxDEndProc SVC_GetDescriptor
 
 ;********************************************************
 ;***                                                  ***
@@ -1184,7 +1184,7 @@ EndProc SVC_GetDescriptor
 ;*** client bx     selector                           ***
 ;***                                                  ***
 ;********************************************************
-BeginProc SVC_GetLimit
+VxDBeginProc SVC_GetLimit
 
         movzx   edx,[ebp.Client_BX]
         call    GetLimit
@@ -1193,7 +1193,7 @@ BeginProc SVC_GetLimit
         mov     [ebp.Client_AX],ax
         mov     [ebp.Client_DX],dx
         ret
-EndProc SVC_GetLimit
+VxDEndProc SVC_GetLimit
 
 ;********************************************************
 ;***                                                  ***
@@ -1203,7 +1203,7 @@ EndProc SVC_GetLimit
 ;***         cx - register to read                    ***
 ;***                                                  ***
 ;********************************************************
-BeginProc SVC_GetDR
+VxDBeginProc SVC_GetDR
 
         mov     cx,[ebp.Client_CX]
         test    cx,cx
@@ -1237,7 +1237,7 @@ donegdr:
         mov     [ebp.Client_EBX],eax
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_GetDR
+VxDEndProc SVC_GetDR
 
 ;********************************************************
 ;***                                                  ***
@@ -1247,7 +1247,7 @@ EndProc SVC_GetDR
 ;***         cx - register to change                  ***
 ;***                                                  ***
 ;********************************************************
-BeginProc SVC_SetDR
+VxDBeginProc SVC_SetDR
 
         mov     cx,[ebp.Client_CX]
         mov     eax,[ebp.Client_EBX]
@@ -1281,7 +1281,7 @@ errsdr:
 donesdr:
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_SetDR
+VxDEndProc SVC_SetDR
 
 ;*****************************************
 ;***                                   ***
@@ -1302,7 +1302,7 @@ SetTimer ENDP
 ;*** SampleStuff - callback for sampler               ***
 ;***                                                  ***
 ;********************************************************
-BeginProc SampleStuff
+VxDBeginProc SampleStuff
 
         call    SetTimer
 
@@ -1324,7 +1324,7 @@ testindex:
 roomleft:
         mov     edx,SampleUserSel               ; get flat pointer to buff
         mov     ebx,SampleUserVM
-        VxDCall3 _SelectorMapFlat, ebx, edx, 0
+        VxDcall3 _SelectorMapFlat, ebx, edx, 0
         cmp     eax,0ffffffffh
         jne     short ok_map
         ret
@@ -1342,7 +1342,7 @@ ok_map:
         add     SampleOffset,SAMPLE_SIZE        ; bump to next table entry
 
         ret
-EndProc SampleStuff
+VxDEndProc SampleStuff
 
 ;********************************************************
 ;***                                                  ***
@@ -1353,7 +1353,7 @@ EndProc SampleStuff
 ;***        dx - milliseconds between samples         ***
 ;***                                                  ***
 ;********************************************************
-BeginProc SVC_InitSampler
+VxDBeginProc SVC_InitSampler
 
         mov     StopSamples,1               ; ignore samples for now
         mov     CurrTick,0
@@ -1383,14 +1383,14 @@ BeginProc SVC_InitSampler
         mov     [ebp.Client_AX],0
         ret
 
-EndProc SVC_InitSampler
+VxDEndProc SVC_InitSampler
 
 ;*************************************************************
 ;***                                                       ***
 ;*** SVC_QuitSampler - cancel timeouts in the Windows VM   ***
 ;***                                                       ***
 ;*************************************************************
-BeginProc SVC_QuitSampler
+VxDBeginProc SVC_QuitSampler
         mov     esi,TimerHandle
         VxDCall Cancel_Time_Out
 
@@ -1405,7 +1405,7 @@ skiprip:
         sub     eax,StartTime
         mov     [ebp.Client_EAX],eax
         ret
-EndProc SVC_QuitSampler
+VxDEndProc SVC_QuitSampler
 
 ;*************************************************************
 ;***                                                       ***
@@ -1414,7 +1414,7 @@ EndProc SVC_QuitSampler
 ;***   NOTE: resets the sample buffer to the start         ***
 ;***                                                       ***
 ;*************************************************************
-BeginProc SVC_StartSampler
+VxDBeginProc SVC_StartSampler
         mov     eax,SampleUserOff
         mov     SampleOffset,eax
         mov     SampleCount,0
@@ -1423,7 +1423,7 @@ BeginProc SVC_StartSampler
         mov     Sample0Tick,eax
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_StartSampler
+VxDEndProc SVC_StartSampler
 
 ;****************************************
 ;***                                  ***
@@ -1432,23 +1432,23 @@ EndProc SVC_StartSampler
 ;***   NOTE: returns sample count     ***
 ;***                                  ***
 ;****************************************
-BeginProc SVC_StopSampler
+VxDBeginProc SVC_StopSampler
         mov     StopSamples,1
         mov     eax,SampleCount
         mov     [ebp.Client_EAX],eax
         ret
-EndProc SVC_StopSampler
+VxDEndProc SVC_StopSampler
 
 ;****************************************
 ;***                                  ***
 ;*** SVC_GetCurrTick - guess!         ***
 ;***                                  ***
 ;****************************************
-BeginProc SVC_GetCurrTick
+VxDBeginProc SVC_GetCurrTick
         mov     eax,CurrTick
         mov     [ebp.Client_EAX],eax
         ret
-EndProc SVC_GetCurrTick
+VxDEndProc SVC_GetCurrTick
 
 ;*******************************************************
 ;***                                                 ***
@@ -1457,45 +1457,45 @@ EndProc SVC_GetCurrTick
 ;*** client bx  sample rate                          ***
 ;***                                                 ***
 ;*******************************************************
-BeginProc SVC_SetTimerRate
+VxDBeginProc SVC_SetTimerRate
         movzx   eax,[ebp.Client_BX]
         mov     IntPeriod,eax
         VxDCall VTD_Begin_Min_Int_Period
         ret
-EndProc SVC_SetTimerRate
+VxDEndProc SVC_SetTimerRate
 
 ;*******************************************************
 ;***                                                 ***
 ;*** SVC_GetTimerRate - get timer tick rate          ***
 ;***                                                 ***
 ;*******************************************************
-BeginProc SVC_GetTimerRate
+VxDBeginProc SVC_GetTimerRate
         VxDCall VTD_Get_Interrupt_Period
         mov     [ebp.Client_AX],ax
         ret
-EndProc SVC_GetTimerRate
+VxDEndProc SVC_GetTimerRate
 
 ;****************************************
 ;***                                  ***
 ;*** SVC_GetCurrCount - guess!        ***
 ;***                                  ***
 ;****************************************
-BeginProc SVC_GetCurrCount
+VxDBeginProc SVC_GetCurrCount
         mov     eax,SampleCount
         mov     [ebp.Client_EAX],eax
         ret
-EndProc SVC_GetCurrCount
+VxDEndProc SVC_GetCurrCount
 
 ;****************************************
 ;***                                  ***
 ;*** SVC_GetSample0Tick - guess!      ***
 ;***                                  ***
 ;****************************************
-BeginProc SVC_GetSample0Tick
+VxDBeginProc SVC_GetSample0Tick
         mov     eax,Sample0Tick
         mov     [ebp.Client_EAX],eax
         ret
-EndProc SVC_GetSample0Tick
+VxDEndProc SVC_GetSample0Tick
 
 
 ;*******************************************************
@@ -1506,7 +1506,7 @@ EndProc SVC_GetSample0Tick
 ;***        BX - offset                              ***
 ;***                                                 ***
 ;*******************************************************
-BeginProc SVC_RegisterName
+VxDBeginProc SVC_RegisterName
 
         call    GetFlatAddr_ES_BX
         mov     StringAddr,eax                  ; save string address
@@ -1552,7 +1552,7 @@ again5:
 donex:
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_RegisterName
+VxDEndProc SVC_RegisterName
 
 ;******************************************************
 ;***                                                ***
@@ -1562,7 +1562,7 @@ EndProc SVC_RegisterName
 ;***        di:si - id segment:offset               ***
 ;***                                                ***
 ;******************************************************
-BeginProc SVC_AccessName
+VxDBeginProc SVC_AccessName
         call    GetFlatAddr_ES_BX
         call    FindServerPtrFromName           ; go find name
         test    eax,eax                         ; did we get a name?
@@ -1612,7 +1612,7 @@ gotid:
         mov     [ebp.Client_AX],0               ; ok!
 
         ret
-EndProc SVC_AccessName
+VxDEndProc SVC_AccessName
 
 ;*************************************************
 ;***                                           ***
@@ -1622,7 +1622,7 @@ EndProc SVC_AccessName
 ;***        BX - offset                        ***
 ;***                                           ***
 ;*************************************************
-BeginProc SVC_UnregisterName
+VxDBeginProc SVC_UnregisterName
         call    GetFlatAddr_ES_BX
         call    FindServerPtrFromName
         test    eax,eax                         ; does the server exist?
@@ -1654,7 +1654,7 @@ oktokill:
         mov     [ebp.Client_AX],0
 
         ret
-EndProc SVC_UnregisterName
+VxDEndProc SVC_UnregisterName
 
 ;*************************************************
 ;***                                           ***
@@ -1663,7 +1663,7 @@ EndProc SVC_UnregisterName
 ;*** Client es:bx - server to disconnect from  ***
 ;***                                           ***
 ;*************************************************
-BeginProc SVC_UnaccessName
+VxDBeginProc SVC_UnaccessName
         call    GetFlatAddr_ES_BX
         call    FindServerPtrFromName
         test    eax,eax                         ; does the server exist?
@@ -1685,7 +1685,7 @@ foundclx:
         mov     [eax.C_InUse],0
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_UnaccessName
+VxDEndProc SVC_UnaccessName
 
 ;**************************************************
 ;***                                            ***
@@ -1695,7 +1695,7 @@ EndProc SVC_UnaccessName
 ;*** returns ax - number of convs               ***
 ;***                                            ***
 ;**************************************************
-BeginProc SVC_StartConv
+VxDBeginProc SVC_StartConv
         call    GetIDFrom_CX_BX
         mov     ServerID,eax                    ; client must have this serv
         mov     eax,VMHandle                    ; client id
@@ -1719,7 +1719,7 @@ doit:
         mov     [ebp.Client_AX],bx              ; return to user
 
         ret
-EndProc SVC_StartConv
+VxDEndProc SVC_StartConv
 
 ;***********************************************************
 ;***                                                     ***
@@ -1728,7 +1728,7 @@ EndProc SVC_StartConv
 ;***  Client ES:BX - pointer to client id                ***
 ;***                                                     ***
 ;***********************************************************
-BeginProc SVC_LookForConv
+VxDBeginProc SVC_LookForConv
         mov     eax,VMHandle
         call    FindServerPtr
         test    eax,eax
@@ -1769,7 +1769,7 @@ nextlfc:
         mov     [ebp.Client_AX],0h              ; no clients waiting
         ret
 
-EndProc SVC_LookForConv
+VxDEndProc SVC_LookForConv
 
 ;******************************************************
 ;***                                                ***
@@ -1778,7 +1778,7 @@ EndProc SVC_LookForConv
 ;*** Client cx:bx  - handle of server               ***
 ;***                                                ***
 ;******************************************************
-BeginProc SVC_EndConv
+VxDBeginProc SVC_EndConv
         call    GetIDFrom_CX_BX
         call    FindServerPtr
         test    eax,eax
@@ -1803,20 +1803,20 @@ okec1:
         mov     [ebp.Client_AX],0
         ret
 
-EndProc SVC_EndConv
+VxDEndProc SVC_EndConv
 
 ;**************************************************
 ;***                                            ***
 ;*** MySuspend - a global event to suspend a VM ***
 ;***                                            ***
 ;**************************************************
-BeginProc MySuspend
+VxDBeginProc MySuspend
         push    ebx
         mov     ebx,edx
         VxDCall Suspend_VM
         pop     ebx
         ret
-EndProc MySuspend
+VxDEndProc MySuspend
 
 ;****************************************
 ;***                                  ***
@@ -2023,11 +2023,11 @@ DoGetPut ENDP
 ;***        DI    - block/noblock        ***
 ;***                                     ***
 ;*******************************************
-BeginProc SVC_ConvGet
+VxDBeginProc SVC_ConvGet
         mov     IsGet,1
         call    DoGetPut
         ret
-EndProc SVC_ConvGet
+VxDEndProc SVC_ConvGet
 
 ;*******************************************
 ;*** SVC_ConvPut - give data to someone  ***
@@ -2038,11 +2038,11 @@ EndProc SVC_ConvGet
 ;***        DI    - block/noblock        ***
 ;***                                     ***
 ;*******************************************
-BeginProc SVC_ConvPut
+VxDBeginProc SVC_ConvPut
         mov     IsGet,0
         call    DoGetPut
         ret
-EndProc SVC_ConvPut
+VxDEndProc SVC_ConvPut
 
 ;***********************************************
 ;***                                         ***
@@ -2063,7 +2063,7 @@ SetDataTimeOut ENDP
 ;***        EDX - ptr to id for timedout VM           ***
 ;***                                                  ***
 ;********************************************************
-BeginProc DataTimedOut
+VxDBeginProc DataTimedOut
         mov     [edx.C_TimerHandle],0
         mov     eax,[edx.C_Regs]                ; retreive register pointer
         cmp     [edx.C_PutBlocked],0
@@ -2080,7 +2080,7 @@ isblocked:
                                                 ; this is bad news
 notblocked:
         ret
-EndProc DataTimedOut
+VxDEndProc DataTimedOut
 
 ;************************************************************
 ;***                                                      ***
@@ -2114,7 +2114,7 @@ DoGetPutTimeOut ENDP
 ;*** client cx:bx - server id to check for                           ***
 ;***                                                                 ***
 ;***********************************************************************
-BeginProc SVC_IsConvAck
+VxDBeginProc SVC_IsConvAck
         call    GetIDFrom_CX_BX
         mov     ServerID,eax                    ; server and client pair
         mov     eax,VMHandle                    ; vm to look for
@@ -2132,17 +2132,17 @@ ok99:
         movzx   eax,byte ptr [eax.C_AckConv]
         mov     [ebp.Client_AX],ax              ; 0 (no) or 1 (yes)
         ret
-EndProc SVC_IsConvAck
+VxDEndProc SVC_IsConvAck
 
 ;**********************************
 ;***                            ***
 ;*** SVC_MyID - return id of VM ***
 ;***                            ***
 ;**********************************
-BeginProc SVC_MyID
+VxDBeginProc SVC_MyID
         mov     [ebp.Client_EAX],ebx
         ret
-EndProc SVC_MyID
+VxDEndProc SVC_MyID
 
 ;****************************************************
 ;***                                              ***
@@ -2151,14 +2151,14 @@ EndProc SVC_MyID
 ;*** client cx:bx - id to start up                ***
 ;***                                              ***
 ;****************************************************
-BeginProc SVC_SetExecutionFocus
+VxDBeginProc SVC_SetExecutionFocus
         call    GetIDFrom_CX_BX
         mov     ebx,eax
         mov     eax,200
         VxDCall Adjust_Execution_Time
         ;VxDCall        Set_Execution_Focus
         ret
-EndProc SVC_SetExecutionFocus
+VxDEndProc SVC_SetExecutionFocus
 
 ;************************************************************
 ;***                                                      ***
@@ -2168,12 +2168,12 @@ EndProc SVC_SetExecutionFocus
 ;***                or ffff (nothing)                     ***
 ;***                                                      ***
 ;************************************************************
-BeginProc SVC_WhatHappened
+VxDBeginProc SVC_WhatHappened
         mov     ax,FaultType
         mov     [ebp.Client_AX],ax
         mov     FaultType,0ffffh
         ret
-EndProc SVC_WhatHappened
+VxDEndProc SVC_WhatHappened
 
 ;**************************************************
 ;***                                            ***
@@ -2185,11 +2185,11 @@ EndProc SVC_WhatHappened
 ;***        DI    - milliseconds to timeout     ***
 ;***                                            ***
 ;**************************************************
-BeginProc SVC_ConvGetTimeout
+VxDBeginProc SVC_ConvGetTimeout
         mov     IsGet,1
         call    DoGetPutTimeOut
         ret
-EndProc SVC_ConvGetTimeout
+VxDEndProc SVC_ConvGetTimeout
 
 ;**************************************************
 ;***                                            ***
@@ -2201,18 +2201,18 @@ EndProc SVC_ConvGetTimeout
 ;***        DI    - milliseconds to timeout     ***
 ;***                                            ***
 ;**************************************************
-BeginProc SVC_ConvPutTimeout
+VxDBeginProc SVC_ConvPutTimeout
         mov     IsGet,0
         call    DoGetPutTimeOut
         ret
-EndProc SVC_ConvPutTimeout
+VxDEndProc SVC_ConvPutTimeout
 
 ;*********************************************
 ;***                                       ***
 ;*** SetCR0 - scheduled event to reset CR0 ***
 ;***                                       ***
 ;*********************************************
-BeginProc SetCR0
+VxDBeginProc SetCR0
         push    eax
         mov     eax,cr0
         or      eax,4h                  ; turn on emulation
@@ -2220,7 +2220,7 @@ BeginProc SetCR0
         mov     cr0,eax
         pop     eax
         ret
-EndProc SetCR0
+VxDEndProc SetCR0
 
 ;**************************************************
 ;***                                            ***
@@ -2256,7 +2256,7 @@ TaskSwitched ENDP
 ;*** returns: ax = 0, -1 (success, failure)     ***
 ;***                                            ***
 ;**************************************************
-BeginProc SVC_EMUInit
+VxDBeginProc SVC_EMUInit
         cmp     IsEMUInit,0                     ; are we already emulating?
         je      short initmebaby                ; nope
         inc     IsEMUInit                       ; add another case
@@ -2297,7 +2297,7 @@ aret7:
         mov     [ebp.Client_AX],0
         ret
 
-EndProc SVC_EMUInit
+VxDEndProc SVC_EMUInit
 
 ;**************************************************
 ;***                                            ***
@@ -2306,7 +2306,7 @@ EndProc SVC_EMUInit
 ;*** returns: ax = 0, -1 (success, failure)     ***
 ;***                                            ***
 ;**************************************************
-BeginProc SVC_EMUShutdown
+VxDBeginProc SVC_EMUShutdown
 ;*
 ;*** one less guy wanting emulation
 ;*
@@ -2329,7 +2329,7 @@ shutmedownbaby:
 
         mov     [ebp.Client_AX],0               ; all done
         ret
-EndProc SVC_EMUShutdown
+VxDEndProc SVC_EMUShutdown
 
 ;**********************************************************************
 ;***                                                                ***
@@ -2341,7 +2341,7 @@ EndProc SVC_EMUShutdown
 ;*** returns - ax 0,-1 (success, failure)                           ***
 ;***                                                                ***
 ;**********************************************************************
-BeginProc SVC_EMURegister
+VxDBeginProc SVC_EMURegister
 
 ;*
 ;*** find an empty list element
@@ -2375,7 +2375,7 @@ fnd100:
 
         ret
 
-EndProc SVC_EMURegister
+VxDEndProc SVC_EMURegister
 
 ;**********************************************************************
 ;***                                                                ***
@@ -2386,7 +2386,7 @@ EndProc SVC_EMURegister
 ;*** returns - ax 0,-1 (success, failure)                           ***
 ;***                                                                ***
 ;**********************************************************************
-BeginProc SVC_EMUUnRegister
+VxDBeginProc SVC_EMUUnRegister
 
 ;*
 ;*** find the specified CS
@@ -2411,7 +2411,7 @@ fnd101:
         mov     [ebp.Client_AX],0
         ret
 
-EndProc SVC_EMUUnRegister
+VxDEndProc SVC_EMUUnRegister
 
 ;**********************************************************************
 ;***                                                                ***
@@ -2420,13 +2420,13 @@ EndProc SVC_EMUUnRegister
 ;*** returns - ax 1,0  (true, false)                                ***
 ;***                                                                ***
 ;**********************************************************************
-BeginProc SVC_FPUPresent
+VxDBeginProc SVC_FPUPresent
 
         mov     ax,HasFPU
         mov     [ebp.Client_AX],ax
         ret
 
-EndProc SVC_FPUPresent
+VxDEndProc SVC_FPUPresent
 
 just_an_fsave:
                 fsave   [eax]
@@ -2445,7 +2445,7 @@ just_an_frstor:
 ;*** returns - ax 0,-1 (success, failure)                           ***
 ;***                                                                ***
 ;**********************************************************************
-BeginProc SVC_EMUSaveRestore
+VxDBeginProc SVC_EMUSaveRestore
 
 ;*
 ;*** find an empty list element
@@ -2488,7 +2488,7 @@ fnd103:
 label199:
         mov     ebx,VMHandle
         movzx   edx,[edi.E_CS]
-        VxDCall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
+        VxDcall3 _SelectorMapFlat, ebx, edx, 0    ; returns linear addr in eax
         mov     ebx,dword ptr [edi.E_8087]      ; 8087 ptr
         add     ebx,eax                         ; add linear base addr
 
@@ -2505,27 +2505,27 @@ label199:
         ret
 
 
-EndProc SVC_EMUSaveRestore
+VxDEndProc SVC_EMUSaveRestore
 
 ;****************************************************************
 ;***                                                          ***
 ;*** SVC_PauseSampler - temporary suspension of sample taking ***
 ;***                                                          ***
 ;****************************************************************
-BeginProc SVC_PauseSampler
+VxDBeginProc SVC_PauseSampler
         mov     StopSamples,1
         ret
-EndProc SVC_PauseSampler
+VxDEndProc SVC_PauseSampler
 
 ;*************************************************
 ;***                                           ***
 ;*** SVC_UnPauseSampler - resume sample taking ***
 ;***                                           ***
 ;*************************************************
-BeginProc SVC_UnPauseSampler
+VxDBeginProc SVC_UnPauseSampler
         mov     StopSamples,0
         ret
-EndProc SVC_UnPauseSampler
+VxDEndProc SVC_UnPauseSampler
 
 ;*******************************************
 ;***                                     ***
@@ -2534,12 +2534,12 @@ EndProc SVC_UnPauseSampler
 ;***        bx - value to write          ***
 ;***                                     ***
 ;*******************************************
-BeginProc SVC_EGAWrite
+VxDBeginProc SVC_EGAWrite
         mov     dx,[ebp.Client_DX]
         mov     ax,[ebp.Client_BX]
         out     dx,ax
         ret
-EndProc SVC_EGAWrite
+VxDEndProc SVC_EGAWrite
 
 ;*******************************************
 ;***                                     ***
@@ -2548,7 +2548,7 @@ EndProc SVC_EGAWrite
 ;***        bx - value to write          ***
 ;***                                     ***
 ;*******************************************
-BeginProc SVC_VGARead
+VxDBeginProc SVC_VGARead
         mov     dx,[ebp.Client_DX]
         mov     ax,[ebp.Client_BX]
         out     dx,al
@@ -2557,7 +2557,7 @@ BeginProc SVC_VGARead
         xor     ah,ah
         mov     [ebp.Client_AX],ax
         ret
-EndProc SVC_VGARead
+VxDEndProc SVC_VGARead
 
 ;*******************************************
 ;***                                     ***
@@ -2565,7 +2565,7 @@ EndProc SVC_VGARead
 ;*** Client dx - register to use         ***
 ;***                                     ***
 ;*******************************************
-BeginProc SVC_DisableVideo
+VxDBeginProc SVC_DisableVideo
         mov     dx,[ebp.Client_DX]
 fooxx:
         in al,dx
@@ -2577,7 +2577,7 @@ fooxx:
         xor al,al
         out dx,al
         ret
-EndProc SVC_DisableVideo
+VxDEndProc SVC_DisableVideo
 
 ;*****************************************************************************
 ;***                                                                       ***
@@ -2589,7 +2589,7 @@ EndProc SVC_DisableVideo
 ;*** returns - ax 0,-1 (success, failure)                                  ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_RegisterInterruptCallback
+VxDBeginProc SVC_RegisterInterruptCallback
         cmp     ICCodeSeg,0
         je      short okric
         mov     [ebp.Client_AX],0FFFFh
@@ -2624,7 +2624,7 @@ okric:
         mov     ICDataFlat,eax
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_RegisterInterruptCallback
+VxDEndProc SVC_RegisterInterruptCallback
 
 ;*****************************************************************************
 ;***                                                                       ***
@@ -2634,7 +2634,7 @@ EndProc SVC_RegisterInterruptCallback
 ;*** returns - ax 0,-1 (success, failure)                                  ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_UnRegisterInterruptCallback
+VxDBeginProc SVC_UnRegisterInterruptCallback
         mov     ax,[ebp.Client_CX]
         cmp     ICCodeSeg,ax
         je      short okuric
@@ -2652,7 +2652,7 @@ okuric:
         mov     ICStackOff,0
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_UnRegisterInterruptCallback
+VxDEndProc SVC_UnRegisterInterruptCallback
 
 
 ;*****************************************************************************
@@ -2663,7 +2663,7 @@ EndProc SVC_UnRegisterInterruptCallback
 ;*** returns - ax 0,-1 (success, failure)                                  ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_GetInterruptCallback
+VxDBeginProc SVC_GetInterruptCallback
         cmp     ICCodeSeg,0
         jne     short okgic
         mov     [ebp.Client_AX],0FFFFh
@@ -2689,7 +2689,7 @@ okgic:
         mov     [eax+0ah],bx
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_GetInterruptCallback
+VxDEndProc SVC_GetInterruptCallback
 
 ;*****************************************************************************
 ;***                                                                       ***
@@ -2697,7 +2697,7 @@ EndProc SVC_GetInterruptCallback
 ;***               area interrupt callback registered                      ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_RestartFromInterrupt
+VxDBeginProc SVC_RestartFromInterrupt
         mov     edx,ICDataFlat
         mov     eax,[edx.SaveEAX]
         mov     [ebp.Client_EAX],eax
@@ -2733,7 +2733,7 @@ BeginProc SVC_RestartFromInterrupt
         mov     [ebp.Client_SS],ax
         pop     eax
         ret
-EndProc SVC_RestartFromInterrupt
+VxDEndProc SVC_RestartFromInterrupt
 
 ;*****************************************************************************
 ;***                                                                       ***
@@ -2741,7 +2741,7 @@ EndProc SVC_RestartFromInterrupt
 ;***               area interrupt callback registered                      ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_Is32BitSel
+VxDBeginProc SVC_Is32BitSel
         movzx   eax,[ebp.Client_BX]
         call    Is32BitSel
         je      short isnot
@@ -2749,21 +2749,21 @@ BeginProc SVC_Is32BitSel
         ret
 isnot:  mov     [ebp.Client_AX],0
         ret
-EndProc SVC_Is32BitSel
+VxDEndProc SVC_Is32BitSel
 
 ;*****************************************************************************
 ;***                                                                       ***
 ;*** SVC_GetVMId - return actual VM id                                     ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_GetVMId
+VxDBeginProc SVC_GetVMId
         mov     eax,VMHandle
         mov     edx,eax
         shr     edx,16
         mov     [ebp.Client_AX],ax
         mov     [ebp.Client_DX],dx
         ret
-EndProc SVC_GetVMId
+VxDEndProc SVC_GetVMId
 
 ;*******************************************************
 ;***                                                 ***
@@ -2771,7 +2771,7 @@ EndProc SVC_GetVMId
 ;*** Client cx:bx - where to reflect interrupts to   ***
 ;***                                                 ***
 ;*******************************************************
-BeginProc SVC_HookIDT
+VxDBeginProc SVC_HookIDT
 
         mov     ax,[ebp.Client_CX]
         mov     ReflectToCS,ax
@@ -2799,14 +2799,14 @@ BeginProc SVC_HookIDT
         mov     word ptr [esi+6], dx            ; hi word of offset
 
         ret
-EndProc SVC_HookIDT
+VxDEndProc SVC_HookIDT
 
 ;*****************************************************************************
 ;***                                                                       ***
 ;*** SVC_IDTFini - done fiddleing IDT                                      ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_IDTFini
+VxDBeginProc SVC_IDTFini
 
         cmp     IDTIsInit,1
         jne     short done_ifini
@@ -2815,7 +2815,7 @@ BeginProc SVC_IDTFini
 done_ifini:
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_IDTFini
+VxDEndProc SVC_IDTFini
 
 ;*****************************************************************************
 ;***                                                                       ***
@@ -2823,7 +2823,7 @@ EndProc SVC_IDTFini
 ;*** Client bx - idt sel                                                   ***
 ;***                                                                       ***
 ;*****************************************************************************
-BeginProc SVC_IDTInit
+VxDBeginProc SVC_IDTInit
         cmp     IDTIsInit,0
         jne     short done_iinit
 
@@ -2852,7 +2852,7 @@ BeginProc SVC_IDTInit
 done_iinit:
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_IDTInit
+VxDEndProc SVC_IDTInit
 
 
 ;*************************************************
@@ -2860,7 +2860,7 @@ EndProc SVC_IDTInit
 ;*** SVC_ConvPutPending - test for pending put ***
 ;***                                           ***
 ;*************************************************
-BeginProc SVC_ConvPutPending
+VxDBeginProc SVC_ConvPutPending
         mov     edx,OFFSET Convs
         xor     ecx,ecx
 loopmetoo:
@@ -2884,7 +2884,7 @@ putp:
         mov     [ebp.Client_AX],1
         ret
 
-EndProc SVC_ConvPutPending
+VxDEndProc SVC_ConvPutPending
 
 ;*************************************************
 ;***                                           ***
@@ -2892,14 +2892,14 @@ EndProc SVC_ConvPutPending
 ;*** Client bx - boolean value                 ***
 ;***                                           ***
 ;*************************************************
-BeginProc SVC_UseHotKey
+VxDBeginProc SVC_UseHotKey
         movzx   eax,[ebp.Client_BX]
         mov     UseHotKey,eax
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_UseHotKey
+VxDEndProc SVC_UseHotKey
 
-BeginProc RaiseInterrupt
+VxDBeginProc RaiseInterrupt
         Push_Client_State
         VxDCall Begin_Nest_Exec
         mov     eax,edx
@@ -2907,7 +2907,7 @@ BeginProc RaiseInterrupt
         VxDCall End_Nest_Exec
         Pop_Client_State
         ret
-EndProc RaiseInterrupt
+VxDEndProc RaiseInterrupt
 
 
 ;*********************************************************************
@@ -2917,7 +2917,7 @@ EndProc RaiseInterrupt
 ;***           dx - interrupt to raise                             ***
 ;***                                                               ***
 ;*********************************************************************
-BeginProc SVC_RaiseInterruptInVM
+VxDBeginProc SVC_RaiseInterruptInVM
         call    GetIDFrom_CX_BX
         mov     ebx,eax
         movzx   edx,[ebp.Client_DX]
@@ -2925,7 +2925,7 @@ BeginProc SVC_RaiseInterruptInVM
         VxDCall Schedule_VM_Event
         mov     [ebp.Client_AX],0
         ret
-EndProc SVC_RaiseInterruptInVM
+VxDEndProc SVC_RaiseInterruptInVM
 
 VxD_CODE_ENDS
 
