@@ -327,7 +327,7 @@ not_watch:
 
         ; DS already has correct segment value
         test    DS:_Flags, F_Is386
-        jnz     restore386regs
+        jnz     restore386Regs
 
 ; If no 32-bit registers available, only restore 16-bit regs
 

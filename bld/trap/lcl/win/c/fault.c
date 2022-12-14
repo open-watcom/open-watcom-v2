@@ -71,7 +71,7 @@
 extern WORD     __far NewAX;
 extern WORD     __far NewCS;
 extern WORD     __far NewIP;
-extern WORD     __far NewFLAGS;
+extern WORD     __far NewFlags;
 extern WORD     __far OldretCS;
 extern WORD     __far OldretIP;
 extern WORD     __far Oldintnumber;
@@ -136,7 +136,7 @@ static void restoreState( volatile fault_frame *ff )
     *wptr = IntResult.CS;
     wptr = _MK_FP( CSAlias, _FP_OFF( &NewIP ) );
     *wptr = (WORD) IntResult.EIP;
-    wptr = _MK_FP( CSAlias, _FP_OFF( &NewFLAGS ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewFlags ) );
     *wptr = (WORD) IntResult.EFlags;
     wptr = _MK_FP( CSAlias, _FP_OFF( &OldretCS ) );
     *wptr = ff->intf.retCS;
