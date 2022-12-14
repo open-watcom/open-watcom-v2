@@ -78,7 +78,7 @@ LoadLE  proc    near
         push    w[load1_Name+4]
         push    d[load1_Flags]
         push    d[load1_Command]
-        push    w[load1_command+4]
+        push    w[load1_Command+4]
         push    w[load1_Environment]
         push    w[load1_Handle]
         push    w[load1_PSP]
@@ -196,8 +196,8 @@ medclose:
         push    ds
         mov     ebx,d[load1_Flags]
         mov     cx,w[load1_Environment]
-        les     esi,f[load1_command]
-        lds     edx,f[load1_name]
+        les     esi,f[load1_Command]
+        lds     edx,f[load1_Name]
         call    CreatePSP
         pop     ds
         mov     w[load1_PSP],bx
@@ -272,7 +272,7 @@ load1_ge0:
         ;
 load1_ge1:
         mov     ecx,edi
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         jc      load1_mem_error
         mov     DWORD PTR es:[esi],0    ;reset count.
         push    es
@@ -352,7 +352,7 @@ load1_NoExports:
         mov     eax,size LE_OBJ         ;length of an object entry.
         mul     d[LEHeader.LE_ObjNum]   ;number of objects.
         mov     ecx,eax
-        sys     GetMemLinear32          ;Get memory.
+        Sys     GetMemLinear32          ;Get memory.
         jc      load1_mem_error         ;Not enough memory.
         mov     d[load1_ObjMem],esi
 ;
@@ -402,7 +402,7 @@ load1_objup0:
 ;Get programs memory block.
 ;
         mov     ecx,ebp
-        sys     GetMemLinear32          ;Get memory.
+        Sys     GetMemLinear32          ;Get memory.
         jc      load1_mem_error         ;Not enough memory.
         mov     d[load1_ProgMem],esi
         mov     d[load1_ProgMem+4],ecx
@@ -422,7 +422,7 @@ load1_objup1:
 ;Get selectors.
 ;
         mov     ecx,d[LEHeader.LE_ObjNum]
-        sys     GetSels
+        Sys     GetSels
         jc      load1_mem_error
         mov     w[load1_Segs],bx        ;store base selector.
         mov     w[load1_Segs+2],cx      ;store number of selectors.
@@ -478,7 +478,7 @@ load1_ge4:
         sub     ecx,d[LEHeader.LE_Fixups]
 load1_ge5:
         neg     ecx
-        sys     GetMemLinear32          ;get entry table memory.
+        Sys     GetMemLinear32          ;get entry table memory.
         jc      load1_mem_error
         mov     edx,esi
         push    ds
@@ -652,7 +652,7 @@ load1_exp8:
         jnz     load1_exp0
         ;
         mov     esi,edx
-        sys     RelMemLinear32
+        Sys     RelMemLinear32
 ;
 ;Read program objects.
 ;
@@ -766,7 +766,7 @@ load1_loadz:
 ;Get fixup table memory & load fixups.
 ;
         mov     ecx,d[LEHeader.LE_FixupSize]
-        sys     GetMemLinear32          ;Get memory.
+        Sys     GetMemLinear32          ;Get memory.
         jc      load1_mem_error         ;Not enough memory.
         mov     d[load1_FixupMem],esi
         push    ecx
@@ -797,7 +797,7 @@ load1_loadz:
         jz      load1_GotImpMods
         shl     ecx,2
         add     ecx,4
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         jc      load1_mem_error
         mov     DWORD PTR es:[esi],0    ;clear entry count for now.
         push    es
@@ -823,7 +823,7 @@ load1_NextModLnk:
 
         push    esi
         mov     ecx,size LE_Header
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         mov     ebp,esi
         pop     esi
         jc      load1_mem_error
@@ -856,7 +856,7 @@ load1_NextModLnk:
         pop     ds
         pop     es
         mov     esi,ebp
-        sys     RelMemLinear32
+        Sys     RelMemLinear32
         pop     edi
         pop     esi
 
@@ -1011,7 +1011,7 @@ ENDIF
         shl     eax,2
         add     eax,d[load1_ModLink]
         mov     edi,es:[eax]            ;point to module.
-        mov     edi,es:EPSP_Struc.EPSP_EXPORTS[edi] ;point to export table.
+        mov     edi,es:EPSP_Struc.EPSP_Exports[edi] ;point to export table.
 
         call    FindFunction
         mov     eax,edi
@@ -1030,7 +1030,7 @@ load1_fiximp0:
         shl     edi,2
         add     edi,d[load1_ModLink]
         mov     edi,es:[edi]
-        mov     edi,es:EPSP_Struc.EPSP_EXPORTS[edi] ;point to export table.
+        mov     edi,es:EPSP_Struc.EPSP_Exports[edi] ;point to export table.
         movzx   eax,WORD PTR es:[esi+1]
         add     esi,2
         sub     ecx,2
@@ -1455,7 +1455,7 @@ load1_fix400:
         jnz     load1_fix0
 
         mov     esi,d[load1_FixupMem]
-        sys     RelMemLinear32
+        Sys     RelMemLinear32
         mov     d[load1_FixupMem],0
 
 ;
@@ -1563,7 +1563,7 @@ load1_makesegs4:
         mul     d[LEHeader.LE_ObjNum]   ;number of objects.
         mov     ecx,eax
         mov     esi,d[load1_ObjMem]
-        sys     ResMemLinear32
+        Sys     ResMemLinear32
         jc      load1_mem_error         ;shouldn't be able to happen.
         mov     d[load1_ObjMem],esi     ;set new Obj mem address.
 ;
@@ -1610,7 +1610,7 @@ load1_NotFLATSeg:
         add     edx,d[load1_ProgMem]    ;offset within real memory.
         ;
 load1_DoSegSet:
-        sys     SetSelDet32
+        Sys     SetSelDet32
         ;
         mov     eax,es:[esi+4]          ;Get class.
         shr     eax,21                  ;move type into useful place.
@@ -1620,10 +1620,10 @@ load1_DoSegSet:
         mov     eax,es:[esi+4]          ;Get type bits.
         mov     cx,0                    ;Set 16 bit seg.
         test    eax,1 shl 25
-        jnz     load1_gotBBit
+        jnz     load1_GotBBit
         mov     cx,1
         test    eax,1 shl 26            ;32 bit seg?
-        jnz     load1_gotBBit
+        jnz     load1_GotBBit
         mov     cx,0                    ;Set 16 bit seg.
 load1_GotBBit:
         call    _DSizeSelector
@@ -1639,7 +1639,7 @@ load1_CodeSeg:
         jnz     load1_Default
         mov     cx,0                    ;Set 16 bit seg.
 load1_Default:
-        sys     CodeSel
+        Sys     CodeSel
         ;
 load1_SegDone:
         pop     esi
@@ -1724,7 +1724,7 @@ load1_NoClose:
         xchg    esi,d[load1_ObjMem]
         or      esi,esi
         jz      load1_NoObjRel
-        sys     RelMemLinear32
+        Sys     RelMemLinear32
 ;
 ;Restore previous state.
 ;
@@ -1775,7 +1775,7 @@ load1_exit:
         pop     w[load1_PSP]
         pop     w[load1_Handle]
         pop     w[load1_Environment]
-        pop     w[load1_command+4]
+        pop     w[load1_Command+4]
         pop     d[load1_Command]
         pop     d[load1_Flags]
         pop     w[load1_Name+4]

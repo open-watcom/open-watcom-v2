@@ -29,7 +29,7 @@ LoadLibrary    proc C USES ,fname:DWORD
 ;Let cwLoad have a go at loading it.
 ;
         mov     edx,fname
-        sys     cwLoad
+        Sys     cwLoad
         jnc     @@4
         xor     edx,edx
         jmp     @@5
@@ -46,7 +46,7 @@ LoadLibrary    proc C USES ,fname:DWORD
 ;Get PSP linear address.
 ;
         mov     bx,si
-        sys     GetSelDet32
+        Sys     GetSelDet32
 ;
 ;Call entry code.
 ;
@@ -78,7 +78,7 @@ LoadLibrary    proc C USES ,fname:DWORD
 ;Initialisation failed so release this PSP.
 ;
         mov     bx,si
-        sys     RelMem
+        Sys     RelMem
         xor     edx,edx
 ;
 ;Return handle (or error) to caller.
@@ -138,7 +138,7 @@ FreeLibrary     proc C USES ,handle:DWORD
 ;Release the module.
 ;
         mov         bx,EPSP_Struc.EPSP_PSPSel[edx]
-        sys         RelSel
+        Sys         RelSel
 ;
         popad
         ret

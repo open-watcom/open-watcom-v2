@@ -196,8 +196,8 @@ api89_emc0:
         push    ds
         mov     ebx,d[api89_Flags]
         mov     cx,w[api89_Environment]
-        les     esi,f[api89_command]
-        lds     edx,f[api89_name]
+        les     esi,f[api89_Command]
+        lds     edx,f[api89_Name]
         call    CreatePSP
         pop     ds
         mov     w[api89_PSP],bx
@@ -257,7 +257,7 @@ api89_NotAutoESP:
         mov     ecx,NewHeaderStruc.NewExports[esi]
         or      ecx,ecx
         jz      api89_NoExports0
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         jc      api89_mem_error
         mov     d[api89_ExpMem],esi
 ;
@@ -270,7 +270,7 @@ api89_NoExports0:
         jz      api89_NoImports0
         shl     ecx,2                               ;dword per entry.
         add     ecx,4                               ;allow for count dword.
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         jc      api89_mem_error
         mov     d[api89_ModLink],esi
         push    es
@@ -288,7 +288,7 @@ api89_NoExports0:
 api89_NoImports0:
         mov     esi,offset apiNewHeader
         mov     ecx,NewHeaderStruc.NewAlloc[esi]    ;get memory size required.
-        sys     GetMemLinear32                      ;Get segment/selector.
+        Sys     GetMemLinear32                      ;Get segment/selector.
         jc      api89_mem_error                     ;Not enough memory.
         mov     d[api89_ProgBase],esi
 ;
@@ -302,11 +302,11 @@ api89_NoImports0:
 api89_NoAutoSeg:
         push    cx
         shl     ecx,3                               ;8 bytes per entry.
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         pop     cx
         jc      api89_mem_error
         mov     d[api89_SegMem],esi
-        sys     GetSels
+        Sys     GetSels
         jc      api89_mem_error
         mov     w[api89_Segs],bx                    ;store base selector.
         mov     w[api89_Segs+2],cx                  ;store number of selectors.
@@ -339,7 +339,7 @@ api89_NoAutoSeg:
         mov     es,es:RealSegment
         assume es:nothing
         mov     edi,d[api89_SegMem]
-        sys     cwcLoad
+        Sys     cwcLoad
         pop     es
         or      ax,ax
         jnz     api89_file_error
@@ -398,7 +398,7 @@ api89_NoAutoMake:
         or      ecx,ecx
         jz      api89_NoRelocsMem
         shl     ecx,2                               ;4 bytes per entry.
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         jc      api89_mem_error
         mov     d[api89_RelocMem],esi
 ;
@@ -413,7 +413,7 @@ api89_NoAutoMake:
         mov     es,es:RealSegment
         assume es:nothing
         mov     edi,d[api89_RelocMem]
-        sys     cwcLoad
+        Sys     cwcLoad
         pop     es
         or      ax,ax
         jnz     api89_file_error
@@ -455,7 +455,7 @@ api89_NoRelocsMem:
         mov     es,es:RealSegment
         assume es:nothing
         mov     edi,d[api89_ExpMem]
-        sys     cwcLoad
+        Sys     cwcLoad
         pop     es
         or      ax,ax
         jnz     api89_file_error
@@ -485,7 +485,7 @@ api89_NoExpMem:
         or      ecx,ecx
         jz      api89_NoImpMem1
         shl     ecx,2                               ;4 bytes per entry.
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
         jc      api89_mem_error
         mov     d[api89_ImpMem],esi
 ;
@@ -500,7 +500,7 @@ api89_NoExpMem:
         mov     es,es:RealSegment
         assume es:nothing
         mov     edi,d[api89_ImpMem]
-        sys     cwcLoad
+        Sys     cwcLoad
         pop     es
         or      ax,ax
         jnz     api89_file_error
@@ -537,7 +537,7 @@ api89_NoImpMem1:
         mov     es,es:RealSegment
         assume es:nothing
         mov     edi,d[api89_ProgBase]
-        sys     cwcLoad
+        Sys     cwcLoad
         pop     es
         or      ax,ax
         jnz     api89_file_error
@@ -829,7 +829,7 @@ api89_NotFLATSeg:
         add     edx,d[api89_ProgBase]               ;offset within real memory.
         ;
 api89_DoSegSet:
-        sys     SetSelDet32
+        Sys     SetSelDet32
         mov     cx,w[api89_SystemFlags]             ;use default setting.
         shr     cx,14
         xor     cl,1
@@ -857,7 +857,7 @@ api89_CodeSeg:
         and     cx,1                                ;get code size
         xor     cx,1                                ;flip it for selector function.
 api89_Default:
-        sys     CodeSel
+        Sys     CodeSel
         ;
 api89_SegDone:
         pop     esi
@@ -1171,7 +1171,7 @@ api89_imp9:
 ;Lose relocation memory.
 ;
         mov     esi,d[api89_RelocMem]
-        sys     RelMemLinear32                      ;release relocation list memory.
+        Sys     RelMemLinear32                      ;release relocation list memory.
         mov     d[api89_RelocMem],0
 ;
 ;Lose import memory.
@@ -1179,7 +1179,7 @@ api89_imp9:
         mov     esi,d[api89_ImpMem]                 ;release IMPORT memory.
         or      esi,esi
         jz      api89_NoRelImp9
-        sys     RelMemLinear32
+        Sys     RelMemLinear32
         mov     d[api89_ImpMem],0
 ;
 ;Lose segment definitions.
@@ -1188,7 +1188,7 @@ api89_NoRelImp9:
         cmp     d[api89_Flags],1
         jz      api89_NoSegMemRel
         mov     esi,d[api89_SegMem]
-        sys     RelMemLinear32                      ;release segment memory.
+        Sys     RelMemLinear32                      ;release segment memory.
         mov     d[api89_SegMem],0
 ;
 ;Check if this is an exec or just a load.
@@ -1256,19 +1256,19 @@ api89_NoClose:
         mov     esi,d[api89_RelocMem]
         or      esi,esi
         jz      api89_NoRelRel
-        sys     RelMemLinear32                      ;release relocation list memory.
+        Sys     RelMemLinear32                      ;release relocation list memory.
         mov     d[api89_RelocMem],0
 api89_NoRelRel:
         mov     esi,d[api89_SegMem]
         or      esi,esi
         jz      api89_NoSegRel
-        sys     RelMemLinear32                      ;release segment memory.
+        Sys     RelMemLinear32                      ;release segment memory.
         mov     d[api89_SegMem],0
 api89_NoSegRel:
         mov     esi,d[api89_ImpMem]
         or      esi,esi
         jz      api89_NoImpRel
-        sys     RelMemLinear32
+        Sys     RelMemLinear32
 ;
 ;Restore previous state.
 ;

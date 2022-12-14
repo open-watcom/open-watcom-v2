@@ -27,7 +27,7 @@ GetModuleFileName  proc    C USES ,handle:DWORD
 ;Get PSP linear address.
 ;
         mov     ebx,handle
-        sys     GetSelDet32
+        Sys     GetSelDet32
         mov     eax,EPSP_Struc.EPSP_FileName
         add     eax,edx
         pop     edx

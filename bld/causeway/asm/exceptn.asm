@@ -265,20 +265,20 @@ exc1_0:
         jnz     exc1_0
         ;
         mov     bl,0
-        sys     GetVect
+        Sys     GetVect
         test    BYTE PTR ExcepSystemFlags,1
         jz      exc1_i00Use32
-        mov     w[OldInt00],dx
-        mov     w[OldInt00+2],cx
+        mov     w[OldInt00h],dx
+        mov     w[OldInt00h+2],cx
         jmp     exc1_i00Done3216
 exc1_i00Use32:
-        mov     d[OldInt00],edx
-        mov     w[OldInt00+4],cx
+        mov     d[OldInt00h],edx
+        mov     w[OldInt00h+4],cx
 exc1_i00Done3216:
-        mov     edx,offset Int00Handler
+        mov     edx,offset Int00hHandler
         mov     cx,cs
         mov     bl,00
-        sys     SetVect
+        Sys     SetVect
         ;
         clc
         retf
@@ -365,19 +365,19 @@ exc2_0:
         dec     ecx
         jnz     exc2_0
         ;
-        cmp     d[OldInt00],0
+        cmp     d[OldInt00h],0
         jz      exc2_i2
         test    BYTE PTR ExcepSystemFlags,1
         jz      exc2_i00Use32
-        mov     dx,w[OldInt00]
-        mov     cx,w[OldInt00+2]
+        mov     dx,w[OldInt00h]
+        mov     cx,w[OldInt00h+2]
         jmp     exc2_i00Done3216
 exc2_i00Use32:
-        mov     edx,d[OldInt00]
-        mov     cx,w[OldInt00+4]
+        mov     edx,d[OldInt00h]
+        mov     cx,w[OldInt00h+4]
 exc2_i00Done3216:
         mov     bl,00h
-        sys     SetVect
+        Sys     SetVect
         ;
 exc2_i2:
         pop     ds
@@ -420,7 +420,7 @@ ExcepClose      endp
 ;
 ;Handle a divide by zero.
 ;
-Int00Handler    proc    near
+Int00hHandler   proc    near
         push    ds
         assume ds:nothing
         mov     ds,cs:ExcepDDSeg
@@ -476,8 +476,8 @@ exc3_Use0_0:
         sti
         jmp     f[TerminationHandler]
         assume ds:_Excep
-OldInt00        df 0
-Int00Handler    endp
+OldInt00h       df 0
+Int00hHandler   endp
 
 
 ;-------------------------------------------------------------------------
@@ -1133,7 +1133,7 @@ exc22_NoFile:
         ;Display debug info.
         ;
         push    ds
-        mov     ds,ExcepDseg
+        mov     ds,ExcepDSeg
         assume ds:_cwMain
         mov     esi,offset Copyright
         xor     ecx,ecx
@@ -1332,7 +1332,7 @@ exc22_13:
         ;
 
         push    ds
-        mov     ds,ExcepDseg
+        mov     ds,ExcepDSeg
         assume ds:_cwMain
         mov     esi,offset Copyright
 exc22_cp0:
@@ -1878,7 +1878,7 @@ exc22_SEL:
         mov     b[edi],' '
         inc     edi
         mov     ebx,es:[esi]
-        sys     GetSelDet32
+        Sys     GetSelDet32
         push    ecx
         mov     eax,edx
         mov     cx,8
@@ -1919,7 +1919,7 @@ exc22_Use32It:
         ;See if there is a memory block that matches this selector.
         ;
         mov     ebx,es:[esi]
-        sys     GetSelDet32
+        Sys     GetSelDet32
         mov     ebx,edx
         pushad
 
@@ -1941,7 +1941,7 @@ exc22_s0:
         jz      exc22_nodpmi
         pushad
         mov     bx,WORD PTR fs:[EPSP_Struc.EPSP_DPMIMem]
-        sys     GetSelDet32
+        Sys     GetSelDet32
         cmp     es:[esi],edx
         popad
         jz      exc22_s1
@@ -2095,7 +2095,7 @@ exc22_m0:
         jz      exc22_nodpmimem
         pushad
         mov     bx,WORD PTR fs:[EPSP_Struc.EPSP_DPMIMem]
-        sys     GetSelDet32
+        Sys     GetSelDet32
         cmp     es:[esi],edx
         popad
         jz      exc22_m1
@@ -2200,7 +2200,7 @@ exc22_mcb1:
         jz      exc22_nodpmimemhere
         pushad
         mov     bx,WORD PTR fs:[EPSP_Struc.EPSP_DPMIMem]
-        sys     GetSelDet32
+        Sys     GetSelDet32
         sub     edx,mcbLen
         cmp     esi,edx
         popad
@@ -2371,7 +2371,7 @@ exc22_dm0:
         push    ecx
         push    edx
         mov     bx,es:[esi]
-        sys     GetSelDet32
+        Sys     GetSelDet32
         mov     eax,edx
         pop     edx
         pop     ecx

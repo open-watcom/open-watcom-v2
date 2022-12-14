@@ -59,9 +59,9 @@ ENDIF
 
 Int15Table      dd 8*2 dup (0)
 Int15Size       dd 0
-INT15hTotal     dd ?
-INT15hValue     dd ?
-INT15hLevel2    dw ?
+Int15Total      dd ?
+Int15Value      dd ?
+Int15Level2     dw ?
 ;
 Protected2Real  dw VCPIProt2Real
 Real2Protected  dw VCPIReal2Prot
@@ -124,7 +124,7 @@ LDTReal         dw ?
 LDTLinear       dd ?
 LDTStart        dw 0
 KernalTSSReal   dw ?            ;Real mode segment for kernal TSS.
-PageDIRReal     dw ?            ;Real mode segment for page directory.
+PageDirReal     dw ?            ;Real mode segment for page directory.
 PageDirLinear   dd ?,-1,?
 PageAliasReal   dw ?            ;Real mode segment for page table alias.
 PageAliasLinear dd ?,-1,?
@@ -210,12 +210,12 @@ fPhysicalGetPage label dword
         dw _fPhysicalGetPage,KernalCS
 fPhysicalGetPages label dword
         dw _fPhysicalGetPages,KernalCS
-fRawSimulateINT label dword
-        dw _fRawSimulateINT,KernalCS
-fRawSimulateFCALL label dword
-        dw _fRawSimulateFCALL,KernalCS
-fRawSimulateFCALLI label dword
-        dw _fRawSimulateFCALLI,KernalCS
+fRawSimulateInt label dword
+        dw _fRawSimulateInt,KernalCS
+fRawSimulateFarCall label dword
+        dw _fRawSimulateFarCall,KernalCS
+fRawSimulateFarCallI label dword
+        dw _fRawSimulateFarCallI,KernalCS
 
 
 
@@ -279,7 +279,7 @@ rv1_NoGDTMove:
         pop     ds
         mov     eax,Page1stLinear+4
         mov     Page1stLinear,eax
-        mov     esi,PageDIRLinear
+        mov     esi,PageDirLinear
         mov     eax,0
         mov     ebx,Page1stLinear+8
         and     ebx,not 4095
@@ -292,22 +292,22 @@ rv1_NoGDTMove:
 ;
 rv1_No1stMove:
 
-        cmp     PageALIASLinear+4,-1
+        cmp     PageAliasLinear+4,-1
         jz      rv1_NoALIASMove
         push    ds
-        mov     esi,PageALIASLinear
-        mov     edi,PageALIASLinear+4
+        mov     esi,PageAliasLinear
+        mov     edi,PageAliasLinear+4
         push    es
         pop     ds
         mov     ecx,4096/4
         cld
         rep     movs d[edi],[esi]
         pop     ds
-        mov     eax,PageALIASLinear+4
-        mov     PageALIASLinear,eax
-        mov     esi,PageDIRLinear
+        mov     eax,PageAliasLinear+4
+        mov     PageAliasLinear,eax
+        mov     esi,PageDirLinear
         mov     eax,1023
-        mov     ebx,PageALIASLinear+8
+        mov     ebx,PageAliasLinear+8
         and     ebx,not 4095
         or      ebx,111b
         mov     es:[esi+eax*4],ebx
@@ -317,20 +317,20 @@ rv1_No1stMove:
 ;
 rv1_NoALIASMove:
 
-        cmp     PageDIRLinear+4,-1
+        cmp     PageDirLinear+4,-1
         jz      rv1_NoDIRMove
         push    ds
-        mov     esi,PageDIRLinear
-        mov     edi,PageDIRLinear+4
+        mov     esi,PageDirLinear
+        mov     edi,PageDirLinear+4
         push    es
         pop     ds
         mov     ecx,4096/4
         cld
         rep     movs d[edi],[esi]
         pop     ds
-        mov     eax,PageDIRLinear+4
-        mov     PageDIRLinear,eax
-        mov     eax,PageDIRLinear+8
+        mov     eax,PageDirLinear+4
+        mov     PageDirLinear,eax
+        mov     eax,PageDirLinear+8
         mov     VCPI_CR3,eax
         call    CR3Flush
 ;
@@ -349,11 +349,11 @@ rv1_NoDIRMove:
         pushad
         mov     DWORD PTR [rv1_StackAdd],esp
         mov     WORD PTR [rv1_StackAdd+4],ss
-        call    RAWPL32PL0
+        call    RawPL3toPL0
         lidt    FWORD PTR [IDTVal]
         mov     edx,DWORD PTR [rv1_StackAdd]
         mov     cx,WORD PTR [rv1_StackAdd+4]
-        call    RAWPL02PL3
+        call    RawPL0toPL3
         popad
 
         call    VCPIRelExtended ;release VCPI memory.
@@ -361,7 +361,7 @@ rv1_NoDIRMove:
 ;Release XMS memory.
 ;
 
-        call    RAWRelXMS       ;release XMS memory.
+        call    RawRelXMS       ;release XMS memory.
 ;
 ;Release INT 15h memory.
 ;
@@ -487,11 +487,11 @@ rv1_VCPI0:
 ;We're back in real mode so remove any patches.
 ;
 rv1_InReal:
-        cmp     w[OldInt2F+2],0
+        cmp     w[OldInt2Fh+2],0
         jz      rv1_ir0
         push    ds
         mov     ax,252fh
-        lds     dx,OldInt2F
+        lds     dx,OldInt2Fh
         int     21h
         pop     ds
 rv1_ir0:
@@ -520,38 +520,38 @@ RawVCPIRealMode endp
 
 
 ;-------------------------------------------------------------------------------
-_fRawSimulateINT proc far
-        call    RawSimulateINT
+_fRawSimulateInt proc far
+        call    RawSimulateInt
         ret
-_fRawSimulateINT endp
+_fRawSimulateInt endp
 
 
 ;-------------------------------------------------------------------------------
-_fRawSimulateINT2 proc far
-        call    RawSimulateINT2
+_fRawSimulateInt2 proc far
+        call    RawSimulateInt2
         ret
-_fRawSimulateINT2 endp
+_fRawSimulateInt2 endp
 
 
 ;-------------------------------------------------------------------------------
-_fRawSimulateFCall proc far
-        call    RawSimulateFCALL
+_fRawSimulateFarCall proc far
+        call    RawSimulateFarCall
         ret
-_fRawSimulateFCall endp
+_fRawSimulateFarCall endp
 
 
 ;-------------------------------------------------------------------------------
-_fRawSimulateFCall2 proc far
-        call    RawSimulateFCALL2
+_fRawSimulateFarCall2 proc far
+        call    RawSimulateFarCall2
         ret
-_fRawSimulateFCall2 endp
+_fRawSimulateFarCall2 endp
 
 
 ;-------------------------------------------------------------------------------
-_fRawSimulateFCallI proc far
-        call    RawSimulateFCALLI
+_fRawSimulateFarCallI proc far
+        call    RawSimulateFarCallI
         ret
-_fRawSimulateFCallI endp
+_fRawSimulateFarCallI endp
 
 
 ;-------------------------------------------------------------------------------
@@ -614,7 +614,7 @@ CR3Flush        proc    near
         pushad
         mov     d[rv10_StackAdd],esp
         mov     w[rv10_StackAdd+4],ss
-        call    RAWPL32PL0
+        call    RawPL3toPL0
         ;
 ;       mov     eax,cr3
         mov     eax,VCPI_CR3
@@ -622,7 +622,7 @@ CR3Flush        proc    near
         ;
         mov     edx,d[rv10_StackAdd]
         mov     cx,w[rv10_StackAdd+4]
-        call    RAWPL02PL3
+        call    RawPL0toPL3
         popad
         popf
         ret
@@ -711,7 +711,7 @@ ITable  dd 8*2 dup (0)
 ;
 ;Release any XMS we claimed.
 ;
-RAWRelXMS       proc    far
+RawRelXMS       proc    far
         cmp     XMSPresent,0
         jz      rv11_Done
         ;
@@ -740,7 +740,7 @@ rv11_0: or      cx,cx
         mov     [edi].v86CallStruc.v86CallEDX,edx
         mov     [edi].v86CallStruc.v86CallSS,0
         mov     [edi].v86CallStruc.v86CallSP,0
-        call    RawSimulateFCALL        ;un-lock it first.
+        call    RawSimulateFarCall        ;un-lock it first.
         pop     dx
         mov     ah,0ah
         push    ax
@@ -753,7 +753,7 @@ rv11_0: or      cx,cx
         mov     [edi].v86CallStruc.v86CallEDX,edx
         mov     [edi].v86CallStruc.v86CallSS,0
         mov     [edi].v86CallStruc.v86CallSP,0
-        call    RawSimulateFCALL        ;un-lock it first.
+        call    RawSimulateFarCall        ;un-lock it first.
         pop     si
         pop     cx
 rv11_1: add     si,2+4+4
@@ -762,7 +762,7 @@ rv11_1: add     si,2+4+4
         ;
 rv11_Done:
         ret
-RAWRelXMS       endp
+RawRelXMS       endp
 
 
 ;-------------------------------------------------------------------------------
@@ -821,7 +821,7 @@ rv12_d0:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
 
-        call    RawSimulateFCALL
+        call    RawSimulateFarCall
         pop     es
         pop     edi
 
@@ -905,7 +905,7 @@ notzeroth:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
 
-        call    RawSimulateFCALL
+        call    RawSimulateFarCall
 
         pop     es
         pop     edi
@@ -959,7 +959,7 @@ rv12_3:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
 
-        call    RawSimulateFCALL
+        call    RawSimulateFarCall
 
         pop     es
         pop     edi
@@ -1004,7 +1004,7 @@ VCPICall        proc    near
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,67h
-        call    RawSimulateINT
+        call    RawSimulateInt
         mov     eax,RealRegsStruc.Real_EAX[edi]
         mov     edx,RealRegsStruc.Real_EDX[edi]
         ;
@@ -1089,7 +1089,7 @@ Int15Rel        endp
 ;
 ;CX:EDX - target stack.
 ;
-RAWReal2Prot    proc    near
+RawReal2Prot    proc    near
         pop     w[rv16_Return]
         mov     d[rv16_ReturnStack],edx ;store return stack.
         mov     w[rv16_ReturnStack+4],cx
@@ -1140,7 +1140,7 @@ rv16_0: mov     ax,KernalLDT            ;Point to empty LDT descriptor.
         ;
         mov     edx,d[rv16_ReturnStack]
         mov     cx,w[rv16_ReturnStack+4]
-        call    RAWPL02PL3
+        call    RawPL0toPL3
         ;
         push    es
         mov     ax,KernalZero
@@ -1157,7 +1157,7 @@ rv16_Return:
         dw ?
 rv16_ReturnStack:
         df ?
-RAWReal2Prot    endp
+RawReal2Prot    endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1168,7 +1168,7 @@ RAWReal2Prot    endp
 ;
 ;CX:DX  - target stack.
 ;
-RAWProt2Real    proc    near
+RawProt2Real    proc    near
         pop     w[rv17_Return]
         mov     w[rv17_ReturnSP],dx
         mov     w[rv17_ReturnSS],cx
@@ -1178,7 +1178,7 @@ RAWProt2Real    proc    near
         mov     fs,ax           ;mode.
         mov     gs,ax           ;/
         ;
-        call    RAWPL32PL0
+        call    RawPL3toPL0
         mov     ax,KernalSwitchPL0
         mov     ss,ax
         ;
@@ -1217,7 +1217,7 @@ rv17_ReturnSP:
         dw ?
 rv17_ReturnSS:
         dw ?
-RAWProt2Real    endp
+RawProt2Real    endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1264,7 +1264,7 @@ rv18_Resume486:
         ;
         mov     edx,d[rv18_ReturnStack]
         mov     cx,w[rv18_ReturnStack+4]
-        call    RAWPL02PL3
+        call    RawPL0toPL3
         ;
         push    es
         mov     ax,KernalZero
@@ -1303,7 +1303,7 @@ VCPIProt2Real   proc    near
         mov     es,ax           ;expand up, read/write for switch back to real
         mov     fs,ax           ;mode.
         mov     gs,ax           ;/
-        call    RAWPL32PL0
+        call    RawPL3toPL0
         mov     ax,KernalSwitchPL0
         mov     ss,ax
         ;
@@ -1348,7 +1348,7 @@ VCPIProt2Real   endp
 
 
 ;-------------------------------------------------------------------------------
-RAWPL02PL3      proc    near
+RawPL0toPL3     proc    near
         pop     w[rv20_RetAdd]
         movzx   ecx,cx
         push    ecx             ;SS
@@ -1374,11 +1374,11 @@ rv20_pl3:
         ;
 rv20_RetAdd:
         dw ?
-RAWPL02PL3      endp
+RawPL0toPL3     endp
 
 
 ;-------------------------------------------------------------------------------
-RawPL32PL0      proc    near
+RawPL3toPL0     proc    near
         pop     w[rv21_RetAdd]
         push    edi
         mov     edi,GDTLinear
@@ -1401,28 +1401,28 @@ rv21_pl0:
         ;
 rv21_RetAdd:
         dw ?
-RawPL32PL0      endp
+RawPL3toPL0     endp
 
 
 ;-------------------------------------------------------------------------------
 ;
 ;Release INT 2F patch.
 ;
-ReleaseINT2F    proc    near
+ReleaseInt2Fh   proc    near
         push    ds
         mov     ax,252fh
-        lds     dx,OldInt2F
+        lds     dx,OldInt2Fh
         int     21h
         pop     ds
         ret
-ReleaseINT2F    endp
+ReleaseInt2Fh   endp
 
 
 ;-------------------------------------------------------------------------------
 ;
 ;Intercept for windows init broadcast.
 ;
-Int2FPatch      proc    near
+Int2FhPatch     proc    near
 ;
 ;check if it's an init broadcast that's being allowed.
 ;
@@ -1462,7 +1462,7 @@ rv23_exit:
 ;
 rv23_ret:
         assume ds:nothing
-        jmp     DWORD PTR cs:[OldInt2F]
+        jmp     DWORD PTR cs:[OldInt2Fh]
         assume ds:_cwRaw
 
 if 0
@@ -1479,15 +1479,15 @@ if 0
         int     21h
 
 rv23_Old:
-        jmp     DWORD PTR cs:[OldInt2F]
+        jmp     DWORD PTR cs:[OldInt2Fh]
         assume ds:_cwRaw
 
 WinMessage      db 'Cannot run Windows in enhanced mode while a CauseWay application is active.',13,10
         db 'Run Windows in standard mode or remove the CauseWay application.',13,10,'$'
 endif
 
-OldInt2F        dd 0
-Int2FPatch      endp
+OldInt2Fh       dd 0
+Int2FhPatch     endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1503,13 +1503,13 @@ Int2FPatch      endp
 ;
 ;Parameter table updated.
 ;
-RAWSimulateInt proc     near
+RawSimulateInt proc     near
         push    cx
         push    bx
         mov     bh,0
         mov     cx,0
-        jmp     RAWSimulate
-RAWSimulateInt  endp
+        jmp     RawSimulate
+RawSimulateInt  endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1527,12 +1527,12 @@ RAWSimulateInt  endp
 ;
 ;Parameter table updated.
 ;
-RAWSimulateInt2 proc    near
+RawSimulateInt2 proc    near
         push    cx
         push    bx
         mov     bh,0
-        jmp     RAWSimulate
-RAWSimulateInt2 endp
+        jmp     RawSimulate
+RawSimulateInt2 endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1547,13 +1547,13 @@ RAWSimulateInt2 endp
 ;
 ;Parameter table updated.
 ;
-RAWSimulateFCALL proc near
+RawSimulateFarCall proc near
         push    cx
         push    bx
         mov     bh,1
         mov     cx,0
         jmp     RawSimulate
-RAWSimulateFCALL endp
+RawSimulateFarCall endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1570,12 +1570,12 @@ RAWSimulateFCALL endp
 ;
 ;Parameter table updated.
 ;
-RAWSimulateFCALL2 proc near
+RawSimulateFarCall2 proc near
         push    cx
         push    bx
         mov     bh,1
         jmp     RawSimulate
-RAWSimulateFCALL2 endp
+RawSimulateFarCall2 endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1592,12 +1592,12 @@ RAWSimulateFCALL2 endp
 ;
 ;Parameter table updated.
 ;
-RAWSimulateFCALLI proc near
+RawSimulateFarCallI proc near
         push    cx
         push    bx
         mov     bh,2
         jmp     RawSimulate
-RAWSimulateFCALLI endp
+RawSimulateFarCallI endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1709,11 +1709,11 @@ rv29_NoIF:
         mov     cx,es:RealRegsStruc.Real_CS[edi]
         shl     ecx,16
         mov     cx,es:RealRegsStruc.Real_IP[edi]
-        mov     w[rv29_calladd],offset rv29_fcall
+        mov     w[rv29_CallAdd],offset rv29_fcall
         cmp     bh,2
-        jnz     rv29_notint
-        mov     w[rv29_calladd],offset rv29_fcalli
-        jmp     rv29_notint
+        jnz     rv29_NotInt
+        mov     w[rv29_CallAdd],offset rv29_fcalli
+        jmp     rv29_NotInt
         ;
 rv29_IsInt:
         ;See if this is a busy interrupt call back.
@@ -1741,7 +1741,7 @@ rv29_c3:
         mov     ecx,DWORD PTR fs:[bp]
         ;
 rv29_c2:
-        mov     w[rv29_calladd],offset rv29_int
+        mov     w[rv29_CallAdd],offset rv29_int
         ;
 rv29_NotInt:
         sub     esi,4
@@ -1790,7 +1790,7 @@ rv29_NotInt:
         pop     WORD PTR cs:[rv29_IntAdd]       ;lose dummy.
         ;
         pop     DWORD PTR cs:[rv29_IntAdd]
-        jmp     WORD PTR cs:[rv29_calladd]
+        jmp     WORD PTR cs:[rv29_CallAdd]
         ;
 rv29_fcall:
         popf
@@ -1900,11 +1900,11 @@ rv29_tVCPI_SP:
         dd ?
 rv29_ourstack:
         dw 0
-RAWSimulate     endp
+RawSimulate     endp
 
 
 ;-------------------------------------------------------------------------------
-RAWCallBack     proc    near
+RawCallBack     proc    near
         pushf
         cli
         ;
@@ -2149,11 +2149,11 @@ rv30_Use16Bit13:
         ;
 rv30_CallB0:
         df ?,0
-RAWCallBack     endp
+RawCallBack     endp
 
 
 ;-------------------------------------------------------------------------------
-RAWICallBack    proc    near
+RawICallBack    proc    near
         cli
         assume ds:nothing
         pop     cs:RetAdd               ;get return address.
@@ -2411,7 +2411,7 @@ rv31_CallTab:
         dw ?
 rv31_zero:
         dd 0
-RAWICallBack    endp
+RawICallBack    endp
 
 
 ;-------------------------------------------------------------------------------
@@ -2497,7 +2497,7 @@ rv34_XMSA20OFF:
         mov     es:RealRegsStruc.Real_EAX[edi],eax
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
-        call    RawSimulateFCALL
+        call    RawSimulateFarCall
         add     esp,size v86CallStruc.v86CallStruc
         jmp     rv34_A20Done
         ;
@@ -2514,7 +2514,7 @@ rv34_XMSA20ON:
         mov     es:RealRegsStruc.Real_EAX[edi],eax
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
-        call    RawSimulateFCALL
+        call    RawSimulateFarCall
         mov     ax,w[XMSControl]
         mov     es:RealRegsStruc.Real_IP[edi],ax
         mov     ax,w[XMSControl+2]
@@ -2523,7 +2523,7 @@ rv34_XMSA20ON:
         mov     es:RealRegsStruc.Real_EAX[edi],eax
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
-        call    RawSimulateFCALL
+        call    RawSimulateFarCall
         mov     eax,es:RealRegsStruc.Real_EAX[edi]
         xor     ax,1
         add     esp,size v86CallStruc.v86CallStruc
@@ -2671,7 +2671,7 @@ cwDPMIEMUStart  label byte
 
 ;-------------------------------------------------------------------------------
 ;
-;Call _cwRaw SimulateINT
+;Call _cwRaw SimulateInt
 ;
 EmuRawSimulateInt proc near
         assume ds:nothing
@@ -2681,13 +2681,13 @@ EmuRawSimulateInt proc near
         ret
         ;
 rv38_calladd:
-        dw offset _fRawSimulateINT,KernalCS
+        dw offset _fRawSimulateInt,KernalCS
 EmuRawSimulateInt endp
 
 
 ;-------------------------------------------------------------------------------
 ;
-;Call _cwRaw SimulateINT
+;Call _cwRaw SimulateInt
 ;
 EmuRawSimulateInt2 proc near
         assume ds:nothing
@@ -2697,15 +2697,15 @@ EmuRawSimulateInt2 proc near
         ret
         ;
 rv39_calladd:
-        dw offset _fRawSimulateINT2,KernalCS
+        dw offset _fRawSimulateInt2,KernalCS
 EmuRawSimulateInt2 endp
 
 
 ;-------------------------------------------------------------------------------
 ;
-;Call _cwRaw SimulateFCALL
+;Call _cwRaw SimulateFarCall
 ;
-EmuRawSimulateFCall proc near
+EmuRawSimulateFarCall proc near
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv40_calladd]
@@ -2713,15 +2713,15 @@ EmuRawSimulateFCall proc near
         ret
         ;
 rv40_calladd:
-        dw offset _fRawSimulateFCALL,KernalCS
-EmuRawSimulateFCall endp
+        dw offset _fRawSimulateFarCall,KernalCS
+EmuRawSimulateFarCall endp
 
 
 ;-------------------------------------------------------------------------------
 ;
-;Call _cwRaw SimulateFCALL
+;Call _cwRaw SimulateFarCall
 ;
-EmuRawSimulateFCall2 proc near
+EmuRawSimulateFarCall2 proc near
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv41_calladd]
@@ -2729,15 +2729,15 @@ EmuRawSimulateFCall2 proc near
         ret
         ;
 rv41_calladd:
-        dw offset _fRawSimulateFCALL2,KernalCS
-EmuRawSimulateFCall2 endp
+        dw offset _fRawSimulateFarCall2,KernalCS
+EmuRawSimulateFarCall2 endp
 
 
 ;-------------------------------------------------------------------------------
 ;
-;Call _cwRaw SimulateFCALLI
+;Call _cwRaw SimulateFarCallI
 ;
-EmuRawSimulateFCallI proc near
+EmuRawSimulateFarCallI proc near
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv42_calladd]
@@ -2745,8 +2745,8 @@ EmuRawSimulateFCallI proc near
         ret
         ;
 rv42_calladd:
-        dw offset _fRawSimulateFCALLI,KernalCS
-EmuRawSimulateFCallI endp
+        dw offset _fRawSimulateFarCallI,KernalCS
+EmuRawSimulateFarCallI endp
 
 
 ;-------------------------------------------------------------------------------
@@ -2764,14 +2764,14 @@ EmuCR3Flush     proc    near
         ;
         mov     d[rv43_StackAdd],esp
         mov     w[rv43_StackAdd+4],ss
-        call    EmuRAWPL32PL0
+        call    EmuRawPL3toPL0
         ;
         mov     eax,cr3
         mov     cr3,eax         ;flush page cache.
         ;
         mov     edx,d[rv43_StackAdd]
         mov     cx,w[rv43_StackAdd+4]
-        call    EmuRAWPL02PL3
+        call    EmuRawPL0toPL3
         ;
         pop     d[erp3RetAdd]
         pop     d[erp0RetAdd]
@@ -2788,7 +2788,7 @@ EmuCR3Flush     endp
 
 
 ;-------------------------------------------------------------------------------
-EmuRAWPL02PL3   proc    near
+EmuRawPL0toPL3  proc    near
         pop     d[erp0RetAdd]
         movzx   ecx,cx
         push    ecx             ;SS
@@ -2809,14 +2809,14 @@ EmuRAWPL02PL3   proc    near
 rv44_pl3:
         push    d[erp0RetAdd]
         ret
-EmuRAWPL02PL3   endp
+EmuRawPL0toPL3  endp
 
 
 erp0RetAdd:
         dd ?
 
 ;-------------------------------------------------------------------------------
-EmuRawPL32PL0   proc    near
+EmuRawPL3toPL0  proc    near
         pop     d[erp3RetAdd]
         push    edi
         push    eax
@@ -2844,7 +2844,7 @@ EmuRawPL32PL0   proc    near
 rv45_pl0:
         push    d[erp3RetAdd]
         ret
-EmuRawPL32PL0   endp
+EmuRawPL3toPL0  endp
 
 
 erp3RetAdd:
@@ -3268,7 +3268,7 @@ rv46_0301_0a:
         push    es:RealRegsStruc.Real_IP[edi]
         push    es:RealRegsStruc.Real_SS[edi]
         push    es:RealRegsStruc.Real_SP[edi]
-        call    EmuRawSimulateFCall2
+        call    EmuRawSimulateFarCall2
         pop     es:RealRegsStruc.Real_SP[edi]
         pop     es:RealRegsStruc.Real_SS[edi]
         pop     es:RealRegsStruc.Real_IP[edi]
@@ -3325,7 +3325,7 @@ rv46_0302_0a:
         push    es:RealRegsStruc.Real_IP[edi]
         push    es:RealRegsStruc.Real_SS[edi]
         push    es:RealRegsStruc.Real_SP[edi]
-        call    EmuRawSimulateFCallI
+        call    EmuRawSimulateFarCallI
         pop     es:RealRegsStruc.Real_SP[edi]
         pop     es:RealRegsStruc.Real_SS[edi]
         pop     es:RealRegsStruc.Real_IP[edi]
@@ -3926,7 +3926,7 @@ rv46_0B00_1:
         mov     ds,ax
         mov     ebp,esp
         mov     di,ss
-        call    EmuRAWPL32PL0
+        call    EmuRawPL3toPL0
         ;
         mov     ax,KernalDS
         mov     ds,ax
@@ -4005,7 +4005,7 @@ rv46_0B00_2:
         ;
         mov     edx,ebp
         mov     cx,di
-        call    EmuRAWPL02PL3
+        call    EmuRawPL0toPL3
         pop     ds
         ;
         mov     eax,ebx
@@ -4067,7 +4067,7 @@ rv46_DPMI_0B01:
         mov     ds,ax
         mov     ebp,esp
         mov     di,ss
-        call    EmuRAWPL32PL0
+        call    EmuRawPL3toPL0
         ;
         mov     ecx,ebx
         shl     ecx,1
@@ -4080,7 +4080,7 @@ rv46_DPMI_0B01:
         ;
         mov     edx,ebp
         mov     cx,di
-        call    EmuRAWPL02PL3
+        call    EmuRawPL0toPL3
         pop     ds
         ;
         clc
@@ -4134,14 +4134,14 @@ rv46_DPMI_0B02:
         mov     ds,ax
         mov     ebp,esp
         mov     di,ss
-        call    EmuRAWPL32PL0
+        call    EmuRawPL3toPL0
         ;
         mov     eax,dr6
         mov     esi,eax
         ;
         mov     edx,ebp
         mov     cx,di
-        call    EmuRAWPL02PL3
+        call    EmuRawPL0toPL3
         pop     ds
         ;
         ;Isolate bit we want.
@@ -4206,7 +4206,7 @@ rv46_DPMI_0B03:
         mov     ds,ax
         mov     ebp,esp
         mov     di,ss
-        call    EmuRAWPL32PL0
+        call    EmuRawPL3toPL0
         ;
         mov     ecx,ebx
         mov     edx,1
@@ -4218,7 +4218,7 @@ rv46_DPMI_0B03:
         ;
         mov     edx,ebp
         mov     cx,di
-        call    EmuRAWPL02PL3
+        call    EmuRawPL0toPL3
         pop     ds
         ;
         clc
@@ -4277,10 +4277,10 @@ rv46_NotOurs:
         ;Not a function recognised by us so pass control to previous handler.
         ;
         assume ds:nothing
-        jmp     FWORD PTR cs:[OldInt31]         ;pass it onto previous handler.
+        jmp     FWORD PTR cs:[OldInt31h]         ;pass it onto previous handler.
         assume ds:_cwDPMIEMU
         ;
-OldInt31        dd offset IntNN386Catch+(31h*8)
+OldInt31h       dd offset IntNN386Catch+(31h*8)
         dw DpmiEmuCS
 RawDPMIPatch    endp
 
@@ -4383,7 +4383,7 @@ PhysicalGetPage proc near
         jnc     rv50_8
         call    GetXMSPage
         jnc     rv50_8
-        call    GetINT15Page
+        call    GetInt15Page
         jnc     rv50_8
         call    GetCONVPage
         jnc     rv50_8
@@ -4465,7 +4465,7 @@ pgp2:
         pop     ds
         assume ds:_cwDPMIEMU
 
-        call    GetINT15Pages
+        call    GetInt15Pages
         add     d[rv51_Total],edx
         call    GetCONVPages
         jc      pgp3                    ; error allocating pages, MED, 11/15/99
@@ -4532,7 +4532,7 @@ GetVCPIPage     proc    near
         mov     RealRegsStruc.Real_IP[edi],offset Int67h
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
-        call    EMURawSimulateFCALL
+        call    EmuRawSimulateFarCall
         mov     eax,RealRegsStruc.Real_EAX[edi]
 
         or      ah,ah           ;get anything?
@@ -4598,7 +4598,7 @@ GetVCPIPages    proc    near
         mov     RealRegsStruc.Real_IP[edi],offset Int67h
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
-        call    EMURawSimulateFCALL
+        call    EmuRawSimulateFarCall
         mov     eax,RealRegsStruc.Real_EAX[edi]
         mov     edx,RealRegsStruc.Real_EDX[edi]
         or      ah,ah           ;get anything?
@@ -4689,7 +4689,7 @@ rv54_2: add     esi,2+4+4               ;next entry.
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;get size of largest block.
+        call    EmuRawSimulateFarCall     ;get size of largest block.
         pop     esi
         mov     eax,RealRegsStruc.Real_EAX[edi]
         or      ax,ax
@@ -4730,7 +4730,7 @@ rv54_nomaxlimit:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;allocate memory.
+        call    EmuRawSimulateFarCall     ;allocate memory.
         pop     bp
         pop     esi
         mov     eax,RealRegsStruc.Real_EAX[edi]
@@ -4752,7 +4752,7 @@ rv54_nomaxlimit:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;lock block & get address.
+        call    EmuRawSimulateFarCall     ;lock block & get address.
         pop     cx
         pop     bp
         pop     esi
@@ -4869,7 +4869,7 @@ rv55_0: push    ds
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;get size of largest block.
+        call    EmuRawSimulateFarCall     ;get size of largest block.
         pop     esi
         pop     ecx
         mov     eax,RealRegsStruc.Real_EAX[edi]
@@ -4896,7 +4896,7 @@ rv55_SizeOK:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;allocate memory.
+        call    EmuRawSimulateFarCall     ;allocate memory.
         pop     bp
         pop     esi
         pop     ecx
@@ -4921,7 +4921,7 @@ rv55_SizeOK:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;lock block & get address.
+        call    EmuRawSimulateFarCall     ;lock block & get address.
         pop     cx
         pop     bp
         pop     esi
@@ -4979,7 +4979,7 @@ rv55_3:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;un-lock it first.
+        call    EmuRawSimulateFarCall     ;un-lock it first.
         pop     dx
         mov     ah,0ah
         mov     RealRegsStruc.Real_EAX[edi],eax
@@ -4992,7 +4992,7 @@ rv55_3:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EMURawSimulateFCALL     ;un-lock it first.
+        call    EmuRawSimulateFarCall     ;un-lock it first.
 rv55_4:
         pop     esi
         pop     ecx
@@ -5043,7 +5043,7 @@ GetXMSPages     endp
 
 
 ;-------------------------------------------------------------------------------
-GetINT15Page    proc    near
+GetInt15Page    proc    near
         push    eax
         push    ebx
         push    esi
@@ -5134,7 +5134,7 @@ GIGetMem2:
         mov     RealRegsStruc.Real_EAX[edi],eax
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
-        call    EMURawSimulateInt
+        call    EmuRawSimulateInt
 
         test    BYTE PTR RealRegsStruc.Real_Flags[edi],1        ; see if carry returned
         je      GIProcess2      ; nope
@@ -5299,11 +5299,11 @@ rv56_10:
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-GetINT15Page    endp
+GetInt15Page    endp
 
 
 ;-------------------------------------------------------------------------------
-GetINT15Pages   proc    near
+GetInt15Pages   proc    near
         push    eax
         push    ebx
         push    ecx
@@ -5318,7 +5318,7 @@ GetINT15Pages   proc    near
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        mov     [INT15hTotal],0
+        mov     [Int15Total],0
         ;
         push    ds
         mov     ax,MainDS
@@ -5351,7 +5351,7 @@ GIGetMem1:
         mov     RealRegsStruc.Real_EAX[edi],eax
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
-        call    EMURawSimulateInt
+        call    EmuRawSimulateInt
 
         test    BYTE PTR RealRegsStruc.Real_Flags[edi],1        ; see if carry returned
         je      GIProcess1      ; nope
@@ -5391,15 +5391,15 @@ use88hResult1:
 
 GIComputeBytes1:
 
-;       mov     w[Int15hValue],ax
-        mov     [Int15hValue],eax
+;       mov     w[Int15Value],ax
+        mov     [Int15Value],eax
 
         mov     ax,ILevel
-        mov     [INT15hLevel2],ax
+        mov     [Int15Level2],ax
         ;
 rv57_0: ;Need to get another block of memory.
         ;
-        cmp     [INT15hLevel2],8
+        cmp     [Int15Level2],8
         jnc     rv57_1          ;can't cope with any more.
         push    ax
         mov     ax,KernalZero
@@ -5427,8 +5427,8 @@ rv57_GotBottom:
         ;
 ;       push    esi
 
-;       movzx   eax,w[Int15hValue]      ;get pretend value.
-        mov     eax,[Int15hValue]       ;get pretend value.
+;       movzx   eax,w[Int15Value]      ;get pretend value.
+        mov     eax,[Int15Value]       ;get pretend value.
 
         shl     eax,10          ; * 1024
         add     eax,100000h             ;add in 1 meg base address.
@@ -5471,16 +5471,16 @@ rv57_SizeOK:
         ;ECX - size.
         ;
         shr     ecx,12          ;get number of pages.
-        add     [INT15hTotal],ecx
+        add     [Int15Total],ecx
         ;
         dec     ebx             ;move back to previous byte.
         sub     ebx,100000h             ;remove starting point.
         shr     ebx,10          ;convert to K.
 
-;       mov     w[Int15hValue],bx       ;set new base value.
-        mov     [Int15hValue],ebx       ;set new base value.
+;       mov     w[Int15Value],bx       ;set new base value.
+        mov     [Int15Value],ebx       ;set new base value.
 
-        inc     [INT15hLevel2]  ;move to next level.
+        inc     [Int15Level2]  ;move to next level.
         jmp     rv57_0
         ;
 rv57_1: ;Now include any remains of existing blocks.
@@ -5497,12 +5497,12 @@ rv57_2: cmp     d[esi],0
         sub     eax,0[esi]
         shr     eax,12          ;free pages remaining
         dec     eax
-        add     [INT15hTotal],eax
+        add     [Int15Total],eax
 rv57_3: add     esi,4+4
         dec     ecx
         jnz     rv57_2
         ;
-rv57_9: mov     edx,[INT15hTotal]
+rv57_9: mov     edx,[Int15Total]
         pop     gs
         pop     fs
         pop     es
@@ -5515,7 +5515,7 @@ rv57_9: mov     edx,[INT15hTotal]
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-GetINT15Pages   endp
+GetInt15Pages   endp
 
 
 ;-------------------------------------------------------------------------------
@@ -5558,7 +5558,7 @@ GetCONVPage     proc    near
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;get segment address.
         test    es:RealRegsStruc.Real_Flags[edi],1
         pop     ebp
@@ -5590,7 +5590,7 @@ rv58_0: cmp     w[esi],0        ;This entry in use?
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         test    es:RealRegsStruc.Real_Flags[edi],1
         pop     edi
         pop     esi
@@ -5613,7 +5613,7 @@ rv58_0: cmp     w[esi],0        ;This entry in use?
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         pop     edi
         pop     esi
         pop     ecx
@@ -5640,7 +5640,7 @@ rv58_2: add     esi,4           ;next entry.
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         pop     esi
         test    es:RealRegsStruc.Real_Flags[edi],1
         jnz     rv58_9
@@ -5691,7 +5691,7 @@ rv58_10:
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         popad
         mov     CONVSavePara,0
 rv58_100:
@@ -5753,7 +5753,7 @@ GetCONVPages    proc    near
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;get segment address.
         test    es:RealRegsStruc.Real_Flags[edi],1
         pop     ebp
@@ -5786,7 +5786,7 @@ rv59_0:
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         pop     esi
         pop     ecx
         mov     ebx,es:RealRegsStruc.Real_EBX[edi]
@@ -5799,7 +5799,7 @@ rv59_0:
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         pop     esi
         pop     ecx
         pop     ebx
@@ -5841,7 +5841,7 @@ rv59_3:
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
 rv59_4:
         pop     esi
         pop     ecx
@@ -5859,7 +5859,7 @@ rv59_4:
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         ;
         ;Now return pages found.
         ;
@@ -5882,7 +5882,7 @@ rv59_9: pushf
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         popad
         mov     CONVSavePara,0
 rv59_100:
@@ -6029,10 +6029,10 @@ rv64_NotOurs:
         ;Not a function recognised by us so pass control to previous handler.
         ;
         assume ds:nothing
-        jmp     FWORD PTR cs:[OldpInt2f]                ;pass it onto previous handler.
+        jmp     FWORD PTR cs:[OldpInt2Fh]   ;pass it onto previous handler.
         assume ds:_cwDPMIEMU
 ;
-OldpInt2f       dd offset IntNN386Catch+(2fh*8)
+OldpInt2Fh      dd offset IntNN386Catch+(2fh*8)
         dw DpmiEmuCS
 Raw2FPatch      endp
 
