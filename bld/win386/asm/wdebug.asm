@@ -605,14 +605,14 @@ VxDBeginProc WGod_Device_Init
 ;*
         mov     eax,02fh
         mov     esi,OFFSET WDebugV86_Int2F
-        VxDCall Hook_V86_Int_Chain
+        VxDcall Hook_V86_Int_Chain
 
 ;*
 ;*** hook div by 0 fault
 ;*
         xor     eax,eax
         mov     esi,OFFSET Fault00Handler
-        VxDCall Hook_PM_Fault
+        VxDcall Hook_PM_Fault
         test    esi,esi
         jne     short aret0
         mov     esi,OFFSET JustReturn
@@ -624,7 +624,7 @@ aret0:
 ;*
         mov     eax,6
         mov     esi,OFFSET Fault06Handler
-        VxDCall Hook_PM_Fault
+        VxDcall Hook_PM_Fault
         test    esi,esi
         jne     short aret6
         mov     esi,OFFSET JustReturn
@@ -636,7 +636,7 @@ aret6:
 ;*
 ;       mov     eax,0eh
 ;       mov     esi,OFFSET Fault0EHandler
-;       VxDCall Hook_PM_Fault
+;       VxDcall Hook_PM_Fault
 ;       test    esi,esi
 ;       jne     short arete
 ;       mov     esi,OFFSET JustReturn
@@ -651,7 +651,7 @@ aret6:
         mov     cl,CallOnPress
         mov     esi,OFFSET HotKeyPressed
         xor     edi,edi
-        VxDCall VKD_Define_Hot_Key
+        VxDcall VKD_Define_Hot_Key
 
         clc
         ret
@@ -678,9 +678,9 @@ VxDBeginProc HotKeyPressed
         jne     short useit
         ret
 useit:
-        VxDCall Get_Sys_VM_Handle
+        VxDcall Get_Sys_VM_Handle
         mov     esi,OFFSET HotStop
-        VxDCall Schedule_VM_Event
+        VxDcall Schedule_VM_Event
         mov     HotEventHandle,esi
         ret
 VxDEndProc HotKeyPressed
@@ -1292,7 +1292,7 @@ SetTimer PROC near
         mov     eax,TimeOutTime
         mov     edx,eax                     ; reference data
         mov     esi,OFFSET SampleStuff    ; callback routine
-        VxDCall Set_Global_Time_Out
+        VxDcall Set_Global_Time_Out
         mov     TimerHandle,esi
         ret
 SetTimer ENDP
@@ -1362,7 +1362,7 @@ VxDBeginProc SVC_InitSampler
         mov     MaxSamples,eax              ; save it
 
         mov     ebx,VMHandle
-        VxDCall Get_VM_Exec_Time
+        VxDcall Get_VM_Exec_Time
         mov     StartTime,eax               ; time windows has been active
 
         mov     SampleUserVM,ebx            ; save VM
@@ -1392,16 +1392,16 @@ VxDEndProc SVC_InitSampler
 ;*************************************************************
 VxDBeginProc SVC_QuitSampler
         mov     esi,TimerHandle
-        VxDCall Cancel_Time_Out
+        VxDcall Cancel_Time_Out
 
         mov     eax,IntPeriod
         test    eax,eax
         je      short skiprip
-        VxDCall VTD_End_Min_Int_Period
+        VxDcall VTD_End_Min_Int_Period
 
 skiprip:
         mov     ebx,WinVMHandle
-        VxDCall Get_VM_Exec_Time
+        VxDcall Get_VM_Exec_Time
         sub     eax,StartTime
         mov     [ebp.Client_EAX],eax
         ret
@@ -1460,7 +1460,7 @@ VxDEndProc SVC_GetCurrTick
 VxDBeginProc SVC_SetTimerRate
         movzx   eax,[ebp.Client_BX]
         mov     IntPeriod,eax
-        VxDCall VTD_Begin_Min_Int_Period
+        VxDcall VTD_Begin_Min_Int_Period
         ret
 VxDEndProc SVC_SetTimerRate
 
@@ -1470,7 +1470,7 @@ VxDEndProc SVC_SetTimerRate
 ;***                                                 ***
 ;*******************************************************
 VxDBeginProc SVC_GetTimerRate
-        VxDCall VTD_Get_Interrupt_Period
+        VxDcall VTD_Get_Interrupt_Period
         mov     [ebp.Client_AX],ax
         ret
 VxDEndProc SVC_GetTimerRate
@@ -1813,7 +1813,7 @@ VxDEndProc SVC_EndConv
 VxDBeginProc MySuspend
         push    ebx
         mov     ebx,edx
-        VxDCall Suspend_VM
+        VxDcall Suspend_VM
         pop     ebx
         ret
 VxDEndProc MySuspend
@@ -1922,7 +1922,7 @@ put4:
         mov     [ebp.Client_AX],NO_BLOCK
         mov     esi,OFFSET MySuspend
         mov     edx,VMHandle
-        VxDCall Schedule_Global_Event
+        VxDcall Schedule_Global_Event
         ret
 
         ;*
@@ -1983,12 +1983,12 @@ put8:
 
         mov     eax,IDAddr                      ; cancel timer of requestor
         mov     esi,[eax.C_TimerHandle]
-        VxDCall Cancel_Time_Out
+        VxDcall Cancel_Time_Out
         mov     [eax.C_TimerHandle],0
 
         mov     eax,OtherIDAddr
         mov     esi,[eax.C_TimerHandle]         ; cancel timer of other guy
-        VxDCall Cancel_Time_Out
+        VxDcall Cancel_Time_Out
         mov     [eax.C_TimerHandle],0
 
         mov     [eax.C_PutBlocked],0            ; turn off for Resume Handler
@@ -1998,7 +1998,7 @@ put8:
         mov     ebx,[eax.C_Regs]
         mov     [ebx.Client_DX],cx              ; give guy we unblock bytes
         mov     ebx,[eax.C_MyID]                ; resume other guy
-        VxDCall Resume_VM
+        VxDcall Resume_VM
         jnc     short gr1                       ; did it work?
         cmp     IsGet,1                         ; no, are we doing ConvGet
         jne     short put5                      ; no, then doing put
@@ -2052,7 +2052,7 @@ VxDEndProc SVC_ConvPut
 SetDataTimeOut PROC near
         mov     edx,IDAddr                  ; reference data - ID ptr
         mov     esi,OFFSET DataTimedOut   ; callback routine
-        VxDCall Set_Global_Time_Out
+        VxDcall Set_Global_Time_Out
         ret
 SetDataTimeOut ENDP
 
@@ -2076,7 +2076,7 @@ isblocked:
         mov     [edx.C_PutBlocked],0            ; turn off blocked flag
         mov     [edx.C_GetBlocked],0
         mov     ebx,[edx.C_MyID]                ; resume VM
-        VxDCall Resume_VM
+        VxDcall Resume_VM
                                                 ; this is bad news
 notblocked:
         ret
@@ -2155,8 +2155,8 @@ VxDBeginProc SVC_SetExecutionFocus
         call    GetIDFrom_CX_BX
         mov     ebx,eax
         mov     eax,200
-        VxDCall Adjust_Execution_Time
-        ;VxDCall        Set_Execution_Focus
+        VxDcall Adjust_Execution_Time
+        ;VxDcall        Set_Execution_Focus
         ret
 VxDEndProc SVC_SetExecutionFocus
 
@@ -2244,7 +2244,7 @@ again_ts:
         ret
 fnd_ts:
         mov     esi,OFFSET SetCR0
-        VxDCall Schedule_Global_Event
+        VxDcall Schedule_Global_Event
         ret
 TaskSwitched ENDP
 
@@ -2267,14 +2267,14 @@ initmebaby:
         cmp     TaskSwitcherActive,1
         je      short yes_active
         mov     esi,OFFSET TaskSwitched
-        VxDCall Call_When_Task_Switched
+        VxDcall Call_When_Task_Switched
         mov     TaskSwitcherActive,1
 yes_active:
         mov     IsEMUInit,1                     ; flag that we are emulating
 
         mov     eax,07h
         mov     esi,OFFSET Fault07Handler
-        VxDCall Hook_PM_Fault                   ; grab int
+        VxDcall Hook_PM_Fault                   ; grab int
         jnc     short ok07
         mov     [ebp.Client_AX],1
         ret
@@ -2322,7 +2322,7 @@ VxDBeginProc SVC_EMUShutdown
 shutmedownbaby:
         mov     eax,07h
         mov     esi,Old07Handler
-        VxDCall Hook_PM_Fault                   ; reset interrupt
+        VxDcall Hook_PM_Fault                   ; reset interrupt
 
         mov     eax,OldCR0                      ; put CR0 back
         mov     cr0,eax
@@ -2901,10 +2901,10 @@ VxDEndProc SVC_UseHotKey
 
 VxDBeginProc RaiseInterrupt
         Push_Client_State
-        VxDCall Begin_Nest_Exec
+        VxDcall Begin_Nest_Exec
         mov     eax,edx
-        VxDCall Exec_Int
-        VxDCall End_Nest_Exec
+        VxDcall Exec_Int
+        VxDcall End_Nest_Exec
         Pop_Client_State
         ret
 VxDEndProc RaiseInterrupt
@@ -2922,7 +2922,7 @@ VxDBeginProc SVC_RaiseInterruptInVM
         mov     ebx,eax
         movzx   edx,[ebp.Client_DX]
         mov     esi, OFFSET RaiseInterrupt
-        VxDCall Schedule_VM_Event
+        VxDcall Schedule_VM_Event
         mov     [ebp.Client_AX],0
         ret
 VxDEndProc SVC_RaiseInterruptInVM

@@ -329,12 +329,12 @@ endm
 
 argscnt = 0
 
-BeginProc macro Name, P1, P2, P3, P4, P5, P6, P7, LastArg
+VxDBeginProc macro Name, P1, P2, P3, P4, P5, P6, P7, LastArg
   Name proc near
   public Name
 endm
 
-EndProc macro Name
+VxDEndProc macro Name
   Name endp
 endm
 

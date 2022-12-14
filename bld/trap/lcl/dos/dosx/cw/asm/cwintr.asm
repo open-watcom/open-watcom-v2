@@ -72,18 +72,18 @@ set_vect macro   vect_no, vect_func, vect_oldaddr, vect_type
         assume ds:_TEXT
         mov     bl,vect_no
 ifb <vect_type>
-        sys GetVect
+        Sys GetVect
 else
-        sys GetEVect
+        Sys GetEVect
 endif
         mov     d[vect_oldaddr],edx
         mov     w[vect_oldaddr+4],cx
         mov     cx,cs
         mov     edx,offset vect_func
 ifb <vect_type>
-        sys SetVect
+        Sys SetVect
 else
-        sys SetEVect
+        Sys SetEVect
 endif
         assume ds:DGROUP
 endm
@@ -97,9 +97,9 @@ restore_vect macro   vect_no, vect_oldaddr, vect_type
         mov     cx,w[vect_oldaddr+4]
         mov     bl,vect_no
 ifb <vect_type>
-        sys SetVect
+        Sys SetVect
 else
-        sys SetEVect
+        Sys SetEVect
 endif
         assume ds:DGROUP
 endm
@@ -821,7 +821,7 @@ DebugLoad   proc    "C" public  uses ebx ecx edx esi edi
         push    ds
         pop     es
         push    ebp
-        sys     ExecDebug
+        Sys     ExecDebug
         pop     ebp
         pop     es
         jnc     @@3load
@@ -856,14 +856,14 @@ DebugLoad   proc    "C" public  uses ebx ecx edx esi edi
 ;Setup a new transfer buffer to stop debugger interfering.
 ;
         mov     bx,200h     ;8192/16
-        sys     GetMemDOS
+        Sys     GetMemDOS
         jc      @@4load
 ;
         call    SetUsrTask
 ;
         mov     bx,ax
         mov     ecx,2000h   ;8192
-        sys     SetDOSTrans
+        Sys     SetDOSTrans
 ;
         call    SetDbgTask
 @@4load:
@@ -932,7 +932,7 @@ CheckMemoryBlockInfo proc private uses ebx edi
         or      eax,ebx
         jz      @@calc2
         mov     edi,ecx
-        sys     GetSelDet32
+        Sys     GetSelDet32
         sub     ecx,esi
         jbe     @@calc2
         cmp     ecx,edi
