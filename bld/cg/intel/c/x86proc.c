@@ -858,6 +858,25 @@ void DoRTCall( rt_class rtindex, bool pop )
     DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), pop );
 }
 
+static unsigned returnAddressStackSize( void )
+/********************************************/
+{
+    unsigned    size;
+
+    if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
+        size = 0;
+    } else if( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) {
+        size = 0;
+    } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
+        size = 2 * WORD_SIZE;
+    } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
+        size = 2 * WORD_SIZE;
+    } else {
+        size = WORD_SIZE;
+    }
+    return( size );
+}
+
 void    GenProlog( void )
 /***********************/
 {
@@ -927,17 +946,7 @@ void    GenProlog( void )
     }
 #endif
 
-    if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
-        (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) ) {
-        ret_size = 0;
-    } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else {
-        ret_size = WORD_SIZE;
-    }
-
+    ret_size = returnAddressStackSize();
     CurrProc->parms.base += ret_size;
     CalcUsedRegs();
 
@@ -1182,17 +1191,7 @@ int ParmsAtPrologue( void )
     }
 #endif
 
-    if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
-       ( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) ) {
-        ret_size = 0;
-    } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else {
-        ret_size = WORD_SIZE;
-    }
-
+    ret_size = returnAddressStackSize();
     parms_off_sp += ret_size;
     return( parms_off_sp );
 }
