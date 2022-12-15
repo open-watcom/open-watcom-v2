@@ -31,8 +31,8 @@
 
 
 #include "variety.h"
-#include <bios.h>
 #include <stddef.h>
+#include <bios.h>
 #include "necibm.h"
 #include "rtdata.h"
 

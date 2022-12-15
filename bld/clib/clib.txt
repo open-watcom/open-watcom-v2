@@ -104,6 +104,7 @@ Previously Implemented Changes:
         convert         - conversion manipulation functions
         defwin          - default windowing system
         direct          - directory management functions
+        doslfn          - DOS LFN specific functions
         environ         - process environment functions
         file            - file manipulation functions
         fpu             - FPU management functions
