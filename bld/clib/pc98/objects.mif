@@ -31,7 +31,6 @@ biosmems_opts = -I"$(clib_dir)/bios/h"
 biosprin_opts = -I"$(clib_dir)/bios/h"
 biosseri_opts = -I"$(clib_dir)/bios/h"
 biostime_opts = -I"$(clib_dir)/bios/h"
-ctrlbrki_opts = -I"$(clib_dir)/process/h"
 sigsy_opts    = -I"$(clib_dir)/process/h"
 
 086_option_fpi87 =-fpi87
