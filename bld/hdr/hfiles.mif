@@ -238,6 +238,7 @@
 !inject h/netinet/in.h                        hlnx      hrdos
 !inject h/netinet/tcp.h                       hlnx      hrdos
 !inject h/sys/_lfndos.h                  hdos
+!inject h/sys/_pc98.h                    hdos
 !inject h/sys/cdrom.h                              hqnx
 !inject h/sys/con_msg.h                            hqnx
 !inject h/sys/console.h                            hqnx

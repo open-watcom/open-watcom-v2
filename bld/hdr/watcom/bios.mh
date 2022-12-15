@@ -10,6 +10,8 @@
 
 :include owrtlink.sp
 
+:include pc98.sp
+
 :include cpluspro.sp
 
 :include pshpackl.sp

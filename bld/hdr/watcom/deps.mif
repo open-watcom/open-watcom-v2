@@ -199,8 +199,8 @@ h/_rbtree.h       : $(mh_dir)/_rbtree.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
 h/_strdef.h       : $(mh_dir)/_strdef.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
 h/alloca.h        : $(mh_dir)/alloca.mh $(owhdr) ../size_t.sp ../null.sp $(cplus) ../alloca.sp
 h/assert.h        : $(assert_deps)
-h/bios.h          : $(mh_dir)/bios.mh $(owhdr) $(cplus) $(packll) $(extension)
-h/bios98.h        : $(mh_dir)/bios98.mh $(owhdr) $(cplus) $(packll) $(extension)
+h/bios.h          : $(mh_dir)/bios.mh $(owhdr) ../pc98.sp $(cplus) $(packll) $(extension)
+h/bios98.h        : $(mh_dir)/bios98.mh $(owhdr) ../pc98.sp $(cplus) $(packll) $(extension)
 h/common.cnv      : $(mh_dir)/common.mh $(crwat_sp)
 h/complex.h       : $(complex_deps)
 h/conio.h         : $(mh_dir)/conio.mh $(owhdr) $(cplus) ../_valist.sp
@@ -315,6 +315,7 @@ h/sys/socket.h    : $(mh_dir)/sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../inc
 !ifeq system dos
 
 h/sys/_lfndos.h   : $(mh_dir)/dos/sys/_lfndos.mh $(owhdrcnt)
+h/sys/_pc98.h     : $(mh_dir)/dos/sys/_pc98.mh $(owhdrcnt)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 
 !else ifeq system rdos

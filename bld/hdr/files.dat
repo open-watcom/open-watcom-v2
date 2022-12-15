@@ -81,6 +81,7 @@ usr="utime.h"
 
 [ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg" ]
 usr="_lfndos.h"
+usr="_pc98.h"
 
 [ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | cplusplus" ]
 #
