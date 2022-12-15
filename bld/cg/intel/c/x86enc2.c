@@ -632,8 +632,8 @@ void    GenJmpRegister( instruction *ins )
 }
 
 
-static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class )
-/*******************************************************************************
+static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class occlass )
+/*********************************************************************************
  * Dump bytes "src" directly into the queue, for length "len".
  */
 {
@@ -641,11 +641,11 @@ static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class )
     uint            addlen;
 
     oc = CGAlloc( offsetof( oc_entry, data ) + MAX_OBJ_LEN );
-    oc->oc_entry.hdr.class = class;
+    oc->oc_entry.hdr.class = occlass;
     oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + MAX_OBJ_LEN;
     oc->oc_entry.hdr.objlen = MAX_OBJ_LEN;
     addlen = 0;
-    if( class == OC_IDATA ) {
+    if( occlass == OC_IDATA ) {
         if( len > 255 )
             len = 255;
         addlen = 1;
