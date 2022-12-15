@@ -18,13 +18,6 @@
 !inject b_timofd.obj                                                        w32
 !inject func086.obj     d16     dpm                                     w16
 !inject func386.obj         d32
-!inject n_disk.obj      d16 d32                                         w16
-!inject n_equipl.obj    d16 d32                                         w16
-!inject n_keybrd.obj    d16 d32                                         w16
-!inject n_mem.obj       d16 d32                                         w16
-!inject n_print.obj     d16 d32                                         w16
-!inject n_serial.obj    d16 d32                                         w16
-!inject n_timofd.obj    d16 d32                                         w16
 !inject tmofd086.obj    d16     dpm                                     w16
 !inject tmofd386.obj        d32
 

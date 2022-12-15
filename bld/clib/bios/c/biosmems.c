@@ -38,9 +38,11 @@
 
 _WCRTLINK unsigned short _bios_memsize( void )
 {
+#if defined( __WATCOM_PC98__ )
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         return( __nec98_bios_memsize() );
     }
+#endif
     /* IBM PC */
     return( __ibm_bios_memsize() );
 }

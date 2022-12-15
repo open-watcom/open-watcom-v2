@@ -5,7 +5,6 @@
 #===================================================================================================
 !inject abort.obj       d16 d32     nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject cenvarg.obj     d16 d32     nt  nta ntp         o16 o32                             rdu
-!inject ctrlbrki.obj    d16 d32                                         w16
 !inject cwaitos2.obj                                    o16 o32
 !inject cwaitwnt.obj                nt  nta ntp
 !inject delay.obj       d16 d32                                         w16

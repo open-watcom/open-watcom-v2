@@ -89,6 +89,34 @@ system begin windows_dll
     format windows dll ^
 end
 
+system begin windows_pc98
+    option osname='Windows 16-bit'
+    libpath '%OWROOT%/bld/fpuemu/i86/stubi86'
+    libpath '%OWROOT%/bld/fpuemu/i86/wini86'
+    libpath '%OWROOT%/bld/clib/pc98/library/windows.086/ms'
+    libpath '%OWROOT%/bld/clib/pc98/library/windows.086/mc'
+    libpath '%OWROOT%/bld/clib/pc98/library/windows.086/mm'
+    libpath '%OWROOT%/bld/clib/pc98/library/windows.086/ml'
+    libpath '%OWROOT%/bld/clib/library/windows.086/ms'
+    libpath '%OWROOT%/bld/clib/library/windows.086/mc'
+    libpath '%OWROOT%/bld/clib/library/windows.086/mm'
+    libpath '%OWROOT%/bld/clib/library/windows.086/ml'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.286/ms'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.287/ms'
+    libpath '%OWROOT%/bld/mathlib/library/windows.286/mc'
+    libpath '%OWROOT%/bld/mathlib/library/windows.287/mc'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.286/mm'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.287/mm'
+    libpath '%OWROOT%/bld/mathlib/library/windows.286/ml'
+    libpath '%OWROOT%/bld/mathlib/library/windows.287/ml'
+    libpath '%OWROOT%/bld/cpplib/library/windows.086/mc'
+    libpath '%OWROOT%/bld/cpplib/library/windows.086/ml'
+    libpath '%OWROOT%/bld/w16api/wini86/lib'
+    library windows
+    option stack=8k, heapsize=1k
+    format windows ^
+end
+
 system begin dos4g
     option osname='DOS/4G'
     libpath '%OWROOT%/bld/fpuemu/386/stub386'

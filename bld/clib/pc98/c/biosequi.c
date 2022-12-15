@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,14 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  Break interrupt Ctrl+C handling save/restore
+* Description:  Get BIOS equipment list.
 *
 ****************************************************************************/
 
 
-extern unsigned char    _WCNEAR __ctrl_break_int;
-
-#ifndef __WINDOWS_386__
-extern      void    __grab_int_ctrl_break( void );
-extern      void    __restore_int_ctrl_break( void );
-#endif
+#define __WATCOM_PC98__
+#include "../../bios/c/biosequi.c"

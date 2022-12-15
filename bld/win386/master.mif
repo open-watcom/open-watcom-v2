@@ -173,6 +173,7 @@ dllexelink : .PROCEDURE
     $(noecho)%create $(LNK)
     @%append $(LNK) debug all
     @%append $(LNK) name $^&.ext
+    @%append $(LNK) library pc98s
     @%append $(LNK) library clibs
     @%append $(LNK) option modname=win38600
     @%append $(LNK) option desc '                                                                                '
@@ -188,12 +189,12 @@ dllexelink : .PROCEDURE
     @for %i in ($(objs_$(fmt))) do @%append $(LNK) file %i
     @%append $(LNK) @imports.lnk
 !ifeq fmt exe
-    @%append $(LNK) sys windows mem font
+    @%append $(LNK) sys windows_pc98 mem font
     @%append $(LNK) option rwr
     @%append $(LNK) option stack=12K
     @%append $(LNK) segment CLASS 'STACK' PRELOAD
 !else
-    @%append $(LNK) sys windows dll initinstance memory
+    @%append $(LNK) sys windows_pc98 dll initinstance memory
     @%append $(LNK) option stack=8K
     @%append $(LNK) segment CLASS 'EMU' PRELOAD MOVEABLE
     @%append $(LNK) @exports.lnk

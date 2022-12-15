@@ -39,6 +39,7 @@ include mdef.inc
 include stword.inc
 include env87.inc
 include fstatus.inc
+include fpeint.inc
 
 _emu_init_start segment word public 'EMU'
 _emu_init_start ends
@@ -60,9 +61,6 @@ else
         extrn   "C",_STACKLOW   : word
 endif
         extrn   "C",__FPE_handler: dword
-ifndef  __OS2__
-        extrn   "C",__FPE_int   : byte  ; defined in \clib\fpu\c\fpeint.c
-endif
 
 TInf    db 00h,00h,00h,00h,00h,00h,00h,80h,0ffh,7fh
 F8Inf   db 0ffh,0ffh,0ffh,0ffh,0ffh,0ffh,0efh,7fh
@@ -98,12 +96,12 @@ defp    __Init_FPE_handler
           push  DS                      ; - ...
           push  ES                      ; - ...
           mov   AH,35h                  ; - get old interrupt handler
-          mov   AL,__FPE_int            ; - for INT 2 (INT 10 on NEC)
+          mov   AL,FPE_INT              ; - for INT 2 (INT 10 on NEC)
           int   21h                     ; - ...
           mov   CS:Save87,BX            ; - save old interrupt handler
           mov   CS:Save87+2,ES          ; - ...
           mov   AH,25h                  ; - set new interrupt handler
-          mov   AL,__FPE_int            ; - for INT 2 (INT 10 on NEC)
+          mov   AL,FPE_INT              ; - for INT 2 (INT 10 on NEC)
           push  CS                      ; - set DS:DX to address of new handler
           pop   DS                      ; - ...
           mov   DX,offset __FPEHandler  ; - ...
@@ -135,7 +133,7 @@ defp    __Fini_FPE_handler
           fwait                         ; - ...
           add   SP,2                    ; - remove temporary
           mov   AH,25h                  ; - restore old interrupt handler
-          mov   AL,__FPE_int            ; - for INT 2 (INT 10 on NEC)
+          mov   AL,FPE_INT              ; - for INT 2 (INT 10 on NEC)
           mov   DS,CS:Save87+2          ; - get address of old handler
           mov   DX,CS:Save87            ; - ...
           int   21h                     ; - ...

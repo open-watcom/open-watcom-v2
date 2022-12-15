@@ -25,14 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  FPU interrupt handling support.
+* Description:  BIOS serial port access.
 *
 ****************************************************************************/
 
 
-extern unsigned char _WCNEAR __FPE_int;    /* Used for Rational Systems and Intel */
-#if defined(__386__)
-extern unsigned char _WCNEAR __IRQ_num;    /* Used for PharLap DOS Extender */
-extern unsigned char _WCNEAR __MST_pic;    /* Master PIC port number */
-extern unsigned char _WCNEAR __SLV_pic;    /* Slave PIC port number */
-#endif
+#define __WATCOM_PC98__
+#include "../../bios/c/biosseri.c"

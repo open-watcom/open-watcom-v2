@@ -37,6 +37,8 @@
 #include "rtdata.h"
 
 
+#if defined( __WATCOM_PC98__ )
+
 /* DOS only, so no multithreading issues with static data */
 static struct {
     unsigned char       pad[18];
@@ -44,8 +46,11 @@ static struct {
     unsigned char       status;
 } buf1, buf2, buf3;                     /* one for each com port */
 
+#endif
+
 _WCRTLINK unsigned short _bios_serialcom( unsigned cmd, unsigned port, unsigned data )
 {
+#if defined( __WATCOM_PC98__ )
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         struct com_t        necBuf;
         unsigned short      necRc;
@@ -153,6 +158,7 @@ _WCRTLINK unsigned short _bios_serialcom( unsigned cmd, unsigned port, unsigned 
         }
         return( ret );
     }
+#endif
     /* IBM PC */
     return( __ibm_bios_serialcom( cmd, port, data ) );
 }

@@ -164,7 +164,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
 
             if( app_type & FAPPTYP_DOS ) { // DOS app
                 // merge argv[0] & argv[1]
-                cmdline[ strlen( cmdline ) ] = ' ';
+                cmdline[strlen( cmdline )] = ' ';
                 len = strlen( cmdline ) + 8;
     #if defined( __BIG_DATA__ )
                 np = lib_fmalloc( len );
