@@ -117,7 +117,11 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         segregs.ds = _FP_SEG( &pblock );
         intdosx( &regs, &regs, &segregs );
         if( regs.x.cflag == 0 && pblock.real_eax.b.l == 0 ) {
-            if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
+            /*
+             * check if DS not 0 or weird OS/2 value 0xFFFF
+             * otherwise it is invalid
+             */
+            if( pblock.real_ds && pblock.real_ds != 0xFFFF ) {
                 return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );
             }
         }
@@ -128,6 +132,10 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         dblock.eax = 0x6300;                /* get DBCS vector table */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
         if( (dblock.flags & INTR_CF) == 0 && ((regx *)&dblock.eax)->b.l == 0 ) {
+            /*
+             * check if DS not 0
+             * otherwise it is invalid
+             */
             if( dblock.ds ) {
                 return( EXTENDER_RM2PM( dblock.ds, dblock.esi ) );
             }
