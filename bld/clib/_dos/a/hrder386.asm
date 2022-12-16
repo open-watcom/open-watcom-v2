@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -91,9 +92,9 @@ endif
 ;
         mov     AL,_Extender    ; get extender indicator
         _guess                  ; guess: pharlap
-          cmp   AL,X_PHARLAP_V2 ; - ...
+          cmp   AL,X_PHARLAP_V1 ; - ...
           _quif b               ; - quit if not pharlap
-          cmp   AL,X_PHARLAP_V7 ; - ...
+          cmp   AL,X_PHARLAP_V8 ; - ...
           _quif a               ; - quit if not pharlap
           push  ECX             ; - save ECX
           mov   CL,24H          ; - critical error interrupt number
@@ -142,9 +143,9 @@ endif
         sub     ECX,ECX         ; zero ECX for selector to use
         mov     AL,_Extender    ; get extender indicator
         _guess                  ; guess: pharlap
-          cmp   AL,X_PHARLAP_V2 ; - ...
+          cmp   AL,X_PHARLAP_V1 ; - ...
           _quif b               ; - quit if not pharlap
-          cmp   AL,X_PHARLAP_V7 ; - ...
+          cmp   AL,X_PHARLAP_V8 ; - ...
           _quif a               ; - quit if not pharlap
           mov   CL,34H          ; - GDT entry for first 1 meg
         _admit                  ; guess: DOS/4GW

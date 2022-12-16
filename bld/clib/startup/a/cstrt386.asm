@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -51,8 +51,14 @@ include tinit.inc
 include xinit.inc
 include extender.inc
 
-FLG_NO87    equ 1
-FLG_LFN     equ 1
+FLG_NO87        equ     1
+FLG_LFN         equ     1
+
+PHARLAP_PSP_SEL equ     24h
+PHARLAP_ENV_SEL equ     2ch
+
+DOS_PSP_ENV_SEG equ     2ch
+
 
         assume  nothing
 
@@ -177,14 +183,11 @@ around: sti                             ; enable interrupts
 
         assume  ds:DGROUP
 
-PSP_SEG equ     24h
-ENV_SEG equ     2ch
-
         and     esp,0fffffffch          ; make sure stack is on a 4 byte bdry
         mov     ebx,esp                 ; get sp
         mov     _STACKTOP,ebx           ; set stack top
         mov     _curbrk,ebx             ; set first available memory location
-        mov     ax,PSP_SEG              ; get segment address of PSP
+        mov     ax,PHARLAP_PSP_SEL      ; get segment address of PSP
         mov     _psp,ax                 ; save segment address of PSP
 ;
 ;       get DOS & Extender version number
@@ -202,9 +205,13 @@ ENV_SEG equ     2ch
         shr     eax,16                  ; get top 16 bits of eax
         cmp     ax,'DX'                 ; if top 16 bits = "DX"
         jne     not_pharlap             ; then its pharlap
-        sub     bl,'0'                  ; - save major version number
-        mov     al,bl                   ; - (was in ascii)
-        mov     ah,XS_NONE              ; - extender subtype
+        mov     ah,XS_PHARLAP_NORMAL    ; - extender subtype
+        cmp     ebx,04A613231h          ; - if ebx is '12aJ'
+        jne short normal_pharlap        ; - then Japanese version
+        mov     ah,XS_PHARLAP_FUJITSU   ; - - setup Japanese extender subtype
+normal_pharlap:                         ; - endif
+        sub     bl,'1' - X_PHARLAP_V1   ; - ASCII -> bin version
+        mov     al,bl                   ; - save major version number
         push    eax                     ; - save version number
         mov     es,_psp                 ; - point to PSP
         mov     ebx,es:[5Ch]            ; - get highest addr used
@@ -218,7 +225,7 @@ ENV_SEG equ     2ch
         int     21h                     ; - ...
         pop     eax                     ; - restore version number
         mov     ebx,ds                  ; - get value of Phar Lap data segment
-        mov     cx,ENV_SEG              ; - PharLap environment segment
+        mov     cx,PHARLAP_ENV_SEL      ; - PharLap environment segment
         jmp short know_extender         ; else
 
 not_pharlap:                            ; - assume DOS/4G or compatible
@@ -226,7 +233,7 @@ not_pharlap:                            ; - assume DOS/4G or compatible
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
         test    al,al                   ; - ...
-        je      short know_extender     ; - quit if not Rational DOS/4G
+        je      short not_rational      ; - quit if not Rational DOS/4G
         mov     eax,gs                  ; - get segment address of kernel
         test    ax,ax                   ; - if not zero
         je      short rat9              ; - then
@@ -235,15 +242,20 @@ rat9:                                   ; - endif
         mov     ax,6                    ; - check data segment base
         mov     ebx,ds                  ; - set up data segment
         int     31h                     ; - DPMI call
-        mov     ax,XS_RATIONAL_ZEROBASE*256+X_RATIONAL ; - asssume Rational 32-bit Extender / extender subtype
+        mov     al,X_RATIONAL           ; - asssume Rational 32-bit Extender
+        mov     ah,XS_RATIONAL_ZEROBASE ; - asssume Rational 32-bit Extender subtype
         or      dx,cx                   ; - if base is non-zero
         jz      rat10                   ; - then
         mov     ah,XS_RATIONAL_NONZEROBASE; - DOS/4G non-zero based data
 rat10:                                  ; - endif
         mov     _psp,es                 ; - save segment address of PSP
-        mov     cx,es:[02ch]            ; - get environment segment into cx
+        mov     cx,es:[DOS_PSP_ENV_SEG] ; - get environment segment into cx
         jmp short know_extender         ; else
 
+not_rational:                           ; - check other extenders
+
+unknow_extender:                        ; - unknown extender
+        xor     eax,eax
 know_extender:                          ; endif
         mov     _Extender,al            ; record extender type
         mov     _ExtenderSubtype,ah     ; record extender subtype

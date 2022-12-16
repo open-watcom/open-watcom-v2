@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -304,9 +304,9 @@ endif   ; ACAD
         cmp     ax,'DX'                 ; if top 16 bits = "DX"
         sete    al                      ; then its Pharlap
         jne     not_pharlap             ; if its pharlap
-        sub     bl,'0'                  ; - save major version number
+        sub     bl,'1' - X_PHARLAP_V1   ; - save major version number
         mov     al,bl                   ; - (was in ascii)
-        xor     ah,ah                   ; - subtype
+        mov     ah,XS_PHARLAP_NORMAL    ; - subtype
         mov     bx,14h                  ; - get value of Phar Lap data segment
         jmp short know_extender         ; else
 

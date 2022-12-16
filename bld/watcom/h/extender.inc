@@ -36,19 +36,24 @@
 ;
 X_ERGO                  equ     0       ; Ergo OS/386 (unsupported)
 X_RATIONAL              equ     1       ; DOS/4G(W) or compatible
-X_PHARLAP_V2            equ     2       ; PharLap 386 | DOS
-X_PHARLAP_V3            equ     3
-X_PHARLAP_V4            equ     4
-X_PHARLAP_V5            equ     5
-X_PHARLAP_V6            equ     6       ; PharLap TNT
-X_PHARLAP_V7            equ     7
-X_PHARLAP_V8            equ     8
-X_INTEL                 equ     9       ; Intel CodeBuilder (unsupported)
-X_WIN386                equ     10      ; Watcom Win386
-X_HX                    equ     11      ; HX DOS Extender
+X_PHARLAP_V1            equ     2       ; PharLap 386 | DOS
+X_PHARLAP_V2            equ     3
+X_PHARLAP_V3            equ     4
+X_PHARLAP_V4            equ     5
+X_PHARLAP_V5            equ     6
+X_PHARLAP_V6            equ     7       ; PharLap TNT
+X_PHARLAP_V7            equ     8
+X_PHARLAP_V8            equ     9
+X_INTEL                 equ     10      ; Intel CodeBuilder (unsupported)
+X_WIN386                equ     11      ; Watcom Win386
+X_HX                    equ     12      ; HX DOS Extender
 ;
 ;       386 DOS Extender Equates for __ExtenderSubtype variable
 ;
-XS_NONE                 equ     0
+XS_NORMAL               equ     0
+
+XS_PHARLAP_NORMAL       equ     0
+XS_PHARLAP_FUJITSU      equ     1
+
 XS_RATIONAL_ZEROBASE    equ     0
 XS_RATIONAL_NONZEROBASE equ     1
