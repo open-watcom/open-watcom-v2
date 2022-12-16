@@ -31,7 +31,7 @@ exetarg_objs          = cwc.obj
 #
 copystub.tmp : copystub.asm
     @%make echo_aslink
-    $(noecho)*bwasm -zq -fo=$^&.obj $[@
+    $(noecho)*bwasm -zq-w8-cx -fo=$^&.obj $[@
     $(noecho)*bwlink system bin op quiet file $^&.obj name $@
 
 copystub.gh : ./mkcode.exe copystub.tmp
@@ -40,7 +40,7 @@ copystub.gh : ./mkcode.exe copystub.tmp
 
 decstub.tmp : decstub.asm
     @%make echo_aslink
-    $(noecho)*bwasm -zq -fo=$^&.obj $[@
+    $(noecho)*bwasm -zq-w8-cx -fo=$^&.obj $[@
     $(noecho)*bwlink system bin op quiet file $^&.obj name $@
 
 decstub.gh : ./mkcode.exe decstub.tmp

@@ -505,7 +505,7 @@ aflags_all      = -we $(mode_aflags) -fo=$@
 
 aflags_intel    = -w8-cx
 
-aflags_386      = -3$(aflags_intel)
+aflags_386      = $(aflags_intel)-3
 aflags_i86      = $(aflags_intel)
 aflags_axp      =
 aflags_ppc      =
