@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,24 @@
 #else
 #define __FP80BIT(ld,d)                 d
 #endif
+
+/*
+ * USE_NORETURN_OPTIMIZATION macro switch to old incorrect NORETURN CALL optimization
+ * processing. Now it is switch off.
+ *
+ * The old processing was based on CALL replacement by JMP and changing stack frame
+ * but it doesn't work correctly for all caling conventions, therefore it is
+ * disabled by this macro
+ *
+ * Now it works without CALL by JMP replacement and stack frame is not changed
+ * any way, simply only change flow by inserting pseudo-instruction OC_NORET into
+ * pipeline optimizer which mark following code as dead and it is later eliminated
+ * No other optimizations are done.
+ * It works transparent way and has no problem with stack frame correction on various
+ * calling conventions.
+ */
+
+//#define USE_NORETURN_OPTIMIZATION
 
 #define _IsPowerOfTwo( x )              ( ( (x) & ( 1 - (x) ) ) == (x) )
 

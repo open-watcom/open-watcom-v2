@@ -62,6 +62,8 @@
 #include "feprotos.h"
 
 
+#define WORDS_COUNT(size)   (((size) + WORD_SIZE - 1) / WORD_SIZE)
+
 #define WINDOWS_CHEAP  ( ( _IsModel( DLL_RESIDENT_CODE ) &&         \
                ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
             || ( _IsTargetModel( CHEAP_WINDOWS )                    \
@@ -79,8 +81,13 @@
 #define CHEAP_FRAME ( _IsTargetModel( NEED_STACK_FRAME ) || \
               _IsntTargetModel( WINDOWS ) || WINDOWS_CHEAP )
 
+#if defined( USE_NORETURN_OPTIMIZATION )
 #define FAR_RET_ON_STACK ( (_RoutineIsLong( CurrProc->state.attr ) ) \
              && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 )
+#else
+#define FAR_RET_ON_STACK ( _RoutineIsLong( CurrProc->state.attr ) )
+#endif
+
 
 #define HW_STACK_CHECK HW_xAX
 #define HW_LOAD_DS     HW_xAX
@@ -311,7 +318,7 @@ static void DoStackCheck( void )
         return;
 #if _TARGET & _TARG_80386
     if( CurrProc->prolog_state & GENERATE_GROW_STACK ) {
-        if( BlockByBlock || CurrProc->locals.size >= 4 * 1024 ) {
+        if( BlockByBlock || CurrProc->locals.size >= 4096 ) {
             GenUnkPush( &CurrProc->targ.stack_check );
             DoRTCall( RT_GROW, true );
         }
@@ -865,8 +872,10 @@ static unsigned returnAddressStackSize( void )
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
         size = 0;
+#if defined( USE_NORETURN_OPTIMIZATION )
     } else if( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) {
         size = 0;
+#endif
     } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
         size = 2 * WORD_SIZE;
     } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
@@ -884,10 +893,10 @@ void    GenProlog( void )
     hw_reg_set  to_push;
     unsigned    ret_size;
     pointer     label;
-    pointer     origlabel; // Original label for generated __far16 thunks
+    pointer     origlabel;  /* Original label for generated __far16 thunks */
     fe_attr     attr;
 
-    ScanInstructions();       /* Do These 2 calls before using DO_WINDOWS_CRAP! */
+    ScanInstructions();     /* Do These 2 calls before using DO_WINDOWS_CRAP! */
     FindIfExported();
     old_segid = SetOP( AskCodeSeg() );
 
@@ -999,9 +1008,13 @@ void    GenProlog( void )
         } else {
             DoStackCheck();
             CurrProc->parms.base += LoadDS();
+#if defined( USE_NORETURN_OPTIMIZATION )
             if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 ) {
                 CurrProc->parms.base += Push( to_push );
             }
+#else
+            CurrProc->parms.base += Push( to_push );
+#endif
             Enter();
             AdjustPushLocals();
             if( _IsModel( NO_OPTIMIZATION ) || CurrProc->targ.sp_frame ) {
@@ -1025,7 +1038,7 @@ void    GenProlog( void )
     SetOP( old_segid );
 
     if( CurrProc->prolog_state & GENERATE_EXPORT ) {
-        OutDLLExport( ( CurrProc->parms.size + WORD_SIZE - 1 ) / WORD_SIZE, AskForLblSym( CurrProc->label ) );
+        OutDLLExport( WORDS_COUNT( CurrProc->parms.size ), AskForLblSym( CurrProc->label ) );
     }
 }
 
@@ -1145,9 +1158,13 @@ void    GenEpilog( void )
     }
 
     if( (attr & FE_NAKED) == 0 ) {
+#if defined( USE_NORETURN_OPTIMIZATION )
         if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 ) {
             DoEpilog();
         }
+#else
+        DoEpilog();
+#endif
 
         if( BlockByBlock ) {
             AbsPatch( CurrProc->targ.prolog_loc, CurrProc->locals.size );
