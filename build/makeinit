@@ -152,6 +152,12 @@ bld_os = osx
 bldonly_osx = 1
 !endif
 
+!ifdef bldonly_$(bld_os)
+!ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+!endif
+
 nested_wmake = wmake
 
 watcom_common_cflags   =-wx-wce=310
