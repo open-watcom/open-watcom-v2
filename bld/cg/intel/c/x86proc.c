@@ -83,7 +83,7 @@
 
 #if defined( USE_NORETURN_OPTIMIZATION )
 #define FAR_RET_ON_STACK ( (_RoutineIsLong( CurrProc->state.attr ) ) \
-             && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 )
+             && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 )
 #else
 #define FAR_RET_ON_STACK ( _RoutineIsLong( CurrProc->state.attr ) )
 #endif
@@ -873,7 +873,7 @@ static unsigned returnAddressStackSize( void )
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
         size = 0;
 #if defined( USE_NORETURN_OPTIMIZATION )
-    } else if( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) {
+    } else if( CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
         size = 0;
 #endif
     } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
@@ -1009,7 +1009,7 @@ void    GenProlog( void )
             DoStackCheck();
             CurrProc->parms.base += LoadDS();
 #if defined( USE_NORETURN_OPTIMIZATION )
-            if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 ) {
+            if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
                 CurrProc->parms.base += Push( to_push );
             }
 #else
@@ -1159,7 +1159,7 @@ void    GenEpilog( void )
 
     if( (attr & FE_NAKED) == 0 ) {
 #if defined( USE_NORETURN_OPTIMIZATION )
-        if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 ) {
+        if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
             DoEpilog();
         }
 #else

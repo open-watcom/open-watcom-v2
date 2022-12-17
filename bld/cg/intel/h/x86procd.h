@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,20 +40,21 @@ typedef enum {
         ROUTINE_REMOVES_PARMS           = 0x00000004,
         ROUTINE_NEEDS_DS_LOADED         = 0x00000008,
         ROUTINE_HAS_SPECIAL_RETURN      = 0x00000010,
-        ROUTINE_NEVER_RETURNS           = 0x00000020,
-        ROUTINE_NEEDS_PROLOG            = 0x00000040,
-        ROUTINE_ALLOCS_RETURN           = 0x00000080,
-        ROUTINE_WANTS_DEBUGGING         = 0x00000100,
-        ROUTINE_NO_STRUCT_REG_RETURNS   = 0x00000200,
-        ROUTINE_NO_FLOAT_REG_RETURNS    = 0x00000400,
-        ROUTINE_MODIFY_EXACT            = 0x00000800,
-        ROUTINE_MODIFIES_NO_MEMORY      = 0x00001000,
-        ROUTINE_READS_NO_MEMORY         = 0x00002000,
-        ROUTINE_NO_8087_RETURNS         = 0x00004000,
-        ROUTINE_LOADS_DS                = 0x00008000,
-        ROUTINE_STACK_RESERVE           = 0x00010000,
-        ROUTINE_PREFER_REGS             = 0x00020000,
-        ROUTINE_FARSS                   = 0x00040000,
+        ROUTINE_NEVER_RETURNS_ABORTS    = 0x00000020,
+        ROUTINE_NEVER_RETURNS_NORETURN  = 0x00000040,
+        ROUTINE_NEEDS_PROLOG            = 0x00000080,
+        ROUTINE_ALLOCS_RETURN           = 0x00000100,
+        ROUTINE_WANTS_DEBUGGING         = 0x00000200,
+        ROUTINE_NO_STRUCT_REG_RETURNS   = 0x00000400,
+        ROUTINE_NO_FLOAT_REG_RETURNS    = 0x00000800,
+        ROUTINE_MODIFY_EXACT            = 0x00001000,
+        ROUTINE_MODIFIES_NO_MEMORY      = 0x00002000,
+        ROUTINE_READS_NO_MEMORY         = 0x00004000,
+        ROUTINE_NO_8087_RETURNS         = 0x00008000,
+        ROUTINE_LOADS_DS                = 0x00010000,
+        ROUTINE_STACK_RESERVE           = 0x00020000,
+        ROUTINE_PREFER_REGS             = 0x00040000,
+        ROUTINE_FARSS                   = 0x00080000,
 } call_attributes;
 
 #define _RoutineIsLong( x ) \

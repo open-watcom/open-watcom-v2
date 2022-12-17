@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         state->attr &= ~ROUTINE_REMOVES_PARMS;
     }
     if( cclass & ABORTS ) {
-        state->attr |= ROUTINE_NEVER_RETURNS;
+        state->attr |= ROUTINE_NEVER_RETURNS_ABORTS;
     }
     if( cclass & ROUTINE_RETURN ) {
         state->attr |= ROUTINE_ALLOCS_RETURN;

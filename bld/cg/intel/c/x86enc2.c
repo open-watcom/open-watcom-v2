@@ -377,7 +377,7 @@ void    GenCall( instruction *ins )
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
         if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
-            CodeHandle( OC_JMP | ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
+            CodeHandle( OC_JMP | OC_ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
         }

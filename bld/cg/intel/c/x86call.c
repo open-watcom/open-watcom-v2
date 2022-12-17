@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,7 +192,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
         }
     }
 
-    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS) ) {
+    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS_ABORTS) ) {
         /* a routine that never returns can not write any memory as far
             as this routine is concerned */
         call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
@@ -200,7 +200,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
         call_ins->flags.call_flags |= CALL_READS_NO_MEMORY;
     }
-    if( state->attr & ROUTINE_NEVER_RETURNS ) {
+    if( state->attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
         call_ins->flags.call_flags |= CALL_ABORTS;
     }
     if( _RoutineIsInterrupt( state->attr ) ) {
