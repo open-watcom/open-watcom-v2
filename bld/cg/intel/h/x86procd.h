@@ -30,30 +30,29 @@
 
 
 typedef enum {
+        /* don't use these directly -- use the macros below */
+        ROUTINE_LONG                    = 0x00000001,
+        ROUTINE_INTERRUPT               = 0x00000002,
+        ROUTINE_FAR16                   = 0x00000003,
+        ROUTINE_CLASS_MASK              = 0x00000003,
 
-        ROUTINE_REMOVES_PARMS           = 0x00000001,
-        ROUTINE_NEEDS_DS_LOADED         = 0x00000004,
-        ROUTINE_HAS_SPECIAL_RETURN      = 0x00000008,
-        ROUTINE_NEVER_RETURNS           = 0x00000010,
-        ROUTINE_NEEDS_PROLOG            = 0x00000020,
-        ROUTINE_ALLOCS_RETURN           = 0x00000040,
-        ROUTINE_WANTS_DEBUGGING         = 0x00000080,
-        ROUTINE_NO_STRUCT_REG_RETURNS   = 0x00000100,
-        ROUTINE_NO_FLOAT_REG_RETURNS    = 0x00000200,
-        ROUTINE_MODIFY_EXACT            = 0x00000400,
-        ROUTINE_MODIFIES_NO_MEMORY      = 0x00000800,
-        ROUTINE_READS_NO_MEMORY         = 0x00001000,
+        ROUTINE_REMOVES_PARMS           = 0x00000004,
+        ROUTINE_NEEDS_DS_LOADED         = 0x00000008,
+        ROUTINE_HAS_SPECIAL_RETURN      = 0x00000010,
+        ROUTINE_NEVER_RETURNS           = 0x00000020,
+        ROUTINE_NEEDS_PROLOG            = 0x00000040,
+        ROUTINE_ALLOCS_RETURN           = 0x00000080,
+        ROUTINE_WANTS_DEBUGGING         = 0x00000100,
+        ROUTINE_NO_STRUCT_REG_RETURNS   = 0x00000200,
+        ROUTINE_NO_FLOAT_REG_RETURNS    = 0x00000400,
+        ROUTINE_MODIFY_EXACT            = 0x00000800,
+        ROUTINE_MODIFIES_NO_MEMORY      = 0x00001000,
+        ROUTINE_READS_NO_MEMORY         = 0x00002000,
         ROUTINE_NO_8087_RETURNS         = 0x00004000,
         ROUTINE_LOADS_DS                = 0x00008000,
         ROUTINE_STACK_RESERVE           = 0x00010000,
         ROUTINE_PREFER_REGS             = 0x00020000,
         ROUTINE_FARSS                   = 0x00040000,
-
-        /* don't use these directly -- use the macros below */
-        ROUTINE_LONG                    = 0x00000002,
-        ROUTINE_INTERRUPT               = 0x00002000,
-        ROUTINE_FAR16                   = 0x00002002,
-        ROUTINE_CLASS_MASK              = 0x00002002,
 } call_attributes;
 
 #define _RoutineIsLong( x ) \
