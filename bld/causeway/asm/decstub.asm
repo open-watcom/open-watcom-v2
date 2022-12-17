@@ -112,7 +112,7 @@ L2:     pop     si
 ;Pass control to the real program.
 ;
         jmp     cs:dword ptr [EntryIP]
-Start   endp
+start   endp
 
 
 Decode  proc    near
