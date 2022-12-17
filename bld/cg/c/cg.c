@@ -361,8 +361,8 @@ extern  void    DumpCClass( call_class cclass )
         Action( "NO_MEMORY_CHANGED " );
     if( cclass & NO_MEMORY_READ )
         Action( "NO_MEMORY_READ " );
-    if( cclass & SUICIDAL )
-        Action( "SUICIDAL " );
+    if( cclass & ABORTS )
+        Action( "ABORTS " );
     if( cclass & NORETURN ) {
         Action( "NORETURN " );
     }

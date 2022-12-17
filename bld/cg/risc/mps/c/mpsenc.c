@@ -552,8 +552,8 @@ static  void doCall( instruction *ins )
     cg_sym_handle       sym;
     byte_seq            *code;
     label_handle        lbl;
-    name				*op;
-    call_class			cclass;
+    name                *op;
+    call_class          cclass;
 
     op = ins->operands[CALL_OP_ADDR];
     sym = op->v.symbol;
@@ -565,7 +565,7 @@ static  void doCall( instruction *ins )
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
-        if( cclass & SUICIDAL ) {
+        if( cclass & ABORTS ) {
             GenNoReturn();
         }
     } else {

@@ -82,7 +82,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & CALLER_POPS ) {
         state->attr &= ~ROUTINE_REMOVES_PARMS;
     }
-    if( cclass & SUICIDAL ) {
+    if( cclass & ABORTS ) {
         state->attr |= ROUTINE_NEVER_RETURNS;
     }
     if( cclass & ROUTINE_RETURN ) {

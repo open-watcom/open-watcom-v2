@@ -75,7 +75,7 @@ static aux_info                RtRtnInfo = {
 };
 
 static aux_info                RtStopInfo = {
-        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | ABORTS | REVERSE_PARMS,
         NULL,
         RtRtnParms,
         HW_D( HW_EMPTY ),
@@ -200,7 +200,7 @@ static aux_info                RtRtnInfo = {
 };
 
 static aux_info                RtStopInfo = {
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | ABORTS | REVERSE_PARMS,
         NULL,
         RtRtnParms,
         HW_D( HW_EMPTY ),
@@ -325,7 +325,7 @@ static aux_info                RtRtnInfo = {
 };
 
 static aux_info                RtStopInfo = {
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | ABORTS | REVERSE_PARMS,
         NULL,
         RtRtnParms,
         HW_D( HW_EMPTY ),

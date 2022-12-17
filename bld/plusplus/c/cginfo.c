@@ -832,10 +832,10 @@ static call_class getCallClass( // GET CLASS OF CALL
 #endif
             fn_flags = fn_type->flag;
             if( fn_flags & TF1_ABORTS ) {
-                value |= SUICIDAL;
+                value |= ABORTS;
             }
             if( fn_flags & TF1_NORETURN ) {
-                value |= SUICIDAL;
+                value |= ABORTS;
             }
 #if _INTEL_CPU
             // don't export addressability thunks
@@ -1549,7 +1549,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
 {
-    return( (getLangInfo( sym )->cclass & SUICIDAL) != 0 );
+    return( (getLangInfo( sym )->cclass & ABORTS) != 0 );
 }
 
 bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS

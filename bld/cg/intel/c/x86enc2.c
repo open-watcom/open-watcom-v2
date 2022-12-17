@@ -373,7 +373,7 @@ void    GenCall( instruction *ins )
             CodeBytes( code->data, code->length );
         }
 #if defined( USE_NORETURN_OPTIMIZATION )
-    } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    } else if( ( cclass & ABORTS ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
         if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
@@ -397,7 +397,7 @@ void    GenCall( instruction *ins )
         }
         DoCall( lbl, imp, (cclass & FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
     }
-    if( (cclass & SUICIDAL) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (cclass & ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
 }

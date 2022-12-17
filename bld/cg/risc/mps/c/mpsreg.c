@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +117,7 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & SETJMP_KLUGE ) {
         state->attr |= ROUTINE_IS_SETJMP;
     }
-    if( cclass & SUICIDAL ) {
+    if( cclass & ABORTS ) {
         state->attr |= ROUTINE_NEVER_RETURNS;
     }
     if( cclass & NO_MEMORY_CHANGED ) {

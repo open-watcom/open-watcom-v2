@@ -1366,7 +1366,7 @@ void     PragmaAux( void )
             have.f_value = true;
 #endif
         } else if( !have.f_value && RecToken( "ABORTS" ) ) {
-            CurrAux->cclass |= SUICIDAL;
+            CurrAux->cclass |= ABORTS;
             have.f_value = true;
 #if _INTEL_CPU
         } else if( !have.f_modify && RecToken( "MODIFY" ) ) {

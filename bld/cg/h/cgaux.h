@@ -73,7 +73,7 @@ typedef enum  {
 #define TEMP_LOC_YES    2
 
 #define REVERSE_PARMS           0x00000001L
-#define SUICIDAL                0x00000002L
+#define ABORTS                  0x00000002L
 #define NORETURN                0x00000004L
 #define PARMS_BY_ADDRESS        0x00000008L
 #define MAKE_CALL_INLINE        0x00000010L

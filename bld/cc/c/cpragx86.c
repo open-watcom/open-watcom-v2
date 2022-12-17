@@ -940,7 +940,7 @@ void PragAux( void )
                 GetRetInfo();
                 have.f_value = true;
             } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                AuxInfo.cclass |= SUICIDAL;
+                AuxInfo.cclass |= ABORTS;
                 have.f_value = true;
             } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                 GetSaveInfo();

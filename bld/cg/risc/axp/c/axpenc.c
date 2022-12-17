@@ -523,7 +523,7 @@ static  void    doCall( instruction *ins )
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
-        if( cclass & SUICIDAL ) {
+        if( cclass & ABORTS ) {
             GenNoReturn();
         }
     } else {

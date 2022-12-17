@@ -441,7 +441,7 @@ void PragAux(                   // #PRAGMA AUX ...
                     GetRetInfo();
                     have.f_value = 1;
                 } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                    CurrInfo->cclass |= SUICIDAL;
+                    CurrInfo->cclass |= ABORTS;
                     have.f_value = 1;
                 } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                     GetSaveInfo();

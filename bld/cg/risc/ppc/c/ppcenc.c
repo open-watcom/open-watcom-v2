@@ -401,7 +401,7 @@ static  void    doCall( instruction *ins )
     code = FindAuxInfo( op, CALL_BYTES );
     if( code != NULL ) {
         _ObjEmitSeq( code );
-        if( cclass & SUICIDAL ) {
+        if( cclass & ABORTS ) {
             GenNoReturn();
         }
     } else {
