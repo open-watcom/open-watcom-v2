@@ -1,3 +1,58 @@
+##############################################################################
+#
+# HANDLING OF NON-WATCOM COMPILERS/PLATFORMS
+#
+##############################################################################
+#
+# x64 CPU (64-bit)
+#
+##################################
+# use native tools for x64 cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .SYMBOLIC
+!else ifndef bldonly_$(host_os)
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+##################################
+#
+# arm CPU (32-bit)
+#
+##################################
+# use native tools for arm cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!else ifeq host_cpu arm
+!ifneq bld_cpu arm
+skip_build: .SYMBOLIC
+!else ifndef bldonly_$(host_os)
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+##################################
+#
+# arm CPU (64-bit)
+#
+##################################
+# use native tools for a64 cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!else ifeq host_cpu a64
+!ifneq bld_cpu a64
+skip_build: .SYMBOLIC
+!else ifndef bldonly_$(host_os)
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+!endif
+##############################################################################
+
 # bootstrap overrides
 ######################
 
