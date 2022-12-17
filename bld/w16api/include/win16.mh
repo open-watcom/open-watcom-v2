@@ -1940,7 +1940,7 @@ typedef struct tagMAT2 {
     FIXED   eM21;
     FIXED   eM22;
 } MAT2;
-typedef FIXED FAR   *LPMAT2;
+typedef MAT2 FAR   *LPMAT2;
 #endif
 #endif
 
