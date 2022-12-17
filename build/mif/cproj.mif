@@ -6,6 +6,14 @@
 !error The host_cpu macro must be defined!
 !endif
 
+!ifdef bldonly_$(bld_os)
+!ifeq bld_cpu $(host_cpu)
+!ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+!endif
+!endif
+
 ###################################
 # define OW build windows version for Win32 platform
 # Now it is setup to 0x400
