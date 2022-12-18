@@ -85,6 +85,8 @@
 #define EXPENTRY  _System
 #define APIENTRY  _System
 
+#define APINORETURN __declspec(noreturn)
+
 #define CHAR     char
 #define SHORT    short
 #define LONG     long

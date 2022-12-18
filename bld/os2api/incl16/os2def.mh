@@ -19,6 +19,8 @@
 #define APIENTRY  PASCAL FAR
 #define CALLBACK  EXPENTRY
 
+#define APINORETURN __declspec(noreturn)
+
 #define CHAR     char
 #define SHORT    short
 #define LONG     long
