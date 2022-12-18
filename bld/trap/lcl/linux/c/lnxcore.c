@@ -41,7 +41,7 @@
 #include "trpcomm.h"
 #include "exeelf.h"
 #include "lnxcomm.h"
-#include "lnxpath.h"
+//#include "coremisc.h"
 //#include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"

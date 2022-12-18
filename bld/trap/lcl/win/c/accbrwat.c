@@ -159,7 +159,8 @@ trap_retval TRAP_CORE( Set_break )( void )
 
     brk = findBrkEntry();
     brk->old_opcode = place_breakpoint( &acc->break_addr );
-    brk->addr = acc->break_addr;
+    brk->addr.segment = acc->break_addr.segment;
+    brk->addr.offset = acc->break_addr.offset;
     brk->in_use = true;
     brk->hard_mode = true;
 
