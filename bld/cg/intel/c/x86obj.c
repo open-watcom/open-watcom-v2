@@ -416,7 +416,7 @@ static  void    SegmentClass( index_rec *rec )
 {
     char        *class_name;
 
-    class_name = FEAuxInfo( (pointer)(pointer_uint)rec->segid, CLASS_NAME );
+    class_name = FEAuxInfo( (pointer)(pointer_uint)rec->segid, FEINF_CLASS_NAME );
     if( class_name != NULL ) {
         rec->cidx = GetNameIdx( class_name, "" );
     }
@@ -969,14 +969,14 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     SegmentIndex = 0;
     PrivateIndexRO = 0;
     PrivateIndexRW = 0;
-    CopyStr( FEAuxInfo( NULL, CODE_GROUP ), CodeGroup );
+    CopyStr( FEAuxInfo( NULL, FEINF_CODE_GROUP ), CodeGroup );
     if( CodeGroup[0] == NULLCHAR ) {
         CodeGroupGIdx = 0;
     } else {
         CodeGroupNIdx = GetNameIdx( CodeGroup, "" );
         CodeGroupGIdx = ++GroupIndex;
     }
-    dgroup = FEAuxInfo( NULL, DATA_GROUP );
+    dgroup = FEAuxInfo( NULL, FEINF_DATA_GROUP );
     if( dgroup == NULL ) {
         NoDGroup = true;
     } else {
@@ -1040,7 +1040,7 @@ void    ObjInit( void )
     CurrFNo = 0;
     OpenObj();
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-    OutName( FEAuxInfo( NULL, SOURCE_NAME ), names );
+    OutName( FEAuxInfo( NULL, FEINF_SOURCE_NAME ), names );
     PutObjOMFRec( CMD_THEADR, names->array, names->used );
     names->used = 0;
 #if _TARGET & _TARG_80386
@@ -1078,15 +1078,15 @@ void    ObjInit( void )
         } else {
             OutByte( 0, names );
         }
-        OutString( FEAuxInfo( NULL, SOURCE_LANGUAGE ), names );
+        OutString( FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
         names->used = 0;
     }
-    for( depend = NULL; (depend = FEAuxInfo( depend, NEXT_DEPENDENCY )) != NULL; ) {
+    for( depend = NULL; (depend = FEAuxInfo( depend, FEINF_NEXT_DEPENDENCY )) != NULL; ) {
         OutShort( DEPENDENCY_COMMENT, names );
         // OMF use dos time/date format
-        OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ) ), names );
-        OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
+        OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP ) ), names );
+        OutName( FEAuxInfo( depend, FEINF_DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
         names->used = 0;
     }
@@ -2049,18 +2049,18 @@ void    ObjFini( void )
         Imports = InitArray( sizeof( byte ), 20, 20 );
     }
     if( Used87 ) {
-        (void)FEAuxInfo( NULL, USED_8087 );
+        (void)FEAuxInfo( NULL, FEINF_USED_8087 );
     }
-    for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, NEXT_IMPORT )) != NULL; ) {
-        OutName( FEAuxInfo( auto_import, IMPORT_NAME ), Imports );
+    for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT )) != NULL; ) {
+        OutName( FEAuxInfo( auto_import, FEINF_IMPORT_NAME ), Imports );
         OutIdx( 0, Imports );           /* type index*/
         if( Imports->used >= BUFFSIZE - TOLERANCE ) {
             PutObjOMFRec( CMD_EXTDEF, Imports->array, Imports->used );
             Imports->used = 0;
         }
     }
-    for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, NEXT_IMPORT_S )) != NULL; ) {
-        OutObjectName( FEAuxInfo( auto_import, IMPORT_NAME_S ), Imports );
+    for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT_S )) != NULL; ) {
+        OutObjectName( FEAuxInfo( auto_import, FEINF_IMPORT_NAME_S ), Imports );
         OutIdx( 0, Imports );           /* type index*/
         if( Imports->used >= BUFFSIZE - TOLERANCE ) {
             PutObjOMFRec( CMD_EXTDEF, Imports->array, Imports->used );
@@ -2072,26 +2072,26 @@ void    ObjFini( void )
         Imports->used = 0;
     }
     /* Emit default library search records. */
-    for( lib = NULL; (lib = FEAuxInfo( lib, NEXT_LIBRARY )) != NULL; ) {
+    for( lib = NULL; (lib = FEAuxInfo( lib, FEINF_NEXT_LIBRARY )) != NULL; ) {
         OutShort( LIBNAME_COMMENT, Imports );
-        OutString( (char *)FEAuxInfo( lib, LIBRARY_NAME ), Imports );
+        OutString( (char *)FEAuxInfo( lib, FEINF_LIBRARY_NAME ), Imports );
         PutObjOMFRec( CMD_COMENT, Imports->array, Imports->used );
         Imports->used = 0;
     }
     /* Emit alias definition records. */
-    for( alias = NULL; (alias = FEAuxInfo( alias, NEXT_ALIAS )) != NULL; ) {
+    for( alias = NULL; (alias = FEAuxInfo( alias, FEINF_NEXT_ALIAS )) != NULL; ) {
         char    *alias_name;
         char    *subst_name;
 
-        alias_name = FEAuxInfo( alias, ALIAS_NAME );
+        alias_name = FEAuxInfo( alias, FEINF_ALIAS_NAME );
         if( alias_name == NULL ) {
-            OutObjectName( FEAuxInfo( alias, ALIAS_SYMBOL ), Imports );
+            OutObjectName( FEAuxInfo( alias, FEINF_ALIAS_SYMBOL ), Imports );
         } else {
             OutName( alias_name, Imports );
         }
-        subst_name = FEAuxInfo( alias, ALIAS_SUBST_NAME );
+        subst_name = FEAuxInfo( alias, FEINF_ALIAS_SUBST_NAME );
         if( subst_name == NULL ) {
-            OutObjectName( FEAuxInfo( alias, ALIAS_SUBST_SYMBOL ), Imports );
+            OutObjectName( FEAuxInfo( alias, FEINF_ALIAS_SUBST_SYMBOL ), Imports );
         } else {
             OutName( subst_name, Imports );
         }
@@ -2365,8 +2365,8 @@ void    OutLabel( label_handle lbl )
         }
         for( curr = CurrSeg->virt_func_refs; curr != NULL; curr = next ) {
             next = curr->next;
-            for( cookie = curr->cookie; cookie != NULL; cookie = FEAuxInfo( cookie, VIRT_FUNC_NEXT_REFERENCE ) ) {
-                OutVirtFuncRef( FEAuxInfo( cookie, VIRT_FUNC_SYM ) );
+            for( cookie = curr->cookie; cookie != NULL; cookie = FEAuxInfo( cookie, FEINF_VIRT_FUNC_NEXT_REFERENCE ) ) {
+                OutVirtFuncRef( FEAuxInfo( cookie, FEINF_VIRT_FUNC_SYM ) );
             }
             CGFree( curr );
         }
@@ -2917,12 +2917,12 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
     pointer             cond;
     import_type         type;
 
-    def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
+    def_resolve = FEAuxInfo( sym, FEINF_DEFAULT_IMPORT_RESOLVE );
     if( def_resolve != NULL && def_resolve != sym ) {
         def_idx = GenImport( def_resolve, false );
         EjectImports();
         cmt = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-        type = (import_type)(pointer_uint)FEAuxInfo( sym, IMPORT_TYPE );
+        type = (import_type)(pointer_uint)FEAuxInfo( sym, FEINF_IMPORT_TYPE );
         switch( type ) {
         case IMPORT_IS_LAZY:
             OutShort( LAZY_EXTRN_COMMENT, cmt );
@@ -2950,8 +2950,8 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
             }
             OutIdx( idx, cmt );
             OutIdx( def_idx, cmt );
-            for( cond = FEAuxInfo( sym, CONDITIONAL_IMPORT ); cond != NULL; cond = FEAuxInfo( cond, NEXT_CONDITIONAL ) ) {
-                sym = FEAuxInfo( cond, CONDITIONAL_SYMBOL );
+            for( cond = FEAuxInfo( sym, FEINF_CONDITIONAL_IMPORT ); cond != NULL; cond = FEAuxInfo( cond, FEINF_NEXT_CONDITIONAL ) ) {
+                sym = FEAuxInfo( cond, FEINF_CONDITIONAL_SYMBOL );
                 OUTPUT_OBJECT_NAME( sym, GetSymLName, &nidx, NORMAL );
                 OutIdx( nidx, cmt );
             }
@@ -2995,7 +2995,7 @@ void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
     attr = FEAttr( sym );
 #if  _TARGET & _TARG_80386
     if( !rel && F_CLASS( class ) == F_OFFSET && (attr & FE_PROC) ) {
-        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR16_CALL ) {
+        if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR16_CALL ) {
             class |= F_FAR16;
         }
     }
@@ -3374,9 +3374,9 @@ static bool     InlineFunction( cg_sym_handle sym )
 /*************************************************/
 {
     if( FEAttr( sym ) & FE_PROC ) {
-        if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
+        if( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) != NULL )
             return( true );
-        if( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) ) {
+        if( (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & MAKE_CALL_INLINE) ) {
             return( true );
         }
     }

@@ -541,7 +541,7 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
 */
 {
     switch( request ) {
-    case AUX_LOOKUP:
+    case FEINF_AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
             return( &Scn1 );
@@ -553,9 +553,9 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
             break;
         }
         break;
-    case CALL_CLASS:
+    case FEINF_CALL_CLASS:
         return( &rt_cclass );
-    case CALL_BYTES:
+    case FEINF_CALL_BYTES:
         return( hdl );
     default:
         _Zoiks( ZOIKS_128 );

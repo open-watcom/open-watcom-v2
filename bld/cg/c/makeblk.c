@@ -281,7 +281,7 @@ type_class_def  InitCallState( type_def *tipe )
     sym = AskForLblSym( CurrProc->label );
     name = AllocMemory( sym, 0, CG_FE, TypeClass( tipe ) );
     name->v.usage |= USE_MEMORY;        /* so not put in conflict graph*/
-    aux = FEAuxInfo( sym, AUX_LOOKUP );
+    aux = FEAuxInfo( sym, FEINF_AUX_LOOKUP );
     return( CallState( aux, tipe, &CurrProc->state ) );
 }
 

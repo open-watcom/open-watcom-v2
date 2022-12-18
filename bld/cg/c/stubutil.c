@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -636,7 +636,7 @@ extern  bool    CheckInLine( n * t ) {
     n   *parm;
     b   *bk;
 
-    if( (*(call_class*)FEAuxInfo( t->h, CALL_CLASS ) & MAKE_CALL_INLINE) == 0 ) {
+    if( (*(call_class*)FEAuxInfo( t->h, FEINF_CALL_CLASS ) & MAKE_CALL_INLINE) == 0 ) {
         return( false );
     }
     icall = CGAlloc( sizeof( ic ) );

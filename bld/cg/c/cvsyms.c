@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ static int SetLang( void )
     int     index;
 
     ret = LANG_C;
-    name =  FEAuxInfo( NULL, SOURCE_LANGUAGE );
+    name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
     for( index = 0; index < MAX_LANG; ++index ){
         if( strcmp( name, LangNames[index].name ) == 0 ){
             ret = LangNames[index].lang;
@@ -222,7 +222,7 @@ void    CVObjInitDbgInfo( void )
         NewBuff( out, CVSyms );
         optr = StartSym(  out, SG_OBJNAME );
         optr->signature = 0;
-        name =  FEAuxInfo( NULL, OBJECT_FILE_NAME );
+        name =  FEAuxInfo( NULL, FEINF_OBJECT_FILE_NAME );
         CVPutStr( out, name );
         EndSym( out );
         buffEnd( out );
@@ -411,7 +411,7 @@ void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
     ptr->segment = 0;
     ptr->type = tipe;
     if( mem ){
-        name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
+        name = FEAuxInfo( sym, FEINF_CLASS_APPENDED_NAME );
     } else {
         name = FEName( sym );
     }
@@ -649,12 +649,12 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     ptr->proctype = tipe;
     ptr->flags.s = 0;
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
+    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR_CALL ) {
         ptr->flags.f.far_ret = true;
     }
 #endif
     if( rtn->obj_type != DBG_NIL_TYPE ) {
-        name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
+        name = FEAuxInfo( sym, FEINF_CLASS_APPENDED_NAME );
     } else {
         name = FEName( sym );
     }

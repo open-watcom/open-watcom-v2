@@ -363,7 +363,7 @@ static  void    EmitNameInCode( void )
 static  int ProEpiDataSize( void )
 /********************************/
 {
-    return( _RoundUp( (int)(pointer_uint)FEAuxInfo( NULL, PROEPI_DATA_SIZE ), WORD_SIZE ) );
+    return( _RoundUp( (int)(pointer_uint)FEAuxInfo( NULL, FEINF_PROEPI_DATA_SIZE ), WORD_SIZE ) );
 }
 
 

@@ -326,7 +326,7 @@ static int SetLang( void )
     int     index;
 
     ret = DWLANG_C;
-    name =  FEAuxInfo( NULL, SOURCE_LANGUAGE );
+    name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
     for( index = 0; index < MAX_LANG; ++index ) {
         if( strcmp( name, LangNames[index].name ) == 0 ) {
             ret = LangNames[index].lang;
@@ -393,7 +393,7 @@ static int InitCU( dw_cu_info *cu )
 {
     type_def        *tipe_addr;
 
-    cu->source_filename = FEAuxInfo( NULL, SOURCE_NAME );
+    cu->source_filename = FEAuxInfo( NULL, FEINF_SOURCE_NAME );
     cu->directory = "";
     cu->inc_list = NULL;
     cu->inc_list_len = 0;
@@ -534,7 +534,7 @@ static const char *SetDwarfProducer( void )
     const char  *name;
 
 #if 0      // disable this feature for now, to have compatibility with OW 1.9
-    name = (const char *)FEAuxInfo( NULL, DBG_DWARF_PRODUCER );
+    name = (const char *)FEAuxInfo( NULL, FEINF_DBG_DWARF_PRODUCER );
     if( name == NULL )
         name = "";
 #else
@@ -571,7 +571,7 @@ void    DFObjInitDbgInfo( void )
         info.funcs = cli_funcs;
         InitSegBck(); // start each seg with a ref label
         if( _IsModel( DBG_PREDEF ) ) {
-            abbrev_sym = FEAuxInfo( NULL, DBG_PREDEF_SYM );
+            abbrev_sym = FEAuxInfo( NULL, FEINF_DBG_PREDEF_SYM );
             info.abbrev_sym = (dw_sym_handle)abbrev_sym;
             attr = FEAttr( abbrev_sym );
             if( (attr & FE_IMPORT) ) {
@@ -588,7 +588,7 @@ void    DFObjInitDbgInfo( void )
                 SetOP( old_segid );
             }
         }
-        debug_pch = FEAuxInfo( NULL, DBG_PCH_SYM );
+        debug_pch = FEAuxInfo( NULL, FEINF_DBG_PCH_SYM );
         if( debug_pch != NULL ) {
             attr = FEAttr( debug_pch );
             if( (attr & FE_IMPORT) == 0 ) {
@@ -995,7 +995,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     tipe = FEDbgRetType( sym );
     flags = 0;
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
+    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
 #endif
@@ -1010,7 +1010,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         flags |= DW_FLAG_ARTIFICIAL;
     }
     flags |= DW_FLAG_PROTOTYPED;
-    access = FEAuxInfo( sym,DBG_SYM_ACCESS );
+    access = FEAuxInfo( sym, FEINF_DBG_SYM_ACCESS );
     if( access != NULL ) {
         if( *access == SYM_ACC_PUBLIC ) {
             flags |= DW_FLAG_PUBLIC;
@@ -1042,7 +1042,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
                      dw_segloc, name, rtn->pro_size, flags );
     if( attr &  FE_GLOBAL ) {
         if( rtn->obj_type != DBG_NIL_TYPE ) {
-            name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
+            name = FEAuxInfo( sym, FEINF_CLASS_APPENDED_NAME );
         } else {
             name = FEName( sym );
         }

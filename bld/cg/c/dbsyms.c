@@ -374,7 +374,7 @@ void    InitDbgInfo( void )
     SrcFileNoInit();
     DBNested( false ); /* set nesting */
     SourceCueInit( &LineInfo );
-    fno = DBSrcFile( FEAuxInfo( NULL, SOURCE_NAME ) );
+    fno = DBSrcFile( FEAuxInfo( NULL, FEINF_SOURCE_NAME ) );
 //    idx = CueAdd( fno, 1, 1 );
     CueAdd( fno, 1, 1 );
     SrcLine = 1;

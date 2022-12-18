@@ -55,7 +55,7 @@ pointer FindAuxInfo( name *name, aux_class request )
     } else if( name->m.memory_type == CG_LBL && AskIfRTLabel( name->v.symbol ) ) {
         aux_handle  aux;
 
-        aux = BEAuxInfo( name->v.symbol, AUX_LOOKUP );
+        aux = BEAuxInfo( name->v.symbol, FEINF_AUX_LOOKUP );
         if( aux == NULL ) {
             /* return default aux info */
             return( FindAuxInfoSym( NULL, request ) );

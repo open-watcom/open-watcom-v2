@@ -31,36 +31,37 @@
 
 
 #ifndef _CG_AUX_INCLUDED
+#define _CG_AUX_INCLUDED
 
 #include "hwreg.h"
 #include "cgauxa.h"
 
 typedef enum {
-        AUX_LOOKUP,
-        CALL_BYTES,
-        CALL_CLASS,
-        FREE_SEGMENT,
-        OBJECT_FILE_NAME,
-        PARM_REGS,
-        RETURN_REG,
-        REVISION_NUMBER,
-        SAVE_REGS,
-        SHADOW_SYMBOL,
-        SOURCE_NAME,
-        TEMP_LOC_NAME,
-        TEMP_LOC_TELL,
-        NEXT_DEPENDENCY,
-        DEPENDENCY_TIMESTAMP,
-        DEPENDENCY_NAME,
-        SOURCE_LANGUAGE,
-        DEFAULT_IMPORT_RESOLVE,
-        UNROLL_COUNT,
-        DBG_PREDEF_SYM,
-        DBG_PCH_SYM,
-        DBG_SYM_ACCESS,
-        DBG_DWARF_PRODUCER,
-        #include "cgauxc.h"
-        __LAST_AUX_CLASS
+    FEINF_AUX_LOOKUP,
+    FEINF_CALL_BYTES,
+    FEINF_CALL_CLASS,
+    FEINF_FREE_SEGMENT,
+    FEINF_OBJECT_FILE_NAME,
+    FEINF_PARM_REGS,
+    FEINF_RETURN_REG,
+    FEINF_REVISION_NUMBER,
+    FEINF_SAVE_REGS,
+    FEINF_SHADOW_SYMBOL,
+    FEINF_SOURCE_NAME,
+    FEINF_TEMP_LOC_NAME,
+    FEINF_TEMP_LOC_TELL,
+    FEINF_NEXT_DEPENDENCY,
+    FEINF_DEPENDENCY_TIMESTAMP,
+    FEINF_DEPENDENCY_NAME,
+    FEINF_SOURCE_LANGUAGE,
+    FEINF_DEFAULT_IMPORT_RESOLVE,
+    FEINF_UNROLL_COUNT,
+    FEINF_DBG_PREDEF_SYM,
+    FEINF_DBG_PCH_SYM,
+    FEINF_DBG_SYM_ACCESS,
+    FEINF_DBG_DWARF_PRODUCER,
+    #include "cgauxc.h"
+    LAST_FEAUX
 } aux_class;
 
 typedef enum {
@@ -97,5 +98,4 @@ typedef enum  {
     #error too many attributes
 #endif
 
-#define _CG_AUX_INCLUDED
 #endif

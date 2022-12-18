@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 CGCALLBACKDEF( FESegID,         segment_id,     (cg_sym_handle) )
 CGCALLBACKDEF( FEBack,          back_handle,    (cg_sym_handle) )
 CGCALLBACKDEF( FEAttr,          fe_attr,        (cg_sym_handle) )
-CGCALLBACKDEF( FEAuxInfo,       pointer,        (pointer,int) )
+CGCALLBACKDEF( FEAuxInfo,       pointer,        (pointer,aux_class) )
 CGCALLBACKDEF( FEName,          cchar_ptr,      (cg_sym_handle) )
 CGCALLBACKDEF( FEModuleName,    cchar_ptr,      (void) )
 CGCALLBACKDEF( FEMessage,       void,           (int,pointer) )

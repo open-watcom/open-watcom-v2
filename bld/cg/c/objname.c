@@ -297,7 +297,7 @@ bool SymIsExported( cg_sym_handle sym )
     if( sym != NULL ) {
         if( FEAttr( sym ) & FE_DLLEXPORT ) {
             exported = true;
-        } else if( *(call_class*)FindAuxInfoSym( sym, CALL_CLASS ) & DLL_EXPORT ) {
+        } else if( *(call_class*)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & DLL_EXPORT ) {
             exported = true;
         }
     }

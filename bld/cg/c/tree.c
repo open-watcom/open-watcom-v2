@@ -867,7 +867,7 @@ call_handle TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
 
     node = TGNode( TN_PARM, O_NOP, left, (tn)sym, NULL );
     node = TGNode( TN_CALL, O_NOP, node, NULL, tipe );
-    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & REVERSE_PARMS ) {
+    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & REVERSE_PARMS ) {
         node->flags |= TF_REVERSE;
     }
 #if ( _TARGET & _TARG_370 )
@@ -1526,7 +1526,7 @@ static  name *TNFindBase( tn node )
         if( op->n.class == N_TEMP ) {
             if( op->v.symbol == NULL )
                 return( NULL );
-            op = SAllocUserTemp( FEAuxInfo( op->v.symbol, SHADOW_SYMBOL ), op->n.type_class, op->n.size );
+            op = SAllocUserTemp( FEAuxInfo( op->v.symbol, FEINF_SHADOW_SYMBOL ), op->n.type_class, op->n.size );
         }
         return( op );
     default:
@@ -2220,7 +2220,7 @@ static  bool    FunctionModifiesSP( tn call )
     cg_sym_handle   sym;
 
     sym = (cg_sym_handle)call->u.left->u2.t.rite;
-    pregs = FindAuxInfoSym( sym, SAVE_REGS );
+    pregs = FindAuxInfoSym( sym, FEINF_SAVE_REGS );
     if( !HW_Ovlap( *pregs, StackReg() ) ) {
         return( true );
     }
@@ -2319,9 +2319,9 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     callnode = NULL;
     addr = callhandle->u.left; /* address to call*/
     sym = (cg_sym_handle)addr->u2.t.rite;
-    aux = FEAuxInfo( sym, AUX_LOOKUP );
-    in_line = ( FEAuxInfo( aux, CALL_BYTES ) != NULL );
-    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
+    aux = FEAuxInfo( sym, FEINF_AUX_LOOKUP );
+    in_line = ( FEAuxInfo( aux, FEINF_CALL_BYTES ) != NULL );
+    cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
     retv = TreeGen( addr->u.left );
     if( cclass & MAKE_CALL_INLINE ) {
         BGDone( retv );

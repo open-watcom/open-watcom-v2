@@ -120,11 +120,11 @@ static void dumpAutoLocn( void )
             if( curr == NULL )
                 break;
             auto_locations = curr->next;
-            if( ((pointer)TEMP_LOC_YES) == FEAuxInfo( curr->s, TEMP_LOC_NAME ) ) {
+            if( ((pointer)TEMP_LOC_YES) == FEAuxInfo( curr->s, FEINF_TEMP_LOC_NAME ) ) {
                 Action( "TEMP_LOC_TELL offset=%h symbol=%s%n"
                       , curr->offset
                       , Name( curr->s ) );
-                FEAuxInfo( (sym_handle)curr->offset, TEMP_LOC_TELL );
+                FEAuxInfo( (sym_handle)curr->offset, FEINF_TEMP_LOC_TELL );
             }
             CGFree( curr );
         }
@@ -373,7 +373,7 @@ extern  void    CClass( sym  s ) {
 
     call_class  *cclass;
 
-    cclass = FindAuxInfoSym( s, CALL_CLASS );
+    cclass = FindAuxInfoSym( s, FEINF_CALL_CLASS );
     DumpCClass( *cclass );
     Action( "%n" );
 }
@@ -868,7 +868,7 @@ extern  n       *CGCall( n *r ) {
     call_class  *cclass;
 
     Action( "CGCall( %t )", r );
-    cclass = (call_class *)FEAuxInfo( r->h, CALL_CLASS );
+    cclass = (call_class *)FEAuxInfo( r->h, FEINF_CALL_CLASS );
     if( *cclass & MAKE_CALL_INLINE ) {
         Action( " inline handle=%p%n", r );
     } else {

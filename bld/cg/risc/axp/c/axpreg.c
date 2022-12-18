@@ -96,7 +96,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_CTurnOff( state->modify, HW_UNUSED );
     state->used = state->modify;     /* anything not saved is used*/
     state->attr = 0;
-    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
+    cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
     if( cclass & SETJMP_KLUGE ) {
         state->attr |= ROUTINE_IS_SETJMP;
     }

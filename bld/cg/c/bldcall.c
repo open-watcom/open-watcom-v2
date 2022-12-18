@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
         call->ins->head.opcode = OP_CALL_INDIRECT;
         type_class = CallState( aux, tipe, call->state );
 #if _TARGET & ( _TARG_80386 | _TARG_8086 )
-        cookie = FEAuxInfo( aux, VIRT_FUNC_REFERENCE );
+        cookie = FEAuxInfo( aux, FEINF_VIRT_FUNC_REFERENCE );
         if( cookie != NULL )
             TellObjVirtFuncRef( cookie );
 #elif _TARGET & _TARG_PPC
@@ -413,7 +413,7 @@ void    AddCallIns( instruction *ins, cn call ) {
             attr = FEAttr( call_name->v.symbol );
 #if _TARGET & _TARG_RISC
             // in case the inline assembly code references a local variable
-            if( FindAuxInfoSym( call_name->v.symbol, CALL_BYTES ) != NULL ) {
+            if( FindAuxInfoSym( call_name->v.symbol, FEINF_CALL_BYTES ) != NULL ) {
                 CurrProc->targ.base_is_fp = true;
             }
 #endif
@@ -429,7 +429,7 @@ void    AddCallIns( instruction *ins, cn call ) {
             // screws up the back end
             addr_type_class = WD;
 #if _TARGET & (_TARG_80386 | _TARG_8086)
-            if( *(call_class *)FindAuxInfo( call_name, CALL_CLASS ) & FAR_CALL ) {
+            if( *(call_class *)FindAuxInfo( call_name, FEINF_CALL_CLASS ) & FAR_CALL ) {
                 addr_type_class = CP;
             }
 #endif
@@ -645,7 +645,7 @@ void    BGReturn( an retval, type_def *tipe ) {
     if( retval != NULL ) {
         tipe_type_class = TypeClass( tipe );
         type_class = ReturnTypeClass( tipe, CurrProc->state.attr );
-        UpdateReturn( &CurrProc->state, tipe, type_class, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
+        UpdateReturn( &CurrProc->state, tipe, type_class, FEAuxInfo( AskForLblSym(CurrProc->label), FEINF_AUX_LOOKUP ) );
         if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
             DbgRetLoc();
         }

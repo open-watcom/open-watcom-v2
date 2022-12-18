@@ -59,7 +59,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     hw_reg_set          tmp;
 
     state->unalterable = FixedRegs();
-    pregs = FEAuxInfo( aux, SAVE_REGS );
+    pregs = FEAuxInfo( aux, FEINF_SAVE_REGS );
     HW_CAsgn( state->modify, HW_FULL );
     HW_TurnOff( state->modify, *pregs );
     HW_CTurnOff( state->modify, HW_UNUSED );
@@ -71,7 +71,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         FEMessage( MSG_BAD_SAVE, aux );
     }
     state->attr = ROUTINE_REMOVES_PARMS;
-    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
+    cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
     if( cclass & INTERRUPT ) {
         state->attr |= ROUTINE_INTERRUPT;
     } else if( cclass & FAR_CALL ) {
@@ -158,7 +158,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     type_class = ReturnTypeClass( tipe, state->attr );
     i = 0;
     parm_dst = &parms[0];
-    for( parm_src = FEAuxInfo( aux, PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
+    for( parm_src = FEAuxInfo( aux, FEINF_PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
             FEMessage( MSG_BAD_SAVE, aux );
@@ -178,7 +178,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         HW_CAsgn( state->return_reg, HW_EMPTY );
     } else if( type_class == XX ) {
         if( cclass & SPECIAL_STRUCT_RETURN ) {
-            pregs = FEAuxInfo( aux, STRETURN_REG );
+            pregs = FEAuxInfo( aux, FEINF_STRETURN_REG );
             state->return_reg = *pregs;
             state->attr |= ROUTINE_HAS_SPECIAL_RETURN;
         } else {
@@ -190,7 +190,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         }
     } else {
         if( cclass & SPECIAL_RETURN ) {
-            pregs = FEAuxInfo( aux, RETURN_REG );
+            pregs = FEAuxInfo( aux, FEINF_RETURN_REG );
             state->return_reg = *pregs;
             state->attr |= ROUTINE_HAS_SPECIAL_RETURN;
         } else {

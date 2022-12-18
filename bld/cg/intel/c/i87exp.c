@@ -1197,7 +1197,7 @@ void    FPInit( void )
     Initialize.
 */
 {
-    Max87Stk = (int)(pointer_uint)FEAuxInfo( NULL, STACK_SIZE_8087 );
+    Max87Stk = (int)(pointer_uint)FEAuxInfo( NULL, FEINF_STACK_SIZE_8087 );
     if( Max87Stk > 8 )
         Max87Stk = 8;
     if( Max87Stk < 4 )

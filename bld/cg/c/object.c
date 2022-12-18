@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +114,7 @@ void    GenObject( void )
                 // don't want to generate anything except calls to pragma's for
                 // naked functions
                 if( ins->head.opcode == OP_CALL ) {
-                    if( FindAuxInfo( ins->operands[CALL_OP_ADDR], CALL_BYTES ) != NULL ) {
+                    if( FindAuxInfo( ins->operands[CALL_OP_ADDR], FEINF_CALL_BYTES ) != NULL ) {
                         GenObjCode( ins );
                     }
                 }

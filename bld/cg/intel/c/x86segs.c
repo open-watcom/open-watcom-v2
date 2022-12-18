@@ -76,7 +76,7 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
         attr = EMPTY;
     }
     segid = AskSegID( sym, class );
-    reg = FEAuxInfo( (pointer)(pointer_uint)segid, PEGGED_REGISTER );
+    reg = FEAuxInfo( (pointer)(pointer_uint)segid, FEINF_PEGGED_REGISTER );
     if( reg != NULL && !HW_CEqual( *reg, HW_EMPTY ) ) {
         if( HW_COvlap( *reg, HW_SEGS ) )
             return( *reg );
@@ -240,7 +240,7 @@ cg_type NamePtrType( name *op ) {
             if( AskNameIsCode( sym, op->m.memory_type ) ) {
                 if( op->m.memory_type == CG_FE ) {
                     if( FEAttr( sym ) & FE_PROC ) {
-                        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL )
+                        if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR_CALL )
                             return( TY_LONG_CODE_PTR );
                         return( TY_NEAR_CODE_PTR );
                     } else {

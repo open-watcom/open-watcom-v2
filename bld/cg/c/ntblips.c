@@ -74,7 +74,7 @@ void    InitBlip() {
             return;
         }
         BlipsOn = true;
-        src_name = FEAuxInfo( NULL, SOURCE_NAME );
+        src_name = FEAuxInfo( NULL, FEINF_SOURCE_NAME );
         strncpy( &fileMapping->file_name[0], src_name, _MAX_PATH );
         strcpy( &fileMapping->rtn_name[0], "" );
         fileMapping->debug.debug_info = false;

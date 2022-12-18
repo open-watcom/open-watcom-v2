@@ -779,7 +779,7 @@ cg_name _CGAPI CGFEName( cg_sym_handle sym, cg_type tipe )
     cg_name     leaf;
 
 
-    if( (FEAttr( sym ) & FE_DLLIMPORT) && ( FindAuxInfoSym( sym, CALL_BYTES ) == NULL ) ) {
+    if( (FEAttr( sym ) & FE_DLLIMPORT) && ( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) == NULL ) ) {
         leaf = TGLeaf( BGName( CG_FE, sym, TypeAddress( TY_POINTER ) ) );
 #ifndef NDEBUG
         EchoAPI( "CGFEName( %s, %t ) declspec(dllimport)", sym, tipe );

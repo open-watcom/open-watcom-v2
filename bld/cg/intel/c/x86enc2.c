@@ -130,7 +130,7 @@ unsigned DepthAlign( unsigned depth )
     static unsigned char    AlignArray[10] = { 0 };
 
     if( AlignArray[0] == 0 || depth == PROC_ALIGN ) {
-        unsigned char *align_info_bytes = FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT );
+        unsigned char *align_info_bytes = FEAuxInfo( NULL, FEINF_CODE_LABEL_ALIGNMENT );
         Copy( align_info_bytes, AlignArray, align_info_bytes[0] + 1 );
     }
     if( OptForSize > 0 )
@@ -363,8 +363,8 @@ void    GenCall( instruction *ins )
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
-    cclass = *(call_class *)FindAuxInfo( op, CALL_CLASS );
-    code = FindAuxInfo( op, CALL_BYTES );
+    cclass = *(call_class *)FindAuxInfo( op, FEINF_CALL_CLASS );
+    code = FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _Emit;
         if( code->relocs ) {

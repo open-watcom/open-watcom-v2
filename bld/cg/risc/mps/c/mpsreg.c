@@ -97,13 +97,13 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     // to support more than a single calling convention, this will need
     // to change to work more like x86
     if( !AskIfRTLabel( CurrProc->label ) ) {
-        code = FEAuxInfo( aux, CALL_BYTES );
+        code = FEAuxInfo( aux, FEINF_CALL_BYTES );
         if( code != NULL ) {
             have_aux_code = true;
         }
     }
 
-    pregs = FEAuxInfo( aux, SAVE_REGS );
+    pregs = FEAuxInfo( aux, FEINF_SAVE_REGS );
     HW_CAsgn( state->modify, HW_FULL );
     if( have_aux_code ) {
         HW_TurnOff( state->modify, *pregs );
@@ -113,7 +113,7 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_CTurnOff( state->modify, HW_UNUSED );
     state->used = state->modify;    /* anything not saved is used */
     state->attr = 0;
-    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
+    cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
     if( cclass & SETJMP_KLUGE ) {
         state->attr |= ROUTINE_IS_SETJMP;
     }
@@ -130,7 +130,7 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
     if( have_aux_code ) {
-        parm_src = FEAuxInfo( aux, PARM_REGS );
+        parm_src = FEAuxInfo( aux, FEINF_PARM_REGS );
     } else {
         parm_src = ParmRegs();
     }

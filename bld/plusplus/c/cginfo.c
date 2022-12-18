@@ -1163,7 +1163,7 @@ static void addDefaultImports( void )
 
 void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         void *_sym,             // - symbol
-        int request )           // - request
+        aux_class request )     // - request
 {
     AUX_INFO *inf;              // - auxilary info
     void *retn = NULL;          // - return value
@@ -1179,79 +1179,79 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     if( buf != NULL )
         CMemFreePtr( &buf );
     inf = &DefaultInfo;
-    switch( (aux_class)request ) {
+    switch( request ) {
 #if _INTEL_CPU
-    case P5_CHIP_BUG_SYM:
+    case FEINF_P5_CHIP_BUG_SYM:
         DbgNotSym();
         retn = ChipBugSym;
         break;
 #endif
-    case SOURCE_LANGUAGE:
+    case FEINF_SOURCE_LANGUAGE:
         DbgNotSym();
         DbgNotRetn();
         retn = "CPP";
         break;
 #if _INTEL_CPU
-    case STACK_SIZE_8087:
+    case FEINF_STACK_SIZE_8087:
         DbgNotSym();
         DbgNotRetn();
         retn = (void *)(pointer_uint)Stack87;
         break;
 #endif
 #if _INTEL_CPU
-    case CODE_GROUP:
+    case FEINF_CODE_GROUP:
         DbgNotSym();
         DbgNotRetn();
         retn = GenCodeGroup;
         break;
 #endif
 #if _INTEL_CPU
-    case DATA_GROUP:
+    case FEINF_DATA_GROUP:
         DbgNotSym();
         DbgNotRetn();
         retn = DataSegName;
         break;
 #endif
-    case OBJECT_FILE_NAME:
+    case FEINF_OBJECT_FILE_NAME:
         DbgNotSym();
         DbgNotRetn();
         retn = IoSuppOutFileName( OFT_OBJ );
         break;
-    case REVISION_NUMBER:
+    case FEINF_REVISION_NUMBER:
         DbgNotSym();
         DbgNotRetn();
         retn = (char *)II_REVISION;
         break;
-    case AUX_LOOKUP:
+    case FEINF_AUX_LOOKUP:
         retn = sym;
         break;
-    case DBG_PCH_SYM:
+    case FEINF_DBG_PCH_SYM:
         DbgNotSym();
         retn = PCHDebugSym;
         break;
-    case DBG_PREDEF_SYM:
+    case FEINF_DBG_PREDEF_SYM:
         DbgNotSym();
         retn = DFAbbrevSym;
         break;
-    case DBG_SYM_ACCESS:
+    case FEINF_DBG_SYM_ACCESS:
         DbgNotRetn();
       { static sym_access access;
         access= getSymAccess( sym );
         retn = &access;
       } break;
 #if _INTEL_CPU
-    case PROEPI_DATA_SIZE:
+    case FEINF_PROEPI_DATA_SIZE:
         DbgNotSym();
         DbgNotRetn();
         retn = (void *)(pointer_uint)ProEpiDataSize;
         break;
   #if _CPU != 8086
-    case P5_PROF_DATA:
+    case FEINF_P5_PROF_DATA:
         DbgNotSym();
         DbgNotRetn();
         retn = CgProfData();
         break;
-    case P5_PROF_SEG:
+    case FEINF_P5_PROF_SEG:
         DbgNotSym();
         DbgNotRetn();
         retn = (void *)SEG_PROF_REF;
@@ -1259,7 +1259,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
   #endif
 #endif
 #if _INTEL_CPU
-    case CODE_LABEL_ALIGNMENT:
+    case FEINF_CODE_LABEL_ALIGNMENT:
       {
         DbgNotSym();
         DbgNotRetn();
@@ -1267,7 +1267,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
       } break;
 #endif
 #if _INTEL_CPU
-    case CLASS_NAME:
+    case FEINF_CLASS_NAME:
         DbgNotSym();
         DbgNotRetn();
         if( ((fe_seg_id)(pointer_uint)sym) == SEG_CODE ) {
@@ -1278,14 +1278,14 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
 #endif
 #if _INTEL_CPU
-    case USED_8087:
+    case FEINF_USED_8087:
         DbgNotSym();
         DbgNotRetn();
         CompFlags.pgm_used_8087 = true;
         retn = NULL;
         break;
 #endif
-    case SOURCE_NAME:
+    case FEINF_SOURCE_NAME:
         DbgNotSym();
         DbgNotRetn();
         if( strcmp( SrcFName, ModuleName ) == 0 ) {
@@ -1299,18 +1299,18 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             retn = ModuleName;
         }
         break;
-    case CALL_CLASS:
+    case FEINF_CALL_CLASS:
         DbgNotRetn();
       { static call_class curr_call_class;
         curr_call_class = getCallClass( sym );
         retn = &curr_call_class;
       } break;
-    case FREE_SEGMENT:
+    case FEINF_FREE_SEGMENT:
         DbgNotSym();
         DbgNotRetn();
         retn = NULL;
         break;
-    case NEXT_LIBRARY:
+    case FEINF_NEXT_LIBRARY:
         DbgNotSym();
         DbgNotRetn();
         if( sym == NULL ) {
@@ -1318,12 +1318,12 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
         retn = CgInfoLibNext( sym );
         break;
-    case LIBRARY_NAME:
+    case FEINF_LIBRARY_NAME:
         DbgNotSym();
         DbgNotRetn();
         retn = CgInfoLibName( sym );
         break;
-    case NEXT_IMPORT:
+    case FEINF_NEXT_IMPORT:
         DbgNotSym();
         DbgNotRetn();
         if( sym == NULL ) {
@@ -1331,22 +1331,22 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
         retn = CgInfoImportNext( sym );
         break;
-    case NEXT_IMPORT_S:
+    case FEINF_NEXT_IMPORT_S:
         DbgNotSym();
         DbgNotRetn();
         retn = CgInfoImportNextS( sym );
         break;
-    case IMPORT_NAME:
+    case FEINF_IMPORT_NAME:
         DbgNotSym();
         DbgNotRetn();
         retn = (void *)CgInfoImportName( sym );
         break;
-    case IMPORT_NAME_S:
+    case FEINF_IMPORT_NAME_S:
         DbgNotSym();
         DbgNotRetn();
         retn = CgInfoImportNameS( sym );
         break;
-    case SAVE_REGS:
+    case FEINF_SAVE_REGS:
       { static hw_reg_set save_set;
         TYPE type;
         DbgNotRetn();
@@ -1360,24 +1360,24 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
         retn = &save_set;
       } break;
-    case RETURN_REG:
+    case FEINF_RETURN_REG:
         DbgNotRetn();
         inf = getLangInfo( sym );
         retn = &inf->returns;
         break;
-    case CALL_BYTES:
+    case FEINF_CALL_BYTES:
         DbgNotRetn();
         inf = getLangInfo( sym );
         retn = inf->code;
         break;
 #if _INTEL_CPU
-    case STRETURN_REG:
+    case FEINF_STRETURN_REG:
         DbgNotRetn();
         inf = getLangInfo( sym );
         retn = &inf->streturn;
         break;
 #endif
-    case PARM_REGS:
+    case FEINF_PARM_REGS:
         DbgNotRetn();
         inf = getLangInfo( sym );
         if( inf->code == NULL && SymIsEllipsisFunc( sym ) ) {
@@ -1389,7 +1389,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             retn = inf->parms;
         }
         break;
-    case NEXT_DEPENDENCY :
+    case FEINF_NEXT_DEPENDENCY :
         DbgNotSym();
         DbgNotRetn();
         if( !CompFlags.emit_dependencies ) {
@@ -1403,27 +1403,27 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             retn = SrcFileNotReadOnly( retn );
         }
         break;
-    case DEPENDENCY_TIMESTAMP :
+    case FEINF_DEPENDENCY_TIMESTAMP :
         DbgNotSym();
         DbgNotRetn();
         retn = &(((SRCFILE)sym)->time_stamp);
         break;
-    case DEPENDENCY_NAME :
+    case FEINF_DEPENDENCY_NAME :
         DbgNotSym();
         DbgNotRetn();
         retn = SrcFileFullName( (SRCFILE)sym );
         break;
-    case TEMP_LOC_NAME :
+    case FEINF_TEMP_LOC_NAME :
         DbgNotRetn();
         dtor_sym = sym;
         retn = (void *)TEMP_LOC_YES;
         break;
-    case TEMP_LOC_TELL :
+    case FEINF_TEMP_LOC_TELL :
         DbgNotSym();
         DbgNotRetn();
         CgBackDtorAutoOffset( dtor_sym, (unsigned)(pointer_uint)sym );
         break;
-    case DEFAULT_IMPORT_RESOLVE :
+    case FEINF_DEFAULT_IMPORT_RESOLVE :
         retn = ExtrefResolve( sym, &res_info );
   #ifndef NDEBUG
         if( TOGGLEDBG( extref ) ) {
@@ -1433,7 +1433,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
   #endif
         break;
-    case IMPORT_TYPE :
+    case FEINF_IMPORT_TYPE :
         DbgNotRetn();
         retn = ExtrefImportType( &res_info );
   #ifndef NDEBUG
@@ -1443,8 +1443,8 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
   #endif
         break;
-    case CONDITIONAL_IMPORT :
-    case NEXT_CONDITIONAL :
+    case FEINF_CONDITIONAL_IMPORT :
+    case FEINF_NEXT_CONDITIONAL :
         DbgNotSym();
         retn = ExtrefVirtualSymbol( &res_info );
   #ifndef NDEBUG
@@ -1454,7 +1454,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
   #endif
         break;
-    case CONDITIONAL_SYMBOL :
+    case FEINF_CONDITIONAL_SYMBOL :
         retn = sym;
   #ifndef NDEBUG
         if( TOGGLEDBG( extref ) ) {
@@ -1463,7 +1463,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
   #endif
         break;
-    case VIRT_FUNC_REFERENCE :
+    case FEINF_VIRT_FUNC_REFERENCE :
   #ifndef NDEBUG
         DbgNotRetn();
         if( ( TOGGLEDBG( extref ) )
@@ -1481,7 +1481,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = ExtrefVfunInfo( sym );
   #endif
         break;
-    case VIRT_FUNC_NEXT_REFERENCE:
+    case FEINF_VIRT_FUNC_NEXT_REFERENCE:
         DbgNotSym();
         DbgNotRetn();
         retn = ExtrefNextVfunSym( sym );
@@ -1491,7 +1491,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
   #endif
         break;
-    case VIRT_FUNC_SYM :
+    case FEINF_VIRT_FUNC_SYM :
         DbgNotSym();
         retn = ExtrefVfunSym( sym );
   #ifndef NDEBUG
@@ -1502,27 +1502,27 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
   #endif
         break;
 #if _INTEL_CPU
-    case PEGGED_REGISTER :
+    case FEINF_PEGGED_REGISTER :
         DbgNotSym();
         DbgNotRetn();
         retn = SegmentBoundReg( (fe_seg_id)(pointer_uint)sym );
         break;
 #endif
-    case CLASS_APPENDED_NAME :
+    case FEINF_CLASS_APPENDED_NAME :
         DbgNotRetn();
         retn = CppClassPathDebug( sym );
         break;
 #if _CPU == _AXP
-    case EXCEPTION_HANDLER: //based on sym return sym of exception handler
+    case FEINF_EXCEPTION_HANDLER: //based on sym return sym of exception handler
         DbgNotSym();
         retn = FstabExcHandler();
         break;
-    case EXCEPTION_DATA://based on sym return sym of exception data
+    case FEINF_EXCEPTION_DATA://based on sym return sym of exception data
         DbgNotSym();
         retn = FstabExcData();
         break;
 #endif
-    case DBG_DWARF_PRODUCER:
+    case FEINF_DBG_DWARF_PRODUCER:
         retn = DWARF_PRODUCER_ID;
         break;
     default :

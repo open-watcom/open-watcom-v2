@@ -1792,8 +1792,8 @@ char    *GetFullSrcName( void )
     }
 }
 
-pointer FEAuxInfo( pointer req_handle, int request )
-//==================================================
+pointer FEAuxInfo( pointer req_handle, aux_class request )
+//========================================================
 // Return specified auxiliary information for given auxiliary entry.
 {
     uint_16     flags;
@@ -1808,7 +1808,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
     aux_info    *info;
 
     switch( request ) {
-    case CALL_CLASS :
+    case FEINF_CALL_CLASS :
         {
             static call_class CallClass;
 
@@ -1816,16 +1816,16 @@ pointer FEAuxInfo( pointer req_handle, int request )
             CallClass = info->cclass ^ REVERSE_PARMS;
             return( (pointer)&CallClass );
         }
-    case SAVE_REGS :
+    case FEINF_SAVE_REGS :
         info = GetAuxInfo( req_handle );
         return( (pointer)&info->save );
-    case RETURN_REG :
+    case FEINF_RETURN_REG :
         info = GetAuxInfo( req_handle );
         return( (pointer)&info->returns );
-    case PARM_REGS :
+    case FEINF_PARM_REGS :
         info = GetAuxInfo( req_handle );
         return( (pointer)info->parms );
-    case CALL_BYTES :
+    case FEINF_CALL_BYTES :
 #if _CPU == _AXP || _CPU == _PPC
         return( NULL );
 #else
@@ -1833,14 +1833,14 @@ pointer FEAuxInfo( pointer req_handle, int request )
         return( (pointer)info->code );
 #endif
 #if _CPU == 8086 || _CPU == 386
-    case CODE_GROUP :
-    case DATA_GROUP :
+    case FEINF_CODE_GROUP :
+    case FEINF_DATA_GROUP :
         return( (pointer)"" );
-    case STRETURN_REG :
+    case FEINF_STRETURN_REG :
         info = GetAuxInfo( req_handle );
         return( (pointer)&info->streturn );
 #endif
-    case NEXT_IMPORT :
+    case FEINF_NEXT_IMPORT :
         switch( (int)(pointer_uint)req_handle ) {
         case 0:
             if( CGFlags & CG_HAS_PROGRAM )
@@ -1893,7 +1893,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
             break;
         }
         return( NULL );
-    case NEXT_IMPORT_S :
+    case FEINF_NEXT_IMPORT_S :
         if( req_handle == NULL ) {
             ImpSym = GList;
         } else {
@@ -1908,7 +1908,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
             }
         }
         return( NULL );
-    case IMPORT_NAME :
+    case FEINF_IMPORT_NAME :
         switch( (int)(pointer_uint)req_handle ) {
         case 1:
 #if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
@@ -1945,21 +1945,21 @@ pointer FEAuxInfo( pointer req_handle, int request )
         case 10:
             return( "__comma_inp_sep" );
         }
-    case IMPORT_NAME_S :
+    case FEINF_IMPORT_NAME_S :
         return( ImpSym );
-    case NEXT_LIBRARY :
+    case FEINF_NEXT_LIBRARY :
         if( req_handle == NULL ) {
             return( DefaultLibs );
         } else {
             return( ((default_lib *)req_handle)->link );
         }
-    case LIBRARY_NAME :
+    case FEINF_LIBRARY_NAME :
         return( &((default_lib *)req_handle)->libname );
-    case SOURCE_NAME :
+    case FEINF_SOURCE_NAME :
         return( GetFullSrcName() );
-    case AUX_LOOKUP :
+    case FEINF_AUX_LOOKUP :
         return( req_handle );
-    case OBJECT_FILE_NAME :
+    case FEINF_OBJECT_FILE_NAME :
         if( ObjName == NULL ) {
             MakeName( SDFName( SrcName ), ObjExtn, TokenBuff );
         } else {
@@ -1976,12 +1976,12 @@ pointer FEAuxInfo( pointer req_handle, int request )
             MakeName( fn, fe, ptr );
         }
         return( TokenBuff );
-    case FREE_SEGMENT :
+    case FEINF_FREE_SEGMENT :
         return( NULL );
-    case REVISION_NUMBER :
+    case FEINF_REVISION_NUMBER :
         return( (pointer)(pointer_uint)II_REVISION );
 #if _CPU == 8086 || _CPU == 386
-    case CLASS_NAME :
+    case FEINF_CLASS_NAME :
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
             if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
                 continue;
@@ -1996,29 +1996,29 @@ pointer FEAuxInfo( pointer req_handle, int request )
             }
         }
         return( NULL );
-    case USED_8087 :
+    case FEINF_USED_8087 :
         CGFlags |= CG_USED_80x87;
         return( NULL );
 #endif
-    case SHADOW_SYMBOL :
+    case FEINF_SHADOW_SYMBOL :
         sym = (sym_id)req_handle;
         _Shadow( sym );
         return( sym );
 #if _CPU == 8086 || _CPU == 386
-    case STACK_SIZE_8087 :
+    case FEINF_STACK_SIZE_8087 :
         // return the number of floating-point registers
         // that are NOT used as cache
         if( CPUOpts & CPUOPT_FPR )
             return( (pointer)(pointer_uint)4 );
         return( (pointer)(pointer_uint)8 );
-    case CODE_LABEL_ALIGNMENT :
+    case FEINF_CODE_LABEL_ALIGNMENT :
         return( AlignmentSeq() );
 #endif
-    case TEMP_LOC_NAME :
+    case FEINF_TEMP_LOC_NAME :
         return( (pointer)(pointer_uint)TEMP_LOC_QUIT );
-    case TEMP_LOC_TELL :
+    case FEINF_TEMP_LOC_TELL :
         return( NULL );
-    case NEXT_DEPENDENCY :
+    case FEINF_NEXT_DEPENDENCY :
         if( (Options & OPT_DEPENDENCY) == 0 ) {
             return( NULL );
         } else {
@@ -2028,19 +2028,19 @@ pointer FEAuxInfo( pointer req_handle, int request )
                 return( ((dep_info *)req_handle)->link );
             }
         }
-    case DEPENDENCY_TIMESTAMP :
+    case FEINF_DEPENDENCY_TIMESTAMP :
         return( &(((dep_info *)req_handle)->time_stamp) );
-    case DEPENDENCY_NAME :
+    case FEINF_DEPENDENCY_NAME :
         return( ((dep_info *)req_handle)->fn );
-    case SOURCE_LANGUAGE:
+    case FEINF_SOURCE_LANGUAGE:
         return( "FORTRAN" );
 #if _CPU == 8086 || _CPU == 386
-    case PEGGED_REGISTER:
+    case FEINF_PEGGED_REGISTER:
         return( NULL );
 #endif
-    case UNROLL_COUNT:
+    case FEINF_UNROLL_COUNT:
         return( NULL );
-    case DBG_DWARF_PRODUCER:
+    case FEINF_DBG_DWARF_PRODUCER:
         return( DWARF_PRODUCER_ID );
     default:
         return( NULL );

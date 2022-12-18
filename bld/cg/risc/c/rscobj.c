@@ -176,10 +176,10 @@ static  void    DefaultLibs( void )
     comments = NULL;
     lib = NULL;
     for( ;; ) {  //Library dependencies
-        lib = FEAuxInfo( lib, NEXT_LIBRARY );
+        lib = FEAuxInfo( lib, FEINF_NEXT_LIBRARY );
         if( lib == NULL )
             break;
-        name =  (char *)FEAuxInfo( lib, LIBRARY_NAME );
+        name =  (char *)FEAuxInfo( lib, FEINF_LIBRARY_NAME );
         if( name == NULL || *name == '\0' )
             continue;
         if( comments == NULL ){
@@ -214,18 +214,18 @@ static  void    AliasNames( void )
 
     alias = NULL;
     for( ;; ) {  // Aliases
-        alias = FEAuxInfo( alias, NEXT_ALIAS );
+        alias = FEAuxInfo( alias, FEINF_NEXT_ALIAS );
         if( alias == NULL )
             break;
-        alias_name = FEAuxInfo( alias, ALIAS_NAME );
+        alias_name = FEAuxInfo( alias, FEINF_ALIAS_NAME );
         if( alias_name == NULL ) {
-            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, ALIAS_SYMBOL ),
+            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, FEINF_ALIAS_SYMBOL ),
                              stringOut, &alias_name, NORMAL );
         }
-        subst_name = FEAuxInfo( alias, ALIAS_SUBST_NAME );
+        subst_name = FEAuxInfo( alias, FEINF_ALIAS_SUBST_NAME );
         owl_alias = OWLSymbolInit( owlFile, alias_name );
         if( subst_name == NULL ) {
-            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, ALIAS_SUBST_SYMBOL ),
+            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, FEINF_ALIAS_SUBST_SYMBOL ),
                              stringOut, &subst_name, NORMAL );
         }
         owl_subst = OWLSymbolInit( owlFile, subst_name );
@@ -241,17 +241,17 @@ static  void    EmitImports( void )
 
     auto_import = NULL;
     for( ;; ) {
-        auto_import = FEAuxInfo( auto_import, NEXT_IMPORT );
+        auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT );
         if( auto_import == NULL )
             break;
-        OWLEmitImport( owlFile, FEAuxInfo( auto_import, IMPORT_NAME ) );
+        OWLEmitImport( owlFile, FEAuxInfo( auto_import, FEINF_IMPORT_NAME ) );
     }
     auto_import = NULL;
     for( ;; ) {
-        auto_import = FEAuxInfo( auto_import, NEXT_IMPORT_S );
+        auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT_S );
         if( auto_import == NULL )
             break;
-        OUTPUT_OBJECT_NAME( FEAuxInfo( auto_import, IMPORT_NAME_S ),
+        OUTPUT_OBJECT_NAME( FEAuxInfo( auto_import, FEINF_IMPORT_NAME_S ),
                          stringOut, &name, NORMAL );
         OWLEmitImport( owlFile, name );
     }
@@ -273,14 +273,14 @@ static  void    EmitDependencyInfo( void )
     sect = NULL;
     depend = NULL;
     for( ;; ) {
-        depend = FEAuxInfo( depend, NEXT_DEPENDENCY );
+        depend = FEAuxInfo( depend, FEINF_NEXT_DEPENDENCY );
         if( depend == NULL )
             break;
         if( sect == NULL ) {
             sect = OWLSectionInit( owlFile, dependSectionName, OWL_SECTION_INFO, 16 );
         }
-        name = (char *)FEAuxInfo( depend, DEPENDENCY_NAME );
-        info.time = *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP );
+        name = (char *)FEAuxInfo( depend, FEINF_DEPENDENCY_NAME );
+        info.time = *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP );
         info.len = strlen( name ) + 1;
         OWLEmitData( sect, (char *)&info, offsetof( DepInfo, name ) );
         OWLEmitData( sect, (char *)name, info.len );
@@ -469,7 +469,7 @@ void    InitSegDefs( void )
         format = OWL_FORMAT_COFF;
     }
 
-    owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
+    owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, FEINF_SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
     if( _IsTargetModel( OWL_LOGGING ) ) {
         OWLLogEnable( owlFile, FILE2OWLF( stdout ) );
     }
@@ -663,9 +663,9 @@ static bool     InlineFunction( cg_sym_handle sym )
 {
     if( (FEAttr( sym ) & FE_PROC) == 0 )
         return( false );
-    if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
+    if( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) != NULL )
         return( true );
-    return( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
+    return( (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
 }
 
 segment_id  AskSegID( pointer hdl, cg_class class )
@@ -873,10 +873,10 @@ static void DumpImportResolve( label_handle label )
         return;
     sym = AskForLblSym( label );
     if( sym != NULL ){
-        def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
+        def_resolve = FEAuxInfo( sym, FEINF_DEFAULT_IMPORT_RESOLVE );
         if( def_resolve != NULL && def_resolve != sym ) {
             bck =  FEBack( def_resolve);
-            type = (import_type)(pointer_uint)FEAuxInfo( sym, IMPORT_TYPE );
+            type = (import_type)(pointer_uint)FEAuxInfo( sym, FEINF_IMPORT_TYPE );
             switch( type ) {
             case IMPORT_IS_LAZY:
                 OWLWeakExt( owlFile, labelOwlSym( label ), labelOwlSym( bck->lbl ), OWL_WKSYM_LAZY );
@@ -887,10 +887,10 @@ static void DumpImportResolve( label_handle label )
             case IMPORT_IS_CONDITIONAL_PURE:
                 /* fall through */
             case IMPORT_IS_CONDITIONAL:
-                cond = FEAuxInfo( sym, CONDITIONAL_IMPORT );
+                cond = FEAuxInfo( sym, FEINF_CONDITIONAL_IMPORT );
                 while( cond != NULL ) {
-                    sym = FEAuxInfo( cond, CONDITIONAL_SYMBOL );
-                    cond = FEAuxInfo( cond, NEXT_CONDITIONAL );
+                    sym = FEAuxInfo( cond, FEINF_CONDITIONAL_SYMBOL );
+                    cond = FEAuxInfo( cond, FEINF_NEXT_CONDITIONAL );
                 }
                 assert( 0 ); // not implemented
                 break;
@@ -1029,7 +1029,7 @@ void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
     OWLEmitReloc( owl_pdata,OWLTellOffset( owl_pdata ), labelOwlSym( label ), OWL_RELOC_WORD );
     OWLEmitData( owl_pdata, (char *)&proc_size, 4 );
     if( sym != NULL ) { // put  out exception handler stuff
-        curr = FEAuxInfo( sym, EXCEPTION_HANDLER );
+        curr = FEAuxInfo( sym, FEINF_EXCEPTION_HANDLER );
         if( curr != NULL ) {
             lbl =  AskForSymLabel( curr, CG_FE );
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );
@@ -1038,7 +1038,7 @@ void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );
         }
         OWLEmitData( owl_pdata, (char *)&Zero, 4 );
-        curr = FEAuxInfo( sym, EXCEPTION_DATA );
+        curr = FEAuxInfo( sym, FEINF_EXCEPTION_DATA );
         if( curr != NULL ) {
             lbl =  AskForSymLabel( curr, CG_FE );
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );

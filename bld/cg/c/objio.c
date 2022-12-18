@@ -139,7 +139,7 @@ static  handle  CreateStream( const char *name )
 bool    CGOpenf( void )
 /*********************/
 {
-    ObjFile = CreateStream( FEAuxInfo( NULL, OBJECT_FILE_NAME ) );
+    ObjFile = CreateStream( FEAuxInfo( NULL, FEINF_OBJECT_FILE_NAME ) );
     if( ObjFile == INVALID_HANDLE )
         return( false );
     BufList = NewBuffer();              // allocate first buffer
@@ -329,7 +329,7 @@ void    CloseObj( void )
         FlushBuffers( ObjFile );
         CloseStream( ObjFile );
         if( EraseObj ) {
-            EraseStream( FEAuxInfo( NULL, OBJECT_FILE_NAME ) );
+            EraseStream( FEAuxInfo( NULL, FEINF_OBJECT_FILE_NAME ) );
         }
         ObjFile = INVALID_HANDLE;
     }

@@ -502,7 +502,7 @@ extern  void    InitDbgInfo( void )
 /*********************************/
 {
     SrcFileNoInit();
-    DBSrcFile( FEAuxInfo( NULL, SOURCE_NAME ) );
+    DBSrcFile( FEAuxInfo( NULL, FEINF_SOURCE_NAME ) );
 }
 
 

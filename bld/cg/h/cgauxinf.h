@@ -31,7 +31,7 @@
 
 #include "cgaux.h"
 
-#define FindAuxInfoSym(s,r) FEAuxInfo(FEAuxInfo(s,AUX_LOOKUP),r)
+#define FindAuxInfoSym(s,r) FEAuxInfo(FEAuxInfo(s,FEINF_AUX_LOOKUP),r)
 
 extern  pointer FindAuxInfo( name *, aux_class );
 #if _TARGET & _TARG_INTEL

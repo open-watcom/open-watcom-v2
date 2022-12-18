@@ -575,10 +575,10 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 //        index    (n-1)
 //            Usually called from a loop until we return 0/NULL to show no more libraries
 //        request
-//            NEXT_LIBRARY
+//            FEINF_NEXT_LIBRARY
 //                examines the current flags to see if any libraries should be
 //                automagically referenced and returns the relevant index if so.
-//            LIBRARY_NAME
+//            FEINF_LIBRARY_NAME
 //                returns the requested name.
 //
 */
@@ -605,7 +605,7 @@ static CGPOINTER NextLibrary( int index, aux_class request )
     if( index == 0 ) {
         addDefaultLibs();
     }
-    if( request == NEXT_LIBRARY )
+    if( request == FEINF_NEXT_LIBRARY )
         ++index;
     if( index > 0 ) {
         for( i = 1, lib = HeadLibs; lib != NULL; lib = lib->next ) {
@@ -617,7 +617,7 @@ static CGPOINTER NextLibrary( int index, aux_class request )
         }
     }
     /* return library name, or */
-    if( request == LIBRARY_NAME || name == NULL )
+    if( request == FEINF_LIBRARY_NAME || name == NULL )
         return( (CGPOINTER)name );
     /* library index */
     return( (CGPOINTER)(pointer_uint)index );
@@ -630,18 +630,18 @@ static CGPOINTER NextLibrary( int index, aux_class request )
 //        index    (n-1)
 //            Called from a loop until we return 0/NULL to show no more aliases
 //        request
-//            NEXT_ALIAS
+//            FEINF_NEXT_ALIAS
 //                returns the index of next alias in the list, or zero if none.
-//            ALIAS_NAME
+//            FEINF_ALIAS_NAME
 //                returns the alias name, or NULL if alias refers to a symbol.
-//            ALIAS_SYMBOL
+//            FEINF_ALIAS_SYMBOL
 //                returns the alias symbol, or NULL if alias refers to a name.
-//            ALIAS_SUBST_NAME
+//            FEINF_ALIAS_SUBST_NAME
 //                returns the name to be substituted for the alias, or NULL.
-//            ALIAS_SUBST_SYMBOL
+//            FEINF_ALIAS_SUBST_SYMBOL
 //                returns the symbol to be substituted for the alias, or NULL.
 //
-// Note: One of ALIAS..._NAME and ALIAS..._SYMBOL will always be 0/NULL and the other
+// Note: One of FEINF_ALIAS..._NAME and FEINF_ALIAS..._SYMBOL will always be 0/NULL and the other
 // will be valid, depending on which form of the pragma was used.
 static CGPOINTER NextAlias( int index, aux_class request )
 {
@@ -652,7 +652,7 @@ static CGPOINTER NextAlias( int index, aux_class request )
     const char          *subst_name = NULL;
     int                 i;
 
-    if( request == NEXT_ALIAS )
+    if( request == FEINF_NEXT_ALIAS )
         ++index;
 
     for( i = 1, aliaslist = AliasHead; aliaslist != NULL; aliaslist = aliaslist->next, ++i ) {
@@ -667,15 +667,15 @@ static CGPOINTER NextAlias( int index, aux_class request )
     if( aliaslist == NULL )
         index = 0;          /* no (more) aliases */
 
-    if( request == ALIAS_NAME ) {
+    if( request == FEINF_ALIAS_NAME ) {
         return( (CGPOINTER)alias_name );
-    } else if( request == ALIAS_SYMBOL ) {
+    } else if( request == FEINF_ALIAS_SYMBOL ) {
         return( (CGPOINTER)alias_sym );
-    } else if( request == ALIAS_SUBST_NAME ) {
+    } else if( request == FEINF_ALIAS_SUBST_NAME ) {
         return( (CGPOINTER)subst_name );
-    } else if( request == ALIAS_SUBST_SYMBOL ) {
+    } else if( request == FEINF_ALIAS_SUBST_SYMBOL ) {
         return( (CGPOINTER)subst_sym );
-    } else {    // this had better be a NEXT_ALIAS request
+    } else {    // this had better be a FEINF_NEXT_ALIAS request
         return( (CGPOINTER)(pointer_uint)index );
     }
 }
@@ -950,10 +950,10 @@ static void addDefaultImports( void )
 //            Usually called from a loop until we return 0/NULL to show no more symbols
 //            are required.
 //        request
-//            NEXT_IMPORT
+//            FEINF_NEXT_IMPORT
 //                examines the current flags to see if any symbols should be
 //                automagically inserted and returns the relevant index if so.
-//            IMPORT_NAME
+//            FEINF_IMPORT_NAME
 //                returns the requested name. if we have returned an index for
 //                the current compiler settings we should be called with a valid
 //                index but we still perform exactly the same checks as this is
@@ -962,7 +962,7 @@ static void addDefaultImports( void )
 */
 
 static CGPOINTER NextImport( int index, aux_class request )
-/*******************************************************/
+/*********************************************************/
 {
     char        *name;
     int         i;
@@ -975,7 +975,7 @@ static CGPOINTER NextImport( int index, aux_class request )
     if( index == 0 ) {
         addDefaultImports();
     }
-    if( request == NEXT_IMPORT )
+    if( request == FEINF_NEXT_IMPORT )
         ++index;
     if( index > 0 ) {
         for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
@@ -989,14 +989,14 @@ static CGPOINTER NextImport( int index, aux_class request )
         }
     }
     /* return the import name, or */
-    if( request == IMPORT_NAME || name == NULL )
+    if( request == FEINF_IMPORT_NAME || name == NULL )
         return( (CGPOINTER)name );
     /* return the index */
     return( (CGPOINTER)(pointer_uint)index );
 }
 
 static CGPOINTER NextImportS( int index, aux_class request )
-/********************************************************/
+/**********************************************************/
 {
     void        *symbol;
     int         i;
@@ -1006,7 +1006,7 @@ static CGPOINTER NextImportS( int index, aux_class request )
         return( NULL );
 
     symbol = NULL;
-    if( request == NEXT_IMPORT_S )
+    if( request == FEINF_NEXT_IMPORT_S )
         ++index;
     if( index > 0 ) {
         for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
@@ -1020,7 +1020,7 @@ static CGPOINTER NextImportS( int index, aux_class request )
         }
     }
     /* return the import symbol, or */
-    if( request == IMPORT_NAME_S || symbol == NULL )
+    if( request == FEINF_IMPORT_NAME_S || symbol == NULL )
         return( (CGPOINTER)symbol );
     /* return the index */
     return( (CGPOINTER)(pointer_uint)index );
@@ -1035,34 +1035,34 @@ static CGPOINTER NextImportS( int index, aux_class request )
 //
 //    pass auxiliary information to back end
 */
-CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
+CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
 {
     aux_info            *inf;
     SYM_ENTRY           sym;
     static hw_reg_set   save_set;
 
     switch( request ) {
-    case SOURCE_LANGUAGE:
+    case FEINF_SOURCE_LANGUAGE:
         return( (CGPOINTER)"C" );
-    case STACK_SIZE_8087:
+    case FEINF_STACK_SIZE_8087:
         return( (CGPOINTER)(pointer_uint)Stack87 );
-    case CODE_GROUP:
+    case FEINF_CODE_GROUP:
         return( (CGPOINTER)GenCodeGroup );
-    case DATA_GROUP:
+    case FEINF_DATA_GROUP:
         return( (CGPOINTER)DataSegName );
-    case OBJECT_FILE_NAME:
+    case FEINF_OBJECT_FILE_NAME:
         return( (CGPOINTER)ObjFileName() );
-    case REVISION_NUMBER:
+    case FEINF_REVISION_NUMBER:
         return( (CGPOINTER)(pointer_uint)II_REVISION );
-    case AUX_LOOKUP:
+    case FEINF_AUX_LOOKUP:
         return( req_handle );
-    case PROEPI_DATA_SIZE:
+    case FEINF_PROEPI_DATA_SIZE:
         return( (CGPOINTER)(pointer_uint)ProEpiDataSize );
-    case DBG_PREDEF_SYM:
+    case FEINF_DBG_PREDEF_SYM:
         return( (CGPOINTER)SymDFAbbr );
-    case P5_CHIP_BUG_SYM:
+    case FEINF_P5_CHIP_BUG_SYM:
         return( (CGPOINTER)SymChipBug );
-    case CODE_LABEL_ALIGNMENT:
+    case FEINF_CODE_LABEL_ALIGNMENT:
         {
             static  unsigned char   Alignment[] = { 2, 1, 1 };
 
@@ -1071,64 +1071,64 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 
             return( (CGPOINTER)Alignment );
         }
-    case CLASS_NAME:
+    case FEINF_CLASS_NAME:
         return( (CGPOINTER)SegClassName( (segment_id)(pointer_uint)req_handle ) );
-    case USED_8087:
+    case FEINF_USED_8087:
         CompFlags.pgm_used_8087 = true;
         return( NULL );
   #if _CPU == 386
-    case P5_PROF_DATA:
+    case FEINF_P5_PROF_DATA:
         return( (CGPOINTER)FunctionProfileBlock );
-    case P5_PROF_SEG:
+    case FEINF_P5_PROF_SEG:
         return( (CGPOINTER)(pointer_uint)FunctionProfileSegId );
   #endif
-    case SOURCE_NAME:
+    case FEINF_SOURCE_NAME:
         if( SrcFName == ModuleName ) {
             return( (CGPOINTER)FNameFullPath( FNames ) );
         } else {
             return( (CGPOINTER)ModuleName );
         }
-    case CALL_CLASS:
+    case FEINF_CALL_CLASS:
         {
             static call_class cclass;
 
             cclass = GetCallClass( req_handle );
             return( (CGPOINTER)&cclass );
         }
-    case FREE_SEGMENT:
+    case FEINF_FREE_SEGMENT:
         return( NULL );
-    case NEXT_LIBRARY:
-    case LIBRARY_NAME:
+    case FEINF_NEXT_LIBRARY:
+    case FEINF_LIBRARY_NAME:
         return( NextLibrary( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT:
-    case IMPORT_NAME:
+    case FEINF_NEXT_IMPORT:
+    case FEINF_IMPORT_NAME:
         return( NextImport( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT_S:
-    case IMPORT_NAME_S:
+    case FEINF_NEXT_IMPORT_S:
+    case FEINF_IMPORT_NAME_S:
         return( NextImportS( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_ALIAS:
-    case ALIAS_NAME:
-    case ALIAS_SYMBOL:
-    case ALIAS_SUBST_NAME:
-    case ALIAS_SUBST_SYMBOL:
+    case FEINF_NEXT_ALIAS:
+    case FEINF_ALIAS_NAME:
+    case FEINF_ALIAS_SYMBOL:
+    case FEINF_ALIAS_SUBST_NAME:
+    case FEINF_ALIAS_SUBST_SYMBOL:
         return( NextAlias( (int)(pointer_uint)req_handle, request ) );
-    case TEMP_LOC_NAME:
+    case FEINF_TEMP_LOC_NAME:
         return( (CGPOINTER)(pointer_uint)TEMP_LOC_QUIT );
-    case TEMP_LOC_TELL:
+    case FEINF_TEMP_LOC_TELL:
         return( NULL );
-    case NEXT_DEPENDENCY:
+    case FEINF_NEXT_DEPENDENCY:
         if( CompFlags.emit_dependencies )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
-    case DEPENDENCY_TIMESTAMP:
+    case FEINF_DEPENDENCY_TIMESTAMP:
         return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
-    case DEPENDENCY_NAME:
+    case FEINF_DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
-    case PEGGED_REGISTER:
+    case FEINF_PEGGED_REGISTER:
         return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_uint)req_handle ) );
-    case DBG_DWARF_PRODUCER:
+    case FEINF_DBG_DWARF_PRODUCER:
         return( (CGPOINTER)DWARF_PRODUCER_ID );
-    case SAVE_REGS:
+    case FEINF_SAVE_REGS:
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
@@ -1146,16 +1146,16 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         }
   #endif
         return( (CGPOINTER)&save_set );
-    case RETURN_REG:
+    case FEINF_RETURN_REG:
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->returns );
-    case CALL_BYTES:
+    case FEINF_CALL_BYTES:
         inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
-    case PARM_REGS:
+    case FEINF_PARM_REGS:
   #ifdef __SEH__
         if(( (SYM_HANDLE)req_handle == SymTryInit )
           || ( (SYM_HANDLE)req_handle == SymTryFini )
@@ -1172,7 +1172,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             }
         }
         return( (CGPOINTER)inf->parms );
-    case STRETURN_REG:
+    case FEINF_STRETURN_REG:
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
@@ -1194,64 +1194,64 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 //
 //    pass auxiliary information to back end
 */
-CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
+CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
 {
     aux_info            *inf;
     SYM_ENTRY           sym;
     static hw_reg_set   save_set;
 
     switch( request ) {
-    case SOURCE_LANGUAGE:
+    case FEINF_SOURCE_LANGUAGE:
         return( (CGPOINTER)"C" );
-    case OBJECT_FILE_NAME:
+    case FEINF_OBJECT_FILE_NAME:
         return( (CGPOINTER)ObjFileName() );
-    case REVISION_NUMBER:
+    case FEINF_REVISION_NUMBER:
         return( (CGPOINTER)(pointer_uint)II_REVISION );
-    case AUX_LOOKUP:
+    case FEINF_AUX_LOOKUP:
         return( req_handle );
-    case SOURCE_NAME:
+    case FEINF_SOURCE_NAME:
         if( SrcFName == ModuleName ) {
             return( (CGPOINTER)FNameFullPath( FNames ) );
         } else {
             return( (CGPOINTER)ModuleName );
         }
-    case CALL_CLASS:
+    case FEINF_CALL_CLASS:
         {
             static call_class cclass;
 
             cclass = GetCallClass( req_handle );
             return( (CGPOINTER)&cclass );
         }
-    case NEXT_LIBRARY:
-    case LIBRARY_NAME:
+    case FEINF_NEXT_LIBRARY:
+    case FEINF_LIBRARY_NAME:
         return( NextLibrary( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT:
-    case IMPORT_NAME:
+    case FEINF_NEXT_IMPORT:
+    case FEINF_IMPORT_NAME:
         return( NextImport( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT_S:
-    case IMPORT_NAME_S:
+    case FEINF_NEXT_IMPORT_S:
+    case FEINF_IMPORT_NAME_S:
         return( NextImportS( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_ALIAS:
-    case ALIAS_NAME:
-    case ALIAS_SYMBOL:
-    case ALIAS_SUBST_NAME:
-    case ALIAS_SUBST_SYMBOL:
+    case FEINF_NEXT_ALIAS:
+    case FEINF_ALIAS_NAME:
+    case FEINF_ALIAS_SYMBOL:
+    case FEINF_ALIAS_SUBST_NAME:
+    case FEINF_ALIAS_SUBST_SYMBOL:
         return( NextAlias( (int)(pointer_uint)req_handle, request ) );
-    case FREE_SEGMENT:
+    case FEINF_FREE_SEGMENT:
         return( NULL );
-    case TEMP_LOC_NAME:
+    case FEINF_TEMP_LOC_NAME:
         return( (CGPOINTER)(pointer_uint)TEMP_LOC_QUIT );
-    case TEMP_LOC_TELL:
+    case FEINF_TEMP_LOC_TELL:
         return( NULL );
-    case NEXT_DEPENDENCY:
+    case FEINF_NEXT_DEPENDENCY:
         if( CompFlags.emit_dependencies )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
-    case DEPENDENCY_TIMESTAMP:
+    case FEINF_DEPENDENCY_TIMESTAMP:
         return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
-    case DEPENDENCY_NAME:
+    case FEINF_DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
-    case SAVE_REGS:
+    case FEINF_SAVE_REGS:
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
@@ -1260,16 +1260,16 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         }
         save_set = inf->save;
         return( (CGPOINTER)&save_set );
-    case RETURN_REG:
+    case FEINF_RETURN_REG:
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->returns );
-    case CALL_BYTES:
+    case FEINF_CALL_BYTES:
         inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
-    case PARM_REGS:
+    case FEINF_PARM_REGS:
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );

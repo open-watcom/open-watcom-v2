@@ -557,11 +557,11 @@ static  void doCall( instruction *ins )
 
     op = ins->operands[CALL_OP_ADDR];
     sym = op->v.symbol;
-    cclass = *(call_class *)FindAuxInfoSym( sym, CALL_CLASS );
+    cclass = *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
     lbl = symLabel( op );
     code = NULL;
     if( !AskIfRTLabel( lbl ) ) {
-        code = FindAuxInfoSym( sym, CALL_BYTES );
+        code = FindAuxInfoSym( sym, FEINF_CALL_BYTES );
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
