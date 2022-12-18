@@ -47,6 +47,36 @@ stages:
 #          title:    Bootstrap OSX
 #          image:    $(owimage_osx)
 #          pscript:  $(owscript_osx)
+  - stage: bootlnx
+    displayName: "Bootstrap Linux"
+    dependsOn:
+      - start
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_lnx)
+      owtools:      GCC
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     lnx
+          title:    Bootstrap Linux
+          image:    $(owimage_lnx)
+          pscript:  $(owscript_lnx)
+  - stage: bootnt
+    displayName: "Bootstrap Windows"
+    dependsOn:
+      - start
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_nt)
+      owtools:      VISUALC
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     nt
+          title:    Bootstrap Windows
+          image:    $(owimage_nt)
+          pscript:  $(owscript_nt)
 #  - stage: buildosx
 #    displayName: "Build OSX"
 #    dependsOn:
@@ -63,21 +93,6 @@ stages:
 #          title:    Build OSX
 #          image:    $(owimage_osx)
 #          pscript:  $(owscript_osx)
-  - stage: bootlnx
-    displayName: "Bootstrap Linux"
-    dependsOn:
-      - start
-    variables:
-      owbuild.stage: boot
-      owimage:      $(owimage_lnx)
-      owtools:      GCC
-    jobs:
-      - template: ci/boot.yml
-        parameters:
-          arch:     lnx
-          title:    Bootstrap Linux
-          image:    $(owimage_lnx)
-          pscript:  $(owscript_lnx)
   - stage: buildlnx
     displayName: "Build Linux"
     dependsOn:
@@ -94,6 +109,40 @@ stages:
           title:    Build Linux
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
+  - stage: buildnt
+    displayName: "Build Windows"
+    dependsOn:
+      - bootnt
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_nt)
+      owtools:      VISUALC
+      owdosbox:     dosbox.exe
+      owdosboxpath: $(owciroot_nt)\nt386
+    jobs:
+      - template: ci/build.yml
+        parameters:
+          arch:     nt
+          title:    Build Windows
+          image:    $(owimage_nt)
+          pscript:  $(owscript_nt)
+  - stage: docsnt
+    displayName: "Docs Build Windows"
+    dependsOn:
+      - bootnt
+    variables:
+      owbuild.stage: docs
+      owtools:      VISUALC
+      owimage:      $(owimage_nt)
+      owciroot:     $(owciroot_nt)
+      owdosbox:     dosbox.exe
+      owdosboxpath: $(owciroot_nt)\nt386
+    jobs:
+      - template: ci/docbuild.yml
+        parameters:
+          arch:     nt
+          image:    $(owimage_nt)
+          pscript:  $(owscript_nt)
   - stage: testslnx
     displayName: "Tests Linux"
     dependsOn:
@@ -108,6 +157,20 @@ stages:
           title:    Tests Linux
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
+  - stage: testsnt
+    displayName: "Tests Windows"
+    dependsOn:
+      - buildnt
+    variables:
+      owbuild.stage: tests
+      owtools:      VISUALC
+    jobs:
+      - template: ci/tests.yml
+        parameters:
+          arch:     nt
+          title:    Tests Windows
+          image:    $(owimage_nt)
+          pscript:  $(owscript_nt)
   - stage: installnx
     displayName: "Installers Build Linux"
     dependsOn:
@@ -138,66 +201,3 @@ stages:
           title:    GitHub Release
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
-  - stage: bootnt
-    displayName: "Bootstrap Windows"
-    dependsOn:
-      - start
-    variables:
-      owbuild.stage: boot
-      owimage:      $(owimage_nt)
-      owtools:      VISUALC
-    jobs:
-      - template: ci/boot.yml
-        parameters:
-          arch:     nt
-          title:    Bootstrap Windows
-          image:    $(owimage_nt)
-          pscript:  $(owscript_nt)
-  - stage: buildnt
-    displayName: "Build Windows"
-    dependsOn:
-      - bootnt
-    variables:
-      owbuild.stage: build
-      owimage:      $(owimage_nt)
-      owtools:      VISUALC
-      owdosbox:     dosbox.exe
-      owdosboxpath: $(owciroot_nt)\nt386
-    jobs:
-      - template: ci/build.yml
-        parameters:
-          arch:     nt
-          title:    Build Windows
-          image:    $(owimage_nt)
-          pscript:  $(owscript_nt)
-  - stage: testsnt
-    displayName: "Tests Windows"
-    dependsOn:
-      - buildnt
-    variables:
-      owbuild.stage: tests
-      owtools:      VISUALC
-    jobs:
-      - template: ci/tests.yml
-        parameters:
-          arch:     nt
-          title:    Tests Windows
-          image:    $(owimage_nt)
-          pscript:  $(owscript_nt)
-  - stage: docsnt
-    displayName: "Docs Build Windows"
-    dependsOn:
-      - bootnt
-    variables:
-      owbuild.stage: docs
-      owtools:      VISUALC
-      owimage:      $(owimage_nt)
-      owciroot:     $(owciroot_nt)
-      owdosbox:     dosbox.exe
-      owdosboxpath: $(owciroot_nt)\nt386
-    jobs:
-      - template: ci/docbuild.yml
-        parameters:
-          arch:     nt
-          image:    $(owimage_nt)
-          pscript:  $(owscript_nt)

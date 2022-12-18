@@ -64,22 +64,6 @@ stages:
           title:    Bootstrap OSX
           image:    $(owimage_osx)
           pscript:  $(owscript_osx)
-  - stage: buildosx
-    displayName: "Build OSX"
-    dependsOn:
-      - bootosx
-    variables:
-      owbuild.stage: build
-      owimage:      $(owimage_osx)
-      owtools:      CLANG
-      owdosbox:     dosbox
-    jobs:
-      - template: ci/build.yml
-        parameters:
-          arch:     osx
-          title:    Build OSX
-          image:    $(owimage_osx)
-          pscript:  $(owscript_osx)
   - stage: bootlnxow
     displayName: "Bootstrap Linux OW"
     dependsOn:
@@ -96,37 +80,6 @@ stages:
         parameters:
           arch:     lnx
           title:    Bootstrap Linux OW
-          image:    $(owimage_lnx)
-          pscript:  $(owscript_lnx)
-  - stage: bootlnx
-    displayName: "Bootstrap Linux"
-    dependsOn:
-      - start
-    variables:
-      owbuild.stage: boot
-      owimage:      $(owimage_lnx)
-      owtools:      GCC
-    jobs:
-      - template: ci/boot.yml
-        parameters:
-          arch:     lnx
-          title:    Bootstrap Linux
-          image:    $(owimage_lnx)
-          pscript:  $(owscript_lnx)
-  - stage: buildlnx
-    displayName: "Build Linux"
-    dependsOn:
-      - bootlnx
-    variables:
-      owbuild.stage: build
-      owimage:      $(owimage_lnx)
-      owtools:      GCC
-      owdosbox:     dosbox
-    jobs:
-      - template: ci/build.yml
-        parameters:
-          arch:     lnx
-          title:    Build Linux
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
   - stage: bootntow
@@ -147,10 +100,25 @@ stages:
           title:    Bootstrap Windows OW
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
+  - stage: bootlnx
+    displayName: "Bootstrap Linux"
+    dependsOn:
+      - bootlnxow
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_lnx)
+      owtools:      GCC
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     lnx
+          title:    Bootstrap Linux
+          image:    $(owimage_lnx)
+          pscript:  $(owscript_lnx)
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
-      - start
+      - bootntow
     variables:
       owbuild.stage: boot
       owimage:      $(owimage_nt)
@@ -162,6 +130,38 @@ stages:
           title:    Bootstrap Windows
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
+  - stage: buildosx
+    displayName: "Build OSX"
+    dependsOn:
+      - bootosx
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_osx)
+      owtools:      CLANG
+      owdosbox:     dosbox
+    jobs:
+      - template: ci/build.yml
+        parameters:
+          arch:     osx
+          title:    Build OSX
+          image:    $(owimage_osx)
+          pscript:  $(owscript_osx)
+  - stage: buildlnx
+    displayName: "Build Linux"
+    dependsOn:
+      - bootlnx
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_lnx)
+      owtools:      GCC
+      owdosbox:     dosbox
+    jobs:
+      - template: ci/build.yml
+        parameters:
+          arch:     lnx
+          title:    Build Linux
+          image:    $(owimage_lnx)
+          pscript:  $(owscript_lnx)
   - stage: buildnt
     displayName: "Build Windows"
     dependsOn:
@@ -210,6 +210,20 @@ stages:
           title:    Tests Linux
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
+  - stage: testsnt
+    displayName: "Tests Windows"
+    dependsOn:
+      - buildnt
+    variables:
+      owbuild.stage: tests
+      owtools:      VISUALC
+    jobs:
+      - template: ci/tests.yml
+        parameters:
+          arch:     nt
+          title:    Tests Windows
+          image:    $(owimage_nt)
+          pscript:  $(owscript_nt)
   - stage: testbootlnxow
     displayName: "Test Bootstrap Linux OW"
     dependsOn:
@@ -228,20 +242,6 @@ stages:
           title:    Test Bootstrap Linux OW
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
-  - stage: testsnt
-    displayName: "Tests Windows"
-    dependsOn:
-      - buildnt
-    variables:
-      owbuild.stage: tests
-      owtools:      VISUALC
-    jobs:
-      - template: ci/tests.yml
-        parameters:
-          arch:     nt
-          title:    Tests Windows
-          image:    $(owimage_nt)
-          pscript:  $(owscript_nt)
   - stage: testbootntow
     displayName: "Test Bootstrap Windows OW"
     dependsOn:
