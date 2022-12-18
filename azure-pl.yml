@@ -49,21 +49,6 @@ stages:
           vmImage: $(owimage_lnx)
         steps:
         - checkout: none
-  - stage: bootosx
-    displayName: "Bootstrap OSX"
-    dependsOn:
-      - start
-    variables:
-      owbuild.stage: boot
-      owimage:      $(owimage_osx)
-      owtools:      CLANG
-    jobs:
-      - template: ci/boot.yml
-        parameters:
-          arch:     osx
-          title:    Bootstrap OSX
-          image:    $(owimage_osx)
-          pscript:  $(owscript_osx)
   - stage: bootlnxow
     displayName: "Bootstrap Linux OW"
     dependsOn:
@@ -130,20 +115,19 @@ stages:
           title:    Bootstrap Windows
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
-  - stage: buildosx
-    displayName: "Build OSX"
+  - stage: bootosx
+    displayName: "Bootstrap OSX"
     dependsOn:
-      - bootosx
+      - start
     variables:
-      owbuild.stage: build
+      owbuild.stage: boot
       owimage:      $(owimage_osx)
       owtools:      CLANG
-      owdosbox:     dosbox
     jobs:
-      - template: ci/build.yml
+      - template: ci/boot.yml
         parameters:
           arch:     osx
-          title:    Build OSX
+          title:    Bootstrap OSX
           image:    $(owimage_osx)
           pscript:  $(owscript_osx)
   - stage: buildlnx
@@ -179,6 +163,22 @@ stages:
           title:    Build Windows
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
+  - stage: buildosx
+    displayName: "Build OSX"
+    dependsOn:
+      - bootosx
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_osx)
+      owtools:      CLANG
+      owdosbox:     dosbox
+    jobs:
+      - template: ci/build.yml
+        parameters:
+          arch:     osx
+          title:    Build OSX
+          image:    $(owimage_osx)
+          pscript:  $(owscript_osx)
   - stage: docsnt
     displayName: "Docs Build Windows"
     dependsOn:
