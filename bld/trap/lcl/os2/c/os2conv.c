@@ -42,7 +42,6 @@
 #define INCL_DOSSIGNALS
 #define INCL_WINSYS
 #include <os2.h>
-//#include <wos2.h>
 #include <os2dbg.h>
 #include "os2v2acc.h"
 #include "trperr.h"
@@ -53,7 +52,7 @@
 
 #define LOCATOR     "OS2V2HLP.EXE"
 
-extern ULONG APIENTRY Dos16SelToFlat( ULONG );
+extern long APIENTRY Dos16SelToFlat( long );
 extern ULONG CallDosSelToFlat( PVOID );
 #pragma aux CallDosSelToFlat = \
         ".386"          \
@@ -71,9 +70,9 @@ extern USHORT   DoCall( PVOID, ULONG, ULONG );
     __parm      [__dx __ax] [__cx __bx] [__di __si] \
     __modify    [__ax __bx __cx __dx __si __di __es]
 
-extern PVOID    __far DoReturn();
+extern PVOID DoReturn();
 
-extern HMODULE  ThisDLLModHandle;
+extern HMODULE          ThisDLLModHandle;
 
 USHORT          (APIENTRY *DebugFunc)( PVOID );
 USHORT          FlatCS;
@@ -152,8 +151,8 @@ int GetDos32Debug( PCHAR err )
         return( FALSE );
     }
     DebugFunc = (PVOID)data.dos_debug;
-    FlatCS = data.cs;
-    FlatDS = data.ds;
+    FlatCS = (USHORT)data.cs;
+    FlatDS = (USHORT)data.ds;
 
     _retaddr = MakeLocalPtrFlat( (PVOID)DoReturn );
     return( TRUE );
@@ -232,7 +231,7 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
 PVOID MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 {
     if( !IsFlatSeg( seg ) )
-        return( _MK_FP( seg, (USHORT)offset ) );
+        return( _MK_FP( seg, (USHORT) offset ) );
     return( MakeSegmentedPointer( offset ) );
 
 } /* MakeItSegmentedNumberOne */
