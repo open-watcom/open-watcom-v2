@@ -33,7 +33,6 @@
 #include "symdbg.h"
 #include "targproc.h"
 
-#define ROUTINE_LOADS_DS                  0x8000
 
 typedef enum {
         GENERATED_PROLOG                = 0x01,
