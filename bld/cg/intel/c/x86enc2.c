@@ -372,8 +372,7 @@ void    GenCall( instruction *ins )
         } else {
             CodeBytes( code->data, code->length );
         }
-#if defined( USE_NORETURN_OPTIMIZATION )
-    } else if( ( cclass & ABORTS ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    } else if( (cclass & ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
         if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
@@ -382,7 +381,6 @@ void    GenCall( instruction *ins )
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
         }
         return;
-#endif
     } else {
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
@@ -397,7 +395,7 @@ void    GenCall( instruction *ins )
         }
         DoCall( lbl, imp, (cclass & FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
     }
-    if( (cclass & ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (cclass & (ABORTS | NORETURN)) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
 }
@@ -415,15 +413,11 @@ void    GenCallIndirect( instruction *ins )
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-#if defined( USE_NORETURN_OPTIMIZATION )
-    if( ( ins->flags.call_flags & CALL_ABORTS ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (ins->flags.call_flags & CALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         occlass = OC_JMPI;
     } else {
         occlass = OC_CALLI;
     }
-#else
-    occlass = OC_CALLI;
-#endif
     if( ins->flags.call_flags & CALL_POPS_PARMS ) {
         occlass |= OC_ATTR_POP;
     }
@@ -438,12 +432,9 @@ void    GenCallIndirect( instruction *ins )
     LayOpword( opcode );
     LayModRM( op );
     _Emit;
-#if defined( USE_NORETURN_OPTIMIZATION )
-#else
-    if( (ins->flags.call_flags & CALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (ins->flags.call_flags & CALL_NORETURN) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
-#endif
 }
 
 
@@ -467,12 +458,9 @@ void    GenCallRegister( instruction *ins )
     LayOpword( M_CJINEAR );
     LayRegRM( op->r.reg );
     _Emit;
-#if defined( USE_NORETURN_OPTIMIZATION )
-#else
-    if( (ins->flags.call_flags & CALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (ins->flags.call_flags & CALL_NORETURN) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
-#endif
 }
 
 

@@ -2,7 +2,6 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -126,11 +125,6 @@ _setjmp endp
 
         xdefp   "C",longjmp
         defpe   longjmp
-if _MODEL and _BIG_CODE
-        add     sp,4            ; correct stack frame (skip over return address)
-else
-        add     sp,2            ; correct stack frame (skip over return address)
-endif
 if _MODEL and (_BIG_DATA or _HUGE_DATA)
     ifdef __WINDOWS__
         mov     di,ds           ; save pegged DS

@@ -529,6 +529,9 @@ static  void    doCall( instruction *ins )
     } else {
         GenCallLabel( lbl );
     }
+    if( cclass & NORETURN ) {
+        GenNoReturn();
+    }
 }
 
 static  void    addressTemp( name *temp, uint_8 *reg, int_16 *offset )

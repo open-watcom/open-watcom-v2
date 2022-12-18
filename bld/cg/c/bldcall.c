@@ -428,7 +428,7 @@ void    AddCallIns( instruction *ins, cn call ) {
             // indirect since calling data labels directly
             // screws up the back end
             addr_type_class = WD;
-#if _TARGET & (_TARG_80386|_TARG_8086)
+#if _TARGET & (_TARG_80386 | _TARG_8086)
             if( *(call_class *)FindAuxInfo( call_name, CALL_CLASS ) & FAR_CALL ) {
                 addr_type_class = CP;
             }

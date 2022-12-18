@@ -81,12 +81,8 @@
 #define CHEAP_FRAME ( _IsTargetModel( NEED_STACK_FRAME ) || \
               _IsntTargetModel( WINDOWS ) || WINDOWS_CHEAP )
 
-#if defined( USE_NORETURN_OPTIMIZATION )
 #define FAR_RET_ON_STACK ( (_RoutineIsLong( CurrProc->state.attr ) ) \
              && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 )
-#else
-#define FAR_RET_ON_STACK ( _RoutineIsLong( CurrProc->state.attr ) )
-#endif
 
 
 #define HW_STACK_CHECK HW_xAX
@@ -872,10 +868,8 @@ static unsigned returnAddressStackSize( void )
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
         size = 0;
-#if defined( USE_NORETURN_OPTIMIZATION )
     } else if( CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
         size = 0;
-#endif
     } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
         size = 2 * WORD_SIZE;
     } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
@@ -1008,13 +1002,9 @@ void    GenProlog( void )
         } else {
             DoStackCheck();
             CurrProc->parms.base += LoadDS();
-#if defined( USE_NORETURN_OPTIMIZATION )
             if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
                 CurrProc->parms.base += Push( to_push );
             }
-#else
-            CurrProc->parms.base += Push( to_push );
-#endif
             Enter();
             AdjustPushLocals();
             if( _IsModel( NO_OPTIMIZATION ) || CurrProc->targ.sp_frame ) {
@@ -1158,13 +1148,9 @@ void    GenEpilog( void )
     }
 
     if( (attr & FE_NAKED) == 0 ) {
-#if defined( USE_NORETURN_OPTIMIZATION )
         if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
             DoEpilog();
         }
-#else
-        DoEpilog();
-#endif
 
         if( BlockByBlock ) {
             AbsPatch( CurrProc->targ.prolog_loc, CurrProc->locals.size );

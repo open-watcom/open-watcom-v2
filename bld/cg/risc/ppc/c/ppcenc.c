@@ -412,6 +412,9 @@ static  void    doCall( instruction *ins )
         ins_encoding = 0x60000000;  // ..znop for linker thunk
         _EmitIns( ins_encoding );
     }
+    if( cclass & NORETURN ) {
+        GenNoReturn();
+    }
 }
 
 

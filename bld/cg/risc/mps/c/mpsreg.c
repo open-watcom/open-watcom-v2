@@ -120,6 +120,9 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & ABORTS ) {
         state->attr |= ROUTINE_NEVER_RETURNS_ABORTS;
     }
+    if( cclass & NORETURN ) {
+        state->attr |= ROUTINE_NEVER_RETURNS_NORETURN;
+    }
     if( cclass & NO_MEMORY_CHANGED ) {
         state->attr |= ROUTINE_MODIFIES_NO_MEMORY;
     }

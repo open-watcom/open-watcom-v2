@@ -571,6 +571,9 @@ static  void doCall( instruction *ins )
     } else {
         GenCallLabel( lbl );
     }
+    if( cclass & NORETURN ) {
+        GenNoReturn();
+    }
 }
 
 

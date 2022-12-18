@@ -64,7 +64,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
     call_ins = call->ins;
     state = call->state;
 
-    if( state->attr & ROUTINE_MODIFIES_NO_MEMORY ) {
+    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS_ABORTS | ROUTINE_NEVER_RETURNS_NORETURN) ) {
         call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
     }
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {

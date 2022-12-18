@@ -835,7 +835,7 @@ static call_class getCallClass( // GET CLASS OF CALL
                 value |= ABORTS;
             }
             if( fn_flags & TF1_NORETURN ) {
-                value |= ABORTS;
+                value |= NORETURN;
             }
 #if _INTEL_CPU
             // don't export addressability thunks

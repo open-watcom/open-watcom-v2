@@ -2,7 +2,6 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -108,11 +107,6 @@ _setjmp endp
 
         xdefp   "C",longjmp
         defpe   longjmp
-if _MODEL and _BIG_CODE
-        add     esp,8           ; correct stack frame (skip over return address)
-else
-        add     esp,4           ; correct stack frame (skip over return address)
-endif
 ifdef __STACK__
         pop     eax             ; get address offset of jmp_buf
 if _MODEL and _BIG_DATA

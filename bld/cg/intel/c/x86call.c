@@ -192,9 +192,11 @@ an      BGCall( cn call, bool use_return, bool in_line )
         }
     }
 
-    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS_ABORTS) ) {
-        /* a routine that never returns can not write any memory as far
-            as this routine is concerned */
+    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS_ABORTS | ROUTINE_NEVER_RETURNS_NORETURN) ) {
+        /*
+         * a routine that never returns can not write any memory
+         * as far as this routine is concerned
+         */
         call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
     }
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
@@ -202,6 +204,9 @@ an      BGCall( cn call, bool use_return, bool in_line )
     }
     if( state->attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
         call_ins->flags.call_flags |= CALL_ABORTS;
+    }
+    if( state->attr & ROUTINE_NEVER_RETURNS_NORETURN ) {
+        call_ins->flags.call_flags |= CALL_NORETURN;
     }
     if( _RoutineIsInterrupt( state->attr ) ) {
         call_ins->flags.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
