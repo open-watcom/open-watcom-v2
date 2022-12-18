@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +45,7 @@ USED_8087,
 STACK_SIZE_8087,
 CODE_LABEL_ALIGNMENT,
 PROEPI_DATA_SIZE,
-
 IMPORT_TYPE,
-#    define IMPORT_IS_WEAK              0
-#    define IMPORT_IS_LAZY              1
-#    define IMPORT_IS_CONDITIONAL       2
-#    define IMPORT_IS_CONDITIONAL_PURE  3
-
 CONDITIONAL_IMPORT,
 NEXT_CONDITIONAL,
 CONDITIONAL_SYMBOL,

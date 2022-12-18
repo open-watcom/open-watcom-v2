@@ -398,7 +398,7 @@ static const char   *LabelName( label_handle label )
     cg_sym_handle       sym;
     const char          *name;
     char                *buff;
-    import_type         kind;
+    import_kind         kind;
     fe_attr             attr;
 
     sym = AskForLblSym( label );
@@ -866,7 +866,7 @@ static void DumpImportResolve( label_handle label )
     cg_sym_handle       def_resolve;
     cg_sym_handle       sym;
     pointer             cond;
-    int                 type;
+    import_type         type;
     back_handle         bck;
 
     if( AskIfRTLabel( label ) )
@@ -876,7 +876,7 @@ static void DumpImportResolve( label_handle label )
         def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
         if( def_resolve != NULL && def_resolve != sym ) {
             bck =  FEBack( def_resolve);
-            type = (int)(pointer_uint)FEAuxInfo( sym, IMPORT_TYPE );
+            type = (import_type)(pointer_uint)FEAuxInfo( sym, IMPORT_TYPE );
             switch( type ) {
             case IMPORT_IS_LAZY:
                 OWLWeakExt( owlFile, labelOwlSym( label ), labelOwlSym( bck->lbl ), OWL_WKSYM_LAZY );

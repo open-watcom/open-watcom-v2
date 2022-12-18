@@ -69,7 +69,7 @@ extern bool         FreeObjCache( void );
 extern char         GetMemModel( void );
 extern void         ChkDbgSegSize( offset max, bool typing );
 extern bool         AskSegIsNear( segment_id segid );
-extern void         DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter, outputter_data data, import_type kind );
+extern void         DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter, outputter_data data, import_kind kind );
 extern bool         SymIsExported( cg_sym_handle sym );
 extern void         DoEmptyQueue( void );
 extern void         DoAlignment( int len );

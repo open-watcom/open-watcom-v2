@@ -256,7 +256,7 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
 }
 
 void    DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter,
-                            outputter_data data, import_type kind )
+                            outputter_data data, import_kind kind )
 /*******************************************************************/
 {
     char        *dst;

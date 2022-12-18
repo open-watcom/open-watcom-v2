@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,11 +63,18 @@ typedef enum {
         __LAST_AUX_CLASS
 } aux_class;
 
+typedef enum {
+    IMPORT_IS_WEAK,
+    IMPORT_IS_LAZY,
+    IMPORT_IS_CONDITIONAL,
+    IMPORT_IS_CONDITIONAL_PURE,
+} import_type;
+
 typedef enum  {
     SYM_ACC_PUBLIC,
     SYM_ACC_PROTECTED,
     SYM_ACC_PRIVATE,
-}sym_access;
+} sym_access;
 
 #define TEMP_LOC_QUIT   0
 #define TEMP_LOC_NO     1

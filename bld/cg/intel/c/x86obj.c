@@ -1431,7 +1431,7 @@ static void GetSymLName( const char *name, omf_idx *nidx )
     *nidx = GetNameIdx( name, "" );
 }
 
-static omf_idx NeedComdatNidx( import_type kind )
+static omf_idx NeedComdatNidx( import_kind kind )
 /***********************************************/
 {
     if( CurrSeg->comdat_nidx == 0 ) {
@@ -2213,7 +2213,7 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
 {
     omf_idx         imp_idx;
     fe_attr         attr;
-    import_type     kind;
+    import_kind     kind;
 
     imp_idx = _AskImportHandle( sym, alt_dllimp );
     if( imp_idx == NOT_IMPORTED ) {

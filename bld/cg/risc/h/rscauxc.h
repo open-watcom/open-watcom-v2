@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +44,6 @@
         IMPORT_NAME_S,
         NEXT_IMPORT_S,
         IMPORT_TYPE,
-#define IMPORT_IS_WEAK              0
-#define IMPORT_IS_LAZY              1
-#define IMPORT_IS_CONDITIONAL       2
-#define IMPORT_IS_CONDITIONAL_PURE  3
         CONDITIONAL_IMPORT,
         NEXT_CONDITIONAL,
         CONDITIONAL_SYMBOL,
