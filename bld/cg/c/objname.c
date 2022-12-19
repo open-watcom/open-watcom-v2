@@ -287,19 +287,3 @@ void    DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter,
     GetExtName( sym, dst, TS_MAX_OBJNAME - 1 - pref_len );
     outputter( buffer, data );
 }
-
-bool SymIsExported( cg_sym_handle sym )
-/*************************************/
-{
-    bool        exported;
-
-    exported = false;
-    if( sym != NULL ) {
-        if( FEAttr( sym ) & FE_DLLEXPORT ) {
-            exported = true;
-        } else if( *(call_class*)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & DLL_EXPORT ) {
-            exported = true;
-        }
-    }
-    return( exported );
-}

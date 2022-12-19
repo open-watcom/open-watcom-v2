@@ -1201,3 +1201,19 @@ void    ObjEmitSeq( byte_seq *code )
         code_ptr = InsRelocNext( code_ptr );
     }
 }
+
+bool SymIsExported( cg_sym_handle sym )
+/*************************************/
+{
+    bool        exported;
+
+    exported = false;
+    if( sym != NULL ) {
+        if( FEAttr( sym ) & FE_DLLEXPORT ) {
+            exported = true;
+        } else if( *(call_class*)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & DLL_EXPORT ) {
+            exported = true;
+        }
+    }
+    return( exported );
+}
