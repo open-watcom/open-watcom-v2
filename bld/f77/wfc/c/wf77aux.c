@@ -377,6 +377,9 @@ void InitPragmaAux( void )
         DefaultInfo.cclass |= GENERATE_STACK_FRAME;
     }
   #if _CPU != 8086
+    if( CGOpts & CGOPT_STACK_GROW ) {
+        cg_target |= GROW_STACK;
+    }
     if( CGOpts & CGOPT_STK_ARGS ) {
         DefaultInfo.cclass |= CALLER_POPS | NO_8087_RETURNS;
         DefaultInfo.parms = StackParms;

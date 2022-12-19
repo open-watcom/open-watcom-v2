@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -228,9 +228,6 @@ static  void    CGStart( void ) {
 #elif _CPU == 386
         if( CGOpts & CGOPT_EZ_OMF ) {
             cg_target |= EZ_OMF;
-        }
-        if( CGOpts & CGOPT_STACK_GROW ) {
-            cg_target |= GROW_STACK;
         }
 #endif
 #if _CPU == 386 || _CPU == 8086
