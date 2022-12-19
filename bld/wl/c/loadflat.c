@@ -426,7 +426,7 @@ static void SetHeaderVxDInfo(os2_flat_header *exe_head)
 
     exp = FmtData.u.os2fam.exports;
     if( ( exp != NULL ) && ( exp->sym != NULL ) ) {
-        ReadInfo( (exp->sym->p.seg)->u1.vm_ptr, &ddb, sizeof( ddb ) );
+        ReadInfo( exp->sym->addr.off + (exp->sym->p.seg)->u1.vm_ptr, &ddb, sizeof( ddb ) );
         exe_head->r.vxd.device_ID = ddb.req_device_number;
         exe_head->r.vxd.DDK_version = ddb.SDK_version;
     }
