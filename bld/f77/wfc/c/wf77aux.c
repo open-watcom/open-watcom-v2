@@ -159,7 +159,7 @@ static  hw_reg_set      FortranParms[] =
     { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
 
 static aux_info         DefaultInfo = {
-    FAR_CALL,
+    FECALL_FAR_CALL,
     NULL,
     FortranParms,
     HW_D( HW_EMPTY ),
