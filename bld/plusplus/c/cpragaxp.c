@@ -44,7 +44,15 @@
 #include "carve.h"
 #include "pcheader.h"
 
-static byte_seq *AuxCodeDup( byte_seq *code );
+
+//
+// The following defines which flags are to be ignored when checking
+// a pragma call classes for equivalence.
+//
+#define FECALL_CALL_CLASS_IGNORE ( 0 \
+    | FECALL_NO_MEMORY_CHANGED       \
+    | FECALL_NO_MEMORY_READ          \
+)
 
 static void pragmasInit(        // INIT PRAGMAS
     INITFINI* defn )            // - definition
@@ -136,13 +144,10 @@ bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     return( true );
 }
 
+//
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
 //
-#define FECALL_CALL_CLASS_IGNORE ( 0                       \
-                          | FECALL_NO_MEMORY_CHANGED       \
-                          | FECALL_NO_MEMORY_READ          \
-                          )
 
 bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
@@ -161,6 +166,33 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
            ( ( inf1->cclass & ~FECALL_CALL_CLASS_IGNORE ) ==
              ( inf2->cclass & ~FECALL_CALL_CLASS_IGNORE ) )
         && ( inf1->flags == inf2->flags );
+}
+
+static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
+    byte_seq *code )
+{
+    byte_seq_len code_length;
+    byte_seq_len size;
+    byte_seq *new_code;
+    byte_seq_reloc *reloc;
+    byte_seq_reloc *new_reloc;
+
+    if( code == NULL ) {
+        return( code );
+    }
+    code_length = code->length;
+    size = offsetof( byte_seq, data ) + code_length;
+    new_code = (byte_seq *)vctsave( (char *)code, size );
+    new_code->relocs = NULL;
+    for( reloc = code->relocs; reloc != NULL; reloc = reloc->next ) {
+        new_reloc = CMemAlloc( sizeof( *new_reloc ) );
+        new_reloc->next = new_code->relocs;
+        new_reloc->sym = reloc->sym;
+        new_reloc->off = reloc->off;
+        new_reloc->type = reloc->type;
+        new_code->relocs = new_reloc;
+    }
+    return( new_code );
 }
 
 static void AuxCopy(           // COPY AUX STRUCTURE
@@ -346,33 +378,6 @@ void AsmSysPCHReadCode( AUX_INFO *info )
 void AsmSysLine( const char *buff )
 {
     AsmLine( buff );
-}
-
-static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
-    byte_seq *code )
-{
-    byte_seq_len code_length;
-    byte_seq_len size;
-    byte_seq *new_code;
-    byte_seq_reloc *reloc;
-    byte_seq_reloc *new_reloc;
-
-    if( code == NULL ) {
-        return( code );
-    }
-    code_length = code->length;
-    size = offsetof( byte_seq, data ) + code_length;
-    new_code = (byte_seq *)vctsave( (char *)code, size );
-    new_code->relocs = NULL;
-    for( reloc = code->relocs; reloc != NULL; reloc = reloc->next ) {
-        new_reloc = CMemAlloc( sizeof( *new_reloc ) );
-        new_reloc->next = new_code->relocs;
-        new_reloc->sym = reloc->sym;
-        new_reloc->off = reloc->off;
-        new_reloc->type = reloc->type;
-        new_code->relocs = new_reloc;
-    }
-    return( new_code );
 }
 
 void AsmSysCopyCode( void )

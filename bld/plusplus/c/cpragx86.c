@@ -69,29 +69,30 @@
     #define SYM_DNEAR   SYM_INT4
 #endif
 
+//
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
 //
-#define FECALL_CALL_CLASS_IGNORE ( 0                       \
-                          | FECALL_NO_MEMORY_CHANGED       \
-                          | FECALL_NO_MEMORY_READ          \
-                          | FECALL_MODIFY_EXACT            \
-                          | FECALL_GENERATE_STACK_FRAME    \
-                          | FECALL_EMIT_FUNCTION_NAME      \
-                          | FECALL_GROW_STACK              \
-                          | FECALL_PROLOG_HOOKS            \
-                          | FECALL_EPILOG_HOOKS            \
-                          | FECALL_TOUCH_STACK             \
-                          | FECALL_LOAD_DS_ON_ENTRY        \
-                          | FECALL_DLL_EXPORT              \
-                          )
+#define FECALL_CALL_CLASS_IGNORE ( 0 \
+    | FECALL_NO_MEMORY_CHANGED       \
+    | FECALL_NO_MEMORY_READ          \
+    | FECALL_MODIFY_EXACT            \
+    | FECALL_GENERATE_STACK_FRAME    \
+    | FECALL_EMIT_FUNCTION_NAME      \
+    | FECALL_GROW_STACK              \
+    | FECALL_PROLOG_HOOKS            \
+    | FECALL_EPILOG_HOOKS            \
+    | FECALL_TOUCH_STACK             \
+    | FECALL_LOAD_DS_ON_ENTRY        \
+    | FECALL_DLL_EXPORT              \
+)
 
 typedef enum
-{       FIXWORD_NONE
-,       FIXWORD_FLOAT
-,       FIXWORD_SEGMENT
-,       FIXWORD_OFFSET
-,       FIXWORD_RELOFF
+{   FIXWORD_NONE
+,   FIXWORD_FLOAT
+,   FIXWORD_SEGMENT
+,   FIXWORD_OFFSET
+,   FIXWORD_RELOFF
 } fix_words;
 
 static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
@@ -286,7 +287,7 @@ void GetPragmaAuxAlias( void )
 
 static void GetParmInfo(
     void )
-    {
+{
     struct {
         unsigned f_pop           : 1;
         unsigned f_reverse       : 1;
@@ -1247,6 +1248,10 @@ static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
     return( false );
 }
 
+//
+// The following defines which flags are to be ignored when checking
+// a pragma call classes for equivalence.
+//
 bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
     AUX_INFO *inf2 )            // - pragma [2]
