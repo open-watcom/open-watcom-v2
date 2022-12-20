@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,33 +31,29 @@
 ****************************************************************************/
 
 
-#define FECALL_CALLER_POPS              ( 0x00000001LL << _TARG_AUX_SHIFT )
-#define FECALL_DLL_EXPORT               ( 0x00000002LL << _TARG_AUX_SHIFT )
-#define FECALL_SPECIAL_RETURN           ( 0x00000004LL << _TARG_AUX_SHIFT )
-#define FECALL_SPECIAL_STRUCT_RETURN    ( 0x00000008LL << _TARG_AUX_SHIFT )
-#define FECALL_FAR_CALL                 ( 0x00000010LL << _TARG_AUX_SHIFT )
-#define FECALL_INTERRUPT                ( 0x00000020LL << _TARG_AUX_SHIFT )
-#define FECALL_LOAD_DS_ON_CALL          ( 0x00000040LL << _TARG_AUX_SHIFT )
-#define FECALL_LOAD_DS_ON_ENTRY         ( 0x00000080LL << _TARG_AUX_SHIFT )
-#define FECALL_MODIFY_EXACT             ( 0x00000100LL << _TARG_AUX_SHIFT )
-#define FECALL_NO_8087_RETURNS          ( 0x00000200LL << _TARG_AUX_SHIFT )
-#define FECALL_NO_FLOAT_REG_RETURNS     ( 0x00000400LL << _TARG_AUX_SHIFT )
-#define FECALL_NO_MEMORY_CHANGED        ( 0x00000800LL << _TARG_AUX_SHIFT )
-#define FECALL_NO_MEMORY_READ           ( 0x00001000LL << _TARG_AUX_SHIFT )
-#define FECALL_NO_STRUCT_REG_RETURNS    ( 0x00002000LL << _TARG_AUX_SHIFT )
-#define FECALL_ROUTINE_RETURN           ( 0x00004000LL << _TARG_AUX_SHIFT )
-#define FECALL_FAT_WINDOWS_PROLOG       ( 0x00008000LL << _TARG_AUX_SHIFT )
-#define FECALL_GENERATE_STACK_FRAME     ( 0x00010000LL << _TARG_AUX_SHIFT )
-#define FECALL_EMIT_FUNCTION_NAME       ( 0x00020000LL << _TARG_AUX_SHIFT )
-#define FECALL_GROW_STACK               ( 0x00040000LL << _TARG_AUX_SHIFT )
-#define FECALL_PROLOG_HOOKS             ( 0x00080000LL << _TARG_AUX_SHIFT )
-#define FECALL_THUNK_PROLOG             ( 0x00100000LL << _TARG_AUX_SHIFT )
-#define FECALL_EPILOG_HOOKS             ( 0x00200000LL << _TARG_AUX_SHIFT )
-#define FECALL_FAR16_CALL               ( 0x00400000LL << _TARG_AUX_SHIFT )
-#define FECALL_TOUCH_STACK              ( 0x00800000LL << _TARG_AUX_SHIFT )
-#define FECALL_LOAD_RDOSDEV_ON_ENTRY    ( 0x01000000LL << _TARG_AUX_SHIFT )
-#define FECALL_FARSS                    ( 0x02000000LL << _TARG_AUX_SHIFT )
-#define LAST_TARG_AUX_ATTRIBUTE         ( 0x02000000LL << _TARG_AUX_SHIFT )
+#define FECALL_SPECIAL_RETURN           ( 0x00000001LL << _TARG_AUX_SHIFT )
+#define FECALL_SPECIAL_STRUCT_RETURN    ( 0x00000002LL << _TARG_AUX_SHIFT )
+#define FECALL_FAR_CALL                 ( 0x00000004LL << _TARG_AUX_SHIFT )
+#define FECALL_INTERRUPT                ( 0x00000008LL << _TARG_AUX_SHIFT )
+#define FECALL_LOAD_DS_ON_CALL          ( 0x00000010LL << _TARG_AUX_SHIFT )
+#define FECALL_LOAD_DS_ON_ENTRY         ( 0x00000020LL << _TARG_AUX_SHIFT )
+#define FECALL_MODIFY_EXACT             ( 0x00000040LL << _TARG_AUX_SHIFT )
+#define FECALL_NO_8087_RETURNS          ( 0x00000080LL << _TARG_AUX_SHIFT )
+#define FECALL_NO_FLOAT_REG_RETURNS     ( 0x00000100LL << _TARG_AUX_SHIFT )
+#define FECALL_NO_STRUCT_REG_RETURNS    ( 0x00000200LL << _TARG_AUX_SHIFT )
+#define FECALL_ROUTINE_RETURN           ( 0x00000400LL << _TARG_AUX_SHIFT )
+#define FECALL_FAT_WINDOWS_PROLOG       ( 0x00000800LL << _TARG_AUX_SHIFT )
+#define FECALL_GENERATE_STACK_FRAME     ( 0x00001000LL << _TARG_AUX_SHIFT )
+#define FECALL_EMIT_FUNCTION_NAME       ( 0x00002000LL << _TARG_AUX_SHIFT )
+#define FECALL_GROW_STACK               ( 0x00004000LL << _TARG_AUX_SHIFT )
+#define FECALL_PROLOG_HOOKS             ( 0x00008000LL << _TARG_AUX_SHIFT )
+#define FECALL_THUNK_PROLOG             ( 0x00010000LL << _TARG_AUX_SHIFT )
+#define FECALL_EPILOG_HOOKS             ( 0x00020000LL << _TARG_AUX_SHIFT )
+#define FECALL_FAR16_CALL               ( 0x00040000LL << _TARG_AUX_SHIFT )
+#define FECALL_TOUCH_STACK              ( 0x00080000LL << _TARG_AUX_SHIFT )
+#define FECALL_LOAD_RDOSDEV_ON_ENTRY    ( 0x00100000LL << _TARG_AUX_SHIFT )
+#define FECALL_FARSS                    ( 0x00200000LL << _TARG_AUX_SHIFT )
+#define LAST_TARG_AUX_ATTRIBUTE         ( 0x00200000LL << _TARG_AUX_SHIFT )
 
 #if LAST_TARG_AUX_ATTRIBUTE == 0
     #error Overflowed a long long constant in x86auxa.h

@@ -31,11 +31,3 @@
 ****************************************************************************/
 
 
-typedef struct {
-    hw_reg_set      gp;
-    hw_reg_set      sp;
-    hw_reg_set      ln;
-    hw_reg_set      ra;
-    hw_reg_set      pr;
-    hw_reg_set      sa;
-} linkage_regs;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,3 @@
 ****************************************************************************/
 
 
-typedef struct {
-    hw_reg_set      gp;
-    hw_reg_set      sp;
-    hw_reg_set      ln;
-    hw_reg_set      ra;
-    hw_reg_set      pr;
-    hw_reg_set      sa;
-} linkage_regs;

@@ -881,22 +881,22 @@ static call_class getCallClass( // GET CLASS OF CALL
 #ifdef REVERSE
         cclass &= ~ FECALL_REVERSE_PARMS;
 #endif
-#ifdef PROLOG_HOOKS
+#ifdef FECALL_PROLOG_HOOKS
         if( CompFlags.ep_switch_used ) {
             cclass |= FECALL_PROLOG_HOOKS;
         }
 #endif
-#ifdef EPILOG_HOOKS
+#ifdef FECALL_EPILOG_HOOKS
         if( CompFlags.ee_switch_used ) {
             cclass |= FECALL_EPILOG_HOOKS;
         }
 #endif
-#ifdef GROW_STACK
+#ifdef FECALL_GROW_STACK
         if( CompFlags.sg_switch_used ) {
             cclass |= FECALL_GROW_STACK;
         }
 #endif
-#ifdef TOUCH_STACK
+#ifdef FECALL_TOUCH_STACK
         if( CompFlags.st_switch_used ) {
             cclass |= FECALL_TOUCH_STACK;
         }

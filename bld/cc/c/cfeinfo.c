@@ -509,11 +509,9 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
                 cclass &= ~ FECALL_FAR_CALL;
             }
 #endif
-#ifdef FECALL_DLL_EXPORT
             if( sym.mods & FLAG_EXPORT ) {
                 cclass |= FECALL_DLL_EXPORT;
             }
-#endif
 #ifdef FECALL_LOAD_DS_ON_ENTRY
             if( sym.mods & FLAG_LOADDS ) {
   #if 0
@@ -527,11 +525,9 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
   #endif
             }
 #endif
-#ifdef FECALL_MAKE_CALL_INLINE
             if( IsInLineFunc( sym_handle ) ) {
                 cclass |= FECALL_MAKE_CALL_INLINE;
             }
-#endif
             if( VarFunc( &sym ) ) {
                 cclass |= FECALL_CALLER_POPS | FECALL_HAS_VARARGS;
             }

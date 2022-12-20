@@ -90,9 +90,13 @@ typedef enum  {
 #define FECALL_PARMS_STACK_RESERVE  0x00000040L
 #define FECALL_SETJMP_KLUGE         0x00000080L
 #define FECALL_PARMS_PREFER_REGS    0x00000100L
-#define LAST_AUX_ATTRIBUTE          0x00000100L
+#define FECALL_CALLER_POPS          0x00000200L
+#define FECALL_NO_MEMORY_READ       0x00000400L
+#define FECALL_NO_MEMORY_CHANGED    0x00000800L
+#define FECALL_DLL_EXPORT           0x00001000L
+#define LAST_AUX_ATTRIBUTE          0x00001000L
 
-#define _TARG_AUX_SHIFT             9
+#define _TARG_AUX_SHIFT             13
 
 #if ( LAST_AUX_ATTRIBUTE >> _TARG_AUX_SHIFT ) != 0
     #error too many attributes in cgaux.h
