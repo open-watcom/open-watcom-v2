@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -252,7 +252,7 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     }
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );
-    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR_CALL ) {
+    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_FAR_CALL ) {
         BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
     } else {
         BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );

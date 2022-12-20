@@ -995,7 +995,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     tipe = FEDbgRetType( sym );
     flags = 0;
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR_CALL ) {
+    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
 #endif

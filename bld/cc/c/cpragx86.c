@@ -72,9 +72,9 @@ static void pragmaAuxInfoInit( void )
        or their fields being freed */
 
     STOSBInfo = WatcallInfo;
-    STOSBInfo.cclass = NO_FLOAT_REG_RETURNS |
-                       NO_STRUCT_REG_RETURNS |
-                       SPECIAL_STRUCT_RETURN;
+    STOSBInfo.cclass = FECALL_NO_FLOAT_REG_RETURNS |
+                       FECALL_NO_STRUCT_REG_RETURNS |
+                       FECALL_SPECIAL_STRUCT_RETURN;
     STOSBInfo.parms = STOSBParms;
     STOSBInfo.objname = "*";
 #endif
@@ -160,31 +160,31 @@ static void PragmaAuxEnd( void )
         CurrInfo->code = AuxInfo.code;
     }
     if( AuxInfoFlg.f_near ) {
-        CurrInfo->cclass &= ~FAR_CALL;
+        CurrInfo->cclass &= ~FECALL_FAR_CALL;
     }
     if( AuxInfoFlg.f_routine_pops ) {
-        CurrInfo->cclass &= ~CALLER_POPS;
+        CurrInfo->cclass &= ~FECALL_CALLER_POPS;
     }
     if( AuxInfoFlg.f_caller_return ) {
-        CurrInfo->cclass &= ~ROUTINE_RETURN;
+        CurrInfo->cclass &= ~FECALL_ROUTINE_RETURN;
     }
     if( AuxInfoFlg.f_8087_returns ) {
-        CurrInfo->cclass &= ~NO_8087_RETURNS;
+        CurrInfo->cclass &= ~FECALL_NO_8087_RETURNS;
     }
     CurrInfo->cclass |= AuxInfo.cclass;
     CurrInfo->flags |= AuxInfo.flags;
     if( AuxInfo.objname != NULL )
         CurrInfo->objname = AuxInfo.objname;
-    if( AuxInfo.cclass & SPECIAL_RETURN )
+    if( AuxInfo.cclass & FECALL_SPECIAL_RETURN )
         CurrInfo->returns = AuxInfo.returns;
-    if( AuxInfo.cclass & SPECIAL_STRUCT_RETURN )
+    if( AuxInfo.cclass & FECALL_SPECIAL_STRUCT_RETURN )
         CurrInfo->streturn = AuxInfo.streturn;
     if( AuxInfo.parms != NULL )
         CurrInfo->parms = AuxInfo.parms;
 
     if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
         HW_CTurnOn( CurrInfo->save, HW_FULL );
-        if( (AuxInfo.cclass & MODIFY_EXACT) == 0 && !CompFlags.save_restore_segregs ) {
+        if( (AuxInfo.cclass & FECALL_MODIFY_EXACT) == 0 && !CompFlags.save_restore_segregs ) {
             HW_Asgn( default_flt_n_seg, WatcallInfo.save );
             HW_CAsgn( flt_n_seg, HW_FLTS );
             HW_CTurnOn( flt_n_seg, HW_SEGS );
@@ -341,7 +341,7 @@ void AsmUsesAuto( aux_info *info )
      * for the use of this pragma. This is done by saying the pragma
      * modifies the [E]SP register. A kludge, but it works.
      */
-//    info->cclass |= GENERATE_STACK_FRAME;
+//    info->cclass |= FECALL_GENERATE_STACK_FRAME;
     HW_CTurnOff( info->save, HW_xSP );
 }
 
@@ -757,20 +757,20 @@ static void GetParmInfo( void )
     have.f_list = false;
     for( ;; ) {
         if( !have.f_pop && PragRecogId( "caller" ) ) {
-            AuxInfo.cclass |= CALLER_POPS;
+            AuxInfo.cclass |= FECALL_CALLER_POPS;
             have.f_pop = true;
         } else if( !have.f_pop && PragRecogId( "routine" ) ) {
-            AuxInfo.cclass &= ~ CALLER_POPS;
+            AuxInfo.cclass &= ~ FECALL_CALLER_POPS;
             AuxInfoFlg.f_routine_pops = true;
             have.f_pop = true;
         } else if( !have.f_reverse && PragRecogId( "reverse" ) ) {
-            AuxInfo.cclass |= REVERSE_PARMS;
+            AuxInfo.cclass |= FECALL_REVERSE_PARMS;
             have.f_reverse = true;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            AuxInfo.cclass |= NO_MEMORY_READ;
+            AuxInfo.cclass |= FECALL_NO_MEMORY_READ;
             have.f_nomemory = true;
         } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-            AuxInfo.cclass |= LOAD_DS_ON_CALL;
+            AuxInfo.cclass |= FECALL_LOAD_DS_ON_CALL;
             have.f_loadds = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             AuxInfo.parms = PragManyRegSets();
@@ -799,20 +799,20 @@ static void GetSTRetInfo( void )
     for( ;; ) {
         if( !have.f_float && PragRecogId( "float" ) ) {
             have.f_float = true;
-            AuxInfo.cclass |= NO_FLOAT_REG_RETURNS;
+            AuxInfo.cclass |= FECALL_NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = true;
-            AuxInfo.cclass |= NO_STRUCT_REG_RETURNS;
+            AuxInfo.cclass |= FECALL_NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecogId( "routine" ) ) {
             have.f_allocs = true;
-            AuxInfo.cclass |= ROUTINE_RETURN;
+            AuxInfo.cclass |= FECALL_ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecogId( "caller" ) ) {
             have.f_allocs = true;
-            AuxInfo.cclass &= ~ROUTINE_RETURN;
+            AuxInfo.cclass &= ~FECALL_ROUTINE_RETURN;
             AuxInfoFlg.f_caller_return = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             have.f_list = true;
-            AuxInfo.cclass |= SPECIAL_STRUCT_RETURN;
+            AuxInfo.cclass |= FECALL_SPECIAL_STRUCT_RETURN;
             AuxInfo.streturn = PragRegList();
         } else {
             break;
@@ -833,16 +833,16 @@ static void GetRetInfo( void )
     have.f_no8087 = false;
     have.f_list = false;
     have.f_struct = false;
-    AuxInfo.cclass &= ~ NO_8087_RETURNS;
+    AuxInfo.cclass &= ~ FECALL_NO_8087_RETURNS;
     AuxInfoFlg.f_8087_returns = true;
     for( ;; ) {
         if( !have.f_no8087 && PragRecogId( "no8087" ) ) {
             have.f_no8087 = true;
             HW_CTurnOff( AuxInfo.returns, HW_FLTS );
-            AuxInfo.cclass |= NO_8087_RETURNS;
+            AuxInfo.cclass |= FECALL_NO_8087_RETURNS;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             have.f_list = true;
-            AuxInfo.cclass |= SPECIAL_RETURN;
+            AuxInfo.cclass |= FECALL_SPECIAL_RETURN;
             AuxInfo.returns = PragRegList();
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = true;
@@ -868,10 +868,10 @@ static void GetSaveInfo( void )
     have.f_list = false;
     for( ;; ) {
         if( !have.f_exact && PragRecogId( "exact" ) ) {
-            AuxInfo.cclass |= MODIFY_EXACT;
+            AuxInfo.cclass |= FECALL_MODIFY_EXACT;
             have.f_exact = true;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            AuxInfo.cclass |= NO_MEMORY_CHANGED;
+            AuxInfo.cclass |= FECALL_NO_MEMORY_CHANGED;
             have.f_nomemory = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             HW_TurnOn( AuxInfo.save, PragRegList() );
@@ -918,20 +918,20 @@ void PragAux( void )
                 have.uses_auto = GetByteSeq( &AuxInfo );
                 have.f_call = true;
             } else if( !have.f_call && PragRecogId( "far" ) ) {
-                AuxInfo.cclass |= FAR_CALL;
+                AuxInfo.cclass |= FECALL_FAR_CALL;
                 have.f_call = true;
             } else if( !have.f_call && PragRecogId( "near" ) ) {
-                AuxInfo.cclass &= ~FAR_CALL;
+                AuxInfo.cclass &= ~FECALL_FAR_CALL;
                 AuxInfoFlg.f_near = true;
                 have.f_call = true;
             } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-                AuxInfo.cclass |= LOAD_DS_ON_ENTRY;
+                AuxInfo.cclass |= FECALL_LOAD_DS_ON_ENTRY;
                 have.f_loadds = true;
             } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
-                AuxInfo.cclass |= LOAD_RDOSDEV_ON_ENTRY;
+                AuxInfo.cclass |= FECALL_LOAD_RDOSDEV_ON_ENTRY;
                 have.f_rdosdev = true;
             } else if( !have.f_export && PragRecogId( "export" ) ) {
-                AuxInfo.cclass |= DLL_EXPORT;
+                AuxInfo.cclass |= FECALL_DLL_EXPORT;
                 have.f_export = true;
             } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                 GetParmInfo();
@@ -940,13 +940,13 @@ void PragAux( void )
                 GetRetInfo();
                 have.f_value = true;
             } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                AuxInfo.cclass |= ABORTS;
+                AuxInfo.cclass |= FECALL_ABORTS;
                 have.f_value = true;
             } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                 GetSaveInfo();
                 have.f_modify = true;
             } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-                AuxInfo.cclass |= GENERATE_STACK_FRAME;
+                AuxInfo.cclass |= FECALL_GENERATE_STACK_FRAME;
                 have.f_frame = true;
             } else {
                 break;

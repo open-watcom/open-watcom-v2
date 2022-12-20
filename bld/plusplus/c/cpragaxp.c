@@ -139,9 +139,9 @@ bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
 //
-#define CALL_CLASS_IGNORE ( 0                       \
-                          | NO_MEMORY_CHANGED       \
-                          | NO_MEMORY_READ          \
+#define FECALL_CALL_CLASS_IGNORE ( 0                       \
+                          | FECALL_NO_MEMORY_CHANGED       \
+                          | FECALL_NO_MEMORY_READ          \
                           )
 
 bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
@@ -158,8 +158,8 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         return( true );
     }
     return
-           ( ( inf1->cclass & ~CALL_CLASS_IGNORE ) ==
-             ( inf2->cclass & ~CALL_CLASS_IGNORE ) )
+           ( ( inf1->cclass & ~FECALL_CALL_CLASS_IGNORE ) ==
+             ( inf2->cclass & ~FECALL_CALL_CLASS_IGNORE ) )
         && ( inf1->flags == inf2->flags );
 }
 

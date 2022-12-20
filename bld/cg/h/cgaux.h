@@ -81,21 +81,21 @@ typedef enum  {
 #define TEMP_LOC_NO     1
 #define TEMP_LOC_YES    2
 
-#define REVERSE_PARMS           0x00000001L
-#define ABORTS                  0x00000002L
-#define NORETURN                0x00000004L
-#define PARMS_BY_ADDRESS        0x00000008L
-#define MAKE_CALL_INLINE        0x00000010L
-#define HAS_VARARGS             0x00000020L
-#define PARMS_STACK_RESERVE     0x00000040L
-#define SETJMP_KLUGE            0x00000080L
-#define PARMS_PREFER_REGS       0x00000100L
-#define LAST_AUX_ATTRIBUTE      0x00000100L
+#define FECALL_REVERSE_PARMS        0x00000001L
+#define FECALL_ABORTS               0x00000002L
+#define FECALL_NORETURN             0x00000004L
+#define FECALL_PARMS_BY_ADDRESS     0x00000008L
+#define FECALL_MAKE_CALL_INLINE     0x00000010L
+#define FECALL_HAS_VARARGS          0x00000020L
+#define FECALL_PARMS_STACK_RESERVE  0x00000040L
+#define FECALL_SETJMP_KLUGE         0x00000080L
+#define FECALL_PARMS_PREFER_REGS    0x00000100L
+#define LAST_AUX_ATTRIBUTE          0x00000100L
 
-#define _TARG_AUX_SHIFT         9
+#define _TARG_AUX_SHIFT             9
 
 #if ( LAST_AUX_ATTRIBUTE >> _TARG_AUX_SHIFT ) != 0
-    #error too many attributes
+    #error too many attributes in cgaux.h
 #endif
 
 #endif

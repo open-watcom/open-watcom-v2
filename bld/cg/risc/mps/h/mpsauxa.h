@@ -30,24 +30,6 @@
 ****************************************************************************/
 
 
-#define LINKAGE_OS                      ( 0x00000001L << _TARG_AUX_SHIFT )
-#define LINKAGE_OSFUNC                  ( 0x00000002L << _TARG_AUX_SHIFT )
-#define LINKAGE_OSENTRY                 ( 0x00000004L << _TARG_AUX_SHIFT )
-#define LINKAGE_CLINK                   ( 0x00000008L << _TARG_AUX_SHIFT )
-#define CALLER_POPS                     ( 0x00000010L << _TARG_AUX_SHIFT )
-#define NO_MEMORY_READ                  ( 0x00000020L << _TARG_AUX_SHIFT )
-#define NO_MEMORY_CHANGED               ( 0x00000040L << _TARG_AUX_SHIFT )
-#define DLL_EXPORT                      ( 0x00000080L << _TARG_AUX_SHIFT )
-#define LAST_TARG_AUX_ATTRIBUTE         ( 0x00000080L << _TARG_AUX_SHIFT )
-
-#if LAST_TARG_AUX_ATTRIBUTE == 0
-    #error Overflowed a long
-#endif
-
-#define LINKAGES (LINKAGE_OS+LINKAGE_OSFUNC+LINKAGE_OSENTRY+LINKAGE_CLINK)
-
-typedef unsigned    call_class;
-
 typedef struct {
     hw_reg_set      gp;
     hw_reg_set      sp;

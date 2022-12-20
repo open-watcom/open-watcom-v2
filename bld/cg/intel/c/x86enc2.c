@@ -372,10 +372,10 @@ void    GenCall( instruction *ins )
         } else {
             CodeBytes( code->data, code->length );
         }
-    } else if( (cclass & ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    } else if( (cclass & FECALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
-        if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
+        if( (cclass & FECALL_FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
             CodeHandle( OC_JMP | OC_ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
@@ -393,9 +393,9 @@ void    GenCall( instruction *ins )
             lbl = (label_handle)sym;
             imp = true;
         }
-        DoCall( lbl, imp, (cclass & FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
+        DoCall( lbl, imp, (cclass & FECALL_FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
     }
-    if( (cclass & (ABORTS | NORETURN)) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (cclass & (FECALL_ABORTS | FECALL_NORETURN)) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
 }

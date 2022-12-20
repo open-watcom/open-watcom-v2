@@ -1235,7 +1235,7 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
 
             info = InfoLookup( (sym_id)fn );
             if( info != NULL ) {
-                if( info->cclass & FAR16_CALL ) {
+                if( info->cclass & FECALL_FAR16_CALL ) {
                     return( TY_INT_2 );
                 }
             }
@@ -1813,7 +1813,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
             static call_class CallClass;
 
             info = GetAuxInfo( req_handle );
-            CallClass = info->cclass ^ REVERSE_PARMS;
+            CallClass = info->cclass ^ FECALL_REVERSE_PARMS;
             return( (pointer)&CallClass );
         }
     case FEINF_SAVE_REGS :

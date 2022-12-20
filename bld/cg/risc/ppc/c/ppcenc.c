@@ -401,7 +401,7 @@ static  void    doCall( instruction *ins )
     code = FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _ObjEmitSeq( code );
-        if( cclass & ABORTS ) {
+        if( cclass & FECALL_ABORTS ) {
             GenNoReturn();
         }
     } else {
@@ -412,7 +412,7 @@ static  void    doCall( instruction *ins )
         ins_encoding = 0x60000000;  // ..znop for linker thunk
         _EmitIns( ins_encoding );
     }
-    if( cclass & NORETURN ) {
+    if( cclass & FECALL_NORETURN ) {
         GenNoReturn();
     }
 }

@@ -316,7 +316,7 @@ bool ParmsToBeReversed( int flags, aux_info *inf )
 #ifdef REVERSE
     inf = LangInfo( flags, inf );
     if( inf != NULL ) {
-        if( inf->cclass & REVERSE_PARMS ) {
+        if( inf->cclass & FECALL_REVERSE_PARMS ) {
             return( true );
         }
     }
@@ -371,14 +371,14 @@ static aux_info *InfoLookup( SYMPTR sym )
                 }
             }
             inf = &InlineInfo;
-            inf->cclass = (WatcallInfo.cclass & FAR_CALL) | MODIFY_EXACT;
+            inf->cclass = (WatcallInfo.cclass & FECALL_FAR_CALL) | FECALL_MODIFY_EXACT;
             if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) )
                 inf->cclass |= ent->info->cclass;
             inf->code = ifunc->code;
             inf->parms = ifunc->parms;
             inf->returns = ifunc->returns;
             if( !HW_CEqual( inf->returns, HW_xAX ) && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-                inf->cclass |= SPECIAL_RETURN;
+                inf->cclass |= FECALL_SPECIAL_RETURN;
             }
             HW_CAsgn( inf->streturn, HW_EMPTY );
             inf->save = ifunc->save;
@@ -435,7 +435,7 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 #if _CPU == 386
     if( (inf->flags & AUX_FLAG_FAR16) || (sym->mods & FLAG_FAR16) ) {
-        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & REVERSE_PARMS) ) {
+        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & FECALL_REVERSE_PARMS) ) {
             return( &Far16PascalInfo );
         } else {
             return( &Far16CdeclInfo );
@@ -457,7 +457,7 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
             return( true );
         ent = AuxLookup( SymName( sym, sym_handle ) );
         if( ent != NULL ) {
-            if( ent->info->cclass & ABORTS ) {
+            if( ent->info->cclass & FECALL_ABORTS ) {
                 return( true );
             }
         }
@@ -482,87 +482,87 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 #if _CPU == 8086
                 if( TargSys == TS_WINDOWS ) {
                     if( sym.mods & (LANG_CDECL | LANG_PASCAL) ) {
-                        cclass |= FAT_WINDOWS_PROLOG;
+                        cclass |= FECALL_FAT_WINDOWS_PROLOG;
                     }
                 }
 #endif
             }
             if( sym.mods & FLAG_ABORTS ) {
-                cclass |= ABORTS;
+                cclass |= FECALL_ABORTS;
             }
             if( sym.mods & FLAG_NORETURN ) {
-                cclass |= NORETURN;
+                cclass |= FECALL_NORETURN;
             }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
             if( sym.mods & FLAG_FARSS ) {
-                cclass |= FARSS;
+                cclass |= FECALL_FARSS;
             }
             if( CompFlags.emit_names ) {
-                cclass |= EMIT_FUNCTION_NAME;
+                cclass |= FECALL_EMIT_FUNCTION_NAME;
             }
             if( sym.mods & FLAG_FAR ) {
-                cclass |= FAR_CALL;
+                cclass |= FECALL_FAR_CALL;
                 if( sym.mods & FLAG_NEAR ) {
-                    cclass |= INTERRUPT;
+                    cclass |= FECALL_INTERRUPT;
                 }
             } else if( sym.mods & FLAG_NEAR ) {
-                cclass &= ~ FAR_CALL;
+                cclass &= ~ FECALL_FAR_CALL;
             }
 #endif
-#ifdef DLL_EXPORT
+#ifdef FECALL_DLL_EXPORT
             if( sym.mods & FLAG_EXPORT ) {
-                cclass |= DLL_EXPORT;
+                cclass |= FECALL_DLL_EXPORT;
             }
 #endif
-#ifdef LOAD_DS_ON_ENTRY
+#ifdef FECALL_LOAD_DS_ON_ENTRY
             if( sym.mods & FLAG_LOADDS ) {
   #if 0
                 if( TargSys == TS_WINDOWS ) {
-                    cclass |= FAT_WINDOWS_PROLOG;
+                    cclass |= FECALL_FAT_WINDOWS_PROLOG;
                 } else {
-                    cclass |= LOAD_DS_ON_ENTRY;
+                    cclass |= FECALL_LOAD_DS_ON_ENTRY;
                 }
   #else
-                cclass |= LOAD_DS_ON_ENTRY;
+                cclass |= FECALL_LOAD_DS_ON_ENTRY;
   #endif
             }
 #endif
-#ifdef MAKE_CALL_INLINE
+#ifdef FECALL_MAKE_CALL_INLINE
             if( IsInLineFunc( sym_handle ) ) {
-                cclass |= MAKE_CALL_INLINE;
+                cclass |= FECALL_MAKE_CALL_INLINE;
             }
 #endif
             if( VarFunc( &sym ) ) {
-                cclass |= CALLER_POPS | HAS_VARARGS;
+                cclass |= FECALL_CALLER_POPS | FECALL_HAS_VARARGS;
             }
         }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
         if( sym.flags & SYM_FUNC_NEEDS_THUNK ) {
-            cclass |= THUNK_PROLOG;
+            cclass |= FECALL_THUNK_PROLOG;
         }
 #endif
     }
 #ifdef REVERSE
-    cclass &= ~ REVERSE_PARMS;
+    cclass &= ~ FECALL_REVERSE_PARMS;
 #endif
-#ifdef PROLOG_HOOKS
+#ifdef FECALL_PROLOG_HOOKS
     if( CompFlags.ep_switch_used ) {
-        cclass |= PROLOG_HOOKS;
+        cclass |= FECALL_PROLOG_HOOKS;
     }
 #endif
-#ifdef EPILOG_HOOKS
+#ifdef FECALL_EPILOG_HOOKS
     if( CompFlags.ee_switch_used ) {
-        cclass |= EPILOG_HOOKS;
+        cclass |= FECALL_EPILOG_HOOKS;
     }
 #endif
-#ifdef GROW_STACK
+#ifdef FECALL_GROW_STACK
     if( CompFlags.sg_switch_used ) {
-        cclass |= GROW_STACK;
+        cclass |= FECALL_GROW_STACK;
     }
 #endif
-#ifdef TOUCH_STACK
+#ifdef FECALL_TOUCH_STACK
     if( CompFlags.st_switch_used ) {
-        cclass |= TOUCH_STACK;
+        cclass |= FECALL_TOUCH_STACK;
     }
 #endif
     return( cclass );

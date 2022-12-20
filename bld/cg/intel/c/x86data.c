@@ -208,7 +208,7 @@ void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
     TellOptimizerByPassed();
     attr = FEAttr( sym );
     if( ( attr & FE_PROC ) && _IsTargetModel( WINDOWS )
-      && (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR_CALL) ) {
+      && (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_FAR_CALL) ) {
         class = F_LDR_OFFSET;
     } else {
         class = F_OFFSET;

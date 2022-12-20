@@ -572,12 +572,12 @@ static AUX_INFO *IntrinsicAuxLookup(
         }
     }
     inf = &InlineInfo;
-    inf->cclass = (DefaultInfo.cclass & FAR_CALL) | MODIFY_EXACT;
+    inf->cclass = (DefaultInfo.cclass & FECALL_FAR_CALL) | FECALL_MODIFY_EXACT;
     inf->code = ifunc->code;
     inf->parms = ifunc->parms;
     inf->returns = ifunc->returns;
     if( !HW_CEqual( inf->returns, HW_xAX ) && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-        inf->cclass |= SPECIAL_RETURN;
+        inf->cclass |= FECALL_SPECIAL_RETURN;
     }
     HW_CAsgn( inf->streturn, HW_EMPTY );
     inf->save = ifunc->save;
@@ -618,7 +618,7 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
             }
 #if _INTEL_CPU && ( _CPU != 8086 )
             if(( mod_flags & TF1_FAR16 ) || ( inf->flags & AUX_FLAG_FAR16 )) {
-                if( inf->cclass & REVERSE_PARMS ) {
+                if( inf->cclass & FECALL_REVERSE_PARMS ) {
                     inf = &Far16PascalInfo;
                 } else {
                     inf = &Far16CdeclInfo;
@@ -783,10 +783,10 @@ static call_class getCallClass( // GET CLASS OF CALL
     TYPE fn_type;               // - function type
     type_flag flags;            // - flags for the function TYPE
     type_flag fn_flags;         // - flags in the function TYPE
-    call_class value;           // - call class
+    call_class cclass;           // - call class
 
     inf = getLangInfo( sym );
-    value = inf->cclass;
+    cclass = inf->cclass;
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
 #if _CPU == _AXP
@@ -800,15 +800,15 @@ static call_class getCallClass( // GET CLASS OF CALL
                 fn_index = SpecialFunction( sym );
                 DbgAssert( fn_index < ( CHAR_BIT * sizeof( unsigned ) ));
                 if( ( 1 << fn_index ) & SETJMP_MASK ) {
-                    value |= SETJMP_KLUGE;
+                    cclass |= FECALL_SETJMP_KLUGE;
                 }
             }
 #endif
             if( SymIsEllipsisFunc( sym ) ) {
-                value |= CALLER_POPS | HAS_VARARGS;
+                cclass |= FECALL_CALLER_POPS | FECALL_HAS_VARARGS;
             }
             if( CgBackFuncInlined( sym ) ) {
-                value |= MAKE_CALL_INLINE;
+                cclass |= FECALL_MAKE_CALL_INLINE;
             }
             /* only want the explicit memory model flags */
             /* default near/far is in the aux info already */
@@ -816,26 +816,26 @@ static call_class getCallClass( // GET CLASS OF CALL
 #if _INTEL_CPU
             if( flags & TF1_FAR ) {
                 /* function has an explicit FAR */
-                value |= FAR_CALL;
+                cclass |= FECALL_FAR_CALL;
             } else if( flags & TF1_NEAR ) {
                 /* function has an explicit NEAR */
-                value &= ~FAR_CALL;
+                cclass &= ~FECALL_FAR_CALL;
             } else if( flags & TF1_FAR16 ) {
-                value |= FAR16_CALL;
+                cclass |= FECALL_FAR16_CALL;
             } else {
                 if( IsBigCode() ) {
                     if( makeFileScopeStaticNear( sym ) ) {
-                        value &= ~FAR_CALL;
+                        cclass &= ~FECALL_FAR_CALL;
                     }
                 }
             }
 #endif
             fn_flags = fn_type->flag;
             if( fn_flags & TF1_ABORTS ) {
-                value |= ABORTS;
+                cclass |= FECALL_ABORTS;
             }
             if( fn_flags & TF1_NORETURN ) {
-                value |= NORETURN;
+                cclass |= FECALL_NORETURN;
             }
 #if _INTEL_CPU
             // don't export addressability thunks
@@ -845,64 +845,64 @@ static call_class getCallClass( // GET CLASS OF CALL
                         // may be COMDATed so make sure the calling convention
                         // matches what it would be for an exported fn
                         if( TargetSwitches & WINDOWS ) {
-                            value |= FAT_WINDOWS_PROLOG;
+                            cclass |= FECALL_FAT_WINDOWS_PROLOG;
                         }
                     } else {
-                        value |= DLL_EXPORT;
+                        cclass |= FECALL_DLL_EXPORT;
                     }
                 }
             }
             if( fn_flags & TF1_INTERRUPT ) {
-                value |= INTERRUPT;
+                cclass |= FECALL_INTERRUPT;
             }
             if( fn_flags & TF1_FARSS ) {
-                value |= FARSS;
+                cclass |= FECALL_FARSS;
             }
             if( fn_flags & TF1_LOADDS ) {
-                value |= LOAD_DS_ON_ENTRY;
+                cclass |= FECALL_LOAD_DS_ON_ENTRY;
             }
             if( CompFlags.emit_names ) {
-                value |= EMIT_FUNCTION_NAME;
+                cclass |= FECALL_EMIT_FUNCTION_NAME;
             }
 #endif
 #if _CPU == 8086
             if( inf == &PascalInfo || inf == &CdeclInfo ) {
                 if( TargetSwitches & WINDOWS ) {
-                    value |= FAT_WINDOWS_PROLOG;
+                    cclass |= FECALL_FAT_WINDOWS_PROLOG;
                 }
             }
 #endif
 #if _INTEL_CPU
             if( sym->flag & SYMF_FAR16_CALLER ) {
-                value |= THUNK_PROLOG;
+                cclass |= FECALL_THUNK_PROLOG;
             }
 #endif
         }
 #ifdef REVERSE
-        value &= ~ REVERSE_PARMS;
+        cclass &= ~ FECALL_REVERSE_PARMS;
 #endif
 #ifdef PROLOG_HOOKS
         if( CompFlags.ep_switch_used ) {
-            value |= PROLOG_HOOKS;
+            cclass |= FECALL_PROLOG_HOOKS;
         }
 #endif
 #ifdef EPILOG_HOOKS
         if( CompFlags.ee_switch_used ) {
-            value |= EPILOG_HOOKS;
+            cclass |= FECALL_EPILOG_HOOKS;
         }
 #endif
 #ifdef GROW_STACK
         if( CompFlags.sg_switch_used ) {
-            value |= GROW_STACK;
+            cclass |= FECALL_GROW_STACK;
         }
 #endif
 #ifdef TOUCH_STACK
         if( CompFlags.st_switch_used ) {
-            value |= TOUCH_STACK;
+            cclass |= FECALL_TOUCH_STACK;
         }
 #endif
     }
-    return( value );
+    return( cclass );
 }
 
 static sym_access getSymAccess( // GET access flag of symbol
@@ -1549,7 +1549,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
 {
-    return( (getLangInfo( sym )->cclass & ABORTS) != 0 );
+    return( (getLangInfo( sym )->cclass & FECALL_ABORTS) != 0 );
 }
 
 bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS

@@ -1739,7 +1739,7 @@ struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
 bool ReverseParms( AUX_INFO *pragma )
 /***********************************/
 {
-    if( pragma->cclass & REVERSE_PARMS ) {
+    if( pragma->cclass & FECALL_REVERSE_PARMS ) {
         return( true );
     }
     return( false );

@@ -356,7 +356,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         break;
     case OPT_ENUM_mem_model_mm:
         model = 'm';
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass |= FECALL_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
         PreDefineStringMacro( "__MEDIUM__" );
@@ -375,7 +375,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         model = 'l';
         PreDefineStringMacro( "_M_" MM_ARCH "LM" );
         PreDefineStringMacro( "__LARGE__" );
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass |= FECALL_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
@@ -385,7 +385,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         model = 'h';
         PreDefineStringMacro( "_M_" MM_ARCH "HM" );
         PreDefineStringMacro( "__HUGE__" );
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass |= FECALL_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= BIG_CODE | BIG_DATA;
@@ -1164,7 +1164,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
     if( data->of_plus ) {
         TargetSwitches |= NEED_STACK_FRAME;
-        WatcallInfo.cclass |= GENERATE_STACK_FRAME;
+        WatcallInfo.cclass |= FECALL_GENERATE_STACK_FRAME;
     }
     if( data->om ) {
         TargetSwitches |= I_MATH_INLINE;

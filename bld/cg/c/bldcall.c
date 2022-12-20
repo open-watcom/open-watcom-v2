@@ -394,11 +394,11 @@ static  void    LinkParms( instruction *call_ins, pn *owner ) {
     *owner = NULL;
 }
 
-void    AddCallIns( instruction *ins, cn call ) {
-/********************************************************
-    stick the call instruction into the current basic block
-*/
-
+void    AddCallIns( instruction *ins, cn call )
+/*********************************************************
+ * stick the call instruction into the current basic block
+ */
+{
     name                *call_name;
     fe_attr             attr;
     type_class_def      addr_type_class;
@@ -412,24 +412,30 @@ void    AddCallIns( instruction *ins, cn call ) {
         if( call_name->m.memory_type == CG_FE ) {
             attr = FEAttr( call_name->v.symbol );
 #if _TARGET & _TARG_RISC
-            // in case the inline assembly code references a local variable
+            /*
+             * in case the inline assembly code references a local variable
+             */
             if( FindAuxInfoSym( call_name->v.symbol, FEINF_CALL_BYTES ) != NULL ) {
                 CurrProc->targ.base_is_fp = true;
             }
 #endif
         }
-        // don't do this for far16 functions since they are handled
-        // in a weird manner by Far16Parms and will not call data labels
+        /*
+         * don't do this for far16 functions since they are handled
+         * in a weird manner by Far16Parms and will not call data labels
+         */
 #if _TARGET & (_TARG_80386 | _TARG_8086)
         if( (attr & FE_PROC) == 0 && (ins->flags.call_flags & CALL_FAR16) == 0 ) {
 #else
         if( (attr & FE_PROC) == 0 ) {
 #endif
-            // indirect since calling data labels directly
-            // screws up the back end
+            /*
+             * indirect since calling data labels directly
+             * screws up the back end
+             */
             addr_type_class = WD;
 #if _TARGET & (_TARG_80386 | _TARG_8086)
-            if( *(call_class *)FindAuxInfo( call_name, FEINF_CALL_CLASS ) & FAR_CALL ) {
+            if( *(call_class *)FindAuxInfo( call_name, FEINF_CALL_CLASS ) & FECALL_FAR_CALL ) {
                 addr_type_class = CP;
             }
 #endif

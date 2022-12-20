@@ -2995,7 +2995,7 @@ void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
     attr = FEAttr( sym );
 #if  _TARGET & _TARG_80386
     if( !rel && F_CLASS( class ) == F_OFFSET && (attr & FE_PROC) ) {
-        if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FAR16_CALL ) {
+        if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_FAR16_CALL ) {
             class |= F_FAR16;
         }
     }
@@ -3376,7 +3376,7 @@ static bool     InlineFunction( cg_sym_handle sym )
     if( FEAttr( sym ) & FE_PROC ) {
         if( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) != NULL )
             return( true );
-        if( (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & MAKE_CALL_INLINE) ) {
+        if( (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_MAKE_CALL_INLINE) ) {
             return( true );
         }
     }
@@ -3435,7 +3435,7 @@ bool SymIsExported( cg_sym_handle sym )
     if( sym != NULL ) {
         if( FEAttr( sym ) & FE_DLLEXPORT ) {
             exported = true;
-        } else if( *(call_class*)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & DLL_EXPORT ) {
+        } else if( *(call_class*)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_DLL_EXPORT ) {
             exported = true;
         }
     }

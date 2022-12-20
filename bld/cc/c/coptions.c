@@ -1482,7 +1482,7 @@ static void Set_OF( void )
 {
     TargetSwitches |= NEED_STACK_FRAME;
     if( OptValue != 0 ) {
-        WatcallInfo.cclass |= GENERATE_STACK_FRAME;
+        WatcallInfo.cclass |= FECALL_GENERATE_STACK_FRAME;
     }
 }
 static void Set_OM( void )          { TargetSwitches |= I_MATH_INLINE; }
@@ -2135,7 +2135,7 @@ static void Define_Memory_Model( void )
         break;
     case SW_MM:
         model = 'm';
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass |= FECALL_FAR_CALL;
         CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CONST_IN_CODE;
         CodePtrSize = TARGET_FAR_POINTER;
@@ -2146,13 +2146,13 @@ static void Define_Memory_Model( void )
         break;
     case SW_ML:
         model = 'l';
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass |= FECALL_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         break;
     case SW_MH:
         model = 'h';
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass |= FECALL_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         break;

@@ -1566,7 +1566,7 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
     }
     parms_reversed = false;
     if( CurFunc->u.func.parms != SYM_NULL ) {
-        if( GetCallClass( CurFuncHandle ) & REVERSE_PARMS ) {
+        if( GetCallClass( CurFuncHandle ) & FECALL_REVERSE_PARMS ) {
             ParmReverse( CurFunc->u.func.parms );
             parms_reversed = true;
         } else {
