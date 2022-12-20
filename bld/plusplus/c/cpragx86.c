@@ -46,19 +46,65 @@
 #include "pcheader.h"
 #include "cgfront.h"
 
+
 #define IS_REGSET(t)    (t == T_LEFT_BRACKET || t == T_LEFT_BRACE)
-
-
-static byte_seq *AuxCodeDup( byte_seq *code );
-static int      GetByteSeq( void );
-
-static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
 
 #define WCPP_ASM            // enable assembler
 
 #define ASM_BLOCK           (64)
 
 #define ROUND_ASM_BLOCK(x)  ((x+ASM_BLOCK-1) & ~(ASM_BLOCK-1))
+
+#if _CPU == 8086
+    #define SYM_INT     SYM_INT2
+    #define SYM_FFAR    SYM_FAR2
+    #define SYM_FNEAR   SYM_NEAR2
+    #define SYM_DFAR    SYM_INT4
+    #define SYM_DNEAR   SYM_INT2
+#else
+    #define SYM_INT     SYM_INT4
+    #define SYM_FFAR    SYM_FAR4
+    #define SYM_FNEAR   SYM_NEAR2
+    #define SYM_DFAR    SYM_INT6
+    #define SYM_DNEAR   SYM_INT4
+#endif
+
+// The following defines which flags are to be ignored when checking
+// a pragma call classes for equivalence.
+//
+#define FECALL_CALL_CLASS_IGNORE ( 0                       \
+                          | FECALL_NO_MEMORY_CHANGED       \
+                          | FECALL_NO_MEMORY_READ          \
+                          | FECALL_MODIFY_EXACT            \
+                          | FECALL_GENERATE_STACK_FRAME    \
+                          | FECALL_EMIT_FUNCTION_NAME      \
+                          | FECALL_GROW_STACK              \
+                          | FECALL_PROLOG_HOOKS            \
+                          | FECALL_EPILOG_HOOKS            \
+                          | FECALL_TOUCH_STACK             \
+                          | FECALL_LOAD_DS_ON_ENTRY        \
+                          | FECALL_DLL_EXPORT              \
+                          )
+
+typedef enum
+{       FIXWORD_NONE
+,       FIXWORD_FLOAT
+,       FIXWORD_SEGMENT
+,       FIXWORD_OFFSET
+,       FIXWORD_RELOFF
+} fix_words;
+
+static int      GetByteSeq( void );
+
+static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
+
+#ifdef WCPP_ASM
+static enum sym_type AsmDataType[] = {
+    #define pick(id,promo,promo_asm,type_text)  promo_asm,
+    #include "_typdefs.h"
+    #undef pick
+};
+#endif
 
 static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
     INITFINI* defn )            // - definition
@@ -200,6 +246,18 @@ static void assemblerFini(      // FINALIZATION OF ASSEMBLER
 
 INITDEFN( assembler, assemblerInit, assemblerFini )
 
+
+static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
+    byte_seq *code )
+{
+    byte_seq_len size;
+
+    if( code == NULL ) {
+        return( code );
+    }
+    size = offsetof( byte_seq, data ) + code->length;
+    return( (byte_seq *)vctsave( (char *)code, size ) );
+}
 
 static void AuxCopy(           // COPY AUX STRUCTURE
     AUX_INFO *to,               // - destination
@@ -462,15 +520,6 @@ void PragAux(                   // #PRAGMA AUX ...
     PPCTL_DISABLE_MACROS();
 }
 
-typedef enum
-{       FIXWORD_NONE
-,       FIXWORD_FLOAT
-,       FIXWORD_SEGMENT
-,       FIXWORD_OFFSET
-,       FIXWORD_RELOFF
-} fix_words;
-
-
 static fix_words FixupKeyword( void )
 {
     fix_words retn;             // - return
@@ -516,20 +565,6 @@ enum sym_state AsmQueryState( void *handle )
 }
 
 
-#if _CPU == 8086
-    #define SYM_INT     SYM_INT2
-    #define SYM_FFAR    SYM_FAR2
-    #define SYM_FNEAR   SYM_NEAR2
-    #define SYM_DFAR    SYM_INT4
-    #define SYM_DNEAR   SYM_INT2
-#else
-    #define SYM_INT     SYM_INT4
-    #define SYM_FFAR    SYM_FAR4
-    #define SYM_FNEAR   SYM_NEAR2
-    #define SYM_DFAR    SYM_INT6
-    #define SYM_DNEAR   SYM_INT4
-#endif
-
 #ifdef WCPP_ASM
 static enum sym_type CodePtrType( type_flag flags )
 {
@@ -567,13 +602,6 @@ static enum sym_type PtrType( type_flag flags )
 
 
 #ifdef WCPP_ASM
-
-static enum sym_type AsmDataType[] = {
-    #define pick(id,promo,promo_asm,type_text)  promo_asm,
-    #include "_typdefs.h"
-    #undef pick
-};
-
 static enum sym_type AsmType(
     TYPE type )
 {
@@ -601,7 +629,6 @@ static enum sym_type AsmType(
         return( AsmDataType[type->id] );
     }
 }
-
 #endif
 
 
@@ -843,18 +870,6 @@ static void AddAFix(
     fix->fixup_type = type;
     fix->next = FixupHead;
     FixupHead = fix;
-}
-
-static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
-    byte_seq *code )
-{
-    byte_seq_len size;
-
-    if( code == NULL ) {
-        return( code );
-    }
-    size = offsetof( byte_seq, data ) + code->length;
-    return( (byte_seq *)vctsave( (char *)code, size ) );
 }
 
 void AsmSysCopyCode( void )
@@ -1234,23 +1249,6 @@ static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
     }
     return( false );
 }
-
-// The following defines which flags are to be ignored when checking
-// a pragma call classes for equivalence.
-//
-#define FECALL_CALL_CLASS_IGNORE ( 0                       \
-                          | FECALL_NO_MEMORY_CHANGED       \
-                          | FECALL_NO_MEMORY_READ          \
-                          | FECALL_MODIFY_EXACT            \
-                          | FECALL_GENERATE_STACK_FRAME    \
-                          | FECALL_EMIT_FUNCTION_NAME      \
-                          | FECALL_GROW_STACK              \
-                          | FECALL_PROLOG_HOOKS            \
-                          | FECALL_EPILOG_HOOKS            \
-                          | FECALL_TOUCH_STACK             \
-                          | FECALL_LOAD_DS_ON_ENTRY        \
-                          | FECALL_DLL_EXPORT              \
-                          )
 
 bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
