@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "ppcswi.h"
-
+typedef enum {
+    #include "ppcswi.h"
+} cg_target_switches;
 
 typedef enum {
     I_PPC

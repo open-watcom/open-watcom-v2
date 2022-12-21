@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "x86swi.h"
-
+typedef enum {
+    #include "x86swi.h"
+} cg_target_switches;
 
 typedef enum {
     /* CPU revisions */

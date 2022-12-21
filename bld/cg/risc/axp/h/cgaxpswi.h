@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "axpswi.h"
-
+typedef enum {
+    #include "axpswi.h"
+} cg_target_switches;
 
 typedef enum {
     I_AXP

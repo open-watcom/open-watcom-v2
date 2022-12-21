@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "mpsswi.h"
-
+typedef enum {
+    #include "mpsswi.h"
+} cg_target_switches;
 
 typedef enum {
     I_MIPS

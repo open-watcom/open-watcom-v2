@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,9 @@
 
 
 #ifndef _CG_SWITCH_INCLUDED
+#define _CG_SWITCH_INCLUDED
+
+#include "cgtargsw.h"
 
 #define NO_OPTIMIZATION         0x80000000L
 #define DBG_NUMBERS             0x40000000L
@@ -68,10 +72,6 @@
 
 #define _TARG_CGSWITCH_SHIFT     0
 
-#include "cgtargsw.h"
-
 typedef unsigned                cg_switches;
-typedef unsigned                cg_target_switches;
 
-#define _CG_SWITCH_INCLUDED
 #endif
