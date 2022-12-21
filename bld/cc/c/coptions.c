@@ -1027,7 +1027,7 @@ static void Set_ESP( void )         { TargetSwitches |= STATEMENT_COUNTING; }
 
 #if _CPU == 386
 static void Set_EZ( void )          { TargetSwitches |= EZ_OMF; }
-static void Set_OMF( void )         { TargetSwitches &= ~(OBJ_ELF | OBJ_COFF); }
+static void Set_OMF( void )         { GenSwitches &= ~(OBJ_ELF | OBJ_COFF); }
 #endif
 
 #if /*_CPU == 386 || */_CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
