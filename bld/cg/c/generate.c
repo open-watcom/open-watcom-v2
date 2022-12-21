@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -743,7 +743,7 @@ void    Generate( bool routine_done )
     FreeProc();
     HaveLiveInfo = false;
 #if _TARGET & _TARG_INTEL
-    if( _IsModel( NEW_P5_PROFILING ) ) {
+    if( _IsTargetModel( NEW_P5_PROFILING ) ) {
         FlushQueue();
     }
 #else
