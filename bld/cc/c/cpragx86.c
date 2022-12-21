@@ -278,7 +278,7 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYP_FUNCTION ) {
         return( AsmCodePtrType( flags ) );
-    } else if( flags & (FLAG_FAR|FLAG_HUGE) ) {
+    } else if( flags & (FLAG_FAR | FLAG_HUGE) ) {
         return( SYM_DFAR );
     } else if( flags & FLAG_NEAR ) {
         return( SYM_DNEAR );

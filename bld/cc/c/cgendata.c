@@ -50,7 +50,7 @@ void EmitZeros( target_size amount )
 
 void AlignIt( TYPEPTR typ )
 {
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if INTEL_CPU
     if( OptSize == 0 ) {        /* optimize for time */
         DGAlign( GetTypeAlignment( typ ) );
     }
