@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +47,4 @@
 #define OWL_LOGGING             0x00000400L
 #define ALIGNED_SHORT           0x00000800L
 #define EXCEPT_FILTER_USED      0x00001000L
-#define LAST_TARG_CGSWITCH      0x00001000L
 
-typedef enum {
-    I_AXP
-} proc_revision;

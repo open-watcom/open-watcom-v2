@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +48,4 @@
 #define CG_OS2_CC               0x00000800L
 #define CG_NT_CC                0x00001000L
 #define OWL_LOGGING             0x00002000L
-#define LAST_TARG_CGSWITCH      0x00002000L
 
-typedef enum {
-    I_PPC
-} proc_revision;
