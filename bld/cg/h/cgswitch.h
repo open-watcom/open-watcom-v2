@@ -36,42 +36,36 @@
 
 #include "cgtargsw.h"
 
-#define NO_OPTIMIZATION         0x80000000L
-#define DBG_NUMBERS             0x40000000L
-#define FORTRAN_ALIASING        0x20000000L
+typedef enum {
+    OBJ_ENDIAN_BIG           = 0x00000001L,
+    OBJ_COFF                 = 0x00000002L,
+    OBJ_ELF                  = 0x00000004L,
+    DLL_RESIDENT_CODE        = 0x00000008L,
+    POSITION_INDEPENDANT     = 0x00000010L,
+    MICROSOFT_COMPATIBLE     = 0x00000020L,
+    ECHO_API_CALLS           = 0x00000040L,
+    SUPER_OPTIMAL            = 0x00000080L,
+    FPU_ROUNDING_OMIT        = 0x00000100L,
+    FPU_ROUNDING_INLINE      = 0x00000200L,
+    FLOW_REG_SAVES           = 0x00000400L,
+    BRANCH_PREDICTION        = 0x00000800L,
+    DBG_PREDEF               = 0x00001000L,
+    NULL_DEREF_OK            = 0x00002000L,
+    FP_UNSTABLE_OPTIMIZATION = 0x00004000L,
+    MEMORY_LOW_FAILS         = 0x00008000L,
+    INS_SCHEDULING           = 0x00010000L,
+    LOOP_OPTIMIZATION        = 0x00020000L,
+    LOOP_UNROLLING           = 0x00040000L,
+    DBG_TYPES                = 0x00080000L,
+    DBG_LOCALS               = 0x00100000L,
+    RELAX_ALIAS              = 0x00200000L,
+    DBG_CV                   = 0x00400000L,
+    DBG_DF                   = 0x00800000L,
+    FORTRAN_ALIASING         = 0x01000000L,
+    DBG_NUMBERS              = 0x02000000L,
+    NO_OPTIMIZATION          = 0x04000000L,
+} cg_switches;
 
-#define DBG_DF                  0x10000000L
-#define DBG_CV                  0x08000000L
-
-#define RELAX_ALIAS             0x04000000L
-#define DBG_LOCALS              0x02000000L
-#define DBG_TYPES               0x01000000L
-#define LOOP_UNROLLING          0x00800000L
-#define LOOP_OPTIMIZATION       0x00400000L
-#define INS_SCHEDULING          0x00200000L
-#define MEMORY_LOW_FAILS        0x00100000L
-#define FP_UNSTABLE_OPTIMIZATION 0x0080000L
-#define NULL_DEREF_OK           0x00040000L
-#define DBG_PREDEF              0x00020000L
-#define BRANCH_PREDICTION       0x00010000L
-#define FLOW_REG_SAVES          0x00008000L
-
-#define FPU_ROUNDING_INLINE     0x00004000L
-#define FPU_ROUNDING_OMIT       0x00002000L
-
-#define SUPER_OPTIMAL           0x00001000L
-#define ECHO_API_CALLS          0x00000800L
-#define MICROSOFT_COMPATIBLE    0x00000400L
-#define POSITION_INDEPENDANT    0x00000200L
-#define DLL_RESIDENT_CODE       0x00000100L
-
-#define OBJ_ELF                 0x00000080L
-#define OBJ_COFF                0x00000040L
-#define OBJ_OWL                 (OBJ_COFF | OBJ_ELF)
-#define OBJ_ENDIAN_BIG          0x00000020L
-
-#define _TARG_CGSWITCH_SHIFT     0
-
-typedef unsigned                cg_switches;
+#define OBJ_OWL             (OBJ_COFF | OBJ_ELF)
 
 #endif
