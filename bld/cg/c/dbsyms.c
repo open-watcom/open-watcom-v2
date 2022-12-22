@@ -378,9 +378,9 @@ void    InitDbgInfo( void )
 //    idx = CueAdd( fno, 1, 1 );
     CueAdd( fno, 1, 1 );
     SrcLine = 1;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFInitDbgInfo();
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVInitDbgInfo();
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
@@ -395,9 +395,9 @@ void    FiniDbgInfo( void )
 {
     DBSrcFileFini();
     SourceCueFini( &LineInfo );
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFFiniDbgInfo();
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVFiniDbgInfo();
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
@@ -428,7 +428,7 @@ void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
 #endif
 //  fname = SrcFNoFind( fno );
 //  printf( "in %s %d %d\n", fname, line, col );
-    hasxcue =  _IsntModel( DBG_TYPES ); // Just OMF line nums
+    hasxcue =  _IsntModel( CGSW_DBG_TYPES ); // Just OMF line nums
     if( hasxcue ) {
         if( fno == 0 && col == 1 ) {
             DBLineNum( line );
@@ -445,9 +445,9 @@ void _CGAPI DBGenStMem( cg_sym_handle sym, dbg_loc loc )
 #ifndef NDEBUG
     EchoAPI( "DBGenStMem( %s,%i)\n", sym, loc );
 #endif
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFGenStatic( sym, loc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVGenStatic( sym, loc, true );
     } else {
     }
@@ -488,7 +488,7 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
 #ifndef NDEBUG
     EchoAPI( "DBGenSym( %s, %i, %i )\n", sym, loc, scoped );
 #endif
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_DBG_LOCALS ) ) {
         attr = FEAttr( sym );
         if( (attr & FE_IMPORT) == 0 ) {
             if( attr & FE_PROC ) {
@@ -507,9 +507,9 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                 lcl->kind = DBG_SYM_VAR;
                 AddLocal( &CurrProc->targ.debug->blk->locals, lcl );
             } else {
-                if( _IsModel( DBG_DF ) ) {
+                if( _IsModel( CGSW_DBG_DF ) ) {
                     DFGenStatic( sym, loc );
-                } else if( _IsModel( DBG_CV ) ) {
+                } else if( _IsModel( CGSW_DBG_CV ) ) {
                     CVGenStatic( sym, loc, false );
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
                 } else {
@@ -533,7 +533,7 @@ void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
 #ifndef NDEBUG
     EchoAPI( "DBModSym( %s, %t )\n",  sym, indirect );
 #endif
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_DBG_LOCALS ) ) {
         attr = FEAttr( sym );
         if( (attr & FE_IMPORT) == 0 ) {
             if( attr & FE_PROC ) {
@@ -559,9 +559,9 @@ void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
 #endif
     CurrProc->targ.debug->obj_type = tipe;
     CurrProc->targ.debug->obj_loc = LocDupl( loc );
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         //
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         //
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
@@ -584,9 +584,9 @@ void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
 #ifndef NDEBUG
     EchoAPI( "DBTypeDef( %c, %t )\n", nm, tipe );
 #endif
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFTypedef( nm, tipe );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVTypedef( nm, tipe );
     } else {
     }
@@ -622,8 +622,8 @@ void    _CGAPI DBLocalType( cg_sym_handle sym, bool kind )
 #ifndef NDEBUG
     EchoAPI( "DBLocalType( %s, %i)\n", sym, kind );
 #endif
-    if( _IsModel( DBG_LOCALS ) ) {
-        if( _IsModel( DBG_CV | DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_DBG_CV | CGSW_DBG_DF ) ) {
             lcl = CGAlloc( sizeof( dbg_local ) );
             lcl->sym = sym;
             lcl->loc = NULL;
@@ -705,9 +705,9 @@ void _CGAPI     DBEndBlock( void )
 void    DbgSetBase( void )
 /************************/
 {
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         /* nothing */
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVSetBase();
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
@@ -724,7 +724,7 @@ void    DbgParmLoc( name *parm, cg_sym_handle sym )
     dbg_local       *lcl;
     dbg_loc         loc;
 
-    if( _IsntModel( DBG_DF ) ) {
+    if( _IsntModel( CGSW_DBG_DF ) ) {
         if( parm->n.class != N_REGISTER  ) {
             return;
         }
@@ -839,7 +839,7 @@ void    DbgRtnBeg( dbg_rtn *rtn,  offset lc )
 /*******************************************/
 {
     rtn->rtn_blk->start = lc;
-    if( _IsModel( DBG_CV ) ) {
+    if( _IsModel( CGSW_DBG_CV ) ) {
         CVRtnBeg( rtn, lc );
     }
 }
@@ -849,9 +849,9 @@ void    DbgProEnd( dbg_rtn *rtn, offset lc )
 /******************************************/
 {
     rtn->pro_size = lc - rtn->rtn_blk->start;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFProEnd( rtn, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVProEnd( rtn, lc );
     }
 }
@@ -861,9 +861,9 @@ void    DbgBlkBeg( dbg_block *blk, offset lc )
 /********************************************/
 {
     blk->start = lc;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFBlkBeg( blk, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVBlkBeg( blk, lc );
     }
 }
@@ -871,9 +871,9 @@ void    DbgBlkBeg( dbg_block *blk, offset lc )
 void    DbgBlkEnd( dbg_block *blk, offset lc )
 /********************************************/
 {
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFBlkEnd( blk, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVBlkEnd( blk, lc );
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
@@ -888,9 +888,9 @@ void    DbgEpiBeg( dbg_rtn *rtn, offset lc )
 /******************************************/
 {
     rtn->epi_start = lc;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFEpiBeg( rtn, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVEpiBeg( rtn, lc );
     }
 }
@@ -899,9 +899,9 @@ void    DbgEpiBeg( dbg_rtn *rtn, offset lc )
 void    DbgRtnEnd( dbg_rtn *rtn, offset lc )
 /******************************************/
 {
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         DFRtnEnd( rtn, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVRtnEnd( rtn, lc );
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {

@@ -130,7 +130,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
 /***********************************************************/
 {
   optbegin
-    if( _IsModel( NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_NO_OPTIMIZATION ) )
         optreturn( false );
     if( _ClassInfo( add ) != _ClassInfo( old ) )
         optreturn( false );

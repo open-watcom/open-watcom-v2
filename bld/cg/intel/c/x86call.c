@@ -320,7 +320,7 @@ name    *StReturn( an retval, type_def *tipe, instruction **pins )
         AddIns( MakeUnary( OP_LA, retp, AllocRegName( CurrProc->state.return_reg ), WD ) );
         *pins = NULL;
     } else {
-        if( _IsTargetModel( FLOATING_SS ) || _IsTargetModel( FLOATING_DS ) ) {
+        if( _IsTargetModel( FLOATING_SS | FLOATING_DS ) ) {
             ptr = AllocTemp( CP );
             off = OffsetPart( ptr );
             seg = SegmentPart( ptr );

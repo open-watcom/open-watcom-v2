@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -308,7 +308,7 @@ dbug_type DBType( TYPEPTR typ )
             ret_val = DBType( typ->object );
             if( fwd_info.debug_name != NULL ) {
                 ret_val = DBEndName( fwd_info.debug_name, ret_val );
-                if( GenSwitches & DBG_CV ) {
+                if( GenSwitches & CGSW_DBG_CV ) {
                     DBTypeDef( sym.name, ret_val ); //get codeview typedef out
                 }
             }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -748,7 +748,7 @@ static  bool    OkToInvert( name *div )
    must have said that it was OK.
 */
 {
-    if( _IsModel( FP_UNSTABLE_OPTIMIZATION ) )
+    if( _IsModel( CGSW_FP_UNSTABLE_OPTIMIZATION ) )
         return( true );
     if( (div->n.class == N_TEMP) && (div->t.temp_flags & CONST_TEMP) ) {
         div = div->v.symbol;

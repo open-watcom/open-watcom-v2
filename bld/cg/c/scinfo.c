@@ -79,7 +79,7 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
     if( x->class == SC_N_INDEXED && x->base == NULL ) {
         switch( y->class ) {
         case SC_N_MEMORY:
-            if( _IsModel( RELAX_ALIAS ) )
+            if( _IsModel( CGSW_RELAX_ALIAS ) )
                 return( false );
             /* fall through */
         case SC_N_INDEXED:
@@ -150,7 +150,7 @@ bool    ScoreEqual( score *scoreboard, int index, score_info *info )
 {
     if( ScoreLookup( &scoreboard[index], info ) )
         return( true );
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         bool        is_equal;
         type_length half_size;
@@ -200,7 +200,7 @@ static  void    ScoreInsert(  score *scoreboard,  int i,  score_info  *info )
 static  void    ScoreAdd( score *scoreboard, int i, score_info *info )
 /********************************************************************/
 {
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_SUPER_OPTIMAL ) ) {
         score       *first;
         score       *curr;
 
@@ -234,7 +234,7 @@ void    ScoreAssign( score *scoreboard, int index, score_info *info )
 /*******************************************************************/
 {
     ScoreAdd( scoreboard, index, info );
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         uint        hi_off;
         uint        lo_off;

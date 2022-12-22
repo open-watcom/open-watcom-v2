@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ conflict_node   *AddConflictNode( name *opnd )
     } else {
         if( opnd->m.memory_type == CG_FE ) {
             attr = FEAttr( opnd->v.symbol );
-            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL | FE_VISIBLE)) == 0 ) && _IsModel( RELAX_ALIAS ) ) ) {
+            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL | FE_VISIBLE)) == 0 ) && _IsModel( CGSW_RELAX_ALIAS ) ) ) {
                 _SetTrue( new, CST_OK_ACROSS_CALLS );
             }
         }
@@ -162,7 +162,7 @@ conflict_node   *FindConflictNode( name *opnd, block *blk, instruction *ins )
     old = opnd;
     if( opnd->n.class == N_TEMP ) {
         opnd = DeAlias( opnd );
-    } else if( ( opnd->n.class != N_MEMORY || _IsntModel( RELAX_ALIAS ) ) ) {
+    } else if( ( opnd->n.class != N_MEMORY || _IsntModel( CGSW_RELAX_ALIAS ) ) ) {
         return( NULL );
     }
     _INS_NOT_BLOCK( ins );

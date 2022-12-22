@@ -1791,7 +1791,7 @@ extern void DwarfDebugInit( void )
 /********************************/
 {
     assert( sizeof( vf_FieldType->dbg.handle ) == sizeof( dbg_type ) );
-    if( GenSwitches & DBG_TYPES ) {
+    if( GenSwitches & CGSW_DBG_TYPES ) {
         initDwarf( true, DSI_NULL );
         Client = DFClient();
         dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
@@ -1831,7 +1831,7 @@ static bool dwarfUsedTypeSymbol( SCOPE scope );
 extern void DwarfDebugFini( void )
 /********************************/
 {
-    if( GenSwitches & DBG_TYPES ) {
+    if( GenSwitches & CGSW_DBG_TYPES ) {
         if( !CompFlags.all_debug_type_names ) { // generate what's used
             dwarfUsedTypeSymbol(GetFileScope());
             dwarfForwardFollowup();
@@ -2114,7 +2114,7 @@ static void dwarfDebugNamedType( void )
 extern void DwarfDebugEmit( void )
 /********************************/
 {
-    if( GenSwitches & DBG_TYPES ) {
+    if( GenSwitches & CGSW_DBG_TYPES ) {
         dwarfEmitFundamentalType();
         if( CompFlags.all_debug_type_names ) {      // generate the works
             dwarfDebugSymbol( GetFileScope() );

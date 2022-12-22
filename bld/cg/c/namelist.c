@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,7 +381,7 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
         new_m->v.usage = NEEDS_MEMORY;
         new_m->m.same_sym = NULL;
     }
-    if( class == CG_FE && _IsModel( NO_OPTIMIZATION ) ) {
+    if( class == CG_FE && _IsModel( CGSW_NO_OPTIMIZATION ) ) {
         new_m->v.usage |= USE_MEMORY;
     }
     new_m->v.block_usage = 0;

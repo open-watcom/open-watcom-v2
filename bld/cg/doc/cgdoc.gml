@@ -124,58 +124,58 @@ structure, defined below.
 .ix options
 .notehd1 Switch
 .notehd2 Definition
-.note NO_OPTIMIZATION
+.note CGSW_NO_OPTIMIZATION
 Turn off optimizations.
-.note DBG_NUMBERS
+.note CGSW_DBG_NUMBERS
 Generate line number debugging information.
-.note FORTRAN_ALIASING
+.note CGSW_FORTRAN_ALIASING
 Assume pointers are only used for parameter passing.
-.note DBG_DF
+.note CGSW_DBG_DF
 Generate debugging information in DWARF format.
-.note DBG_CV
+.note CGSW_DBG_CV
 Generate debugging information in CodeView format. If neither
-DBG_DF nor DBG_CV is set, debugging information (if any) is
+CGSW_DBG_DF nor CGSW_DBG_CV is set, debugging information (if any) is
 generated in the Watcom format.
-.note RELAX_ALIAS
+.note CGSW_RELAX_ALIAS
 Assume that a static/extern variable and a pointer to that same
 variable are not used within the same routine.
-.note DBG_LOCALS
+.note CGSW_DBG_LOCALS
 Generate local symbol information for use by a debugger.
-.note DBG_TYPES
+.note CGSW_DBG_TYPES
 Generate typing information for use by a debugger.
-.note LOOP_UNROLLING
+.note CGSW_LOOP_UNROLLING
 Turn on loop unrolling.
-.note LOOP_OPTIMIZATION
+.note CGSW_LOOP_OPTIMIZATION
 Turn on loop optimizations.
-.note INS_SCHEDULING
+.note CGSW_INS_SCHEDULING
 Turn on instruction scheduling.
-.note MEMORY_LOW_FAILS
+.note CGSW_MEMORY_LOW_FAILS
 Allow the code generator to run out of memory without being able to
 generate object code (allows the 386 compiler to use EBP as a cache
 register).
-.note FP_UNSTABLE_OPTIMIZATION
+.note CGSW_FP_UNSTABLE_OPTIMIZATION
 Allow the code generator to perform optimizations that are
 mathematically correct, but are numerically unstable.
 E.g.
 converting division by a constant to a multiplication by the reciprocal.
-.note NULL_DEREF_OK
+.note CGSW_NULL_DEREF_OK
 NULL points to valid memory and may be dereferenced.
-.note FPU_ROUNDING_INLINE
+.note CGSW_FPU_ROUNDING_INLINE
 Inline floating-point value rounding (actually truncation) routine
 when converting floating-point values to integers.
-.note FPU_ROUNDING_OMIT
+.note CGSW_FPU_ROUNDING_OMIT
 Omit floating-point value rounding entirely and use FPU default. Results
 will not be ISO C compliant.
-.note ECHO_API_CALLS
+.note CGSW_ECHO_API_CALLS
 Log each call to the code generator with its arguments and return value.
 Only available in debug builds.
-.note OBJ_ELF
+.note CGSW_OBJ_ELF
 Emit ELF object files.
-.note OBJ_COFF
+.note CGSW_OBJ_COFF
 Emit COFF object files. For Intel compilers, OMF object files will
 be emitted in the absence of either switch.
-.note OBJ_ENDIAN_BIG
-Emit big-endian object files (COFF or ELF). If OBJ_ENDIAN_BIG is not
+.note CGSW_OBJ_ENDIAN_BIG
+Emit big-endian object files (COFF or ELF). If CGSW_OBJ_ENDIAN_BIG is not
 set, little-endian objects will be generated.
 .endnote
 .begnote $break $setptnt 2i
@@ -3504,10 +3504,10 @@ The following macros are defined by the code generator include files.
 :ZLI.CPU_MASK
 :ZLI.C_FRONT_END
 :ZLI.DBG_FWD_TYPE
-:ZLI.DBG_LOCALS
+:ZLI.CGSW_DBG_LOCALS
 :ZLI.DBG_NIL_TYPE
-:ZLI.DBG_NUMBERS
-:ZLI.DBG_TYPES
+:ZLI.CGSW_DBG_NUMBERS
+:ZLI.CGSW_DBG_TYPES
 :ZLI.DLL_EXPORT
 :ZLI.DO_FLOATING_FIXUPS
 :ZLI.DO_SYM_FIXUPS
@@ -3528,7 +3528,7 @@ The following macros are defined by the code generator include files.
 :ZLI.FLOATING_FS
 :ZLI.FLOATING_GS
 :ZLI.FLOATING_SS
-:ZLI.FORTRAN_ALIASING
+:ZLI.CGSW_FORTRAN_ALIASING
 :ZLI.FORTRAN_FRONT_END
 :ZLI.FPU_MASK
 :ZLI.FRONT_END_MASK
@@ -3576,7 +3576,7 @@ The following macros are defined by the code generator include files.
 :ZLI.HW_TurnOn
 :ZLI.II_REVISION
 :ZLI.INDEXED_GLOBALS
-:ZLI.INS_SCHEDULING
+:ZLI.CGSW_INS_SCHEDULING
 :ZLI.INTERNAL_DBG_OUTPUT
 :ZLI.INTERRUPT
 :ZLI.I_MATH_INLINE
@@ -3586,7 +3586,7 @@ The following macros are defined by the code generator include files.
 :ZLI.LAST_TARG_CGSWITCH
 :ZLI.LOAD_DS_ON_CALL
 :ZLI.LOAD_DS_ON_ENTRY
-:ZLI.LOOP_OPTIMIZATION
+:ZLI.CGSW_LOOP_OPTIMIZATION
 :ZLI.MAKE_CALL_INLINE
 :ZLI.MAX_POSSIBLE_REG
 :ZLI.MIN_OP
@@ -3597,7 +3597,7 @@ The following macros are defined by the code generator include files.
 :ZLI.NO_FLOAT_REG_RETURNS
 :ZLI.NO_MEMORY_CHANGED
 :ZLI.NO_MEMORY_READ
-:ZLI.NO_OPTIMIZATION
+:ZLI.CGSW_NO_OPTIMIZATION
 :ZLI.NO_STRUCT_REG_RETURNS
 :ZLI.NULL
 :ZLI.NULLCHAR
@@ -3607,7 +3607,7 @@ The following macros are defined by the code generator include files.
 :ZLI.O_LAST_FLOW
 :ZLI.PARMS_BY_ADDRESS
 :ZLI.PROLOG_HOOKS
-:ZLI.RELAX_ALIAS
+:ZLI.CGSW_RELAX_ALIAS
 :ZLI.REVERSE_PARMS
 :ZLI.ROUTINE_RETURN
 :ZLI.SEG_EXTRN_FAR

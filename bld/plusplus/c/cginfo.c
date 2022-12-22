@@ -171,7 +171,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     case MSG_SCHEDULER_DIED:
     case MSG_REGALLOC_DIED:
     case MSG_SCOREBOARD_DIED:
-        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+        if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
             if( lastFunctionOutOfMem != parm ) {
                 lastFunctionOutOfMem = parm;
                 CErr2p( WARN_CG_MEM_PROC, FEName( (SYMBOL)parm ) );
@@ -179,7 +179,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         }
         break;
     case MSG_PEEPHOLE_FLUSHED:
-        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+        if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
             if( !CompFlags.low_on_memory_printed ) {
                 CompFlags.low_on_memory_printed = true;
                 CErr1( WARN_CG_MEM_PEEPHOLE );
@@ -759,7 +759,7 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
         // function may be called as a FAR function through a pointer
         return( false );
     }
-    if( (GenSwitches & (DBG_TYPES | DBG_LOCALS)) != 0 ) {
+    if( (GenSwitches & (CGSW_DBG_TYPES | CGSW_DBG_LOCALS)) != 0 ) {
         // function's debugging info will be FAR
         return( false );
     }
@@ -1569,7 +1569,7 @@ dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
     dbg_type ret;
     SYMBOL sym = _sym;
 
-    if( GenSwitches & DBG_DF ) {
+    if( GenSwitches & CGSW_DBG_DF ) {
         ret = DwarfDebugSym( sym );
     } else {
         ret = SymbolicDebugType( sym->sym_type, SD_DEFAULT );
@@ -1590,7 +1590,7 @@ dbg_type FEDbgRetType(           // GET DEBUG RETURN TYPE FOR SYMBOL
     } else {
         type = type->of;
     }
-    if( GenSwitches & DBG_DF ) {
+    if( GenSwitches & CGSW_DBG_DF ) {
         ret = DwarfDebugType( type );
     } else {
         ret = SymbolicDebugType( type, SD_DEFAULT );

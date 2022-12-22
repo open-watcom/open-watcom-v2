@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -539,7 +539,7 @@ void     MarkInvariants( void )
                     break;
                 case N_INDEXED:
                     if( op->i.base == NULL ) {
-                        if( _IsntModel( FORTRAN_ALIASING ) ) {
+                        if( _IsntModel( CGSW_FORTRAN_ALIASING ) ) {
                             free_index = true;
                         }
                     } else if( op->i.base->n.class == N_TEMP ) {
@@ -572,7 +572,7 @@ void     MarkInvariants( void )
     */
     // ZapRegister( Head->ins.hd.next->head.live.regs );
     if( have_call || free_index ) {
-        if( _IsntModel( FORTRAN_ALIASING ) ) {
+        if( _IsntModel( CGSW_FORTRAN_ALIASING ) ) {
             for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
                 if( op->v.usage & USE_ADDRESS ) {
                     _SetLoopUsage( op, VU_VARIANT );

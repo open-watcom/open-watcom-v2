@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -293,7 +293,7 @@ instruction *rALLOCA( instruction *ins )
         CheapCall( ins, RT_STK_CRAWL, AllocRegName( HW_EMPTY ), AllocRegName( HW_EMPTY ) );
     }
     if( MaxStack != 0 ) {
-        if( _IsModel( MICROSOFT_COMPATIBLE ) ) {
+        if( _IsModel( CGSW_MICROSOFT_COMPATIBLE ) ) {
             // in order to support doing alloca's in parm lists, we copy
             // the parm cache area down now
             CopyStack( ins, real_amount, MaxStack );

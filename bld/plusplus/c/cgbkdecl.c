@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,8 +119,8 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
         }
         CGParmDecl( (cg_sym_handle)sym, cgtype );
         if( fctl->debug_info
-         && ( GenSwitches & DBG_LOCALS ) ) {
-            if( GenSwitches & DBG_DF ) {
+         && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
+            if( GenSwitches & CGSW_DBG_DF ) {
                 DwarfSymDebugGenSymbol( sym, true, cgtype == TY_POINTER );
             }else{
                 SymbolicDebugGenSymbol( sym, true, cgtype == TY_POINTER );
@@ -239,14 +239,14 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
     case SYMC_AUTO:
     case SYMC_REGISTER:
         if( SymIsCatchAlias( sym ) ) {
-            if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
+            if( fctl->debug_info && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
                 SYMBOL base = SymDeAlias( sym );
                 switch( base->id ) {
                 case SYMC_AUTO:
                 case SYMC_REGISTER:
                     if( ! SymIsAnonymous( sym ) ) {
                         if( !SymIsTemporary( sym ) ) {
-                            if( GenSwitches & DBG_DF ) {
+                            if( GenSwitches & CGSW_DBG_DF ) {
                                 DwarfSymDebugGenSymbol( sym, true, false );
                             }else{
                                 SymbolicDebugGenSymbol( sym, true, false );
@@ -264,8 +264,8 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
                     }
                 } else {
                     declareAuto( sym );
-                    if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
-                        if( GenSwitches & DBG_DF ) {
+                    if( fctl->debug_info && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
+                        if( GenSwitches & CGSW_DBG_DF ) {
                             DwarfDebugGenSymbol( sym, true );
                         }else{
                             SymbolicDebugGenSymbol( sym, true, false );
@@ -277,11 +277,11 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
         break;
     case SYMC_STATIC:
         if( fctl->debug_info
-         && ( GenSwitches & DBG_LOCALS ) ) {
+         && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
             if( ! SymIsAnonymous( sym ) ) {
                 if( SymIsReferenced( sym ) || SymIsInitialized( sym ) ) {
                     if( ! CgDeclSkippableConstObj( sym ) ) {
-                        if( GenSwitches & DBG_DF ) {
+                        if( GenSwitches & CGSW_DBG_DF ) {
                             DwarfDebugGenSymbol( sym, true );
                         }else{
                             SymbolicDebugGenSymbol( sym, true, false );
@@ -293,8 +293,8 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
         break;
     case SYMC_TYPEDEF:
         if( fctl->debug_info
-         && ( GenSwitches & DBG_LOCALS ) ) {
-            if( GenSwitches & (DBG_CV | DBG_DF ) ) {
+         && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
+            if( GenSwitches & (CGSW_DBG_CV | CGSW_DBG_DF ) ) {
                 DBLocalType( (cg_sym_handle)sym, false );
             }
         }
@@ -309,7 +309,7 @@ bool CgDeclSkippableConstObj(   // DETERMINE IF SKIPPABLE CONST OBJ
     if( SymAddrTaken( sym ) ) {
         return( false );
     }
-    if( SymIsAutomatic( sym ) && ( GenSwitches & DBG_LOCALS ) ) {
+    if( SymIsAutomatic( sym ) && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
         // if we are debugging locals; don't skip initialization
         return( false );
     }

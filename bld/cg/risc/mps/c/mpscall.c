@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +178,7 @@ void InitTargProc( void )
     CurrProc->targ.debug = NULL;
     // For d1+ or higher, force accesses to locals to go through $fp since frame
     // pointer is what the DWARF debug info is currently referencing.
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_DBG_LOCALS ) ) {
         CurrProc->targ.base_is_fp = true;
     } else {
         CurrProc->targ.base_is_fp = false;

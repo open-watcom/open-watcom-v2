@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -489,9 +489,9 @@ void            PropNullInfo( void )
     block               *blk;
     bool                change;
 
-    if( _IsModel( NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_NO_OPTIMIZATION ) )
         return;
-    if( _IsModel( NULL_DEREF_OK ) )
+    if( _IsModel( CGSW_NULL_DEREF_OK ) )
         return;
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

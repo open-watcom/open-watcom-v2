@@ -42,16 +42,16 @@
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
-#define DEF_SWITCHES_ALL        ( MEMORY_LOW_FAILS )
+#define CGSW_DEF_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS)
+#define CGSW_DEF_SWITCHES       0
 
 #define DEF_TARGET_SWITCHES     0
-#define DEF_SWITCHES            0
 
 
 void CmdSysInit( void )
 /*********************/
 {
-    GenSwitches = DEF_SWITCHES | DEF_SWITCHES_ALL;
+    GenSwitches = CGSW_DEF_SWITCHES | CGSW_DEF_SWITCHES_ALL;
     TargetSwitches = DEF_TARGET_SWITCHES;
     CodeClassName = NULL;
     TextSegName = strsave( "" );
@@ -126,19 +126,19 @@ static void macroDefs( void )
     if( TargetSwitches & ASM_OUTPUT ) {
         DefSwitchMacro( "LA" );
     }
-    if( GenSwitches & NO_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
         DefSwitchMacro( "OD" );
     }
-    if( GenSwitches & RELAX_ALIAS ) {
+    if( GenSwitches & CGSW_RELAX_ALIAS ) {
         DefSwitchMacro( "OA" );
     }
-    if( GenSwitches & BRANCH_PREDICTION ) {
+    if( GenSwitches & CGSW_BRANCH_PREDICTION ) {
         DefSwitchMacro( "OB" );
     }
-    if( GenSwitches & LOOP_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_LOOP_OPTIMIZATION ) {
         DefSwitchMacro( "OL" );
     }
-    if( GenSwitches & INS_SCHEDULING ) {
+    if( GenSwitches & CGSW_INS_SCHEDULING ) {
         DefSwitchMacro( "OR" );
     }
 
@@ -261,28 +261,28 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 {
     char *target_name = NULL;
 
-    GenSwitches &= ~( DBG_CV | DBG_DF | DBG_PREDEF );
+    GenSwitches &= ~( CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF );
     switch( data->dbg_output ) {
     case OPT_ENUM_dbg_output_hd:
     default:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= DBG_DF;
+        GenSwitches |= CGSW_DBG_DF;
         break;
     case OPT_ENUM_dbg_output_hda:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= DBG_DF | DBG_PREDEF;
+        GenSwitches |= CGSW_DBG_DF | CGSW_DBG_PREDEF;
         break;
 #if 0
     case OPT_ENUM_dbg_output_hw:
-        GenSwitches &= ~( DBG_CV | DBG_DF | DBG_PREDEF );
+        GenSwitches &= ~( CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF );
         break;
 #endif
     case OPT_ENUM_dbg_output_hc:
-        GenSwitches |= DBG_CV;
+        GenSwitches |= CGSW_DBG_CV;
         break;
     }
     // -zw overrides a build target setting

@@ -50,6 +50,7 @@
 #include "ctokens.h"
 #include "cerrs.h"
 #include "cmsg.h"
+#include "cgswitch.h"
 #include "pragdefn.h"
 
 
@@ -235,8 +236,8 @@ global unsigned     CTypeCounts[DATA_TYPE_SIZE];
 global char         *Buffer;
 global char         *TokenBuf;
 
-global unsigned     GenSwitches;        /* target independant switches for code generator */
-global unsigned     TargetSwitches;     /* target specific code generator switches */
+global cg_switches  GenSwitches;        /* target independant switches for code generator */
+global cg_target_switches TargetSwitches; /* target specific code generator switches */
 
 global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */

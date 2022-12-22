@@ -464,15 +464,15 @@ void    GenProlog( void )
     lc = AskLocation();
     CurrProc->targ.proc_start = lc;
     label = CurrProc->label;
-    if( _IsModel( DBG_NUMBERS ) ) {
+    if( _IsModel( CGSW_DBG_NUMBERS ) ) {
         OutFileStart( HeadBlock->ins.hd.line_num );
     }
     OutTOCRec( label );
     CodeLabel( label, DepthAlign( PROC_ALIGN ) );
-    if( _IsModel( DBG_NUMBERS ) ) {
+    if( _IsModel( CGSW_DBG_NUMBERS ) ) {
         OutFuncStart( label, lc, HeadBlock->ins.hd.line_num );
     }
-    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
+    if( _IsModel( CGSW_DBG_LOCALS ) ) {  // d1+ or d2
         DbgRtnBeg( CurrProc->targ.debug, lc );
     }
     // keep stack aligned
@@ -485,7 +485,7 @@ void    GenProlog( void )
     emitProlog( &CurrProc->targ.stack_map );
     lc = AskLocation();
     CurrProc->targ.pro_size = lc;
-    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
+    if( _IsModel( CGSW_DBG_LOCALS ) ) {  // d1+ or d2
   //    DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust
   //                    - ret_size );
         DbgProEnd( CurrProc->targ.debug, lc );
@@ -501,7 +501,7 @@ void    GenEpilog( void )
     offset              lc;
 
     old_segid = SetOP( AskCodeSeg() );
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_DBG_LOCALS ) ){  // d1+ or d2
         lc = AskLocation();
         DbgEpiBeg( CurrProc->targ.debug, lc );
     }
@@ -510,10 +510,10 @@ void    GenEpilog( void )
     GenReturn();
     CurrProc->prolog_state |= GENERATED_EPILOG;
     lc = AskLocation();
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_DBG_LOCALS ) ){  // d1+ or d2
         DbgRtnEnd( CurrProc->targ.debug, lc );
     }
-    if( _IsModel( DBG_NUMBERS ) ) {
+    if( _IsModel( CGSW_DBG_NUMBERS ) ) {
         OutFuncEnd( lc );
     }
     OutPDataRec( CurrProc->label, CurrProc->targ.pro_size, lc );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ bool CgRetnOptActive            // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
 
     file_ctl = fctl->cgfile;
     return CgRetnOptForFile( file_ctl )
-        && !( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) );
+        && !( fctl->debug_info && ( GenSwitches & CGSW_DBG_LOCALS ) );
 }
 
 

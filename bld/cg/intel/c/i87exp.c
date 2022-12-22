@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -463,13 +463,13 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         DoNothing( ins );
         ins = SuffixFSTPRes( ins );
         */
-        if( _IsModel( FPU_ROUNDING_INLINE ) ) {
+        if( _IsModel( CGSW_FPU_ROUNDING_INLINE ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
             if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
             }
-        } else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+        } else if( _IsModel( CGSW_FPU_ROUNDING_OMIT ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
         } else {
@@ -482,13 +482,13 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         DoNothing( ins );
         break;
     case _Move( OP_STK0, RES_MEM  ):
-        if( _IsModel( FPU_ROUNDING_INLINE ) ) {
+        if( _IsModel( CGSW_FPU_ROUNDING_INLINE ) ) {
             if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
             } else {
                 ins->u.gen_table = MFST;
             }
-        } else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+        } else if( _IsModel( CGSW_FPU_ROUNDING_OMIT ) ) {
             ins->u.gen_table = MFST;
         } else {
             PrefixChop( ins );

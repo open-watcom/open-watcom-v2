@@ -2140,7 +2140,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
         optimized = false;
         string_len = 0;
         if( last_parm->op.opr == OPR_PUSHSTRING ) {
-            if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+            if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
                 string_len = last_parm->op.u2.string_handle->length;
                 if( functree->op.opr == OPR_PUSHADDR ) {
                     SymGet( &sym, functree->op.u2.sym_handle );
@@ -2161,7 +2161,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                 }
 #endif
                 sym_name = SymName( &sym, functree->op.u2.sym_handle );
-                if( (GenSwitches & NO_OPTIMIZATION) == 0 && CompFlags.extensions_enabled ) {
+                if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 && CompFlags.extensions_enabled ) {
                     for( i = 0; MathFuncs[i].name != NULL; ++i ) {
                         if( parm_count == MathFuncs[i].parm_count
                           && ( strcmp( sym_name, MathFuncs[i].name ) == 0

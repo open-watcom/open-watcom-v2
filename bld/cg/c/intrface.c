@@ -636,7 +636,7 @@ label_handle _CGAPI CGLastParm( void )
     EchoAPI( "CGLastParm()\n" );
 #endif
     top = NULL;
-    if( _IsntModel( NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
         if( !BGInInline() ) {
             top = BENewLabel();
             BGGenCtrl( O_LABEL, NULL, top, true );

@@ -1432,7 +1432,7 @@ static  name    *TNGetLeafName( tn node )
     case CL_ADDR_GLOBAL:
         return( addr->u.n.name );
     case CL_POINTER:
-        if( _IsModel( FORTRAN_ALIASING ) )
+        if( _IsModel( CGSW_FORTRAN_ALIASING ) )
             return( addr->u.n.name );
         return( NULL );
     default:
@@ -1499,7 +1499,7 @@ static  name *TNFindBase( tn node )
         default:
             break;
         }
-        if( _IsntModel( FORTRAN_ALIASING ) )
+        if( _IsntModel( CGSW_FORTRAN_ALIASING ) )
             return( NULL );
         if( node->u2.t.op != O_POINTS )
             return( NULL );

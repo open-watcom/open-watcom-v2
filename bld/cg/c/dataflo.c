@@ -186,7 +186,7 @@ static  void    CheckGlobals( void )
     name        *op;
 
 #define FORCE_MEM (USE_MEMORY|USE_ADDRESS)
-    if( _IsntModel( RELAX_ALIAS ) ) {
+    if( _IsntModel( CGSW_RELAX_ALIAS ) ) {
         for( op = Names[N_MEMORY]; op != NULL; op = op->n.next_name ) {
             if( op->m.memory_type == CG_FE ) {
                 if( ( op->v.usage & FORCE_MEM ) != FORCE_MEM ) {

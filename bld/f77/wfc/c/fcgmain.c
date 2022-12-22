@@ -138,10 +138,10 @@ static  void    CGStart( void ) {
     if( BELoad( NULL ) ) {
         CGFlags |= CG_LOADED;
         cpu = 0;
-        cg_opts = FORTRAN_ALIASING | RELAX_ALIAS;
+        cg_opts = CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS;
 #if COMP_CFG_CG_FPE
         if( (OZOpts & OZOPT_O_LOOP_INVAR) == 0 ) {
-            cg_opts |= ENABLE_FP_EXCEPTIONS;
+            cg_opts |= CGSW_ENABLE_FP_EXCEPTIONS;
         }
 #endif
         cg_target = TARG_SWITCHES;
@@ -155,7 +155,7 @@ static  void    CGStart( void ) {
         }
 #endif
         if( CGOpts & CGOPT_ECHOAPI ) {
-            cg_opts |= ECHO_API_CALLS;
+            cg_opts |= CGSW_ECHO_API_CALLS;
         }
 
 #if _CPU == 386 || _CPU == 8086
@@ -165,32 +165,32 @@ static  void    CGStart( void ) {
 #endif
 #if _CPU == 386
         if( OZOpts & OZOPT_O_BASE_PTR ) {
-            cg_opts |= MEMORY_LOW_FAILS;
+            cg_opts |= CGSW_MEMORY_LOW_FAILS;
         }
 #endif
         if( OZOpts & OZOPT_O_SUPER_OPTIMAL ) {
-            cg_opts |= SUPER_OPTIMAL;
+            cg_opts |= CGSW_SUPER_OPTIMAL;
         }
         if( OZOpts & OZOPT_O_FLOW_REG_SAVES ) {
-            cg_opts |= FLOW_REG_SAVES;
+            cg_opts |= CGSW_FLOW_REG_SAVES;
         }
         if( OZOpts & OZOPT_O_BRANCH_PREDICTION ) {
-            cg_opts |= BRANCH_PREDICTION;
+            cg_opts |= CGSW_BRANCH_PREDICTION;
         }
         if( OZOpts & OZOPT_O_CALL_RET ) {
             cg_target |= NO_CALL_RET_TRANSFORM;
         }
         if( OZOpts & OZOPT_O_LOOP ) {
-            cg_opts |= LOOP_OPTIMIZATION;
+            cg_opts |= CGSW_LOOP_OPTIMIZATION;
         }
         if( OZOpts & OZOPT_O_UNROLL ) {
-            cg_opts |= LOOP_OPTIMIZATION | LOOP_UNROLLING;
+            cg_opts |= CGSW_LOOP_OPTIMIZATION | CGSW_LOOP_UNROLLING;
         }
         if( OZOpts & OZOPT_O_MATH ) {
             cg_target |= I_MATH_INLINE;
         }
         if( OZOpts & OZOPT_O_DISABLE ) {
-            cg_opts |= NO_OPTIMIZATION;
+            cg_opts |= CGSW_NO_OPTIMIZATION;
         }
 #if _CPU == 386 || _CPU == 8086
         if( OZOpts & OZOPT_O_FRAME ) {
@@ -198,10 +198,10 @@ static  void    CGStart( void ) {
         }
 #endif
         if( OZOpts & OZOPT_O_INSSCHED ) {
-            cg_opts |= INS_SCHEDULING;
+            cg_opts |= CGSW_INS_SCHEDULING;
         }
         if( OZOpts & OZOPT_O_NUMERIC ) {
-            cg_opts |= FP_UNSTABLE_OPTIMIZATION;
+            cg_opts |= CGSW_FP_UNSTABLE_OPTIMIZATION;
         }
         space_time = 50;
         if( OZOpts & OZOPT_O_SPACE ) {
@@ -333,15 +333,15 @@ static  void    CGStart( void ) {
 #endif
 
         if( CGOpts & CGOPT_DB_LINE ) {
-            cg_opts |= DBG_NUMBERS;
+            cg_opts |= CGSW_DBG_NUMBERS;
         }
         if( CGOpts & CGOPT_DB_LOCALS ) {
-            cg_opts |= DBG_TYPES | DBG_LOCALS | DBG_NUMBERS | NO_OPTIMIZATION;
+            cg_opts |= CGSW_DBG_TYPES | CGSW_DBG_LOCALS | CGSW_DBG_NUMBERS | CGSW_NO_OPTIMIZATION;
         }
         if( CGOpts & CGOPT_DI_CV ) {
-            cg_opts |= DBG_CV;
+            cg_opts |= CGSW_DBG_CV;
         } else if( CGOpts & CGOPT_DI_DWARF ) {
-            cg_opts |= DBG_DF;
+            cg_opts |= CGSW_DBG_DF;
         }
         info = BEInit( cg_opts, cg_target, space_time, cpu );
 

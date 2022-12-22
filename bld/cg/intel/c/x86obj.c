@@ -802,7 +802,7 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
         DoSegment( new, NULL, NULL, use_16 ); /* don't allow DGROUP after BEStart */
         SegDefs = NULL;
     }
-    if( first_code_segid != BACKSEGS && _IsModel( DBG_DF ) ) {
+    if( first_code_segid != BACKSEGS && _IsModel( CGSW_DBG_DF ) ) {
         DFBegCCU( first_code_segid, NULL );
     }
 }
@@ -903,7 +903,7 @@ static void OutModel( array_control *dest )
         model[3] = 'c';
     }
     model[4] = 'd';
-    if( _IsModel( POSITION_INDEPENDANT ) ) {
+    if( _IsModel( CGSW_POSITION_INDEPENDANT ) ) {
         model[4] = 'i';
     }
     model[5] = '\0';
@@ -995,18 +995,18 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
         DoSegment( seg, dgroup_def, tgroup_def, false );
     }
     SegDefs = NULL;
-    if( _IsModel( DBG_DF ) ) {
-        if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
             DFDefSegs();
         }
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVDefSegs();
     } else {
         DbgTypeSize = 0;
-        if( _IsModel( DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_DBG_LOCALS ) ) {
             DbgLocals = DbgSegDef( DbgSegs[0].seg_name, DbgSegs[0].class_name, SEG_COMB_PRIVATE );
         }
-        if( _IsModel( DBG_TYPES ) ) {
+        if( _IsModel( CGSW_DBG_TYPES ) ) {
             DbgTypes = DbgSegDef( DbgSegs[1].seg_name, DbgSegs[1].class_name, SEG_COMB_PRIVATE );
         }
     }
@@ -1044,7 +1044,7 @@ void    ObjInit( void )
     PutObjOMFRec( CMD_THEADR, names->array, names->used );
     names->used = 0;
 #if _TARGET & _TARG_80386
-    if( _IsTargetModel( EZ_OMF ) || _IsTargetModel( FLAT_MODEL ) ) {
+    if( _IsTargetModel( EZ_OMF | FLAT_MODEL ) ) {
         OutShort( PHARLAP_OMF_COMMENT, names );
         if( _IsntTargetModel( EZ_OMF ) ) {
             OutString( "OS220", names );
@@ -1063,17 +1063,17 @@ void    ObjInit( void )
     OutModel( names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
     names->used = 0;
-    if( _IsTargetModel( FLAT_MODEL ) && _IsModel( DBG_DF ) ) {
+    if( _IsTargetModel( FLAT_MODEL ) && _IsModel( CGSW_DBG_DF ) ) {
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_FLAT_ADDRS, names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
         names->used = 0;
     }
-    if( _IsntModel( DBG_DF | DBG_CV ) ) {
+    if( _IsntModel( CGSW_DBG_DF | CGSW_DBG_CV ) ) {
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_SOURCE_LANGUAGE, names );
         OutByte( DEBUG_MAJOR_VERSION, names );
-        if( _IsModel( DBG_TYPES | DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_DBG_TYPES | CGSW_DBG_LOCALS ) ) {
             OutByte( DEBUG_MINOR_VERSION, names );
         } else {
             OutByte( 0, names );
@@ -1123,15 +1123,15 @@ void    ObjInit( void )
     Imports = NULL;
     GenStaticImports = false;
     AbsPatches = NULL;
-    if( _IsModel( DBG_DF ) ) {
-        if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
             DFObjInitDbgInfo();
 #if 0 // save for JimR and linker
-        } else if( _IsModel( DBG_NUMBERS ) ) {
+        } else if( _IsModel( CGSW_DBG_NUMBERS ) ) {
             DFObjLineInitDbgInfo();
 #endif
         }
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVObjInitDbgInfo();
     } else {
         WVObjInitDbgInfo();
@@ -1837,7 +1837,7 @@ void    FlushOP( segment_id segid )
     if( segid == codeSegId ) {
         DoEmptyQueue();
     }
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
         rec = CurrSeg;
         if( rec->exec || rec->cidx == _NIDX_DATA || rec->cidx == _NIDX_BSS ) {
             if( rec->max_size != 0 ) {
@@ -2011,8 +2011,8 @@ void    ObjFini( void )
     char        *lib;
     char        *alias;
 
-    if( _IsModel( DBG_DF ) ) {
-        if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
             offset  codesize;
 
             codesize = 0;
@@ -2025,14 +2025,14 @@ void    ObjFini( void )
             }
             DFObjFiniDbgInfo( codesize );
 #if 0 //save for Jimr
-        } else if( _IsModel( DBG_NUMBERS ) ) {
+        } else if( _IsModel( CGSW_DBG_NUMBERS ) ) {
             DFObjLineFini( );
 #endif
         }
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_DBG_CV ) ) {
         CVObjFiniDbgInfo();
     } else {
-        if( _IsModel( DBG_TYPES ) ) {
+        if( _IsModel( CGSW_DBG_TYPES ) ) {
             FiniWVTypes();
         }
         WVObjFiniDbgInfo();
@@ -2229,7 +2229,7 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
             if( !alt_dllimp ) {
                 kind = DLLIMPORT;
             }
-        } else if( _IsModel( POSITION_INDEPENDANT ) ) {
+        } else if( _IsModel( CGSW_POSITION_INDEPENDANT ) ) {
             if( attr & FE_THREAD_DATA ) {
                 kind = PIC_RW;
             }
@@ -2741,13 +2741,13 @@ static  void    AddLineInfo( object *obj, cg_linenum line, offset offs )
 {
     cue_state           info;
 
-    if( _IsModel( DBG_DF ) || _IsModel( DBG_CV ) ) {
+    if( _IsModel( CGSW_DBG_DF ) || _IsModel( CGSW_DBG_CV ) ) {
         CueFind( line, &info );
-        if( _IsModel( DBG_DF ) ) {
-            if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+        if( _IsModel( CGSW_DBG_DF ) ) {
+            if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
                  DFLineNum( &info, offs );
             }
-        } else if( _IsModel( DBG_CV ) ) {
+        } else if( _IsModel( CGSW_DBG_CV ) ) {
             if( info.fno != CurrFNo ) {
                 FlushLineNum( obj );
                 InitLineInfo( obj );
@@ -3292,7 +3292,7 @@ void    TellObjNewLabel( cg_sym_handle lbl )
     */
     if( FEAttr( lbl ) & FE_COMMON ) {
         DoEmptyQueue();
-        if( _IsModel( DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
             }
@@ -3300,7 +3300,7 @@ void    TellObjNewLabel( cg_sym_handle lbl )
     } else if( CurrSeg->comdat_symbol != NULL ) {
         DoEmptyQueue();
         SetUpObj( false );
-        if( _IsModel( DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
             }
@@ -3318,7 +3318,7 @@ void    TellObjNewProc( cg_sym_handle proc )
     old_segid = SetOP( codeSegId );
     proc_segid = FESegID( proc );
     if( codeSegId != proc_segid ) {
-        if( _IsModel( DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
             }
@@ -3336,7 +3336,7 @@ void    TellObjNewProc( cg_sym_handle proc )
     }
     if( FEAttr( proc ) & FE_COMMON ) {
         DoEmptyQueue();
-        if( _IsModel( DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
             }
@@ -3346,7 +3346,7 @@ void    TellObjNewProc( cg_sym_handle proc )
     } else if( CurrSeg->comdat_symbol != NULL ) {
         DoEmptyQueue();
         SetUpObj( false );
-        if( _IsModel( DBG_DF ) ) {
+        if( _IsModel( CGSW_DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
             }

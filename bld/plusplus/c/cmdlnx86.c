@@ -52,19 +52,22 @@ typedef enum {                  // flags to control memory model settings
 } mem_model_control;
 
 #if 0
-#define DEF_SWITCHES_ALL        ( MEMORY_LOW_FAILS | ENABLE_FP_EXCEPTIONS )
+#define CGSW_DEF_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS | CGSW_ENABLE_FP_EXCEPTIONS)
 #else
-#define DEF_SWITCHES_ALL        ( MEMORY_LOW_FAILS )
+#define CGSW_DEF_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS)
+#endif
+#if _CPU == 8086
+    #define CGSW_DEF_SWITCHES   0
+#else
+    #define CGSW_DEF_SWITCHES   0
 #endif
 
 #if _CPU == 8086
     #define DEF_TARGET_SWITCHES CHEAP_POINTER
-    #define DEF_SWITCHES 0
     #define DEFAULT_CPU CPU_86
     #define DEFAULT_FPU FPU_87
 #else
     #define DEF_TARGET_SWITCHES CHEAP_POINTER|USE_32|FLAT_MODEL
-    #define DEF_SWITCHES 0
     #define DEFAULT_CPU CPU_686
     #define DEFAULT_FPU FPU_387
 #endif
@@ -78,7 +81,7 @@ typedef enum {                  // flags to control memory model settings
 void CmdSysInit( void )
 /*********************/
 {
-    GenSwitches = DEF_SWITCHES | DEF_SWITCHES_ALL;
+    GenSwitches = CGSW_DEF_SWITCHES | CGSW_DEF_SWITCHES_ALL;
     TargetSwitches = DEF_TARGET_SWITCHES;
     SET_CPU( CpuSwitches, DEFAULT_CPU );
     SET_FPU( CpuSwitches, DEFAULT_FPU );
@@ -746,25 +749,25 @@ static void macroDefs( void )
     if( TargetSwitches & NEED_STACK_FRAME ) {
         DefSwitchMacro( "OF" );
     }
-    if( GenSwitches & NO_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
         DefSwitchMacro( "OD" );
     }
-    if( GenSwitches & RELAX_ALIAS ) {
+    if( GenSwitches & CGSW_RELAX_ALIAS ) {
         DefSwitchMacro( "OA" );
     }
-    if( GenSwitches & BRANCH_PREDICTION ) {
+    if( GenSwitches & CGSW_BRANCH_PREDICTION ) {
         DefSwitchMacro( "OB" );
     }
-    if( GenSwitches & LOOP_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_LOOP_OPTIMIZATION ) {
         DefSwitchMacro( "OL" );
     }
-    if( GenSwitches & INS_SCHEDULING ) {
+    if( GenSwitches & CGSW_INS_SCHEDULING ) {
         DefSwitchMacro( "OR" );
     }
-    if( GenSwitches & FPU_ROUNDING_INLINE ) {
+    if( GenSwitches & CGSW_FPU_ROUNDING_INLINE ) {
         DefSwitchMacro( "ZRI" );
     }
-    if( GenSwitches & FPU_ROUNDING_OMIT ) {
+    if( GenSwitches & CGSW_FPU_ROUNDING_OMIT ) {
         DefSwitchMacro( "ZRO" );
     }
     if( TargetSwitches & GEN_FWAIT_386 ) {
@@ -966,16 +969,16 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     char *target_name = NULL;
     mem_model_control mmc = MMC_NULL;
 
-    GenSwitches &= ~( DBG_CV | DBG_DF | DBG_PREDEF );
+    GenSwitches &= ~( CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF );
     switch( data->dbg_output ) {
     case OPT_ENUM_dbg_output_hc:
-        GenSwitches |= DBG_CV;
+        GenSwitches |= CGSW_DBG_CV;
         break;
     case OPT_ENUM_dbg_output_hda:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= DBG_DF | DBG_PREDEF;
+        GenSwitches |= CGSW_DBG_DF | CGSW_DBG_PREDEF;
         break;
     case OPT_ENUM_dbg_output_hw:
         break;
@@ -984,7 +987,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= DBG_DF;
+        GenSwitches |= CGSW_DBG_DF;
         break;
     }
     switch( data->ds_peg ) {
@@ -1006,9 +1009,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         data->zro = data->zri = 0;
     }
     if( data->zri ) {
-        GenSwitches |= FPU_ROUNDING_INLINE;
+        GenSwitches |= CGSW_FPU_ROUNDING_INLINE;
     } else if( data->zro ) {
-        GenSwitches |= FPU_ROUNDING_OMIT;
+        GenSwitches |= CGSW_FPU_ROUNDING_OMIT;
     }
 
 #if _CPU == 386

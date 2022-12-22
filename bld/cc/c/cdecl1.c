@@ -108,7 +108,7 @@ static void FuncDefn( SYMPTR sym )
     }
     sym->flags |= SYM_DEFINED /* | SYM_REFERENCED */;
 
-    if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+    if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
         sym->flags |= SYM_OK_TO_RECURSE;
     }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -405,7 +405,7 @@ bool     TailRecursion( void )
     bool        changed;
 
     changed = false;
-    if( _IsntModel( NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
+    if( _IsntModel( CGSW_NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_CALL ) {

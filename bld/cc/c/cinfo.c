@@ -786,7 +786,7 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_SCHEDULER_DIED:
     case MSG_REGALLOC_DIED:
     case MSG_SCOREBOARD_DIED:
-        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+        if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
             if( LastFuncOutOfMem != parm ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE, FEName( (CGSYM_HANDLE)parm ) );
                 LastFuncOutOfMem = parm;
@@ -794,7 +794,7 @@ void FEMessage( int class, CGPOINTER parm )
         }
         break;
     case MSG_PEEPHOLE_FLUSHED:
-        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+        if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
             if( !CompFlags.low_on_memory_printed ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
                 CompFlags.low_on_memory_printed = true;

@@ -73,11 +73,11 @@ void    DFDefSegs( void )
 {
     dw_sectnum  i;
 
-    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
         for( i = 0; i < DW_DEBUG_MAX; ++i ){
             DFSetSection( i, NULL, DbgSegDef( DwarfSegNames[i].seg_name ) );
         }
-    } else if( _IsModel( DBG_NUMBERS ) ) {
+    } else if( _IsModel( CGSW_DBG_NUMBERS ) ) {
         DFSetSection( DW_DEBUG_LINE, NULL, DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name ) );
     }
 }

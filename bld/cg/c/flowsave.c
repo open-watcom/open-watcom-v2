@@ -303,7 +303,7 @@ void FlowSave( hw_reg_set *preg )
     type_class_def      reg_type_class;
 
     HW_CAsgn( flowedRegs, HW_EMPTY );
-    if( _IsntModel( FLOW_REG_SAVES ) )
+    if( _IsntModel( CGSW_FLOW_REG_SAVES ) )
         return;
     if( !HaveDominatorInfo )
         return;

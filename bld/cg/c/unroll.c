@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -292,7 +292,7 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
     *clean = false;
     unroll_count = Head->unroll_count;
     if( unroll_count == 0 ) {
-        if( _IsntModel( LOOP_UNROLLING ) )
+        if( _IsntModel( CGSW_LOOP_UNROLLING ) )
             return( 0 );
         if( OptForSize > 0 )
             return( false );

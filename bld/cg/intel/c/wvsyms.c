@@ -172,7 +172,7 @@ void    WVSetBase( void )
     temp_buff   temp;
     back_handle bck;
 
-    if( _IsModel( DBG_LOCALS ) && NeedBaseSet() ) {
+    if( _IsModel( CGSW_DBG_LOCALS ) && NeedBaseSet() ) {
         bck = BENewBack( NULL );
         bck->segid = AskOP();
         OutLabel( bck->lbl );

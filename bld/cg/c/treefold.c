@@ -922,7 +922,7 @@ tn      FoldDiv( tn left, tn rite, type_def *tipe )
                 BurnTree( left );
                 BurnTree( rite );
             } else if( ( tipe->attr & TYPE_FLOAT ) &&
-                ( _IsModel( FP_UNSTABLE_OPTIMIZATION ) ||
+                ( _IsModel( CGSW_FP_UNSTABLE_OPTIMIZATION ) ||
                 ( CFIsU32( rv ) && GetLog2( CFConvertByType( rv, tipe ) ) != -1 ) ) ) {
                 if( CFTest( rv ) != 0 ) {
                     tmp = CFInverse( rv );
@@ -1050,7 +1050,7 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
                         BurnTree( rite );
                     }
                 }
-            } else if( _IsntModel( NO_OPTIMIZATION ) && _IsntModel( DBG_LOCALS ) && TGCanDuplicate( left ) ) {
+            } else if( _IsntModel( CGSW_NO_OPTIMIZATION ) && _IsntModel( CGSW_DBG_LOCALS ) && TGCanDuplicate( left ) ) {
                 /* signed int a; optimize a % rv like IBM does:
                    int b = a >> 31;
                    t1 = (a ^ b) - b;
@@ -1449,9 +1449,9 @@ tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
                     left = TGTrash( left );
                     return( TGBinary( O_COMMA, left, IntToType( result, TypeInteger ), TypeInteger ) );
                 }
-                if( _IsntModel( NULL_DEREF_OK ) && IsObjectAddr( left ) && ( CFTest( rite->u.name->c.value ) == 0 ) ) {
+                if( _IsntModel( CGSW_NULL_DEREF_OK ) && IsObjectAddr( left ) && ( CFTest( rite->u.name->c.value ) == 0 ) ) {
                     /* Addresses of globals or local variables are guaranteed not to be null
-                     * unless NULL_DEREF_OK is in effect
+                     * unless CGSW_NULL_DEREF_OK is in effect
                      */
                     BurnTree( left );
                     BurnTree( rite );

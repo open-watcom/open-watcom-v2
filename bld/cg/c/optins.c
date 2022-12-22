@@ -149,7 +149,7 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
     oc_class    cl;
     ins_entry   *ins;
 
-    if( _IsModel( NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_NO_OPTIMIZATION ) )
         return( false );
     if( jmp == NULL )
         return( false );
@@ -284,7 +284,7 @@ void    OptPush( void )
             }
             break;
         case OC_CALL:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
                 CallRet( ins );
             }
             break;
@@ -296,7 +296,7 @@ void    OptPush( void )
             }
             break;
         case OC_RET:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
                 RetAftrLbl( ins );
                 RetAftrCall( ins );
             }
@@ -339,17 +339,17 @@ void    OptPull( void )
         switch( ins_class ) {
         case OC_LABEL:
             Untangle( FirstIns );
-            if( _IsntModel( NO_OPTIMIZATION ) && !InsDelete ) {
+            if( _IsntModel( CGSW_NO_OPTIMIZATION ) && !InsDelete ) {
                 CloneCode( _Label( FirstIns ) );
             }
             break;
         case OC_CALL:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
                 CallRet( FirstIns );
             }
             break;
         case OC_JMP:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
                 IsolatedCode( FirstIns );
                 if( !InsDelete ) {
                     StraightenCode( FirstIns );
@@ -364,7 +364,7 @@ void    OptPull( void )
             }
             break;
         case OC_JMPI:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
                 IsolatedCode( FirstIns );
                 if( !InsDelete ) {
                     CheckStraightenCode( NextIns( FirstIns ) );
@@ -376,7 +376,7 @@ void    OptPull( void )
             break;
         case OC_RET:
         case OC_NORET:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
                 IsolatedCode( FirstIns );
                 if( !InsDelete ) {
                     CheckStraightenCode( NextIns( FirstIns ) );

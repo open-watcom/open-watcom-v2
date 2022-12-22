@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,11 +92,11 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     Action( ", opt_size==%d, proc_rev=%h%n", opt_size, proc );
     SymDebug = 0;
     TypDebug = 0;
-    if( cg_data & DBG_LOCALS ) {
+    if( cg_data & CGSW_DBG_LOCALS ) {
         SymDebug = FCreate( "DBGSYM" );
         ++FilesOpen;
     }
-    if( cg_data & DBG_TYPES ) {
+    if( cg_data & CGSW_DBG_TYPES ) {
         TypDebug = FCreate( "DBGTYP" );
         ++FilesOpen;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -266,7 +266,7 @@ cg_type NamePtrType( name *op ) {
             return( TY_POINTER );
         }
     } else if( op->n.class == N_TEMP ) {
-        if( _IsTargetModel( FLOATING_SS ) || _IsTargetModel( FLOATING_DS ) ) {
+        if( _IsTargetModel( FLOATING_SS | FLOATING_DS ) ) {
             // can't have a stack > 64K - BBB 06/02/94
             return( TY_LONG_POINTER );
         } else {
