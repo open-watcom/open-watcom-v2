@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,5 @@
 ****************************************************************************/
 
 
-extern int      RTSpawn( void (*fn)( void ) );
-extern void     RTSuicide( void );
-#if defined( __WATCOMC__ )
-#pragma aux RTSuicide __aborts
-#endif
+extern int                  RTSpawn( void (*fn)( void ) );
+extern _WCNORETURN void     RTSuicide( void );
