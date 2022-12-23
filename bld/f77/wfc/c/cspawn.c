@@ -34,6 +34,8 @@
 #include "jmpbuf.h"
 #include "cspawn.h"
 
+#include "clibext.h"
+
 
 static  jmp_buf *CSpawnStack;
 
@@ -55,8 +57,8 @@ int     CSpawn( void (*fn)( void ) )
 }
 
 
-void    CSuicide( void )
-//=====================
+_WCNORETURN void    CSuicide( void )
+//==================================
 {
     longjmp( *CSpawnStack, 1 );
 }

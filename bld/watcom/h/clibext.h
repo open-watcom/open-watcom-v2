@@ -59,6 +59,7 @@
 
 #define _WCRTLINK
 #define _WCNEAR
+#define _WCNORETURN
 #define __near
 #define __based(x)
 

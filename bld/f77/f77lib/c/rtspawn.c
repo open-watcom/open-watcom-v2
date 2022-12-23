@@ -76,7 +76,7 @@ int     RTSpawn( void (*fn)( void ) )
 }
 
 
-void    RTSuicide( void )
+_WCNORETURN void    RTSuicide( void )
 {
     if( _SPAWNSTACK == NULL )
         exit( -1 );
