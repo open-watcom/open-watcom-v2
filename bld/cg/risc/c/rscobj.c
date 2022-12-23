@@ -603,21 +603,7 @@ char GetMemModel( void )
 {
     char    model;
 
-    if( _IsTargetModel( BIG_CODE ) ) {
-        if( _IsTargetModel( BIG_DATA ) ) {
-            if( _IsntTargetModel( CHEAP_POINTER ) ) {
-                model = 'h';
-            } else {
-                model = 'l';
-            }
-        } else {
-            model = 'm';
-        }
-    } else if( _IsTargetModel( BIG_DATA ) ) {
-        model = 'c';
-    } else {
-        model = 'f';
-    }
+    model = 'f';
     return( model );
 }
 
