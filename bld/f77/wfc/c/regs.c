@@ -35,10 +35,10 @@
 // REGS         : register information
 //
 
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
 static char             IF_names[] = "IF@*";
 static char             IF_Xnames[] = "IF@X*";
-#elif _CPU == _AXP || _CPU == _PPC
+#elif _RISC_CPU
 static char             IF_names[] = "_IF_*";
 static char             IF_Xnames[] = "_IF_X*";
 #else
@@ -303,7 +303,7 @@ static aux_info                IFVarInfo = {
         &IFArgValue
 };
 
-#elif _CPU == _AXP || _CPU == _PPC
+#elif _RISC_CPU
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D( HW_EMPTY )};

@@ -508,13 +508,13 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
 
 static  void    SetConstDataSeg( void ) {
 //=================================
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     if( (CGOpts & CGOPT_CONST_CODE) && ( _BigDataModel( CGOpts ) ) ) {
         BESetSeg( CurrCodeSegId );
     } else {
         BESetSeg( SEG_CDATA );
     }
-#else
+#else /* _RISC_CPU */
     BESetSeg( SEG_CDATA );
 #endif
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,12 +102,12 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
         return( SEG_FREE );
     if( ( CurrGSeg != NULL ) && ( CurrGSeg->size + g_size <= MaxSegSize ) ) {
         // object will fit in current segment
-#if _CPU == 8086  || _CPU == 386
+#if _INTEL_CPU
         if( ( init == CurrGSeg->initialized ) || !_SmallDataModel( CGOpts ) ) {
             CurrGSeg->size += g_size;
             return( CurrGSeg->segid );
         }
-#else
+#else /* _RISC_CPU */
         if( init == CurrGSeg->initialized ) {
             CurrGSeg->size += g_size;
             return( CurrGSeg->segid );

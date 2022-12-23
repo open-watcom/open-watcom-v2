@@ -238,38 +238,7 @@ static void AddDefaultLib( const char *libname, char priority )
 void DefaultLibInfo( void )
 //=========================
 {
-#if _CPU == 386
-    if( CGOpts & CGOPT_STK_ARGS ) {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( "flibs", '1' );
-            AddDefaultLib( "math3s", '1' );
-        } else {
-            AddDefaultLib( "flib7s", '1' );
-            AddDefaultLib( "math387s", '1' );
-        }
-        AddDefaultLib( "clib3s", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( "wresfs", '1' );
-        }
-    } else {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( "flib", '1' );
-            AddDefaultLib( "math3r", '1' );
-        } else {
-            AddDefaultLib( "flib7", '1' );
-            AddDefaultLib( "math387r", '1' );
-        }
-        AddDefaultLib( "clib3r", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( "wresf", '1' );
-        }
-    }
-    if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLib( "emu387", '1' );
-    } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLib( "noemu387", '1' );
-    }
-#elif _CPU == 8086
+#if _CPU == 8086
     if( CGOpts & CGOPT_M_MEDIUM ) {
         if( CPUOpts & CPUOPT_FPC ) {
             AddDefaultLib( "flibm", '1' );
@@ -299,6 +268,37 @@ void DefaultLibInfo( void )
         AddDefaultLib( "emu87", '1' );
     } else if( CPUOpts & CPUOPT_FPI87 ) {
         AddDefaultLib( "noemu87", '1' );
+    }
+#elif _CPU == 386
+    if( CGOpts & CGOPT_STK_ARGS ) {
+        if( CPUOpts & CPUOPT_FPC ) {
+            AddDefaultLib( "flibs", '1' );
+            AddDefaultLib( "math3s", '1' );
+        } else {
+            AddDefaultLib( "flib7s", '1' );
+            AddDefaultLib( "math387s", '1' );
+        }
+        AddDefaultLib( "clib3s", '1' );
+        if( Options & OPT_RESOURCES ) {
+            AddDefaultLib( "wresfs", '1' );
+        }
+    } else {
+        if( CPUOpts & CPUOPT_FPC ) {
+            AddDefaultLib( "flib", '1' );
+            AddDefaultLib( "math3r", '1' );
+        } else {
+            AddDefaultLib( "flib7", '1' );
+            AddDefaultLib( "math387r", '1' );
+        }
+        AddDefaultLib( "clib3r", '1' );
+        if( Options & OPT_RESOURCES ) {
+            AddDefaultLib( "wresf", '1' );
+        }
+    }
+    if( CPUOpts & CPUOPT_FPI ) {
+        AddDefaultLib( "emu387", '1' );
+    } else if( CPUOpts & CPUOPT_FPI87 ) {
+        AddDefaultLib( "noemu387", '1' );
     }
 #elif _CPU == _AXP
     AddDefaultLib( "flib", '1' );

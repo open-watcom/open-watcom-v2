@@ -112,7 +112,20 @@ static aux_info         *AliasInfo;
 static char             SymName[MAX_SYMLEN+1];
 static size_t           SymLen;
 
-#if _CPU == 386
+#if _CPU == 8086
+static char    __Pascal[] =  {
+    "aux __pascal \"^\" "
+    "parm routine reverse [] "
+    "value struct float struct caller [] "
+    "modify [ax bx cx dx]"
+};
+static char    __Cdecl[] =   {
+    "aux __cdecl \"_*\" "
+    "parm caller [] "
+    "value struct float struct routine [ax] "
+    "modify [ax bx cx dx]"
+};
+#elif _CPU == 386
 static char    __Syscall[] = {
     "aux __syscall \"*\" "
     "parm caller [] "
@@ -136,19 +149,6 @@ static char    __Stdcall[] = {
     "parm routine [] "
     "value struct [] "
     "modify [eax ecx edx]"
-};
-#elif _CPU == 8086
-static char    __Pascal[] =  {
-    "aux __pascal \"^\" "
-    "parm routine reverse [] "
-    "value struct float struct caller [] "
-    "modify [ax bx cx dx]"
-};
-static char    __Cdecl[] =   {
-    "aux __cdecl \"_*\" "
-    "parm caller [] "
-    "value struct float struct routine [ax] "
-    "modify [ax bx cx dx]"
 };
 #endif
 
@@ -491,6 +491,12 @@ static void DupCallBytes( aux_info *dst, aux_info *src )
 {
     byte_seq        *new_seq;
     size_t          seq_len;
+#if _RISC_CPU
+    byte_seq_reloc  **lnk;
+    byte_seq_reloc  *new;
+    byte_seq_reloc  *head;
+    byte_seq_reloc  *reloc;
+#endif
 
     seq_len = src->code->length;
     new_seq = FMemAlloc( offsetof( byte_seq, data ) + seq_len );
@@ -499,16 +505,8 @@ static void DupCallBytes( aux_info *dst, aux_info *src )
     dst->code->length = src->code->length;
 
 #if _INTEL_CPU
-
     dst->code->relocs = src->code->relocs;
-
-#elif _CPU == _AXP || _CPU == _PPC
-
-    byte_seq_reloc      **lnk;
-    byte_seq_reloc      *new;
-    byte_seq_reloc      *head;
-    byte_seq_reloc      *reloc;
-
+#else /* _RISC_CPU */
     head = NULL;
     lnk = &head;
     for( reloc = src->code->relocs; reloc; reloc = reloc->next ) {
@@ -521,7 +519,6 @@ static void DupCallBytes( aux_info *dst, aux_info *src )
         lnk = &new->next;
     }
     dst->code->relocs = head;
-
 #endif
 }
 
@@ -820,7 +817,7 @@ static void AsmInsertFixups( unsigned char *buff, size_t len )
     CurrAux->code = seq;
 }
 
-#elif _CPU == _AXP || _CPU == _PPC
+#else /* _RISC_CPU */
 
 uint_32 AsmQuerySPOffsetOf( void *handle )
 //========================================
@@ -905,14 +902,12 @@ static void GetByteSeq( void )
             AsmCodeAddress = (byte_seq_len)seq_len;
             AsmCodeLimit = MAXIMUM_BYTESEQ;
             AsmCodeBuffer = buff;
-#if _INTEL_CPU
-  #if _CPU == 8086
+#if _CPU == 8086
             AsmLine( TokStart + 1, use_fpu_emu );
             use_fpu_emu = false;
-  #else
+#elif _CPU == 386
             AsmLine( TokStart + 1, false );
-  #endif
-#else
+#else /* _RISC_CPU */
             AsmLine( TokStart + 1 );
 #endif
             if( AsmCodeAddress <= MAXIMUM_BYTESEQ ) {
@@ -1348,11 +1343,11 @@ void     PragmaAux( void )
         } else if( !have.f_call && RecToken( "FAR" ) ) {
             CurrAux->cclass |= FECALL_FAR_CALL;
             have.f_call = true;
-#if _CPU == 386
+    #if _CPU == 386
         } else if( !have.f_call && RecToken( "FAR16" ) ) {
             CurrAux->cclass |= FECALL_FAR16_CALL;
             have.f_call = true;
-#endif
+    #endif
         } else if( !have.f_call && RecToken( "NEAR" ) ) {
             CurrAux->cclass &= ~FECALL_FAR_CALL;
             have.f_call = true;

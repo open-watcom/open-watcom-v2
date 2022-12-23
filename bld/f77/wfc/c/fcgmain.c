@@ -111,15 +111,16 @@ void    CGGenSub( void ) {
     }
 }
 
+#define DEF_CGSW_SWITCHES       (CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS)
 
-#if _CPU == 386
-  #define TARG_SWITCHES (USE_32)
-#elif _CPU == 8086
-  #define TARG_SWITCHES 0
+#if _CPU == 8086
+  #define DEF_CGTRGSW_SWITCHES  0
+#elif _CPU == 386
+  #define DEF_CGTRGSW_SWITCHES  (USE_32)
 #elif _CPU == _AXP
-  #define TARG_SWITCHES 0
+  #define DEF_CGTRGSW_SWITCHES  0
 #elif _CPU == _PPC
-  #define TARG_SWITCHES 0
+  #define DEF_CGTRGSW_SWITCHES  0
 #else
   #error no target specified
 #endif
@@ -138,15 +139,16 @@ static  void    CGStart( void ) {
     if( BELoad( NULL ) ) {
         CGFlags |= CG_LOADED;
         cpu = 0;
-        cg_opts = CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS;
+        cg_opts = DEF_CGSW_SWITCHES;
+        cg_target = DEF_CGTRGSW_SWITCHES;
+
 #if COMP_CFG_CG_FPE
         if( (OZOpts & OZOPT_O_LOOP_INVAR) == 0 ) {
             cg_opts |= CGSW_ENABLE_FP_EXCEPTIONS;
         }
 #endif
-        cg_target = TARG_SWITCHES;
 
-#if _CPU == _AXP || _CPU == _PPC
+#if _RISC_CPU
         if( CGOpts & CGOPT_GENASM ) {
             cg_target |= ASM_OUTPUT;
         }
@@ -158,15 +160,15 @@ static  void    CGStart( void ) {
             cg_opts |= CGSW_ECHO_API_CALLS;
         }
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
         if( CGOpts & CGOPT_CONST_CODE ) {
             cg_target |= CONST_IN_CODE;
         }
-#endif
-#if _CPU == 386
+	#if _CPU == 386
         if( OZOpts & OZOPT_O_BASE_PTR ) {
             cg_opts |= CGSW_MEMORY_LOW_FAILS;
         }
+	#endif
 #endif
         if( OZOpts & OZOPT_O_SUPER_OPTIMAL ) {
             cg_opts |= CGSW_SUPER_OPTIMAL;
@@ -192,7 +194,7 @@ static  void    CGStart( void ) {
         if( OZOpts & OZOPT_O_DISABLE ) {
             cg_opts |= CGSW_NO_OPTIMIZATION;
         }
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
         if( OZOpts & OZOPT_O_FRAME ) {
             cg_target |= NEED_STACK_FRAME;
         }
@@ -210,27 +212,25 @@ static  void    CGStart( void ) {
         if( OZOpts & OZOPT_O_TIME ) {
             space_time = 0;
         }
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
         if( _FloatingDS( CGOpts ) ) {
             cg_target |= FLOATING_DS;
         }
         if( _FloatingES( CGOpts ) ) {
             cg_target |= FLOATING_ES;
         }
-#endif
-#if _CPU == 8086
+    #if _CPU == 8086
         if( CGOpts & CGOPT_SS_FLOATS ) {
             cg_target |= FLOATING_SS;
         }
         if( CGOpts & CGOPT_WINDOWS ) {
             cg_target |= WINDOWS | CHEAP_WINDOWS;
         }
-#elif _CPU == 386
+    #else
         if( CGOpts & CGOPT_EZ_OMF ) {
             cg_target |= EZ_OMF;
         }
-#endif
-#if _CPU == 386 || _CPU == 8086
+    #endif
     #if _CPU == 8086
         if( CPUOpts & (CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586) ) {
     #endif
@@ -258,13 +258,13 @@ static  void    CGStart( void ) {
         if( CGOpts & CGOPT_M_COMPACT ) {
             cg_target |= BIG_DATA | CHEAP_POINTER;
         }
-#elif _CPU == _AXP || _CPU == _PPC
+#elif _RISC_CPU
         cg_target |= CHEAP_POINTER;
 #else
     #error no target specified
 #endif
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
         if( CGOpts & CGOPT_M_MEDIUM ) {
             cg_target |= BIG_CODE | CHEAP_POINTER;
         }
@@ -320,10 +320,10 @@ static  void    CGStart( void ) {
             SET_FPU_LEVEL( cpu, FPU_686 );
         } else if( CPUOpts & (CPUOPT_FPI | CPUOPT_FPI87) ) {
             // no level specified; use default
-    #if _CPU == 386
-            SET_FPU_LEVEL( cpu, FPU_387 );
-    #else
+    #if _CPU == 8086
             SET_FPU_LEVEL( cpu, FPU_87 );
+    #else
+            SET_FPU_LEVEL( cpu, FPU_387 );
     #endif
         }
 
@@ -366,7 +366,7 @@ static  void    CGStart( void ) {
 #endif
             }
         }
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
         if( GET_FPU( cpu ) > FPU_NONE ) {
             CGFlags |= CG_FP_MODEL_80x87;
         }

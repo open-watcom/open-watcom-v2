@@ -7,7 +7,7 @@
 
 #include "wfcmsgs.grh"
 
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
 #include "wasmcmsg.grh"
 #endif
 

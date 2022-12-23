@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,7 +310,7 @@ static void CGOption( opt_entry *optn, bool negated )
                CGOPT_M_MEDIUM | CGOPT_M_LARGE );
         _Excl( CGOPT_BD | CGOPT_BM );
         _Excl( CGOPT_STACK_CHK | CGOPT_STACK_GROW );
-#elif _CPU == _AXP || _CPU == _PPC
+#elif _RISC_CPU
         _Excl( CGOPT_BD | CGOPT_BM );
 #else
   #error Unknown platform
@@ -352,7 +352,7 @@ static void OZOption( opt_entry *optn, bool negated )
                                    CPUOpts &= ~(excl_bits);        \
                                }
 
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
 static  void    CPUOption( opt_entry *optn, bool negated )
 //========================================================
 // Process a code generator option.
@@ -361,12 +361,12 @@ static  void    CPUOption( opt_entry *optn, bool negated )
 
     opt_bit = optn->value;
     if( !negated ) {
-#if _CPU == 8086
+  #if _CPU == 8086
         _CPUExcl( CPUOPT_8086 | CPUOPT_80186 | CPUOPT_80286 |
                   CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586 );
-#else
+  #else
         _CPUExcl( CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586 );
-#endif
+  #endif
         _CPUExcl( CPUOPT_FPC | CPUOPT_FPI | CPUOPT_FPI87 )
         _CPUExcl( CPUOPT_FPC | CPUOPT_FP287 | CPUOPT_FP387 | CPUOPT_FP5 );
         CPUOpts |= opt_bit;

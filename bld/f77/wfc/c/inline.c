@@ -54,72 +54,9 @@
 #include "cgprotos.h"
 
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
 
-#if _CPU == 386
-
-// Space optimized pragmas (take an awful beating on a pentium)
-
-// edi  - destination pointer
-// esi  - source pointer
-// ecx  - number of characters to move
-static  char    __RTIStrBlastEqOS[] =  {
-    "aux __RTIStrBlastEq = "
-        "\"rep   movsb\" "
-    "parm reverse [edi] [esi] [ecx]"
-};
-
-// edi  - destination pointer
-// eax  - number of spaces to append
-// esi  - source pointer
-// ecx  - number of characters to move
-static  char    __RTIStrBlastNeOS[] =  {
-    "aux __RTIStrBlastNe = "
-        "\"rep   movsb\" "
-        "\"mov   ecx, eax\" "
-        "\"mov   eax, 0x20202020\" "
-        "\"rep   stosb\" "
-    "parm reverse [edi] [eax] [esi] [ecx]"
-};
-
-// Time Optimized pragmas
-
-// edi  - destination pointer
-// esi  - source pointer
-// ecx  - number of 4 character tuples to move (strlen >> 2)
-// eax  - number of characters left over after initial 4-tuple move (strlen & 3)
-static  char    __RTIStrBlastEqOT[] =  {
-    "aux __RTIStrBlastEq = "
-        "\"rep   movsd\" "
-        "\"mov   ecx, eax\" "
-        "\"rep   movsb\" "
-    "parm reverse [edi] [esi] [ecx] [eax]"
-};
-
-// edi  - destination pointer
-// eax  - number of spaces to append
-// esi  - source pointer
-// ecx  - number of characters to move
-static  char    __RTIStrBlastNeOT[] =  {
-    "aux __RTIStrBlastNe = "
-        "\"mov   ecx, eax\" "
-        "\"shr   ecx, 2\" "
-        "\"rep   movsd\" "
-        "\"mov   ecx, eax\" "
-        "\"and   ecx, 3\" "
-        "\"rep   movsb\" "
-        "\"mov   ecx, edx\" "
-        "\"shr   ecx, 2\" "
-        "\"mov   eax, 0x20202020\" "
-        "\"rep   stosd\" "
-        "\"mov   ecx, edx\" "
-        "\"and   ecx, 3\" "
-        "\"rep   stosb\" "
-    "parm reverse [edi] [edx] [esi] [eax] "
-    "modify [ecx]"
-};
-
-#elif _CPU == 8086
+#if _CPU == 8086
 
 // Space Optimized pragmas
 
@@ -334,6 +271,70 @@ static  char    __RTIStrBlastNeOTS[] =  {
     "parm reverse [di] [dx] [si] [ax] "
     "modify [cx es]"
 };
+
+#else /* _CPU == 386 */
+
+// Space optimized pragmas (take an awful beating on a pentium)
+
+// edi  - destination pointer
+// esi  - source pointer
+// ecx  - number of characters to move
+static  char    __RTIStrBlastEqOS[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsb\" "
+    "parm reverse [edi] [esi] [ecx]"
+};
+
+// edi  - destination pointer
+// eax  - number of spaces to append
+// esi  - source pointer
+// ecx  - number of characters to move
+static  char    __RTIStrBlastNeOS[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"rep   movsb\" "
+        "\"mov   ecx, eax\" "
+        "\"mov   eax, 0x20202020\" "
+        "\"rep   stosb\" "
+    "parm reverse [edi] [eax] [esi] [ecx]"
+};
+
+// Time Optimized pragmas
+
+// edi  - destination pointer
+// esi  - source pointer
+// ecx  - number of 4 character tuples to move (strlen >> 2)
+// eax  - number of characters left over after initial 4-tuple move (strlen & 3)
+static  char    __RTIStrBlastEqOT[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsd\" "
+        "\"mov   ecx, eax\" "
+        "\"rep   movsb\" "
+    "parm reverse [edi] [esi] [ecx] [eax]"
+};
+
+// edi  - destination pointer
+// eax  - number of spaces to append
+// esi  - source pointer
+// ecx  - number of characters to move
+static  char    __RTIStrBlastNeOT[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"mov   ecx, eax\" "
+        "\"shr   ecx, 2\" "
+        "\"rep   movsd\" "
+        "\"mov   ecx, eax\" "
+        "\"and   ecx, 3\" "
+        "\"rep   movsb\" "
+        "\"mov   ecx, edx\" "
+        "\"shr   ecx, 2\" "
+        "\"mov   eax, 0x20202020\" "
+        "\"rep   stosd\" "
+        "\"mov   ecx, edx\" "
+        "\"and   ecx, 3\" "
+        "\"rep   stosb\" "
+    "parm reverse [edi] [edx] [esi] [eax] "
+    "modify [ecx]"
+};
+
 #endif
 
 typedef struct inline_rtn {
@@ -391,13 +392,13 @@ static bool     CreatedPragmas = false;
 void    InitInlinePragmas( void ) {
 //===========================
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     rtn_ids     i;
 
     if( !CreatedPragmas ) {
         if( OZOpts & OZOPT_O_SPACE ) {
             InlineTab = OptSpaceInlineTab;
-#if _CPU == 8086
+    #if _CPU == 8086
             if( CGOpts & CGOPT_M_MEDIUM ) {
                 InlineTab = OptSpaceSmallModelInlineTab;
             } else {
@@ -415,7 +416,7 @@ void    InitInlinePragmas( void ) {
                     InlineTab = OptTimeWinInlineTab;
                 }
             }
-#endif
+    #endif
         }
         for( i = 0; i < INLINETAB_SIZE; i++ ) {
             DoPragma( InlineTab[i].pragma );
@@ -433,7 +434,7 @@ call_handle     InitInlineCall( rtn_ids rtn_id )
 //==============================================
 // Initialize a call to a runtime routine.
 {
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     sym_id              sym;
     inline_rtn          *in_entry;
     size_t              name_len;
@@ -454,19 +455,18 @@ call_handle     InitInlineCall( rtn_ids rtn_id )
         in_entry->info = InfoLookup( sym );
     }
     return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ, in_entry->sym_ptr ) );
-#else
+#else /* _RISC_CPU */
     /* unused parameters */ (void)rtn_id;
     return( 0 );
 #endif
 }
 
 
-void    FreeInlinePragmas( void ) {
-//===========================
-
+void    FreeInlinePragmas( void )
+//===============================
 // Free symbol table entries for run-time routines.
-
-#if _CPU == 386 || _CPU == 8086
+{
+#if _INTEL_CPU
     int         i;
     sym_id      sym;
 
