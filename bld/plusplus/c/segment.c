@@ -1184,11 +1184,13 @@ static fe_seg_id nextZmSegment( // GET NEXT CODE SEGMENT FOR -zm
 
     if( code_def_seg.ds_used ) {
         ads_control = ADS_NULL;
+#if _INTEL_CPU
         if( IsBigCode() && CompFlags.zm_switch_used ) {
             if( !CompFlags.zmf_switch_used ) {
                 ads_control = ADS_ZM_SEGMENT;
             }
         }
+#endif
         segid = addDefSeg( &code_def_seg, ads_control )->segid;
     } else {
         code_def_seg.ds_used = true;

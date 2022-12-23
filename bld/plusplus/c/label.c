@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -258,9 +258,11 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
 
     ok = false;
     if( SymRequiresDtoring( sym ) ) {
+#if _INTEL_CPU
         if( TypeTruncByMemModel( sym->sym_type ) ) {
             CErr1( ERR_DTOR_OBJ_MEM_MODEL );
         }
+#endif
         if( TypeExactDtorable( sym->sym_type ) ) {
             dtor = RoDtorFind( sym );
             dtor->flag |= SYMF_ADDR_TAKEN;

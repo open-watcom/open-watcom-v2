@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -862,11 +862,15 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
     /* unused parameters */ (void)defn;
 
     if( *TextSegName == '\0' ) {
+#if _INTEL_CPU
         if( IsBigCode() ) {
             stxpcpy( stxpcpy( seg_name, ModuleName ), TS_SEG_CODE );
         } else {
             stxpcpy( seg_name, TS_SEG_CODE );
         }
+#else
+        stxpcpy( seg_name, TS_SEG_CODE );
+#endif
         CMemFree( TextSegName );
         TextSegName = strsave( seg_name );
     }

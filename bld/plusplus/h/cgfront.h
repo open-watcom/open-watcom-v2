@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1464,9 +1465,11 @@ TYPE TypeThisSymbol(            // GET TYPE OF THIS FOR SYMBOL MEMBER
     SYMBOL sym,                 // - symbol
     bool reference )            // - use reference?
 ;
+#if _INTEL_CPU
 bool TypeTruncByMemModel(       // TEST TYPE TRUNCATED TO DEF. MEMORY MODEL
     TYPE type )                 // - the type
 ;
+#endif
 TYPE TypeUnArithResult(         // TYPE OF UNARY ARITHMETIC RESULT
     TYPE op1 )                  // - type
 ;

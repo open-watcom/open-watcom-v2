@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1299,10 +1299,12 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             refd = PointerTypeForArray( refd );
             refd = TypePointedAtModified( refd );
         }
+#if _INTEL_CPU
         if( TypeTruncByMemModel( refd ) ) {
             CErr( ERR_CTOR_OBJ_MEM_MODEL );
             currInit->state = DS_ERROR;
         } else {
+#endif
             sig = dataInitTypeSigFind( base_type, TSA_DEFAULT_CTOR | TSA_DTOR );
             node = NodeArguments( NodeTypeSig( sig )
                                 , NodeOffset( num_elem )
@@ -1322,7 +1324,9 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             _dump( "-------------------------------------------------------" );
 
             dataInitEmitExpr( node );
+#if _INTEL_CPU
         }
+#endif
     }
     //DtorArrayIndex
 }

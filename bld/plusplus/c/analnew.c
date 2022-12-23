@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -713,10 +713,12 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
         return( data );
     }
     pted = ptr_type->of;
+#if _INTEL_CPU
     if( TypeTruncByMemModel( pted ) ) {
         PTreeErrorExpr( data, ERR_DLT_OBJ_MEM_MODEL );
         return( data );
     }
+#endif
     del_op = flag.array_delete ? CO_DELETE_ARRAY : CO_DELETE;
     flag.num_in_alloc = false;
     pted = ArrayBaseType( pted );

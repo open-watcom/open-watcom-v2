@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,11 +221,15 @@ TYPE TypeTargetSizeT(           // GET TYPE OF TARGET'S size_t
 {
     TYPE type;                  // - return type
 
+#if _INTEL_CPU
     if( IsHugeData() ) {
         type = GetBasicType( TYP_ULONG );
     } else {
         type = GetBasicType( TYP_UINT );
     }
+#else
+    type = GetBasicType( TYP_UINT );
+#endif
     return( type );
 }
 
@@ -235,15 +239,20 @@ unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
 {
     unsigned size;              // - size of type
 
+#if _INTEL_CPU
     if( IsHugeData() ) {
         size = TARGET_ULONG;
     } else {
         size = TARGET_UINT;
     }
+#else
+    size = TARGET_UINT;
+#endif
     return( size );
 }
 
 
+#if _INTEL_CPU
 bool TypeTruncByMemModel(       // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
     TYPE type )                 // - the type
 {
@@ -264,6 +273,7 @@ bool TypeTruncByMemModel(       // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
     }
     return( ok );
 }
+#endif
 
 
 TYPE TypeRebuildPcPtr(          // REBUILD PC-PTR TYPE

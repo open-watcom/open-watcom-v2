@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1677,6 +1677,7 @@ void PTypeCheckInit( void )
         }
     }
     initCacheAfterOptions();
+#if _INTEL_CPU
     if( IsBigCode() ) {
         defaultFunctionMemFlag = TF1_FAR;
     } else {
@@ -1689,6 +1690,10 @@ void PTypeCheckInit( void )
     } else {
         defaultDataMemFlag = TF1_NEAR;
     }
+#else
+    defaultFunctionMemFlag = TF1_NEAR;
+    defaultDataMemFlag = TF1_NEAR;
+#endif
 }
 
 static type_id findTypeId( scalar_t scalar )
@@ -6734,9 +6739,11 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                         }
                         sym->sym_type = type;
                     }
+#if _INTEL_CPU
                     if( TargetSwitches & FLOATING_SS ) {
                         sym->sym_type = MakeModifiedType( sym->sym_type, TF1_FAR );
                     }
+#endif
                 }
             }
         } else if( is_a_function && ScopeLocalClass( scope ) ) {

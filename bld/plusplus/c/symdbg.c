@@ -141,20 +141,28 @@ static dbg_loc symbolicDebugSetSegment( dbg_loc dl, SYMBOL sym )
 static dbg_loc symbolicDebugSetCodeSegment( dbg_loc dl )
 /******************************************************/
 {
+#if _INTEL_CPU
     if( !IsBigCode() ) {
+#endif
         dl = symbolicDebugSetSegment( dl, DefaultCodeSymbol );
         DbgAddrTaken( DefaultCodeSymbol );
+#if _INTEL_CPU
     }
+#endif
     return( dl );
 }
 
 dbg_loc SymbolicDebugSetDataSegment( dbg_loc dl )
 /***********************************************/
 {
+#if _INTEL_CPU
     if( !IsBigData() ) {
+#endif
         dl = symbolicDebugSetSegment( dl, DefaultDataSymbol );
         DefaultDataSymbol->flag |= SYMF_REFERENCED;
+#if _INTEL_CPU
     }
+#endif
     return( dl );
 }
 

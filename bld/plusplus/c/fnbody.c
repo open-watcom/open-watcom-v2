@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1145,12 +1145,14 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
             } else {
                 attrs = CATT_PTR + CATT_CLS;
             }
+#if _INTEL_CPU
             TypePointedAt( spectype, &flags );
             if( flags & (TF1_BASED | TF1_FAR16) ) {
                 attrs |= CATT_PCPTR;
             } else if( (flags & TF1_FAR) && !IsBigData() ) {
                 attrs |= CATT_FAR;
             }
+#endif
         }
     } else {
         if( NULL == TypeReference( spectype ) ) {
@@ -1780,9 +1782,11 @@ static void functionShutdown(   // COMMON SHUT-DOWN FOR ALL COMPILED FUNCTIONS
     CgFrontFuncClose( func );
     LabelFiniFunc( &f->label_mem );
     endControl();
+#if _INTEL_CPU
     if( f->floating_ss ) {
         TargetSwitches &= ~FLOATING_SS;
     }
+#endif
     // AccessErrClear();
 }
 
@@ -1831,12 +1835,14 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
         ScopeJumpForward( dinfo->scope );
     }
     ScopeBeginFunction( func );
+#if _INTEL_CPU
     if( (TargetSwitches & FLOATING_SS) == 0 ) {
         if( fn_type->flag & TF1_FARSS ) {
             TargetSwitches |= FLOATING_SS;
             f->floating_ss = true;
         }
     }
+#endif
     InsertArgs( &(dinfo->parms) );
     mem_init = dinfo->mem_init;
     dinfo->mem_init = NULL;
@@ -1999,6 +2005,7 @@ static TYPE handleDefnChecks( SYMBOL func )
         SetErrLoc( &func->locn->tl );
         CErr1( msg );
     }
+#if _INTEL_CPU
     if( flags & TF1_NEAR ) {
         if( CompFlags.zm_switch_used ) {
             if( IsBigCode() && !CompFlags.zmf_switch_used ) {
@@ -2007,6 +2014,7 @@ static TYPE handleDefnChecks( SYMBOL func )
             }
         }
     }
+#endif
     return( fn_type );
 }
 

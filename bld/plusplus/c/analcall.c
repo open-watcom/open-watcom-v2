@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1039,6 +1039,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             if( pted == NULL ) {
                 pted = node_this->type;
             }
+#if _INTEL_CPU
             if( TypeTruncByMemModel( pted ) ) {
                 if( SymIsCtor( sym ) ) {
                     PTreeErrorExpr( node_this, ERR_CTOR_OBJ_MEM_MODEL );
@@ -1055,6 +1056,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                 NodeFreeDupedExpr( static_fn_this );
                 return( expr );
             }
+#endif
             if( adjustForVirtualCall( &node_this, r_func, result ) ) {
                 virtual_call = true;
                 expr->cgop = CO_CALL_EXEC_IND;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1798,8 +1798,10 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
         dtor = DtorFindLocn( sym->sym_type, &err_locn );
         if( NULL == dtor ) {
             PTreeErrorNode( expr );
+#if _INTEL_CPU
         } else if( TypeTruncByMemModel( expr->type ) ) {
             PTreeErrorExpr( expr, ERR_DTOR_OBJ_MEM_MODEL );
+#endif
         } else if( TypeExactDtorable( sym->sym_type ) ) {
 //          CDtorScheduleArgRemap( dtor );
             SymMarkRefed( dtor );

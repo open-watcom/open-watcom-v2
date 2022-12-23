@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,6 +174,7 @@ static fe_seg_id cgSegIdNearVariable( SYMBOL sym, type_flag flags,
     return( segid );
 }
 
+#if _INTEL_CPU
 static fe_seg_id cgSegIdFarVariable( SYMBOL sym, type_flag flags,
     target_size_t size, SEGID_CONTROL control )
 {
@@ -205,6 +207,7 @@ static fe_seg_id cgSegIdHugeVariable( SYMBOL sym, type_flag flags,
     }
     return( segid );
 }
+#endif
 
 static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL control )
 {
@@ -220,6 +223,7 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
         }
     }
 #endif
+#if _INTEL_CPU
     if( flags & TF1_NEAR ) {
         segid = cgSegIdNearVariable( sym, flags, size, control );
     } else if( flags & TF1_HUGE ) {
@@ -246,6 +250,9 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
             segid = cgSegIdFarVariable( sym, flags, size, control );
         }
     }
+#else
+    segid = cgSegIdNearVariable( sym, flags, size, control );
+#endif
     return( segid );
 }
 
@@ -253,7 +260,9 @@ fe_seg_id CgSegIdFunction( SYMBOL sym )
 /*************************************/
 {
     fe_seg_id segid;
+#if _INTEL_CPU
     type_flag flags;
+#endif
 
     segid = sym->segid;
     if( segid == SEG_NULL ) {
@@ -261,6 +270,7 @@ fe_seg_id CgSegIdFunction( SYMBOL sym )
             // defined in this compilation unit
             segid = SegmentForDefinedFunc( sym );
         } else {
+#if _INTEL_CPU
             TypeGetActualFlags( sym->sym_type, &flags );
             if( flags & TF1_FAR ) {
                 segid = SegmentImport();
@@ -269,6 +279,9 @@ fe_seg_id CgSegIdFunction( SYMBOL sym )
             } else {
                 segid = SegmentDefaultCode();
             }
+#else
+            segid = SegmentDefaultCode();
+#endif
         }
         sym->segid = segid;
     }
