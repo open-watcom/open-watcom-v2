@@ -30,20 +30,13 @@
 ****************************************************************************/
 
 
-/*
- * Keep next 3 for now, since the C front end references these consts
- * in 'target independant' files
- */
-BIG_DATA                = 0x00000001L,
-BIG_CODE                = 0x00000002L,
-FLOATING_SS             = 0x00000004L,
-ASM_OUTPUT              = 0x00000008L,
-SHORTS_ALIGNED          = 0x00000010L,
-I_MATH_INLINE           = 0x00000020L,
-NO_CALL_RET_TRANSFORM   = 0x00000040L,
-CHEAP_POINTER           = 0x00000080L,
-STACK_INIT              = 0x00000100L,
-STACK_CHECK             = 0x00000200L,
-OWL_LOGGING             = 0x00000400L,
-ALIGNED_SHORT           = 0x00000800L,
-EXCEPT_FILTER_USED      = 0x00001000L,
+ASM_OUTPUT              = 0x00000001L,
+SHORTS_ALIGNED          = 0x00000002L,
+I_MATH_INLINE           = 0x00000004L,
+NO_CALL_RET_TRANSFORM   = 0x00000008L,
+CHEAP_POINTER           = 0x00000010L,
+STACK_INIT              = 0x00000020L,
+STACK_CHECK             = 0x00000040L,
+OWL_LOGGING             = 0x00000080L,
+ALIGNED_SHORT           = 0x00000100L,
+EXCEPT_FILTER_USED      = 0x00000200L,

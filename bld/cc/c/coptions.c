@@ -883,6 +883,41 @@ static void EnsureEndOfSwitch( void )
         OptScanPtr = BadCmdLine( ERR_INVALID_OPTION, OptScanPtr );
     }
 }
+static void StripQuotes( char *fname )
+{
+    char    *s;
+    char    *d;
+    char    c;
+
+    if( *fname == '"' ) {
+        // string will shrink so we can reduce in place
+        d = fname;
+        for( s = fname + 1; (c = *s++) != '\0'; ) {
+            if( c == '"' )
+                break;
+            // collapse double backslashes, only then look for escaped quotes
+            if( c == '\\' ) {
+                if( *s == '\\' || *s == '"' ) {
+                    c = *s++;
+                }
+            }
+            *d++ = c;
+        }
+        *d = '\0';
+    }
+}
+static char *CopyOfParm( void )
+{
+    return( ToString( OptParm, OptScanPtr - OptParm ) );
+}
+static char *GetAFileName( void )
+{
+    char    *fname;
+
+    fname = CopyOfParm();
+    StripQuotes( fname );
+    return( fname );
+}
 
 #if _CPU == _AXP
 static void SetStructPack( void )   { CompFlags.align_structs_on_qwords = true; }
@@ -1041,44 +1076,6 @@ static void Set_EP( void )
 {
     CompFlags.ep_switch_used = true;
     ProEpiDataSize = OptValue;
-}
-
-static void StripQuotes( char *fname )
-{
-    char    *s;
-    char    *d;
-    char    c;
-
-    if( *fname == '"' ) {
-        // string will shrink so we can reduce in place
-        d = fname;
-        for( s = fname + 1; (c = *s++) != '\0'; ) {
-            if( c == '"' )
-                break;
-            // collapse double backslashes, only then look for escaped quotes
-            if( c == '\\' ) {
-                if( *s == '\\' || *s == '"' ) {
-                    c = *s++;
-                }
-            }
-            *d++ = c;
-        }
-        *d = '\0';
-    }
-}
-
-static char *CopyOfParm( void )
-{
-    return( ToString( OptParm, OptScanPtr - OptParm ) );
-}
-
-static char *GetAFileName( void )
-{
-    char    *fname;
-
-    fname = CopyOfParm();
-    StripQuotes( fname );
-    return( fname );
 }
 
 static void Set_FH( void )

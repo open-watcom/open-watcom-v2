@@ -101,16 +101,14 @@ opt( "ODO",        OZOPT_O_FASTDO,   CMD|OZ,      NULL,         &OZOption )
 opt( "OX",         OZOPT_O_X,        CMD|OZ,      NULL,         &OZOption )
 //                      Memory Models
 #if _INTEL_CPU
-  #if _CPU == 8086
-opt( "MM",         CGOPT_M_MEDIUM,   CMD|CG,      NULL,         &CGOption )
 opt( "ML",         CGOPT_M_LARGE,    CMD|CG,      NULL,         &CGOption )
+opt( "MM",         CGOPT_M_MEDIUM,   CMD|CG,      NULL,         &CGOption )
+  #if _CPU == 8086
 opt( "MH",         CGOPT_M_HUGE,     CMD|CG,      NULL,         &CGOption )
   #else
 opt( "MF",         CGOPT_M_FLAT,     CMD|CG,      NULL,         &CGOption )
 opt( "MS",         CGOPT_M_SMALL,    CMD|CG,      NULL,         &CGOption )
 opt( "MC",         CGOPT_M_COMPACT,  CMD|CG,      NULL,         &CGOption )
-opt( "MM",         CGOPT_M_MEDIUM,   CMD|CG,      NULL,         &CGOption )
-opt( "ML",         CGOPT_M_LARGE,    CMD|CG,      NULL,         &CGOption )
   #endif
 //                      CPU Targets
   #if _CPU == 8086
