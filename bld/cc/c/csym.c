@@ -623,7 +623,7 @@ static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
 
 static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
 {
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     if( sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_ADDR_TAKEN ) {
             if( CompFlags.using_overlays ) {
@@ -637,8 +637,10 @@ static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
             }
         }
     }
-#else
+#else /* _RISC_CPU */
+
     /* unused parameters */ (void)sym; (void)name;
+
 #endif
 }
 

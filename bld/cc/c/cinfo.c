@@ -296,7 +296,8 @@ void SetSegment( SYMPTR sym )
     segment_list        *seg;
     target_size         size;
 
-#if _CPU == 8086
+#if _INTEL_CPU
+  #if _CPU == 8086
     if( (sym->mods & FLAG_FAR) && CompFlags.zc_switch_used ) {
         if( CONSTANT( sym->mods )
           || (sym->attribs.stg_class == SC_STATIC && (sym->flags & SYM_TEMP)) ) {
@@ -304,7 +305,7 @@ void SetSegment( SYMPTR sym )
             return;
         }
     }
-#elif _CPU == 386
+  #else
     if( !CompFlags.rent ) {
         if( (sym->mods & FLAG_FAR) || (TargetSwitches & FLAT_MODEL) ) {
            if( CONSTANT( sym->mods ) && CompFlags.zc_switch_used ) {
@@ -317,6 +318,7 @@ void SetSegment( SYMPTR sym )
             }
          }
      }
+  #endif
 #endif
     if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
         size = SizeOfArg( sym->sym_type );
@@ -951,7 +953,7 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
     /* unused parameters */ (void)parm;
 
     switch( tipe ) {
-#if _CPU == 386 || _CPU == 370 || _CPU == _PPC || _CPU == _MIPS
+#if _CPU == 386 || _RISC_CPU
     case TY_UINT_2:
     case TY_INT_2:
 #endif

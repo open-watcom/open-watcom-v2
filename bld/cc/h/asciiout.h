@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 
 #if _CPU != 370
     #define _ASCIIOUT( c )
-#elif  ' ' == 0x40   /* EBCDIC host ? */
+#elif  ' ' == 0x40   /* EBCDIC host */
     #define _ASCIIOUT( c ) \
         if( CompFlags.asciiout_used ) { \
             extern char const etoatbl[]; \

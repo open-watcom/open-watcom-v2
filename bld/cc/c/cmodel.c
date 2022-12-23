@@ -304,11 +304,13 @@ void InitModInfo( void )
     ModuleName = NULL;
     ErrLimit = 20;
     WngLevel = WLEVEL_DEFAULT;
-#if _CPU == 8086
+#if _INTEL_CPU
+  #if _CPU == 8086
     PackAmount = TARGET_INT;     /* pack structs on word boundaries */
-#elif _CPU == 386
+  #else
     PackAmount = 8;
-#else
+  #endif
+#else /* _RISC_CPU */
     CompFlags.make_enums_an_int = true;     // make enums ints
     CompFlags.original_enum_setting = true;
     PackAmount = 8;

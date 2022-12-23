@@ -266,7 +266,7 @@ static void ReturnExpression( OPNODE *node, cg_name expr )
 
 static cg_type DataPointerType( OPNODE *node )
 {
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     cg_type     dtype;
 
     if( Far16Pointer( node->flags ) ) {
@@ -281,7 +281,8 @@ static cg_type DataPointerType( OPNODE *node )
         dtype = TY_POINTER;
     }
     return( dtype );
-#else
+#else /* _RISC_CPU */
+
     /* unused parameters */ (void)node;
 
     return( TY_POINTER );
@@ -1089,7 +1090,7 @@ static void EmitNodes( TREEPTR tree )
             PushCGName( TryAbnormalTermination() );
             break;
 #endif
-#if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
+#if _RISC_CPU
         case OPR_VASTART:
             op2 = PopCGName();          // - get offset of parm
             op1 = PopCGName();          // - get address of va_list
@@ -1521,7 +1522,7 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
     CurFunc = &CurFuncSym;
     SymGet( CurFunc, funcsym_handle );
     CurFuncHandle = funcsym_handle;
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( ! CompFlags.zu_switch_used ) {
         if( CurFunc->mods & FLAG_FARSS ) {      /* function use far stack */
             TargetSwitches |= FLOATING_SS;
@@ -1843,7 +1844,7 @@ cg_type CGenType( TYPEPTR typ )
 
 static cg_type CodePtrType( type_modifiers flags )
 {
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     cg_type     dtype;
 
     if( flags & FLAG_FAR ) {
@@ -1854,7 +1855,8 @@ static cg_type CodePtrType( type_modifiers flags )
         dtype = TY_CODE_PTR;
     }
     return( dtype );
-#else
+#else /* _RISC_CPU */
+
     /* unused parameters */ (void)flags;
 
     return( TY_CODE_PTR );
@@ -1870,7 +1872,7 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
     if( typ->decl_type == TYP_FUNCTION ) {
         dtype = CodePtrType( flags );
     } else {
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
         if( flags & FLAG_FAR ) {
             dtype = TY_LONG_POINTER;
         } else if( flags & FLAG_HUGE ) {
@@ -1880,7 +1882,7 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
         } else {
             dtype = TY_POINTER;
         }
-#else
+#else /* _RISC_CPU */
         dtype = TY_POINTER;
 #endif
     }
@@ -1890,7 +1892,7 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
 
 static segment_id StringSegment( STR_HANDLE strlit )
 {
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( strlit->flags & STRLIT_FAR )
         return( FarStringSegId );
 #endif

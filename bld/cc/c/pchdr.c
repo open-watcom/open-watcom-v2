@@ -741,7 +741,7 @@ static void OutPutTypes( void )
     OutPutTypeIndexes();
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
 static void OutPutAuxInfo( aux_info *info )
 {
     hw_reg_set          *regs;
@@ -960,7 +960,7 @@ static void OutPutEverything( void )
     OutPutSegInfo();
     OutPutTypes();
     OutPutTags();
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     OutPutPragmaInfo();
 #endif
     OutPutSymHashTable();
@@ -1567,7 +1567,7 @@ static char *FixupTags( char *p, unsigned tag_count )
     return( p );
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
 static char *FixupAuxInfo( char *p, aux_info *info )
 {
     unsigned            len;
@@ -1679,7 +1679,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     p = FixupSegInfo( p, pch->seg_count );
     p = FixupTypes( p, pch->type_count );
     p = FixupTags( p, pch->tag_count );
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     p = FixupPragmaInfo( p, pch->pragma_count, pch->pragma_entry_count );
 #endif
     p = FixupSymHashTable( p, pch->symhash_count );

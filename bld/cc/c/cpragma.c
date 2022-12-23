@@ -980,7 +980,7 @@ static void pragAllocText( void )
                 break;
             }
         }
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
         CompFlags.multiple_code_segments = true;
 #endif
         MustRecog( T_RIGHT_PAREN );
@@ -1308,7 +1308,7 @@ static void pragCodeSeg( void )
         }
         MustRecog( T_RIGHT_PAREN );
         DefCodeSegment = tseg;
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
         CompFlags.multiple_code_segments = true;
 #endif
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
 mathfunc( "__LOG",   "log",     1, O_LOG ),
 mathfunc( "__COS",   "cos",     1, O_COS ),
 mathfunc( "__SIN",   "sin",     1, O_SIN ),

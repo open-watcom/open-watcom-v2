@@ -1029,14 +1029,14 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
         }
         if( CurToken == T_TIMES ) {
             NextToken();
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
             // * seg16 binds with * cause of IBM dorks, and so does far16
             if( (CurToken == T__SEG16) || (CurToken == T__FAR16) || (CurToken == T___FAR16) ) {
-#if _CPU == 386
-                info->modifier |= FLAG_FAR16;
-#else
+    #if _CPU == 8086
                 info->modifier |= FLAG_FAR;
-#endif
+    #else
+                info->modifier |= FLAG_FAR16;
+    #endif
                 NextToken();
             }
 #endif

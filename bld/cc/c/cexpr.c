@@ -188,7 +188,7 @@ op_flags OpFlags( type_modifiers flags )
     if( flags & FLAG_CONST )        ops |= OPFLAG_CONST;
     if( flags & FLAG_VOLATILE )     ops |= OPFLAG_VOLATILE;
     if( flags & FLAG_UNALIGNED )    ops |= OPFLAG_UNALIGNED;
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( flags & FLAG_NEAR )         ops |= OPFLAG_NEARPTR;
     if( flags & FLAG_FAR )          ops |= OPFLAG_FARPTR;
     if( flags & FLAG_HUGE )         ops |= OPFLAG_HUGEPTR;
@@ -205,7 +205,7 @@ type_modifiers FlagOps( op_flags ops )
     if( ops & OPFLAG_CONST )        flags |= FLAG_CONST;
     if( ops & OPFLAG_VOLATILE )     flags |= FLAG_VOLATILE;
     if( ops & OPFLAG_UNALIGNED )    flags|= FLAG_UNALIGNED;
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( ops & OPFLAG_NEARPTR )      flags |= FLAG_NEAR;
     if( ops & OPFLAG_FARPTR )       flags |= FLAG_FAR;
     if( ops & OPFLAG_HUGEPTR )      flags |= FLAG_HUGE;
@@ -1959,13 +1959,13 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 }
 
 
-#if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
+#if _RISC_CPU
 // This really ought to be defined somewhere else...
-#if (_CPU == _AXP)
+  #if (_CPU == _AXP)
     #define REG_SIZE    8
-#else
+  #else
     #define REG_SIZE    4
-#endif
+  #endif
 static TREEPTR GenVaStartNode( TREEPTR last_parm )
 {
     // there should be 3 parms __builtin_va_start( list, parm_name, stdarg )
@@ -2180,18 +2180,18 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                         }
                     }
                 }
-#if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
+#if _RISC_CPU
                 if( strcmp( sym_name, "__builtin_va_start" ) == 0 ) {
                     return( GenVaStartNode( last_parm ) );
                 }
                 if( strcmp( sym_name, "__builtin_alloca" ) == 0 ) {
                     return( GenAllocaNode( last_parm ) );
                 }
-#endif
-#if  _CPU == _PPC
+    #if  _CPU == _PPC
                 if( strcmp( sym_name, "__builtin_varg" ) == 0 ) {
                     return( GenVaArgNode( last_parm ) );
                 }
+    #endif
 #endif
             }
         }

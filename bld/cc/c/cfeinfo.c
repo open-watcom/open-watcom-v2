@@ -185,7 +185,7 @@ bool VarFunc( SYMPTR sym )
     return( false );
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
 
 static const inline_funcs *Flat( const inline_funcs *ifunc )
 {
@@ -347,7 +347,7 @@ static aux_info *InfoLookup( SYMPTR sym )
                 return( inf );
             name += 8;
         }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
         {
             const inline_funcs  *ifunc;
 
@@ -493,7 +493,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             if( sym.mods & FLAG_NORETURN ) {
                 cclass |= FECALL_NORETURN;
             }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
             if( sym.mods & FLAG_FARSS ) {
                 cclass |= FECALL_FARSS;
             }
@@ -532,7 +532,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
                 cclass |= FECALL_CALLER_POPS | FECALL_HAS_VARARGS;
             }
         }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
         if( sym.flags & SYM_FUNC_NEEDS_THUNK ) {
             cclass |= FECALL_THUNK_PROLOG;
         }
@@ -734,7 +734,7 @@ static const char *GetNamePattern( SYM_HANDLE sym_handle )
         inf = LangInfo( sym.mods, inf );
         if( sym.flags & SYM_FUNCTION ) {
             pattern = inf->objname;
-#if ( _CPU == 386 ) || ( _CPU == 8086 )
+#if _INTEL_CPU
             if( VarFunc( &sym ) ) {
                 if( inf == &DefaultInfo )
                     inf = DftCallConv;
@@ -840,7 +840,7 @@ static void addDefaultImports( void )
             control = CM_NULL;
         }
     }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( CompFlags.emit_library_names ) {
         if( CompFlags.float_used ) {
             if( CompFlags.use_long_double ) {
@@ -875,7 +875,7 @@ static void addDefaultImports( void )
             }
         }
     }
-#else
+#else /* _RISC_CPU */
     if( CompFlags.emit_library_names ) {
         /* handle floating-point support */
         if( CompFlags.float_used ) {
@@ -883,7 +883,7 @@ static void addDefaultImports( void )
         }
     }
 #endif
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( CompFlags.main_has_parms ) {
   #if _CPU == 8086
         if( CompFlags.has_wchar_entry ) {
@@ -907,7 +907,7 @@ static void addDefaultImports( void )
         }
   #endif
     }
-#else
+#else /* _RISC_CPU */
     if( CompFlags.main_has_parms ) {
         AddExtRefN( "_argc" );
     }
@@ -916,7 +916,7 @@ static void addDefaultImports( void )
     if( CompFlags.bw_switch_used ) {
         AddExtRefN( "__init_default_win" );
     }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     /* handle NetWare */
     if( TargSys == TS_NETWARE || TargSys == TS_NETWARE5 ) {
         /* is target NETWARE or NETWARE5? */
@@ -1022,7 +1022,7 @@ static CGPOINTER NextImportS( int index, aux_class request )
     return( (CGPOINTER)(pointer_uint)index );
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
 
 /*
 //    This section is for

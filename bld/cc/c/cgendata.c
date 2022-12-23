@@ -54,7 +54,7 @@ void AlignIt( TYPEPTR typ )
     if( OptSize == 0 ) {        /* optimize for time */
         DGAlign( GetTypeAlignment( typ ) );
     }
-#else
+#else /* _RISC_CPU */
     align_type  align;
 
     align = GetTypeAlignment( typ );
