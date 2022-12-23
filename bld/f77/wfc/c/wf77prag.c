@@ -43,7 +43,6 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "inout.h"
-#include "cspawn.h"
 #include "asmstmt.h"
 #include "chain.h"
 #include "symtab.h"
@@ -51,6 +50,7 @@
 #include "cioconst.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 default_lib             *DefaultLibs;

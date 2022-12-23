@@ -41,11 +41,11 @@
 #include "cle.h"
 #include "fmeminit.h"
 #include "utility.h"
-#include "cspawn.h"
 #include "wresmem.h"
 #include "trmemcvr.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 void    FMemInit( void ) {

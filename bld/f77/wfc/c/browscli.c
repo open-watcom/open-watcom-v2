@@ -42,10 +42,10 @@
 #include "browscli.h"
 #include "fmemmgr.h"
 #include "ferror.h"
-#include "cspawn.h"
 #include "sdcio.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 #define SWAP( x, y )    {x^=y^=x^=y;}

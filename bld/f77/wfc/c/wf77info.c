@@ -48,7 +48,6 @@
 #include "ferror.h"
 #include "inout.h"
 #include "fctypes.h"
-#include "cspawn.h"
 #include "stdio.h"
 #include "charset.h"
 #include "cbsize.h"
@@ -85,6 +84,7 @@
 #include "feprotos.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 extern  global_seg      *CurrGSeg;

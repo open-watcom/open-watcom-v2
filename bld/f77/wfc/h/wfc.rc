@@ -9,7 +9,7 @@ BEGIN
     #define pick(c,e,j) (c + MSG_RC_BASE + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
     #include "wfcmsgs.gh"
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     #include "wasmc.msg"
 #endif
     #include "usage.gh"
@@ -19,7 +19,7 @@ BEGIN
     #define pick(c,e,j) (c + MSG_RC_BASE + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
     #include "wfcmsgs.gh"
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     #include "wasmc.msg"
 #endif
     #include "usage.gh"

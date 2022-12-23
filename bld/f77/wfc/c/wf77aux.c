@@ -44,7 +44,6 @@
 #include "chain.h"
 #include "ferror.h"
 #include "errcod.h"
-#include "cspawn.h"
 #include "data.h"
 #include "cioconst.h"
 #include "kwlookup.h"
@@ -61,6 +60,7 @@
 #include "cgprotos.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 #define MAX_REG_SETS    16

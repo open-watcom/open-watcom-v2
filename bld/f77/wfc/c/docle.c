@@ -45,13 +45,13 @@
 #include "errcod.h"
 #include "comio.h"
 #include "inout.h"
-#include "cspawn.h"
 #include "mkname.h"
 #include "compprog.h"
 #include "docle.h"
 #include "errutil.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 extern  unsigned_32     CompTime;
