@@ -944,11 +944,15 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
     pointer_type = 0;
     retcode = TCE_OK;
     /* "char *s" and "char s[]" differs only by FLAG_WAS_ARRAY, ignore it too */
+#if _INTEL_CPU
     if( TargetSwitches & BIG_DATA ) {
         ptr_mask = ~(FLAG_FAR  | FLAG_WAS_ARRAY | MASK_LANGUAGES);
     } else {
+#endif
         ptr_mask = ~(FLAG_NEAR | FLAG_WAS_ARRAY | MASK_LANGUAGES);
+#if _INTEL_CPU
     }
+#endif
     for( ;; ) {
         // skip typedefs, go into enum base
         typ1 = SkipTypeFluff( typ1 );

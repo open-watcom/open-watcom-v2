@@ -367,6 +367,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             if( sym->attribs.declspec != DECLSPEC_NONE ) {
                 CErr1( ERR_INVALID_DECLSPEC );
             }
+#if _INTEL_CPU
             /*
             // Local variables in stack will be far when SS != DS (/zu)
             // (applies only to auto vars, functions params are handled
@@ -375,6 +376,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             if( TargetSwitches & FLOATING_SS ) {
                 sym->mods |= FLAG_FAR;
             }
+#endif
         }
         /*
         // static class variables can be thread local also
@@ -414,6 +416,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         if( ChkEqSymLevel( &old_sym ) || stg_class == SC_EXTERN ) {
             old_attrs = old_sym.mods;
             new_attrs = sym->mods;
+#if _INTEL_CPU
             /* add default far/near flags depending on data model */
             if( TargetSwitches & BIG_DATA ) {
                 old_attrs |= FLAG_FAR;
@@ -422,6 +425,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
                 old_attrs |= FLAG_NEAR;
                 new_attrs |= FLAG_NEAR;
             }
+#endif
             if( (new_attrs & ~MASK_FUNC) != (old_attrs & ~MASK_FUNC) ) {
                  CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }

@@ -139,22 +139,23 @@ void AssignSeg( SYMPTR sym )
 
 void SetFarHuge( SYMPTR sym, bool report )
 {
+#if _INTEL_CPU
     TYPEPTR             typ;
     type_modifiers      attrib;
     target_size         size;
 
-#if _CPU != 8086
+  #if _CPU != 8086
     /* unused parameters */ (void)report;
-#endif
+  #endif
 
-#if _CPU == 8086
+  #if _CPU == 8086
     if( sym->attribs.declspec == DECLSPEC_DLLIMPORT
       || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {
         sym->mods |= FLAG_FAR;
     } else if( sym->mods & FLAG_EXPORT ) {
         sym->mods |= FLAG_FAR;
     }
-#endif
+  #endif
     size = SizeOfArg( sym->sym_type );
     if( TargetSwitches & BIG_DATA ) {
         attrib = sym->mods;
@@ -171,21 +172,26 @@ void SetFarHuge( SYMPTR sym, bool report )
             } else if( CompFlags.strings_in_code_segment && (sym->mods & FLAG_CONST) ) {
                 attrib |= FLAG_FAR;
             }
-#if _CPU == 8086
+  #if _CPU == 8086
             if( (attrib & FLAG_FAR) && size > 0x10000 ) {
                 attrib &= ~FLAG_FAR;
                 attrib |= FLAG_HUGE;
             }
-#endif
+  #endif
             sym->mods = attrib;
         }
     }
-#if _CPU == 8086
+  #if _CPU == 8086
    if( report && size > 0x10000 && (sym->mods & FLAG_HUGE) == 0 ) {
         SetErrLoc( &sym->src_loc );
         CErr1( ERR_VAR_TOO_LARGE );
         InitErrLoc();
    }
+  #endif
+#else
+
+    /* unused parameters */ (void)sym; (void)report;
+
 #endif
 }
 
@@ -862,12 +868,14 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
             segid = SEG_CODE;
             if( sym->seginfo != NULL ) {
                 segid = sym->seginfo->segid;
+#if _INTEL_CPU
             } else if( attr & FE_IMPORT ) {
                 if( (sym->mods & FLAG_FAR) || (TargetSwitches & BIG_CODE) ) {
                     if( sym->flags & SYM_ADDR_TAKEN ) {
                         segid = import_segid--;
                     }
                 }
+#endif
             }
         } else if( sym->u.var.segid != SEG_NULL ) {
             segid = sym->u.var.segid;

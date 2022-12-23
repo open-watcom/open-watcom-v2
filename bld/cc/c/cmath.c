@@ -495,6 +495,7 @@ static pointer_class PointerClass( TYPEPTR typ )
         ptrclass = PTRCLS_FAR16;
     } else if( flags & FLAG_HUGE ) {
         ptrclass = PTRCLS_HUGE;
+#if _INTEL_CPU
     } else {
         if( typ->decl_type == TYP_FUNCTION ) {
             if( TargetSwitches & BIG_CODE ) {
@@ -505,6 +506,7 @@ static pointer_class PointerClass( TYPEPTR typ )
                 ptrclass = PTRCLS_FAR;
             }
         }
+#endif
     }
     if( typ->decl_type == TYP_FUNCTION )
         ptrclass += PTRCLS_FUNC;
@@ -718,6 +720,7 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
     typ1_flags = typ1->u.p.decl_flags;
     typ2_flags = typ2->u.p.decl_flags;
     if( typ1->decl_type == TYP_POINTER && typ2->decl_type == TYP_POINTER ) {
+#if _INTEL_CPU
         if( typ2_flags & FLAG_BASED ) {
             if( (typ1_flags & MASK_ALL_MEM_MODELS) == FLAG_NONE ) {
                 if( typ1->object->decl_type == TYP_FUNCTION ) {
@@ -734,6 +737,7 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
                 op2 = BasedPtrNode( typ2, op2 );
             }
         }
+#endif
     } else if( typ2->decl_type == TYP_POINTER ) {
         // If we're converting a based pointer to some larger arithmetic type,
         // we must convert it to a long pointer first to get proper segment.
@@ -1216,6 +1220,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             if(( op1_type == PTR )&&( op2_type == PTR )) {
                 /* make sure both pointers are same type */
                 CompatiblePtrType( op1_tp, op2_tp, opr );
+#if _INTEL_CPU
                 if(( op1_tp->u.p.decl_flags & FLAG_HUGE ) ||
                    ( op2_tp->u.p.decl_flags & FLAG_HUGE ) ) {
                     result_type = LNG;
@@ -1225,6 +1230,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                         result_type = LNG;
                     }
                 }
+#endif
             }
         }
     }
@@ -1248,11 +1254,13 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             if( (result_type == INT) || (result_type == LNG) ) {
                 result = ExprNode( op1, TokenToOperator( opr ), op2 );
                 return( PtrSubtract( result, size, result_type ) );
+#if _INTEL_CPU
             } else if( (op1_tp->u.p.decl_flags & FLAG_HUGE) ||
                       ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
                 if( (op2_type != LNG) && (op2_type != ULN) ) {
                     op2 = CnvOp( op2, GetType( TYP_LONG ), true );
                 }
+#endif
             }
             op2 = MulByConst( op2, size );
         }
@@ -1267,12 +1275,14 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             size = 1;
         }
         if( size != 1 ) {
+#if _INTEL_CPU
             if( (op2_tp->u.p.decl_flags & FLAG_HUGE)
               || ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
                 if( (op1_type != LNG ) && (op1_type != ULN) ) {
                     op2 = CnvOp( op2, GetType( TYP_LONG ), true );
                 }
             }
+#endif
             op1 = MulByConst( op1, size );
         }
     } else {

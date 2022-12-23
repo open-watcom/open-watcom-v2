@@ -550,9 +550,11 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             tree = ExprNode( NULL, OPR_ADDROF, tree );
             if( segid == SEG_STACK ) {
                 CompFlags.addr_of_auto_taken = true;
+#if _INTEL_CPU
                 if( TargetSwitches & FLOATING_SS ) {
                     decl_flags = (decl_flags & ~FLAG_NEAR) | FLAG_FAR;
                 }
+#endif
             }
             tree->u.expr_type = PtrNode( typ->object, decl_flags, segid );
         }
@@ -744,9 +746,11 @@ static TREEPTR AddrOp( TREEPTR tree )
         if( sym.attribs.stg_class == SC_AUTO ) {
             segid = SEG_STACK;
             CompFlags.addr_of_auto_taken = true;
+#if _INTEL_CPU
             if( TargetSwitches & FLOATING_SS ) {
                 modifiers |= FLAG_FAR;
             }
+#endif
         }
         typ = PtrNode( typ, modifiers & MASK_PTR, segid );
     } else if( tree->op.opr == OPR_POINTS ) {

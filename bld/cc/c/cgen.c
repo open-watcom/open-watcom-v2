@@ -1376,9 +1376,11 @@ void DoCompile( void )
     if( setjmp( env ) == 0 ) {
         Environment = JMPBUF_PTR( env );
         if( BELoad( NULL ) ) {
+#if _INTEL_CPU
             if( ! CompFlags.zu_switch_used ) {
                 TargetSwitches &= ~ FLOATING_SS;
             }
+#endif
 #ifndef NDEBUG
             if( TOGGLEDBG( dump_cg ) ) {
                 GenSwitches |= CGSW_ECHO_API_CALLS;

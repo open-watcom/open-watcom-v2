@@ -1169,10 +1169,8 @@ static void SetModuleName( void )   { ModuleName = CopyOfParm(); }
 static void SetAPILogging( void )   { GenSwitches |= CGSW_ECHO_API_CALLS; }
 
 #ifndef NDEBUG
-#ifdef ASM_OUTPUT
+#if _RISC_CPU
 static void SetAsmListing( void )   { TargetSwitches |= ASM_OUTPUT; }
-#endif
-#ifdef OWL_LOGGING
 static void SetOwlLogging( void )   { TargetSwitches |= OWL_LOGGING; }
 #endif
 #endif
@@ -1653,10 +1651,8 @@ static struct option const CFE_Options[] = {
 #endif
     { "lc",     0,              SetAPILogging },
 #ifndef NDEBUG
-#ifdef ASM_OUTPUT
+#if _RISC_CPU
     { "la",     0,              SetAsmListing },
-#endif
-#ifdef OWL_LOGGING
     { "lo",     0,              SetOwlLogging },
 #endif
 #endif

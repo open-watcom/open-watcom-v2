@@ -279,6 +279,7 @@ TREEPTR StringLeaf( string_flags flags )
 
     strlit = NULL;
     new_lit = GetLiteral();
+#if _INTEL_CPU
     if( TargetSwitches & BIG_DATA ) {
         if( !CompFlags.strings_in_code_segment ) {
             if( new_lit->length > DataThreshold ) {
@@ -286,10 +287,13 @@ TREEPTR StringLeaf( string_flags flags )
             }
         }
     }
+#endif
     if( CompFlags.wide_char_string )
         flags |= STRLIT_WIDE;
+#if _INTEL_CPU
     if( flags & STRLIT_FAR )
         CompFlags.far_strings = true;
+#endif
     hash = CalcStringHash( new_lit );
     if( TOGGLE( reuse_duplicate_strings ) ) {
         for( strlit = StringHash[hash]; strlit != NULL; strlit = strlit->next_string ) {

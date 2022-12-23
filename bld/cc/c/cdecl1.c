@@ -120,6 +120,7 @@ static void FuncDefn( SYMPTR sym )
     if( TOGGLE( check_stack ) )
         sym->flags |= SYM_CHECK_STACK;
 
+#if _INTEL_CPU
     if( !CompFlags.zu_switch_used ) {
         if( sym->mods & FLAG_FARSS ) {          /* function use far stack */
             TargetSwitches |= FLOATING_SS;
@@ -127,6 +128,7 @@ static void FuncDefn( SYMPTR sym )
             TargetSwitches &= ~FLOATING_SS;
         }
     }
+#endif
     if( strcmp( CurFunc->name, "main" ) == 0
       || strcmp( CurFunc->name, "wmain" ) == 0 ) {
         sym->mods &= ~MASK_LANGUAGES;  // Turn off any language flags
@@ -185,8 +187,10 @@ static void BeginFunc( void )
         if( CurFunc->seginfo == NULL ) {
             if( CompFlags.zm_switch_used ) {
                 name = "";
+#if _INTEL_CPU
                 if( TargetSwitches & BIG_CODE )
                     name = CurFunc->name;
+#endif
                 segname = TS_SEG_CODE; /* "_TEXT" */
                 if( TextSegName[0] != '\0' ) {
                     segname = TextSegName;
