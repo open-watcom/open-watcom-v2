@@ -58,6 +58,20 @@
 #include "gsegs.h"
 
 
+#define DEF_CGSW_SWITCHES       (CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS)
+
+#if _CPU == 8086
+  #define DEF_CGTRGSW_SWITCHES  0
+#elif _CPU == 386
+  #define DEF_CGTRGSW_SWITCHES  (USE_32)
+#elif _CPU == _AXP
+  #define DEF_CGTRGSW_SWITCHES  0
+#elif _CPU == _PPC
+  #define DEF_CGTRGSW_SWITCHES  0
+#else
+  #error no or invalid target specified
+#endif
+
 cgflags_t               CGFlags = { 0 };
 
 /* Forward declarations */
@@ -110,20 +124,6 @@ void    CGGenSub( void ) {
         }
     }
 }
-
-#define DEF_CGSW_SWITCHES       (CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS)
-
-#if _CPU == 8086
-  #define DEF_CGTRGSW_SWITCHES  0
-#elif _CPU == 386
-  #define DEF_CGTRGSW_SWITCHES  (USE_32)
-#elif _CPU == _AXP
-  #define DEF_CGTRGSW_SWITCHES  0
-#elif _CPU == _PPC
-  #define DEF_CGTRGSW_SWITCHES  0
-#else
-  #error no target specified
-#endif
 
 static  void    CGStart( void ) {
 //=========================
