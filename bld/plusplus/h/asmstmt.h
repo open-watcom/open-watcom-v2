@@ -48,10 +48,12 @@ extern PTREE        AsmStmt( void );
 
 // from CPRAGxxx
 
-extern bool         AsmInsertFixups( VBUF *code );
-extern void         AsmUsesAuto( void );
+extern bool         AsmSysInsertFixups( VBUF *code );
+extern AUX_INFO     *AsmSysCreateAux( const char * );
+extern void         AsmSysUsesAuto( void );
 extern void         AsmSysInit( void );
 extern void         AsmSysFini( void );
+extern void         AsmSysDone( void );
 extern char const   *AsmSysDefineByte( void );
 extern void         AsmSysCopyCode( void );
 extern void         AsmSysLine( const char * );
