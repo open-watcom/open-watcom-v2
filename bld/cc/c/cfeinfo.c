@@ -541,22 +541,16 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 #ifdef REVERSE
     cclass &= ~ FECALL_REVERSE_PARMS;
 #endif
-#ifdef FECALL_PROLOG_HOOKS
+#if _INTEL_CPU
     if( CompFlags.ep_switch_used ) {
         cclass |= FECALL_PROLOG_HOOKS;
     }
-#endif
-#ifdef FECALL_EPILOG_HOOKS
     if( CompFlags.ee_switch_used ) {
         cclass |= FECALL_EPILOG_HOOKS;
     }
-#endif
-#ifdef FECALL_GROW_STACK
     if( CompFlags.sg_switch_used ) {
         cclass |= FECALL_GROW_STACK;
     }
-#endif
-#ifdef FECALL_TOUCH_STACK
     if( CompFlags.st_switch_used ) {
         cclass |= FECALL_TOUCH_STACK;
     }
@@ -1180,7 +1174,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
     return( NULL );
 }
 
-#else
+#else /* _RISC_CPU */
 
 /*
 //    This section is NOT 8086 and 386 , i.e.,

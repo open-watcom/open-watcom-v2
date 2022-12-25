@@ -868,7 +868,7 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
         } else {
             stxpcpy( seg_name, TS_SEG_CODE );
         }
-#else
+#else /* _RISC_CPU */
         stxpcpy( seg_name, TS_SEG_CODE );
 #endif
         CMemFree( TextSegName );

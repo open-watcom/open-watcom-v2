@@ -250,7 +250,7 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
             segid = cgSegIdFarVariable( sym, flags, size, control );
         }
     }
-#else
+#else /* _RISC_CPU */
     segid = cgSegIdNearVariable( sym, flags, size, control );
 #endif
     return( segid );
@@ -279,7 +279,7 @@ fe_seg_id CgSegIdFunction( SYMBOL sym )
             } else {
                 segid = SegmentDefaultCode();
             }
-#else
+#else /* _RISC_CPU */
             segid = SegmentDefaultCode();
 #endif
         }

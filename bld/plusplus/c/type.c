@@ -1690,7 +1690,7 @@ void PTypeCheckInit( void )
     } else {
         defaultDataMemFlag = TF1_NEAR;
     }
-#else
+#else /* _RISC_CPU */
     defaultFunctionMemFlag = TF1_NEAR;
     defaultDataMemFlag = TF1_NEAR;
 #endif

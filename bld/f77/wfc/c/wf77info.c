@@ -307,11 +307,11 @@ static  void    BldCSName( char *buff )
 //=====================================
 // Build code segment name.
 {
-#if _CPU == 8086
+  #if _CPU == 8086
     strcpy( STGetName( SubProgId, buff ), CSSuff );
-#else
+  #else
     strcpy( buff, CSSuff );
-#endif
+  #endif
 }
 #endif
 

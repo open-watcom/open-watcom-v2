@@ -227,7 +227,7 @@ TYPE TypeTargetSizeT(           // GET TYPE OF TARGET'S size_t
     } else {
         type = GetBasicType( TYP_UINT );
     }
-#else
+#else /* _RISC_CPU */
     type = GetBasicType( TYP_UINT );
 #endif
     return( type );
@@ -245,7 +245,7 @@ unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
     } else {
         size = TARGET_UINT;
     }
-#else
+#else /* _RISC_CPU */
     size = TARGET_UINT;
 #endif
     return( size );

@@ -35,7 +35,7 @@
 
 #if _INTEL_CPU
     #include "asminlin.h"
-#else
+#else /* _RISC_CPU */
     #include "asinline.h"
 #endif
 

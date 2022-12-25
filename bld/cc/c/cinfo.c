@@ -188,7 +188,7 @@ void SetFarHuge( SYMPTR sym, bool report )
         InitErrLoc();
    }
   #endif
-#else
+#else /* _RISC_CPU */
 
     /* unused parameters */ (void)sym; (void)report;
 
@@ -868,14 +868,14 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
             segid = SEG_CODE;
             if( sym->seginfo != NULL ) {
                 segid = sym->seginfo->segid;
-#if _INTEL_CPU
+    #if _INTEL_CPU
             } else if( attr & FE_IMPORT ) {
                 if( (sym->mods & FLAG_FAR) || (TargetSwitches & BIG_CODE) ) {
                     if( sym->flags & SYM_ADDR_TAKEN ) {
                         segid = import_segid--;
                     }
                 }
-#endif
+    #endif
             }
         } else if( sym->u.var.segid != SEG_NULL ) {
             segid = sym->u.var.segid;

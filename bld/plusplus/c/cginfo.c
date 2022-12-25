@@ -474,9 +474,7 @@ static const inline_funcs *Flat( const inline_funcs *ifunc )
   #endif
     return( ifunc );
 }
-#endif
 
-#if _INTEL_CPU
 static const inline_funcs *InlineLookup( NAME name )
 {
     const inline_funcs  *ifunc;
@@ -583,7 +581,7 @@ static AUX_INFO *IntrinsicAuxLookup(
     inf->save = ifunc->save;
     inf->objname = NULL;
     inf->use = 1;
-#else
+#else /* _RISC_CPU */
     AUX_INFO *inf;
 
     /* unused parameters */ (void)sym;
@@ -864,15 +862,13 @@ static call_class getCallClass( // GET CLASS OF CALL
             if( CompFlags.emit_names ) {
                 cclass |= FECALL_EMIT_FUNCTION_NAME;
             }
-#endif
-#if _CPU == 8086
+    #if _CPU == 8086
             if( inf == &PascalInfo || inf == &CdeclInfo ) {
                 if( TargetSwitches & WINDOWS ) {
                     cclass |= FECALL_FAT_WINDOWS_PROLOG;
                 }
             }
-#endif
-#if _INTEL_CPU
+    #endif
             if( sym->flag & SYMF_FAR16_CALLER ) {
                 cclass |= FECALL_THUNK_PROLOG;
             }
@@ -881,22 +877,16 @@ static call_class getCallClass( // GET CLASS OF CALL
 #ifdef REVERSE
         cclass &= ~ FECALL_REVERSE_PARMS;
 #endif
-#ifdef FECALL_PROLOG_HOOKS
+#if _INTEL_CPU
         if( CompFlags.ep_switch_used ) {
             cclass |= FECALL_PROLOG_HOOKS;
         }
-#endif
-#ifdef FECALL_EPILOG_HOOKS
         if( CompFlags.ee_switch_used ) {
             cclass |= FECALL_EPILOG_HOOKS;
         }
-#endif
-#ifdef FECALL_GROW_STACK
         if( CompFlags.sg_switch_used ) {
             cclass |= FECALL_GROW_STACK;
         }
-#endif
-#ifdef FECALL_TOUCH_STACK
         if( CompFlags.st_switch_used ) {
             cclass |= FECALL_TOUCH_STACK;
         }
@@ -1180,32 +1170,26 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         CMemFreePtr( &buf );
     inf = &DefaultInfo;
     switch( request ) {
-#if _INTEL_CPU
-    case FEINF_P5_CHIP_BUG_SYM:
-        DbgNotSym();
-        retn = ChipBugSym;
-        break;
-#endif
     case FEINF_SOURCE_LANGUAGE:
         DbgNotSym();
         DbgNotRetn();
         retn = "CPP";
         break;
 #if _INTEL_CPU
+    case FEINF_P5_CHIP_BUG_SYM:
+        DbgNotSym();
+        retn = ChipBugSym;
+        break;
     case FEINF_STACK_SIZE_8087:
         DbgNotSym();
         DbgNotRetn();
         retn = (void *)(pointer_uint)Stack87;
         break;
-#endif
-#if _INTEL_CPU
     case FEINF_CODE_GROUP:
         DbgNotSym();
         DbgNotRetn();
         retn = GenCodeGroup;
         break;
-#endif
-#if _INTEL_CPU
     case FEINF_DATA_GROUP:
         DbgNotSym();
         DbgNotRetn();
@@ -1257,16 +1241,12 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = (void *)SEG_PROF_REF;
         break;
   #endif
-#endif
-#if _INTEL_CPU
     case FEINF_CODE_LABEL_ALIGNMENT:
       {
         DbgNotSym();
         DbgNotRetn();
         retn = CgInfoCodeAlignment();
       } break;
-#endif
-#if _INTEL_CPU
     case FEINF_CLASS_NAME:
         DbgNotSym();
         DbgNotRetn();
@@ -1276,8 +1256,6 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             retn = SegmentClassName( (fe_seg_id)(pointer_uint)sym );
         }
         break;
-#endif
-#if _INTEL_CPU
     case FEINF_USED_8087:
         DbgNotSym();
         DbgNotRetn();

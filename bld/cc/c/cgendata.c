@@ -68,25 +68,26 @@ target_size GetDQuadPointerSize( enum quad_flags dq_flags )
 {
     target_size         size;
 
+    size = TARGET_POINTER;
+#if _INTEL_CPU
     if( dq_flags & Q_NEAR_POINTER ) {
         size = TARGET_NEAR_POINTER;
     } else if( dq_flags & Q_FAR_POINTER ) {
         size = TARGET_FAR_POINTER;
     } else if( dq_flags & Q_CODE_POINTER ) {
-        size = TARGET_POINTER;
-#if _INTEL_CPU
         if( TargetSwitches & BIG_CODE ) {
             size = TARGET_FAR_POINTER;
         }
-#endif
     } else {
-        size = TARGET_POINTER;
-#if _INTEL_CPU
         if( TargetSwitches & BIG_DATA ) {
             size = TARGET_FAR_POINTER;
         }
-#endif
     }
+#else
+    if( dq_flags & Q_NEAR_POINTER ) {
+        size = TARGET_NEAR_POINTER;
+    }
+#endif
     return( size );
 }
 
