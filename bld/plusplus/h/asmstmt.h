@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 #include "asalloc.h"
 #if _INTEL_CPU
   #include "asminlin.h"
-#else
+#else /* _RISC_CPU */
   #include "asinline.h"
 #endif
 
@@ -47,12 +48,10 @@ extern PTREE        AsmStmt( void );
 
 // from CPRAGxxx
 
-extern bool         AsmSysInsertFixups( VBUF *code );
-extern AUX_INFO     *AsmSysCreateAux( const char * );
-extern void         AsmSysUsesAuto( void );
+extern bool         AsmInsertFixups( VBUF *code );
+extern void         AsmUsesAuto( void );
 extern void         AsmSysInit( void );
 extern void         AsmSysFini( void );
-extern void         AsmSysDone( void );
 extern char const   *AsmSysDefineByte( void );
 extern void         AsmSysCopyCode( void );
 extern void         AsmSysLine( const char * );
