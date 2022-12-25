@@ -1224,7 +1224,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                 if(( op1_tp->u.p.decl_flags & FLAG_HUGE ) ||
                    ( op2_tp->u.p.decl_flags & FLAG_HUGE ) ) {
                     result_type = LNG;
-                } else if( (TargetSwitches & (BIG_DATA | CHEAP_POINTER) ) == BIG_DATA ) {
+                } else if( IsHugeData() ) {
                     if( ((op1_tp->u.p.decl_flags & (FLAG_FAR | FLAG_NEAR)) == 0 )
                      && ((op2_tp->u.p.decl_flags & (FLAG_FAR | FLAG_NEAR)) == 0) ) {
                         result_type = LNG;
@@ -1255,8 +1255,8 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                 result = ExprNode( op1, TokenToOperator( opr ), op2 );
                 return( PtrSubtract( result, size, result_type ) );
 #if _INTEL_CPU
-            } else if( (op1_tp->u.p.decl_flags & FLAG_HUGE) ||
-                      ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
+            } else if( (op1_tp->u.p.decl_flags & FLAG_HUGE)
+              || IsHugeData() ) {
                 if( (op2_type != LNG) && (op2_type != ULN) ) {
                     op2 = CnvOp( op2, GetType( TYP_LONG ), true );
                 }
@@ -1277,7 +1277,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         if( size != 1 ) {
 #if _INTEL_CPU
             if( (op2_tp->u.p.decl_flags & FLAG_HUGE)
-              || ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
+              || IsHugeData() ) {
                 if( (op1_type != LNG ) && (op1_type != ULN) ) {
                     op2 = CnvOp( op2, GetType( TYP_LONG ), true );
                 }

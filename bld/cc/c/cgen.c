@@ -599,9 +599,8 @@ static cg_name IndexOperator( cg_name op1, OPNODE *node, cg_name op2 )
     if( element_size != 1 ) {
         index_type = TY_INTEGER;
 #if _CPU == 8086
-        if( (node->flags & OPFLAG_HUGEPTR) ||
-           ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA &&
-            (node->flags & (OPFLAG_NEARPTR | OPFLAG_FARPTR)) == 0) ) {
+        if( (node->flags & OPFLAG_HUGEPTR)
+          || (IsHugeData() && (node->flags & (OPFLAG_NEARPTR | OPFLAG_FARPTR)) == 0) ) {
             index_type = TY_INT_4;
         }
 #endif

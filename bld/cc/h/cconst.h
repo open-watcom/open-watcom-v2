@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,3 +73,5 @@
                                     && strcmp(s, PPOPERATOR_PRAGMA) == 0)
 
 #define ARRAY_SIZE(x)               (sizeof( x ) / sizeof( *x ))
+
+#define IsHugeData()                ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA)
