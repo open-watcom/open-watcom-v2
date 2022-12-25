@@ -512,7 +512,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             if( sym.mods & FLAG_EXPORT ) {
                 cclass |= FECALL_DLL_EXPORT;
             }
-#ifdef _INTEL_CPU
+#if _INTEL_CPU
             if( sym.mods & FLAG_LOADDS ) {
   #if 0
                 if( TargSys == TS_WINDOWS ) {
