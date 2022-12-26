@@ -159,7 +159,7 @@ static  hw_reg_set      FortranParms[] =
     { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
 
 static aux_info         DefaultInfo = {
-    FECALL_FAR_CALL,
+    FECALL_X86_FAR_CALL,
     NULL,
     FortranParms,
     HW_D( HW_EMPTY ),
@@ -374,21 +374,21 @@ void InitPragmaAux( void )
         }
     }
     if( OZOpts & OZOPT_O_FRAME ) {
-        DefaultInfo.cclass |= FECALL_GENERATE_STACK_FRAME;
+        DefaultInfo.cclass |= FECALL_X86_GENERATE_STACK_FRAME;
     }
   #if _CPU != 8086
     if( CGOpts & CGOPT_STACK_GROW ) {
-        DefaultInfo.cclass |= FECALL_GROW_STACK;
+        DefaultInfo.cclass |= FECALL_X86_GROW_STACK;
     }
     if( CGOpts & CGOPT_STK_ARGS ) {
-        DefaultInfo.cclass |= FECALL_CALLER_POPS | FECALL_NO_8087_RETURNS;
+        DefaultInfo.cclass |= FECALL_CALLER_POPS | FECALL_X86_NO_8087_RETURNS;
         DefaultInfo.parms = StackParms;
         HW_CTurnOff( DefaultInfo.save, HW_EAX );
         HW_CTurnOff( DefaultInfo.save, HW_EDX );
         HW_CTurnOff( DefaultInfo.save, HW_ECX );
         HW_CTurnOff( DefaultInfo.save, HW_FLTS );
 
-        IFXInfo.cclass |= FECALL_CALLER_POPS | FECALL_NO_8087_RETURNS;
+        IFXInfo.cclass |= FECALL_CALLER_POPS | FECALL_X86_NO_8087_RETURNS;
         IFXInfo.parms = StackParms;
 
         HW_CTurnOff( IFXInfo.save, HW_FLTS );
@@ -1127,19 +1127,19 @@ static void GetSTRetInfo( void )
     have.f_list   = false;
     for(;;) {
         if( !have.f_float && RecToken( "FLOAT" ) ) {
-            CurrAux->cclass |= FECALL_NO_FLOAT_REG_RETURNS;
+            CurrAux->cclass |= FECALL_X86_NO_FLOAT_REG_RETURNS;
             have.f_float = true;
         } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
-            CurrAux->cclass |= FECALL_NO_STRUCT_REG_RETURNS;
+            CurrAux->cclass |= FECALL_X86_NO_STRUCT_REG_RETURNS;
             have.f_struct = true;
         } else if( !have.f_allocs && RecToken( "ROUTINE" ) ) {
-            CurrAux->cclass |= FECALL_ROUTINE_RETURN;
+            CurrAux->cclass |= FECALL_X86_ROUTINE_RETURN;
             have.f_allocs = true;
         } else if( !have.f_allocs && RecToken( "CALLER" ) ) {
-            CurrAux->cclass &= ~FECALL_ROUTINE_RETURN;
+            CurrAux->cclass &= ~FECALL_X86_ROUTINE_RETURN;
             have.f_allocs = true;
         } else if( !have.f_list && RecToken( "[" ) ) {
-            CurrAux->cclass |= FECALL_SPECIAL_STRUCT_RETURN;
+            CurrAux->cclass |= FECALL_X86_SPECIAL_STRUCT_RETURN;
             CurrAux->streturn = RegSet();
             have.f_list = true;
         } else {
@@ -1161,16 +1161,16 @@ static void GetRetInfo( void )
     have.f_no8087  = false;
     have.f_list    = false;
     have.f_struct  = false;
-    // "3s" default is FECALL_NO_8087_RETURNS - turn off FECALL_NO_8087_RETURNS
+    // "3s" default is FECALL_X86_NO_8087_RETURNS - turn off FECALL_X86_NO_8087_RETURNS
     // flag so that "3s" model programs can use 387 pragmas
-    CurrAux->cclass &= ~FECALL_NO_8087_RETURNS;
+    CurrAux->cclass &= ~FECALL_X86_NO_8087_RETURNS;
     for(;;) {
         if( !have.f_no8087 && RecToken( "NO8087" ) ) {
-            CurrAux->cclass |= FECALL_NO_8087_RETURNS;
+            CurrAux->cclass |= FECALL_X86_NO_8087_RETURNS;
             HW_CTurnOff( CurrAux->returns, HW_FLTS );
             have.f_no8087 = true;
         } else if( !have.f_list && RecToken( "[" ) ) {
-            CurrAux->cclass |= FECALL_SPECIAL_RETURN;
+            CurrAux->cclass |= FECALL_X86_SPECIAL_RETURN;
             CurrAux->returns = RegSet();
             have.f_list = true;
         } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
@@ -1201,7 +1201,7 @@ static void GetSaveInfo( void )
     have.f_list     = false;
     for(;;) {
         if( !have.f_exact && RecToken( "EXACT" ) ) {
-            CurrAux->cclass |= FECALL_MODIFY_EXACT;
+            CurrAux->cclass |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = true;
         } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
             CurrAux->cclass |= FECALL_NO_MEMORY_CHANGED;
@@ -1271,7 +1271,7 @@ static void GetParmInfo( void )
             CurrAux->cclass |= FECALL_NO_MEMORY_READ;
             have.f_nomemory = true;
         } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-            CurrAux->cclass |= FECALL_LOAD_DS_ON_CALL;
+            CurrAux->cclass |= FECALL_X86_LOAD_DS_ON_CALL;
             have.f_loadds = true;
         } else if( !have.f_list && CurrToken( "[" ) ) {
             if( CurrAux->parms != DefaultInfo.parms ) {
@@ -1341,18 +1341,18 @@ void     PragmaAux( void )
 #if _INTEL_CPU
             have.f_call = true;
         } else if( !have.f_call && RecToken( "FAR" ) ) {
-            CurrAux->cclass |= FECALL_FAR_CALL;
+            CurrAux->cclass |= FECALL_X86_FAR_CALL;
             have.f_call = true;
     #if _CPU == 386
         } else if( !have.f_call && RecToken( "FAR16" ) ) {
-            CurrAux->cclass |= FECALL_FAR16_CALL;
+            CurrAux->cclass |= FECALL_X86_FAR16_CALL;
             have.f_call = true;
     #endif
         } else if( !have.f_call && RecToken( "NEAR" ) ) {
-            CurrAux->cclass &= ~FECALL_FAR_CALL;
+            CurrAux->cclass &= ~FECALL_X86_FAR_CALL;
             have.f_call = true;
         } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-            CurrAux->cclass |= FECALL_LOAD_DS_ON_ENTRY;
+            CurrAux->cclass |= FECALL_X86_LOAD_DS_ON_ENTRY;
             have.f_loadds = true;
 #endif
         } else if( !have.f_export && RecToken( "EXPORT" ) ) {
@@ -1387,16 +1387,16 @@ void CheckFar16Call( sym_id sp )
 
     info = AuxLookup( sp->u.ns.name, sp->u.ns.u2.name_len );
     if( info != NULL ) {
-        if( info->cclass & FECALL_FAR16_CALL ) {
+        if( info->cclass & FECALL_X86_FAR16_CALL ) {
             if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
-                ProgramInfo.cclass |= FECALL_THUNK_PROLOG;
+                ProgramInfo.cclass |= FECALL_X86_THUNK_PROLOG;
             } else {
                 info = AuxLookup( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
                 if( info == NULL ) {
                     info = NewAuxEntry( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
                     CopyAuxInfo( info, &FortranInfo );
                 }
-                info->cclass |= FECALL_THUNK_PROLOG;
+                info->cclass |= FECALL_X86_THUNK_PROLOG;
             }
         }
     }

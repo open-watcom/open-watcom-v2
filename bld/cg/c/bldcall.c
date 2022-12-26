@@ -435,7 +435,7 @@ void    AddCallIns( instruction *ins, cn call )
              */
             addr_type_class = WD;
 #if _TARGET & (_TARG_80386 | _TARG_8086)
-            if( *(call_class *)FindAuxInfo( call_name, FEINF_CALL_CLASS ) & FECALL_FAR_CALL ) {
+            if( *(call_class *)FindAuxInfo( call_name, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL ) {
                 addr_type_class = CP;
             }
 #endif

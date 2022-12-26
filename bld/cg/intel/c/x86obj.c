@@ -2995,7 +2995,7 @@ void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
     attr = FEAttr( sym );
 #if  _TARGET & _TARG_80386
     if( !rel && F_CLASS( class ) == F_OFFSET && (attr & FE_PROC) ) {
-        if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_FAR16_CALL ) {
+        if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_X86_FAR16_CALL ) {
             class |= F_FAR16;
         }
     }

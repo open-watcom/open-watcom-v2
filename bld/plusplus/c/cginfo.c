@@ -570,12 +570,12 @@ static AUX_INFO *IntrinsicAuxLookup(
         }
     }
     inf = &InlineInfo;
-    inf->cclass = (DefaultInfo.cclass & FECALL_FAR_CALL) | FECALL_MODIFY_EXACT;
+    inf->cclass = (DefaultInfo.cclass & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
     inf->code = ifunc->code;
     inf->parms = ifunc->parms;
     inf->returns = ifunc->returns;
     if( !HW_CEqual( inf->returns, HW_xAX ) && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-        inf->cclass |= FECALL_SPECIAL_RETURN;
+        inf->cclass |= FECALL_X86_SPECIAL_RETURN;
     }
     HW_CAsgn( inf->streturn, HW_EMPTY );
     inf->save = ifunc->save;
@@ -814,16 +814,16 @@ static call_class getCallClass( // GET CLASS OF CALL
 #if _INTEL_CPU
             if( flags & TF1_FAR ) {
                 /* function has an explicit FAR */
-                cclass |= FECALL_FAR_CALL;
+                cclass |= FECALL_X86_FAR_CALL;
             } else if( flags & TF1_NEAR ) {
                 /* function has an explicit NEAR */
-                cclass &= ~FECALL_FAR_CALL;
+                cclass &= ~FECALL_X86_FAR_CALL;
             } else if( flags & TF1_FAR16 ) {
-                cclass |= FECALL_FAR16_CALL;
+                cclass |= FECALL_X86_FAR16_CALL;
             } else {
                 if( IsBigCode() ) {
                     if( makeFileScopeStaticNear( sym ) ) {
-                        cclass &= ~FECALL_FAR_CALL;
+                        cclass &= ~FECALL_X86_FAR_CALL;
                     }
                 }
             }
@@ -843,7 +843,7 @@ static call_class getCallClass( // GET CLASS OF CALL
                         // may be COMDATed so make sure the calling convention
                         // matches what it would be for an exported fn
                         if( TargetSwitches & WINDOWS ) {
-                            cclass |= FECALL_FAT_WINDOWS_PROLOG;
+                            cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                         }
                     } else {
                         cclass |= FECALL_DLL_EXPORT;
@@ -851,26 +851,26 @@ static call_class getCallClass( // GET CLASS OF CALL
                 }
             }
             if( fn_flags & TF1_INTERRUPT ) {
-                cclass |= FECALL_INTERRUPT;
+                cclass |= FECALL_X86_INTERRUPT;
             }
             if( fn_flags & TF1_FARSS ) {
-                cclass |= FECALL_FARSS;
+                cclass |= FECALL_X86_FARSS;
             }
             if( fn_flags & TF1_LOADDS ) {
-                cclass |= FECALL_LOAD_DS_ON_ENTRY;
+                cclass |= FECALL_X86_LOAD_DS_ON_ENTRY;
             }
             if( CompFlags.emit_names ) {
-                cclass |= FECALL_EMIT_FUNCTION_NAME;
+                cclass |= FECALL_X86_EMIT_FUNCTION_NAME;
             }
     #if _CPU == 8086
             if( inf == &PascalInfo || inf == &CdeclInfo ) {
                 if( TargetSwitches & WINDOWS ) {
-                    cclass |= FECALL_FAT_WINDOWS_PROLOG;
+                    cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                 }
             }
     #endif
             if( sym->flag & SYMF_FAR16_CALLER ) {
-                cclass |= FECALL_THUNK_PROLOG;
+                cclass |= FECALL_X86_THUNK_PROLOG;
             }
 #endif
         }
@@ -879,16 +879,16 @@ static call_class getCallClass( // GET CLASS OF CALL
 #endif
 #if _INTEL_CPU
         if( CompFlags.ep_switch_used ) {
-            cclass |= FECALL_PROLOG_HOOKS;
+            cclass |= FECALL_X86_PROLOG_HOOKS;
         }
         if( CompFlags.ee_switch_used ) {
-            cclass |= FECALL_EPILOG_HOOKS;
+            cclass |= FECALL_X86_EPILOG_HOOKS;
         }
         if( CompFlags.sg_switch_used ) {
-            cclass |= FECALL_GROW_STACK;
+            cclass |= FECALL_X86_GROW_STACK;
         }
         if( CompFlags.st_switch_used ) {
-            cclass |= FECALL_TOUCH_STACK;
+            cclass |= FECALL_X86_TOUCH_STACK;
         }
 #endif
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -208,7 +208,7 @@ void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
     TellOptimizerByPassed();
     attr = FEAttr( sym );
     if( ( attr & FE_PROC ) && _IsTargetModel( WINDOWS )
-      && (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_FAR_CALL) ) {
+      && (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL) ) {
         class = F_LDR_OFFSET;
     } else {
         class = F_OFFSET;

@@ -136,7 +136,7 @@ void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types 
     if( class == CG_FE ) {
         attr = FEAttr( sym );
         if( ((kind & BASE) == 0) && _IsTargetModel( WINDOWS )
-         && ( attr & FE_PROC ) && (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_FAR_CALL) ) {
+         && ( attr & FE_PROC ) && (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL) ) {
             kind |= LDOF;
         }
         if( UseImportForm( attr ) ) { /* 90-05-22 */

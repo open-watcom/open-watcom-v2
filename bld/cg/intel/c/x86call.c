@@ -458,7 +458,7 @@ void    PostCall( cn call )
 type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
 /********************************************************************************/
 {
-    if( cclass & FECALL_FAR16_CALL )
+    if( cclass & FECALL_X86_FAR16_CALL )
         return( tipe );
     return( QParmType( func, NULL, tipe ) );
 }

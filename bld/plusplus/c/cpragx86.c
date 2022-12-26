@@ -73,17 +73,17 @@
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
 //
-#define FECALL_CALL_CLASS_IGNORE ( 0 \
+#define FECALL_X86_CALL_CLASS_IGNORE ( 0 \
     | FECALL_NO_MEMORY_CHANGED       \
     | FECALL_NO_MEMORY_READ          \
-    | FECALL_MODIFY_EXACT            \
-    | FECALL_GENERATE_STACK_FRAME    \
-    | FECALL_EMIT_FUNCTION_NAME      \
-    | FECALL_GROW_STACK              \
-    | FECALL_PROLOG_HOOKS            \
-    | FECALL_EPILOG_HOOKS            \
-    | FECALL_TOUCH_STACK             \
-    | FECALL_LOAD_DS_ON_ENTRY        \
+    | FECALL_X86_MODIFY_EXACT            \
+    | FECALL_X86_GENERATE_STACK_FRAME    \
+    | FECALL_X86_EMIT_FUNCTION_NAME      \
+    | FECALL_X86_GROW_STACK              \
+    | FECALL_X86_PROLOG_HOOKS            \
+    | FECALL_X86_EPILOG_HOOKS            \
+    | FECALL_X86_TOUCH_STACK             \
+    | FECALL_X86_LOAD_DS_ON_ENTRY        \
     | FECALL_DLL_EXPORT              \
 )
 
@@ -315,7 +315,7 @@ static void GetParmInfo(
             CurrInfo->cclass |= FECALL_NO_MEMORY_READ;
             have.f_nomemory = 1;
         } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-            CurrInfo->cclass |= FECALL_LOAD_DS_ON_CALL;
+            CurrInfo->cclass |= FECALL_X86_LOAD_DS_ON_CALL;
             have.f_loadds = 1;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             PragManyRegSets();
@@ -343,19 +343,19 @@ static void GetSTRetInfo(
     for( ;; ) {
         if( !have.f_float && PragRecogId( "float" ) ) {
             have.f_float = 1;
-            CurrInfo->cclass |= FECALL_NO_FLOAT_REG_RETURNS;
+            CurrInfo->cclass |= FECALL_X86_NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
-            CurrInfo->cclass |= FECALL_NO_STRUCT_REG_RETURNS;
+            CurrInfo->cclass |= FECALL_X86_NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecogId( "routine" ) ) {
             have.f_allocs = 1;
-            CurrInfo->cclass |= FECALL_ROUTINE_RETURN;
+            CurrInfo->cclass |= FECALL_X86_ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecogId( "caller" ) ) {
             have.f_allocs = 1;
-            CurrInfo->cclass &= ~FECALL_ROUTINE_RETURN;
+            CurrInfo->cclass &= ~FECALL_X86_ROUTINE_RETURN;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
-            CurrInfo->cclass |= FECALL_SPECIAL_STRUCT_RETURN;
+            CurrInfo->cclass |= FECALL_X86_SPECIAL_STRUCT_RETURN;
             CurrInfo->streturn = PragRegList();
         } else {
             break;
@@ -375,15 +375,15 @@ static void GetRetInfo(
     have.f_no8087  = 0;
     have.f_list    = 0;
     have.f_struct  = 0;
-    CurrInfo->cclass &= ~ FECALL_NO_8087_RETURNS;
+    CurrInfo->cclass &= ~ FECALL_X86_NO_8087_RETURNS;
     for( ;; ) {
         if( !have.f_no8087 && PragRecogId( "no8087" ) ) {
             have.f_no8087 = 1;
             HW_CTurnOff( CurrInfo->returns, HW_FLTS );
-            CurrInfo->cclass |= FECALL_NO_8087_RETURNS;
+            CurrInfo->cclass |= FECALL_X86_NO_8087_RETURNS;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
-            CurrInfo->cclass |= FECALL_SPECIAL_RETURN;
+            CurrInfo->cclass |= FECALL_X86_SPECIAL_RETURN;
             CurrInfo->returns = PragRegList();
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
@@ -413,7 +413,7 @@ static void GetSaveInfo(
     have.f_list     = 0;
     for( ;; ) {
         if( !have.f_exact && PragRecogId( "exact" ) ) {
-            CurrInfo->cclass |= FECALL_MODIFY_EXACT;
+            CurrInfo->cclass |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = 1;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
             CurrInfo->cclass |= FECALL_NO_MEMORY_CHANGED;
@@ -1152,16 +1152,16 @@ void PragAux(                   // #PRAGMA AUX ...
                     have.uses_auto = GetByteSeq();
                     have.f_call = 1;
                 } else if( !have.f_call && PragRecogId( "far" ) ) {
-                    CurrInfo->cclass |= FECALL_FAR_CALL;
+                    CurrInfo->cclass |= FECALL_X86_FAR_CALL;
                     have.f_call = 1;
                 } else if( !have.f_call && PragRecogId( "near" ) ) {
-                    CurrInfo->cclass &= ~FECALL_FAR_CALL;
+                    CurrInfo->cclass &= ~FECALL_X86_FAR_CALL;
                     have.f_call = 1;
                 } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-                    CurrInfo->cclass |= FECALL_LOAD_DS_ON_ENTRY;
+                    CurrInfo->cclass |= FECALL_X86_LOAD_DS_ON_ENTRY;
                     have.f_loadds = 1;
                 } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
-                    CurrInfo->cclass |= FECALL_LOAD_RDOSDEV_ON_ENTRY;
+                    CurrInfo->cclass |= FECALL_X86_LOAD_RDOSDEV_ON_ENTRY;
                     have.f_rdosdev = 1;
                 } else if( !have.f_export && PragRecogId( "export" ) ) {
                     CurrInfo->cclass |= FECALL_DLL_EXPORT;
@@ -1179,7 +1179,7 @@ void PragAux(                   // #PRAGMA AUX ...
                     GetSaveInfo();
                     have.f_modify = 1;
                 } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-                    CurrInfo->cclass |= FECALL_GENERATE_STACK_FRAME;
+                    CurrInfo->cclass |= FECALL_X86_GENERATE_STACK_FRAME;
                     have.f_frame = 1;
                 } else {
                     break;
@@ -1266,8 +1266,8 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         return( true );
     }
     return
-           ( ( inf1->cclass & ~FECALL_CALL_CLASS_IGNORE ) ==
-             ( inf2->cclass & ~FECALL_CALL_CLASS_IGNORE ) )
+           ( ( inf1->cclass & ~FECALL_X86_CALL_CLASS_IGNORE ) ==
+             ( inf2->cclass & ~FECALL_X86_CALL_CLASS_IGNORE ) )
         && parmSetsIdentical( inf1->parms, inf2->parms )
         && HW_Equal( inf1->returns, inf2->returns )
         && HW_Equal( inf1->streturn, inf2->streturn )

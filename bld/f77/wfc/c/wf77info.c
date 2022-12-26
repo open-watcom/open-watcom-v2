@@ -423,7 +423,7 @@ static  void   DefineGlobalSeg( global_seg *seg )
 // Define a global segment.
 {
     int         private;
-    char        g_name[G_DATA_LEN+3];
+    char        g_name[G_DATA_LEN+8];
 
     seg->segid = AllocSegId();
     memcpy( g_name, GData, G_DATA_LEN );
@@ -1235,7 +1235,7 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
 
             info = InfoLookup( (sym_id)fn );
             if( info != NULL ) {
-                if( info->cclass & FECALL_FAR16_CALL ) {
+                if( info->cclass & FECALL_X86_FAR16_CALL ) {
                     return( TY_INT_2 );
                 }
             }

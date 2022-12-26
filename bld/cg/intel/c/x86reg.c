@@ -72,11 +72,11 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     }
     state->attr = ROUTINE_REMOVES_PARMS;
     cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
-    if( cclass & FECALL_INTERRUPT ) {
+    if( cclass & FECALL_X86_INTERRUPT ) {
         state->attr |= ROUTINE_INTERRUPT;
-    } else if( cclass & FECALL_FAR_CALL ) {
+    } else if( cclass & FECALL_X86_FAR_CALL ) {
         state->attr |= ROUTINE_LONG;
-    } else if( cclass & FECALL_FAR16_CALL ) {
+    } else if( cclass & FECALL_X86_FAR16_CALL ) {
         state->attr |= ROUTINE_FAR16;
     }
     if( cclass & FECALL_CALLER_POPS ) {
@@ -88,20 +88,20 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & FECALL_NORETURN ) {
         state->attr |= ROUTINE_NEVER_RETURNS_NORETURN;
     }
-    if( cclass & FECALL_ROUTINE_RETURN ) {
+    if( cclass & FECALL_X86_ROUTINE_RETURN ) {
         state->attr |= ROUTINE_ALLOCS_RETURN;
     }
-    if( cclass & FECALL_NO_STRUCT_REG_RETURNS ) {
+    if( cclass & FECALL_X86_NO_STRUCT_REG_RETURNS ) {
         state->attr |= ROUTINE_NO_STRUCT_REG_RETURNS;
     }
-    if( cclass & FECALL_NO_FLOAT_REG_RETURNS ) {
+    if( cclass & FECALL_X86_NO_FLOAT_REG_RETURNS ) {
         state->attr |= ROUTINE_NO_FLOAT_REG_RETURNS;
         state->attr |= ROUTINE_NO_8087_RETURNS;
     }
-    if( cclass & FECALL_NO_8087_RETURNS ) {
+    if( cclass & FECALL_X86_NO_8087_RETURNS ) {
         state->attr |= ROUTINE_NO_8087_RETURNS;
     }
-    if( cclass & FECALL_MODIFY_EXACT ) {
+    if( cclass & FECALL_X86_MODIFY_EXACT ) {
         state->attr |= ROUTINE_MODIFY_EXACT;
     }
     if( cclass & FECALL_NO_MEMORY_CHANGED ) {
@@ -110,48 +110,48 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & FECALL_NO_MEMORY_READ ) {
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
-    if( cclass & FECALL_LOAD_DS_ON_ENTRY ) {
+    if( cclass & FECALL_X86_LOAD_DS_ON_ENTRY ) {
         state->attr |= ROUTINE_LOADS_DS;
     }
-    if( cclass & FECALL_LOAD_DS_ON_CALL ) {
+    if( cclass & FECALL_X86_LOAD_DS_ON_CALL ) {
         state->attr |= ROUTINE_NEEDS_DS_LOADED;
     }
-    if( cclass & FECALL_PARMS_STACK_RESERVE ) {
+    if( cclass & FECALL_X86_PARMS_STACK_RESERVE ) {
         state->attr |= ROUTINE_STACK_RESERVE;
     }
-    if( cclass & FECALL_PARMS_PREFER_REGS ) {
+    if( cclass & FECALL_X86_PARMS_PREFER_REGS ) {
         state->attr |= ROUTINE_PREFER_REGS;
     }
-    if( cclass & FECALL_FARSS ) {
+    if( cclass & FECALL_X86_FARSS ) {
         state->attr |= ROUTINE_FARSS;
     }
     if( state == &CurrProc->state ) {
-        if( cclass & (FECALL_GENERATE_STACK_FRAME | FECALL_PROLOG_HOOKS | FECALL_EPILOG_HOOKS) ) {
+        if( cclass & (FECALL_X86_GENERATE_STACK_FRAME | FECALL_X86_PROLOG_HOOKS | FECALL_X86_EPILOG_HOOKS) ) {
             CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
             state->attr |= ROUTINE_NEEDS_PROLOG;
         }
-        if( cclass & FECALL_PROLOG_HOOKS ) {
+        if( cclass & FECALL_X86_PROLOG_HOOKS ) {
             CurrProc->prolog_state |= GENERATE_PROLOG_HOOKS;
         }
-        if( cclass & FECALL_EPILOG_HOOKS ) {
+        if( cclass & FECALL_X86_EPILOG_HOOKS ) {
             CurrProc->prolog_state |= GENERATE_EPILOG_HOOKS;
         }
-        if( cclass & FECALL_FAT_WINDOWS_PROLOG ) {
+        if( cclass & FECALL_X86_FAT_WINDOWS_PROLOG ) {
             CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
         }
-        if( cclass & FECALL_EMIT_FUNCTION_NAME ) {
+        if( cclass & FECALL_X86_EMIT_FUNCTION_NAME ) {
             CurrProc->prolog_state |= GENERATE_FUNCTION_NAME;
         }
-        if( cclass & FECALL_THUNK_PROLOG ) {
+        if( cclass & FECALL_X86_THUNK_PROLOG ) {
             CurrProc->prolog_state |= GENERATE_THUNK_PROLOG;
         }
-        if( cclass & FECALL_GROW_STACK ) {
+        if( cclass & FECALL_X86_GROW_STACK ) {
             CurrProc->prolog_state |= GENERATE_GROW_STACK;
         }
-        if( cclass & FECALL_TOUCH_STACK ) {
+        if( cclass & FECALL_X86_TOUCH_STACK ) {
             CurrProc->prolog_state |= GENERATE_TOUCH_STACK;
         }
-        if( cclass & FECALL_LOAD_RDOSDEV_ON_ENTRY ) {
+        if( cclass & FECALL_X86_LOAD_RDOSDEV_ON_ENTRY ) {
             CurrProc->prolog_state |= GENERATE_RDOSDEV_PROLOG;
         }
     }
@@ -177,7 +177,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( tipe == TypeNone ) {
         HW_CAsgn( state->return_reg, HW_EMPTY );
     } else if( type_class == XX ) {
-        if( cclass & FECALL_SPECIAL_STRUCT_RETURN ) {
+        if( cclass & FECALL_X86_SPECIAL_STRUCT_RETURN ) {
             pregs = FEAuxInfo( aux, FEINF_STRETURN_REG );
             state->return_reg = *pregs;
             state->attr |= ROUTINE_HAS_SPECIAL_RETURN;
@@ -189,7 +189,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
             HW_TurnOn( state->modify, tmp );
         }
     } else {
-        if( cclass & FECALL_SPECIAL_RETURN ) {
+        if( cclass & FECALL_X86_SPECIAL_RETURN ) {
             pregs = FEAuxInfo( aux, FEINF_RETURN_REG );
             state->return_reg = *pregs;
             state->attr |= ROUTINE_HAS_SPECIAL_RETURN;

@@ -219,7 +219,7 @@ static  int     DumpArgInfo( itnode *node ) {
 #if _CPU == 386
                 if( (parm_code == PC_PROCEDURE) || (parm_code == PC_FN_OR_SUB) ) {
                     info = InfoLookup( node->sym_ptr );
-                    if( info->cclass & FECALL_FAR16_CALL ) {
+                    if( info->cclass & FECALL_X86_FAR16_CALL ) {
                         parm_code |= PC_PROC_FAR16;
                     }
                 }
