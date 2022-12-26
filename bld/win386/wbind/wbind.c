@@ -343,7 +343,7 @@ int main( int argc, char *argv[] )
     char            exe_name[_MAX_PATH];
     char            res_name[_MAX_PATH];
     char            ext_name[_MAX_PATH];
-    char            wrc_cmd[256];
+    char            wrc_cmd[_MAX_PATH];
     int             wrc_parm;
     long            totalsize;
     long            exelen;

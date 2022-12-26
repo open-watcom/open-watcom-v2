@@ -141,7 +141,7 @@ vi_rc SrcAssign( const char *data, vars_list *vl )
             switch( j ) {
             case STR_T_STRLEN:
                 if( v != NULL ) {
-                    sprintf( tmp1, "%d", v->len );
+                    sprintf( tmp1, "%u", (unsigned)v->len );
                 } else {
                     strcpy( tmp1, "0" );
                 }

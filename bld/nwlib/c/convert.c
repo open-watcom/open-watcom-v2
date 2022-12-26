@@ -185,11 +185,15 @@ static void PutARValue( char *element, uint_32 value, ar_len desired_len )
 static void PutARValueMode( char *element, uint_32 value, ar_len desired_len )
 {
     ar_len      value_len;
+    char        buffer[14];
 
-    sprintf( element, "%lo", (unsigned long)value );
-    value_len = strlen( element );
+    sprintf( buffer, "%lo", (unsigned long)value );
+    value_len = strlen( buffer );
     if( value_len < desired_len ) {
+        strcpy( element, buffer );
         PutARPadding( element, value_len, desired_len );
+    } else {
+        strncpy( element, buffer + (value_len - desired_len), desired_len );
     }
 }
 
@@ -203,3 +207,4 @@ void CreateARHeader( ar_header *ar, arch_header * arch )
     PutARValue( ar->size, arch->size, AR_SIZE_LEN );
     memcpy( ar->header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN );
 }
+

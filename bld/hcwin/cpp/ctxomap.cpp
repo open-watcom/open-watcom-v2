@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +115,7 @@ uint_32 HFCtxomap::size()
         for( current = _firstRec; current != NULL; current = current->_nextRec ) {
             true_offset = _offsetFile->getOffset( current->_offset );
             if( true_offset == HFContext::_badValue ) {
-                char str[16];
+                char str[30];
                 sprintf( str, "MAP number %ld", (long)current->_mapnum );
                 HCWarning( HLP_NOTOPIC, (const char *)str );
             } else {

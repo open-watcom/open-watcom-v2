@@ -3737,14 +3737,14 @@ bool WritePrologue( const char *curline )
             size_override( buffer, curr->size );
             if( Options.mode & MODE_IDEAL ) {
                 if( curr->sym != NULL ) {
-                    sprintf( buffer + strlen(buffer), "(%s %s%lu)", curr->sym->name,
+                    sprintf( buffer + strlen( buffer ), "(%s %s%lu)", curr->sym->name,
                              ( Use32 ) ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 } else {
-                    sprintf( buffer + strlen(buffer), "%s%lu",
+                    sprintf( buffer + strlen( buffer ), "%s%lu",
                              ( Use32 ) ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 }
             } else {
-                sprintf( buffer + strlen(buffer), "%s%lu]",
+                sprintf( buffer + strlen( buffer ), "%s%lu]",
                          ( Use32 ) ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
             curr->replace = AsmStrDup( buffer );
@@ -3996,7 +3996,7 @@ static void write_epilogue( void )
 bool Ret( token_idx i, token_idx count, bool flag_iret )
 /******************************************************/
 {
-    char        buffer[20];
+    char        buffer[40];
     proc_info   *info;
     expr_list   opndx;
     char        *p;

@@ -587,7 +587,7 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         break;
     case DM_ARRAY_SIZE:
         if( value != 0 ) {
-            char buff[12];
+            char buff[24];
 
 #if defined( __WATCOMC__ )
             ultoa( (unsigned long)value, buff, 10 );
