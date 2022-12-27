@@ -305,7 +305,7 @@ static aux_info                IFVarInfo = {
 };
 
   #endif
-#else /* _RISC_CPU */
+#elif _RISC_CPU
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D( HW_EMPTY )};
