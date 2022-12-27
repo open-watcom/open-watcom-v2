@@ -50,7 +50,8 @@ static char             IF_Xnames[] = "_IF_X*";
 static  pass_by         IFArgValue = { NULL, PASS_BY_VALUE };
 static  pass_by         IFArgDescriptor = { NULL, PASS_BY_DESCRIPTOR };
 
-#if _CPU == 8086
+#if _INTEL_CPU
+  #if _CPU == 8086
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ), HW_D( HW_EMPTY ) };
@@ -178,7 +179,7 @@ static aux_info                IFVarInfo = {
         &IFArgValue
 };
 
-#elif   _CPU == 386
+  #else /* _CPU == 386 */
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ), HW_D( HW_EMPTY ) };
@@ -303,7 +304,8 @@ static aux_info                IFVarInfo = {
         &IFArgValue
 };
 
-#elif _RISC_CPU
+  #endif
+#else /* _RISC_CPU */
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D( HW_EMPTY )};

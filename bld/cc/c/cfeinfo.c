@@ -1016,16 +1016,10 @@ static CGPOINTER NextImportS( int index, aux_class request )
     return( (CGPOINTER)(pointer_uint)index );
 }
 
-#if _INTEL_CPU
-
-/*
-//    This section is for
-//        8086
-//        386
-//
-//    pass auxiliary information to back end
-*/
 CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
+/*************************************************************
+ * pass auxiliary information to back end
+ */
 {
     aux_info            *inf;
     SYM_ENTRY           sym;
@@ -1034,18 +1028,21 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
     switch( request ) {
     case FEINF_SOURCE_LANGUAGE:
         return( (CGPOINTER)"C" );
+#if _INTEL_CPU
     case FEINF_STACK_SIZE_8087:
         return( (CGPOINTER)(pointer_uint)Stack87 );
     case FEINF_CODE_GROUP:
         return( (CGPOINTER)GenCodeGroup );
     case FEINF_DATA_GROUP:
         return( (CGPOINTER)DataSegName );
+#endif
     case FEINF_OBJECT_FILE_NAME:
         return( (CGPOINTER)ObjFileName() );
     case FEINF_REVISION_NUMBER:
         return( (CGPOINTER)(pointer_uint)II_REVISION );
     case FEINF_AUX_LOOKUP:
         return( req_handle );
+#if _INTEL_CPU
     case FEINF_PROEPI_DATA_SIZE:
         return( (CGPOINTER)(pointer_uint)ProEpiDataSize );
     case FEINF_DBG_PREDEF_SYM:
@@ -1072,6 +1069,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
     case FEINF_P5_PROF_SEG:
         return( (CGPOINTER)(pointer_uint)FunctionProfileSegId );
   #endif
+#endif
     case FEINF_SOURCE_NAME:
         if( SrcFName == ModuleName ) {
             return( (CGPOINTER)FNameFullPath( FNames ) );
@@ -1114,8 +1112,10 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
         return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
     case FEINF_DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
+#if _INTEL_CPU
     case FEINF_PEGGED_REGISTER:
         return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_uint)req_handle ) );
+#endif
     case FEINF_DBG_DWARF_PRODUCER:
         return( (CGPOINTER)DWARF_PRODUCER_ID );
     case FEINF_SAVE_REGS:
@@ -1126,15 +1126,16 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
             sym.mods = 0;
         }
         save_set = inf->save;
+#if _INTEL_CPU
         if( sym.mods & FLAG_SAVEREGS ) {
             HW_CTurnOn( save_set, HW_SEGS );
         }
-
   #ifdef __SEH__
         if( (SYM_HANDLE)req_handle == SymTryInit ) {
             HW_CTurnOff( save_set, HW_xSP );
         }
   #endif
+#endif
         return( (CGPOINTER)&save_set );
     case FEINF_RETURN_REG:
         inf = FindInfo( &sym, req_handle );
@@ -1146,6 +1147,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
         inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
     case FEINF_PARM_REGS:
+#if _INTEL_CPU
   #ifdef __SEH__
         if(( (SYM_HANDLE)req_handle == SymTryInit )
           || ( (SYM_HANDLE)req_handle == SymTryFini )
@@ -1154,6 +1156,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
             return( (CGPOINTER)TryParms );
         }
   #endif
+#endif
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
@@ -1162,118 +1165,19 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
             }
         }
         return( (CGPOINTER)inf->parms );
+#if _INTEL_CPU
     case FEINF_STRETURN_REG:
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->streturn );
-    default:
-        break;
-    }
-    return( NULL );
-}
-
-#else /* _RISC_CPU */
-
-/*
-//    This section is NOT 8086 and 386 , i.e.,
-//        _AXP
-//        _PPC
-//        _MIPS
-//
-//    pass auxiliary information to back end
-*/
-CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
-{
-    aux_info            *inf;
-    SYM_ENTRY           sym;
-    static hw_reg_set   save_set;
-
-    switch( request ) {
-    case FEINF_SOURCE_LANGUAGE:
-        return( (CGPOINTER)"C" );
-    case FEINF_OBJECT_FILE_NAME:
-        return( (CGPOINTER)ObjFileName() );
-    case FEINF_REVISION_NUMBER:
-        return( (CGPOINTER)(pointer_uint)II_REVISION );
-    case FEINF_AUX_LOOKUP:
-        return( req_handle );
-    case FEINF_SOURCE_NAME:
-        if( SrcFName == ModuleName ) {
-            return( (CGPOINTER)FNameFullPath( FNames ) );
-        } else {
-            return( (CGPOINTER)ModuleName );
-        }
-    case FEINF_CALL_CLASS:
-        {
-            static call_class cclass;
-
-            cclass = GetCallClass( req_handle );
-            return( (CGPOINTER)&cclass );
-        }
-    case FEINF_NEXT_LIBRARY:
-    case FEINF_LIBRARY_NAME:
-        return( NextLibrary( (int)(pointer_uint)req_handle, request ) );
-    case FEINF_NEXT_IMPORT:
-    case FEINF_IMPORT_NAME:
-        return( NextImport( (int)(pointer_uint)req_handle, request ) );
-    case FEINF_NEXT_IMPORT_S:
-    case FEINF_IMPORT_NAME_S:
-        return( NextImportS( (int)(pointer_uint)req_handle, request ) );
-    case FEINF_NEXT_ALIAS:
-    case FEINF_ALIAS_NAME:
-    case FEINF_ALIAS_SYMBOL:
-    case FEINF_ALIAS_SUBST_NAME:
-    case FEINF_ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)(pointer_uint)req_handle, request ) );
-    case FEINF_FREE_SEGMENT:
-        return( NULL );
-    case FEINF_TEMP_LOC_NAME:
-        return( (CGPOINTER)(pointer_uint)TEMP_LOC_QUIT );
-    case FEINF_TEMP_LOC_TELL:
-        return( NULL );
-    case FEINF_NEXT_DEPENDENCY:
-        if( CompFlags.emit_dependencies )
-            return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
-        return( NULL );
-    case FEINF_DEPENDENCY_TIMESTAMP:
-        return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
-    case FEINF_DEPENDENCY_NAME:
-        return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
-    case FEINF_SAVE_REGS:
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        } else {
-            sym.mods = 0;
-        }
-        save_set = inf->save;
-        return( (CGPOINTER)&save_set );
-    case FEINF_RETURN_REG:
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        }
-        return( (CGPOINTER)&inf->returns );
-    case FEINF_CALL_BYTES:
-        inf = FindInfo( &sym, req_handle );
-        return( (CGPOINTER)inf->code );
-    case FEINF_PARM_REGS:
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-            if( inf->code == NULL && VarFunc( &sym ) ) {
-                return( (CGPOINTER)DefaultVarParms );
-            }
-        }
-        return( (CGPOINTER)inf->parms );
-    default:
-        break;
-    }
-    return( NULL );
-}
 #endif
+    default:
+        break;
+    }
+    return( NULL );
+}
 
 char *SrcFullPath( char const *name, char *buff, unsigned max )
 {

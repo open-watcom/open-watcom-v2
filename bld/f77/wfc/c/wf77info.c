@@ -1831,9 +1831,6 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
     case FEINF_STRETURN_REG :
         info = GetAuxInfo( req_handle );
         return( (pointer)&info->streturn );
-#else /* _RISC_CPU */
-    case FEINF_CALL_BYTES :
-        return( NULL );
 #endif
     case FEINF_NEXT_IMPORT :
         switch( (int)(pointer_uint)req_handle ) {
@@ -1887,7 +1884,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
         default:
             break;
         }
-        return( NULL );
+        break;
     case FEINF_NEXT_IMPORT_S :
         if( req_handle == NULL ) {
             ImpSym = GList;
@@ -1902,7 +1899,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
                 return( (pointer)(pointer_uint)1 );
             }
         }
-        return( NULL );
+        break;
     case FEINF_IMPORT_NAME :
         switch( (int)(pointer_uint)req_handle ) {
         case 1:
@@ -1940,6 +1937,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
         case 10:
             return( "__comma_inp_sep" );
         }
+        break;
     case FEINF_IMPORT_NAME_S :
         return( ImpSym );
     case FEINF_NEXT_LIBRARY :
@@ -1971,8 +1969,6 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
             MakeName( fn, fe, ptr );
         }
         return( TokenBuff );
-    case FEINF_FREE_SEGMENT :
-        return( NULL );
     case FEINF_REVISION_NUMBER :
         return( (pointer)(pointer_uint)II_REVISION );
 #if _INTEL_CPU
@@ -1990,10 +1986,10 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
                 return( MangleSymBuff );
             }
         }
-        return( NULL );
+        break;
     case FEINF_USED_8087 :
         CGFlags |= CG_USED_80x87;
-        return( NULL );
+        break;
 #endif
     case FEINF_SHADOW_SYMBOL :
         sym = (sym_id)req_handle;
@@ -2011,35 +2007,27 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
 #endif
     case FEINF_TEMP_LOC_NAME :
         return( (pointer)(pointer_uint)TEMP_LOC_QUIT );
-    case FEINF_TEMP_LOC_TELL :
-        return( NULL );
     case FEINF_NEXT_DEPENDENCY :
-        if( (Options & OPT_DEPENDENCY) == 0 ) {
-            return( NULL );
-        } else {
+        if( Options & OPT_DEPENDENCY ) {
             if( req_handle == NULL ) {
                 return( DependencyInfo );
             } else {
                 return( ((dep_info *)req_handle)->link );
             }
         }
+        break;
     case FEINF_DEPENDENCY_TIMESTAMP :
         return( &(((dep_info *)req_handle)->time_stamp) );
     case FEINF_DEPENDENCY_NAME :
         return( ((dep_info *)req_handle)->fn );
     case FEINF_SOURCE_LANGUAGE:
         return( "FORTRAN" );
-#if _INTEL_CPU
-    case FEINF_PEGGED_REGISTER:
-        return( NULL );
-#endif
-    case FEINF_UNROLL_COUNT:
-        return( NULL );
     case FEINF_DBG_DWARF_PRODUCER:
         return( DWARF_PRODUCER_ID );
     default:
-        return( NULL );
+        break;
     }
+    return( NULL );
 }
 
 #if 0
