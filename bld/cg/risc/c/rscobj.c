@@ -526,7 +526,7 @@ void    OutFileStart( int line )
     cue_state           info;
     const char          *fname;
 
-    if( _IsModel( CGSW_DBG_DF ) || _IsModel( CGSW_DBG_CV ) ){
+    if( _IsModel( CGSW_DBG_DF | CGSW_DBG_CV ) ){
         CueFind( line, &info );
         line = info.line;
         if( info.fno != CurrFNo ){
@@ -542,7 +542,7 @@ void    OutFuncStart( label_handle label, offset start, cg_linenum line )
 {
     cue_state            info;
 
-    if( _IsModel( CGSW_DBG_DF ) || _IsModel( CGSW_DBG_CV ) ){
+    if( _IsModel( CGSW_DBG_DF | CGSW_DBG_CV ) ){
         CueFind( line, &info );
         line = info.line;
         if( _IsModel( CGSW_DBG_DF ) ){
@@ -573,7 +573,7 @@ void    OutLineNum( cg_linenum line, bool label_line )
     /* unused parameters */ (void)label_line;
 
     lc = OWLTellOffset( currSection->owl_handle );
-    if( _IsModel( CGSW_DBG_DF ) || _IsModel( CGSW_DBG_CV ) ) {
+    if( _IsModel( CGSW_DBG_DF | CGSW_DBG_CV ) ) {
         CueFind( line, &info );
         if( _IsModel( CGSW_DBG_DF ) ) {
             if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {

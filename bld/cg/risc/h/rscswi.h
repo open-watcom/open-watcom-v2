@@ -25,9 +25,18 @@
 *
 *  ========================================================================
 *
-* Description:  Codegen switches specific to MIPS.
+* Description:  Codegen switches specific to RISC architectures.
 *
 ****************************************************************************/
 
 
-
+ASM_OUTPUT              = 0x00000001,
+SHORTS_ALIGNED          = 0x00000002,
+I_MATH_INLINE           = 0x00000004,
+NO_CALL_RET_TRANSFORM   = 0x00000008,
+CHEAP_POINTER           = 0x00000010,
+STACK_INIT              = 0x00000020,
+STACK_CHECK             = 0x00000040,
+OWL_LOGGING             = 0x00000080,
+ALIGNED_SHORT           = 0x00000100,
+EXCEPT_FILTER_USED      = 0x00000200,

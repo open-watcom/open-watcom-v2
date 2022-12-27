@@ -30,15 +30,6 @@
 ****************************************************************************/
 
 
-ASM_OUTPUT              = 0x00000001L,
-ALIGNED_SHORT           = 0x00000002L,
-I_MATH_INLINE           = 0x00000004L,
-NO_CALL_RET_TRANSFORM   = 0x00000008L,
-CHEAP_POINTER           = 0x00000010L,
-STACK_INIT              = 0x00000020L,
-EXCEPT_FILTER_USED      = 0x00000040L,
-STACK_CHECK             = 0x00000080L,
-CG_OS2_CC               = 0x00000100L,
-CG_NT_CC                = 0x00000200L,
-OWL_LOGGING             = 0x00000400L,
+CG_OS2_CC               = 0x00000400,
+CG_NT_CC                = 0x00000800,
 

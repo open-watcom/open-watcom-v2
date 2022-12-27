@@ -31,6 +31,7 @@
 
 
 typedef enum {
+    #include "rscswi.h"
     #include "axpswi.h"
 } cg_target_switches;
 
