@@ -31,6 +31,18 @@
 ****************************************************************************/
 
 
+#define FLOATING_FIXUP_BYTE     0xFF
+
+#define BYTE_SEQ_SYM    void *
+#define BYTE_SEQ_OFF    unsigned
+
+#define STRUCT_BYTE_SEQ( x ) \
+{ \
+    byte_seq_len    length; \
+    bool            relocs; \
+    byte            data[x]; \
+}
+
 #define FECALL_X86_SPECIAL_RETURN           ( 0x00000001LL << _TARG_AUX_SHIFT )
 #define FECALL_X86_SPECIAL_STRUCT_RETURN    ( 0x00000002LL << _TARG_AUX_SHIFT )
 #define FECALL_X86_FAR_CALL                 ( 0x00000004LL << _TARG_AUX_SHIFT )
@@ -62,11 +74,7 @@
 #endif
 
 typedef unsigned long long      call_class;
-
-#define FLOATING_FIXUP_BYTE     0xFF
-
-#define BYTE_SEQ_SYM    void *
-#define BYTE_SEQ_OFF    unsigned
+typedef unsigned long long      call_class_target;
 
 typedef enum {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) FIX_ ## enum,
@@ -78,12 +86,5 @@ typedef enum {
 } cg_fixups;
 
 typedef unsigned    byte_seq_len;
-
-#define STRUCT_BYTE_SEQ( x ) \
-{ \
-    byte_seq_len    length; \
-    bool            relocs; \
-    byte            data[x]; \
-}
 
 typedef struct byte_seq STRUCT_BYTE_SEQ( 1 ) byte_seq;

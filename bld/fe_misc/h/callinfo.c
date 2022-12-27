@@ -84,7 +84,7 @@ static  hw_reg_set  StackParms[] = {
     HW_D( HW_EMPTY )
 };
 
-#if _CPU == 386
+  #if _CPU == 386
 static  hw_reg_set  MetaWareParms[] = {
     HW_D( HW_EMPTY )
 };
@@ -96,23 +96,23 @@ static  hw_reg_set  FastcallParms[] = {
     HW_D( HW_ECX ), HW_D( HW_EDX ),
     HW_D( HW_EMPTY )
 };
-#else
+  #else
 static  hw_reg_set  FastcallParms[] = {
     HW_D( HW_AX ), HW_D( HW_DX ), HW_D( HW_BX ),
     HW_D( HW_EMPTY )
 };
-#endif
+  #endif
 
 void AuxInfoInit( int flag_stdatnum )
 /***********************************/
 {
     hw_reg_set  full_no_segs;
-    call_class  call_type;
+    call_class  cclass;
 
     HW_CAsgn( full_no_segs, HW_FULL );
     HW_CTurnOff( full_no_segs, HW_SEGS );
 
-    call_type = WatcallInfo.cclass & FECALL_X86_FAR_CALL;
+    cclass = WatcallInfo.cclass & FECALL_X86_FAR_CALL;
 
 /*************************************************
  *  __fortran calling convention
@@ -122,21 +122,20 @@ void AuxInfoInit( int flag_stdatnum )
 /*************************************************
  *  __cdecl calling convention
  *************************************************/
-    CdeclInfo.cclass =    call_type |
-#if _CPU == 8086
-                         FECALL_X86_LOAD_DS_ON_CALL |
-#endif
+    CdeclInfo.cclass =    cclass |
                          //FECALL_REVERSE_PARMS |
                          FECALL_CALLER_POPS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
-#if _CPU == 8086
+  #if _CPU == 8086
+                         FECALL_X86_LOAD_DS_ON_CALL |
                          FECALL_X86_NO_FLOAT_REG_RETURNS |
-#endif
+  #endif
                          FECALL_X86_NO_STRUCT_REG_RETURNS |
                          FECALL_X86_ROUTINE_RETURN |
                          //FECALL_X86_NO_8087_RETURNS |
                          //FECALL_X86_SPECIAL_RETURN |
-                         FECALL_X86_SPECIAL_STRUCT_RETURN;
+                         FECALL_X86_SPECIAL_STRUCT_RETURN |
+                         0;
     CdeclInfo.parms = StackParms;
     CdeclInfo.objname = AUX_STRALLOC( "_*" );
 
@@ -144,22 +143,22 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CAsgn( CdeclInfo.streturn, HW_EMPTY );
     HW_TurnOn( CdeclInfo.save, full_no_segs );
     HW_CTurnOff( CdeclInfo.save, HW_FLTS );
-#if _CPU == 386
+  #if _CPU == 386
     HW_CAsgn( CdeclInfo.streturn, HW_EAX );
     HW_CTurnOff( CdeclInfo.save, HW_EAX );
 //    HW_CTurnOff( CdeclInfo.save, HW_EBX );
     HW_CTurnOff( CdeclInfo.save, HW_ECX );
     HW_CTurnOff( CdeclInfo.save, HW_EDX );
-#else
+  #else
     HW_CAsgn( CdeclInfo.streturn, HW_AX );
     HW_CTurnOff( CdeclInfo.save, HW_ABCD );
     HW_CTurnOff( CdeclInfo.save, HW_ES );
-#endif
+  #endif
 
 /*************************************************
  *  __pascal calling convention
  *************************************************/
-    PascalInfo.cclass =   call_type |
+    PascalInfo.cclass =   cclass |
                          FECALL_REVERSE_PARMS |
                          //FECALL_CALLER_POPS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
@@ -168,7 +167,8 @@ void AuxInfoInit( int flag_stdatnum )
                          //FECALL_X86_ROUTINE_RETURN |
                          //FECALL_X86_NO_8087_RETURNS |
                          //FECALL_X86_SPECIAL_RETURN |
-                         FECALL_X86_SPECIAL_STRUCT_RETURN;
+                         FECALL_X86_SPECIAL_STRUCT_RETURN |
+                         0;
     PascalInfo.parms = StackParms;
     PascalInfo.objname = AUX_STRALLOC( "^" );
 
@@ -176,21 +176,21 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CAsgn( PascalInfo.streturn, HW_EMPTY );
     HW_TurnOn( PascalInfo.save, full_no_segs );
     HW_CTurnOff( PascalInfo.save, HW_FLTS );
-#if _CPU == 386
+  #if _CPU == 386
     HW_CTurnOff( PascalInfo.save, HW_EAX );
     HW_CTurnOff( PascalInfo.save, HW_EBX );
     HW_CTurnOff( PascalInfo.save, HW_ECX );
     HW_CTurnOff( PascalInfo.save, HW_EDX );
-#else
+  #else
     HW_CTurnOff( PascalInfo.save, HW_ABCD );
     HW_CTurnOff( PascalInfo.save, HW_ES );
-#endif
+  #endif
 
 
 /*************************************************
  *  __stdcall calling convention
  *************************************************/
-    StdcallInfo.cclass =  call_type |
+    StdcallInfo.cclass =  cclass |
                          //FECALL_REVERSE_PARMS |
                          //FECALL_CALLER_POPS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
@@ -199,42 +199,43 @@ void AuxInfoInit( int flag_stdatnum )
                          //FECALL_X86_ROUTINE_RETURN |
                          //FECALL_X86_NO_8087_RETURNS |
                          //FECALL_X86_SPECIAL_RETURN |
-                         FECALL_X86_SPECIAL_STRUCT_RETURN;
+                         FECALL_X86_SPECIAL_STRUCT_RETURN |
+                         0;
     StdcallInfo.parms = StackParms;
-#if _CPU == 386
+  #if _CPU == 386
     if( flag_stdatnum ) {
         StdcallInfo.objname = AUX_STRALLOC( "_*#" );
     } else {
         StdcallInfo.objname = AUX_STRALLOC( "_*" );
     }
-#else
+  #else
     /* unused parameters */ (void)flag_stdatnum;
 
     StdcallInfo.objname = AUX_STRALLOC( "_*" );
-#endif
+  #endif
 
     HW_CAsgn( StdcallInfo.returns, HW_EMPTY );
     HW_CAsgn( StdcallInfo.streturn, HW_EMPTY );
     HW_TurnOn( StdcallInfo.save, full_no_segs );
     HW_CTurnOff( StdcallInfo.save, HW_FLTS );
-#if _CPU == 386
+  #if _CPU == 386
 //    HW_CAsgn( StdcallInfo.streturn, HW_EAX );
     HW_CTurnOff( StdcallInfo.save, HW_EAX );
 //    HW_CTurnOff( StdcallInfo.save, HW_EBX );
     HW_CTurnOff( StdcallInfo.save, HW_ECX );
     HW_CTurnOff( StdcallInfo.save, HW_EDX );
-#else
+  #else
     HW_CAsgn( StdcallInfo.streturn, HW_AX );
     HW_CTurnOff( StdcallInfo.save, HW_ABCD );
     HW_CTurnOff( StdcallInfo.save, HW_ES );
-#endif
+  #endif
 
 
 /*************************************************
  *  __fastcall calling convention
  *************************************************/
-#if _CPU == 386
-    FastcallInfo.cclass = call_type |
+  #if _CPU == 386
+    FastcallInfo.cclass = cclass |
                          //FECALL_REVERSE_PARMS |
                          //FECALL_CALLER_POPS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
@@ -243,7 +244,8 @@ void AuxInfoInit( int flag_stdatnum )
                          //FECALL_X86_ROUTINE_RETURN |
                          //FECALL_X86_NO_8087_RETURNS |
                          //FECALL_X86_SPECIAL_RETURN |
-                         FECALL_X86_SPECIAL_STRUCT_RETURN;
+                         FECALL_X86_SPECIAL_STRUCT_RETURN |
+                         0;
     FastcallInfo.parms = FastcallParms;
     FastcallInfo.objname = AUX_STRALLOC( "@*#" );
 
@@ -255,18 +257,19 @@ void AuxInfoInit( int flag_stdatnum )
 //    HW_CTurnOff( FastcallInfo.save, HW_EBX );
     HW_CTurnOff( FastcallInfo.save, HW_ECX );
     HW_CTurnOff( FastcallInfo.save, HW_EDX );
-#else
-    FastcallInfo.cclass = call_type |
-                         FECALL_X86_PARMS_PREFER_REGS |
+  #else
+    FastcallInfo.cclass = cclass |
                          //FECALL_REVERSE_PARMS |
                          //FECALL_CALLER_POPS |
+                         FECALL_X86_PARMS_PREFER_REGS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
                          //FECALL_X86_NO_FLOAT_REG_RETURNS |
                          //FECALL_X86_NO_STRUCT_REG_RETURNS |
                          //FECALL_X86_ROUTINE_RETURN |
                          //FECALL_X86_NO_8087_RETURNS |
                          //FECALL_X86_SPECIAL_RETURN |
-                         FECALL_X86_SPECIAL_STRUCT_RETURN;
+                         FECALL_X86_SPECIAL_STRUCT_RETURN |
+                         0;
     FastcallInfo.parms = FastcallParms;
     FastcallInfo.objname = AUX_STRALLOC( "@*" );
 
@@ -276,29 +279,28 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CTurnOff( FastcallInfo.save, HW_FLTS );
     HW_CTurnOff( FastcallInfo.save, HW_ABCD );
     HW_CTurnOff( FastcallInfo.save, HW_ES );
-#endif
+  #endif
 
 /*************************************************
  *  _Optlink calling convention
  *************************************************/
-    OptlinkInfo.cclass =  call_type |
-#if _INTEL_CPU
-                         FECALL_X86_PARMS_STACK_RESERVE |
-#endif
+    OptlinkInfo.cclass =  cclass |
                          //FECALL_REVERSE_PARMS |
                          FECALL_CALLER_POPS  |
+                         FECALL_X86_PARMS_STACK_RESERVE |
                          //FECALL_X86_GENERATE_STACK_FRAME |
                          //FECALL_X86_NO_FLOAT_REG_RETURNS |
                          FECALL_X86_NO_STRUCT_REG_RETURNS |
                          //FECALL_X86_ROUTINE_RETURN |
                          //FECALL_X86_NO_8087_RETURNS |
                          //FECALL_X86_SPECIAL_RETURN |
-                         FECALL_X86_SPECIAL_STRUCT_RETURN;
-#if _CPU == 386
+                         FECALL_X86_SPECIAL_STRUCT_RETURN |
+                         0;
+  #if _CPU == 386
     OptlinkInfo.parms = OptlinkParms;
-#else
+  #else
     OptlinkInfo.parms = StackParms;
-#endif
+  #endif
     OptlinkInfo.objname = AUX_STRALLOC( "*" );
 
     HW_CAsgn( OptlinkInfo.returns, HW_EMPTY );
@@ -306,20 +308,20 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CAsgn( OptlinkInfo.streturn, HW_EMPTY );
     HW_TurnOn( OptlinkInfo.save, full_no_segs );
     HW_CTurnOff( OptlinkInfo.save, HW_FLTS );
-#if _CPU == 386
+  #if _CPU == 386
     HW_CTurnOff( OptlinkInfo.save, HW_EAX );
 //    HW_CTurnOff( OptlinkInfo.save, HW_EBX );
     HW_CTurnOff( OptlinkInfo.save, HW_ECX );
     HW_CTurnOff( OptlinkInfo.save, HW_EDX );
-#else
+  #else
     HW_CTurnOff( OptlinkInfo.save, HW_ABCD );
     HW_CTurnOff( OptlinkInfo.save, HW_ES );
-#endif
+  #endif
 
 /*************************************************
  *  __syscall calling convention
  *************************************************/
-    SyscallInfo.cclass =  call_type |
+    SyscallInfo.cclass =  cclass |
                          //FECALL_REVERSE_PARMS |
                          FECALL_CALLER_POPS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
@@ -328,7 +330,8 @@ void AuxInfoInit( int flag_stdatnum )
                          //FECALL_X86_ROUTINE_RETURN |
                          //FECALL_X86_NO_8087_RETURNS |
                          //FECALL_X86_SPECIAL_RETURN |
-                         FECALL_X86_SPECIAL_STRUCT_RETURN;
+                         FECALL_X86_SPECIAL_STRUCT_RETURN |
+                         0;
     SyscallInfo.parms = StackParms;
     SyscallInfo.objname = AUX_STRALLOC( "*" );
 
@@ -336,17 +339,17 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CAsgn( SyscallInfo.streturn, HW_EMPTY );
     HW_TurnOn( SyscallInfo.save, full_no_segs );
     HW_CTurnOff( SyscallInfo.save, HW_FLTS );
-#if _CPU == 386
+  #if _CPU == 386
     HW_CTurnOff( SyscallInfo.save, HW_EAX );
 //    HW_CTurnOff( SyscallInfo.save, HW_EBX );
     HW_CTurnOff( SyscallInfo.save, HW_ECX );
     HW_CTurnOff( SyscallInfo.save, HW_EDX );
-#else
+  #else
     HW_CTurnOff( SyscallInfo.save, HW_ABCD );
     HW_CTurnOff( SyscallInfo.save, HW_ES );
-#endif
+  #endif
 
-#if _CPU == 386
+  #if _CPU == 386
 /****************************************************
  *  OS/2 32-bit->16-bit calling convention ( _Far16 )
  ****************************************************/
@@ -366,15 +369,17 @@ void AuxInfoInit( int flag_stdatnum )
     Far16PascalInfo.cclass |= FECALL_X86_FAR16_CALL;
     Far16PascalInfo.parms = StackParms;
     Far16PascalInfo.objname = AUX_STRALLOC( PascalInfo.objname );
-#endif
+  #endif
 }
 
-#if _CPU == 386
+  #if _CPU == 386
 void SetAuxStackConventions( void )
 /*********************************/
 {
     WatcallInfo.cclass &= (FECALL_X86_GENERATE_STACK_FRAME | FECALL_X86_FAR_CALL);
-    WatcallInfo.cclass |= (FECALL_CALLER_POPS | FECALL_X86_NO_8087_RETURNS);
+    WatcallInfo.cclass |= FECALL_CALLER_POPS |
+                          FECALL_X86_NO_8087_RETURNS |
+                          0;
     WatcallInfo.parms = MetaWareParms;
     HW_CTurnOff( WatcallInfo.save, HW_EAX );
     HW_CTurnOff( WatcallInfo.save, HW_EDX );
@@ -382,9 +387,9 @@ void SetAuxStackConventions( void )
     HW_CTurnOff( WatcallInfo.save, HW_FLTS );
     WatcallInfo.objname = AUX_STRALLOC( "*" );
 }
-#endif
+  #endif
 
-#endif
+#endif /* _INTEL_CPU */
 
 int IsAuxParmsBuiltIn( hw_reg_set *parms )
 /***************************************/
@@ -396,12 +401,12 @@ int IsAuxParmsBuiltIn( hw_reg_set *parms )
         return( true );
     } else if( parms == FastcallParms ) {
         return( true );
-#if _CPU == 386
+  #if _CPU == 386
     } else if( parms == OptlinkParms ) {
         return( true );
     } else if( parms == MetaWareParms ) {
         return( true );
-#endif
+  #endif
 #endif
     } else if( parms == NULL ) {
         return( true );

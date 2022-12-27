@@ -35,6 +35,13 @@
 #include "owl.h"
 
 
+#define STRUCT_BYTE_SEQ( x ) \
+{ \
+    byte_seq_len    length; \
+    byte_seq_reloc  *relocs; \
+    byte            data[x]; \
+}
+
 #define LAST_TARG_AUX_ATTRIBUTE     ( 0x00000001L << _TARG_AUX_SHIFT )
 
 #if LAST_TARG_AUX_ATTRIBUTE == 0
@@ -51,12 +58,5 @@ typedef struct byte_seq_reloc {
     void                    *sym;
     owl_reloc_type          type;
 } byte_seq_reloc;
-
-#define STRUCT_BYTE_SEQ( x ) \
-{ \
-    byte_seq_len    length; \
-    byte_seq_reloc  *relocs; \
-    byte            data[x]; \
-}
 
 typedef struct byte_seq STRUCT_BYTE_SEQ( 1 ) byte_seq;
