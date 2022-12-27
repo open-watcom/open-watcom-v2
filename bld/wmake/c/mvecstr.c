@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,13 @@
 ****************************************************************************/
 
 
-#define _IN_MVECSTR
 #include "make.h"
 #include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mvecstr.h"
+
+#include "clibext.h"
 
 
 #define MIN_TEXT    507     /* minimum length we'll create text */

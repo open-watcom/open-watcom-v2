@@ -43,6 +43,8 @@
 #endif
 #include "wresmem.h"
 
+#include "clibext.h"
+
 
 #ifdef USE_FAR
 STATIC bool     largeNearSeg;    /* have we done a _nheapgrow() ? */

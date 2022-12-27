@@ -57,6 +57,8 @@
 #endif
 #include "pcobj.h"
 
+#include "clibext.h"
+
 
 #if defined( __DOS__ )
 

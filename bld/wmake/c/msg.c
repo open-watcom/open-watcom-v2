@@ -39,6 +39,8 @@
 #include "msg.h"
 #include "mstream.h"
 
+#include "clibext.h"
+
 
 typedef union msg_arg {
     UINT16      ui16;
