@@ -113,9 +113,11 @@ bool FoldIntoIndex( instruction * ins ) {
         if( next == NULL )
             break;
         sib.ins = next;
-        // if( !HW_Equal( base_reg, HW_EMPTY ) && _IsTargetModel( INDEXED_GLOBALS )
-        //  && sib.index->i.base != NULL
-        //  && sib.index->i.base->n.class == N_MEMORY ) break;
+        // if( !HW_Equal( base_reg, HW_EMPTY )
+        //   && _IsTargetModel( CGSW_X86_INDEXED_GLOBALS )
+        //   && sib.index->i.base != NULL
+        //   && sib.index->i.base->n.class == N_MEMORY )
+        //     break;
     /*
         Hey, we found a good one as long as reg dies immediately after it and we
         don't need to save the base register slot for INDEXED GLOBALS

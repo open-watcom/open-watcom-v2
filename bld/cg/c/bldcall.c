@@ -748,7 +748,7 @@ static void SplitStructParms( pn *parm_list, call_state *state )
     type_class_def      type_class;
 
 #if _TARGET & _TARG_PPC
-    if( _IsTargetModel( CG_OS2_CC ) )
+    if( _IsTargetModel( CGSW_PPC_OS2_CC ) )
         return;
     using_type_class = U4;
 #elif _TARGET & _TARG_AXP

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -322,10 +322,10 @@ static  bool    CanLoadStringOps( instruction *ins ) {
     }
     HW_CAsgn( needs, HW_xSI );
     HW_CTurnOn( needs, HW_xDI );
-    if( _IsTargetModel( FLOATING_DS ) ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS ) ) {
         HW_CTurnOn( needs, HW_DS );
     }
-    if( _IsTargetModel( FLOATING_ES ) ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_ES ) ) {
        HW_CTurnOn( needs, HW_ES );
     }
     return( !HW_Ovlap( needs, ins->head.live.regs ) );
@@ -356,9 +356,9 @@ static  bool    SegmentFloats( name *op ) {
     if( segname->n.class != N_REGISTER )
         return( true );
     if( HW_COvlap( segname->r.reg, HW_DS ) )
-        return( _IsTargetModel( FLOATING_DS ) );
+        return( _IsTargetModel( CGSW_X86_FLOATING_DS ) );
     if( HW_COvlap( segname->r.reg, HW_SS ) )
-        return( _IsTargetModel( FLOATING_SS ) );
+        return( _IsTargetModel( CGSW_X86_FLOATING_SS ) );
     return( true );
 }
 
@@ -414,7 +414,9 @@ static  instruction     *LoadStringOps( instruction *ins,
             es_needs_save = true;
         }
         DelSeg( ins );
-    } else if( _IsTargetModel( FLAT_MODEL ) && !SegmentFloats( *op1 ) && !SegmentFloats( *op2 ) ) {
+    } else if( _IsTargetModel( CGSW_X86_FLAT_MODEL )
+      && !SegmentFloats( *op1 )
+      && !SegmentFloats( *op2 ) ) {
         load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( HW_xDI ), WD );
         PrefixIns( ins, load_op1 );
         load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( HW_xSI ), WD );
@@ -428,14 +430,16 @@ static  instruction     *LoadStringOps( instruction *ins,
         ds_needs_save = SegmentFloats( *op1 );
         es_needs_save = SegmentFloats( *op2 );
     }
-    if( _IsntTargetModel( FLOATING_DS ) && ds_needs_save ) { /* restore DS*/
+    if( _IsntTargetModel( CGSW_X86_FLOATING_DS )
+      && ds_needs_save ) { /* restore DS*/
         ds_reg = AllocRegName( HW_DS );
         pop = MakeUnary( OP_POP, NULL, ds_reg, U2 );
         pop->num_operands = 0;
         SuffixIns( ins, pop );
         PrefixIns( load_op2, MakeUnary( OP_PUSH, ds_reg, NULL, U2 ) );
     }
-    if( _IsntTargetModel( FLOATING_ES ) && es_needs_save ) { /* restore ES */
+    if( _IsntTargetModel( CGSW_X86_FLOATING_ES )
+      && es_needs_save ) { /* restore ES */
         es_reg = AllocRegName( HW_ES );
         pop = MakeUnary( OP_POP, NULL, es_reg, U2 );
         pop->num_operands = 0;
@@ -787,7 +791,7 @@ instruction     *rDOLONGPUSH( instruction *ins )
         HW_CAsgn( hw_ss_sp, HW_SS );
         HW_CTurnOn( hw_ss_sp, HW_xSP );
         sp = AllocRegName( HW_xSP );
-        if( _IsTargetModel( FLOATING_SS ) ) {
+        if( _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
             temp = AllocTemp( CP );
             temp_ins = MakeMove( AllocRegName( hw_ss_sp ), temp, CP );
         } else {
@@ -920,7 +924,7 @@ instruction     *rCMPCP( instruction *ins )
     assert( ins->operands[1]->c.lo.int_value == 0 );
     if( ins->head.opcode == OP_CMP_EQUAL ||
         ins->head.opcode == OP_CMP_NOT_EQUAL ) {
-        if( _IsTargetModel( NULL_SELECTOR_BAD ) ) {
+        if( _IsTargetModel( CGSW_X86_NULL_SELECTOR_BAD ) ) {
             ins->operands[0] = HighPart( ins->operands[0], U2 );
             ChangeType( ins, U2 );
             return( ins );

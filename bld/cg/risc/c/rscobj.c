@@ -470,7 +470,7 @@ void    InitSegDefs( void )
     }
 
     owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, FEINF_SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
-    if( _IsTargetModel( OWL_LOGGING ) ) {
+    if( _IsTargetModel( CGSW_RISC_OWL_LOGGING ) ) {
         OWLLogEnable( owlFile, FILE2OWLF( stdout ) );
     }
 
@@ -1019,7 +1019,7 @@ void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
         if( curr != NULL ) {
             lbl =  AskForSymLabel( curr, CG_FE );
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );
-        } else if( _IsTargetModel( EXCEPT_FILTER_USED ) ) {
+        } else if( _IsTargetModel( CGSW_RISC_EXCEPT_FILTER_USED ) ) {
             lbl = RTLabel( RT_EXCEPT_RTN );
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );
         }

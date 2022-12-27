@@ -58,16 +58,16 @@
 #include "gsegs.h"
 
 
-#define DEF_CGSW_SWITCHES       (CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS)
+#define DEF_CGSW_SWITCHES           (CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS)
 
 #if _CPU == 8086
-  #define DEF_CGTRGSW_SWITCHES  0
+  #define DEF_CGSW_TARGET_SWITCHES  0
 #elif _CPU == 386
-  #define DEF_CGTRGSW_SWITCHES  (USE_32)
+  #define DEF_CGSW_TARGET_SWITCHES  (CGSW_X86_USE_32)
 #elif _CPU == _AXP
-  #define DEF_CGTRGSW_SWITCHES  0
+  #define DEF_CGSW_TARGET_SWITCHES  0
 #elif _CPU == _PPC
-  #define DEF_CGTRGSW_SWITCHES  0
+  #define DEF_CGSW_TARGET_SWITCHES  0
 #else
   #error no or invalid target specified
 #endif
@@ -79,11 +79,10 @@ static  void    CGStart( void );
 static  void    InitCG( void );
 
 
-static  void    CGProgFini( void ) {
-//============================
-
+static  void    CGProgFini( void )
+//================================
 // Finalize code generator.
-
+{
     if( CGFlags & CG_LOADED ) {
         if( CGFlags & CG_INIT ) {
             FreeGlobalData();
@@ -96,11 +95,10 @@ static  void    CGProgFini( void ) {
 }
 
 
-void    CGGenSub( void ) {
-//==================
-
+void    CGGenSub( void )
+//======================
 // Finalize code generator after compiling a subprogram.
-
+{
     InitStack();
     if( (CGFlags & CG_STARTED) == 0 ) {
         CGStart();
@@ -125,11 +123,10 @@ void    CGGenSub( void ) {
     }
 }
 
-static  void    CGStart( void ) {
-//=========================
-
+static  void    CGStart( void )
+//=============================
 // Initialize code generator.
-
+{
     cg_switches         cg_gen_opts;
     cg_target_switches  cg_target_opts;
     int                 space_time;
@@ -140,7 +137,7 @@ static  void    CGStart( void ) {
         CGFlags |= CG_LOADED;
         cpu = 0;
         cg_gen_opts = DEF_CGSW_SWITCHES;
-        cg_target_opts = DEF_CGTRGSW_SWITCHES;
+        cg_target_opts = DEF_CGSW_TARGET_SWITCHES;
 
 #if COMP_CFG_CG_FPE
         if( (OZOpts & OZOPT_O_LOOP_INVAR) == 0 ) {
@@ -150,10 +147,10 @@ static  void    CGStart( void ) {
 
 #if _RISC_CPU
         if( CGOpts & CGOPT_GENASM ) {
-            cg_target_opts |= ASM_OUTPUT;
+            cg_target_opts |= CGSW_RISC_ASM_OUTPUT;
         }
         if( CGOpts & CGOPT_LOGOWL ) {
-            cg_target_opts |= OWL_LOGGING;
+            cg_target_opts |= CGSW_RISC_OWL_LOGGING;
         }
 #endif
         if( CGOpts & CGOPT_ECHOAPI ) {
@@ -162,13 +159,13 @@ static  void    CGStart( void ) {
 
 #if _INTEL_CPU
         if( CGOpts & CGOPT_CONST_CODE ) {
-            cg_target_opts |= CONST_IN_CODE;
+            cg_target_opts |= CGSW_X86_CONST_IN_CODE;
         }
-	#if _CPU == 386
+        #if _CPU == 386
         if( OZOpts & OZOPT_O_BASE_PTR ) {
             cg_gen_opts |= CGSW_MEMORY_LOW_FAILS;
         }
-	#endif
+        #endif
 #endif
         if( OZOpts & OZOPT_O_SUPER_OPTIMAL ) {
             cg_gen_opts |= CGSW_SUPER_OPTIMAL;
@@ -180,7 +177,7 @@ static  void    CGStart( void ) {
             cg_gen_opts |= CGSW_BRANCH_PREDICTION;
         }
         if( OZOpts & OZOPT_O_CALL_RET ) {
-            cg_target_opts |= NO_CALL_RET_TRANSFORM;
+            cg_gen_opts |= CGSW_NO_CALL_RET_TRANSFORM;
         }
         if( OZOpts & OZOPT_O_LOOP ) {
             cg_gen_opts |= CGSW_LOOP_OPTIMIZATION;
@@ -189,14 +186,14 @@ static  void    CGStart( void ) {
             cg_gen_opts |= CGSW_LOOP_OPTIMIZATION | CGSW_LOOP_UNROLLING;
         }
         if( OZOpts & OZOPT_O_MATH ) {
-            cg_target_opts |= I_MATH_INLINE;
+            cg_gen_opts |= CGSW_I_MATH_INLINE;
         }
         if( OZOpts & OZOPT_O_DISABLE ) {
             cg_gen_opts |= CGSW_NO_OPTIMIZATION;
         }
 #if _INTEL_CPU
         if( OZOpts & OZOPT_O_FRAME ) {
-            cg_target_opts |= NEED_STACK_FRAME;
+            cg_target_opts |= CGSW_X86_NEED_STACK_FRAME;
         }
 #endif
         if( OZOpts & OZOPT_O_INSSCHED ) {
@@ -214,31 +211,31 @@ static  void    CGStart( void ) {
         }
 #if _INTEL_CPU
         if( _FloatingDS( CGOpts ) ) {
-            cg_target_opts |= FLOATING_DS;
+            cg_target_opts |= CGSW_X86_FLOATING_DS;
         }
         if( _FloatingES( CGOpts ) ) {
-            cg_target_opts |= FLOATING_ES;
+            cg_target_opts |= CGSW_X86_FLOATING_ES;
         }
     #if _CPU == 8086
         if( CGOpts & CGOPT_SS_FLOATS ) {
-            cg_target_opts |= FLOATING_SS;
+            cg_target_opts |= CGSW_X86_FLOATING_SS;
         }
         if( CGOpts & CGOPT_WINDOWS ) {
-            cg_target_opts |= WINDOWS | CHEAP_WINDOWS;
+            cg_target_opts |= CGSW_X86_WINDOWS | CGSW_X86_CHEAP_WINDOWS;
         }
     #else
         if( CGOpts & CGOPT_EZ_OMF ) {
-            cg_target_opts |= EZ_OMF;
+            cg_target_opts |= CGSW_X86_EZ_OMF;
         }
     #endif
     #if _CPU == 8086
         if( CPUOpts & (CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586) ) {
     #endif
             if( _FloatingFS( CGOpts ) ) {
-                cg_target_opts |= FLOATING_FS;
+                cg_target_opts |= CGSW_X86_FLOATING_FS;
             }
             if( _FloatingGS( CGOpts ) ) {
-                cg_target_opts |= FLOATING_GS;
+                cg_target_opts |= CGSW_X86_FLOATING_GS;
             }
     #if _CPU == 8086
         }
@@ -248,24 +245,24 @@ static  void    CGStart( void ) {
         // set memory model
 
         if( CGOpts & CGOPT_M_MEDIUM ) {
-            cg_target_opts |= BIG_CODE | CHEAP_POINTER;
+            cg_target_opts |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
         }
         if( CGOpts & CGOPT_M_LARGE ) {
-            cg_target_opts |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
+            cg_target_opts |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         }
 #if _CPU == 8086
         if( CGOpts & CGOPT_M_HUGE ) {
-            cg_target_opts |= BIG_CODE | BIG_DATA;
+            cg_target_opts |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA;
         }
 #elif _CPU == 386
         if( CGOpts & CGOPT_M_FLAT ) {
-            cg_target_opts |= FLAT_MODEL;
+            cg_target_opts |= CGSW_X86_FLAT_MODEL;
         }
         if( CGOpts & CGOPT_M_COMPACT ) {
-            cg_target_opts |= BIG_DATA | CHEAP_POINTER;
+            cg_target_opts |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         }
 #elif _RISC_CPU
-        cg_target_opts |= CHEAP_POINTER;
+        cg_target_opts |= CGSW_X86_CHEAP_POINTER;
 #else
     #error no or invalid target specified
 #endif
@@ -328,7 +325,7 @@ static  void    CGStart( void ) {
         }
 
         if( CPUOpts & CPUOPT_FPD ) {
-            cg_target_opts |= P5_DIVIDE_CHECK;
+            cg_target_opts |= CGSW_X86_P5_DIVIDE_CHECK;
         }
 #endif
 
@@ -376,11 +373,10 @@ static  void    CGStart( void ) {
 }
 
 
-static  void    InitCG( void ) {
-//========================
-
+static  void    InitCG( void )
+//============================
 // Initialize code generator.
-
+{
     CGFlags |= CG_INIT;
     InitSegs();
     BEStart();
@@ -389,11 +385,10 @@ static  void    InitCG( void ) {
 }
 
 
-void    FCodeSequence( void ) {
-//=======================
-
+void    FCodeSequence( void )
+//===========================
 // Interpret an F-Code sequence.
-
+{
     FCODE   f_code;
 
     for(;;) {
@@ -405,11 +400,10 @@ void    FCodeSequence( void ) {
 }
 
 
-void    CGPurge( void ) {
-//=================
-
+void    CGPurge( void )
+//=====================
 // Free up unallocated memory if code generator gave a fatal error.
-
+{
     FiniLabels( 0 );
     FiniLabels( FORMAT_LABEL );
     FiniTmps();

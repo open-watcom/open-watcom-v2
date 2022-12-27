@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -512,7 +512,7 @@ static  bool    ShiftConst( an r_addr ) {
 #if WORD_SIZE == 2
     if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 16 )
         return( false );
-    if( _IsTargetModel( BIG_DATA ) && _IsntTargetModel( CHEAP_POINTER ) )
+    if( _IsTargetModel( CGSW_X86_BIG_DATA ) && _IsntTargetModel( CGSW_X86_CHEAP_POINTER ) )
         return( false );
 #else
     if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 8 )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,14 +311,16 @@ void    FixSegments( void ) {
              * if this is a CS override in flat model - that particular case is not
              * an error because the CS override is essentially a no-op.  MN
              */
-#define ANY_FLOATING (FLOATING_DS|FLOATING_ES|FLOATING_FS|FLOATING_GS)
+#define CGSW_X86_ANY_FLOATING (CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_ES | CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS)
 #if _TARGET & _TARG_80386
-            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > OpcodeNumOperands( ins )
-                 && !(_IsTargetModel( FLAT_MODEL ) &&
-                (ins->operands[ins->num_operands - 1]->n.class == N_REGISTER) &&
-                HW_CEqual( ins->operands[ins->num_operands - 1]->r.reg, HW_CS )) ) {
+            if( _IsntTargetModel( CGSW_X86_ANY_FLOATING )
+              && ins->num_operands > OpcodeNumOperands( ins )
+              && !(_IsTargetModel( CGSW_X86_FLAT_MODEL )
+              && (ins->operands[ins->num_operands - 1]->n.class == N_REGISTER)
+              && HW_CEqual( ins->operands[ins->num_operands - 1]->r.reg, HW_CS )) ) {
 #else
-            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > OpcodeNumOperands( ins ) ) {
+            if( _IsntTargetModel( CGSW_X86_ANY_FLOATING )
+              && ins->num_operands > OpcodeNumOperands( ins ) ) {
 #endif
                 /* throw away override */
                 ins->num_operands--;
@@ -491,7 +493,9 @@ void    FixFPConsts( instruction *ins ) {
     opcnt               i;
     type_class_def      type_class;
 
-    if( !FPCInCode() && (_IsTargetModel( FLOATING_SS ) && _IsTargetModel( FLOATING_DS )) ) {
+    if( !FPCInCode()
+      && _IsTargetModel( CGSW_X86_FLOATING_SS )
+      && _IsTargetModel( CGSW_X86_FLOATING_DS ) ) {
         type_class = FltClass( ins );
         if( type_class != XX ) {
             for( i = ins->num_operands; i-- > 0; ) {

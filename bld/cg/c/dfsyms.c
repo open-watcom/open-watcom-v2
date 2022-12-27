@@ -240,7 +240,7 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
     case DW_W_ARANGE_ADDR:
         DoLblReloc( ARange, 0 );
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsntTargetModel( FLAT_MODEL ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             DoSegLblReloc( ARange );
         }
 #endif
@@ -401,7 +401,7 @@ static int InitCU( dw_cu_info *cu )
     cu->offset_size = tipe_addr->length;
     cu->segment_size = 0;
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( _IsntTargetModel( FLAT_MODEL ) ) {
+    if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
         cu->segment_size = 2;
     }
 #endif
@@ -491,7 +491,7 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
 #else
         old_segid = SetOP( code_segid );
     #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsTargetModel( FLAT_MODEL ) ) {
+        if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             bck = MakeLabel();
             OutLabel( bck->lbl );
             Pc_Low = bck;
@@ -646,7 +646,7 @@ void    DFObjLineInitDbgInfo( void )
         cu.flags = false;
 #else
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsTargetModel( FLAT_MODEL ) ) {
+        if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             cu.flags = true;
         } else {
             cu.flags = false;
@@ -734,7 +734,7 @@ void     DFLineNum( cue_state *state, offset lc )
         OutLabel( bck->lbl );
         DWLineAddr( Client, (dw_sym_handle)bck, lc );
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsntTargetModel( FLAT_MODEL ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             DWLineSeg( Client, (dw_sym_handle)bck );
         }
 #endif
@@ -784,7 +784,7 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     dw_segloc = NULL;
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( attr & FE_STATIC ) {
-        if( _IsntTargetModel( FLAT_MODEL ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             dw_segloc = SegLoc( sym );
         }
     }
@@ -1030,7 +1030,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
 #endif
     dw_segloc = NULL;
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( _IsntTargetModel( FLAT_MODEL ) ) {
+    if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
         dw_segloc = SegLoc( sym );
     }
 #endif

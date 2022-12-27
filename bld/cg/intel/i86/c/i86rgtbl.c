@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -917,13 +917,13 @@ hw_reg_set      FixedRegs( void )
     HW_CTurnOn( tmp, HW_BP );
     HW_CTurnOn( tmp, HW_SS );
     HW_CTurnOn( tmp, HW_CS );
-    if( _IsntTargetModel( FLOATING_DS ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_DS ) )
         HW_CTurnOn( tmp, HW_DS );
-    if( _IsntTargetModel( FLOATING_ES ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_ES ) )
         HW_CTurnOn( tmp, HW_ES );
-    if( _IsntTargetModel( FLOATING_FS ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_FS ) )
         HW_CTurnOn( tmp, HW_FS );
-    if( _IsntTargetModel( FLOATING_GS ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_GS ) )
         HW_CTurnOn( tmp, HW_GS );
     return( tmp );
 }
@@ -972,13 +972,13 @@ hw_reg_set      AllCacheRegs( void )
     HW_CTurnOn( tmp, HW_ABCD );
     HW_CTurnOn( tmp, HW_SI );
     HW_CTurnOn( tmp, HW_DI );
-    if( _IsTargetModel( FLOATING_DS ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS ) )
         HW_CTurnOn( tmp, HW_DS );
-    if( _IsTargetModel( FLOATING_ES ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_ES ) )
         HW_CTurnOn( tmp, HW_ES );
-    if( _IsTargetModel( FLOATING_FS ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_FS ) )
         HW_CTurnOn( tmp, HW_FS );
-    if( _IsTargetModel( FLOATING_GS ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_GS ) )
         HW_CTurnOn( tmp, HW_GS );
     return( tmp );
 }

@@ -52,22 +52,22 @@ typedef enum {                  // flags to control memory model settings
 } mem_model_control;
 
 #if 0
-#define CGSW_DEF_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS | CGSW_ENABLE_FP_EXCEPTIONS)
+#define DEF_CGSW_SWITCHES_ALL       (CGSW_MEMORY_LOW_FAILS | CGSW_ENABLE_FP_EXCEPTIONS)
 #else
-#define CGSW_DEF_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS)
+#define DEF_CGSW_SWITCHES_ALL       (CGSW_MEMORY_LOW_FAILS)
 #endif
 #if _CPU == 8086
-    #define CGSW_DEF_SWITCHES   0
+    #define DEF_CGSW_SWITCHES       0
+    #define DEF_CGSW_X86_SWITCHES   CGSW_X86_CHEAP_POINTER
 #else
-    #define CGSW_DEF_SWITCHES   0
+    #define DEF_CGSW_SWITCHES       0
+    #define DEF_CGSW_X86_SWITCHES   (CGSW_X86_CHEAP_POINTER | CGSW_X86_USE_32 | CGSW_X86_FLAT_MODEL)
 #endif
 
 #if _CPU == 8086
-    #define DEF_TARGET_SWITCHES CHEAP_POINTER
     #define DEFAULT_CPU CPU_86
     #define DEFAULT_FPU FPU_87
 #else
-    #define DEF_TARGET_SWITCHES CHEAP_POINTER|USE_32|FLAT_MODEL
     #define DEFAULT_CPU CPU_686
     #define DEFAULT_FPU FPU_387
 #endif
@@ -81,8 +81,8 @@ typedef enum {                  // flags to control memory model settings
 void CmdSysInit( void )
 /*********************/
 {
-    GenSwitches = CGSW_DEF_SWITCHES | CGSW_DEF_SWITCHES_ALL;
-    TargetSwitches = DEF_TARGET_SWITCHES;
+    GenSwitches = DEF_CGSW_SWITCHES | DEF_CGSW_SWITCHES_ALL;
+    TargetSwitches = DEF_CGSW_X86_SWITCHES;
     SET_CPU( CpuSwitches, DEFAULT_CPU );
     SET_FPU( CpuSwitches, DEFAULT_FPU );
     SET_FPU_EMU( CpuSwitches );
@@ -136,7 +136,7 @@ void CmdX86CheckThreshold( unsigned *p )
 void CmdSysSetMaxOptimization( void )
 /***********************************/
 {
-    TargetSwitches |= I_MATH_INLINE;
+    GenSwitches |= CGSW_I_MATH_INLINE;
 }
 
 static void defineM_IX86Macro( void )
@@ -167,11 +167,11 @@ static void setWindowsSystem( void )
 {
 #if _CPU == 8086
     PreDefineStringMacro( "_WINDOWS" );
-    TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
-    TargetSwitches &= ~ FLOATING_DS;
+    TargetSwitches |= CGSW_X86_WINDOWS | CGSW_X86_CHEAP_WINDOWS;
+    TargetSwitches &= ~ CGSW_X86_FLOATING_DS;
 #else
     PreDefineStringMacro( "__WINDOWS_386__" );
-    TargetSwitches |= FLOATING_FS;
+    TargetSwitches |= CGSW_X86_FLOATING_FS;
     SET_FPU_INLINE( CpuSwitches );
 #endif
 }
@@ -354,8 +354,8 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         PreDefineStringMacro( "_M_" MM_ARCH "SM" );
         PreDefineStringMacro( "__SMALL__" );
         CompFlags.strings_in_code_segment = false;
-        TargetSwitches &= ~CONST_IN_CODE;
-        bit |= CHEAP_POINTER;
+        TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
+        bit |= CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_mm:
         model = 'm';
@@ -364,15 +364,15 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
         PreDefineStringMacro( "__MEDIUM__" );
         CompFlags.strings_in_code_segment = false;
-        TargetSwitches &= ~CONST_IN_CODE;
-        bit |= BIG_CODE | CHEAP_POINTER;
+        TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
+        bit |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_mc:
         model = 'c';
         PreDefineStringMacro( "_M_" MM_ARCH "CM" );
         PreDefineStringMacro( "__COMPACT__" );
         DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_DATA | CHEAP_POINTER;
+        bit |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_ml:
         model = 'l';
@@ -381,7 +381,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
+        bit |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         break;
 #if _CPU == 8086
     case OPT_ENUM_mem_model_mh:
@@ -391,7 +391,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_CODE | BIG_DATA;
+        bit |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA;
         break;
 #else
     case OPT_ENUM_mem_model_mfi:
@@ -401,7 +401,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );
         PreDefineStringMacro( "__FLAT__" );
-        bit |= FLAT_MODEL | CHEAP_POINTER;
+        bit |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
         break;
 #endif
     default:
@@ -409,33 +409,33 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     }
 // setup default "floating" segment registers
 #if _CPU == 8086
-    bit |= FLOATING_ES;
+    bit |= CGSW_X86_FLOATING_ES;
 #else
     // 386 flat model needs at least one floating segment register
-    bit |= FLOATING_GS;
-    if( (bit & FLAT_MODEL) == 0 ) {
-        bit |= FLOATING_ES;
+    bit |= CGSW_X86_FLOATING_GS;
+    if( (bit & CGSW_X86_FLAT_MODEL) == 0 ) {
+        bit |= CGSW_X86_FLOATING_ES;
     }
 #endif
-    if( bit & BIG_DATA ) {
-        bit |= FLOATING_DS;
+    if( bit & CGSW_X86_BIG_DATA ) {
+        bit |= CGSW_X86_FLOATING_DS;
     }
     if( control & ( MMC_DS | MMC_WIN ) ) {
-        bit &= ~FLOATING_DS;
+        bit &= ~CGSW_X86_FLOATING_DS;
     } else {
-        TargetSwitches &= ~ FLOATING_DS;
+        TargetSwitches &= ~ CGSW_X86_FLOATING_DS;
     }
     if( control & MMC_FS ) {
-        bit &= ~FLOATING_FS;
+        bit &= ~CGSW_X86_FLOATING_FS;
     } else {
-        TargetSwitches &= ~ FLOATING_FS;
+        TargetSwitches &= ~ CGSW_X86_FLOATING_FS;
     }
     if( control & MMC_GS ) {
-        bit &= ~FLOATING_GS;
+        bit &= ~CGSW_X86_FLOATING_GS;
     } else {
-        TargetSwitches &= ~ FLOATING_GS;
+        TargetSwitches &= ~ CGSW_X86_FLOATING_GS;
     }
-    TargetSwitches &= ~( FLAT_MODEL | BIG_CODE | BIG_DATA | CHEAP_POINTER | FLOATING_ES );
+    TargetSwitches &= ~(CGSW_X86_FLAT_MODEL | CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER | CGSW_X86_FLOATING_ES);
     TargetSwitches |= bit;
 #if _CPU == 8086
     if( data->bm ) { // .DLL
@@ -693,60 +693,60 @@ static void defEmu( void )
 
 static void macroDefs( void )
 {
-    if( TargetSwitches & I_MATH_INLINE ) {
+    if( GenSwitches & CGSW_I_MATH_INLINE ) {
         DefSwitchMacro( "OM" );
     }
-    switch( TargetSwitches & (BIG_DATA|BIG_CODE|CHEAP_POINTER|FLAT_MODEL) ) {
-    case CHEAP_POINTER:
+    switch( TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER | CGSW_X86_FLAT_MODEL) ) {
+    case CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MS" );
         break;
-    case BIG_CODE|CHEAP_POINTER:
+    case CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MM" );
         break;
-    case BIG_DATA|CHEAP_POINTER:
+    case CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MC" );
         break;
-    case BIG_CODE|BIG_DATA|CHEAP_POINTER:
+    case CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "ML" );
         break;
-    case BIG_CODE|BIG_DATA:
+    case CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA:
         DefSwitchMacro( "MH" );
         break;
-    case FLAT_MODEL|CHEAP_POINTER:
+    case CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MF" );
         break;
     }
-    if( TargetSwitches & FLOATING_FS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
         DefSwitchMacro( "ZFF" );
     } else {
         DefSwitchMacro( "ZFP" );
     }
-    if( TargetSwitches & FLOATING_GS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_GS ) {
         DefSwitchMacro( "ZGF" );
     } else {
         DefSwitchMacro( "ZGP" );
     }
-    if( TargetSwitches & FLOATING_DS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
         DefSwitchMacro( "ZDF" );
     } else {
         DefSwitchMacro( "ZDP" );
     }
-    if( TargetSwitches & FLOATING_SS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
         DefSwitchMacro( "ZU" );
     }
-    if( TargetSwitches & INDEXED_GLOBALS ) {
+    if( TargetSwitches & CGSW_X86_INDEXED_GLOBALS ) {
         DefSwitchMacro( "XGV" );
     }
-    if( TargetSwitches & WINDOWS ) {
+    if( TargetSwitches & CGSW_X86_WINDOWS ) {
         DefSwitchMacro( "ZW" );
     }
-    if( TargetSwitches & SMART_WINDOWS ) {
+    if( TargetSwitches & CGSW_X86_SMART_WINDOWS ) {
         DefSwitchMacro( "ZWS" );
     }
-    if( TargetSwitches & NO_CALL_RET_TRANSFORM ) {
+    if( GenSwitches & CGSW_NO_CALL_RET_TRANSFORM ) {
         DefSwitchMacro( "OC" );
     }
-    if( TargetSwitches & NEED_STACK_FRAME ) {
+    if( TargetSwitches & CGSW_X86_NEED_STACK_FRAME ) {
         DefSwitchMacro( "OF" );
     }
     if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
@@ -770,7 +770,7 @@ static void macroDefs( void )
     if( GenSwitches & CGSW_FPU_ROUNDING_OMIT ) {
         DefSwitchMacro( "ZRO" );
     }
-    if( TargetSwitches & GEN_FWAIT_386 ) {
+    if( TargetSwitches & CGSW_X86_GEN_FWAIT_386 ) {
         DefSwitchMacro( "ZFW" );
     }
     if( CompFlags.signed_char ) {
@@ -912,7 +912,7 @@ static void macroDefs( void )
 #endif
     if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
-        if( TargetSwitches & WINDOWS ) {
+        if( TargetSwitches & CGSW_X86_WINDOWS ) {
             PreDefineStringMacro( "SOMLINK=__cdecl" );
             PreDefineStringMacro( "SOMDLINK=__far" );
         }
@@ -927,26 +927,26 @@ static void miscAnalysis( OPT_STORAGE *data )
 {
 #if _CPU == 8086
     if( data->bd || data->zu ) {
-        if( TargetSwitches & SMART_WINDOWS ) {
+        if( TargetSwitches & CGSW_X86_SMART_WINDOWS ) {
             CErr1( ERR_ZWS_MUST_HAVE_SS_DS_SAME );
         }
     }
 #endif
     if( GET_CPU( CpuSwitches ) < CPU_386 ) {
         /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
-        TargetSwitches &= ~( FLOATING_FS | FLOATING_GS );
+        TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
     }
     if( !CompFlags.save_restore_segregs ) {
-        if( TargetSwitches & FLOATING_DS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             HW_CTurnOff( WatcallInfo.save, HW_DS );
         }
-        if( TargetSwitches & FLOATING_ES ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_ES ) {
             HW_CTurnOff( WatcallInfo.save, HW_ES );
         }
-        if( TargetSwitches & FLOATING_FS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
             HW_CTurnOff( WatcallInfo.save, HW_FS );
         }
-        if( TargetSwitches & FLOATING_GS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_GS ) {
             HW_CTurnOff( WatcallInfo.save, HW_GS );
         }
     }
@@ -969,7 +969,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     char *target_name = NULL;
     mem_model_control mmc = MMC_NULL;
 
-    GenSwitches &= ~( CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF );
+    GenSwitches &= ~(CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF);
     switch( data->dbg_output ) {
     case OPT_ENUM_dbg_output_hc:
         GenSwitches |= CGSW_DBG_CV;
@@ -992,17 +992,17 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
     switch( data->ds_peg ) {
     case OPT_ENUM_ds_peg_zdp:
-        TargetSwitches &= ~ FLOATING_DS;
+        TargetSwitches &= ~ CGSW_X86_FLOATING_DS;
         mmc |= MMC_DS;
         break;
     case OPT_ENUM_ds_peg_zdf:
-        TargetSwitches |= FLOATING_DS;
+        TargetSwitches |= CGSW_X86_FLOATING_DS;
         mmc |= MMC_DS;
         break;
     }
 
     if( data->zfw ) {
-        TargetSwitches |= GEN_FWAIT_386;
+        TargetSwitches |= CGSW_X86_GEN_FWAIT_386;
     }
     if( data->zro && data->zri ) {
 //        DbgDefault( "invalid fp rounding flags - ignored" );
@@ -1016,27 +1016,27 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 
 #if _CPU == 386
     if( data->zdl ) {
-        TargetSwitches |= LOAD_DS_DIRECTLY;
+        TargetSwitches |= CGSW_X86_LOAD_DS_DIRECTLY;
         mmc |= MMC_DS;
     }
 #endif
     switch( data->fs_peg ) {
     case OPT_ENUM_fs_peg_zfp:
-        TargetSwitches &= ~ FLOATING_FS;
+        TargetSwitches &= ~ CGSW_X86_FLOATING_FS;
         mmc |= MMC_FS;
         break;
     case OPT_ENUM_fs_peg_zff:
-        TargetSwitches |= FLOATING_FS;
+        TargetSwitches |= CGSW_X86_FLOATING_FS;
         mmc |= MMC_FS;
         break;
     }
     switch( data->gs_peg ) {
     case OPT_ENUM_gs_peg_zgp:
-        TargetSwitches &= ~ FLOATING_GS;
+        TargetSwitches &= ~ CGSW_X86_FLOATING_GS;
         mmc |= MMC_GS;
         break;
     case OPT_ENUM_gs_peg_zgf:
-        TargetSwitches |= FLOATING_GS;
+        TargetSwitches |= CGSW_X86_FLOATING_GS;
         mmc |= MMC_GS;
         break;
     }
@@ -1068,12 +1068,12 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         break;
     case OPT_ENUM_win_zws:
         SetTargetLiteral( &target_name, "windows" );
-        TargetSwitches |= SMART_WINDOWS;
+        TargetSwitches |= CGSW_X86_SMART_WINDOWS;
         mmc |= MMC_WIN;
         break;
     case OPT_ENUM_win_zWs:
         SetTargetLiteral( &target_name, "cheap_windows" );
-        TargetSwitches |= SMART_WINDOWS;
+        TargetSwitches |= CGSW_X86_SMART_WINDOWS;
         mmc |= MMC_WIN;
         break;
     }
@@ -1127,7 +1127,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     // depends on architecture and fpu being set
     setMemoryModel( data, mmc );
     if( data->fpd ) {
-        TargetSwitches |= P5_DIVIDE_CHECK;
+        TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK;
     }
     /*
     //  Changed the ordering.
@@ -1160,17 +1160,17 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         SetStringOption( &TextSegName, &(data->nt_value) );
     }
     if( data->oc ) {
-        TargetSwitches |= NO_CALL_RET_TRANSFORM;
+        GenSwitches |= CGSW_NO_CALL_RET_TRANSFORM;
     }
     if( data->of ) {
-        TargetSwitches |= NEED_STACK_FRAME;
+        TargetSwitches |= CGSW_X86_NEED_STACK_FRAME;
     }
     if( data->of_plus ) {
-        TargetSwitches |= NEED_STACK_FRAME;
+        TargetSwitches |= CGSW_X86_NEED_STACK_FRAME;
         WatcallInfo.cclass |= FECALL_X86_GENERATE_STACK_FRAME;
     }
     if( data->om ) {
-        TargetSwitches |= I_MATH_INLINE;
+        GenSwitches |= CGSW_I_MATH_INLINE;
     }
     if( data->r ) {
         CompFlags.save_restore_segregs = true;
@@ -1187,7 +1187,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zc ) {
         CompFlags.strings_in_code_segment = true;
         CompFlags.zc_switch_used = true;
-        TargetSwitches |= CONST_IN_CODE;
+        TargetSwitches |= CGSW_X86_CONST_IN_CODE;
     }
     if( data->zm ) {
         CompFlags.zm_switch_used = true;
@@ -1198,7 +1198,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
     if( data->zu ) {
         CompFlags.zu_switch_used = true;
-        TargetSwitches |= FLOATING_SS;
+        TargetSwitches |= CGSW_X86_FLOATING_SS;
     }
     if( data->zx ) {
         CompFlags.zx_switch_used = true;
@@ -1208,7 +1208,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #if _CPU == 8086
     if( data->xgls ) {
-        TargetSwitches |= NULL_SELECTOR_BAD;
+        TargetSwitches |= CGSW_X86_NULL_SELECTOR_BAD;
     }
 #else
     if( data->vcap ) {
@@ -1218,22 +1218,22 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         CompFlags.br_switch_used = true;
     }
     if( data->ez ) {
-        TargetSwitches |= EZ_OMF;
+        TargetSwitches |= CGSW_X86_EZ_OMF;
     }
     if( data->etp ) {
-        TargetSwitches |= NEW_P5_PROFILING;
+        TargetSwitches |= CGSW_X86_NEW_P5_PROFILING;
     }
     if( data->esp ) {
-        TargetSwitches |= STATEMENT_COUNTING;
+        TargetSwitches |= CGSW_X86_STATEMENT_COUNTING;
     }
     if( data->et ) {
-        TargetSwitches |= P5_PROFILING;
+        TargetSwitches |= CGSW_X86_P5_PROFILING;
     }
     if( data->et0 ) {
-        TargetSwitches |= P5_PROFILING | P5_PROFILING_CTR0;
+        TargetSwitches |= CGSW_X86_P5_PROFILING | CGSW_X86_P5_PROFILING_CTR0;
     }
     if( data->xgv ) {
-        TargetSwitches |= INDEXED_GLOBALS;
+        TargetSwitches |= CGSW_X86_INDEXED_GLOBALS;
     }
     if( data->zo ) {
         CompFlags.zo_switch_used = true;
@@ -1243,7 +1243,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #endif
     if( data->iso == OPT_ENUM_iso_za ) {
-        TargetSwitches &= ~I_MATH_INLINE;
+        GenSwitches &= ~CGSW_I_MATH_INLINE;
     }
     switch( data->intel_call_conv ) {
     case OPT_ENUM_intel_call_conv_ecc:

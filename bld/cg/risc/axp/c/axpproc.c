@@ -487,7 +487,7 @@ static  void    emitProlog( stack_map *map )
         }
     }
     if( map->locals.size != 0 || map->parm_cache.size != 0 ) {
-        if( _IsTargetModel( STACK_INIT ) ) {
+        if( _IsTargetModel( CGSW_RISC_STACK_INIT ) ) {
             type_length         size;
             size = map->locals.size + map->parm_cache.size;
             if( size > AXP_MAX_OFFSET ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,7 +156,7 @@ static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_de
 static  name    *GetTLSDataRef( instruction *ins, name *op, type_class_def type_class )
 /*************************************************************************************/
 {
-    if( _IsTargetModel( GENERIC_TLS ) ) {
+    if( _IsTargetModel( CGSW_X86_GENERIC_TLS ) ) {
         return( GetNTTLSDataRef( ins, op, type_class ) );
     } else {
         return( GetGenericTLSDataRef( ins, op, type_class ) );

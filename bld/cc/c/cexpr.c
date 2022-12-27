@@ -551,7 +551,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             if( segid == SEG_STACK ) {
                 CompFlags.addr_of_auto_taken = true;
 #if _INTEL_CPU
-                if( TargetSwitches & FLOATING_SS ) {
+                if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
                     decl_flags = (decl_flags & ~FLAG_NEAR) | FLAG_FAR;
                 }
 #endif
@@ -747,7 +747,7 @@ static TREEPTR AddrOp( TREEPTR tree )
             segid = SEG_STACK;
             CompFlags.addr_of_auto_taken = true;
 #if _INTEL_CPU
-            if( TargetSwitches & FLOATING_SS ) {
+            if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
                 modifiers |= FLAG_FAR;
             }
 #endif

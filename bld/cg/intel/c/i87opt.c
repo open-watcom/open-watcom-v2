@@ -365,7 +365,7 @@ static  bool    FSinCos( instruction *ins1 )
     instruction *ins3;
     instruction *ins4;
 
-    if( _IsntTargetModel( I_MATH_INLINE ) ) {
+    if( _IsntModel( CGSW_I_MATH_INLINE ) ) {
         return( false );
     }
     ins2 = ins1->head.next;
@@ -831,7 +831,7 @@ void    FixP5Divs( void )
     block       *blk;
     instruction *ins;
 
-    if( _IsntTargetModel( P5_DIVIDE_CHECK ) )
+    if( _IsntTargetModel( CGSW_X86_P5_DIVIDE_CHECK ) )
         return;
     if( !_FPULevel( FPU_87 ) )
         return;

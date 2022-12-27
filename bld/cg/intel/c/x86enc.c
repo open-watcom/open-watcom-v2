@@ -436,7 +436,7 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
         default:
             break;
         }
-        if( _IsTargetModel( USE_32 ) ) {
+        if( _IsTargetModel( CGSW_X86_USE_32 ) ) {
             if( ins->type_class == U2 || ins->type_class == I2 ) {
                 if( NeedOpndSize( ins ) ) {
                     AddToTemp( M_OPND_SIZE );
@@ -721,8 +721,8 @@ static  void    DoP5Divide( instruction *ins ) {
     StackDepth += WORD_SIZE;
 #endif
     _Code;
-    if( _IsTargetModel( FLOATING_DS ) ) {
-        if( _IsTargetModel( FLOATING_SS ) ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS ) ) {
+        if( _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
             LayOpbyte( 0x1e );  /* push ds    */
             AddByte( 0x50 );    /* push [e]ax */
             _Emit;
@@ -934,7 +934,7 @@ void    GenSeg( hw_reg_set regs )
         if( HW_CEqual( segreg, HW_SS ) )
             return;
         if( HW_CEqual( segreg, HW_DS )
-         && _IsntTargetModel(FLOATING_DS|FLOATING_SS) ) {
+         && _IsntTargetModel(CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_SS) ) {
             return;
         }
     } else {
@@ -969,16 +969,16 @@ type_class_def  OpndSize( hw_reg_set reg )
     if( HW_COvlap( reg, HW_SEGS ) )
         return( U2 );
 #if _TARGET & _TARG_8086
-    if( _IsTargetModel( USE_32 ) )
+    if( _IsTargetModel( CGSW_X86_USE_32 ) )
         AddToTemp( M_OPND_SIZE );
     return( U2 );
 #else
     if( HW_COvlap( reg, HW_32 ) ) {
-        if( _IsntTargetModel( USE_32 ) )
+        if( _IsntTargetModel( CGSW_X86_USE_32 ) )
             AddToTemp( M_OPND_SIZE );
         return( U4 );
     } else {
-        if( _IsTargetModel( USE_32 ) )
+        if( _IsTargetModel( CGSW_X86_USE_32 ) )
             AddToTemp( M_OPND_SIZE );
         return( U2 );
     }
@@ -1529,7 +1529,7 @@ void    GenWindowsProlog( void )
 /******************************/
 {
     _Code;
-    if( _IsTargetModel( SMART_WINDOWS ) ) {
+    if( _IsTargetModel( CGSW_X86_SMART_WINDOWS ) ) {
         LayOpbyte( 0x8c );          /*  mov     [e]ax, ss   */
         AddByte( 0xd0 );            /*  ..                  */
     } else {
@@ -1724,7 +1724,7 @@ static  void    CallMathFunc( instruction *ins ) {
     rt_class    rtindex;
 
     rtindex = LookupRoutine( ins );
-    DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), false );
+    DoCall( RTLabel( rtindex ), true, _IsTargetModel( CGSW_X86_BIG_CODE ), false );
 }
 
 static void     GenUnkLea( pointer value )
@@ -1755,7 +1755,7 @@ void    GenObjCode( instruction *ins ) {
     if( gen != G_NO ) {
 #if 1
         // fixme - should be _IsTargetModel
-        if( _IsTargetModel( P5_DIVIDE_CHECK ) ) {
+        if( _IsTargetModel( CGSW_X86_P5_DIVIDE_CHECK ) ) {
             if( ins->head.opcode == OP_DIV && _IsFloating( ins->type_class ) ) {
                 DoP5Divide( ins );
                 return;
@@ -2073,7 +2073,7 @@ void    GenObjCode( instruction *ins ) {
         case G_CALL:
             GenCall( ins );
             AdjustStackDepth( ins );
-            if( _IsTargetModel( NEW_P5_PROFILING ) ) {
+            if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
                 label_handle    lbl;
                 segment_id      segid;
 
@@ -2092,7 +2092,7 @@ void    GenObjCode( instruction *ins ) {
                 GenCallIndirect( ins );
             }
             AdjustStackDepth( ins );
-            if( _IsTargetModel( NEW_P5_PROFILING ) ) {
+            if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
                 label_handle    lbl;
                 label_handle    junk;
                 segment_id      segid;
@@ -2123,7 +2123,7 @@ void    GenObjCode( instruction *ins ) {
             case U8:
             case I8:
                 LayOpbyte( M_CWD );
-                if( _IsntTargetModel( USE_32 ) )
+                if( _IsntTargetModel( CGSW_X86_USE_32 ) )
                     AddToTemp( M_OPND_SIZE );
                 break;
 #endif
@@ -2135,7 +2135,7 @@ void    GenObjCode( instruction *ins ) {
                 switch( ins->base_type_class ) {
                 case U1:
                 case I1:
-                    if( _IsTargetModel( USE_32 ) )
+                    if( _IsTargetModel( CGSW_X86_USE_32 ) )
                         AddToTemp( M_OPND_SIZE );
                     AddToTemp( M_CBW );
                     break;
@@ -2144,12 +2144,12 @@ void    GenObjCode( instruction *ins ) {
                 }
                 if( HW_CEqual( ins->result->r.reg, HW_DX_AX ) ) {
                     LayOpbyte( M_CWD );
-                    if( _IsTargetModel( USE_32 ) ) {
+                    if( _IsTargetModel( CGSW_X86_USE_32 ) ) {
                         AddToTemp( M_OPND_SIZE );
                     }
                 } else {
                     LayOpbyte( M_CBW );
-                    if( _IsntTargetModel( USE_32 ) ) {
+                    if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
                         AddToTemp( M_OPND_SIZE ); /* CWDE */
                     }
                 }
@@ -2158,7 +2158,7 @@ void    GenObjCode( instruction *ins ) {
             case U2:
             case I2:
                 LayOpbyte( M_CBW );
-                if( _IsTargetModel( USE_32 ) )
+                if( _IsTargetModel( CGSW_X86_USE_32 ) )
                     AddToTemp( M_OPND_SIZE );
                 break;
             default:
@@ -2221,7 +2221,7 @@ void    GenObjCode( instruction *ins ) {
             LayOpword( 0xFBD9 );
             break;
         case G_FCHOP:
-            DoCall( RTLabel( RT_CHOP ), true, _IsTargetModel( BIG_CODE ), false );
+            DoCall( RTLabel( RT_CHOP ), true, _IsTargetModel( CGSW_X86_BIG_CODE ), false );
             break;
         case G_FTST:
         case G_FCOMPP:
@@ -2285,12 +2285,12 @@ void    GenObjCode( instruction *ins ) {
                 switch( ins->type_class ) {
                 case U2:
                 case I2:
-                    if( _IsTargetModel( USE_32 ) )
+                    if( _IsTargetModel( CGSW_X86_USE_32 ) )
                         AddToTemp( M_OPND_SIZE );
                     break;
                 case U4:
                 case I4:
-                    if( _IsntTargetModel( USE_32 ) )
+                    if( _IsntTargetModel( CGSW_X86_USE_32 ) )
                         AddToTemp( M_OPND_SIZE );
                     break;
                 default:

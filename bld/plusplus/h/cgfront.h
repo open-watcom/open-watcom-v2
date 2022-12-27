@@ -201,13 +201,13 @@ typedef enum                    // CALL_OPT -- types of call optimizations
 #define conversionWorked( val ) ( (val) <= CNV_WORKED )
 
 // TEST IF DEFAULT MEMORY MODEL USES BIG CODE
-#define IsBigCode()     ((TargetSwitches & BIG_CODE) != 0)
+#define IsBigCode()     ((TargetSwitches & CGSW_X86_BIG_CODE) != 0)
 // TEST IF DEFAULT MEMORY MODEL USES BIG DATA
-#define IsBigData()     ((TargetSwitches & BIG_DATA) != 0)
+#define IsBigData()     ((TargetSwitches & CGSW_X86_BIG_DATA) != 0)
 // TEST IF DEFAULT MEMORY MODEL USES HUGE DATA
-#define IsHugeData()    ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == (BIG_DATA))
+#define IsHugeData()    ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == (CGSW_X86_BIG_DATA))
 // TEST IF DEFAULT MEMORY MODEL IS FLAT
-#define IsFlat()        ((TargetSwitches & FLAT_MODEL) != 0)
+#define IsFlat()        ((TargetSwitches & CGSW_X86_FLAT_MODEL) != 0)
 
 // PROTOTYPES : exposed to C++ compiler
 
@@ -265,7 +265,7 @@ bool AnalyseClQual(             // ANALYSE :: operator
 ;
 bool AnalyseClQualRes(          // ANALYSE :: operator
     PTREE *a_expr,              // - addr( expression to be analysed )
-    SEARCH_RESULT **out )       // an optional out variable for the result. 
+    SEARCH_RESULT **out )       // an optional out variable for the result.
 ;
 bool AnalyseLvalueAddrOf(       // ANALYSE LVALUE FOR "&"
     PTREE *a_expr )             // - addr[ expression to be analysed ]

@@ -1150,7 +1150,7 @@ static  void Encode( instruction *ins )
         break;
     }
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
         DumpLiteral( " - " );

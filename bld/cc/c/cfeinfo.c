@@ -192,7 +192,7 @@ static const inline_funcs *Flat( const inline_funcs *ifunc )
   #if _CPU == 386
     const alt_inline_funcs  *p;
 
-    if( TargetSwitches & FLAT_MODEL ) {
+    if( TargetSwitches & CGSW_X86_FLAT_MODEL ) {
         for( p = FlatAlternates; p->byteseq != NULL; p++ ) {
             if( p->byteseq == ifunc->code ) {
                 return( &(p->alt_ifunc) );
@@ -216,15 +216,15 @@ static const inline_funcs *IF_Lookup( const char *name )
     }
     if( OptSize == 100 ) {              /* if /os specified */
         ifunc = SInline_Functions;
-        if( TargetSwitches & BIG_DATA ) {
+        if( TargetSwitches & CGSW_X86_BIG_DATA ) {
   #if _CPU == 8086
-            if( TargetSwitches & FLOATING_DS ) {
+            if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
                 ifunc = ZF_Data_Functions;
             } else {
                 ifunc = ZP_Data_Functions;
             }
   #else
-            if( TargetSwitches & FLOATING_DS ) {
+            if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
                 ifunc = SBigData_Functions;
             } else {
                 ifunc = SBigDataNoDs_Functions;
@@ -238,7 +238,7 @@ static const inline_funcs *IF_Lookup( const char *name )
         }
     }
   #if _CPU == 386
-    if( TargetSwitches & FLAT_MODEL ) {
+    if( TargetSwitches & CGSW_X86_FLAT_MODEL ) {
         for( ifunc = Flat_Functions; ifunc->name != NULL; ++ifunc ) {
             if( strcmp( ifunc->name, name ) == 0 ) {
                 return( ifunc );
@@ -247,15 +247,15 @@ static const inline_funcs *IF_Lookup( const char *name )
     }
   #endif
     ifunc = Inline_Functions;
-    if( TargetSwitches & BIG_DATA ) {
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
   #if _CPU == 8086
-        if( TargetSwitches & FLOATING_DS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             ifunc = DF_Data_Functions;
         } else {
             ifunc = DP_Data_Functions;
         }
   #else
-        if( TargetSwitches & FLOATING_DS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             ifunc = BigData_Functions;
         } else {
             ifunc = BigDataNoDs_Functions;
@@ -813,7 +813,7 @@ static void addDefaultImports( void )
             control = CM_NULL;
         }
 #if _CPU == 8086
-        if( (control & CM_WINMAIN) && CompFlags.has_winmain || (TargetSwitches & WINDOWS) && CompFlags.has_main ) {
+        if( (control & CM_WINMAIN) && CompFlags.has_winmain || (TargetSwitches & CGSW_X86_WINDOWS) && CompFlags.has_main ) {
 #else
         if( (control & CM_WINMAIN) && CompFlags.has_winmain ) {
 #endif
@@ -845,7 +845,7 @@ static void addDefaultImports( void )
         }
   #if _CPU == 8086
         if( FirstStmt != 0 ) {
-            if( TargetSwitches & BIG_CODE ) {
+            if( TargetSwitches & CGSW_X86_BIG_CODE ) {
                 AddExtRefN( "_big_code_" );
             } else {
                 AddExtRefN( "_small_code_" );
@@ -918,13 +918,13 @@ static void addDefaultImports( void )
     }
 
     /* handle 'old' profiling */
-    if( TargetSwitches & P5_PROFILING ) {
+    if( TargetSwitches & CGSW_X86_P5_PROFILING ) {
         /* is profiling enabled (-et)? */
         AddExtRefN( "__p5_profile" );
     }
 
     /* handle 'new' profiling */
-    if( TargetSwitches & NEW_P5_PROFILING ) {
+    if( TargetSwitches & CGSW_X86_NEW_P5_PROFILING ) {
         /* is profiling enabled (-etp)? */
         AddExtRefN( "__new_p5_profile" );
     }

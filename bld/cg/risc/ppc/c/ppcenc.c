@@ -823,7 +823,7 @@ static  void    Encode( instruction *ins )
         break;
     }
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
         DumpLiteral( " - " );
@@ -859,7 +859,7 @@ void    CodeLabel( label_handle label, unsigned alignment )
     }
     OutLabel( label );
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpChar( 'L' );
         DumpPtr( label );
         DumpChar( ':' );
@@ -873,7 +873,7 @@ void    CodeLineNumber( cg_linenum line, bool label )
 /***************************************************/
 {
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "Source Line: " );
         DumpInt( line );
         DumpNL();
@@ -888,7 +888,7 @@ void    GenJumpLabel( label_handle label )
 {
     GenBRANCH( 18, label, false, false );
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "JMP L" );
         DumpPtr( label );
         DumpNL();
@@ -904,7 +904,7 @@ static void    GenJumpIf( instruction *ins, pointer label )
     ops = &BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][0]; // fixme - floating point
     GenCONDBR( 16, ops[0], ops[1], label );
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "Jcc L" );
         DumpPtr( label );
         DumpNL();

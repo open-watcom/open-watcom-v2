@@ -74,4 +74,4 @@
 
 #define ARRAY_SIZE(x)               (sizeof( x ) / sizeof( *x ))
 
-#define IsHugeData()                ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA)
+#define IsHugeData()                ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)

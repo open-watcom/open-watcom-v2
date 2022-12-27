@@ -75,11 +75,11 @@ target_size GetDQuadPointerSize( enum quad_flags dq_flags )
     } else if( dq_flags & Q_FAR_POINTER ) {
         size = TARGET_FAR_POINTER;
     } else if( dq_flags & Q_CODE_POINTER ) {
-        if( TargetSwitches & BIG_CODE ) {
+        if( TargetSwitches & CGSW_X86_BIG_CODE ) {
             size = TARGET_FAR_POINTER;
         }
     } else {
-        if( TargetSwitches & BIG_DATA ) {
+        if( TargetSwitches & CGSW_X86_BIG_DATA ) {
             size = TARGET_FAR_POINTER;
         }
     }

@@ -280,7 +280,7 @@ TREEPTR StringLeaf( string_flags flags )
     strlit = NULL;
     new_lit = GetLiteral();
 #if _INTEL_CPU
-    if( TargetSwitches & BIG_DATA ) {
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         if( !CompFlags.strings_in_code_segment ) {
             if( new_lit->length > DataThreshold ) {
                 flags |= STRLIT_FAR;

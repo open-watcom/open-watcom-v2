@@ -499,7 +499,7 @@ static TYPE makeCompilerData( TYPE type, type_flag flags )
     if( defaultDataMemFlag & (TF1_FAR | TF1_HUGE) ) {
 #if _CPU == 8086
         if( (flags & TF1_CONST) == 0 ) {
-            if( TargetSwitches & WINDOWS ) {
+            if( TargetSwitches & CGSW_X86_WINDOWS ) {
                 /* R/W data must be near for 16-bit Windows */
                 flags |= TF1_NEAR;
             } else {
@@ -6740,7 +6740,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                         sym->sym_type = type;
                     }
 #if _INTEL_CPU
-                    if( TargetSwitches & FLOATING_SS ) {
+                    if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
                         sym->sym_type = MakeModifiedType( sym->sym_type, TF1_FAR );
                     }
 #endif

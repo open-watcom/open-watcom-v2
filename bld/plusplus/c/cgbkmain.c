@@ -1292,9 +1292,9 @@ static void emitProfilingData(
     back_handle fnh;
     VBUF data;
 
-    if( TargetSwitches & NEW_P5_PROFILING )
+    if( TargetSwitches & CGSW_X86_NEW_P5_PROFILING )
         return;
-    if( TargetSwitches & P5_PROFILING ) {
+    if( TargetSwitches & CGSW_X86_P5_PROFILING ) {
         if( SymIsGennedComdatFun( sym ) ) {
             return;
         }

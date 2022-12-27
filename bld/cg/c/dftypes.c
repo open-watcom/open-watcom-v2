@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,7 +239,7 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe )
     dw_loc = DWLocFini( Client, locid );
     dw_segloc = NULL;
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( _IsntTargetModel( FLAT_MODEL ) ) {
+    if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
         locid = DWLocInit( Client );
         DWLocSym( Client, locid, (dw_sym_handle)bck, DW_W_LABEL_SEG );
         dw_segloc = DWLocFini( Client, locid );
@@ -340,7 +340,7 @@ static  uint   DFPtrClass( cg_type ptr_type )
     uint        flags;
 
 #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR) && _IsTargetModel( FLAT_MODEL )  ) {
+    if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR) && _IsTargetModel( CGSW_X86_FLAT_MODEL )  ) {
 #else
     if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR) ) {
 #endif

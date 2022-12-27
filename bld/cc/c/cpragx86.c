@@ -263,7 +263,7 @@ static int AsmCodePtrType( type_modifiers flags )
         return( SYM_FFAR );
     } else if( flags & FLAG_NEAR ) {
         return( SYM_FNEAR );
-    } else if( TargetSwitches & BIG_CODE ) {
+    } else if( TargetSwitches & CGSW_X86_BIG_CODE ) {
         return( SYM_FFAR );
     } else {
         return( SYM_FNEAR );
@@ -282,7 +282,7 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
         return( SYM_DFAR );
     } else if( flags & FLAG_NEAR ) {
         return( SYM_DNEAR );
-    } else if( TargetSwitches & BIG_DATA ) {
+    } else if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         return( SYM_DFAR );
     } else {
         return( SYM_DNEAR );

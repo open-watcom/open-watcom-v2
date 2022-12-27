@@ -53,15 +53,15 @@ void    TargTypeInit( void )
     PTInteger = TypeAddress( TY_INT_2 );
     PTUnsigned = TypeAddress( TY_UINT_2 );
 
-    if( _IsTargetModel( BIG_CODE ) ) {
+    if( _IsTargetModel( CGSW_X86_BIG_CODE ) ) {
         TypeAlias( TY_CODE_PTR, TY_LONG_CODE_PTR );
         PTCodePointer = TypeAddress( TY_LONG_CODE_PTR );
     } else {
         TypeAlias( TY_CODE_PTR, TY_NEAR_CODE_PTR );
         PTCodePointer = TypeAddress( TY_NEAR_CODE_PTR );
     }
-    if( _IsTargetModel( BIG_DATA ) ) {
-        if( _IsTargetModel( CHEAP_POINTER ) ) {
+    if( _IsTargetModel( CGSW_X86_BIG_DATA ) ) {
+        if( _IsTargetModel( CGSW_X86_CHEAP_POINTER ) ) {
             TypeAlias( TY_POINTER, TY_LONG_POINTER );
             PTPointer = TypeAddress( TY_LONG_POINTER );
         } else {

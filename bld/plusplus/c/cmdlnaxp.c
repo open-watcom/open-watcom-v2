@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,17 +42,17 @@
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
-#define CGSW_DEF_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS)
-#define CGSW_DEF_SWITCHES       0
+#define DEF_CGSW_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS)
+#define DEF_CGSW_SWITCHES       0
 
-#define DEF_TARGET_SWITCHES     0
+#define DEF_CGSW_AXP_SWITCHES  0
 
 
 void CmdSysInit( void )
 /*********************/
 {
-    GenSwitches = CGSW_DEF_SWITCHES | CGSW_DEF_SWITCHES_ALL;
-    TargetSwitches = DEF_TARGET_SWITCHES;
+    GenSwitches = DEF_CGSW_SWITCHES | DEF_CGSW_SWITCHES_ALL;
+    TargetSwitches = DEF_CGSW_AXP_SWITCHES;
     CodeClassName = NULL;
     TextSegName = strsave( "" );
     DataSegName = strsave( "" );
@@ -79,7 +79,7 @@ char *CmdSysEnvVar( void )
 void CmdSysSetMaxOptimization( void )
 /***********************************/
 {
-    TargetSwitches |= I_MATH_INLINE;
+    GenSwitches |= CGSW_I_MATH_INLINE;
 }
 
 static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
@@ -117,13 +117,13 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 
 static void macroDefs( void )
 {
-    if( TargetSwitches & I_MATH_INLINE ) {
+    if( GenSwitches & CGSW_I_MATH_INLINE ) {
         DefSwitchMacro( "OM" );
     }
-    if( TargetSwitches & NO_CALL_RET_TRANSFORM ) {
+    if( GenSwitches & CGSW_NO_CALL_RET_TRANSFORM ) {
         DefSwitchMacro( "OC" );
     }
-    if( TargetSwitches & ASM_OUTPUT ) {
+    if( TargetSwitches & CGSW_RISC_ASM_OUTPUT ) {
         DefSwitchMacro( "LA" );
     }
     if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
@@ -261,7 +261,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 {
     char *target_name = NULL;
 
-    GenSwitches &= ~( CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF );
+    GenSwitches &= ~(CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF);
     switch( data->dbg_output ) {
     case OPT_ENUM_dbg_output_hd:
     default:
@@ -278,7 +278,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         break;
 #if 0
     case OPT_ENUM_dbg_output_hw:
-        GenSwitches &= ~( CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF );
+        GenSwitches &= ~(CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF);
         break;
 #endif
     case OPT_ENUM_dbg_output_hc:
@@ -293,31 +293,31 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
     setMemoryModel( data );
     if( data->as ) {
-        TargetSwitches |= ALIGNED_SHORT;
+        TargetSwitches |= CGSW_RISC_ALIGNED_SHORT;
     }
     if( data->br ) {
         CompFlags.br_switch_used = true;
     }
     if( data->la ) {
-        TargetSwitches |= ASM_OUTPUT;
+        TargetSwitches |= CGSW_RISC_ASM_OUTPUT;
     }
     if( data->lo ) {
-        TargetSwitches |= OWL_LOGGING;
+        TargetSwitches |= CGSW_RISC_OWL_LOGGING;
     }
     if( data->oc ) {
-        TargetSwitches |= NO_CALL_RET_TRANSFORM;
+        GenSwitches |= CGSW_NO_CALL_RET_TRANSFORM;
     }
     if( data->om ) {
-        TargetSwitches |= I_MATH_INLINE;
+        GenSwitches |= CGSW_I_MATH_INLINE;
     }
     if( data->nm ) {
         SetStringOption( &ModuleName, &(data->nm_value) );
     }
     if( data->si ) {
-        TargetSwitches |= STACK_INIT;
+        TargetSwitches |= CGSW_RISC_STACK_INIT;
     }
     if( data->iso == OPT_ENUM_iso_za ) {
-        TargetSwitches &= ~I_MATH_INLINE;
+        GenSwitches &= ~CGSW_I_MATH_INLINE;
     }
     if( data->vcap ) {
         CompFlags.vc_alloca_parm = true;

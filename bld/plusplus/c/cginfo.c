@@ -464,7 +464,7 @@ static const inline_funcs *Flat( const inline_funcs *ifunc )
   #if _CPU != 8086
     const alt_inline_funcs  *p;
 
-    if( TargetSwitches & FLAT_MODEL ) {
+    if( TargetSwitches & CGSW_X86_FLAT_MODEL ) {
         for( p = FlatAlternates; p->byteseq != NULL; p++ ) {
             if( p->byteseq == ifunc->code ) {
                 return( &(p->alt_ifunc) );
@@ -491,7 +491,7 @@ static const inline_funcs *InlineLookup( NAME name )
         ifunc = SInline_Functions;
         if( IsBigData() ) {
   #if _CPU == 8086
-            if( TargetSwitches & FLOATING_DS ) {
+            if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
                 ifunc = ZF_Data_Functions;
             } else {
                 ifunc = ZP_Data_Functions;
@@ -525,7 +525,7 @@ static const inline_funcs *InlineLookup( NAME name )
     ifunc = Inline_Functions;
     if( IsBigData() ) {
   #if _CPU == 8086
-        if( TargetSwitches & FLOATING_DS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             ifunc = DF_Data_Functions;
         } else {
             ifunc = DP_Data_Functions;
@@ -842,7 +842,7 @@ static call_class getCallClass( // GET CLASS OF CALL
                     if( fn_flags & TF1_INLINE ) {
                         // may be COMDATed so make sure the calling convention
                         // matches what it would be for an exported fn
-                        if( TargetSwitches & WINDOWS ) {
+                        if( TargetSwitches & CGSW_X86_WINDOWS ) {
                             cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                         }
                     } else {
@@ -864,7 +864,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
     #if _CPU == 8086
             if( inf == &PascalInfo || inf == &CdeclInfo ) {
-                if( TargetSwitches & WINDOWS ) {
+                if( TargetSwitches & CGSW_X86_WINDOWS ) {
                     cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                 }
             }
@@ -1134,9 +1134,9 @@ static void addDefaultImports( void )
 #endif
     }
 #if _INTEL_CPU && ( _CPU != 8086 )
-    if( TargetSwitches & NEW_P5_PROFILING ) {
+    if( TargetSwitches & CGSW_X86_NEW_P5_PROFILING ) {
         CgInfoAddImport( "__new_p5_profile" );
-    } else if( TargetSwitches & P5_PROFILING ) {
+    } else if( TargetSwitches & CGSW_X86_P5_PROFILING ) {
         CgInfoAddImport( "__p5_profile" );
     }
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -258,13 +258,13 @@ bool    DoVerify( vertype kind, instruction *ins )
         return( OtherVerify( V_OP2POW2, ins, op1, op2, result ) );
     case V_OP1ADDR:
     case V_OP1LOC:
-        if( _IsTargetModel( INDEXED_GLOBALS ) )
+        if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) )
             return( false );
         if( op1->n.class == N_MEMORY )
             return( true );
         break;
     case V_RESLOC:
-        if( _IsTargetModel( INDEXED_GLOBALS ) )
+        if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) )
             return( false );
         if( result->n.class == N_MEMORY )
             return( true );

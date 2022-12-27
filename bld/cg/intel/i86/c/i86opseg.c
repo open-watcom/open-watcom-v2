@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,8 @@ void    InitZeroPage( void )
 */
 {
     ZPageType = ZP_USES_SS;
-    if( _IsTargetModel( FLOATING_DS ) && OptForSize > 50 ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS )
+      && OptForSize > 50 ) {
         if( !HW_COvlap( CurrProc->state.used, HW_DS ) ) {
             ZPageType = ZP_USES_DS;
             if( CountSegOvers() > 4 ) {
@@ -125,7 +126,8 @@ void    InitZeroPage( void )
             } else {
                 ZPageType = ZP_USES_SS;
             }
-        } else if( CanZapBP() && !HW_COvlap( CurrProc->state.used, HW_BP ) ) {
+        } else if( CanZapBP()
+          && !HW_COvlap( CurrProc->state.used, HW_BP ) ) {
             ZPageType = ZP_USES_BP;
             if( CountSegOvers() > 4 ) {
                 QuickSave( HW_BP, OP_PUSH );

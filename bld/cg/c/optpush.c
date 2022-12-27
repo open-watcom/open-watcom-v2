@@ -49,7 +49,7 @@ void    RetAftrCall( ins_entry *ret_instr )
     ins_entry   *call_instr;
 
   optbegin
-    if( _IsTargetModel( NO_CALL_RET_TRANSFORM ) )
+    if( _IsModel( CGSW_NO_CALL_RET_TRANSFORM ) )
         optreturnvoid;
     for( call_instr = ret_instr; PrevClass( call_instr ) == OC_LABEL; ) {
         call_instr = PrevIns( call_instr );

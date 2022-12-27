@@ -1377,7 +1377,7 @@ void DoCompile( void )
         if( BELoad( NULL ) ) {
 #if _INTEL_CPU
             if( ! CompFlags.zu_switch_used ) {
-                TargetSwitches &= ~ FLOATING_SS;
+                TargetSwitches &= ~ CGSW_X86_FLOATING_SS;
             }
 #endif
 #ifndef NDEBUG
@@ -1391,7 +1391,7 @@ void DoCompile( void )
             cgi_info = BEInit( GenSwitches, TargetSwitches, OptSize, ProcRevision );
             if( cgi_info.success ) {
 #if _CPU == 386
-                if( TargetSwitches & (P5_PROFILING | NEW_P5_PROFILING) ) {
+                if( TargetSwitches & (CGSW_X86_P5_PROFILING | CGSW_X86_NEW_P5_PROFILING) ) {
                     FunctionProfileSegId = AddSegName( "TI", "DATA", SEGTYPE_INITFINI );
                 }
 #endif
@@ -1526,16 +1526,16 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
 #if _INTEL_CPU
     if( ! CompFlags.zu_switch_used ) {
         if( CurFunc->mods & FLAG_FARSS ) {      /* function use far stack */
-            TargetSwitches |= FLOATING_SS;
+            TargetSwitches |= CGSW_X86_FLOATING_SS;
         } else {
-            TargetSwitches &= ~ FLOATING_SS;
+            TargetSwitches &= ~ CGSW_X86_FLOATING_SS;
         }
     }
 #endif
     ret_type = ReturnType( CGenType( CurFunc->sym_type->object ) );
     CGProcDecl( (CGSYM_HANDLE)funcsym_handle, ret_type );
 #if _CPU == 386
-    if( TargetSwitches & P5_PROFILING ) {
+    if( TargetSwitches & CGSW_X86_P5_PROFILING ) {
         const char *fn_name;
         size_t     len;
         segment_id old_segid;

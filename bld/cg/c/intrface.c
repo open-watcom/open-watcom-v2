@@ -127,7 +127,7 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
 #if _TARGET & _TARG_8086
     /* if it ain't a 386 or better, FS and GS aren't there */
     if( !_CPULevel( CPU_386 ) ) {
-        platform &= ~(FLOATING_FS | FLOATING_GS);
+        platform &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
     }
 #elif  _TARGET & _TARG_80386
     if( !_CPULevel( CPU_386 ) ) {

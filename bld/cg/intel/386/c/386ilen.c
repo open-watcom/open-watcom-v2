@@ -91,7 +91,7 @@ obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
         i = 4;
         break;
     }
-    if( _IsTargetModel( USE_32 ) )
+    if( _IsTargetModel( CGSW_X86_USE_32 ) )
         ++i;
     return( InsSize[i][attr] );
 }

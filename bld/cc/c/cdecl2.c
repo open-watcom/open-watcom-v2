@@ -373,7 +373,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             // (applies only to auto vars, functions params are handled
             // NOT here but in "cexpr.c" [OPR_PUSHADDR])
             */
-            if( TargetSwitches & FLOATING_SS ) {
+            if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
                 sym->mods |= FLAG_FAR;
             }
 #endif
@@ -418,7 +418,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             new_attrs = sym->mods;
 #if _INTEL_CPU
             /* add default far/near flags depending on data model */
-            if( TargetSwitches & BIG_DATA ) {
+            if( TargetSwitches & CGSW_X86_BIG_DATA ) {
                 old_attrs |= FLAG_FAR;
                 new_attrs |= FLAG_FAR;
             } else {

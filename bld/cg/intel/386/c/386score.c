@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,14 +46,14 @@ void    ScInitRegs( score *scoreboard )
     int ds;
 
     ds = AllocRegName( HW_DS )->r.reg_index;
-    if( _IsntTargetModel( FLOATING_DS ) ) {
-        if( _IsntTargetModel( FLOATING_ES ) ) {
+    if( _IsntTargetModel( CGSW_X86_FLOATING_DS ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLOATING_ES ) ) {
             xs = AllocRegName( HW_ES )->r.reg_index;
             if( !RegsEqual( scoreboard, xs, ds ) ) {
                 RegInsert( scoreboard, xs, ds );
             }
         }
-        if( _IsntTargetModel( FLOATING_SS ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) {
             xs = AllocRegName( HW_SS )->r.reg_index;
             if( !RegsEqual( scoreboard, xs, ds ) ) {
                 RegInsert( scoreboard, xs, ds );

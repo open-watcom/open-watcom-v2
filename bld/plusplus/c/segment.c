@@ -1103,7 +1103,7 @@ static void initP5TimingSegs( void )
     PC_SEGMENT *seg;
     PC_SEGMENT *sib;
 
-    if( TargetSwitches & (P5_PROFILING | NEW_P5_PROFILING) ) {
+    if( TargetSwitches & (CGSW_X86_P5_PROFILING | CGSW_X86_NEW_P5_PROFILING) ) {
         seg = segmentAllocRom( TS_SEG_TIB, SEG_PROF_BEG );
         sib = segmentAllocRW( TS_SEG_TI, SEG_PROF_REF );
         addSibling( seg, sib );

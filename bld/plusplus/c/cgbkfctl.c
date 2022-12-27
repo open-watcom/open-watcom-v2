@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,8 +108,7 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
     fctl->ctor_test      = false;
     fctl->dtor_reg_reqd  = false;
     fctl->debug_info     = ( 0 == CgBackInlinedDepth() )
-                         && ( GenSwitches
-                            & ( CGSW_DBG_NUMBERS | CGSW_DBG_TYPES | CGSW_DBG_LOCALS ) );
+                         && (GenSwitches & (CGSW_DBG_NUMBERS | CGSW_DBG_TYPES | CGSW_DBG_LOCALS));
     if( has_cdtor ) {
         fctl->cdtor_val = cd_arg;
         fctl->has_cdtor_val = true;

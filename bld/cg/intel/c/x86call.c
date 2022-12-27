@@ -177,7 +177,8 @@ an      BGCall( cn call, bool use_return, bool in_line )
             call_ins->flags.call_flags |= CALL_RETURNS_STRUCT;
         }
     }
-    if( _IsTargetModel(FLOATING_DS) && (state->attr&ROUTINE_NEEDS_DS_LOADED) ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS )
+      && (state->attr & ROUTINE_NEEDS_DS_LOADED) ) {
         HW_CTurnOn( state->parm.used, HW_DS );
     }
     if( _RoutineIsFar16( state->attr ) ) {
@@ -301,7 +302,7 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
         }
     }
     if( CurrProc->state.attr & ROUTINE_FARSS ) {
-        TargetModel |= FLOATING_SS;
+        TargetModel |= CGSW_X86_FLOATING_SS;
     }
 }
 
@@ -320,7 +321,7 @@ name    *StReturn( an retval, type_def *tipe, instruction **pins )
         AddIns( MakeUnary( OP_LA, retp, AllocRegName( CurrProc->state.return_reg ), WD ) );
         *pins = NULL;
     } else {
-        if( _IsTargetModel( FLOATING_SS | FLOATING_DS ) ) {
+        if( _IsTargetModel( CGSW_X86_FLOATING_SS | CGSW_X86_FLOATING_DS ) ) {
             ptr = AllocTemp( CP );
             off = OffsetPart( ptr );
             seg = SegmentPart( ptr );
@@ -344,7 +345,8 @@ static  void    AddCall( instruction *ins, cn call ) {
 
     name        *proc_name;
 
-    if( _IsTargetModel(FLOATING_DS) && (call->state->attr&ROUTINE_NEEDS_DS_LOADED) ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS )
+      && (call->state->attr & ROUTINE_NEEDS_DS_LOADED) ) {
         AddIns( MakeMove( NearSegment(), AllocRegName( HW_DS ), U2 ) );
     }
     if( call->name->tipe == TypeProcParm ) {

@@ -157,7 +157,7 @@ void SetFarHuge( SYMPTR sym, bool report )
     }
   #endif
     size = SizeOfArg( sym->sym_type );
-    if( TargetSwitches & BIG_DATA ) {
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         attrib = sym->mods;
         if( (attrib & MASK_ALL_MEM_MODELS) == 0 ) {
             if( size == 0 ) {   /* unspecified array size */
@@ -313,7 +313,7 @@ void SetSegment( SYMPTR sym )
     }
   #else
     if( !CompFlags.rent ) {
-        if( (sym->mods & FLAG_FAR) || (TargetSwitches & FLAT_MODEL) ) {
+        if( (sym->mods & FLAG_FAR) || (TargetSwitches & CGSW_X86_FLAT_MODEL) ) {
            if( CONSTANT( sym->mods ) && CompFlags.zc_switch_used ) {
                 sym->u.var.segid = SEG_CODE;
                 return;
@@ -870,7 +870,7 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
                 segid = sym->seginfo->segid;
     #if _INTEL_CPU
             } else if( attr & FE_IMPORT ) {
-                if( (sym->mods & FLAG_FAR) || (TargetSwitches & BIG_CODE) ) {
+                if( (sym->mods & FLAG_FAR) || (TargetSwitches & CGSW_X86_BIG_CODE) ) {
                     if( sym->flags & SYM_ADDR_TAKEN ) {
                         segid = import_segid--;
                     }

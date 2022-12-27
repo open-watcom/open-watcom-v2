@@ -559,7 +559,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op )
             }
             ++idx;
         }
-        if( _IsntTargetModel( FLOATING_DS ) && _IsntTargetModel( FLOATING_SS ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLOATING_DS ) && _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) {
             HW_CTurnOff( avail_index, HW_SS );
         }
         index = AllocRegName( avail_index );
@@ -903,8 +903,9 @@ static instruction *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_TAN:
         case OP_SQRT:
         case OP_ATAN:
-            if( _FPULevel( FPU_387 ) && _IsTargetModel( I_MATH_INLINE ) &&
-                _IsntTargetModel( P5_DIVIDE_CHECK ) ) {
+            if( _FPULevel( FPU_387 )
+              && _IsModel( CGSW_I_MATH_INLINE )
+              && _IsntTargetModel( CGSW_X86_P5_DIVIDE_CHECK ) ) {
                 ins = ExpUnary( ins, op1, res, FMATH );
             } else {
                 ins = ExpUnary( ins, op1, res, IFUNC );
@@ -913,8 +914,10 @@ static instruction *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_LOG:
         case OP_LOG10:
         case OP_EXP:
-            if( _FPULevel( FPU_387 ) && _IsTargetModel( I_MATH_INLINE ) &&
-                _IsntTargetModel( P5_DIVIDE_CHECK ) && OptForSize <= 50 ) {
+            if( _FPULevel( FPU_387 )
+              && _IsModel( CGSW_I_MATH_INLINE )
+              && _IsntTargetModel( CGSW_X86_P5_DIVIDE_CHECK )
+              && OptForSize <= 50 ) {
                 ins = ExpUnary( ins, op1, res, FMATH );
             } else {
                 ins = ExpUnary( ins, op1, res, IFUNC );

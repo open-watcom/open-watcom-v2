@@ -945,7 +945,7 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
     retcode = TCE_OK;
     /* "char *s" and "char s[]" differs only by FLAG_WAS_ARRAY, ignore it too */
 #if _INTEL_CPU
-    if( TargetSwitches & BIG_DATA ) {
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         ptr_mask = ~(FLAG_FAR  | FLAG_WAS_ARRAY | MASK_LANGUAGES);
     } else {
         ptr_mask = ~(FLAG_NEAR | FLAG_WAS_ARRAY | MASK_LANGUAGES);

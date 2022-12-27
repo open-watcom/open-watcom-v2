@@ -372,7 +372,8 @@ void    GenCall( instruction *ins )
         } else {
             CodeBytes( code->data, code->length );
         }
-    } else if( (cclass & FECALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    } else if( (cclass & FECALL_ABORTS)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
         if( (cclass & FECALL_X86_FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
@@ -395,7 +396,8 @@ void    GenCall( instruction *ins )
         }
         DoCall( lbl, imp, (cclass & FECALL_X86_FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
     }
-    if( (cclass & (FECALL_ABORTS | FECALL_NORETURN)) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (cclass & (FECALL_ABORTS | FECALL_NORETURN))
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
 }
@@ -413,7 +415,8 @@ void    GenCallIndirect( instruction *ins )
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    if( (ins->flags.call_flags & CALL_ABORTS) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (ins->flags.call_flags & CALL_ABORTS)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         occlass = OC_JMPI;
     } else {
         occlass = OC_CALLI;
@@ -432,7 +435,8 @@ void    GenCallIndirect( instruction *ins )
     LayOpword( opcode );
     LayModRM( op );
     _Emit;
-    if( (ins->flags.call_flags & CALL_NORETURN) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (ins->flags.call_flags & CALL_NORETURN)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
 }
@@ -458,7 +462,8 @@ void    GenCallRegister( instruction *ins )
     LayOpword( M_CJINEAR );
     LayRegRM( op->r.reg );
     _Emit;
-    if( (ins->flags.call_flags & CALL_NORETURN) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    if( (ins->flags.call_flags & CALL_NORETURN)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
 }
@@ -588,7 +593,8 @@ void    GenJmpMemory( instruction *ins )
     label_handle    lbl;
     name            *base;
 
-    if( ins->head.opcode != OP_SELECT && _IsTargetModel( BIG_CODE ) ) {
+    if( ins->head.opcode != OP_SELECT
+      && _IsTargetModel( CGSW_X86_BIG_CODE ) ) {
         ReFormat( OC_JMPI | OC_ATTR_FAR );
         LayOpword( M_CJILONG );
     } else {

@@ -498,11 +498,11 @@ static pointer_class PointerClass( TYPEPTR typ )
 #if _INTEL_CPU
     } else {
         if( typ->decl_type == TYP_FUNCTION ) {
-            if( TargetSwitches & BIG_CODE ) {
+            if( TargetSwitches & CGSW_X86_BIG_CODE ) {
                 ptrclass = PTRCLS_FAR;
             }
         } else {
-            if( TargetSwitches & BIG_DATA ) {
+            if( TargetSwitches & CGSW_X86_BIG_DATA ) {
                 ptrclass = PTRCLS_FAR;
             }
         }
@@ -724,11 +724,11 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
         if( typ2_flags & FLAG_BASED ) {
             if( (typ1_flags & MASK_ALL_MEM_MODELS) == FLAG_NONE ) {
                 if( typ1->object->decl_type == TYP_FUNCTION ) {
-                    if( TargetSwitches & BIG_CODE ) {
+                    if( TargetSwitches & CGSW_X86_BIG_CODE ) {
                         typ1_flags = FLAG_FAR;
                     }
                 } else {
-                    if( TargetSwitches & BIG_DATA ) {
+                    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
                         typ1_flags = FLAG_FAR;
                     }
                 }
@@ -745,7 +745,7 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
         // that segments don't exist.
         if( TypeSize( typ1 ) > TypeSize( typ2 ) ) {
 #if _CPU == 386
-            if( (TargetSwitches & FLAT_MODEL) == 0 && (typ2_flags & FLAG_BASED) ) {
+            if( (TargetSwitches & CGSW_X86_FLAT_MODEL) == 0 && (typ2_flags & FLAG_BASED) ) {
 #else
             if( typ2_flags & FLAG_BASED ) {
 #endif

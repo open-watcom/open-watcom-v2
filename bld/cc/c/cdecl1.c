@@ -123,9 +123,9 @@ static void FuncDefn( SYMPTR sym )
 #if _INTEL_CPU
     if( !CompFlags.zu_switch_used ) {
         if( sym->mods & FLAG_FARSS ) {          /* function use far stack */
-            TargetSwitches |= FLOATING_SS;
+            TargetSwitches |= CGSW_X86_FLOATING_SS;
         } else {
-            TargetSwitches &= ~FLOATING_SS;
+            TargetSwitches &= ~CGSW_X86_FLOATING_SS;
         }
     }
 #endif
@@ -188,7 +188,7 @@ static void BeginFunc( void )
             if( CompFlags.zm_switch_used ) {
                 name = "";
 #if _INTEL_CPU
-                if( TargetSwitches & BIG_CODE )
+                if( TargetSwitches & CGSW_X86_BIG_CODE )
                     name = CurFunc->name;
 #endif
                 segname = TS_SEG_CODE; /* "_TEXT" */

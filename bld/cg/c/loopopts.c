@@ -63,15 +63,24 @@
 #include "revcond.h"
 
 
-/* block flag usage                                                 */
-/*                                                                  */
-/* BLK_BLOCK_MARKED is used in the sense of will execute            */
-/*                                                                  */
-
-/* target specific. Can a pointer get anywhere near the boundary pointer values? */
-/* For 8086, yes. 0000 and FFFF are quite possible as pointer values */
+/*
+ * block flag usage
+ *
+ * BLK_BLOCK_MARKED is used in the sense of will execute
+ *
+ *
+ * target specific. Can a pointer get anywhere near the boundary
+ * pointer values? For 8086, yes. 0000 and FFFF are quite possible
+ * as pointer values
+ */
 
 #define _POINTER_GETS_NEAR_BOUNDS 1
+
+typedef enum {
+    CMP_TRUE,
+    CMP_FALSE,
+    CMP_UNKNOWN
+} value;
 
 typedef struct block_list {
     block                   *blk;
@@ -89,16 +98,16 @@ static bool             MemChangedInLoop;
 
 static void     InitIndVars( void )
 /**********************************
-    Initialize for induction variable processing
-*/
+ * Initialize for induction variable processing
+ */
 {
     IndVarList = NULL;                 /* initialize */
 }
 
 static level_depth      MaxDepth( void )
 /***************************************
-    return the depth of the deepest nested loop in the procedure
-*/
+ * return the depth of the deepest nested loop in the procedure
+ */
 {
     level_depth     depth;
     block           *blk;
@@ -115,8 +124,8 @@ static level_depth      MaxDepth( void )
 
 static void     ReplaceAllOccurences( name *of, name *with )
 /***********************************************************
-    Replace all occurences of "of" with "with" in the program.
-*/
+ * Replace all occurences of "of" with "with" in the program.
+ */
 {
     block       *blk;
     instruction *ins;
@@ -137,8 +146,8 @@ static void     ReplaceAllOccurences( name *of, name *with )
 
 static bool     InLoop( block *blk )
 /***********************************
-    return true if blk is in the loop defined by Head.
-*/
+ * return true if blk is in the loop defined by Head.
+ */
 {
     if( blk == Head )
         return( true );
@@ -152,12 +161,12 @@ static bool     InLoop( block *blk )
 
 
 block    *AddPreBlock( block *postblk )
-/*********************************************
-    There is no preheader for this loop (loop has no initialization) so
-    add a block right in front of the loop header and move any branch
-    that goes from outside the loop to the header, go through the
-    preheader first.
-*/
+/**************************************
+ * There is no preheader for this loop (loop has no initialization) so
+ * add a block right in front of the loop header and move any branch
+ * that goes from outside the loop to the header, go through the
+ * preheader first.
+ */
 {
     block_edge  *edge;
     block       *preblk;
@@ -201,13 +210,13 @@ block    *AddPreBlock( block *postblk )
 }
 
 
-static bool     IsPreHeader( block *test ) {
-/*******************************************
-    return true if block "test" will serve as a preheader for "Loop".  A
-    preheader must branch directly to the loop head, and no other block
-    that is not in the loop may branch into the loop.
-*/
-
+static bool     IsPreHeader( block *test )
+/*****************************************
+ * return true if block "test" will serve as a preheader for "Loop".  A
+ * preheader must branch directly to the loop head, and no other block
+ * that is not in the loop may branch into the loop.
+ */
+{
     block_num   i;
     block       *other;
 
@@ -259,8 +268,8 @@ static block    *FindPreHeader( void )
 
 static void     PreHeader( void )
 /********************************
-    Make sure that "Loop" has a preheader "PreHead"
-*/
+ * Make sure that "Loop" has a preheader "PreHead"
+ */
 {
     block_edge  *edge;
     block_edge  *next;
@@ -280,9 +289,9 @@ static void     PreHeader( void )
 
 void     MarkLoop( void )
 /*******************************
-    Mark the current loop (defined by Head) as IN_LOOP.  Also mark any
-    blocks in the loop containing a branch out of the loop as LOOP_EXIT.
-*/
+ * Mark the current loop (defined by Head) as IN_LOOP.  Also mark any
+ * blocks in the loop containing a branch out of the loop as LOOP_EXIT.
+ */
 {
     block       *other_blk;
     block_num   targets;
@@ -310,9 +319,9 @@ void     MarkLoop( void )
 
 
 void     UnMarkLoop( void )
-/*********************************
-    Turn off the loop marking bits for the current loop.
-*/
+/**************************
+ * Turn off the loop marking bits for the current loop.
+ */
 {
     block       *blk;
 
@@ -323,24 +332,24 @@ void     UnMarkLoop( void )
 }
 
 block    *NextInLoop( block *blk )
-/***************************************/
+/********************************/
 {
     return( blk->u.loop );
 }
 
 
 block    *NextInProg( block *blk )
-/***************************************/
+/********************************/
 {
     return( blk->next_block );
 }
 
 
 void     MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
-/**********************************************************************
-    Turn the loop condition exit block into one that just transfers out
-    of the loop.
-*/
+/***************************************************************
+ * Turn the loop condition exit block into one that just transfers out
+ * of the loop.
+ */
 {
     block_edge  *edge;
 
@@ -361,8 +370,8 @@ void     MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
 
 static bool     KillOneTrippers( void )
 /**************************************
-    Nuke the loops that are only going to go around one time.
-*/
+ * Nuke the loops that are only going to go around one time.
+ */
 {
     block       *blk;
     block       *curr;
@@ -405,9 +414,9 @@ static bool     KillOneTrippers( void )
 
 
 void     UnMarkInvariants( void )
-/***************************************
-    Turn off the bits which indicate that a name is loop invariant
-*/
+/********************************
+ * Turn off the bits which indicate that a name is loop invariant
+ */
 {
     name        *op;
 
@@ -422,8 +431,8 @@ void     UnMarkInvariants( void )
 
 static void     ZapRegister( hw_reg_set regs )
 /*********************************************
-    Flip bits required given that N_REGISTER "regs" has been changed
-*/
+ * Flip bits required given that N_REGISTER "regs" has been changed
+ */
 {
     name        *other;
 
@@ -437,8 +446,8 @@ static void     ZapRegister( hw_reg_set regs )
 
 static void     ZapTemp( name *op )
 /**********************************
-    Flip bits required given that N_TEMP "op" has been changed
-*/
+ * Flip bits required given that N_TEMP "op" has been changed
+ */
 {
     name        *alias;
 
@@ -468,8 +477,8 @@ static void     ZapTemp( name *op )
 
 static void     ZapMemory( name *op )
 /************************************
-    Flip bits required given that N_MEMORY "op" has been changed
-*/
+ * Flip bits required given that N_MEMORY "op" has been changed
+ */
 {
     name        *other;
 
@@ -486,16 +495,16 @@ static void     ZapMemory( name *op )
 
 
 void     MarkInvariants( void )
-/*************************************
-    Mark all N_TEMP/N_MEMORY names as INVARIANT with respect to the
-    current loop "Loop", then traverse the loop and turn off the
-    INVARIANT bit for anything that could be modified by an instruction
-    withing the loop.  We borrow the block_usage field for the marking
-    procedure since the block_usage field is only used during the live
-    information calculation.  We also distinguish names which are varied
-    once (VARIED_ONCE) from names which are varied more than once within
-    the loop.
-*/
+/******************************
+ * Mark all N_TEMP/N_MEMORY names as INVARIANT with respect to the
+ * current loop "Loop", then traverse the loop and turn off the
+ * INVARIANT bit for anything that could be modified by an instruction
+ * withing the loop.  We borrow the block_usage field for the marking
+ * procedure since the block_usage field is only used during the live
+ * information calculation.  We also distinguish names which are varied
+ * once (VARIED_ONCE) from names which are varied more than once within
+ * the loop.
+ */
 {
     name        *op;
     block       *blk;
@@ -566,11 +575,10 @@ void     MarkInvariants( void )
         }
     }
     /*
-        Now check to see if the destination of an instruction is live on
-        entry to the loop before we consider hoisting it in FindRegInvar...
-        BBB - may 13, 1993
-    */
-    // ZapRegister( Head->ins.hd.next->head.live.regs );
+     * Now check to see if the destination of an instruction is live on
+     * entry to the loop before we consider hoisting it in FindRegInvar...
+     */
+    //ZapRegister( Head->ins.hd.next->head.live.regs );
     if( have_call || free_index ) {
         if( _IsntModel( CGSW_FORTRAN_ALIASING ) ) {
             for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
@@ -619,9 +627,9 @@ static bool     InvariantReg( name *op )
 
 
 bool     InvariantOp( name *op )
-/**************************************
-    return true if "op" is invariant with respect to "Loop"
-*/
+/*******************************
+ * return true if "op" is invariant with respect to "Loop"
+ */
 {
     switch( op->n.class ) {
     case N_CONSTANT:
@@ -642,12 +650,6 @@ bool     InvariantOp( name *op )
     }
 }
 
-
-typedef enum {
-    CMP_TRUE,
-    CMP_FALSE,
-    CMP_UNKNOWN
-} value;
 
 static value    OpLTZero( name *op, bool fp )
 {
@@ -679,9 +681,9 @@ static value    OpEQZero( name *op, bool fp )
 
 
 bool     Hoistable( instruction *ins, block *blk )
-/********************************************************
-    Is it safe to hoist instruction "ins" out of the loop (or if)?
-*/
+/*************************************************
+ * Is it safe to hoist instruction "ins" out of the loop (or if)?
+ */
 {
     bool        will_execute;
     bool        dangerous;
@@ -692,10 +694,13 @@ bool     Hoistable( instruction *ins, block *blk )
     will_execute = false;
     dangerous = false;
     big_const = false;
-    if( blk != NULL && LoopProtected && _IsBlkMarked( blk ) ) {
+    if( blk != NULL
+      && LoopProtected
+      && _IsBlkMarked( blk ) ) {
         will_execute = true;
     }
-    if( _IsFloating( ins->type_class ) && _IsntTargetModel( I_MATH_INLINE ) ) {
+    if( _IsFloating( ins->type_class )
+      && _IsntModel( CGSW_I_MATH_INLINE ) ) {
         dangerous = true;
     } else {
         for( i = 0; i < ins->num_operands; ++i ) {
@@ -709,7 +714,8 @@ bool     Hoistable( instruction *ins, block *blk )
             }
         }
     }
-    if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) ) {
+    if( _IsFloating( ins->type_class )
+      || _IsI64( ins->type_class ) ) {
         big_const = true;
     }
     switch( ins->head.opcode ) {
@@ -752,8 +758,10 @@ bool     Hoistable( instruction *ins, block *blk )
             return( false );
         break;
 #if _TARGET & _TARG_RISC
-        // on RISC architectures, we want to hoist OP_LAs as they will
-        // usually turn into expensive lha, la style pairs in the encoder
+    /*
+     * on RISC architectures, we want to hoist OP_LAs as they will
+     * usually turn into expensive lha, la style pairs in the encoder
+     */
     case OP_LA:
         break;
 #endif
@@ -783,7 +791,8 @@ static bool     InvariantExpr( instruction *ins, block *blk )
     if( !Hoistable( ins, blk ) )
         return( false );
     // For OP_LA, operand need not be invariant, only its address.
-    if( (ins->head.opcode == OP_LA) && (ins->operands[0]->n.class == N_MEMORY) ) {
+    if( (ins->head.opcode == OP_LA)
+      && (ins->operands[0]->n.class == N_MEMORY) ) {
         return( true );
     }
     for( i = ins->num_operands; i-- > 0; ) {

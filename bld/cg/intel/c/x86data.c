@@ -207,7 +207,8 @@ void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
 
     TellOptimizerByPassed();
     attr = FEAttr( sym );
-    if( ( attr & FE_PROC ) && _IsTargetModel( WINDOWS )
+    if( (attr & FE_PROC)
+      && _IsTargetModel( CGSW_X86_WINDOWS )
       && (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL) ) {
         class = F_LDR_OFFSET;
     } else {
@@ -289,7 +290,7 @@ void    BackPtrBase( back_handle bck, segment_id segid )
 bool    FPCInCode( void )
 /***********************/
 {
-    return( _IsTargetModel( CONST_IN_CODE ) || ( _IsTargetModel( FLOATING_DS ) && _IsTargetModel( FLOATING_SS ) ) );
+    return( _IsTargetModel( CGSW_X86_CONST_IN_CODE ) || ( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) );
 }
 
 static  cg_class ConstDataClass( void )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ static  struct STRUCT_BYTE_SEQ( 6 ) Scn4ES = {  /* or Scn2 in USE16 */
 const char  *AskRTName( rt_class rtindex )
 /****************************************/
 {
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) {
+    if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) ) {
         switch( rtindex ) {
         case RT_FDA:
             return( "__FXA" );
@@ -263,26 +263,26 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
     case FEINF_AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
-            if( _IsntTargetModel( FLAT_MODEL ) )
+            if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                 return( &Scn1ES );
             return( &Scn1 );
         case RT_SCAN2:
-            if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+            if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn4ES );
                 return( &Scn4 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn2ES );
                 return( &Scn2 );
             }
         case RT_SCAN4:
-            if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+            if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn2ES );
                 return( &Scn2 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn4ES );
                 return( &Scn4 );
             }

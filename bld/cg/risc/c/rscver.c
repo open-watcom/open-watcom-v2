@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +139,7 @@ static  bool    Aligned( name *op, type_length align, type_class_def type_class 
         natural = TypeClassSize[type_class];
     }
     if( natural == 2 ) {
-        if( _IsntTargetModel( ALIGNED_SHORT ) ) {
+        if( _IsntTargetModel( CGSW_RISC_ALIGNED_SHORT ) ) {
             return( false );
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ static  hw_reg_set IndexTab[] = {
 static void OpndSizeIf( void )
 /****************************/
 {
-    if( _IsTargetModel( USE_32 ) ) {
+    if( _IsTargetModel( CGSW_X86_USE_32 ) ) {
         AddToTemp( M_OPND_SIZE );
     }
 }
@@ -282,7 +282,7 @@ void    LayLeaRegOp( instruction *ins )
 static  void    CheckSize( void )
 /*******************************/
 {
-    if( _IsTargetModel( USE_32 ) ) {
+    if( _IsTargetModel( CGSW_X86_USE_32 ) ) {
         AddToTemp( M_ADDR_SIZE );
     }
 }

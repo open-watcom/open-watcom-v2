@@ -241,7 +241,7 @@ static  void            PostOptimize( void )
     #if 0
         // Get rid of unused conditions on variables level
         // to decrease number of referenced vars in LdStAlloc() and Score()
-        if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
+        if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
             DeadInstructions(); // cleanup junk after Conditions()
         }
@@ -261,7 +261,7 @@ static  void            PostOptimize( void )
             LoopRegInvariant();
     #if (_TARGET & _TARG_RISC) == 0
         // Get rid of remaining unused conditions on register level.
-        if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
+        if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
         }
     #endif
@@ -743,7 +743,7 @@ void    Generate( bool routine_done )
     FreeProc();
     HaveLiveInfo = false;
 #if _TARGET & _TARG_INTEL
-    if( _IsTargetModel( NEW_P5_PROFILING ) ) {
+    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         FlushQueue();
     }
 #else

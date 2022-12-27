@@ -66,20 +66,20 @@
 
 #define WINDOWS_CHEAP  ( ( _IsModel( CGSW_DLL_RESIDENT_CODE ) &&         \
                ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
-            || ( _IsTargetModel( CHEAP_WINDOWS )                    \
+            || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS )                    \
                && (CurrProc->prolog_state & (GENERATE_EXPORT | GENERATE_FAT_PROLOG)) == 0 ) )
 
-#define DO_WINDOWS_CRAP ( _IsTargetModel( WINDOWS )                 \
+#define DO_WINDOWS_CRAP ( _IsTargetModel( CGSW_X86_WINDOWS )                 \
                && ( !WINDOWS_CHEAP || CurrProc->contains_call ) )
 
-#define DO_BP_CHAIN ( ( (_IsTargetModel( NEED_STACK_FRAME ) || _IsModel( CGSW_DBG_CV ) ) \
+#define DO_BP_CHAIN ( ( (_IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) || _IsModel( CGSW_DBG_CV ) ) \
                && CurrProc->contains_call )                                         \
              || (CurrProc->prolog_state & GENERATE_FAT_PROLOG) )
 
 #define CHAIN_FRAME ( DO_WINDOWS_CRAP || DO_BP_CHAIN )
 
-#define CHEAP_FRAME ( _IsTargetModel( NEED_STACK_FRAME ) || \
-              _IsntTargetModel( WINDOWS ) || WINDOWS_CHEAP )
+#define CHEAP_FRAME ( _IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) || \
+              _IsntTargetModel( CGSW_X86_WINDOWS ) || WINDOWS_CHEAP )
 
 #define FAR_RET_ON_STACK ( (_RoutineIsLong( CurrProc->state.attr ) ) \
              && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 )
@@ -407,7 +407,7 @@ static  void    DoLoadDS( void )
 /******************************/
 {
 #if _TARGET & _TARG_80386
-    if( _IsntTargetModel( LOAD_DS_DIRECTLY ) ) {
+    if( _IsntTargetModel( CGSW_X86_LOAD_DS_DIRECTLY ) ) {
         DoRTCall( RT_GETDS, false );
     } else {
 #endif
@@ -792,7 +792,7 @@ static  void    DoEpilog( void )
     if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
         QuickSave( HW_xSP, OP_POP );
     }
-    if( _IsTargetModel( NEW_P5_PROFILING | P5_PROFILING ) ) {
+    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING | CGSW_X86_P5_PROFILING ) ) {
         GenP5ProfilingEpilog( CurrProc->label );
     }
 #endif
@@ -823,7 +823,7 @@ void    AddCacheRegs( void )
         return;
     if( OptForSize > 50 )
         return;
-    if( _IsTargetModel( FLOATING_DS | FLOATING_SS ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_SS ) )
         return;
     if( !ScanInstructions() )
         return;
@@ -841,8 +841,9 @@ void    AddCacheRegs( void )
     if( CurrProc->targ.has_fd_temps ) {
         CurrProc->targ.sp_frame = true;
         CurrProc->targ.sp_align = true;
-    } else if( !DO_BP_CHAIN && _IsntTargetModel( WINDOWS ) &&
-            !_RoutineIsInterrupt( CurrProc->state.attr ) ) {
+    } else if( !DO_BP_CHAIN
+      && _IsntTargetModel( CGSW_X86_WINDOWS )
+      && !_RoutineIsInterrupt( CurrProc->state.attr ) ) {
         /*
          * We cannot make EBP available under Windows because the SS
          * selector might not cover the data segment and so we cannot use
@@ -858,7 +859,7 @@ void    AddCacheRegs( void )
 void DoRTCall( rt_class rtindex, bool pop )
 /*****************************************/
 {
-    DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), pop );
+    DoCall( RTLabel( rtindex ), true, _IsTargetModel( CGSW_X86_BIG_CODE ), pop );
 }
 
 static unsigned returnAddressStackSize( void )
@@ -932,7 +933,7 @@ void    GenProlog( void )
 
 #if _TARGET & _TARG_80386
     if( (attr & FE_NAKED) == 0 ) {
-        if( _IsTargetModel( NEW_P5_PROFILING | P5_PROFILING ) ) {
+        if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING | CGSW_X86_P5_PROFILING ) ) {
             GenP5ProfilingProlog( label );
         }
         if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {

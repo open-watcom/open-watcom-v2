@@ -631,7 +631,7 @@ static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
             }
         } else {
             if( (sym->mods & (FLAG_FAR | FLAG_NEAR)) == 0
-              && (TargetSwitches & BIG_CODE)
+              && (TargetSwitches & CGSW_X86_BIG_CODE)
               && !CompFlags.multiple_code_segments ) {
                 sym->mods |= FLAG_NEAR;
             }

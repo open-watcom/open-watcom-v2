@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@
 static void OpndSizeIf( bool if_32 )
 /**********************************/
 {
-    if( ( if_32 && _IsTargetModel( USE_32 ) ) || _IsntTargetModel( USE_32 ) ) {
+    if( ( if_32 && _IsTargetModel( CGSW_X86_USE_32 ) ) || _IsntTargetModel( CGSW_X86_USE_32 ) ) {
         AddToTemp( M_OPND_SIZE );
     }
 }
@@ -81,7 +81,7 @@ static void TakeUpSlack( type_length size )
 /*****************************************/
 {
     for( ; size >= 2; size -= 2 ) {
-        if( _IsTargetModel( USE_32 ) )
+        if( _IsTargetModel( CGSW_X86_USE_32 ) )
             AddByte( M_OPND_SIZE );
         AddByte( M_MOVSW );
     }
@@ -106,7 +106,7 @@ void    DoRepOp( instruction *ins )
                 OpndSizeIf( false );
                 first = false;
             } else {
-                if( _IsntTargetModel( USE_32 ) ) AddByte( M_OPND_SIZE );
+                if( _IsntTargetModel( CGSW_X86_USE_32 ) ) AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
             }
         }
@@ -115,7 +115,7 @@ void    DoRepOp( instruction *ins )
         LayOpbyte( M_REPE );
         if( ins->head.opcode == OP_MOV ) {
             if( ( size & ( 4 - 1 ) ) == 0 || OptForSize <= 50 ) {
-                if( _IsntTargetModel( USE_32 ) ) AddByte( M_OPND_SIZE );
+                if( _IsntTargetModel( CGSW_X86_USE_32 ) ) AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
                 TakeUpSlack( size & ( 4 - 1 ) );
             } else {
@@ -126,7 +126,7 @@ void    DoRepOp( instruction *ins )
                 AddByte( M_CMPSB );
             } else {
                 AddByte( M_CMPSW );
-                if( _IsntTargetModel( USE_32 ) ) AddByte( M_OPND_SIZE );
+                if( _IsntTargetModel( CGSW_X86_USE_32 ) ) AddByte( M_OPND_SIZE );
             }
         }
     }
@@ -288,7 +288,7 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
             }
         } else {
             if( scale == 0 && HW_CEqual( base, HW_EBP )
-              && ( lea || _IsntTargetModel( FLOATING_DS ) && _IsntTargetModel( FLOATING_SS ) ) ) {
+              && ( lea || _IsntTargetModel( CGSW_X86_FLOATING_DS ) && _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) ) {
                 /*
                    flip base & index registers so that we might avoid having
                    to output a byte displacement (can't have a zero sized
@@ -412,7 +412,7 @@ void    LayLeaRegOp( instruction *ins )
 static  void    CheckSize( void )
 /*******************************/
 {
-    if( _IsntTargetModel( USE_32 ) ) {
+    if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
         AddToTemp( M_ADDR_SIZE );
     }
 }
@@ -607,7 +607,7 @@ static void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
 static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
 /************************************************************************/
 {
-    if( _IsTargetModel( NEW_P5_PROFILING ) ) {
+    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         doProfilingCode( "", &CurrProc->targ.routine_profile_data, prolog );
     } else {
         back_handle     bck;
@@ -631,7 +631,7 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         ILen += 4;
         DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, semaphore ), OFST );
         _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+        if( _IsTargetModel( CGSW_X86_P5_PROFILING_CTR0 ) ) {
             LayOpword( prolog ? 0x1675 : 0x167d );      /* jne/jge skip */
             _Next;
             LayOpbyte( 0x51 );                          /* push ecx */
@@ -642,13 +642,13 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         }
         LayOpbyte( 0x52 );                              /* push edx */
         _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+        if( _IsTargetModel( CGSW_X86_P5_PROFILING_CTR0 ) ) {
             LayOpword( 0xc931 );                        /* xor ecx,ecx */
             _Next;
         }
         LayOpbyte( 0x50 );                              /* push eax */
         _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+        if( _IsTargetModel( CGSW_X86_P5_PROFILING_CTR0 ) ) {
             LayOpword( 0x330f );                        /* rdpmc */
             _Next;
         } else {
@@ -667,7 +667,7 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         _Next;
         LayOpbyte( 0x5a );                              /* pop edx */
         _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+        if( _IsTargetModel( CGSW_X86_P5_PROFILING_CTR0 ) ) {
             LayOpbyte( 0x59 );                          /* pop ecx */
             _Next;
         }
@@ -679,7 +679,7 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
 void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
 /************************************************************************/
 {
-    if( _IsTargetModel( NEW_P5_PROFILING ) ) {
+    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         doProfilingCode( fe_name, data, prolog );
     }
 }
@@ -877,9 +877,9 @@ void StartBlockProfiling( block *blk )
     segment_id          data_segid;
     label_handle        data;
 
-    if( _IsntTargetModel( NEW_P5_PROFILING ) )
+    if( _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) )
         return;
-    if( _IsntTargetModel( STATEMENT_COUNTING ) )
+    if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) )
         return;
     data_segid = (segment_id)(pointer_uint)FEAuxInfo( NULL, FEINF_P5_PROF_SEG );
     if( blk->label == NULL )

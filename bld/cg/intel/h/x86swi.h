@@ -30,32 +30,30 @@
 ****************************************************************************/
 
 
-I_MATH_INLINE           = 0x00000001,     /* Inline math functions */
-EZ_OMF                  = 0x00000002,     /* Generate EZ-OMF objects */
-BIG_DATA                = 0x00000004,     /* Data pointers are far */
-BIG_CODE                = 0x00000008,     /* Code pointers are far */
-CHEAP_POINTER           = 0x00000010,     /* Model isn't huge */
-FLAT_MODEL              = 0x00000020,     /* Flat memory model */
-FLOATING_FS             = 0x00000040,     /* FS selector is floating */
-FLOATING_GS             = 0x00000080,     /* GS selector is floating */
-FLOATING_ES             = 0x00000100,     /* ES selector is floating */
-FLOATING_SS             = 0x00000200,     /* SS selector is floating */
-FLOATING_DS             = 0x00000400,     /* DS selector is floating */
-USE_32                  = 0x00000800,     /* Generate 32-bit segments */
-INDEXED_GLOBALS         = 0x00001000,     /* Position Independent Code (faulty!) */
-WINDOWS                 = 0x00002000,     /* Generate Win16 prologs */
-CHEAP_WINDOWS           = 0x00004000,     /* Cheap Win16 prologs */
-NO_CALL_RET_TRANSFORM   = 0x00008000,     /* Don't turn calls into jumps */
-CONST_IN_CODE           = 0x00010000,     /* FP consts in code segment */
-NEED_STACK_FRAME        = 0x00020000,     /* Always generate stack frame */
-LOAD_DS_DIRECTLY        = 0x00040000,     /* No runtime call to load DS */
-SMART_WINDOWS           = 0x00100000,     /* Smart Win16 prolog (DS==SS) */
-P5_PROFILING            = 0x00200000,     /* Pentium RDTSC profiling (-et) */
-P5_DIVIDE_CHECK         = 0x00400000,     /* Check for bad Pentium FDIV */
-GENERIC_TLS             = 0x00800000,     /* TLS code not NT specific (unused?) */
-NEW_P5_PROFILING        = 0x01000000,     /* "New" profiling (-etp) */
-STATEMENT_COUNTING      = 0x02000000,     /* Statement counting (-esp) */
-NULL_SELECTOR_BAD       = 0x04000000,     /* Avoid null selectors on i86 */
-P5_PROFILING_CTR0       = 0x08000000,     /* Use RDPMC instead of RDTSC */
-GEN_FWAIT_386           = 0x10000000,     /* Generate FWAITs on 386 and up */
+CGSW_X86_EZ_OMF                  = 0x00000001,  /* Generate EZ-OMF objects */
+CGSW_X86_BIG_DATA                = 0x00000002,  /* Data pointers are far */
+CGSW_X86_BIG_CODE                = 0x00000004,  /* Code pointers are far */
+CGSW_X86_CHEAP_POINTER           = 0x00000008,  /* Model isn't huge */
+CGSW_X86_FLAT_MODEL              = 0x00000010,  /* Flat memory model */
+CGSW_X86_FLOATING_FS             = 0x00000020,  /* FS selector is floating */
+CGSW_X86_FLOATING_GS             = 0x00000040,  /* GS selector is floating */
+CGSW_X86_FLOATING_ES             = 0x00000080,  /* ES selector is floating */
+CGSW_X86_FLOATING_SS             = 0x00000100,  /* SS selector is floating */
+CGSW_X86_FLOATING_DS             = 0x00000200,  /* DS selector is floating */
+CGSW_X86_USE_32                  = 0x00000400,  /* Generate 32-bit segments */
+CGSW_X86_INDEXED_GLOBALS         = 0x00000800,  /* Position Independent Code (faulty!) */
+CGSW_X86_WINDOWS                 = 0x00001000,  /* Generate Win16 prologs */
+CGSW_X86_CHEAP_WINDOWS           = 0x00002000,  /* Cheap Win16 prologs */
+CGSW_X86_CONST_IN_CODE           = 0x00004000,  /* FP consts in code segment */
+CGSW_X86_NEED_STACK_FRAME        = 0x00008000,  /* Always generate stack frame */
+CGSW_X86_LOAD_DS_DIRECTLY        = 0x00010000,  /* No runtime call to load DS */
+CGSW_X86_SMART_WINDOWS           = 0x00020000,  /* Smart Win16 prolog (DS==SS) */
+CGSW_X86_P5_PROFILING            = 0x00040000,  /* Pentium RDTSC profiling (-et) */
+CGSW_X86_P5_DIVIDE_CHECK         = 0x00080000,  /* Check for bad Pentium FDIV */
+CGSW_X86_GENERIC_TLS             = 0x00100000,  /* TLS code not NT specific (unused?) */
+CGSW_X86_NEW_P5_PROFILING        = 0x00200000,  /* "New" profiling (-etp) */
+CGSW_X86_STATEMENT_COUNTING      = 0x00400000,  /* Statement counting (-esp) */
+CGSW_X86_NULL_SELECTOR_BAD       = 0x00800000,  /* Avoid null selectors on i86 */
+CGSW_X86_P5_PROFILING_CTR0       = 0x01000000,  /* Use RDPMC instead of RDTSC */
+CGSW_X86_GEN_FWAIT_386           = 0x02000000,  /* Generate FWAITs on 386 and up */
 

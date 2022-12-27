@@ -73,9 +73,12 @@
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
 //
-#define FECALL_X86_CALL_CLASS_IGNORE ( 0 \
+#define FECALL_CALL_CLASS_IGNORE ( 0 \
     | FECALL_NO_MEMORY_CHANGED       \
     | FECALL_NO_MEMORY_READ          \
+    | FECALL_DLL_EXPORT              \
+)
+#define FECALL_X86_CALL_CLASS_IGNORE ( 0 \
     | FECALL_X86_MODIFY_EXACT            \
     | FECALL_X86_GENERATE_STACK_FRAME    \
     | FECALL_X86_EMIT_FUNCTION_NAME      \
@@ -84,7 +87,6 @@
     | FECALL_X86_EPILOG_HOOKS            \
     | FECALL_X86_TOUCH_STACK             \
     | FECALL_X86_LOAD_DS_ON_ENTRY        \
-    | FECALL_DLL_EXPORT              \
 )
 
 typedef enum
@@ -1266,8 +1268,8 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         return( true );
     }
     return
-           ( ( inf1->cclass & ~FECALL_X86_CALL_CLASS_IGNORE ) ==
-             ( inf2->cclass & ~FECALL_X86_CALL_CLASS_IGNORE ) )
+           ( ( inf1->cclass & ~(FECALL_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) ==
+             ( inf2->cclass & ~(FECALL_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) )
         && parmSetsIdentical( inf1->parms, inf2->parms )
         && HW_Equal( inf1->returns, inf2->returns )
         && HW_Equal( inf1->streturn, inf2->streturn )
