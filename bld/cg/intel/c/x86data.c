@@ -290,7 +290,8 @@ void    BackPtrBase( back_handle bck, segment_id segid )
 bool    FPCInCode( void )
 /***********************/
 {
-    return( _IsTargetModel( CGSW_X86_CONST_IN_CODE ) || ( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) );
+    return( _IsTargetModel( CGSW_X86_CONST_IN_CODE )
+      || ( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) );
 }
 
 static  cg_class ConstDataClass( void )

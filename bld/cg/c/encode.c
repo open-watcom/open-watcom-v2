@@ -83,7 +83,7 @@ void    CodeLabel( label_handle label, unsigned align )
     CodeHandle( OC_LABEL, align - 1, label );
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpChar( 'L' );
         DumpPtr( label );
         DumpChar( ':' );
@@ -108,7 +108,7 @@ void    CodeLineNumber( cg_linenum line, bool label_line )
         oc.oc_linenum.line = line;
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
-        if( _IsTargetModel( ASM_OUTPUT ) ) {
+        if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
             DumpLiteral( "Source Line: " );
             DumpInt( line );
             DumpNL();
@@ -194,7 +194,7 @@ static  void    DoCondJump( instruction *cond )
         InputOC( &oc );
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
-        if( _IsTargetModel( ASM_OUTPUT ) ) {
+        if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
             DumpLiteral( "Jcc L" );
             DumpPtr( dest_true );
             DumpNL();
@@ -237,7 +237,7 @@ void    GenJumpLabel( label_handle label )
     CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), label );
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "JMP L" );
         DumpPtr( label );
         DumpNL();

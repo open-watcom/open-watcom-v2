@@ -61,7 +61,6 @@ typedef enum {
     FEINF_DBG_SYM_ACCESS,
     FEINF_DBG_DWARF_PRODUCER,
     #include "cgauxc.h"
-    LAST_FEAUX
 } aux_class;
 
 typedef enum {

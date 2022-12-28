@@ -934,7 +934,7 @@ void    GenSeg( hw_reg_set regs )
         if( HW_CEqual( segreg, HW_SS ) )
             return;
         if( HW_CEqual( segreg, HW_DS )
-         && _IsntTargetModel(CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_SS) ) {
+          && _IsntTargetModel( CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_SS ) ) {
             return;
         }
     } else {

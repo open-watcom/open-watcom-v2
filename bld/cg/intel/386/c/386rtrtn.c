@@ -255,9 +255,9 @@ name    *Addressable( name *cons, type_class_def type_class )
 
 
 pointer BEAuxInfo( pointer hdl, aux_class request )
-/**********************************************************
-    see ScanCall for explanation
-*/
+/**************************************************
+ * see ScanCall for explanation
+ */
 {
     switch( request ) {
     case FEINF_AUX_LOOKUP:
