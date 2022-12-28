@@ -35,6 +35,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "cgaux.h"
+#include "cgauxinf.h"
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
@@ -52,9 +53,10 @@
 #include "bldcall.h"
 #include "bldins.h"
 #include "x86segs.h"
-#include "cgprotos.h"
 #include "parm.h"
 #include "bgcall.h"
+#include "cgprotos.h"
+#include "feprotos.h"
 
 
 static  void    AddCall( instruction *ins, cn call );
