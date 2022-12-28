@@ -33,6 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "zoiks.h"
 #include "namelist.h"

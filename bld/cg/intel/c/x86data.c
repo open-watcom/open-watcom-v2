@@ -36,6 +36,7 @@
 #include "system.h"
 #include "jumps.h"
 #include "zoiks.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "x86objd.h"
 #include "data.h"

@@ -41,6 +41,7 @@
 #include "zoiks.h"
 #include "x86objd.h"
 #include "objout.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "dbsyms.h"
 #include "objio.h"

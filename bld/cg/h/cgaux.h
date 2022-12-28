@@ -36,6 +36,10 @@
 #include "hwreg.h"
 #include "cgauxa.h"
 
+#define TEMP_LOC_QUIT   0
+#define TEMP_LOC_NO     1
+#define TEMP_LOC_YES    2
+
 typedef enum {
     FEINF_AUX_LOOKUP,
     FEINF_CALL_BYTES,
@@ -75,28 +79,5 @@ typedef enum  {
     SYM_ACC_PROTECTED,
     SYM_ACC_PRIVATE,
 } sym_access;
-
-#define TEMP_LOC_QUIT   0
-#define TEMP_LOC_NO     1
-#define TEMP_LOC_YES    2
-
-#define FECALL_REVERSE_PARMS        0x00000001L
-#define FECALL_ABORTS               0x00000002L
-#define FECALL_NORETURN             0x00000004L
-#define FECALL_PARMS_BY_ADDRESS     0x00000008L
-#define FECALL_MAKE_CALL_INLINE     0x00000010L
-#define FECALL_HAS_VARARGS          0x00000020L
-#define FECALL_SETJMP_KLUGE         0x00000040L
-#define FECALL_CALLER_POPS          0x00000080L
-#define FECALL_NO_MEMORY_READ       0x00000100L
-#define FECALL_NO_MEMORY_CHANGED    0x00000200L
-#define FECALL_DLL_EXPORT           0x00000400L
-#define LAST_AUX_ATTRIBUTE          0x00000400L
-
-#define _TARG_AUX_SHIFT             11
-
-#if ( LAST_AUX_ATTRIBUTE >> _TARG_AUX_SHIFT ) != 0
-    #error too many attributes in cgaux.h
-#endif
 
 #endif

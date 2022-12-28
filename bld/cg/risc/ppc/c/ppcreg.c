@@ -33,6 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
+#include "cgauxcc.h"
 #include "cgmem.h"
 #include "data.h"
 #include "utils.h"

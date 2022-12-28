@@ -36,6 +36,7 @@
 #include "reloc.h"
 #include "zoiks.h"
 #include "coff.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "optmain.h"
 #include "ppcenc.h"

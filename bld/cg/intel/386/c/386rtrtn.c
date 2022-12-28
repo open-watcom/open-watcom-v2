@@ -34,6 +34,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "seldef.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "makeins.h"
 #include "data.h"

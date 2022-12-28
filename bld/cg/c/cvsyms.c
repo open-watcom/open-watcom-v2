@@ -38,6 +38,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "cvdbg.h"
 #include "data.h"

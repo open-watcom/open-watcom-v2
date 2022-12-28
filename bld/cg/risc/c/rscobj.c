@@ -33,6 +33,7 @@
 #include "_cgstd.h"
 #include <time.h>
 #include "coderep.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "cgmem.h"
 #include "reloc.h"

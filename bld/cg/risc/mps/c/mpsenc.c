@@ -39,6 +39,7 @@
 #include "zoiks.h"
 #include "coff.h"
 #include "encode.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "data.h"
 #include "rtrtn.h"

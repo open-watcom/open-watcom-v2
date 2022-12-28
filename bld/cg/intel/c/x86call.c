@@ -35,6 +35,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "cgaux.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "zoiks.h"
 #include "makeins.h"

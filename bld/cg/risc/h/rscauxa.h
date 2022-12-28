@@ -42,14 +42,6 @@
     byte            data[x]; \
 }
 
-#define LAST_TARG_AUX_ATTRIBUTE     ( 0x00000001L << _TARG_AUX_SHIFT )
-
-#if LAST_TARG_AUX_ATTRIBUTE == 0
-    #error Overflowed a long constant in rscauxa.h
-#endif
-
-typedef unsigned        call_class;
-
 typedef unsigned        byte_seq_len;
 
 typedef struct byte_seq_reloc {

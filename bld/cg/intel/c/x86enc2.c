@@ -38,6 +38,7 @@
 #include "system.h"
 #include "x86objd.h"
 #include "pcencode.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "seldef.h"
 #include "pccode.h"

@@ -34,6 +34,7 @@
 #include <time.h>
 #include "coderep.h"
 #include "data.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "system.h"
 #include "cgmem.h"
