@@ -38,6 +38,7 @@
 
 #else
 
+#include "cgauxcc.h"
 #include "auxflags.h"
 
 typedef struct aux_info {
