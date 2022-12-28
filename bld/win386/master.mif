@@ -154,7 +154,7 @@ vxdlink : .PROCEDURE
     $(noecho)%create $(LNK)
     @%append $(LNK) system win_vxd
     @%append $(LNK) name $^&.386
-    @%append $(LNK) option desc 'Win386 $($^&_name) Device (Version 1.1 Open Watcom)'
+    @%append $(LNK) option desc 'Win386 $($^&_name) Device (Version $(bld_ver_str) Open Watcom)'
     @%append $(LNK) option modname=WDEBUG
     @%append $(LNK) option map
     @%append $(LNK) segment '_LTEXT'  preload nondiscardable
