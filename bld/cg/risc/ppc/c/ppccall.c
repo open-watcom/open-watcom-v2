@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,11 +123,9 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 }
 
 
-type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
-/********************************************************************************/
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe )
+/*************************************************************/
 {
-    /* unused parameters */ (void)cclass;
-
     tipe = QParmType( func, NULL, tipe );
     return( tipe );
 }

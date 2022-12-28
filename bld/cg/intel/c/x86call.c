@@ -457,10 +457,10 @@ void    PostCall( cn call )
     /* unused parameters */ (void)call;
 }
 
-type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
-/********************************************************************************/
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe )
+/*************************************************************/
 {
-    if( cclass & FECALL_X86_FAR16_CALL )
+    if( *(call_class *)FindAuxInfoSym( func, FEINF_CALL_CLASS ) & FECALL_X86_FAR16_CALL )
         return( tipe );
     return( QParmType( func, NULL, tipe ) );
 }

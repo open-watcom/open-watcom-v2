@@ -130,11 +130,9 @@ void BGProcDecl( cg_sym_handle sym, type_def *tipe )
 }
 
 
-type_def *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
-/*****************************************************************************/
+type_def *PassParmType( cg_sym_handle func, type_def* tipe )
+/**********************************************************/
 {
-    /* unused parameters */ (void)cclass;
-
     tipe = QParmType( func, NULL, tipe );
     return( tipe );
 }

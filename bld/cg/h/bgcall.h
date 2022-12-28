@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,4 +41,4 @@ extern void             PushInSameBlock( instruction *ins );
 extern instruction      *PushOneParm( instruction *ins, name *curr, type_class_def type_class, type_length offset, call_state *state );
 extern void             PreCall( cn call );
 extern void             PostCall( cn call );
-extern type_def         *PassParmType( cg_sym_handle func, type_def *tipe, call_class cclass );
+extern type_def         *PassParmType( cg_sym_handle func, type_def *tipe );

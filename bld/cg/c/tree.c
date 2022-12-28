@@ -2368,7 +2368,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
                     parman = BGConvert( parman, TypeAddress( TY_INT_4 ) );
                 }
 #endif
-                parman = BGConvert( parman, PassParmType( sym, tipe, cclass ) );
+                parman = BGConvert( parman, PassParmType( sym, tipe ) );
             }
         }
         parman->flags |= FL_STACKABLE;
