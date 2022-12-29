@@ -308,7 +308,7 @@ dbug_type DBType( TYPEPTR typ )
             ret_val = DBType( typ->object );
             if( fwd_info.debug_name != NULL ) {
                 ret_val = DBEndName( fwd_info.debug_name, ret_val );
-                if( GenSwitches & CGSW_DBG_CV ) {
+                if( GenSwitches & CGSW_GEN_DBG_CV ) {
                     DBTypeDef( sym.name, ret_val ); //get codeview typedef out
                 }
             }

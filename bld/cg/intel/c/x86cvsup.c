@@ -48,10 +48,10 @@
 void    CVDefSegs( void )
 /***********************/
 {
-    if( _IsModel( CGSW_DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         CVSyms = DbgSegDef( "$$SYMBOLS", "DEBSYM", SEG_COMB_PRIVATE+SEG_USE_32 );
     }
-    if( _IsModel( CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         CVTypes = DbgSegDef( "$$TYPES", "DEBTYP", SEG_COMB_PRIVATE+SEG_USE_32 );
     }
 }

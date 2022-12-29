@@ -52,15 +52,15 @@ typedef enum {                  // flags to control memory model settings
 } mem_model_control;
 
 #if 0
-#define DEF_CGSW_SWITCHES_ALL       (CGSW_MEMORY_LOW_FAILS | CGSW_ENABLE_FP_EXCEPTIONS)
+#define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS | CGSW_GEN_ENABLE_FP_EXCEPTIONS)
 #else
-#define DEF_CGSW_SWITCHES_ALL       (CGSW_MEMORY_LOW_FAILS)
+#define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS)
 #endif
 #if _CPU == 8086
-    #define DEF_CGSW_SWITCHES       0
+    #define DEF_CGSW_GEN_SWITCHES   0
     #define DEF_CGSW_X86_SWITCHES   CGSW_X86_CHEAP_POINTER
 #else
-    #define DEF_CGSW_SWITCHES       0
+    #define DEF_CGSW_GEN_SWITCHES   0
     #define DEF_CGSW_X86_SWITCHES   (CGSW_X86_CHEAP_POINTER | CGSW_X86_USE_32 | CGSW_X86_FLAT_MODEL)
 #endif
 
@@ -81,7 +81,7 @@ typedef enum {                  // flags to control memory model settings
 void CmdSysInit( void )
 /*********************/
 {
-    GenSwitches = DEF_CGSW_SWITCHES | DEF_CGSW_SWITCHES_ALL;
+    GenSwitches = DEF_CGSW_GEN_SWITCHES | DEF_CGSW_GEN_SWITCHES_ALL;
     TargetSwitches = DEF_CGSW_X86_SWITCHES;
     SET_CPU( CpuSwitches, DEFAULT_CPU );
     SET_FPU( CpuSwitches, DEFAULT_FPU );
@@ -136,7 +136,7 @@ void CmdX86CheckThreshold( unsigned *p )
 void CmdSysSetMaxOptimization( void )
 /***********************************/
 {
-    GenSwitches |= CGSW_I_MATH_INLINE;
+    GenSwitches |= CGSW_GEN_I_MATH_INLINE;
 }
 
 static void defineM_IX86Macro( void )
@@ -693,7 +693,7 @@ static void defEmu( void )
 
 static void macroDefs( void )
 {
-    if( GenSwitches & CGSW_I_MATH_INLINE ) {
+    if( GenSwitches & CGSW_GEN_I_MATH_INLINE ) {
         DefSwitchMacro( "OM" );
     }
     switch( TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER | CGSW_X86_FLAT_MODEL) ) {
@@ -743,31 +743,31 @@ static void macroDefs( void )
     if( TargetSwitches & CGSW_X86_SMART_WINDOWS ) {
         DefSwitchMacro( "ZWS" );
     }
-    if( GenSwitches & CGSW_NO_CALL_RET_TRANSFORM ) {
+    if( GenSwitches & CGSW_GEN_NO_CALL_RET_TRANSFORM ) {
         DefSwitchMacro( "OC" );
     }
     if( TargetSwitches & CGSW_X86_NEED_STACK_FRAME ) {
         DefSwitchMacro( "OF" );
     }
-    if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION ) {
         DefSwitchMacro( "OD" );
     }
-    if( GenSwitches & CGSW_RELAX_ALIAS ) {
+    if( GenSwitches & CGSW_GEN_RELAX_ALIAS ) {
         DefSwitchMacro( "OA" );
     }
-    if( GenSwitches & CGSW_BRANCH_PREDICTION ) {
+    if( GenSwitches & CGSW_GEN_BRANCH_PREDICTION ) {
         DefSwitchMacro( "OB" );
     }
-    if( GenSwitches & CGSW_LOOP_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_LOOP_OPTIMIZATION ) {
         DefSwitchMacro( "OL" );
     }
-    if( GenSwitches & CGSW_INS_SCHEDULING ) {
+    if( GenSwitches & CGSW_GEN_INS_SCHEDULING ) {
         DefSwitchMacro( "OR" );
     }
-    if( GenSwitches & CGSW_FPU_ROUNDING_INLINE ) {
+    if( GenSwitches & CGSW_GEN_FPU_ROUNDING_INLINE ) {
         DefSwitchMacro( "ZRI" );
     }
-    if( GenSwitches & CGSW_FPU_ROUNDING_OMIT ) {
+    if( GenSwitches & CGSW_GEN_FPU_ROUNDING_OMIT ) {
         DefSwitchMacro( "ZRO" );
     }
     if( TargetSwitches & CGSW_X86_GEN_FWAIT_386 ) {
@@ -969,16 +969,16 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     char *target_name = NULL;
     mem_model_control mmc = MMC_NULL;
 
-    GenSwitches &= ~(CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF);
+    GenSwitches &= ~(CGSW_GEN_DBG_CV | CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF);
     switch( data->dbg_output ) {
     case OPT_ENUM_dbg_output_hc:
-        GenSwitches |= CGSW_DBG_CV;
+        GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     case OPT_ENUM_dbg_output_hda:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= CGSW_DBG_DF | CGSW_DBG_PREDEF;
+        GenSwitches |= CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF;
         break;
     case OPT_ENUM_dbg_output_hw:
         break;
@@ -987,7 +987,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= CGSW_DBG_DF;
+        GenSwitches |= CGSW_GEN_DBG_DF;
         break;
     }
     switch( data->ds_peg ) {
@@ -1009,9 +1009,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         data->zro = data->zri = 0;
     }
     if( data->zri ) {
-        GenSwitches |= CGSW_FPU_ROUNDING_INLINE;
+        GenSwitches |= CGSW_GEN_FPU_ROUNDING_INLINE;
     } else if( data->zro ) {
-        GenSwitches |= CGSW_FPU_ROUNDING_OMIT;
+        GenSwitches |= CGSW_GEN_FPU_ROUNDING_OMIT;
     }
 
 #if _CPU == 386
@@ -1160,7 +1160,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         SetStringOption( &TextSegName, &(data->nt_value) );
     }
     if( data->oc ) {
-        GenSwitches |= CGSW_NO_CALL_RET_TRANSFORM;
+        GenSwitches |= CGSW_GEN_NO_CALL_RET_TRANSFORM;
     }
     if( data->of ) {
         TargetSwitches |= CGSW_X86_NEED_STACK_FRAME;
@@ -1170,7 +1170,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         WatcallInfo.cclass |= FECALL_X86_GENERATE_STACK_FRAME;
     }
     if( data->om ) {
-        GenSwitches |= CGSW_I_MATH_INLINE;
+        GenSwitches |= CGSW_GEN_I_MATH_INLINE;
     }
     if( data->r ) {
         CompFlags.save_restore_segregs = true;
@@ -1243,7 +1243,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #endif
     if( data->iso == OPT_ENUM_iso_za ) {
-        GenSwitches &= ~CGSW_I_MATH_INLINE;
+        GenSwitches &= ~CGSW_GEN_I_MATH_INLINE;
     }
     switch( data->intel_call_conv ) {
     case OPT_ENUM_intel_call_conv_ecc:

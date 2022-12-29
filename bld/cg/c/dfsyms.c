@@ -435,7 +435,7 @@ void    DFSymRange( cg_sym_handle sym, offset size )
 // this may cause debug information to be missing... call it
 // a FIXME
 {
-    if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
         ARange = FEBack( sym );
         DWAddress( Client, size );
     }
@@ -449,7 +449,7 @@ void    DFSegRange( void )
     offset      off;
     offset      size;
 
-    if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
         size = AskMaxSize();
         if( size > 0 ) {
             bck = MakeLabel();
@@ -478,7 +478,7 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
     /* unused parameters */ (void)code_segid;
 #endif
 
-    if( _IsntModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+    if( _IsntModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
         return;
     }
     if( CcuDef ) {
@@ -561,7 +561,7 @@ void    DFObjInitDbgInfo( void )
     cg_sym_handle   debug_pch;
     fe_attr         attr;
 
-    if( _IsntModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+    if( _IsntModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
         return;
     }
     info.compiler_options = DW_CM_DEBUGGER;
@@ -571,7 +571,7 @@ void    DFObjInitDbgInfo( void )
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;
         InitSegBck(); // start each seg with a ref label
-        if( _IsModel( CGSW_DBG_PREDEF ) ) {
+        if( _IsModel( CGSW_GEN_DBG_PREDEF ) ) {
             abbrev_sym = FEAuxInfo( NULL, FEINF_DBG_PREDEF_SYM );
             info.abbrev_sym = (dw_sym_handle)abbrev_sym;
             attr = FEAttr( abbrev_sym );
@@ -694,7 +694,7 @@ void    DFObjFiniDbgInfo( offset codesize )
     offset          here;
     back_handle     bck;
 
-    if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
         bck = Comp_High;
         if( bck != NULL ) {
             old_segid = SetOP( AskCodeSeg() );

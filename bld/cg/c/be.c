@@ -92,11 +92,11 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     Action( ", opt_size==%d, proc_rev=%h%n", opt_size, proc );
     SymDebug = 0;
     TypDebug = 0;
-    if( cg_data & CGSW_DBG_LOCALS ) {
+    if( cg_data & CGSW_GEN_DBG_LOCALS ) {
         SymDebug = FCreate( "DBGSYM" );
         ++FilesOpen;
     }
-    if( cg_data & CGSW_DBG_TYPES ) {
+    if( cg_data & CGSW_GEN_DBG_TYPES ) {
         TypDebug = FCreate( "DBGTYP" );
         ++FilesOpen;
     }

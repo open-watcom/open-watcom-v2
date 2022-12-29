@@ -3500,7 +3500,7 @@ void ClassCtorNullBody( SYMBOL ctor )
         info->ctor_user_code = false;
     } else {
         /* out-of-line definition */
-        if(( GenSwitches & CGSW_DBG_LOCALS ) == 0 ) {
+        if(( GenSwitches & CGSW_GEN_DBG_LOCALS ) == 0 ) {
             if( IsSrcFilePrimary( ctor->locn->tl.src_file ) ) {
                 if( info->ctor_user_code_checked ) {
                     CErr1( WARN_OPTIMIZE_IF_EARLIER );
@@ -3525,7 +3525,7 @@ void ClassDtorNullBody( SYMBOL dtor )
         info->dtor_user_code = false;
     } else {
         /* out-of-line definition */
-        if(( GenSwitches & CGSW_DBG_LOCALS ) == 0 ) {
+        if(( GenSwitches & CGSW_GEN_DBG_LOCALS ) == 0 ) {
             if( IsSrcFilePrimary( dtor->locn->tl.src_file ) ) {
                 //
                 // If dtor is:

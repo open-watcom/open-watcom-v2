@@ -124,8 +124,8 @@ void AuxInfoInit( int flag_stdatnum )
  *  __cdecl calling convention
  *************************************************/
     CdeclInfo.cclass =    cclass |
-                         //FECALL_REVERSE_PARMS |
-                         FECALL_CALLER_POPS |
+                         //FECALL_GEN_REVERSE_PARMS |
+                         FECALL_GEN_CALLER_POPS |
                          //FECALL_X86_PARMS_PREFER_REGS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
   #if _CPU == 8086
@@ -163,8 +163,8 @@ void AuxInfoInit( int flag_stdatnum )
  *  __pascal calling convention
  *************************************************/
     PascalInfo.cclass =   cclass |
-                         FECALL_REVERSE_PARMS |
-                         //FECALL_CALLER_POPS |
+                         FECALL_GEN_REVERSE_PARMS |
+                         //FECALL_GEN_CALLER_POPS |
                          //FECALL_X86_PARMS_PREFER_REGS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
                          //FECALL_X86_LOAD_DS_ON_CALL |
@@ -197,8 +197,8 @@ void AuxInfoInit( int flag_stdatnum )
  *  __stdcall calling convention
  *************************************************/
     StdcallInfo.cclass =  cclass |
-                         //FECALL_REVERSE_PARMS |
-                         //FECALL_CALLER_POPS |
+                         //FECALL_GEN_REVERSE_PARMS |
+                         //FECALL_GEN_CALLER_POPS |
                          //FECALL_X86_PARMS_PREFER_REGS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
                          //FECALL_X86_LOAD_DS_ON_CALL |
@@ -242,8 +242,8 @@ void AuxInfoInit( int flag_stdatnum )
     HW_TurnOn( FastcallInfo.save, full_no_segs );
     HW_CTurnOff( FastcallInfo.save, HW_FLTS );
     FastcallInfo.cclass = cclass |
-                         //FECALL_REVERSE_PARMS |
-                         //FECALL_CALLER_POPS |
+                         //FECALL_GEN_REVERSE_PARMS |
+                         //FECALL_GEN_CALLER_POPS |
   #if _CPU == 8086
                          FECALL_X86_PARMS_PREFER_REGS |
   #else /* _CPU == 386 */
@@ -274,8 +274,8 @@ void AuxInfoInit( int flag_stdatnum )
  *  _Optlink calling convention
  *************************************************/
     OptlinkInfo.cclass =  cclass |
-                         //FECALL_REVERSE_PARMS |
-                         FECALL_CALLER_POPS  |
+                         //FECALL_GEN_REVERSE_PARMS |
+                         FECALL_GEN_CALLER_POPS  |
                          FECALL_X86_PARMS_STACK_RESERVE |
                          //FECALL_X86_GENERATE_STACK_FRAME |
                          //FECALL_X86_LOAD_DS_ON_CALL |
@@ -312,8 +312,8 @@ void AuxInfoInit( int flag_stdatnum )
  *  __syscall calling convention
  *************************************************/
     SyscallInfo.cclass =  cclass |
-                         //FECALL_REVERSE_PARMS |
-                         FECALL_CALLER_POPS |
+                         //FECALL_GEN_REVERSE_PARMS |
+                         FECALL_GEN_CALLER_POPS |
                          //FECALL_X86_GENERATE_STACK_FRAME |
                          //FECALL_X86_LOAD_DS_ON_CALL |
                          //FECALL_X86_NO_FLOAT_REG_RETURNS |
@@ -368,7 +368,7 @@ void SetAuxStackConventions( void )
 /*********************************/
 {
     WatcallInfo.cclass &= (FECALL_X86_GENERATE_STACK_FRAME | FECALL_X86_FAR_CALL);
-    WatcallInfo.cclass |= FECALL_CALLER_POPS |
+    WatcallInfo.cclass |= FECALL_GEN_CALLER_POPS |
                           FECALL_X86_NO_8087_RETURNS |
                           0;
     WatcallInfo.parms = MetaWareParms;

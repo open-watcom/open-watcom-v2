@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,14 +82,14 @@ static  bool  ZapsMemory( name *result, name *op, bool for_index ) {
         return( TempsOverlap( result, op ) );
     case N_INDEXED:
         if( result->i.base == NULL ) {
-            if( _IsModel( CGSW_FORTRAN_ALIASING ) )
+            if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) )
                 return( false );
             if( op->v.usage & USE_ADDRESS )
                 return( true );
-            return( _IsntModel( CGSW_RELAX_ALIAS ) );
+            return( _IsntModel( CGSW_GEN_RELAX_ALIAS ) );
         }
         if( result->i.base->n.class == N_TEMP ) {
-            return( _IsntModel( CGSW_RELAX_ALIAS ) );
+            return( _IsntModel( CGSW_GEN_RELAX_ALIAS ) );
         } else { /* it must be N_MEMORY*/
             return( ZapsMemory( result->i.base, op, true ) );
         }
@@ -197,13 +197,13 @@ static  bool_maybe  ZapsIndexed( name *result, name *op )
         return( MB_FALSE );
     case N_MEMORY:
         if( op->i.base == NULL ) {
-            if( _IsModel( CGSW_FORTRAN_ALIASING ) )
+            if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) )
                 return( MB_FALSE );
             if( op->v.usage & USE_ADDRESS )
                 return( MB_TRUE );
-            return( _IsModel( CGSW_RELAX_ALIAS ) ? MB_FALSE : MB_TRUE );
+            return( _IsModel( CGSW_GEN_RELAX_ALIAS ) ? MB_FALSE : MB_TRUE );
         } else if( op->i.base->n.class == N_TEMP ) {
-            return( _IsModel( CGSW_RELAX_ALIAS ) ? MB_FALSE : MB_TRUE );
+            return( _IsModel( CGSW_GEN_RELAX_ALIAS ) ? MB_FALSE : MB_TRUE );
         } else {
             return( ZapsMemory( result, op->i.base, true ) ? MB_TRUE : MB_FALSE );
         }
@@ -264,7 +264,7 @@ bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
     case N_MEMORY:
         if( modifies && (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) )
             return( MB_FALSE );
-        if( _IsModel( CGSW_FORTRAN_ALIASING ) ) {
+        if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
             switch( op->m.memory_type ) {
             case CG_FE:
                 if( (FEAttr( op->v.symbol ) & FE_VISIBLE ) == 0 ) {

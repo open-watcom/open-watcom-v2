@@ -244,23 +244,25 @@ static  void    CGStart( void )
 
         // set memory model
 
+#if _INTEL_CPU
         if( CGOpts & CGOPT_M_MEDIUM ) {
             cg_target_opts |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
         }
         if( CGOpts & CGOPT_M_LARGE ) {
             cg_target_opts |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         }
-#if _CPU == 8086
+    #if _CPU == 8086
         if( CGOpts & CGOPT_M_HUGE ) {
             cg_target_opts |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA;
         }
-#elif _CPU == 386
+    #else
         if( CGOpts & CGOPT_M_FLAT ) {
             cg_target_opts |= CGSW_X86_FLAT_MODEL;
         }
         if( CGOpts & CGOPT_M_COMPACT ) {
             cg_target_opts |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         }
+    #endif
 #elif _RISC_CPU
         cg_target_opts |= CGSW_X86_CHEAP_POINTER;
 #else

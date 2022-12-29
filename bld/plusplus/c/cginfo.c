@@ -72,7 +72,7 @@
 #endif
 
 
-#if _INTEL_CPU && ( _CPU != 8086 )
+#if _CPU == 386
     extern const inline_funcs Fs_Functions[];   // FS PRAGMAS
     extern const alt_inline_funcs FlatAlternates[];
 #endif
@@ -171,7 +171,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     case MSG_SCHEDULER_DIED:
     case MSG_REGALLOC_DIED:
     case MSG_SCOREBOARD_DIED:
-        if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
+        if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( lastFunctionOutOfMem != parm ) {
                 lastFunctionOutOfMem = parm;
                 CErr2p( WARN_CG_MEM_PROC, FEName( (SYMBOL)parm ) );
@@ -179,7 +179,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         }
         break;
     case MSG_PEEPHOLE_FLUSHED:
-        if( (GenSwitches & CGSW_NO_OPTIMIZATION) == 0 ) {
+        if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( !CompFlags.low_on_memory_printed ) {
                 CompFlags.low_on_memory_printed = true;
                 CErr1( WARN_CG_MEM_PEEPHOLE );
@@ -614,9 +614,9 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
                     inf = &DefaultInfo;
                 }
             }
-#if _INTEL_CPU && ( _CPU != 8086 )
+#if _CPU == 386
             if(( mod_flags & TF1_FAR16 ) || ( inf->flags & AUX_FLAG_FAR16 )) {
-                if( inf->cclass & FECALL_REVERSE_PARMS ) {
+                if( inf->cclass & FECALL_GEN_REVERSE_PARMS ) {
                     inf = &Far16PascalInfo;
                 } else {
                     inf = &Far16CdeclInfo;
@@ -757,7 +757,7 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
         // function may be called as a FAR function through a pointer
         return( false );
     }
-    if( (GenSwitches & (CGSW_DBG_TYPES | CGSW_DBG_LOCALS)) != 0 ) {
+    if( (GenSwitches & (CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS)) != 0 ) {
         // function's debugging info will be FAR
         return( false );
     }
@@ -798,15 +798,15 @@ static call_class getCallClass( // GET CLASS OF CALL
                 fn_index = SpecialFunction( sym );
                 DbgAssert( fn_index < ( CHAR_BIT * sizeof( unsigned ) ));
                 if( ( 1 << fn_index ) & SETJMP_MASK ) {
-                    cclass |= FECALL_SETJMP_KLUGE;
+                    cclass |= FECALL_GEN_SETJMP_KLUGE;
                 }
             }
 #endif
             if( SymIsEllipsisFunc( sym ) ) {
-                cclass |= FECALL_CALLER_POPS | FECALL_HAS_VARARGS;
+                cclass |= FECALL_GEN_CALLER_POPS | FECALL_GEN_HAS_VARARGS;
             }
             if( CgBackFuncInlined( sym ) ) {
-                cclass |= FECALL_MAKE_CALL_INLINE;
+                cclass |= FECALL_GEN_MAKE_CALL_INLINE;
             }
             /* only want the explicit memory model flags */
             /* default near/far is in the aux info already */
@@ -830,10 +830,10 @@ static call_class getCallClass( // GET CLASS OF CALL
 #endif
             fn_flags = fn_type->flag;
             if( fn_flags & TF1_ABORTS ) {
-                cclass |= FECALL_ABORTS;
+                cclass |= FECALL_GEN_ABORTS;
             }
             if( fn_flags & TF1_NORETURN ) {
-                cclass |= FECALL_NORETURN;
+                cclass |= FECALL_GEN_NORETURN;
             }
 #if _INTEL_CPU
             // don't export addressability thunks
@@ -846,7 +846,7 @@ static call_class getCallClass( // GET CLASS OF CALL
                             cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                         }
                     } else {
-                        cclass |= FECALL_DLL_EXPORT;
+                        cclass |= FECALL_GEN_DLL_EXPORT;
                     }
                 }
             }
@@ -875,7 +875,7 @@ static call_class getCallClass( // GET CLASS OF CALL
 #endif
         }
 #ifdef REVERSE
-        cclass &= ~ FECALL_REVERSE_PARMS;
+        cclass &= ~ FECALL_GEN_REVERSE_PARMS;
 #endif
 #if _INTEL_CPU
         if( CompFlags.ep_switch_used ) {
@@ -915,7 +915,7 @@ static void addDefaultLibs( void )
     if( CompFlags.emit_library_names ) {
         if( _HAS_ANY_MAIN || CompFlags.extern_C_defn_found
             || CompFlags.pragma_library || CompFlags.emit_all_default_libs ) {
-#if _INTEL_CPU && ( _CPU != 8086 )
+#if _CPU == 386
             if( CompFlags.br_switch_used ) {
                 CgInfoAddCompLib( CDLL_Name );
             } else
@@ -925,7 +925,7 @@ static void addDefaultLibs( void )
             } else {
                 CgInfoAddCompLib( CLIB_Name );
             }
-#if _INTEL_CPU && ( _CPU != 8086 )
+#if _CPU == 386
             if( CompFlags.br_switch_used ) {
                 CgInfoAddCompLib( WCPPDLL_Name );
             } else
@@ -1115,7 +1115,7 @@ static void addDefaultImports( void )
         CgInfoAddImportS( RunTimeCallSymbol( RTD_FS_ROOT ) );
     }
     if( CompFlags.excs_enabled ) {
-#if _INTEL_CPU && ( _CPU != 8086 )
+#if _CPU == 386
         if( CompFlags.fs_registration ) {
             switch( TargetSystem ) {
             case TS_OS2 :
@@ -1133,7 +1133,7 @@ static void addDefaultImports( void )
         CgInfoAddImport( RunTimeCodeString( RTD_TS_GENERIC ) );
 #endif
     }
-#if _INTEL_CPU && ( _CPU != 8086 )
+#if _CPU == 386
     if( TargetSwitches & CGSW_X86_NEW_P5_PROFILING ) {
         CgInfoAddImport( "__new_p5_profile" );
     } else if( TargetSwitches & CGSW_X86_P5_PROFILING ) {
@@ -1527,7 +1527,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
 {
-    return( (getLangInfo( sym )->cclass & FECALL_ABORTS) != 0 );
+    return( (getLangInfo( sym )->cclass & FECALL_GEN_ABORTS) != 0 );
 }
 
 bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS
@@ -1547,7 +1547,7 @@ dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
     dbg_type ret;
     SYMBOL sym = _sym;
 
-    if( GenSwitches & CGSW_DBG_DF ) {
+    if( GenSwitches & CGSW_GEN_DBG_DF ) {
         ret = DwarfDebugSym( sym );
     } else {
         ret = SymbolicDebugType( sym->sym_type, SD_DEFAULT );
@@ -1568,7 +1568,7 @@ dbg_type FEDbgRetType(           // GET DEBUG RETURN TYPE FOR SYMBOL
     } else {
         type = type->of;
     }
-    if( GenSwitches & CGSW_DBG_DF ) {
+    if( GenSwitches & CGSW_GEN_DBG_DF ) {
         ret = DwarfDebugType( type );
     } else {
         ret = SymbolicDebugType( type, SD_DEFAULT );

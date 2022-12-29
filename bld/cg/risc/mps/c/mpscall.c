@@ -176,7 +176,7 @@ void InitTargProc( void )
     CurrProc->targ.debug = NULL;
     // For d1+ or higher, force accesses to locals to go through $fp since frame
     // pointer is what the DWARF debug info is currently referencing.
-    if( _IsModel( CGSW_DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         CurrProc->targ.base_is_fp = true;
     } else {
         CurrProc->targ.base_is_fp = false;

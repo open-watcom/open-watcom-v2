@@ -566,13 +566,13 @@ static  void doCall( instruction *ins )
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
-        if( cclass & FECALL_ABORTS ) {
+        if( cclass & FECALL_GEN_ABORTS ) {
             GenNoReturn();
         }
     } else {
         GenCallLabel( lbl );
     }
-    if( cclass & FECALL_NORETURN ) {
+    if( cclass & FECALL_GEN_NORETURN ) {
         GenNoReturn();
     }
 }

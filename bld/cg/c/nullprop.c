@@ -489,9 +489,9 @@ void            PropNullInfo( void )
     block               *blk;
     bool                change;
 
-    if( _IsModel( CGSW_NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) )
         return;
-    if( _IsModel( CGSW_NULL_DEREF_OK ) )
+    if( _IsModel( CGSW_GEN_NULL_DEREF_OK ) )
         return;
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

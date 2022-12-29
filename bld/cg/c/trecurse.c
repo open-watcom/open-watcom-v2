@@ -405,7 +405,7 @@ bool     TailRecursion( void )
     bool        changed;
 
     changed = false;
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_CALL ) {

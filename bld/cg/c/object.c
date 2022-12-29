@@ -58,7 +58,7 @@ static  source_line_number      DumpLineNum( source_line_number n,
                                              bool label_line ) {
 /*************************************************************************/
 
-    if( _IsModel( CGSW_DBG_NUMBERS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
         if( n > 0 && n != last ) {
             last = n;
             CodeLineNumber( n, label_line );
@@ -791,16 +791,16 @@ void    SortBlocks( void )
 
     _MarkBlkAllUnVisited();
     BlocksSortedBy( GenId );
-    if( _IsModel( CGSW_NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) )
         return;
-    if( _IsntModel( CGSW_BRANCH_PREDICTION ) )
+    if( _IsntModel( CGSW_GEN_BRANCH_PREDICTION ) )
         return;
     if( OptForSize > 50 )
         return;
     // we can't screw about with the placement of the return
     // block when we are outputting records which mark the start
     // of the epilog etc...
-    if( _IsModel( CGSW_DBG_LOCALS ) )
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) )
         return;
     BQInit( &unplaced );
     BQInit( &placed );

@@ -44,7 +44,7 @@
 
 static  void    InitVisitedTemps( void )
 /***************************************
-    Mark all N_TEMP and N_MEMORY names as Not visited. If CGSW_NO_OPTIMIZATION
+    Mark all N_TEMP and N_MEMORY names as Not visited. If CGSW_GEN_NO_OPTIMIZATION
     is on, mark them all as visited.
 */
 {
@@ -63,14 +63,14 @@ static  void    InitVisitedTemps( void )
             } while( alias != op );
         }
     }
-    if( _IsModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
             if( _FrontEndTmp( op ) ) {
                 op->t.temp_flags |= VISITED;
             }
         }
     }
-    if( BlockByBlock || _IsModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( BlockByBlock || _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
             if( op->v.usage & USE_IN_ANOTHER_BLOCK ) {
                 op->t.temp_flags |= VISITED;

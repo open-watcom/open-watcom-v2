@@ -316,7 +316,7 @@ bool ParmsToBeReversed( int flags, aux_info *inf )
 #ifdef REVERSE
     inf = LangInfo( flags, inf );
     if( inf != NULL ) {
-        if( inf->cclass & FECALL_REVERSE_PARMS ) {
+        if( inf->cclass & FECALL_GEN_REVERSE_PARMS ) {
             return( true );
         }
     }
@@ -435,7 +435,7 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 #if _CPU == 386
     if( (inf->flags & AUX_FLAG_FAR16) || (sym->mods & FLAG_FAR16) ) {
-        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & FECALL_REVERSE_PARMS) ) {
+        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & FECALL_GEN_REVERSE_PARMS) ) {
             return( &Far16PascalInfo );
         } else {
             return( &Far16CdeclInfo );
@@ -457,7 +457,7 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
             return( true );
         ent = AuxLookup( SymName( sym, sym_handle ) );
         if( ent != NULL ) {
-            if( ent->info->cclass & FECALL_ABORTS ) {
+            if( ent->info->cclass & FECALL_GEN_ABORTS ) {
                 return( true );
             }
         }
@@ -488,10 +488,10 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 #endif
             }
             if( sym.mods & FLAG_ABORTS ) {
-                cclass |= FECALL_ABORTS;
+                cclass |= FECALL_GEN_ABORTS;
             }
             if( sym.mods & FLAG_NORETURN ) {
-                cclass |= FECALL_NORETURN;
+                cclass |= FECALL_GEN_NORETURN;
             }
 #if _INTEL_CPU
             if( sym.mods & FLAG_FARSS ) {
@@ -510,7 +510,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             }
 #endif
             if( sym.mods & FLAG_EXPORT ) {
-                cclass |= FECALL_DLL_EXPORT;
+                cclass |= FECALL_GEN_DLL_EXPORT;
             }
 #if _INTEL_CPU
             if( sym.mods & FLAG_LOADDS ) {
@@ -526,10 +526,10 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             }
 #endif
             if( IsInLineFunc( sym_handle ) ) {
-                cclass |= FECALL_MAKE_CALL_INLINE;
+                cclass |= FECALL_GEN_MAKE_CALL_INLINE;
             }
             if( VarFunc( &sym ) ) {
-                cclass |= FECALL_CALLER_POPS | FECALL_HAS_VARARGS;
+                cclass |= FECALL_GEN_CALLER_POPS | FECALL_GEN_HAS_VARARGS;
             }
         }
 #if _INTEL_CPU
@@ -539,7 +539,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 #endif
     }
 #ifdef REVERSE
-    cclass &= ~ FECALL_REVERSE_PARMS;
+    cclass &= ~ FECALL_GEN_REVERSE_PARMS;
 #endif
 #if _INTEL_CPU
     if( CompFlags.ep_switch_used ) {

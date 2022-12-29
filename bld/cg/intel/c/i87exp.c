@@ -463,13 +463,13 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         DoNothing( ins );
         ins = SuffixFSTPRes( ins );
         */
-        if( _IsModel( CGSW_FPU_ROUNDING_INLINE ) ) {
+        if( _IsModel( CGSW_GEN_FPU_ROUNDING_INLINE ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
             if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
             }
-        } else if( _IsModel( CGSW_FPU_ROUNDING_OMIT ) ) {
+        } else if( _IsModel( CGSW_GEN_FPU_ROUNDING_OMIT ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
         } else {
@@ -482,13 +482,13 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         DoNothing( ins );
         break;
     case _Move( OP_STK0, RES_MEM  ):
-        if( _IsModel( CGSW_FPU_ROUNDING_INLINE ) ) {
+        if( _IsModel( CGSW_GEN_FPU_ROUNDING_INLINE ) ) {
             if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
             } else {
                 ins->u.gen_table = MFST;
             }
-        } else if( _IsModel( CGSW_FPU_ROUNDING_OMIT ) ) {
+        } else if( _IsModel( CGSW_GEN_FPU_ROUNDING_OMIT ) ) {
             ins->u.gen_table = MFST;
         } else {
             PrefixChop( ins );
@@ -904,7 +904,7 @@ static instruction *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_SQRT:
         case OP_ATAN:
             if( _FPULevel( FPU_387 )
-              && _IsModel( CGSW_I_MATH_INLINE )
+              && _IsModel( CGSW_GEN_I_MATH_INLINE )
               && _IsntTargetModel( CGSW_X86_P5_DIVIDE_CHECK ) ) {
                 ins = ExpUnary( ins, op1, res, FMATH );
             } else {
@@ -915,7 +915,7 @@ static instruction *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_LOG10:
         case OP_EXP:
             if( _FPULevel( FPU_387 )
-              && _IsModel( CGSW_I_MATH_INLINE )
+              && _IsModel( CGSW_GEN_I_MATH_INLINE )
               && _IsntTargetModel( CGSW_X86_P5_DIVIDE_CHECK )
               && OptForSize <= 50 ) {
                 ins = ExpUnary( ins, op1, res, FMATH );

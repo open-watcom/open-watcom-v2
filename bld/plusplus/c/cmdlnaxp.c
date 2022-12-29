@@ -42,8 +42,8 @@
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
-#define DEF_CGSW_SWITCHES_ALL   (CGSW_MEMORY_LOW_FAILS)
-#define DEF_CGSW_SWITCHES       0
+#define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS)
+#define DEF_CGSW_GEN_SWITCHES       0
 
 #define DEF_CGSW_AXP_SWITCHES  0
 
@@ -51,7 +51,7 @@
 void CmdSysInit( void )
 /*********************/
 {
-    GenSwitches = DEF_CGSW_SWITCHES | DEF_CGSW_SWITCHES_ALL;
+    GenSwitches = DEF_CGSW_GEN_SWITCHES | DEF_CGSW_GEN_SWITCHES_ALL;
     TargetSwitches = DEF_CGSW_AXP_SWITCHES;
     CodeClassName = NULL;
     TextSegName = strsave( "" );
@@ -79,7 +79,7 @@ char *CmdSysEnvVar( void )
 void CmdSysSetMaxOptimization( void )
 /***********************************/
 {
-    GenSwitches |= CGSW_I_MATH_INLINE;
+    GenSwitches |= CGSW_GEN_I_MATH_INLINE;
 }
 
 static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
@@ -117,28 +117,28 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 
 static void macroDefs( void )
 {
-    if( GenSwitches & CGSW_I_MATH_INLINE ) {
+    if( GenSwitches & CGSW_GEN_I_MATH_INLINE ) {
         DefSwitchMacro( "OM" );
     }
-    if( GenSwitches & CGSW_NO_CALL_RET_TRANSFORM ) {
+    if( GenSwitches & CGSW_GEN_NO_CALL_RET_TRANSFORM ) {
         DefSwitchMacro( "OC" );
     }
     if( TargetSwitches & CGSW_RISC_ASM_OUTPUT ) {
         DefSwitchMacro( "LA" );
     }
-    if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION ) {
         DefSwitchMacro( "OD" );
     }
-    if( GenSwitches & CGSW_RELAX_ALIAS ) {
+    if( GenSwitches & CGSW_GEN_RELAX_ALIAS ) {
         DefSwitchMacro( "OA" );
     }
-    if( GenSwitches & CGSW_BRANCH_PREDICTION ) {
+    if( GenSwitches & CGSW_GEN_BRANCH_PREDICTION ) {
         DefSwitchMacro( "OB" );
     }
-    if( GenSwitches & CGSW_LOOP_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_LOOP_OPTIMIZATION ) {
         DefSwitchMacro( "OL" );
     }
-    if( GenSwitches & CGSW_INS_SCHEDULING ) {
+    if( GenSwitches & CGSW_GEN_INS_SCHEDULING ) {
         DefSwitchMacro( "OR" );
     }
 
@@ -261,28 +261,28 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 {
     char *target_name = NULL;
 
-    GenSwitches &= ~(CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF);
+    GenSwitches &= ~(CGSW_GEN_DBG_CV | CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF);
     switch( data->dbg_output ) {
     case OPT_ENUM_dbg_output_hd:
     default:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= CGSW_DBG_DF;
+        GenSwitches |= CGSW_GEN_DBG_DF;
         break;
     case OPT_ENUM_dbg_output_hda:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= CGSW_DBG_DF | CGSW_DBG_PREDEF;
+        GenSwitches |= CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF;
         break;
 #if 0
     case OPT_ENUM_dbg_output_hw:
-        GenSwitches &= ~(CGSW_DBG_CV | CGSW_DBG_DF | CGSW_DBG_PREDEF);
+        GenSwitches &= ~(CGSW_GEN_DBG_CV | CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF);
         break;
 #endif
     case OPT_ENUM_dbg_output_hc:
-        GenSwitches |= CGSW_DBG_CV;
+        GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     }
     // -zw overrides a build target setting
@@ -305,10 +305,10 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         TargetSwitches |= CGSW_RISC_OWL_LOGGING;
     }
     if( data->oc ) {
-        GenSwitches |= CGSW_NO_CALL_RET_TRANSFORM;
+        GenSwitches |= CGSW_GEN_NO_CALL_RET_TRANSFORM;
     }
     if( data->om ) {
-        GenSwitches |= CGSW_I_MATH_INLINE;
+        GenSwitches |= CGSW_GEN_I_MATH_INLINE;
     }
     if( data->nm ) {
         SetStringOption( &ModuleName, &(data->nm_value) );
@@ -317,7 +317,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         TargetSwitches |= CGSW_RISC_STACK_INIT;
     }
     if( data->iso == OPT_ENUM_iso_za ) {
-        GenSwitches &= ~CGSW_I_MATH_INLINE;
+        GenSwitches &= ~CGSW_GEN_I_MATH_INLINE;
     }
     if( data->vcap ) {
         CompFlags.vc_alloca_parm = true;

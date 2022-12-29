@@ -89,7 +89,7 @@ conflict_node   *AddConflictNode( name *opnd )
     } else {
         if( opnd->m.memory_type == CG_FE ) {
             attr = FEAttr( opnd->v.symbol );
-            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL | FE_VISIBLE)) == 0 ) && _IsModel( CGSW_RELAX_ALIAS ) ) ) {
+            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL | FE_VISIBLE)) == 0 ) && _IsModel( CGSW_GEN_RELAX_ALIAS ) ) ) {
                 _SetTrue( new, CST_OK_ACROSS_CALLS );
             }
         }
@@ -162,7 +162,7 @@ conflict_node   *FindConflictNode( name *opnd, block *blk, instruction *ins )
     old = opnd;
     if( opnd->n.class == N_TEMP ) {
         opnd = DeAlias( opnd );
-    } else if( ( opnd->n.class != N_MEMORY || _IsntModel( CGSW_RELAX_ALIAS ) ) ) {
+    } else if( ( opnd->n.class != N_MEMORY || _IsntModel( CGSW_GEN_RELAX_ALIAS ) ) ) {
         return( NULL );
     }
     _INS_NOT_BLOCK( ins );

@@ -82,7 +82,7 @@ bool    CreateBreak( void )
     if( HeadBlock == NULL ) {
         return( false );
     }
-    if( _IsntModel( CGSW_FORTRAN_ALIASING ) ) {
+    if( _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
         return( false );
     }
     if( !FixReturns() ) {

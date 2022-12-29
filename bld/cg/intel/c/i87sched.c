@@ -614,7 +614,7 @@ static  void    CheckTemp( instruction *ins, name *op, bool defined )
 /*******************************************************************/
 {
     if( op->n.class == N_MEMORY ) {
-        if( _IsntModel( CGSW_RELAX_ALIAS ) ) {
+        if( _IsntModel( CGSW_GEN_RELAX_ALIAS ) ) {
             return;
         }
     } else if( op->n.class != N_TEMP ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,7 +170,7 @@ void    WVDumpName( dbg_name name, dbg_type tipe )
 
     NewType( &temp, WT_NAME + NAME_NAME );
     name->refno = TypeIdx;
-    if( _IsModel( CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         BuffIndex( name->scope );
         if( tipe == DBG_FWD_TYPE ) {
             BuffForward( &name->patch );
@@ -593,7 +593,7 @@ static  void    EndType( bool check_too_big ) {
 /*********************************************/
 
 
-    if( _IsModel( CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         if( check_too_big )
             ChkDbgSegSize( MAX_TYPE_SIZE, true );
         BuffEnd( DbgTypes );

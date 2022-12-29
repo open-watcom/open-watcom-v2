@@ -348,7 +348,7 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
         conf->name->v.usage |= USE_MEMORY;
     }
     opnd = tree->temp;
-    if( _IsModel( CGSW_DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         DBAllocReg( reg_name, opnd );
     }
 
@@ -529,14 +529,14 @@ static signed_32     CountRegMoves( conflict_node *conf,
         }
     }
 #if ( _TARGET & _TARG_370 ) == 0
-    if( _IsModel( CGSW_SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
 #endif
         count += CountRegMoves( conf, HighOffsetReg( reg ), tree->hi, levels );
         count += CountRegMoves( conf, LowOffsetReg( reg ), tree->lo, levels );
 #if ( _TARGET & _TARG_370 ) == 0
     }
 #endif
-    if( _IsModel( CGSW_SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
         /*
          * This is really expensive, compile time-wise, but what it does is
          * checks to see if we have an intervening temp or two that may turn
@@ -1328,7 +1328,7 @@ bool    RegAlloc( bool keep_on_truckin )
             FreeConflicts();
             NullConflicts( EMPTY );
             HaveLiveInfo = false;
-            if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 DeadInstructions();
                 FindReferences();
                 PropagateMoves();

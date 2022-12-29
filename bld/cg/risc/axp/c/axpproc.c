@@ -546,13 +546,13 @@ void    GenProlog( void )
 
     old_segid = SetOP( AskCodeSeg() );
     label = CurrProc->label;
-    if( _IsModel( CGSW_DBG_NUMBERS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
         OutFileStart( HeadBlock->ins.hd.line_num );
     }
     TellKeepLabel( label );
     TellProcLabel( label );
     CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.hd.line_num );
-    if( _IsModel( CGSW_DBG_LOCALS ) ) {  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
         // DbgRtnBeg( CurrProc->targ.debug, lc );
         EmitRtnBeg( /*label, HeadBlock->ins.hd.line_num*/ );
     }

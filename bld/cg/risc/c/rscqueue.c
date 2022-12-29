@@ -78,12 +78,12 @@ static  void    dumpDebug( void ) {
         OutLineNum( debugOC.oc_linenum.line, debugOC.oc_linenum.label_line );
         break;
     case OC_INFO_DBG_RTN_BEG:
-        if( _IsModel( CGSW_DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgRtnBeg( debugOC.oc_debug.ptr, loc );
         }
         break;
     case OC_INFO_DBG_EPI_BEG:
-        if( _IsModel( CGSW_DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgEpiBeg( debugOC.oc_debug.ptr, loc );
         }
         break;
@@ -121,19 +121,19 @@ static  void    doInfo( any_oc *oc ) {
         break;
     case OC_INFO_DBG_PRO_END:
         lc = AskLocation();
-        if( _IsModel( CGSW_DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgProEnd( oc->oc_debug.ptr, lc );
         }
         prologueEnd = lc;
         break;
     case OC_INFO_DBG_RTN_END:
-        if( _IsModel( CGSW_DBG_NUMBERS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             OutFuncEnd( lc );
         }
-        if( _IsModel( CGSW_DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgRtnEnd( oc->oc_debug.ptr, AskLocation() );
         }
-        if( _IsModel( CGSW_OBJ_COFF ) ) {
+        if( _IsModel( CGSW_GEN_OBJ_COFF ) ) {
             // Only emit .pdata section into COFF objects; there might be some
             // better mechanism to decide whether .pdata should be emitted.
             lc = AskLocation();
@@ -163,7 +163,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     case OC_RCODE:
         if( _HasReloc( &oc->oc_rins ) ) {
             OutReloc( oc->oc_rins.sym, oc->oc_rins.reloc, 0 );
-            if( _IsModel( CGSW_OBJ_COFF ) ) {
+            if( _IsModel( CGSW_GEN_OBJ_COFF ) ) {
                 // ELF doesn't do pair relocs, just don't emit them
                 if( oc->oc_rins.reloc == OWL_RELOC_HALF_HI ) {
                     OutReloc( oc->oc_rins.sym, OWL_RELOC_PAIR, 0 );
@@ -209,7 +209,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
             lc = AskLocation();
             procStart = lc;
             procLabel = lbl;
-            if( _IsModel( CGSW_DBG_NUMBERS ) ) {
+            if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
                 OutFuncStart( lbl, lc, oc->oc_handle.line );
             }
         }

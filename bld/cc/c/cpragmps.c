@@ -65,7 +65,7 @@ void AsmUsesAuto( aux_info *info )
      * for the use of this pragma. This is done by saying the pragma
      * modifies the [E]SP register. A kludge, but it works.
      */
-//    info->cclass |= FECALL_GENERATE_STACK_FRAME;
+//    info->cclass |= FECALL_GEN_GENERATE_STACK_FRAME;
 //    HW_CTurnOff( info->save, HW_xSP );
 }
 
@@ -286,7 +286,7 @@ void PragAux( void )
                 have.uses_auto = GetByteSeq( &AuxInfo );
                 have.f_call = true;
             } else if( !have.f_export && PragRecogId( "export" ) ) {
-                AuxInfo.cclass |= FECALL_DLL_EXPORT;
+                AuxInfo.cclass |= FECALL_GEN_DLL_EXPORT;
                 have.f_export = true;
             } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                 GetParmInfo();
@@ -295,13 +295,13 @@ void PragAux( void )
                 GetRetInfo();
                 have.f_value = true;
             } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                AuxInfo.cclass |= FECALL_ABORTS;
+                AuxInfo.cclass |= FECALL_GEN_ABORTS;
                 have.f_value = true;
             } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                 GetSaveInfo();
                 have.f_modify = true;
             } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-//                AuxInfo.cclass |= FECALL_GENERATE_STACK_FRAME;
+//                AuxInfo.cclass |= FECALL_GEN_GENERATE_STACK_FRAME;
                 have.f_frame = true;
             } else {
                 break;

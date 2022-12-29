@@ -128,7 +128,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->parm.offset  = 0;
     InitPPCParmState( state );
     type_class = ReturnTypeClass( tipe, state->attr );
-    if( *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS ) & FECALL_HAS_VARARGS ) {
+    if( *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS ) & FECALL_GEN_HAS_VARARGS ) {
         state->attr |= ROUTINE_HAS_VARARGS;
     }
     UpdateReturn( state, tipe, type_class, aux );

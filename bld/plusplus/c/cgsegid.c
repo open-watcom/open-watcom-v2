@@ -232,6 +232,7 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
         segid = cgSegIdFarVariable( sym, flags, size, control );
     } else {
         bool assume_near = true;
+#if _INTEL_CPU
         if( IsBigData() ) {
             if( flags & TF1_DEFAULT_FAR ) {
                 assume_near = false;
@@ -244,6 +245,7 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
                 }
             }
         }
+#endif
         if( assume_near ) {
             segid = cgSegIdNearVariable( sym, flags, size, control );
         } else {

@@ -150,17 +150,17 @@ void    ObjInit( void )
 {
     OpenObj();
     CurrFNo = 0;
-    if( _IsModel( CGSW_DBG_DF ) ) {
-        if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
             DFDefSegs();
             DFObjInitDbgInfo();
 #if 0 //save for jimr
-        } else if( _IsModel( CGSW_DBG_NUMBERS ) ) {
+        } else if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             DFDefSegs();
             DFObjLineInitDbgInfo();
 #endif
         }
-    } else if( _IsModel( CGSW_DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVDefSegs();
         CVObjInitDbgInfo();
     }
@@ -340,16 +340,16 @@ void    ObjFini( void )
     curr = FindSection( codeSectionId );
     code_size = OWLTellSize( curr->owl_handle  );
 
-    if( _IsModel( CGSW_DBG_DF ) ) {
-        if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
             DoDFSegRange();
             DFObjFiniDbgInfo( code_size );
 #if 0 // save for jimr
-        } else if( _IsModel( CGSW_DBG_NUMBERS ) ) {
+        } else if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             DFObjLineFiniDbgInfo();
 #endif
         }
-    } else if( _IsModel( CGSW_DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVObjFiniDbgInfo();
     }
     DefaultLibs();
@@ -464,7 +464,7 @@ void    InitSegDefs( void )
     #error Unknown RISC target
 #endif
 
-    if( _IsModel( CGSW_OBJ_ELF ) ) {
+    if( _IsModel( CGSW_GEN_OBJ_ELF ) ) {
         format = OWL_FORMAT_ELF;
     } else {
         format = OWL_FORMAT_COFF;
@@ -500,7 +500,7 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
         }
         if( codeSectionId == BACKSEGS ) {
             codeSectionId = segid;
-            if( _IsModel( CGSW_DBG_DF ) ) {
+            if( _IsModel( CGSW_GEN_DBG_DF ) ) {
                 DFBegCCU( segid, NULL );
             }
         }
@@ -527,7 +527,7 @@ void    OutFileStart( int line )
     cue_state           info;
     const char          *fname;
 
-    if( _IsModel( CGSW_DBG_DF | CGSW_DBG_CV ) ){
+    if( _IsModel( CGSW_GEN_DBG_DF | CGSW_GEN_DBG_CV ) ){
         CueFind( line, &info );
         line = info.line;
         if( info.fno != CurrFNo ){
@@ -543,11 +543,11 @@ void    OutFuncStart( label_handle label, offset start, cg_linenum line )
 {
     cue_state            info;
 
-    if( _IsModel( CGSW_DBG_DF | CGSW_DBG_CV ) ){
+    if( _IsModel( CGSW_GEN_DBG_DF | CGSW_GEN_DBG_CV ) ){
         CueFind( line, &info );
         line = info.line;
-        if( _IsModel( CGSW_DBG_DF ) ){
-            if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ){
+        if( _IsModel( CGSW_GEN_DBG_DF ) ){
+            if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ){
                 DFLineNum( &info, start );
             }
         }
@@ -574,13 +574,13 @@ void    OutLineNum( cg_linenum line, bool label_line )
     /* unused parameters */ (void)label_line;
 
     lc = OWLTellOffset( currSection->owl_handle );
-    if( _IsModel( CGSW_DBG_DF | CGSW_DBG_CV ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF | CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
-        if( _IsModel( CGSW_DBG_DF ) ) {
-            if( _IsModel( CGSW_DBG_LOCALS | CGSW_DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+            if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
                 DFLineNum( &info, lc );
             }
-        } else if( _IsModel( CGSW_DBG_CV ) ) {
+        } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
             const char  *fname;
 
             if( info.fno != CurrFNo ) {
@@ -652,7 +652,7 @@ static bool     InlineFunction( cg_sym_handle sym )
         return( false );
     if( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) != NULL )
         return( true );
-    return( (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_MAKE_CALL_INLINE) != 0 );
+    return( (*(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_MAKE_CALL_INLINE) != 0 );
 }
 
 segment_id  AskSegID( pointer hdl, cg_class class )
@@ -768,7 +768,7 @@ void    FlushOP( segment_id segid )
     owl_section_type    tipe;
 
     sect = FindSection( segid );
-    if( _IsModel( CGSW_DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         tipe = OWLTellSectionType( sect->owl_handle );
         switch( tipe ) {
         case OWL_SECTION_INFO:
@@ -1074,11 +1074,11 @@ void    TellObjNewProc( cg_sym_handle proc )
         currSection->is_start = true;
     }
     if( FEAttr( proc ) & FE_COMMON ) {
-        if( _IsModel( CGSW_DBG_CV ) ) { // set the $debug for comdat
+        if( _IsModel( CGSW_GEN_DBG_CV ) ) { // set the $debug for comdat
             CVDefSymComdat( currSection->owl_handle );
         }
     } else {
-        if( _IsModel( CGSW_DBG_CV ) ) {
+        if( _IsModel( CGSW_GEN_DBG_CV ) ) {
             CVDefSymNormal();  // reset to normal $debug section
         }
     }
@@ -1198,7 +1198,7 @@ bool SymIsExported( cg_sym_handle sym )
     if( sym != NULL ) {
         if( FEAttr( sym ) & FE_DLLEXPORT ) {
             exported = true;
-        } else if( *(call_class*)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_DLL_EXPORT ) {
+        } else if( *(call_class*)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_DLL_EXPORT ) {
             exported = true;
         }
     }

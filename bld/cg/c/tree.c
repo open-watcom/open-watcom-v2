@@ -868,7 +868,7 @@ call_handle TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
 
     node = TGNode( TN_PARM, O_NOP, left, (tn)sym, NULL );
     node = TGNode( TN_CALL, O_NOP, node, NULL, tipe );
-    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_REVERSE_PARMS ) {
+    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_REVERSE_PARMS ) {
         node->flags |= TF_REVERSE;
     }
     return( node );
@@ -1433,7 +1433,7 @@ static  name    *TNGetLeafName( tn node )
     case CL_ADDR_GLOBAL:
         return( addr->u.n.name );
     case CL_POINTER:
-        if( _IsModel( CGSW_FORTRAN_ALIASING ) )
+        if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) )
             return( addr->u.n.name );
         return( NULL );
     default:
@@ -1500,7 +1500,7 @@ static  name *TNFindBase( tn node )
         default:
             break;
         }
-        if( _IsntModel( CGSW_FORTRAN_ALIASING ) )
+        if( _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) )
             return( NULL );
         if( node->u2.t.op != O_POINTS )
             return( NULL );
@@ -2321,7 +2321,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     in_line = ( FEAuxInfo( aux, FEINF_CALL_BYTES ) != NULL );
     cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
     retv = TreeGen( addr->u.left );
-    if( cclass & FECALL_MAKE_CALL_INLINE ) {
+    if( cclass & FECALL_GEN_MAKE_CALL_INLINE ) {
         BGDone( retv );
         BGStartInline( sym );
     } else {
@@ -2332,7 +2332,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
         base = TNFindBase( scan->u.left );
         parmtn = scan->u.left;
         scan->u.name = base;
-        if( cclass & FECALL_PARMS_BY_ADDRESS ) {
+        if( cclass & FECALL_GEN_PARMS_BY_ADDRESS ) {
             if( parmtn->class == TN_UNARY && parmtn->u2.t.op == O_POINTS ) {
                 parman = AddrGen( parmtn->u.left );
                 parmtn->u.left = NULL;
@@ -2359,7 +2359,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
                 parman = retv;
             }
         } else {
-            if( in_line || (cclass & FECALL_MAKE_CALL_INLINE) ) {
+            if( in_line || (cclass & FECALL_GEN_MAKE_CALL_INLINE) ) {
                 parman = BGConvert( parman, tipe );
             } else {
 #if _TARGET & _TARG_AXP
@@ -2373,14 +2373,14 @@ static  an  TNCall( tn callhandle, bool ignore_return )
             }
         }
         parman->flags |= FL_STACKABLE;
-        if( cclass & FECALL_MAKE_CALL_INLINE ) {
+        if( cclass & FECALL_GEN_MAKE_CALL_INLINE ) {
             BGAddInlineParm( parman );
         } else {
             BGAddParm( callnode, parman );
         }
     }
     FreeTreeNode( addr );
-    if( cclass & FECALL_MAKE_CALL_INLINE ) {
+    if( cclass & FECALL_GEN_MAKE_CALL_INLINE ) {
         retv = BGStopInline( callhandle, callhandle->tipe );
         NodesToZap = callhandle->u2.t.rite;
         TNZapParms();

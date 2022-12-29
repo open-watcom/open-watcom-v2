@@ -87,7 +87,7 @@ void SymbolicDebugInit( void )
 {
     assert( sizeof( vf_FieldType->dbg.handle ) == sizeof( dbg_type ) );
 
-    if( GenSwitches & CGSW_DBG_TYPES ) {
+    if( GenSwitches & CGSW_GEN_DBG_TYPES ) {
         scopeEnum = DBScope( "enum" );
         scopeUnion = DBScope( "union" );
         scopeStruct = DBScope( "struct" );
@@ -96,7 +96,7 @@ void SymbolicDebugInit( void )
         DbgSuppInit( DSI_NULL );
     }
 
-    if( GenSwitches & CGSW_DBG_LOCALS ) {
+    if( GenSwitches & CGSW_GEN_DBG_LOCALS ) {
         pvf_FieldType = MakeVFTableFieldType( true );
         vf_FieldType = PointerTypeEquivalent( pvf_FieldType )->of;
         vf_FieldTypeSize = CgTypeSize( vf_FieldType );
@@ -533,7 +533,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                            attribute,
                            SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
                 if( SymIsInitialized(  curr ) ) {
-                    if( GenSwitches & CGSW_DBG_LOCALS ) {
+                    if( GenSwitches & CGSW_GEN_DBG_LOCALS ) {
                         DBGenStMem( (cg_sym_handle)curr, dl );
                    }
                }
@@ -638,7 +638,7 @@ static void *symbolicDebugClassType( TYPE type )
 {
     dbg_type ret;
 
-    if( GenSwitches & CGSW_DBG_CV ) {
+    if( GenSwitches & CGSW_GEN_DBG_CV ) {
         ret = symCVDebugClassType( type );
     } else {
         ret = symWVDebugClassType( type );
@@ -853,7 +853,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         if( bflag & TF1_BASED ) {
             dt = basedPointerType( type, base, control );
         } else if( base->flag & TF1_REFERENCE ) {
-            if( GenSwitches & CGSW_DBG_CV ) {
+            if( GenSwitches & CGSW_GEN_DBG_CV ) {
                 dt = DBDereference( CgTypeOutput( type ),
                                     SymbolicDebugType( base->of,
                                                        control&~SD_DEREF ) );
@@ -1086,7 +1086,7 @@ void SymbolicDebugGenSymbol( SYMBOL sym, bool scoped, bool by_ref )
     dbg_loc     dl;
     dl = DBLocInit();
     dl = DBLocSym( dl, symbolicDebugSymAlias( sym ) );
-    if( (GenSwitches & CGSW_DBG_CV) == 0 ) {
+    if( (GenSwitches & CGSW_GEN_DBG_CV) == 0 ) {
         if( by_ref ) {
             pt = MakePointerTo( sym->sym_type );
             dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( pt ) );
@@ -1122,7 +1122,7 @@ static void symbolicDebugSymbol( void )
             IsCppNameInterestingDebug( curr ) ) {
             SymbolicDebugGenSymbol( curr, false, false );
             DbgAddrTaken( curr );
-        } else if( GenSwitches & CGSW_DBG_CV ) {
+        } else if( GenSwitches & CGSW_GEN_DBG_CV ) {
             if( SymIsTypedef( curr ) ) {
                 DBTypeDef( CppNameDebug( curr ) ,
                       SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
@@ -1134,13 +1134,13 @@ static void symbolicDebugSymbol( void )
 void SymbolicDebugEmit( void )
 /****************************/
 {
-    if( GenSwitches & CGSW_DBG_TYPES ) {
+    if( GenSwitches & CGSW_GEN_DBG_TYPES ) {
         symbolicDebugFundamentalType();
         if( !CompFlags.no_debug_type_names ) {
             symbolicDebugNamedType();
         }
     }
-    if( GenSwitches & CGSW_DBG_LOCALS ) {
+    if( GenSwitches & CGSW_GEN_DBG_LOCALS ) {
         symbolicDebugSymbol();
     }
 }

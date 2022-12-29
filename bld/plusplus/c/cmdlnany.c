@@ -709,10 +709,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->opt_level ) {
     case OPT_ENUM_opt_level_ox:  /* -ox => -obmiler -s */
-        GenSwitches &= ~ CGSW_NO_OPTIMIZATION;
-        GenSwitches |= CGSW_BRANCH_PREDICTION;       // -ob
-        GenSwitches |= CGSW_LOOP_OPTIMIZATION;       // -ol
-        GenSwitches |= CGSW_INS_SCHEDULING;          // -or
+        GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;       // -ob
+        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;       // -ol
+        GenSwitches |= CGSW_GEN_INS_SCHEDULING;          // -or
         CmdSysSetMaxOptimization();             // -om
         CompFlags.inline_intrinsics = true;     // -oi
 #if 0   // Disabled - introduces too many problems which no one is ready to fix
@@ -725,17 +725,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         TOGGLE( check_stack ) = false;         // -s
         break;
     case OPT_ENUM_opt_level_od:
-        GenSwitches |= CGSW_NO_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         break;
     }
     switch( data->opt_size_time ) {
     case OPT_ENUM_opt_size_time_ot:
         OptSize = 0;
-        GenSwitches &= ~ CGSW_NO_OPTIMIZATION;
+        GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
         break;
     case OPT_ENUM_opt_size_time_os:
         OptSize = 100;
-        GenSwitches &= ~ CGSW_NO_OPTIMIZATION;
+        GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
         break;
     default:
         OptSize = 50;
@@ -769,9 +769,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         // optimizing the writing of the debugging info by referring back
         // to the info in another module
         CompFlags.all_debug_type_names = true;
-        GenSwitches |= CGSW_DBG_NUMBERS | CGSW_DBG_TYPES | CGSW_DBG_LOCALS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
-            GenSwitches |= CGSW_NO_OPTIMIZATION;
+            GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
@@ -782,22 +782,22 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.inline_functions = false;
         /* fall through */
     case OPT_ENUM_debug_info_d2:
-        GenSwitches |= CGSW_DBG_NUMBERS | CGSW_DBG_TYPES | CGSW_DBG_LOCALS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
-            GenSwitches |= CGSW_NO_OPTIMIZATION;
+            GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
     case OPT_ENUM_debug_info_d2t:
         CompFlags.no_debug_type_names = true;
-        GenSwitches |= CGSW_DBG_NUMBERS | CGSW_DBG_TYPES | CGSW_DBG_LOCALS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
-            GenSwitches |= CGSW_NO_OPTIMIZATION;
+            GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
     case OPT_ENUM_debug_info_d1:
-        GenSwitches |= CGSW_DBG_NUMBERS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS;
         break;
     case OPT_ENUM_debug_info_d0:
         break;
@@ -815,7 +815,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->bd ) {
         CompFlags.bd_switch_used = true;
-        GenSwitches |= CGSW_DLL_RESIDENT_CODE;
+        GenSwitches |= CGSW_GEN_DLL_RESIDENT_CODE;
     }
     if( data->bm ) {
         CompFlags.bm_switch_used = true;
@@ -960,17 +960,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.batch_file_continue = true;
     }
     if( data->oa ) {
-        GenSwitches |= CGSW_RELAX_ALIAS;
+        GenSwitches |= CGSW_GEN_RELAX_ALIAS;
     }
     if( data->ob ) {
-        GenSwitches |= CGSW_BRANCH_PREDICTION;
+        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;
     }
     // following must follow processing of debug options
     if( data->oe ) {
         CgBackSetOeSize( data->oe_value );
     }
     if( data->oh ) {
-        GenSwitches |= CGSW_SUPER_OPTIMAL;
+        GenSwitches |= CGSW_GEN_SUPER_OPTIMAL;
     }
     if( data->oi ) {
         CompFlags.inline_intrinsics = true;
@@ -984,31 +984,31 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
 #endif
     }
     if( data->ok ) {
-        GenSwitches |= CGSW_FLOW_REG_SAVES;
+        GenSwitches |= CGSW_GEN_FLOW_REG_SAVES;
     }
     if( data->ol ) {
-        GenSwitches |= CGSW_LOOP_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;
     }
     if( data->ol_plus ) {
-        GenSwitches |= CGSW_LOOP_UNROLLING;
+        GenSwitches |= CGSW_GEN_LOOP_UNROLLING;
     }
     if( data->on ) {
-        GenSwitches |= CGSW_FP_UNSTABLE_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_FP_UNSTABLE_OPTIMIZATION;
     }
     if( data->oo ) {
-        GenSwitches &= ~ CGSW_MEMORY_LOW_FAILS;
+        GenSwitches &= ~ CGSW_GEN_MEMORY_LOW_FAILS;
     }
     if( data->op ) {
         CompFlags.op_switch_used = true;
     }
     if( data->or ) {
-        GenSwitches |= CGSW_INS_SCHEDULING;
+        GenSwitches |= CGSW_GEN_INS_SCHEDULING;
     }
     if( data->ou ) {
         CompFlags.unique_functions = true;
     }
     if( data->oz ) {
-        GenSwitches |= CGSW_NULL_DEREF_OK;
+        GenSwitches |= CGSW_GEN_NULL_DEREF_OK;
     }
     if( data->pil ) {
         CompFlags.cpp_ignore_line = true;

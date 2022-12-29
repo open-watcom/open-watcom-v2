@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -303,7 +303,7 @@ void FlowSave( hw_reg_set *preg )
     type_class_def      reg_type_class;
 
     HW_CAsgn( flowedRegs, HW_EMPTY );
-    if( _IsntModel( CGSW_FLOW_REG_SAVES ) )
+    if( _IsntModel( CGSW_GEN_FLOW_REG_SAVES ) )
         return;
     if( !HaveDominatorInfo )
         return;

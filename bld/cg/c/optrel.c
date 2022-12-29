@@ -132,7 +132,7 @@ static  bool    InRange( void )
     label_handle    jmp_lbl;
 
   optbegin
-    if( _IsModel( CGSW_NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) )
         optreturn( false );
     jmp_lbl = Handle->redirect;
     /* we don't have a redirection for this label*/
@@ -159,14 +159,14 @@ static  void    BigBranch( ins_entry *add, ins_entry *jmp )
 */
 {
   optbegin
-    if( jmp != NULL && _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( jmp != NULL && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         /* jump to a jump that's going where we want*/
         HndlRedirect( AddNewLabel( PrevIns( jmp ), 0 ) );
         ChgLblRef( FirstIns, Handle->redirect );
     } else if( InRange() ) {
         /* use old redirection label*/
         ChgLblRef( FirstIns, Handle->redirect );
-    } else if( add != NULL && _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+    } else if( add != NULL && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         /* add a jump that's in range*/
         AddNewJump( add, Handle );
         _Savings( OPT_JUMPS, -_ObjLen( NextIns( add ) ) );

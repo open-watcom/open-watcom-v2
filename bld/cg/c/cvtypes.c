@@ -165,7 +165,7 @@ static  int  EndSub( cv_out *out )
 
     AlignBuff( out );
     len = out->ptr - out->buff;
-    if( _IsModel( CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         old_segid = SetOP( CVTypes );
 //        here = AskBigLocation();
         DataBytes( len, out->buff );
@@ -182,7 +182,7 @@ static  long_offset   EndTypeString( cv_out *out )
     unsigned        len;
     long_offset     here = 0;
 
-    if( _IsModel( CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         AlignBuff( out );
         len = out->ptr - out->buff;
         *((u2 *)&out->buff[0]) = len - sizeof( u2 );  /* set type rec len*/
@@ -534,7 +534,7 @@ void    CVDumpName( dbg_name name, dbg_type tipe )
         NewTypeString( out );
         tipe = ++TypeIdx;
         name->refno = tipe;
-        if( _IsModel( CGSW_DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             mod = StartType( out, LFG_MODIFIER );
             mod->attr.s = 0;
             mod->index = tipe;

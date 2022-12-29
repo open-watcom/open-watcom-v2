@@ -373,7 +373,7 @@ void    GenCall( instruction *ins )
         } else {
             CodeBytes( code->data, code->length );
         }
-    } else if( (cclass & FECALL_ABORTS)
+    } else if( (cclass & FECALL_GEN_ABORTS)
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
@@ -397,7 +397,7 @@ void    GenCall( instruction *ins )
         }
         DoCall( lbl, imp, (cclass & FECALL_X86_FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
     }
-    if( (cclass & (FECALL_ABORTS | FECALL_NORETURN))
+    if( (cclass & (FECALL_GEN_ABORTS | FECALL_GEN_NORETURN))
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }

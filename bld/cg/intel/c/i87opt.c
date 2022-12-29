@@ -365,7 +365,7 @@ static  bool    FSinCos( instruction *ins1 )
     instruction *ins3;
     instruction *ins4;
 
-    if( _IsntModel( CGSW_I_MATH_INLINE ) ) {
+    if( _IsntModel( CGSW_GEN_I_MATH_INLINE ) ) {
         return( false );
     }
     ins2 = ins1->head.next;
@@ -810,7 +810,7 @@ void    FPOptimize( void )
 */
 {
     if( _FPULevel( FPU_87 ) ) {
-        if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+        if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
             Opt8087();
         }
         Wait8087();

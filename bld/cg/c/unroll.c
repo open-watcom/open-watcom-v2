@@ -292,7 +292,7 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
     *clean = false;
     unroll_count = Head->unroll_count;
     if( unroll_count == 0 ) {
-        if( _IsntModel( CGSW_LOOP_UNROLLING ) )
+        if( _IsntModel( CGSW_GEN_LOOP_UNROLLING ) )
             return( 0 );
         if( OptForSize > 0 )
             return( false );

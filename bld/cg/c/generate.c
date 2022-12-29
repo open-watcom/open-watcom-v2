@@ -149,7 +149,7 @@ static  void            PreOptimize( void )
 {
     bool        change;
 
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
 //      CharsAndShortsToInts();
         MakeMovAddrConsts();
         PushPostOps();
@@ -157,11 +157,11 @@ static  void            PreOptimize( void )
         InsDead();
         MakeFlowGraph();
         BlockTrim();
-        CommonSex( _IsModel( CGSW_LOOP_OPTIMIZATION ) );
+        CommonSex( _IsModel( CGSW_GEN_LOOP_OPTIMIZATION ) );
         SetOnCondition();
         BlockTrim();
         AddANop();
-        if( _IsModel( CGSW_LOOP_OPTIMIZATION ) ) {
+        if( _IsModel( CGSW_GEN_LOOP_OPTIMIZATION ) ) {
             change = false;
             if( TransLoops( false ) ) {
                 change = true;
@@ -216,7 +216,7 @@ static  block           *NextBlock( block *blk, void *parm )
 static  void            PostOptimize( void )
 /******************************************/
 {
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         // Run peephole optimizer again. Important: It is critical that the
         // new instructions can be directly generated because RegAlloc is
         // done by now. PeepOpt() is responsible for verifying that.
@@ -229,7 +229,7 @@ static  void            PostOptimize( void )
         DeadInstructions();
     }
     MergeIndex();
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
     #if (_TARGET & _TARG_RISC) == 0
         //
         // Calling Conditions() at this point has nice optimization effect,
@@ -267,10 +267,10 @@ static  void            PostOptimize( void )
     #endif
     }
     FPExpand();
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         DeadInstructions();   // cleanup junk after Conditions()
         // Run scheduler last, when all instructions are stable
-        if( _IsModel( CGSW_INS_SCHEDULING ) ) {
+        if( _IsModel( CGSW_GEN_INS_SCHEDULING ) ) {
             HaveLiveInfo = false;
             Schedule(); /* NOTE: Schedule messes up live information */
             LiveInfoUpdate();
@@ -377,14 +377,14 @@ static  void    BlockToCode( bool partly_done )
     if( !partly_done ) {
         FixMemRefs();
         HaveLiveInfo = false;
-        if( _IsntModel( CGSW_NO_OPTIMIZATION | CGSW_FORTRAN_ALIASING ) ) {
+        if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION | CGSW_GEN_FORTRAN_ALIASING ) ) {
             FindReferences();
             CommonSex(false);
             PushPostOps();
         }
         FindReferences();
         DeadTemps();
-        if( _IsModel( CGSW_NO_OPTIMIZATION ) ) {
+        if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
             SetInOut( HeadBlock );
         } else {
             MakeConflicts();
@@ -469,7 +469,7 @@ static  void    FlushBlocks( bool partly_done )
     block       *curr;
     block_class classes;
 
-    if( !BlockByBlock && _IsntModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( !BlockByBlock && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         ProcMessage( MSG_REGALLOC_DIED );
     }
     if( !partly_done ) {
@@ -620,7 +620,7 @@ void    ProcMessage( msg_class msg )
 {
     static proc_def *lastproc = NULL;
 
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) && lastproc != CurrProc ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && lastproc != CurrProc ) {
         FEMessage( msg, AskForLblSym( CurrProc->label ) );
         lastproc = CurrProc;
     }
@@ -639,7 +639,7 @@ void    Generate( bool routine_done )
     HaveDominatorInfo = false;
 #if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
     /* if we want to go fast, generate statement at a time */
-    if( _IsModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         if( !BlockByBlock ) {
             InitStackMap();
             BlockByBlock = true;
@@ -697,7 +697,7 @@ void    Generate( bool routine_done )
         return;
     }
     MakeConflicts();
-    if( _IsModel( CGSW_LOOP_OPTIMIZATION ) ) {
+    if( _IsModel( CGSW_GEN_LOOP_OPTIMIZATION ) ) {
         SplitVars();
     }
     AddCacheRegs();

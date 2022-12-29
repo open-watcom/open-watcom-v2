@@ -485,19 +485,19 @@ static void SetGenSwitches( void )
         /* nothing to do */
         break;
     case SW_DF_CV:
-        GenSwitches |= CGSW_DBG_CV;
+        GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     case SW_DF_DEF:
         /* DWARF is the default */
     case SW_DF_DWARF:
-        GenSwitches |= CGSW_DBG_DF;
+        GenSwitches |= CGSW_GEN_DBG_DF;
         break;
     case SW_DF_DWARF_A:
-        GenSwitches |= CGSW_DBG_DF | CGSW_DBG_PREDEF;
+        GenSwitches |= CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF;
         SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYP_USHORT ), SC_EXTERN );
         break;
     case SW_DF_DWARF_G:
-        GenSwitches |= CGSW_DBG_DF | CGSW_DBG_PREDEF;
+        GenSwitches |= CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF;
         SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYP_USHORT ), SC_NONE );
         break;
     }
@@ -505,10 +505,9 @@ static void SetGenSwitches( void )
 
 static void MacroDefs( void )
 {
-    if( GenSwitches & CGSW_I_MATH_INLINE ) {
+    if( GenSwitches & CGSW_GEN_I_MATH_INLINE ) {
         Define_Macro( "__SW_OM" );
     }
-
 #if _INTEL_CPU
   #if _CPU == 8086
     #define MX86 "M_I86"
@@ -610,38 +609,38 @@ static void MacroDefs( void )
     }
 #endif
 #if _RISC_CPU
-    if( GenSwitches & CGSW_OBJ_ENDIAN_BIG ) {
+    if( GenSwitches & CGSW_GEN_OBJ_ENDIAN_BIG ) {
         Define_Macro( "__BIG_ENDIAN__" );
     }
 #endif
-    if( GenSwitches & CGSW_NO_CALL_RET_TRANSFORM ) {
+    if( GenSwitches & CGSW_GEN_NO_CALL_RET_TRANSFORM ) {
         Define_Macro( "__SW_OC" );
     }
-    if( GenSwitches & CGSW_SUPER_OPTIMAL ) {
+    if( GenSwitches & CGSW_GEN_SUPER_OPTIMAL ) {
         Define_Macro( "__SW_OH" );
     }
-    if( GenSwitches & CGSW_FLOW_REG_SAVES ) {
+    if( GenSwitches & CGSW_GEN_FLOW_REG_SAVES ) {
         Define_Macro( "__SW_OK" );
     }
-    if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION ) {
         Define_Macro( "__SW_OD" );
     }
-    if( GenSwitches & CGSW_RELAX_ALIAS ) {
+    if( GenSwitches & CGSW_GEN_RELAX_ALIAS ) {
         Define_Macro( "__SW_OA" );
     }
-    if( GenSwitches & CGSW_LOOP_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_LOOP_OPTIMIZATION ) {
         Define_Macro( "__SW_OL" );
     }
-    if( GenSwitches & CGSW_INS_SCHEDULING ) {
+    if( GenSwitches & CGSW_GEN_INS_SCHEDULING ) {
         Define_Macro( "__SW_OR" );
     }
-    if( GenSwitches & CGSW_FP_UNSTABLE_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_FP_UNSTABLE_OPTIMIZATION ) {
         Define_Macro( "__SW_ON" );
     }
-    if( GenSwitches & CGSW_FPU_ROUNDING_OMIT ) {
+    if( GenSwitches & CGSW_GEN_FPU_ROUNDING_OMIT ) {
         Define_Macro( "__SW_ZRO" );
     }
-    if( GenSwitches & CGSW_FPU_ROUNDING_INLINE ) {
+    if( GenSwitches & CGSW_GEN_FPU_ROUNDING_INLINE ) {
         Define_Macro( "__SW_ZRI" );
     }
     if( CompFlags.use_long_double ) {
@@ -945,7 +944,7 @@ static void Set_FPD( void )         { TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK
 static void SetMemoryModel( void )  { SwData.mem = OptValue; }
 #endif
 
-static void Set_BD( void )          { CompFlags.bd_switch_used = true; GenSwitches |= CGSW_DLL_RESIDENT_CODE; }
+static void Set_BD( void )          { CompFlags.bd_switch_used = true; GenSwitches |= CGSW_GEN_DLL_RESIDENT_CODE; }
 static void Set_BC( void )          { CompFlags.bc_switch_used = true; }
 static void Set_BG( void )          { CompFlags.bg_switch_used = true; }
 static void Set_BM( void )          { CompFlags.bm_switch_used = true; }
@@ -977,25 +976,25 @@ static void Set_AQ( void )          { CompFlags.no_check_qualifiers = true; }
 static void Set_D0( void )
 {
     debug_optimization_change = false;
-    GenSwitches &= ~(CGSW_DBG_NUMBERS | CGSW_DBG_TYPES | CGSW_DBG_LOCALS);
+    GenSwitches &= ~(CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS);
     CompFlags.debug_info_some = false;
     CompFlags.no_debug_type_names = false;
     EnsureEndOfSwitch();
 }
 static void Set_D1( void )
 {
-    GenSwitches |= CGSW_DBG_NUMBERS;
+    GenSwitches |= CGSW_GEN_DBG_NUMBERS;
     if( *OptScanPtr == '+' ) {
         ++OptScanPtr;
         CompFlags.debug_info_some = true;
-        GenSwitches |= CGSW_DBG_TYPES | CGSW_DBG_LOCALS;
+        GenSwitches |= CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
     }
     EnsureEndOfSwitch();
 }
 static void Set_D2( void )
 {
     debug_optimization_change = true;
-    GenSwitches |= CGSW_DBG_NUMBERS | CGSW_DBG_TYPES | CGSW_DBG_LOCALS;
+    GenSwitches |= CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
     if( *OptScanPtr == '~' ) {
         ++OptScanPtr;
         CompFlags.no_debug_type_names = true;
@@ -1060,19 +1059,19 @@ static void Set_ETP( void )         { TargetSwitches |= CGSW_X86_NEW_P5_PROFILIN
 static void Set_ESP( void )         { TargetSwitches |= CGSW_X86_STATEMENT_COUNTING; }
   #if _CPU == 386
 static void Set_EZ( void )          { TargetSwitches |= CGSW_X86_EZ_OMF; }
-static void Set_OMF( void )         { GenSwitches &= ~(CGSW_OBJ_ELF | CGSW_OBJ_COFF); }
+static void Set_OMF( void )         { GenSwitches &= ~(CGSW_GEN_OBJ_ELF | CGSW_GEN_OBJ_COFF); }
   #endif
 #endif
 
 #if _RISC_CPU /* || _CPU == 386 */
-static void Set_ELF( void )         { GenSwitches &= ~CGSW_OBJ_OWL;
-                                      GenSwitches |= CGSW_OBJ_ELF; }
-static void Set_COFF( void )        { GenSwitches &= ~CGSW_OBJ_OWL;
-                                      GenSwitches |= CGSW_OBJ_COFF; }
+static void Set_ELF( void )         { GenSwitches &= ~CGSW_GEN_OBJ_OWL;
+                                      GenSwitches |= CGSW_GEN_OBJ_ELF; }
+static void Set_COFF( void )        { GenSwitches &= ~CGSW_GEN_OBJ_OWL;
+                                      GenSwitches |= CGSW_GEN_OBJ_COFF; }
 #endif
 #if _RISC_CPU
-static void Set_EndianLittle( void ) { GenSwitches &= ~CGSW_OBJ_ENDIAN_BIG; }
-static void Set_EndianBig( void )    { GenSwitches |= CGSW_OBJ_ENDIAN_BIG; }
+static void Set_EndianLittle( void ) { GenSwitches &= ~CGSW_GEN_OBJ_ENDIAN_BIG; }
+static void Set_EndianBig( void )    { GenSwitches |= CGSW_GEN_OBJ_ENDIAN_BIG; }
 #endif
 
 static void Set_EP( void )
@@ -1166,7 +1165,7 @@ static void SetGroup( void )        { GenCodeGroup = CopyOfParm(); }
 #endif
 static void SetModuleName( void )   { ModuleName = CopyOfParm(); }
 
-static void SetAPILogging( void )   { GenSwitches |= CGSW_ECHO_API_CALLS; }
+static void SetAPILogging( void )   { GenSwitches |= CGSW_GEN_ECHO_API_CALLS; }
 
 #ifndef NDEBUG
 #if _RISC_CPU
@@ -1269,7 +1268,7 @@ static void Set_ZA( void )
     CompFlags.extensions_enabled = false;
     CompFlags.non_iso_compliant_names_enabled = false;
     CompFlags.unique_functions = true;
-    GenSwitches &= ~CGSW_I_MATH_INLINE;
+    GenSwitches &= ~CGSW_GEN_I_MATH_INLINE;
 }
 
 static void SetStrictANSI( void )
@@ -1339,14 +1338,14 @@ static void Set_ZPW( void )         { CompFlags.slack_byte_warning = true; }
 #if _INTEL_CPU
 static void Set_ZRO( void )
 {
-    GenSwitches |= CGSW_FPU_ROUNDING_OMIT;
-    GenSwitches &= ~CGSW_FPU_ROUNDING_INLINE;
+    GenSwitches |= CGSW_GEN_FPU_ROUNDING_OMIT;
+    GenSwitches &= ~CGSW_GEN_FPU_ROUNDING_INLINE;
 }
 
 static void Set_ZRI( void )
 {
-    GenSwitches |= CGSW_FPU_ROUNDING_INLINE;
-    GenSwitches &= ~CGSW_FPU_ROUNDING_OMIT;
+    GenSwitches |= CGSW_GEN_FPU_ROUNDING_INLINE;
+    GenSwitches &= ~CGSW_GEN_FPU_ROUNDING_OMIT;
 }
 #endif
 
@@ -1461,16 +1460,16 @@ static void Set_PW( void )
 }
 static void Set_PreProcChar( void ) { PreProcChar = *OptScanPtr++; }
 
-static void Set_OA( void )          { GenSwitches |= CGSW_RELAX_ALIAS; }
-static void Set_OB( void )          { GenSwitches |= CGSW_BRANCH_PREDICTION; }
-static void Set_OD( void )          { GenSwitches |= CGSW_NO_OPTIMIZATION; }
+static void Set_OA( void )          { GenSwitches |= CGSW_GEN_RELAX_ALIAS; }
+static void Set_OB( void )          { GenSwitches |= CGSW_GEN_BRANCH_PREDICTION; }
+static void Set_OD( void )          { GenSwitches |= CGSW_GEN_NO_OPTIMIZATION; }
 static void Set_OE( void )
 {
     Inline_Threshold = OptValue;
     TOGGLE( inline ) = true;
 }
 
-static void Set_OC( void )          { GenSwitches |= CGSW_NO_CALL_RET_TRANSFORM; }
+static void Set_OC( void )          { GenSwitches |= CGSW_GEN_NO_CALL_RET_TRANSFORM; }
 #if _INTEL_CPU
 static void Set_OF( void )
 {
@@ -1481,29 +1480,29 @@ static void Set_OF( void )
 }
 static void Set_OP( void )          { CompFlags.op_switch_used = true; }    // force floats to memory
 #endif
-static void Set_OM( void )          { GenSwitches |= CGSW_I_MATH_INLINE; }
-static void Set_OH( void )          { GenSwitches |= CGSW_SUPER_OPTIMAL; }
-static void Set_OK( void )          { GenSwitches |= CGSW_FLOW_REG_SAVES; }
+static void Set_OM( void )          { GenSwitches |= CGSW_GEN_I_MATH_INLINE; }
+static void Set_OH( void )          { GenSwitches |= CGSW_GEN_SUPER_OPTIMAL; }
+static void Set_OK( void )          { GenSwitches |= CGSW_GEN_FLOW_REG_SAVES; }
 static void Set_OI( void )          { CompFlags.inline_functions = true; }
-static void Set_OL( void )          { GenSwitches |= CGSW_LOOP_OPTIMIZATION; }
-static void Set_OL_plus( void )     { GenSwitches |= CGSW_LOOP_OPTIMIZATION | CGSW_LOOP_UNROLLING; }
-static void Set_ON( void )          { GenSwitches |= CGSW_FP_UNSTABLE_OPTIMIZATION; }
-static void Set_OO( void )          { GenSwitches &= ~CGSW_MEMORY_LOW_FAILS; }
-static void Set_OR( void )          { GenSwitches |= CGSW_INS_SCHEDULING; }
-static void Set_OS( void )          { GenSwitches &= ~CGSW_NO_OPTIMIZATION; OptSize = 100; }
-static void Set_OT( void )          { GenSwitches &= ~CGSW_NO_OPTIMIZATION; OptSize = 0; }
+static void Set_OL( void )          { GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION; }
+static void Set_OL_plus( void )     { GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION | CGSW_GEN_LOOP_UNROLLING; }
+static void Set_ON( void )          { GenSwitches |= CGSW_GEN_FP_UNSTABLE_OPTIMIZATION; }
+static void Set_OO( void )          { GenSwitches &= ~CGSW_GEN_MEMORY_LOW_FAILS; }
+static void Set_OR( void )          { GenSwitches |= CGSW_GEN_INS_SCHEDULING; }
+static void Set_OS( void )          { GenSwitches &= ~CGSW_GEN_NO_OPTIMIZATION; OptSize = 100; }
+static void Set_OT( void )          { GenSwitches &= ~CGSW_GEN_NO_OPTIMIZATION; OptSize = 0; }
 static void Set_OU( void )          { CompFlags.unique_functions = true; }
 static void Set_OX( void )
 {
     TOGGLE( check_stack ) = false;
-    GenSwitches &= ~CGSW_NO_OPTIMIZATION;
-    GenSwitches |= CGSW_LOOP_OPTIMIZATION | CGSW_INS_SCHEDULING | CGSW_BRANCH_PREDICTION;
+    GenSwitches &= ~CGSW_GEN_NO_OPTIMIZATION;
+    GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION | CGSW_GEN_INS_SCHEDULING | CGSW_GEN_BRANCH_PREDICTION;
     CompFlags.inline_functions = true;
     OptValue = 20; // Otherwise we effectively disable inlining!
     Set_OE();
-    GenSwitches |= CGSW_I_MATH_INLINE;
+    GenSwitches |= CGSW_GEN_I_MATH_INLINE;
 }
-static void Set_OZ( void )          { GenSwitches |= CGSW_NULL_DEREF_OK; }
+static void Set_OZ( void )          { GenSwitches |= CGSW_GEN_NULL_DEREF_OK; }
 
 // '=' indicates optional '='
 // '#' indicates a decimal numeric value
@@ -2080,7 +2079,7 @@ static void InitCPUModInfo( void )
     PCH_FileName = NULL;
     TargetSwitches = 0;
     TargSys = TS_OTHER;
-    GenSwitches = CGSW_MEMORY_LOW_FAILS;
+    GenSwitches = CGSW_GEN_MEMORY_LOW_FAILS;
 #if _INTEL_CPU
     Stack87 = 8;
     TextSegName = "";
@@ -2095,9 +2094,9 @@ static void InitCPUModInfo( void )
     DataPtrSize = TARGET_POINTER;
     CodePtrSize = TARGET_POINTER;
   #if _CPU == _AXP
-    GenSwitches |= CGSW_OBJ_COFF;
+    GenSwitches |= CGSW_GEN_OBJ_COFF;
   #else
-    GenSwitches |= CGSW_OBJ_ELF;
+    GenSwitches |= CGSW_GEN_OBJ_ELF;
   #endif
 #else
     #error InitCPUModInfo not configured for system
@@ -2226,7 +2225,7 @@ static void Define_Memory_Model( void )
 static void SetDebug( void )
 {
     if( debug_optimization_change ) {
-        GenSwitches |= CGSW_NO_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         CompFlags.inline_functions = false;
     }
 }

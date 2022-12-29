@@ -748,7 +748,7 @@ static  bool    OkToInvert( name *div )
    must have said that it was OK.
 */
 {
-    if( _IsModel( CGSW_FP_UNSTABLE_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_FP_UNSTABLE_OPTIMIZATION ) )
         return( true );
     if( (div->n.class == N_TEMP) && (div->t.temp_flags & CONST_TEMP) ) {
         div = div->v.symbol;

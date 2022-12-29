@@ -65,7 +65,7 @@ static  bool    FlushSomeOpt( pointer_uint size )
         old_segid = SetOP( AskCodeSeg() );
         freed = ShrinkQueue( size );
         SetOP( old_segid );
-        if( _IsntModel( CGSW_NO_OPTIMIZATION ) && !IckyWicky ) {
+        if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !IckyWicky ) {
             IckyWicky = true;
             FEMessage( MSG_PEEPHOLE_FLUSHED, NULL );
         }
@@ -79,7 +79,7 @@ static  bool    FlushSomeOpt( pointer_uint size )
 static  bool    ChkMemLimit( pointer_uint limit )
 /***********************************************/
 {
-    if( _IsModel( CGSW_MEMORY_LOW_FAILS ) )
+    if( _IsModel( CGSW_GEN_MEMORY_LOW_FAILS ) )
         return( false );
     if( MemInUse() - FrlSize <= limit )
         return( false );

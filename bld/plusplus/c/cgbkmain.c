@@ -296,17 +296,17 @@ static SYMBOL transThisSym(     // TRANSLATE TO "this_sym" WHEN NULL
 static void funcDebugInfo(      // DEFINE FUNCTION DEBUGGING INFORMATION
     FN_CTL *fctl )              // - current function control pointer
 {
-    if( fctl->debug_info && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
+    if( fctl->debug_info && ( GenSwitches & CGSW_GEN_DBG_LOCALS ) ) {
         if( SymIsClassMember( fctl->func ) ) {
             SYMBOL this_sym;
             this_sym = transThisSym( NULL, fctl );
-            if( GenSwitches & CGSW_DBG_DF ) {
+            if( GenSwitches & CGSW_GEN_DBG_DF ) {
                 DwarfDebugMemberFunc( fctl->func, this_sym );
             } else {
                 SymbolicDebugMemberFunc( fctl->func, this_sym );
             }
         } else if( SymIsNameSpaceMember( fctl->func ) ) {
-            if( GenSwitches & CGSW_DBG_DF ) {
+            if( GenSwitches & CGSW_GEN_DBG_DF ) {
                 DwarfDebugNameSpaceEnclosed( fctl->func );
             }
         }
@@ -2102,7 +2102,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
                 emitProfilingData( fctl, sym );
             }
             if( fctl->debug_info
-             && ( GenSwitches & CGSW_DBG_LOCALS ) ) {
+             && ( GenSwitches & CGSW_GEN_DBG_LOCALS ) ) {
                 DBModSym( (cg_sym_handle)sym, TY_DEFAULT );
             }
             BlkPosnPush( NULL );
@@ -2363,7 +2363,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             if( scope != NULL ) {
                 scope->u.s.dtor_reqd = false;
                 if( fctl->debug_info
-                 && ( GenSwitches & CGSW_DBG_LOCALS )
+                 && ( GenSwitches & CGSW_GEN_DBG_LOCALS )
                  && ScopeDebugable( scope ) ) {
                     DBBegBlock();
                 }
@@ -2376,7 +2376,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             BlkPosnPush( scope );
             if( scope != NULL ) {
                 if( fctl->debug_info
-                 && ( GenSwitches & CGSW_DBG_LOCALS )
+                 && ( GenSwitches & CGSW_GEN_DBG_LOCALS )
                  && ScopeDebugable( scope ) ) {
                     DBBegBlock();
                 }
@@ -2392,7 +2392,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { SCOPE scope;                    // - scope to be ended
             scope = ins_value.pvalue;
             if( fctl->debug_info
-             && ( GenSwitches & CGSW_DBG_LOCALS )
+             && ( GenSwitches & CGSW_GEN_DBG_LOCALS )
              && ScopeDebugable( scope ) ) {
                 DBEndBlock();
             }
@@ -3132,7 +3132,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
 #ifndef NDEBUG
     TOGGLEDBG( callgraph_scan ) = false;
     if( TOGGLEDBG( dump_cg ) ) {
-        GenSwitches |= CGSW_ECHO_API_CALLS;
+        GenSwitches |= CGSW_GEN_ECHO_API_CALLS;
     }
 #endif
     CtxSetCurrContext( CTX_CG_FUNC );
@@ -3155,7 +3155,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
             cdtorSym = AllocSymbol();
             cdtorSym->id = SYMC_AUTO;
             statics = NULL;
-            if( GenSwitches & CGSW_DBG_DF ) {
+            if( GenSwitches & CGSW_GEN_DBG_DF ) {
                 DwarfDebugInit();
                 DwarfDebugEmit();
             } else {
@@ -3163,7 +3163,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
                 SymbolicDebugEmit();
             }
 #ifdef FASTCG
-            if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
+            if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION ) {
                 InitExpressCode( SEG_CONST2, 1 );
             }
 #endif
@@ -3181,7 +3181,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
             } while( sig_thunk_genned );
             freeObjTables();
             CgioWalkFiles( &CgioFreeFile );
-            if( GenSwitches & CGSW_DBG_DF ) {
+            if( GenSwitches & CGSW_GEN_DBG_DF ) {
                 DwarfDebugFini();
             } else {
                 SymbolicDebugFini();

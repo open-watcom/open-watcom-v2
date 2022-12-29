@@ -47,7 +47,7 @@ SYMBOL DefaultDataSymbol;
 void DbgSuppSegRequest( void )
 /****************************/
 {
-    if( GenSwitches & (CGSW_DBG_TYPES | CGSW_DBG_LOCALS | CGSW_DBG_DF) ) {
+    if( GenSwitches & (CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_DF) ) {
         SegmentMarkUsed( SEG_CODE );
         SegmentMarkUsed( SEG_BSS );
     }

@@ -64,7 +64,7 @@
 
 #define WORDS_COUNT(size)   (((size) + WORD_SIZE - 1) / WORD_SIZE)
 
-#define WINDOWS_CHEAP  ( ( _IsModel( CGSW_DLL_RESIDENT_CODE ) &&         \
+#define WINDOWS_CHEAP  ( ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE ) &&         \
                ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
             || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS )                    \
                && (CurrProc->prolog_state & (GENERATE_EXPORT | GENERATE_FAT_PROLOG)) == 0 ) )
@@ -72,7 +72,7 @@
 #define DO_WINDOWS_CRAP ( _IsTargetModel( CGSW_X86_WINDOWS )                 \
                && ( !WINDOWS_CHEAP || CurrProc->contains_call ) )
 
-#define DO_BP_CHAIN ( ( (_IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) || _IsModel( CGSW_DBG_CV ) ) \
+#define DO_BP_CHAIN ( ( (_IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) || _IsModel( CGSW_GEN_DBG_CV ) ) \
                && CurrProc->contains_call )                                         \
              || (CurrProc->prolog_state & GENERATE_FAT_PROLOG) )
 
@@ -673,7 +673,7 @@ static  int Push( hw_reg_set to_push )
     int         i;
 
     size = 0;
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
         FlowSave( &to_push );
     }
     for( i = 0; i < sizeof( PushRegs ) / sizeof( PushRegs[0] ) - 1; i++ ) {
@@ -693,7 +693,7 @@ static  void        Pop( hw_reg_set to_pop )
 {
     int         i;
 
-    if( _IsntModel( CGSW_NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
         FlowRestore( &to_pop );
     }
     for( i = sizeof( PushRegs ) / sizeof( PushRegs[0] ) - 1; i-- > 0 ; ) {
@@ -819,7 +819,7 @@ void    AddCacheRegs( void )
 #if _TARGET & _TARG_80386
     if( CurrProc->targ.never_sp_frame )
         return;
-    if( _IsntModel( CGSW_MEMORY_LOW_FAILS ) )
+    if( _IsntModel( CGSW_GEN_MEMORY_LOW_FAILS ) )
         return;
     if( OptForSize > 50 )
         return;
@@ -899,11 +899,11 @@ void    GenProlog( void )
         EmitNameInCode();
     }
 
-    if( _IsModel( CGSW_DBG_NUMBERS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
         CodeLineNumber( HeadBlock->ins.hd.line_num, false );
     }
 
-    if( _IsModel( CGSW_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
         EmitRtnBeg();
     }
     if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) {
@@ -1008,7 +1008,7 @@ void    GenProlog( void )
             }
             Enter();
             AdjustPushLocals();
-            if( _IsModel( CGSW_NO_OPTIMIZATION ) || CurrProc->targ.sp_frame ) {
+            if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) || CurrProc->targ.sp_frame ) {
                 CurrProc->targ.base_adjust = 0;
             } else {
                 CurrProc->targ.base_adjust = AdjustBase();
@@ -1022,7 +1022,7 @@ void    GenProlog( void )
     }
     CurrProc->prolog_state |= GENERATED_PROLOG;
 
-    if( _IsModel( CGSW_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
         DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
         EmitProEnd();
     }
@@ -1144,7 +1144,7 @@ void    GenEpilog( void )
          - CurrProc->targ.push_local_size;
     PatchBigLabels( stack );
 
-    if( _IsModel( CGSW_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
         EmitEpiBeg();
     }
 
@@ -1169,7 +1169,7 @@ void    GenEpilog( void )
 
 
     CurrProc->prolog_state |= GENERATED_EPILOG;
-    if( _IsModel( CGSW_DBG_LOCALS ) ) {  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
         EmitRtnEnd();
     }
 }

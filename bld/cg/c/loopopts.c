@@ -548,7 +548,7 @@ void     MarkInvariants( void )
                     break;
                 case N_INDEXED:
                     if( op->i.base == NULL ) {
-                        if( _IsntModel( CGSW_FORTRAN_ALIASING ) ) {
+                        if( _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
                             free_index = true;
                         }
                     } else if( op->i.base->n.class == N_TEMP ) {
@@ -580,7 +580,7 @@ void     MarkInvariants( void )
      */
     //ZapRegister( Head->ins.hd.next->head.live.regs );
     if( have_call || free_index ) {
-        if( _IsntModel( CGSW_FORTRAN_ALIASING ) ) {
+        if( _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
             for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
                 if( op->v.usage & USE_ADDRESS ) {
                     _SetLoopUsage( op, VU_VARIANT );
@@ -700,7 +700,7 @@ bool     Hoistable( instruction *ins, block *blk )
         will_execute = true;
     }
     if( _IsFloating( ins->type_class )
-      && _IsntModel( CGSW_I_MATH_INLINE ) ) {
+      && _IsntModel( CGSW_GEN_I_MATH_INLINE ) ) {
         dangerous = true;
     } else {
         for( i = 0; i < ins->num_operands; ++i ) {

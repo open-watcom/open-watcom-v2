@@ -80,13 +80,13 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     } else if( cclass & FECALL_X86_FAR16_CALL ) {
         state->attr |= ROUTINE_FAR16;
     }
-    if( cclass & FECALL_CALLER_POPS ) {
+    if( cclass & FECALL_GEN_CALLER_POPS ) {
         state->attr &= ~ROUTINE_REMOVES_PARMS;
     }
-    if( cclass & FECALL_ABORTS ) {
+    if( cclass & FECALL_GEN_ABORTS ) {
         state->attr |= ROUTINE_NEVER_RETURNS_ABORTS;
     }
-    if( cclass & FECALL_NORETURN ) {
+    if( cclass & FECALL_GEN_NORETURN ) {
         state->attr |= ROUTINE_NEVER_RETURNS_NORETURN;
     }
     if( cclass & FECALL_X86_ROUTINE_RETURN ) {
@@ -105,10 +105,10 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & FECALL_X86_MODIFY_EXACT ) {
         state->attr |= ROUTINE_MODIFY_EXACT;
     }
-    if( cclass & FECALL_NO_MEMORY_CHANGED ) {
+    if( cclass & FECALL_GEN_NO_MEMORY_CHANGED ) {
         state->attr |= ROUTINE_MODIFIES_NO_MEMORY;
     }
-    if( cclass & FECALL_NO_MEMORY_READ ) {
+    if( cclass & FECALL_GEN_NO_MEMORY_READ ) {
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
     if( cclass & FECALL_X86_LOAD_DS_ON_ENTRY ) {

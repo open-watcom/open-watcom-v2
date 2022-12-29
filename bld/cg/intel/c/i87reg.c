@@ -735,7 +735,7 @@ void    FPRegAlloc( void )
 void    FPInitStkReq( void )
 /**************************/
 {
-    if( _IsModel( CGSW_I_MATH_INLINE ) ) {
+    if( _IsModel( CGSW_GEN_I_MATH_INLINE ) ) {
         StackReq387[OP_SIN - FIRST_IFUNC] = 0;
         StackReq387[OP_COS - FIRST_IFUNC] = 0;
     }

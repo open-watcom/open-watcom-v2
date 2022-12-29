@@ -196,12 +196,12 @@ static  void    InitSegBck( void )
 {
     segment_id  old_segid;
 
-    if( _IsModel( CGSW_DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         old_segid = SetOP( CVSyms );
         DataLong( CV_OMF_SIG );
         SetOP( old_segid );
     }
-    if( _IsModel( CGSW_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         old_segid = SetOP( CVTypes );
         DataLong( CV_OMF_SIG );
         SetOP( old_segid );
@@ -219,7 +219,7 @@ void    CVObjInitDbgInfo( void )
     char        *name;
 
     InitSegBck();
-    if( _IsModel( CGSW_DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         NewBuff( out, CVSyms );
         optr = StartSym(  out, SG_OBJNAME );
         optr->signature = 0;

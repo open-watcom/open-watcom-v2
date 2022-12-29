@@ -357,7 +357,7 @@ static dep_type DataDependant( instruction *ins_i,
             return( ret );
         }
     }
-    if( _IsModel( CGSW_FORTRAN_ALIASING ) && _OpIsCall( ins_j->head.opcode ) ) {
+    if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) && _OpIsCall( ins_j->head.opcode ) ) {
         if( !ins_linked )
             return( DEP_OP );
         /*

@@ -381,7 +381,7 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
         new_m->v.usage = NEEDS_MEMORY;
         new_m->m.same_sym = NULL;
     }
-    if( class == CG_FE && _IsModel( CGSW_NO_OPTIMIZATION ) ) {
+    if( class == CG_FE && _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         new_m->v.usage |= USE_MEMORY;
     }
     new_m->v.block_usage = 0;

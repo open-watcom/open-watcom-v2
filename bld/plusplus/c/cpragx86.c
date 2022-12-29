@@ -73,10 +73,10 @@
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
 //
-#define FECALL_CALL_CLASS_IGNORE ( 0 \
-    | FECALL_NO_MEMORY_CHANGED       \
-    | FECALL_NO_MEMORY_READ          \
-    | FECALL_DLL_EXPORT              \
+#define FECALL_GEN_CALL_CLASS_IGNORE ( 0 \
+    | FECALL_GEN_NO_MEMORY_CHANGED       \
+    | FECALL_GEN_NO_MEMORY_READ          \
+    | FECALL_GEN_DLL_EXPORT              \
 )
 #define FECALL_X86_CALL_CLASS_IGNORE ( 0 \
     | FECALL_X86_MODIFY_EXACT            \
@@ -305,16 +305,16 @@ static void GetParmInfo(
     have.f_list          = 0;
     for( ;; ) {
         if( !have.f_pop && PragRecogId( "caller" ) ) {
-            CurrInfo->cclass |= FECALL_CALLER_POPS;
+            CurrInfo->cclass |= FECALL_GEN_CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_pop && PragRecogId( "routine" ) ) {
-            CurrInfo->cclass &= ~ FECALL_CALLER_POPS;
+            CurrInfo->cclass &= ~ FECALL_GEN_CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_reverse && PragRecogId( "reverse" ) ) {
-            CurrInfo->cclass |= FECALL_REVERSE_PARMS;
+            CurrInfo->cclass |= FECALL_GEN_REVERSE_PARMS;
             have.f_reverse = 1;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            CurrInfo->cclass |= FECALL_NO_MEMORY_READ;
+            CurrInfo->cclass |= FECALL_GEN_NO_MEMORY_READ;
             have.f_nomemory = 1;
         } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
             CurrInfo->cclass |= FECALL_X86_LOAD_DS_ON_CALL;
@@ -418,7 +418,7 @@ static void GetSaveInfo(
             CurrInfo->cclass |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = 1;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            CurrInfo->cclass |= FECALL_NO_MEMORY_CHANGED;
+            CurrInfo->cclass |= FECALL_GEN_NO_MEMORY_CHANGED;
             have.f_nomemory = 1;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             modlist = PragRegList();
@@ -1166,7 +1166,7 @@ void PragAux(                   // #PRAGMA AUX ...
                     CurrInfo->cclass |= FECALL_X86_LOAD_RDOSDEV_ON_ENTRY;
                     have.f_rdosdev = 1;
                 } else if( !have.f_export && PragRecogId( "export" ) ) {
-                    CurrInfo->cclass |= FECALL_DLL_EXPORT;
+                    CurrInfo->cclass |= FECALL_GEN_DLL_EXPORT;
                     have.f_export = 1;
                 } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                     GetParmInfo();
@@ -1175,7 +1175,7 @@ void PragAux(                   // #PRAGMA AUX ...
                     GetRetInfo();
                     have.f_value = 1;
                 } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                    CurrInfo->cclass |= FECALL_ABORTS;
+                    CurrInfo->cclass |= FECALL_GEN_ABORTS;
                     have.f_value = 1;
                 } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                     GetSaveInfo();
@@ -1268,8 +1268,8 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         return( true );
     }
     return
-           ( ( inf1->cclass & ~(FECALL_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) ==
-             ( inf2->cclass & ~(FECALL_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) )
+           ( ( inf1->cclass & ~(FECALL_GEN_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) ==
+             ( inf2->cclass & ~(FECALL_GEN_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) )
         && parmSetsIdentical( inf1->parms, inf2->parms )
         && HW_Equal( inf1->returns, inf2->returns )
         && HW_Equal( inf1->streturn, inf2->streturn )

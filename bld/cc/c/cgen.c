@@ -244,7 +244,7 @@ static void EndFunction( OPNODE *node )
     if( InLineDepth == 0 ) {
         RelLocalVars( LocalVarList );
     }
-    if( GenSwitches & CGSW_DBG_LOCALS ) {
+    if( GenSwitches & CGSW_GEN_DBG_LOCALS ) {
         if( InLineDepth != 0 ) {
             DBEndBlock();
         }
@@ -1382,11 +1382,11 @@ void DoCompile( void )
 #endif
 #ifndef NDEBUG
             if( TOGGLEDBG( dump_cg ) ) {
-                GenSwitches |= CGSW_ECHO_API_CALLS;
+                GenSwitches |= CGSW_GEN_ECHO_API_CALLS;
             }
 #endif
             if( CompFlags.rent ) {
-                GenSwitches |= CGSW_POSITION_INDEPENDANT;
+                GenSwitches |= CGSW_GEN_POSITION_INDEPENDANT;
             }
             cgi_info = BEInit( GenSwitches, TargetSwitches, OptSize, ProcRevision );
             if( cgi_info.success ) {
@@ -1398,7 +1398,7 @@ void DoCompile( void )
                 SetSegs();
                 BEStart();
                 EmitSegLabels();
-                if( GenSwitches & CGSW_DBG_TYPES )
+                if( GenSwitches & CGSW_GEN_DBG_TYPES )
                     EmitDBType();
                 EmitSyms();
                 EmitCS_Strings();
@@ -1446,7 +1446,7 @@ static void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
     target_size         size;
 
     typ = sym->sym_type;
-    if( (GenSwitches & CGSW_DBG_TYPES) && (sym->attribs.stg_class == SC_TYPEDEF) ) {
+    if( (GenSwitches & CGSW_GEN_DBG_TYPES) && (sym->attribs.stg_class == SC_TYPEDEF) ) {
         if( typ->decl_type != TYP_TYPEDEF ) {
             DBEndName( DBBegName( sym->name, DBG_NIL_TYPE ), DBType( typ ) );
         }
@@ -1497,7 +1497,7 @@ static void EmitSyms( void )
     for( sym_handle = GlobalSym; sym_handle != SYM_NULL; sym_handle = sym.handle ) {
         SymGet( &sym, sym_handle );
         EmitSym( &sym, sym_handle );
-        if( (GenSwitches & CGSW_DBG_LOCALS )
+        if( (GenSwitches & CGSW_GEN_DBG_LOCALS )
           && ( sym.sym_type->decl_type != TYP_FUNCTION )
           && ( (sym.flags & SYM_TEMP) == 0 )
           && ( sym.attribs.stg_class != SC_TYPEDEF ) ) {
@@ -1557,7 +1557,7 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
         BESetSeg( old_segid );
     }
 #endif
-    if( GenSwitches & CGSW_DBG_LOCALS ) {
+    if( GenSwitches & CGSW_GEN_DBG_LOCALS ) {
         if( InLineDepth == 0 ) {
             DBModSym( (CGSYM_HANDLE)CurFuncHandle, TY_DEFAULT );
         } else {
@@ -1566,7 +1566,7 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
     }
     parms_reversed = false;
     if( CurFunc->u.func.parms != SYM_NULL ) {
-        if( GetCallClass( CurFuncHandle ) & FECALL_REVERSE_PARMS ) {
+        if( GetCallClass( CurFuncHandle ) & FECALL_GEN_REVERSE_PARMS ) {
             ParmReverse( CurFunc->u.func.parms );
             parms_reversed = true;
         } else {
@@ -1601,12 +1601,12 @@ static void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
     dtype = CGenType( typ );
     CGParmDecl( (CGSYM_HANDLE)sym_handle, dtype );
 #if _CPU == 386
-    if( (GenSwitches & CGSW_NO_OPTIMIZATION)
+    if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION)
       || (!CompFlags.register_conventions && CompFlags.debug_info_some) ) {
 #else
-    if( GenSwitches & CGSW_NO_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION ) {
 #endif
-        if( GenSwitches & CGSW_DBG_LOCALS ) {
+        if( GenSwitches & CGSW_GEN_DBG_LOCALS ) {
             DBLocalSym( (CGSYM_HANDLE)sym_handle, TY_DEFAULT );
         }
     }
@@ -1636,7 +1636,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
         SymGet( &sym, sym_handle );
         emit_debug_info = false;
         emit_extra_info = false;
-        if( GenSwitches & CGSW_NO_OPTIMIZATION )
+        if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION )
             emit_debug_info = true;
         if( sym.attribs.stg_class == SC_STATIC ) {
             emit_debug_info = false;
@@ -1682,7 +1682,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
 #endif
         if( emit_debug_info || emit_extra_info ) {
             if( Saved_CurFunc == SYM_NULL ) {  /* if we are not inlining */
-                if( GenSwitches & CGSW_DBG_LOCALS ) {
+                if( GenSwitches & CGSW_GEN_DBG_LOCALS ) {
                     if( (sym.flags & SYM_TEMP) == 0 ) {
                         DBLocalSym( (CGSYM_HANDLE)sym_handle, TY_DEFAULT );
                     }

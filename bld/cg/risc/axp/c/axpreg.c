@@ -98,19 +98,19 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->used = state->modify;     /* anything not saved is used*/
     state->attr = 0;
     cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
-    if( cclass & FECALL_SETJMP_KLUGE ) {
+    if( cclass & FECALL_GEN_SETJMP_KLUGE ) {
         state->attr |= ROUTINE_IS_SETJMP;
     }
-    if( cclass & FECALL_ABORTS ) {
+    if( cclass & FECALL_GEN_ABORTS ) {
         state->attr |= ROUTINE_NEVER_RETURNS_ABORTS;
     }
-    if( cclass & FECALL_NORETURN ) {
+    if( cclass & FECALL_GEN_NORETURN ) {
         state->attr |= ROUTINE_NEVER_RETURNS_NORETURN;
     }
-    if( cclass & FECALL_NO_MEMORY_CHANGED ) {
+    if( cclass & FECALL_GEN_NO_MEMORY_CHANGED ) {
         state->attr |= ROUTINE_MODIFIES_NO_MEMORY;
     }
-    if( cclass & FECALL_NO_MEMORY_READ ) {
+    if( cclass & FECALL_GEN_NO_MEMORY_READ ) {
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
     i = 0;

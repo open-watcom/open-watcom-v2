@@ -52,7 +52,7 @@ bool CgRetnOptActive            // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
 
     file_ctl = fctl->cgfile;
     return CgRetnOptForFile( file_ctl )
-        && !( fctl->debug_info && ( GenSwitches & CGSW_DBG_LOCALS ) );
+        && !( fctl->debug_info && ( GenSwitches & CGSW_GEN_DBG_LOCALS ) );
 }
 
 

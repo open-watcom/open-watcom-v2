@@ -163,7 +163,7 @@ static void PragmaAuxEnd( void )
         CurrInfo->cclass &= ~FECALL_X86_FAR_CALL;
     }
     if( AuxInfoFlg.f_routine_pops ) {
-        CurrInfo->cclass &= ~FECALL_CALLER_POPS;
+        CurrInfo->cclass &= ~FECALL_GEN_CALLER_POPS;
     }
     if( AuxInfoFlg.f_caller_return ) {
         CurrInfo->cclass &= ~FECALL_X86_ROUTINE_RETURN;
@@ -757,17 +757,17 @@ static void GetParmInfo( void )
     have.f_list = false;
     for( ;; ) {
         if( !have.f_pop && PragRecogId( "caller" ) ) {
-            AuxInfo.cclass |= FECALL_CALLER_POPS;
+            AuxInfo.cclass |= FECALL_GEN_CALLER_POPS;
             have.f_pop = true;
         } else if( !have.f_pop && PragRecogId( "routine" ) ) {
-            AuxInfo.cclass &= ~ FECALL_CALLER_POPS;
+            AuxInfo.cclass &= ~ FECALL_GEN_CALLER_POPS;
             AuxInfoFlg.f_routine_pops = true;
             have.f_pop = true;
         } else if( !have.f_reverse && PragRecogId( "reverse" ) ) {
-            AuxInfo.cclass |= FECALL_REVERSE_PARMS;
+            AuxInfo.cclass |= FECALL_GEN_REVERSE_PARMS;
             have.f_reverse = true;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            AuxInfo.cclass |= FECALL_NO_MEMORY_READ;
+            AuxInfo.cclass |= FECALL_GEN_NO_MEMORY_READ;
             have.f_nomemory = true;
         } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
             AuxInfo.cclass |= FECALL_X86_LOAD_DS_ON_CALL;
@@ -871,7 +871,7 @@ static void GetSaveInfo( void )
             AuxInfo.cclass |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = true;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            AuxInfo.cclass |= FECALL_NO_MEMORY_CHANGED;
+            AuxInfo.cclass |= FECALL_GEN_NO_MEMORY_CHANGED;
             have.f_nomemory = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             HW_TurnOn( AuxInfo.save, PragRegList() );
@@ -931,7 +931,7 @@ void PragAux( void )
                 AuxInfo.cclass |= FECALL_X86_LOAD_RDOSDEV_ON_ENTRY;
                 have.f_rdosdev = true;
             } else if( !have.f_export && PragRecogId( "export" ) ) {
-                AuxInfo.cclass |= FECALL_DLL_EXPORT;
+                AuxInfo.cclass |= FECALL_GEN_DLL_EXPORT;
                 have.f_export = true;
             } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                 GetParmInfo();
@@ -940,7 +940,7 @@ void PragAux( void )
                 GetRetInfo();
                 have.f_value = true;
             } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                AuxInfo.cclass |= FECALL_ABORTS;
+                AuxInfo.cclass |= FECALL_GEN_ABORTS;
                 have.f_value = true;
             } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                 GetSaveInfo();
