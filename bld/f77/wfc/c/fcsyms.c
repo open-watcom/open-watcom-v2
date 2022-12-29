@@ -1511,7 +1511,7 @@ static  void    DefineArgs( entry_pt *ep ) {
     pass_by     *arg_aux;
 
     info = InfoLookup( ep->id );
-    if( (info->cclass & FECALL_REVERSE_PARMS) ) {
+    if( (info->cclass & FECALL_GEN_REVERSE_PARMS) ) {
         ReverseList( (void **)&ep->parms );
         ReverseList( (void **)&info->arg_info );
     }
@@ -1527,7 +1527,7 @@ static  void    DefineArgs( entry_pt *ep ) {
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
         DeclareShadowArgs( ep, info );
     }
-    if( info->cclass & FECALL_REVERSE_PARMS ) {
+    if( info->cclass & FECALL_GEN_REVERSE_PARMS ) {
         ReverseList( (void **)&ep->parms );
         ReverseList( (void **)&info->arg_info );
     }
