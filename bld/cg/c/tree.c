@@ -376,8 +376,9 @@ tn  TGCompare( cg_op op, tn left, tn rite, type_def *tipe )
         can_demote = false;
     }
 #endif
-    if( ( left->tipe == rite->tipe ) && ( left->tipe != TypeBoolean )
-        && ( ( left->tipe->attr & ~TYPE_SIGNED ) == ( tipe->attr & ~TYPE_SIGNED ) ) ) {
+    if( ( left->tipe == rite->tipe )
+      && ( left->tipe != TypeBoolean )
+      && ( (left->tipe->attr & ~TYPE_SIGNED) == (tipe->attr & ~TYPE_SIGNED) ) ) {
         tipe = left->tipe;
     } else {
         tipe = ResultType( left, rite, tipe, BinMat, can_demote );
@@ -622,16 +623,16 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
         tipe = ResultType( left, rite, tipe, SubMat, false );
         /* pointer subtraction yields a different result type than ops!*/
         if( tipe->refno == TypeHugeInteger->refno
-            && left->tipe->refno == TY_HUGE_POINTER
-            && rite->tipe->refno == TY_HUGE_POINTER ) {
+          && left->tipe->refno == TY_HUGE_POINTER
+          && rite->tipe->refno == TY_HUGE_POINTER ) {
             /* nothing*/
         } else if( tipe->refno == TypeLongInteger->refno
-            && left->tipe->refno == TY_LONG_POINTER
-            && rite->tipe->refno == TY_LONG_POINTER ) {
+          && left->tipe->refno == TY_LONG_POINTER
+          && rite->tipe->refno == TY_LONG_POINTER ) {
              /* nothing*/
         } else if( tipe->refno == TypeNearInteger->refno
-            && left->tipe->refno == TY_NEAR_POINTER
-            && rite->tipe->refno == TY_NEAR_POINTER ) {
+          && left->tipe->refno == TY_NEAR_POINTER
+          && rite->tipe->refno == TY_NEAR_POINTER ) {
              /* nothing*/
         } else if( tipe->refno == TY_HUGE_POINTER ) {
             rite = TGConvert( rite, TypeHugeInteger );
@@ -653,8 +654,9 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
     case O_TIMES:
         tipe = ResultType( left, rite, tipe, BinMat, false );
 #if _TARGET & _TARG_8086
-        if( tipe->refno == TY_INT_4 &&
-            left->tipe->length <= 2 && rite->tipe->length <= 2 ) {
+        if( tipe->refno == TY_INT_4
+          && left->tipe->length <= 2
+          && rite->tipe->length <= 2 ) {
             left = TGConvert( left, TypeInteger );
         } else {
             left = TGConvert( left, tipe );
@@ -1163,10 +1165,10 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
             BurnTree( dupleft );
         }
     } else if( result->class == TN_BINARY
-     && result->u.left == leftp
-     && leftp->class == TN_UNARY
-     && leftp->u2.t.op == O_POINTS
-     && leftp->u.left == left ) {
+      && result->u.left == leftp
+      && leftp->class == TN_UNARY
+      && leftp->u2.t.op == O_POINTS
+      && leftp->u.left == left ) {
         result->class = class;
         result->u.left = left;
         result->optipe = optipe;
@@ -1945,9 +1947,9 @@ static  an  TNBitAssign( tn node )
     lhs = node->u.left;
     rhs = node->u2.t.rite;
     if( rhs->class == TN_BIT_RVALUE
-     && rhs->u2.b.start == lhs->u2.b.start
-     && rhs->u2.b.len == lhs->u2.b.len
-     && rhs->tipe->length == lhs->tipe->length ) {
+      && rhs->u2.b.start == lhs->u2.b.start
+      && rhs->u2.b.len == lhs->u2.b.len
+      && rhs->tipe->length == lhs->tipe->length ) {
         mask = TGMask32( lhs );
         left = AddrGen( lhs->u.left );
         rite = AddrGen( rhs->u.left );
@@ -2067,8 +2069,8 @@ static an   MakeBased( an left, an rite, type_def *tipe )
     temp = MakeTempAddr( temp_var );
     near_type = TypeAddress( TY_NEAR_POINTER );
     short_type = TypeAddress( TY_UINT_2 );
-    if( rite->format == NF_ADDR &&
-      ( rite->class == CL_ADDR_GLOBAL || rite->class == CL_ADDR_TEMP ) ) {
+    if( rite->format == NF_ADDR
+      && ( rite->class == CL_ADDR_GLOBAL || rite->class == CL_ADDR_TEMP ) ) {
         BGDone( BGAssign( AddrCopy( temp ), left, near_type ) );
         seg = AddrName( SegName( rite->u.n.name ), short_type );
         BGDone( rite );
@@ -2306,7 +2308,8 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     an              retv;
     an              parman;
     type_def        *tipe;
-    bool            in_line;
+    bool            aux_inline;
+    bool            call_inline;
     name            *base;
     call_class      cclass;
     cg_sym_handle   sym;
@@ -2318,10 +2321,11 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     addr = callhandle->u.left; /* address to call*/
     sym = (cg_sym_handle)addr->u2.t.rite;
     aux = FEAuxInfo( sym, FEINF_AUX_LOOKUP );
-    in_line = ( FEAuxInfo( aux, FEINF_CALL_BYTES ) != NULL );
+    aux_inline = ( FEAuxInfo( aux, FEINF_CALL_BYTES ) != NULL );
     cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
+    call_inline = ( (cclass & FECALL_GEN_MAKE_CALL_INLINE) != 0 );
     retv = TreeGen( addr->u.left );
-    if( cclass & FECALL_GEN_MAKE_CALL_INLINE ) {
+    if( call_inline ) {
         BGDone( retv );
         BGStartInline( sym );
     } else {
@@ -2359,7 +2363,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
                 parman = retv;
             }
         } else {
-            if( in_line || (cclass & FECALL_GEN_MAKE_CALL_INLINE) ) {
+            if( aux_inline || call_inline ) {
                 parman = BGConvert( parman, tipe );
             } else {
 #if _TARGET & _TARG_AXP
@@ -2373,20 +2377,20 @@ static  an  TNCall( tn callhandle, bool ignore_return )
             }
         }
         parman->flags |= FL_STACKABLE;
-        if( cclass & FECALL_GEN_MAKE_CALL_INLINE ) {
+        if( call_inline ) {
             BGAddInlineParm( parman );
         } else {
             BGAddParm( callnode, parman );
         }
     }
     FreeTreeNode( addr );
-    if( cclass & FECALL_GEN_MAKE_CALL_INLINE ) {
+    if( call_inline ) {
         retv = BGStopInline( callhandle, callhandle->tipe );
         NodesToZap = callhandle->u2.t.rite;
         TNZapParms();
     } else {
         NodesToZap = callhandle->u2.t.rite;
-        retv = BGCall( callnode, ( callhandle->flags & TF_USED ) != 0, in_line );
+        retv = BGCall( callnode, ( callhandle->flags & TF_USED ) != 0, aux_inline );
         retv->flags |= FL_STACKABLE;
         BGFiniCall( callnode );
     }

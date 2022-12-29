@@ -32,7 +32,6 @@
 
 #include "cvars.h"
 #include "cgswitch.h"
-#include "cgauxcc.h"
 #include "i64.h"
 #include "cfeinfo.h"
 

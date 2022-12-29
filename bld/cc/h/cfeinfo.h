@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,14 @@
 ****************************************************************************/
 
 
-extern bool         VarFunc( SYMPTR );
-extern bool         VarParm( SYMPTR );
-extern call_class   GetCallClass( SYM_HANDLE );
-extern aux_info     *FindInfo( SYMPTR, SYM_HANDLE );
-extern bool         FunctionAborts( SYMPTR, SYM_HANDLE );
-extern bool         ParmsToBeReversed( int, aux_info * );
-extern aux_info     *GetLangInfo( type_modifiers flags );
-extern char         *SrcFullPath( char const *, char *, unsigned );
+extern bool                 VarFunc( SYMPTR );
+extern bool                 VarParm( SYMPTR );
+extern call_class           GetCallClass( SYM_HANDLE );
+#if _INTEL_CPU
+extern call_class_target    GetCallClassTarget( SYM_HANDLE );
+#endif
+extern aux_info             *FindInfo( SYMPTR, SYM_HANDLE );
+extern bool                 FunctionAborts( SYMPTR, SYM_HANDLE );
+extern bool                 ParmsToBeReversed( int, aux_info * );
+extern aux_info             *GetLangInfo( type_modifiers flags );
+extern char                 *SrcFullPath( char const *, char *, unsigned );
