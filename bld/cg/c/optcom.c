@@ -161,7 +161,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( false );
         if( _Label( old ) != _Label( add ) )
             optreturn( false );
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         if( old->oc.oc_jcond.index != add->oc.oc_jcond.index )
             return( false );
 #endif

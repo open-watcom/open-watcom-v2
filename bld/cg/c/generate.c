@@ -230,7 +230,7 @@ static  void            PostOptimize( void )
     }
     MergeIndex();
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
-    #if (_TARGET & _TARG_RISC) == 0
+    #if !_TARGET_RISC
         //
         // Calling Conditions() at this point has nice optimization effect,
         // but doesn't working correctly right now. It optimizes conditions
@@ -259,7 +259,7 @@ static  void            PostOptimize( void )
         DeadInstructions(); // cleanup junk after Score()
         if( !BlockByBlock )
             LoopRegInvariant();
-    #if (_TARGET & _TARG_RISC) == 0
+    #if !_TARGET_RISC
         // Get rid of remaining unused conditions on register level.
         if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
@@ -637,7 +637,7 @@ void    Generate( bool routine_done )
         return;
     HaveLiveInfo = false;
     HaveDominatorInfo = false;
-#if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
+#if _TARGET_RISC == 0 && ( _TARGET & _TARG_370 ) == 0
     /* if we want to go fast, generate statement at a time */
     if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         if( !BlockByBlock ) {
@@ -742,7 +742,7 @@ void    Generate( bool routine_done )
     }
     FreeProc();
     HaveLiveInfo = false;
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
     if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         FlushQueue();
     }

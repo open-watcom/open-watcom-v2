@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,6 +34,6 @@
 #define FindAuxInfoSym(s,r) FEAuxInfo(FEAuxInfo(s,FEINF_AUX_LOOKUP),r)
 
 extern  pointer FindAuxInfo( name *, aux_class );
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
 extern  pointer BEAuxInfo( pointer, aux_class );
 #endif

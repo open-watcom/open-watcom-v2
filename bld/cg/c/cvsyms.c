@@ -337,7 +337,7 @@ static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, int disp )
 /***  local rel to  frame  *************************************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
 {
-//#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+//#if _TARGET_INTEL
     cs_bprel   *ptr;
 
     ptr = StartSym(  out, SG_BPREL );
@@ -649,7 +649,7 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     tipe = FEDbgType( sym );
     ptr->proctype = tipe;
     ptr->flags.s = 0;
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL ) {
         ptr->flags.f.far_ret = true;
     }

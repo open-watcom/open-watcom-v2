@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
+#if _TARGET_INTEL
 extern void     DumpSeqs( void );
 extern bool     DumpFPUIns87( instruction *ins );
 #endif

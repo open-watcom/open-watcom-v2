@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ static  pointer         *RegFrl;
 static  pointer         *TreeFrl;
 
 
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
 static bool HasSegRegs( reg_tree *tree )
 {
     hw_reg_set  *regs;
@@ -117,7 +117,7 @@ bool    RegTreeFrlFree( void )
 static  void    CheckBigPointer( reg_tree *tree )
 /***********************************************/
 {
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
 /* this routine is a sickening concession to the foolish design of the 8086
    (may all intel designers rot in hell forever, amen)
 

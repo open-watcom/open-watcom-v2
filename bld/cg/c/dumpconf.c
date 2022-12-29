@@ -93,7 +93,7 @@ void    DumpRegName( hw_reg_set regname )
             if( Check(&name,HW_Y4) ) { DumpLiteral( "Y4" ); continue; }
             if( Check(&name,HW_Y6) ) { DumpLiteral( "Y6" ); continue; }
 #endif
-#if _TARGET & (_TARG_PPC | _TARG_AXP | _TARG_MIPS)
+#if _TARGET_RISC
             if( Check(&name,HW_R0) ) { DumpLiteral( "R0" ); continue; }
             if( Check(&name,HW_R1) ) { DumpLiteral( "R1" ); continue; }
             if( Check(&name,HW_R2) ) { DumpLiteral( "R2" ); continue; }
@@ -267,7 +267,7 @@ void    DumpRegName( hw_reg_set regname )
             if( Check(&name,HW_LR) ) { DumpLiteral( "LR" ); continue; }
 #endif
 #endif
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
             if( Check(&name,HW_EAX)) { DumpLiteral("EAX"); continue; }
             if( Check(&name,HW_AX) ) { DumpLiteral( "AX"); continue; }
             if( Check(&name,HW_AL) ) { DumpLiteral( "AL"); continue; }

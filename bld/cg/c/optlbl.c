@@ -162,7 +162,7 @@ ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl )
         if( _ObjLen( oldlbl ) > _ObjLen( newlbl ) ) {
             _ObjLen( newlbl ) = _ObjLen( oldlbl );
         }
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         /* one of the line numbers (at most) is non-zero - keep it */
         if( _LblLine( oldlbl ) != 0 ) {
             _LblLine( newlbl ) = _LblLine( oldlbl );

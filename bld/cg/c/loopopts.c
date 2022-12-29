@@ -757,7 +757,7 @@ bool     Hoistable( instruction *ins, block *blk )
         if( ins->operands[0]->n.class != N_INDEXED )
             return( false );
         break;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     /*
      * on RISC architectures, we want to hoist OP_LAs as they will
      * usually turn into expensive lha, la style pairs in the encoder

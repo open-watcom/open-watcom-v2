@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "dumpins.h"
 #include "dumpfpu.h"
 
-#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
+#if _TARGET_INTEL
 
 #include "i87sched.h"
 #include "gen8087.h"
@@ -255,7 +255,7 @@ bool    DumpFPUIns87( instruction *ins )
 void    DumpFPUIns( instruction *ins )
 /************************************/
 {
-#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
+#if _TARGET_INTEL
     (void)DumpFPUIns87( ins );
 #else
     /* unused parameters */ (void)ins;

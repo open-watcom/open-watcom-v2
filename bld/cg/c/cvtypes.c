@@ -1828,7 +1828,7 @@ dbg_type    CVEndProc( dbg_proc pr )
         CGFree( parm );
     }
     EndTypeString( out );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( pr->call == TY_NEAR_CODE_PTR ) {
         call = CV_NEARC;
     } else {

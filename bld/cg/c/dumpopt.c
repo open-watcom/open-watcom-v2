@@ -50,7 +50,7 @@ static const char *CNames[] = {
     ""
 };
 
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
 
 static const char *Conds[] = {
     "jo   ",
@@ -271,7 +271,7 @@ void    DumpOc( ins_entry *ins )
         case OC_NORET:
             DumpNL();
             break;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         case OC_RCODE:
             DumpPtr( (pointer)(pointer_uint)ins->oc.oc_rins.opcode );
             if( _HasReloc( &ins->oc.oc_rins ) ) {
@@ -319,7 +319,7 @@ static  void    DoLabel( oc_handle *instr ) {
             break;
         DumpChar( ' ' );
     }
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     if( instr->line != 0 ) {
         DumpLiteral( "line=<" );
         DumpInt( instr->line );

@@ -59,7 +59,7 @@ bool     IsTrickyPointerConv( instruction *ins )
     to be carefully converted with taking segments into account?
 */
 {
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
         if( ins->base_type_class == U2 && TypeClassSize[ins->type_class] > WORD_SIZE ) {
             return( true );

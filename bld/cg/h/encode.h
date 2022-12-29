@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 extern void         CodeLabel( label_handle, unsigned );
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
 extern void         CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line );
 #endif
 extern void         CodeLineNumber( unsigned_32, bool );

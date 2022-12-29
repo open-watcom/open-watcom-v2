@@ -431,7 +431,7 @@ static signed_32     CountRegMoves( conflict_node *conf,
     int                 half;
     name                *reg_name;
     name                *op1;
-#if _TARGET & (_TARG_80386 | _TARG_8086 | _TARG_370)
+#if _TARGET_INTEL || (_TARGET & _TARG_370)
     name                *op2;
 #endif
     name                *res;
@@ -460,7 +460,7 @@ static signed_32     CountRegMoves( conflict_node *conf,
             ins = blk->ins.hd.next;
         } else {
             if( ins->head.opcode != OP_MOV ) {
-#if _TARGET & (_TARG_80386 | _TARG_8086 | _TARG_370)
+#if _TARGET_INTEL || (_TARGET & _TARG_370)
                 op1 = NULL;
                 op2 = NULL;
                 if( ins->num_operands != 0 ) {

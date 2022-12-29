@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ typedef struct code_lbl {
 #if  OPTIONS & SHORT_JUMPS
     struct code_lbl         *redirect;
 #endif
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     struct code_lbl         *ppc_alt_name;
     void                    *owl_symbol;
 #endif

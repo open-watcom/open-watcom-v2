@@ -49,7 +49,7 @@ static  ins_entry       *Redirect( ins_entry *, ins_entry * );
 static  bool    LineLabel( ins_entry *label )
 /*******************************************/
 {
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     if( _LblLine( label ) != 0 ) {
         return( true );
     }

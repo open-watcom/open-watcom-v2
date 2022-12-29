@@ -206,7 +206,7 @@ type_def        *TypeDef( cg_type refno, type_length length, type_length align )
     list->tipe.type_def.refno  =  refno;
     list->tipe.type_def.length = length;
     list->tipe.type_def.attr   = 0;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     list->tipe.type_def.align  = align;
 #endif
     return( &list->tipe.type_def );

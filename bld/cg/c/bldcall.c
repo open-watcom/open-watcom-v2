@@ -49,7 +49,7 @@
 #include "redefby.h"
 #include "intrface.h"
 #include "makeblk.h"
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
 #include "x86objd.h"
 #include "x86obj.h"
 #endif
@@ -111,7 +111,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     cn                  call;
     type_class_def      type_class;
     name                *mem;
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     void                *cookie;
 #endif
 
@@ -134,7 +134,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     } else {
         call->ins->head.opcode = OP_CALL_INDIRECT;
         type_class = CallState( aux, tipe, call->state );
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
         cookie = FEAuxInfo( aux, FEINF_VIRT_FUNC_REFERENCE );
         if( cookie != NULL )
             TellObjVirtFuncRef( cookie );
@@ -193,7 +193,7 @@ static  instruction *DoParmDef( name *result, type_class_def type_class )
     return( parm_def );
 }
 
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
 
 #if _TARGET & _TARG_AXP
 #define BASE_TYPE       U8
@@ -298,7 +298,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
 
     no_temp = ( type_class == XX );
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     // The arguments of an interrupt routine coming in on the stack are used
     // for input and output; routine epilog pops them into registers. Handle
     // them specially to stop the optimizer from eliminating the writes (don't
@@ -308,7 +308,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
         temp->v.usage |= USE_ADDRESS;
     }
 #endif
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     if( type_class == XX ) {
         return( DoAlphaParmDecl( reg, sym, tipe, temp ) );
     }
@@ -412,7 +412,7 @@ void    AddCallIns( instruction *ins, cn call )
         attr = 0;
         if( call_name->m.memory_type == CG_FE ) {
             attr = FEAttr( call_name->v.symbol );
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
             /*
              * in case the inline assembly code references a local variable
              */
@@ -425,7 +425,7 @@ void    AddCallIns( instruction *ins, cn call )
          * don't do this for far16 functions since they are handled
          * in a weird manner by Far16Parms and will not call data labels
          */
-#if _TARGET & (_TARG_80386 | _TARG_8086)
+#if _TARGET_INTEL
         if( (attr & FE_PROC) == 0 && (ins->flags.call_flags & CALL_FAR16) == 0 ) {
 #else
         if( (attr & FE_PROC) == 0 ) {
@@ -435,7 +435,7 @@ void    AddCallIns( instruction *ins, cn call )
              * screws up the back end
              */
             addr_type_class = WD;
-#if _TARGET & (_TARG_80386 | _TARG_8086)
+#if _TARGET_INTEL
             if( *(call_class *)FindAuxInfo( call_name, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL ) {
                 addr_type_class = CP;
             }
@@ -583,7 +583,7 @@ void    ParmIns( pn parm, call_state *state ) {
             } else if( !CvtOk( TypeClass( addr->tipe ), reg->n.type_class ) ) {
                 ins = NULL;
                 FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
-  #if _TARGET & ( _TARG_8086 | _TARG_80386 )
+  #if _TARGET_INTEL
             } else if( HW_CEqual( reg->r.reg, HW_ABCD ) ) {
                 ins = NULL;
                 FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
@@ -700,7 +700,7 @@ void    BGReturn( an retval, type_def *tipe ) {
     TargetModel = SaveTargetModel;
 }
 
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
 
 static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_type_class )
 /***************************************************************************************/
@@ -811,7 +811,7 @@ bool        AssgnParms( cn call, bool in_line ) {
     state = call->state;
     call_ins = call->ins;
     parms = 0;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     SplitStructParms( &call->parms, state );
     parm = call->parms;
 #endif

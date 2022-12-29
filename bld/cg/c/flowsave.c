@@ -310,7 +310,7 @@ void FlowSave( hw_reg_set *preg )
     // we can't do this if we have push's which are 'live' at the end of a block
     // - this flag is set when we see a push being generated for a call in a different
     //   block
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
     if( CurrProc->targ.never_sp_frame )
         return;
 #endif
@@ -327,7 +327,7 @@ void FlowSave( hw_reg_set *preg )
         HW_Asgn( reg_info[curr_reg].reg, *curr_push );
         reg_info[curr_reg].save = NULL;
         reg_info[curr_reg].restore = NULL;
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
         if( HW_COvlap( *curr_push, HW_xBP ) )
             continue;  // don't mess with BP - it's magical
 #endif
@@ -358,7 +358,7 @@ void FlowSave( hw_reg_set *preg )
         restore = reg_info[curr_reg].restore;
         if( ( save != NULL && save != HeadBlock ) && ( restore != NULL && !_IsBlkAttr( restore, BLK_RETURN ) ) ) {
             reg_type_class = WD;
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
             if( IsSegReg( reg_info[curr_reg].reg ) ) {
                 reg_type_class = U2;
             }

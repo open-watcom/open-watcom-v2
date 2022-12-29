@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ const opcode_entry  *ResetGenEntry( instruction *ins )
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     /*
      * Real architectures are orthogonal and don't need to swap
      * op's. BBB

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -496,7 +496,7 @@ an      BGUnary( cg_op op, an left, type_def *tipe )
             new = CnvRnd( left, tipe, O_ROUND );
         }
         break;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     case O_STACK_ALLOC:
         CurrProc->targ.base_is_fp = true;
         break;

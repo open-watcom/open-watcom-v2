@@ -248,7 +248,7 @@ static bool OkToSlide( instruction *ins, name *op )
     Is it OK to slide an INDEX_ADJUST instruction past an index name?
 */
 {
-#if  _TARGET & (_TARG_80386 | _TARG_8086 )
+#if  _TARGET_INTEL
     opcnt           i;
 #endif
 
@@ -260,7 +260,7 @@ static bool OkToSlide( instruction *ins, name *op )
         return( true );
     if( OptForSize >= 50 )
         return( false );
-#if  _TARGET & (_TARG_80386 | _TARG_8086 )
+#if  _TARGET_INTEL
     /* bad news to add a displacement on an instruction that also
        has a constant operand (takes an extra clock) */
     for( i = ins->num_operands; i-- > 0; ) {

@@ -67,7 +67,7 @@
 #include "feprotos.h"
 #include "cgprotos.h"
 
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     #include "x86segs.h"
 #endif
 #ifndef NDEBUG
@@ -335,7 +335,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
 #endif
 }
 
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
 static bool RHSLongPointer( tn rite )
 {
     if( rite->class == TN_LEAF && rite->u.addr->format == NF_ADDR ) {
@@ -538,7 +538,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
         left = TGConvert( left, tipe );
         rite = TGConvert( rite, tipe );
         break;
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     case O_CONVERT: /* based pointer junk */
         left = TGConvert( left, TypeAddress( TY_NEAR_POINTER ) );
         if( !RHSLongPointer( rite ) ) {
@@ -1584,7 +1584,7 @@ static  an  AddrGen( tn node )
     base = TNFindBase( node );
     flags = node->flags;
     alignment = node->u2.t.alignment;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     if( alignment == 0 ) {
         if( node->tipe->refno >= TY_FIRST_FREE ) {
             // it's a user-defined struct/type
@@ -2051,7 +2051,7 @@ an  TNUnary( tn node )
     return( retv );
 }
 
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
 static an   MakeBased( an left, an rite, type_def *tipe )
 /********************************************************
     Create a far pointer from the ashes of a near pointer on the left
@@ -2132,7 +2132,7 @@ an  TNBinary( tn node )
     BurnTree( r );
     // end of ugly hack
 
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
     /* based pointer junk */
     if( node->u2.t.op == O_CONVERT ) {
         retv = MakeBased( left, rite, node->tipe );
@@ -2146,7 +2146,7 @@ an  TNBinary( tn node )
         } else {
             retv = BGBinary( node->u2.t.op, left, rite, node->tipe, true );
         }
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
     }
 #endif
     retv->flags |= FL_STACKABLE;

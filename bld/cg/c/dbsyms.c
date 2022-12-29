@@ -44,7 +44,7 @@
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
 #include "wvsyms.h"
 #endif
 #include "dw.h"
@@ -382,7 +382,7 @@ void    InitDbgInfo( void )
         DFInitDbgInfo();
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVInitDbgInfo();
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVInitDbgInfo();
 #endif
@@ -399,7 +399,7 @@ void    FiniDbgInfo( void )
         DFFiniDbgInfo();
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVFiniDbgInfo();
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVFiniDbgInfo();
 #endif
@@ -511,7 +511,7 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                     DFGenStatic( sym, loc );
                 } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
                     CVGenStatic( sym, loc, false );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
                 } else {
                     WVGenStatic( sym , loc );
 #endif
@@ -563,7 +563,7 @@ void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
         //
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         //
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVObjectPtr( ptr_type );
 #endif
@@ -709,7 +709,7 @@ void    DbgSetBase( void )
         /* nothing */
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVSetBase();
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVSetBase();
 #endif
@@ -747,7 +747,7 @@ void    DbgRetLoc( void )
     if( CurrProc->targ.debug->reeturn == NULL ) {
         loc = DBLocInit();
         loc = LocReg( loc, AllocRegName( CurrProc->state.return_reg ) );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
         if( CurrProc->targ.return_points == NULL ) {
             /* nothing to do */
         } else if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
@@ -875,7 +875,7 @@ void    DbgBlkEnd( dbg_block *blk, offset lc )
         DFBlkEnd( blk, lc );
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVBlkEnd( blk, lc );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVBlkEnd( blk, lc );
 #endif
@@ -903,7 +903,7 @@ void    DbgRtnEnd( dbg_rtn *rtn, offset lc )
         DFRtnEnd( rtn, lc );
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVRtnEnd( rtn, lc );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVRtnEnd( rtn, lc );
 #endif

@@ -548,7 +548,7 @@ name    *AllocRegName( hw_reg_set regs )
     new_r = AllocName( N_REGISTER, RegClass( regs ), 0 );
     new_r->r.reg = regs;
     new_r->r.reg_index = -1;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     SetArchIndex( new_r, regs );
 #endif
     return( new_r );

@@ -347,7 +347,7 @@ extern  void    Attrs( sym s ) {
 extern  void    DumpCClass( call_class cclass )
 /*********************************************/
 {
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( cclass & FAR_CALL )
         Action( "FAR " );
     if( cclass & ROUTINE_RETURN )

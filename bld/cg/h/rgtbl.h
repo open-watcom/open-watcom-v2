@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ extern hw_reg_set       SaveRegs( void );
 extern hw_reg_set       MustSaveRegs( void );
 extern hw_reg_set       ScratchReg( void );
 
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
 extern hw_reg_set       ReturnReg( type_class_def type_class, bool use_87 );
 #else
 extern hw_reg_set       ReturnReg( type_class_def type_class );
