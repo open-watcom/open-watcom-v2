@@ -49,6 +49,9 @@
 
 typedef struct aux_info {
     call_class          cclass;
+#if _INTEL_CPU
+    call_class_target   cclass_target;
+#endif
     byte_seq            *code;
     hw_reg_set          *parms;
     hw_reg_set          returns;

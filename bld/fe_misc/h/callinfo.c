@@ -103,8 +103,9 @@ static  hw_reg_set  OptlinkParms[] = {
 void AuxInfoInit( int flag_stdatnum )
 /***********************************/
 {
-    hw_reg_set  full_no_segs;
-    call_class  cclass;
+    hw_reg_set          full_no_segs;
+    call_class          cclass;
+    call_class_target   cclass_target;
 
   #if _CPU == 8086
     flag_stdatnum = 0;
@@ -114,6 +115,7 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CTurnOff( full_no_segs, HW_SEGS );
 
     cclass = WatcallInfo.cclass & FECALL_X86_FAR_CALL;
+    cclass_target = 0;
 
 /*************************************************
  *  __fortran calling convention
@@ -123,6 +125,7 @@ void AuxInfoInit( int flag_stdatnum )
 /*************************************************
  *  __cdecl calling convention
  *************************************************/
+    CdeclInfo.cclass_target = cclass_target;
     CdeclInfo.cclass =    cclass |
                          //FECALL_GEN_REVERSE_PARMS |
                          FECALL_GEN_CALLER_POPS |
@@ -162,6 +165,7 @@ void AuxInfoInit( int flag_stdatnum )
 /*************************************************
  *  __pascal calling convention
  *************************************************/
+    PascalInfo.cclass_target = cclass_target;
     PascalInfo.cclass =   cclass |
                          FECALL_GEN_REVERSE_PARMS |
                          //FECALL_GEN_CALLER_POPS |
@@ -196,6 +200,7 @@ void AuxInfoInit( int flag_stdatnum )
 /*************************************************
  *  __stdcall calling convention
  *************************************************/
+    StdcallInfo.cclass_target = cclass_target;
     StdcallInfo.cclass =  cclass |
                          //FECALL_GEN_REVERSE_PARMS |
                          //FECALL_GEN_CALLER_POPS |
@@ -241,6 +246,7 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CAsgn( FastcallInfo.streturn, HW_EMPTY );
     HW_TurnOn( FastcallInfo.save, full_no_segs );
     HW_CTurnOff( FastcallInfo.save, HW_FLTS );
+    FastcallInfo.cclass_target = cclass_target;
     FastcallInfo.cclass = cclass |
                          //FECALL_GEN_REVERSE_PARMS |
                          //FECALL_GEN_CALLER_POPS |
@@ -273,6 +279,7 @@ void AuxInfoInit( int flag_stdatnum )
 /*************************************************
  *  _Optlink calling convention
  *************************************************/
+    OptlinkInfo.cclass_target = cclass_target;
     OptlinkInfo.cclass =  cclass |
                          //FECALL_GEN_REVERSE_PARMS |
                          FECALL_GEN_CALLER_POPS  |
@@ -311,6 +318,7 @@ void AuxInfoInit( int flag_stdatnum )
 /*************************************************
  *  __syscall calling convention
  *************************************************/
+    SyscallInfo.cclass_target = cclass_target;
     SyscallInfo.cclass =  cclass |
                          //FECALL_GEN_REVERSE_PARMS |
                          FECALL_GEN_CALLER_POPS |
@@ -367,6 +375,7 @@ void AuxInfoInit( int flag_stdatnum )
 void SetAuxStackConventions( void )
 /*********************************/
 {
+    WatcallInfo.cclass_target = 0;
     WatcallInfo.cclass &= (FECALL_X86_GENERATE_STACK_FRAME | FECALL_X86_FAR_CALL);
     WatcallInfo.cclass |= FECALL_GEN_CALLER_POPS |
                           FECALL_X86_NO_8087_RETURNS |

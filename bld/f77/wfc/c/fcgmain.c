@@ -58,7 +58,7 @@
 #include "gsegs.h"
 
 
-#define DEF_CGSW_SWITCHES           (CGSW_FORTRAN_ALIASING | CGSW_RELAX_ALIAS)
+#define DEF_CGSW_GEN_SWITCHES       (CGSW_GEN_FORTRAN_ALIASING | CGSW_GEN_RELAX_ALIAS)
 
 #if _CPU == 8086
   #define DEF_CGSW_TARGET_SWITCHES  0
@@ -136,12 +136,12 @@ static  void    CGStart( void )
     if( BELoad( NULL ) ) {
         CGFlags |= CG_LOADED;
         cpu = 0;
-        cg_gen_opts = DEF_CGSW_SWITCHES;
+        cg_gen_opts = DEF_CGSW_GEN_SWITCHES;
         cg_target_opts = DEF_CGSW_TARGET_SWITCHES;
 
 #if COMP_CFG_CG_FPE
         if( (OZOpts & OZOPT_O_LOOP_INVAR) == 0 ) {
-            cg_gen_opts |= CGSW_ENABLE_FP_EXCEPTIONS;
+            cg_gen_opts |= CGSW_GEN_ENABLE_FP_EXCEPTIONS;
         }
 #endif
 
@@ -154,7 +154,7 @@ static  void    CGStart( void )
         }
 #endif
         if( CGOpts & CGOPT_ECHOAPI ) {
-            cg_gen_opts |= CGSW_ECHO_API_CALLS;
+            cg_gen_opts |= CGSW_GEN_ECHO_API_CALLS;
         }
 
 #if _INTEL_CPU
@@ -163,33 +163,33 @@ static  void    CGStart( void )
         }
         #if _CPU == 386
         if( OZOpts & OZOPT_O_BASE_PTR ) {
-            cg_gen_opts |= CGSW_MEMORY_LOW_FAILS;
+            cg_gen_opts |= CGSW_GEN_MEMORY_LOW_FAILS;
         }
         #endif
 #endif
         if( OZOpts & OZOPT_O_SUPER_OPTIMAL ) {
-            cg_gen_opts |= CGSW_SUPER_OPTIMAL;
+            cg_gen_opts |= CGSW_GEN_SUPER_OPTIMAL;
         }
         if( OZOpts & OZOPT_O_FLOW_REG_SAVES ) {
-            cg_gen_opts |= CGSW_FLOW_REG_SAVES;
+            cg_gen_opts |= CGSW_GEN_FLOW_REG_SAVES;
         }
         if( OZOpts & OZOPT_O_BRANCH_PREDICTION ) {
-            cg_gen_opts |= CGSW_BRANCH_PREDICTION;
+            cg_gen_opts |= CGSW_GEN_BRANCH_PREDICTION;
         }
         if( OZOpts & OZOPT_O_CALL_RET ) {
-            cg_gen_opts |= CGSW_NO_CALL_RET_TRANSFORM;
+            cg_gen_opts |= CGSW_GEN_NO_CALL_RET_TRANSFORM;
         }
         if( OZOpts & OZOPT_O_LOOP ) {
-            cg_gen_opts |= CGSW_LOOP_OPTIMIZATION;
+            cg_gen_opts |= CGSW_GEN_LOOP_OPTIMIZATION;
         }
         if( OZOpts & OZOPT_O_UNROLL ) {
-            cg_gen_opts |= CGSW_LOOP_OPTIMIZATION | CGSW_LOOP_UNROLLING;
+            cg_gen_opts |= CGSW_GEN_LOOP_OPTIMIZATION | CGSW_GEN_LOOP_UNROLLING;
         }
         if( OZOpts & OZOPT_O_MATH ) {
-            cg_gen_opts |= CGSW_I_MATH_INLINE;
+            cg_gen_opts |= CGSW_GEN_I_MATH_INLINE;
         }
         if( OZOpts & OZOPT_O_DISABLE ) {
-            cg_gen_opts |= CGSW_NO_OPTIMIZATION;
+            cg_gen_opts |= CGSW_GEN_NO_OPTIMIZATION;
         }
 #if _INTEL_CPU
         if( OZOpts & OZOPT_O_FRAME ) {
@@ -197,10 +197,10 @@ static  void    CGStart( void )
         }
 #endif
         if( OZOpts & OZOPT_O_INSSCHED ) {
-            cg_gen_opts |= CGSW_INS_SCHEDULING;
+            cg_gen_opts |= CGSW_GEN_INS_SCHEDULING;
         }
         if( OZOpts & OZOPT_O_NUMERIC ) {
-            cg_gen_opts |= CGSW_FP_UNSTABLE_OPTIMIZATION;
+            cg_gen_opts |= CGSW_GEN_FP_UNSTABLE_OPTIMIZATION;
         }
         space_time = 50;
         if( OZOpts & OZOPT_O_SPACE ) {
@@ -332,15 +332,15 @@ static  void    CGStart( void )
 #endif
 
         if( CGOpts & CGOPT_DB_LINE ) {
-            cg_gen_opts |= CGSW_DBG_NUMBERS;
+            cg_gen_opts |= CGSW_GEN_DBG_NUMBERS;
         }
         if( CGOpts & CGOPT_DB_LOCALS ) {
-            cg_gen_opts |= CGSW_DBG_TYPES | CGSW_DBG_LOCALS | CGSW_DBG_NUMBERS | CGSW_NO_OPTIMIZATION;
+            cg_gen_opts |= CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_NUMBERS | CGSW_GEN_NO_OPTIMIZATION;
         }
         if( CGOpts & CGOPT_DI_CV ) {
-            cg_gen_opts |= CGSW_DBG_CV;
+            cg_gen_opts |= CGSW_GEN_DBG_CV;
         } else if( CGOpts & CGOPT_DI_DWARF ) {
-            cg_gen_opts |= CGSW_DBG_DF;
+            cg_gen_opts |= CGSW_GEN_DBG_DF;
         }
         info = BEInit( cg_gen_opts, cg_target_opts, space_time, cpu );
 

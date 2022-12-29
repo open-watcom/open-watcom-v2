@@ -112,7 +112,64 @@ static aux_info         *AliasInfo;
 static char             SymName[MAX_SYMLEN+1];
 static size_t           SymLen;
 
-#if _CPU == 8086
+static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
+
+static  hw_reg_set      FortranParms[] = {
+#if _INTEL_CPU
+  #if _CPU == 8086
+    HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ),
+  #else /* _CPU == 386 */
+    HW_D_4( HW_EAX, HW_EBX, HW_ECX, HW_EDX ),
+  #endif
+#else /* _RISC_CPU */
+#endif
+    HW_D( HW_EMPTY )
+};
+
+static aux_info         DefaultInfo = {
+    /*
+     * call class
+     */
+#if _INTEL_CPU
+  #if _CPU == 8086
+    FECALL_X86_FAR_CALL,
+    0,
+  #else /* _CPU == 386 */
+    0,
+    0,
+  #endif
+#else /* _RISC_CPU */
+    0,
+#endif
+    NULL,                   /* code */
+    FortranParms,           /* parms */
+    HW_D( HW_EMPTY ),       /* returns */
+    /*
+     * structure return register
+     */
+#if _INTEL_CPU
+  #if _CPU == 8086
+    HW_D( HW_SI ),
+  #else /* _CPU == 386 */
+    HW_D( HW_ESI ),
+  #endif
+#else /* _RISC_CPU */
+    HW_D( HW_EMPTY ),
+#endif
+    HW_D( HW_FULL ),        /* save */
+    "^",                    /* objname */
+    0,                      /* use */
+    0,                      /* flags */
+    NULL,                   /* arg_info */
+    NULL,                   /* link */
+    0                       /* sym_len */
+};
+
+#include "regs.c"
+
+#if _INTEL_CPU
+  #if _CPU == 8086
+
 static char    __Pascal[] =  {
     "aux __pascal \"^\" "
     "parm routine reverse [] "
@@ -125,7 +182,9 @@ static char    __Cdecl[] =   {
     "value struct float struct routine [ax] "
     "modify [ax bx cx dx]"
 };
-#elif _CPU == 386
+
+  #else /* _CPU == 386 */
+
 static char    __Syscall[] = {
     "aux __syscall \"*\" "
     "parm caller [] "
@@ -150,63 +209,11 @@ static char    __Stdcall[] = {
     "value struct [] "
     "modify [eax ecx edx]"
 };
+
+  #endif
+#else /* _RISC_CPU */
+
 #endif
-
-static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
-
-#if _CPU == 8086
-static  hw_reg_set      FortranParms[] =
-    { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
-
-static aux_info         DefaultInfo = {
-    FECALL_X86_FAR_CALL,
-    NULL,
-    FortranParms,
-    HW_D( HW_EMPTY ),
-    HW_D( HW_SI ),
-    HW_D( HW_FULL ),
-    "^",
-    0,
-    0,
-    NULL
-};
-#elif   _CPU == 386
-static  hw_reg_set      FortranParms[] =
-    { HW_D_4( HW_EAX, HW_EBX, HW_ECX, HW_EDX ), HW_D( HW_EMPTY ) };
-
-static aux_info         DefaultInfo = {
-    0,
-    NULL,
-    FortranParms,
-    HW_D( HW_EMPTY ),
-    HW_D( HW_ESI ),
-    HW_D( HW_FULL ),
-    "^",
-    0,
-    0,
-    NULL
-};
-#else
-static  hw_reg_set      FortranParms[] =
-    { HW_D( HW_EMPTY ) };
-
-static aux_info         DefaultInfo = {
-    0,
-    NULL,
-    FortranParms,
-    HW_D( HW_EMPTY ),
-    HW_D( HW_EMPTY ),
-    HW_D( HW_FULL ),
-    "^",
-    0,
-    0,
-    NULL
-};
-#endif
-
-
-#include "regs.c"
-
 
 static struct magic_words_info {
     const char      *name;
@@ -381,14 +388,15 @@ void InitPragmaAux( void )
         DefaultInfo.cclass |= FECALL_X86_GROW_STACK;
     }
     if( CGOpts & CGOPT_STK_ARGS ) {
-        DefaultInfo.cclass |= FECALL_CALLER_POPS | FECALL_X86_NO_8087_RETURNS;
+        DefaultInfo.cclass |= FECALL_GEN_CALLER_POPS | FECALL_X86_NO_8087_RETURNS;
         DefaultInfo.parms = StackParms;
         HW_CTurnOff( DefaultInfo.save, HW_EAX );
-        HW_CTurnOff( DefaultInfo.save, HW_EDX );
+//        HW_CTurnOff( DefaultInfo.save, HW_EBX );
         HW_CTurnOff( DefaultInfo.save, HW_ECX );
+        HW_CTurnOff( DefaultInfo.save, HW_EDX );
         HW_CTurnOff( DefaultInfo.save, HW_FLTS );
 
-        IFXInfo.cclass |= FECALL_CALLER_POPS | FECALL_X86_NO_8087_RETURNS;
+        IFXInfo.cclass |= FECALL_GEN_CALLER_POPS | FECALL_X86_NO_8087_RETURNS;
         IFXInfo.parms = StackParms;
 
         HW_CTurnOff( IFXInfo.save, HW_FLTS );
@@ -554,6 +562,9 @@ static void CopyAuxInfo( aux_info *dst, aux_info *src )
 {
     if( dst != src ) {
         dst->cclass = src->cclass;
+#if _INTEL_CPU
+        dst->cclass_target = src->cclass_target;
+#endif
         dst->save = src->save;
         dst->returns = src->returns;
         dst->streturn = src->streturn;
@@ -1204,7 +1215,7 @@ static void GetSaveInfo( void )
             CurrAux->cclass |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = true;
         } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
-            CurrAux->cclass |= FECALL_NO_MEMORY_CHANGED;
+            CurrAux->cclass |= FECALL_GEN_NO_MEMORY_CHANGED;
             have.f_nomemory = true;
         } else if( !have.f_list && RecToken( "[" ) ) {
             modlist = RegSet();
@@ -1258,17 +1269,17 @@ static void GetParmInfo( void )
             have.f_args = true;
 #if _INTEL_CPU
         } else if( !have.f_pop && RecToken( "CALLER" ) ) {
-            CurrAux->cclass |= FECALL_CALLER_POPS;
+            CurrAux->cclass |= FECALL_GEN_CALLER_POPS;
             have.f_pop = true;
         } else if( !have.f_pop && RecToken( "ROUTINE" ) ) {
-            CurrAux->cclass &= ~FECALL_CALLER_POPS;
+            CurrAux->cclass &= ~FECALL_GEN_CALLER_POPS;
             have.f_pop = true;
         } else if( !have.f_reverse && RecToken( "REVERSE" ) ) {
             // arguments are processed in reverse order by default
-            CurrAux->cclass |= FECALL_REVERSE_PARMS;
+            CurrAux->cclass |= FECALL_GEN_REVERSE_PARMS;
             have.f_reverse = true;
         } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
-            CurrAux->cclass |= FECALL_NO_MEMORY_READ;
+            CurrAux->cclass |= FECALL_GEN_NO_MEMORY_READ;
             have.f_nomemory = true;
         } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
             CurrAux->cclass |= FECALL_X86_LOAD_DS_ON_CALL;
@@ -1356,7 +1367,7 @@ void     PragmaAux( void )
             have.f_loadds = true;
 #endif
         } else if( !have.f_export && RecToken( "EXPORT" ) ) {
-            CurrAux->cclass |= FECALL_DLL_EXPORT;
+            CurrAux->cclass |= FECALL_GEN_DLL_EXPORT;
             have.f_export = true;
 #if _INTEL_CPU
         } else if( !have.f_value && RecToken( "VALUE" ) ) {
@@ -1364,7 +1375,7 @@ void     PragmaAux( void )
             have.f_value = true;
 #endif
         } else if( !have.f_value && RecToken( "ABORTS" ) ) {
-            CurrAux->cclass |= FECALL_ABORTS;
+            CurrAux->cclass |= FECALL_GEN_ABORTS;
             have.f_value = true;
 #if _INTEL_CPU
         } else if( !have.f_modify && RecToken( "MODIFY" ) ) {

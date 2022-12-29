@@ -1809,7 +1809,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
             static call_class CallClass;
 
             info = GetAuxInfo( req_handle );
-            CallClass = info->cclass ^ FECALL_REVERSE_PARMS;
+            CallClass = info->cclass ^ FECALL_GEN_REVERSE_PARMS;
             return( (pointer)&CallClass );
         }
     case FEINF_SAVE_REGS :
