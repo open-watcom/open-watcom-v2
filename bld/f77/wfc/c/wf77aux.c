@@ -72,6 +72,45 @@
     #define REGNAME_MAX_LEN     4
 #endif
 
+#if _INTEL_CPU
+#define CCLASS_TARGET_CODE  0, NULL
+#else
+#define CCLASS_TARGET_CODE  NULL
+#endif
+
+#if _CPU == 8086
+#define CCLASS_ITEMS(x)   (x) | FECALL_X86_FAR_CALL, CCLASS_TARGET_CODE,
+#else
+#define CCLASS_ITEMS(x)   (x), CCLASS_TARGET_CODE,
+#endif
+
+#if _INTEL_CPU
+#define MASK_RT_at      "RT@*"
+#define MASK_IF_at      "IF@*"
+#define MASK_IF_at_X    "IF@X*"
+#else /* _RISC_CPU */
+#define MASK_RT_at      "__RT_*"
+#define MASK_IF_at      "_IF_*"
+#define MASK_IF_at_X    "_IF_X*"
+#endif
+
+#if _INTEL_CPU
+  #if _CPU == 8086
+#define STRETURN HW_SI
+  #else /* _CPU == 386 */
+#define STRETURN HW_ESI
+  #endif
+#else /* _RISC_CPU */
+#define STRETURN HW_EMPTY
+#endif
+
+#define AUX_SETUPX(p1,p2)   (p1), 0, 0, (p2), NULL, 0, '\0'
+
+#define AUX_SETUP_Default CCLASS_ITEMS( 0 ) FortranParms, HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX("^", NULL)
+#define AUX_SETUP_RT_at(p1,p2) CCLASS_ITEMS( (p1) ) (p2), HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX(MASK_RT_at, NULL)
+#define AUX_SETUP_IF_at(p1,p2,p3) CCLASS_ITEMS( (p1) ) (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at, (p3))
+#define AUX_SETUP_IF_at_X(p1,p2,p3) CCLASS_ITEMS( (p1) ) (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at_X, (p3))
+
 
 typedef enum {
     #define pick(a,b,c,d)   a,
@@ -112,7 +151,19 @@ static aux_info         *AliasInfo;
 static char             SymName[MAX_SYMLEN+1];
 static size_t           SymLen;
 
-static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
+static  pass_by         IFArgValue = { NULL, PASS_BY_VALUE };
+static  pass_by         IFArgDescriptor = { NULL, PASS_BY_DESCRIPTOR };
+
+static hw_reg_set       StackParms[] = {
+    HW_D( HW_EMPTY )
+};
+
+#if _CPU == 8086
+static hw_reg_set       WinParms[] = {
+    HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ),
+    HW_D( HW_EMPTY )
+};
+#endif
 
 static  hw_reg_set      FortranParms[] = {
 #if _INTEL_CPU
@@ -126,46 +177,69 @@ static  hw_reg_set      FortranParms[] = {
     HW_D( HW_EMPTY )
 };
 
-static aux_info         DefaultInfo = {
-    /*
-     * call class
-     */
+static  hw_reg_set      RtRtnParms[] = {
 #if _INTEL_CPU
   #if _CPU == 8086
-    FECALL_X86_FAR_CALL,
-    0,
+     HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ),
   #else /* _CPU == 386 */
-    0,
-    0,
+     HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ),
   #endif
-#else /* _RISC_CPU */
-    0,
+#elif _RISC_CPU
 #endif
-    NULL,                   /* code */
-    FortranParms,           /* parms */
-    HW_D( HW_EMPTY ),       /* returns */
-    /*
-     * structure return register
-     */
-#if _INTEL_CPU
-  #if _CPU == 8086
-    HW_D( HW_SI ),
-  #else /* _CPU == 386 */
-    HW_D( HW_ESI ),
-  #endif
-#else /* _RISC_CPU */
-    HW_D( HW_EMPTY ),
-#endif
-    HW_D( HW_FULL ),        /* save */
-    "^",                    /* objname */
-    0,                      /* use */
-    0,                      /* flags */
-    NULL,                   /* arg_info */
-    NULL,                   /* link */
-    0                       /* sym_len */
+     HW_D( HW_EMPTY )
 };
 
-#include "regs.c"
+static  hw_reg_set      IFParms[] = {
+#if _INTEL_CPU
+  #if _CPU == 8086
+     HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ),
+  #else /* _CPU == 386 */
+     HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ),
+  #endif
+#elif _RISC_CPU
+#endif
+     HW_D( HW_EMPTY )
+};
+
+static aux_info         DefaultInfo = {
+    AUX_SETUP_Default
+};
+
+static aux_info         RtRtnInfo = {
+    AUX_SETUP_RT_at( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED | FECALL_GEN_REVERSE_PARMS, RtRtnParms )
+};
+
+static aux_info         RtStopInfo = {
+    AUX_SETUP_RT_at( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED | FECALL_GEN_ABORTS | FECALL_GEN_REVERSE_PARMS, RtRtnParms )
+};
+
+static aux_info         RtVarInfo = {
+    AUX_SETUP_RT_at( FECALL_GEN_CALLER_POPS | FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED | FECALL_GEN_REVERSE_PARMS, StackParms )
+};
+
+static aux_info         CoRtnInfo = {
+    AUX_SETUP_RT_at( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED | FECALL_GEN_REVERSE_PARMS, RtRtnParms )
+};
+
+static aux_info         IFXInfo = {
+    AUX_SETUP_IF_at_X( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED, FortranParms, NULL )
+};
+
+static aux_info         IFInfo = {
+    AUX_SETUP_IF_at( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED, IFParms, &IFArgValue )
+};
+
+static aux_info         IFCharInfo = {
+    AUX_SETUP_IF_at( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED, IFParms, &IFArgDescriptor )
+};
+
+static aux_info         IFChar2Info = {
+    AUX_SETUP_IF_at_X( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED, IFParms, NULL )
+};
+
+static aux_info         IFVarInfo = {
+    AUX_SETUP_IF_at_X( FECALL_GEN_NO_MEMORY_READ | FECALL_GEN_NO_MEMORY_CHANGED | FECALL_GEN_CALLER_POPS, StackParms, &IFArgValue )
+};
 
 #if _INTEL_CPU
   #if _CPU == 8086

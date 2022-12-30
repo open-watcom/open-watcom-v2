@@ -65,8 +65,6 @@ exetarg_res_version_nt_x64 = exever.res
 exetarg_res_wresui    = wresui.res
 !include exetarg.mif
 
-wf77aux.obj : wf77aux.c regs.c
-
 #
 # rc and others
 #
@@ -76,7 +74,7 @@ verrc_exe = $(exetarg_name)
 rcui_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
     $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-wresui.res : $(f77wfc_dir)/h/wfc.rc wasmcmsg.grh $(f77wfc_dir)/h/wfc.rh
+wresui.res : $(f77wfc_dir)/h/wfc.rc $(f77wfc_dir)/h/wfc.rh
     @%make echo_rc
     $(rcui8)
 
