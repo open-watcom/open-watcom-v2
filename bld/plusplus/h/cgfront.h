@@ -205,7 +205,7 @@ typedef enum                    // CALL_OPT -- types of call optimizations
 // TEST IF DEFAULT MEMORY MODEL USES BIG DATA
 #define IsBigData()     ((TargetSwitches & CGSW_X86_BIG_DATA) != 0)
 // TEST IF DEFAULT MEMORY MODEL USES HUGE DATA
-#define IsHugeData()    ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == (CGSW_X86_BIG_DATA))
+#define IsHugeData()    ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)
 // TEST IF DEFAULT MEMORY MODEL IS FLAT
 #define IsFlat()        ((TargetSwitches & CGSW_X86_FLAT_MODEL) != 0)
 

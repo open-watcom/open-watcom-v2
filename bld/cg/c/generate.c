@@ -230,7 +230,7 @@ static  void            PostOptimize( void )
     }
     MergeIndex();
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
-    #if !_TARGET_RISC
+#if !_TARGET_RISC
         //
         // Calling Conditions() at this point has nice optimization effect,
         // but doesn't working correctly right now. It optimizes conditions
@@ -246,7 +246,7 @@ static  void            PostOptimize( void )
             DeadInstructions(); // cleanup junk after Conditions()
         }
     #endif
-    #endif
+#endif
         // OptCloseMoves();  // todo: merge constant moves before riscifier
         LdStAlloc();
         Score();
@@ -259,12 +259,12 @@ static  void            PostOptimize( void )
         DeadInstructions(); // cleanup junk after Score()
         if( !BlockByBlock )
             LoopRegInvariant();
-    #if !_TARGET_RISC
+#if !_TARGET_RISC
         // Get rid of remaining unused conditions on register level.
         if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
         }
-    #endif
+#endif
     }
     FPExpand();
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {

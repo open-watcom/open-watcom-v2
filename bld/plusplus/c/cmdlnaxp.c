@@ -45,7 +45,7 @@
 #define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS)
 #define DEF_CGSW_GEN_SWITCHES       0
 
-#define DEF_CGSW_AXP_SWITCHES  0
+#define DEF_CGSW_AXP_SWITCHES       0
 
 
 void CmdSysInit( void )

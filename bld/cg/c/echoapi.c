@@ -225,7 +225,7 @@ void EchoAPI              // EchoAPI ROUTINE
     ( const char *text          // - text
     , ... )                     // - operands
 {
-    if( _IsModel( CGSW_ECHO_API_CALLS ) ) {
+    if( _IsModel( CGSW_GEN_ECHO_API_CALLS ) ) {
         char buffer[256];
         va_list args;
         va_start( args, text );
