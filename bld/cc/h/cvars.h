@@ -350,7 +350,7 @@ global int          PreProcChar;
 global TYPEPTR      PrevProtoType;      /* prev func prototype */
 
 global align_type   SegAlignment[FIRST_PRIVATE_SEGMENT];
-global unsigned     TargSys;
+global unsigned     TargetSystem;
 global segment_id   DefDataSegment;     /* #pragma data_seg("segname","class") */
 global textsegment  *DefCodeSegment;    /* #pragma code_seg("seg","c") */
 

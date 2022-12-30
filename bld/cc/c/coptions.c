@@ -78,6 +78,12 @@ static const char   *OptParm;
 #define PEGGED( r ) boolbit     peg_##r##s_used : 1; \
                     boolbit     peg_##r##s_on   : 1
 
+#define TOPEGGED( r ) \
+    if( !SwData.peg_##r##s_used ) { \
+        SwData.peg_##r##s_on = true; \
+        SwData.peg_##r##s_used = true; \
+    }
+
 static struct
 {
     char        *sys_name;
@@ -181,7 +187,7 @@ static void SetCharacterEncoding( void )
     }
 }
 
-static void SetTargName( const char *name, size_t len )
+static void SetTargetName( const char *name, size_t len )
 {
     char        *p;
 
@@ -193,16 +199,15 @@ static void SetTargName( const char *name, size_t len )
         return;
     SwData.sys_name = CMemAlloc( len + 1 ); /* for NULLCHAR */
     p = SwData.sys_name;
-    while( len != 0 ) {
+    while( len-- > 0 ) {
         *p++ = (char)toupper( *(unsigned char *)name++ );
-        --len;
     }
     *p++ = '\0';
 }
 
-#define _SetConstTarg( name ) SetTargName( name, sizeof( name ) - 1 )
+#define _SetTargetNameConst( name ) SetTargetName( name, sizeof( name ) - 1 )
 
-static void SetTargSystem( void )
+static void SetTargetSystem( void )
 {
     char        *buff;
 
@@ -251,7 +256,7 @@ static void SetTargSystem( void )
     PreDefine_Macro( "__SPARC__" );
     PreDefine_Macro( "_SPARC_" );
 #else
-    #error SetTargSystem not configured
+    #error SetTargetSystem not configured
 #endif
 
     PreDefine_Macro( "__WATCOM_INT64__" );
@@ -259,61 +264,61 @@ static void SetTargSystem( void )
     if( SwData.sys_name == NULL ) {
 #if _INTEL_CPU
     #if defined( __NOVELL__ )
-        _SetConstTarg( "netware" );
+        _SetTargetNameConst( "netware" );
     #elif defined( __QNX__ )
-        _SetConstTarg( "qnx" );
+        _SetTargetNameConst( "qnx" );
     #elif defined( __LINUX__ )
-        _SetConstTarg( "linux" );
+        _SetTargetNameConst( "linux" );
     #elif defined( __HAIKU__ )
-        _SetConstTarg( "haiku" );
+        _SetTargetNameConst( "haiku" );
     #elif defined( __SOLARIS__ ) || defined( __sun__ )
-        _SetConstTarg( "solaris" );
+        _SetTargetNameConst( "solaris" );
     #elif defined( __OSX__ ) || defined( __APPLE__ )
-        _SetConstTarg( "osx" );
+        _SetTargetNameConst( "osx" );
     #elif defined( __OS2__ )
-        _SetConstTarg( "os2" );
+        _SetTargetNameConst( "os2" );
     #elif defined( __NT__ )
-        _SetConstTarg( "nt" );
+        _SetTargetNameConst( "nt" );
     #elif defined( __DOS__ )
-        _SetConstTarg( "dos" );
+        _SetTargetNameConst( "dos" );
     #elif defined( __BSD__ )
-        _SetConstTarg( "bsd" );
+        _SetTargetNameConst( "bsd" );
     #elif defined( __RDOS__ )
-        _SetConstTarg( "rdos" );
+        _SetTargetNameConst( "rdos" );
     #else
         #error "Target OS not defined"
     #endif
 #elif _RISC_CPU || _CPU == _SPARC
         /* we only have NT libraries for Alpha right now */
-        _SetConstTarg( "nt" );
+        _SetTargetNameConst( "nt" );
 #else
     #error Target Machine OS not configured
 #endif
     }
 
     if( strcmp( SwData.sys_name, "DOS" ) == 0 ) {
-        TargSys = TS_DOS;
+        TargetSystem = TS_DOS;
     } else if( strcmp( SwData.sys_name, "NETWARE" ) == 0 ) {
-        TargSys = TS_NETWARE;
+        TargetSystem = TS_NETWARE;
     } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
-        TargSys = TS_NETWARE5;
+        TargetSystem = TS_NETWARE5;
     } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
-        TargSys = TS_WINDOWS;
+        TargetSystem = TS_WINDOWS;
     } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
-        TargSys = TS_CHEAP_WINDOWS;
+        TargetSystem = TS_CHEAP_WINDOWS;
     } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
-        TargSys = TS_NT;
+        TargetSystem = TS_NT;
     } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
-        TargSys = TS_LINUX;
+        TargetSystem = TS_LINUX;
     } else if( strcmp( SwData.sys_name, "QNX" ) == 0 ) {
-        TargSys = TS_QNX;
+        TargetSystem = TS_QNX;
     } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
-        TargSys = TS_OS2;
+        TargetSystem = TS_OS2;
     } else {
-        TargSys = TS_OTHER;
+        TargetSystem = TS_OTHER;
     }
 
-    switch( TargSys ) {
+    switch( TargetSystem ) {
     case TS_DOS:
         if( CompFlags.non_iso_compliant_names_enabled ) {
             PreDefine_Macro( "MSDOS" );
@@ -330,7 +335,7 @@ static void SetTargSystem( void )
         if( SwData.mem == SW_M_DEF ) {
             SwData.mem = SW_MS;
         }
-        if( TargSys == TS_NETWARE5 )
+        if( TargetSystem == TS_NETWARE5 )
             PreDefine_Macro( "__NETWARE__" );
         PreDefine_Macro( "__NETWARE_386__" );
         /*
@@ -357,7 +362,7 @@ static void SetTargSystem( void )
         PreDefine_Macro( "__WINDOWS__" );
         PreDefine_Macro( "_WINDOWS" );
 #else
-        TargSys = TS_WINDOWS;
+        TargetSystem = TS_WINDOWS;
 #endif
         /* fall through */
     case TS_WINDOWS:
@@ -834,7 +839,7 @@ void MergeInclude( void )
     char        *buff;
 
     if( !CompFlags.cpp_ignore_env ) {
-        switch( TargSys ) {
+        switch( TargetSystem ) {
         case TS_CHEAP_WINDOWS:
         case TS_WINDOWS:
             env_var = FEGetEnv( "WINDOWS_" INC_VAR );
@@ -954,7 +959,7 @@ static void Set_BR( void )          { CompFlags.br_switch_used = true; }
 #endif
 
 static void Set_BW( void )          { CompFlags.bw_switch_used = true; }
-static void Set_BT( void )          { SetTargName( OptParm,  OptScanPtr - OptParm ); }
+static void Set_BT( void )          { SetTargetName( OptParm,  OptScanPtr - OptParm ); }
 
 static void SetExtendedDefines( void )
 {
@@ -1385,14 +1390,14 @@ static void ChkSmartWindows( void )
 
 static void SetCheapWindows( void )
 {
-    _SetConstTarg( "cheap_windows" );
+    _SetTargetNameConst( "cheap_windows" );
     ChkSmartWindows();
 }
   #endif
 
 static void SetWindows( void )
 {
-    _SetConstTarg( "windows" );
+    _SetTargetNameConst( "windows" );
   #if _CPU == 8086
     ChkSmartWindows();
   #endif
@@ -2078,7 +2083,7 @@ static void InitCPUModInfo( void )
     CodeClassName = NULL;
     PCH_FileName = NULL;
     TargetSwitches = 0;
-    TargSys = TS_OTHER;
+    TargetSystem = TS_OTHER;
     GenSwitches = CGSW_GEN_MEMORY_LOW_FAILS;
 #if _INTEL_CPU
     Stack87 = 8;
@@ -2156,8 +2161,8 @@ static void Define_Memory_Model( void )
         strcpy( CLIB_Name, "1clibmt?" );
     }
     if( CompFlags.bd_switch_used ) {
-        if( TargSys == TS_WINDOWS ||
-            TargSys == TS_CHEAP_WINDOWS ) {
+        if( TargetSystem == TS_WINDOWS ||
+            TargetSystem == TS_CHEAP_WINDOWS ) {
             strcpy( CLIB_Name, "1clib?" );
         } else {
             strcpy( CLIB_Name, "1clibdl?" );
@@ -2271,7 +2276,7 @@ void GenCOptions( char **cmdline )
     CBanner();          /* print banner if -zq not specified */
     GblPackAmount = PackAmount;
     SetDebug();
-    SetTargSystem();
+    SetTargetSystem();
     SetGenSwitches();
     SetCharacterEncoding();
     Define_Memory_Model();

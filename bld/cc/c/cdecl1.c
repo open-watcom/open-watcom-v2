@@ -216,7 +216,7 @@ static void BeginFunc( void )
         CompFlags.has_wchar_entry = true;
         // fall through!
     case MAIN_WINMAIN:
-        if( TargSys == TS_WINDOWS || TargSys == TS_CHEAP_WINDOWS || TargSys == TS_NT ) {
+        if( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS || TargetSystem == TS_NT ) {
             CompFlags.has_winmain = true;
         } else {
             CompFlags.has_wchar_entry = false;

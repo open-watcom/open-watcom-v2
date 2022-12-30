@@ -52,6 +52,7 @@
 #define FECALL_GEN_CALL_CLASS_IGNORE ( 0 \
     | FECALL_GEN_NO_MEMORY_CHANGED       \
     | FECALL_GEN_NO_MEMORY_READ          \
+    | FECALL_GEN_DLL_EXPORT              \
 )
 
 static void pragmasInit(        // INIT PRAGMAS

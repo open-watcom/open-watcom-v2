@@ -480,7 +480,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             } else {
                 cclass = GetLangInfo( sym.mods )->cclass;
 #if _CPU == 8086
-                if( TargSys == TS_WINDOWS ) {
+                if( TargetSystem == TS_WINDOWS ) {
                     if( sym.mods & (LANG_CDECL | LANG_PASCAL) ) {
                         cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                     }
@@ -515,7 +515,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 #if _INTEL_CPU
             if( sym.mods & FLAG_LOADDS ) {
   #if 0
-                if( TargSys == TS_WINDOWS ) {
+                if( TargetSystem == TS_WINDOWS ) {
                     cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                 } else {
                     cclass |= FECALL_X86_LOAD_DS_ON_ENTRY;
@@ -773,7 +773,7 @@ const char *FEExtName( CGSYM_HANDLE sym_handle, int request )
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_uint)GetParmsSize( (SYM_HANDLE)sym_handle ) );
     case EXTN_IMPPREFIX:
-        return( ( TargSys == TS_NT ) ? "__imp_" : NULL );
+        return( ( TargetSystem == TS_NT ) ? "__imp_" : NULL );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
@@ -912,7 +912,7 @@ static void addDefaultImports( void )
     }
 #if _INTEL_CPU
     /* handle NetWare */
-    if( TargSys == TS_NETWARE || TargSys == TS_NETWARE5 ) {
+    if( TargetSystem == TS_NETWARE || TargetSystem == TS_NETWARE5 ) {
         /* is target NETWARE or NETWARE5? */
         AddExtRefN( "__WATCOM_Prelude" );
     }
