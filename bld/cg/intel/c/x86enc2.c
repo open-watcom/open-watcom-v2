@@ -359,12 +359,14 @@ void    GenCall( instruction *ins )
     call_class      cclass;
     byte_seq        *code;
     label_handle    lbl;
+    bool            far_call;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
     cclass = *(call_class *)FindAuxInfo( op, FEINF_CALL_CLASS );
+    far_call = ( (*(call_class_target *)FindAuxInfo( op, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) != 0 );
     code = FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _Emit;
@@ -377,7 +379,7 @@ void    GenCall( instruction *ins )
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
-        if( (cclass & FECALL_X86_FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
+        if( far_call && (FEAttr( sym ) & FE_IMPORT) ) {
             CodeHandle( OC_JMP | OC_ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
@@ -395,7 +397,7 @@ void    GenCall( instruction *ins )
             lbl = (label_handle)sym;
             imp = true;
         }
-        DoCall( lbl, imp, (cclass & FECALL_X86_FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
+        DoCall( lbl, imp, far_call, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
     }
     if( (cclass & (FECALL_GEN_ABORTS | FECALL_GEN_NORETURN))
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {

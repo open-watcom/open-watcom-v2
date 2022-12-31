@@ -548,10 +548,12 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     return( cclass );
 }
 
+#if _INTEL_CPU
 call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
 {
     return( (call_class_target)GetCallClass( sym_handle ) );
 }
+#endif
 
 /*
 //    NextLibrary

@@ -895,10 +895,12 @@ static call_class getCallClass( // GET CLASS OF CALL
     return( cclass );
 }
 
-call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
+#if _INTEL_CPU
+static call_class_target getCallClassTarget( SYMBOL sym )
 {
-    return( (call_class_target)GetCallClass( sym_handle ) );
+    return( (call_class_target)getCallClass( sym ) );
 }
+#endif
 
 static sym_access getSymAccess( // GET access flag of symbol
     SYMBOL sym )                // - symbol

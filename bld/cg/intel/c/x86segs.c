@@ -243,7 +243,7 @@ cg_type NamePtrType( name *op ) {
             if( AskNameIsCode( sym, op->m.memory_type ) ) {
                 if( op->m.memory_type == CG_FE ) {
                     if( FEAttr( sym ) & FE_PROC ) {
-                        if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL )
+                        if( *(call_class_target *)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL )
                             return( TY_LONG_CODE_PTR );
                         return( TY_NEAR_CODE_PTR );
                     } else {

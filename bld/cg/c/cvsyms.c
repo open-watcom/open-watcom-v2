@@ -650,7 +650,7 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     ptr->proctype = tipe;
     ptr->flags.s = 0;
 #if _TARGET_INTEL
-    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_X86_FAR_CALL ) {
+    if( *(call_class_target *)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
         ptr->flags.f.far_ret = true;
     }
 #endif

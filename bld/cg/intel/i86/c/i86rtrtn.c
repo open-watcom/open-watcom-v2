@@ -556,6 +556,8 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
         break;
     case FEINF_CALL_CLASS:
         return( &rt_cclass );
+    case FEINF_CALL_CLASS_TARGET:
+        return( &rt_cclass );
     case FEINF_CALL_BYTES:
         return( hdl );
     default:

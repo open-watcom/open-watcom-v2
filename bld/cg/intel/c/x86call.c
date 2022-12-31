@@ -463,7 +463,7 @@ void    PostCall( cn call )
 type_def    *PassParmType( cg_sym_handle func, type_def* tipe )
 /*************************************************************/
 {
-    if( *(call_class *)FindAuxInfoSym( func, FEINF_CALL_CLASS ) & FECALL_X86_FAR16_CALL )
+    if( *(call_class_target *)FindAuxInfoSym( func, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR16_CALL )
         return( tipe );
     return( QParmType( func, NULL, tipe ) );
 }
