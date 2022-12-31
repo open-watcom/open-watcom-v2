@@ -38,6 +38,6 @@ extern call_class_target    GetCallClassTarget( SYM_HANDLE );
 #endif
 extern aux_info             *FindInfo( SYMPTR, SYM_HANDLE );
 extern bool                 FunctionAborts( SYMPTR, SYM_HANDLE );
-extern bool                 ParmsToBeReversed( int, aux_info * );
+extern bool                 ParmsToBeReversed( type_modifiers, aux_info * );
 extern aux_info             *GetLangInfo( type_modifiers flags );
-extern char                 *SrcFullPath( char const *, char *, unsigned );
+extern char                 *SrcFullPath( char const *, char *, size_t );

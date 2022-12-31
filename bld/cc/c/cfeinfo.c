@@ -300,21 +300,12 @@ aux_info *GetLangInfo( type_modifiers flags )
     }
 }
 
-/*
-//    return language specific info
-*/
-static aux_info *LangInfo( type_modifiers flags, aux_info *inf )
-{
-    if( inf != &DefaultInfo )
-        return( inf );
-
-    return( GetLangInfo( flags ) );
-}
-
-bool ParmsToBeReversed( int flags, aux_info *inf )
+bool ParmsToBeReversed( type_modifiers flags, aux_info *inf )
 {
 #ifdef REVERSE
-    inf = LangInfo( flags, inf );
+    if( inf == &DefaultInfo ) {
+        inf = GetLangInfo( flags );
+    }
     if( inf != NULL ) {
         if( inf->cclass & FECALL_GEN_REVERSE_PARMS ) {
             return( true );
@@ -442,6 +433,9 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
         }
     }
 #endif
+    if( inf == &DefaultInfo ) {
+        inf = GetLangInfo( sym->mods );
+    }
     return( inf );
 }
 
@@ -471,22 +465,17 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     SYM_ENTRY           sym;
     call_class          cclass;
 
-    cclass = DefaultInfo.cclass;
+    inf = FindInfo( &sym, sym_handle );
+    cclass = inf->cclass;
     if( sym_handle != SYM_NULL ) {
-        inf = FindInfo( &sym, sym_handle );
         if( sym.flags & SYM_FUNCTION ) {
-            if( inf != &DefaultInfo ) {
-                cclass = inf->cclass;
-            } else {
-                cclass = GetLangInfo( sym.mods )->cclass;
 #if _CPU == 8086
-                if( TargetSystem == TS_WINDOWS ) {
-                    if( sym.mods & (LANG_CDECL | LANG_PASCAL) ) {
-                        cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
-                    }
+            if( TargetSystem == TS_WINDOWS ) {
+                if( inf == &PascalInfo || inf == &CdeclInfo ) {
+                    cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
                 }
-#endif
             }
+#endif
             if( sym.mods & FLAG_ABORTS ) {
                 cclass |= FECALL_GEN_ABORTS;
             }
@@ -725,7 +714,6 @@ static const char *GetNamePattern( SYM_HANDLE sym_handle )
         pattern = "*";
     } else {
 #endif
-        inf = LangInfo( sym.mods, inf );
         if( sym.flags & SYM_FUNCTION ) {
             pattern = inf->objname;
 #if _INTEL_CPU
@@ -1119,12 +1107,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
     case FEINF_DBG_DWARF_PRODUCER:
         return( (CGPOINTER)DWARF_PRODUCER_ID );
     case FEINF_SAVE_REGS:
+        sym.mods = 0;
         inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        } else {
-            sym.mods = 0;
-        }
         save_set = inf->save;
 #if _INTEL_CPU
         if( sym.mods & FLAG_SAVEREGS ) {
@@ -1139,9 +1123,6 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
         return( (CGPOINTER)&save_set );
     case FEINF_RETURN_REG:
         inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        }
         return( (CGPOINTER)&inf->returns );
     case FEINF_CALL_BYTES:
         inf = FindInfo( &sym, req_handle );
@@ -1159,7 +1140,6 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
 #endif
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
                 return( (CGPOINTER)DefaultVarParms );
             }
@@ -1168,9 +1148,6 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
 #if _INTEL_CPU
     case FEINF_STRETURN_REG:
         inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        }
         return( (CGPOINTER)&inf->streturn );
 #endif
     default:
@@ -1179,7 +1156,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
     return( NULL );
 }
 
-char *SrcFullPath( char const *name, char *buff, unsigned max )
+char *SrcFullPath( char const *name, char *buff, size_t max )
 {
     return( _getFilenameFullPath( buff, name, max ) );
 }

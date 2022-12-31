@@ -2112,7 +2112,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
             aux_info    *inf;
 
             inf = FindInfo( &sym, functree->op.u2.sym_handle );
-            if( (inf->flags & AUX_FLAG_FAR16) || (sym.mods & FLAG_FAR16) ) {
+            if( inf == &Far16PascalInfo || inf == &Far16CdeclInfo ) {
                 far16_func = true;
                 typ = Far16Type( typ );
             }
