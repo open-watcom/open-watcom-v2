@@ -52,6 +52,21 @@
 #include "clibext.h"
 
 
+#define __isdigit(c)    ((c) >= '0' && (c) <= '9')
+
+#define PEGGED( r ) boolbit     peg_##r##s_used : 1; \
+                    boolbit     peg_##r##s_on   : 1
+
+#define SET_PEGGED( r, b )          SwData.peg_##r##s_used = true; SwData.peg_##r##s_on = b;
+#define CHECK_SET_PEGGED( r, b )    if( !SwData.peg_##r##s_used ) { SwData.peg_##r##s_used = true; SwData.peg_##r##s_on = b; }
+#define CHECK_TO_PEGGED( r )        if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
+
+#define _SetTargetNameConst( name ) SetTargetName( name, sizeof( name ) - 1 )
+
+#define INC_VAR "INCLUDE"
+
+#define MAX_NESTING 32
+
 enum encoding {
     ENC_ZK = 1,
     ENC_ZK0,
@@ -72,17 +87,6 @@ struct  option {
 static unsigned     OptValue;
 static const char   *OptScanPtr;
 static const char   *OptParm;
-
-#define __isdigit(c)    ((c) >= '0' && (c) <= '9')
-
-#define PEGGED( r ) boolbit     peg_##r##s_used : 1; \
-                    boolbit     peg_##r##s_on   : 1
-
-#define TOPEGGED( r ) \
-    if( !SwData.peg_##r##s_used ) { \
-        SwData.peg_##r##s_on = true; \
-        SwData.peg_##r##s_used = true; \
-    }
 
 static struct
 {
@@ -205,8 +209,6 @@ static void SetTargetName( const char *name, size_t len )
     *p++ = '\0';
 }
 
-#define _SetTargetNameConst( name ) SetTargetName( name, sizeof( name ) - 1 )
-
 static void SetTargetSystem( void )
 {
     char        *buff;
@@ -302,10 +304,14 @@ static void SetTargetSystem( void )
         TargetSystem = TS_NETWARE;
     } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
         TargetSystem = TS_NETWARE5;
+        PreDefine_Macro( "__NETWARE5__" );
+        strcpy( SwData.sys_name, "NETWARE" );
     } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
         TargetSystem = TS_WINDOWS;
     } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
         TargetSystem = TS_CHEAP_WINDOWS;
+        PreDefine_Macro( "__CHEAP_WINDOWS__" );
+        strcpy( SwData.sys_name, "WINDOWS" );
     } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
         TargetSystem = TS_NT;
     } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
@@ -335,8 +341,6 @@ static void SetTargetSystem( void )
         if( SwData.mem == SW_M_DEF ) {
             SwData.mem = SW_MS;
         }
-        if( TargetSystem == TS_NETWARE5 )
-            PreDefine_Macro( "__NETWARE__" );
         PreDefine_Macro( "__NETWARE_386__" );
         /*
         //  NETWARE uses stack based calling conventions
@@ -359,7 +363,6 @@ static void SetTargetSystem( void )
 
     case TS_CHEAP_WINDOWS:
 #if _CPU == 8086
-        PreDefine_Macro( "__WINDOWS__" );
         PreDefine_Macro( "_WINDOWS" );
 #else
         TargetSystem = TS_WINDOWS;
@@ -368,16 +371,10 @@ static void SetTargetSystem( void )
     case TS_WINDOWS:
 #if _INTEL_CPU
   #if _CPU == 8086
-        if( !SwData.peg_ds_used ) {
-            SwData.peg_ds_on = true;
-            SwData.peg_ds_used = true;
-        }
+        CHECK_SET_PEGGED( d, true )
   #else /* _CPU == 386 */
         PreDefine_Macro( "__WINDOWS_386__" );
-        if( !SwData.peg_fs_used ) {
-            SwData.peg_fs_on = false;
-            SwData.peg_fs_used = true;
-        }
+        CHECK_SET_PEGGED( f, false )
         switch( SwData.fpt ) {
         case SW_FPT_DEF:
         case SW_FPT_EMU:
@@ -397,8 +394,6 @@ static void SetTargetSystem( void )
     CMemFree( buff );
 }
 
-#define SET_PEG( r ) if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
-
 static void SetGenSwitches( void )
 {
 #if _INTEL_CPU
@@ -409,8 +404,8 @@ static void SetGenSwitches( void )
         SwData.fpu = SW_FPU0;
     if( SwData.mem == SW_M_DEF )
         SwData.mem = SW_MS;
-    SET_PEG( f );
-    SET_PEG( g );
+    CHECK_TO_PEGGED( f );
+    CHECK_TO_PEGGED( g );
   #else
     if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU6;
@@ -453,16 +448,16 @@ static void SetGenSwitches( void )
     switch( SwData.mem ) {
     case SW_MF:
         TargetSwitches |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
-        SET_PEG( d );
-        SET_PEG( e );
-        SET_PEG( f );
+        CHECK_TO_PEGGED( d );
+        CHECK_TO_PEGGED( e );
+        CHECK_TO_PEGGED( f );
     case SW_MS:
         TargetSwitches |= CGSW_X86_CHEAP_POINTER;
-        SET_PEG( d );
+        CHECK_TO_PEGGED( d );
         break;
     case SW_MM:
         TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
-        SET_PEG( d );
+        CHECK_TO_PEGGED( d );
         break;
     case SW_MC:
         TargetSwitches |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
@@ -830,8 +825,6 @@ static void AddIncList( const char *path_list )
     }
 }
 
-#define INC_VAR "INCLUDE"
-
 void MergeInclude( void )
 {
     /* must be called after GenCOptions to get req'd IncPathList */
@@ -839,22 +832,10 @@ void MergeInclude( void )
     char        *buff;
 
     if( !CompFlags.cpp_ignore_env ) {
-        switch( TargetSystem ) {
-        case TS_CHEAP_WINDOWS:
-        case TS_WINDOWS:
-            env_var = FEGetEnv( "WINDOWS_" INC_VAR );
-            break;
-        case TS_NETWARE:
-        case TS_NETWARE5:
-            env_var = FEGetEnv( "NETWARE_" INC_VAR );
-            break;
-        default:
-            buff = CMemAlloc( strlen( SwData.sys_name ) + LENLIT( "_" INC_VAR ) + 1 );
-            sprintf( buff, "%s_" INC_VAR, SwData.sys_name );
-            env_var = FEGetEnv( buff );
-            CMemFree( buff );
-            break;
-        }
+        buff = CMemAlloc( strlen( SwData.sys_name ) + LENLIT( "_" INC_VAR ) + 1 );
+        sprintf( buff, "%s_" INC_VAR, SwData.sys_name );
+        env_var = FEGetEnv( buff );
+        CMemFree( buff );
         AddIncList( env_var );
 
 #if _CPU == 386
@@ -868,6 +849,7 @@ void MergeInclude( void )
         AddIncList( env_var );
     }
     CMemFree( SwData.sys_name );
+    SwData.sys_name = NULL;
 }
 
 
@@ -1294,13 +1276,13 @@ static void Set_ZC( void )
     CompFlags.zc_switch_used = true;
     TargetSwitches |= CGSW_X86_CONST_IN_CODE;
 }
-static void Set_ZDF( void )         { SwData.peg_ds_used = true; SwData.peg_ds_on = false; }
-static void Set_ZDP( void )         { SwData.peg_ds_used = true; SwData.peg_ds_on = true; }
+static void Set_ZDF( void )         { SET_PEGGED( d, false ) }
+static void Set_ZDP( void )         { SET_PEGGED( d, true ) }
 static void Set_ZDL( void )         { TargetSwitches |= CGSW_X86_LOAD_DS_DIRECTLY; }
-static void Set_ZFF( void )         { SwData.peg_fs_used = true; SwData.peg_fs_on = false; }
-static void Set_ZFP( void )         { SwData.peg_fs_used = true; SwData.peg_fs_on = true; }
-static void Set_ZGF( void )         { SwData.peg_gs_used = true; SwData.peg_gs_on = false; }
-static void Set_ZGP( void )         { SwData.peg_gs_used = true; SwData.peg_gs_on = true; }
+static void Set_ZFF( void )         { SET_PEGGED( f, false ) }
+static void Set_ZFP( void )         { SET_PEGGED( f, true ) }
+static void Set_ZGF( void )         { SET_PEGGED( g, false ) }
+static void Set_ZGP( void )         { SET_PEGGED( g, true ) }
 #endif
 static void Set_ZE( void )
 {
@@ -1989,8 +1971,6 @@ static char *ReadIndirectFile( void )
     }
     return( env );
 }
-
-#define MAX_NESTING 32
 
 static void ProcOptions( const char *str )
 {
