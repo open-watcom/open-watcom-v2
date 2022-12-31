@@ -465,6 +465,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     SYM_ENTRY           sym;
     call_class          cclass;
 
+    sym.mods = 0;
     inf = FindInfo( &sym, sym_handle );
     cclass = inf->cclass;
     if( sym_handle != SYM_NULL ) {
@@ -545,6 +546,11 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     }
 #endif
     return( cclass );
+}
+
+call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
+{
+    return( (call_class_target)GetCallClass( sym_handle ) );
 }
 
 /*
@@ -1071,6 +1077,15 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
             cclass = GetCallClass( req_handle );
             return( (CGPOINTER)&cclass );
         }
+#if _INTEL_CPU
+    case FEINF_CALL_CLASS_TARGET:
+        {
+            static call_class_target cclass_target;
+
+            cclass_target = GetCallClassTarget( req_handle );
+            return( (CGPOINTER)&cclass_target );
+        }
+#endif
     case FEINF_FREE_SEGMENT:
         return( NULL );
     case FEINF_NEXT_LIBRARY:

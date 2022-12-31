@@ -895,6 +895,11 @@ static call_class getCallClass( // GET CLASS OF CALL
     return( cclass );
 }
 
+call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
+{
+    return( (call_class_target)GetCallClass( sym_handle ) );
+}
+
 static sym_access getSymAccess( // GET access flag of symbol
     SYMBOL sym )                // - symbol
 {
@@ -1283,6 +1288,14 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         curr_call_class = getCallClass( sym );
         retn = &curr_call_class;
       } break;
+#if _INTEL_CPU
+    case FEINF_CALL_CLASS_TARGET:
+        DbgNotRetn();
+      { static call_class_target curr_call_class_target;
+        curr_call_class_target = getCallClassTarget( sym );
+        retn = &curr_call_class_target;
+      } break;
+#endif
     case FEINF_FREE_SEGMENT:
         DbgNotSym();
         DbgNotRetn();
