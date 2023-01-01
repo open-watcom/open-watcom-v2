@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,16 +72,12 @@
     #define REGNAME_MAX_LEN     4
 #endif
 
-#if _INTEL_CPU
-#define CCLASS_TARGET_CODE  0, NULL
-#else
-#define CCLASS_TARGET_CODE  NULL
-#endif
-
 #if _CPU == 8086
-#define CCLASS_ITEMS(x)   (x) | FECALL_X86_FAR_CALL, CCLASS_TARGET_CODE,
-#else
-#define CCLASS_ITEMS(x)   (x), CCLASS_TARGET_CODE,
+#define CCLASS_ITEMS(x)   (x) | FECALL_X86_FAR_CALL, 0, NULL
+#elif _CPU == 386
+#define CCLASS_ITEMS(x)   (x), 0, NULL
+#else /* _RISC_CPU */
+#define CCLASS_ITEMS(x)   (x), NULL
 #endif
 
 #if _INTEL_CPU
@@ -95,22 +91,25 @@
 #endif
 
 #if _INTEL_CPU
-  #if _CPU == 8086
-#define STRETURN HW_SI
-  #else /* _CPU == 386 */
-#define STRETURN HW_ESI
-  #endif
+#define STRETURN HW_xSI
 #else /* _RISC_CPU */
 #define STRETURN HW_EMPTY
 #endif
 
-#define AUX_SETUPX(p1,p2)   (p1), 0, 0, (p2), NULL, 0, '\0'
+#define AUX_SETUPX(p1,p2)   (p1), 0, 0, (p2)
 
-#define AUX_SETUP_Default CCLASS_ITEMS( 0 ) FortranParms, HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX("^", NULL)
-#define AUX_SETUP_RT_at(p1,p2) CCLASS_ITEMS( (p1) ) (p2), HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX(MASK_RT_at, NULL)
-#define AUX_SETUP_IF_at(p1,p2,p3) CCLASS_ITEMS( (p1) ) (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at, (p3))
-#define AUX_SETUP_IF_at_X(p1,p2,p3) CCLASS_ITEMS( (p1) ) (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at_X, (p3))
+#define AUX_SETUP_Default CCLASS_ITEMS( 0 ), FortranParms, HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX("^", NULL)
+#define AUX_SETUP_RT_at(p1,p2) CCLASS_ITEMS( (p1) ), (p2), HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX(MASK_RT_at, NULL)
+#define AUX_SETUP_IF_at(p1,p2,p3) CCLASS_ITEMS( (p1) ), (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at, (p3))
+#define AUX_SETUP_IF_at_X(p1,p2,p3) CCLASS_ITEMS( (p1) ), (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at_X, (p3))
 
+
+typedef struct aux_entry {
+    aux_info            info;
+    struct aux_entry    *link;
+    size_t              sym_len;
+    char                sym_name[1];
+} aux_entry;
 
 typedef enum {
     #define pick(a,b,c,d)   a,
@@ -144,7 +143,7 @@ static aux_info         StdcallInfo;
 static aux_info         FastcallInfo;
 static aux_info         OptlinkInfo;
 
-static aux_info         *AuxList;
+static aux_entry        *AuxList;
 static aux_info         *CurrAux;
 static aux_info         *AliasInfo;
 
@@ -335,16 +334,18 @@ static aux_info *LookupMagicKeyword( void )
 static aux_info *AuxLookup( const char *name, size_t name_len )
 //=============================================================
 {
-    aux_info    *aux;
+    aux_entry   *ent;
 
-    for( aux = AuxList; aux != NULL; aux = aux->link ) {
-        if( aux->sym_len == name_len ) {
-            if( strnicmp( name, aux->sym_name, name_len ) == 0 ) {
+    for( ent = AuxList; ent != NULL; ent = ent->link ) {
+        if( ent->sym_len == name_len ) {
+            if( strnicmp( name, ent->sym_name, name_len ) == 0 ) {
                 break;
             }
         }
     }
-    return( aux );
+    if( ent == NULL )
+        return( NULL );
+    return( &ent->info );
 }
 
 
@@ -527,10 +528,10 @@ static void FreeAuxElements( aux_info *info )
 }
 
 
-static void FreeAuxEntry( aux_info *aux )
-//=======================================
+static void FreeAuxEntry( aux_entry *aux )
+//========================================
 {
-    FreeAuxElements( aux );
+    FreeAuxElements( &aux->info );
     FMemFree( aux );
 }
 
@@ -661,19 +662,19 @@ static void CopyAuxInfo( aux_info *dst, aux_info *src )
 static aux_info *NewAuxEntry( const char *name, size_t name_len )
 //===============================================================
 {
-    aux_info    *aux;
+    aux_entry   *ent;
 
-    aux = FMemAlloc( sizeof( aux_info ) + name_len );
-    aux->sym_len = name_len;
-    memcpy( aux->sym_name, name, name_len );
-    aux->sym_name[name_len] = NULLCHAR;
-    aux->link = AuxList;
-    aux->parms = DefaultInfo.parms;
-    aux->code = DefaultInfo.code;
-    aux->objname = DefaultInfo.objname;
-    aux->arg_info = DefaultInfo.arg_info;
-    AuxList = aux;
-    return( aux );
+    ent = FMemAlloc( sizeof( aux_entry ) + name_len );
+    ent->sym_len = name_len;
+    memcpy( ent->sym_name, name, name_len );
+    ent->sym_name[name_len] = NULLCHAR;
+    ent->link = AuxList;
+    ent->info.parms = DefaultInfo.parms;
+    ent->info.code = DefaultInfo.code;
+    ent->info.objname = DefaultInfo.objname;
+    ent->info.arg_info = DefaultInfo.arg_info;
+    AuxList = ent;
+    return( &ent->info );
 }
 
 
@@ -1508,42 +1509,37 @@ aux_info    *InfoLookup( sym_id sym )
 {
     aux_info    *info;
 
-    if( sym == NULL )
-        return( &FortranInfo );
-    if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
-        if( sym->u.ns.flags & SY_INTRINSIC ) {
-            if( IFVarArgs( sym->u.ns.si.fi.index ) ) {
-                return( &IFVarInfo );
-            // check for character arguments must come first so that
-            // IF@xxx gets generated for intrinsic functions with character
-            // arguments (instead of XF@xxxx)
-            } else if( IFArgType( sym->u.ns.si.fi.index ) == FT_CHAR ) {
-                if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
-                    if( (Options & OPT_DESCRIPTOR) == 0 ) {
-                        return( &IFChar2Info );
+    if( sym != NULL ) {
+        if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+            if( sym->u.ns.flags & SY_INTRINSIC ) {
+                if( IFVarArgs( sym->u.ns.si.fi.index ) ) {
+                    return( &IFVarInfo );
+                // check for character arguments must come first so that
+                // IF@xxx gets generated for intrinsic functions with character
+                // arguments (instead of XF@xxxx)
+                } else if( IFArgType( sym->u.ns.si.fi.index ) == FT_CHAR ) {
+                    if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
+                        if( (Options & OPT_DESCRIPTOR) == 0 ) {
+                            return( &IFChar2Info );
+                        }
                     }
+                    return( &IFCharInfo );
+                } else if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
+                    return( &IFXInfo );
                 }
-                return( &IFCharInfo );
-            } else if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
-                return( &IFXInfo );
+                return( &IFInfo );
+            } else if( sym->u.ns.flags & SY_RT_ROUTINE ) {
+                return( RTAuxInfo( sym ) );
+            } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
+                return( &ProgramInfo );
             }
-            return( &IFInfo );
-        } else if( sym->u.ns.flags & SY_RT_ROUTINE ) {
-            return( RTAuxInfo( sym ) );
-        } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
-            return( &ProgramInfo );
-        } else {
-            info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
-            if( info == NULL )
-                return( &FortranInfo );
+        }
+        info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
+        if( info != NULL ) {
             return( info );
         }
-    } else {
-        info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
-        if( info == NULL )
-            return( &FortranInfo );
-        return( info );
     }
+    return( &FortranInfo );
 }
 
 

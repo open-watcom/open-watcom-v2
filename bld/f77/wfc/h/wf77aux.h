@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,9 +61,6 @@ typedef struct aux_info {
     unsigned            use;
     aux_flags           flags;
     pass_by             *arg_info;
-    struct aux_info     *link;
-    size_t              sym_len;
-    char                sym_name[1];
 } aux_info;
 
 extern aux_info         ProgramInfo;
