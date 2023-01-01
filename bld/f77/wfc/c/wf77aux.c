@@ -528,18 +528,18 @@ static void FreeAuxElements( aux_info *info )
 }
 
 
-static void FreeAuxEntry( aux_entry *aux )
+static void FreeAuxEntry( aux_entry *ent )
 //========================================
 {
-    FreeAuxElements( &aux->info );
-    FMemFree( aux );
+    FreeAuxElements( &ent->info );
+    FMemFree( ent );
 }
 
 
 void FiniPragmaAux( void )
 //========================
 {
-    void        *next;
+    aux_entry   *next;
 
     while( AuxList != NULL ) {
         next = AuxList->link;
