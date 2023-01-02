@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -346,9 +346,7 @@ static void SetTargetSystem( void )
         //  NETWARE uses stack based calling conventions
         //  by default - silly people.
         */
-        if( !CompFlags.register_conv_set ) {
-            CompFlags.register_conventions = false;
-        }
+        CompFlags.register_conventions = false;
         break;
 
     case TS_NT:
@@ -2070,7 +2068,6 @@ static void InitCPUModInfo( void )
     TextSegName = "";
     DataSegName = "";
     GenCodeGroup = "";
-    CompFlags.register_conv_set = false;
     CompFlags.register_conventions = true;
 #elif _RISC_CPU || _CPU == _SPARC
     TextSegName = "";
