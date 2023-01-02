@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -467,54 +467,18 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 
     sym.mods = 0;
     inf = FindInfo( &sym, sym_handle );
-    cclass = inf->cclass;
+    cclass = inf->cclass & FECALL_GEN_MASK;
     if( sym_handle != SYM_NULL ) {
         if( sym.flags & SYM_FUNCTION ) {
-#if _CPU == 8086
-            if( TargetSystem == TS_WINDOWS ) {
-                if( inf == &PascalInfo || inf == &CdeclInfo ) {
-                    cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
-                }
-            }
-#endif
             if( sym.mods & FLAG_ABORTS ) {
                 cclass |= FECALL_GEN_ABORTS;
             }
             if( sym.mods & FLAG_NORETURN ) {
                 cclass |= FECALL_GEN_NORETURN;
             }
-#if _INTEL_CPU
-            if( sym.mods & FLAG_FARSS ) {
-                cclass |= FECALL_X86_FARSS;
-            }
-            if( CompFlags.emit_names ) {
-                cclass |= FECALL_X86_EMIT_FUNCTION_NAME;
-            }
-            if( sym.mods & FLAG_FAR ) {
-                cclass |= FECALL_X86_FAR_CALL;
-                if( sym.mods & FLAG_NEAR ) {
-                    cclass |= FECALL_X86_INTERRUPT;
-                }
-            } else if( sym.mods & FLAG_NEAR ) {
-                cclass &= ~ FECALL_X86_FAR_CALL;
-            }
-#endif
             if( sym.mods & FLAG_EXPORT ) {
                 cclass |= FECALL_GEN_DLL_EXPORT;
             }
-#if _INTEL_CPU
-            if( sym.mods & FLAG_LOADDS ) {
-  #if 0
-                if( TargetSystem == TS_WINDOWS ) {
-                    cclass |= FECALL_X86_FAT_WINDOWS_PROLOG;
-                } else {
-                    cclass |= FECALL_X86_LOAD_DS_ON_ENTRY;
-                }
-  #else
-                cclass |= FECALL_X86_LOAD_DS_ON_ENTRY;
-  #endif
-            }
-#endif
             if( IsInLineFunc( sym_handle ) ) {
                 cclass |= FECALL_GEN_MAKE_CALL_INLINE;
             }
@@ -522,28 +486,9 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
                 cclass |= FECALL_GEN_CALLER_POPS | FECALL_GEN_HAS_VARARGS;
             }
         }
-#if _INTEL_CPU
-        if( sym.flags & SYM_FUNC_NEEDS_THUNK ) {
-            cclass |= FECALL_X86_THUNK_PROLOG;
-        }
-#endif
     }
 #ifdef REVERSE
     cclass &= ~ FECALL_GEN_REVERSE_PARMS;
-#endif
-#if _INTEL_CPU
-    if( CompFlags.ep_switch_used ) {
-        cclass |= FECALL_X86_PROLOG_HOOKS;
-    }
-    if( CompFlags.ee_switch_used ) {
-        cclass |= FECALL_X86_EPILOG_HOOKS;
-    }
-    if( CompFlags.sg_switch_used ) {
-        cclass |= FECALL_X86_GROW_STACK;
-    }
-    if( CompFlags.st_switch_used ) {
-        cclass |= FECALL_X86_TOUCH_STACK;
-    }
 #endif
     return( cclass );
 }
@@ -551,7 +496,65 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 #if _INTEL_CPU
 call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
 {
-    return( (call_class_target)GetCallClass( sym_handle ) );
+    aux_info            *inf;
+    SYM_ENTRY           sym;
+    call_class_target   cclass_target;
+
+    sym.mods = 0;
+    inf = FindInfo( &sym, sym_handle );
+    cclass_target = inf->cclass & ~ FECALL_GEN_MASK;
+    if( sym_handle != SYM_NULL ) {
+        if( sym.flags & SYM_FUNCTION ) {
+#if _CPU == 8086
+            if( TargetSystem == TS_WINDOWS ) {
+                if( inf == &PascalInfo || inf == &CdeclInfo ) {
+                    cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
+                }
+            }
+#endif
+            if( sym.mods & FLAG_FARSS ) {
+                cclass_target |= FECALL_X86_FARSS;
+            }
+            if( CompFlags.emit_names ) {
+                cclass_target |= FECALL_X86_EMIT_FUNCTION_NAME;
+            }
+            if( sym.mods & FLAG_FAR ) {
+                cclass_target |= FECALL_X86_FAR_CALL;
+                if( sym.mods & FLAG_NEAR ) {
+                    cclass_target |= FECALL_X86_INTERRUPT;
+                }
+            } else if( sym.mods & FLAG_NEAR ) {
+                cclass_target &= ~ FECALL_X86_FAR_CALL;
+            }
+            if( sym.mods & FLAG_LOADDS ) {
+  #if 0
+                if( TargetSystem == TS_WINDOWS ) {
+                    cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
+                } else {
+                    cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
+                }
+  #else
+                cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
+  #endif
+            }
+        }
+        if( sym.flags & SYM_FUNC_NEEDS_THUNK ) {
+            cclass_target |= FECALL_X86_THUNK_PROLOG;
+        }
+    }
+    if( CompFlags.ep_switch_used ) {
+        cclass_target |= FECALL_X86_PROLOG_HOOKS;
+    }
+    if( CompFlags.ee_switch_used ) {
+        cclass_target |= FECALL_X86_EPILOG_HOOKS;
+    }
+    if( CompFlags.sg_switch_used ) {
+        cclass_target |= FECALL_X86_GROW_STACK;
+    }
+    if( CompFlags.st_switch_used ) {
+        cclass_target |= FECALL_X86_TOUCH_STACK;
+    }
+    return( cclass_target );
 }
 #endif
 

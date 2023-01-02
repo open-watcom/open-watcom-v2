@@ -49,5 +49,19 @@
     #error too many attributes in cgaux.h
 #endif
 
+#define FECALL_GEN_MASK ( \
+    FECALL_GEN_REVERSE_PARMS | \
+    FECALL_GEN_ABORTS | \
+    FECALL_GEN_NORETURN | \
+    FECALL_GEN_PARMS_BY_ADDRESS | \
+    FECALL_GEN_MAKE_CALL_INLINE | \
+    FECALL_GEN_HAS_VARARGS | \
+    FECALL_GEN_SETJMP_KLUGE | \
+    FECALL_GEN_CALLER_POPS | \
+    FECALL_GEN_NO_MEMORY_READ | \
+    FECALL_GEN_NO_MEMORY_CHANGED | \
+    FECALL_GEN_DLL_EXPORT | \
+    0)
+
 #include "cgauxccc.h"
 

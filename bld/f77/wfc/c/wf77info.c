@@ -1809,7 +1809,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
             static call_class CallClass;
 
             info = GetAuxInfo( req_handle );
-            CallClass = info->cclass ^ FECALL_GEN_REVERSE_PARMS;
+            CallClass = (info->cclass & FECALL_GEN_MASK) ^ FECALL_GEN_REVERSE_PARMS;
             return( (pointer)&CallClass );
         }
 #if _INTEL_CPU
@@ -1819,7 +1819,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
 
             info = GetAuxInfo( req_handle );
 //            CallClassTarget = info->cclass_target ^ FECALL_GEN_REVERSE_PARMS;
-            CallClassTarget = info->cclass ^ FECALL_GEN_REVERSE_PARMS;
+            CallClassTarget = info->cclass & ~ FECALL_GEN_MASK;
             return( (pointer)&CallClassTarget );
         }
 #endif
