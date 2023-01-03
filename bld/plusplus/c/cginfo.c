@@ -775,8 +775,10 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
 }
 #endif
 
-static call_class getCallClass( // GET CLASS OF CALL
-    SYMBOL sym )                // - symbol
+static call_class getCallClass( SYMBOL sym )
+/************************************************
+ * handle only generic attributes for call class
+ */
 {
     AUX_INFO *inf;              // - aux info. for symbol
     TYPE fn_type;               // - function type
@@ -839,13 +841,16 @@ static call_class getCallClass( // GET CLASS OF CALL
 }
 
 #if _INTEL_CPU
-static call_class_target getCallClassTarget( SYMBOL sym )
+static call_class_target getCallClassTarget( SYMBOL sym )                        // - symbol
+/********************************************************
+ * handle only target specific attributes for call class
+ */
 {
-    AUX_INFO *inf;              // - aux info. for symbol
-    TYPE fn_type;               // - function type
-    type_flag flags;            // - flags for the function TYPE
-    type_flag fn_flags;         // - flags in the function TYPE
-    call_class_target cclass_target;           // - call class
+    AUX_INFO *inf;                      // - aux info. for symbol
+    TYPE fn_type;                       // - function type
+    type_flag flags;                    // - flags for the function TYPE
+    type_flag fn_flags;                 // - flags in the function TYPE
+    call_class_target cclass_target;    // - call class
 
     inf = getLangInfo( sym );
     cclass_target = inf->cclass_target;

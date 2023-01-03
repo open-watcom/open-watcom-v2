@@ -78,16 +78,16 @@ typedef struct aux_info {
 #define OptlinkInfo      BuiltinAuxInfo[6]
 #define StdcallInfo      BuiltinAuxInfo[7]
 #define FastcallInfo     BuiltinAuxInfo[8]
-#if _CPU == 386
+  #if _CPU == 386
 #define Far16CdeclInfo   BuiltinAuxInfo[9]
 #define Far16PascalInfo  BuiltinAuxInfo[10]
-#endif
+  #endif
 
-#if _CPU == 386
+  #if _CPU == 386
 #define MAX_BUILTIN_AUXINFO (9 + 2)
-#else
+  #else
 #define MAX_BUILTIN_AUXINFO 9
-#endif
+  #endif
 
 extern aux_info     *DftCallConv;
 

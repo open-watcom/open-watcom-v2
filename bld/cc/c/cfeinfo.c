@@ -464,6 +464,9 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
 }
 
 call_class GetCallClass( SYM_HANDLE sym_handle )
+/***********************************************
+ * handle only generic attributes for call class
+ */
 {
     aux_info            *inf;
     SYM_ENTRY           sym;
@@ -499,6 +502,9 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 
 #if _INTEL_CPU
 call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
+/************************************************************
+ * handle only target specific attributes for call class
+ */
 {
     aux_info            *inf;
     SYM_ENTRY           sym;
