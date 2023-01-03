@@ -570,8 +570,9 @@ static AUX_INFO *IntrinsicAuxLookup(
         }
     }
     inf = &InlineInfo;
-    inf->cclass = 0;
-    inf->cclass_target = (DefaultInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
+    inf->cclass         = FECALL_GEN_NONE;
+    inf->cclass_target  = (DefaultInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
+
     inf->code = ifunc->code;
     inf->parms = ifunc->parms;
     inf->returns = ifunc->returns;

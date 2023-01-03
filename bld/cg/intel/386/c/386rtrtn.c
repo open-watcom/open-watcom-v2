@@ -289,8 +289,9 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
             return( NULL );
         }
     case FEINF_CALL_CLASS:
+        return( FECALL_GEN_NONE );
     case FEINF_CALL_CLASS_TARGET:
-        return( 0 );
+        return( FECALL_X86_NONE );
     case FEINF_CALL_BYTES:
         return( hdl );
     default:

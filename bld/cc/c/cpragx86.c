@@ -72,11 +72,11 @@ static void pragmaAuxInfoInit( void )
        or their fields being freed */
 
     STOSBInfo = WatcallInfo;
-    STOSBInfo.cclass        = 0;
+    STOSBInfo.cclass        = FECALL_GEN_NONE;
     STOSBInfo.cclass_target = FECALL_X86_NO_FLOAT_REG_RETURNS |
                               FECALL_X86_NO_STRUCT_REG_RETURNS |
                               FECALL_X86_SPECIAL_STRUCT_RETURN |
-                              0;
+                              FECALL_X86_NONE;
     STOSBInfo.parms = STOSBParms;
     STOSBInfo.objname = "*";
 #endif

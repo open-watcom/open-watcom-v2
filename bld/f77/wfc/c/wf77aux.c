@@ -75,7 +75,7 @@
 #if _CPU == 8086
 #define CCLASS_ITEMS(x)   (x), FECALL_X86_FAR_CALL, NULL
 #elif _CPU == 386
-#define CCLASS_ITEMS(x)   (x), 0, NULL
+#define CCLASS_ITEMS(x)   (x), FECALL_X86_NONE, NULL
 #else /* _RISC_CPU */
 #define CCLASS_ITEMS(x)   (x), NULL
 #endif
@@ -98,7 +98,7 @@
 
 #define AUX_SETUPX(p1,p2)   (p1), 0, 0, (p2)
 
-#define AUX_SETUP_Default CCLASS_ITEMS( 0 ), FortranParms, HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX("^", NULL)
+#define AUX_SETUP_Default CCLASS_ITEMS( FECALL_GEN_NONE ), FortranParms, HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX("^", NULL)
 #define AUX_SETUP_RT_at(p1,p2) CCLASS_ITEMS( (p1) ), (p2), HW_D( HW_EMPTY ), HW_D( STRETURN ), HW_D( HW_FULL ), AUX_SETUPX(MASK_RT_at, NULL)
 #define AUX_SETUP_IF_at(p1,p2,p3) CCLASS_ITEMS( (p1) ), (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at, (p3))
 #define AUX_SETUP_IF_at_X(p1,p2,p3) CCLASS_ITEMS( (p1) ), (p2), HW_D( HW_EMPTY ), HW_D( HW_EMPTY ), HW_D( HW_FULL ), AUX_SETUPX(MASK_IF_at_X, (p3))

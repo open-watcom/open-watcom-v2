@@ -362,7 +362,7 @@ static aux_info *InfoLookup( SYMPTR sym )
                 }
             }
             inf = &InlineInfo;
-            inf->cclass         = 0;
+            inf->cclass         = FECALL_GEN_NONE;
             inf->cclass_target  = (WatcallInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
 
             if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) ) {

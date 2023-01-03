@@ -34,6 +34,7 @@
 #include "cgauxccc.h"
 
 typedef enum {
+    FECALL_GEN_NONE                 = 0,
     FECALL_GEN_REVERSE_PARMS        = 0x00000001,
     FECALL_GEN_ABORTS               = 0x00000002,
     FECALL_GEN_NORETURN             = 0x00000004,

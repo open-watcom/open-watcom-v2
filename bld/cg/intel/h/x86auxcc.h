@@ -32,6 +32,7 @@
 
 
 typedef enum {
+    FECALL_X86_NONE                     = 0,
     FECALL_X86_SPECIAL_RETURN           = 0x00000001,
     FECALL_X86_SPECIAL_STRUCT_RETURN    = 0x00000002,
     FECALL_X86_FAR_CALL                 = 0x00000004,
