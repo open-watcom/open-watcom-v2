@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ void AsmUsesAuto( aux_info *info )
      * for the use of this pragma. This is done by saying the pragma
      * modifies the [E]SP register. A kludge, but it works.
      */
-//    info->cclass |= FECALL_GEN_GENERATE_STACK_FRAME;
+//    info->cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
 //    HW_CTurnOff( info->save, HW_xSP );
 }
 
@@ -301,7 +301,7 @@ void PragAux( void )
                 GetSaveInfo();
                 have.f_modify = true;
             } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-//                AuxInfo.cclass |= FECALL_GEN_GENERATE_STACK_FRAME;
+//                AuxInfo.cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
                 have.f_frame = true;
             } else {
                 break;

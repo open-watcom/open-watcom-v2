@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,38 +30,18 @@
 ****************************************************************************/
 
 
-#define FECALL_GEN_REVERSE_PARMS        0x00000001L
-#define FECALL_GEN_ABORTS               0x00000002L
-#define FECALL_GEN_NORETURN             0x00000004L
-#define FECALL_GEN_PARMS_BY_ADDRESS     0x00000008L
-#define FECALL_GEN_MAKE_CALL_INLINE     0x00000010L
-#define FECALL_GEN_HAS_VARARGS          0x00000020L
-#define FECALL_GEN_SETJMP_KLUGE         0x00000040L
-#define FECALL_GEN_CALLER_POPS          0x00000080L
-#define FECALL_GEN_NO_MEMORY_READ       0x00000100L
-#define FECALL_GEN_NO_MEMORY_CHANGED    0x00000200L
-#define FECALL_GEN_DLL_EXPORT           0x00000400L
-#define LAST_AUX_ATTRIBUTE          0x00000400L
-
-#define _TARG_AUX_SHIFT             11
-
-#if ( LAST_AUX_ATTRIBUTE >> _TARG_AUX_SHIFT ) != 0
-    #error too many attributes in cgaux.h
-#endif
-
-#define FECALL_GEN_MASK ( \
-    FECALL_GEN_REVERSE_PARMS | \
-    FECALL_GEN_ABORTS | \
-    FECALL_GEN_NORETURN | \
-    FECALL_GEN_PARMS_BY_ADDRESS | \
-    FECALL_GEN_MAKE_CALL_INLINE | \
-    FECALL_GEN_HAS_VARARGS | \
-    FECALL_GEN_SETJMP_KLUGE | \
-    FECALL_GEN_CALLER_POPS | \
-    FECALL_GEN_NO_MEMORY_READ | \
-    FECALL_GEN_NO_MEMORY_CHANGED | \
-    FECALL_GEN_DLL_EXPORT | \
-    0)
-
 #include "cgauxccc.h"
 
+typedef enum {
+    FECALL_GEN_REVERSE_PARMS        = 0x00000001,
+    FECALL_GEN_ABORTS               = 0x00000002,
+    FECALL_GEN_NORETURN             = 0x00000004,
+    FECALL_GEN_PARMS_BY_ADDRESS     = 0x00000008,
+    FECALL_GEN_MAKE_CALL_INLINE     = 0x00000010,
+    FECALL_GEN_HAS_VARARGS          = 0x00000020,
+    FECALL_GEN_SETJMP_KLUGE         = 0x00000040,
+    FECALL_GEN_CALLER_POPS          = 0x00000080,
+    FECALL_GEN_NO_MEMORY_READ       = 0x00000100,
+    FECALL_GEN_NO_MEMORY_CHANGED    = 0x00000200,
+    FECALL_GEN_DLL_EXPORT           = 0x00000400,
+} call_class;

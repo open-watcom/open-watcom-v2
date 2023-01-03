@@ -1460,7 +1460,7 @@ static void Set_OF( void )
 {
     TargetSwitches |= CGSW_X86_NEED_STACK_FRAME;
     if( OptValue != 0 ) {
-        WatcallInfo.cclass |= FECALL_X86_GENERATE_STACK_FRAME;
+        WatcallInfo.cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
     }
 }
 static void Set_OP( void )          { CompFlags.op_switch_used = true; }    // force floats to memory
@@ -2106,7 +2106,7 @@ static void Define_Memory_Model( void )
         break;
     case SW_MM:
         model = 'm';
-        WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
         CodePtrSize = TARGET_FAR_POINTER;
@@ -2117,13 +2117,13 @@ static void Define_Memory_Model( void )
         break;
     case SW_ML:
         model = 'l';
-        WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         break;
     case SW_MH:
         model = 'h';
-        WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         break;

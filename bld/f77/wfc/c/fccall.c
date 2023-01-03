@@ -549,7 +549,7 @@ void    FCCall( void ) {
             scb = GetPtr();
             arg = SCBPointer( CGFEName( scb, TY_CHAR ) );
 #if _CPU == 386
-            if( info->cclass & FECALL_X86_FAR16_CALL ) {
+            if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
                 arg = CGUnary( O_PTR_TO_FOREIGN, arg, TY_POINTER );
             }
 #endif
@@ -571,7 +571,7 @@ void    FCCall( void ) {
             arg = XPop();
             cg_typ = TY_CODE_PTR;
 #if _INTEL_CPU
-            if( (info->cclass & FECALL_X86_FAR16_CALL) && arg_proc_far16 ) {
+            if( (info->cclass_target & FECALL_X86_FAR16_CALL) && arg_proc_far16 ) {
                 chk_foreign = false;
             } else if( arg_aux != NULL ) {
                 if( arg_aux->info & ARG_FAR ) {
@@ -609,7 +609,7 @@ void    FCCall( void ) {
                 ++idx;
             }
 #if _CPU == 386
-            if( pass_scb && (info->cclass & FECALL_X86_FAR16_CALL) ) {
+            if( pass_scb && (info->cclass_target & FECALL_X86_FAR16_CALL) ) {
                 arg = MkSCB16( arg );
             }
 #endif
@@ -707,7 +707,7 @@ void    FCCall( void ) {
             }
         }
 #if _INTEL_CPU
-        if( (info->cclass & FECALL_X86_FAR16_CALL) && chk_foreign ) {
+        if( (info->cclass_target & FECALL_X86_FAR16_CALL) && chk_foreign ) {
             arg = CGUnary( O_PTR_TO_FOREIGN, arg, cg_typ );
         }
 #endif
@@ -731,7 +731,7 @@ void    FCCall( void ) {
                 scb = GetPtr();
                 arg = CGFEName( scb, TY_CHAR );
 #if _CPU == 386
-                if( info->cclass & FECALL_X86_FAR16_CALL ) {
+                if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
                     arg = MkSCB16( arg );
                     arg = CGUnary( O_PTR_TO_FOREIGN, arg, TY_GLOBAL_POINTER );
                 }

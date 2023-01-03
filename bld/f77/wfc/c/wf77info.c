@@ -1235,7 +1235,7 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
 
             info = InfoLookup( (sym_id)fn );
             if( info != NULL ) {
-                if( info->cclass & FECALL_X86_FAR16_CALL ) {
+                if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
                     return( TY_INT_2 );
                 }
             }
@@ -1809,7 +1809,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
             static call_class CallClass;
 
             info = GetAuxInfo( req_handle );
-            CallClass = (info->cclass & FECALL_GEN_MASK) ^ FECALL_GEN_REVERSE_PARMS;
+            CallClass = info->cclass ^ FECALL_GEN_REVERSE_PARMS;
             return( (pointer)&CallClass );
         }
 #if _INTEL_CPU
@@ -1818,8 +1818,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
             static call_class_target CallClassTarget;
 
             info = GetAuxInfo( req_handle );
-//            CallClassTarget = info->cclass_target ^ FECALL_GEN_REVERSE_PARMS;
-            CallClassTarget = info->cclass & ~ FECALL_GEN_MASK;
+            CallClassTarget = info->cclass_target;
             return( (pointer)&CallClassTarget );
         }
 #endif

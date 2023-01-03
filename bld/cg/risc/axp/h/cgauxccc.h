@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -26,8 +26,11 @@
 *  ========================================================================
 *
 * Description:  Aux pragma call flags shared between cg and front ends.
+*                   (axp target specific)
 *
 ****************************************************************************/
 
 
-typedef unsigned    call_class;
+//typedef enum {
+//    FECALL_AXP_....           = 0x00000001,
+//} call_class_target;

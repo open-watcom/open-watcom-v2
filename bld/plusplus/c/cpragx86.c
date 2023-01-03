@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -317,7 +317,7 @@ static void GetParmInfo(
             CurrInfo->cclass |= FECALL_GEN_NO_MEMORY_READ;
             have.f_nomemory = 1;
         } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-            CurrInfo->cclass |= FECALL_X86_LOAD_DS_ON_CALL;
+            CurrInfo->cclass_target |= FECALL_X86_LOAD_DS_ON_CALL;
             have.f_loadds = 1;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             PragManyRegSets();
@@ -345,19 +345,19 @@ static void GetSTRetInfo(
     for( ;; ) {
         if( !have.f_float && PragRecogId( "float" ) ) {
             have.f_float = 1;
-            CurrInfo->cclass |= FECALL_X86_NO_FLOAT_REG_RETURNS;
+            CurrInfo->cclass_target |= FECALL_X86_NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
-            CurrInfo->cclass |= FECALL_X86_NO_STRUCT_REG_RETURNS;
+            CurrInfo->cclass_target |= FECALL_X86_NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecogId( "routine" ) ) {
             have.f_allocs = 1;
-            CurrInfo->cclass |= FECALL_X86_ROUTINE_RETURN;
+            CurrInfo->cclass_target |= FECALL_X86_ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecogId( "caller" ) ) {
             have.f_allocs = 1;
-            CurrInfo->cclass &= ~FECALL_X86_ROUTINE_RETURN;
+            CurrInfo->cclass_target &= ~FECALL_X86_ROUTINE_RETURN;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
-            CurrInfo->cclass |= FECALL_X86_SPECIAL_STRUCT_RETURN;
+            CurrInfo->cclass_target |= FECALL_X86_SPECIAL_STRUCT_RETURN;
             CurrInfo->streturn = PragRegList();
         } else {
             break;
@@ -377,15 +377,15 @@ static void GetRetInfo(
     have.f_no8087  = 0;
     have.f_list    = 0;
     have.f_struct  = 0;
-    CurrInfo->cclass &= ~ FECALL_X86_NO_8087_RETURNS;
+    CurrInfo->cclass_target &= ~ FECALL_X86_NO_8087_RETURNS;
     for( ;; ) {
         if( !have.f_no8087 && PragRecogId( "no8087" ) ) {
             have.f_no8087 = 1;
             HW_CTurnOff( CurrInfo->returns, HW_FLTS );
-            CurrInfo->cclass |= FECALL_X86_NO_8087_RETURNS;
+            CurrInfo->cclass_target |= FECALL_X86_NO_8087_RETURNS;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
-            CurrInfo->cclass |= FECALL_X86_SPECIAL_RETURN;
+            CurrInfo->cclass_target |= FECALL_X86_SPECIAL_RETURN;
             CurrInfo->returns = PragRegList();
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
@@ -415,7 +415,7 @@ static void GetSaveInfo(
     have.f_list     = 0;
     for( ;; ) {
         if( !have.f_exact && PragRecogId( "exact" ) ) {
-            CurrInfo->cclass |= FECALL_X86_MODIFY_EXACT;
+            CurrInfo->cclass_target |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = 1;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
             CurrInfo->cclass |= FECALL_GEN_NO_MEMORY_CHANGED;
@@ -1154,16 +1154,16 @@ void PragAux(                   // #PRAGMA AUX ...
                     have.uses_auto = GetByteSeq();
                     have.f_call = 1;
                 } else if( !have.f_call && PragRecogId( "far" ) ) {
-                    CurrInfo->cclass |= FECALL_X86_FAR_CALL;
+                    CurrInfo->cclass_target |= FECALL_X86_FAR_CALL;
                     have.f_call = 1;
                 } else if( !have.f_call && PragRecogId( "near" ) ) {
-                    CurrInfo->cclass &= ~FECALL_X86_FAR_CALL;
+                    CurrInfo->cclass_target &= ~FECALL_X86_FAR_CALL;
                     have.f_call = 1;
                 } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-                    CurrInfo->cclass |= FECALL_X86_LOAD_DS_ON_ENTRY;
+                    CurrInfo->cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
                     have.f_loadds = 1;
                 } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
-                    CurrInfo->cclass |= FECALL_X86_LOAD_RDOSDEV_ON_ENTRY;
+                    CurrInfo->cclass_target |= FECALL_X86_LOAD_RDOSDEV_ON_ENTRY;
                     have.f_rdosdev = 1;
                 } else if( !have.f_export && PragRecogId( "export" ) ) {
                     CurrInfo->cclass |= FECALL_GEN_DLL_EXPORT;
@@ -1181,7 +1181,7 @@ void PragAux(                   // #PRAGMA AUX ...
                     GetSaveInfo();
                     have.f_modify = 1;
                 } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-                    CurrInfo->cclass |= FECALL_X86_GENERATE_STACK_FRAME;
+                    CurrInfo->cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
                     have.f_frame = 1;
                 } else {
                     break;
@@ -1268,8 +1268,10 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         return( true );
     }
     return
-           ( ( inf1->cclass & ~(FECALL_GEN_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) ==
-             ( inf2->cclass & ~(FECALL_GEN_CALL_CLASS_IGNORE | FECALL_X86_CALL_CLASS_IGNORE) ) )
+           ( ( inf1->cclass & ~FECALL_GEN_CALL_CLASS_IGNORE ) ==
+             ( inf2->cclass & ~FECALL_GEN_CALL_CLASS_IGNORE ) )
+        && ( ( inf1->cclass_target & ~FECALL_X86_CALL_CLASS_IGNORE ) ==
+             ( inf2->cclass_target & ~FECALL_X86_CALL_CLASS_IGNORE ) )
         && parmSetsIdentical( inf1->parms, inf2->parms )
         && HW_Equal( inf1->returns, inf2->returns )
         && HW_Equal( inf1->streturn, inf2->streturn )
@@ -1306,6 +1308,9 @@ bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     if( datap->cclass != def_info->cclass ) {
         return( false );
     }
+    if( datap->cclass_target != def_info->cclass_target ) {
+        return( false );
+    }
     if( datap->code != def_info->code ) {
         return( false );
     }
@@ -1332,6 +1337,14 @@ static bool okClassChange(      // TEST IF OK TO CHANGE A CLASS IN PRAGMA
     call_class oldp,                 // - old
     call_class newp,                 // - new
     call_class defp )                // - default
+{
+    return( ( ( oldp & newp) == oldp ) || ( oldp == defp ) );
+}
+
+static bool okClassTargetChange(    // TEST IF OK TO CHANGE A CLASS IN PRAGMA
+    call_class_target oldp,         // - old
+    call_class_target newp,         // - new
+    call_class_target defp )        // - default
 {
     return( ( ( oldp & newp) == oldp ) || ( oldp == defp ) );
 }
@@ -1392,6 +1405,9 @@ bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
     return( ( okClassChange( oldp->cclass
                          , newp->cclass
                          , DefaultInfo.cclass ) )
+        && ( okClassTargetChange( oldp->cclass_target
+                         , newp->cclass_target
+                         , DefaultInfo.cclass_target ) )
         && ( ( oldp->flags & newp->flags ) == oldp->flags )
         && ( okParmChange( oldp->parms
                          , newp->parms

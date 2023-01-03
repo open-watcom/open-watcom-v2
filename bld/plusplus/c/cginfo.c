@@ -570,12 +570,13 @@ static AUX_INFO *IntrinsicAuxLookup(
         }
     }
     inf = &InlineInfo;
-    inf->cclass = (DefaultInfo.cclass & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
+    inf->cclass = 0;
+    inf->cclass_target = (DefaultInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
     inf->code = ifunc->code;
     inf->parms = ifunc->parms;
     inf->returns = ifunc->returns;
     if( !HW_CEqual( inf->returns, HW_xAX ) && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-        inf->cclass |= FECALL_X86_SPECIAL_RETURN;
+        inf->cclass_target |= FECALL_X86_SPECIAL_RETURN;
     }
     HW_CAsgn( inf->streturn, HW_EMPTY );
     inf->save = ifunc->save;
@@ -784,7 +785,7 @@ static call_class getCallClass( // GET CLASS OF CALL
     call_class cclass;           // - call class
 
     inf = getLangInfo( sym );
-    cclass = inf->cclass & FECALL_GEN_MASK;
+    cclass = inf->cclass;
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
 #if _CPU == _AXP
@@ -847,7 +848,7 @@ static call_class_target getCallClassTarget( SYMBOL sym )
     call_class_target cclass_target;           // - call class
 
     inf = getLangInfo( sym );
-    cclass_target = inf->cclass & ~ FECALL_GEN_MASK;
+    cclass_target = inf->cclass_target;
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
             fn_type = TypeGetActualFlags( sym->sym_type, &flags );

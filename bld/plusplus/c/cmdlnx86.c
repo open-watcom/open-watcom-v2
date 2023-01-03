@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -359,7 +359,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         break;
     case OPT_ENUM_mem_model_mm:
         model = 'm';
-        WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
         PreDefineStringMacro( "__MEDIUM__" );
@@ -378,7 +378,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         model = 'l';
         PreDefineStringMacro( "_M_" MM_ARCH "LM" );
         PreDefineStringMacro( "__LARGE__" );
-        WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
@@ -388,7 +388,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         model = 'h';
         PreDefineStringMacro( "_M_" MM_ARCH "HM" );
         PreDefineStringMacro( "__HUGE__" );
-        WatcallInfo.cclass |= FECALL_X86_FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA;
@@ -1167,7 +1167,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
     if( data->of_plus ) {
         TargetSwitches |= CGSW_X86_NEED_STACK_FRAME;
-        WatcallInfo.cclass |= FECALL_X86_GENERATE_STACK_FRAME;
+        WatcallInfo.cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
     }
     if( data->om ) {
         GenSwitches |= CGSW_GEN_I_MATH_INLINE;

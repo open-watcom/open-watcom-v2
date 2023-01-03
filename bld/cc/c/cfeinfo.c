@@ -362,14 +362,17 @@ static aux_info *InfoLookup( SYMPTR sym )
                 }
             }
             inf = &InlineInfo;
-            inf->cclass = (WatcallInfo.cclass & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
-            if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) )
+            inf->cclass = 0;
+            inf->cclass_target = (WatcallInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
+            if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) ) {
                 inf->cclass |= ent->info->cclass;
+                inf->cclass_target |= ent->info->cclass_target;
+            }
             inf->code = ifunc->code;
             inf->parms = ifunc->parms;
             inf->returns = ifunc->returns;
             if( !HW_CEqual( inf->returns, HW_xAX ) && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-                inf->cclass |= FECALL_X86_SPECIAL_RETURN;
+                inf->cclass_target |= FECALL_X86_SPECIAL_RETURN;
             }
             HW_CAsgn( inf->streturn, HW_EMPTY );
             inf->save = ifunc->save;
@@ -467,7 +470,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 
     sym.mods = 0;
     inf = FindInfo( &sym, sym_handle );
-    cclass = inf->cclass & FECALL_GEN_MASK;
+    cclass = inf->cclass;
     if( sym_handle != SYM_NULL ) {
         if( sym.flags & SYM_FUNCTION ) {
             if( sym.mods & FLAG_ABORTS ) {
@@ -502,7 +505,7 @@ call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
 
     sym.mods = 0;
     inf = FindInfo( &sym, sym_handle );
-    cclass_target = inf->cclass & ~ FECALL_GEN_MASK;
+    cclass_target = inf->cclass_target;
     if( sym_handle != SYM_NULL ) {
         if( sym.flags & SYM_FUNCTION ) {
 #if _CPU == 8086
