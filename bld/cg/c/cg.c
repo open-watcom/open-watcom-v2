@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -371,10 +371,10 @@ extern  void    DumpCClass( call_class cclass )
 extern  void    CClass( sym  s ) {
 /********************************/
 
-    call_class  *cclass;
+    call_class  cclass;
 
     cclass = FindAuxInfoSym( s, FEINF_CALL_CLASS );
-    DumpCClass( *cclass );
+    DumpCClass( cclass );
     Action( "%n" );
 }
 
@@ -865,14 +865,14 @@ extern  void    CGAddParm( n *l, n *p, cg_type t ) {
 extern  n       *CGCall( n *r ) {
 /*******************************/
 
-    call_class  *cclass;
+    call_class  cclass;
 
     Action( "CGCall( %t )", r );
-    cclass = (call_class *)FEAuxInfo( r->h, FEINF_CALL_CLASS );
-    if( *cclass & MAKE_CALL_INLINE ) {
+    cclass = (call_class)(pointer_uint)FEAuxInfo( r->h, FEINF_CALL_CLASS );
+    if( cclass & MAKE_CALL_INLINE ) {
         Action( " inline handle=%p%n", r );
     } else {
-        DumpCClass( *cclass );
+        DumpCClass( cclass );
         Action( "%n" );
     }
     VerNode( r );

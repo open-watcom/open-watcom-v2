@@ -139,10 +139,10 @@ void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types 
         if( ((kind & BASE) == 0)
           && _IsTargetModel( CGSW_X86_WINDOWS )
           && (attr & FE_PROC)
-          && (*(call_class_target *)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) ) {
+          && ((call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) ) {
             kind |= LDOF;
         }
-        if( UseImportForm( attr ) ) { /* 90-05-22 */
+        if( UseImportForm( attr ) ) {
             EmitByte( ESC );
             EmitByte( IMP | kind );
             EmitPtr( sym );

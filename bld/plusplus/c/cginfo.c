@@ -1304,17 +1304,13 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
     case FEINF_CALL_CLASS:
         DbgNotRetn();
-      { static call_class curr_call_class;
-        curr_call_class = getCallClass( sym );
-        retn = &curr_call_class;
-      } break;
+        retn = (void *)getCallClass( sym );
+        break;
 #if _INTEL_CPU
     case FEINF_CALL_CLASS_TARGET:
         DbgNotRetn();
-      { static call_class_target curr_call_class_target;
-        curr_call_class_target = getCallClassTarget( sym );
-        retn = &curr_call_class_target;
-      } break;
+        retn = (void *)getCallClassTarget( sym );
+        break;
 #endif
     case FEINF_FREE_SEGMENT:
         DbgNotSym();

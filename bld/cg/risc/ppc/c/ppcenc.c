@@ -398,7 +398,7 @@ static  void    doCall( instruction *ins )
     name            *op;
 
     op = ins->operands[CALL_OP_ADDR];
-    cclass = *(call_class *)FindAuxInfo( op, FEINF_CALL_CLASS );
+    cclass = (call_class)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS );
     code = FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _ObjEmitSeq( code );

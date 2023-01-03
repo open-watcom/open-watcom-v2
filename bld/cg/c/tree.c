@@ -870,7 +870,7 @@ call_handle TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
 
     node = TGNode( TN_PARM, O_NOP, left, (tn)sym, NULL );
     node = TGNode( TN_CALL, O_NOP, node, NULL, tipe );
-    if( *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_REVERSE_PARMS ) {
+    if( (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_REVERSE_PARMS ) {
         node->flags |= TF_REVERSE;
     }
     return( node );
@@ -2322,7 +2322,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     sym = (cg_sym_handle)addr->u2.t.rite;
     aux = FEAuxInfo( sym, FEINF_AUX_LOOKUP );
     aux_inline = ( FEAuxInfo( aux, FEINF_CALL_BYTES ) != NULL );
-    cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
+    cclass = (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS );
     call_inline = ( (cclass & FECALL_GEN_MAKE_CALL_INLINE) != 0 );
     retv = TreeGen( addr->u.left );
     if( call_inline ) {

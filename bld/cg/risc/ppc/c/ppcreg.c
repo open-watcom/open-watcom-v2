@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,7 +128,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->parm.offset  = 0;
     InitPPCParmState( state );
     type_class = ReturnTypeClass( tipe, state->attr );
-    if( *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS ) & FECALL_GEN_HAS_VARARGS ) {
+    if( (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS ) & FECALL_GEN_HAS_VARARGS ) {
         state->attr |= ROUTINE_HAS_VARARGS;
     }
     UpdateReturn( state, tipe, type_class, aux );

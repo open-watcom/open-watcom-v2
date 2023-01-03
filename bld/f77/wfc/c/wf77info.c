@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1805,22 +1805,10 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
 
     switch( request ) {
     case FEINF_CALL_CLASS :
-        {
-            static call_class CallClass;
-
-            info = GetAuxInfo( req_handle );
-            CallClass = info->cclass ^ FECALL_GEN_REVERSE_PARMS;
-            return( (pointer)&CallClass );
-        }
+        return( (pointer)(call_class)( info->cclass ^ FECALL_GEN_REVERSE_PARMS ) );
 #if _INTEL_CPU
     case FEINF_CALL_CLASS_TARGET :
-        {
-            static call_class_target CallClassTarget;
-
-            info = GetAuxInfo( req_handle );
-            CallClassTarget = info->cclass_target;
-            return( (pointer)&CallClassTarget );
-        }
+        return( (pointer)info->cclass_target );
 #endif
     case FEINF_SAVE_REGS :
         info = GetAuxInfo( req_handle );

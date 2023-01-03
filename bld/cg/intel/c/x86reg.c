@@ -73,8 +73,8 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         FEMessage( MSG_BAD_SAVE, aux );
     }
     state->attr = ROUTINE_REMOVES_PARMS;
-    cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
-    cclass_target = *(call_class_target *)FEAuxInfo( aux, FEINF_CALL_CLASS_TARGET );
+    cclass = (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS );
+    cclass_target = (call_class_target)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS_TARGET );
     if( cclass_target & FECALL_X86_INTERRUPT ) {
         state->attr |= ROUTINE_INTERRUPT;
     } else if( cclass_target & FECALL_X86_FAR_CALL ) {

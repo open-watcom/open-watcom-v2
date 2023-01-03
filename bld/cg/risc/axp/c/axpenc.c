@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -516,7 +516,7 @@ static  void    doCall( instruction *ins )
 
     op = ins->operands[CALL_OP_ADDR];
     sym = op->v.symbol;
-    cclass = *(call_class *)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
+    cclass = (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
     lbl = symLabel( op );
     code = NULL;
     if( !AskIfRTLabel( lbl ) ) {

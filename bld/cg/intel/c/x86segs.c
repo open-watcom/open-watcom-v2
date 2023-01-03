@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -243,7 +243,7 @@ cg_type NamePtrType( name *op ) {
             if( AskNameIsCode( sym, op->m.memory_type ) ) {
                 if( op->m.memory_type == CG_FE ) {
                     if( FEAttr( sym ) & FE_PROC ) {
-                        if( *(call_class_target *)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL )
+                        if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL )
                             return( TY_LONG_CODE_PTR );
                         return( TY_NEAR_CODE_PTR );
                     } else {

@@ -1080,20 +1080,10 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
             return( (CGPOINTER)ModuleName );
         }
     case FEINF_CALL_CLASS:
-        {
-            static call_class cclass;
-
-            cclass = GetCallClass( req_handle );
-            return( (CGPOINTER)&cclass );
-        }
+        return( (CGPOINTER)GetCallClass( req_handle ) );
 #if _INTEL_CPU
     case FEINF_CALL_CLASS_TARGET:
-        {
-            static call_class_target cclass_target;
-
-            cclass_target = GetCallClassTarget( req_handle );
-            return( (CGPOINTER)&cclass_target );
-        }
+        return( (CGPOINTER)GetCallClassTarget( req_handle ) );
 #endif
     case FEINF_FREE_SEGMENT:
         return( NULL );

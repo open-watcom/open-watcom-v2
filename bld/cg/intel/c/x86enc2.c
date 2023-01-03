@@ -365,8 +365,8 @@ void    GenCall( instruction *ins )
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
-    cclass = *(call_class *)FindAuxInfo( op, FEINF_CALL_CLASS );
-    far_call = ( (*(call_class_target *)FindAuxInfo( op, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) != 0 );
+    cclass = (call_class)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS );
+    far_call = ( ((call_class_target)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) != 0 );
     code = FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _Emit;

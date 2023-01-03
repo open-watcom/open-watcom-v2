@@ -253,7 +253,7 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     }
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );
-    if( *(call_class_target *)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
+    if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
         BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
     } else {
         BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );

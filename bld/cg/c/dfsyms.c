@@ -996,7 +996,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     tipe = FEDbgRetType( sym );
     flags = 0;
 #if _TARGET_INTEL
-    if( *(call_class_target *)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
+    if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
 #endif

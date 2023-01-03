@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_CTurnOff( state->modify, HW_UNUSED );
     state->used = state->modify;     /* anything not saved is used*/
     state->attr = 0;
-    cclass = *(call_class *)FEAuxInfo( aux, FEINF_CALL_CLASS );
+    cclass = (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS );
     if( cclass & FECALL_GEN_SETJMP_KLUGE ) {
         state->attr |= ROUTINE_IS_SETJMP;
     }
