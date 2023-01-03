@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,8 +66,6 @@ rtn_info RTInfo[] = {
     #undef PICK1
     #undef PICK
 };
-
-static call_class       rt_cclass = 0;
 
 static  struct STRUCT_BYTE_SEQ( 2 ) Scn1 = {
      2, false,
@@ -291,9 +289,8 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
             return( NULL );
         }
     case FEINF_CALL_CLASS:
-        return( &rt_cclass );
     case FEINF_CALL_CLASS_TARGET:
-        return( &rt_cclass );
+        return( 0 );
     case FEINF_CALL_BYTES:
         return( hdl );
     default:

@@ -636,7 +636,7 @@ extern  bool    CheckInLine( n * t ) {
     n   *parm;
     b   *bk;
 
-    if( ((call_class)(pointer_uint)FEAuxInfo( t->h, FEINF_CALL_CLASS ) & MAKE_CALL_INLINE) == 0 ) {
+    if( ((call_class)(pointer_uint)FEAuxInfo( t->h, FEINF_CALL_CLASS ) & FECALL_MAKE_CALL_INLINE) == 0 ) {
         return( false );
     }
     icall = CGAlloc( sizeof( ic ) );

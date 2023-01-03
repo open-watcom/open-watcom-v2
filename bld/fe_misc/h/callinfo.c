@@ -114,6 +114,9 @@ void AuxInfoInit( int flag_stdatnum )
     HW_CAsgn( full_no_segs, HW_FULL );
     HW_CTurnOff( full_no_segs, HW_SEGS );
 
+    /*
+     * get FECALL_X86_FAR_CALL attribute only
+     */
     cclass = 0;
     cclass_target = WatcallInfo.cclass_target & FECALL_X86_FAR_CALL;
 

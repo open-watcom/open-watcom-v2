@@ -98,7 +98,7 @@ extern void         SetAuxStackConventions( void );
 extern void         SetAuxWatcallInfo( void );
 extern void         SetDefaultAuxInfo( void );
 extern int          IsAuxParmsBuiltIn( hw_reg_set *parms );
-extern int          IsAuxInfoBuiltIn( aux_info *info );
+extern int          IsAuxInfoBuiltIn( aux_info *inf );
 extern char         *VarNamePattern( aux_info *inf );
 
 #endif
