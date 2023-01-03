@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1038,7 +1038,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             if( (CurToken == T__SEG16) || (CurToken == T__FAR16) || (CurToken == T___FAR16) ) {
     #if _CPU == 8086
                 info->modifier |= FLAG_FAR;
-    #else
+    #else /* _CPU == 386 */
                 info->modifier |= FLAG_FAR16;
     #endif
                 NextToken();

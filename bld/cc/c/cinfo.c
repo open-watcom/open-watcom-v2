@@ -311,7 +311,7 @@ void SetSegment( SYMPTR sym )
             return;
         }
     }
-  #else
+  #else /* _CPU == 386 */
     if( !CompFlags.rent ) {
         if( (sym->mods & FLAG_FAR) || (TargetSwitches & CGSW_X86_FLAT_MODEL) ) {
            if( CONSTANT( sym->mods ) && CompFlags.zc_switch_used ) {

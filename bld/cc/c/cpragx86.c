@@ -72,10 +72,11 @@ static void pragmaAuxInfoInit( void )
        or their fields being freed */
 
     STOSBInfo = WatcallInfo;
-    STOSBInfo.cclass = 0;
+    STOSBInfo.cclass        = 0;
     STOSBInfo.cclass_target = FECALL_X86_NO_FLOAT_REG_RETURNS |
-                       FECALL_X86_NO_STRUCT_REG_RETURNS |
-                       FECALL_X86_SPECIAL_STRUCT_RETURN;
+                              FECALL_X86_NO_STRUCT_REG_RETURNS |
+                              FECALL_X86_SPECIAL_STRUCT_RETURN |
+                              0;
     STOSBInfo.parms = STOSBParms;
     STOSBInfo.objname = "*";
 #endif
@@ -172,8 +173,9 @@ static void PragmaAuxEnd( void )
     if( AuxInfoFlg.f_8087_returns ) {
         CurrInfo->cclass_target &= ~FECALL_X86_NO_8087_RETURNS;
     }
-    CurrInfo->cclass |= AuxInfo.cclass;
+    CurrInfo->cclass        |= AuxInfo.cclass;
     CurrInfo->cclass_target |= AuxInfo.cclass_target;
+
     CurrInfo->flags |= AuxInfo.flags;
     if( AuxInfo.objname != NULL )
         CurrInfo->objname = AuxInfo.objname;

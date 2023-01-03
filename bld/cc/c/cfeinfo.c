@@ -223,7 +223,7 @@ static const inline_funcs *IF_Lookup( const char *name )
             } else {
                 ifunc = ZP_Data_Functions;
             }
-  #else
+  #else /* _CPU == 386 */
             if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
                 ifunc = SBigData_Functions;
             } else {
@@ -254,7 +254,7 @@ static const inline_funcs *IF_Lookup( const char *name )
         } else {
             ifunc = DP_Data_Functions;
         }
-  #else
+  #else /* _CPU == 386 */
         if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             ifunc = BigData_Functions;
         } else {
@@ -351,7 +351,7 @@ static aux_info *InfoLookup( SYMPTR sym )
               || HW_CEqual( ifunc->returns, HW_ES_DI )
               || HW_CEqual( ifunc->returns, HW_CX_DI ) ) {
                 if( SizeOfArg( sym->sym_type->object ) != 4 ) {
-  #else
+  #else /* _CPU == 386 */
             if( HW_CEqual( ifunc->returns, HW_DX_AX )
               || HW_CEqual( ifunc->returns, HW_DS_ESI )
               || HW_CEqual( ifunc->returns, HW_ES_EDI )
@@ -362,11 +362,12 @@ static aux_info *InfoLookup( SYMPTR sym )
                 }
             }
             inf = &InlineInfo;
-            inf->cclass = 0;
-            inf->cclass_target = (WatcallInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
+            inf->cclass         = 0;
+            inf->cclass_target  = (WatcallInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
+
             if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) ) {
-                inf->cclass |= ent->info->cclass;
-                inf->cclass_target |= ent->info->cclass_target;
+                inf->cclass         |= ent->info->cclass;
+                inf->cclass_target  |= ent->info->cclass_target;
             }
             inf->code = ifunc->code;
             inf->parms = ifunc->parms;
@@ -508,13 +509,13 @@ call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
     cclass_target = inf->cclass_target;
     if( sym_handle != SYM_NULL ) {
         if( sym.flags & SYM_FUNCTION ) {
-#if _CPU == 8086
+  #if _CPU == 8086
             if( TargetSystem == TS_WINDOWS ) {
                 if( inf == &PascalInfo || inf == &CdeclInfo ) {
                     cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
                 }
             }
-#endif
+  #endif
             if( sym.mods & FLAG_FARSS ) {
                 cclass_target |= FECALL_X86_FARSS;
             }
@@ -858,7 +859,7 @@ static void addDefaultImports( void )
             if( GET_FPU( ProcRevision ) & FPU_EMU ) {
   #if _CPU == 8086
                 AddExtRefN( "__init_87_emulator" );
-  #else
+  #else /* _CPU == 386 */
                 AddExtRefN( "__init_387_emulator" );
   #endif
             }
@@ -887,7 +888,7 @@ static void addDefaultImports( void )
         } else {
             AddExtRefN( "__argc" );
         }
-  #else
+  #else /* _CPU == 386 */
         if( CompFlags.register_conventions ) {
             if( CompFlags.has_wchar_entry ) {
                 AddExtRefN( "__wargc" );

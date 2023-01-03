@@ -404,7 +404,7 @@ static void SetGenSwitches( void )
         SwData.mem = SW_MS;
     CHECK_TO_PEGGED( f );
     CHECK_TO_PEGGED( g );
-  #else
+  #else /* _CPU == 386 */
     if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU6;
     if( SwData.fpu == SW_FPU_DEF )
@@ -509,7 +509,7 @@ static void MacroDefs( void )
 #if _INTEL_CPU
   #if _CPU == 8086
     #define MX86 "M_I86"
-  #else
+  #else /* _CPU == 386 */
     #define MX86 "M_386"
   #endif
     if( CompFlags.non_iso_compliant_names_enabled ) {
@@ -538,7 +538,7 @@ static void MacroDefs( void )
     }
   #if _CPU == 8086
     #define X86 "_M_I86"
-  #else
+  #else /* _CPU == 386 */
     #define X86 "_M_386"
   #endif
     switch( SwData.mem ) {
@@ -1552,7 +1552,7 @@ static struct option const CFE_Options[] = {
     { "4",      SW_CPU4,        SetCPU },
     { "5",      SW_CPU5,        SetCPU },
     { "6",      SW_CPU6,        SetCPU },
-  #else
+  #else /* _CPU == 386 */
     { "6r",     SW_CPU6,        SetCPU_xR },
     { "6s",     SW_CPU6,        SetCPU_xS },
     { "6",      SW_CPU6,        SetCPU },
@@ -1647,7 +1647,7 @@ static struct option const CFE_Options[] = {
     { "ml",     SW_ML,          SetMemoryModel },
   #if _CPU == 8086
     { "mh",     SW_MH,          SetMemoryModel },
-  #else
+  #else /* _CPU == 386 */
     { "mf",     SW_MF,          SetMemoryModel },
   #endif
     { "nc=$",   0,              SetCodeClass },
@@ -1773,7 +1773,7 @@ static struct option const CFE_Options[] = {
   #if _CPU == 8086
     { "zW*",    0,              SetCheapWindows },
     { "zw*",    0,              SetWindows },
-  #else
+  #else /* _CPU == 386 */
     { "zw",     0,              SetWindows },
     { "zz",     0,              Set_ZZ },
   #endif
