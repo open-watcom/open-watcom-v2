@@ -655,9 +655,11 @@ static const char *allowStrictReplacement( const char *patbuff )
     const char *p;
     char       prev;
 
-    // mangled C++ name will be injected as the name so
-    // we only allow 'patbuff' to be a pure replacement
-    // rather than like "_*" "*_" "^" "__!"
+    /*
+     * mangled C++ name will be injected as the name so
+     * we only allow 'patbuff' to be a pure replacement
+     * rather than like "_*" "*_" "^" "__!"
+     */
     if( patbuff == NULL ) {
         return( patbuff );
     }
@@ -719,11 +721,11 @@ static const char *GetNamePattern( // MANGLE SYMBOL NAME
     return( patbuff );
 }
 
-const char *FEExtName( cg_sym_handle sym, int request ) {
-//*******************************************************
-
-// Return symbol name related info for object file.
-
+const char *FEExtName( cg_sym_handle sym, int request )
+/*******************************************************
+ * Return symbol name related info for object file.
+ */
+{
     switch( request ) {
     case EXTN_BASENAME:
         return( GetMangledName( sym ) );
@@ -743,12 +745,14 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
 #if _INTEL_CPU
 static bool makeFileScopeStaticNear( SYMBOL sym )
 {
-    // make a file-scope static function near in big code models if:
-    //   - address has not been taken
-    //   - no debugging info is required
-    //     (debug info would be wrong because type says far function)
-    //   - multiple code segments are not used
-    //   - function will not end up as FE_COMMON
+    /*
+     * make a file-scope static function near in big code models if:
+     *   - address has not been taken
+     *   - no debugging info is required
+     *     (debug info would be wrong because type says far function)
+     *   - multiple code segments are not used
+     *   - function will not end up as FE_COMMON
+     */
     if( sym->id != SYMC_STATIC ) {
         return( false );
     }
@@ -756,20 +760,28 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
         return( false );
     }
     if( (sym->flag & SYMF_ADDR_TAKEN) != 0 ) {
-        // function may be called as a FAR function through a pointer
+        /*
+         * function may be called as a FAR function through a pointer
+         */
         return( false );
     }
     if( (GenSwitches & (CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS)) != 0 ) {
-        // function's debugging info will be FAR
+        /*
+         * function's debugging info will be FAR
+         */
         return( false );
     }
     if( CompFlags.zm_switch_used ) {
-        // caller may not be in the same segment
+        /*
+         * caller may not be in the same segment
+         */
         return( false );
     }
     if( SymIsComdatFun( sym ) ) {
-        // another module may not satisfy previous conditions so depending
-        // on what copy the linker uses, one of the calls will not match
+        /*
+         * another module may not satisfy previous conditions so depending
+         * on what copy the linker uses, one of the calls will not match
+         */
         return( false );
     }
     return( true );
@@ -785,7 +797,7 @@ static call_class getCallClass( SYMBOL sym )
     TYPE fn_type;               // - function type
     type_flag flags;            // - flags for the function TYPE
     type_flag fn_flags;         // - flags in the function TYPE
-    call_class cclass;           // - call class
+    call_class cclass;          // - call class
 
     inf = getLangInfo( sym );
     cclass = inf->cclass;
@@ -812,8 +824,10 @@ static call_class getCallClass( SYMBOL sym )
             if( CgBackFuncInlined( sym ) ) {
                 cclass |= FECALL_GEN_MAKE_CALL_INLINE;
             }
-            /* only want the explicit memory model flags */
-            /* default near/far is in the aux info already */
+            /*
+             * only want the explicit memory model flags
+             * default near/far is in the aux info already
+             */
             fn_type = TypeGetActualFlags( sym->sym_type, &flags );
             fn_flags = fn_type->flag;
             if( fn_flags & TF1_ABORTS ) {
@@ -823,11 +837,12 @@ static call_class getCallClass( SYMBOL sym )
                 cclass |= FECALL_GEN_NORETURN;
             }
 #if _INTEL_CPU
-            // don't export addressability thunks
+            /*
+             * don't export addressability thunks
+             */
             if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
-                    if( fn_flags & TF1_INLINE ) {
-                    } else {
+                    if( (fn_flags & TF1_INLINE) == 0 ) {
                         cclass |= FECALL_GEN_DLL_EXPORT;
                     }
                 }
@@ -859,10 +874,14 @@ static call_class_target getCallClassTarget( SYMBOL sym )                       
         if( SymIsFunction( sym ) ) {
             fn_type = TypeGetActualFlags( sym->sym_type, &flags );
             if( flags & TF1_FAR ) {
-                /* function has an explicit FAR */
+                /*
+                 * function has an explicit FAR
+                 */
                 cclass_target |= FECALL_X86_FAR_CALL;
             } else if( flags & TF1_NEAR ) {
-                /* function has an explicit NEAR */
+                /*
+                 * function has an explicit NEAR
+                 */
                 cclass_target &= ~FECALL_X86_FAR_CALL;
             } else if( flags & TF1_FAR16 ) {
                 cclass_target |= FECALL_X86_FAR16_CALL;
@@ -874,12 +893,16 @@ static call_class_target getCallClassTarget( SYMBOL sym )                       
                 }
             }
             fn_flags = fn_type->flag;
-            // don't export addressability thunks
+            /*
+             * don't export addressability thunks
+             */
             if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
                     if( fn_flags & TF1_INLINE ) {
-                        // may be COMDATed so make sure the calling convention
-                        // matches what it would be for an exported fn
+                        /*
+                         * may be COMDATed so make sure the calling convention
+                         * matches what it would be for an exported fn
+                         */
                         if( TargetSwitches & CGSW_X86_WINDOWS ) {
                             cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
                         }
@@ -1129,7 +1152,9 @@ static void addDefaultImports( void )
     }
 #endif
 #if 0
-    // not req'd with new library
+    /*
+     * not req'd with new library
+     */
     if( CompFlags.inline_fun_reg ) {
         CgInfoAddImportS( RunTimeCallSymbol( RTF_INLINE_FREG ) );
     }
@@ -1183,8 +1208,8 @@ static void addDefaultImports( void )
 
 
 void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
-        void *_sym,             // - symbol
-        aux_class request )     // - request
+    void *_sym,                 // - symbol
+    aux_class request )         // - request
 {
     AUX_INFO *inf;              // - auxilary info
     void *retn = NULL;          // - return value
@@ -1394,11 +1419,15 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotRetn();
         inf = getLangInfo( sym );
         if( inf->code == NULL && SymIsEllipsisFunc( sym ) ) {
-            // so <stdarg.h> will work properly; all parms must be on the stack
+            /*
+             * so <stdarg.h> will work properly; all parms must be on the stack
+             */
             retn = DefaultVarParms;
         } else {
-            // (1) non ... functions
-            // (2) ... functions that are #pragma code bursts
+            /*
+             * (1) non ... functions
+             * (2) ... functions that are #pragma code bursts
+             */
             retn = inf->parms;
         }
         break;
