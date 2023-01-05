@@ -134,12 +134,16 @@ sys_rtdll       = 0
 sys_rtdll       = 0
 !endif
 
-!ifdef $(proj_name)_debugfmt
-debugfmt = $($(proj_name)_debugfmt)
+!ifndef debugfmt
+!ifeq codeview 1
+debugfmt = codeview
 !else ifeq %CODEVIEW 1
 debugfmt = codeview
+!else ifdef $(proj_name)_debugfmt
+debugfmt = $($(proj_name)_debugfmt)
 !else
 debugfmt = dwarf
+!endif
 !endif
 
 !ifdef $(proj_name)_nomapfile
