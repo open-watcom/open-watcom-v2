@@ -2634,7 +2634,7 @@ bool AsmParse( const char *curline )
         case TC_COLON:
             if( last_opnd_label ) {
                 if( AsmBuffer[i+1].class != TC_RES_ID ) {
-                    if( MakeLabel( AsmBuffer[i-1].string_ptr, MT_NEAR ) ) {
+                    if( MakeLabel( i - 1, MT_NEAR ) ) {
                          return( RC_ERROR );
                     }
                 }

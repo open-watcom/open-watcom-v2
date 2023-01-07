@@ -39,6 +39,6 @@ extern bool             LabelDirective( token_idx );
 
 #endif
 
-extern bool             MakeLabel( char *, memtype );
+extern bool             MakeLabel( token_idx i, memtype );
 
 #endif

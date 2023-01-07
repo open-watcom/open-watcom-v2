@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -491,7 +491,7 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
                 AsmBuffer[start + i].string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
                     new_constant = true;
-                    MakeLabel( buff, MT_NEAR );
+                    MakeLabel( start + i, MT_NEAR );
                 }
                 break;
             }

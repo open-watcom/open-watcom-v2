@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,37 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  WASM header file with global macros definition.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+#ifndef ASMTOK_H_INCLUDED
+#define ASMTOK_H_INCLUDED
 
-#ifdef _M_I86
-#define ASMI86FAR   __far
-#else
-#define ASMI86FAR
+typedef unsigned char       token_idx;
+
 #endif
-
-#define RC_ERROR                true
-#define RC_OK                   false
-
-#define MAX_TOKEN               100     // there is no restriction for this number
-#define MAX_LINE_LEN            512     // there is no restriction for this number
-#define MAX_TOK_LEN             256
-#define MAX_FILE_NAME           30
-#define MAX_ID_LEN              247
-#define MAX_MEMORY              1024
-#define MAX_LINE                1024
-#define MAX_PUB_SIZE            100     // max # of entries in pubdef record
-#define MAX_EXT_LENGTH          0x400   // max length ( in chars ) of extdef
-
-/* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
-#define MAX_LEDATA_LEN          1024
-#define MAX_LEDATA_THRESHOLD    (MAX_LEDATA_LEN - 12)
-
-#define NULLC                   '\0'
-#define NULLS                   "\0"
-
-#define INVALID_IDX             (MAX_TOKEN + 1)
-#define ISVALID_IDX(x)          ((x)<INVALID_IDX)
-#define ISINVALID_IDX(x)        ((x)>=INVALID_IDX)

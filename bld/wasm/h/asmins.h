@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +36,13 @@
 #include "asmopnds.h"
 #include "asmsym.h"
 #include "asmops.h"
+#include "asmtok.h"
 
 enum regsize {
     A_BYTE = 0,
     A_WORD,
     A_DWORD,
 };
-
-typedef unsigned char       token_idx;
-#define INVALID_IDX         ((token_idx)-1)
-#define ISVALID_IDX(x)      ((x)<=MAX_TOKEN)
-#define ISINVALID_IDX(x)    ((x)>MAX_TOKEN)
 
 typedef enum operand_idx {
     OPND1 = 0,
