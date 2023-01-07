@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,7 +211,7 @@ static bool lineis( char *str, char *substr )
 static bool macro_local( void )
 /*****************************/
 {
-    /* take a line that looks like  LOCAL varname [, varname * ] */
+    /* take a line that looks like  LOCAL labelid [, labelid ] */
 
     token_idx   i = 0;
     char        buffer[MAX_LINE_LEN];

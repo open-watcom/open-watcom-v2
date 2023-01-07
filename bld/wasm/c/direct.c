@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,10 +120,6 @@ static typeinfo TypeInfo[] = {
 #define IDEAL_ARGUMENT_STRING_32 "ebp+"
 #define IDEAL_LOCAL_STRING       "bp-"
 #define IDEAL_LOCAL_STRING_32    "ebp-"
-
-static char             *Check4Mangler( token_idx *i );
-static int              token_cmp( char **token, int start, int end );
-static void             ModelAssumeInit( void );
 
 extern bool             write_to_file;  // write if there is no error
 extern unsigned         BufSize;
@@ -1062,6 +1058,28 @@ uint_32 GetCurrSegStart( void )
     return( CurrSeg->seg->e.seginfo->start_loc );
 }
 
+static int token_cmp( char **token, int start, int end )
+/******************************************************/
+/* compare token against those specified in TypeInfo[start...end] */
+{
+    int         i;
+    char        *str;
+    char        *tkn;
+
+    str = *token;
+
+    for( i = start; i <= end; i++ ) {
+        tkn = TypeInfo[i].string;
+        if( tkn == NULL )
+            continue;
+        if( stricmp( tkn, str ) == 0 ) {
+            // type is found
+            return( i );
+        }
+    }
+    return( TOK_INVALID );      // No type is found
+}
+
 bool CheckForLang( token_idx i, int *lang )
 /*****************************************/
 {
@@ -1094,6 +1112,23 @@ static int GetLangType( token_idx *i )
     }
     (*i)++;
     return( lang_type );
+}
+
+static char *Check4Mangler( token_idx *i )
+/****************************************/
+{
+    char *mangle_type = NULL;
+
+    if( AsmBuffer[*i].class == TC_STRING ) {
+        mangle_type = AsmBuffer[*i].string_ptr;
+        (*i)++;
+        if( AsmBuffer[*i].class != TC_COMMA ) {
+            AsmWarn( 2, EXPECTING_COMMA );
+        } else {
+            (*i)++;
+        }
+    }
+    return( mangle_type );
 }
 
 bool ExtDef( token_idx i, bool glob_def )
@@ -1170,23 +1205,6 @@ bool ExtDef( token_idx i, bool glob_def )
         SetMangler( &dir->sym, mangle_type, lang_type );
     }
     return( RC_OK );
-}
-
-static char *Check4Mangler( token_idx *i )
-/****************************************/
-{
-    char *mangle_type = NULL;
-
-    if( AsmBuffer[*i].class == TC_STRING ) {
-        mangle_type = AsmBuffer[*i].string_ptr;
-        (*i)++;
-        if( AsmBuffer[*i].class != TC_COMMA ) {
-            AsmWarn( 2, EXPECTING_COMMA );
-        } else {
-            (*i)++;
-        }
-    }
-    return( mangle_type );
 }
 
 bool PubDef( token_idx i )
@@ -1389,28 +1407,6 @@ bool SetCurrSeg( token_idx i )
         break;
     }
     return( SetUse32() );
-}
-
-static int token_cmp( char **token, int start, int end )
-/******************************************************/
-/* compare token against those specified in TypeInfo[start...end] */
-{
-    int         i;
-    char        *str;
-    char        *tkn;
-
-    str = *token;
-
-    for( i = start; i <= end; i++ ) {
-        tkn = TypeInfo[i].string;
-        if( tkn == NULL )
-            continue;
-        if( stricmp( tkn, str ) == 0 ) {
-            // type is found
-            return( i );
-        }
-    }
-    return( TOK_INVALID );      // No type is found
 }
 
 static seg_type ClassNameType( char *name )
@@ -2070,6 +2066,36 @@ bool SimSeg( token_idx i )
     return( RC_OK );
 }
 
+static void ModelAssumeInit( void )
+/**********************************/
+{
+    char        buffer[ MAX_LINE_LEN ];
+    char        *name;
+
+    /* Generates codes for assume */
+    switch( ModuleInfo.model ) {
+    case MOD_FLAT:
+        InputQueueLine( "ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:ERROR,GS:ERROR");
+        break;
+    case MOD_TINY:
+        InputQueueLine( "ASSUME CS:DGROUP, DS:DGROUP, ES:DGROUP, SS:DGROUP" );
+        break;
+    case MOD_SMALL:
+    case MOD_COMPACT:
+    case MOD_MEDIUM:
+    case MOD_LARGE:
+    case MOD_HUGE:
+        strcpy( buffer, "ASSUME CS:" );
+        if( (name = Options.text_seg) == NULL ) {
+            name = SIM_NAME_CODE;
+        }
+        strcat( buffer, name );
+        strcat( buffer, ", DS:DGROUP, SS:DGROUP" );
+        InputQueueLine( buffer );
+        break;
+    }
+}
+
 static void module_prologue( void )
 /*********************************/
 /* Generates codes for .MODEL; based on optasm pg.142-146 */
@@ -2351,36 +2377,6 @@ void AssumeInit( void )
         AssumeTable[reg].symbol = NULL;
         AssumeTable[reg].error = false;
         AssumeTable[reg].flat = false;
-    }
-}
-
-static void ModelAssumeInit( void )
-/**********************************/
-{
-    char        buffer[ MAX_LINE_LEN ];
-    char        *name;
-
-    /* Generates codes for assume */
-    switch( ModuleInfo.model ) {
-    case MOD_FLAT:
-        InputQueueLine( "ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:ERROR,GS:ERROR");
-        break;
-    case MOD_TINY:
-        InputQueueLine( "ASSUME CS:DGROUP, DS:DGROUP, ES:DGROUP, SS:DGROUP" );
-        break;
-    case MOD_SMALL:
-    case MOD_COMPACT:
-    case MOD_MEDIUM:
-    case MOD_LARGE:
-    case MOD_HUGE:
-        strcpy( buffer, "ASSUME CS:" );
-        if( (name = Options.text_seg) == NULL ) {
-            name = SIM_NAME_CODE;
-        }
-        strcat( buffer, name );
-        strcat( buffer, ", DS:DGROUP, SS:DGROUP" );
-        InputQueueLine( buffer );
-        break;
     }
 }
 
