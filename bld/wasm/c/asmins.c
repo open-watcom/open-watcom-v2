@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -338,43 +338,6 @@ static void check_assume( struct asm_sym *sym, prefix_reg default_reg )
     }
 }
 
-bool check_override( token_idx *i )
-/*********************************/
-/* Check if there is a register, segment or group override */
-{
-    token_idx   index;
-
-    index = *i;
-
-    if( ( index + 2 ) < Token_Count ) {
-        if( AsmBuffer[index+1].class == TC_COLON ) {
-            switch( AsmBuffer[index].class ) {
-            case TC_REG:
-                Code->prefix.seg =
-                    AsmOpTable[AsmOpcode[AsmBuffer[index].u.token].position].opcode;
-                (*i) += 2;
-                if( *i >= Token_Count ) {
-                    AsmError( LABEL_EXPECTED_AFTER_COLON );
-                    return( RC_ERROR );
-                }
-                break;
-            case TC_ID:      // Segment or Group override
-                if( FixOverride(*i) ) {
-                    return( RC_ERROR );
-                }
-                (*i) += 2;
-                if( *i >= Token_Count ) {
-                    AsmError( LABEL_EXPECTED_AFTER_COLON );
-                    return( RC_ERROR );
-                }
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    return( RC_OK );
-}
 #endif
 
 static unsigned char Reg386( asm_token reg_token )

@@ -151,7 +151,6 @@ extern int      GetInsString( asm_token, char * );
 
 #endif
 
-extern bool     check_override( token_idx *i );
 extern int      OperandSize( OPNDTYPE opnd );
 extern bool     InRange( unsigned long val, unsigned bytes );
 extern bool     cpu_directive( asm_token );
