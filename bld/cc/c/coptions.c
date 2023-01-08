@@ -218,6 +218,7 @@ static void SetTargetSystem( void )
         PreDefine_Macro( "M_I86" );
 #elif _CPU == 386
         PreDefine_Macro( "M_I386" );
+        PreDefine_Macro( "i386" );
 #elif _CPU == _AXP
         PreDefine_Macro( "M_ALPHA" );
 #elif _CPU == _PPC
@@ -234,26 +235,35 @@ static void SetTargetSystem( void )
     PreDefine_Macro( "__X86__" );
     PreDefine_Macro( "_X86_" );
 #elif _CPU == 386
+    PreDefine_Macro( "__i386__" );
+    PreDefine_Macro( "__i386" );
     PreDefine_Macro( "_M_I386" );
     PreDefine_Macro( "__386__" );
     PreDefine_Macro( "__X86__" );
     PreDefine_Macro( "_X86_" );
     PreDefine_Macro( "_STDCALL_SUPPORTED" );
 #elif _CPU == _AXP
+    PreDefine_Macro( "__alpha__" );
     PreDefine_Macro( "_M_ALPHA" );
     PreDefine_Macro( "__ALPHA__" );
     PreDefine_Macro( "_ALPHA_" );
     PreDefine_Macro( "__AXP__" );
     PreDefine_Macro( "_STDCALL_SUPPORTED" );
 #elif _CPU == _PPC
+    PreDefine_Macro( "__powerpc__" );
+    PreDefine_Macro( "__ppc__" );
     PreDefine_Macro( "_M_PPC" );
     PreDefine_Macro( "__POWERPC__" );
     PreDefine_Macro( "__PPC__" );
     PreDefine_Macro( "_PPC_" );
 #elif _CPU == _MIPS
+    PreDefine_Macro( "__mips__" );
+    PreDefine_Macro( "__mips=32" );
     PreDefine_Macro( "_M_MRX000" );
     PreDefine_Macro( "__MIPS__" );
 #elif _CPU == _SPARC
+    PreDefine_Macro( "__sparc__" );
+    PreDefine_Macro( "__sparc" );
     PreDefine_Macro( "_M_SPARC" );
     PreDefine_Macro( "__SPARC__" );
     PreDefine_Macro( "_SPARC_" );
@@ -330,6 +340,7 @@ static void SetTargetSystem( void )
             PreDefine_Macro( "MSDOS" );
         }
         PreDefine_Macro( "_DOS" );
+        PreDefine_Macro( "__MSDOS__" );
         break;
 
 #if _CPU == 386
@@ -350,13 +361,31 @@ static void SetTargetSystem( void )
         break;
 
     case TS_NT:
+        if( CompFlags.non_iso_compliant_names_enabled ) {
+            PreDefine_Macro( "WIN32" );
+            PreDefine_Macro( "WINNT" );
+        }
         PreDefine_Macro( "_WIN32" );
+        PreDefine_Macro( "__WIN32" );
+        PreDefine_Macro( "__WIN32__" );
+        PreDefine_Macro( "__WINNT" );
+        PreDefine_Macro( "__WINNT__" );
         break;
 #endif
-    case TS_QNX:
-        /* fall through */
     case TS_LINUX:
+        if( CompFlags.non_iso_compliant_names_enabled ) {
+            PreDefine_Macro( "linux" );
+        }
+        PreDefine_Macro( "__linux__" );
+        PreDefine_Macro( "__linux" );
+        /* fall through */
+    case TS_QNX:
+        if( CompFlags.non_iso_compliant_names_enabled ) {
+            PreDefine_Macro( "unix" );
+        }
         PreDefine_Macro( "__UNIX__" );
+        PreDefine_Macro( "__unix__" );
+        PreDefine_Macro( "__unix" );
         break;
 
     case TS_CHEAP_WINDOWS:
@@ -745,14 +774,20 @@ static void MacroDefs( void )
     case CPU_486:
         Define_Macro( "__SW_4" );
         PreDefine_Macro( "_M_IX86=400" );
+        PreDefine_Macro( "__i486__" );
+        PreDefine_Macro( "__i486" );
         break;
     case CPU_586:
         Define_Macro( "__SW_5" );
         PreDefine_Macro( "_M_IX86=500" );
+        PreDefine_Macro( "__i586__" );
+        PreDefine_Macro( "__i586" );
         break;
     case CPU_686:
         Define_Macro( "__SW_6" );
         PreDefine_Macro( "_M_IX86=600" );
+        PreDefine_Macro( "__i686__" );
+        PreDefine_Macro( "__i686" );
         break;
     }
     switch( SwData.fpt ) {
