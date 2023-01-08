@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,10 @@
 #ifndef _ASMSTRUC_H_INCLUDED
 #define _ASMSTRUC_H_INCLUDED
 
-extern bool             StructDef( token_idx );
-extern int              AddFieldToStruct( asm_sym *, token_idx );
+extern bool             StructDef( token_buffer *tokbuf, token_idx );
+extern int              AddFieldToStruct( asm_sym *, token_buffer *tokbuf, token_idx );
 extern int              GetStructSize( asm_sym * );
-extern bool             InitializeStructure( asm_sym *, asm_sym *, token_idx );
+extern bool             InitializeStructure( asm_sym *, asm_sym *, token_buffer *tokbuf, token_idx );
 extern asm_sym          *FindStructureMember( asm_sym *symbol , const char *name );
 
 #endif

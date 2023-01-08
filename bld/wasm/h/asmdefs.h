@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +103,6 @@
 #endif
 
 /* global variables */
-extern asm_tok          AsmBuffer[MAX_TOKEN + 1];
 extern struct asm_code  *Code;
 extern struct asm_sym   *Frame;
 extern char             Parse_Pass;     // phase of parsing
@@ -112,7 +112,7 @@ extern bool             Use32;          // if 32-bit code is use
 extern token_idx        Token_Count;    // number of tokens on line
 
 extern void             AsmByte( unsigned char );
-extern token_idx        AsmScan( const char * );
+extern token_idx        AsmScan( token_buffer *tokbuf, const char * );
 
 #if defined( _STANDALONE_ )
 

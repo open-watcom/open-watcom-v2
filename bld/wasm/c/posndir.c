@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,19 +77,19 @@ bool ChangeCurrentLocation( bool relative, int_32 value, bool select_data )
     return( RC_OK );
 }
 
-bool OrgDirective( token_idx i )
-/******************************/
+bool OrgDirective( token_buffer *tokbuf, token_idx i )
+/****************************************************/
 {
     struct asm_sym  *sym;
     int_32          value = 0;
 
-    if( AsmBuffer[i+1].class == TC_NUM ) {
-        return( ChangeCurrentLocation( false, AsmBuffer[i+1].u.value, false ) );
-    } else if( AsmBuffer[i+1].class == TC_ID ) {
-        sym = AsmLookup( AsmBuffer[i+1].string_ptr );
-        if( AsmBuffer[i+2].class == TC_OP_SQ_BRACKET &&
-            AsmBuffer[i+3].class == TC_NUM ) {
-            value = AsmBuffer[i+3].u.value;
+    if( tokbuf->tokens[i+1].class == TC_NUM ) {
+        return( ChangeCurrentLocation( false, tokbuf->tokens[i+1].u.value, false ) );
+    } else if( tokbuf->tokens[i+1].class == TC_ID ) {
+        sym = AsmLookup( tokbuf->tokens[i+1].string_ptr );
+        if( tokbuf->tokens[i+2].class == TC_OP_SQ_BRACKET &&
+            tokbuf->tokens[i+3].class == TC_NUM ) {
+            value = tokbuf->tokens[i+3].u.value;
         }
         return( ChangeCurrentLocation( false, sym->offset + value, false ) );
     }
@@ -131,18 +132,18 @@ static void fill_in_objfile_space( uint_32 size )
     }
 }
 
-bool AlignDirective( asm_token directive, token_idx i )
-/*****************************************************/
+bool AlignDirective( asm_token directive, token_buffer *tokbuf, token_idx i )
+/***************************************************************************/
 {
     uint_32     align_val = 0;
     unsigned    seg_align;
 
     switch( directive ) {
     case T_ALIGN:
-        if( AsmBuffer[i+1].class == TC_NUM ) {
+        if( tokbuf->tokens[i+1].class == TC_NUM ) {
             uint_32 power;
 
-            align_val = AsmBuffer[i+1].u.value;
+            align_val = tokbuf->tokens[i+1].u.value;
             /* check that the parm is a power of 2 */
             for( power = 1; power < align_val; power <<= 1 );
             if( power != align_val ) {

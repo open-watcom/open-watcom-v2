@@ -44,9 +44,10 @@
 
 /* prototypes */
 
-bool directive( token_idx i, asm_token direct )
-/*********************************************/
-/* Handle all directives */
+bool directive( token_buffer *tokbuf, token_idx i, asm_token direct )
+/********************************************************************
+ * Handle all directives
+ */
 {
     bool        ret;
 
@@ -131,7 +132,7 @@ bool directive( token_idx i, asm_token direct )
     case T_PUBLIC:
         /* special case - expanded inside iff it is an EQU to a symbol */
         if( Parse_Pass == PASS_1 )
-            return( PubDef( i + 1 ) );
+            return( PubDef( tokbuf, i + 1 ) );
         return( RC_OK );
     case T_ELSE:
     case T_ELSEIF:
@@ -159,7 +160,7 @@ bool directive( token_idx i, asm_token direct )
     case T_IFDIFI:
     case T_IFIDN:
     case T_IFIDNI:
-        return( conditional_assembly_directive( i ) );
+        return( conditional_assembly_directive( tokbuf, i ) );
     case T_DOT_ERR:
     case T_DOT_ERRB:
     case T_DOT_ERRDEF:
@@ -184,25 +185,25 @@ bool directive( token_idx i, asm_token direct )
     case T_ERRIFIDN:
     case T_ERRIFIDNI:
     case T_ERRIFNDEF:
-        return( conditional_error_directive( i ) );
+        return( conditional_error_directive( tokbuf, i ) );
     case T_ENDS:
         if( Definition.struct_depth != 0 )
-            return( StructDef( i ) );
+            return( StructDef( tokbuf, i ) );
         // else fall through to T_SEGMENT
     case T_SEGMENT:
         if( Parse_Pass == PASS_1 )
-            return( SegDef(i) );
-        return( SetCurrSeg(i) );
+            return( SegDef( tokbuf, i ) );
+        return( SetCurrSeg( tokbuf, i ) );
     case T_GROUP:
         if( Parse_Pass == PASS_1 )
-            return( GrpDef(i) );
+            return( GrpDef( tokbuf, i ) );
         return( RC_OK );
     case T_PROC:
-        return( ProcDef( i, true ) );
+        return( ProcDef( tokbuf, i, true ) );
     case T_ENDP:
-        return( ProcEnd(i) );
+        return( ProcEnd( tokbuf, i ) );
     case T_ENUM:
-        return( EnumDef( i ) );
+        return( EnumDef( tokbuf, i ) );
     case T_DOT_CODE:
     case T_DOT_STACK:
     case T_DOT_DATA:
@@ -221,7 +222,7 @@ bool directive( token_idx i, asm_token direct )
     case T_FARDATA:
     case T_UFARDATA:
     case T_CONST:
-        return( SimSeg(i) );
+        return( SimSeg( tokbuf, i ) );
     case T_WARN:
     case T_NOWARN:
         AsmWarn( 4, IGNORING_DIRECTIVE );
@@ -299,7 +300,7 @@ bool directive( token_idx i, asm_token direct )
         AsmError( NOT_SUPPORTED );
         return( RC_ERROR );
     case T_ORG:
-        ExpandTheWorld( 0, false, true );
+        ExpandTheWorld( tokbuf, 0, false, true );
         break;
     case T_TEXTEQU:     /* TEXTEQU */
         if( Options.mode & MODE_IDEAL ) {
@@ -309,7 +310,7 @@ bool directive( token_idx i, asm_token direct )
     case T_EQU2:        /* = */
     case T_EQU:         /* EQU */
         /* expand any constants and simplify any expressions */
-        ExpandTheConstant( 0, false, true );
+        ExpandTheConstant( tokbuf, 0, false, true );
         break;
     case T_NAME:        /* no expand parameters */
         break;
@@ -323,14 +324,14 @@ bool directive( token_idx i, asm_token direct )
     case T_EXITCODE:
     default:
         /* expand any constants in all other directives */
-        ExpandAllConsts( 0, false );
+        ExpandAllConsts( tokbuf, 0, false );
         break;
     }
 
     switch( direct ) {
     case T_ALIAS:
         if( Parse_Pass == PASS_1 )
-            return( AddAlias( i ) );
+            return( AddAlias( tokbuf, i ) );
         return( RC_OK );
     case T_EXTERN:
         if( Options.mode & MODE_IDEAL ) {
@@ -338,11 +339,11 @@ bool directive( token_idx i, asm_token direct )
         }
     case T_EXTRN:
         if( Parse_Pass == PASS_1 )
-            return( ExtDef( i + 1, false ) );
+            return( ExtDef( tokbuf, i + 1, false ) );
         return( RC_OK );
     case T_COMM:
         if( Parse_Pass == PASS_1 )
-            return( CommDef( i + 1 ) );
+            return( CommDef( tokbuf, i + 1 ) );
         return( RC_OK );
     case T_EXTERNDEF:
         if( Options.mode & MODE_IDEAL ) {
@@ -350,95 +351,95 @@ bool directive( token_idx i, asm_token direct )
         }
     case T_GLOBAL:
         if( Parse_Pass == PASS_1 )
-            return( ExtDef( i + 1, true ) );
+            return( ExtDef( tokbuf, i + 1, true ) );
         return( RC_OK );
     case T_DOT_MODEL:
         if( Options.mode & MODE_IDEAL ) {
             break;
         }
     case T_MODEL:
-        return( Model(i) );
+        return( Model( tokbuf, i ) );
     case T_INCLUDE:
-        return( Include( i + 1 ) );
+        return( Include( tokbuf, i + 1 ) );
     case T_INCLUDELIB:
         if( Parse_Pass == PASS_1 )
-            return( IncludeLib( i + 1 ) );
+            return( IncludeLib( tokbuf, i + 1 ) );
         return( RC_OK );
     case T_ASSUME:
-        return( SetAssume(i) );
+        return( SetAssume( tokbuf, i ) );
     case T_END:
-        return( ModuleEnd(Token_Count) );
+        return( ModuleEnd( tokbuf, Token_Count ) );
     case T_EQU:
-        return( DefineConstant( i-1, false, false ) );
+        return( DefineConstant( tokbuf, i-1, false, false ) );
     case T_EQU2:
-        return( DefineConstant( i-1, true, false ) );
+        return( DefineConstant( tokbuf, i-1, true, false ) );
     case T_TEXTEQU:
-        return( DefineConstant( i-1, true, true ) );
+        return( DefineConstant( tokbuf, i-1, true, true ) );
     case T_MACRO:
-        return( MacroDef( i, false ) );
+        return( MacroDef( tokbuf, i, false ) );
     case T_ENDM:
         return( MacroEnd( false ) );
     case T_EXITM:
         return( MacroEnd( true ) );
     case T_ARG:
         if( Parse_Pass == PASS_1 )
-            return( ArgDef(i) );
+            return( ArgDef( tokbuf, i ) );
         return( RC_OK );
     case T_USES:
         if( Parse_Pass == PASS_1 )
-            return( UsesDef(i) );
+            return( UsesDef( tokbuf, i ) );
         return( RC_OK );
     case T_LOCAL:
         if( Parse_Pass == PASS_1 )
-            return( LocalDef(i) );
+            return( LocalDef( tokbuf, i ) );
         return( RC_OK );
     case T_COMMENT:
         if( Options.mode & MODE_IDEAL )
             break;
-        return( Comment( START_COMMENT, i, NULL ) );
+        return( Comment( START_COMMENT, tokbuf, i, NULL ) );
     case T_STRUCT:
         if( Options.mode & MODE_IDEAL ) {
             break;
         }
     case T_STRUC:
-        return( StructDef( i ) );
+        return( StructDef( tokbuf, i ) );
     case T_NAME:
         if( Parse_Pass == PASS_1 )
-            return( NameDirective(i) );
+            return( NameDirective( tokbuf, i ) );
         return( RC_OK );
     case T_LABEL:
-        return( LabelDirective( i ) );
+        return( LabelDirective( tokbuf, i ) );
     case T_ORG:
-        return( OrgDirective( i ) );
+        return( OrgDirective( tokbuf, i ) );
     case T_ALIGN:
     case T_EVEN:
-        return( AlignDirective( direct, i ) );
+        return( AlignDirective( direct, tokbuf, i ) );
     case T_FOR:
         if( Options.mode & MODE_IDEAL ) {
             break;
         }
     case T_IRP:
-        return( ForDirective( i + 1, IRP_WORD ) );
+        return( ForDirective( tokbuf, i + 1, IRP_WORD ) );
     case T_FORC:
         if( Options.mode & MODE_IDEAL ) {
             break;
         }
     case T_IRPC:
-        return( ForDirective( i + 1, IRP_CHAR ) );
+        return( ForDirective( tokbuf, i + 1, IRP_CHAR ) );
     case T_REPEAT:
         if( Options.mode & MODE_IDEAL ) {
             break;
         }
     case T_REPT:
-        return( ForDirective( i + 1, IRP_REPEAT ) );
+        return( ForDirective( tokbuf, i + 1, IRP_REPEAT ) );
     case T_DOT_STARTUP:
     case T_DOT_EXIT:
     case T_STARTUPCODE:
     case T_EXITCODE:
-        return( Startup ( i ) );
+        return( Startup ( tokbuf, i ) );
     case T_LOCALS:
     case T_NOLOCALS:
-        return( Locals( i ) );
+        return( Locals( tokbuf, i ) );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( RC_ERROR );

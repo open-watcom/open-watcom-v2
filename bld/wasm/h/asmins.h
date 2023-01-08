@@ -154,9 +154,9 @@ extern int      GetInsString( asm_token, char * );
 extern int      OperandSize( OPNDTYPE opnd );
 extern bool     InRange( unsigned long val, unsigned bytes );
 extern bool     cpu_directive( asm_token );
-extern bool     AsmParse( const char *curline );
-extern bool     NextArrayElement( bool *next );
-extern bool     data_init( token_idx, token_idx );
+extern bool     AsmParse( token_buffer *tokbuf, const char *curline );
+extern bool     NextArrayElement( token_buffer *tokbuf, bool *next );
+extern bool     data_init( token_buffer *tokbuf, token_idx, token_idx );
 extern bool     match_phase_1( void );
 
 #endif

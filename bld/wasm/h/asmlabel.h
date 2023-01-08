@@ -35,10 +35,10 @@
 
 extern bool             IsLabelStruct( char * );
 extern void             PrepAnonLabels( void );
-extern bool             LabelDirective( token_idx );
+extern bool             LabelDirective( token_buffer *tokbuf, token_idx );
 
 #endif
 
-extern bool             MakeLabel( token_idx i, memtype );
+extern bool             MakeLabel( token_buffer *tokbuf, token_idx i, memtype );
 
 #endif

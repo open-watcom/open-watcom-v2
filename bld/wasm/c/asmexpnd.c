@@ -43,11 +43,10 @@
 
 #endif
 
+
 #if defined( _STANDALONE_ )
 
 #define    MAX_EQU_NESTING      20
-
-static bool         createconstant( const char *, bool, token_idx, bool, bool );
 
 static label_list *label_cmp( char *name, label_list *head )
 {
@@ -62,8 +61,8 @@ static label_list *label_cmp( char *name, label_list *head )
 }
 
 
-void AddTokens( asm_tok *buffer, token_idx start, token_idx count )
-/******************************************************************/
+void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count )
+/**********************************************************************/
 {
     token_idx   i;
 
@@ -72,27 +71,27 @@ void AddTokens( asm_tok *buffer, token_idx start, token_idx count )
     if( ISINVALID_IDX( count ) ) {
         /* it's an empty expansion */
         for( i = start; i <= Token_Count; ++i ) {
-            buffer[i] = buffer[i + 1];
+            tokbuf->tokens[i] = tokbuf->tokens[i + 1];
         }
         Token_Count += -1;      // ?????
     } else {
         for( i = Token_Count; i > start; i-- ) {
-            buffer[i + count] = buffer[i];
+            tokbuf->tokens[i + count] = tokbuf->tokens[i];
         }
-        buffer[i + count] = buffer[i];
+        tokbuf->tokens[i + count] = tokbuf->tokens[i];
         Token_Count += count;
     }
 }
 
-bool ExpandSymbol( token_idx i, bool early_only, bool *expanded )
-/***************************************************************/
+bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *expanded )
+/*************************************************************************************/
 {
     dir_node            *dir;
     token_idx           j;
 
     *expanded = false;
     /* expand constant */
-    dir = (dir_node *)AsmGetSymbol( AsmBuffer[i].string_ptr );
+    dir = (dir_node *)AsmGetSymbol( tokbuf->tokens[i].string_ptr );
     if( dir != NULL ) {
         switch( dir->sym.state ) {
         case SYM_CONST:
@@ -100,16 +99,16 @@ bool ExpandSymbol( token_idx i, bool early_only, bool *expanded )
                 break;
             DebugMsg(( "Expand Constant: %s ->", dir->sym.name ));
             /* insert the pre-scanned data for this constant */
-            AddTokens( AsmBuffer, i, dir->e.constinfo->count - 1 );
+            AddTokens( tokbuf, i, dir->e.constinfo->count - 1 );
             for( j = 0; j < dir->e.constinfo->count; j++ ) {
-                AsmBuffer[i + j].class = dir->e.constinfo->data[j].class;
-                AsmBuffer[i + j].u.value = dir->e.constinfo->data[j].u.value;
-                AsmBuffer[i + j].string_ptr = dir->e.constinfo->data[j].string_ptr;
+                tokbuf->tokens[i + j].class = dir->e.constinfo->data[j].class;
+                tokbuf->tokens[i + j].u.value = dir->e.constinfo->data[j].u.value;
+                tokbuf->tokens[i + j].string_ptr = dir->e.constinfo->data[j].string_ptr;
 #ifdef DEBUG_OUT
-                if( AsmBuffer[i + j].class == TC_NUM ) {
-                    DebugMsg(( " %d", AsmBuffer[i + j].u.value ));
+                if( tokbuf->tokens[i + j].class == TC_NUM ) {
+                    DebugMsg(( " %d", tokbuf->tokens[i + j].u.value ));
                 } else {
-                    DebugMsg(( " %s", AsmBuffer[i + j].string_ptr ));
+                    DebugMsg(( " %s", tokbuf->tokens[i + j].string_ptr ));
                 }
 #endif
             }
@@ -126,8 +125,8 @@ bool ExpandSymbol( token_idx i, bool early_only, bool *expanded )
     return( RC_OK );
 }
 
-bool ExpandProcString( token_idx index, bool *expanded )
-/******************************************************/
+bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
+/****************************************************************************/
 {
     token_idx           i;
     int                 cnt;
@@ -145,7 +144,7 @@ bool ExpandProcString( token_idx index, bool *expanded )
     char                *p;
 
     *expanded = false;
-    strcpy( buffer, AsmBuffer[index].string_ptr );
+    strcpy( buffer, tokbuf->tokens[index].string_ptr );
     wipe_space( buffer );
     for( word = strtok( buffer, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
         count++;
@@ -164,9 +163,9 @@ bool ExpandProcString( token_idx index, bool *expanded )
         if( replace != NULL ) {
             if( *replace == '\0' ) {
                 replace++;  /* point to first register string */
-                if( ( AsmBuffer[index + 1].class == TC_PLUS ) &&
-                    ( AsmBuffer[index + 2].class == TC_NUM ) ) {
-                    offset = AsmBuffer[index + 2].u.value;
+                if( ( tokbuf->tokens[index + 1].class == TC_PLUS ) &&
+                    ( tokbuf->tokens[index + 2].class == TC_NUM ) ) {
+                    offset = tokbuf->tokens[index + 2].u.value;
                     if( ( ( Use32 ) && ( offset != 4 ) ) ||
                         ( ( !Use32 ) && ( offset != 2 ) ) ) {
                         AsmErr( CANT_ACCESS_MULTI_REG_PARMS, replace );
@@ -183,14 +182,14 @@ bool ExpandProcString( token_idx index, bool *expanded )
             if( label->is_register && !info->is_vararg ) {
                 left_bracket = right_bracket = 0;   /* reset bracket indexes */
                 for( i = 0; i < index; i++ ) {
-                    if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
+                    if( tokbuf->tokens[i].class == TC_OP_SQ_BRACKET ) {
                         break;
                     }
                 }
                 if( i < index ) {
                     left_bracket = i;
                     for( i = index + 1; i < Token_Count; i++ ) {
-                        if( AsmBuffer[i].class == TC_CL_SQ_BRACKET ) {
+                        if( tokbuf->tokens[i].class == TC_CL_SQ_BRACKET ) {
                             right_bracket = i;
                             break;
                         }
@@ -207,8 +206,8 @@ bool ExpandProcString( token_idx index, bool *expanded )
                     right_bracket = index;
                 }
             }
-            if( index > 0 && AsmBuffer[index - 1].class == TC_DIRECTIVE ) {
-                switch( AsmBuffer[index - 1].u.token ) {
+            if( index > 0 && tokbuf->tokens[index - 1].class == TC_DIRECTIVE ) {
+                switch( tokbuf->tokens[index - 1].u.token ) {
                 case T_IFDEF:
                 case T_IFNDEF:
                 case T_ELSEIFDEF:
@@ -220,9 +219,9 @@ bool ExpandProcString( token_idx index, bool *expanded )
                     return( RC_OK );
                 }
             }
-            if( AsmBuffer[index + 1].class == TC_DIRECTIVE ) {
+            if( tokbuf->tokens[index + 1].class == TC_DIRECTIVE ) {
                 /* this will never happen with multiple words in a string */
-                switch( AsmBuffer[index + 1].u.token ) {
+                switch( tokbuf->tokens[index + 1].u.token ) {
                 case T_EQU:
                 case T_EQU2:
                 case T_TEXTEQU:
@@ -249,23 +248,23 @@ bool ExpandProcString( token_idx index, bool *expanded )
                     continue;   /*yes, skip it */
                 }
             }
-            len = strlen( AsmBuffer[i].string_ptr );
-            if( AsmBuffer[i].class == TC_STRING )
+            len = strlen( tokbuf->tokens[i].string_ptr );
+            if( tokbuf->tokens[i].class == TC_STRING )
                 *p++ = '<';
-            p = CATSTR( p, AsmBuffer[i].string_ptr, len );
-            if( AsmBuffer[i].class == TC_STRING ) {
+            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
+            if( tokbuf->tokens[i].class == TC_STRING ) {
                 *p++ = '>';
             }
         } else {
-            if( AsmBuffer[i].class == TC_PERCENT ) {
+            if( tokbuf->tokens[i].class == TC_PERCENT ) {
                 /* don't save the % */
                 i++;
             }
 
             /* copy the string in ... 1 word at a time */
-            len = strlen( AsmBuffer[index].string_ptr ) + 1;
+            len = strlen( tokbuf->tokens[index].string_ptr ) + 1;
             string = AsmTmpAlloc( len );
-            memcpy( string, AsmBuffer[index].string_ptr, len );
+            memcpy( string, tokbuf->tokens[index].string_ptr, len );
             wipe_space( string );
             word = strtok( string, " \t" );
             for( cnt = 1; cnt < count; cnt++ ) {
@@ -288,49 +287,11 @@ bool ExpandProcString( token_idx index, bool *expanded )
     /* make sure this line goes at the front of the queue */
     PushLineQueue();
     InputQueueLine( buffer );
-    AsmBuffer[0].class = 0;
-    AsmBuffer[0].string_ptr = NULL;
-    AsmBuffer[0].u.value = 0;
+    tokbuf->tokens[0].class = 0;
+    tokbuf->tokens[0].string_ptr = NULL;
+    tokbuf->tokens[0].u.value = 0;
     *expanded = true;
     return( RC_OK );
-}
-
-bool DefineConstant( token_idx i, bool redefine, bool expand_early )
-/******************************************************************/
-/* if expand_early is true, expand before doing any parsing */
-{
-
-    char                *name;
-
-    if( i != 0 ) {
-        AsmError( SYNTAX_ERROR );
-        return( RC_ERROR );
-    }
-
-    /* get the name */
-    name = AsmBuffer[i++].string_ptr;
-    i++;
-
-    return( createconstant( name, false, i, redefine, expand_early ) );
-}
-
-bool StoreConstant( const char *name, const char *value, bool redefine )
-/**********************************************************************/
-{
-    AsmScan( value );
-    return( createconstant( name, false, 0, redefine, false ) );
-}
-
-void MakeConstantUnderscored( const char *name )
-/**********************************************/
-{
-    char    buffer[MAX_LINE_LEN];
-
-    /* define a macro */
-    strcpy( buffer, "__" );
-    strcpy( buffer + 2, name );
-    strcat( buffer, "__" );
-    createconstant( buffer, true, 0, true, false );
 }
 
 static void FreeConstData( const_info *constinfo )
@@ -396,8 +357,8 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
     return( RC_OK );
 }
 
-static bool createconstant( const char *name, bool value, token_idx start, bool redefine, bool expand_early )
-/***********************************************************************************************************/
+static bool createconstant( const char *name, bool value, token_buffer *tokbuf, token_idx start, bool redefine, bool expand_early )
+/*********************************************************************************************************************************/
 {
     asm_tok             *new;
     dir_node            *dir;
@@ -449,11 +410,11 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     }
 
     /* expand any constants */
-    if( ExpandTheWorld( start, false, true ) )
+    if( ExpandTheWorld( tokbuf, start, false, true ) )
         return( RC_ERROR );
 
-    for( counta = 0, i = start; AsmBuffer[i].class != TC_FINAL; i++ ) {
-        if( ( AsmBuffer[i].class != TC_STRING ) || ( AsmBuffer[i].u.value != 0 ) ) {
+    for( counta = 0, i = start; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
+        if( ( tokbuf->tokens[i].class != TC_STRING ) || ( tokbuf->tokens[i].u.value != 0 ) ) {
             counta++;
         }
     }
@@ -468,9 +429,9 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
         can_be_redefine = ( counta > 1 );
     }
     for( i = 0; i < count; i++ ) {
-        switch( AsmBuffer[start + i].class ) {
+        switch( tokbuf->tokens[start + i].class ) {
         case TC_STRING:
-            if( AsmBuffer[start + i].u.value == 0 ) {
+            if( tokbuf->tokens[start + i].u.value == 0 ) {
                 i--;
                 count--;
                 start++;
@@ -481,17 +442,17 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
         case TC_NUM:
             break;
         case TC_ID:
-            if( IS_SYM_COUNTER( AsmBuffer[start + i].string_ptr ) ) {
+            if( IS_SYM_COUNTER( tokbuf->tokens[start + i].string_ptr ) ) {
                 char            buff[40];
                 /*
                     We want a '$' symbol to have the value at it's
                     point of definition, not point of expansion.
                 */
                 sprintf( buff, ".$%p/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
-                AsmBuffer[start + i].string_ptr = buff;
+                tokbuf->tokens[start + i].string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
                     new_constant = true;
-                    MakeLabel( start + i, MT_NEAR );
+                    MakeLabel( tokbuf, start + i, MT_NEAR );
                 }
                 break;
             }
@@ -499,14 +460,14 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
             can_be_redefine = true;
             break;
         }
-        new[i].class = AsmBuffer[start + i].class;
-        memcpy( new[i].u.bytes, AsmBuffer[start + i].u.bytes, sizeof( new[i].u.bytes ) );
-        if( AsmBuffer[start + i].string_ptr == NULL ) {
+        new[i].class = tokbuf->tokens[start + i].class;
+        memcpy( new[i].u.bytes, tokbuf->tokens[start + i].u.bytes, sizeof( new[i].u.bytes ) );
+        if( tokbuf->tokens[start + i].string_ptr == NULL ) {
             new[i].string_ptr = NULL;
         } else {
-            len = strlen( AsmBuffer[start + i].string_ptr ) + 1;
+            len = strlen( tokbuf->tokens[start + i].string_ptr ) + 1;
             new[i].string_ptr = AsmAlloc( len );
-            memcpy( new[i].string_ptr, AsmBuffer[start + i].string_ptr, len );
+            memcpy( new[i].string_ptr, tokbuf->tokens[start + i].string_ptr, len );
         }
     }
     if( new_constant && can_be_redefine )
@@ -517,14 +478,55 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     return( RC_OK );
 }
 
-bool ExpandAllConsts( token_idx start_pos, bool early_only )
-/**********************************************************/
+bool DefineConstant( token_buffer *tokbuf, token_idx i, bool redefine, bool expand_early )
+/*****************************************************************************************
+ * if expand_early is true, expand before doing any parsing
+ */
+{
+
+    char                *name;
+
+    if( i != 0 ) {
+        AsmError( SYNTAX_ERROR );
+        return( RC_ERROR );
+    }
+
+    /* get the name */
+    name = tokbuf->tokens[i++].string_ptr;
+    i++;
+
+    return( createconstant( name, false, tokbuf, i, redefine, expand_early ) );
+}
+
+bool StoreConstant( const char *name, const char *value, bool redefine )
+/**********************************************************************/
+{
+    token_buffer    tokbuf;
+
+    AsmScan( &tokbuf, value );
+    return( createconstant( name, false, &tokbuf, 0, redefine, false ) );
+}
+
+void MakeConstantUnderscored( const char *name )
+/**********************************************/
+{
+    char    buffer[MAX_LINE_LEN];
+
+    /* define a macro */
+    strcpy( buffer, "__" );
+    strcpy( buffer + 2, name );
+    strcat( buffer, "__" );
+    createconstant( buffer, true, NULL, 0, true, false );
+}
+
+bool ExpandAllConsts( token_buffer *tokbuf, token_idx start_pos, bool early_only )
+/********************************************************************************/
 {
     token_idx   i;
     bool        expanded;
 
-    if( AsmBuffer[start_pos + 1].class == TC_DIRECTIVE ) {
-        switch( AsmBuffer[start_pos + 1].u.token ) {
+    if( tokbuf->tokens[start_pos + 1].class == TC_DIRECTIVE ) {
+        switch( tokbuf->tokens[start_pos + 1].u.token ) {
         case T_EQU:
         case T_EQU2:
         case T_TEXTEQU:
@@ -532,10 +534,10 @@ bool ExpandAllConsts( token_idx start_pos, bool early_only )
         }
     }
     Globals.expand_count = 0;
-    for( i = start_pos; AsmBuffer[i].class != TC_FINAL; i++ ) {
-        if( AsmBuffer[i].class != TC_ID )
+    for( i = start_pos; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
+        if( tokbuf->tokens[i].class != TC_ID )
             continue;
-        if( ExpandSymbol( i, early_only, &expanded ) )
+        if( ExpandSymbol( tokbuf, i, early_only, &expanded ) )
             return( RC_ERROR );
         if( expanded ) {
             i--; // in case the new symbol also needs to be expanded
@@ -545,15 +547,15 @@ bool ExpandAllConsts( token_idx start_pos, bool early_only )
     return( RC_OK );
 }
 
-bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
-/************************************************************************/
+bool ExpandTheWorld( token_buffer *tokbuf, token_idx start_pos, bool early_only, bool flag_msg )
+/**********************************************************************************************/
 {
     token_idx   val;
 
-    if( ExpandAllConsts( start_pos, early_only ) )
+    if( ExpandAllConsts( tokbuf, start_pos, early_only ) )
         return( RC_ERROR );
     if( !early_only ) {
-        val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
+        val = EvalExpr( tokbuf, Token_Count, start_pos, Token_Count, flag_msg );
         if( ISINVALID_IDX( val ) )
             return( RC_ERROR );
         Token_Count = val;
@@ -561,15 +563,15 @@ bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
     return( RC_OK );
 }
 
-bool ExpandTheConstant( token_idx start_pos, bool early_only, bool flag_msg )
+bool ExpandTheConstant( token_buffer *tokbuf, token_idx start_pos, bool early_only, bool flag_msg )
 /***************************************************************************/
 {
     token_idx   val;
 
-    if( ExpandAllConsts( start_pos, early_only ) )
+    if( ExpandAllConsts( tokbuf, start_pos, early_only ) )
         return( RC_ERROR );
     if( !early_only ) {
-        val = EvalConstant( Token_Count, start_pos + 2, Token_Count, flag_msg );
+        val = EvalConstant( tokbuf, Token_Count, start_pos + 2, Token_Count, flag_msg );
         if( ISINVALID_IDX( val ) )
             return( RC_ERROR );
         Token_Count = val;
@@ -579,14 +581,14 @@ bool ExpandTheConstant( token_idx start_pos, bool early_only, bool flag_msg )
 
 #else
 
-bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
-/************************************************************************/
+bool ExpandTheWorld( token_buffer *tokbuf, token_idx start_pos, bool early_only, bool flag_msg )
+/**********************************************************************************************/
 {
     token_idx   val;
 
     /* unused parameters */ (void)early_only;
 
-    val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
+    val = EvalExpr( tokbuf, Token_Count, start_pos, Token_Count, flag_msg );
     if( ISINVALID_IDX( val ) )
         return( RC_ERROR );
     Token_Count = val;

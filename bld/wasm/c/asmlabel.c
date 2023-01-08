@@ -71,8 +71,8 @@ bool IsLabelStruct( char *name )
 }
 #endif
 
-bool MakeLabel( token_idx i, memtype mem_type )
-/*********************************************/
+bool MakeLabel( token_buffer *tokbuf, token_idx i, memtype mem_type )
+/*******************************************************************/
 {
     struct asm_sym      *sym;
     char                *symbol_name;
@@ -83,7 +83,7 @@ bool MakeLabel( token_idx i, memtype mem_type )
 //    proc_info           *info;
 #endif
 
-    symbol_name = AsmBuffer[i].string_ptr;
+    symbol_name = tokbuf->tokens[i].string_ptr;
 #if defined( _STANDALONE_ )
     if( CurrSeg == NULL )
         AsmError( LABEL_OUTSIDE_SEGMENT );
@@ -154,7 +154,7 @@ bool MakeLabel( token_idx i, memtype mem_type )
     }
     if( Definition.struct_depth != 0 ) {
         if( Parse_Pass == PASS_1 ) {
-            sym->offset = AddFieldToStruct( sym, INVALID_IDX );
+            sym->offset = AddFieldToStruct( sym, tokbuf, INVALID_IDX );
             sym->state = SYM_STRUCT_FIELD;
         }
     } else {
@@ -183,8 +183,8 @@ bool MakeLabel( token_idx i, memtype mem_type )
 }
 
 #if defined( _STANDALONE_ )
-bool LabelDirective( token_idx i )
-/********************************/
+bool LabelDirective( token_buffer *tokbuf, token_idx i )
+/******************************************************/
 {
     token_idx   n;
 
@@ -195,43 +195,43 @@ bool LabelDirective( token_idx i )
     } else {
         n = INVALID_IDX;
     }
-    if( ISINVALID_IDX( n ) || ( AsmBuffer[n].class != TC_ID ) ) {
+    if( ISINVALID_IDX( n ) || ( tokbuf->tokens[n].class != TC_ID ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );
     }
-    if( AsmBuffer[++i].class == TC_ID ) {
-        if( IsLabelStruct( AsmBuffer[i].string_ptr ) ) {
-            return( MakeLabel( n, MT_STRUCT ) );
+    if( tokbuf->tokens[++i].class == TC_ID ) {
+        if( IsLabelStruct( tokbuf->tokens[i].string_ptr ) ) {
+            return( MakeLabel( tokbuf, n, MT_STRUCT ) );
         }
     }
-    if( ( AsmBuffer[i].class != TC_RES_ID ) &&
-        ( AsmBuffer[i].class != TC_DIRECTIVE ) ) {
+    if( ( tokbuf->tokens[i].class != TC_RES_ID ) &&
+        ( tokbuf->tokens[i].class != TC_DIRECTIVE ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );
     }
-    switch( AsmBuffer[i].u.token ) {
+    switch( tokbuf->tokens[i].u.token ) {
     case T_NEAR:
-        return( MakeLabel( n, MT_NEAR ));
+        return( MakeLabel( tokbuf, n, MT_NEAR ));
     case T_FAR:
-        return( MakeLabel( n, MT_FAR ));
+        return( MakeLabel( tokbuf, n, MT_FAR ));
     case T_BYTE:
-        return( MakeLabel( n, MT_BYTE ));
+        return( MakeLabel( tokbuf, n, MT_BYTE ));
     case T_WORD:
-        return( MakeLabel( n, MT_WORD ));
+        return( MakeLabel( tokbuf, n, MT_WORD ));
     case T_DWORD:
-        return( MakeLabel( n, MT_DWORD ));
+        return( MakeLabel( tokbuf, n, MT_DWORD ));
     case T_FWORD:
-        return( MakeLabel( n, MT_FWORD ));
+        return( MakeLabel( tokbuf, n, MT_FWORD ));
     case T_PWORD:
-        return( MakeLabel( n, MT_FWORD ));
+        return( MakeLabel( tokbuf, n, MT_FWORD ));
     case T_QWORD:
-        return( MakeLabel( n, MT_QWORD ));
+        return( MakeLabel( tokbuf, n, MT_QWORD ));
     case T_TBYTE:
-        return( MakeLabel( n, MT_TBYTE ));
+        return( MakeLabel( tokbuf, n, MT_TBYTE ));
     case T_OWORD:
-        return( MakeLabel( n, MT_OWORD ));
+        return( MakeLabel( tokbuf, n, MT_OWORD ));
     case T_PROC:
-        return( MakeLabel( n, CurrProc->e.procinfo->mem_type ));
+        return( MakeLabel( tokbuf, n, CurrProc->e.procinfo->mem_type ));
     default:
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );

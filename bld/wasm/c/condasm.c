@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,9 +82,9 @@ void prep_line_for_conditional_assembly( char *line )
     char            fix;
     const asm_ins   ASMI86FAR *ins;
 
-    if( Comment( QUERY_COMMENT, 0, NULL ) ) {
-        if( Comment( QUERY_COMMENT_DELIM, 0, line ) ) {
-            Comment( END_COMMENT, 0, NULL );
+    if( Comment( QUERY_COMMENT, NULL, 0, NULL ) ) {
+        if( Comment( QUERY_COMMENT_DELIM, NULL, 0, line ) ) {
+            Comment( END_COMMENT, NULL, 0, NULL );
         }
         *line = '\0';
         return;
@@ -183,12 +183,12 @@ static bool check_dif( bool sensitive, char *string, char *string2 )
     }
 }
 
-bool conditional_error_directive( token_idx i )
-/*********************************************/
+bool conditional_error_directive( token_buffer *tokbuf, token_idx i )
+/*******************************************************************/
 {
     asm_token   direct;
 
-    direct = AsmBuffer[i].u.token;
+    direct = tokbuf->tokens[i].u.token;
 
     /* expand any constants if necessary */
     switch( direct ) {
@@ -203,7 +203,7 @@ bool conditional_error_directive( token_idx i )
     case T_ERRIFDIFI:
     case T_ERRIFIDN:
     case T_ERRIFIDNI:
-        ExpandTheWorld( i + 1, false, true );
+        ExpandTheWorld( tokbuf, i + 1, false, true );
     }
 
     switch( direct ) {
@@ -212,73 +212,73 @@ bool conditional_error_directive( token_idx i )
         AsmErr( FORCED );
         return( RC_ERROR );
     case T_DOT_ERRNZ:
-        if( AsmBuffer[i+1].class == TC_NUM && AsmBuffer[i+1].u.value ) {
-            AsmErr( FORCED_NOT_ZERO, AsmBuffer[i+1].u.value );
+        if( tokbuf->tokens[i+1].class == TC_NUM && tokbuf->tokens[i+1].u.value ) {
+            AsmErr( FORCED_NOT_ZERO, tokbuf->tokens[i+1].u.value );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRE:
     case T_ERRIFE:
-        if( AsmBuffer[i+1].class == TC_NUM && !AsmBuffer[i+1].u.value ) {
-            AsmErr( FORCED_EQUAL, AsmBuffer[i+1].u.value );
+        if( tokbuf->tokens[i+1].class == TC_NUM && !tokbuf->tokens[i+1].u.value ) {
+            AsmErr( FORCED_EQUAL, tokbuf->tokens[i+1].u.value );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDEF:
     case T_ERRIFDEF:
-        if( check_defd( AsmBuffer[i+1].string_ptr ) ) {
-            AsmErr( FORCED_DEF, AsmBuffer[i+1].string_ptr );
+        if( check_defd( tokbuf->tokens[i+1].string_ptr ) ) {
+            AsmErr( FORCED_DEF, tokbuf->tokens[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRNDEF:
     case T_ERRIFNDEF:
-        if( !check_defd( AsmBuffer[i+1].string_ptr ) ) {
-            AsmErr( FORCED_NOT_DEF, AsmBuffer[i+1].string_ptr );
+        if( !check_defd( tokbuf->tokens[i+1].string_ptr ) ) {
+            AsmErr( FORCED_NOT_DEF, tokbuf->tokens[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRB:
     case T_ERRIFB:
-        if( AsmBuffer[i+1].class == TC_STRING &&
-            check_blank( AsmBuffer[i+1].string_ptr ) ) {
-            AsmErr( FORCED_BLANK, AsmBuffer[i+1].string_ptr );
+        if( tokbuf->tokens[i+1].class == TC_STRING &&
+            check_blank( tokbuf->tokens[i+1].string_ptr ) ) {
+            AsmErr( FORCED_BLANK, tokbuf->tokens[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRNB:
     case T_ERRIFNB:
-        if( AsmBuffer[i+1].class != TC_STRING ||
-            !check_blank( AsmBuffer[i+1].string_ptr ) ) {
-            AsmErr( FORCED_NOT_BLANK, AsmBuffer[i+1].string_ptr );
+        if( tokbuf->tokens[i+1].class != TC_STRING ||
+            !check_blank( tokbuf->tokens[i+1].string_ptr ) ) {
+            AsmErr( FORCED_NOT_BLANK, tokbuf->tokens[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDIF:
     case T_ERRIFDIF:
-        if( check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
-            AsmErr( FORCED_DIF, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
+        if( check_dif( true, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) ) {
+            AsmErr( FORCED_DIF, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDIFI:
     case T_ERRIFDIFI:
-        if( check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
-            AsmErr( FORCED_DIF, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
+        if( check_dif( false, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) ) {
+            AsmErr( FORCED_DIF, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDN:
     case T_ERRIFIDN:
-        if( !check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
-            AsmErr( FORCED_IDN, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
+        if( !check_dif( true, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) ) {
+            AsmErr( FORCED_IDN, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDNI:
     case T_ERRIFIDNI:
-        if( !check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
-            AsmErr( FORCED_IDN, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
+        if( !check_dif( false, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) ) {
+            AsmErr( FORCED_IDN, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
@@ -286,12 +286,12 @@ bool conditional_error_directive( token_idx i )
     return( RC_OK );
 }
 
-static if_state get_cond_state( token_idx i )
+static if_state get_cond_state( token_buffer *tokbuf, token_idx i )
 {
     asm_token   direct;
     if_state    cond_state;
 
-    direct = AsmBuffer[i].u.token;
+    direct = tokbuf->tokens[i].u.token;
 
     /* expand any constants if necessary */
     switch( direct ) {
@@ -307,13 +307,13 @@ static if_state get_cond_state( token_idx i )
     case T_ELSEIFE:
     case T_ELSEIFIDN:
     case T_ELSEIFIDNI:
-        ExpandTheWorld( i + 1, false, true );
+        ExpandTheWorld( tokbuf, i + 1, false, true );
     }
 
     switch( direct ) {
     case T_IF:
     case T_ELSEIF:
-        cond_state = ( AsmBuffer[i+1].class == TC_NUM && AsmBuffer[i+1].u.value )
+        cond_state = ( tokbuf->tokens[i+1].class == TC_NUM && tokbuf->tokens[i+1].u.value )
                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IF1:
@@ -326,45 +326,45 @@ static if_state get_cond_state( token_idx i )
         break;
     case T_IFB:
     case T_ELSEIFB:
-        cond_state = ( check_blank( AsmBuffer[i+1].string_ptr ) ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( check_blank( tokbuf->tokens[i+1].string_ptr ) ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDEF:
     case T_ELSEIFDEF:
-        cond_state = ( check_defd( AsmBuffer[i+1].string_ptr ) ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( check_defd( tokbuf->tokens[i+1].string_ptr ) ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFE:
     case T_ELSEIFE:
-        cond_state = ( AsmBuffer[i+1].class == TC_NUM && !AsmBuffer[i+1].u.value )
+        cond_state = ( tokbuf->tokens[i+1].class == TC_NUM && !tokbuf->tokens[i+1].u.value )
                     ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDIF:
     case T_ELSEIFDIF:
-        cond_state = ( check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+        cond_state = ( check_dif( true, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) )
                     ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDIFI:
     case T_ELSEIFDIFI:
-        cond_state = ( check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+        cond_state = ( check_dif( false, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) )
                     ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDN:
     case T_ELSEIFIDN:
-        cond_state = ( !check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+        cond_state = ( !check_dif( true, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) )
                     ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDNI:
     case T_ELSEIFIDNI:
-        cond_state = ( !check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+        cond_state = ( !check_dif( false, tokbuf->tokens[i+1].string_ptr, tokbuf->tokens[i+3].string_ptr ) )
                     ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFNB:
     case T_ELSEIFNB:
-        cond_state = ( !check_blank( AsmBuffer[i+1].string_ptr ) )
+        cond_state = ( !check_blank( tokbuf->tokens[i+1].string_ptr ) )
                     ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFNDEF:
     case T_ELSEIFNDEF:
-        cond_state = ( !check_defd( AsmBuffer[i+1].string_ptr ) )
+        cond_state = ( !check_defd( tokbuf->tokens[i+1].string_ptr ) )
                     ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     default:
@@ -374,12 +374,12 @@ static if_state get_cond_state( token_idx i )
     return( cond_state );
 }
 
-bool conditional_assembly_directive( token_idx i )
-/************************************************/
+bool conditional_assembly_directive( token_buffer *tokbuf, token_idx i )
+/**********************************************************************/
 {
     asm_token   direct;
 
-    direct = AsmBuffer[i].u.token;
+    direct = tokbuf->tokens[i].u.token;
 
     switch( direct ) {
     case T_IF:
@@ -401,7 +401,7 @@ bool conditional_assembly_directive( token_idx i )
                 AsmError( NESTING_LEVEL_TOO_DEEP );
                 return( RC_ERROR );
             }
-            CurState = get_cond_state( i );
+            CurState = get_cond_state( tokbuf, i );
         } else {
             falseblocknestlevel++;
         }
@@ -422,7 +422,7 @@ bool conditional_assembly_directive( token_idx i )
             CurState = DONE;
         } else if( CurState == LOOKING_FOR_TRUE_COND ) {
             if( falseblocknestlevel == 0 ) {
-                CurState = get_cond_state( i );
+                CurState = get_cond_state( tokbuf, i );
             }
         }
         break;

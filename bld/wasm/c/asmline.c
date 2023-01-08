@@ -596,10 +596,11 @@ void PushMacro( const char *name, bool hidden )
 }
 
 #ifdef DEBUG_OUT
-static void dbg_output( void )
-/****************************/
-/* For debugging use only; print out a simplied version of the source line
-   after it is parsed and the expression is evaluated */
+static void dbg_output( token_buffer *tokbuf )
+/*********************************************
+ * For debugging use only; print out a simplied version of the source line
+ * after it is parsed and the expression is evaluated
+ */
 {
     if( Options.int_debug ) {
         token_idx   i;
@@ -607,12 +608,12 @@ static void dbg_output( void )
         DebugMsg(("Line: %lu ", LineNumber ));
         DebugMsg(("Output :"));
         for( i = 0; i < Token_Count; i++ ) {
-            switch( AsmBuffer[i].class ) {
+            switch( tokbuf->tokens[i].class ) {
             case TC_NUM:
-                DebugMsg(( " %d ", AsmBuffer[i].u.value ));
+                DebugMsg(( " %d ", tokbuf->tokens[i].u.value ));
                 break;
             case TC_STRING:
-                DebugMsg(( " '%s' ", AsmBuffer[i].string_ptr));
+                DebugMsg(( " '%s' ", tokbuf->tokens[i].string_ptr));
                 break;
             case TC_OP_SQ_BRACKET:
                 DebugMsg(( " %s ", "[" ));
@@ -624,7 +625,7 @@ static void dbg_output( void )
                 DebugMsg(( " %s ", ":" ));
                 break;
             case TC_RES_ID:
-                switch( AsmBuffer[i].u.token ) {
+                switch( tokbuf->tokens[i].u.token ) {
                 case T_PTR:
                     DebugMsg(( " %s ", "Ptr" ));
                     break;
@@ -663,12 +664,12 @@ static void dbg_output( void )
                     DebugMsg(( " %s ", "OWord" ));
                     break;
                 default:
-                    DebugMsg((" %s ", AsmBuffer[i].string_ptr ));
+                    DebugMsg((" %s ", tokbuf->tokens[i].string_ptr ));
                     break;
                 }
                 break;
             default:
-                DebugMsg((" %s ", AsmBuffer[i].string_ptr ));
+                DebugMsg((" %s ", tokbuf->tokens[i].string_ptr ));
                 break;
             }
         }
@@ -709,12 +710,13 @@ void AsmLine( const char *string )
 /********************************/
 {
     token_idx       count;
+    token_buffer    tokbuf;
 
     // Token_Count is the number of tokens scanned
-    Token_Count = AsmScan( string );
-    Token_Count = ExpandMacro( Token_Count );
+    Token_Count = AsmScan( &tokbuf, string );
+    Token_Count = ExpandMacro( &tokbuf, Token_Count );
 
-    if( ExpandTheWorld( 1, true, true ) ) {
+    if( ExpandTheWorld( &tokbuf, 1, true, true ) ) {
         write_to_file = false;
         return;
     }
@@ -722,7 +724,7 @@ void AsmLine( const char *string )
     if( CurrProc != NULL && !DefineProc ) {
         for( count = 0; count < Token_Count; count++ ) {
             bool expanded;
-            if( ExpandProcString( count, &expanded ) ) {
+            if( ExpandProcString( &tokbuf, count, &expanded ) ) {
                 write_to_file = false;
                 return;
             }
@@ -733,7 +735,7 @@ void AsmLine( const char *string )
     }
 
     if( Token_Count > 0 ) {
-        if( AsmParse( string ) ) {
+        if( AsmParse( &tokbuf, string ) ) {
             write_to_file = false;
         }
     } else if( ISINVALID_IDX( Token_Count ) ) {
@@ -741,7 +743,7 @@ void AsmLine( const char *string )
         write_to_file = false;
     }
   #ifdef DEBUG_OUT
-    dbg_output();               // for debuggin only
+    dbg_output( &tokbuf );               // for debuggin only
   #endif
 }
 
@@ -750,16 +752,17 @@ void AsmLine( const char *string )
 void AsmLine( const char *string, bool use_emu )
 /**********************************************/
 {
-    enum fpe    old_floating_point;
+    enum fpe        old_floating_point;
+    token_buffer    tokbuf;
 
     old_floating_point = floating_point;
     if( old_floating_point != NO_FP_ALLOWED ) {
         floating_point = ( use_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
     }
     // Token_Count is the number of tokens scanned
-    Token_Count = AsmScan( string );
+    Token_Count = AsmScan( &tokbuf, string );
     if( Token_Count > 0 ) {
-        AsmParse( string );
+        AsmParse( &tokbuf, string );
     }
     floating_point = old_floating_point;
 }
