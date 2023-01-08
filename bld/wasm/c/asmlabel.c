@@ -75,14 +75,16 @@ bool MakeLabel( token_idx i, memtype mem_type )
 /*********************************************/
 {
     struct asm_sym      *sym;
+    char                *symbol_name;
 #if defined( _STANDALONE_ )
     uint_32             addr = 0;
     char                buffer[20];
     struct asm_sym      *newsym;
 //    proc_info           *info;
-    char                *symbol_name;
+#endif
 
     symbol_name = AsmBuffer[i].string_ptr;
+#if defined( _STANDALONE_ )
     if( CurrSeg == NULL )
         AsmError( LABEL_OUTSIDE_SEGMENT );
     if( symbol_name[0] == '@' && symbol_name[1] == '@' && symbol_name[2] == '\0' ) {
