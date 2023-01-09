@@ -459,7 +459,7 @@ bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
-bld_c_flags   = -std=c99
+bld_c_flags   = -std=gnu99
 bld_cxx_flags = -std=c++98
 
 # options for linking
@@ -522,7 +522,7 @@ cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 cppflags_a64    = $(common_cppflags_a64) $(common_cppflags_$(host_os)_a64)
 
-c_flags   = -std=c99
+c_flags   = -std=gnu99
 cxx_flags = -std=c++98
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_exe) -o $@
