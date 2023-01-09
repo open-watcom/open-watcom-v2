@@ -358,7 +358,7 @@ common_flags = $(common_flags_dbg)
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
 !ifdef __CLANG_TOOLS__
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wpragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 !else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 !endif
