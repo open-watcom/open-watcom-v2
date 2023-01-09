@@ -1,5 +1,6 @@
 parameters:
   title:    ''
+  artifsuflnx: ''
 
 jobs:
   - job: lastbuild
@@ -21,7 +22,7 @@ jobs:
     - template: artfload.yml
       parameters:
         path:       rel
-        artifname:  rel-lnx
+        artifname:  rel-lnx${{ parameters.artifsuflnx }}
     # consolidate documentation
     - template: docsload.yml
     # create full binary archive

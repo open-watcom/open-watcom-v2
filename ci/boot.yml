@@ -3,6 +3,7 @@ parameters:
   title:    ''
   image:    ''
   pscript:  ''
+  artifsuf: ''
 
 jobs:
   - job: boot${{ parameters.arch }}
@@ -15,8 +16,8 @@ jobs:
     - template: artfsave.yml
       parameters:
         path:       build/$(owobjdir)
-        artifname:  build-${{ parameters.arch }}
+        artifname:  build-${{ parameters.arch }}${{ parameters.artifsuf }}
     - template: artfsave.yml
       parameters:
         path:       bld/watcom/$(owobjdir)
-        artifname:  bld-watcom-${{ parameters.arch }}
+        artifname:  bld-watcom-${{ parameters.arch }}${{ parameters.artifsuf }}

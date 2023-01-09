@@ -3,6 +3,7 @@ parameters:
   title:    ''
   image:    ''
   pscript:  ''
+  artifsuf: ''
 
 jobs:
   - job: tests${{ parameters.arch }}
@@ -13,4 +14,4 @@ jobs:
     - template: artfload.yml
       parameters:
         path:       build/$(owobjdir)
-        artifname:  build-${{ parameters.arch }}
+        artifname:  build-${{ parameters.arch }}${{ parameters.artifsuf }}

@@ -85,12 +85,12 @@ stages:
           title:    Bootstrap Windows OW
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
-  - stage: bootlnx
-    displayName: "Bootstrap Linux"
+  - stage: bootlnxgcc
+    displayName: "Bootstrap Linux GCC"
     dependsOn:
       - bootlnxow
     variables:
-      owbuild.stage: boot
+      owbuild.stage: bootgcc
       owimage:      $(owimage_lnx)
       owtools:      GCC
     jobs:
@@ -100,6 +100,23 @@ stages:
           title:    Bootstrap Linux
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
+          artifsuf: gcc
+  - stage: bootlnxclang
+    displayName: "Bootstrap Linux Clang"
+    dependsOn:
+      - bootlnxow
+    variables:
+      owbuild.stage: bootgcc
+      owimage:      $(owimage_lnx)
+      owtools:      CLANG
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     lnx
+          title:    Bootstrap Linux
+          image:    $(owimage_lnx)
+          pscript:  $(owscript_lnx)
+          artifsuf: clang
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
@@ -130,10 +147,10 @@ stages:
           title:    Bootstrap OSX
           image:    $(owimage_osx)
           pscript:  $(owscript_osx)
-  - stage: buildlnx
-    displayName: "Build Linux"
+  - stage: buildlnxgcc
+    displayName: "Build Linux GCC"
     dependsOn:
-      - bootlnx
+      - bootlnxgcc
     variables:
       owbuild.stage: build
       owimage:      $(owimage_lnx)
@@ -146,6 +163,24 @@ stages:
           title:    Build Linux
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
+          artifsuf: gcc
+  - stage: buildlnxclang
+    displayName: "Build Linux Clang"
+    dependsOn:
+      - bootlnxclang
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_lnx)
+      owtools:      CLANG
+      owdosbox:     dosbox
+    jobs:
+      - template: ci/build.yml
+        parameters:
+          arch:     lnx
+          title:    Build Linux
+          image:    $(owimage_lnx)
+          pscript:  $(owscript_lnx)
+          artifsuf: clang
   - stage: buildnt
     displayName: "Build Windows"
     dependsOn:
@@ -196,10 +231,10 @@ stages:
           arch:     nt
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
-  - stage: testslnx
-    displayName: "Tests Linux"
+  - stage: testslnxgcc
+    displayName: "Tests Linux GCC"
     dependsOn:
-      - buildlnx
+      - buildlnxgcc
     variables:
       owbuild.stage: tests
       owtools:      GCC
@@ -210,6 +245,22 @@ stages:
           title:    Tests Linux
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
+          artifsuf: gcc
+  - stage: testslnxclang
+    displayName: "Tests Linux Clang"
+    dependsOn:
+      - buildlnxclang
+    variables:
+      owbuild.stage: tests
+      owtools:      CLANG
+    jobs:
+      - template: ci/tests.yml
+        parameters:
+          arch:     lnx
+          title:    Tests Linux
+          image:    $(owimage_lnx)
+          pscript:  $(owscript_lnx)
+          artifsuf: clang
   - stage: testsnt
     displayName: "Tests Windows"
     dependsOn:
@@ -224,10 +275,10 @@ stages:
           title:    Tests Windows
           image:    $(owimage_nt)
           pscript:  $(owscript_nt)
-  - stage: testbootlnxow
-    displayName: "Test Bootstrap Linux OW"
+  - stage: testbootlnxowgcc
+    displayName: "Test Bootstrap Linux OW GCC"
     dependsOn:
-      - testslnx
+      - testslnxgcc
     variables:
       owbuild.stage: boot
       owimage:      $(owimage_lnx)
@@ -242,6 +293,26 @@ stages:
           title:    Test Bootstrap Linux OW
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
+          artifsuflnx: gcc
+  - stage: testbootlnxowclang
+    displayName: "Test Bootstrap Linux OW Clang"
+    dependsOn:
+      - testslnxclang
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_lnx)
+      owtools:      WATCOM
+      watcom:       $(owroot)/rel
+      include:      $(owroot)/rel/lh
+      watcom.path:  $(owroot)/rel/binl
+    jobs:
+      - template: ci/testboot.yml
+        parameters:
+          arch:     lnx
+          title:    Test Bootstrap Linux OW
+          image:    $(owimage_lnx)
+          pscript:  $(owscript_lnx)
+          artifsuflnx: clang
   - stage: testbootntow
     displayName: "Test Bootstrap Windows OW"
     dependsOn:
@@ -263,7 +334,8 @@ stages:
   - stage: lastbuild
     displayName: "Last CI build"
     dependsOn:
-      - testbootlnxow
+      - testbootlnxowgcc
+      - testbootlnxowclang
       - testbootntow
       - docsnt
     variables:
@@ -272,3 +344,4 @@ stages:
       - template: ci/lastbld.yml
         parameters:
           title:    Last CI Build
+          artifsuflnx: gcc

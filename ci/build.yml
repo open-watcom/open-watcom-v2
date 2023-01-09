@@ -3,6 +3,7 @@ parameters:
   title:    ''
   image:    ''
   pscript:  ''
+  artifsuf: ''
 
 jobs:
   - job: build${{ parameters.arch }}
@@ -17,19 +18,19 @@ jobs:
     - template: artfload.yml
       parameters:
         path:       build/$(owobjdir)
-        artifname:  build-${{ parameters.arch }}
+        artifname:  build-${{ parameters.arch }}${{ parameters.artifsuf }}
     - template: artfload.yml
       parameters:
         path:       bld/watcom/$(owobjdir)
-        artifname:  bld-watcom-${{ parameters.arch }}
+        artifname:  bld-watcom-${{ parameters.arch }}${{ parameters.artifsuf }}
     - script: ${{ parameters.pscript }}
       displayName: "Build"
     - ${{ if in(parameters.arch, 'lnx', 'nt') }}:
       - template: artfsave.yml
         parameters:
           path:         rel
-          artifname:    rel-${{ parameters.arch }}
+          artifname:    rel-${{ parameters.arch }}${{ parameters.artifsuf }}
       - template: artfsave.yml
         parameters:
           path:         bld/setupgui
-          artifname:    bld-setupgui-${{ parameters.arch }}
+          artifname:    bld-setupgui-${{ parameters.arch }}${{ parameters.artifsuf }}

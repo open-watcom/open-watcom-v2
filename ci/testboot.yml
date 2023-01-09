@@ -3,6 +3,7 @@ parameters:
   title:    ''
   image:    ''
   pscript:  ''
+  artifsuf: ''
 
 jobs:
   - job: testboot${{ parameters.arch }}
@@ -13,6 +14,6 @@ jobs:
     - template: artfload.yml
       parameters:
         path:       rel
-        artifname:  rel-${{ parameters.arch }}
+        artifname:  rel-${{ parameters.arch }}${{ parameters.artifsuf }}
     - script: ${{ parameters.pscript }}
       displayName: "Test Bootstrap OW"
