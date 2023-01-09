@@ -47,8 +47,6 @@
     #pragma warning(disable:4103)
     #pragma pack(push,4)
 #elif defined( __clang__ )
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignore "-Wno-pragma-pack"
     #pragma pack(push,4)
 #else
     #pragma pack(push,4)
