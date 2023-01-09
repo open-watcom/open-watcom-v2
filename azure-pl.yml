@@ -90,7 +90,7 @@ stages:
     dependsOn:
       - bootlnxow
     variables:
-      owbuild.stage: bootgcc
+      owbuild.stage: boot
       owimage:      $(owimage_lnx)
       owtools:      GCC
     jobs:
@@ -106,7 +106,7 @@ stages:
     dependsOn:
       - bootlnxow
     variables:
-      owbuild.stage: bootgcc
+      owbuild.stage: boot
       owimage:      $(owimage_lnx)
       owtools:      CLANG
     jobs:
