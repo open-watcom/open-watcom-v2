@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,15 +72,17 @@ const char FAR BuiltIns[] = {
     "__LOADDLL__=\n"
 #endif
 
+#if defined( __WATCOMC__ )
+
 #if defined( __DOS__ )
     "__MSDOS__=\n"
     "__DOS__=\n"
 
 #elif defined( __NT__ )
     "__NT__=\n"
-    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
+    #if defined( _M_X64 )
         "__NTX64__=\n"
-    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
+    #elif defined( _M_IX86 )
         "__NT386__=\n"
     #elif defined( __AXP__ )
         "__NTAXP__=\n"
@@ -98,23 +100,32 @@ const char FAR BuiltIns[] = {
 #elif defined( __RDOS__ )
     "__RDOS__=\n"
 
-#elif defined( __SOLARIS__ ) || defined( __SunOS ) || defined( __sun )
-    "__SOLARIS__=\n"
+#elif defined( __LINUX__ )
+    "__LINUX__=\n"
     "__UNIX__=\n"
+    #if defined( _M_X64 )
+        "__LINUXX64__=\n"
+    #elif defined( _M_IX86 )
+        "__LINUX386__=\n"
+    #elif defined( __PPC__ )
+        "__LINUXPPC__=\n"
+    #elif defined( __MIPS__ )
+        "__LINUXMIPS__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
+#endif
 
-#elif defined( __OSX__ ) || defined( __APPLE__ )
-    "__OSX__=\n"
-    "__UNIX__=\n"
+#else /* non-WATCOM toolchains */
+
+#if defined( __NT__ )
+    "__NT__=\n"
     #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
-        "__OSXX64__=\n"
+        "__NTX64__=\n"
     #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
-        "__OSX386__=\n"
-    #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
-        "__OSXPPC__=\n"
-    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
-        "__OSXARM__=\n"
-    #elif defined( _M_ARM64 ) || defined( __arm64__ ) || defined( __aarch64__ )
-        "__OSXARM64__=\n"
+        "__NT386__=\n"
+    #elif defined( __AXP__ )
+        "__NTAXP__=\n"
     #else
         #error Unknown CPU architecture
     #endif
@@ -134,6 +145,27 @@ const char FAR BuiltIns[] = {
         "__LINUXARM__=\n"
     #elif defined( _M_ARM64 ) || defined( __arm64__ ) || defined( __aarch64__ )
         "__LINUXARM64__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
+
+#elif defined( __SOLARIS__ ) || defined( __SunOS ) || defined( __sun )
+    "__SOLARIS__=\n"
+    "__UNIX__=\n"
+
+#elif defined( __OSX__ ) || defined( __APPLE__ )
+    "__OSX__=\n"
+    "__UNIX__=\n"
+    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
+        "__OSXX64__=\n"
+    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
+        "__OSX386__=\n"
+    #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
+        "__OSXPPC__=\n"
+    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
+        "__OSXARM__=\n"
+    #elif defined( _M_ARM64 ) || defined( __arm64__ ) || defined( __aarch64__ )
+        "__OSXARM64__=\n"
     #else
         #error Unknown CPU architecture
     #endif
@@ -165,6 +197,8 @@ const char FAR BuiltIns[] = {
     #endif
 
 #endif
+
+#endif /* non-WATCOM toolchains */
 };
 
 const char FAR SuffixList[] = {
@@ -346,3 +380,4 @@ const char FAR POSIXBuiltIn[] = {
 const UINT8 IsArray[] = {
     #include "isarray.gh"
 };
+
