@@ -293,7 +293,7 @@ stages:
           title:    Test Bootstrap Linux OW
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
-          artifsuflnx: gcc
+          artifsuf: gcc
   - stage: testbootlnxowclang
     displayName: "Test Bootstrap Linux OW Clang"
     dependsOn:
@@ -312,7 +312,7 @@ stages:
           title:    Test Bootstrap Linux OW
           image:    $(owimage_lnx)
           pscript:  $(owscript_lnx)
-          artifsuflnx: clang
+          artifsuf: clang
   - stage: testbootntow
     displayName: "Test Bootstrap Windows OW"
     dependsOn:
