@@ -36,6 +36,7 @@
 typedef unsigned char       token_idx;
 typedef struct token_buffer {
     asm_tok                 tokens[MAX_TOKEN + 1];
+    char                    stringbuf[MAX_LINE_LEN];
 } token_buffer;
 
 #endif

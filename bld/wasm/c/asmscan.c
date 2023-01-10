@@ -666,13 +666,11 @@ token_idx AsmScan( token_buffer *tokbuf, const char *string )
     const char                  *ptr;
     char                        *output_ptr;
     token_idx                   idx;
-    // stringbuf - buffer in which to store strings
-    static char                 stringbuf[MAX_LINE_LEN];
 
 #ifdef DEBUG_OUT
     CurrString = string;
 #endif
-    output_ptr = stringbuf;
+    output_ptr = tokbuf->stringbuf;
 #if defined( _STANDALONE_ )
     EnumDirective = false;
 #endif

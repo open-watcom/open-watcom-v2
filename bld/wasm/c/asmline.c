@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -714,22 +714,26 @@ void AsmLine( const char *string )
 
     // Token_Count is the number of tokens scanned
     Token_Count = AsmScan( &tokbuf, string );
-    Token_Count = ExpandMacro( &tokbuf, Token_Count );
+    if( ISVALID_IDX( Token_Count ) && Token_Count > 0 ) {
+        Token_Count = ExpandMacro( &tokbuf, Token_Count );
 
-    if( ExpandTheWorld( &tokbuf, 1, true, true ) ) {
-        write_to_file = false;
-        return;
-    }
-
-    if( CurrProc != NULL && !DefineProc ) {
-        for( count = 0; count < Token_Count; count++ ) {
-            bool expanded;
-            if( ExpandProcString( &tokbuf, count, &expanded ) ) {
+        if( Token_Count > 1 ) {
+            if( ExpandTheWorld( &tokbuf, 1, true, true ) ) {
                 write_to_file = false;
                 return;
             }
-            if( expanded ) {
-                return;
+        }
+
+        if( CurrProc != NULL && !DefineProc ) {
+            for( count = 0; count < Token_Count; count++ ) {
+                bool expanded;
+                if( ExpandProcString( &tokbuf, count, &expanded ) ) {
+                    write_to_file = false;
+                    return;
+                }
+                if( expanded ) {
+                    return;
+                }
             }
         }
     }
@@ -761,7 +765,7 @@ void AsmLine( const char *string, bool use_emu )
     }
     // Token_Count is the number of tokens scanned
     Token_Count = AsmScan( &tokbuf, string );
-    if( Token_Count > 0 ) {
+    if( ISVALID_IDX( Token_Count ) && Token_Count > 0 ) {
         AsmParse( &tokbuf, string );
     }
     floating_point = old_floating_point;
