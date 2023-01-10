@@ -110,7 +110,7 @@ bool MakeLabel( token_buffer *tokbuf, token_idx i, memtype mem_type )
         GetSymInfo( sym );
         BackPatch( sym );
         /* now point the @F marker at the next anon. label if we have one */
-        sprintf( buffer, "L&_%d", AnonymousCounter+1 );
+        sprintf( buffer, "L&_%d", AnonymousCounter + 1 );
         sym = AsmGetSymbol( buffer );
         if( sym != NULL ) {
             AsmChangeName( sym->name, "@F" );

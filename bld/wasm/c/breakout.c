@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -436,7 +436,7 @@ bool directive( token_buffer *tokbuf, token_idx i, asm_token direct )
     case T_DOT_EXIT:
     case T_STARTUPCODE:
     case T_EXITCODE:
-        return( Startup ( tokbuf, i ) );
+        return( Startup( tokbuf, i ) );
     case T_LOCALS:
     case T_NOLOCALS:
         return( Locals( tokbuf, i ) );

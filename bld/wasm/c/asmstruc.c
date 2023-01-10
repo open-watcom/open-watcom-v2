@@ -109,6 +109,7 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
             switch( tokbuf->tokens[n].class ) {
             case TC_FINAL:   /* Name absent */
                 name = Definition.curr_struct->sym.name;
+                break;
             case TC_ID:
                 break;
             default:
