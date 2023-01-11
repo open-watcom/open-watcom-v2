@@ -287,19 +287,19 @@ static const char * const SimCodeEnd[2][SIM_LAST] = {
 static last_seg_info    lastseg;        // last opened simplified segment
 
 static char         code_segment_name[MAX_LINE_LEN];
-static asm_tok      const_CodeSize = { TC_NUM, NULL, 0 };
-static asm_tok      const_DataSize = { TC_NUM, NULL, 0 };
-static asm_tok      const_Model = { TC_NUM, NULL, 0 };
-static asm_tok      const_Interface = { TC_NUM, NULL, 0 };
-static asm_tok      const_data = { TC_ID, NULL, 0 };
-static asm_tok      const_code = { TC_ID, code_segment_name, 0 };
+static asm_tok      const_CodeSize =  { TC_NUM, NULL,              0 };
+static asm_tok      const_DataSize =  { TC_NUM, NULL,              0 };
+static asm_tok      const_Model =     { TC_NUM, NULL,              0 };
+static asm_tok      const_Interface = { TC_NUM, NULL,              0 };
+static asm_tok      const_data =      { TC_ID,  NULL,              0 };
+static asm_tok      const_code =      { TC_ID,  code_segment_name, 0 };
 
-static const_info   info_CodeSize = { true, 0, 0, true, &const_CodeSize };
-static const_info   info_DataSize = { true, 0, 0, true, &const_DataSize };
-static const_info   info_Model = { true, 0, 0, true, &const_Model };
-static const_info   info_Interface = { true, 0, 0, true, &const_Interface };
-static const_info   info_data = { true, 0, 0, true, &const_data };
-static const_info   info_code = { true, 0, 0, true, &const_code };
+static const_info   info_CodeSize =  { &const_CodeSize,  1, true, 0, 0 };
+static const_info   info_DataSize =  { &const_DataSize,  1, true, 0, 0 };
+static const_info   info_Model =     { &const_Model,     1, true, 0, 0 };
+static const_info   info_Interface = { &const_Interface, 1, true, 0, 0 };
+static const_info   info_data =      { &const_data,      1, true, 0, 0 };
+static const_info   info_code =      { &const_code,      1, true, 0, 0 };
 
 static bool AddPredefinedConstant( char *name, const_info *info )
 /***************************************************************/
@@ -426,6 +426,7 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
     return( RC_OK );
 }
 
+#if 0
 #ifdef DEBUG_OUT
 void heap( char *func ) // for debugging only
 /*********************/
@@ -443,6 +444,7 @@ void heap( char *func ) // for debugging only
     }
 #endif
 }
+#endif
 #endif
 
 static bool SetAssumeCSCurrSeg( void )
