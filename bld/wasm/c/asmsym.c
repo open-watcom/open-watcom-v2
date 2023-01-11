@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -677,10 +677,10 @@ static void log_symbol( struct asm_sym *sym )
         const_info  *cst = dir->e.constinfo;
 
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-        if( cst->count && cst->data[0].class != TC_NUM ) {
-            LstMsg( "Text     %s\n", cst->data[0].string_ptr );
+        if( cst->count && cst->tokens[0].class != TC_NUM ) {
+            LstMsg( "Text     %s\n", cst->tokens[0].string_ptr );
         } else {
-            LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->data[0].u.value : 0 );
+            LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->tokens[0].u.value : 0 );
         }
     } else if( sym->state == SYM_INTERNAL && !IS_SYM_COUNTER( sym->name ) ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
@@ -813,7 +813,7 @@ static void DumpSymbol( struct asm_sym *sym )
     case SYM_CONST:
         type = "CONSTANT";
 //        dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
-//        dir->e.constinfo->data = NULL;
+//        dir->e.constinfo->tokens = NULL;
 //        dir->e.constinfo->count = 0;
         break;
     case SYM_PROC:

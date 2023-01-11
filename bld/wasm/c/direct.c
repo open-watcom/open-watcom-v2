@@ -595,7 +595,7 @@ void dir_init( dir_node *dir, int tab )
         dir->sym.segment = NULL;
         dir->sym.offset = 0;
         dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
-        dir->e.constinfo->data = NULL;
+        dir->e.constinfo->tokens = NULL;
         dir->e.constinfo->count = 0;
         dir->e.constinfo->predef = false;
         return;
@@ -780,7 +780,7 @@ void FreeInfo( dir_node *dir )
         if( !dir->e.constinfo->predef ) {
 #ifdef DEBUG_OUT
             if( ( dir->e.constinfo->count > 0 )
-                && ( dir->e.constinfo->data[0].class != TC_NUM ) ) {
+                && ( dir->e.constinfo->tokens[0].class != TC_NUM ) ) {
                 DebugMsg( ( "freeing const(String): %s = ", dir->sym.name ) );
             } else {
                 DebugMsg( ( "freeing const(Number): %s = ", dir->sym.name ) );
@@ -788,16 +788,16 @@ void FreeInfo( dir_node *dir )
 #endif
             for( i = 0; i < dir->e.constinfo->count; i++ ) {
 #ifdef DEBUG_OUT
-                if( dir->e.constinfo->data[i].class == TC_NUM ) {
-                    DebugMsg(( "%d ", dir->e.constinfo->data[i].u.value ));
+                if( dir->e.constinfo->tokens[i].class == TC_NUM ) {
+                    DebugMsg(( "%d ", dir->e.constinfo->tokens[i].u.value ));
                 } else {
-                    DebugMsg(( "%s ", dir->e.constinfo->data[i].string_ptr ));
+                    DebugMsg(( "%s ", dir->e.constinfo->tokens[i].string_ptr ));
                 }
 #endif
-                AsmFree( dir->e.constinfo->data[i].string_ptr );
+                AsmFree( dir->e.constinfo->tokens[i].string_ptr );
             }
             DebugMsg(( "\n" ));
-            AsmFree( dir->e.constinfo->data );
+            AsmFree( dir->e.constinfo->tokens );
             AsmFree( dir->e.constinfo );
         }
         break;
@@ -1237,7 +1237,7 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
         } else if( dir->sym.state == SYM_CONST ) {
             /* check if the symbol expands to another symbol,
              * and if so, expand it */
-            if( dir->e.constinfo->data[0].class == TC_ID ) {
+            if( dir->e.constinfo->tokens[0].class == TC_ID ) {
                 ExpandTheWorld( tokbuf, i, false, true );
                 return( PubDef( tokbuf, i ) );
             }
@@ -3258,8 +3258,8 @@ bool EnumDef( token_buffer *tokbuf, token_idx i )
                         sym = AsmGetSymbol( tokbuf->tokens[i].string_ptr );
                         if( ( sym != NULL ) && ( sym->state == SYM_CONST ) ) {
                             dir = ( dir_node * ) sym;
-                            if( dir->e.constinfo->data[0].class == TC_NUM ) {
-                                count = dir->e.constinfo->data[0].u.value;
+                            if( dir->e.constinfo->tokens[0].class == TC_NUM ) {
+                                count = dir->e.constinfo->tokens[0].u.value;
                                 break;
                             }
                         }

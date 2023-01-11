@@ -66,19 +66,10 @@ void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count )
 {
     token_idx   i;
 
-    if( count == 0 )
-        return;
-    if( ISINVALID_IDX( count ) ) {
-        /* it's an empty expansion */
-        for( i = start; i <= Token_Count; ++i ) {
-            tokbuf->tokens[i] = tokbuf->tokens[i + 1];
-        }
-        Token_Count += -1;      // ?????
-    } else {
-        for( i = Token_Count; i > start; i-- ) {
+    if( count > 0 ) {
+        for( i = Token_Count; i >= start; i-- ) {
             tokbuf->tokens[i + count] = tokbuf->tokens[i];
         }
-        tokbuf->tokens[i + count] = tokbuf->tokens[i];
         Token_Count += count;
     }
 }
@@ -88,6 +79,7 @@ bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *exp
 {
     dir_node            *dir;
     token_idx           j;
+    token_idx           count;
 
     *expanded = false;
     /* expand constant */
@@ -99,11 +91,10 @@ bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *exp
                 break;
             DebugMsg(( "Expand Constant: %s ->", dir->sym.name ));
             /* insert the pre-scanned data for this constant */
-            AddTokens( tokbuf, i, dir->e.constinfo->count - 1 );
-            for( j = 0; j < dir->e.constinfo->count; j++ ) {
-                tokbuf->tokens[i + j].class = dir->e.constinfo->data[j].class;
-                tokbuf->tokens[i + j].u.value = dir->e.constinfo->data[j].u.value;
-                tokbuf->tokens[i + j].string_ptr = dir->e.constinfo->data[j].string_ptr;
+            count = dir->e.constinfo->count;
+            AddTokens( tokbuf, i, count - 1 );
+            for( j = 0; j < count; j++ ) {
+                tokbuf->tokens[i + j] = dir->e.constinfo->tokens[j];
 #ifdef DEBUG_OUT
                 if( tokbuf->tokens[i + j].class == TC_NUM ) {
                     DebugMsg(( " %d", tokbuf->tokens[i + j].u.value ));
@@ -296,28 +287,28 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
 
 static void FreeConstData( const_info *constinfo )
 {
-    if( constinfo->data != NULL ) {
+    if( constinfo->tokens != NULL ) {
 
         int i;
 
         for( i = 0; i < constinfo->count; i++ ) {
 #ifdef DEBUG_OUT
-            if( constinfo->data[i].class == TC_NUM ) {
-                DebugMsg(( "%d ", constinfo->data[i].u.value ));
+            if( constinfo->tokens[i].class == TC_NUM ) {
+                DebugMsg(( "%d ", constinfo->tokens[i].u.value ));
             } else {
-                DebugMsg(( "%s ", constinfo->data[i].string_ptr ));
+                DebugMsg(( "%s ", constinfo->tokens[i].string_ptr ));
             }
 #endif
-            AsmFree( constinfo->data[i].string_ptr );
+            AsmFree( constinfo->tokens[i].string_ptr );
         }
         DebugMsg(( "\n" ));
-        AsmFree( constinfo->data );
+        AsmFree( constinfo->tokens );
     }
 }
 
 bool StoreConstantNumber( const char *name, long value, bool redefine )
 {
-    struct asm_tok  *new;
+    asm_tok         *new;
     dir_node        *dir;
     struct asm_sym  *sym;
 
@@ -346,14 +337,14 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
             return( RC_ERROR );
         }
     }
-    new = AsmAlloc( sizeof( struct asm_tok ) );
+    new = AsmAlloc( sizeof( asm_tok ) );
     memset( new[0].u.bytes, 0, sizeof( new[0].u.bytes ) );
     new[0].class = TC_NUM;
     new[0].u.value = value;
     new[0].string_ptr = NULL;
     FreeConstData( dir->e.constinfo );
     dir->e.constinfo->count = 1;
-    dir->e.constinfo->data = new;
+    dir->e.constinfo->tokens = new;
     return( RC_OK );
 }
 
@@ -393,8 +384,8 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
     }
 
     if( value ) {
-        if( dir->e.constinfo->count == 1 && dir->e.constinfo->data[0].class == TC_NUM ) {
-            dir->e.constinfo->data[0].u.value = 1;
+        if( dir->e.constinfo->count == 1 && dir->e.constinfo->tokens[0].class == TC_NUM ) {
+            dir->e.constinfo->tokens[0].u.value = 1;
         } else {
             /* just define it to be 1 and get out */
             new = AsmAlloc( sizeof( asm_tok ) );
@@ -404,7 +395,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
             new[0].string_ptr = NULL;
             FreeConstData( dir->e.constinfo );
             dir->e.constinfo->count = 1;
-            dir->e.constinfo->data = new;
+            dir->e.constinfo->tokens = new;
         }
         return( RC_OK );
     }
@@ -474,7 +465,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
         dir->e.constinfo->redefine = true;
     FreeConstData( dir->e.constinfo );
     dir->e.constinfo->count = count;
-    dir->e.constinfo->data = new;
+    dir->e.constinfo->tokens = new;
     return( RC_OK );
 }
 

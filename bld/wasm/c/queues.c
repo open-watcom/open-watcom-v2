@@ -175,11 +175,11 @@ bool GetPublicData( void )
             if( dir->sym.state != SYM_CONST ) {
                 d->offset = dir->sym.offset;
             } else {
-                if( dir->e.constinfo->data[0].class != TC_NUM  ) {
+                if( dir->e.constinfo->tokens[0].class != TC_NUM  ) {
                     AsmWarn( 2, PUBLIC_CONSTANT_NOT_NUMERIC );
                     d->offset = 0;
                 } else {
-                    d->offset = dir->e.constinfo->data[0].u.value;
+                    d->offset = dir->e.constinfo->tokens[0].u.value;
                 }
             }
             d->type.idx = 0;

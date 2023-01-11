@@ -163,11 +163,11 @@ typedef struct {
 } comm_info;
 
 typedef struct {
+    asm_tok             *tokens;        // array of asm_tok's to replace symbol
+    token_idx           count;          // number of tokens
     boolbit             predef      :1; // whether it is predefined symbol
     boolbit             redefine    :1; // whether it is redefinable or not
     boolbit             expand_early:1; // if true expand before parsing
-    token_idx           count;          // number of tokens
-    asm_tok             *data;          // array of asm_tok's to replace symbol
 } const_info;
 
 typedef struct regs_list {
