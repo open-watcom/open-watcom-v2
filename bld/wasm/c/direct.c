@@ -294,12 +294,12 @@ static asm_tok      const_Interface = { TC_NUM, NULL,              0 };
 static asm_tok      const_data =      { TC_ID,  NULL,              0 };
 static asm_tok      const_code =      { TC_ID,  code_segment_name, 0 };
 
-static const_info   info_CodeSize =  { &const_CodeSize,  1, true, 0, 0 };
-static const_info   info_DataSize =  { &const_DataSize,  1, true, 0, 0 };
-static const_info   info_Model =     { &const_Model,     1, true, 0, 0 };
-static const_info   info_Interface = { &const_Interface, 1, true, 0, 0 };
-static const_info   info_data =      { &const_data,      1, true, 0, 0 };
-static const_info   info_code =      { &const_code,      1, true, 0, 0 };
+static const_info   info_CodeSize =  { &const_CodeSize,  1, true, false, false };
+static const_info   info_DataSize =  { &const_DataSize,  1, true, false, false };
+static const_info   info_Model =     { &const_Model,     1, true, false, false };
+static const_info   info_Interface = { &const_Interface, 1, true, false, false };
+static const_info   info_data =      { &const_data,      1, true, false, false };
+static const_info   info_code =      { &const_code,      1, true, false, false };
 
 static bool AddPredefinedConstant( char *name, const_info *info )
 /***************************************************************/
@@ -426,7 +426,6 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
     return( RC_OK );
 }
 
-#if 0
 #ifdef DEBUG_OUT
 void heap( char *func ) // for debugging only
 /*********************/
@@ -445,7 +444,6 @@ void heap( char *func ) // for debugging only
 #endif
 }
 #endif
-#endif
 
 static bool SetAssumeCSCurrSeg( void )
 /************************************/
@@ -458,10 +456,11 @@ static bool SetAssumeCSCurrSeg( void )
         info->flat = false;
         info->error = true;
     } else {
-        if( CurrSeg->seg->e.seginfo->group != NULL )
+        if( CurrSeg->seg->e.seginfo->group != NULL ) {
             info->symbol = GetGrp( &CurrSeg->seg->sym );
-        else
+        } else {
             info->symbol = &CurrSeg->seg->sym;
+        }
         info->flat = false;
         info->error = false;
     }
