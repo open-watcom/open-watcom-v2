@@ -400,16 +400,25 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
         return( RC_OK );
     }
 
-    /* expand any constants */
-    if( ExpandTheWorld( tokbuf, start, false, true ) )
-        return( RC_ERROR );
+    if( tokbuf->tokens[start].class != TC_FINAL
+      && tokbuf->tokens[start].class != TC_ID
+      && tokbuf->tokens[start + 1].class == TC_FINAL ) {
+        counta = 1;
+        count = 1;
+    } else {
+        /*
+         * expand any constants
+         */
+        if( ExpandTheWorld( tokbuf, start, false, true ) )
+            return( RC_ERROR );
 
-    for( counta = 0, i = start; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
-        if( ( tokbuf->tokens[i].class != TC_STRING ) || ( tokbuf->tokens[i].u.value != 0 ) ) {
-            counta++;
+        for( counta = 0, i = start; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
+            if( ( tokbuf->tokens[i].class != TC_STRING ) || ( tokbuf->tokens[i].u.value != 0 ) ) {
+                counta++;
+            }
         }
+        count = i - start;
     }
-    count = i - start;
 
     if( counta == 0 ) {
         new = NULL;
@@ -422,7 +431,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
     for( i = 0; i < count; i++ ) {
         switch( tokbuf->tokens[start + i].class ) {
         case TC_STRING:
-            if( tokbuf->tokens[start + i].u.value == 0 ) {
+            if( count != 1 && tokbuf->tokens[start + i].u.value == 0 ) {
                 i--;
                 count--;
                 start++;
@@ -435,10 +444,11 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
         case TC_ID:
             if( IS_SYM_COUNTER( tokbuf->tokens[start + i].string_ptr ) ) {
                 char            buff[40];
+
                 /*
-                    We want a '$' symbol to have the value at it's
-                    point of definition, not point of expansion.
-                */
+                 * We want a '$' symbol to have the value at it's
+                 * point of definition, not point of expansion.
+                 */
                 sprintf( buff, ".$%p/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
                 tokbuf->tokens[start + i].string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
@@ -474,18 +484,20 @@ bool DefineConstant( token_buffer *tokbuf, token_idx i, bool redefine, bool expa
  * if expand_early is true, expand before doing any parsing
  */
 {
-
     char                *name;
 
     if( i != 0 ) {
         AsmError( SYNTAX_ERROR );
         return( RC_ERROR );
     }
-
-    /* get the name */
+    /*
+     * get the name
+     */
     name = tokbuf->tokens[i++].string_ptr;
+    /*
+     * skip directive EQU, TEXTEQU, ...
+     */
     i++;
-
     return( createconstant( name, false, tokbuf, i, redefine, expand_early ) );
 }
 
