@@ -607,7 +607,7 @@ static void dbg_output( token_buffer *tokbuf )
 
         DebugMsg(("Line: %lu ", LineNumber ));
         DebugMsg(("Output :"));
-        for( i = 0; i < Token_Count; i++ ) {
+        for( i = 0; i < tokbuf->count; i++ ) {
             switch( tokbuf->tokens[i].class ) {
             case TC_NUM:
                 DebugMsg(( " %d ", tokbuf->tokens[i].u.value ));
@@ -713,8 +713,9 @@ void AsmLine( const char *string )
     token_buffer    tokbuf;
 
     // Token_Count is the number of tokens scanned
-    Token_Count = AsmScan( &tokbuf, string );
-    if( ISVALID_IDX( Token_Count ) && Token_Count > 0 ) {
+    Token_Count = INVALID_IDX;
+    if( !AsmScan( &tokbuf, string ) ) {
+        Token_Count = tokbuf.count;
         Token_Count = ExpandMacro( &tokbuf, Token_Count );
 
         if( Token_Count > 1 ) {
@@ -738,13 +739,13 @@ void AsmLine( const char *string )
         }
     }
 
-    if( Token_Count > 0 ) {
+    if( ISINVALID_IDX( Token_Count ) ) {
+        // syntax error
+        write_to_file = false;
+    } else if( Token_Count > 0 ) {
         if( AsmParse( &tokbuf, string ) ) {
             write_to_file = false;
         }
-    } else if( ISINVALID_IDX( Token_Count ) ) {
-        // syntax error
-        write_to_file = false;
     }
   #ifdef DEBUG_OUT
     dbg_output( &tokbuf );               // for debuggin only
@@ -764,8 +765,9 @@ void AsmLine( const char *string, bool use_emu )
         floating_point = ( use_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
     }
     // Token_Count is the number of tokens scanned
-    Token_Count = AsmScan( &tokbuf, string );
-    if( ISVALID_IDX( Token_Count ) && Token_Count > 0 ) {
+    Token_Count = INVALID_IDX;
+    if( !AsmScan( &tokbuf, string ) ) {
+        Token_Count = tokbuf.count;
         AsmParse( &tokbuf, string );
     }
     floating_point = old_floating_point;

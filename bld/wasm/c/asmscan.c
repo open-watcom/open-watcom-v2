@@ -655,25 +655,23 @@ static bool get_inc_path( asm_tok *tok, const char **input, char **output )
 }
 #endif
 
-static token_idx endFinalToken( asm_tok *tok, char *buff, token_idx idx )
+static bool endFinalToken( asm_tok *tok, char *buff, bool rc )
 {
     *buff = '\0';
     tok->string_ptr = buff;
     tok->class = TC_FINAL;
-    return( idx );
+    return( rc );
 }
 
-token_idx AsmScan( token_buffer *tokbuf, const char *string )
-/***********************************************************/
-/*
-- perform syntax checking on scan line;
-- pass back tokens for later use;
-- string contains the WHOLE line to scan
-*/
+bool AsmScan( token_buffer *tokbuf, const char *string )
+/*******************************************************
+ * - perform syntax checking on scan line;
+ * - pass back tokens for later use;
+ * - string contains the WHOLE line to scan
+ */
 {
     const char                  *ptr;
     char                        *output_ptr;
-    token_idx                   idx;
     asm_tok                     *tok;
 
 #ifdef DEBUG_OUT
@@ -690,14 +688,15 @@ token_idx AsmScan( token_buffer *tokbuf, const char *string )
     while( isspace( *ptr ) || (*ptr == '%') ) {
         ptr++;
     }
+    tokbuf->count = 0;
     tok = tokbuf->tokens;
-    for( idx = 0; idx < MAX_TOKEN; ++idx ) {
+    while( tokbuf->count < MAX_TOKEN ) {
         tok->string_ptr = output_ptr;
         while( isspace( *ptr ) ) {
             ptr++;
         }
         if( *ptr == NULLC ) {
-            return( endFinalToken( tok, output_ptr, idx ) );
+            return( endFinalToken( tok, output_ptr, RC_OK ) );
         }
 
         if( isalpha( *ptr )
@@ -706,23 +705,23 @@ token_idx AsmScan( token_buffer *tokbuf, const char *string )
             || *ptr == '@'
             || *ptr == '?'
             || *ptr == '\\'
-            || ( *ptr == '.' && idx == 0 ) ) {
+            || ( *ptr == '.' && tokbuf->count == 0 ) ) {
             if( get_id( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, INVALID_IDX ) );
+                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
             }
 #if defined( _STANDALONE_ )
             if( tok->class == TC_DIRECTIVE ) {
                 if( tok->u.token == T_COMMENT ) {
-                    idx++;
                     tok++;
-                    if( idx >= MAX_TOKEN )
+                    tokbuf->count++;
+                    if( tokbuf->count >= MAX_TOKEN )
                         break;
                     get_comment( tok, &ptr, &output_ptr );
                 } else if( tok->u.token == T_INCLUDE || tok->u.token == T_INCLUDELIB ) {
                     // this mess allows include directives with undelimited file names
-                    idx++;
                     tok++;
-                    if( idx >= MAX_TOKEN )
+                    tokbuf->count++;
+                    if( tokbuf->count >= MAX_TOKEN )
                         break;
                     get_inc_path( tok, &ptr, &output_ptr );
                 }
@@ -730,19 +729,20 @@ token_idx AsmScan( token_buffer *tokbuf, const char *string )
 #endif
         } else if( isdigit( *ptr ) ) {
             if( get_number( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, INVALID_IDX ) );
+                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
             }
         } else if( *ptr == '`' ) {
             if( get_id_in_backquotes( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, INVALID_IDX ) );
+                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
             }
         } else {
             if( get_special_symbol( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, INVALID_IDX ) );
+                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
             }
         }
         tok++;
+        tokbuf->count++;
     }
     AsmError( TOO_MANY_TOKENS );
-    return( endFinalToken( tok, output_ptr, INVALID_IDX ) );
+    return( endFinalToken( tok, output_ptr, RC_ERROR ) );
 }

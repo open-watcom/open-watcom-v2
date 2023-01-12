@@ -3281,7 +3281,10 @@ bool EnumDef( token_buffer *tokbuf, token_idx i )
                         AsmError( UNEXPECTED_END_OF_FILE );
                         return( RC_ERROR );
                     }
-                    Token_Count = AsmScan( tokbuf, string );
+                    Token_Count = INVALID_IDX;
+                    if( !AsmScan( tokbuf, string ) ) {
+                        Token_Count = tokbuf->count;
+                    }
                 }
             }
             break;
