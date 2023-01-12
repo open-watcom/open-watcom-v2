@@ -337,7 +337,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                     i++;
                 }
             }
-            if(  i< Token_Count && tokbuf->tokens[i].class != TC_COMMA ) {
+            if( i < Token_Count && tokbuf->tokens[i].class != TC_COMMA ) {
                 AsmError( EXPECTING_COMMA );
                 return( RC_ERROR );
             }

@@ -612,6 +612,7 @@ void dir_init( dir_node *dir, int tab )
         dir->sym.state = SYM_MACRO;
         dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
         dir->e.macroinfo->parmlist = NULL;
+//        dir->e.macroinfo->labellist = NULL;
         dir->e.macroinfo->data = NULL;
         dir->e.macroinfo->srcfile = NULL;
         break;
@@ -889,6 +890,8 @@ void FreeInfo( dir_node *dir )
                     labelcurr = labelnext;
                 }
             }
+
+            /* free the labels list */
 
             /* free the lines list */
             datacurr = dir->e.macroinfo->data;
@@ -1170,7 +1173,8 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
         } else {
             mem_type = TypeInfo[type].value;
         }
-        for( ; i < Token_Count && tokbuf->tokens[i].class != TC_COMMA; i++ );
+        for( ; i < Token_Count && tokbuf->tokens[i].class != TC_COMMA; i++ )
+            {}
 
         dir = (dir_node *)AsmGetSymbol( token );
         if( dir == NULL ) {
@@ -1569,7 +1573,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
         } else {
             i++;        /* Go past SEGMENT */
         }
-        for( ; i < Token_Count; i ++ ) {
+        for( ; i < Token_Count; i++ ) {
             if( tokbuf->tokens[i].class == TC_STRING ) {
 
                 /* the class name - the only token which is of type STRING */

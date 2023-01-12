@@ -827,6 +827,7 @@ static void DumpSymbol( struct asm_sym *sym )
         type = "MACRO";
 //        dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
 //        dir->e.macroinfo->parmlist = NULL;
+//        dir->e.macroinfo->labellist = NULL;
 //        dir->e.macroinfo->data = NULL;
 //        dir->e.macroinfo->filename = NULL;
         break;

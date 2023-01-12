@@ -225,6 +225,7 @@ typedef struct  fname_list {
 
 typedef struct {
     parm_list           *parmlist;  // list of parameters
+//    label_list          *labellist; // list of local labels
     asmlines            *data;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
     bool                hidden;     // if true don't print error messages

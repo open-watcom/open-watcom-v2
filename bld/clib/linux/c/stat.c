@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,19 +35,22 @@
 #include "linuxsys.h"
 
 _WCRTLINK int stat( const char *filename, struct stat * __buf )
+/**************************************************************
+ * Even on 64-bit Linux, Open Watcom compiles itself as 32-bit. The problem with stat()
+ * for 32-bit processes is that some device nodes are higher than 255 which are normally
+ * returned in st_dev, but the Linux kernel will fail the call with EOVERFLOW if the
+ * returned st_dev (or any other field) exceeds the storage limits of the plain stat()
+ * struct. If compiling on a filesystem mounted from NVME storage (device node 259, x),
+ * stat() will fail on every file on that filesystem. To work around this, use stat64()
+ * and translate to stat(). Return EOVERFLOW only if the file is too large. Other fields
+ * like st_dev and st_rdev are irrelevant to a compiler and should be ignored.
+ */
 {
-    /* Even on 64-bit Linux, Open Watcom compiles itself as 32-bit. The problem with stat()
-     * for 32-bit processes is that some device nodes are higher than 255 which are normally
-     * returned in st_dev, but the Linux kernel will fail the call with EOVERFLOW if the
-     * returned st_dev (or any other field) exceeds the storage limits of the plain stat()
-     * struct. If compiling on a filesystem mounted from NVME storage (device node 259, x),
-     * stat() will fail on every file on that filesystem. To work around this, use stat64()
-     * and translate to stat(). Return EOVERFLOW only if the file is too large. Other fields
-     * like st_dev and st_rdev are irrelevant to a compiler and should be ignored. */
     struct stat64 s64;
+
     syscall_res res = sys_call2( SYS_stat64, (u_long)filename, (u_long)(&s64) );
-    if (!__syscall_iserror(res)) {
-        if (s64.st_size <= 0x7FFFFFFFu/*2GB - 1*/) {
+    if( !__syscall_iserror( res ) ) {
+        if( s64.st_size <= 0x7FFFFFFFU /*2GB - 1*/ ) {
             __buf->st_dev = s64.st_dev;
             __buf->st_ino = s64.st_ino;
             __buf->st_mode = s64.st_mode;
@@ -61,8 +64,7 @@ _WCRTLINK int stat( const char *filename, struct stat * __buf )
             __buf->st_atime = s64.st_atime;
             __buf->st_mtime = s64.st_mtime;
             __buf->st_ctime = s64.st_ctime;
-        }
-        else {
+        } else {
             res = (syscall_res)(-EOVERFLOW);
         }
     }
