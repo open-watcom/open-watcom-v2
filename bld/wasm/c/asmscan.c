@@ -657,7 +657,6 @@ static bool get_inc_path( asm_tok *tok, const char **input, char **output )
 
 static bool endFinalToken( asm_tok *tok, char *buff, bool rc )
 {
-    *buff = '\0';
     tok->string_ptr = buff;
     tok->class = TC_FINAL;
     return( rc );
@@ -677,7 +676,6 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
 #ifdef DEBUG_OUT
     CurrString = string;
 #endif
-    output_ptr = tokbuf->stringbuf;
 #if defined( _STANDALONE_ )
     EnumDirective = false;
 #endif
@@ -688,6 +686,12 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
     while( isspace( *ptr ) || (*ptr == '%') ) {
         ptr++;
     }
+    output_ptr = tokbuf->stringbuf;
+    /*
+     * create blank string on buffer beginning
+     * for termination token
+     */
+    *output_ptr++ = '\0';
     tokbuf->count = 0;
     tok = tokbuf->tokens;
     while( tokbuf->count < MAX_TOKEN ) {
@@ -696,7 +700,7 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
             ptr++;
         }
         if( *ptr == NULLC ) {
-            return( endFinalToken( tok, output_ptr, RC_OK ) );
+            return( endFinalToken( tok, tokbuf->stringbuf, RC_OK ) );
         }
 
         if( isalpha( *ptr )
@@ -707,7 +711,7 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
             || *ptr == '\\'
             || ( *ptr == '.' && tokbuf->count == 0 ) ) {
             if( get_id( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
 #if defined( _STANDALONE_ )
             if( tok->class == TC_DIRECTIVE ) {
@@ -729,20 +733,20 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
 #endif
         } else if( isdigit( *ptr ) ) {
             if( get_number( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
         } else if( *ptr == '`' ) {
             if( get_id_in_backquotes( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
         } else {
             if( get_special_symbol( tok, &ptr, &output_ptr ) ) {
-                return( endFinalToken( tok + 1, output_ptr, RC_ERROR ) );
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
         }
         tok++;
         tokbuf->count++;
     }
     AsmError( TOO_MANY_TOKENS );
-    return( endFinalToken( tok, output_ptr, RC_ERROR ) );
+    return( endFinalToken( tok, tokbuf->stringbuf, RC_ERROR ) );
 }

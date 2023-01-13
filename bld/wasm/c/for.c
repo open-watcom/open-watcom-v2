@@ -85,7 +85,8 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
         parmstring = AsmTmpAlloc( len );
         memcpy( parmstring, tokbuf->tokens[i].string_ptr, len );
         tokbuf->tokens[i].class = TC_FINAL;
-        Token_Count = i;
+        tokbuf->tokens[i].string_ptr = tokbuf->stringbuf;
+        tokbuf->count = i;
         AddTokens( tokbuf, arg_loc, 1 );
     }
     /* now make a macro */

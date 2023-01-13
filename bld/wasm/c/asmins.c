@@ -2474,6 +2474,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
                 bool expanded;
                 if( ExpandSymbol( tokbuf, i, false, &expanded ) )
                     return( RC_ERROR );
+                Token_Count = tokbuf->count;
                 if( expanded ) {
                     // restart token processing
                     i--;

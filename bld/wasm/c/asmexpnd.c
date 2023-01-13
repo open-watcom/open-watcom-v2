@@ -67,10 +67,10 @@ void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count )
     token_idx   i;
 
     if( count > 0 ) {
-        for( i = Token_Count; i >= start; i-- ) {
+        for( i = tokbuf->count; i >= start; i-- ) {
             tokbuf->tokens[i + count] = tokbuf->tokens[i];
         }
-        Token_Count += count;
+        tokbuf->count += count;
     }
 }
 
@@ -84,11 +84,8 @@ bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *exp
     *expanded = false;
     /* expand constant */
     dir = (dir_node *)AsmGetSymbol( tokbuf->tokens[i].string_ptr );
-    if( dir != NULL ) {
-        switch( dir->sym.state ) {
-        case SYM_CONST:
-            if( !dir->e.constinfo->expand_early && early_only )
-                break;
+    if( dir != NULL && dir->sym.state == SYM_CONST ) {
+        if( dir->e.constinfo->expand_early || !early_only ) {
             DebugMsg(( "Expand Constant: %s ->", dir->sym.name ));
             /* insert the pre-scanned data for this constant */
             count = dir->e.constinfo->count;
@@ -110,7 +107,6 @@ bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *exp
                 return( RC_ERROR );
             }
             *expanded = true;
-            break;
         }
     }
     return( RC_OK );
@@ -542,6 +538,7 @@ bool ExpandAllConsts( token_buffer *tokbuf, token_idx start_pos, bool early_only
             continue;
         if( ExpandSymbol( tokbuf, i, early_only, &expanded ) )
             return( RC_ERROR );
+        Token_Count = tokbuf->count;
         if( expanded ) {
             i--; // in case the new symbol also needs to be expanded
             continue;

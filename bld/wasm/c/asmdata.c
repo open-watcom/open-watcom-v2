@@ -383,6 +383,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
 
             if( ExpandSymbol( tokbuf, i, false, &expanded ) )
                 return( INVALID_IDX );
+            Token_Count = tokbuf->count;
             if( expanded ) {
                 continue;
             }

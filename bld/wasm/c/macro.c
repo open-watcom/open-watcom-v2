@@ -306,7 +306,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     i += 2;
 
     if( store_data ) {
-        for( ; i < Token_Count ; ) {
+        for( ; i < tokbuf->count ; ) {
             paranode = AsmAlloc( sizeof( parm_list ) );
             paranode->def = NULL;
             paranode->replace = NULL;
@@ -337,7 +337,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                     i++;
                 }
             }
-            if( i < Token_Count && tokbuf->tokens[i].class != TC_COMMA ) {
+            if( i < tokbuf->count && tokbuf->tokens[i].class != TC_COMMA ) {
                 AsmError( EXPECTING_COMMA );
                 return( RC_ERROR );
             }
@@ -642,6 +642,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
                             free_parmlist( info->parmlist );
                             return( INVALID_IDX );
                         }
+                        Token_Count = tokbuf->count;
                         if( expanded ) {
                             tok_count = Token_Count;
                             continue;
