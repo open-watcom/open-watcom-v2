@@ -908,13 +908,13 @@ static bool proc_check( token_buffer *tokbuf, const char *curline, bool *prolog 
  */
 {
     *prolog = false;
-    if( ( CurrProc == NULL ) || ( Token_Count == 0 ) || !DefineProc )
+    if( ( CurrProc == NULL ) || ( tokbuf->count == 0 ) || !DefineProc )
         return( RC_OK );
 
     if( tokbuf->tokens[0].class == TC_DIRECTIVE )
         return( RC_OK );
 
-    if( Token_Count > 1 ) {
+    if( tokbuf->count > 1 ) {
         if( ( tokbuf->tokens[1].class == TC_DIRECTIVE )
           || ( tokbuf->tokens[1].class == TC_DIRECT_EXPR ) ) {
             return( RC_OK );
@@ -2337,7 +2337,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
     SegOverride = NULL;
 #endif
 
-    for( i = 0; i < Token_Count; i++ ) {
+    for( i = 0; i < tokbuf->count; i++ ) {
         switch( tokbuf->tokens[i].class ) {
         case TC_INSTR:
 //            ExpandTheWorld( i, false, true );
@@ -2379,7 +2379,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
             case T_RET:
                 if( ( CurrProc != NULL ) && !in_epilogue ) {
                     in_epilogue = true;
-                    return( Ret( tokbuf, i, Token_Count, false ) );
+                    return( Ret( tokbuf, i, false ) );
                 }
                 /* fall through */
             case T_RETN:
@@ -2391,7 +2391,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
             case T_IRETD:
                 if( ( CurrProc != NULL ) && !in_epilogue ) {
                     in_epilogue = true;
-                    return( Ret( tokbuf, i, Token_Count, true ) );
+                    return( Ret( tokbuf, i, true ) );
                 }
                 /* fall through */
             case T_IRETF:
@@ -2401,7 +2401,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
                 break;
             case T_CALL:
                 if( Options.mode & MODE_IDEAL ) {
-                    for( n = i + 2; n < Token_Count; n++ ) {
+                    for( n = i + 2; n < tokbuf->count; n++ ) {
                         if( !CheckForLang( tokbuf, n, &temp ) ) {
                             return( expand_call( tokbuf, n + 1, temp ) );
                         }
@@ -2414,7 +2414,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
                 break;
             }
             i++;
-            if( EvalOperand( tokbuf, &i, Token_Count, &opndx, true ) ) {
+            if( EvalOperand( tokbuf, &i, tokbuf->count, &opndx, true ) ) {
                 return( RC_ERROR );
             }
             if( opndx.empty )
@@ -2455,7 +2455,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
             if( Parse_Pass != PASS_1 ) {
                 Modend = true;
                 n = i + 1;
-                if( EvalOperand( tokbuf, &n, Token_Count, &opndx, true ) ) {
+                if( EvalOperand( tokbuf, &n, tokbuf->count, &opndx, true ) ) {
                     return( RC_ERROR );
                 }
                 if( !opndx.empty && ( opndx.type == EXPR_ADDR ) ) {
@@ -2474,7 +2474,6 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
                 bool expanded;
                 if( ExpandSymbol( tokbuf, i, false, &expanded ) )
                     return( RC_ERROR );
-                Token_Count = tokbuf->count;
                 if( expanded ) {
                     // restart token processing
                     i--;
@@ -2543,7 +2542,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
             Frame = NULL;
             SegOverride = NULL;
 #endif
-            if( EvalOperand( tokbuf, &i, Token_Count, &opndx, true ) ) {
+            if( EvalOperand( tokbuf, &i, tokbuf->count, &opndx, true ) ) {
                 return( RC_ERROR );
             }
             Opnd_Count++;

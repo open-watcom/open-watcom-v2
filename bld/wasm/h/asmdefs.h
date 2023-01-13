@@ -109,7 +109,6 @@ extern char             Parse_Pass;     // phase of parsing
 extern operand_idx      Opnd_Count;
 extern bool             Modend;         // end of module is reached
 extern bool             Use32;          // if 32-bit code is use
-extern token_idx        Token_Count;    // number of tokens on line
 
 extern void             AsmByte( unsigned char );
 extern bool             AsmScan( token_buffer *tokbuf, const char * );

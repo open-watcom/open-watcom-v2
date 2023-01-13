@@ -782,7 +782,7 @@ void FreeInfo( dir_node *dir )
         if( !dir->e.constinfo->predef ) {
 #ifdef DEBUG_OUT
             if( ( dir->e.constinfo->count > 0 )
-                && ( dir->e.constinfo->tokens[0].class != TC_NUM ) ) {
+              && ( dir->e.constinfo->tokens[0].class != TC_NUM ) ) {
                 DebugMsg( ( "freeing const(String): %s = ", dir->sym.name ) );
             } else {
                 DebugMsg( ( "freeing const(Number): %s = ", dir->sym.name ) );
@@ -1147,7 +1147,7 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
     int                 lang_type;
 
     mangle_type = Check4Mangler( tokbuf, &i );
-    for( ; i < Token_Count; i++ ) {
+    for( ; i < tokbuf->count; i++ ) {
 
         /* get the symbol language type if present */
         lang_type = GetLangType( tokbuf, &i );
@@ -1173,7 +1173,7 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
         } else {
             mem_type = TypeInfo[type].value;
         }
-        for( ; i < Token_Count && tokbuf->tokens[i].class != TC_COMMA; i++ )
+        for( ; i < tokbuf->count && tokbuf->tokens[i].class != TC_COMMA; i++ )
             {}
 
         dir = (dir_node *)AsmGetSymbol( token );
@@ -1221,7 +1221,7 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
     int                 lang_type;
 
     mangle_type = Check4Mangler( tokbuf, &i );
-    for( ; i < Token_Count; i += 2 ) {
+    for( ; i < tokbuf->count; i += 2 ) {
 
         /* get the symbol language type if present */
         lang_type = GetLangType( tokbuf, &i );
@@ -1309,7 +1309,7 @@ bool GrpDef( token_buffer *tokbuf, token_idx i )
     if( grp == NULL )
         return( RC_ERROR );
 
-    for( ; i < Token_Count;     // stop at the end of the line
+    for( ; i < tokbuf->count;     // stop at the end of the line
          i += 2 ) {             // skip over commas
         name = tokbuf->tokens[i].string_ptr;
         /* Add the segment name */
@@ -1499,7 +1499,8 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
     if( Options.mode & MODE_IDEAL ) {
         if( i > 0 ) {
             n = INVALID_IDX;
-        } else if( tokbuf->tokens[i].u.token == T_ENDS || tokbuf->tokens[i + 1].class != TC_FINAL ) {
+        } else if( tokbuf->tokens[i].u.token == T_ENDS
+          || tokbuf->tokens[i + 1].class != TC_FINAL ) {
             n = i + 1;
         } else {
             n = INVALID_IDX;
@@ -1573,7 +1574,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
         } else {
             i++;        /* Go past SEGMENT */
         }
-        for( ; i < Token_Count; i++ ) {
+        for( ; i < tokbuf->count; i++ ) {
             if( tokbuf->tokens[i].class == TC_STRING ) {
 
                 /* the class name - the only token which is of type STRING */
@@ -1985,7 +1986,7 @@ bool SimSeg( token_buffer *tokbuf, token_idx i )
     type = tokbuf->tokens[i].u.token;
     i++; /* get past the directive token */
     name = NULL;
-    if( i < Token_Count ) {
+    if( i < tokbuf->count ) {
         name = tokbuf->tokens[i].string_ptr;
     }
     switch( type ) {
@@ -2009,7 +2010,7 @@ bool SimSeg( token_buffer *tokbuf, token_idx i )
         if( ModuleInfo.model != MOD_FLAT ) {
             InputQueueLine( input_dgroup( name, seg, buffer ) );
         }
-        if( i < Token_Count ) {
+        if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class != TC_NUM ) {
                 AsmError( CONSTANT_EXPECTED );
                 return( RC_ERROR );
@@ -2212,7 +2213,7 @@ static void get_module_name( void )
     ModuleInfo.name = AsmStrDup( pg.fname );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
         if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
-            || ( *p == '@' ) || ( *p == '?' ) ) ) {
+          || ( *p == '@' ) || ( *p == '?' ) ) ) {
             /* it's not a legal character for a symbol name */
             *p = '_';
         }
@@ -2283,7 +2284,7 @@ bool Model( token_buffer *tokbuf, token_idx i )
         }
     }
 
-    for( i++; i < Token_Count; i++ ) {
+    for( i++; i < tokbuf->count; i++ ) {
 
         token = tokbuf->tokens[i].string_ptr;
         wipe_space( token );
@@ -2355,7 +2356,7 @@ bool Model( token_buffer *tokbuf, token_idx i )
         i++;
 
         /* go past comma */
-        if( ( i < Token_Count ) && ( tokbuf->tokens[i].class != TC_COMMA ) ) {
+        if( ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( RC_ERROR );
         }
@@ -2397,7 +2398,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
     struct asm_sym  *sym;
 
 
-    for( i++; i < Token_Count; i++ ) {
+    for( i++; i < tokbuf->count; i++ ) {
 
         token = tokbuf->tokens[i].string_ptr;
         wipe_space( token );
@@ -2415,7 +2416,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
         i++;
 
         if( ( tokbuf->tokens[i].class == TC_UNARY_OPERATOR )
-            && ( tokbuf->tokens[i].u.token == T_SEG ) ) {
+          && ( tokbuf->tokens[i].u.token == T_SEG ) ) {
             i++;
         }
 
@@ -2434,7 +2435,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
             return( RC_ERROR );
         }
         if( ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )
-            && ( ( reg == TOK_FS ) || ( reg == TOK_GS ) ) ) {
+          && ( ( reg == TOK_FS ) || ( reg == TOK_GS ) ) ) {
             AsmError( INVALID_REGISTER );
             return( RC_ERROR );
         }
@@ -2458,7 +2459,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
             sym = AsmLookup( segloc );
             if( sym == NULL )
                 return( RC_ERROR );
-            if ( ( Parse_Pass != PASS_1 ) && ( sym->state == SYM_UNDEFINED ) ) {
+            if( ( Parse_Pass != PASS_1 ) && ( sym->state == SYM_UNDEFINED ) ) {
                 AsmErr( SYMBOL_NOT_DEFINED, segloc );
                 return( RC_ERROR );
             }
@@ -2468,7 +2469,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
         }
 
         /* go past comma */
-        if( ( i < Token_Count ) && ( tokbuf->tokens[i].class != TC_COMMA ) ) {
+        if( ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( RC_ERROR );
         }
@@ -2628,8 +2629,8 @@ enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
         Frame = sym_assume;
     }
     if( ( sym->segment == sym_assume )
-        || ( GetGrp( sym ) == sym_assume )
-        || ( sym->state == SYM_EXTERNAL ) ) {
+      || ( GetGrp( sym ) == sym_assume )
+      || ( sym->state == SYM_EXTERNAL ) ) {
         return( prefix );
     } else {
         return( ASSUME_NOTHING );
@@ -2667,8 +2668,8 @@ enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
     return( ASSUME_NOTHING );
 }
 
-bool ModuleEnd( token_buffer *tokbuf, token_idx count )
-/*****************************************************/
+bool ModuleEnd( token_buffer *tokbuf )
+/************************************/
 {
     char        buffer[MAX_LINE_LEN];
     token_idx   i;
@@ -2684,14 +2685,14 @@ bool ModuleEnd( token_buffer *tokbuf, token_idx count )
         p = CATLIT( buffer, "END" );
         if( StartupDirectiveFound ) {
             StartupDirectiveFound = false;
-            if( count > 1 ) {
+            if( tokbuf->count > 1 ) {
                 AsmError( SYNTAX_ERROR );
             }
             *p++ = ' ';
             len = strlen( StartAddr );
             p = CATSTR( p, StartAddr, len );
         } else {
-            for( i = 1; i < count; ++i ) {
+            for( i = 1; i < tokbuf->count; ++i ) {
                 *p++ = ' ';
                 len = strlen( tokbuf->tokens[i].string_ptr );
                 p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
@@ -2704,7 +2705,7 @@ bool ModuleEnd( token_buffer *tokbuf, token_idx count )
 
     EndDirectiveFound = true;
 
-    if( count == 1 ) {
+    if( tokbuf->count == 1 ) {
         return( RC_OK );
     }
 
@@ -2748,8 +2749,8 @@ static int find_size( int type )
             ptr_size = 2;
         }
         if( (ModuleInfo.model == MOD_COMPACT)
-         || (ModuleInfo.model == MOD_LARGE)
-         || (ModuleInfo.model == MOD_HUGE) ) {
+          || (ModuleInfo.model == MOD_LARGE)
+          || (ModuleInfo.model == MOD_HUGE) ) {
             ptr_size += 2;      /* add segment for far data pointers */
         }
         return( ptr_size );
@@ -2854,7 +2855,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 
     info = CurrProc->e.procinfo;
 
-    for( i++; i < Token_Count; i++ ) {
+    for( i++; i < tokbuf->count; i++ ) {
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( LABEL_IS_EXPECTED );
             return( RC_ERROR );
@@ -2881,15 +2882,15 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
         local->next = NULL;
         local->is_register = false;
 
-        if( i < Token_Count ) {
+        if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_OP_SQ_BRACKET ) {
                 i++;
-                if( ( tokbuf->tokens[i].class != TC_NUM ) || ( i >= Token_Count ) ) {
+                if( ( tokbuf->tokens[i].class != TC_NUM ) || ( i >= tokbuf->count ) ) {
                     AsmError( SYNTAX_ERROR );
                     return( RC_ERROR );
                 }
                 local->factor = tokbuf->tokens[i++].u.value;
-                if( ( tokbuf->tokens[i].class != TC_CL_SQ_BRACKET ) || ( i >= Token_Count ) ) {
+                if( ( tokbuf->tokens[i].class != TC_CL_SQ_BRACKET ) || ( i >= tokbuf->count ) ) {
                     AsmError( EXPECTED_CL_SQ_BRACKET );
                     return( RC_ERROR );
                 }
@@ -2897,7 +2898,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
             }
         }
 
-        if( i < Token_Count ) {
+        if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class != TC_COLON ) {
                 AsmError( COLON_EXPECTED );
                 return( RC_ERROR );
@@ -2941,9 +2942,9 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 
         switch( tokbuf->tokens[++i].class ) {
         case TC_DIRECTIVE:
-            if( ( tokbuf->tokens[i].u.token == T_EQU2 ) &&
-                ( tokbuf->tokens[i + 1].class == TC_ID ) &&
-                ( tokbuf->tokens[i + 2].class == TC_FINAL ) ) {
+            if( ( tokbuf->tokens[i].u.token == T_EQU2 )
+              && ( tokbuf->tokens[i + 1].class == TC_ID )
+              && ( tokbuf->tokens[i + 2].class == TC_FINAL ) ) {
                 i++;
                 StoreConstantNumber( tokbuf->tokens[i++].string_ptr, info->localsize, true );
             }
@@ -3002,11 +3003,11 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
 
     info = CurrProc->e.procinfo;
 
-    if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C ) &&
-        ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
+    if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C )
+      && ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
         parameter_on_stack = false;
     }
-    for( i++; i < Token_Count; i++ ) {
+    for( i++; i < tokbuf->count; i++ ) {
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( LABEL_IS_EXPECTED );
             return( RC_ERROR );
@@ -3129,9 +3130,9 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
         }
         switch( tokbuf->tokens[++i].class ) {
         case TC_DIRECTIVE:
-            if( ( tokbuf->tokens[i].u.token == T_EQU2 ) &&
-                ( tokbuf->tokens[i + 1].class == TC_ID ) &&
-                ( tokbuf->tokens[i + 2].class == TC_FINAL ) ) {
+            if( ( tokbuf->tokens[i].u.token == T_EQU2 )
+              && ( tokbuf->tokens[i + 1].class == TC_ID )
+              && ( tokbuf->tokens[i + 2].class == TC_FINAL ) ) {
                 i++;
                 StoreConstantNumber( tokbuf->tokens[i++].string_ptr, info->parasize, true );
             }
@@ -3172,7 +3173,7 @@ bool UsesDef( token_buffer *tokbuf, token_idx i )
 
     info = CurrProc->e.procinfo;
 
-    for( i++; ( i < Token_Count ) && ( tokbuf->tokens[i].class != TC_FINAL ); i++ ) {
+    for( i++; ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_FINAL ); i++ ) {
         regist = AsmAlloc( sizeof( regs_list ));
         regist->next = NULL;
         regist->reg = AsmStrDup( tokbuf->tokens[i].string_ptr );
@@ -3252,8 +3253,8 @@ bool EnumDef( token_buffer *tokbuf, token_idx i )
                 return( RC_ERROR );
             }
             if( n ) {
-                if( ( tokbuf->tokens[i + 1].class == TC_DIRECTIVE ) &&
-                    ( tokbuf->tokens[i + 1].u.token == T_EQU2 ) ) {
+                if( ( tokbuf->tokens[i + 1].class == TC_DIRECTIVE )
+                  && ( tokbuf->tokens[i + 1].u.token == T_EQU2 ) ) {
                     i += 2;
                     switch( tokbuf->tokens[i].class ) {
                     case TC_NUM:
@@ -3285,10 +3286,7 @@ bool EnumDef( token_buffer *tokbuf, token_idx i )
                         AsmError( UNEXPECTED_END_OF_FILE );
                         return( RC_ERROR );
                     }
-                    Token_Count = INVALID_IDX;
-                    if( !AsmScan( tokbuf, string ) ) {
-                        Token_Count = tokbuf->count;
-                    }
+                    AsmScan( tokbuf, string );
                 }
             }
             break;
@@ -3338,7 +3336,7 @@ static bool proc_exam( dir_node *proc, token_buffer *tokbuf, token_idx i )
     info->pe_type = ( ( Code->info.cpu & P_CPU_MASK ) == P_286 ) || ( ( Code->info.cpu & P_CPU_MASK ) == P_386 );
 
     /* Parse the definition line, except the parameters */
-    for( i++; i < Token_Count && tokbuf->tokens[i].class != TC_COMMA; i++ ) {
+    for( i++; i < tokbuf->count && tokbuf->tokens[i].class != TC_COMMA; i++ ) {
         token = tokbuf->tokens[i].string_ptr;
         if( tokbuf->tokens[i].class == TC_STRING ) {
             /* name mangling */
@@ -3390,7 +3388,7 @@ static bool proc_exam( dir_node *proc, token_buffer *tokbuf, token_idx i )
             minimum = TOK_PROC_USES;
             break;
         case TOK_PROC_USES:
-            for( i++; ( i < Token_Count ) && ( tokbuf->tokens[i].class != TC_COMMA ); i++ ) {
+            for( i++; ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_COMMA ); i++ ) {
                 token = tokbuf->tokens[i].string_ptr;
                 regist = AsmAlloc( sizeof( regs_list ));
                 regist->next = NULL;
@@ -3420,7 +3418,7 @@ parms:
     DefineProc = true;
     proc->sym.mem_type = info->mem_type;
 
-    if( i >= Token_Count ) {
+    if( i >= tokbuf->count ) {
         return( RC_OK );
     } else if( ( proc->sym.langtype == WASM_LANG_NONE ) && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
         AsmError( LANG_MUST_BE_SPECIFIED );
@@ -3435,7 +3433,7 @@ parms:
     unused_stack_space = 0;
 
     /* now parse parms */
-    for( ; i < Token_Count; i++ ) {
+    for( ; i < tokbuf->count; i++ ) {
         /* read symbol */
         token = tokbuf->tokens[i++].string_ptr;
 
@@ -3539,7 +3537,7 @@ parms:
         }
         /* go past comma */
         i++;
-        if( ( i < Token_Count ) && ( tokbuf->tokens[i].class != TC_COMMA ) ) {
+        if( ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( RC_ERROR );
         }
@@ -3766,9 +3764,9 @@ bool WritePrologue( const char *curline )
         }
         if( Use32 )
             offset *= 2;
-        if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C ) &&
-            ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
-            !info->is_vararg ) {
+        if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C )
+          && ( Options.watcom_parms_passed_by_regs || !Use32 )
+          && !info->is_vararg ) {
             parameter_on_stack = false;
         }
         for( curr = info->paralist; curr != NULL; curr = curr->next ) {
@@ -3825,8 +3823,10 @@ bool WritePrologue( const char *curline )
         return( RC_OK );
     in_prologue = true;
     PushLineQueue();
-    if( ( info->localsize != 0 ) || ( info->parasize != 0 ) ||
-        ( info->is_vararg ) || Options.trace_stack == 2 ) {
+    if( ( info->localsize != 0 )
+      || ( info->parasize != 0 )
+      || ( info->is_vararg )
+      || Options.trace_stack == 2 ) {
         //
         // prolog code timmings
         //
@@ -3905,8 +3905,10 @@ static void write_epilogue( void )
     /* Pop the registers */
     pop_registers( CurrProc->e.procinfo->regslist );
 
-    if( ( info->localsize == 0 ) && ( info->parasize == 0 ) &&
-        ( !info->is_vararg ) && Options.trace_stack != 2 ) {
+    if( ( info->localsize == 0 )
+      && ( info->parasize == 0 )
+      && ( !info->is_vararg )
+      && Options.trace_stack != 2 ) {
         return;
     }
     // epilog code timmings
@@ -3999,8 +4001,8 @@ static void write_epilogue( void )
     }
 }
 
-bool Ret( token_buffer *tokbuf, token_idx i, token_idx count, bool flag_iret )
-/****************************************************************************/
+bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
+/***********************************************************/
 {
     char        buffer[40];
     proc_info   *info;
@@ -4027,7 +4029,7 @@ bool Ret( token_buffer *tokbuf, token_idx i, token_idx count, bool flag_iret )
     write_epilogue();
 
     if( !flag_iret ) {
-        if( count == i + 1 ) {
+        if( tokbuf->count == i + 1 ) {
             switch( CurrProc->sym.langtype ) {
             case WASM_LANG_BASIC:
             case WASM_LANG_FORTRAN:
@@ -4042,9 +4044,9 @@ bool Ret( token_buffer *tokbuf, token_idx i, token_idx count, bool flag_iret )
                 }
                 break;
             case WASM_LANG_WATCOM_C:
-                if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
-                    !info->is_vararg &&
-                    ( info->parasize != 0 ) ) {
+                if( ( Options.watcom_parms_passed_by_regs || !Use32 )
+                  && !info->is_vararg
+                  && ( info->parasize != 0 ) ) {
                     sprintf( p, "%lu", info->parasize );
                 }
                 break;
@@ -4053,7 +4055,8 @@ bool Ret( token_buffer *tokbuf, token_idx i, token_idx count, bool flag_iret )
             }
         } else {
             ++i;
-            if( EvalOperand( tokbuf, &i, count, &opndx, true ) || (opndx.type != EXPR_CONST) ) {
+            if( EvalOperand( tokbuf, &i, tokbuf->count, &opndx, true )
+              || (opndx.type != EXPR_CONST) ) {
                 AsmError( CONSTANT_EXPECTED );
                 return( RC_ERROR );
             }
@@ -4170,7 +4173,7 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
     memtype         mem_type;
 
     mangle_type = Check4Mangler( tokbuf, &i );
-    for( ; i < Token_Count; i++ ) {
+    for( ; i < tokbuf->count; i++ ) {
         count = 1;
 
         /* get the distance ( near or far ) */
@@ -4203,7 +4206,7 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
             AsmError( INVALID_QUALIFIED_TYPE );
             return( RC_ERROR );
         }
-        for( ; i< Token_Count && tokbuf->tokens[i].class != TC_COMMA; i++ ) {
+        for( ; i< tokbuf->count && tokbuf->tokens[i].class != TC_COMMA; i++ ) {
             if( tokbuf->tokens[i].class == TC_COLON ) {
                 i++;
                 /* count */
@@ -4241,16 +4244,16 @@ bool Locals( token_buffer *tokbuf, token_idx i )
 /**********************************************/
 {
     Options.locals_len = ( tokbuf->tokens[i].u.token == T_LOCALS ) ? 2 : 0;
-    if( i + 1 == Token_Count ) {
+    if( i + 1 == tokbuf->count ) {
         return( RC_OK );
     }
     if( tokbuf->tokens[i].u.token == T_LOCALS ) {
         ++i;
-        if( i < Token_Count && tokbuf->tokens[i].class == TC_ID
+        if( i < tokbuf->count && tokbuf->tokens[i].class == TC_ID
             && strlen( tokbuf->tokens[i].string_ptr ) >= 2 ) {
             Options.locals_prefix[0] = tokbuf->tokens[i].string_ptr[0];
             Options.locals_prefix[1] = tokbuf->tokens[i].string_ptr[1];
-            if( Token_Count - i == 1 && strlen( tokbuf->tokens[i].string_ptr ) == 2 ) {
+            if( tokbuf->count - i == 1 && strlen( tokbuf->tokens[i].string_ptr ) == 2 ) {
                 return( RC_OK );
             }
         }

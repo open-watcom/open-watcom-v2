@@ -151,7 +151,7 @@ bool AlignDirective( asm_token directive, token_buffer *tokbuf, token_idx i )
                 return( RC_ERROR );
             }
         } else {
-            if( Token_Count == i + 1 ) {
+            if( tokbuf->count == i + 1 ) {
                 align_val = GetCurrSegAlign();
             } else {
                 AsmError( EXPECTING_NUMBER );

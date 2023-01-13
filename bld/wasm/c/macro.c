@@ -495,8 +495,8 @@ static void free_parmlist( parm_list *head )
     return;
 }
 
-token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
-/****************************************************************/
+bool ExpandMacro( token_buffer *tokbuf )
+/**************************************/
 {
     char        buffer[MAX_LINE_LEN];
     dir_node    *dir;
@@ -514,11 +514,11 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
     size_t      len;
 
     if( tokbuf->tokens[0].class == TC_FINAL )
-        return( tok_count );
+        return( RC_OK );
     /*
      * first, find out if it is a macro
      */
-    for( macro_name_loc = 0; macro_name_loc < tok_count; macro_name_loc++ ) {
+    for( macro_name_loc = 0; macro_name_loc < tokbuf->count; macro_name_loc++ ) {
         if( tokbuf->tokens[macro_name_loc].class == TC_ID ) {
             sym = AsmGetSymbol( tokbuf->tokens[macro_name_loc].string_ptr );
         }
@@ -527,7 +527,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
         }
     }
     if( sym == NULL || sym->state != SYM_MACRO ) {
-        return( tok_count );
+        return( RC_OK );
     }
     if( macro_name_loc > 0 || (Options.mode & MODE_IDEAL) == 0 ) {
         if( Options.mode & MODE_IDEAL ) {
@@ -538,7 +538,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
         if( tokbuf->tokens[i].class == TC_DIRECTIVE
           && tokbuf->tokens[i].u.token == T_MACRO ) {
             /* this is a macro DEFINITION! */
-            return( tok_count );
+            return( RC_OK );
         }
     }
     if( macro_name_loc != 0 ) {
@@ -566,7 +566,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
 
     for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
         p = buffer;
-        if( i < tok_count ) {
+        if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_COMMA
               || ( tokbuf->tokens[i].class == TC_STRING
                 && strlen( tokbuf->tokens[i].string_ptr ) == 0 ) ) {
@@ -575,7 +575,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
                  */
                 if( parm->required ) {
                     AsmError( PARM_REQUIRED );
-                    return( INVALID_IDX );
+                    return( RC_ERROR );
                 }
                 if( parm->def ) {
                     /*
@@ -585,10 +585,10 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
                 }
                 if( tokbuf->tokens[i].class != TC_COMMA ) {
                     i++;
-                    if( i < tok_count &&
+                    if( i < tokbuf->count &&
                         tokbuf->tokens[i].class != TC_COMMA ) {
                         AsmError( EXPECTING_COMMA );
-                        return( INVALID_IDX );
+                        return( RC_ERROR );
                     }
                 }
                 /*
@@ -611,7 +611,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
                     if( !expansion_flag ) {
                         if( tokbuf->tokens[i].class == TC_COMMA ||
                             tokbuf->tokens[i].string_ptr == NULL ||
-                            i == tok_count ) {
+                            i == tokbuf->count ) {
                             break;
                         }
                         if( tokbuf->tokens[i].class == TC_NUM ) {
@@ -640,11 +640,9 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
                         bool expanded;
                         if( ExpandSymbol( tokbuf, i, false, &expanded ) ) {
                             free_parmlist( info->parmlist );
-                            return( INVALID_IDX );
+                            return( RC_ERROR );
                         }
-                        Token_Count = tokbuf->count;
                         if( expanded ) {
-                            tok_count = Token_Count;
                             continue;
                         }
 
@@ -653,9 +651,8 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
                             tokbuf->tokens[i + 1].class == TC_FINAL ) {
                             if( tokbuf->tokens[i + 1].class == TC_FINAL )
                                 i++;
-                            tok_count = EvalExpr( tokbuf, tok_count, exp_start, i - 1, true );
+                            tokbuf->count = EvalExpr( tokbuf, exp_start, i - 1, true );
                             expansion_flag = false;
-                            Token_Count = tok_count;
                             i = exp_start;
                         }
                     }
@@ -671,7 +668,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
         } else {
             if( parm->required ) {
                 AsmError( PARM_REQUIRED );
-                return( INVALID_IDX );
+                return( RC_ERROR );
             }
         }
     }
@@ -691,7 +688,7 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
                 AsmScan( tokbuf, line );
                 if( macro_local( tokbuf ) ) {
                     AsmFree( line );
-                    return( INVALID_IDX );
+                    return( RC_ERROR );
                 }
                 AsmFree( line );
                 continue;
@@ -718,7 +715,11 @@ token_idx ExpandMacro( token_buffer *tokbuf, token_idx tok_count )
      */
     free_parmlist( info->parmlist );
 
-    return( 0 );
+    tokbuf->count = 0;
+    tokbuf->tokens[0].class = TC_FINAL;
+    tokbuf->tokens[0].string_ptr = tokbuf->stringbuf;
+
+    return( RC_OK );
 }
 
 bool MacroDef( token_buffer *tokbuf, token_idx i, bool hidden )

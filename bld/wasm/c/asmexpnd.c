@@ -175,7 +175,7 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
                 }
                 if( i < index ) {
                     left_bracket = i;
-                    for( i = index + 1; i < Token_Count; i++ ) {
+                    for( i = index + 1; i < tokbuf->count; i++ ) {
                         if( tokbuf->tokens[i].class == TC_CL_SQ_BRACKET ) {
                             right_bracket = i;
                             break;
@@ -225,8 +225,8 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
 
     /* now we need to build the new line string to pass through the scanner */
     p = buffer;
-    /* NOTE: if we have a TC_DIRECTIVE, token_count is always set to 1 !??! */
-    for( i = 0; i < Token_Count; i++ ) {
+    /* NOTE: if we have a TC_DIRECTIVE, tokbuf->count is always set to 1 !??! */
+    for( i = 0; i < tokbuf->count; i++ ) {
         if( i != index ) {
             /* register parameter ? */
             if( label->is_register && !info->is_vararg ) {
@@ -538,7 +538,6 @@ bool ExpandAllConsts( token_buffer *tokbuf, token_idx start_pos, bool early_only
             continue;
         if( ExpandSymbol( tokbuf, i, early_only, &expanded ) )
             return( RC_ERROR );
-        Token_Count = tokbuf->count;
         if( expanded ) {
             i--; // in case the new symbol also needs to be expanded
             continue;
@@ -555,10 +554,10 @@ bool ExpandTheWorld( token_buffer *tokbuf, token_idx start_pos, bool early_only,
     if( ExpandAllConsts( tokbuf, start_pos, early_only ) )
         return( RC_ERROR );
     if( !early_only ) {
-        val = EvalExpr( tokbuf, Token_Count, start_pos, Token_Count, flag_msg );
+        val = EvalExpr( tokbuf, start_pos, tokbuf->count, flag_msg );
         if( ISINVALID_IDX( val ) )
             return( RC_ERROR );
-        Token_Count = val;
+        tokbuf->count = val;
     }
     return( RC_OK );
 }
@@ -571,10 +570,10 @@ bool ExpandTheConstant( token_buffer *tokbuf, token_idx start_pos, bool early_on
     if( ExpandAllConsts( tokbuf, start_pos, early_only ) )
         return( RC_ERROR );
     if( !early_only ) {
-        val = EvalConstant( tokbuf, Token_Count, start_pos + 2, Token_Count, flag_msg );
+        val = EvalConstant( tokbuf, start_pos + 2, tokbuf->count, flag_msg );
         if( ISINVALID_IDX( val ) )
             return( RC_ERROR );
-        Token_Count = val;
+        tokbuf->count = val;
     }
     return( RC_OK );
 }
@@ -588,10 +587,10 @@ bool ExpandTheWorld( token_buffer *tokbuf, token_idx start_pos, bool early_only,
 
     /* unused parameters */ (void)early_only;
 
-    val = EvalExpr( tokbuf, Token_Count, start_pos, Token_Count, flag_msg );
+    val = EvalExpr( tokbuf, start_pos, tokbuf->count, flag_msg );
     if( ISINVALID_IDX( val ) )
         return( RC_ERROR );
-    Token_Count = val;
+    tokbuf->count = val;
     return( RC_OK );
 }
 

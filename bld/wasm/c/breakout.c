@@ -368,7 +368,7 @@ bool directive( token_buffer *tokbuf, token_idx i, asm_token direct )
     case T_ASSUME:
         return( SetAssume( tokbuf, i ) );
     case T_END:
-        return( ModuleEnd( tokbuf, Token_Count ) );
+        return( ModuleEnd( tokbuf ) );
     case T_EQU:
         return( DefineConstant( tokbuf, i-1, false, false ) );
     case T_EQU2:

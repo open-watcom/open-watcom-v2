@@ -350,7 +350,7 @@ extern bool             LocalDef( token_buffer *tokbuf, token_idx );        // d
 extern bool             ArgDef( token_buffer *tokbuf, token_idx );          // define arguments in procedure
 extern bool             UsesDef( token_buffer *tokbuf, token_idx );         // define used registers in procedure
 extern bool             EnumDef( token_buffer *tokbuf, token_idx );         // handles enumerated values
-extern bool             Ret( token_buffer *tokbuf, token_idx, token_idx, bool ); // emit return statement from procedure
+extern bool             Ret( token_buffer *tokbuf, token_idx, bool );       // emit return statement from procedure
 extern bool             WritePrologue( const char * ); // emit prologue statement after the
                                                 // declaration of a procedure
 extern bool             GetQueueMacroHidden( void );
@@ -368,7 +368,7 @@ extern bool             CheckForLang( token_buffer *tokbuf, token_idx, int *lang
 extern void             ModuleInit( void );
 extern void             ModuleFini( void );
 
-extern bool             ModuleEnd( token_buffer *tokbuf, token_idx );       // handle END statement
+extern bool             ModuleEnd( token_buffer *tokbuf );                  // handle END statement
 
 extern bool             Locals( token_buffer *tokbuf, token_idx );          // handle [NO]LOCALS statement
 

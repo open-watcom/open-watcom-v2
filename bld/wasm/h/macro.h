@@ -33,6 +33,6 @@
 #ifndef _MACRO_H_
 #define _MACRO_H_
 
-extern token_idx        ExpandMacro( token_buffer *tokbuf, token_idx );
+extern bool     ExpandMacro( token_buffer *tokbuf );
 
 #endif

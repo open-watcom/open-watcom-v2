@@ -2137,19 +2137,20 @@ static void fix_final( token_buffer *tokbuf )
     }
 }
 
-token_idx EvalExpr( token_buffer *tokbuf, token_idx count, token_idx start_tok, token_idx end_tok, bool flag_msg )
-/****************************************************************************************************************/
+token_idx EvalExpr( token_buffer *tokbuf, token_idx start_tok, token_idx end_tok, bool flag_msg )
+/***********************************************************************************************/
 {
     token_idx   i = start_tok;
     token_idx   start;          // position of first token of an expression
     token_idx   num;            // number of tokens in the expression
     bool        final = false;
     expr_list   result;
+    token_idx   count;
 
     if( tokbuf->tokens[end_tok].class == TC_FINAL )
         final = true;
 
-    TokCnt = count;
+    TokCnt = count = tokbuf->count;
 
     if( fix_parens( tokbuf ) ) {
         // take out those parentheses which are not part of an expression
@@ -2199,8 +2200,8 @@ token_idx EvalExpr( token_buffer *tokbuf, token_idx count, token_idx start_tok, 
     fix_final( tokbuf );
 
     if( tokbuf->tokens[TokCnt].class == TC_NOOP || final ) {
-        tokbuf->tokens[ TokCnt ].class = TC_FINAL;
-        tokbuf->tokens[ TokCnt ].string_ptr = NULL;
+        tokbuf->tokens[TokCnt].class = TC_FINAL;
+        tokbuf->tokens[TokCnt].string_ptr = NULL;
     }
 
     return( TokCnt );
@@ -2307,13 +2308,13 @@ static bool is_expr_const( token_idx i )
 
 #if defined( _STANDALONE_ )
 
-token_idx EvalConstant( token_buffer *tokbuf, token_idx count, token_idx start_tok, token_idx end_tok, bool flag_msg )
-/********************************************************************************************************************/
+token_idx EvalConstant( token_buffer *tokbuf, token_idx start_tok, token_idx end_tok, bool flag_msg )
+/***************************************************************************************************/
 {
     token_idx   i;
 //    bool        const_expr = true;
 
-    TokCnt = count;
+    TokCnt = tokbuf->count;
     error_msg = flag_msg;
     for( i = start_tok; i < TokCnt && i <= end_tok; ++i ) {
         if( !is_expr1( tokbuf, i ) ) {
