@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1019,10 +1019,10 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
 /*************************************************************/
 /* CHANGE WARNING LEVEL FOR A MESSAGE */
 {
-    int     msg_index;
+    unsigned    msg_index;
 
     msg_index = GetMsgIndex( msgnum );
-    if( msg_index < 0 ) {
+    if( IS_MSGIDX_INVALID( msg_index ) ) {
         CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
@@ -1060,10 +1060,10 @@ static void warnChangeLevels( unsigned level )
 void WarnEnableDisable( bool enabled, msg_codes msgnum )
 /******************************************************/
 {
-    int     msg_index;
+    unsigned    msg_index;
 
     msg_index = GetMsgIndex( msgnum );
-    if( msg_index < 0 ) {
+    if( IS_MSGIDX_INVALID( msg_index ) ) {
         CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }

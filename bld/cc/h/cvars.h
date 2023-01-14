@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,9 @@
 #define MAX_LEVEL       1024
 #define USER_LIB_PRIO   '9'
 #define ERRLIMIT_NOMAX  ((unsigned)-1)
+
+#define MSGIDX_INVALID  (-1)
+#define IS_MSGIDX_INVALID(m)  ((int)(m) == MSGIDX_INVALID)
 
 #define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
 #define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
@@ -642,7 +645,7 @@ extern void         FiniMsg( void );
 extern char const   *UsageText( void );   // GET INTERNATIONAL USAGE TEXT
 //extern msg_type     CGetMsgType( msg_codes msgnum );
 extern char const   *CGetMsgPrefix( msg_codes msgnum );
-extern int          GetMsgIndex( msg_codes msgnum );
+extern unsigned     GetMsgIndex( msg_codes msgnum );
 
 /* coptions */
 extern bool         EqualChar(int);

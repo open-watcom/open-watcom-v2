@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,12 +95,12 @@ static bool okToPrintMsg( msg_codes msgnum, int *plevel )
 /*******************************************************/
 /* See if OK to print message */
 {
-    bool    ok;
-    int     level;
-    int     msg_index;
+    bool        ok;
+    int         level;
+    unsigned    msg_index;
 
     msg_index = GetMsgIndex( msgnum );
-    if( msg_index < 0 )
+    if( IS_MSGIDX_INVALID( msg_index ) )
         return( false );
     ok = msg_level[msg_index].enabled;
     level = msg_level[msg_index].level;
