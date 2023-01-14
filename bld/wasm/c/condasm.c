@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include "directiv.h"
 #include "asmexpnd.h"
+#include "macro.h"
 #include "condasm.h"
 #include "myassert.h"
 
@@ -49,7 +50,6 @@ typedef enum if_state {
                                everything until we see an endif */
 } if_state;
 
-extern int          MacroExitState;
 
 static if_state     CurState = ACTIVE;
 static int_8        NestLevel = 0;
@@ -110,7 +110,7 @@ void prep_line_for_conditional_assembly( char *line )
     *end = fix;
     if( ins == NULL ) {
         /* if it is not in the table */
-        if( CurState == LOOKING_FOR_TRUE_COND || CurState == DONE || MacroExitState ) {
+        if( CurState == LOOKING_FOR_TRUE_COND || CurState == DONE || MacroIntState ) {
             *line = '\0';
         }
         return;
@@ -147,7 +147,7 @@ void prep_line_for_conditional_assembly( char *line )
     case T_IFNDEF:
         break;
     default:
-        if( CurState == LOOKING_FOR_TRUE_COND || CurState == DONE || MacroExitState ) {
+        if( CurState == LOOKING_FOR_TRUE_COND || CurState == DONE || MacroIntState ) {
             *line = '\0';
         }
     }

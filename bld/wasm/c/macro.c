@@ -58,7 +58,7 @@ extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 extern int              MacroLocalVarCounter;
 
-int                     MacroExitState = 0;
+macro_state             MacroIntState = MACSTATE_NONE;
 
 static asmlines *asmline_insert( asmlines **head, void *data )
 /************************************************************/
@@ -760,15 +760,15 @@ bool MacroEnd( bool exit_flag )
 /*****************************/
 {
     if( exit_flag ) {
-        MacroExitState = 2;
-    } else if( MacroExitState > 0 ) {
+        MacroIntState = 2;
+    } else if( MacroIntState > 0 ) {
         if( GetQueueMacroHidden() ) {
-            MacroExitState--;
+            MacroIntState--;
         } else {
-            MacroExitState = 0;
+            MacroIntState = 0;
         }
     } else {
-        MacroExitState = 0;
+        MacroIntState = 0;
     }
     return( RC_OK );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,6 +54,7 @@
 #include "omfobjre.h"
 #include "omfgen.h"
 #include "omfgenio.h"
+#include "macro.h"
 
 #include "clibext.h"
 
@@ -74,7 +75,6 @@ extern void             CmdlParamsInit( void );
 extern symbol_queue     Tables[];       // tables of definitions
 extern unsigned         BufSize;
 
-extern int              MacroExitState;
 extern bool             in_prologue;
 
 extern bool             EndDirectiveFound;
@@ -1177,7 +1177,7 @@ static void OnePassInit( void )
     PassTotal = 0;
     LineNumber = 0;
     lastLineNumber = 0;
-    MacroExitState = 0;
+    MacroIntState = MACSTATE_NONE;
 }
 
 static unsigned long OnePass( char *string )
