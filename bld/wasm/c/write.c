@@ -68,7 +68,7 @@
 // if you want exactly same behaviour as MASM then undefine following macro
 #define PRIVATE_PROC_INFO
 
-#define MAX_REC_LENGTH 0xFFFEL
+#define MAX_REC_LENGTH  0xFFFEL
 
 extern void             CmdlParamsInit( void );
 
@@ -94,7 +94,7 @@ bool                    PhaseError;
 
 struct asmfixup         *ModendFixup = NULL; // start address fixup
 
-global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
+global_vars             Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
 static const FNAME      *FNames = NULL;
 static unsigned long    lastLineNumber;
@@ -189,8 +189,9 @@ void OutSelect( bool starts )
     unsigned long       curr;
 
     if( starts ) {
-        if( !Options.output_comment_data_in_code_records || Globals.data_in_code
-            || !Globals.code_seg )
+        if( !Options.output_comment_data_in_code_records
+          || Globals.data_in_code
+          || !Globals.code_seg )
             return;
         Globals.sel_start = GetCurrAddr();
         Globals.data_in_code = true;
@@ -733,7 +734,7 @@ void AddLinnumDataRef( void )
     } else {
         line_num = LineNumber;
     }
-    if( line_num < 0x8000 )  {
+    if( line_num < 0x8000 ) {
         if( lastLineNumber != line_num ) {
             curr = AsmAlloc( sizeof( struct line_num_info ) );
             curr->number = (uint_16)line_num;
@@ -1049,7 +1050,7 @@ static void write_alias( void )
     bool                first;
 
     first = true;
-    while( ( alias = GetAliasData( first ) ) != NULL ) {
+    while( (alias = GetAliasData( first )) != NULL ) {
         /* output an alias record for this alias */
         len1 = strlen( alias );
         subst = alias + len1 + 1;
@@ -1078,7 +1079,7 @@ static bool write_pub( void )
 }
 
 void FlushCurrSeg( void )
-/***************************/
+/***********************/
 {
     unsigned i = 0;
 
@@ -1125,8 +1126,9 @@ void FlushCurrSeg( void )
 }
 
 static void reset_seg_len( void )
-/*******************************/
-/* Reset length of all segments to zero */
+/********************************
+ * Reset length of all segments to zero
+ */
 {
     dir_node    *curr;
 
@@ -1167,6 +1169,7 @@ static void writepass1stuff( char *name )
 static void OnePassInit( void )
 /*****************************/
 {
+    RadixSet( 10 );
     CmdlParamsInit();
     AssumeInit();
 
@@ -1200,7 +1203,7 @@ static unsigned long OnePass( char *string )
 }
 
 void WriteObjModule( void )
-/**************************/
+/*************************/
 {
     uint_8              codebuf[ MAX_LEDATA_LEN ];
     char                string[ MAX_LINE_LEN ];
