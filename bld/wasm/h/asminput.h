@@ -44,7 +44,6 @@ extern void     PushMacro( const char *name, bool hidden );
 extern bool     ScanLine( char *line, size_t len );
 extern void     AddItemToIncludePath( const char *string, const char *end );
 extern void     FreeIncludePath( void );
-extern void     RadixSet( unsigned );
 
 #ifdef DEBUG_OUT
 extern const char   *CurrString;    // Current Input Line

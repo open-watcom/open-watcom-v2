@@ -112,6 +112,7 @@ extern bool             Use32;          // if 32-bit code is use
 
 extern void             AsmByte( unsigned char );
 extern bool             AsmScan( token_buffer *tokbuf, const char * );
+extern void             RadixSet( unsigned );
 
 #if defined( _STANDALONE_ )
 
