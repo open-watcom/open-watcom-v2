@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@ extern void     PushMacro( const char *name, bool hidden );
 extern bool     ScanLine( char *line, size_t len );
 extern void     AddItemToIncludePath( const char *string, const char *end );
 extern void     FreeIncludePath( void );
+extern void     RadixSet( unsigned );
 
 #ifdef DEBUG_OUT
 extern const char   *CurrString;    // Current Input Line

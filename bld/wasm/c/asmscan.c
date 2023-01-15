@@ -37,6 +37,12 @@
 #endif
 #include <ctype.h>
 
+
+typedef union {
+    float   f;
+    long    l;
+} NUMBERFL;
+
 #ifdef DEBUG_OUT
 const char              *CurrString; // Current Input Line
 #endif
@@ -47,10 +53,7 @@ bool                    EnumDirective;
 
 #endif
 
-typedef union {
-    float   f;
-    long    l;
-} NUMBERFL;
+static unsigned         radix_base = 10;
 
 static bool get_float( asm_tok *tok, const char **input, char **output )
 /**********************************************************************/
@@ -239,24 +242,26 @@ static bool get_number( asm_tok *tok, const char **input, char **output )
         }
         c = tolower( c );
         if( isxdigit( c ) ) {
-            if( c == 'b' ) {
-                if( base == 0 && OK_NUM( BINARY ) ) {
-                    c2 = ((unsigned char *)ptr)[1];
-                    if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
-                        base = 2;
-                        extra = 1;
-                        break;
-                    }
-                }
-            } else if( c == 'd' ) {
-                if( base == 0 && OK_NUM( DECIMAL ) ) {
-                    c2 = ptr[1];
-                    if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
-                        if( !isalnum( c2 ) && c2 != '_' ) {
-                            base = 10;
+            if( base != 16 && radix_base != 16 ) {
+                if( c == 'b' ) {
+                    if( base == 0 && OK_NUM( BINARY ) ) {
+                        c2 = ((unsigned char *)ptr)[1];
+                        if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
+                            base = 2;
                             extra = 1;
+                            break;
                         }
-                        break;
+                    }
+                } else if( c == 'd' ) {
+                    if( base == 0 && OK_NUM( DECIMAL ) ) {
+                        c2 = ptr[1];
+                        if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
+                            if( !isalnum( c2 ) && c2 != '_' ) {
+                                base = 10;
+                                extra = 1;
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -294,7 +299,7 @@ static bool get_number( asm_tok *tok, const char **input, char **output )
 #endif
     tok->class = TC_NUM;
     if( base == 0 ) {
-        base = ( first_char_0 ) ? 8 : 10;
+        base = radix_base;
     }
     switch( base ) {
     case 10:
@@ -661,10 +666,10 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
  * - string contains the WHOLE line to scan
  */
 {
-    const char                  *ptr;
-    char                        *output_ptr;
-    asm_tok                     *tok;
-    int							c;
+    const char          *ptr;
+    char                *output_ptr;
+    asm_tok             *tok;
+    int                 c;
 
 #ifdef DEBUG_OUT
     CurrString = string;
@@ -739,4 +744,9 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
     }
     AsmError( TOO_MANY_TOKENS );
     return( endFinalToken( tok, tokbuf->stringbuf, RC_ERROR ) );
+}
+
+void RadixSet( unsigned new_base )
+{
+    radix_base = new_base;
 }
