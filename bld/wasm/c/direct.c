@@ -2207,13 +2207,13 @@ static void get_module_name( void )
 {
     pgroup2     pg;
     char        *p;
+    int         c;
 
     /**/myassert( AsmFiles.fname[ASM] != NULL );
     _splitpath2( AsmFiles.fname[ASM], pg.buffer, NULL, NULL, &pg.fname, NULL );
     ModuleInfo.name = AsmStrDup( pg.fname );
-    for( p = ModuleInfo.name; *p != '\0'; ++p ) {
-        if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
-          || ( *p == '@' ) || ( *p == '?' ) ) ) {
+    for( p = ModuleInfo.name; (c = *(unsigned char *)p) != '\0'; ++p ) {
+        if( !IS_VALID_ID_CHAR( c ) ) {
             /* it's not a legal character for a symbol name */
             *p = '_';
         }

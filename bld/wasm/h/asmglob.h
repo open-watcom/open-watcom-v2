@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,6 +86,9 @@
 #define BYTE_8                  8
 #define BYTE_10                 10
 #define BYTE_16                 16
+
+#define IS_VALID_ID_CHAR_FIRST(ch)  (isalpha(ch) || ch=='_' || ch=='@' || ch=='$' || ch=='?')
+#define IS_VALID_ID_CHAR(ch)        (isalnum(ch) || ch=='_' || ch=='@' || ch=='$' || ch=='?')
 
 enum fpe {
     DO_FP_EMULATION,

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -292,20 +292,15 @@ static void SetMM( void )
     memory_model = (char)OptValue;
 }
 
-static bool isvalidident( char *id )
-/**********************************/
+static bool isvalidident( const char *id )
+/****************************************/
 {
-    char    *s;
-    int     lwr_char;
+    int     c;
 
-    if( isdigit( *id ) )
+    if( isdigit( *(unsigned char *)id ) )
         return( false ); /* can't start with a number */
-    for( s = id; *s != '\0'; s++ ) {
-        lwr_char = tolower( *s );
-        if( !( lwr_char == '_' || lwr_char == '.' || lwr_char == '$'
-                || lwr_char == '@' || lwr_char == '?'
-                || isdigit( lwr_char )
-                || islower( lwr_char ) ) ) {
+    while( (c = *(unsigned char *)id++) != '\0' ) {
+        if( !( IS_VALID_ID_CHAR( c ) || c == '.' ) ) {
             return( false );
         }
     }

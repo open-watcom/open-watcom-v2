@@ -133,9 +133,6 @@ static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *
     return( start + len );
 }
 
-#define is_valid_id_char( ch ) \
-    ( isalpha(ch) || isdigit(ch) || ch=='_' || ch=='@' || ch=='$' || ch=='?' )
-
 static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parms )
 /*********************************************************************************/
 {
@@ -144,7 +141,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
     char    *start;
     bool    quote;
     size_t  len;
-    char    c;
+    int     c;
 
     /*
      * handle the substitution operator ( & )
@@ -156,8 +153,8 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
          * scan across the string for space, &, " - to start a word
          */
         line = tmp;
-        while( (c = *tmp) != '\0' ) {
-            if( is_valid_id_char( c ) ) {
+        while( (c = *(unsigned char *)tmp) != '\0' ) {
+            if( IS_VALID_ID_CHAR( c ) ) {
                 if( tmp == line ) {
                     /*
                      * ok to start at beginning of line
@@ -189,8 +186,8 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
         /*
          * scan across the string for space, &, " - to end the word
          */
-        while( (c = *tmp) != '\0' ) {
-            if( !is_valid_id_char( c ) ) {
+        while( (c = *(unsigned char *)tmp) != '\0' ) {
+            if( !IS_VALID_ID_CHAR( c ) ) {
                 if( c == '"' ) {
                     /*
                      * toggle the quote flag

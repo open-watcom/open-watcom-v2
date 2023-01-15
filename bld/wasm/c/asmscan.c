@@ -215,9 +215,9 @@ static bool get_number( asm_tok *tok, const char **input, char **output )
     first_char_0 = false;
     extra = 0;
     ptr = *input;
-    if( *ptr == '0' ) {
+    if( *(unsigned char *)ptr == '0' ) {
         ++ptr;
-        if( tolower( *ptr ) == 'x' ) {
+        if( tolower( *(unsigned char *)ptr ) == 'x' ) {
             ++ptr;
             base = 16;
         } else {
@@ -225,7 +225,7 @@ static bool get_number( asm_tok *tok, const char **input, char **output )
         }
     }
     dig_start = ptr;
-    for( ; (c = *ptr) != '\0'; ++ptr ) {
+    for( ; (c = *(unsigned char *)ptr) != '\0'; ++ptr ) {
         if( isdigit( c ) ) {
             digits_seen |= 1 << (c - '0');
             continue;
@@ -241,7 +241,7 @@ static bool get_number( asm_tok *tok, const char **input, char **output )
         if( isxdigit( c ) ) {
             if( c == 'b' ) {
                 if( base == 0 && OK_NUM( BINARY ) ) {
-                    c2 = ptr[1];
+                    c2 = ((unsigned char *)ptr)[1];
                     if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
                         base = 2;
                         extra = 1;
@@ -311,12 +311,9 @@ static bool get_number( asm_tok *tok, const char **input, char **output )
         /* fall through */
         //AsmError( INVALID_NUMBER_DIGIT );
         /* swallow remainder of token */
-        while( isalnum( *ptr )
-            || *ptr == '_'
-            || *ptr == '$'
-            || *ptr == '@'
-            || *ptr == '?' ) {
-            ++ptr;
+        c = *(unsigned char *)ptr;
+        while( IS_VALID_ID_CHAR( c ) ) {
+            c = *(unsigned char *)(++ptr);
         }
         tok->class = TC_BAD_NUM;
         break;
@@ -362,29 +359,24 @@ static bool get_id( asm_tok *tok, const char **input, char **output )
  * get_id could change buf_index, if a COMMENT directive is found
  */
 {
-    char            cur_char;
+    int             c;
     const asm_ins   ASMI86FAR *ins;
 
     tok->string_ptr = *output;
-    if( **input != '\\' ) {
-        tok->class = TC_ID;
-    } else {
+    if( **input == '\\' ) {
         tok->class = TC_PATH;
+    } else {
+        tok->class = TC_ID;
     }
     tok->u.value = 0;
 
     *(*output)++ = *(*input)++;
     for( ; ; ) {
-        cur_char = **input;
+        c = *(unsigned char *)*input;
         /* if character is part of a valid name, add it */
-        if( isalpha( cur_char )
-            || isdigit( cur_char )
-            || cur_char == '_'
-            || cur_char == '$'
-            || cur_char == '@'
-            || cur_char == '?'  ) {
+        if( IS_VALID_ID_CHAR( c ) ) {
             *(*output)++ = *(*input)++;
-        } else if( cur_char == '\\' ) {
+        } else if( c == '\\' ) {
             *(*output)++ = *(*input)++;
             tok->class = TC_PATH;
         } else  {
@@ -672,6 +664,7 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
     const char                  *ptr;
     char                        *output_ptr;
     asm_tok                     *tok;
+    int							c;
 
 #ifdef DEBUG_OUT
     CurrString = string;
@@ -699,17 +692,14 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
         while( isspace( *ptr ) ) {
             ptr++;
         }
-        if( *ptr == NULLC ) {
+        c = *(unsigned char *)ptr;
+        if( c == NULLC ) {
             return( endFinalToken( tok, tokbuf->stringbuf, RC_OK ) );
         }
 
-        if( isalpha( *ptr )
-            || *ptr == '_'
-            || *ptr == '$'
-            || *ptr == '@'
-            || *ptr == '?'
-            || *ptr == '\\'
-            || ( *ptr == '.' && tokbuf->count == 0 ) ) {
+        if( IS_VALID_ID_CHAR_FIRST( c )
+          || c == '\\'
+          || ( c == '.' && tokbuf->count == 0 ) ) {
             if( get_id( tok, &ptr, &output_ptr ) ) {
                 return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
@@ -731,11 +721,11 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
                 }
             }
 #endif
-        } else if( isdigit( *ptr ) ) {
+        } else if( isdigit( c ) ) {
             if( get_number( tok, &ptr, &output_ptr ) ) {
                 return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
-        } else if( *ptr == '`' ) {
+        } else if( c == '`' ) {
             if( get_id_in_backquotes( tok, &ptr, &output_ptr ) ) {
                 return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
