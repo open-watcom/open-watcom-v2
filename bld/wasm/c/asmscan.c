@@ -196,8 +196,8 @@ static bool get_string( asm_tok *tok, const char **input, char **output )
     return( RC_OK );
 }
 
-static bool get_number( asm_tok *tok, const char **input, char **output )
-/***********************************************************************/
+static bool get_number( asm_tok *tok, const char **input, char **output, bool base10 )
+/************************************************************************************/
 {
     const char          *ptr;
     const char          *dig_start;
@@ -299,7 +299,11 @@ static bool get_number( asm_tok *tok, const char **input, char **output )
 #endif
     tok->class = TC_NUM;
     if( base == 0 ) {
-        base = radix_base;
+        if( base10 ) {
+            base = 10;
+        } else {
+            base = radix_base;
+        }
     }
     switch( base ) {
     case 10:
@@ -670,6 +674,7 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
     char                *output_ptr;
     asm_tok             *tok;
     int                 c;
+    bool                base10;
 
 #ifdef DEBUG_OUT
     CurrString = string;
@@ -678,6 +683,7 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
     EnumDirective = false;
 #endif
 
+    base10 = false;
     ptr = string;
 // FIXME !!
     /* skip initial spaces and expansion codes */
@@ -723,11 +729,13 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
                     if( tokbuf->count >= MAX_TOKEN )
                         break;
                     get_inc_path( tok, &ptr, &output_ptr );
+                } else if( tok->u.token == T_DOT_RADIX ) {
+                    base10 = true;
                 }
             }
 #endif
         } else if( isdigit( c ) ) {
-            if( get_number( tok, &ptr, &output_ptr ) ) {
+            if( get_number( tok, &ptr, &output_ptr, base10 ) ) {
                 return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
         } else if( c == '`' ) {

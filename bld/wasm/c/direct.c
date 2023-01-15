@@ -4261,3 +4261,23 @@ bool Locals( token_buffer *tokbuf, token_idx i )
     AsmError( SYNTAX_ERROR );
     return( RC_ERROR );
 }
+
+bool Radix( token_buffer *tokbuf, token_idx i )
+/*********************************************/
+{
+    unsigned    new_radix;
+
+    if( i < tokbuf->count && tokbuf->tokens[i].class == TC_NUM ) {
+        new_radix = tokbuf->tokens[i].u.value;
+        switch( new_radix ) {
+        case 16:
+        case 10:
+        case 8:
+        case 2:
+            RadixSet( new_radix );
+            return( RC_OK );
+        }
+    }
+    AsmError( SYNTAX_ERROR );
+    return( RC_ERROR );
+}

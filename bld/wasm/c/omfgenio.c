@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,7 +165,7 @@ void ObjWEndRec( void )
     checksum = -checksum;
     safeWrite( &checksum, 1 );
         /* back up to length */
-    safeSeek( -(long)pobjState->length - 2, SEEK_CUR );
+    safeSeek( -(long)( pobjState->length + 2 ), SEEK_CUR );
     safeWrite( buf, 2 );                   /* write the length */
     safeSeek( 0L, SEEK_END );       /* move to end of file again */
     pobjState->in_rec = false;

@@ -256,13 +256,18 @@ bool directive( token_buffer *tokbuf, token_idx i, asm_token direct )
         }
         AsmWarn( 4, IGNORING_DIRECTIVE );
         return( RC_OK );
+    case T_DOT_RADIX:
+        if( Options.mode & MODE_IDEAL ) {
+            AsmError( UNKNOWN_DIRECTIVE );
+            return( RC_ERROR );
+        }
+        break;
     case T_DOT_BREAK:
     case T_DOT_CONTINUE:
     case T_DOT_ELSE:
     case T_DOT_ENDIF:
     case T_DOT_ENDW:
     case T_DOT_IF:
-    case T_DOT_RADIX:
     case T_DOT_REPEAT:
     case T_DOT_UNTIL:
     case T_DOT_WHILE:
@@ -440,6 +445,8 @@ bool directive( token_buffer *tokbuf, token_idx i, asm_token direct )
     case T_LOCALS:
     case T_NOLOCALS:
         return( Locals( tokbuf, i ) );
+    case T_DOT_RADIX:
+        return( Radix( tokbuf, i + 1 ) );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( RC_ERROR );

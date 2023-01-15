@@ -235,8 +235,6 @@ static bool macro_local( token_buffer *tokbuf )
 {
     token_idx   i = 0;
     char        buffer[MAX_LINE_LEN];
-    char        *p;
-    size_t      len;
 
     if( tokbuf->tokens[i].u.token != T_LOCAL ) {
         AsmError( SYNTAX_ERROR );
@@ -252,10 +250,7 @@ static bool macro_local( token_buffer *tokbuf )
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
-        len = strlen( tokbuf->tokens[i].string_ptr );
-        p = CATSTR( buffer, tokbuf->tokens[i].string_ptr, len );
-        p = CATLIT( p, " TEXTEQU " );
-        sprintf( p, "??%04d", MacroLocalVarCounter );
+        sprintf( buffer, "%s TEXTEQU ??%04d", tokbuf->tokens[i].string_ptr, MacroLocalVarCounter );
         MacroLocalVarCounter++;
         InputQueueLine( buffer );
         i++;
@@ -524,6 +519,9 @@ bool ExpandMacro( token_buffer *tokbuf )
         }
     }
     if( sym == NULL || sym->state != SYM_MACRO ) {
+        /*
+         * not a macro, continue regular processing
+         */
         return( RC_OK );
     }
     if( macro_name_loc > 0 || (Options.mode & MODE_IDEAL) == 0 ) {
@@ -534,7 +532,10 @@ bool ExpandMacro( token_buffer *tokbuf )
         }
         if( tokbuf->tokens[i].class == TC_DIRECTIVE
           && tokbuf->tokens[i].u.token == T_MACRO ) {
-            /* this is a macro DEFINITION! */
+            /*
+             * this is a macro DEFINITION!
+             * continue regular processing
+             */
             return( RC_OK );
         }
     }

@@ -372,6 +372,8 @@ extern bool             ModuleEnd( token_buffer *tokbuf );                  // h
 
 extern bool             Locals( token_buffer *tokbuf, token_idx );          // handle [NO]LOCALS statement
 
+extern bool             Radix( token_buffer *tokbuf, token_idx );
+
 extern bool             ChangeCurrentLocation( bool relative, int_32 value, bool select_data );
 extern bool             OrgDirective( token_buffer *tokbuf, token_idx i );
 extern bool             AlignDirective( asm_token directive, token_buffer *tokbuf, token_idx i );
