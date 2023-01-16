@@ -54,8 +54,9 @@
  * expand it if that is the case
  */
 
-extern bool             DefineProc;     // true if the definition of procedure
-                                        // has not ended
+typedef char *replace_func( void *data, char *start, size_t len, asmlines *lstruct );
+
+extern bool             DefineProc;     // true if the definition of procedure has not ended
 extern int              MacroLocalVarCounter;
 
 macro_state             MacroIntState = MACSTATE_NONE;
@@ -80,8 +81,8 @@ static asmlines *asmline_insert( asmlines **head, void *data )
     return( entry );
 }
 
-static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *lstruct )
-/****************************************************************************************
+static char *replace_parm( void *data, char *start, size_t len, asmlines *lstruct )
+/**********************************************************************************
  * search through parm list for word pointed at by start,
  * if you find it, set up the line string
  * this is similar to a printf format string
@@ -91,16 +92,16 @@ static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *
  */
 {
     char            buffer[10];
-    parm_list       *p;
+    parm_list       *parm;
     char            *new_line;
     char            *old_line;
     size_t          before;             // length of text before placeholder
     char            count = 0;
 
     old_line = lstruct->line;
-    for( p = parms; p != NULL; p = p->next ) {
-        if( ( p->label != NULL ) && ( strlen( p->label ) == len )
-          && ( strncmp( start, p->label, len ) == 0 ) ) {
+    for( parm = (parm_list *)data; parm != NULL; parm = parm->next ) {
+        if( ( parm->label != NULL ) && ( strlen( parm->label ) == len )
+          && ( strncmp( start, parm->label, len ) == 0 ) ) {
             /*
              * hey! it matches!
              */
@@ -133,8 +134,51 @@ static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *
     return( start + len );
 }
 
-static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parms )
-/*********************************************************************************/
+static char *replace_label( void *data, char *start, size_t len, asmlines *lstruct )
+/***********************************************************************************
+ * search through local label list for word pointed at by start,
+ * if you find it, replace it by real label in the line string
+ * this allows up to 100 parameters - lots :)
+ * fixme - this max. should be docmented & checked for.
+ */
+{
+    char            *new_line;
+    char            *old_line;
+    size_t          before;             // length of text before word
+    local_label     *loclab;
+
+    old_line = lstruct->line;
+    for( loclab = (local_label *)data; loclab != NULL; loclab = loclab->next ) {
+        if( ( loclab->local_len == len )
+          && ( strncmp( start, loclab->local, len ) == 0 ) ) {
+            /*
+             * hey! it matches!
+             */
+            new_line = AsmAlloc( strlen( old_line ) - len + loclab->label_len + 1 );
+            before = start - old_line;
+            if( before > 0 ) {
+                if( *(start - 1) == '&' )
+                    before--;
+                strncpy( new_line, old_line, before );
+            }
+            strcpy( new_line + before, loclab->label );
+            if( *(start + len) == '&' )
+                len++;
+            strcpy( new_line + before + loclab->label_len, start + len );
+            lstruct->line = new_line;
+
+            AsmFree( old_line );
+            /*
+             * ptr to char after new label
+             */
+            return( new_line + before + loclab->label_len );
+        }
+    }
+    return( start + len );
+}
+
+static void replace_items_in_line( asmlines *linestruct, void *data, replace_func *replace_fn )
+/*********************************************************************************************/
 {
     char    *line;
     char    *tmp;
@@ -206,7 +250,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
          */
         if( !quote || *start == '&' || *(start - 1) == '&' || *(start + len + 1) == '&' ) {
             if( *start != '\0' && len > 0 ) {
-                tmp = replace_parm( parms, start, len, linestruct );
+                tmp = replace_fn( data, start, len, linestruct );
             }
         }
     }
@@ -228,45 +272,64 @@ static bool lineis( char *str, char *substr )
     return( true );
 }
 
-static bool macro_local( token_buffer *tokbuf )
-/**********************************************
- * take a line that looks like  LOCAL labelid [, labelid ]
- */
+static bool is_repeat_block( char *ptr )
+/**************************************/
 {
-    token_idx   i = 0;
-    char        buffer[MAX_LINE_LEN];
+    return( lineis( ptr, "for" )
+          || lineis( ptr, "forc" )
+          || lineis( ptr, "irp" )
+          || lineis( ptr, "irpc" )
+          || lineis( ptr, "rept" )
+          || lineis( ptr, "repeat" ) );
+}
 
-    if( tokbuf->tokens[i].u.token != T_LOCAL ) {
-        AsmError( SYNTAX_ERROR );
-        return( RC_ERROR );
-    }
+static bool process_local( token_buffer *tokbuf, macro_info *info )
+{
+    asm_tok     *tok;
 
-    PushLineQueue();
-    for( i++; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
-        /*
-         * define an equ to expand the specified variable to a temp. name
-         */
-        if( tokbuf->tokens[i].class != TC_ID ) {
-            AsmError( OPERAND_EXPECTED );
-            return( RC_ERROR );
-        }
-        sprintf( buffer, "%s TEXTEQU ??%04d", tokbuf->tokens[i].string_ptr, MacroLocalVarCounter );
-        MacroLocalVarCounter++;
-        InputQueueLine( buffer );
-        i++;
-        if( tokbuf->tokens[i].class == TC_FINAL )
+    tok = tokbuf->tokens + 1;
+    while( tok->class == TC_ID ) {
+        local_label *loclab;
+
+        loclab = AsmAlloc( sizeof( local_label ) );
+        loclab->next = info->locallist;
+        info->locallist = loclab;
+        loclab->local = AsmStrDup( tok->string_ptr );
+        loclab->local_len = strlen( loclab->local );
+        loclab->label = NULL;
+        loclab->label_len = 0;
+        tok++;
+        if( tok->class != TC_COMMA ) {
+            if( tok->class != TC_FINAL ) {
+                AsmError( EXPECTING_COMMA );
+            }
             break;
-        /*
-         * now skip the comma
-         */
-        if( tokbuf->tokens[i].class != TC_COMMA ) {
-            AsmError( EXPECTING_COMMA );
-            return( RC_ERROR );
         }
+        tok++;
+    }
+    if( tok->class != TC_FINAL ) {
+        AsmError( OPERAND_EXPECTED );
+        return( RC_ERROR );
     }
     return( RC_OK );
 }
 
+#if 0
+static void reverse_local_labels( macro_info *info )
+{
+    local_label *loclab;
+    local_label *prev;
+    local_label *next;
+
+    prev = NULL;
+    for( loclab = info->locallist; loclab != NULL; loclab = next ) {
+        next = loclab->next;
+        loclab->next = prev;
+        prev = loclab;
+    }
+    info->locallist = prev;
+}
+#endif
 
 static bool macro_exam( token_buffer *tokbuf, token_idx i )
 /*********************************************************/
@@ -358,15 +421,40 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     }
     /*
      * now read in all the contents of the macro, and store them
+     *
+     * first read all local directive data from top
      */
-    for( ; ; ) {
-        char *ptr;
-
+    for( ;; ) {
         string = ReadTextLine( buffer );
         if( string == NULL ) {
             AsmError( UNEXPECTED_END_OF_FILE );
             return( RC_ERROR );
-        } else if( lineis( string, "endm" ) ) {
+        }
+        if( AsmScan( tokbuf, string ) )
+            break;
+        if( tokbuf->count > 0 ) {
+            if( tokbuf->tokens[0].class != TC_DIRECTIVE || tokbuf->tokens[0].u.token != T_LOCAL ) {
+                break;
+            }
+            if( store_data ) {
+                if( process_local( tokbuf, info ) ) {
+                    return( RC_ERROR );
+                }
+            }
+        }
+    }
+#if 0
+    if( store_data ) {
+        reverse_local_labels( info );
+    }
+#endif
+    /*
+     * now read in all the contents of the macro, and store them
+     */
+    for( ;; ) {
+        char *ptr;
+
+        if( lineis( string, "endm" ) ) {
             if( nesting_depth ) {
                 nesting_depth--;
             } else {
@@ -376,25 +464,14 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
         ptr = string;
         while( isspace( *ptr ) )
             ptr++;
-        if( lineis( ptr, "for" )
-         || lineis( ptr, "forc" )
-         || lineis( ptr, "irp" )
-         || lineis( ptr, "irpc" )
-         || lineis( ptr, "rept" )
-         || lineis( ptr, "repeat" ) ) {
+        if( is_repeat_block( ptr ) ) {
             nesting_depth++;
         }
         while( *ptr != '\0' && !isspace( *ptr ) )
             ptr++; // skip 1st token
         while( isspace( *ptr ) )
             ptr++;
-        if( lineis( ptr, "macro" )
-         || lineis( ptr, "for" )
-         || lineis( ptr, "forc" )
-         || lineis( ptr, "irp" )
-         || lineis( ptr, "irpc" )
-         || lineis( ptr, "rept" )
-         || lineis( ptr, "repeat" ) ) {
+        if( is_repeat_block( ptr ) || lineis( ptr, "macro" ) ) {
             nesting_depth++;
         }
 
@@ -403,7 +480,12 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             /*
              * make info->data point at the LAST line in the struct
              */
-            put_parm_placeholders_in_line( linestruct, info->parmlist );
+            replace_items_in_line( linestruct, info->parmlist, replace_parm );
+        }
+        string = ReadTextLine( buffer );
+        if( string == NULL ) {
+            AsmError( UNEXPECTED_END_OF_FILE );
+            return( RC_ERROR );
         }
     }
 }
@@ -451,26 +533,37 @@ static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
     return( strlen( dest ) );
 }
 
-static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
-/****************************************************************/
+static char *fill_in_parms_and_labels( char *line, macro_info *info )
+/*******************************************************************/
 {
     char                buffer[MAX_LINE_LEN];
     parm_list           *parm;
     char                *new_line;
     char                **parm_array; /* array of ptrs to parm replace str's */
     int                 count = 0;
+    asmlines            lnode;
 
-    for( parm = parmlist; parm != NULL; parm = parm->next ) {
+    for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
         count ++;
     }
     parm_array = AsmTmpAlloc( count * sizeof( char * ) );
     count = 0;
-    for( parm = parmlist; parm != NULL; parm = parm->next ) {
+    for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
         parm_array[count] = parm->replace;
         count++;
     }
-
-    my_sprintf( buffer, lnode->line, count-1, parm_array );
+    if( info->locallist != NULL ) {
+        /*
+         * make mapping of local labels
+         */
+        lnode.line = AsmStrDup( line );
+        replace_items_in_line( &lnode, info->locallist, replace_label );
+        line = lnode.line;
+        my_sprintf( buffer, line, count - 1, parm_array );
+        AsmFree( line );
+    } else {
+        my_sprintf( buffer, line, count - 1, parm_array );
+    }
     new_line = AsmStrDup( buffer );
     return( new_line );
 }
@@ -500,10 +593,10 @@ bool ExpandMacro( token_buffer *tokbuf )
     token_idx   i;
     token_idx   macro_name_loc;
     bool        expansion_flag = false;
-    token_idx   exp_start = 0;
-    int         nesting_depth;
+    token_idx   expr_start = 0;
     char        *p;
     size_t      len;
+    local_label *loclab;
 
     if( tokbuf->tokens[0].class == TC_FINAL )
         return( RC_OK );
@@ -603,7 +696,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     if( *(tokbuf->tokens[i].string_ptr) == '%' ) {
                         *(tokbuf->tokens[i].string_ptr) = ' ';
                         expansion_flag = true;
-                        exp_start = i;
+                        expr_start = i;
                     }
 
                     if( !expansion_flag ) {
@@ -649,9 +742,9 @@ bool ExpandMacro( token_buffer *tokbuf )
                             tokbuf->tokens[i + 1].class == TC_FINAL ) {
                             if( tokbuf->tokens[i + 1].class == TC_FINAL )
                                 i++;
-                            tokbuf->count = EvalExpr( tokbuf, exp_start, i - 1, true );
+                            tokbuf->count = EvalExpr( tokbuf, expr_start, i - 1, true );
                             expansion_flag = false;
-                            i = exp_start;
+                            i = expr_start;
                         }
                     }
                     i++;
@@ -671,36 +764,21 @@ bool ExpandMacro( token_buffer *tokbuf )
         }
     }
     /*
+     * assign local label numbers of this macro instance
+     */
+    for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
+        char    label[10];
+
+        sprintf( label, "??%04d", MacroLocalVarCounter++ );
+        loclab->label = AsmStrDup( label );
+        loclab->label_len = strlen( loclab->label );
+    }
+    /*
      * now actually fill in the parms
      */
     PushLineQueue();
-    nesting_depth = 0;
     for( lnode = info->data; lnode != NULL; lnode = lnode->next ) {
-        line = fill_in_parms( lnode, info->parmlist );
-        if( lineis( line, "endm" ) ) {
-            if( nesting_depth ) {
-                nesting_depth--;
-            }
-        } else if( lineis( line, "local" ) ) {
-            if( nesting_depth == 0 ) {
-                AsmScan( tokbuf, line );
-                if( macro_local( tokbuf ) ) {
-                    AsmFree( line );
-                    return( RC_ERROR );
-                }
-                AsmFree( line );
-                continue;
-            }
-        } else {
-            p = line;
-            while( *p != '\0' && !isspace( *p ) )
-                p++; // skip 1st token
-            while( isspace( *p ) )
-                p++; // skip all spaces
-            if( lineis( p, "macro" ) ) {
-                nesting_depth++;
-            }
-        }
+        line = fill_in_parms_and_labels( lnode->line, info );
         InputQueueLine( line );
         AsmFree( line );
     }
@@ -712,6 +790,14 @@ bool ExpandMacro( token_buffer *tokbuf )
      * now free the parm replace strings
      */
     free_parmlist( info->parmlist );
+    /*
+     * now free the local label replace strings
+     */
+    for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
+        AsmFree( loclab->label );
+        loclab->label = NULL;
+        loclab->label_len = 0;
+    }
 
     tokbuf->count = 0;
     tokbuf->tokens[0].class = TC_FINAL;

@@ -612,7 +612,7 @@ void dir_init( dir_node *dir, int tab )
         dir->sym.state = SYM_MACRO;
         dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
         dir->e.macroinfo->parmlist = NULL;
-//        dir->e.macroinfo->labellist = NULL;
+        dir->e.macroinfo->locallist = NULL;
         dir->e.macroinfo->data = NULL;
         dir->e.macroinfo->srcfile = NULL;
         break;
@@ -871,40 +871,36 @@ void FreeInfo( dir_node *dir )
             parm_list       *labelnext;
             asmlines        *datacurr;
             asmlines        *datanext;
+            local_label     *localcurr;
+            local_label     *localnext;
 
             /* free the parm list */
-            labelcurr = dir->e.macroinfo->parmlist;
-            if( labelcurr != NULL ) {
-                for( ;; ) {
-                    labelnext = labelcurr->next;
-                    AsmFree( labelcurr->label );
-                    if( labelcurr->replace != NULL ) {
-                        AsmFree( labelcurr->replace );
-                    }
-                    if( labelcurr->def != NULL ) {
-                        AsmFree( labelcurr->def );
-                    }
-                    AsmFree( labelcurr );
-                    if( labelnext == NULL )
-                        break;
-                    labelcurr = labelnext;
+            for( labelcurr = dir->e.macroinfo->parmlist; labelcurr != NULL; labelcurr = labelnext ) {
+                labelnext = labelcurr->next;
+                AsmFree( labelcurr->label );
+                if( labelcurr->replace != NULL ) {
+                    AsmFree( labelcurr->replace );
                 }
+                if( labelcurr->def != NULL ) {
+                    AsmFree( labelcurr->def );
+                }
+                AsmFree( labelcurr );
             }
 
             /* free the labels list */
+            for( localcurr = dir->e.macroinfo->locallist; localcurr != NULL; localcurr = localnext ) {
+                localnext = localcurr->next;
+                AsmFree( localcurr->label );
+                AsmFree( localcurr );
+            }
 
             /* free the lines list */
-            datacurr = dir->e.macroinfo->data;
-            if( datacurr != NULL ) {
-                for( ;; ) {
-                    datanext = datacurr->next;
-                    AsmFree( datacurr->line );
-                    AsmFree( datacurr );
-                    if( datanext == NULL )
-                        break;
-                    datacurr = datanext;
-                }
+            for( datacurr = dir->e.macroinfo->data; datacurr != NULL; datacurr = datanext ) {
+                datanext = datacurr->next;
+                AsmFree( datacurr->line );
+                AsmFree( datacurr );
             }
+
             AsmFree( dir->e.macroinfo );
         }
         break;

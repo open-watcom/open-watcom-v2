@@ -223,9 +223,17 @@ typedef struct  fname_list {
         char    *fullname;
 } FNAME;
 
+typedef struct local_label {
+    struct local_label  *next;
+    char                *local;
+    size_t              local_len;
+    char                *label;
+    size_t              label_len;
+} local_label;
+
 typedef struct {
     parm_list           *parmlist;  // list of parameters
-//    label_list          *labellist; // list of local labels
+    local_label         *locallist; // list of local labels
     asmlines            *data;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
     bool                hidden;     // if true don't print error messages
