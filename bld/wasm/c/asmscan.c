@@ -242,6 +242,9 @@ static bool get_number( asm_tok *tok, const char **input, char **output, bool ba
         }
         c = tolower( c );
         if( isxdigit( c ) ) {
+            /*
+             * process only a-fA-F characters, 0-9 are already processed
+             */
             if( base != 16 && radix_base != 16 ) {
                 if( c == 'b' ) {
                     if( base == 0 && OK_NUM( BINARY ) ) {
@@ -270,7 +273,10 @@ static bool get_number( asm_tok *tok, const char **input, char **output, bool ba
         } else if( c == 'h' ) {
             base = 16;
             extra = 1;
-        } else if( c == 'o' ) {
+        } else if( c == 't' ) {
+            base = 10;
+            extra = 1;
+        } else if( c == 'o' || c == 'q' ) {
             base = 8;
             extra = 1;
         } else if( c == 'r' ) {
