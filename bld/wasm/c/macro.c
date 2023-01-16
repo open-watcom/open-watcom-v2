@@ -244,8 +244,10 @@ static void replace_items_in_line( asmlines *linestruct, void *data, replace_fun
         }
         len = tmp - start;
         /*
-         * look for this word in the macro parms, and replace it if it is
+         * look for this word in the replacement data
+         * and replace it if it is found
          *
+         * !!! IMPORTANT !!!
          * this would change line - it will have to be reallocated
          */
         if( !quote || *start == '&' || *(start - 1) == '&' || *(start + len + 1) == '&' ) {
@@ -455,11 +457,10 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
         char *ptr;
 
         if( lineis( string, "endm" ) ) {
-            if( nesting_depth ) {
-                nesting_depth--;
-            } else {
+            if( nesting_depth == 0 ) {
                 return( RC_OK );
             }
+            nesting_depth--;
         }
         ptr = string;
         while( isspace( *ptr ) )
@@ -764,7 +765,7 @@ bool ExpandMacro( token_buffer *tokbuf )
         }
     }
     /*
-     * assign local label numbers of this macro instance
+     * assign local labels for this macro instance
      */
     for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
         char    label[10];
@@ -774,7 +775,7 @@ bool ExpandMacro( token_buffer *tokbuf )
         loclab->label_len = strlen( loclab->label );
     }
     /*
-     * now actually fill in the parms
+     * now actually fill in the actual parms
      */
     PushLineQueue();
     for( lnode = info->data; lnode != NULL; lnode = lnode->next ) {
@@ -787,18 +788,21 @@ bool ExpandMacro( token_buffer *tokbuf )
      */
     PushMacro( sym->name, info->hidden );
     /*
-     * now free the parm replace strings
+     * free the parm replace strings
      */
     free_parmlist( info->parmlist );
     /*
-     * now free the local label replace strings
+     * free the local label replace strings
      */
     for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
         AsmFree( loclab->label );
         loclab->label = NULL;
         loclab->label_len = 0;
     }
-
+    /*
+     * free the scanner token array
+     * macro is expanded in source queue and original scanner tokens are not necessary
+     */
     tokbuf->count = 0;
     tokbuf->tokens[0].class = TC_FINAL;
     tokbuf->tokens[0].string_ptr = tokbuf->stringbuf;

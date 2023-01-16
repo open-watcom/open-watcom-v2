@@ -240,7 +240,7 @@ typedef struct {
 } macro_info;
 
 typedef struct {
-    direct_idx          idx;                // lname index
+    direct_idx          idx;        // lname index
 } lname_info;
 
 typedef struct field_list {
