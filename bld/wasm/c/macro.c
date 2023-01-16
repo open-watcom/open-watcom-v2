@@ -153,7 +153,20 @@ static char *replace_label( void *data, char *start, size_t len, asmlines *lstru
           && ( strncmp( start, loclab->local, len ) == 0 ) ) {
             /*
              * hey! it matches!
+             *
+             * check internal symbol
              */
+            if( loclab->label_len == 0 ) {
+                /*
+                 * if the internal symbol does not exist, it is created
+                 * and saved for further use
+                 */
+                char    label[10];
+
+                sprintf( label, "??%04d", MacroLocalVarCounter++ );
+                loclab->label = AsmStrDup( label );
+                loclab->label_len = strlen( loclab->label );
+            }
             new_line = AsmAlloc( strlen( old_line ) - len + loclab->label_len + 1 );
             before = start - old_line;
             if( before > 0 ) {
@@ -316,23 +329,6 @@ static bool process_local( token_buffer *tokbuf, macro_info *info )
     return( RC_OK );
 }
 
-#if 0
-static void reverse_local_labels( macro_info *info )
-{
-    local_label *loclab;
-    local_label *prev;
-    local_label *next;
-
-    prev = NULL;
-    for( loclab = info->locallist; loclab != NULL; loclab = next ) {
-        next = loclab->next;
-        loclab->next = prev;
-        prev = loclab;
-    }
-    info->locallist = prev;
-}
-#endif
-
 static bool macro_exam( token_buffer *tokbuf, token_idx i )
 /*********************************************************/
 {
@@ -445,11 +441,6 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             }
         }
     }
-#if 0
-    if( store_data ) {
-        reverse_local_labels( info );
-    }
-#endif
     /*
      * now read in all the contents of the macro, and store them
      */
@@ -555,15 +546,21 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     }
     if( info->locallist != NULL ) {
         /*
-         * make mapping of local labels
+         * replace macro local labels by internal symbols
          */
         lnode.line = AsmStrDup( line );
         replace_items_in_line( &lnode, info->locallist, replace_label );
         line = lnode.line;
-        my_sprintf( buffer, line, count - 1, parm_array );
+    }
+    /*
+     * replace parameters by actual values
+     */
+    my_sprintf( buffer, line, count - 1, parm_array );
+    /*
+     * free temporary line used by local labels replacement
+     */
+    if( info->locallist != NULL ) {
         AsmFree( line );
-    } else {
-        my_sprintf( buffer, line, count - 1, parm_array );
     }
     new_line = AsmStrDup( buffer );
     return( new_line );
@@ -765,16 +762,6 @@ bool ExpandMacro( token_buffer *tokbuf )
         }
     }
     /*
-     * assign local labels for this macro instance
-     */
-    for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
-        char    label[10];
-
-        sprintf( label, "??%04d", MacroLocalVarCounter++ );
-        loclab->label = AsmStrDup( label );
-        loclab->label_len = strlen( loclab->label );
-    }
-    /*
      * now actually fill in the actual parms
      */
     PushLineQueue();
@@ -792,12 +779,14 @@ bool ExpandMacro( token_buffer *tokbuf )
      */
     free_parmlist( info->parmlist );
     /*
-     * free the local label replace strings
+     * free the local label replace strings, if exists
      */
     for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
-        AsmFree( loclab->label );
-        loclab->label = NULL;
-        loclab->label_len = 0;
+        if( loclab->label_len > 0 ) {
+            loclab->label_len = 0;
+            AsmFree( loclab->label );
+            loclab->label = NULL;
+        }
     }
     /*
      * free the scanner token array
