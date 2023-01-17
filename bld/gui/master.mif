@@ -1,5 +1,7 @@
 proj_name = gui
 
+gui_nodoslfn = 1
+
 !ifndef bootstrap
 gui_trmem = 1
 !endif

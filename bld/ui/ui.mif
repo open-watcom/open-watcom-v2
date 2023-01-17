@@ -2,6 +2,8 @@ tree_depth = 4
 
 proj_name = ui
 
+ui_nodoslfn = 1
+
 ui_trmem = 1
 
 ui_autodepends = .autodepend

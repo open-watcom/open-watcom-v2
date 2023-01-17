@@ -13,6 +13,7 @@ proj_name = wres
 
 wres_autodepends = .AUTODEPEND
 wres_distrib_lib = 1
+wres_nodoslfn = 1
 
 !ifdef model
 memory_model_i86 = $(model)

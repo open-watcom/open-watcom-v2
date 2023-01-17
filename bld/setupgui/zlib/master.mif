@@ -6,6 +6,8 @@ zlib_autodepends = .autodepend
 
 zlib_nofpu = 1
 
+zlib_nodoslfn = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

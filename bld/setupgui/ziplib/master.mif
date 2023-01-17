@@ -6,6 +6,8 @@ ziplib_autodepends = .autodepend
 
 ziplib_nofpu = 1
 
+ziplib_nodoslfn = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
