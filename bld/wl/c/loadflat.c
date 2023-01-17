@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -423,10 +423,14 @@ static void SetHeaderVxDInfo(os2_flat_header *exe_head)
 {
     entry_export *exp;
     vxd_ddb      ddb;
+    unsigned_32  adjust;
+    unsigned_32  off;
 
     exp = FmtData.u.os2fam.exports;
     if( ( exp != NULL ) && ( exp->sym != NULL ) ) {
-        ReadInfo( exp->sym->addr.off + (exp->sym->p.seg)->u1.vm_ptr, &ddb, sizeof( ddb ) );
+        adjust = exp->sym->p.seg->u.leader->seg_addr.off + exp->sym->p.seg->a.delta;
+        off = exp->sym->addr.off - adjust;
+        ReadInfo( (exp->sym->p.seg)->u1.vm_ptr + off, &ddb, sizeof( ddb ) );
         exe_head->r.vxd.device_ID = ddb.req_device_number;
         exe_head->r.vxd.DDK_version = ddb.SDK_version;
     }
