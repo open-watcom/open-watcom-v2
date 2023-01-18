@@ -1049,6 +1049,7 @@ static void warnChangeLevels( unsigned level )
 
     for( msg_index = 0; msg_index < MESSAGE_COUNT; msg_index++ ) {
         switch( msg_level[msg_index].type ) {
+    	case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
         case MSG_TYPE_WARNING :
         case MSG_TYPE_ANSI :
         case MSG_TYPE_ANSIWARN :
