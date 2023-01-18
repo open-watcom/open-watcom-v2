@@ -1239,6 +1239,7 @@ LWSTDAPI                PathMatchSpecExW( LPCWSTR, LPCWSTR, DWORD );
     #define PathIsURL               PathIsURLA
     #define PathMakePretty          PathMakePrettyA
     #define PathMakeSystemFolder    PathMakeSystemFolderA
+    #define PathMatchSpec           PathMatchSpecA
     #define PathParseIconLocation   PathParseIconLocationA
     #define PathQuoteSpaces         PathQuoteSpacesA
     #define PathRelativePathTo      PathRelativePathToA
