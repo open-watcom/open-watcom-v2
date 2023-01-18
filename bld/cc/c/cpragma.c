@@ -1027,11 +1027,12 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
         return;
     }
     switch( msg_level[msg_index].type ) {
-    case MSG_TYPE_ERROR :
+//    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
         CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
+    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
     case MSG_TYPE_ANSIWARN :
@@ -1068,11 +1069,12 @@ void WarnEnableDisable( bool enabled, msg_codes msgnum )
         return;
     }
     switch( msg_level[msg_index].type ) {
-    case MSG_TYPE_ERROR :
+//    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
         CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
+    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
     case MSG_TYPE_ANSIWARN :

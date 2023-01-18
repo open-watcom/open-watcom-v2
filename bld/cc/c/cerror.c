@@ -118,7 +118,7 @@ static bool okToPrintMsg( msg_codes msgnum, int *plevel )
         }
         break;
     case MSG_TYPE_WARNING :
-    case MSG_TYPE_ERROR :
+    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
         break;
     }
     *plevel = level;

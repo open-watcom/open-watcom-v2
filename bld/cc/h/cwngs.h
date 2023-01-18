@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,6 +67,7 @@ warn( WARN_COMPARE_ALWAYS,                      1 )
 warn( WARN_REPEATED_MODIFIER,                   3 )
 warn( WARN_QUALIFIER_MISMATCH,                  1 )
 warn( WARN_SIGN_MISMATCH,                       1 )
+warn( WARN_PARM_SIGN_MISMATCH,                  1 )
 warn( WARN_PARM_NOT_REFERENCED,                 3 )
 warn( WARN_LOSE_PRECISION,                      1 )
 warn( WARN_LEVEL_1,                             1 )

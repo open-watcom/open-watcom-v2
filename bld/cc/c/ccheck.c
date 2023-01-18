@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -823,7 +823,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         break;
     case PS:
         if( parmno ) {
-            CWarn2( WARN_SIGN_MISMATCH, ERR_PARM_SIGN_MISMATCH, parmno );
+            CWarn2( WARN_PARM_SIGN_MISMATCH, ERR_PARM_SIGN_MISMATCH, parmno );
         } else {
             CWarn1( WARN_SIGN_MISMATCH, ERR_SIGN_MISMATCH );
         }
