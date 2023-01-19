@@ -28,6 +28,8 @@ set PROJDIR=<CWD>
 
     <CCCMD> ntaxp/lib/*                   "<OWRELROOT>/libaxp/nt/"
 
+    <CCCMD> ntmps/lib/*                   "<OWRELROOT>/libmps/nt/"
+
 [ BLOCK . . ]
 
 [ INCLUDE "<OWROOT>/build/epilog.ctl" ]

@@ -532,6 +532,45 @@ system begin ntaxp_dll
     runtime windows=4.0
 :endsegment
 end
+system begin ntmips
+:segment Pspecs
+    ARCH mips -bt=nt
+:elsesegment Pwlsystem
+    option osname='Windows NT(MIPS) character-mode'
+    libpath '%WATCOM%/libmps'
+    libpath '%WATCOM%/libmps/nt'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool
+    library shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+:endsegment
+end
+system begin ntmips_win
+:segment Pspecs
+    ARCH mips -bt=nt
+:elsesegment Pwlsystem
+    option osname='Windows NT(MIPS) windowed'
+    libpath '%WATCOM%/libmps'
+    libpath '%WATCOM%/libmps/nt'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool
+    library shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+:endsegment
+end
+system begin ntmips_dll
+:segment Pspecs
+    ARCH mips -bt=nt -bd
+:elsesegment Pwlsystem
+    option osname='Windows NT(MIPS)'
+    libpath '%WATCOM%/libmps'
+    libpath '%WATCOM%/libmps/nt'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool
+    library shell32,uuid,comctl32
+    format windows nt dll ^
+    runtime windows=4.0
+:endsegment
+end
 system begin causeway
 :segment Pspecs
     ARCH i386 -bt=dos

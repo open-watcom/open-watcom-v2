@@ -43,6 +43,17 @@ system begin 386
     format windows nt
     runtime console
 end
+:elsesegment mips
+::
+:: NT (MIPS) default system
+::
+system begin 386
+    option osname='Windows NT(MIPS) character-mode'
+    libpath '%WATCOM%\libmps'
+    libpath '%WATCOM%\libmps\nt'
+    format windows nt
+    runtime console
+end
 :elsesegment
 ::
 :: NT (x86) default system

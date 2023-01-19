@@ -413,6 +413,28 @@ system begin ntaxp_win
     runtime windows=4.0
 end
 
+system begin ntmips
+    option osname='Windows NT character-mode (MIPS)'
+    libpath '%OWROOT%/bld/clib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/mathlib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/cpplib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/w32api/ntmps/lib'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+end
+
+system begin ntmips_win
+    option osname='Windows NT(MIPS) windowed'
+    libpath '%OWROOT%/bld/clib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/mathlib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/cpplib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/w32api/ntmps/lib'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+
 system begin pe_linux
     option osname='Linux x86 PE'
     libpath '%OWROOT%/bld/clib/library/linux.386/mf_r'
