@@ -2,7 +2,7 @@
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
-:cmt * Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt * Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt *
 :cmt *  ========================================================================
@@ -42,6 +42,7 @@
 :cmt        :ansi <n>   warning if extensions enabled, error otherwise
 :cmt        :ansierr    ignored if extensions enabled, error otherwise
 :cmt        :ansiwarn <n>   ignored if extensions enabled, warn otherwise
+:cmt        :error <n>  (default) message is a error with a specific level
 :cmt        :warning <n>    message is a warning with a specific level
 :cmt        :info       informational message
 :cmt
@@ -1210,6 +1211,7 @@ specified in the
 .id &incvarup
 environment variable or the "-I" option on the command line.
 :MSGSYM. ERR_TOO_MANY_MACRO_PARMS
+:ERROR. 1
 :MSGTXT. Too many parameters given for macro '%s'
 :MSGJTXT. マクロ'%s'に与えられたパラメータが多すぎます
 .np
@@ -1313,6 +1315,7 @@ to
 .np
 The specified variable has already been statically initialized.
 :MSGSYM. ERR_MISSING_QUOTE
+:ERROR. 1
 :MSGTXT. String literal not terminated before end of line
 :MSGJTXT. 文字列定数の最後が見つかりません
 .np
@@ -1957,6 +1960,7 @@ desired line number.
 The second argument of the #line directive must be a filename
 enclosed in quotes.
 :MSGSYM. ERR_PARM_COUNT_MISMATCH
+:ERROR. 1
 :MSGTXT. Parameter count does not agree with previous definition
 :MSGJTXT. パラメータ数が前の定義と一致しません
 .np
@@ -2127,12 +2131,14 @@ The variable "X" requires two initializers not three.
 You have two pointers that either point to different objects, or the
 pointers are of different size, or they have different modifiers.
 :MSGSYM. ERR_REPEATED_MODIFIER
+:ERROR. 3
 :MSGTXT. Modifier repeated in declaration
 :MSGJTXT. 修飾子が宣言の中で繰り返し使用されています
 .np
 You have repeated the use of a modifier like "const" (an error)
 or "far" (a warning) in a declaration.
 :MSGSYM. ERR_QUALIFIER_MISMATCH
+:ERROR. 1
 :MSGTXT. Type qualifier mismatch
 :MSGJTXT. 型修飾子が一致しません
 .np
@@ -2143,11 +2149,13 @@ You have two pointers that have different "const" or "volatile" qualifiers.
 .np
 You have two pointers that have different const or "volatile" qualifiers.
 :MSGSYM. ERR_SIGN_MISMATCH
+:ERROR. 1
 :MSGTXT. Sign specifier mismatch
 :MSGJTXT. 符号指定子が一致しません
 .np
 You have two pointers that point to types that have different sign specifiers.
 :MSGSYM. ERR_PARM_SIGN_MISMATCH
+:ERROR. 1
 :MSGTXT. Parameter %d, sign specifier mismatch
 :MSGJTXT. パラメータ%d, 符号指定子が一致しません
 .np

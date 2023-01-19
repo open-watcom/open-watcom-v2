@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,6 +69,7 @@ def_tag( msgattr ) \
 def_tag( ansi ) \
 def_tag( ansierr ) \
 def_tag( ansiwarn ) \
+def_tag( error ) \
 def_tag( warning ) \
 def_tag( info ) \
 def_tag( ansicomp ) \
@@ -754,6 +755,14 @@ static void do_jck( const char *p )
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     m->mtype = MSG_TYPE_JCK;
+    m->level = pickUpLevel( p );
+}
+
+static void do_error( const char *p )
+{
+    MSGSYM *m = mustBeProceededByMSGSYM();
+
+    m->mtype = MSG_TYPE_ERROR;
     m->level = pickUpLevel( p );
 }
 
