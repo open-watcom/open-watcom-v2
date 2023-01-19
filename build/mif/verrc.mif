@@ -82,6 +82,22 @@ verrcaxp_exe_out = veraxp.res
 verrcaxp_exe = $(proj_name)axp
 !endif
 
+!ifndef verrcmps_exe_skel
+verrcmps_exe_skel = ../vermps.rc
+!endif
+
+!ifndef verrcmps_exe_int
+verrcmps_exe_int = vermps.grc
+!endif
+
+!ifndef verrcmps_exe_out
+verrcmps_exe_out = vermps.res
+!endif
+
+!ifndef verrcmps_exe
+verrcmps_exe = $(proj_name)mps
+!endif
+
 !ifndef verrcppc_exe_skel
 verrcppc_exe_skel = ../verppc.rc
 !endif
@@ -123,6 +139,11 @@ $(verrcaxp_exe_out): $(verrcaxp_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
     @%make echo_rc
     $(rc) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$@
+
+$(verrcmps_exe_out): $(verrcmps_exe_skel) .EXPLICIT
+    $(noecho)genverrc $]@ $(verrcmps_exe_int) $$ $(verrcmps_exe) $(patch_level)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcmps_exe_int) -fo=$@
 
 $(verrcppc_exe_out): $(verrcppc_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
@@ -195,6 +216,14 @@ bind_res_versionaxp_exe: .PROCEDURE .EXPLICIT
     @echo bind res $@
 !endif
     $(rcbnd) $(versionaxp_res_exe_$(host_os)_$(host_cpu)) $@
+!endif
+
+bind_res_versionmps_exe: .PROCEDURE .EXPLICIT
+!ifdef versionmps_res_exe_$(host_os)_$(host_cpu)
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(rcbnd) $(versionmps_res_exe_$(host_os)_$(host_cpu)) $@
 !endif
 
 bind_res_versionppc_exe: .PROCEDURE .EXPLICIT

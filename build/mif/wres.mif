@@ -47,6 +47,7 @@ wres_dir_nt386      = nt386/$(name_model_386)
 !endif
 
 wres_dir_ntaxp      = ntaxp/$(name_model_axp)
+wres_dir_ntmps      = ntmps/$(name_model_mps)
 
 wres_dir_linuxarm   = linuxarm/$(name_model_arm)
 wres_dir_linuxa64   = linuxa64/$(name_model_a64)
