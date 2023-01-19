@@ -1023,14 +1023,14 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
 
     msg_index = GetMsgIndex( msgnum );
     if( IS_MSGIDX_INVALID( msg_index ) ) {
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
 //    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
     case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_WARNING :
@@ -1049,7 +1049,7 @@ static void warnChangeLevels( unsigned level )
 
     for( msg_index = 0; msg_index < MESSAGE_COUNT; msg_index++ ) {
         switch( msg_level[msg_index].type ) {
-    	case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
+        case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
         case MSG_TYPE_WARNING :
         case MSG_TYPE_ANSI :
         case MSG_TYPE_ANSIWARN :
@@ -1066,14 +1066,14 @@ void WarnEnableDisable( bool enabled, msg_codes msgnum )
 
     msg_index = GetMsgIndex( msgnum );
     if( IS_MSGIDX_INVALID( msg_index ) ) {
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
 //    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
     case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_WARNING :
@@ -1124,7 +1124,7 @@ static bool pragWarning( void )
                 warnChangeLevel( level, msgnum );
             }
         } else {
-            CWarn1( WARN_PRAG_WARNING_BAD_LEVEL, ERR_PRAG_WARNING_BAD_LEVEL );
+            CWarn1( ERR_PRAG_WARNING_BAD_LEVEL );
             NextToken();
         }
     }

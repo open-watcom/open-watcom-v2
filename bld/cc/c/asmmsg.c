@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ void AsmError( const char *msg )
 void AsmWarning( const char *msg )
 /********************************/
 {
-    CWarn2p( WARN_ASSEMBLER_WARNING, ERR_ASSEMBLER_WARNING, msg );
+    CWarn2p( ERR_ASSEMBLER_WARNING, msg );
 }
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
                 if( !CompFlags.cpp_mode ) {
                     if( SkipLevel == NestLevel ) {
                         if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                            CWarn1( ERR_CONSTANT_TOO_BIG );
                         } else if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
                             CErr1( ERR_INVALID_HEX_CONSTANT );
                         }

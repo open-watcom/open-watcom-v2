@@ -484,10 +484,10 @@ extern void         CErr4p(msg_codes msgnum,const char *,const char *,const char
 extern void         CErrP1(int parmno,msg_codes msgnum);
 extern void         SetErrLoc(source_loc *);
 extern void         InitErrLoc( void );
-extern void         CWarn1(int level,msg_codes msgnum);
-extern void         CWarn2(int level,msg_codes msgnum,int);
-extern void         CWarn2p(int level,msg_codes msgnum,const char *);
-extern void         CWarnP1(int parmno,int level,msg_codes msgnum);
+extern void         CWarn1(msg_codes msgnum);
+extern void         CWarn2(msg_codes msgnum,int);
+extern void         CWarn2p(msg_codes msgnum,const char *);
+extern void         CWarnP1(int parmno,msg_codes msgnum);
 extern void         PCHNote( msg_codes msgnum, ... );
 extern void         CInfoMsg(msg_codes msgnum,...);
 extern void         CSuicide( void );

@@ -176,7 +176,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
     PrevProtoType = NULL;
     // Warn if assuming 'int' return type - should be an error in strict C99 mode
     if( *state & DECL_STATE_NOTYPE ) {
-        CWarn2p( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
+        CWarn2p( ERR_NO_RET_TYPE_GIVEN, sym->name );
     }
     sym->attribs.rent = false;      /* Assume not override aka re-entrant */
     if( CompFlags.rent && (sym->attribs.declspec == DECLSPEC_DLLIMPORT) ) {
@@ -201,7 +201,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
         }
         if( Check_global_prototype ) {
             if( stg_class != SC_STATIC && stg_class != SC_EXTERN && (sym->mods & FLAG_INLINE) == 0 && CurToken == T_LEFT_BRACE && !CheckFuncMain( sym->name ) ) {
-                CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym->name );
+                CWarn2p( ERR_ASSUMED_IMPORT, sym->name );
             }
         }
         sym_handle = SymAddL0( sym->info.hash, sym );
@@ -277,7 +277,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
             if( stg_class == SC_STATIC && old_sym.attribs.stg_class == SC_EXTERN ) {
                 /* can't redeclare extern function as static */
                 /* NB: We may want to handle SC_FORWARD functions too! */
-                CWarn2p( WARN_FUNCTION_STG_CLASS_REDECLARED, ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
+                CWarn2p( ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
             }
             CMemFree( sym->name );
             if( stg_class == SC_NONE && old_sym.attribs.stg_class != SC_FORWARD ) {
@@ -319,13 +319,13 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     // Warn if neither type nor storage class were given; this should probably be
     // an error in strict C89 (and naturally C99) mode
     if( (stg_class == SC_NONE) && (*state & DECL_STATE_NOTYPE) && (*state & DECL_STATE_NOSTWRN) == 0 ) {
-        CWarn1( WARN_NO_STG_OR_TYPE, ERR_NO_STG_OR_TYPE );
+        CWarn1( ERR_NO_STG_OR_TYPE );
         *state |= DECL_STATE_NOSTWRN;   // Only warn once for each declarator list
     }
 
     // Additionally warn if assuming 'int' type - should be an error in strict C99 mode
     if( *state & DECL_STATE_NOTYPE ) {
-        CWarn2p( WARN_NO_DATA_TYPE_GIVEN, ERR_NO_DATA_TYPE_GIVEN, sym->name );
+        CWarn2p( ERR_NO_DATA_TYPE_GIVEN, sym->name );
     }
     if( CompFlags.rent ) {
         sym->attribs.rent = true; //Assume instance data
@@ -911,7 +911,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
     for( ;; ) {
         flags = GetModifiers();   // NEAR FAR CDECL stuff
         if( flags & info->modifier ) {
-            CWarn1( WARN_REPEATED_MODIFIER, ERR_REPEATED_MODIFIER );
+            CWarn1( ERR_REPEATED_MODIFIER );
         }
         info->modifier |= flags;
         if( CurToken == T___BASED ) {
@@ -1343,7 +1343,7 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
                 CErr1( ERR_ID_LIST_SHOULD_BE_EMPTY );
             }
             /* Old-style declarations are obsolescent (ever since ANSI C89!) */
-            CWarn1( WARN_OBSOLETE_FUNC_DECL, ERR_OBSOLETE_FUNC_DECL );
+            CWarn1( ERR_OBSOLETE_FUNC_DECL );
         }
         if( parms_list != NULL ) {
             FreeParmList();
@@ -1357,7 +1357,7 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
          * __interrupt functions are unlikely to be called directly.
          */
         if( (mod & FLAG_INTERRUPT) == 0 ) {
-            CWarn1( WARN_OBSOLETE_FUNC_DECL, ERR_OBSOLETE_FUNC_DECL );
+            CWarn1( ERR_OBSOLETE_FUNC_DECL );
         }
     }
     if( typ != NULL ) {

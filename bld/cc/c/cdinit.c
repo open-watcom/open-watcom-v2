@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -321,7 +321,7 @@ static void ChkConstant( unsigned value, unsigned max_value )
 {
     if( value > max_value ) {
         if( (value | (max_value >> 1)) != ~0U ) {
-            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+            CWarn1( ERR_CONSTANT_TOO_BIG );
         }
     }
 }
@@ -1064,7 +1064,7 @@ static void InitCharArray( TYPEPTR typ )
     size = typ->u.array->dimension;
     if( len > size ) {
         if( ( len - size ) > 1 ) {
-            CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
+            CWarn1( ERR_LIT_TOO_LONG );
         }
         /* chop the string */
         len = size;
@@ -1107,7 +1107,7 @@ static void InitWCharArray( TYPEPTR typ )
     size = typ->u.array->dimension;
     if( len > size ) {
         if( ( len - size ) > 1 ) {
-            CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
+            CWarn1( ERR_LIT_TOO_LONG );
         }
         len = size;
     }

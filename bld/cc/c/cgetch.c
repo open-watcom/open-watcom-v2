@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -269,7 +269,7 @@ static int tryBackSlashNewLine( void )
     }
     if( nc == '\n' ) {
         if( CompFlags.scanning_cpp_comment && SkipLevel == NestLevel ) {
-            CWarn1( WARN_SPLICE_IN_CPP_COMMENT, ERR_SPLICE_IN_CPP_COMMENT );
+            CWarn1( ERR_SPLICE_IN_CPP_COMMENT );
         }
         if( CompFlags.cpp_mode ) {
             if( CompFlags.in_pragma ) {
@@ -572,7 +572,7 @@ void CloseFCB( FCB *srcfcb )
         err_loc.column = srcfcb->src_loc.column;
         err_loc.fno = srcfcb->src_flist->index;
         SetErrLoc( &err_loc );
-        CWarn1( WARN_NO_EOL_BEFORE_EOF, ERR_NO_EOL_BEFORE_EOF );
+        CWarn1( ERR_NO_EOL_BEFORE_EOF );
         InitErrLoc();
     }
     SrcFile = srcfcb->prev_file;

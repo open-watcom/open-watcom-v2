@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -892,7 +892,7 @@ static target_size FieldAlign( target_size next_offset, FIELDPTR field, align_ty
         old_offset = next_offset;
         next_offset = _RoundUp( next_offset, align );
         if( CompFlags.slack_byte_warning && (next_offset - old_offset) ) {
-            CWarn2( WARN_LEVEL_1, ERR_SLACK_ADDED, (unsigned)( next_offset - old_offset ) );
+            CWarn2( ERR_SLACK_ADDED, (unsigned)( next_offset - old_offset ) );
         }
     }
     field->offset = next_offset;
@@ -1121,7 +1121,7 @@ static target_size GetFields( TYPEPTR decl )
             NextToken();
         }
         if( CurToken == T_RIGHT_BRACE ) {
-            CWarn1( WARN_MISSING_LAST_SEMICOLON, ERR_MISSING_LAST_SEMICOLON );
+            CWarn1( ERR_MISSING_LAST_SEMICOLON );
         } else {
             MustRecog( T_SEMI_COLON );
         }

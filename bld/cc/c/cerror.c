@@ -317,13 +317,11 @@ void CErrP1( int parmno, msg_codes msgnum )
 
 
 // Out warning message
-static void CWarn( int parmno, int levelx, msg_codes msgnum, ... )
+static void CWarn( int parmno, msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
     int         level;
-
-    /* unused parameters */ (void)levelx;
 
     if( okToPrintMsg( msgnum, &level ) ) {
         if( level <= WngLevel ) {
@@ -338,24 +336,24 @@ static void CWarn( int parmno, int levelx, msg_codes msgnum, ... )
     }
 }
 
-void CWarn1( int level, msg_codes msgnum )
+void CWarn1( msg_codes msgnum )
 {
-    CWarn( 0, level, msgnum );
+    CWarn( 0, msgnum );
 }
 
-void CWarn2( int level, msg_codes msgnum, int p1 )
+void CWarn2( msg_codes msgnum, int p1 )
 {
-    CWarn( 0, level, msgnum, p1 );
+    CWarn( 0, msgnum, p1 );
 }
 
-void CWarn2p( int level, msg_codes msgnum, const char *p1 )
+void CWarn2p( msg_codes msgnum, const char *p1 )
 {
-    CWarn( 0, level, msgnum, p1 );
+    CWarn( 0, msgnum, p1 );
 }
 
-void CWarnP1( int parmno, int level, msg_codes msgnum )
+void CWarnP1( int parmno, msg_codes msgnum )
 {
-    CWarn( parmno, level, msgnum );
+    CWarn( parmno, msgnum );
 }
 
 

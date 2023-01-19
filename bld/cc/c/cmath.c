@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -857,11 +857,11 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         }
         if( cmp_cc != CMP_VOID ) {
             if( cmp_cc == CMP_COMPLEX ) {
-                CWarn1( WARN_COMPARE_UNSIGNED_VS_ZERO, ERR_COMPARE_UNSIGNED_VS_ZERO );
+                CWarn1( ERR_COMPARE_UNSIGNED_VS_ZERO );
             } else {
                 int res = ( cmp_cc == CMP_TRUE );
 
-                CWarn2( WARN_COMPARE_ALWAYS, ERR_COMPARE_ALWAYS, res );
+                CWarn2( ERR_COMPARE_ALWAYS, res );
             }
         }
     }
@@ -877,9 +877,9 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                (op2_type == TYP_POINTER && IsInt( op1_type )) ) {
         /* ok to compare pointer with constant 0 */
         if( opr != T_EQ && opr != T_NE ) {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+            CWarn1( ERR_POINTER_TYPE_MISMATCH );
         } else if( !IsZero( op1 ) && !IsZero( op2 ) ) {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_NON_ZERO_CONST );
+            CWarn1( ERR_NON_ZERO_CONST );
         }
         if( op2_type == TYP_POINTER ) {
             cmp_type = typ2;
@@ -1044,7 +1044,7 @@ extern TREEPTR LCastAdj( TREEPTR tree )
     typ = tree->u.expr_type;
     opnd->u.expr_type = typ;
     FreeExprTree( tree );
-    CWarn1( WARN_LVALUE_CAST, ERR_LVALUE_CAST );
+    CWarn1( ERR_LVALUE_CAST );
     opnd->op.flags &= ~OPFLAG_RVALUE;
     if( opnd->op.opr == OPR_PUSHSYM ) {
         opnd->op.opr = OPR_PUSHADDR;
@@ -1129,7 +1129,7 @@ static bool LValue( TREEPTR op1 )
             }
             if( op1->op.flags & OPFLAG_LVALUE_CAST ) {
                 op1->op.flags &= ~(OPFLAG_LVALUE_CAST | OPFLAG_RVALUE);
-                CWarn1( WARN_LVALUE_CAST, ERR_LVALUE_CAST );
+                CWarn1( ERR_LVALUE_CAST );
             }
             return( true );
         }
@@ -1422,7 +1422,7 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             if( op1->op.opr == OPR_PUSHSYM ) {
                 op1->op.opr = OPR_PUSHADDR;
             }
-            CWarn1( WARN_LVALUE_CAST, ERR_LVALUE_CAST );
+            CWarn1( ERR_LVALUE_CAST );
         } else {
             CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
         }
@@ -1682,7 +1682,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, bool cast_op )
             }
         } else if( newtyp->decl_type == TYP_ENUM ) {
             if( typ->decl_type == TYP_POINTER ) {
-                CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+                CWarn1( ERR_POINTER_TYPE_MISMATCH );
             }
             newtyp = newtyp->object;
             goto convert;
@@ -1712,9 +1712,9 @@ convert:                                /* moved here */
                   || ( opnd_type == TYP_ARRAY ) ) {
                     if( !IsPtrConvSafe( opnd, newtyp, typ ) ) {
                         if( cast_op ) {
-                            CWarn1( WARN_CAST_POINTER_TRUNCATION, ERR_CAST_POINTER_TRUNCATION );
+                            CWarn1( ERR_CAST_POINTER_TRUNCATION );
                         } else {
-                            CWarn1( WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
+                            CWarn1( ERR_POINTER_TRUNCATION );
                         }
                     }
                     if( !cast_op ) {
@@ -1764,7 +1764,7 @@ convert:                                /* moved here */
                 }
             }
             if( !cast_op && cnv == P2A && TypeSize( typ ) > TypeSize( newtyp ) ) {
-                CWarn1( WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
+                CWarn1( ERR_POINTER_TRUNCATION );
             }
             if( cnv == P2A || cnv == A2P ) {
                 if( TypeSize( typ ) != TypeSize( newtyp ) ) {
@@ -2076,13 +2076,13 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
     dtype2 = DataTypeOf( typ2 );
     if( dtype1 == TYP_POINTER && false_part->op.opr == OPR_PUSHINT ) {
         if( false_part->op.u2.long_value != 0 ) {
-            CWarn1( WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
+            CWarn1( ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ1, typ2 ) ); /* merge near/far/const etc. */
     }
     if( dtype2 == TYP_POINTER && true_part->op.opr == OPR_PUSHINT ) {
         if( true_part->op.u2.long_value != 0 ) {
-            CWarn1( WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
+            CWarn1( ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ2, typ1 ) ); /* merge near/far/const etc. */
     }

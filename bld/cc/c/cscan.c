@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -785,7 +785,7 @@ static TOKEN doScanNum( void )
             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
             Constant =  Constant64.u._32[I64LO32];
             if( diagnose_lex_error() ) {
-                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                CWarn1( ERR_CONSTANT_TOO_BIG );
             }
         }
     } else if( ov == CNV_32 && con.suffix != SUFF_LL && con.suffix != SUFF_ULL ) {
@@ -874,7 +874,7 @@ static TOKEN doScanNum( void )
     } else if( ov == CNV_OVR ) {
         BadTokenInfo = ERR_CONSTANT_TOO_BIG;
         if( diagnose_lex_error() ) {
-            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+            CWarn1( ERR_CONSTANT_TOO_BIG );
         }
     }
     return( token );
@@ -1134,7 +1134,7 @@ static void doScanComment( void )
                     c = NextChar();
                     if( c == '/' )
                         break;
-                    CWarn2( WARN_NESTED_COMMENT, ERR_NESTED_COMMENT, CommentLoc.line );
+                    CWarn2( ERR_NESTED_COMMENT, CommentLoc.line );
                 }
             }
             // NextChar might not be pointing to GetNextChar at this point
@@ -1357,7 +1357,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                             if( n > 0377 && char_type != TYP_WCHAR ) {
                                 BadTokenInfo = ERR_CONSTANT_TOO_BIG;
                                 if( diagnose_lex_error() ) {
-                                    CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                                    CWarn1( ERR_CONSTANT_TOO_BIG );
                                 }
                                 n &= 0377;          // mask off high bits
                             }
@@ -1368,7 +1368,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     c = ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
                     if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                         if( diagnose_lex_error() ) {
-                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                            CWarn1( ERR_CONSTANT_TOO_BIG );
                         }
                     }
                 }
@@ -1467,7 +1467,7 @@ static TOKEN doScanString( bool wide )
         if( c == '\n' ) {
             if( SkipLevel != NestLevel ) {
                 if( CompFlags.extensions_enabled ) {
-                    CWarn1( WARN_MISSING_QUOTE, ERR_MISSING_QUOTE );
+                    CWarn1( ERR_MISSING_QUOTE );
                     ok = true;
                 }
             }
@@ -1487,7 +1487,7 @@ static TOKEN doScanString( bool wide )
                 ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
                 if( diagnose_lex_error() ) {
                     if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                        CWarn1( ERR_CONSTANT_TOO_BIG );
                     } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                         CErr1( ERR_INVALID_HEX_CONSTANT );
                     }
@@ -1505,7 +1505,7 @@ static TOKEN doScanString( bool wide )
     }
     WriteBufferNullChar();
     if( CompFlags.trigraph_alert ) {
-        CWarn1( WARN_LEVEL_1, ERR_EXPANDED_TRIGRAPH );
+        CWarn1( ERR_EXPANDED_TRIGRAPH );
     }
     if( wide )
         CompFlags.wide_char_string = wide;

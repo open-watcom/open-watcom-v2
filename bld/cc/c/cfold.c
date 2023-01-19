@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1239,9 +1239,9 @@ static void CheckOpndValues( TREEPTR tree )
                 break;
             }
             if( shift_negative ) {
-                CWarn1( WARN_SHIFT_AMOUNT_NEGATIVE, ERR_SHIFT_AMOUNT_NEGATIVE );
+                CWarn1( ERR_SHIFT_AMOUNT_NEGATIVE );
             } else if( shift_too_big ) {
-                CWarn1( WARN_SHIFT_AMOUNT_TOO_BIG, ERR_SHIFT_AMOUNT_TOO_BIG );
+                CWarn1( ERR_SHIFT_AMOUNT_TOO_BIG );
             }
         }
         break;
@@ -1278,7 +1278,7 @@ static void CheckOpndValues( TREEPTR tree )
                 break;
             }
             if( zero_divisor ) {
-                CWarn1( WARN_DIV_BY_ZERO, ERR_DIV_BY_ZERO );
+                CWarn1( ERR_DIV_BY_ZERO );
             }
         }
         break;

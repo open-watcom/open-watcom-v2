@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,9 +91,9 @@ static void ChkStringLeaf( TREEPTR leaf )
 static void ChkUseful( void )
 {
     if( CompFlags.useful_side_effect ) {
-        CWarn1( WARN_USEFUL_SIDE_EFFECT, ERR_USEFUL_SIDE_EFFECT );
+        CWarn1( ERR_USEFUL_SIDE_EFFECT );
     } else {
-        CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
+        CWarn1( ERR_MEANINGLESS );
     }
 }
 
@@ -428,7 +428,7 @@ static void ChkRetValue( void )
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYP_VOID ) {
-        CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
+        CWarn2p( ERR_MISSING_RETURN_VALUE, CurFunc->name );
     }
 }
 
@@ -463,7 +463,7 @@ static SYM_HANDLE GetLocalVarDecls( void )
 static void DeadMsg( void )
 /*************************/
 {
-    CWarn1( WARN_DEAD_CODE, ERR_DEAD_CODE );
+    CWarn1( ERR_DEAD_CODE );
     DeadCode = 2;   /* so we don't get more messages */
 }
 
@@ -1030,7 +1030,7 @@ static void EndSwitch( void )
         }
     }
 //      if( sw->case_list == NULL ) {
-//          CWarn1( WARN_EMPTY_SWITCH, ERR_EMPTY_SWITCH );
+//          CWarn1( ERR_EMPTY_SWITCH );
 //      }
 #if 0
     for( ; (ce = sw->case_list) != NULL; ) {
@@ -1273,7 +1273,7 @@ void Statement( void )
             }
             if( CurToken == T_SEMI_COLON ) {
                 if( !CompFlags.useful_side_effect ) {
-                    CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
+                    CWarn1( ERR_MEANINGLESS );
                 }
             }
             declaration_allowed = false;
@@ -1429,7 +1429,7 @@ void Statement( void )
         }
     } else if( ! return_at_outer_level ) {
         if( DeadCode == 0 && !CurFunc->attribs.naked ) {
-            CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
+            CWarn2p( ERR_MISSING_RETURN_VALUE, CurFunc->name );
         }
     }
     if( end_of_func_label != 0 ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -580,7 +580,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
             CErr2p( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
         } else if( !MacroHasVarArgs( mentry ) && parmno > parm_count_reqd ) {
             if( parm_count_reqd > 0 ) {
-                CWarn2p( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
+                CWarn2p( ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
             }
         } else if( strcmp( mentry->macro_name, "va_start" ) == 0 ) {
             if( SymLevel != 0 && !VarParm( CurFunc ) ) {

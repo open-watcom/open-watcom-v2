@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -418,7 +418,7 @@ static TREEPTR SymLeaf( void )
             if( CurToken == T_LEFT_PAREN ) {
                 sym.attribs.stg_class = SC_FORWARD;     /* indicate forward decl */
                 /* Warn about unprototyped function */
-                CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym.name );
+                CWarn2p( ERR_ASSUMED_IMPORT, sym.name );
                 sym_handle = SymAddL0( hash, &sym ); /* add symbol to level 0 */
                 sym.flags |= SYM_FUNCTION;
                 sym.sym_type = FuncNode( GetType( TYP_INT ), FLAG_NONE, NULL );
@@ -597,7 +597,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                     if( (sym.flags & SYM_ASSIGNED) == 0 ) {
                       /* turn on flag so msg only comes out once per sym */
                         sym.flags |= SYM_ASSIGNED;
-                        CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, SymName( &sym, tree->op.u2.sym_handle ) );
+                        CWarn2p( ERR_SYM_NOT_ASSIGNED, SymName( &sym, tree->op.u2.sym_handle ) );
                     }
                 }
             }
@@ -670,7 +670,7 @@ static void CheckAddrOfArray( TYPEPTR typ )
     if( typ != NULL ) {
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYP_ARRAY ) {
-            CWarn1( WARN_ADDR_OF_ARRAY, ERR_ADDR_OF_ARRAY );
+            CWarn1( ERR_ADDR_OF_ARRAY );
         }
     }
 }
@@ -698,7 +698,7 @@ static TREEPTR AddrOp( TREEPTR tree )
     if( tree->op.flags & OPFLAG_LVALUE_CAST ) {
         if( CompFlags.extensions_enabled ) {
             tree->op.flags &= ~(OPFLAG_LVALUE_CAST | OPFLAG_RVALUE);
-            CWarn1( WARN_LVALUE_CAST, ERR_LVALUE_CAST );
+            CWarn1( ERR_LVALUE_CAST );
         } else {
             CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
             return( ErrorNode( tree ) );
@@ -1439,9 +1439,9 @@ static TREEPTR GetExpr( void )
             if( Class[ExprLevel] != TC_PARM_LIST ) {
                 if( CompFlags.meaningless_stmt ) {
                     if( CompFlags.useful_side_effect ) {
-                        CWarn1( WARN_USEFUL_SIDE_EFFECT, ERR_USEFUL_SIDE_EFFECT );
+                        CWarn1( ERR_USEFUL_SIDE_EFFECT );
                     } else {
-                        CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
+                        CWarn1( ERR_MEANINGLESS );
                     }
                 }
             } else {
@@ -1699,7 +1699,7 @@ static TREEPTR ExprId( void )
             }
         } else {
 //          if( SizeOfCount == 0 ) {
-//              CWarn2p( WARN_UNDECLARED_PP_SYM, ERR_UNDECLARED_PP_SYM, Buffer);
+//              CWarn2p( ERR_UNDECLARED_PP_SYM, Buffer);
 //          }
             NextToken();
             if( CurToken == T_LEFT_PAREN ) {
@@ -1766,7 +1766,7 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         return( ErrorNode( index_expr ) );
     }
     if( TypeOf( index_expr )->type_flags & TF2_TYP_PLAIN_CHAR ) {
-        CWarn1( WARN_PLAIN_CHAR_SUBSCRIPT, ERR_PLAIN_CHAR_SUBSCRIPT );
+        CWarn1( ERR_PLAIN_CHAR_SUBSCRIPT );
     }
     typ = tree->u.expr_type;
     SKIP_TYPEDEFS( typ );
@@ -1907,7 +1907,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 #if _CPU == 386
             /* can allow wrong number of parms with -3s option */
             if( !CompFlags.register_conventions ) {
-                CWarn1( WARN_PARM_COUNT_MISMATCH, ERR_PARM_COUNT_WARNING );
+                CWarn1( ERR_PARM_COUNT_WARNING );
             } else {
                 CErr1( ERR_PARM_COUNT_MISMATCH );
             }
@@ -2433,7 +2433,7 @@ TREEPTR BoolExpr( TREEPTR tree )
     default:
         if( tree->op.opr == OPR_EQUALS ) {
             if( IsConstLeaf( tree ) ) {
-                CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR, ERR_ASSIGNMENT_IN_BOOL_EXPR );
+                CWarn1( ERR_ASSIGNMENT_IN_BOOL_EXPR );
             }
         }
         tree = RValue( tree );
@@ -2499,7 +2499,7 @@ static TREEPTR NotOp( TREEPTR tree )
         if( tree->op.opr == OPR_EQUALS ) {
             opnd = tree->right;
             if( IsConstLeaf( opnd ) ) {
-                CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR, ERR_ASSIGNMENT_IN_BOOL_EXPR );
+                CWarn1( ERR_ASSIGNMENT_IN_BOOL_EXPR );
             }
         }
         tree = RelOp( ScalarExpr( tree ), T_EQ, IntLeaf( 0 ) );

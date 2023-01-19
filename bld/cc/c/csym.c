@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -552,16 +552,16 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
                 if( (sym->flags & SYM_IGNORE_UNREFERENCE) == 0 ) {
                     if( sym->attribs.is_parm ) {
-                        CWarn2p( WARN_PARM_NOT_REFERENCED, ERR_PARM_NOT_REFERENCED, name );
+                        CWarn2p( ERR_PARM_NOT_REFERENCED, name );
                     } else {
-                        CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
+                        CWarn2p( ERR_SYM_NOT_REFERENCED, name );
                     }
                 }
             } else if( (sym->flags & SYM_ASSIGNED) == 0 ) {
                 typ = sym->sym_type;
                 SKIP_TYPEDEFS( typ );
                 if( sym->attribs.stg_class != SC_STATIC && typ->decl_type != TYP_ARRAY ) {
-                    CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
+                    CWarn2p( ERR_SYM_NOT_ASSIGNED, name );
                 }
             }
         }
@@ -600,7 +600,7 @@ static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
         if( sym->attribs.stg_class == SC_STATIC ) {
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
                 if( (sym->flags & SYM_IGNORE_UNREFERENCE) == 0 ) {
-                    CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
+                    CWarn2p( ERR_SYM_NOT_REFERENCED, name );
                 }
             }
         }
@@ -627,7 +627,7 @@ static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
     if( sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_ADDR_TAKEN ) {
             if( CompFlags.using_overlays ) {
-                CWarn2p( WARN_ADDR_OF_STATIC_FUNC_TAKEN, ERR_ADDR_OF_STATIC_FUNC_TAKEN, name );
+                CWarn2p( ERR_ADDR_OF_STATIC_FUNC_TAKEN, name );
             }
         } else {
             if( (sym->mods & (FLAG_FAR | FLAG_NEAR)) == 0
@@ -994,7 +994,7 @@ void FreeLabels( void )
         if( !label->defined ) {
             CErr2p( ERR_UNDEFINED_LABEL, label->name );
         } else if( !label->referenced ) {
-            CWarn2p( WARN_UNREFERENCED_LABEL, ERR_UNREFERENCED_LABEL, label->name );
+            CWarn2p( ERR_UNREFERENCED_LABEL, label->name );
         }
         CMemFree( label );
     }

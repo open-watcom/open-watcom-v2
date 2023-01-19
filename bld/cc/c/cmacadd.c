@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,10 +153,10 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
             old_mentry = NULL;
         } else if( MacroCompare( mentry, old_mentry ) ) {
             if( MacroIsSpecial( old_mentry ) ) {
-                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, name );
+                CWarn2p( ERR_MACRO_DEFN_NOT_IDENTICAL, name );
             } else {
                 SetDiagMacro( old_mentry );
-                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, name );
+                CWarn2p( ERR_MACRO_DEFN_NOT_IDENTICAL, name );
                 SetDiagPop();
                 *lnk = old_mentry->next_macro;
                 old_mentry = NULL;

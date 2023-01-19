@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -745,7 +745,7 @@ void FEMessage( int class, CGPOINTER parm )
 
             sym = SymGetPtr( (SYM_HANDLE)parm );
             SetErrLoc( &sym->src_loc );
-            CWarn2p( WARN_SYMBOL_NAME_TOO_LONG, ERR_SYMBOL_NAME_TOO_LONG, sym->name );
+            CWarn2p( ERR_SYMBOL_NAME_TOO_LONG, sym->name );
             InitErrLoc();
         }
         break;

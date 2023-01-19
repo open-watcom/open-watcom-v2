@@ -516,21 +516,21 @@ void CompatiblePtrType( TYPEPTR typ1, TYPEPTR typ2, TOKEN opr )
         break;
     case PQ:
         if( !CompFlags.no_check_qualifiers ) { // else fuck em
-            CWarn1( WARN_QUALIFIER_MISMATCH, ERR_QUALIFIER_MISMATCH );
+            CWarn1( ERR_QUALIFIER_MISMATCH );
         }
         break;
     case PM:
     case NO:
-        CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+        CWarn1( ERR_POINTER_TYPE_MISMATCH );
         break;
     case PS:
-        CWarn1( WARN_SIGN_MISMATCH, ERR_SIGN_MISMATCH );
+        CWarn1( ERR_SIGN_MISMATCH );
         break;
     case PW:
-        CWarn1( WARN_INCONSISTENT_INDIRECTION_LEVEL, ERR_INCONSISTENT_INDIRECTION_LEVEL );
+        CWarn1( ERR_INCONSISTENT_INDIRECTION_LEVEL );
         break;
     case PC:
-        CWarn1( WARN_PCTYPE_MISMATCH, ERR_PCTYPE_MISMATCH );
+        CWarn1( ERR_PCTYPE_MISMATCH );
         break;
     case OK:
     case AC:
@@ -602,7 +602,7 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
 #if _CPU == 386
         /* can allow wrong number of parms with -3s option */
         if( !CompFlags.register_conventions ) {
-            CWarn1( WARN_PARM_COUNT_MISMATCH, ERR_PARM_COUNT_WARNING );
+            CWarn1( ERR_PARM_COUNT_WARNING );
         } else {
             CErr1( ERR_PARM_COUNT_MISMATCH );
         }
@@ -656,9 +656,9 @@ extern void ChkCallParms( void )
                 // is no symbol associated with the function and diagnostic information
                 // is hence limited.
                 if( sym.flags & SYM_TEMP ) {
-                    CWarn1( WARN_NONPROTO_FUNC_CALLED_INDIRECT, ERR_NONPROTO_FUNC_CALLED_INDIRECT );
+                    CWarn1( ERR_NONPROTO_FUNC_CALLED_INDIRECT );
                 } else {
-                    CWarn2p( WARN_NONPROTO_FUNC_CALLED, ERR_NONPROTO_FUNC_CALLED, SymName( &sym, callsite->op.u2.sym_handle ) );
+                    CWarn2p( ERR_NONPROTO_FUNC_CALLED, SymName( &sym, callsite->op.u2.sym_handle ) );
                 }
             }
             InitErrLoc();
@@ -782,7 +782,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     case PT:
         if( asgn_check ) {
             if( !IsPtrConvSafe( opnd2, typ1, typ2 ) ) {
-                CWarnP1( parmno, WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
+                CWarnP1( parmno, ERR_POINTER_TRUNCATION );
             }
         } else if( parmno ) {
             CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
@@ -796,7 +796,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
                 if( parmno ) {
                     CErr2( ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
                 } else {
-                    CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+                    CWarn1( ERR_POINTER_TYPE_MISMATCH );
                 }
             }
         } else if( parmno ) {
@@ -808,9 +808,9 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     case PQ:
         if( !CompFlags.no_check_qualifiers ) {
             if( parmno ) {
-                CWarn2( WARN_QUALIFIER_MISMATCH, ERR_PARM_QUALIFIER_MISMATCH, parmno );
+                CWarn2( ERR_PARM_QUALIFIER_MISMATCH, parmno );
             } else {
-                CWarn1( WARN_QUALIFIER_MISMATCH, ERR_QUALIFIER_MISMATCH );
+                CWarn1( ERR_QUALIFIER_MISMATCH );
             }
         }
         break;
@@ -818,31 +818,31 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         if( parmno ) {
             CErr2( ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
         } else {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+            CWarn1( ERR_POINTER_TYPE_MISMATCH );
         }
         break;
     case PS:
         if( parmno ) {
-            CWarn2( WARN_PARM_SIGN_MISMATCH, ERR_PARM_SIGN_MISMATCH, parmno );
+            CWarn2( ERR_PARM_SIGN_MISMATCH, parmno );
         } else {
-            CWarn1( WARN_SIGN_MISMATCH, ERR_SIGN_MISMATCH );
+            CWarn1( ERR_SIGN_MISMATCH );
         }
         break;
     case PW:
         if( parmno ) {
-            CWarn2( WARN_PARM_INCONSISTENT_INDIRECTION_LEVEL, ERR_PARM_INCONSISTENT_INDIRECTION_LEVEL, parmno );
+            CWarn2( ERR_PARM_INCONSISTENT_INDIRECTION_LEVEL, parmno );
         } else {
-            CWarn1( WARN_INCONSISTENT_INDIRECTION_LEVEL, ERR_INCONSISTENT_INDIRECTION_LEVEL );
+            CWarn1( ERR_INCONSISTENT_INDIRECTION_LEVEL );
         }
         break;
     case PC:
         if( asgn_check ) {  /* Allow only "... *p = int 0";  */
             if( IsPointer( typ1 ) && opnd2->op.opr == OPR_PUSHINT ) {
                 if( opnd2->op.u2.long_value != 0 ) {
-                    CWarnP1( parmno, WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
+                    CWarnP1( parmno, ERR_NONPORTABLE_PTR_CONV );
                 }
             } else {
-                CWarnP1( parmno, WARN_PCTYPE_MISMATCH, ERR_PCTYPE_MISMATCH );
+                CWarnP1( parmno, ERR_PCTYPE_MISMATCH );
             }
         } else if( parmno ) {
             CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
@@ -855,10 +855,10 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
             bitfield_width  fsize_1 = 0, fsize_2 = 0;
 
             if( TypeSizeEx( typ2, &fsize_2 ) > TypeSizeEx( typ1, &fsize_1 ) ) {
-                CWarnP1( parmno, WARN_LOSE_PRECISION, ERR_LOSE_PRECISION );
+                CWarnP1( parmno, ERR_LOSE_PRECISION );
             }
             if( fsize_2 > fsize_1 ) {
-                CWarnP1( parmno, WARN_LOSE_PRECISION, ERR_LOSE_PRECISION );
+                CWarnP1( parmno, ERR_LOSE_PRECISION );
             }
         } else {
             if( parmno ) {
@@ -871,7 +871,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     case OK:
         if( asgn_check ) {
             if( !AssRangeChk( typ1, opnd2 ) ) {
-                CWarnP1( parmno, WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                CWarnP1( parmno, ERR_CONSTANT_TOO_BIG );
             }
         }
         break;
@@ -888,24 +888,24 @@ void TernChk( TYPEPTR typ1, TYPEPTR typ2 )
         break;
     case PT:
     case PX:
-        CWarn1( WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
+        CWarn1( ERR_POINTER_TRUNCATION );
         break;
     case PQ:
         if( !CompFlags.no_check_qualifiers ) {
-            CWarn1( WARN_QUALIFIER_MISMATCH,ERR_QUALIFIER_MISMATCH );
+            CWarn1( ERR_QUALIFIER_MISMATCH );
         }
         break;
     case PM:
-        CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+        CWarn1( ERR_POINTER_TYPE_MISMATCH );
         break;
     case PS:
-        CWarn1( WARN_SIGN_MISMATCH, ERR_SIGN_MISMATCH );
+        CWarn1( ERR_SIGN_MISMATCH );
         break;
     case PW:
-        CWarn1( WARN_INCONSISTENT_INDIRECTION_LEVEL, ERR_INCONSISTENT_INDIRECTION_LEVEL );
+        CWarn1( ERR_INCONSISTENT_INDIRECTION_LEVEL );
         break;
     case PC:
-        CWarn1( WARN_PCTYPE_MISMATCH, ERR_PCTYPE_MISMATCH );
+        CWarn1( ERR_PCTYPE_MISMATCH );
         break;
     case OK:
     case AC:
@@ -927,7 +927,7 @@ void ChkRetType( TREEPTR tree )
         CErr2p( ERR_NOT_EXPECTING_RETURN_VALUE, CurFunc->name );
     } else if( ret_type->decl_type == TYP_POINTER ) {
         if( ret_type->u.p.segid == SEG_STACK ) {
-            CWarn1( WARN_RET_ADDR_OF_AUTO, ERR_RET_ADDR_OF_AUTO );
+            CWarn1( ERR_RET_ADDR_OF_AUTO );
         }
     }
     /* check that the types are compatible */
