@@ -418,6 +418,7 @@ cl_fpu_flags = $(fpu_flags)
 # generic application macros
 clflags_nt_386      = -l=nt
 clflags_nt_axp      = -l=ntaxp
+clflags_nt_mps      = -l=ntmips
 clflags_win_i86     = -l=windows
 clflags_win_386     = -l=win386
 clflags_os2_i86     = -l=os2
@@ -437,6 +438,7 @@ clflags_linux_mps   = -l=linuxmips
 # windowed application macros
 clflags_wind_nt_386  = -l=nt_win
 clflags_wind_nt_axp  = -l=ntaxp_win
+clflags_wind_nt_mps  = -l=ntmips_win
 clflags_wind_os2_386 = -l=os2v2_pm
 clflags_wind_os2_i86 = -l=os2_pm
 
@@ -448,6 +450,7 @@ clflags_dll_dos_386  = -l=causeway_dll $(clflags_doslfn_386)
 !endif
 clflags_dll_nt_386   = -l=nt_dll
 clflags_dll_nt_axp   = -l=ntaxp_dll
+clflags_dll_nt_mps   = -l=ntmips_dll
 clflags_dll_os2_386  = -l=os2v2_dll
 clflags_dll_os2_i86  = -l=os2_dll
 clflags_dll_rdos_386 = -l=rdos_dll
@@ -517,6 +520,7 @@ lflags_linux_ppc    = sys linuxppc
 lflags_nov_386      = sys novell
 lflags_nt_386       = sys nt
 lflags_nt_axp       = sys ntaxp
+lflags_nt_mps       = sys ntmips
 lflags_os2_386      = sys os2v2
 lflags_os2_i86      = sys os2 pmc
 lflags_qnx_386      = sys qnx386 flat
@@ -530,6 +534,7 @@ lflags_zdos_386     = sys zdos
 # windowed application macros
 lflags_wind_nt_386   = sys nt_win
 lflags_wind_nt_axp   = sys ntaxp_win
+lflags_wind_nt_mps   = sys ntmips_win
 lflags_wind_os2_386  = sys os2v2_pm
 lflags_wind_os2_i86  = sys os2_pm
 
@@ -542,6 +547,7 @@ lflags_dll_linux_ppc   = $(lflags_linux_ppc)
 lflags_dll_nov_386     = $(lflags_nov_386)
 lflags_dll_nt_386      = sys nt_dll
 lflags_dll_nt_axp      = sys ntaxp_dll
+lflags_dll_nt_mps      = sys ntmips_dll
 lflags_dll_os2_386     = sys os2v2_dll
 lflags_dll_os2_i86     = sys os2_dll
 lflags_dll_qnx_386     = $(lflags_qnx_386)
@@ -572,6 +578,7 @@ libflags_386    = -ii
 libflags_i86    = -ii
 libflags_ppc    = -ip
 libflags_axp    = -ia
+libflags_mps    = -im
 libflags_x64    = -i6
 
 libflags_dos       = -io
@@ -581,6 +588,7 @@ libflags_linux_ppc = -ie
 libflags_linux_x64 = -ie
 libflags_nt_386    = -io
 libflags_nt_axp    = -ic
+libflags_nt_mps    = -ic
 libflags_nt_ppc    = -ic
 libflags_nt_x64    = -ic
 libflags_os2       = -io

@@ -91,6 +91,9 @@ bldonly_nt = 1
 !else ifdef __NTAXP__
 bld_cpu = axp
 bld_os = nt
+!else ifdef __NTMIPS__
+bld_cpu = mps
+bld_os = nt
 !else ifdef __LINUX386__
 bld_cpu = 386
 bld_os = linux
