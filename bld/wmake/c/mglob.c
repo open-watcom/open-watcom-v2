@@ -128,7 +128,7 @@ const char FAR BuiltIns[] = {
         "__NT386__=\n"
     #elif defined( __AXP__ )
         "__NTAXP__=\n"
-    #elif defined( __MIPS__ )
+    #elif defined( __MIPS__ ) || defined( _MIPS_ )
         "__NTMIPS__=\n"
     #else
         #error Unknown CPU architecture
