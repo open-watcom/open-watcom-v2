@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,6 +83,9 @@ static void SetCoffFile( coff_lib_file *c_file, processor_type processor,
         break;
     case WL_PROC_AXP:
         c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_ALPHA;
+        break;
+    case WL_PROC_MIPS:
+        c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_R4000;
         break;
     case WL_PROC_X64:
         c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_AMD64;
@@ -281,6 +284,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
         break;
     case WL_PROC_PPC:
     case WL_PROC_AXP:
+    case WL_PROC_MIPS:
     case WL_PROC_X86:
     default:
         opt_hdr.h32->magic = 0x010B;
@@ -301,6 +305,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
         opt_hdr.h32->l_minor = 0x3c;
         break;
     case WL_PROC_AXP:
+    case WL_PROC_MIPS:
     case WL_PROC_X64:
     case WL_PROC_X86:
     default:
@@ -325,6 +330,9 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
         break;
     case WL_PROC_AXP:
         type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
+        break;
+    case WL_PROC_MIPS:
+        type = COFF_IMAGE_REL_MIPS_REFWORDNB;
         break;
     case WL_PROC_X64:
         type = COFF_IMAGE_REL_AMD64_ADDR32NB;
@@ -459,6 +467,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
         break;
     case WL_PROC_PPC:
     case WL_PROC_AXP:
+    case WL_PROC_MIPS:
     case WL_PROC_X86:
     default:
         section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
@@ -503,6 +512,11 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                     | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
                 type = 0x20;
                 sec_num = 1;
+                break;
+            case WL_PROC_MIPS:
+                /*
+                 * Not yet implemented
+                 */
                 break;
             case WL_PROC_PPC:
                 AddCoffSection( &c_file, ".text", 0x18, 1, COFF_IMAGE_SCN_ALIGN_4BYTES
@@ -581,6 +595,11 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
                 sym_idx = 0x8;
                 break;
+            case WL_PROC_MIPS:
+                /*
+                 * Not yet implemented
+                 */
+                break;
             case WL_PROC_PPC:
                 LibWrite( io, CoffImportPpcText, 0x18 );
                 WriteCoffReloc( io, 0x0, 0xa, COFF_IMAGE_REL_PPC_TOCREL14 | COFF_IMAGE_REL_PPC_TOCDEFN );
@@ -641,6 +660,9 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 break;
             case WL_PROC_AXP:
                 obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_ALPHA;
+                break;
+            case WL_PROC_MIPS:
+                obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_R4000;
                 break;
             case WL_PROC_X86:
             default:

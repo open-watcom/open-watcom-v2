@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -364,6 +364,11 @@ static void peAddImport( arch_header *arch, libfile io, long header_offset )
         coff_obj = true;
         Options.coff_found = true;
         break;
+    case ORL_MACHINE_TYPE_R4000:
+        processor = WL_PROC_MIPS;
+        coff_obj = true;
+        Options.coff_found = true;
+        break;
     case ORL_MACHINE_TYPE_PPC601:
         processor = WL_PROC_PPC;
         Options.coff_found = true;
@@ -584,6 +589,8 @@ void ProcessImport( char *name )
                 Options.processor = WL_PROC_PPC;
 #elif defined( __AXP__ )
                 Options.processor = WL_PROC_AXP;
+#elif defined( __MIPS__ )
+                Options.processor = WL_PROC_MIPS;
 #else
                 Options.processor = WL_PROC_X86;
 #endif
@@ -626,6 +633,17 @@ void ProcessImport( char *name )
                 Options.libtype = WL_LTYPE_AR;
                 Options.filetype = WL_FTYPE_COFF;
                 Warning( ERR_NO_TYPE, "COFF" );
+                break;
+            case WL_PROC_MIPS:
+#ifdef __NT__
+                Options.libtype = WL_LTYPE_AR;
+                Options.filetype = WL_FTYPE_COFF;
+                Warning( ERR_NO_TYPE, "COFF" );
+#else
+                Options.libtype = WL_LTYPE_MLIB;
+                Options.filetype = WL_FTYPE_ELF;
+                Warning( ERR_NO_TYPE, "ELF" );
+#endif
                 break;
             case WL_PROC_PPC:
 #ifdef __NT__
@@ -770,6 +788,7 @@ size_t CoffImportSize( import_sym *import )
             }
             break;
         case WL_PROC_AXP:
+        case WL_PROC_MIPS:
         case WL_PROC_PPC:
         case WL_PROC_X86:
         default:
@@ -832,6 +851,11 @@ size_t CoffImportSize( import_sym *import )
                     ret += 7 + sym_len;
                 }
                 ret += 0xc + 3 * COFF_RELOC_SIZE;   // .text
+                break;
+            case WL_PROC_MIPS:
+                /*
+                 * not yet implemented
+                 */
                 break;
             case WL_PROC_PPC:
                 if( sym_len > 8 ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,6 +198,12 @@ static const char *ParseOption( const char *c, char *token_buff )
                 DuplicateOption( start );
             }
             Options.processor = WL_PROC_AXP;
+            break;
+        case 'm':
+            if( Options.processor != WL_PROC_NONE ) {
+                DuplicateOption( start );
+            }
+            Options.processor = WL_PROC_MIPS;
             break;
         case 'p':
             if( Options.processor != WL_PROC_NONE ) {
