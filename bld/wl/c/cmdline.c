@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -414,18 +414,18 @@ void SetFormat( void )
     char        *fname;
 
     if( CmdFlags & CF_NO_EXTENSION ) {
-        fname = Name;
-    } else {
+        FmtData.def_ext = E_NONE;
 #ifdef _RAW
-        if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
-            FmtData.def_ext = E_HEX;      //   has been specified
+    } else {
+        if( FmtData.output_hex ) {      // override default extension if hex or raw (bin)
+            FmtData.def_ext = E_HEX;    //   has been specified
         } else if( FmtData.output_raw ) {
             FmtData.def_ext = E_BIN;
         }
 #endif
-        fname = FileName( Name, strlen( Name ), FmtData.def_ext, CmdFlags & CF_UNNAMED );
-        _LnkFree( Name );
     }
+    fname = FileName( Name, strlen( Name ), FmtData.def_ext, CmdFlags & CF_UNNAMED );
+    _LnkFree( Name );
     Root->outfile = NewOutFile( fname );
     Name = NULL;
 #ifdef _EXE

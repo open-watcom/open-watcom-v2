@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -689,28 +689,39 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     }
     namelen = cnt;
     namptr = buff + len - 1;
-    while( --cnt != 0 && *namptr != '.' ) {
+    while( --cnt > 0 && *namptr != '.' ) {
         namptr--;
     }
-    if( force || *namptr != '.' ) {
+    if( !force && ( etype == E_NONE || *namptr == '.' ) ) {
+        /*
+         * duplicate name if no extension change is necessary
+         */
+        ptr = ChkToString( buff, len );
+    } else {
         if( force && etype == E_MAP ) {         // op map goes in current dir.
             buff = namstart;
             len = namelen;
         }
+        /*
+         * remove extension if it exists
+         */
         if( cnt != 0 ) {
             len = namptr - buff;
         }
-        extlen = DefExtLen[etype];
-        _ChkAlloc( ptr, len + 1 + extlen + 1 );
-        memcpy( ptr, buff, len );
-        if( extlen > 0 ) {
-            ptr[len++] = '.';
-            memcpy( ptr + len, DefExt[etype], extlen );
-            len += extlen;
+        /*
+         * if some extension is required then add it
+         */
+        if( etype != E_NONE ) {
+            extlen = DefExtLen[etype];
+            _ChkAlloc( ptr, len + 1 + extlen + 1 );
+            memcpy( ptr, buff, len );
+            if( extlen > 0 ) {
+                ptr[len++] = '.';
+                memcpy( ptr + len, DefExt[etype], extlen );
+                len += extlen;
+            }
         }
         ptr[len] = '\0';
-    } else {
-        ptr = ChkToString( buff, len );
     }
     return( ptr );
 }
