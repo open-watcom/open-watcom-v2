@@ -27,6 +27,7 @@ clib_cpp_flags_windows     = -DSTRICT $(def_windowing)
 clib_cpp_flags_windows_386 = -D__CALL21__
 clib_cpp_flags_winnt       = $(win32ver) $(def_windowing)
 clib_cpp_flags_winnt_axp   = -DWIN32 -D_WIN32
+clib_cpp_flags_winnt_mps   = -DWIN32 -D_WIN32
 clib_cpp_flags_winnt_ppc   = -DWIN32 -D_WIN32
 clib_cpp_flags_os2         = $(def_windowing)
 clib_cpp_flags_nw_clib     = -D_NETWARE_CLIB
@@ -92,8 +93,8 @@ sw_c_386_ms = -ms$(sw_c_386_ms_$(system))
 sw_c_386_mf = -mf
 sw_c_386_mc = -mc$(sw_c_bigdata)$(sw_c_386_mc_$(system))
 sw_c_axp_   =
-sw_c_ppc_   =
 sw_c_mps_   =
+sw_c_ppc_   =
 
 # sw_c_(processor)
 sw_c_intel    = -fpc
@@ -109,8 +110,8 @@ sw_c_086 = $(sw_c_intel)-0
 sw_c_286 = $(sw_c_intel)-2
 sw_c_386 = $(sw_c_intel)$(sw_c_$(convention))-zc
 sw_c_axp = $(sw_c_fi_nonx86)
-sw_c_ppc = $(sw_c_fi_nonx86)
 sw_c_mps = $(sw_c_fi_nonx86)
+sw_c_ppc = $(sw_c_fi_nonx86)
 
 # sw_c_(system)_(processor)
 sw_c_msdos_086    =
@@ -131,6 +132,7 @@ sw_c_windows_086  =
 sw_c_windows_386  =
 sw_c_winnt_386    =
 sw_c_winnt_axp    =
+sw_c_winnt_mps    =
 sw_c_winnt_ppc    =
 sw_c_linux_386    =
 sw_c_linux_ppc    =
@@ -191,8 +193,8 @@ sw_a_386_ms = -ms
 sw_a_386_mf = -mf
 sw_a_386_mc = -mc
 sw_a_axp_   =
-sw_a_ppc_   =
 sw_a_mps_   =
+sw_a_ppc_   =
 
 # sw_a_(processor)
 sw_a_intel    = -w8-cx-e-fpc
@@ -203,8 +205,8 @@ sw_a_086 = $(sw_a_intel)-0
 sw_a_286 = $(sw_a_intel)-2
 sw_a_386 = $(sw_a_intel)$(sw_a_$(convention))
 sw_a_axp =
-sw_a_ppc =
 sw_a_mps =
+sw_a_ppc =
 
 # sw_a_(system)_(processor)
 sw_a_msdos_086    =
@@ -225,6 +227,7 @@ sw_a_windows_086  =
 sw_a_windows_386  = -D__CALL21__
 sw_a_winnt_386    =
 sw_a_winnt_axp    = -DWIN32 -D_WIN32
+sw_a_winnt_mps    = -DWIN32 -D_WIN32
 sw_a_winnt_ppc    = -oc -DWIN32 -D_WIN32
 sw_a_linux_386    =
 sw_a_linux_ppc    =
