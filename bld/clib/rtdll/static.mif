@@ -26,7 +26,7 @@ static_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/initrtns.obj &
     $(clib_dir)/streamio/library/$(__cifx__)/dsetefg.obj &
 !ifeq system winnt
-  !ifeq processor 386
+!  ifeq processor 386
     $(clib_dir)/intel/library/$(__cifx__)/tlsawnt.obj &
     $(clib_dir)/libwin32/library/$(__cifx__)/getmodfn.obj &
     $(clib_dir)/mthread/library/$(__cifx__)/declwnt.obj &
@@ -35,8 +35,8 @@ static_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/dstrt386.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrtwnt.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrwwnt.obj &
-  !endif
-  !ifeq processor axp
+!  endif
+!  ifeq processor axp
     $(clib_dir)/mthread/library/$(__cifx__)/declthrd.obj &
     $(clib_dir)/startup/library/$(__cifx__)/cstrtwna.obj &
     $(clib_dir)/startup/library/$(__cifx__)/cstrwwna.obj &
@@ -44,8 +44,8 @@ static_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/dstrtwna.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrtwna.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrwwna.obj &
-  !endif
-  !ifeq processor mps
+!  endif
+!  ifeq processor mps
     $(clib_dir)/mthread/library/$(__cifx__)/declthrd.obj &
     $(clib_dir)/startup/library/$(__cifx__)/cstrtwnm.obj &
     $(clib_dir)/startup/library/$(__cifx__)/cstrwwnm.obj &
@@ -53,7 +53,7 @@ static_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/dstrtwnm.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrtwnm.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrwwnm.obj &
-  !endif
+!  endif
     $(clib_dir)/startup/library/$(__cifx__)/dllnmwnt.obj &
     $(clib_dir)/startup/library/$(__cifx__)/dmndwnt.obj &
     $(clib_dir)/startup/library/$(__cifx__)/ddgrpwnt.obj &
