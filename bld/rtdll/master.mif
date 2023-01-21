@@ -10,6 +10,7 @@ rtdll_host_cpu_287=i86
 rtdll_host_cpu_386=386
 rtdll_host_cpu_387=386
 rtdll_host_cpu_axp=axp
+rtdll_host_cpu_mps=mps
 rtdll_host_cpu_ppc=ppc
 host_cpu = $(rtdll_host_cpu_$(processor))
 
@@ -100,6 +101,7 @@ dlltarg_libs          = $(dll_libs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_res_version_nt_axp = version.res
+dlltarg_res_version_nt_mps = version.res
 dlltarg_export        = $(dll_def)
 !ifeq component wlib
 !ifeq convention register

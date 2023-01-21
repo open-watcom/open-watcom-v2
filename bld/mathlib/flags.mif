@@ -35,8 +35,8 @@ sw_c_286_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
 sw_c_386_ms = -ms$(sw_c_386_ms_$(system))
 sw_c_386_mf = -mf
 sw_c_axp_   =
-sw_c_ppc_   =
 sw_c_mps_   =
+sw_c_ppc_   =
 
 # sw_c_(processor)
 sw_c_intel    = -of
@@ -51,8 +51,8 @@ sw_c_287 =$(sw_c_intel)-fpi
 sw_c_386 =$(sw_c_intel)$(sw_c_$(convention))-fpc-zc-fpd$(sw_c_profile)
 sw_c_387 =$(sw_c_intel)$(sw_c_$(convention))-fpi87-zc-fpd$(sw_c_profile)
 sw_c_axp =
-sw_c_ppc =
 sw_c_mps =
+sw_c_ppc =
 
 # sw_c_(system)
 sw_c_msdos    = -bt=dos
@@ -86,8 +86,8 @@ sw_a_286_mh = -mh$(sw_a_bigcode)
 sw_a_386_ms = -ms
 sw_a_386_mf = -mf
 sw_a_axp_   =
-sw_a_ppc_   =
 sw_a_mps_   =
+sw_a_ppc_   =
 
 # sw_a_(processor)
 sw_a_intel    = -w8-cx-e-DPDIV
@@ -100,8 +100,8 @@ sw_a_287 = $(sw_a_intel)$(sw_a_16bit) -fpi -fp0
 sw_a_386 = $(sw_a_intel)$(sw_a_$(convention)) -fpc -D_BUILDING_MATHLIB
 sw_a_387 = $(sw_a_intel)$(sw_a_$(convention)) -fpi87 -fp5
 sw_a_axp =
-sw_a_ppc =
 sw_a_mps =
+sw_a_ppc =
 
 # sw_a_(system)
 sw_a_msdos    = -bt=dos
