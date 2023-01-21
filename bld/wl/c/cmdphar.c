@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,8 +52,8 @@
 void SetPharFmt( void )
 /*********************/
 {
-    Extension = E_PROTECT;
     LinkState &= ~LS_MAKE_RELOCS;   // do not generate relocations.
+    FmtData.def_ext = E_PROTECT;
     FmtData.u.phar.mindata = 0;
     FmtData.u.phar.maxdata = 0xFFFFFFFF;
     FmtData.u.phar.breaksym = NULL;
@@ -332,8 +332,8 @@ static bool ProcPharFlat( void )
 static bool ProcRex( void )
 /*************************/
 {
-    Extension = E_REX;
     LinkState |= LS_MAKE_RELOCS;    // make relocations;
+    FmtData.def_ext = E_REX;
     return( true );
 }
 

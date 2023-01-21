@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -991,7 +991,7 @@ static char **getStubNamePtr( void )
 #endif
 #ifdef _PHARLAP
     if( HintFormat( MK_PHAR_LAP ) ) {
-        Extension = E_LOAD;     /* want .exe instead of .exp now */
+        FmtData.def_ext = E_LOAD;     /* want .exe instead of .exp now */
         return( &FmtData.u.phar.stub );
     }
 #endif

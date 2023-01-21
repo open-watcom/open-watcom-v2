@@ -59,7 +59,7 @@ static byte         OvlLevel;
 void SetDosFmt( void )
 /********************/
 {
-    Extension = E_LOAD;
+    FmtData.def_ext = E_LOAD;
 }
 
 void FreeDosFmt( void )
@@ -519,7 +519,7 @@ bool ProcForceVector( void )
 static bool ProcCom( void )
 /*************************/
 {
-    Extension = E_COM;
+    FmtData.def_ext = E_COM;
     return( true );
 }
 

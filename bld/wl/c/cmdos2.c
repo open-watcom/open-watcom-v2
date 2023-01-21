@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,8 +60,8 @@ void SetOS2Fmt( void )
 {
     if( LinkState & LS_FMT_INITIALIZED )
         return;
-    Extension = E_LOAD;
     LinkState |= LS_FMT_INITIALIZED;
+    FmtData.def_ext = E_LOAD;
     FmtData.u.os2fam.flags = MULTIPLE_AUTO_DATA;
     FmtData.u.os2fam.heapsize = 0;
     FmtData.u.os2fam.segment_shift = 0;
@@ -1089,7 +1089,7 @@ static bool ProcRunRDOS( void )
 static bool ProcRunEFIBoot( void )
 /********************************/
 {
-    Extension = E_EFI;
+    FmtData.def_ext = E_EFI;
     FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
     GetSubsystemVersion();
     return( true );
@@ -1177,7 +1177,7 @@ static parse_entry  Term_Keywords[] = {
 static bool ProcOS2DLL( void )
 /****************************/
 {
-    Extension = E_DLL;
+    FmtData.def_ext = E_DLL;
     FmtData.dll = true;
     if( FmtData.type & MK_WINDOWS ) {
         FmtData.u.os2fam.flags &= ~MULTIPLE_AUTO_DATA;
@@ -1295,7 +1295,7 @@ static bool ProcPMFullscreen( void )
 static bool ProcPhysDevice( void )
 /********************************/
 {
-    Extension = E_DLL;
+    FmtData.def_ext = E_DLL;
     FmtData.dll = true;
     FmtData.u.os2fam.flags |= PHYS_DEVICE;
     return( true );
@@ -1304,7 +1304,7 @@ static bool ProcPhysDevice( void )
 static bool ProcVirtDevice( void )
 /********************************/
 {
-    Extension = E_DLL;
+    FmtData.def_ext = E_DLL;
     FmtData.dll = true;
     FmtData.u.os2fam.flags |= VIRT_DEVICE;
     return( true );
@@ -1350,7 +1350,7 @@ bool ProcOS2Format( void )
  * process the format os2 or format windows directives
  */
 {
-    Extension = E_LOAD;
+    FmtData.def_ext = E_LOAD;
     ProcOne( OS2Formats, SEP_NO );
     ProcOne( OS2SubFormats, SEP_NO );
     if( FmtData.type & MK_OS2_LX ) {
@@ -1373,7 +1373,7 @@ bool ProcWindowsFormat( void )
  * process the format windows directives
  */
 {
-    Extension = E_LOAD;
+    FmtData.def_ext = E_LOAD;
     ProcOne( WindowsFormats, SEP_NO );
     ProcOne( WindowsSubFormats, SEP_NO );
     if( FmtData.type & MK_WINDOWS ) {

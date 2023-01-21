@@ -81,7 +81,6 @@ typedef struct {
     void            (*free_func)(void);
 } select_format;
 
-file_defext             Extension;
 file_list               **CurrFList;
 tok                     Token;
 commandflag             CmdFlags;
@@ -145,12 +144,12 @@ static void ResetCmdFile( void )
  * do all the initialization necessary for parsing a command file
  */
 {
+    memset( &FmtData, 0, sizeof( FmtData ) );
     SysBlocks = NULL;
-    Extension = E_LOAD;
+    FmtData.def_ext = E_LOAD;
     Name = NULL;
     CmdFlags = CF_UNNAMED;
     ObjPath = NULL;
-    memset( &FmtData, 0, sizeof( FmtData ) );
     FmtData.base = NO_BASE_SPEC;
     FmtData.objalign = NO_BASE_SPEC;
     FmtData.type = MK_ALL;
@@ -419,12 +418,12 @@ void SetFormat( void )
     } else {
 #ifdef _RAW
         if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
-            Extension = E_HEX;      //   has been specified
+            FmtData.def_ext = E_HEX;      //   has been specified
         } else if( FmtData.output_raw ) {
-            Extension = E_BIN;
+            FmtData.def_ext = E_BIN;
         }
 #endif
-        fname = FileName( Name, strlen( Name ), Extension, CmdFlags & CF_UNNAMED );
+        fname = FileName( Name, strlen( Name ), FmtData.def_ext, CmdFlags & CF_UNNAMED );
         _LnkFree( Name );
     }
     Root->outfile = NewOutFile( fname );

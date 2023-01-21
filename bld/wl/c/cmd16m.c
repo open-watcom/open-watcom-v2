@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +48,8 @@
 void SetD16MFmt( void )
 /*********************/
 {
-    Extension = E_PROTECT;
     LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
+    FmtData.def_ext = E_PROTECT;
     FmtData.u.d16m.options = 0;
     FmtData.u.d16m.flags = 0;
     FmtData.u.d16m.strategy = MNoStrategy;

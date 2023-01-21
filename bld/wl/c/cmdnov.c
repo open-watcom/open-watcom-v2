@@ -58,7 +58,7 @@
 void SetNovFmt( void )
 /********************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
 }
 
 void FreeNovFmt( void )
@@ -651,7 +651,7 @@ bool ProcNovDBI( void )
 static bool ProcModuleTypeN( int n )
 /**********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = n;
     return( true );
 }
@@ -659,7 +659,7 @@ static bool ProcModuleTypeN( int n )
 static bool ProcNLM( void )
 /*************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 0;
     return( true );
 }
@@ -667,7 +667,7 @@ static bool ProcNLM( void )
 static bool ProcLAN( void )
 /*************************/
 {
-    Extension = E_LAN;
+    FmtData.def_ext = E_LAN;
     FmtData.u.nov.moduletype = 1;
     return( true );
 }
@@ -675,7 +675,7 @@ static bool ProcLAN( void )
 static bool ProcDSK( void )
 /*************************/
 {
-    Extension = E_DSK;
+    FmtData.def_ext = E_DSK;
     FmtData.u.nov.moduletype = 2;
     return( true );
 }
@@ -683,7 +683,7 @@ static bool ProcDSK( void )
 static bool ProcNAM( void )
 /*************************/
 {
-    Extension = E_NAM;
+    FmtData.def_ext = E_NAM;
     FmtData.u.nov.moduletype = 3;
     return( true );
 }
@@ -691,7 +691,7 @@ static bool ProcNAM( void )
 static bool ProcModuleType4( void )
 /*********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 4;
     return( true );
 }
@@ -699,7 +699,7 @@ static bool ProcModuleType4( void )
 static bool ProcModuleType5( void )
 /*********************************/
 {
-    Extension = E_NOV_MSL;
+    FmtData.def_ext = E_NOV_MSL;
     FmtData.u.nov.moduletype = 5;
     return( true );
 }
@@ -707,7 +707,7 @@ static bool ProcModuleType5( void )
 static bool ProcModuleType6( void )
 /*********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 6;
     return( true );
 }
@@ -715,7 +715,7 @@ static bool ProcModuleType6( void )
 static bool ProcModuleType7( void )
 /*********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 7;
     return( true );
 }
@@ -723,7 +723,7 @@ static bool ProcModuleType7( void )
 static bool ProcModuleType8( void )
 /*********************************/
 {
-    Extension = E_NOV_HAM;
+    FmtData.def_ext = E_NOV_HAM;
     FmtData.u.nov.moduletype = 8;
     return( true );
 }
@@ -731,7 +731,7 @@ static bool ProcModuleType8( void )
 static bool ProcModuleType9( void )
 /*********************************/
 {
-    Extension = E_NOV_CDM;
+    FmtData.def_ext = E_NOV_CDM;
     FmtData.u.nov.moduletype = 9;
     return( true );
 }
@@ -742,7 +742,7 @@ static bool ProcModuleType9( void )
 static bool ProcModuleType10( void )
 /**********************************/
 {
-    Extension = ;
+    FmtData.def_ext = ;
     FmtData.u.nov.moduletype = 10;
     return( true );
 }
@@ -750,7 +750,7 @@ static bool ProcModuleType10( void )
 static bool ProcModuleType11( void )
 /**********************************/
 {
-    Extension = ;
+    FmtData.def_ext = ;
     FmtData.u.nov.moduletype = 11;
     return( true );
 }
@@ -758,7 +758,7 @@ static bool ProcModuleType11( void )
 static bool ProcModuleType12( void )
 /**********************************/
 {
-    Extension = ;
+    FmtData.def_ext = ;
     FmtData.u.nov.moduletype = 12;
     return( true );
 }

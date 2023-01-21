@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ void FreeZdosFmt( void )
 static bool ProcZdosSYS( void )
 /*****************************/
 {
-    Extension = E_SYS;
+    FmtData.def_ext = E_SYS;
     FmtData.base = 0;                           // it's a driver, so reset base
     return( true );
 }
@@ -77,7 +77,7 @@ static bool ProcZdosSYS( void )
 static bool ProcZdosHWD( void )
 /*****************************/
 {
-    Extension = E_HWD;
+    FmtData.def_ext = E_HWD;
     FmtData.base = 0;                           // it's a driver, so reset base
     return( true );
 }
@@ -85,7 +85,7 @@ static bool ProcZdosHWD( void )
 static bool ProcZdosFSD( void )
 /*****************************/
 {
-    Extension = E_FSD;
+    FmtData.def_ext = E_FSD;
     FmtData.base = 0;                           // it's a driver, so reset base
     return( true );
 }

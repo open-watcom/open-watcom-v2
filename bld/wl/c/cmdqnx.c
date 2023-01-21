@@ -54,7 +54,7 @@
 void SetQNXFmt( void )
 /********************/
 {
-    Extension = E_QNX;
+    FmtData.def_ext = E_QNX;
     FmtData.u.qnx.flags = 0;
     FmtData.u.qnx.priv_level = 0;
     FmtData.u.qnx.seg_flags = NULL;

@@ -44,7 +44,7 @@
 void SetELFFmt( void )
 /********************/
 {
-    Extension = E_ELF;
+    FmtData.def_ext = E_ELF;
     FmtData.u.elf.exp.export = NULL;
     FmtData.u.elf.exp.module = NULL;
     FmtData.u.elf.extrasects = 0;
