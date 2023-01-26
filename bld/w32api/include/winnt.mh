@@ -31,6 +31,8 @@
     #define _ALPHA_
 #elif defined(_M_PPC) && !defined(_PPC_)
     #define _PPC_
+#elif defined(_M_MRX000) && !defined(_MIPS_)
+    #define _MIPS_
 #endif
 
 /* Pointer attributes */
@@ -917,6 +919,16 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
     #define CONTEXT_DEBUG_REGISTERS (CONTEXT_PPC | 0x00000008L)
     #define CONTEXT_FULL \
         (CONTEXT_CONTROL | CONTEXT_FLOATING_POINT | CONTEXT_INTEGER | CONTEXT_DEBUG_REGISTERS)
+#endif
+
+/* Context flags for the MIPS processor */
+#ifdef _MIPS_
+    #define CONTEXT_R4000   0x00010000    /* r4000 context */
+    #define CONTEXT_CONTROL         (CONTEXT_R4000 | 0x00000001L)
+    #define CONTEXT_FLOATING_POINT  (CONTEXT_R4000 | 0x00000002L)
+    #define CONTEXT_INTEGER         (CONTEXT_R4000 | 0x00000004L)
+    #define CONTEXT_FULL \
+        (CONTEXT_CONTROL | CONTEXT_FLOATING_POINT | CONTEXT_INTEGER)
 #endif
 
 /* WOW64 context flags */
@@ -3136,6 +3148,134 @@ typedef struct _CONTEXT {
     DWORD Dr5;
     DWORD Dr6;
     DWORD Dr7;
+} CONTEXT;
+typedef CONTEXT *PCONTEXT;
+#endif
+
+/* Context record for the MIPS processor */
+#ifdef _MIPS_
+typedef struct _CONTEXT {
+
+        /* This section is always present and is used as an argument build */
+        /* area. */
+
+        DWORD Argument[4];
+
+        /* This section is specified/returned if the ContextFlags word contains */
+        /* the flag CONTEXT_FLOATING_POINT. */
+
+        DWORD FltF0;
+        DWORD FltF1;
+        DWORD FltF2;
+        DWORD FltF3;
+        DWORD FltF4;
+        DWORD FltF5;
+        DWORD FltF6;
+        DWORD FltF7;
+        DWORD FltF8;
+        DWORD FltF9;
+        DWORD FltF10;
+        DWORD FltF11;
+        DWORD FltF12;
+        DWORD FltF13;
+        DWORD FltF14;
+        DWORD FltF15;
+        DWORD FltF16;
+        DWORD FltF17;
+        DWORD FltF18;
+        DWORD FltF19;
+        DWORD FltF20;
+        DWORD FltF21;
+        DWORD FltF22;
+        DWORD FltF23;
+        DWORD FltF24;
+        DWORD FltF25;
+        DWORD FltF26;
+        DWORD FltF27;
+        DWORD FltF28;
+        DWORD FltF29;
+        DWORD FltF30;
+        DWORD FltF31;
+
+        /* This section is specified/returned if the ContextFlags word contains */
+        /* the flag CONTEXT_INTEGER. */
+
+        /* N.B. The registers gp, sp, and ra are defined in this section, but are */
+        /*  considered part of the control context rather than part of the integer */
+        /*  context. */
+
+        /* N.B. Register zero is not stored in the frame. */
+
+        DWORD IntZero;
+        DWORD IntAt;
+        DWORD IntV0;
+        DWORD IntV1;
+        DWORD IntA0;
+        DWORD IntA1;
+        DWORD IntA2;
+        DWORD IntA3;
+        DWORD IntT0;
+        DWORD IntT1;
+        DWORD IntT2;
+        DWORD IntT3;
+        DWORD IntT4;
+        DWORD IntT5;
+        DWORD IntT6;
+        DWORD IntT7;
+        DWORD IntS0;
+        DWORD IntS1;
+        DWORD IntS2;
+        DWORD IntS3;
+        DWORD IntS4;
+        DWORD IntS5;
+        DWORD IntS6;
+        DWORD IntS7;
+        DWORD IntT8;
+        DWORD IntT9;
+        DWORD IntK0;
+        DWORD IntK1;
+        DWORD IntGp;
+        DWORD IntSp;
+        DWORD IntS8;
+        DWORD IntRa;
+        DWORD IntLo;
+        DWORD IntHi;
+
+        /* This section is specified/returned if the ContextFlags word contains */
+        /* the flag CONTEXT_FLOATING_POINT. */
+
+        DWORD Fsr;
+
+        /* This section is specified/returned if the ContextFlags word contains */
+        /* the flag CONTEXT_CONTROL. */
+
+        /* N.B. The registers gp, sp, and ra are defined in the integer section, */
+        /*   but are considered part of the control context rather than part of */
+        /*   the integer context. */
+
+        DWORD Fir;
+        DWORD Psr;
+
+        /* The flags values within this flag control the contents of */
+        /* a CONTEXT record. */
+
+        /* If the context record is used as an input parameter, then */
+        /* for each portion of the context record controlled by a flag */
+        /* whose value is set, it is assumed that that portion of the */
+        /* context record contains valid context. If the context record */
+        /* is being used to modify a thread's context, then only that */
+        /* portion of the threads context will be modified. */
+
+        /* If the context record is used as an IN OUT parameter to capture */
+        /* the context of a thread, then only those portions of the thread's */
+        /* context corresponding to set flags will be returned. */
+
+        /* The context record is never used as an OUT only parameter. */
+
+        DWORD ContextFlags;
+
+        DWORD Fill[2];
+
 } CONTEXT;
 typedef CONTEXT *PCONTEXT;
 #endif
