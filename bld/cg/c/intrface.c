@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,6 +164,10 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
         info.version.target = II_TARG_370; /* NYI -- for now */
 #elif _TARGET & _TARG_AXP
         info.version.target = II_TARG_AXP;
+#elif _TARGET & _TARG_PPC
+        info.version.target = II_TARG_PPC;
+#elif _TARGET & _TARG_MIPS
+        info.version.target = II_TARG_MIPS;
 #endif
         info.version.revision = II_REVISION;
     }

@@ -499,8 +499,15 @@ aflags_rdosdev  = -bt=rdosdev
 aflags_nov      = -bt=netware
 aflags_linux    = -bt=linux
 
+aflags_nt_axp    = -oc
+aflags_nt_mps    = -oc
+aflags_nt_ppc    = -oc
+aflags_os2_ppc   = -oe
+aflags_linux_mps = -oe
+aflags_linux_ppc = -oe
+
 proj_a_flags     = $(extra_a_flags) $(extra_a_flags_$(host_cpu)) $(extra_a_flags_$(host_os))
-aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(proj_a_flags)
+aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(aflags_$(host_os)_$(host_cpu)) $(proj_a_flags)
 
 #####################
 # LINKER SETINGS

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1338,7 +1338,9 @@ void BuildSystemLink( FILE *fp )
   #else
     } else if( CPU_Arch == TARGET_ARCH_MIPS ) {
   #endif
-  #if defined(__LINUX__)
+  #if defined(__NT__)
+        Fputnl( "system ntmips", fp );
+  #elif defined(__LINUX__)
         Fputnl( "system linuxmips", fp );
         if( !Flags.strip_all ) {
             Fputnl( "option exportall", fp );

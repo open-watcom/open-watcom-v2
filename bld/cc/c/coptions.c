@@ -290,9 +290,11 @@ static void SetTargetSystem( void )
     #else
         #error "Target OS not defined"
     #endif
-#elif _RISC_CPU || _CPU == _SPARC
+#elif _RISC_CPU
         /* we only have NT libraries for Alpha right now */
         _SetTargetNameConst( "nt" );
+#elif _CPU == _SPARC
+        _SetTargetNameConst( "solaris" );
 #else
     #error Target Machine OS not configured
 #endif
@@ -390,6 +392,16 @@ static void SetTargetSystem( void )
     sprintf( buff, "__%s__", SwData.sys_name );
     PreDefine_Macro( buff );
     CMemFree( buff );
+
+#if _RISC_CPU
+    if( (GenSwitches & (CGSW_GEN_OBJ_ELF | CGSW_GEN_OBJ_COFF)) == 0 ) {
+        if( TargetSystem == TS_WINDOWS ) {
+            GenSwitches |= CGSW_GEN_OBJ_COFF;
+        } else {
+            GenSwitches |= CGSW_GEN_OBJ_ELF;
+        }
+    }
+#endif
 }
 
 static void SetGenSwitches( void )
@@ -1049,10 +1061,8 @@ static void Set_OMF( void )         { GenSwitches &= ~(CGSW_GEN_OBJ_ELF | CGSW_G
 #endif
 
 #if _RISC_CPU /* || _CPU == 386 */
-static void Set_ELF( void )         { GenSwitches &= ~CGSW_GEN_OBJ_OWL;
-                                      GenSwitches |= CGSW_GEN_OBJ_ELF; }
-static void Set_COFF( void )        { GenSwitches &= ~CGSW_GEN_OBJ_OWL;
-                                      GenSwitches |= CGSW_GEN_OBJ_COFF; }
+static void Set_ELF( void )         { GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_COFF) | CGSW_GEN_OBJ_ELF; }
+static void Set_COFF( void )        { GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_ELF) | CGSW_GEN_OBJ_COFF; }
 #endif
 #if _RISC_CPU
 static void Set_EndianLittle( void ) { GenSwitches &= ~CGSW_GEN_OBJ_ENDIAN_BIG; }
@@ -2075,11 +2085,6 @@ static void InitCPUModInfo( void )
     GenCodeGroup = "";
     DataPtrSize = TARGET_POINTER;
     CodePtrSize = TARGET_POINTER;
-  #if _CPU == _AXP
-    GenSwitches |= CGSW_GEN_OBJ_COFF;
-  #else
-    GenSwitches |= CGSW_GEN_OBJ_ELF;
-  #endif
 #else
     #error InitCPUModInfo not configured for system
 #endif

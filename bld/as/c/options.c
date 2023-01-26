@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,8 @@
 #include "banner.h"
 #include "iopath.h"
 
-#ifdef AS_ALPHA
-as_flags        AsOptions = OBJ_COFF;   // COFF is default.
-#else
-as_flags        AsOptions = 0;          // ELF is default.
-#endif
+
+as_flags        AsOptions = 0;
 
 static char     **ppDefines = NULL;
 static int      maxNumPredefines;
@@ -182,10 +180,12 @@ bool OptionsInit( int argc, char **argv )
             case 'o':
                 switch( *s ) {
                 case 'c':
+                    _UnsetOption( OBJ_ELF );
                     _SetOption( OBJ_COFF );
                     break;
                 case 'e': // ELF
                     _UnsetOption( OBJ_COFF );
+                    _SetOption( OBJ_ELF );
                     break;
                 default:
                     goto errInvalid;

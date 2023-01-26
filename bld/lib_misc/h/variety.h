@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,6 +130,8 @@
         #define __NT_AXP__
     #elif defined(__PPC__)
         #define __NT_PPC__
+    #elif defined(__MIPS__)
+        #define __NT_MIPS__
     #else
         #error unrecognized processor for NT
     #endif

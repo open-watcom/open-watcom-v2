@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,8 +153,18 @@ bool ObjInit( char *fname ) {
     }
     ErrorFile = fopen( errorFilename, "wt" );
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
-    obj_format = ( _IsOption( OBJ_COFF ) ? OWL_FORMAT_COFF : OWL_FORMAT_ELF );
-    OwlFile = OWLFileInit( OwlHandle, fname, objFP, obj_format, OWL_FILE_OBJECT );
+    if( _IsOption( OBJ_COFF ) ) {
+        obj_format = OWL_FORMAT_COFF;
+    } else if( _IsOption( OBJ_ELF ) ) {
+        obj_format = OWL_FORMAT_ELF;
+    } else {
+#if defined( __NT__ )
+        obj_format = OWL_FORMAT_COFF;
+#else
+        obj_format = OWL_FORMAT_ELF;
+#endif
+    }
+       OwlFile = OWLFileInit( OwlHandle, fname, objFP, obj_format, OWL_FILE_OBJECT );
     ObjSwitchSection( AS_SECTION_TEXT );
     CurrAlignment = 0;
     return( true );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -919,7 +919,11 @@ void BuildSystemLink( FILE *fp )
         Fputnl( "system ntppc", fp );
   #endif
 #elif defined( WCLMPS )
+  #if defined( __LINUX__ )
         Fputnl( "system linuxmips", fp );
+  #else
+        Fputnl( "system ntmips", fp );
+  #endif
 #else
   #if defined( __OS2__ )
         Fputnl( "system os2v2", fp );

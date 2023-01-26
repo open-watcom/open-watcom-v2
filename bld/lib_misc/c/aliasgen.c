@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -434,6 +434,8 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
         } else if( !strcmp( syselem->system, "lmp" ) ) {        /* MIPS */
             add_system( &aliasmips, syselem->system );
         } else if( !strcmp( syselem->system, "mps" ) ) {        /* MIPS */
+            add_system( &aliasmips, syselem->system );
+        } else if( !strcmp( syselem->system, "ntm" ) ) {        /* MIPS */
             add_system( &aliasmips, syselem->system );
         } else {                                                /* x86 */
             add_system( &aliasix86, syselem->system );
