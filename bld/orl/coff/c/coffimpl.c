@@ -441,6 +441,12 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
         AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
         symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
         break;
+    case COFF_IMAGE_FILE_MACHINE_R3000:
+    case COFF_IMAGE_FILE_MACHINE_R4000:
+        /*
+         * TODO! Need to implement
+         */
+        return( ORL_ERROR );
     default:
         return( ORL_ERROR );
     }
@@ -519,6 +525,12 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
 /* .text relocations records */
         CreateCoffReloc( coff_file_hnd, 0x2, symbol___imp_exportedName, COFF_IMAGE_REL_I386_DIR32 );
         break;
+    case COFF_IMAGE_FILE_MACHINE_R3000:
+    case COFF_IMAGE_FILE_MACHINE_R4000:
+        /*
+         * TODO! Need to implement
+         */
+        break;
     }
 
     type = 0;
@@ -541,6 +553,12 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
             break;
         case COFF_IMAGE_FILE_MACHINE_I386:
             type = COFF_IMAGE_REL_I386_DIR32NB;
+            break;
+        case COFF_IMAGE_FILE_MACHINE_R3000:
+        case COFF_IMAGE_FILE_MACHINE_R4000:
+            /*
+             * TODO! Need to implement
+             */
             break;
         }
 /* .idata$5 section data - name */
