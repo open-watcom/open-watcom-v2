@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +148,8 @@ enum {
     COFF_IMAGE_FILE_MACHINE_UNKNOWN          = 0,
     COFF_IMAGE_FILE_MACHINE_I386             = 0x014c, // Intel 386 (Sys V).
     COFF_IMAGE_FILE_MACHINE_I860             = 0x014d, // Intel 860.
-    COFF_IMAGE_FILE_MACHINE_R3000            = 0x0162, // MIPS little-endian, 0x160 big-endian
+    COFF_IMAGE_FILE_MACHINE_R3000BE          = 0x0160, // MIPS big-endian
+    COFF_IMAGE_FILE_MACHINE_R3000            = 0x0162, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_R4000            = 0x0166, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_R10000           = 0x0168, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_WCEMIPSV2        = 0x0169, // MIPS little-endian WCE v2
