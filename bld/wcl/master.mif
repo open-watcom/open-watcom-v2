@@ -67,11 +67,7 @@ verrc_exe_skel = $(wcl_dir)/exever.rc
 
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     @%make echo_wsplice
-!ifdef bootstrap
-    $(wsplice) -k Pspecs $[@ - | sed -f $(wcl_dir)/convtool.sed >$@
-!else
     $(wsplice) -k Pspecs $[@ $@
-!endif
 
 # optencod options and targets for various hosts
 !ifdef target_cpu
