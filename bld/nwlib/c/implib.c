@@ -38,7 +38,11 @@
 
 
 // must correspond to defines in implib.h
-static char *procname[5] = { "", "AXP", "PPC", "X86","" };
+static char *procname[] = {
+    #define WL_PROC(p,e,n)  n,
+    WL_PROCS
+    #undef WL_PROC
+};
 
 static void fillInU16( unsigned_16 value, char *out )
 {
@@ -900,7 +904,11 @@ size_t CoffImportSize( import_sym *import )
     return( 0 );
 }
 
-static short    ElfProcessors[4] = { 0, EM_ALPHA, EM_PPC, 0 };
+static short    ElfProcessors[] = {
+    #define WL_PROC(p,e,n)  e,
+    WL_PROCS
+    #undef WL_PROC
+};
 
 void ElfWriteImport( libfile io, sym_file *sfile )
 {
