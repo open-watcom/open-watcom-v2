@@ -67,6 +67,10 @@ static unsigned_8       CoffImportX64Text[] = {
  0xFF,0x25,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 };
 
+static unsigned_8       CoffImportMipsText[] = {
+0x00, 0x00, 0x08, 0x3C, 0x00, 0x00, 0x08, 0x8D, 0x08, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00 
+};
+
 static void InitCoffFile( coff_lib_file *c_file )
 {
     c_file->string_table = MemAlloc( INIT_MAX_SIZE_COFF_STRING_TABLE );
@@ -514,9 +518,11 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 sec_num = 1;
                 break;
             case WL_PROC_MIPS:
-                /*
-                 * Not yet implemented
-                 */
+                AddCoffSection( &c_file, ".text", 0xA, 3, COFF_IMAGE_SCN_ALIGN_4BYTES
+                    | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
+                    | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+                type = 0x20;
+                sec_num = 1;
                 break;
             case WL_PROC_PPC:
                 AddCoffSection( &c_file, ".text", 0x18, 1, COFF_IMAGE_SCN_ALIGN_4BYTES
@@ -596,9 +602,12 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 sym_idx = 0x8;
                 break;
             case WL_PROC_MIPS:
-                /*
-                 * Not yet implemented
-                 */
+                LibWrite( io, CoffImportMipsText, 0xA );
+                WriteCoffReloc( io, 0x0, 8, COFF_IMAGE_REL_MIPS_REFHI );
+                WriteCoffReloc( io, 0x0, 0, COFF_IMAGE_REL_MIPS_PAIR );
+                WriteCoffReloc( io, 0x4, 8, COFF_IMAGE_REL_MIPS_REFLO );
+                type = COFF_IMAGE_REL_MIPS_REFWORDNB;
+                sym_idx = 0xB;
                 break;
             case WL_PROC_PPC:
                 LibWrite( io, CoffImportPpcText, 0x18 );

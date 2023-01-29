@@ -92,6 +92,11 @@ static unsigned_8 CoffImportX86Text[] = {
  0xFF,0x25,0x00,0x00,0x00,0x00
 };
 
+static unsigned_8 CoffImportMipsText[] = {
+0x00, 0x00, 0x08, 0x3C, 0x00, 0x00, 0x08, 0x8D, 0x08, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00 
+};
+
+
 static void InitCoffFile( coff_lib_file *c_file )
 {
     c_file->string_table = _ClientAlloc( c_file->coff_file_hnd, INIT_MAX_SIZE_COFF_STRING_TABLE );
@@ -443,10 +448,11 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
         break;
     case COFF_IMAGE_FILE_MACHINE_R3000:
     case COFF_IMAGE_FILE_MACHINE_R4000:
-        /*
-         * TODO! Need to implement
-         */
-        return( ORL_ERROR );
+/* .text section header */
+        section_no = AddCoffSection( &c_file, ".text", sizeof( CoffImportMipsText ), 3, COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
+        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        break;
     default:
         return( ORL_ERROR );
     }
@@ -527,9 +533,12 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
         break;
     case COFF_IMAGE_FILE_MACHINE_R3000:
     case COFF_IMAGE_FILE_MACHINE_R4000:
-        /*
-         * TODO! Need to implement
-         */
+/* .text section data */
+        AddDataImpLib( coff_file_hnd, CoffImportAxpText, sizeof( CoffImportAxpText ) );
+/* .text relocations records */
+        CreateCoffReloc( coff_file_hnd, 0x0, symbol___imp_exportedName, COFF_IMAGE_REL_MIPS_REFHI );
+        CreateCoffReloc( coff_file_hnd, 0x0, symbol_text_exportedName, COFF_IMAGE_REL_MIPS_PAIR );
+        CreateCoffReloc( coff_file_hnd, 0x4, symbol___imp_exportedName, COFF_IMAGE_REL_MIPS_REFLO );
         break;
     }
 
@@ -556,9 +565,7 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
             break;
         case COFF_IMAGE_FILE_MACHINE_R3000:
         case COFF_IMAGE_FILE_MACHINE_R4000:
-            /*
-             * TODO! Need to implement
-             */
+            type = COFF_IMAGE_REL_MIPS_REFWORDNB;
             break;
         }
 /* .idata$5 section data - name */
