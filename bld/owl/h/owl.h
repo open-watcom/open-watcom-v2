@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,13 @@
 #include "watcom.h"
 #include <stdio.h>
 
+#define OWL_CPUS \
+    OWL_CPU( OWL_CPU_PPC, EM_PPC ) \
+    OWL_CPU( OWL_CPU_ALPHA, EM_AXP ) \
+    OWL_CPU( OWL_CPU_MIPS, EM_MIPS ) \
+    OWL_CPU( OWL_CPU_X86, EM_386 ) \
+    OWL_CPU( OWL_CPU_X64, EM_X86_64 )
+
 typedef enum {
     OWL_SYM_UNDEFINED,
     OWL_SYM_FUNCTION,
@@ -63,10 +70,9 @@ typedef enum {
 } owl_format;
 
 typedef enum {
-    OWL_CPU_PPC,
-    OWL_CPU_ALPHA,
-    OWL_CPU_MIPS,
-    OWL_CPU_INTEL
+    #define OWL_CPU(c,e) c,
+    OWL_CPUS
+    #undef OWL_CPU
 } owl_cpu;
 
 typedef enum {

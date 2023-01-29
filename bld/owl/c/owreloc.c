@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,7 +186,7 @@ Elf32_Word OWLENTRY ElfRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
     case OWL_CPU_ALPHA:
         elf_relocs = elfRelocTypesAlpha;
         break;
-    case OWL_CPU_INTEL:
+    case OWL_CPU_X86:
         elf_relocs = elfRelocTypes386;
         break;
     default:
@@ -209,7 +210,7 @@ uint_32 OWLENTRY CoffRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
     case OWL_CPU_ALPHA:
         coff_relocs = coffRelocTypesAlpha;
         break;
-    case OWL_CPU_INTEL:
+    case OWL_CPU_X86:
         coff_relocs = coffRelocTypes386;
         break;
     default:
@@ -282,7 +283,7 @@ unsigned OWLENTRY OWLRelocBitMask( owl_file_handle file, owl_reloc_info *reloc )
     case OWL_CPU_ALPHA:
         mask_array = alphaMasks;
         break;
-    case OWL_CPU_INTEL:
+    case OWL_CPU_X86:
         return 0xffffffff;
     case OWL_CPU_MIPS:
         mask_array = mipsMasks;
@@ -300,15 +301,15 @@ owl_offset OWLENTRY OWLRelocTargetDisp( owl_section_handle section, owl_offset f
     owl_cpu     cpu;
 
     cpu = section->file->info->cpu;
-    if( cpu == OWL_CPU_ALPHA || cpu == OWL_CPU_INTEL || cpu == OWL_CPU_MIPS ) {
+    if( cpu == OWL_CPU_ALPHA || cpu == OWL_CPU_X86 || cpu == OWL_CPU_MIPS ) {
         from += 4;  // Intel, Alpha and MIPS use updated PC
     } // PowerPC uses current PC
-    if( cpu != OWL_CPU_INTEL ) {    // no alignment restrictions for Intel
+    if( cpu != OWL_CPU_X86 ) {    // no alignment restrictions for Intel
         assert( ( to % 4 ) == 0 );
         assert( ( from % 4 ) == 0 );
     }
     ret = to - from;
-    if( cpu == OWL_CPU_PPC || cpu == OWL_CPU_INTEL ) {
+    if( cpu == OWL_CPU_PPC || cpu == OWL_CPU_X86 ) {
         return( ret );
     }
     return( ret >> 2 ); // Alpha and MIPS chop off the low two bits
