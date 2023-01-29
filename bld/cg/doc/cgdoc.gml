@@ -486,7 +486,7 @@ The segment is read only.
 The code generator may put its data here.
 One segment must be marked with this attribute.
 It may not be a COMMON, PRIVATE or EXEC segment.
-If the front end requires code in the EXEC segment, the CONST_IN_CODE
+If the front end requires code in the EXEC segment, the CGSW_X86_CONST_IN_CODE
 switch must be passed to BEInit().
 .note COMMON
 All occurrences of this segment will be overlayed.
@@ -501,7 +501,7 @@ This allows a naive front end to specify a constant set of segment
 names, and have the code generator mangle them in such a manner that
 they work properly in concert with the set of cg_switches that have
 been specified (e.g.
-prepending the module name to the code segments when BIG_CODE is
+prepending the module name to the code segments when CGSW_X86_BIG_CODE is
 specified on the x86).
 When GIVEN_NAME is specified, the back end outputs the segment name to
 the object file exactly as given.

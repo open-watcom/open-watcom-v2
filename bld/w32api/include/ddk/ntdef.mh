@@ -18,15 +18,11 @@
 
 :include cpluspro.sp
 
-/* Define the appropriate macro for the current processor. */
-#if defined(_M_I386) && !defined(_X86_)
-    #define _X86_
-#elif defined(_M_ALPHA) && !defined(_ALPHA_)
-    #define _ALPHA_
-#endif
+:: Define the appropriate macro for the current processor.
+:include archmacs.sp
 
 /* Calling conventions */
-#ifdef _M_I386
+#ifdef _X86_
     #define FASTCALL    __fastcall
 #else
     #define FASTCALL

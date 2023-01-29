@@ -85,7 +85,7 @@ h/ddk/ntddtape.h :        $(mh_dir)/ddk/ntddtape.mh $(owhdr) $(cplus)
 h/ddk/ntddtdi.h :         $(mh_dir)/ddk/ntddtdi.mh $(owhdr) $(cplus)
 h/ddk/ntddvdeo.h :        $(mh_dir)/ddk/ntddvdeo.mh $(owhdr) $(cplus)
 h/ddk/ntddvol.h :         $(mh_dir)/ddk/ntddvol.mh $(owhdr) $(cplus)
-h/ddk/ntdef.h :           $(mh_dir)/ddk/ntdef.mh $(owhdr) $(cplus) $(externc_sp) $(mh_dir)/stdapi.sp $(mh_dir)/secstat.sp $(hdr_dir)/null.sp
+h/ddk/ntdef.h :           $(mh_dir)/ddk/ntdef.mh $(owhdr) $(cplus) $(externc_sp) $(hdr_dir)/archmacs.sp $(mh_dir)/stdapi.sp $(mh_dir)/secstat.sp $(hdr_dir)/null.sp
 h/ddk/ntifs.h :           $(mh_dir)/ddk/ntifs.mh $(owhdr) $(cplus)
 h/ddk/ntiologc.h :        $(mh_dir)/ddk/ntiologc.mh $(owhdr) $(cplus)
 h/ddk/ntnls.h :           $(mh_dir)/ddk/ntnls.mh $(owhdr) $(cplus)
@@ -389,7 +389,7 @@ h/winioctl.h :            $(mh_dir)/winioctl.mh $(owhdr) $(mh_dir)/storguid.sp $
 h/winldap.h :             $(mh_dir)/winldap.mh $(owhdr) $(cplus)
 h/winnetwk.h :            $(mh_dir)/winnetwk.mh $(owhdr) $(cplus)
 h/winnls.h :              $(mh_dir)/winnls.mh $(owhdr) $(cplus)
-h/winnt.h :               $(mh_dir)/winnt.mh $(owhdr) $(cplus) $(externc_sp) $(mh_dir)/stdapi.sp $(mh_dir)/osverinf.sp
+h/winnt.h :               $(mh_dir)/winnt.mh $(owhdr) $(cplus) $(externc_sp) $(hdr_dir)/archmacs.sp $(mh_dir)/stdapi.sp $(mh_dir)/osverinf.sp
 h/winnt.rh :              $(mh_dir)/winnt.mh $(crwatcnt_sp)
 h/winperf.h :             $(mh_dir)/winperf.mh $(owhdr) $(cplus)
 h/winreg.h :              $(mh_dir)/winreg.mh $(owhdr) $(cplus)
