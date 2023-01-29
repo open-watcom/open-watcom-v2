@@ -762,6 +762,7 @@ environments where all macros will be defined.
 :MSGGRPTXT. Error Messages
 :cmt -------------------------------------------------------------------
 :MSGSYM. ERR_MISPLACED_BREAK
+:ERROR. 1
 :MSGTXT. BREAK must appear in while, do, for or switch statement
 :MSGJTXT. BREAKはwhile, do, for, switch文の中になければなりません
 .np
@@ -778,6 +779,7 @@ or
 .kw switch
 statement.
 :MSGSYM. ERR_MISPLACED_CASE
+:ERROR. 1
 :MSGTXT. CASE must appear in switch statement
 :MSGJTXT. CASEはswitch文の中になければなりません
 .np
@@ -787,6 +789,7 @@ label has been found that is not inside a
 .kw switch
 statement.
 :MSGSYM. ERR_MISPLACED_CONTINUE
+:ERROR. 1
 :MSGTXT. CONTINUE must appear in while, do or for statement
 :MSGJTXT. CONTINUEはwhile, do, for文の中になければなりません
 .np
@@ -809,6 +812,7 @@ statement and the
 .kw continue
 statement.
 :MSGSYM. ERR_MISPLACED_DEFAULT
+:ERROR. 1
 :MSGTXT. DEFAULT must appear in switch statement
 :MSGJTXT. DEFAULTはswitch文の中になければなりません
 .np
@@ -825,6 +829,7 @@ and the
 .kw default
 label.
 :MSGSYM. ERR_MISPLACED_RIGHT_BRACE
+:ERROR. 1
 :MSGTXT. Misplaced '}' or missing earlier '{'
 :MSGJTXT. 間違った位置に'}'があるか，もっと前にあるべき'{'がありません
 .np
@@ -833,6 +838,7 @@ An extra
 has been found which cannot be matched up with an earlier
 .id {.
 :MSGSYM. ERR_MISPLACED_ELIF
+:ERROR. 1
 :MSGTXT. Misplaced #elif directive
 :MSGJTXT. #elif擬似命令の位置が間違っています
 .np
@@ -844,6 +850,7 @@ preprocessing group and before the
 .id #else
 directive if present.
 :MSGSYM. ERR_MISPLACED_ELSE
+:ERROR. 1
 :MSGTXT. Misplaced #else directive
 :MSGJTXT. #else擬似命令の位置が間違っています
 .np
@@ -855,6 +862,7 @@ preprocessing group and follow all
 .id #elif
 directives if present.
 :MSGSYM. ERR_MISPLACED_ENDIF
+:ERROR. 1
 :MSGTXT. Misplaced #endif directive
 :MSGJTXT. #endif擬似命令の位置が間違っています
 .np
@@ -867,6 +875,7 @@ or you are missing an
 .id #if
 directive earlier in the file.
 :MSGSYM. ERR_ONLY_1_DEFAULT
+:ERROR. 1
 :MSGTXT. Only 1 DEFAULT per switch allowed
 :MSGJTXT. 1つのswitch文には1つのDEFAULTだけが認められます
 .np
@@ -876,18 +885,21 @@ label in a
 .kw switch
 statement.
 :MSGSYM. ERR_EXPECTING_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting '%s' but found '%s'
 :MSGJTXT. '%s'があるはずですが，'%s'がありました
 .np
 A syntax error has been detected.
 The tokens displayed in the message should help you to determine the problem.
 :MSGSYM. ERR_TYPE_MISMATCH
+:ERROR. 1
 :MSGTXT. Type mismatch
 :MSGJTXT. 型が一致しません
 .np
 For pointer subtraction, both pointers must point to the same type.
 For other operators, both expressions must be assignment compatible.
 :MSGSYM. ERR_UNDECLARED_SYM
+:ERROR. 1
 :MSGTXT. Symbol '%s' has not been declared
 :MSGJTXT. シンボル'%s'が宣言されませんでした
 .np
@@ -897,12 +909,14 @@ need to
 .id #include
 a header file that contains the declaration.
 :MSGSYM. ERR_NOT_A_FUNCTION
+:ERROR. 1
 :MSGTXT. Expression is not a function
 :MSGJTXT. 式が関数ではありません
 .np
 The compiler has found an expression that looks like a function call, but
 it is not defined as a function.
 :MSGSYM. ERR_CANNOT_MODIFY_CONST
+:ERROR. 1
 :MSGTXT. Constant variable cannot be modified
 :MSGJTXT. 定数変数は変更できません
 .np
@@ -911,18 +925,21 @@ has been declared with the
 .kw const
 keyword.
 :MSGSYM. ERR_MUST_BE_LVALUE
+:ERROR. 1
 :MSGTXT. Left operand must be an 'lvalue'
 :MSGJTXT. 左辺は'左辺値'でなければなりません
 .np
 The operand on the left side of an "=" sign must be a variable or memory
 location which can have a value assigned to it.
 :MSGSYM. ERR_SYM_ALREADY_DEFINED_AS_VAR
+:ERROR. 1
 :MSGTXT. '%s' is already defined as a variable
 :MSGJTXT. '%s'は既に変数として定義されています
 .np
 You are trying to declare a function with the same name as a previously
 declared variable.
 :MSGSYM. ERR_EXPECTING_ID
+:ERROR. 1
 :MSGTXT. Expecting identifier
 :MSGJTXT. 識別子があるべきです
 .np
@@ -930,11 +947,13 @@ The token following "->" and "." operators must be the name of an
 identifier which appears in the struct or union identified by the
 operand preceding the "->" and "." operators.
 :MSGSYM. ERR_LABEL_ALREADY_DEFINED
+:ERROR. 1
 :MSGTXT. Label '%s' already defined
 :MSGJTXT. ラベル'%s'は既に定義されています
 .np
 All labels within a function must be unique.
 :MSGSYM. ERR_UNDEFINED_LABEL
+:ERROR. 1
 :MSGTXT. Label '%s' not defined in function
 :MSGJTXT. ラベル'%s'は関数の中で定義されていません
 .np
@@ -943,6 +962,7 @@ A
 statement has referenced a label that is not defined in the function.
 Add the necessary label or check the spelling of the label(s) in the function.
 :MSGSYM. ERR_DUPLICATE_TAG
+:ERROR. 1
 :MSGTXT. Tag '%s' already defined
 :MSGJTXT. タグ'%s'は既に定義されています
 .np
@@ -953,17 +973,20 @@ and
 .kw enum
 tag names must be unique.
 :MSGSYM. ERR_INVALID_DIMENSION
+:ERROR. 1
 :MSGTXT. Dimension cannot be 0 or negative
 :MSGJTXT. 次元が0または負であることはできません
 .np
 The dimension of an array must be positive and non-zero.
 :MSGSYM. ERR_DIMENSION_REQUIRED
+:ERROR. 1
 :MSGTXT. Dimensions of multi-dimension array must be specified
 :MSGJTXT. 多次元配列の次元は指定されなければなりません
 .np
 All dimensions of a multiple dimension array must be specified.
 The only exception is the first dimension which can declared as "[]".
 :MSGSYM. ERR_MISSING_DATA_TYPE
+:ERROR. 1
 :MSGTXT. Missing or misspelled data type near '%s'
 :MSGJTXT. '%s'の近くのデータ型がないか，つづりが間違ってています
 .np
@@ -971,12 +994,14 @@ The compiler has found an identifier that is not a predefined type or the
 name of a "typedef".
 Check the identifier for a spelling mistake.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_PARM
+:ERROR. 1
 :MSGTXT. Storage class of parameter must be register or unspecified
 :MSGJTXT. パラメーターの記憶クラスは，レジスタか無指定でなければなりません
 .np
 The only storage class allowed for a parameter declaration is
 .kw register.
 :MSGSYM. ERR_SYM_NOT_IN_PARM_LIST
+:ERROR. 1
 :MSGTXT. Declared symbol '%s' is not in parameter list
 :MSGJTXT. 宣言されたシンボル'%s'はパラメーターリストにありません
 .np
@@ -984,16 +1009,19 @@ Make sure that all the identifiers in the parameter list match those
 provided in the declarations between the start of the function and the
 opening brace "{".
 :MSGSYM. ERR_PARM_ALREADY_DECLARED
+:ERROR. 1
 :MSGTXT. Parameter '%s' already declared
 :MSGJTXT. パラメーター'%s'は既に宣言されています
 .np
 A declaration for the specified parameter has already been processed.
 :MSGSYM. ERR_INVALID_DECLARATOR
+:ERROR. 1
 :MSGTXT. Invalid declarator
 :MSGJTXT. 不適切な宣言子です
 .np
 A syntax error has occurred while parsing a declaration.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_FUNC
+:ERROR. 1
 :MSGTXT. Invalid storage class for function
 :MSGJTXT. 関数に対して不適切な記憶クラスです
 .np
@@ -1002,6 +1030,7 @@ If a storage class is given for a function, it must be
 or
 .kw extern.
 :MSGSYM. ERR_VAR_CANT_BE_VOID
+:ERROR. 1
 :MSGTXT. Variable '%s' cannot be void
 :MSGJTXT. 変数'%s'はvoid型であることはできません
 .np
@@ -1009,17 +1038,20 @@ You cannot declare a
 .kw void
 variable.
 :MSGSYM. ERR_EXPR_MUST_BE_POINTER_TO
+:ERROR. 1
 :MSGTXT. Expression must be 'pointer to ...'
 :MSGJTXT. 式は'...へのポインタ'でなければなりません
 .np
 An attempt has been made to de-reference (*) a variable or expression which
 is not declared to be a pointer.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_RVALUE
+:ERROR. 1
 :MSGTXT. Cannot take the address of an rvalue
 :MSGJTXT. 右辺値(数値定数等)のアドレスをとることはできません
 .np
 You can only take the address of a variable or memory location.
 :MSGSYM. ERR_NAME_NOT_FOUND_IN_STRUCT
+:ERROR. 1
 :MSGTXT. Name '%s' not found in struct/union %s
 :MSGJTXT. 名前%sはstruct/union %s の中にありません
 .np
@@ -1033,6 +1065,7 @@ to the correct
 or
 .kw union.
 :MSGSYM. ERR_MUST_BE_STRUCT_OR_UNION
+:ERROR. 1
 :MSGTXT. Expression for '.' must be a 'structure' or 'union'
 :MSGJTXT. .に対する式は，'構造体'か'共用体'でなければなりません
 .np
@@ -1043,6 +1076,7 @@ or
 .kw union
 type.
 :MSGSYM. ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION
+:ERROR. 1
 :MSGTXT. Expression for '->' must be 'pointer to struct or union'
 :MSGJTXT. '->'に対する式は，'structかunionへのポインタ'でなければなりません
 .np
@@ -1053,11 +1087,13 @@ or
 .kw union
 type.
 :MSGSYM. ERR_SYM_ALREADY_DEFINED
+:ERROR. 1
 :MSGTXT. Symbol '%s' already defined
 :MSGJTXT. シンボル'%s'は既に定義されています
 .np
 The specified symbol has already been defined.
 :MSGSYM. ERR_FUNCTION_NOT_DEFINED
+:ERROR. 1
 :MSGTXT. static function '%s' has not been defined
 :MSGJTXT. スタティック関数'%s'が定義されていません
 .np
@@ -1067,6 +1103,7 @@ function, but a definition for the
 .kw static
 function has not been found in the file.
 :MSGSYM. ERR_RIGHT_OPERAND_IS_A_POINTER
+:ERROR. 1
 :MSGTXT. Right operand of '%s' is a pointer
 :MSGJTXT. '%s'の右オペランドがポインタです
 .np
@@ -1074,6 +1111,7 @@ The right operand of "+=" and "&minus.=" cannot be a pointer.
 The right operand of "&minus." cannot be a pointer unless the left
 operand is also a pointer.
 :MSGSYM. ERR_MUST_BE_SCALAR_TYPE
+:ERROR. 1
 :MSGTXT. Type cast must be a scalar type
 :MSGJTXT. 型キャストは，スカラー型でなければなりません
 .np
@@ -1082,6 +1120,7 @@ You cannot type cast an expression to be a
 .kw union,
 array or function.
 :MSGSYM. ERR_EXPECTING_LABEL
+:ERROR. 1
 :MSGTXT. Expecting label for goto statement
 :MSGJTXT. goto文に対するラベルがあるべきです
 .np
@@ -1089,6 +1128,7 @@ The
 .kw goto
 statement requires the name of a label.
 :MSGSYM. ERR_DUPLICATE_CASE_VALUE
+:ERROR. 1
 :MSGTXT. Duplicate case value '%s' found
 :MSGJTXT. caseの値'%s'が2つあります
 .np
@@ -1096,21 +1136,25 @@ Every case value in a
 .kw switch
 statement must be unique.
 :MSGSYM. ERR_FIELD_TOO_WIDE
+:ERROR. 1
 :MSGTXT. Field width too large
 :MSGJTXT. フィールドの幅が大きすぎます
 .np
 The maximum field width allowed is 16 bits.
 :MSGSYM. ERR_WIDTH_0
+:ERROR. 1
 :MSGTXT. Field width of 0 with symbol not allowed
 :MSGJTXT. シンボルをもつ幅0のフィールドは許されません
 .np
 A bit field must be at least one bit in size.
 :MSGSYM. ERR_WIDTH_NEGATIVE
+:ERROR. 1
 :MSGTXT. Field width must be positive
 :MSGJTXT. フィールドの幅は正の数でなければなりません
 .np
 You cannot have a negative field width.
 :MSGSYM. ERR_INVALID_TYPE_FOR_FIELD
+:ERROR. 1
 :MSGTXT. Invalid type specified for bit field
 :MSGJTXT. ビットフィールドに不適切な型が指定されました
 .np
@@ -1125,6 +1169,7 @@ and
 .kw int
 .
 :MSGSYM. ERR_INCOMPLETE_TYPE
+:ERROR. 1
 :MSGTXT. Variable '%s' has incomplete type
 :MSGJTXT. 変数'%s'の型は不完全です
 .np
@@ -1134,11 +1179,13 @@ or
 .kw union
 has not been given.
 :MSGSYM. ERR_EXPR_MUST_BE_ARRAY
+:ERROR. 1
 :MSGTXT. Subscript on non-array
 :MSGJTXT. 非配列への添え字です
 .np
 One of the operands of "[]" must be an array.
 :MSGSYM. ERR_INCOMPLETE_COMMENT
+:ERROR. 1
 :MSGTXT. Incomplete comment started on line %u
 :MSGJTXT. Incomplete comment started on line %u
 .np
@@ -1146,17 +1193,20 @@ The compiler did not find
 .id */
 to mark the end of a comment.
 :MSGSYM. ERR_MUST_BE_MACRO_PARM
+:ERROR. 1
 :MSGTXT. Argument for # must be a macro parm
 :MSGJTXT. #への引数は，マクロ・パラメータでなければなりません
 .np
 The argument for the stringize operator "#" must be a macro parameter.
 :MSGSYM. ERR_UNKNOWN_DIRECTIVE
+:ERROR. 1
 :MSGTXT. Unknown preprocessing directive '#%s'
 :MSGJTXT. 前処理擬似命令'#%s'の意味が不明です
 .np
 An unrecognized preprocessing directive has been encountered.
 Check for correct spelling.
 :MSGSYM. ERR_INVALID_INCLUDE
+:ERROR. 1
 :MSGTXT. Invalid #include directive
 :MSGJTXT. 不適切な#include擬似命令です
 .np
@@ -1164,11 +1214,13 @@ A syntax error has been encountered in a
 .id #include
 directive.
 :MSGSYM. ERR_TOO_FEW_MACRO_PARMS
+:ERROR. 1
 :MSGTXT. Not enough parameters given for macro '%s'
 :MSGJTXT. マクロ'%s'に与えられたパラメータが不十分です
 .np
 You have not supplied enough parameters to the specified macro.
 :MSGSYM. ERR_NOT_EXPECTING_RETURN_VALUE
+:ERROR. 1
 :MSGTXT. Not expecting a return value for function '%s'
 :MSGJTXT. 関数'%s'に対して戻り値はないはずです
 .np
@@ -1179,6 +1231,7 @@ Delete the
 .kw return
 statement, or change the type of the function.
 :MSGSYM. ERR_EXPR_HAS_VOID_TYPE
+:ERROR. 1
 :MSGTXT. Expression has void type
 :MSGJTXT. 式はvoid型です
 .np
@@ -1186,12 +1239,14 @@ You tried to use the value of a
 .kw void
 expression inside another expression.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_BIT_FIELD
+:ERROR. 1
 :MSGTXT. Cannot take the address of a bit field
 :MSGJTXT. ビットフィールドのアドレスは取れません
 .np
 The smallest addressable unit is a byte.
 You cannot take the address of a bit field.
 :MSGSYM. ERR_NOT_A_CONSTANT_EXPR
+:ERROR. 1
 :MSGTXT. Expression must be constant
 :MSGJTXT. 式は定数でなければなりません
 .np
@@ -1199,6 +1254,7 @@ The compiler expects a constant expression.
 This message can occur during static initialization if you are
 trying to initialize a non-pointer type with an address expression.
 :MSGSYM. ERR_CANT_OPEN_FILE
+:ERROR. 1
 :MSGTXT. Unable to open '%s'
 :MSGJTXT. '%s'をオープンすることができません
 .np
@@ -1217,12 +1273,14 @@ environment variable or the "-I" option on the command line.
 .np
 You have supplied too many parameters for the specified macro.
 :MSGSYM. ERR_MODIFIERS_DISAGREE
+:ERROR. 1
 :MSGTXT. Modifiers disagree with previous definition of '%s'
 :MSGJTXT. 修飾子が'%s'の前の定義と一致しません
 .np
 You have more than one definition or prototype for the variable or
 function which have different type modifiers.
 :MSGSYM. ERR_CANT_USE_TYPEDEF_AS_VAR
+:ERROR. 1
 :MSGTXT. Cannot use typedef '%s' as a variable
 :MSGJTXT. typedef'%s'は変数として使えません
 .np
@@ -1230,6 +1288,7 @@ The name of a typedef has been found when an operand or operator is expected.
 If you are trying to use a type cast, make sure there are parentheses
 around the type, otherwise check for a spelling mistake.
 :MSGSYM. ERR_INV_STG_CLASS_FOR_GLOBAL
+:ERROR. 1
 :MSGTXT. Invalid storage class for non-local variable
 :MSGJTXT. 非局所変数に対する不適切な記憶クラスです
 .np
@@ -1239,6 +1298,7 @@ or
 .kw register
 .
 :MSGSYM. ERR_INV_TYPE
+:ERROR. 1
 :MSGTXT. Invalid type
 :MSGJTXT. 不適切な型です
 .np
@@ -1257,6 +1317,7 @@ and
 .kw double
 .
 :MSGSYM. ERR_EXPECTING_DECL_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting data or function declaration, but found '%s'
 :MSGJTXT. データまたは関数の宣言があるはずですが，'%s'があります
 .np
@@ -1264,16 +1325,19 @@ The compiler is expecting the start of a data or function declaration.
 If you are only part way through a function, then you have too many
 closing braces "}".
 :MSGSYM. ERR_INCONSISTENT_TYPE
+:ERROR. 1
 :MSGTXT. Inconsistent return type for function '%s'
 :MSGJTXT. 関数'%s'に対する矛盾した戻り型です
 .np
 Two prototypes for the same function disagree.
 :MSGSYM. ERR_MISSING_OPERAND
+:ERROR. 1
 :MSGTXT. Missing operand
 :MSGJTXT. オペランドがありません
 .np
 An operand is required in the expression being parsed.
 :MSGSYM. ERR_OUT_OF_MEMORY
+:ERROR. 1
 :MSGTXT. Out of memory
 :MSGJTXT. メモリ不足です
 .np
@@ -1289,17 +1353,20 @@ For the 16-bit C compiler,
 the "-d2" option causes the compiler to use more memory.
 Try compiling with the "-d1" option instead.
 :MSGSYM. ERR_INV_CHAR_CONSTANT
+:ERROR. 1
 :MSGTXT. Invalid character constant
 :MSGJTXT. 不適切な文字定数です
 .np
 This message is issued for an improperly formed character constant.
 :MSGSYM. ERR_CANT_USE_VOID
+:ERROR. 1
 :MSGTXT. Cannot perform operation with pointer to void
 :MSGJTXT. voidへのポインタで演算を実行することはできません
 .np
 You cannot use a "pointer to void" with the operators +, &minus., ++,
 &minus.&minus., += and &minus.=.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_REGISTER
+:ERROR. 1
 :MSGTXT. Cannot take address of variable with storage class 'register'
 :MSGJTXT. 記憶クラス'register'の変数のアドレスを取ることはできません
 .np
@@ -1310,6 +1377,7 @@ to
 .kw auto
 .
 :MSGSYM. ERR_VAR_ALREADY_INITIALIZED
+:ERROR. 1
 :MSGTXT. Variable '%s' already initialized
 :MSGJTXT. 変数'%s'は既に初期化されました
 .np
@@ -1325,12 +1393,14 @@ The compiler did not find a closing double quote " or line
 continuation character \ before the end of a line or before
 the end of the source file.
 :MSGSYM. ERR_NEED_BRACES
+:ERROR. 1
 :MSGTXT. Data for aggregate type must be enclosed in curly braces
 :MSGJTXT. 集合体型のデータは，波括弧に入れられなければなりません
 .np
 When an array, struct or union is statically initialized, the data
 must be enclosed in curly braces {}.
 :MSGSYM. ERR_PARM_TYPE_MISMATCH
+:ERROR. 1
 :MSGTXT. Type of parameter %d does not agree with previous definition
 :MSGJTXT. パラメータ%dの型が前の定義と一致しません
 .np
@@ -1363,6 +1433,7 @@ This will assure that the first instance of structure
 .id foo
 is defined at the proper outer scope.
 :MSGSYM. ERR_STG_CLASS_DISAGREES
+:ERROR. 1
 :MSGTXT. Storage class disagrees with previous definition of '%s'
 :MSGJTXT. 記憶クラスが'%s'の前の定義と一致しません
 .np
@@ -1380,16 +1451,19 @@ and later defined as
 .kw static
 .
 :MSGSYM. ERR_INVALID_OPTION
+:ERROR. 1
 :MSGTXT. Invalid option '%s'
 :MSGJTXT. オプション'%s'は不適切です
 .np
 The specified option is not recognized by the compiler.
 :MSGSYM. ERR_INVALID_OPTIMIZATION
+:ERROR. 1
 :MSGTXT. Invalid optimization option '%s'
 :MSGJTXT. 不適切な最適化オプション'%s'です
 .np
 The specified option is an unrecognized optimization option.
 :MSGSYM. ERR_INVALID_MEMORY_MODEL
+:ERROR. 1
 :MSGTXT. Invalid memory model '%s'
 :MSGJTXT. 不適切なメモリーモデル'%s'です
 .np
@@ -1397,23 +1471,27 @@ Memory model option must be one of "ms", "mm", "mc", "ml", "mh" or
 "mf" which selects the Small, Medium, Compact, Large, Huge or Flat
 memory model.
 :MSGSYM. ERR_MISSING_SEMICOLON
+:ERROR. 1
 :MSGTXT. Missing semicolon at end of declaration
 :MSGJTXT. 宜言の終わりにセミコロンがありません
 .np
 You are missing a semicolon ";" on the declaration just before the left
 curly brace "{".
 :MSGSYM. ERR_MISSING_RIGHT_BRACE
+:ERROR. 1
 :MSGTXT. Missing '}'
 :MSGJTXT. '}'がありません
 .np
 The compiler detected end of file before finding a right curly brace "}" to
 end the current function.
 :MSGSYM. ERR_INVALID_TYPE_FOR_SWITCH
+:ERROR. 1
 :MSGTXT. Invalid type for switch expression
 :MSGJTXT. switch式に対する不適切な型です
 .np
 The type of a switch expression must be integral.
 :MSGSYM. ERR_EXPR_MUST_BE_INTEGRAL
+:ERROR. 1
 :MSGTXT. Expression must be integral
 :MSGJTXT. 式は整数型でなければなりません
 An integral expression is required.
@@ -1431,23 +1509,27 @@ int foo( int a, float b, int *p )
 }
 :eerrbad.
 :MSGSYM. ERR_EXPR_MUST_BE_ARITHMETIC
+:ERROR. 1
 :MSGTXT. Expression must be arithmetic
 :MSGJTXT. 式は算術式でなければなりません
 .np
 Both operands of the "*", "/" and "%" operators must be arithmetic.
 The operand of the unary minus must also be arithmetic.
 :MSGSYM. ERR_EXPR_MUST_BE_SCALAR
+:ERROR. 1
 :MSGTXT. Expression must be scalar type
 :MSGJTXT. 式はスカラー型でなければなりません
 .np
 A scalar expression is required.
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_LABEL
+:ERROR. 1
 :MSGTXT. Statement required after label
 :MSGJTXT. ラベルの後には文が必要です
 .np
 The C language definition requires a statement following a label.
 You can use a null statement which consists of just a semicolon (";").
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_DO
+:ERROR. 1
 :MSGTXT. Statement required after 'do'
 :MSGJTXT. 'do'の後には文が必要です
 .np
@@ -1457,6 +1539,7 @@ and
 .kw while
 keywords.
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_CASE
+:ERROR. 1
 :MSGTXT. Statement required after 'case'
 :MSGJTXT. 'case'の後に文が必要です
 .np
@@ -1465,6 +1548,7 @@ The C language definition requires a statement following a
 label.
 You can use a null statement which consists of just a semicolon (";").
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_DEFAULT
+:ERROR. 1
 :MSGTXT. Statement required after 'default'
 :MSGJTXT. 'default'の後に文が必要です
 .np
@@ -1473,12 +1557,14 @@ The C language definition requires a statement following a
 label.
 You can use a null statement which consists of just a semicolon (";").
 :MSGSYM. ERR_EXPR_TOO_COMPLICATED
+:ERROR. 1
 :MSGTXT. Expression too complicated, split it up and try again
 :MSGJTXT. 式があまりに複雑ですので，分割して再度試してください
 .np
 The expression contains too many levels of nested parentheses.
 Divide the expression up into two or more sub-expressions.
 :MSGSYM. ERR_MISSING_CENDIF
+:ERROR. 1
 :MSGTXT. Missing matching #endif directive
 :MSGJTXT. 対応する#endif擬似命令がありません
 .np
@@ -1489,11 +1575,13 @@ or
 .id #ifndef
 preprocessing directive.
 :MSGSYM. ERR_INVALID_MACRO_DEFN
+:ERROR. 1
 :MSGTXT. Invalid macro definition, missing )
 :MSGJTXT. 不適切なマクロ定義です，）がありません
 .np
 The right parenthesis ")" is required for a function-like macro definition.
 :MSGSYM. ERR_INCOMPLETE_MACRO
+:ERROR. 1
 :MSGTXT. Missing ) for expansion of '%s' macro
 :MSGJTXT. '%s'マクロの展開に対する）がありません
 .np
@@ -1502,6 +1590,7 @@ function-like macro.
 A right parenthesis ")" is required to mark the end of the argument(s) for
 a function-like macro.
 :MSGSYM. ERR_INVALID_CONVERSION
+:ERROR. 1
 :MSGTXT. Invalid conversion
 :MSGJTXT. 不適切な変換です
 .np
@@ -1520,6 +1609,7 @@ or
 .kw double
 .
 :MSGSYM. ERR_USER_ERROR_MSG
+:ERROR. 1
 :MSGTXT. %s
 :MSGJTXT. %s
 .np
@@ -1527,24 +1617,28 @@ This is a user message generated with the
 .id #error
 preprocessing directive.
 :MSGSYM. ERR_CANT_HAVE_AN_ARRAY_OF_FUNCTIONS
+:ERROR. 1
 :MSGTXT. Cannot define an array of functions
 :MSGJTXT. 関数の配列は定義できません
 .np
 You can have an array of pointers to functions, but not an array
 of functions.
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_AN_ARRAY
+:ERROR. 1
 :MSGTXT. Function cannot return an array
 :MSGJTXT. 関数は配列を返せません
 .np
 A function cannot return an array.
 You can return a pointer to an array.
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_A_FUNCTION
+:ERROR. 1
 :MSGTXT. Function cannot return a function
 :MSGJTXT. 関数は関数を返せません
 .np
 You cannot return a function.
 You can return a pointer to a function.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_LOCAL_VAR
+:ERROR. 1
 :MSGTXT. Cannot take address of local variable in static initialization
 :MSGJTXT. スタティックな初期化の中で局所変数のアドレスを取ることはできません
 .np
@@ -1552,6 +1646,7 @@ You cannot take the address of an
 .kw auto
 variable at compile time.
 :MSGSYM. ERR_INCONSISTENT_USE_OF_RETURN
+:ERROR. 1
 :MSGTXT. Inconsistent use of return statements
 :MSGJTXT. return文の使用が矛盾しています
 .np
@@ -1567,6 +1662,7 @@ value specified to be consistent with the other
 .kw return
 statement in the function.
 :MSGSYM. ERR_MISSING_QUESTION_OR_MISPLACED_COLON
+:ERROR. 1
 :MSGTXT. Missing ? or misplaced :
 :MSGJTXT. ?がないか，:の位置が間違っています
 .np
@@ -1575,6 +1671,7 @@ operators.
 You may need parenthesis around the expressions involved so that it can
 be parsed correctly.
 :MSGSYM. ERR_MAX_STRUCT_SIZE_IS_64K
+:ERROR. 1
 :MSGTXT. Maximum struct or union size is 64K
 :MSGJTXT. structおよびunionの大きさは最大64 Kです
 .np
@@ -1585,6 +1682,7 @@ or
 is limited to 64K so that the compiler
 can represent the offset of a member in a 16-bit register.
 :MSGSYM. ERR_STMT_MUST_BE_INSIDE_FUNCTION
+:ERROR. 1
 :MSGTXT. Statement must be inside function. Probable cause: missing {
 :MSGJTXT. 文は関数の内部でなければなりません。考えられる原因：{がありません
 .np
@@ -1596,10 +1694,12 @@ etc., which must be inside a function.
 You either have too many closing braces "}" or you are missing an
 opening brace "{" earlier in the function.
 :MSGSYM. ERR_UNUSED_3
+:ERROR. 1
 :MSGTXT. not used
 :MSGJTXT. このメッセージは使用されません
 unused message
 :MSGSYM. ERR_CANT_UNDEF_THESE_NAMES
+:ERROR. 1
 :MSGTXT. Cannot #undef '%s'
 :MSGJTXT. '%s'は#undefできません
 .np
@@ -1612,6 +1712,7 @@ cannot be deleted by the
 .id #undef
 directive.
 :MSGSYM. ERR_CANT_DEFINE_DEFINED
+:ERROR. 1
 :MSGTXT. Cannot #define the name 'defined'
 :MSGJTXT. 名前'defined'は#defineできません
 .np
@@ -1619,16 +1720,19 @@ You cannot define a macro called
 .id defined
 .
 :MSGSYM. ERR_MISPLACED_SHARP_SHARP
+:ERROR. 1
 :MSGTXT. ## must not be at start or end of replacement tokens
 :MSGJTXT. ##は置き換えトークンの先頭または最後にあってはなりません
 .np
 There must be a token on each side of the "##" (token pasting) operator.
 :MSGSYM. ERR_NO_CAST_DURING_PP
+:ERROR. 1
 :MSGTXT. Type cast not allowed in #if or #elif expression
 :MSGJTXT. 型キャストは#ifあるいは#elif式の中では許されません
 .np
 A type cast is not allowed in a preprocessor expression.
 :MSGSYM. ERR_NO_SIZEOF_DURING_PP
+:ERROR. 1
 :MSGTXT. 'sizeof' not allowed in #if or #elif expression
 :MSGJTXT. 'sizeof'は#ifか#elif式の中で許されません
 .np
@@ -1636,6 +1740,7 @@ The
 .kw sizeof
 operator is not allowed in a preprocessor expression.
 :MSGSYM. ERR_INVALID_RELOP_FOR_STRUCT_OR_UNION
+:ERROR. 1
 :MSGTXT. Cannot compare a struct or union
 :MSGJTXT. structあるいはunionは比較できません
 .np
@@ -1658,6 +1763,7 @@ then you can compare two structs using
 .id memcmp
 .
 :MSGSYM. ERR_EMPTY_ENUM_LIST
+:ERROR. 1
 :MSGTXT. Enumerator list cannot be empty
 :MSGJTXT. 列挙子リストは空であることができません
 .np
@@ -1665,16 +1771,19 @@ You must have at least one identifier in an
 .kw enum
 list.
 :MSGSYM. ERR_INVALID_FLOATING_POINT_CONSTANT
+:ERROR. 1
 :MSGTXT. Invalid floating-point constant
 :MSGJTXT. 不適切な浮動小数点定数です
 .np
 The exponent part of the floating-point constant is not formed correctly.
 :MSGSYM. ERR_CANT_TAKE_SIZEOF_FIELD
+:ERROR. 1
 :MSGTXT. Cannot take sizeof a bit field
 :MSGJTXT. ビットフィールドのsizeofを計算することはできません
 .np
 The smallest object that you can ask for the size of is a char.
 :MSGSYM. ERR_CANT_INITIALIZE_EXTERN_VAR
+:ERROR. 1
 :MSGTXT. Cannot initialize variable with storage class of extern
 :MSGJTXT. externの記憶クラスの変数は初期化できません
 .np
@@ -1683,6 +1792,7 @@ A storage class of
 is used to associate the variable with its actual definition somewhere
 else in the program.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_PARM_PROTO
+:ERROR. 1
 :MSGTXT. Invalid storage class for parameter
 :MSGJTXT. パラメータに対して不適切な記憶クラスです
 .np
@@ -1690,17 +1800,20 @@ The only storage class allowed for a parameter is
 .kw register
 .
 :MSGSYM. ERR_EMPTY_INITIALIZER_LIST
+:ERROR. 1
 :MSGTXT. Initializer list cannot be empty
 :MSGJTXT. 初期化リストは空であることができません
 .np
 An initializer list must have at least one item specified.
 :MSGSYM. ERR_INCOMPLETE_EXPR_TYPE
+:ERROR. 1
 :MSGTXT. Expression has incomplete type
 :MSGJTXT. 式の型が不完全です
 .np
 An attempt has been made to access a struct or union whose definition is
 not known, or an array whose dimensions are not known.
 :MSGSYM. ERR_STRUCT_OR_UNION_INSIDE_ITSELF
+:ERROR. 1
 :MSGTXT. Struct or union cannot contain itself
 :MSGJTXT. Structあるいはunionがそれ自身を含むことはできません
 .np
@@ -1714,16 +1827,19 @@ You can have a pointer in the
 which points to an instance of itself.
 Check for a missing "*" in the declaration.
 :MSGSYM. ERR_INCOMPLETE_ENUM_DECL
+:ERROR. 1
 :MSGTXT. Incomplete enum declaration
 :MSGJTXT. 不完全なenum宣言です
 .np
 The enumeration tag has not been previously defined.
 :MSGSYM. ERR_ID_LIST_SHOULD_BE_EMPTY
+:ERROR. 1
 :MSGTXT. An id list not allowed except for function definition
 :MSGJTXT. 関数定義を除いて，IDリストは許されません
 .np
 A function prototype must contain type information.
 :MSGSYM. ERR_MUST_BE_VAR_PARM_FUNC
+:ERROR. 1
 :MSGTXT. Must use 'va_start' macro inside function with variable parameters
 :MSGJTXT. 'va_start'マクロは可変パラメータをもつ関数の内側で使用しなければなりません
 .np
@@ -1734,12 +1850,14 @@ that takes a variable number of parameters.
 A function is defined with a variable number of parameters by declaring
 the last parameter in the function as "...".
 :MSGSYM. ERR_FATAL_ERROR
+:ERROR. 1
 :MSGTXT. ***FATAL*** %s
 :MSGJTXT. ***致命的*** %s
 .np
 A fatal error has been detected during code generation time.
 The type of error is displayed in the message.
 :MSGSYM. ERR_BACK_END_ERROR
+:ERROR. 1
 :MSGTXT. Internal compiler error %d
 :MSGJTXT. コンパイラ内部エラー%d
 .np
@@ -1748,17 +1866,20 @@ Please report the specified internal compiler error number and any other
 helpful details about the program being compiled to compiler developers
 so that we can fix the problem.
 :MSGSYM. ERR_BAD_PARM_REGISTER
+:ERROR. 1
 :MSGTXT. Parameter number %d - invalid register in #pragma
 :MSGJTXT. パラメータ番号 %d - #pragmaの中の不適切なレジスタ
 .np
 The designated registers cannot hold the value for the parameter.
 :MSGSYM. ERR_BAD_RETURN_REGISTER
+:ERROR. 1
 :MSGTXT. Procedure '%s' has invalid return register in #pragma
 :MSGJTXT. プロシージャ'%s'は#pragmaの中で不適切なリターン・レジスタを持っています
 .np
 The size of the return register does not match the size of the result
 returned by the function.
 :MSGSYM. ERR_BAD_SAVE
+:ERROR. 1
 :MSGTXT. Illegal register modified by '%s' #pragma
 :MSGJTXT. 違法なレジスタが'%s'#pragmaによって修正されました
 .np
@@ -1773,6 +1894,7 @@ The EBP, CS, DS, and SS registers cannot be modified in small data
 models.
 The EBP, CS, and SS registers cannot be modified in large data models.
 :MSGSYM. ERR_NO_EXTERNAL_DEFNS_FOUND
+:ERROR. 1
 :MSGTXT. File must contain at least one external definition
 :MSGJTXT. ファイルは少くとも1つの外部定義を含まなければなりません
 .np
@@ -1780,16 +1902,19 @@ Every file must contain at least one global object, (either a data variable
 or a function).
 This message is only issued in strict ANSI mode (-za).
 :MSGSYM. ERR_OUT_OF_MACRO_MEMORY
+:ERROR. 1
 :MSGTXT. Out of macro space
 :MSGJTXT. マクロ空間が不足です
 .np
 The compiler ran out of memory for storing macro definitions.
 :MSGSYM. ERR_BREAK_KEY_HIT
+:ERROR. 1
 :MSGTXT. Keyboard interrupt detected
 :MSGJTXT. キーボード割り込みが検出されました
 .np
 The compile has been aborted with Ctrl/C or Ctrl/Break.
 :MSGSYM. ERR_INV_DATA_TYPE_FOR_REGISTER
+:ERROR. 1
 :MSGTXT. Array, struct or union cannot be placed in a register
 :MSGJTXT. 配列，struct，あるいはunionをレジスタに置くことはできません
 .np
@@ -1797,23 +1922,27 @@ Only scalar objects can be specified with the
 .kw register
 class.
 :MSGSYM. ERR_TYPE_REQUIRED_IN_PARM_LIST
+:ERROR. 1
 :MSGTXT. Type required in parameter list
 :MSGJTXT. 型がパラメータ・リストの中に必要です
 .np
 If the first parameter in a function definition or prototype is defined
 with a type, then all of the parameters must have a type specified.
 :MSGSYM. ERR_ENUM_CONSTANT_OUT_OF_RANGE
+:ERROR. 1
 :MSGTXT. Enum constant is out of range %s
 :MSGJTXT. enum定数が%sの範囲外です
 .np
 All of the constants must fit into appropriate value range.
 :MSGSYM. ERR_TYPE_DOES_NOT_AGREE
+:ERROR. 1
 :MSGTXT. Type does not agree with previous definition of '%s'
 :MSGJTXT. 型が'%s'の前の定義と一致しません
 .np
 You have more than one definition of a variable or function that do not
 agree.
 :MSGSYM. ERR_DUPLICATE_FIELD_NAME
+:ERROR. 1
 :MSGTXT. Duplicate name '%s' not allowed in struct or union
 :MSGJTXT. structあるいはunionの中で，同じ名前'%s'を二度使うことはできません
 .np
@@ -1823,11 +1952,13 @@ or
 .kw union
 must be unique.
 :MSGSYM. ERR_DUPLICATE_MACRO_PARM
+:ERROR. 1
 :MSGTXT. Duplicate macro parameter '%s'
 :MSGJTXT. マクロ・パラメータ'%s'の定義が二度行われています
 .np
 The parameters specified in a macro definition must be unique.
 :MSGSYM. ERR_UNABLE_TO_OPEN_WORK_FILE
+:ERROR. 1
 :MSGTXT. Unable to open work file: error code = %d
 :MSGJTXT. ワーク・ファイルをオープンすることができません：エラーコード = %d
 .np
@@ -1835,26 +1966,31 @@ The compiler tries to open a new work file by the name "__wrkN__.tmp" where
 N is the digit 0 to 9.
 This message will be issued if all of those files already exist.
 :MSGSYM. ERR_WORK_FILE_WRITE_ERROR
+:ERROR. 1
 :MSGTXT. Write error on work file: error code = %d
 :MSGJTXT. ワーク・ファイルの書込みエラー：エラーコード = %d
 .np
 An error was encountered trying to write information to the work file.
 The disk could be full.
 :MSGSYM. ERR_WORK_FILE_READ_ERROR
+:ERROR. 1
 :MSGTXT. Read error on work file: error code = %d
 :MSGJTXT. ワーク・ファイルの読取りエラー：エラーコード = %d
 .np
 An error was encountered trying to read information from the work file.
 :MSGSYM. ERR_WORK_FILE_SEEK_ERROR
+:ERROR. 1
 :MSGTXT. Seek error on work file: error code = %d
 :MSGJTXT. ワーク・ファイルのシーク・エラー：エラーコード = %d
 .np
 An error was encountered trying to seek to a position in the work file.
 :MSGSYM. ERR_UNUSED_4
+:ERROR. 1
 :MSGTXT. not used
 :MSGJTXT. このメッセージは使用されません
 unused message
 :MSGSYM. ERR_OUT_OF_ENUM_MEMORY
+:ERROR. 1
 :MSGTXT. Out of enum space
 :MSGJTXT. enum空間が不足です
 .np
@@ -1863,11 +1999,13 @@ of the
 .kw enum
 constants defined in your program.
 :MSGSYM. ERR_FILENAME_REQUIRED
+:ERROR. 1
 :MSGTXT. Filename required on command line
 :MSGJTXT. コマンド・ライン上にファイル名が必要です
 .np
 The name of a file to be compiled must be specified on the command line.
 :MSGSYM. ERR_CAN_ONLY_COMPILE_ONE_FILE
+:ERROR. 1
 :MSGTXT. Command line contains more than one file to compile
 :MSGJTXT. コマンド・ラインにコンパイルするファイルが2つ以上指定されています
 .np
@@ -1877,6 +2015,7 @@ The compiler can only compile one file at a time.
 You can use the &wclname. utility to compile multiple files with a
 single command.
 :MSGSYM. ERR_MISPLACED_LEAVE
+:ERROR. 1
 :MSGTXT. _leave must appear in a _try statement
 :MSGJTXT. _leaveは_try文の中になければなりません
 .np
@@ -1891,12 +2030,14 @@ keyword causes the program to jump to the start of the
 .kw _finally
 block.
 :MSGSYM. ERR_EXPECTING_END_OF_LINE_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting end of line but found '%s'
 :MSGJTXT. 行末であるはずですが，'%s'があります
 .np
 A syntax error has been detected.
 The token displayed in the message should help you determine the problem.
 :MSGSYM. ERR_TOO_MANY_BYTES_IN_PRAGMA
+:ERROR. 1
 :MSGTXT. Too many bytes specified in #pragma
 :MSGJTXT. #pragmaの中で指定されたバイト・コードが多すぎます
 .np
@@ -1904,6 +2045,7 @@ There is an internal limit on the number of bytes for in-line code
 that can be specified with a pragma.
 Try splitting the function into two or more smaller functions.
 :MSGSYM. ERR_BAD_LINKAGE
+:ERROR. 1
 :MSGTXT. Cannot resolve linkage conventions for routine '%s' #pragma
 :MSGJTXT. ルーチン'%s'#pragmaに対してリンケージ規約を解決できません
 .np
@@ -1911,6 +2053,7 @@ The compiler cannot generate correct code for the specified routine
 because of register conflicts.
 Change the registers used by the parameters of the pragma.
 :MSGSYM. ERR_SYM_MUST_BE_GLOBAL
+:ERROR. 1
 :MSGTXT. Symbol '%s' in pragma must be global
 :MSGJTXT. プラグマの中のシンボル'%s'はグローバルでなければなりません
 .np
@@ -1919,6 +2062,7 @@ function.
 You can only reference a parameter or local variable by passing it as
 a parameter to the in-line code pragma.
 :MSGSYM. ERR_INTERNAL_LIMIT_EXCEEDED
+:ERROR. 1
 :MSGTXT. Internal compiler limit exceeded, break module into smaller pieces
 :MSGJTXT. コンパイラの内部制限を越えました。モジュールをより小さい部分に分割してください
 .np
@@ -1927,6 +2071,7 @@ table entries and literal strings.
 If you exceed one of these limits, the program must be broken into smaller
 pieces until it is capable of being processed by the compiler.
 :MSGSYM. ERR_INVALID_INITIALIZER
+:ERROR. 1
 :MSGTXT. Invalid initializer for integer data type
 :MSGJTXT. 整数データ型に対して不適切な初期化です
 .np
@@ -1934,6 +2079,7 @@ Integer data types (int and long) can be initialized with
 numeric expressions or address expressions that are the same size
 as the integer data type being initialized.
 :MSGSYM. ERR_TOO_MANY_ERRORS
+:ERROR. 1
 :MSGTXT. Too many errors: compilation aborted
 :MSGJTXT. エラーが多すぎます：コンパイルを中止します
 .np
@@ -1942,18 +2088,21 @@ exceeds the error limit.
 The error limit can be set with the "-e" option.
 The default error limit is 20.
 :MSGSYM. ERR_EXPECTING_IDENTIFIER_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting identifier but found '%s'
 :MSGJTXT. 識別子があるはずですが，'%s'がありました
 .np
 A syntax error has been detected.
 The token displayed in the message should help you determine the problem.
 :MSGSYM. ERR_EXPECTING_CONSTANT_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting constant but found '%s'
 :MSGJTXT. 定数があるはずですが，'%s'がありました
 .np
 The #line directive must be followed by a constant indicating the
 desired line number.
 :MSGSYM. ERR_EXPECTING_STRING_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting \"filename\" but found '%s'
 :MSGJTXT. \"ファイル名\"があるはずですが，'%s'がありました
 .np
@@ -1969,12 +2118,14 @@ to a function.
 If the function is supposed to have a variable number of parameters, then
 you are missing the ", ..." in the function prototype.
 :MSGSYM. ERR_SEGMENT_NAME_REQUIRED
+:ERROR. 1
 :MSGTXT. Segment name required
 :MSGJTXT. セグメント名が必要です
 .np
 A segment name must be supplied in the form of a literal string
 to the __segname() directive.
 :MSGSYM. ERR_INVALID_BASED_DECLARATOR
+:ERROR. 1
 :MSGTXT. Invalid __based declaration
 :MSGJTXT. 不適切な__based宣言です
 .np
@@ -1984,24 +2135,28 @@ See the
 .us C Language Reference
 document for description of all the allowable forms of __based declarations.
 :MSGSYM. ERR_SYM_MUST_BE_TYPE_SEGMENT
+:ERROR. 1
 :MSGTXT. Variable for __based declaration must be of type __segment or pointer
 :MSGJTXT. __based宣言に対する変数は型__segmentでなければなりません
 .np
 A based pointer declaration must be based on a simple variable of type
 __segment or pointer.
 :MSGSYM. ERR_DUPLICATE_ID
+:ERROR. 1
 :MSGTXT. Duplicate external symbol %s
 :MSGJTXT. 外部シンボル%sが2つあります
 .np
 Duplicate external symbols will exist when the specified symbol name is
 truncated to 8 characters.
 :MSGSYM. ERR_ASSEMBLER_ERROR
+:ERROR. 1
 :MSGTXT. Assembler error: '%s'
 :MSGJTXT. アセンブラ・エラー：'%s'
 .np
 An error has been detected by the in-line assembler.
 The message indicates the error detected.
 :MSGSYM. ERR_VAR_TOO_LARGE
+:ERROR. 1
 :MSGTXT. Variable must be 'huge'
 :MSGJTXT. 変数は'huge'でなければなりません
 .np
@@ -2009,29 +2164,34 @@ A variable or an array that requires more than 64K of storage in the 16-bit
 compiler must be declared as
 .kw huge.
 :MSGSYM. ERR_TOO_MANY_PARM_SETS
+:ERROR. 1
 :MSGTXT. Too many parm sets
 :MSGJTXT. parmの指定が多すぎます
 .np
 Too many parameter register sets have been specified in the pragma.
 :MSGSYM. ERR_IO_ERR
+:ERROR. 1
 :MSGTXT. I/O error reading '%s': %s
 :MSGJTXT. '%s'読み込み中のＩ／Ｏエラー：%s
 .np
 An I/O error has been detected by the compiler while reading the source file.
 The system dependent reason is also displayed in the message.
 :MSGSYM. ERR_NO_SEG_REGS
+:ERROR. 1
 :MSGTXT. Attempt to access far memory with all segment registers disabled in '%s'
 :MSGJTXT. '%s'の中で使用禁止にされたすべてのセグメント・レジスタでfarメモリにアクセスしようとしています
 .np
 The compiler does not have any segment registers available to access the
 desired far memory location.
 :MSGSYM. ERR_NO_MACRO_ID_COMMAND_LINE
+:ERROR. 1
 :MSGTXT. No identifier provided for '-D' option
 :MSGJTXT. /Dオプションに対する識別子がありません
 .np
 The command line option "-D" must be followed by the name of the macro
 to be defined.
 :MSGSYM. ERR_BAD_PEG_REG
+:ERROR. 1
 :MSGTXT. Invalid register pegged to a segment in '%s'
 :MSGJTXT. 不適切なレジスタが'%s'の中でセグメントに固定されています
 .np
@@ -2039,35 +2199,41 @@ The register specified in a #pragma data_seg, or a
 .kw __segname
 expression must be a valid segment register.
 :MSGSYM. ERR_INVALID_OCTAL_CONSTANT
+:ERROR. 1
 :MSGTXT. Invalid octal constant
 :MSGJTXT. 不適切な８進定数です
 .np
 An octal constant cannot contain the digits 8 or 9.
 :MSGSYM. ERR_INVALID_HEX_CONSTANT
+:ERROR. 1
 :MSGTXT. Invalid hexadecimal constant
 :MSGJTXT. 不適切な１６進定数です
 .np
 The token sequence "0x" must be followed by a hexadecimal character
 (0-9, a-f, or A-F).
 :MSGSYM. ERR_UNEXPECTED_RIGHT_PAREN
+:ERROR. 1
 :MSGTXT. Unexpected ')'. Probable cause: missing '('
 :MSGJTXT. 間違った場所に')'があります。考えられる原因：'('がありません
 .np
 A closing parenthesis was found in an expression without a corresponding
 opening parenthesis.
 :MSGSYM. ERR_UNREACHABLE_SYM
+:ERROR. 1
 :MSGTXT. Symbol '%s' is unreachable from #pragma
 :MSGJTXT. シンボル'%s'は#pragmaから届きません
 .np
 The in-line assembler found a jump instruction to a label that is
 too far away.
 :MSGSYM. ERR_CONST_DIV_ZERO
+:ERROR. 1
 :MSGTXT. Division or remainder by zero in a constant expression
 :MSGJTXT. 定数式の中にゼロによる除算か剰余があります
 .np
 The compiler found a constant expression containing a division or
 remainder by zero.
 :MSGSYM. ERR_INVALID_STRING_LITERAL
+:ERROR. 1
 :MSGTXT. Cannot end string literal with backslash
 :MSGJTXT. 文字列定数はバックスラッシュで終了することはできません
 .np
@@ -2078,6 +2244,7 @@ on that argument must not end in a backslash character.
 str(@#\)
 .eerrbad
 :MSGSYM. ERR_INVALID_DECLSPEC
+:ERROR. 1
 :MSGTXT. Invalid __declspec declaration
 :MSGJTXT. 不適切な__declspec宣言です
 .np
@@ -2085,11 +2252,13 @@ The only valid __declspec declarations are "__declspec(thread)",
 "__declspec(dllexport)",
 and "__declspec(dllimport)".
 :MSGSYM. ERR_TOO_MANY_STORAGE_CLASS_SPECIFIERS
+:ERROR. 1
 :MSGTXT. Too many storage class specifiers
 :MSGJTXT. 記憶クラス指定子が多すぎます
 .np
 You can only specify one storage class specifier in a declaration.
 :MSGSYM. ERR_EXPECTING_BUT_FOUND_END_OF_FILE
+:ERROR. 1
 :MSGTXT. Expecting '%s' but found end of file
 :MSGJTXT. '%s'があるはずですが，ファイルが終了してしまいました
 .np
@@ -2097,6 +2266,7 @@ A syntax error has been detected.
 The compiler is still expecting more input when it reached the
 end of the source program.
 :MSGSYM. ERR_EXPECTING_STRUCT_UNION_TAG_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting struct/union tag but found '%s'
 :MSGJTXT. 構造体/共用体タグがあるはずですが，'%s'がありました
 .np
@@ -2106,6 +2276,7 @@ or
 .kw union
 keyword.
 :MSGSYM. ERR_OPND_OF_BUILTIN_ISFLOAT_MUST_BE_TYPE
+:ERROR. 1
 :MSGTXT. Operand of __builtin_isfloat() must be a type
 :MSGJTXT. __builtin_isfloat()のオペランドは型でなければなりません
 .np
@@ -2113,11 +2284,13 @@ The __builtin_isfloat() function is used by the
 .kw va_arg
 macro to determine if a type is a floating-point type.
 :MSGSYM. ERR_INVALID_CONSTANT
+:ERROR. 1
 :MSGTXT. Invalid constant
 :MSGJTXT. 不適切な定数です
 .np
 The token sequence does not represent a valid numeric constant.
 :MSGSYM. ERR_TOO_MANY_INITS
+:ERROR. 1
 :MSGTXT. Too many initializers
 :MSGJTXT. 初期化指定子が多すぎます
 .np
@@ -2125,6 +2298,7 @@ There are more initializers than objects to initialize.
 For example  int X[2] = { 0, 1, 2 };
 The variable "X" requires two initializers not three.
 :MSGSYM. ERR_PARM_POINTER_TYPE_MISMATCH
+:ERROR. 1
 :MSGTXT. Parameter %d, pointer type mismatch
 :MSGJTXT. パラメータ%d, ポインタの型が違います
 .np
@@ -2144,6 +2318,7 @@ or "far" (a warning) in a declaration.
 .np
 You have two pointers that have different "const" or "volatile" qualifiers.
 :MSGSYM. ERR_PARM_QUALIFIER_MISMATCH
+:ERROR. 1
 :MSGTXT. Parameter %d, type qualifier mismatch
 :MSGJTXT. パラメータ%d, 型修飾子が一致しません
 .np
@@ -2161,18 +2336,21 @@ You have two pointers that point to types that have different sign specifiers.
 .np
 You have two pointers that point to types that have different sign specifiers.
 :MSGSYM. ERR_MISSING_LINE_CONTINUE
+:ERROR. 1
 :cmt This message not currently used.  25-June-2006
 :MSGTXT. Missing \\ for string literal
 :MSGJTXT. 文字列定数に対して \\ がありません
 .np
 You need a '\' to continue a string literal across a line.
 :MSGSYM. ERR_EXPECTING_AFTER_BUT_FOUND
+:ERROR. 1
 :MSGTXT. Expecting '%s' after '%s' but found '%s'
 :MSGJTXT. '%s'が'%s'の後にあるはずですが，'%s'があります
 .np
 A syntax error has been detected.
 The tokens displayed in the message should help you to determine the problem.
 :MSGSYM. ERR_EXPECTING_AFTER_BUT_FOUND_END_OF_FILE
+:ERROR. 1
 :MSGTXT. Expecting '%s' after '%s' but found end of file
 :MSGJTXT. '%s'が'%s'の後にあるはずですが，ファイルが終了してしまいました
 .np
@@ -2180,11 +2358,13 @@ A syntax error has been detected.
 The compiler is still expecting more input when it reached the
 end of the source program.
 :MSGSYM. ERR_BAD_REGISTER_NAME
+:ERROR. 1
 :MSGTXT. Invalid register name '%s' in #pragma
 :MSGJTXT. #pragmaの中に無効なレジスタ名'%s'があります
 .np
 The register name is invalid/unknown.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_LOOP_DECL
+:ERROR. 1
 :MSGTXT. Storage class of 'for' statement declaration not register or auto
 :MSGJTXT. 'for'ステートメント記憶クラスがレジスタまたはautoでありません
 .np
@@ -2196,6 +2376,7 @@ or
 .kw register
 .
 :MSGSYM. ERR_NO_TYPE_IN_DECL
+:ERROR. 1
 :MSGTXT. No type specified in declaration
 :MSGJTXT. 宣言内で型が指定されていません
 .np
@@ -2204,6 +2385,7 @@ A declaration specifier must include a type specifier.
 auto i;
 .eerrbad
 :MSGSYM. ERR_DECL_IN_LOOP_NOT_OBJECT
+:ERROR. 1
 :MSGTXT. Symbol '%s' declared in 'for' statement must be object
 :MSGJTXT. 'for'ステートメント内で宣言されたシンボル'%s'はオブジェクトでなければなりません
 .np
@@ -2217,6 +2399,7 @@ for( int i = 0, j( void ); i < 5; ++i ) {
 }
 .eerrbad
 :MSGSYM. ERR_UNEXPECTED_DECLARATION
+:ERROR. 1
 :MSGTXT. Unexpected declaration
 :MSGJTXT. 予期しない宣言です
 .np
@@ -2248,6 +2431,7 @@ void foo( int a )
 }
 .eerrbad
 :MSGSYM. ERR_ELSE_WITHOUT_IF
+:ERROR. 1
 :MSGTXT. 'else' without 'if'
 :MSGJTXT. 「else」に「if」がありません
 .np
@@ -2257,14 +2441,17 @@ must follow
 .kw if
 .
 :MSGSYM. ERR_CONSECUTIVE_OPERANDS
+:ERROR. 1
 :MSGTXT. expression contains consecutive operand(s)
 :MSGJTXT. 式に連続したオペランドがあります
 More than one operand found in a row.
 :MSGSYM. ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION
+:ERROR. 1
 :MSGTXT. '%s' unexpected in constant expression
 :MSGJTXT. 条件式の中に'%s'があります
 '%s' not allowed in constant expression.
 :MSGSYM. ERR_FLOATING_CONSTANT_UNDERFLOW
+:ERROR. 1
 :MSGTXT. floating-point constant too small to represent
 :MSGJTXT. 浮動小数点定数が小さすぎます
 The Open Watcom C compiler cannot represent the floating-point
@@ -2273,6 +2460,7 @@ constant because the magnitude of the negative exponent is too large.
 float f = 1.2e-78965;
 :eerrbad.
 :MSGSYM. ERR_FLOATING_CONSTANT_OVERFLOW
+:ERROR. 1
 :MSGTXT. floating-point constant too large to represent
 :MSGJTXT. 浮動小数点定数が大きすぎます
 The Open Watcom C compiler cannot represent the floating-point
@@ -2281,52 +2469,64 @@ constant because the magnitude of the positive exponent is too large.
 float f = 1.2e78965;
 :eerrbad.
 :MSGSYM. ERR_UNMATCHED_LEFT_PAREN
+:ERROR. 1
 :MSGTXT. unmatched left parenthesis '('
 :MSGJTXT. 左括弧"("が一致しません
 The expression contains a left parenthesis "(" without a matching right
 parenthesis.
 :MSGSYM. ERR_EXTRA_OPERAND
+:ERROR. 1
 :MSGTXT. expression contains extra operand(s)
 :MSGJTXT. 式に余分なオペランドがあります
 The expression contains operand(s) without an operator.
 :MSGSYM. ERR_UNMATCHED_RIGHT_PAREN
+:ERROR. 1
 :MSGTXT. unmatched right parenthesis ')'
 :MSGJTXT. 右括弧")"が一致しません
 The expression contains a right parenthesis ")" without a matching left
 parenthesis.
 :MSGSYM. ERR_EMPTY_PAREN
+:ERROR. 1
 :MSGTXT. no expression between parentheses '( )'
 :MSGJTXT. 括弧"()"の中に式がありません
 There is a matching set of parenthesis "()" which do not contain an expression.
 :MSGSYM. ERR_CONDITIONAL_MISSING_COLON
+:ERROR. 1
 :MSGTXT. expecting ':' operator in conditional expression
 :MSGJTXT. 条件式の':'演算子がありません
 A conditional expression exists without the ':' operator.
 :MSGSYM. ERR_CONDITIONAL_MISSING_QUESTION
+:ERROR. 1
 :MSGTXT. expecting '?' operator in conditional expression
 :MSGJTXT. 条件式の'?'演算子がありません
 A conditional expression exists without the '?' operator.
 :MSGSYM. ERR_CONDITIONAL_MISSING_FIRST_OPERAND
+:ERROR. 1
 :MSGTXT. expecting first operand in conditional expression
 :MSGJTXT. 条件式の第1オペランドがありません
 A conditional expression exists without the first operand.
 :MSGSYM. ERR_CONDITIONAL_MISSING_SECOND_OPERAND
+:ERROR. 1
 :MSGTXT. expecting second operand in conditional expression
 :MSGJTXT. 条件式の第2オペランドがありません
 A conditional expression exists without the second operand.
 :MSGSYM. ERR_CONDITIONAL_MISSING_THIRD_OPERAND
+:ERROR. 1
 :MSGTXT. expecting third operand in conditional expression
 :MSGJTXT. 条件式の第3オペランドがありません
 A conditional expression exists without the third operand.
 :MSGSYM. ERR_BINARY_MISSING_RIGHT_OPERAND
+:ERROR. 1
 :MSGTXT. binary operator '%s' missing right operand
 :MSGJTXT. 2項演算子'%s'に右オペランドがありません
 There is no expression to the right of the indicated binary operator.
 :MSGSYM. ERR_BINARY_MISSING_LEFT_OPERAND
+:ERROR. 1
 :MSGTXT. binary operator '%s' missing left operand
 :MSGJTXT. 2項演算子'%s'に左オペランドがありません
 There is no expression to the left of the indicated binary operator.
 :MSGSYM. ERR_UNARY_OPERATOR_MISSING_OPERAND
+:ERROR. 1
 :MSGTXT. expecting operand after unary operator '%s'
 :MSGJTXT. 単項演算子'%s'の後のオペランドがありません
 A unary operator without being followed by an operand.
