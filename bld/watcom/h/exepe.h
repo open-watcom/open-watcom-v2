@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,8 +175,8 @@ enum {
     PE_CPU_I860             = 0x014d,
     PE_CPU_MIPS_R3000       = 0x0162,
     PE_CPU_MIPS_R4000       = 0x0166,
-    PE_CPU_ALPHA            = 0x184,
-    PE_CPU_POWERPC          = 0x1F0,
+    PE_CPU_ALPHA            = 0x0184,
+    PE_CPU_POWERPC          = 0x01F0,
     PE_CPU_AMD64            = 0x8664
 };
 
