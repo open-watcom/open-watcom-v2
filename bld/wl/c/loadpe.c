@@ -116,9 +116,9 @@ static i386_transfer    I386Jump = { I386_TRANSFER_OP1, I386_TRANSFER_OP2, 0 };
  * ALPHA transfer code
  */
 static unsigned_32      AlphaJump[] = {
-    0x277F0000,         //  ldah    r27,hioff(r31)
-    0xA37B0000,         //  ldl     r27,looff(r27)
-    0x6BFB0000          //  jmp     r31,0(r27)
+    0x277F0000,         // ldah     r27,hioff(r31)
+    0xA37B0000,         // ldl      r27,looff(r27)
+    0x6BFB0000          // jmp      r31,0(r27)
 };
 
 #define ALPHA_TRANSFER_SIZE sizeof( AlphaJump )
@@ -127,12 +127,12 @@ static unsigned_32      AlphaJump[] = {
  * PPC transfer code
  */
 static unsigned_32 PPCJump[]= {
-    0x81620000,         //   lwz        r11,[tocv]__imp_RtlMoveMemory(rtoc)
-    0x818B0000,         //   lwz        r12,(r11)
-    0x90410004,         //   stw        rtoc,0x4(sp)
-    0x7D8903A6,         //   mtctr      r12
-    0x804B0004,         //   lwz        rtoc,0x4(r11)
-    0x4E800420          //   bctr
+    0x81620000,         // lwz      r11,[tocv]__imp_RtlMoveMemory(rtoc)
+    0x818B0000,         // lwz      r12,(r11)
+    0x90410004,         // stw      rtoc,0x4(sp)
+    0x7D8903A6,         // mtctr    r12
+    0x804B0004,         // lwz      rtoc,0x4(r11)
+    0x4E800420          // bctr
 };
 
 #define PPC_TRANSFER_SIZE   sizeof( PPCJump )
@@ -159,9 +159,9 @@ static x64_transfer    X64Jump = { X64_TRANSFER_OP1, X64_TRANSFER_OP2, {0} };
  * MIPS transfer code
  */
 static unsigned_32 MIPSJump[] = {
-    0x3C080000,             // lui  r8,hioff(r0)
-    0x8D080000,             // lw   r8,looff(r8)
-    0x01000008,             // jr   r8
+    0x3C080000,         // lui      r8,hioff(r0)
+    0x8D080000,         // lw       r8,looff(r8)
+    0x01000008,         // jr       r8
 };
 
 #define MIPS_TRANSFER_SIZE  sizeof( MIPSJump )
