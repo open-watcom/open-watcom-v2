@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,16 @@ static  const_string_table coff_hdr_msg[] = {
     "4number of symbols                               = ",
     "2no. of bytes in nt header following flags field = ",
     "2flags                                           = ",
+    NULL
+};
+
+static  const_string_table coff_imp_hdr_msg[] = {
+    "2version                                         = ",
+    "2cpu type                                        = ",
+    "4time/date stamp                                 = ",
+    "4size of data                                    = ",
+    "2ordinal/hint                                    = ",
+    "2type                                            = ",
     NULL
 };
 
@@ -181,28 +192,53 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
 bool Dmp_coff_head( void )
 /************************/
 {
-    coff_file_header    header;
+    union {
+        coff_file_header            o;
+        coff_import_object_header   i;
+    } header;
+    bool    impfile;
+    char    *p;
 
     Wlseek( Coff_off );
-    Wread( &header, sizeof( coff_file_header ) );
-    if( header.cpu_type != COFF_IMAGE_FILE_MACHINE_I386
-        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_ALPHA
-        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_UNKNOWN
-        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_POWERPC ) {
+    Wread( &header, sizeof( header ) );
+    if( header.i.sig1 != 0 && header.i.sig2 != 0xFFFF
+        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_I386
+        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_ALPHA
+        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_R3000
+        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_R4000
+        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_UNKNOWN
+        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_POWERPC ) {
         return( false );
     }
-    Banner( "COFF object file" );
+    impfile = ( header.i.sig1 == 0 && header.i.sig2 == 0xFFFF );
+    if( impfile ) {
+        Banner( "COFF import file" );
+    } else {
+        Banner( "COFF object file" );
+    }
     Wdputs( "file offset = " );
     Puthex( Coff_off, 8 );
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
-    Dump_header( (char *)&header, coff_hdr_msg, 4 );
-    DumpCoffHdrFlags( header.flags );
-    load_string_table( &header );
-    Wlseek( Coff_off + sizeof(coff_file_header) + header.opt_hdr_size );
-    dmp_objects( header.num_sections );
-    unload_string_table();
-    dmp_symtab( header.sym_table, header.num_symbols );
+    if( impfile ) {
+        Dump_header( (char *)&header + 4, coff_imp_hdr_msg, 4 );
+        p = Wmalloc( header.i.size_of_data );
+        Wread( p, header.i.size_of_data );
+        Wdputslc( "\nSymbol name: " );
+        Wdputs( p );
+        Wdputslc( "\nDLL:         " );
+        p += strlen( p ) + 1;
+        Wdputs( p );
+        Wdputslc( "\n\n" );
+    } else {
+        Dump_header( (char *)&header, coff_hdr_msg, 4 );
+        DumpCoffHdrFlags( header.o.flags );
+        load_string_table( &header.o );
+        Wlseek( Coff_off + sizeof(coff_file_header) + header.o.opt_hdr_size );
+        dmp_objects( header.o.num_sections );
+        unload_string_table();
+        dmp_symtab( header.o.sym_table, header.o.num_symbols );
+    }
     return( true );
 }
 

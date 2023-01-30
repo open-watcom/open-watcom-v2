@@ -83,13 +83,30 @@ typedef struct {
         } non_name;
     } name;
     uint_32             value;
-    signed_16           sec_num;
+    signed_16           sec_num;    /* 1-based */
     uint_16             type;
     uint_8              storage_class;
     uint_8              num_aux;
 } coff_symbol;
 
 #define COFF_SYM_SIZE sizeof(coff_symbol)
+
+typedef struct {
+    union {
+        char            name_string[COFF_SYM_NAME_LEN];
+        struct {
+            uint_32     zeros;
+            uint_32     offset;
+        } non_name;
+    } name;
+    uint_32             value;
+    signed_32           sec_num;    /* 1-based */
+    uint_16             type;
+    uint_8              storage_class;
+    uint_8              num_aux;
+} coff_symbol_ex;
+
+#define COFF_SYM_EX_SIZE sizeof(coff_symbol_ex)
 
 #define _CoffSymType( complex, simple )         ( ( (complex) << 4 ) | (simple) )
 #define _CoffBaseType( sym_type )               ( (sym_type) & 0xf )
@@ -128,9 +145,10 @@ typedef struct {
     uint_16     num_relocs;
     uint_16     num_line_numbers;
     uint_32     checksum;
-    uint_16     number;
+    int_16      number;
     uint_8      selection;
-    char        unused[3];
+    uint_8      reserved;
+    int_16      high_number;
 } coff_sym_section;
 
 typedef struct {
@@ -279,6 +297,7 @@ enum {
     COFF_IMAGE_SYM_TYPE_WORD         = 0x000D, //
     COFF_IMAGE_SYM_TYPE_UINT         = 0x000E, //
     COFF_IMAGE_SYM_TYPE_DWORD        = 0x000F, //
+    COFF_IMAGE_SYM_TYPE_FUNCTION     = 0x0020, // undocumented, symbol is function
     COFF_IMAGE_SYM_TYPE_PCODE        = 0x8000  //
 };
 
