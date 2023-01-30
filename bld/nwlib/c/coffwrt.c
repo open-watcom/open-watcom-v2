@@ -40,13 +40,42 @@
 #include "clibext.h"
 
 
+/*
+ * Microsoft PE/COFF .idata section description
+ *
+ * following sub-sections are defined in object file for linker
+ * to link DLL entries into executable
+ *
+ * structures are described in Microsoft PE/COFF documentation
+ * and in Windows header files winnt.h
+ *
+ * .idata$2     Import Directory Table (IDT) is array of IMAGE_IMPORT_DESCRIPTOR's
+ * .idata$3     terminator (null entry) of IDT (.idata$2)
+ * .idata$4     Import Lookup Table (ILT) is array of array of pointers to Import Name Table (INT)
+ * .idata$5     Import Address Table (IAT) is array of array of pointers to INT
+ * .idata$6     Import Name Table (INT) is array of names with hints
+ * .idata$7     DLL Names Table is list of DLL names
+ *
+ * Note: for PPC architecture .idata$7 sub-section is merged into .idata$6
+ *
+ *
+ */
+
 typedef struct name_len {
     size_t      len;
     char        *name;
 } name_len;
 
 static unsigned_8       CoffImportAxpText[] = {
- 0x00,0x00,0x7F,0x27,0x00,0x00,0x7B,0xA3,0x00,0x00,0xFB,0x6B
+    0x00,0x00,0x7F,0x27,
+    0x00,0x00,0x7B,0xA3,
+    0x00,0x00,0xFB,0x6B
+};
+
+static unsigned_8       CoffImportMipsText[] = {
+    0x3C080000,             // lui  r8,hioff(r0)
+    0x8D080000,             // lw   r8,looff(r8)
+    0x01000008,             // jr   r8
 };
 
 static unsigned_8       CoffImportPpcText[] = {
@@ -507,26 +536,28 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
             SetCoffFile( &c_file, sfile->import->processor, sfile->arch.date, 0 );
             switch( sfile->import->processor ) {
             case WL_PROC_AXP:
-                AddCoffSection( &c_file, ".text", 0xc, 3, COFF_IMAGE_SCN_ALIGN_16BYTES
+                AddCoffSection( &c_file, ".text", sizeof( CoffImportAxpText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES
                     | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
                     | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
                 type = 0x20;
                 sec_num = 1;
                 break;
             case WL_PROC_MIPS:
-                /*
-                 * Not yet implemented
-                 */
+                AddCoffSection( &c_file, ".text", sizeof( CoffImportMipsText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES
+                    | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
+                    | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+                type = 0x20;
+                sec_num = 1;
                 break;
             case WL_PROC_PPC:
-                AddCoffSection( &c_file, ".text", 0x18, 1, COFF_IMAGE_SCN_ALIGN_4BYTES
+                AddCoffSection( &c_file, ".text", sizeof( CoffImportPpcText ), 1, COFF_IMAGE_SCN_ALIGN_4BYTES
                     | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
                     | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
                 AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
                 memcpy( buffer, "..", 2 );
                 memcpy( buffer + 2, symName.name, symName.len + 1 );
                 AddCoffSymbol( &c_file, buffer, 0x0, 1, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
-                AddCoffSection( &c_file, ".pdata", 0x14, 4, COFF_IMAGE_SCN_ALIGN_1BYTES
+                AddCoffSection( &c_file, ".pdata", sizeof( CoffImportPpcPdata ), 4, COFF_IMAGE_SCN_ALIGN_1BYTES
                     | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
                     | COFF_IMAGE_SCN_MEM_READ );
                 AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
@@ -540,7 +571,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 type = COFF_IMAGE_SYM_TYPE_NULL;
                 break;
             case WL_PROC_X64:
-                AddCoffSection( &c_file, ".text", 0xA, 1, COFF_IMAGE_SCN_ALIGN_2BYTES
+                AddCoffSection( &c_file, ".text", sizeof( CoffImportX64Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES
                     | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
                     | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
                 type = 0x20;
@@ -550,7 +581,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 sfile->import->processor = WL_PROC_X86;
                 /* fall through */
             case WL_PROC_X86:
-                AddCoffSection( &c_file, ".text", 0x6, 1, COFF_IMAGE_SCN_ALIGN_2BYTES
+                AddCoffSection( &c_file, ".text", sizeof( CoffImportX86Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES
                     | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
                     | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
                 type = 0x20;        // JBS 99/12/21 a wild guess
@@ -588,7 +619,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
             WriteCoffSections( io, &c_file );
             switch( sfile->import->processor ) {
             case WL_PROC_AXP:
-                LibWrite( io, CoffImportAxpText, 0x0c );
+                LibWrite( io, CoffImportAxpText, sizeof( CoffImportAxpText ) );
                 WriteCoffReloc( io, 0x0, 5, COFF_IMAGE_REL_ALPHA_REFHI );
                 WriteCoffReloc( io, 0x0, 2, COFF_IMAGE_REL_ALPHA_PAIR );
                 WriteCoffReloc( io, 0x4, 5, COFF_IMAGE_REL_ALPHA_REFLO );
@@ -596,14 +627,17 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 sym_idx = 0x8;
                 break;
             case WL_PROC_MIPS:
-                /*
-                 * Not yet implemented
-                 */
+                LibWrite( io, CoffImportMipsText, sizeof( CoffImportMipsText ) );
+                WriteCoffReloc( io, 0x0, 5, COFF_IMAGE_REL_MIPS_REFHI );
+                WriteCoffReloc( io, 0x0, 2, COFF_IMAGE_REL_MIPS_PAIR );
+                WriteCoffReloc( io, 0x4, 5, COFF_IMAGE_REL_MIPS_REFLO );
+                type = COFF_IMAGE_REL_MIPS_REFWORDNB;
+                sym_idx = 0x8;
                 break;
             case WL_PROC_PPC:
-                LibWrite( io, CoffImportPpcText, 0x18 );
+                LibWrite( io, CoffImportPpcText, sizeof( CoffImportPpcText ) );
                 WriteCoffReloc( io, 0x0, 0xa, COFF_IMAGE_REL_PPC_TOCREL14 | COFF_IMAGE_REL_PPC_TOCDEFN );
-                LibWrite( io, CoffImportPpcPdata, 0x14 );
+                LibWrite( io, CoffImportPpcPdata, sizeof( CoffImportPpcPdata ) );
                 WriteCoffReloc( io, 0x0, 2, COFF_IMAGE_REL_PPC_ADDR32 );
                 WriteCoffReloc( io, 0x4, 2, COFF_IMAGE_REL_PPC_ADDR32 );
                 WriteCoffReloc( io, 0x10, 2, COFF_IMAGE_REL_PPC_ADDR32 );
@@ -616,7 +650,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 sym_idx = 0xd;
                 break;
             case WL_PROC_X64:
-                LibWrite( io, CoffImportX64Text, 0xA );
+                LibWrite( io, CoffImportX64Text, sizeof( CoffImportX64Text ) );
                 WriteCoffReloc( io, 0x2, 5, COFF_IMAGE_REL_AMD64_ADDR32 );
                 type = COFF_IMAGE_REL_AMD64_ADDR32NB;
                 sym_idx = 0x8;
@@ -625,7 +659,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 sfile->import->processor = WL_PROC_X86;
                 /* fall through */
             case WL_PROC_X86:
-                LibWrite( io, CoffImportX86Text, 0x6 );
+                LibWrite( io, CoffImportX86Text, sizeof( CoffImportX86Text ) );
                 WriteCoffReloc( io, 0x2, 5, COFF_IMAGE_REL_I386_DIR32 );
                 type = COFF_IMAGE_REL_I386_DIR32NB;
                 sym_idx = 0x8;
