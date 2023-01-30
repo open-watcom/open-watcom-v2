@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,14 +149,25 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->eh.e_ident[EI_ABIVERSION] = FmtData.u.elf.abiversion;
     memset( &hdr->eh.e_ident[EI_PAD], 0, EI_NIDENT - EI_PAD );
     hdr->eh.e_type = ET_EXEC;
-    if( LinkState & LS_HAVE_PPC_CODE ) {
-        hdr->eh.e_machine = EM_PPC;
-    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:
+        hdr->eh.e_machine = EM_ALPHA;
+        break;
+    case LS_HAVE_MIPS_CODE:
         hdr->eh.e_machine = EM_MIPS;
-    } else if( LinkState & LS_HAVE_X64_CODE ) {
+        break;
+    case LS_HAVE_PPC_CODE:
+        hdr->eh.e_machine = EM_PPC;
+        break;
+    case LS_HAVE_X64_CODE:
         hdr->eh.e_machine = EM_X86_64;
-    } else {
+        break;
+    case LS_HAVE_X86_CODE:
         hdr->eh.e_machine = EM_386;
+        break;
+    default:
+        hdr->eh.e_machine = EM_NONE;
+        break;
     }
     hdr->eh.e_version = EV_CURRENT;
     if( StartInfo.type == START_UNDEFED ) {

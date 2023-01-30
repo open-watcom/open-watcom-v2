@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1156,7 +1156,7 @@ static bool FarCallOpt( fix_relo_data *fix )
      */
 
     // optimization is valid only for Intel CPU
-    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_I86_CODE) )
+    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_X86_CODE) )
         return( false );
     if( fix->type & FIX_UNSAFE )
         return( false );
@@ -1316,8 +1316,8 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         save = true;
         off = fix->loc_addr.off + seg->u.leader->group->linear;
         if( fix->type & FIX_HIGH ) {
-            reltype = PE_FIX_HIGHADJ;   // NYI: can be high when objalign ==
-            breloc->rel_size = sizeof( high_pe_reloc_item );    // 0x10000
+            reltype = PE_FIX_HIGHADJ;   // NYI: can be high when objalign == 0x10000
+            breloc->rel_size = sizeof( high_pe_reloc_item );
             breloc->item.hpe.low_off = (unsigned_16)target.off;
         } else if( ftype == FIX_OFFSET_16 ) {
             if( (FmtData.objalign & 0xFFFF) == 0 ) {
@@ -1598,28 +1598,10 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 
         save = true;
         off = fix->loc_addr.off;
-        if( LinkState & LS_HAVE_I86_CODE ) {
-            if( fix->type & FIX_REL ) {
-                breloc->item.elf.info = R_386_PC32;
-            } else {
-                breloc->item.elf.info = R_386_32;
-            }
-        } else if( LinkState & LS_HAVE_X64_CODE ) {
-            // TODO
-        } else if( LinkState & LS_HAVE_PPC_CODE ) {
-            if( fix->type & FIX_HIGH ) {
-                breloc->item.elf.info = R_PPC_ADDR16_HI;
-                breloc->item.elf.addend = (unsigned_16)target.off;
-            } else if( ftype == FIX_OFFSET_16 ) {
-                breloc->item.elf.info = R_PPC_ADDR16_LO;
-                if( (FmtData.objalign & 0xFFFF) == 0 ) {
-                    save = false;
-                }
-            } else {
-                breloc->item.elf.info = R_PPC_REL32;
-                LnkMsg( LOC + ERR + MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
-            }
-        } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+        case LS_HAVE_ALPHA_CODE:
+            break;
+        case LS_HAVE_MIPS_CODE:
             if( fix->type & FIX_HIGH ) {
                 breloc->item.elf.info = R_MIPS_HI16;
                 breloc->item.elf.addend = (unsigned_16)target.off;
@@ -1636,6 +1618,33 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                 breloc->item.elf.info = R_MIPS_REL32;
                 LnkMsg( LOC + ERR + MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
             }
+            break;
+        case LS_HAVE_PPC_CODE:
+            if( fix->type & FIX_HIGH ) {
+                breloc->item.elf.info = R_PPC_ADDR16_HI;
+                breloc->item.elf.addend = (unsigned_16)target.off;
+            } else if( ftype == FIX_OFFSET_16 ) {
+                breloc->item.elf.info = R_PPC_ADDR16_LO;
+                if( (FmtData.objalign & 0xFFFF) == 0 ) {
+                    save = false;
+                }
+            } else {
+                breloc->item.elf.info = R_PPC_REL32;
+                LnkMsg( LOC + ERR + MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
+            }
+            break;
+        case LS_HAVE_X64_CODE:
+            // TODO
+            break;
+        case LS_HAVE_X86_CODE:
+            if( fix->type & FIX_REL ) {
+                breloc->item.elf.info = R_386_PC32;
+            } else {
+                breloc->item.elf.info = R_386_32;
+            }
+            break;
+        default:
+            break;
         }
         sym = tthread->u.sym;
         if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_WAS_LAZY) ) {
@@ -1714,8 +1723,8 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
     ftype = fix->type & (FIX_OFFSET_MASK | FIX_BASE);
     if( (FmtData.type & (MK_PHAR_SIMPLE | MK_PHAR_FLAT))
         || (FmtData.type & (MK_NOVELL | MK_ELF))
-            && (LinkState & LS_HAVE_I86_CODE) && (ftype != FIX_OFFSET_32)
-        || (FmtData.type & MK_ELF) && (LinkState & LS_HAVE_I86_CODE) == 0
+            && (LinkState & LS_HAVE_X86_CODE) && (ftype != FIX_OFFSET_32)
+        || (FmtData.type & MK_ELF) && (LinkState & LS_HAVE_X86_CODE) == 0
             && (ftype & (FIX_BASE | FIX_OFFSET_8))
         || (FmtData.type & MK_PE) && (ftype & (FIX_BASE | FIX_OFFSET_8))
         || ((FmtData.type & (MK_PHAR_REX | MK_ZDOS | MK_RAW)) && (ftype != FIX_OFFSET_16)
@@ -1768,7 +1777,7 @@ static void Relocate( offset off, fix_relo_data *fix, target_spec *target )
     fix->os2_selfrel = false;
     fix->data = addbuf;
 
-    if( (LinkFlags & LF_FAR_CALLS_FLAG) && (LinkState & LS_HAVE_I86_CODE) ) {
+    if( (LinkFlags & LF_FAR_CALLS_FLAG) && (LinkState & LS_HAVE_X86_CODE) ) {
 
         /*
          * it is necessary to copy also two bytes before reloc position to addbuf
@@ -1785,7 +1794,7 @@ static void Relocate( offset off, fix_relo_data *fix, target_spec *target )
 
     if( !CheckSpecials( fix, target ) ) {
         PatchData( fix );
-        if( (LinkFlags & LF_FAR_CALLS_FLAG) && (LinkState & LS_HAVE_I86_CODE) )
+        if( (LinkFlags & LF_FAR_CALLS_FLAG) && (LinkState & LS_HAVE_X86_CODE) )
             FarCallOpt( fix );
         FmtReloc( fix, target );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1089,10 +1089,10 @@ unsigned long OMFPass1( void )
     unsigned long retval;
 
     PermStartMod( CurrMod );
-    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_I86_CODE) ) {
+    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_X86_CODE) ) {
         LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name);
     } else {
-        LinkState |= LS_HAVE_I86_CODE;
+        LinkState |= LS_HAVE_X86_CODE;
     }
     CurrMod->omfdbg = OMF_DBG_CODEVIEW; // Assume MS style LINNUM records
     retval = ProcObj( CurrMod->f.source, CurrMod->location, &Pass1Cmd );

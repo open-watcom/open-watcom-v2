@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,9 +76,6 @@
 
 #ifdef _OS2
 
-#define I386_TRANSFER_OP1       0xff        /* first byte of a "JMP [FOO]" */
-#define I386_TRANSFER_OP2       0x25        /* second byte of a "JMP [FOO]" */
-
 #define MINIMUM_SEG_SHIFT       2           /* Corresponds to 2^2 == 4 bytes */
 #define DEFAULT_SEG_SHIFT       9           /* Corresponds to 2^9 == 512 bytes */
 
@@ -91,45 +88,44 @@
 #define PE_RDOS_SS_MAJOR        1
 #define PE_RDOS_SS_MINOR        0
 
-#include "pushpck1.h"
-
-typedef struct {
-    unsigned_8  op1;
-    unsigned_8  op2;
-    unsigned_32 dest;
-} i386_transfer;
-
-static i386_transfer    I386Jump = { I386_TRANSFER_OP1, I386_TRANSFER_OP2, 0 };
-
-#define I386_TRANSFER_SIZE      sizeof( i386_transfer )
-
-#define ALPHA_TRANSFER_OP1      0x277F
-#define ALPHA_TRANSFER_OP2      0xA37B
-#define ALPHA_TRANSFER_OP3      0x6BFB
-
-typedef struct {
-    unsigned_16 high;
-    unsigned_16 op1;
-    unsigned_16 low;
-    unsigned_16 op2;
-    unsigned_16 zero;
-    unsigned_16 op3;
-} alpha_transfer;
-
-#include "poppck.h"
-
 typedef struct local_import {
     struct local_import *next;
     symbol              *iatsym;
     symbol              *locsym;
 } local_import;
 
-static alpha_transfer   AlphaJump = {   0, ALPHA_TRANSFER_OP1,
-                                        0, ALPHA_TRANSFER_OP2,
-                                        0, ALPHA_TRANSFER_OP3 };
+/*
+ * x86 transfer code
+ */
+#define I386_TRANSFER_OP1       0xff        /* first byte of a "JMP [FOO]" */
+#define I386_TRANSFER_OP2       0x25        /* second byte of a "JMP [FOO]" */
 
-#define ALPHA_TRANSFER_SIZE sizeof( alpha_transfer )
+#include "pushpck1.h"
+typedef struct {
+    unsigned_8  op1;
+    unsigned_8  op2;
+    unsigned_32 dest;
+} i386_transfer;
+#include "poppck.h"
 
+static i386_transfer    I386Jump = { I386_TRANSFER_OP1, I386_TRANSFER_OP2, 0 };
+
+#define I386_TRANSFER_SIZE      sizeof( i386_transfer )
+
+/*
+ * ALPHA transfer code
+ */
+static unsigned_32      AlphaJump[] = {
+    0x277F0000,         //  ldah    r27,hioff(r31)
+    0xA37B0000,         //  ldl     r27,looff(r27)
+    0x6BFB0000          //  jmp     r31,0(r27)
+};
+
+#define ALPHA_TRANSFER_SIZE sizeof( AlphaJump )
+
+/*
+ * PPC transfer code
+ */
 static unsigned_32 PPCJump[]= {
     0x81620000,         //   lwz        r11,[tocv]__imp_RtlMoveMemory(rtoc)
     0x818B0000,         //   lwz        r12,(r11)
@@ -141,22 +137,35 @@ static unsigned_32 PPCJump[]= {
 
 #define PPC_TRANSFER_SIZE   sizeof( PPCJump )
 
+/*
+ * x64 transfer code
+ */
 #define X64_TRANSFER_OP1    0xff    /* first byte of a "JMP [FOO]" */
 #define X64_TRANSFER_OP2    0x25    /* second byte of a "JMP [FOO]" */
 
 #include "pushpck1.h"
-
 typedef struct {
     unsigned_8  op1;
     unsigned_8  op2;
     unsigned_64 dest;
 } x64_transfer;
+#include "poppck.h"
 
 static x64_transfer    X64Jump = { X64_TRANSFER_OP1, X64_TRANSFER_OP2, {0} };
 
-#include "poppck.h"
-
 #define X64_TRANSFER_SIZE sizeof( x64_transfer )
+
+/*
+ * MIPS transfer code
+ */
+static unsigned_32 MIPSJump[] = {
+    0x3C080000,             // lui  r8,hioff(r0)
+    0x8D080000,             // lw   r8,looff(r8)
+    0x01000008,             // jr   r8
+};
+
+#define MIPS_TRANSFER_SIZE  sizeof( MIPSJump )
+
 
 #define TRANSFER_SEGNAME "TRANSFER CODE"
 
@@ -240,8 +249,8 @@ static void CalcImpOff( dll_sym_info *dll, offset *off )
     *off += sizeof( pe_va );
 }
 
-static void XFerReloc( offset off, group_entry *group, unsigned type )
-/********************************************************************/
+static void XFerReloc( offset off, group_entry *group, unsigned type, unsigned data )
+/***********************************************************************************/
 {
     reloc_item  reloc;
     size_t      size;
@@ -250,7 +259,7 @@ static void XFerReloc( offset off, group_entry *group, unsigned type )
     reloc.pe = (( off + group->linear ) & OSF_PAGE_MASK) | type;
     if( type == PE_FIX_HIGHADJ ) {
         size = sizeof( high_pe_reloc_item );
-        reloc.hpe.low_off = AlphaJump.low;
+        reloc.hpe.low_off = data;
     }
     WriteReloc( group, off, &reloc, size );
 }
@@ -260,9 +269,10 @@ static int GetTransferGlueSize( void )
 {
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
     case LS_HAVE_ALPHA_CODE:    return( ALPHA_TRANSFER_SIZE );
-    case LS_HAVE_I86_CODE:      return( I386_TRANSFER_SIZE );
-    case LS_HAVE_X64_CODE:      return( X64_TRANSFER_SIZE ); // TODO
+    case LS_HAVE_MIPS_CODE:     return( MIPS_TRANSFER_SIZE ); // TODO
     case LS_HAVE_PPC_CODE:      return( PPC_TRANSFER_SIZE );
+    case LS_HAVE_X64_CODE:      return( X64_TRANSFER_SIZE ); // TODO
+    case LS_HAVE_X86_CODE:      return( I386_TRANSFER_SIZE );
     default:                    DbgAssert( 0 ); return( 0 );
     }
 }
@@ -271,10 +281,11 @@ static void *GetTransferGlueCode( void )
 /**************************************/
 {
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
-    case LS_HAVE_ALPHA_CODE:    return( &AlphaJump );
-    case LS_HAVE_I86_CODE:      return( &I386Jump );
-    case LS_HAVE_X64_CODE:      return( &X64Jump ); // TODO
+    case LS_HAVE_ALPHA_CODE:    return( AlphaJump );
+    case LS_HAVE_MIPS_CODE:     return( MIPSJump ); // TODO
     case LS_HAVE_PPC_CODE:      return( PPCJump );
+    case LS_HAVE_X64_CODE:      return( &X64Jump ); // TODO
+    case LS_HAVE_X86_CODE:      return( &I386Jump );
     default:                    DbgAssert( 0 ); return( NULL );
     }
 }
@@ -315,38 +326,62 @@ static void GenPETransferTable( void )
         datalen = GetTransferGlueSize();
         data = GetTransferGlueCode();
         WALK_IMPORT_SYMBOLS( sym ) {
-            if( LinkState & LS_HAVE_ALPHA_CODE ) {
+            switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+            case LS_HAVE_ALPHA_CODE:
+              {
                 offset dest = FindIATSymAbsOff( sym );
-                AlphaJump.high = dest >> 16;
-                AlphaJump.low = dest;
+                AlphaJump[0] |= ( dest >> 16 );     // hioff
+                AlphaJump[1] |= ( dest & 0xFFFF );  // looff
                 if( LinkState & LS_MAKE_RELOCS ) {
                     if( (FmtData.objalign & 0xFFFF) == 0 ) {
-                        XFerReloc( sym->addr.off + offsetof( alpha_transfer, high ),
-                                   group, PE_FIX_HIGH );
+                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGH, 0 );
                     } else {
-                        XFerReloc( sym->addr.off + offsetof( alpha_transfer, low ),
-                                   group, PE_FIX_LOW );
-                        XFerReloc( sym->addr.off + offsetof( alpha_transfer, high ),
-                                    group, PE_FIX_HIGHADJ );
+                        XFerReloc( sym->addr.off + sizeof( AlphaJump[0] ), group, PE_FIX_LOW, 0 );
+                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, AlphaJump[0] );
                     }
                 }
-            } else if( LinkState & LS_HAVE_I86_CODE ) {
+              }
+                break;
+            case LS_HAVE_MIPS_CODE:
+              {
                 offset dest = FindIATSymAbsOff( sym );
-                I386Jump.dest = dest;
+                MIPSJump[0] |= ( dest >> 16 );     // hioff
+                MIPSJump[1] |= ( dest & 0xFFFF );  // looff
                 if( LinkState & LS_MAKE_RELOCS ) {
-                    XFerReloc( sym->addr.off + offsetof( i386_transfer, dest ),
-                                group, PE_FIX_HIGHLOW );
+                    if( (FmtData.objalign & 0xFFFF) == 0 ) {
+                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGH, 0 );
+                    } else {
+                        XFerReloc( sym->addr.off + sizeof( MIPSJump[0] ), group, PE_FIX_LOW, 0 );
+                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, MIPSJump[0] );
+                    }
                 }
-            } else if( LinkState & LS_HAVE_X64_CODE ) {
+              }
+                break;
+            case LS_HAVE_PPC_CODE:
+                PPCJump[0] = (PPCJump[0] & 0xffff0000) | (FindSymPosInTocv( sym ) & 0x0000ffff);
+                break;
+            case LS_HAVE_X64_CODE:
                 // TODO
+              {
                 offset dest = FindIATSymAbsOff( sym );
                 X64Jump.dest.u._32[0] = dest;
                 X64Jump.dest.u._32[1] = 0;
                 if( LinkState & LS_MAKE_RELOCS ) {
-                    XFerReloc( sym->addr.off + offsetof( x64_transfer, dest ), group, PE_FIX_HIGHLOW );
+                    XFerReloc( sym->addr.off + offsetof( x64_transfer, dest ), group, PE_FIX_HIGHLOW, 0 );
                 }
-            } else {
-                PPCJump[0] = (PPCJump[0] & 0xffff0000) | (FindSymPosInTocv( sym ) & 0x0000ffff);
+              }
+                break;
+            case LS_HAVE_X86_CODE:
+              {
+                offset dest = FindIATSymAbsOff( sym );
+                I386Jump.dest = dest;
+                if( LinkState & LS_MAKE_RELOCS ) {
+                    XFerReloc( sym->addr.off + offsetof( i386_transfer, dest ), group, PE_FIX_HIGHLOW, 0 );
+                }
+              }
+                break;
+            default:
+                break;
             }
             off = sym->addr.off - base;
             PutInfo( XFerSegData->u1.vm_ptr + off, data, datalen );
@@ -360,13 +395,14 @@ static void GenPETransferTable( void )
     }
     if( LinkState & LS_MAKE_RELOCS ) {
         for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
-            XFerReloc( loc_imp->iatsym->addr.off, group, PE_FIX_HIGHLOW );
+            XFerReloc( loc_imp->iatsym->addr.off, group, PE_FIX_HIGHLOW, 0 );
         }
     }
     group->size = group->totalsize;
 }
 
 unsigned_32 DefStackSizePE( void )
+/********************************/
 {
     return( PE_DEF_STACK_SIZE );
 }
@@ -568,7 +604,7 @@ static void WriteImportInfo( void )
     WriteIAT( buf + IData.ilt_off, linear ); // Import Lookup table
     WriteToc( buf + IData.eof_ilt_off );
     for( pos = IData.eof_ilt_off; pos < IData.iat_off; pos += sizeof( pe_va ) ) {
-        XFerReloc( pos, group, PE_FIX_HIGHLOW );
+        XFerReloc( pos, group, PE_FIX_HIGHLOW, 0 );
     }
     WriteIAT( buf + IData.iat_off, linear ); // Import Address table
     pos = IData.mod_name_off;            /* write the module names */
@@ -1227,12 +1263,22 @@ void FiniPELoadFile( void )
         } else {
             PE32( h ).signature = PE_SIGNATURE;
         }
-        if( LinkState & LS_HAVE_I86_CODE ) {
-            PE32( h ).cpu_type = PE_CPU_386;
-        } else if( LinkState & LS_HAVE_ALPHA_CODE ) {
+        switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+        case LS_HAVE_ALPHA_CODE:
             PE32( h ).cpu_type = PE_CPU_ALPHA;
-        } else {
+            break;
+        case LS_HAVE_MIPS_CODE:     // TODO
+//            PE32( h ).cpu_type = PE_CPU_MIPS_R3000;
+            PE32( h ).cpu_type = PE_CPU_MIPS_R4000;
+            break;
+        case LS_HAVE_PPC_CODE:
             PE32( h ).cpu_type = PE_CPU_POWERPC;
+            break;
+        case LS_HAVE_X86_CODE:
+            PE32( h ).cpu_type = PE_CPU_386;
+            break;
+        default:
+            break;
         }
         PE32( h ).num_objects = num_objects;
         PE32( h ).time_stamp = (unsigned_32)time( NULL );

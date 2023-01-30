@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -867,14 +867,25 @@ static void ExecWlib( void )
     _ChkAlloc( cmdline, namelen + impnamelen +19 +2 +1 +4 +1 );
     memcpy( cmdline, "-c -b -n -q -pa -ii \"", 19 + 2 );
     temp = cmdline + 19 - 1;
-    if( LinkState & LS_HAVE_ALPHA_CODE ) {
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:
         *temp = 'a';
-    } else if( LinkState & LS_HAVE_PPC_CODE ) {
-        *temp = 'p';
-    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        break;
+    case LS_HAVE_MIPS_CODE:
         *temp = 'm';
-    } else if( LinkState & LS_HAVE_X64_CODE ) {
+        break;
+    case LS_HAVE_PPC_CODE:
+        *temp = 'p';
+        break;
+    case LS_HAVE_X64_CODE:
         *temp = '6';
+        break;
+    case LS_HAVE_X86_CODE:
+        *temp = 'i';
+        break;
+    default:
+        *temp = 'i';
+        break;
     }
     temp += 3;
     memcpy( temp, FmtData.implibname, impnamelen );
@@ -901,16 +912,25 @@ static void ExecWlib( void )
     _ChkAlloc( atfname, namelen + 1 );  // +1 for the @
     *atfname = '@';
     memcpy( atfname + 1, ImpLib.fname, namelen );
-    if( LinkState & LS_HAVE_ALPHA_CODE ) {
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:
         libtype = "-ia";
-    } else if( LinkState & LS_HAVE_PPC_CODE ) {
-        libtype = "-ip";
-    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        break;
+    case LS_HAVE_MIPS_CODE:
         libtype = "-im";
-    } else if( LinkState & LS_HAVE_X64_CODE ) {
+        break;
+    case LS_HAVE_PPC_CODE:
+        libtype = "-ip";
+        break;
+    case LS_HAVE_X64_CODE:
         libtype = "-i6";
-    } else {
+        break;
+    case LS_HAVE_X86_CODE:
         libtype = "-ii";
+        break;
+    default:
+        libtype = "-ii";
+        break;
     }
     retval = (int)spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, "-c", "-b", "-n", "-q", "-pa",
                   libtype, FmtData.implibname, atfname, NULL );

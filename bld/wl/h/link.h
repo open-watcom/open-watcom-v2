@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ typedef enum {
     LS_HAVE_16BIT_CODE      = CONSTU32( 0x00001000 ),   // true if we have 16 bit code.
     LS_HAVE_ALPHA_CODE      = CONSTU32( 0x00002000 ),
     LS_HAVE_PPC_CODE        = CONSTU32( 0x00004000 ),
-    LS_HAVE_I86_CODE        = CONSTU32( 0x00008000 ),
+    LS_HAVE_X86_CODE        = CONSTU32( 0x00008000 ),
     LS_HAVE_MIPS_CODE       = CONSTU32( 0x00010000 ),
     LS_HAVE_X64_CODE        = CONSTU32( 0x00020000 ),
     LS_CAN_REMOVE_SEGMENTS  = CONSTU32( 0x00040000 ),
@@ -101,7 +101,7 @@ typedef enum {
     LS_FMT_SEEN_64BIT       = CONSTU32( 0x01000000 ),
 } stateflag;
 
-#define LS_HAVE_MACHTYPE_MASK   (LS_HAVE_I86_CODE | LS_HAVE_X64_CODE | LS_HAVE_ALPHA_CODE | LS_HAVE_PPC_CODE | LS_HAVE_MIPS_CODE)
+#define LS_HAVE_MACHTYPE_MASK   (LS_HAVE_X86_CODE | LS_HAVE_X64_CODE | LS_HAVE_ALPHA_CODE | LS_HAVE_PPC_CODE | LS_HAVE_MIPS_CODE)
 #define LS_ORDER_FLAG_MASK      (LS_DOSSEG_FLAG | LS_SPEC_ORDER_FLAG)
 
 #define LS_CLEAR_ON_INC     /* flags to clear when incremental linking. */ \

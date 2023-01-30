@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,7 +227,7 @@ static bool CheckFlags( orl_file_handle filehdl )
     machtype = ORLFileGetMachineType( filehdl );
     switch( machtype ) {
     case ORL_MACHINE_TYPE_I386:
-        typemask = LS_HAVE_I86_CODE;
+        typemask = LS_HAVE_X86_CODE;
         break;
     case ORL_MACHINE_TYPE_AMD64:
         typemask = LS_HAVE_X64_CODE;
@@ -239,6 +239,7 @@ static bool CheckFlags( orl_file_handle filehdl )
         typemask = LS_HAVE_PPC_CODE;
         break;
     case ORL_MACHINE_TYPE_R3000:
+    case ORL_MACHINE_TYPE_R4000: // TODO
         typemask = LS_HAVE_MIPS_CODE;
         break;
     case ORL_MACHINE_TYPE_NONE:
@@ -306,7 +307,7 @@ static orl_return EntryCallback( const char *name, void *dummy )
     /* unused parameters */ (void)dummy;
 
     if( !StartInfo.user_specd ) {
-        if( (ObjFormat & FMT_COFF) && (LinkState & LS_HAVE_I86_CODE) ) {
+        if( (ObjFormat & FMT_COFF) && (LinkState & LS_HAVE_X86_CODE) ) {
             /* simple hack for 32-bit MS COFF module to get real startup symbol name
              * entry directive contains unmangled symbol name
              * prepend undrescore should be OK

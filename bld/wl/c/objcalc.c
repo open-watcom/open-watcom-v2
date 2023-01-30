@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -837,15 +837,24 @@ static void setDefBase( void )
 #endif
 #ifdef _ELF
     if( FmtData.type & MK_ELF ) {
-        if( LinkState & LS_HAVE_PPC_CODE ) {
-            FmtData.base = 0x10000000;
-        } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+        case LS_HAVE_ALPHA_CODE:
+            break;
+        case LS_HAVE_MIPS_CODE:
             FmtData.base = 0x00400000;
-        } else if( LinkState & LS_HAVE_X64_CODE ) {
+            break;
+        case LS_HAVE_PPC_CODE:
+            FmtData.base = 0x10000000;
+            break;
+        case LS_HAVE_X64_CODE:
             // TODO
             FmtData.base = 0x08048000;
-        } else {
+            break;
+        case LS_HAVE_X86_CODE:
             FmtData.base = 0x08048000;
+            break;
+        default:
+            break;
         }
         return;
     }
@@ -858,13 +867,22 @@ static void setDefObjAlign( void )
 {
 #ifdef _OS2
     if( FmtData.type & MK_PE ) {
-        if( (LinkState & LS_HAVE_I86_CODE) ) {
+        switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+        case LS_HAVE_ALPHA_CODE:
+        case LS_HAVE_MIPS_CODE: // TODO
+        case LS_HAVE_PPC_CODE:
+            FmtData.objalign = _64K;
+            break;
+        case LS_HAVE_X86_CODE:
             FmtData.objalign = _4K;
-        } else if( (LinkState & LS_HAVE_X64_CODE) ) {
+            break;
+        case LS_HAVE_X64_CODE:
             // TODO
             FmtData.objalign = _64K;
-        } else {
+            break;
+        default:
             FmtData.objalign = _64K;
+            break;
         }
         return;
     } else if( FmtData.type & MK_WIN_VXD ) {
