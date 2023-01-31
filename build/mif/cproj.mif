@@ -766,13 +766,27 @@ rcbnd           = $(rc_bnd) -k
 
 #####################################
 # GLOBAL MACROS SETINGS FOR OW TOOLS
+#####################################
+# output format setup for RISC architecture
+cc_outfmt_ntaxp	   = -eoc
+cc_outfmt_ntmps	   = -eoc
+cc_outfmt_ntppc	   = -eoc
+cc_outfmt_linuxaxp = -eoe
+cc_outfmt_linuxmps = -eoe
+cc_outfmt_linuxppc = -eoe
+as_outfmt_ntaxp	   = -oc
+as_outfmt_ntmps	   = -oc
+as_outfmt_ntppc	   = -oc
+as_outfmt_linuxaxp = -oe
+as_outfmt_linuxmps = -oe
+as_outfmt_linuxppc = -oe
 ######
-cc              = $(noecho)$(cc_$(host_cpu)) -zq $(bldver_cppflags)
+cc              = $(noecho)$(cc_$(host_cpu)) -zq $(bldver_cppflags) $(cc_outfmt_$(host_os)$(host_cpu))
 cl              = $(noecho)$(cl_$(host_cpu)) -zq $(bldver_cppflags)
 cxx             = $(noecho)$(cxx_$(host_cpu)) -zq $(bldver_cppflags)
 linker          = $(noecho)$(linker_$(host_cpu)) op q
 librarian       = $(noecho)$(librarian_$(host_cpu)) -q
-as              = $(noecho)$(as_$(host_cpu)) -q $(bldver_cppflags)
+as              = $(noecho)$(as_$(host_cpu)) -q $(bldver_cppflags) $(as_outfmt_$(host_os)$(host_cpu))
 
 rc              = $(noecho)*bwrc -q $(bldver_cppflags)
 rc_ui           = $(noecho)*bwrc -q $(bldver_cppflags)
