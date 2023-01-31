@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -347,7 +348,7 @@ static void DumpSection( pe_object *hdr )
             Wread( &reloc, sizeof( coff_reloc ) );
             Puthex( reloc.offset, 8 );
             Wdputc( ' ' );
-            Puthex( reloc.sym_tab_index, 8 );
+            Puthex( reloc.sym_tab_index + 1, 8 );
             Wdputc( ' ' );
             Putdecbz( reloc.type, 5 );
             if( i % 3 == 2 ) {

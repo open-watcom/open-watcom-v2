@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -344,16 +345,14 @@ void dmp_mult_data_line( char *buf, unsigned_16 address, unsigned_16 amount )
     }
 }
 
-void dmp_data_line( char *data, unsigned_16 address, unsigned_16 amount )
-/***********************************************************************/
+void dmp_data_line_bytes( char *data, unsigned_16 amount )
+/********************************************************/
 {
     unsigned_16     idx;
     char            *buf;
 
     buf = alloca( amount + 1 );
     memcpy( buf, data, amount );
-    Puthex( address, 4 );
-    Wdputc( ':' );
     for( idx = 0; idx < amount; ++idx ) {
         Wdputc( ' ' );
         if( (idx & 0x0007) == 0 )
@@ -373,4 +372,12 @@ void dmp_data_line( char *data, unsigned_16 address, unsigned_16 amount )
     Wdputs( "    " );
     Wdputs( buf );
     Wdputslc( "\n" );
+}
+
+void dmp_data_line( char *data, unsigned_16 address, unsigned_16 amount )
+/***********************************************************************/
+{
+    Puthex( address, 4 );
+    Wdputc( ':' );
+    dmp_data_line_bytes( data, amount );
 }

@@ -112,14 +112,15 @@ static void unload_string_table( void )
 static void dmp_symtab( unsigned long offset, unsigned long num_syms )
 /********************************************************************/
 {
-    coff_symbol *symtab;
-    coff_symbol *start;
-    char *      strtab;
-    unsigned_32 strsize;
-    unsigned_32 symidx;
-    unsigned    num_aux;
-    char *      name;
-    char        buff[9];
+    coff_symbol     *symtab;
+    coff_symbol     *start;
+    char            *strtab;
+    unsigned_32     strsize;
+    unsigned_32     symidx;
+    unsigned        num_aux;
+    char            *name;
+    char            buff[9];
+    int             i;
 
     if( num_syms == 0 ) {
         Wdputslc( "No symbols in object file\n" );
@@ -142,6 +143,7 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
         strtab = NULL;
     }
     buff[8] = '\0';
+    Wdputs( "Idx  Value    Sec  Type Class # Aux Name\n" );
     for( symidx = 0; symidx < num_syms; symidx++ ) {
         if( symtab->name.non_name.zeros == 0 ) {
             name = strtab + symtab->name.non_name.offset - 4;
@@ -151,30 +153,28 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
             memcpy( buff, symtab->name.name_string, 8 );
             name = buff;
         }
-        Wdputs( "Idx: " );
-        Puthex( symidx, 8 );
-        Wdputs( " Name: " );
-        Wdputs( name );
-        Wdputslc( "\n" );
-        Wdputs( "Value: " );
+        Puthex( symidx + 1, 4 );
+        Wdputs( " " );
         Puthex( symtab->value, 8 );
-        Wdputs( " Sec #: " );
+        Wdputs( " " );
         Puthex( symtab->sec_num, 4 );
-        Wdputs( " Type: " );
+        Wdputs( " " );
         Puthex( symtab->type, 4 );
-        Wdputs( " Class: " );
+        Wdputs( " " );
         Puthex( symtab->storage_class, 2 );
-        Wdputs( " # Aux Syms: " );
+        Wdputs( "    " );
         Putdec( symtab->num_aux );
-        Wdputslc( "\n" );
+        Wdputs( "     " );
+        Wdputslc( name );
         num_aux = symtab->num_aux;
         symtab++;
-        if( num_aux > 0 ) {
-            dmp_mult_data_line( (char *)symtab, 0, (unsigned_16)( num_aux * sizeof( coff_symbol ) ) );
-            symtab += num_aux;
-            symidx += num_aux;
-        }
         Wdputslc( "\n" );
+        for( i = 0; i < num_aux; i++ ) {
+            Wdputs( "aux" );
+            dmp_data_line_bytes( (char *)symtab, (unsigned_16)sizeof( coff_symbol ) );
+            symtab++;
+            symidx++;
+        }
     }
     Wdputslc( "\n" );
     if( strsize != 0 ) {
