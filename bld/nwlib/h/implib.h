@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,41 +32,11 @@
 
 #define MAX_IMPORT_STRING      (_MAX_PATH + 512 + 80)
 
-#define COFFBASEDESCRIPTORSIZE 573
-#define COFFBASENULLDESCRIPTORSIZE 127
-#define COFFBASENULLTHUNKSIZE 148
-#define COFFBASEAXPIMPORTSIZE 385
-#define COFFBASEPPCIMPORTSIZE 656
-#define COFFBASEAXPNAMEDSIZE 484
-#define COFFBASEPPCNAMEDSIZE 755
-
 #define ELFBASEIMPORTSIZE 0x14A
 #define ELFBASESTRTABSIZE 0x22
 
-extern char CoffDescrip1[];
-extern char CoffDescrip2[];
-extern char CoffNullDescriptor[];
-extern char CoffNullThunk[];
-extern char CoffAXPOrdinal[];
-extern char CoffPPCOrdinal[];
-extern char CoffAXPNamed1[];
-extern char CoffAXPNamed2[];
-extern char CoffPPCNamed1[];
-extern char CoffPPCNamed2[];
-
 extern char ElfBase[];
 extern char ElfOSInfo[];
-
-#define CoffDescrip1_SIZE       0x174
-#define CoffDescrip2_SIZE       0x7e
-#define CoffNullDescriptor_SIZE 0x7d
-#define CoffNullThunk_SIZE      0x7c
-#define CoffAXPOrdinal_SIZE     0x15e
-#define CoffPPCOrdinal_SIZE     0x26a
-#define CoffAXPNamed1_SIZE      0xfa
-#define CoffAXPNamed2_SIZE      0xc6
-#define CoffPPCNamed1_SIZE      0x19a
-#define CoffPPCNamed2_SIZE      0x132
 
 #define ElfBase_SIZE            0x122
 #define ElfOSInfo_SIZE          0x28
