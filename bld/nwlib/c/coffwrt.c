@@ -36,6 +36,7 @@
 #include <error.h>
 #include "coff.h"
 #include "coffwrt.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -66,41 +67,50 @@ typedef struct name_len {
     char        *name;
 } name_len;
 
-static unsigned_32      CoffImportAxpText[] = {
-    0x277F0000,         // ldah r27,hioff(r31)
-    0xA37B0000,         // ldl  r27,looff(r27)
-    0x6BFB0000          // jmp  r31,0(r27)
+/*
+ * ALPHA transfer code
+ */
+static unsigned_32  CoffImportAxpText[] = {
+    0x277F0000,     // ldah     r27,hioff(r31)
+    0xA37B0000,     // ldl      r27,looff(r27)
+    0x6BFB0000      // jmp      r31,0(r27)
 };
 
-static unsigned_32      CoffImportMipsText[] = {
-    0x3C080000,         // lui  r8,hioff(r0)
-    0x8D080000,         // lw   r8,looff(r8)
-    0x01000008,         // jr   r8
+/*
+ * MIPS transfer code
+ */
+static unsigned_32  CoffImportMipsText[] = {
+    0x3C080000,     // lui      r8,hioff(r0)
+    0x8D080000,     // lw       r8,looff(r8)
+    0x01000008,     // jr       r8
 };
 
-static unsigned_32      CoffImportPpcText[] = {
-    0x81620000,         // lwz      r11,[tocv]__imp_RtlMoveMemory(rtoc)
-    0x818B0000,         // lwz      r12,(r11)
-    0x90410004,         // stw      rtoc,0x4(sp)
-    0x7D8903A6,         // mtctr    r12
-    0x804B0004,         // lwz      rtoc,0x4(r11)
-    0x4E800420          // bctr
+/*
+ * PPC transfer code
+ */
+static unsigned_32  CoffImportPpcText[] = {
+    0x81620000,     // lwz      r11,[tocv]__imp_RtlMoveMemory(rtoc)
+    0x818B0000,     // lwz      r12,(r11)
+    0x90410004,     // stw      rtoc,0x4(sp)
+    0x7D8903A6,     // mtctr    r12
+    0x804B0004,     // lwz      rtoc,0x4(r11)
+    0x4E800420      // bctr
 };
 
-static unsigned_8       CoffImportPpcPdata[] = {
-    0x00,0x00,0x00,0x00,
-    0x18,0x00,0x00,0x00,
-    0x00,0x00,0x00,0x00,
-    0x03,0x00,0x00,0x00,
-    0x0D,0x00,0x00,0x00
+static unsigned_32  CoffImportPpcPdata[] = {
+    0x00000000,
+    0x00000018,
+    0x00000000,
+    0x00000003,
+    0x0000000D,
 };
 
-static unsigned_8       CoffImportX86Text[] = {
-    0xFF,0x25,0x00,0x00,0x00,0x00
-};
-
-static unsigned_8       CoffImportX64Text[] = {
+static unsigned_8   CoffImportX64Text[] = {
     0xFF,0x25,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+};
+
+static unsigned_8   CoffImportX86Text[] = {
+    0xFF,0x25,0x00,0x00,0x00,0x00
 };
 
 static void InitCoffFile( coff_lib_file *c_file )
@@ -388,7 +398,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
     memcpy( buffer + 20, modName->name, modName->len + 1 );
     AddCoffSymbol( c_file, buffer, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     AddCoffSymbol( c_file, ".idata$2", 0xC0000040, sec_num, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
-    sec_num = AddCoffSection( c_file, ".idata$6", Round2( dllName->len + 1 ), 0, COFF_IMAGE_SCN_ALIGN_2BYTES
+    sec_num = AddCoffSection( c_file, ".idata$6", __ROUND_UP_SIZE_EVEN( dllName->len + 1 ), 0, COFF_IMAGE_SCN_ALIGN_2BYTES
         | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymbol( c_file, ".idata$6", 0x0, sec_num, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 0 );
     AddCoffSymbol( c_file, ".idata$4", 0xC0000040, 0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
@@ -606,7 +616,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
             AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
             if( named_relocs ) {
-                sec_num = AddCoffSection( &c_file, ".idata$6", sizeof( ordinal ) + Round2( exportedName.len + 1 ),
+                sec_num = AddCoffSection( &c_file, ".idata$6", sizeof( ordinal ) + __ROUND_UP_SIZE_EVEN( exportedName.len + 1 ),
                     0, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT
                     | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ
                     | COFF_IMAGE_SCN_MEM_WRITE );

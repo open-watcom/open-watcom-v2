@@ -95,77 +95,64 @@ typedef struct local_import {
 } local_import;
 
 /*
- * x86 transfer code
- */
-#define I386_TRANSFER_OP1       0xff        /* first byte of a "JMP [FOO]" */
-#define I386_TRANSFER_OP2       0x25        /* second byte of a "JMP [FOO]" */
-
-#include "pushpck1.h"
-typedef struct {
-    unsigned_8  op1;
-    unsigned_8  op2;
-    unsigned_32 dest;
-} i386_transfer;
-#include "poppck.h"
-
-static i386_transfer    I386Jump = { I386_TRANSFER_OP1, I386_TRANSFER_OP2, 0 };
-
-#define I386_TRANSFER_SIZE      sizeof( i386_transfer )
-
-/*
  * ALPHA transfer code
  */
 static unsigned_32      AlphaJump[] = {
-    0x277F0000,         // ldah     r27,hioff(r31)
-    0xA37B0000,         // ldl      r27,looff(r27)
-    0x6BFB0000          // jmp      r31,0(r27)
+    0x277F0000,     // ldah     r27,hioff(r31)
+    0xA37B0000,     // ldl      r27,looff(r27)
+    0x6BFB0000      // jmp      r31,0(r27)
 };
-
-#define ALPHA_TRANSFER_SIZE sizeof( AlphaJump )
-
-/*
- * PPC transfer code
- */
-static unsigned_32 PPCJump[]= {
-    0x81620000,         // lwz      r11,[tocv]__imp_RtlMoveMemory(rtoc)
-    0x818B0000,         // lwz      r12,(r11)
-    0x90410004,         // stw      rtoc,0x4(sp)
-    0x7D8903A6,         // mtctr    r12
-    0x804B0004,         // lwz      rtoc,0x4(r11)
-    0x4E800420          // bctr
-};
-
-#define PPC_TRANSFER_SIZE   sizeof( PPCJump )
-
-/*
- * x64 transfer code
- */
-#define X64_TRANSFER_OP1    0xff    /* first byte of a "JMP [FOO]" */
-#define X64_TRANSFER_OP2    0x25    /* second byte of a "JMP [FOO]" */
-
-#include "pushpck1.h"
-typedef struct {
-    unsigned_8  op1;
-    unsigned_8  op2;
-    unsigned_64 dest;
-} x64_transfer;
-#include "poppck.h"
-
-static x64_transfer    X64Jump = { X64_TRANSFER_OP1, X64_TRANSFER_OP2, {0} };
-
-#define X64_TRANSFER_SIZE sizeof( x64_transfer )
 
 /*
  * MIPS transfer code
  */
 static unsigned_32 MIPSJump[] = {
-    0x3C080000,         // lui      r8,hioff(r0)
-    0x8D080000,         // lw       r8,looff(r8)
-    0x01000008,         // jr       r8
+    0x3C080000,     // lui      r8,hioff(r0)
+    0x8D080000,     // lw       r8,looff(r8)
+    0x01000008,     // jr       r8
 };
 
-#define MIPS_TRANSFER_SIZE  sizeof( MIPSJump )
+/*
+ * PPC transfer code
+ */
+static unsigned_32 PPCJump[]= {
+    0x81620000,     // lwz      r11,[tocv]__imp_RtlMoveMemory(rtoc)
+    0x818B0000,     // lwz      r12,(r11)
+    0x90410004,     // stw      rtoc,0x4(sp)
+    0x7D8903A6,     // mtctr    r12
+    0x804B0004,     // lwz      rtoc,0x4(r11)
+    0x4E800420      // bctr
+};
 
+/*
+ * x64 transfer code
+ */
+#include "pushpck1.h"
+struct {
+    unsigned_8  op1;
+    unsigned_8  op2;
+    unsigned_64 dest;
+} X64Jump = {
+    0xff,   /* first byte of a "JMP [FOO]" */
+    0x25,   /* second byte of a "JMP [FOO]" */
+    0
+};
+#include "poppck.h"
+
+/*
+ * x86 transfer code
+ */
+#include "pushpck1.h"
+struct {
+    unsigned_8  op1;
+    unsigned_8  op2;
+    unsigned_32 dest;
+} I386Jump = {
+    0xff,   /* first byte of a "JMP [FOO]" */
+    0x25,   /* second byte of a "JMP [FOO]" */
+    0
+};
+#include "poppck.h"
 
 #define TRANSFER_SEGNAME "TRANSFER CODE"
 
@@ -268,11 +255,11 @@ static int GetTransferGlueSize( void )
 /************************************/
 {
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
-    case LS_HAVE_ALPHA_CODE:    return( ALPHA_TRANSFER_SIZE );
-    case LS_HAVE_MIPS_CODE:     return( MIPS_TRANSFER_SIZE ); // TODO
-    case LS_HAVE_PPC_CODE:      return( PPC_TRANSFER_SIZE );
-    case LS_HAVE_X64_CODE:      return( X64_TRANSFER_SIZE ); // TODO
-    case LS_HAVE_X86_CODE:      return( I386_TRANSFER_SIZE );
+    case LS_HAVE_ALPHA_CODE:    return( sizeof( AlphaJump ) );
+    case LS_HAVE_MIPS_CODE:     return( sizeof( MIPSJump ) ); // TODO
+    case LS_HAVE_PPC_CODE:      return( sizeof( PPCJump ) );
+    case LS_HAVE_X64_CODE:      return( sizeof( X64Jump ) ); // TODO
+    case LS_HAVE_X86_CODE:      return( sizeof( I386Jump ) );
     default:                    DbgAssert( 0 ); return( 0 );
     }
 }
@@ -336,7 +323,7 @@ static void GenPETransferTable( void )
                     if( (FmtData.objalign & 0xFFFF) == 0 ) {
                         XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGH, 0 );
                     } else {
-                        XFerReloc( sym->addr.off + sizeof( AlphaJump[0] ), group, PE_FIX_LOW, 0 );
+                        XFerReloc( sym->addr.off + 4, group, PE_FIX_LOW, 0 );
                         XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, AlphaJump[0] );
                     }
                 }
@@ -351,7 +338,7 @@ static void GenPETransferTable( void )
                     if( (FmtData.objalign & 0xFFFF) == 0 ) {
                         XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGH, 0 );
                     } else {
-                        XFerReloc( sym->addr.off + sizeof( MIPSJump[0] ), group, PE_FIX_LOW, 0 );
+                        XFerReloc( sym->addr.off + 4, group, PE_FIX_LOW, 0 );
                         XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, MIPSJump[0] );
                     }
                 }
@@ -367,7 +354,7 @@ static void GenPETransferTable( void )
                 X64Jump.dest.u._32[0] = dest;
                 X64Jump.dest.u._32[1] = 0;
                 if( LinkState & LS_MAKE_RELOCS ) {
-                    XFerReloc( sym->addr.off + offsetof( x64_transfer, dest ), group, PE_FIX_HIGHLOW, 0 );
+                    XFerReloc( sym->addr.off + 2, group, PE_FIX_HIGHLOW, 0 );
                 }
               }
                 break;
@@ -376,7 +363,7 @@ static void GenPETransferTable( void )
                 offset dest = FindIATSymAbsOff( sym );
                 I386Jump.dest = dest;
                 if( LinkState & LS_MAKE_RELOCS ) {
-                    XFerReloc( sym->addr.off + offsetof( i386_transfer, dest ), group, PE_FIX_HIGHLOW, 0 );
+                    XFerReloc( sym->addr.off + 2, group, PE_FIX_HIGHLOW, 0 );
                 }
               }
                 break;

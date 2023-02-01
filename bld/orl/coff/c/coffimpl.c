@@ -37,6 +37,7 @@
 #include "walloca.h"
 #include "coffimpl.h"
 #include "cofforl.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -75,32 +76,36 @@ typedef struct {
 //IMPORT_DESCRIPT optional header
 
 static unsigned_32 CoffImportAxpText[] = {
-    0x277F0000,         // ldah r27,hioff(r31)
-    0xA37B0000,         // ldl  r27,looff(r27)
-    0x6BFB0000          // jmp  r31,0(r27)
+    0x277F0000,     // ldah r27,hioff(r31)
+    0xA37B0000,     // ldl  r27,looff(r27)
+    0x6BFB0000      // jmp  r31,0(r27)
 };
 
 static unsigned_32 CoffImportMipsText[] = {
-    0x3C080000,         // lui  r8,hioff(r0)
-    0x8D080000,         // lw   r8,looff(r8)
-    0x01000008,         // jr   r8
+    0x3C080000,     // lui  r8,hioff(r0)
+    0x8D080000,     // lw   r8,looff(r8)
+    0x01000008,     // jr   r8
 };
 
-static unsigned_8 CoffImportPpcText[] = {
-    0x00,0x00,0x62,0x81,
-    0x00,0x00,0x8B,0x81,
-    0x04,0x00,0x41,0x90,
-    0xA6,0x03,0x89,0x7D,
-    0x04,0x00,0x4B,0x80,
-    0x20,0x04,0x80,0x4E
+static unsigned_32  CoffImportPpcText[] = {
+    0x81620000,     // lwz      r11,[tocv]__imp_RtlMoveMemory(rtoc)
+    0x818B0000,     // lwz      r12,(r11)
+    0x90410004,     // stw      rtoc,0x4(sp)
+    0x7D8903A6,     // mtctr    r12
+    0x804B0004,     // lwz      rtoc,0x4(r11)
+    0x4E800420      // bctr
 };
 
-static unsigned_8 CoffImportPpcPdata[] = {
-    0x00,0x00,0x00,0x00,
-    0x18,0x00,0x00,0x00,
-    0x00,0x00,0x00,0x00,
-    0x03,0x00,0x00,0x00,
-    0x0D,0x00,0x00,0x00
+static unsigned_32  CoffImportPpcPdata[] = {
+    0x00000000,
+    0x00000018,
+    0x00000000,
+    0x00000003,
+    0x0000000D,
+};
+
+static unsigned_8 CoffImportX64Text[] = {
+    0xFF,0x25,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 };
 
 static unsigned_8 CoffImportX86Text[] = {
@@ -170,7 +175,7 @@ static signed_16 AddCoffSection( coff_lib_file *c_file, const char *name, unsign
     /*
      * Sections numbering has index base 1
      */
-    section = c_file->section + c_file->header.num_sections;
+    section = c_file->section + c_file->header.num_sections++;
     len = strlen( name );
     memset( section, 0, COFF_SECTION_HEADER_SIZE );
     if( len > COFF_SEC_NAME_LEN ) {
@@ -183,11 +188,14 @@ static signed_16 AddCoffSection( coff_lib_file *c_file, const char *name, unsign
     section->size = size;
     section->num_relocs = num_relocs;
     section->flags = flags;
-    return( ++(c_file->header.num_sections) );
+    return( c_file->header.num_sections );
 }
 
 static coff_quantity AddCoffSymbol( coff_lib_file *c_file, const char *name, unsigned_32 value,
-    signed_16 sec_num,  unsigned_16 type, unsigned_8 class, unsigned_8 num_aux )
+    signed_16 sec_num, unsigned_16 type, unsigned_8 class, unsigned_8 num_aux )
+/**********************************************************************************************
+ * sec_num is 1-based
+ */
 {
     coff_symbol *sym;
     size_t      len;
@@ -213,24 +221,27 @@ static coff_quantity AddCoffSymbol( coff_lib_file *c_file, const char *name, uns
     return( c_file->header.num_symbols++ );
 }
 
-static coff_quantity AddCoffSymSec( coff_lib_file *c_file, unsigned_8 selection, signed_16 section_no )
+static coff_quantity AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigned_8 selection )
+/***************************************************************************************************
+ * sec_num is 1-based
+ */
 {
     coff_sym_section    *sym;
     char                name[9];
     coff_section_header *section;
     coff_quantity       symbol_no;
 
-    section = c_file->section + section_no - 1;
+    section = c_file->section + sec_num - 1;
     memcpy( name, section->name, COFF_SEC_NAME_LEN );
     name[COFF_SEC_NAME_LEN] = '\0';
-    symbol_no = AddCoffSymbol( c_file, name, 0x0, section_no, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
+    symbol_no = AddCoffSymbol( c_file, name, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
     sym = (coff_sym_section *)( c_file->symbol + c_file->header.num_symbols );
     sym->length = section->size;
     sym->num_relocs = section->num_relocs;
     sym->num_line_numbers = 0;
     sym->checksum = 0;
     if( selection == COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE ) {
-        sym->number = section_no;
+        sym->number = sec_num;
     } else {
         sym->number = 0;
     }
@@ -298,6 +309,13 @@ int ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
     return( 0 );
 }
 
+static void WriteStringPadding( coff_file_handle coff_file_hnd, const char *name, size_t len )
+{
+    AddDataImpLib( coff_file_hnd, name, (int)len );
+    if( len & 1 ) {
+        AddDataImpLib( coff_file_hnd, "\0", 1 );
+    }
+}
 
 static void CreateCoffFileHeader( coff_file_handle coff_file_hnd, coff_lib_file *c_file )
 {
@@ -407,8 +425,9 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
     coff_quantity   symbol_toc = 0;
     char            *DLLSymbolName;
     size_t          dllsymbol_name_len;
-    signed_16       section_no;
+    signed_16       sec_num;
     size_t          len;
+    unsigned_16     named_relocs;
 
     c_file.coff_file_hnd = coff_file_hnd;
     InitCoffFile( &c_file );
@@ -423,71 +442,71 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
     if( len < ( sizeof( "__imp_" ) + symbol_name_len ) )
         len = sizeof( "__imp_" ) + symbol_name_len;
     buffer = alloca( len );
+    named_relocs = ( import->type != COFF_IMPORT_OBJECT_ORDINAL ) ? 1 : 0;
 
     SetCoffFile( &c_file, import->processor, import->time_date_stamp, 0 );
     switch( import->processor ) {
     case COFF_IMAGE_FILE_MACHINE_ALPHA:
 /* .text section header */
-        section_no = AddCoffSection( &c_file, ".text", sizeof( CoffImportAxpText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
-        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
-        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportAxpText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
+        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
         break;
     case COFF_IMAGE_FILE_MACHINE_R3000:
     case COFF_IMAGE_FILE_MACHINE_R4000:
 /* .text section header */
-        section_no = AddCoffSection( &c_file, ".text", sizeof( CoffImportMipsText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
-        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
-        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportMipsText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
+        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
         break;
     case COFF_IMAGE_FILE_MACHINE_POWERPC:
 /* .text section header */
-        section_no = AddCoffSection( &c_file, ".text", sizeof( CoffImportPpcText ), 1, COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
-        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
+        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportPpcText ), 1, COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
         buffer[0] = '.';
         buffer[1] = '.';
         strcpy( buffer + 2, import->exportedName );
-        symbol_text_exportedName = AddCoffSymbol( &c_file, buffer, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        symbol_text_exportedName = AddCoffSymbol( &c_file, buffer, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
 /* .pdata section header */
-        section_no = AddCoffSection( &c_file, ".pdata", sizeof( CoffImportPpcPdata ), 4, COFF_IMAGE_SCN_ALIGN_1BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ );
-        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE, section_no );
+        sec_num = AddCoffSection( &c_file, ".pdata", sizeof( CoffImportPpcPdata ), 4, COFF_IMAGE_SCN_ALIGN_1BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ );
+        AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
 /* .reldata section header */
-        section_no = AddCoffSection( &c_file, ".reldata", sizeof( bnull.b64 ), 2, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_8BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE) );
-        if( import->type != COFF_IMPORT_OBJECT_ORDINAL) {
-            AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
+        sec_num = AddCoffSection( &c_file, ".reldata", sizeof( bnull.b64 ), 2, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_8BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE) );
+        if( named_relocs ) {
+            AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
         }
-        AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        AddCoffSymbol( &c_file, import->exportedName, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        break;
+    case COFF_IMAGE_FILE_MACHINE_AMD64:
+/* .text section header */
+        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportX64Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
+        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
         break;
     case COFF_IMAGE_FILE_MACHINE_I386:
 /* .text section header */
-        section_no = AddCoffSection( &c_file, ".text", sizeof( CoffImportX86Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
-        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
-        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportX86Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
+        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
         break;
     default:
         return( ORL_ERROR );
     }
 
 /* .idata$5 section header */
-    if( import->type == COFF_IMPORT_OBJECT_ORDINAL) {
-        section_no = AddCoffSection( &c_file, ".idata$5", sizeof( bnull.b32 ), 0, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE) );
-    } else {
-        section_no = AddCoffSection( &c_file, ".idata$5", sizeof( bnull.b32 ), 1, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE) );
-    }
-    AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
+    sec_num = AddCoffSection( &c_file, ".idata$5", sizeof( bnull.b32 ), named_relocs, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE) );
+    AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
     strcpy( buffer, "__imp_" );
     strcat( buffer, import->exportedName );
-    symbol___imp_exportedName = AddCoffSymbol( &c_file, buffer, 0x0, section_no, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    symbol___imp_exportedName = AddCoffSymbol( &c_file, buffer, 0x0, sec_num, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
 
 /* .idata$4 section header */
-    if( import->type == COFF_IMPORT_OBJECT_ORDINAL) {
-        section_no = AddCoffSection( &c_file, ".idata$4", sizeof( bnull.b32 ), 0, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE) );
-        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE, section_no );
-    } else {
-        section_no = AddCoffSection( &c_file, ".idata$4", sizeof( bnull.b32 ), 1, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE) );
-        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE, section_no );
+    sec_num = AddCoffSection( &c_file, ".idata$4", sizeof( bnull.b32 ), named_relocs, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE) );
+    AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
+    if( named_relocs ) {
 /* .idata$6 section header */
-        section_no = AddCoffSection( &c_file, ".idata$6", (unsigned_32)( sizeof( ordinal ) + ( dllsymbol_name_len | 1 ) + 1 ), 0, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE) );
-        symbol_idata6 = AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE, section_no );
+        sec_num = AddCoffSection( &c_file, ".idata$6", sizeof( ordinal ) + __ROUND_UP_SIZE_EVEN( dllsymbol_name_len + 1 ), 0, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE) );
+        symbol_idata6 = AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
     }
 
 /* other symbols */
@@ -544,6 +563,12 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
         CreateCoffReloc( coff_file_hnd, 0x0, symbol_text_exportedName, COFF_IMAGE_REL_PPC_ADDR32 );
         CreateCoffReloc( coff_file_hnd, 0x4, symbol_toc, COFF_IMAGE_REL_PPC_ADDR32 );
         break;
+    case COFF_IMAGE_FILE_MACHINE_AMD64:
+/* .text section data */
+        AddDataImpLib( coff_file_hnd, CoffImportX64Text, sizeof( CoffImportX64Text ) );
+/* .text relocations records */
+        CreateCoffReloc( coff_file_hnd, 0x2, symbol___imp_exportedName, COFF_IMAGE_REL_AMD64_ADDR32NB );
+        break;
     case COFF_IMAGE_FILE_MACHINE_I386:
 /* .text section data */
         AddDataImpLib( coff_file_hnd, CoffImportX86Text, sizeof( CoffImportX86Text ) );
@@ -554,15 +579,7 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
 
     type = 0;
     ordinal = (unsigned_16)import->ordinal;
-    if( import->type == COFF_IMPORT_OBJECT_ORDINAL ) {
-/* .idata$5 section data - ordinal */
-        AddDataImpLib( coff_file_hnd, &ordinal, sizeof( ordinal ) );
-        type = 0x8000;
-        AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
-/* .idata$4 section data - ordinal */
-        AddDataImpLib( coff_file_hnd, &ordinal, sizeof( ordinal ) );
-        AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
-    } else {
+    if( named_relocs ) {
         switch( import->processor ) {
         case COFF_IMAGE_FILE_MACHINE_ALPHA:
             type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
@@ -573,6 +590,9 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
             break;
         case COFF_IMAGE_FILE_MACHINE_POWERPC:
             type = COFF_IMAGE_REL_PPC_ADDR32NB;
+            break;
+        case COFF_IMAGE_FILE_MACHINE_AMD64:
+            type = COFF_IMAGE_REL_AMD64_ADDR32NB;
             break;
         case COFF_IMAGE_FILE_MACHINE_I386:
             type = COFF_IMAGE_REL_I386_DIR32NB;
@@ -588,10 +608,15 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
         CreateCoffReloc( coff_file_hnd, 0, symbol_idata6, type );
 /* .idata$6 section data - name */
         AddDataImpLib( coff_file_hnd, &ordinal, sizeof( ordinal ) );
-        AddDataImpLib( coff_file_hnd, DLLSymbolName, (int)( dllsymbol_name_len + 1 ) );
-        if( (dllsymbol_name_len & 1) == 0 ) {
-            AddDataImpLib( coff_file_hnd, "\0", 1 );
-        }
+        WriteStringPadding( coff_file_hnd, DLLSymbolName, dllsymbol_name_len + 1 );
+    } else {
+        unsigned_32 sym_idx;
+
+        sym_idx = ordinal | 0x80000000L;
+/* .idata$5 section data - ordinal */
+        AddDataImpLib( coff_file_hnd, &sym_idx, sizeof( sym_idx ) );
+/* .idata$4 section data - ordinal */
+        AddDataImpLib( coff_file_hnd, &sym_idx, sizeof( sym_idx ) );
     }
 
 /* COFF symbol table */

@@ -33,6 +33,7 @@
 #include "wlib.h"
 #include "wio.h"
 #include "pathgrp2.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -57,12 +58,11 @@ void GetFileContents( const char *name, libfile io, arch_header *arch, char **co
 {
     size_t  size;
 
-    size = arch->size;
-    if( size == 0 ) {
+    if( arch->size == 0 ) {
         *contents = NULL;
         return;
     }
-    Round2var( size );
+    size = __ROUND_UP_SIZE_EVEN( arch->size );
     *contents = MemAlloc( size );
     if( LibRead( io, *contents, size ) != size ) {
         BadLibrary( name );

@@ -33,6 +33,7 @@
 #include "wlib.h"
 #include "ar.h"
 #include "coff.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -758,11 +759,11 @@ size_t ElfImportSize( import_sym *import )
         for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
             len += temp->len;
         }
-        Round2var( len );
+        len = __ROUND_UP_SIZE_EVEN( len );
         break;
     case ELFRENAMED:
         len += 0x21 + 1 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
-        Round2var( len );
+        len = __ROUND_UP_SIZE_EVEN( len );
         break;
     default:
         break;
@@ -805,7 +806,7 @@ size_t CoffImportSize( import_sym *import )
             + opt_hdr_len                               // optional header
             + 2 * COFF_SECTION_HEADER_SIZE +            // section table (headers)
             + 0x14 + 3 * COFF_RELOC_SIZE                // section data
-            + Round2( dll_len + 1 )                     // section data
+            + __ROUND_UP_SIZE_EVEN( dll_len + 1 )       // section data
             + 7 * COFF_SYM_SIZE                         // symbol table
             + 4 + mod_len + 21 + 25 + mod_len + 18 );   // string table
     case NULL_IMPORT_DESCRIPTOR:
@@ -832,11 +833,11 @@ size_t CoffImportSize( import_sym *import )
                 }
                 ret = COFF_FILE_HEADER_SIZE
                     + 4 * COFF_SECTION_HEADER_SIZE
-                    + 4 + COFF_RELOC_SIZE       // idata$5
-                    + 4 + COFF_RELOC_SIZE       // idata$4
-                    + 2 + Round2( exp_len + 1 ) // idata$6
+                    + 4 + COFF_RELOC_SIZE                       // idata$5
+                    + 4 + COFF_RELOC_SIZE                       // idata$4
+                    + 2 + __ROUND_UP_SIZE_EVEN( exp_len + 1 )   // idata$6
                     + 11 * COFF_SYM_SIZE
-                    + 4 + mod_len + 21;         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
+                    + 4 + mod_len + 21;                         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
             } else {
                 ret = COFF_FILE_HEADER_SIZE
                     + 3 * COFF_SECTION_HEADER_SIZE
@@ -926,7 +927,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         strtabsize += temp->len + 1;
     }
     padding = ( (strtabsize & 1) != 0 );
-    Round2var( strtabsize );
+    strtabsize = __ROUND_UP_SIZE_EVEN( strtabsize );
     fillInU16( ElfProcessors[import->processor], &(ElfBase[0x12]) );
     fillInU32( strtabsize, &(ElfBase[0x74]) );
     fillInU32( strtabsize + 0x100, &(ElfBase[0x98]) );
