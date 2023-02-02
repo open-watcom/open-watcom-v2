@@ -798,7 +798,7 @@ size_t CoffImportSize( import_sym *import )
         case WL_PROC_X86:
         default:
             if( Options.coff_import_long ) {
-                opt_hdr_len = sizeof( coff_opt_hdr );
+                opt_hdr_len = sizeof( coff_opt_hdr32 );
             }
             break;
         }

@@ -291,7 +291,7 @@ static size_t GetSizeCoffOptHeader( sym_file *sfile, bool long_format )
         if( sfile->import->processor == WL_PROC_X64 ) {
             return( sizeof( coff_opt_hdr64 ) );
         } else {
-            return( sizeof( coff_opt_hdr ) );
+            return( sizeof( coff_opt_hdr32 ) );
         }
     }
     return( 0 );
@@ -302,7 +302,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     coff_opt_hdr64  _opt_hdr;
     union {
         coff_opt_hdr64  *h64;
-        coff_opt_hdr    *h32;
+        coff_opt_hdr32  *h32;
     } opt_hdr;
 
     opt_hdr.h64 = &_opt_hdr;

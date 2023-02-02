@@ -558,9 +558,7 @@ typedef struct {
     coff_image_data_directory   tls_table;
     coff_image_data_directory   load_config_table;
     uint_8      reserved2[40];
-} coff_opt_hdr;
-
-#define COFF_OPT_HDR_SIZE sizeof( coff_opt_hdr )
+} coff_opt_hdr32;
 
 typedef struct {
     uint_16     magic;                  //standard fields
