@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,9 +197,9 @@ void TrimPathInPlace( char *name )
 
 char *MakeTmpName( char *buffer )
 {
-    char name[9];
-    long initial;
-    long count;
+    char name[20];
+    int  initial;
+    int  count;
 
     _splitpath2( Options.input_name, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
 
@@ -207,9 +207,9 @@ char *MakeTmpName( char *buffer )
      * For whatever it's worth, we'll only check 9999 files before
      * quitting ;-)
      */
-    initial = time( NULL ) % 1000L;
-    for( count = ( initial + 1L ) % 1000L; count != initial; count = ( count + 1L ) % 1000L ) {
-        sprintf( name, "_wlib%03ld", count );
+    initial = time( NULL ) % 1000;
+    for( count = ( initial + 1 ) % 1000; count != initial; count = ( count + 1 ) % 1000 ) {
+        sprintf( name, "_wlib%03d", count );
         _makepath( buffer, pg1.drive, pg1.dir, name, "$$$" );
 
         if( access( buffer, 0 ) != 0 ) {

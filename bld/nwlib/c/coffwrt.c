@@ -166,7 +166,7 @@ static signed_16 AddCoffSection( coff_lib_file *c_file, const char *name, unsign
     coff_section_header     *section;
     size_t                  len;
 
-    section = c_file->section + c_file->header.num_sections++;
+    section = c_file->sections + c_file->header.num_sections++;
     len = strlen( name );
     memset( section, 0, COFF_SECTION_HEADER_SIZE );
     if( len > COFF_SEC_NAME_LEN ) {
@@ -187,7 +187,7 @@ static void AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, const char 
     coff_symbol _WCUNALIGNED    *sym;
     size_t                      len;
 
-    sym = c_file->symbol + c_file->header.num_symbols;
+    sym = c_file->symbols + c_file->header.num_symbols;
     len = strlen( name );
     if( len > COFF_SYM_NAME_LEN ) {
         sym->name.non_name.zeros = 0;
@@ -210,11 +210,11 @@ static void AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigned_8 
     char                            name[COFF_SEC_NAME_LEN + 1];
     coff_section_header             *section;
 
-    section = c_file->section + sec_num - 1;
+    section = c_file->sections + sec_num - 1;
     strncpy( name, section->name, COFF_SEC_NAME_LEN );
     name[COFF_SEC_NAME_LEN] = '\0';
     AddCoffSymbol( c_file, sec_num, name, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
-    sym = (coff_sym_section *)( c_file->symbol + c_file->header.num_symbols );
+    sym = (coff_sym_section *)( c_file->symbols + c_file->header.num_symbols );
     sym->length = section->size;
     sym->num_relocs = section->num_relocs;
     sym->num_line_numbers = 0;
@@ -245,10 +245,10 @@ static void WriteCoffFileHeader( libfile io, coff_lib_file *c_file )
     d_ptr = COFF_FILE_HEADER_SIZE + c_file->header.opt_hdr_size
             + c_file->header.num_sections * COFF_SECTION_HEADER_SIZE;
     for( i = 0; i < c_file->header.num_sections; i++ ) {
-        c_file->section[i].rawdata_ptr = d_ptr;
-        d_ptr += c_file->section[i].size;
-        c_file->section[i].reloc_ptr = d_ptr;
-        d_ptr += c_file->section[i].num_relocs * COFF_RELOC_SIZE;
+        c_file->sections[i].rawdata_ptr = d_ptr;
+        d_ptr += c_file->sections[i].size;
+        c_file->sections[i].reloc_ptr = d_ptr;
+        d_ptr += c_file->sections[i].num_relocs * COFF_RELOC_SIZE;
     }
     c_file->header.sym_table = d_ptr;
     LibWrite( io, &( c_file->header ), COFF_FILE_HEADER_SIZE );
@@ -256,12 +256,12 @@ static void WriteCoffFileHeader( libfile io, coff_lib_file *c_file )
 
 static void WriteCoffSections( libfile io, coff_lib_file *c_file )
 {
-    LibWrite( io, c_file->section, c_file->header.num_sections * COFF_SECTION_HEADER_SIZE );
+    LibWrite( io, c_file->sections, c_file->header.num_sections * COFF_SECTION_HEADER_SIZE );
 }
 
 static void WriteCoffSymbols( libfile io, coff_lib_file *c_file )
 {
-    LibWrite( io, c_file->symbol, c_file->header.num_symbols * COFF_SYM_SIZE );
+    LibWrite( io, c_file->symbols, c_file->header.num_symbols * COFF_SYM_SIZE );
 }
 
 static void WriteCoffReloc( libfile io, unsigned_32 offset, unsigned_32 sym_tab_index, unsigned_16 type )
