@@ -323,6 +323,17 @@ fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 #######################
 # PREPROCESSOR SETINGS
 ######
+!ifndef nodoslfn
+!ifndef $(proj_name)_nodoslfn
+#cppflags_doslfn = -D__WATCOM_LFN__
+!endif
+!endif
+!ifndef nodospc98
+!ifndef $(proj_name)_nodospc98
+#cppflags_dospc98 = -D__WATCOM_PC98__
+!endif
+!endif
+
 cppflags_all    = $(mode_cppflags)
 !ifdef __WATCOM_TOOLS__
 cppflags_all    += -D_ENABLE_AUTODEPEND
@@ -332,13 +343,7 @@ cppflags_all    += -DBOOTSTRAP
 !endif
 
 cppflags_win    = -DSTRICT
-cppflags_dos    =
-!ifndef $(proj_name)_nodoslfn
-cppflags_dos    += -D__WATCOM_LFN__
-!endif
-!ifndef $(proj_name)_nodospc98
-cppflags_dos    += -D__WATCOM_PC98__
-!endif
+cppflags_dos    = $(cppflags_doslfn) $(cppflags_dospc98)
 
 ##########################
 # C/C++ COMPILERS SETINGS
@@ -513,9 +518,11 @@ aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(af
 # LINKER SETINGS
 ######
 
+!ifndef nodoslfn
 !ifndef $(proj_name)_nodoslfn
-lflags_doslfn_i86   = lib doslfn$(memory_model_i86).lib
-lflags_doslfn_386   = lib doslfn3r.lib
+#lflags_doslfn_i86   = lib doslfn$(memory_model_i86).lib
+#lflags_doslfn_386   = lib doslfn3r.lib
+!endif
 !endif
 
 # generic application macros
