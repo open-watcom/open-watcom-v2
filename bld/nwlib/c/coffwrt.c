@@ -413,7 +413,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
     WriteCoffStringTable( io, c_file );
 }
 
-static void WriteNullImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c_file )
+static void WriteNullImportDescriptor( libfile io, coff_lib_file *c_file )
 {
     char        buffer[0x14];
     signed_16   sec_num;
@@ -529,7 +529,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
         WriteImportDescriptor( io, sfile, &c_file, &modName, &dllName, long_format );
         break;
     case NULL_IMPORT_DESCRIPTOR:
-        WriteNullImportDescriptor( io, sfile, &c_file );
+        WriteNullImportDescriptor( io, &c_file );
         break;
     case NULL_THUNK_DATA:
         WriteNullThunkData( io, sfile, &c_file, &modName, section_align );
