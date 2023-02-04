@@ -70,6 +70,7 @@
 #include "newmem.h"
 #include "dosstub.h"
 #include "posixfp.h"
+#include "implcoff.h"
 
 #include "clibext.h"
 
@@ -93,66 +94,6 @@ typedef struct local_import {
     symbol              *iatsym;
     symbol              *locsym;
 } local_import;
-
-/*
- * ALPHA transfer code
- */
-static unsigned_32      AlphaJump[] = {
-    0x277F0000,     // ldah     r27,hioff(r31)
-    0xA37B0000,     // ldl      r27,looff(r27)
-    0x6BFB0000      // jmp      r31,0(r27)
-};
-
-/*
- * MIPS transfer code
- */
-static unsigned_32 MIPSJump[] = {
-    0x3C080000,     // lui      r8,hioff(r0)
-    0x8D080000,     // lw       r8,looff(r8)
-    0x01000008,     // jr       r8
-};
-
-/*
- * PPC transfer code
- */
-static unsigned_32 PPCJump[]= {
-    0x81620000,     // lwz      r11,[tocv]__imp_RtlMoveMemory(rtoc)
-    0x818B0000,     // lwz      r12,(r11)
-    0x90410004,     // stw      rtoc,0x4(sp)
-    0x7D8903A6,     // mtctr    r12
-    0x804B0004,     // lwz      rtoc,0x4(r11)
-    0x4E800420      // bctr
-};
-
-/*
- * x64 transfer code
- */
-#include "pushpck1.h"
-struct {
-    unsigned_8  op1;
-    unsigned_8  op2;
-    unsigned_64 dest;
-} X64Jump = {
-    0xff,   /* first byte of a "JMP [FOO]" */
-    0x25,   /* second byte of a "JMP [FOO]" */
-    0
-};
-#include "poppck.h"
-
-/*
- * x86 transfer code
- */
-#include "pushpck1.h"
-struct {
-    unsigned_8  op1;
-    unsigned_8  op2;
-    unsigned_32 dest;
-} I386Jump = {
-    0xff,   /* first byte of a "JMP [FOO]" */
-    0x25,   /* second byte of a "JMP [FOO]" */
-    0
-};
-#include "poppck.h"
 
 #define TRANSFER_SEGNAME "TRANSFER CODE"
 
@@ -255,11 +196,11 @@ static int GetTransferGlueSize( void )
 /************************************/
 {
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
-    case LS_HAVE_ALPHA_CODE:    return( sizeof( AlphaJump ) );
-    case LS_HAVE_MIPS_CODE:     return( sizeof( MIPSJump ) ); // TODO
-    case LS_HAVE_PPC_CODE:      return( sizeof( PPCJump ) );
-    case LS_HAVE_X64_CODE:      return( sizeof( X64Jump ) ); // TODO
-    case LS_HAVE_X86_CODE:      return( sizeof( I386Jump ) );
+    case LS_HAVE_ALPHA_CODE:    return( sizeof( CoffImportAxpText ) );
+    case LS_HAVE_MIPS_CODE:     return( sizeof( CoffImportMipsText ) ); // TODO
+    case LS_HAVE_PPC_CODE:      return( sizeof( CoffImportPpcText ) );
+    case LS_HAVE_X64_CODE:      return( sizeof( CoffImportX64Text ) ); // TODO
+    case LS_HAVE_X86_CODE:      return( sizeof( CoffImportX86Text ) );
     default:                    DbgAssert( 0 ); return( 0 );
     }
 }
@@ -268,11 +209,11 @@ static void *GetTransferGlueCode( void )
 /**************************************/
 {
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
-    case LS_HAVE_ALPHA_CODE:    return( AlphaJump );
-    case LS_HAVE_MIPS_CODE:     return( MIPSJump ); // TODO
-    case LS_HAVE_PPC_CODE:      return( PPCJump );
-    case LS_HAVE_X64_CODE:      return( &X64Jump ); // TODO
-    case LS_HAVE_X86_CODE:      return( &I386Jump );
+    case LS_HAVE_ALPHA_CODE:    return( CoffImportAxpText );
+    case LS_HAVE_MIPS_CODE:     return( CoffImportMipsText ); // TODO
+    case LS_HAVE_PPC_CODE:      return( CoffImportPpcText );
+    case LS_HAVE_X64_CODE:      return( CoffImportX64Text ); // TODO
+    case LS_HAVE_X86_CODE:      return( CoffImportX86Text );
     default:                    DbgAssert( 0 ); return( NULL );
     }
 }
@@ -317,14 +258,14 @@ static void GenPETransferTable( void )
             case LS_HAVE_ALPHA_CODE:
               {
                 offset dest = FindIATSymAbsOff( sym );
-                AlphaJump[0] |= ( dest >> 16 );     // hioff
-                AlphaJump[1] |= ( dest & 0xFFFF );  // looff
+                CoffImportAxpText[0] |= ( dest >> 16 );     // hioff
+                CoffImportAxpText[1] |= ( dest & 0xFFFF );  // looff
                 if( LinkState & LS_MAKE_RELOCS ) {
                     if( (FmtData.objalign & 0xFFFF) == 0 ) {
                         XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGH, 0 );
                     } else {
                         XFerReloc( sym->addr.off + 4, group, PE_FIX_LOW, 0 );
-                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, AlphaJump[0] );
+                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, CoffImportAxpText[0] );
                     }
                 }
               }
@@ -332,27 +273,27 @@ static void GenPETransferTable( void )
             case LS_HAVE_MIPS_CODE:
               {
                 offset dest = FindIATSymAbsOff( sym );
-                MIPSJump[0] |= ( dest >> 16 );     // hioff
-                MIPSJump[1] |= ( dest & 0xFFFF );  // looff
+                CoffImportMipsText[0] |= ( dest >> 16 );     // hioff
+                CoffImportMipsText[1] |= ( dest & 0xFFFF );  // looff
                 if( LinkState & LS_MAKE_RELOCS ) {
                     if( (FmtData.objalign & 0xFFFF) == 0 ) {
                         XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGH, 0 );
                     } else {
                         XFerReloc( sym->addr.off + 4, group, PE_FIX_LOW, 0 );
-                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, MIPSJump[0] );
+                        XFerReloc( sym->addr.off + 0, group, PE_FIX_HIGHADJ, CoffImportMipsText[0] );
                     }
                 }
               }
                 break;
             case LS_HAVE_PPC_CODE:
-                PPCJump[0] = (PPCJump[0] & 0xffff0000) | (FindSymPosInTocv( sym ) & 0x0000ffff);
+                CoffImportPpcText[0] = (CoffImportPpcText[0] & 0xffff0000) | (FindSymPosInTocv( sym ) & 0x0000ffff);
                 break;
             case LS_HAVE_X64_CODE:
                 // TODO
               {
                 offset dest = FindIATSymAbsOff( sym );
-                X64Jump.dest.u._32[0] = dest;
-                X64Jump.dest.u._32[1] = 0;
+                ((unsigned_64 *)(CoffImportX64Text + 2))->u._32[0] = dest;
+                ((unsigned_64 *)(CoffImportX64Text + 2))->u._32[1] = 0;
                 if( LinkState & LS_MAKE_RELOCS ) {
                     XFerReloc( sym->addr.off + 2, group, PE_FIX_HIGHLOW, 0 );
                 }
@@ -361,7 +302,8 @@ static void GenPETransferTable( void )
             case LS_HAVE_X86_CODE:
               {
                 offset dest = FindIATSymAbsOff( sym );
-                I386Jump.dest = dest;
+
+                *(unsigned_32 *)(CoffImportX86Text + 2) = dest;
                 if( LinkState & LS_MAKE_RELOCS ) {
                     XFerReloc( sym->addr.off + 2, group, PE_FIX_HIGHLOW, 0 );
                 }
