@@ -217,7 +217,7 @@ static unsigned AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigne
     strncpy( name, section->name, COFF_SEC_NAME_LEN );
     name[COFF_SEC_NAME_LEN] = '\0';
     symb_idx = AddCoffSymbol( c_file, sec_num, name, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
-    sym = (coff_sym_section *)( c_file->symbols + c_file->header.num_symbols );
+    sym = (coff_sym_section *)( c_file->symbols + c_file->header.num_symbols++ );
     sym->length = section->size;
     sym->num_relocs = section->num_relocs;
     sym->num_line_numbers = 0;
