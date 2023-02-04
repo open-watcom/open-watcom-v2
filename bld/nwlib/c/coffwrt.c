@@ -119,14 +119,14 @@ static void InitCoffFile( coff_lib_file *c_file )
 static void SetCoffFile( coff_lib_file *c_file, sym_file *sfile )
 {
     switch( sfile->import->processor ) {
-    case WL_PROC_PPC:
-        c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_POWERPC;
-        break;
     case WL_PROC_AXP:
         c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_ALPHA;
         break;
     case WL_PROC_MIPS:
         c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_R4000;
+        break;
+    case WL_PROC_PPC:
+        c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_POWERPC;
         break;
     case WL_PROC_X64:
         c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_AMD64;
@@ -181,13 +181,15 @@ static signed_16 AddCoffSection( coff_lib_file *c_file, const char *name, unsign
     return( c_file->header.num_sections );
 }
 
-static void AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, const char *name,
+static unsigned AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, const char *name,
     unsigned_32 value, unsigned_16 type, unsigned_8 class, unsigned_8 num_aux )
 {
     coff_symbol _WCUNALIGNED    *sym;
     size_t                      len;
+    unsigned                    symb_idx;
 
-    sym = c_file->symbols + c_file->header.num_symbols;
+    symb_idx = c_file->header.num_symbols++;
+    sym = c_file->symbols + symb_idx;
     len = strlen( name );
     if( len > COFF_SYM_NAME_LEN ) {
         sym->name.non_name.zeros = 0;
@@ -201,19 +203,20 @@ static void AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, const char 
     sym->type = type;
     sym->storage_class = class;
     sym->num_aux = num_aux;
-    c_file->header.num_symbols++;
+    return( symb_idx );
 }
 
-static void AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigned_8 selection )
+static unsigned AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigned_8 selection )
 {
     coff_sym_section _WCUNALIGNED   *sym;
     char                            name[COFF_SEC_NAME_LEN + 1];
     coff_section_header             *section;
+    unsigned                        symb_idx;
 
     section = c_file->sections + sec_num - 1;
     strncpy( name, section->name, COFF_SEC_NAME_LEN );
     name[COFF_SEC_NAME_LEN] = '\0';
-    AddCoffSymbol( c_file, sec_num, name, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
+    symb_idx = AddCoffSymbol( c_file, sec_num, name, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
     sym = (coff_sym_section *)( c_file->symbols + c_file->header.num_symbols );
     sym->length = section->size;
     sym->num_relocs = section->num_relocs;
@@ -225,7 +228,7 @@ static void AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigned_8 
         sym->number = 0;
     }
     sym->selection = selection;
-    c_file->header.num_symbols++;
+    return( symb_idx );
 }
 
 static void WriteStringPadding( libfile io, const char *name, size_t len )
@@ -291,7 +294,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     memset( opt_hdr.h64, 0, sizeof( *opt_hdr.h64 ) );
     switch( sfile->import->processor ) {
     case WL_PROC_X64:
-        opt_hdr.h64->magic = 0x020B;
+        opt_hdr.h64->magic = COFF_IMAGE_NT_OPTIONAL_HDR64_MAGIC;
         opt_hdr.h64->l_major = 2;
         opt_hdr.h64->l_minor = 0x32;
         opt_hdr.h64->section_align = 0x1000;
@@ -312,7 +315,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     case WL_PROC_MIPS:
     case WL_PROC_X86:
     default:
-        opt_hdr.h32->magic = 0x010B;
+        opt_hdr.h32->magic = COFF_IMAGE_NT_OPTIONAL_HDR32_MAGIC;
         opt_hdr.h32->l_major = 2;
         opt_hdr.h32->l_minor = 0x32;
         opt_hdr.h32->section_align = 0x1000;
@@ -343,7 +346,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     }
 }
 
-static void AddCoffSymbolWithPrefix( coff_lib_file *c_file, unsigned_16 sec_num, const char *prefix, name_len *modName, unsigned_16 type )
+static unsigned AddCoffSymbolWithPrefix( coff_lib_file *c_file, unsigned_16 sec_num, const char *prefix, name_len *modName, unsigned_16 type )
 {
     char *buffer;
     size_t len;
@@ -351,17 +354,17 @@ static void AddCoffSymbolWithPrefix( coff_lib_file *c_file, unsigned_16 sec_num,
     len = strlen( prefix );
     buffer = alloca( len + modName->len + 1 );
     strcpy( strcpy( buffer, prefix ) + len, modName->name );
-    AddCoffSymbol( c_file, sec_num, buffer, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    return( AddCoffSymbol( c_file, sec_num, buffer, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
-static void AddCoffSymbolNullThunkData( coff_lib_file *c_file, unsigned_16 sec_num, name_len *modName )
+static unsigned AddCoffSymbolNullThunkData( coff_lib_file *c_file, unsigned_16 sec_num, name_len *modName )
 {
     char *buffer;
 
     buffer = alloca( 1 + modName->len + sizeof( "_NULL_THUNK_DATA" ) );
     buffer[0] = 0x7f;
     strcpy( strcpy( buffer + 1, modName->name ) + modName->len, "_NULL_THUNK_DATA" );
-    AddCoffSymbol( c_file, sec_num, buffer, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    return( AddCoffSymbol( c_file, sec_num, buffer, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
 static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c_file, name_len *modName, name_len *dllName, bool long_format )
@@ -370,15 +373,50 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
     char            buffer[0x14];
     signed_16       sec_num;
 
+    /*
+     * section no. 1
+     */
+    sec_num = AddCoffSection( c_file, ".idata$2", 0x14, 3, COFF_IMAGE_SCN_ALIGN_4BYTES
+        | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
+    AddCoffSymbolWithPrefix( c_file, sec_num, "__IMPORT_DESCRIPTOR_", modName, COFF_IMAGE_SYM_TYPE_NULL );
+    AddCoffSymbol( c_file, sec_num, ".idata$2", 0xC0000040, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
+    /*
+     * section no. 2
+     */
+    sec_num = AddCoffSection( c_file, ".idata$6", __ROUND_UP_SIZE_EVEN( dllName->len + 1 ), 0, COFF_IMAGE_SCN_ALIGN_2BYTES
+        | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
+    AddCoffSymbol( c_file, sec_num, ".idata$6", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 0 );
+    AddCoffSymbol( c_file, 0, ".idata$4", 0xC0000040, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
+    AddCoffSymbol( c_file, 0, ".idata$5", 0xC0000040, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
+    AddCoffSymbol( c_file, 0, "__NULL_IMPORT_DESCRIPTOR", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    AddCoffSymbolNullThunkData( c_file, 0, modName );
+    /*
+     * write data
+     */
+    if( long_format ) {
+        if( sfile->import->processor == WL_PROC_X64 ) {
+            c_file->header.opt_hdr_size = (unsigned_16)sizeof( coff_opt_hdr64 );
+        } else {
+            c_file->header.opt_hdr_size = (unsigned_16)sizeof( coff_opt_hdr32 );
+        }
+    }
+    WriteCoffFileHeader( io, c_file );
+    if( long_format ) {
+        WriteCoffOptHeader( io, sfile );
+    }
+    WriteCoffSections( io, c_file );
+    /*
+     * write data section no. 1
+     */
     switch( sfile->import->processor ) {
-    case WL_PROC_PPC:
-        type = COFF_IMAGE_REL_PPC_IFGLUE;
-        break;
     case WL_PROC_AXP:
         type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
         break;
     case WL_PROC_MIPS:
         type = COFF_IMAGE_REL_MIPS_REFWORDNB;
+        break;
+    case WL_PROC_PPC:
+        type = COFF_IMAGE_REL_PPC_IFGLUE;
         break;
     case WL_PROC_X64:
         type = COFF_IMAGE_REL_AMD64_ADDR32NB;
@@ -390,34 +428,14 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
         type = COFF_IMAGE_REL_I386_DIR32NB;
         break;
     }
-    if( long_format ) {
-        if( sfile->import->processor == WL_PROC_X64 ) {
-            c_file->header.opt_hdr_size = (unsigned_16)sizeof( coff_opt_hdr64 );
-        } else {
-            c_file->header.opt_hdr_size = (unsigned_16)sizeof( coff_opt_hdr32 );
-        }
-    }
-    sec_num = AddCoffSection( c_file, ".idata$2", 0x14, 3, COFF_IMAGE_SCN_ALIGN_4BYTES
-        | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
-    AddCoffSymbolWithPrefix( c_file, sec_num, "__IMPORT_DESCRIPTOR_", modName, COFF_IMAGE_SYM_TYPE_NULL );
-    AddCoffSymbol( c_file, sec_num, ".idata$2", 0xC0000040, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
-    sec_num = AddCoffSection( c_file, ".idata$6", __ROUND_UP_SIZE_EVEN( dllName->len + 1 ), 0, COFF_IMAGE_SCN_ALIGN_2BYTES
-        | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
-    AddCoffSymbol( c_file, sec_num, ".idata$6", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 0 );
-    AddCoffSymbol( c_file, 0, ".idata$4", 0xC0000040, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
-    AddCoffSymbol( c_file, 0, ".idata$5", 0xC0000040, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
-    AddCoffSymbol( c_file, 0, "__NULL_IMPORT_DESCRIPTOR", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
-    AddCoffSymbolNullThunkData( c_file, 0, modName );
-    WriteCoffFileHeader( io, c_file );
-    if( long_format ) {
-        WriteCoffOptHeader( io, sfile );
-    }
-    WriteCoffSections( io, c_file );
     memset( buffer, 0, sizeof( buffer ) );
     LibWrite( io, buffer, 0x14 );
     WriteCoffReloc( io, 0xc, 2, type );
     WriteCoffReloc( io, 0x0, 3, type );
     WriteCoffReloc( io, 0x10, 4, type );
+    /*
+     * write data section no. 2
+     */
     WriteStringPadding( io, dllName->name, dllName->len + 1 );
     WriteCoffSymbols( io, c_file );
     WriteCoffStringTable( io, c_file );
@@ -428,11 +446,20 @@ static void WriteNullImportDescriptor( libfile io, coff_lib_file *c_file )
     char        buffer[0x14];
     signed_16   sec_num;
 
+    /*
+     * section no. 1
+     */
     sec_num = AddCoffSection( c_file, ".idata$3", 0x14, 0, COFF_IMAGE_SCN_ALIGN_4BYTES
         | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymbol( c_file, sec_num, "__NULL_IMPORT_DESCRIPTOR", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    /*
+     * write data
+     */
     WriteCoffFileHeader( io, c_file );
     WriteCoffSections( io, c_file );
+    /*
+     * write data section no. 1
+     */
     memset( buffer, 0 , sizeof( buffer ) );
     LibWrite( io, buffer, 0x14 );
     WriteCoffSymbols( io, c_file );
@@ -449,13 +476,25 @@ static void WriteNullThunkData( libfile io, sym_file *sfile, coff_lib_file *c_fi
     if( sfile->import->processor == WL_PROC_X64 ) {
         section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
     }
+    /*
+     * section no. 1
+     */
     sec_num = AddCoffSection( c_file, ".idata$5", 0x4, 0, section_align
         | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymbolNullThunkData( c_file, sec_num, modName );
+    /*
+     * section no. 2
+     */
     sec_num = AddCoffSection( c_file, ".idata$4", 0x4, 0, section_align
         | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
+    /*
+     * write data
+     */
     WriteCoffFileHeader( io, c_file );
     WriteCoffSections( io, c_file );
+    /*
+     * write data section no. 1 + 2
+     */
     memset( buffer, 0 , sizeof( buffer ) );
     LibWrite( io, buffer, 8 );
     WriteCoffSymbols( io, c_file );
@@ -463,24 +502,27 @@ static void WriteNullThunkData( libfile io, sym_file *sfile, coff_lib_file *c_fi
 }
 
 static void WriteShortImportEntry( libfile io, sym_file *sfile, name_len *symName, name_len *dllName )
+/*****************************************************************************************************
+ * write short format entry
+ */
 {
     coff_import_object_header   obj_hdr;
 
-    obj_hdr.sig1 = COFF_IMAGE_FILE_MACHINE_UNKNOWN;
+    obj_hdr.sig1 = COFF_IMPORT_OBJECT_HDR_SIG1;
     obj_hdr.sig2 = COFF_IMPORT_OBJECT_HDR_SIG2;
     obj_hdr.version = 0;
     switch( sfile->import->processor ) {
-    case WL_PROC_X64:
-        obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_AMD64;
-        break;
-    case WL_PROC_PPC:
-        obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_POWERPC;
-        break;
     case WL_PROC_AXP:
         obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_ALPHA;
         break;
     case WL_PROC_MIPS:
         obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_R4000;
+        break;
+    case WL_PROC_PPC:
+        obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_POWERPC;
+        break;
+    case WL_PROC_X64:
+        obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_AMD64;
         break;
     case WL_PROC_X86:
     default:
@@ -509,6 +551,9 @@ static void WriteShortImportEntry( libfile io, sym_file *sfile, name_len *symNam
 
 static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_file,
     name_len *symName, name_len *modName, name_len *exportedName )
+/**************************************************************************************
+ * write long format entry
+ */
 {
     signed_16       sec_num;
     unsigned_16     named_relocs;
@@ -522,6 +567,10 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
     if( sfile->import->processor == WL_PROC_X64 ) {
         section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
     }
+    named_relocs = ( sfile->import->type == NAMED ) ? 1 : 0;
+    /*
+     * section no. 1
+     */
     switch( sfile->import->processor ) {
     case WL_PROC_AXP:
         sec_num = AddCoffSection( c_file, ".text", sizeof( CoffImportAxpText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES
@@ -559,10 +608,16 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         AddCoffSymbol( c_file, sec_num, symName->name, 0x0, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
     if( sfile->import->processor == WL_PROC_PPC ) {
+        /*
+         * section no. 2
+         */
         sec_num = AddCoffSection( c_file, ".pdata", sizeof( CoffImportPpcPdata ), 4, COFF_IMAGE_SCN_ALIGN_1BYTES
             | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
             | COFF_IMAGE_SCN_MEM_READ );
         AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
+        /*
+         * section no. 3
+         */
         sec_num = AddCoffSection( c_file, ".reldata", 0x8, 2, COFF_IMAGE_SCN_ALIGN_8BYTES
             | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
             | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
@@ -572,31 +627,45 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
         AddCoffSymbol( c_file, sec_num, symName->name, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
-    named_relocs = ( sfile->import->type == NAMED ) ? 1 : 0;
+    /*
+     * section no. 2(4)
+     */
     sec_num = AddCoffSection( c_file, ".idata$5", 0x4, named_relocs, section_align
         | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
         | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
     AddCoffSymbolWithPrefix( c_file, sec_num, "__imp_", symName, COFF_IMAGE_SYM_TYPE_NULL );
+    /*
+     * section no. 3(5)
+     */
     sec_num = AddCoffSection( c_file, ".idata$4", 0x4, named_relocs, section_align
         | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
         | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
-    AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
+    AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );                        /* sym_idx = 6(11/12) + aux */
     if( sfile->import->type == NAMED ) {
+        /*
+         * section no. 4/6
+         */
         sec_num = AddCoffSection( c_file, ".idata$6", sizeof( ordinal ) + __ROUND_UP_SIZE_EVEN( exportedName->len + 1 ),
             0, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT
             | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ
             | COFF_IMAGE_SCN_MEM_WRITE );
-        AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
+        AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );                    /* sym_idx = 8(13/14) + aux */
     }
     if( sfile->import->processor == WL_PROC_PPC ) {
         AddCoffSymbol( c_file, 0, ".toc", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
     AddCoffSymbolWithPrefix( c_file, 0, "__IMPORT_DESCRIPTOR_", modName, COFF_IMAGE_SYM_TYPE_NULL );
+    /*
+     * write data
+     */
     WriteCoffFileHeader( io, c_file );
     WriteCoffSections( io, c_file );
     switch( sfile->import->processor ) {
     case WL_PROC_AXP:
+        /*
+         * write data section no. 1
+         */
         LibWrite( io, CoffImportAxpText, sizeof( CoffImportAxpText ) );
         WriteCoffReloc( io, 0x0, 5, COFF_IMAGE_REL_ALPHA_REFHI );
         WriteCoffReloc( io, 0x0, 2, COFF_IMAGE_REL_ALPHA_PAIR );
@@ -605,6 +674,9 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         sym_idx = 0x8;
         break;
     case WL_PROC_MIPS:
+        /*
+         * write data section no. 1
+         */
         LibWrite( io, CoffImportMipsText, sizeof( CoffImportMipsText ) );
         WriteCoffReloc( io, 0x0, 5, COFF_IMAGE_REL_MIPS_REFHI );
         WriteCoffReloc( io, 0x0, 2, COFF_IMAGE_REL_MIPS_PAIR );
@@ -613,13 +685,22 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         sym_idx = 0x8;
         break;
     case WL_PROC_PPC:
+        /*
+         * write data section no. 1
+         */
         LibWrite( io, CoffImportPpcText, sizeof( CoffImportPpcText ) );
         WriteCoffReloc( io, 0x0, 0xa, COFF_IMAGE_REL_PPC_TOCREL14 | COFF_IMAGE_REL_PPC_TOCDEFN );
+        /*
+         * write data section no. 2
+         */
         LibWrite( io, CoffImportPpcPdata, sizeof( CoffImportPpcPdata ) );
         WriteCoffReloc( io, 0x0, 2, COFF_IMAGE_REL_PPC_ADDR32 );
         WriteCoffReloc( io, 0x4, 2, COFF_IMAGE_REL_PPC_ADDR32 );
         WriteCoffReloc( io, 0x10, 2, COFF_IMAGE_REL_PPC_ADDR32 );
         WriteCoffReloc( io, 0x80410004, 2, COFF_IMAGE_REL_PPC_SECTION );
+        /*
+         * write data section no. 3
+         */
         memset( buffer, 0, sizeof( buffer ) );
         LibWrite( io, buffer, 8 );
         WriteCoffReloc( io, 0x0, 2, COFF_IMAGE_REL_PPC_ADDR32 );
@@ -628,6 +709,9 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         sym_idx = 0xd;
         break;
     case WL_PROC_X64:
+        /*
+         * write data section no. 1
+         */
         LibWrite( io, CoffImportX64Text, sizeof( CoffImportX64Text ) );
         WriteCoffReloc( io, 0x2, 5, COFF_IMAGE_REL_AMD64_ADDR32 );
         type = COFF_IMAGE_REL_AMD64_ADDR32NB;
@@ -637,6 +721,9 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         sfile->import->processor = WL_PROC_X86;
         /* fall through */
     case WL_PROC_X86:
+        /*
+         * write data section no. 1
+         */
         LibWrite( io, CoffImportX86Text, sizeof( CoffImportX86Text ) );
         WriteCoffReloc( io, 0x2, 5, COFF_IMAGE_REL_I386_DIR32 );
         type = COFF_IMAGE_REL_I386_DIR32NB;
@@ -645,16 +732,31 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
     }
     ordinal = sfile->import->u.sym.ordinal;
     if( sfile->import->type == NAMED ) {
+        /*
+         * write data section no. 2(4)
+         */
         memset( buffer, 0, sizeof( buffer ) );
         LibWrite( io, buffer, 4 );
         WriteCoffReloc( io, 0, sym_idx, type );
+        /*
+         * write data section no. 3(5)
+         */
         LibWrite( io, buffer, 4 );
         WriteCoffReloc( io, 0, sym_idx, type );
+        /*
+         * write data section no. 4(6)
+         */
         LibWrite( io, &ordinal, sizeof( ordinal ) );
         WriteStringPadding( io, exportedName->name, exportedName->len + 1 );
     } else {
         sym_idx = ordinal | 0x80000000L;
+        /*
+         * write data section no. 2(4)
+         */
         LibWrite( io, &sym_idx, 4 );
+        /*
+         * write data section no. 3(5)
+         */
         LibWrite( io, &sym_idx, 4 );
     }
     WriteCoffSymbols( io, c_file );
@@ -662,6 +764,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
 }
 
 void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
+/*******************************************************************/
 {
     coff_lib_file               c_file;
     name_len                    dllName;
@@ -669,8 +772,10 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
     name_len                    exportedName;
     name_len                    modName;
 
-    // We are being extremely cautious in the following lines of code
-    // up to the switch statement.
+    /*
+     * We are being extremely cautious in the following lines of code
+     * up to the switch statement.
+     */
     dllName.len = 0;
     dllName.name = sfile->import->DLLName;
     if( dllName.name != NULL ) {
@@ -712,6 +817,9 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
         if( exportedName.len == 0 && sfile->import->type == NAMED ) {
             FatalError( ERR_CANT_DO_IMPORT, "AR", "NO EXPORTED NAME" );
         }
+        break;
+    case NULL_IMPORT_DESCRIPTOR:
+    default:
         break;
     }
     InitCoffFile( &c_file );

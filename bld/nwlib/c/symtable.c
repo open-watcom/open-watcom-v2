@@ -789,7 +789,6 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
     HashTable[hash] = sym;
 }
 
-
 #ifndef NDEBUG
 void DumpFileTable( void )
 {

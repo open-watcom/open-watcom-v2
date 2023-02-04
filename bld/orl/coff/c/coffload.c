@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,16 +55,20 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
     unsigned_16 flags;
     bool        flag_import_library;
 
-    if( ( f_hdr->cpu_type == COFF_IMAGE_FILE_MACHINE_UNKNOWN ) && ( f_hdr->num_sections == COFF_IMPORT_OBJECT_HDR_SIG2 ) ) {
-        // COFF import library
+    flag_import_library = ( ((coff_import_object_header *)f_hdr)->sig1 == COFF_IMPORT_OBJECT_HDR_SIG1
+                        && ((coff_import_object_header *)f_hdr)->sig2 == COFF_IMPORT_OBJECT_HDR_SIG2 );
+    if( flag_import_library ) {
+        /*
+         * COFF import library
+         */
         cpu_type = ((coff_import_object_header *)f_hdr)->machine;
         flags = 0;
-        flag_import_library = true;
     } else {
-        // other COFF objects
+        /*
+         * other COFF objects
+         */
         cpu_type = f_hdr->cpu_type;
         flags = f_hdr->flags;
-        flag_import_library = false;
     }
     switch( cpu_type ) {
     case COFF_IMAGE_FILE_MACHINE_I860:
@@ -131,7 +136,8 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
         coff_file_hnd->flags |= ORL_FILE_FLAG_SYSTEM;
     }
     if( coff_file_hnd->type != ORL_FILE_TYPE_OBJECT ) {
-        /* There are no known big endian PE images, but there are lying
+        /*
+         * There are no known big endian PE images, but there are lying
          * cheating PE images that claim to be big endian and aren't.
          */
         coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
@@ -144,7 +150,8 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
         if( flags & COFF_IMAGE_FILE_BYTES_REVERSED_HI ) {
             coff_file_hnd->flags |= ORL_FILE_FLAG_BIG_ENDIAN;
         } else {
-            /* Inserting a default here - note that the BYTES_REVERSED_LO/HI
+            /*
+             * Inserting a default here - note that the BYTES_REVERSED_LO/HI
              * flags are now deprecated and neither is supposed to be present.
              */
             coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
@@ -458,15 +465,19 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
         return( ORL_OUT_OF_MEMORY );
     f_hdr = (coff_file_header *)coff_file_hnd->f_hdr_buffer;
     if( determine_file_specs( coff_file_hnd, f_hdr ) ) {
-        // we have identified an import_object_header
-        // convert short import library structures to long import
-        // library structures, change _ClientRead and _ClientSeek
-        // macros to read from converted metadata
+        /*
+         * we have identified an import_object_header
+         * convert short import library structures to long import
+         * library structures, change _ClientRead and _ClientSeek
+         * macros to read from converted metadata
+         */
         return_val = convert_import_library_init( coff_file_hnd );
         if ( return_val != ORL_OKAY ) {
             return( return_val );
         }
-        // reread new converted file header and next process as normal
+        /*
+         * reread new converted file header and next process as normal
+         */
         coff_file_hnd->f_hdr_buffer = _ClientRead( coff_file_hnd, sizeof( coff_file_header ) );
         if( coff_file_hnd->f_hdr_buffer == NULL )
             return( ORL_OUT_OF_MEMORY );
@@ -476,12 +487,16 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     if( f_hdr->opt_hdr_size > 0 ) {     // skip/process optional header
         pe_opt_hdr *opt_hdr = (pe_opt_hdr *)_ClientRead( coff_file_hnd, f_hdr->opt_hdr_size );
         switch( opt_hdr->magic ) {
-        case 0x10b:
-            // PE  (32-bit)
+        case COFF_IMAGE_NT_OPTIONAL_HDR32_MAGIC:
+            /*
+             * PE  (32-bit)
+             */
             coff_file_hnd->export_table_rva = opt_hdr->pe32.export_table_rva;
             break;
-        case 0x20b:
-            // PE+ (64-bit)
+        case COFF_IMAGE_NT_OPTIONAL_HDR64_MAGIC:
+            /*
+             * PE+ (64-bit)
+             */
             coff_file_hnd->flags |= ORL_FILE_FLAG_64BIT_MACHINE;
             coff_file_hnd->pe64 = true;
             coff_file_hnd->export_table_rva = opt_hdr->pe64.export_table_rva;

@@ -201,7 +201,8 @@ bool Dmp_coff_head( void )
 
     Wlseek( Coff_off );
     Wread( &header, sizeof( header ) );
-    if( header.i.sig1 != 0 && header.i.sig2 != 0xFFFF
+    impfile = ( header.i.sig1 == COFF_IMPORT_OBJECT_HDR_SIG1 && header.i.sig2 == COFF_IMPORT_OBJECT_HDR_SIG2 );
+    if( !impfile
         && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_I386
         && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_ALPHA
         && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_R3000
@@ -210,7 +211,6 @@ bool Dmp_coff_head( void )
         && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_POWERPC ) {
         return( false );
     }
-    impfile = ( header.i.sig1 == 0 && header.i.sig2 == 0xFFFF );
     if( impfile ) {
         Banner( "COFF import file" );
     } else {
