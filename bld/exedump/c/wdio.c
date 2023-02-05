@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -225,8 +225,8 @@ unsigned Align_name( unsigned_8 len, unsigned_8 align )
 }
 
 
-void Dump_header( void *data_ptr, const_string_table *msg, int max_width )
-/************************************************************************/
+void Dump_header( const void *data_ptr, const_string_table *msg, int max_width )
+/******************************************************************************/
 {
     unsigned_8  *data = (unsigned_8 *)data_ptr;
     int         skip;
@@ -258,6 +258,13 @@ void Dump_header( void *data_ptr, const_string_table *msg, int max_width )
             Wdputs( &msg[0][1] );
             Puthex64( *(long long *)data, 16 );
             data += sizeof( long long );
+            break;
+        case 'S':       // ASCIIZ string
+            Wdputs( &msg[0][1] );
+            skip = strlen( (char *)data );
+            Wdputs( (char *)data );
+            data += skip + 1;
+            print_h = false;
             break;
         case '0':       // fixed size ASCIIZ string
             skip = msg[0][1] - '0';

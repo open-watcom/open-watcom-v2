@@ -39,8 +39,15 @@
 #include "wdfunc.h"
 
 
+static  const_string_table coff_hdr_cpu32[] = {
+    "2cpu type (32-bit)                               = ",
+    NULL
+};
+static  const_string_table coff_hdr_cpu64[] = {
+    "2cpu type (64-bit)                               = ",
+    NULL
+};
 static  const_string_table coff_hdr_msg[] = {
-    "2cpu type                                        = ",
     "2number of object entries                        = ",
     "4time/date stamp                                 = ",
     "4symbol table                                    = ",
@@ -50,13 +57,21 @@ static  const_string_table coff_hdr_msg[] = {
     NULL
 };
 
-static  const_string_table coff_imp_hdr_msg[] = {
+static  const_string_table coff_imp_hdr_msg1[] = {
     "2version                                         = ",
-    "2cpu type                                        = ",
+    NULL
+};
+static  const_string_table coff_imp_hdr_msg2[] = {
     "4time/date stamp                                 = ",
     "4size of data                                    = ",
     "2ordinal/hint                                    = ",
     "2type                                            = ",
+    NULL
+};
+
+static  const_string_table coff_imp_symbol[] = {
+    "SSymbol name: ",
+    "SDLL:         ",
     NULL
 };
 
@@ -195,43 +210,63 @@ bool Dmp_coff_head( void )
     union {
         coff_file_header            o;
         coff_import_object_header   i;
-    } header;
-    bool    impfile;
-    char    *p;
+    }           header;
+    bool        impfile;
+    char        *p;
+    const char  * const *templ;
 
     Wlseek( Coff_off );
     Wread( &header, sizeof( header ) );
     impfile = ( header.i.sig1 == COFF_IMPORT_OBJECT_HDR_SIG1 && header.i.sig2 == COFF_IMPORT_OBJECT_HDR_SIG2 );
     if( !impfile
-        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_I386
-        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_ALPHA
-        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_R3000
-        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_R4000
-        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_UNKNOWN
-        && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_POWERPC ) {
+      && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_I386
+      && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_ALPHA
+      && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_R3000
+      && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_R4000
+      && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_UNKNOWN
+      && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_POWERPC
+      && header.o.cpu_type != COFF_IMAGE_FILE_MACHINE_AMD64
+        ) {
         return( false );
     }
     if( impfile ) {
-        Banner( "COFF import file" );
+        p = "COFF import file";
     } else {
-        Banner( "COFF object file" );
+        p = "COFF object file";
     }
+    Banner( p );
     Wdputs( "file offset = " );
     Puthex( Coff_off, 8 );
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
     if( impfile ) {
-        Dump_header( (char *)&header + 4, coff_imp_hdr_msg, 4 );
+        switch( header.i.machine ) {
+        case COFF_IMAGE_FILE_MACHINE_AMD64:
+            templ = coff_hdr_cpu64;
+            break;
+        default:
+            templ = coff_hdr_cpu32;
+            break;
+        }
+        Dump_header( (char *)&header + 4, coff_imp_hdr_msg1, 4 );
+        Dump_header( (char *)&header + 6, templ, 4 );
+        Dump_header( (char *)&header + 8, coff_imp_hdr_msg2, 4 );
+        Wdputslc( "\n" );
         p = Wmalloc( header.i.size_of_data );
         Wread( p, header.i.size_of_data );
-        Wdputslc( "\nSymbol name: " );
-        Wdputs( p );
-        Wdputslc( "\nDLL:         " );
-        p += strlen( p ) + 1;
-        Wdputs( p );
-        Wdputslc( "\n\n" );
+        Dump_header( p, coff_imp_symbol, 80 );
+        Wdputslc( "\n" );
     } else {
-        Dump_header( (char *)&header, coff_hdr_msg, 4 );
+        switch( header.o.cpu_type ) {
+        case COFF_IMAGE_FILE_MACHINE_AMD64:
+            templ = coff_hdr_cpu64;
+            break;
+        default:
+            templ = coff_hdr_cpu32;
+            break;
+        }
+        Dump_header( (char *)&header, templ, 4 );
+        Dump_header( (char *)&header + 2, coff_hdr_msg, 4 );
         DumpCoffHdrFlags( header.o.flags );
         load_string_table( &header.o );
         Wlseek( Coff_off + sizeof(coff_file_header) + header.o.opt_hdr_size );

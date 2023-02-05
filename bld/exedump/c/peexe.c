@@ -49,15 +49,35 @@
 
 #define PHYS_OFFSET(r,o)    ((o).physical_offset + r - (o).rva)
 
-static  const_string_table pe_exe_msg[] = {
-    "2cpu type                                        = ",
+static  const_string_table pe32_exe_msg1[] = {
+    "2cpu type (32-bit)                               = ",
+    NULL
+};
+static  const_string_table pe64_exe_msg1[] = {
+    "2cpu type (64-bit)                               = ",
+    NULL
+};
+
+static  const_string_table pe_exe_msg1[] = {
     "2number of object entries                        = ",
     "4time/date stamp                                 = ",
     "4symbol table                                    = ",
     "4number of symbols                               = ",
     "2no. of bytes in nt header following flags field = ",
     "2flags                                           = ",
+    NULL
+};
+
+static  const_string_table pe32_exe_msg2[] = {
     "2magic (32-bit)                                  = ",
+    NULL
+};
+static  const_string_table pe64_exe_msg2[] = {
+    "2magic (64-bit)                                  = ",
+    NULL
+};
+
+static  const_string_table pe_exe_msg2[] = {
     "1link major version number                       = ",
     "1link minor version number                       = ",
     "4code size                                       = ",
@@ -65,8 +85,20 @@ static  const_string_table pe_exe_msg[] = {
     "4uninititialized data size                       = ",
     "4entrypoint rva                                  = ",
     "4code base                                       = ",
+    NULL
+};
+
+static  const_string_table pe32_exe_msg3[] = {
     "4data base                                       = ",
     "4image base                                      = ",
+    NULL
+};
+static  const_string_table pe64_exe_msg3[] = {
+    "8image base                                      = ",
+    NULL
+};
+
+static  const_string_table pe_exe_msg3[] = {
     "4object alignment: power of 2, 512 to 256M       = ",
     "4file alignment factor to align image pages      = ",
     "2os major version number                         = ",
@@ -81,6 +113,10 @@ static  const_string_table pe_exe_msg[] = {
     "4file checksum                                   = ",
     "2nt subsystem                                    = ",
     "2dll flags                                       = ",
+    NULL
+};
+
+static  const_string_table pe32_exe_msg4[] = {
     "4stack reserve size                              = ",
     "4stack commit size                               = ",
     "4size of local heap to reserve                   = ",
@@ -90,37 +126,7 @@ static  const_string_table pe_exe_msg[] = {
     NULL
 };
 
-static  const_string_table pe64_exe_msg[] = {
-    "2cpu type                                        = ",
-    "2number of object entries                        = ",
-    "4time/date stamp                                 = ",
-    "4symbol table                                    = ",
-    "4number of symbols                               = ",
-    "2no. of bytes in nt header following flags field = ",
-    "2flags                                           = ",
-    "2magic (64-bit)                                  = ",
-    "1link major version number                       = ",
-    "1link minor version number                       = ",
-    "4code size                                       = ",
-    "4initialized data size                           = ",
-    "4uninititialized data size                       = ",
-    "4entrypoint rva                                  = ",
-    "4code base                                       = ",
-    "8image base                                      = ",
-    "4object alignment: power of 2, 512 to 256M       = ",
-    "4file alignment factor to align image pages      = ",
-    "2os major version number                         = ",
-    "2os minor version number                         = ",
-    "2user major version number                       = ",
-    "2user minor version number                       = ",
-    "2subsystem major version number                  = ",
-    "2subsystem minor version number                  = ",
-    "4reserved1                                       = ",
-    "4virtual size of the image                       = ",
-    "4total header size                               = ",
-    "4file checksum                                   = ",
-    "2nt subsystem                                    = ",
-    "2dll flags                                       = ",
+static  const_string_table pe64_exe_msg4[] = {
     "8stack reserve size                              = ",
     "8stack commit size                               = ",
     "8size of local heap to reserve                   = ",
@@ -207,6 +213,7 @@ bool Dmp_pe_head( void )
     unsigned_32         num_tables;
     pe_hdr_table_entry  *tbl_entry;
     unsigned_32         offset;
+    const unsigned char *data;
 
     Exp_off = 0;
     Imp_off = 0;
@@ -235,12 +242,38 @@ bool Dmp_pe_head( void )
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
     if( IS_PE64( Pe_head ) ) {
-        Dump_header( (char *)&PE64( Pe_head ).cpu_type, pe64_exe_msg, 8 );
+        data = (const unsigned char *)&PE64( Pe_head ).cpu_type;
+        Dump_header( data, pe64_exe_msg1, 8 );
+        data += 2;
+        Dump_header( data, pe_exe_msg1,   8 );
+        data += 18;
+        Dump_header( data, pe64_exe_msg2, 8 );
+        data += 2;
+        Dump_header( data, pe_exe_msg2,   8 );
+        data += 22;
+        Dump_header( data, pe64_exe_msg3, 8 );
+        data += 8;
+        Dump_header( data, pe_exe_msg3,   8 );
+        data += 40;
+        Dump_header( data, pe64_exe_msg4, 8 );
         DumpCoffHdrFlags( PE64( Pe_head ).flags );
         tbl_entry = PE64( Pe_head ).table;
         num_tables = PE64( Pe_head ).num_tables;
     } else {
-        Dump_header( (char *)&PE32( Pe_head ).cpu_type, pe_exe_msg, 4 );
+        data = (const unsigned char *)&PE32( Pe_head ).cpu_type;
+        Dump_header( data, pe32_exe_msg1, 4 );
+        data += 2;
+        Dump_header( data, pe_exe_msg1,   4 );
+        data += 18;
+        Dump_header( data, pe32_exe_msg2, 4 );
+        data += 2;
+        Dump_header( data, pe_exe_msg2,   4 );
+        data += 22;
+        Dump_header( data, pe32_exe_msg3, 4 );
+        data += 8;
+        Dump_header( data, pe_exe_msg3,   4 );
+        data += 40;
+        Dump_header( data, pe32_exe_msg4, 4 );
         DumpCoffHdrFlags( PE32( Pe_head ).flags );
         tbl_entry = PE32( Pe_head ).table;
         num_tables = PE32( Pe_head ).num_tables;
