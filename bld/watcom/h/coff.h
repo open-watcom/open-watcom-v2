@@ -535,6 +535,9 @@ enum {
 #define COFF_IMAGE_NT_OPTIONAL_HDR32_MAGIC   0x010B
 #define COFF_IMAGE_NT_OPTIONAL_HDR64_MAGIC   0x020B
 
+#define COFF_IMAGE_ORDINAL_FLAG32   0x80000000L
+#define COFF_IMAGE_ORDINAL_FLAG64   0x8000000000000000LL
+
 typedef struct {
     uint_32     rva;
     uint_32     size;
