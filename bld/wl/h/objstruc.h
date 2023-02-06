@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -291,12 +291,12 @@ typedef enum {
     CLASS_TRANSFER      = 0x0002,   /* used for PE import transfer code */
     CLASS_MS_TYPE       = 0x0004,
     CLASS_MS_LOCAL      = 0x0008,
-    CLASS_DWARF         = 0x000C,
-    CLASS_CODE          = 0x0010,
-    CLASS_LXDATA_SEEN   = 0x0020,
-    CLASS_READ_ONLY     = 0x0040,
-    CLASS_STACK         = 0x0080,
-    CLASS_IDATA         = 0x0100,
+    CLASS_DWARF         = 0x0010,
+    CLASS_CODE          = 0x0020,
+    CLASS_LXDATA_SEEN   = 0x0040,
+    CLASS_READ_ONLY     = 0x0080,
+    CLASS_STACK         = 0x0100,
+    CLASS_IDATA         = 0x0200,
     CLASS_FIXED         = 0x1000,   // Class should load at specified address
     CLASS_COPY          = 0x2000,   // Class should use data from DupClass
     CLASS_NOEMIT        = 0x4000,   // Class should not generate output

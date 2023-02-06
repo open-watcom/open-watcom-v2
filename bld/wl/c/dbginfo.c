@@ -316,6 +316,8 @@ void ODBIDefClass( class_entry *class, unsigned_32 size )
 {
     debug_info *dinfo;
 
+    if( class->flags & CLASS_DWARF )
+        return;
     dinfo = CurrSect->dbg_info;
     if( dinfo == NULL )
         return;

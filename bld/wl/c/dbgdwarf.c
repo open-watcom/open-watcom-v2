@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -465,10 +465,10 @@ void DwarfDefClass( class_entry *class, unsigned_32 size )
 {
     /* unused parameters */ (void)size;
 
-    if( (class->flags & CLASS_DEBUG_INFO) != CLASS_DWARF )
-        return;
-    DBIClass = class;
-    RingWalk( class->segs, DefAClass );
+    if( class->flags & CLASS_DWARF ) {
+        DBIClass = class;
+        RingWalk( class->segs, DefAClass );
+    }
 }
 
 void DwarfAddGlobal( symbol *sym )

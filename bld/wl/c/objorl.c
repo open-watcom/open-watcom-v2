@@ -477,14 +477,14 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     snode->entry = sdata;
     snode->handle = sec;
     sdata->iscdat = ( (flags & ORL_SEC_FLAG_COMDAT) != 0 );
-    len = sizeof( CoffIDataSegName ) - 1;
-    if( strnicmp( CoffIDataSegName, name, len ) == 0 ) {
+    len = sizeof( CoffIDataSegName "$" ) - 1;
+    if( strnicmp( CoffIDataSegName "$", name, len ) == 0 ) {
         SeenDLLRecord();
         CurrMod->modinfo |= MOD_IMPORT_LIB;
-        if( name[len + 1] == '6' ) {    // it is the segment containg the name
+        if( name[len] == '6' ) {        // .idata$6 it is the segment containg the name
             ORLSecGetContents( sec, (unsigned_8 **)&ImpExternalName );
             ImpExternalName += 2;
-        } else if( name[len + 1] == '4' ) {     // it is an import by ordinal
+        } else if( name[len] == '4' ) { // .idata$4 it is an import by ordinal
             ORLSecGetContents( sec, (void *)&contents );
             ImpOrdinal = *contents;
         }

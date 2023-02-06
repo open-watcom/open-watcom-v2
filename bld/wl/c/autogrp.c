@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +99,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
     if( seg == NULL ) {
         for( class = sec->classlist; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
-                 break;
+                break;
             }
         }
         if( class == NULL ) {
@@ -111,7 +111,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
     while( (seg = RingStep( class->segs, seg )) == NULL ) {
         for( class = class->next_class; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
-                 break;
+                break;
             }
         }
         if( class == NULL ) {
