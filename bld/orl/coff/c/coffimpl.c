@@ -70,10 +70,10 @@ typedef struct {
     coff_import_object_name_type    type;
     int                             processor;
     char                            *DLLName;
-    long                            ordinal;
     char                            *symName;
     char                            *exportedName;
     unsigned_32                     time_date_stamp;
+    unsigned_16                     ordinal;
 } import_sym;
 
 /*
