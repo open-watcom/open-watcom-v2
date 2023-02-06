@@ -1560,7 +1560,7 @@ static void CreateIDataSection( void )
     PrepareToc();
     if( 0 != CalcIDataSize() ) {
         IDataGroup = GetGroup( IDataGrpName );
-        class = FindClass( Root, CoffIDataSegName, true, false );
+        class = FindClass( Root, CoffIDataClassName, true, false );
         class->flags |= CLASS_IDATA | CLASS_LXDATA_SEEN;
         sdata = AllocSegData();
         if( LinkState & LS_HAVE_X64_CODE ) {
