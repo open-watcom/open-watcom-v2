@@ -451,22 +451,25 @@ static void WriteNullThunkData( libfile io, sym_file *sfile, coff_lib_file *c_fi
 {
     char            nulls[8];
     signed_16       sec_num;
-    unsigned_32     section_align;
+    unsigned_32     thunk_section_align;
+    unsigned        thunk_size;
 
-    section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
+    thunk_size = 4;
+    thunk_section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
     if( sfile->import->processor == WL_PROC_X64 ) {
-        section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
+        thunk_size = 8;
+        thunk_section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
     }
     /*
      * section no. 1
      */
-    sec_num = AddCoffSection( c_file, ".idata$5", 0x4, 0, section_align
+    sec_num = AddCoffSection( c_file, ".idata$5", thunk_size, 0, thunk_section_align
         | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymbolNullThunkData( c_file, sec_num, modName );
     /*
      * section no. 2
      */
-    sec_num = AddCoffSection( c_file, ".idata$4", 0x4, 0, section_align
+    sec_num = AddCoffSection( c_file, ".idata$4", thunk_size, 0, thunk_section_align
         | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
     /*
      * write data
@@ -532,12 +535,10 @@ static void WriteShortImportEntry( libfile io, sym_file *sfile, name_len *symNam
 
 static void WriteCoffImportTablesNamed( libfile io, sym_file *sfile, unsigned symb_hints )
 {
-    unsigned_64 import_table_entry;
-    unsigned    pesize;
+    char        nulls[8];
+    unsigned    thunk_size;
     unsigned_16 type;
 
-    pesize = 4;
-    import_table_entry.u._64[0] = 0;
     switch( sfile->import->processor ) {
     case WL_PROC_AXP:
         type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
@@ -550,22 +551,26 @@ static void WriteCoffImportTablesNamed( libfile io, sym_file *sfile, unsigned sy
         break;
     case WL_PROC_X64:
         type = COFF_IMAGE_REL_AMD64_ADDR32NB;
-        pesize = 8;
         break;
     default:
     case WL_PROC_X86:
         type = COFF_IMAGE_REL_I386_DIR32NB;
         break;
     }
+    thunk_size = 4;
+    if( sfile->import->processor == WL_PROC_X64 ) {
+        thunk_size = 8;
+    }
+    memset( nulls, 0, sizeof( nulls ) );
     /*
      * write data section no. 2(4)
      */
-    LibWrite( io, &import_table_entry, pesize );
+    LibWrite( io, nulls, thunk_size );
     WriteCoffReloc( io, 0x0000, symb_hints, type );
     /*
      * write data section no. 3(5)
      */
-    LibWrite( io, &import_table_entry, pesize );
+    LibWrite( io, nulls, thunk_size );
     WriteCoffReloc( io, 0x0000, symb_hints, type );
 }
 
@@ -612,20 +617,21 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
     signed_16       sec_num;
     char            nulls[8];
     unsigned_16     ordinal;
-    unsigned_32     section_align;
+    unsigned_32     thunk_section_align;
     unsigned        symb_name;
     unsigned        symb_imp_name;
     unsigned        symb_toc;
     unsigned        symb_hints;
-    bool            pe64;
+    unsigned        thunk_size;
     bool            is_named;
 
-    section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
+    thunk_size = 4;
+    thunk_section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
     if( sfile->import->processor == WL_PROC_X64 ) {
-        section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
+        thunk_size = 8;
+        thunk_section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
     }
     is_named = ( sfile->import->type == NAMED );
-    pe64 = false;
     /*
      * section no. 1
      */
@@ -649,7 +655,6 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         sec_num = AddCoffSection( c_file, ".text", sizeof( CoffImportX64Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES
             | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
             | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
-        pe64 = true;
         break;
     default:
         sfile->import->processor = WL_PROC_X86;
@@ -689,7 +694,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
     /*
      * section no. 2(4)
      */
-    sec_num = AddCoffSection( c_file, ".idata$5", ( pe64 ) ? 8 : 4, ( is_named ) ? 1 : 0, section_align
+    sec_num = AddCoffSection( c_file, ".idata$5", thunk_size, ( is_named ) ? 1 : 0, thunk_section_align
         | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
         | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
@@ -697,7 +702,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
     /*
      * section no. 3(5)
      */
-    sec_num = AddCoffSection( c_file, ".idata$4", ( pe64 ) ? 8 : 4, ( is_named ) ? 1 : 0, section_align
+    sec_num = AddCoffSection( c_file, ".idata$4", thunk_size, ( is_named ) ? 1 : 0, thunk_section_align
         | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
         | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
