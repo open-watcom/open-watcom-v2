@@ -39,7 +39,10 @@
 
 #define MAX_DATA_QUAD_SEGS (LARGEST_DATA_QUAD_INDEX / DATA_QUADS_PER_SEG + 1)
 
-typedef enum { IS_VALUE, IS_ADDR } fold_state;
+typedef enum {
+    IS_VALUE,
+    IS_ADDR
+} fold_state;
 
 typedef struct {
     target_ssize        offset;
@@ -57,7 +60,8 @@ typedef struct {
 typedef struct data_quad_list {
     DATA_QUAD               dq;
     target_size             size;
-    struct data_quad_list   *prev, *next;
+    struct data_quad_list   *prev;
+    struct data_quad_list   *next;
 } DATA_QUAD_LIST;
 
 static unsigned BitMask[] = {
@@ -95,7 +99,7 @@ static unsigned BitMask[] = {
     0xFFFFFFFF
 };
 
-static DATA_QUAD_LIST   *DataQuadSegs[MAX_DATA_QUAD_SEGS];/* segments for data quads*/
+static DATA_QUAD_LIST   *DataQuadSegs[MAX_DATA_QUAD_SEGS]; /* segments for data quads */
 static DATA_QUAD_LIST   *CurDataQuad;
 static int              DataQuadSegIndex;
 static int              DataQuadIndex;
@@ -120,7 +124,9 @@ void InitDataQuads( void )
     DataQuadIndex = DATA_QUADS_PER_SEG;
     DataQuadSegIndex = -1;
     memset( DataQuadSegs, 0, sizeof( DataQuadSegs ) );
-    /* put a guard at the start */
+    /*
+     * put a guard at the start
+     */
     CurDataQuad = NewDataQuad();
     CurDataQuad->prev = NULL;
     CurDataQuad->next = NULL;
@@ -188,9 +194,11 @@ static DATA_QUAD_LIST *NewDataQuad( void )
     return( dql );
 }
 
-/* splits the dataquad pointed to by dql so that the current one
-   will have size "size" and the new one "oldsize - size" */
 static void SplitDataQuad( DATA_QUAD_LIST *dql, target_size size )
+/*****************************************************************
+ * splits the dataquad pointed to by dql so that the current one
+ * will have size "size" and the new one "oldsize - size"
+ */
 {
     DATA_QUAD_LIST  *ndql;
     DATA_QUAD       *ndq;
@@ -234,7 +242,9 @@ static void SplitDataQuad( DATA_QUAD_LIST *dql, target_size size )
         }
     }
     if( size != 0 ) {
-        /* can't happen ! */
+        /*
+         * can't happen !
+         */
         CErr2p( ERR_FATAL_ERROR, "Bad initializer quad" );
         CSuicide();
     }
@@ -255,18 +265,21 @@ static void GenDataQuad( DATA_QUAD *dq, target_size size )
 
     dql = CurDataQuad->next;
     if( dql != NULL ) {
-        /* overwrite the current dataquad */
+        /*
+         * overwrite the current dataquad
+         */
         cursize = dql->size;
         while( size > cursize && dql->next != NULL ) {
             DeleteDataQuad( dql );
             dql = dql->next;
             cursize += dql->size;
         }
-        /* dql now takes up cursize bytes but was defined to
-           take up dql->size bytes: split into a dataquad with
-           dql->size - (cursize - size) bytes and one with
-           cursize - size bytes.
-        */
+        /*
+         * dql now takes up cursize bytes but was defined to
+         * take up dql->size bytes: split into a dataquad with
+         * dql->size - (cursize - size) bytes and one with
+         * cursize - size bytes.
+         */
         if( size < cursize ) {
             SplitDataQuad( dql, dql->size - ( cursize - size ) );
         }
@@ -306,13 +319,17 @@ static void RelSeekBytes( target_ssize n )
         dql = dql->next;
         n -= dql->size;
     }
-    /* now -dql->size < n <= 0 or dql->next == NULL */
+    /*
+     * now -dql->size < n <= 0 or dql->next == NULL
+     */
     if( n < 0 ) {
         SplitDataQuad( dql, dql->size + n );
     }
     CurDataQuad = dql;
     if( n > 0 ) {
-        /* dql->next == NULL */
+        /*
+         * dql->next == NULL
+         */
         ZeroBytes( n );
     }
 }
@@ -339,11 +356,13 @@ static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
     if( LastCurDataQuad == CurDataQuad ) {
         dq_ptr = &CurDataQuad->dq;
     }
-    if( (DATA_TYPE)dq_ptr->type == dtype && dq_ptr->flags == (Q_DATA | Q_REPEATED_DATA)
+    if( (DATA_TYPE)dq_ptr->type == dtype
+      && dq_ptr->flags == (Q_DATA | Q_REPEATED_DATA)
       && dq_ptr->u_long_value1 == value ) {
         dq_ptr->u_rpt_count++;                  /* increment repeat count */
         CurDataQuad->size += size;
-    } else if( (DATA_TYPE)dq_ptr->type == dtype && dq_ptr->flags == Q_DATA ) {
+    } else if( (DATA_TYPE)dq_ptr->type == dtype
+      && dq_ptr->flags == Q_DATA ) {
         if( dq_ptr->u_long_value1 == value ) {
             dq_ptr->flags |= Q_REPEATED_DATA;
             dq_ptr->u_rpt_count = 2;            /* repeat count */
@@ -362,13 +381,17 @@ static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
         LastCurDataQuad = CurDataQuad;
         return;
     }
-    /* if the next dataquad is non-empty we'll have to delete it */
+    /*
+     * if the next dataquad is non-empty we'll have to delete it
+     */
     dql = CurDataQuad->next;
     if( dql != NULL ) {
         if( dql->size > size ) {
             SplitDataQuad( dql, size );
         }
-        /* no need to "free" the next one, just remove it from the list */
+        /*
+         * no need to "free" the next one, just remove it from the list
+         */
         DeleteDataQuad( dql );
     }
 }
@@ -538,7 +561,7 @@ static void StorePointer( TYPEPTR typ, target_size size )
 
     dq.flags = Q_DATA;
     if( typ->decl_type == TYP_POINTER ) {
-        if( typ->u.p.decl_flags & (FLAG_FAR|FLAG_HUGE) ) {
+        if( typ->u.p.decl_flags & (FLAG_FAR | FLAG_HUGE) ) {
             dq.flags |= Q_FAR_POINTER;
         } else if( typ->u.p.decl_flags & FLAG_NEAR ) {
             dq.flags |= Q_NEAR_POINTER;
@@ -556,7 +579,7 @@ static void StorePointer( TYPEPTR typ, target_size size )
     dq.type = QDT_ID;
     dq.u.var.sym_handle = SYM_NULL;
     dq.u.var.offset = 0;
-    if( CurToken != T_RIGHT_BRACE) {
+    if( CurToken != T_RIGHT_BRACE ) {
         tree = AddrExpr();
         tree = InitAsgn( typ, tree ); // as if we are assigning
         info.offset = 0;
@@ -698,13 +721,15 @@ static FIELDPTR InitBitField( FIELDPTR field )
 }
 
 
-/* typ is the (perhaps subaggregate) object that is initialized.
-   ctyp refers to the current object which is the object
-   associated with the closest brace pair. It may or may not be
-   equal to typ */
-
-/* Detects a C99 designated initializer */
 static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
+/********************************************************************
+ * Detects a C99 designated initializer
+ *
+ * typ is the (perhaps subaggregate) object that is initialized.
+ * ctyp refers to the current object which is the object
+ * associated with the closest brace pair. It may or may not be
+ * equal to typ
+ */
 {
     TREEPTR         tree;
     target_size     offs;
@@ -718,9 +743,10 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
         new_field = true;
         return( field );
     }
-
-    /* if designator refers to outer type: back out */
-    if(typ != ctyp && new_field)
+    /*
+     * if designator refers to outer type: back out
+     */
+    if( typ != ctyp && new_field )
         return( NULL );
 
     new_field = false;
@@ -768,8 +794,10 @@ static bool DesignatedInSubAggregate( DATA_TYPE decl_type )
     case TYP_FCOMPLEX:
     case TYP_DCOMPLEX:
     case TYP_LDCOMPLEX:
-        /* A subaggregate can be stopped by a designated initializer.
-           in that case the comma was already eaten... */
+        /*
+         * A subaggregate can be stopped by a designated initializer.
+         * in that case the comma was already eaten...
+         */
         return( CurToken == T_DOT || CurToken == T_LEFT_BRACKET );
     default:
         return( false );
@@ -807,7 +835,9 @@ static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
             if( !typ->u.array->unspecified_dim )
                 break;
             array_size = n;
-            /* clear out the new element just in case */
+            /*
+             * clear out the new element just in case
+             */
             elem_size = SizeOfArg( typ->object );
             ZeroBytes( elem_size );
             RelSeekBytes( -(target_ssize)elem_size );
@@ -834,21 +864,28 @@ static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
     }
 }
 
-/* Detects a C99 designated initializer for fields */
-/* Initialize struct or union fields */
 static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
+/***********************************************************************
+ * Initialize struct or union fields
+ * Detects a C99 designated initializer for fields
+ */
 {
     TYPEPTR         ftyp;
     target_size     n;
     target_size     offset;
 
-    n = typ->u.tag->size;      /* get full size of the struct or union */
+    /*
+     * get full size of the struct or union
+     */
+    n = typ->u.tag->size;
     offset = 0;
     for( ;; ) {
         field = DesignatedInit( typ, ctyp, field );
         if( field == NULL )
             break;
-        /* The first field might not start at offset 0 */
+        /*
+         * The first field might not start at offset 0
+         */
         if( field->offset != offset ) {
             RelSeekBytes( field->offset - offset );
         }
@@ -865,7 +902,9 @@ static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
                 ZeroBytes( n - offset );    /* pad the rest */
             }
             offset = n;
-            /* designated initializers may still override this field */
+            /*
+             * designated initializers may still override this field
+             */
             field = NULL;
         }
         if( CurToken == T_EOF )
@@ -936,10 +975,14 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
             } else if( level == 0 ) {
                 CErr1( ERR_NEED_BRACES );
             }
-            if( typ == ctyp ) { /* initialize new current type */
-                /* first zero out the whole array; otherwise
-                   overlapping fields caused by designated
-                   initializers will make life very difficult */
+            if( typ == ctyp ) {
+                /*
+                 * initialize new current type
+                 *
+                 * first zero out the whole array; otherwise
+                 * overlapping fields caused by designated
+                 * initializers will make life very difficult
+                 */
                 ZeroBytes( size );
                 RelSeekBytes( -(target_ssize)size );
             }
@@ -955,9 +998,13 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
         } else if( level == 0 ) {
             CErr1( ERR_NEED_BRACES );
         }
-        if( typ == ctyp ) { /* initialize new current type */
-            /* zero out all fields; otherwise overlapping fields caused
-               by designated initializers will make life very difficult */
+        if( typ == ctyp ) {
+            /*
+             * initialize new current type
+             *
+             * zero out all fields; otherwise overlapping fields caused
+             * by designated initializers will make life very difficult
+             */
             ZeroBytes( size );
             RelSeekBytes( -(target_ssize)size );
         }
@@ -1046,14 +1093,15 @@ static bool WCharArray( TYPEPTR typ )
 }
 
 static void InitCharArray( TYPEPTR typ )
+/***************************************
+ * This function handles the initialization of statements like:
+ * char  name[4] = "abcd";
+ */
 {
     target_size         len;
     STR_HANDLE          str_lit;
     target_size         size;
     DATA_QUAD           dq;
-
-/*      This function handles the initialization of statements like:  */
-/*              char  name[4] = "abcd";  */
 
     str_lit = GetLiteral();
     if( CompFlags.wide_char_string )
@@ -1066,7 +1114,9 @@ static void InitCharArray( TYPEPTR typ )
         if( ( len - size ) > 1 ) {
             CWarn1( ERR_LIT_TOO_LONG );
         }
-        /* chop the string */
+        /*
+         * chop the string
+         */
         len = size;
         str_lit->length = size;
     }
@@ -1082,6 +1132,10 @@ static void InitCharArray( TYPEPTR typ )
 
 
 static void InitWCharArray( TYPEPTR typ )
+/****************************************
+ * This function handles the initialization of statements like:
+ * wchar_t  name[5] = L"abcd";
+ */
 {
     target_size         len;
     target_size         i;
@@ -1093,10 +1147,6 @@ static void InitWCharArray( TYPEPTR typ )
 
     dq.type = QDT_SHORT;
     dq.flags = Q_DATA;
-
-/*      This function handles the initialization of statements like:  */
-/*              wchar_t  name[5] = L"abcd";  */
-
     str_lit = GetLiteral();
     if( !CompFlags.wide_char_string )
         CErr1( ERR_TYPE_MISMATCH );
@@ -1181,23 +1231,33 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
     struct_typ = NULL;
     last_array = NULL;
     typ = sym->sym_type;
-    /* Follow chain of typedefs/structs/arrays */
+    /*
+     * Follow chain of typedefs/structs/arrays
+     */
     for( ;; ) {
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYP_ARRAY ) {
-            /* Remember innermost array type */
+            /*
+             * Remember innermost array type
+             */
             last_array = typ;
             typ = typ->object;
         } else if( typ->decl_type == TYP_STRUCT ) {
             FIELDPTR    field;
 
-            /* Remember outermost structure type */
+            /*
+             * Remember outermost structure type
+             */
             if( struct_typ == NULL ) {
-                /* last_array cannot to be outside this struct! */
+                /*
+                 * last_array cannot to be outside this struct!
+                 */
                 last_array = NULL;
                 struct_typ = typ;
             }
-            /* Determine the type of the last field in the struct */
+            /*
+             * Determine the type of the last field in the struct
+             */
             field = typ->u.tag->u.field_list;
             if( field == NULL )
                 break;
@@ -1209,21 +1269,28 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
         }
     }
     typ = last_array;
-    /* If innermost array had unspecified dimension, create new types whose
+    /*
+     * If innermost array had unspecified dimension, create new types whose
      * dimensions will be determined by number of initializers
      */
     if( (typ != NULL) && typ->u.array->unspecified_dim ) {
         if( struct_typ == NULL ) {
-            /* Array was not inside struct */
+            /*
+             * Array was not inside struct
+             */
             sym->sym_type = ArrayNode( typ->object );
             sym->sym_type->u.array->unspecified_dim = true;
         } else {
             typ = sym->sym_type;
-            /* Create new structure type */
+            /*
+             * Create new structure type
+             */
             sym->sym_type = TypeNode( TYP_STRUCT, ArrayNode( last_array->object ) );
             sym->sym_type->u.tag = struct_typ->u.tag;
             struct_typ = sym->sym_type;
-            /* Create new array types as necessary */
+            /*
+             * Create new array types as necessary
+             */
             for( ;; ) {
                 SKIP_TYPEDEFS( typ );
                 if( typ->decl_type != TYP_ARRAY )
@@ -1241,7 +1308,9 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
     InitSymData( sym->sym_type, sym->sym_type, 0 );
     SymGet( sym, sym_handle );
     if( struct_typ != NULL ) {
-        /* Structure contains an unspecified length array as last field */
+        /*
+         * Structure contains an unspecified length array as last field
+         */
         struct_typ->object->u.array->dimension = typ->u.array->dimension;
         typ->u.array->unspecified_dim = true;
         typ->u.array->dimension = 0;    /* Reset back to 0 */
@@ -1275,7 +1344,9 @@ static void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
     StaticInit( &sym2, sym2_handle );
     CompFlags.initializing_data = false;
     SymReplace( &sym2, sym2_handle );
-    /* StaticInit will change sym2.sym_type if it is an incomplete array type */
+    /*
+     * StaticInit will change sym2.sym_type if it is an incomplete array type
+     */
     sym->sym_type = sym2.sym_type;
     AssignAggregate( VarLeaf( sym, sym_handle ),
                      VarLeaf( &sym2, sym2_handle ), sym->sym_type );
@@ -1559,7 +1630,10 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                     InitArrayStructVarZero( sym, sym_handle, i, typ2 );
                 }
             }
-            NextToken();                    // skip over T_RIGHT_BRACE
+            /*
+             * skip over T_RIGHT_BRACE
+             */
+            NextToken();
             break;
         }
         /* fall through */
@@ -1586,7 +1660,9 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
         SrcLoc = TokenLoc;
         typ = sym->sym_type;
         SKIP_TYPEDEFS( typ );
-        /* check for { before checking for array, struct or union  */
+        /*
+         * check for { before checking for array, struct or union
+         */
         if( CurToken != T_LEFT_BRACE && typ->decl_type != TYP_ARRAY ) {
             AddStmt( AsgnOp( VarLeaf( sym, sym_handle ), T_ASSIGN_LAST, CommaExpr() ) );
             sym->flags |= SYM_ASSIGNED;
@@ -1597,8 +1673,10 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
                 AggregateVarDeclEquals( sym, sym_handle );
             }
         } else if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION ) {
-            if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits && SimpleStruct( typ ) ) {
-                NextToken();  //T_LEFT_BRACE
+            if( CurToken == T_LEFT_BRACE
+              && CompFlags.auto_agg_inits
+              && SimpleStruct( typ ) ) {
+                NextToken(); //T_LEFT_BRACE
                 InitArrayStructVar( sym, sym_handle, 0, typ );
                 NextToken(); //T_RIGHT_BRACE
             } else {
