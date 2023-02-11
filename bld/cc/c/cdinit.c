@@ -408,8 +408,10 @@ static void StoreIValue64( DATA_TYPE dtype, int64 value )
 }
 
 static void AddrFold( TREEPTR tree, addrfold_info *info )
+/********************************************************
+ * Assume tree has been const folded
+ */
 {
-// Assume tree has been const folded
     SYM_ENTRY           sym;
     target_ssize        offset;
 
@@ -933,7 +935,9 @@ static void InitUnion( TYPEPTR typ, TYPEPTR ctyp )
     FIELDPTR            field;
     TYPEPTR             ftyp;
 
-    // skip unnamed bit fields
+    /*
+     * skip unnamed bit fields
+     */
     for( field = typ->u.tag->u.field_list; field != NULL; field = field->next_field ) {
         ftyp = field->field_type;
         SKIP_TYPEDEFS( ftyp );
@@ -960,7 +964,9 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
             CErr1( ERR_EMPTY_INITIALIZER_LIST );
         }
     }
-    // skip typedefs, go into enum base
+    /*
+     * skip typedefs, go into enum base
+     */
     typ = SkipTypeFluff( typ );
     size = SizeOfArg( typ );
     switch( typ->decl_type ) {
@@ -1372,7 +1378,7 @@ static void InitStructField( SYMPTR sym, SYM_HANDLE sym_handle, target_size base
     AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
 }
 
-static void InitArrayStructVarZero( SYMPTR sym, SYM_HANDLE sym_handle, int index, TYPEPTR typ )
+static void InitStructUnionVarZero( SYMPTR sym, SYM_HANDLE sym_handle, int index, TYPEPTR typ )
 {
     FIELDPTR    field;
     target_size base;
@@ -1383,7 +1389,7 @@ static void InitArrayStructVarZero( SYMPTR sym, SYM_HANDLE sym_handle, int index
     }
 }
 
-static void InitArrayStructVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TYPEPTR typ )
+static void InitStructUnionVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TYPEPTR typ )
 {
     TREEPTR     value;
     FIELDPTR    field;
@@ -1518,7 +1524,10 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
     case TYP_DIMAGINARY:
     case TYP_LDIMAGINARY:
     case TYP_BOOL:
-        NextToken();                    // skip over T_LEFT_BRACE
+        /*
+         * skip over T_LEFT_BRACE
+         */
+        NextToken();
         if( CharArray( typ->object ) ) {
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
@@ -1591,21 +1600,24 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
     case TYP_STRUCT:
     case TYP_UNION:
         if( SimpleStruct( typ2 ) ) {
-            NextToken();                    // skip over T_LEFT_BRACE
+            /*
+             * skip over T_LEFT_BRACE
+             */
+            NextToken();
             n = typ->u.array->dimension;
             dim = 0;
             i = 0;
             for( ;; ) {
                 if( DesignatedInit( typ, typ, &i ) != NULL ) {
                     for( j = dim; j < i; j++ ) {
-                        InitArrayStructVarZero( sym, sym_handle, j, typ2 );
+                        InitStructUnionVarZero( sym, sym_handle, j, typ2 );
                     }
                 }
                 token = CurToken;
                 if( token == T_LEFT_BRACE ) {
                     NextToken();
                 }
-                InitArrayStructVar( sym, sym_handle, i, typ2 );
+                InitStructUnionVar( sym, sym_handle, i, typ2 );
                 if( token == T_LEFT_BRACE ) {
                     MustRecog( T_RIGHT_BRACE );
                 }
@@ -1627,7 +1639,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 typ->u.array->dimension = dim;
             } else {
                 for( i = dim; i < n; i++ ) { // mop up
-                    InitArrayStructVarZero( sym, sym_handle, i, typ2 );
+                    InitStructUnionVarZero( sym, sym_handle, i, typ2 );
                 }
             }
             /*
@@ -1677,7 +1689,7 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
               && CompFlags.auto_agg_inits
               && SimpleStruct( typ ) ) {
                 NextToken(); //T_LEFT_BRACE
-                InitArrayStructVar( sym, sym_handle, 0, typ );
+                InitStructUnionVar( sym, sym_handle, 0, typ );
                 NextToken(); //T_RIGHT_BRACE
             } else {
                 AggregateVarDeclEquals( sym, sym_handle );

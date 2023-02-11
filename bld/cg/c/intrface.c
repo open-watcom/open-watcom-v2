@@ -433,7 +433,7 @@ void _CGAPI     BEFiniPatch( patch_handle patch )
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-static  back_handle     NewBackReturn = NULL;
+static back_handle      NewBackReturn = NULL;
 
 name * cg_internal LkAddBackUserTemp( cg_sym_handle sym, name *temp )
 /*******************************************************************/

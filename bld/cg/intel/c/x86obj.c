@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2611,7 +2611,7 @@ void    IncLocation( offset by )
             FatalError( "segment too large" );
         } else if( CurrSeg->comdat_label == NULL ) {
             CurrSeg->big = 1;
-            if( CurrSeg->attr & SEG_USE_32  ) {
+            if( CurrSeg->attr & SEG_USE_32 ) {
                 CurrSeg->max_size = (long_offset)(-1);
                 CurrSeg->location = (long_offset)(-1);
             } else {
