@@ -433,26 +433,26 @@ void _CGAPI     BEFiniPatch( patch_handle patch )
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-static  pointer                 NewBackReturn = NULL;
+static  back_handle     NewBackReturn = NULL;
 
-pointer cg_internal LkAddBack( cg_sym_handle sym, pointer curr_back )
+name * cg_internal LkAddBackUserTemp( cg_sym_handle sym, name *temp )
 /*******************************************************************/
 {
     back_handle bck;
 
-    NewBackReturn = TO_FAKE_BACK( curr_back );
+    NewBackReturn = TO_FAKE_BACK( (back_handle)temp );
     bck = FEBack( sym );
     NewBackReturn = NULL;
-    return( TO_REAL_BACK( bck ) );
+    return( (name *)TO_REAL_BACK( bck ) );
 }
 
-back_handle cg_internal SymBack( cg_sym_handle sym )
-/**************************************************/
+name * cg_internal SymBackUserTemp( cg_sym_handle sym )
+/*****************************************************/
 {
     back_handle bck;
 
     bck = FEBack( sym );
-    return( TO_REAL_BACK( bck ) );
+    return( (name *)TO_REAL_BACK( bck ) );
 }
 
 static void AllocMoreBckInfo( void )

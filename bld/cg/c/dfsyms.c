@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -298,8 +298,9 @@ static back_handle  MakeLabel( void )
 }
 
 void    DFInitDbgInfo( void )
-/***************************/
-/* called after ObjInit */
+/****************************
+ * called after ObjInit
+ */
 {
     CurrFNo = 0;
     CcuDef = false;
@@ -427,13 +428,14 @@ static int InitCU( dw_cu_info *cu )
 }
 
 void    DFSymRange( cg_sym_handle sym, offset size )
-/**************************************************/
-// I don't see what this is good for. The aranges for any
-// comdat symbols will be taken care of by DFSegRange().
-// Running this code may produce overlapping aranges that
-// confuse the hell out of the debugger. However, not running
-// this may cause debug information to be missing... call it
-// a FIXME
+/***************************************************
+ * I don't see what this is good for. The aranges for any
+ * comdat symbols will be taken care of by DFSegRange().
+ * Running this code may produce overlapping aranges that
+ * confuse the hell out of the debugger. However, not running
+ * this may cause debug information to be missing... call it
+ * a FIXME
+ */
 {
     if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
         ARange = FEBack( sym );
@@ -442,8 +444,9 @@ void    DFSymRange( cg_sym_handle sym, offset size )
 }
 
 void    DFSegRange( void )
-/************************/
-/* do arange for the current segment */
+/*************************
+ * do arange for the current segment
+ */
 {
     back_handle bck;
     offset      off;
@@ -465,8 +468,9 @@ void    DFSegRange( void )
 }
 
 void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
-/**************************************************************/
-// Call when codeseg hase been defined
+/***************************************************************
+ * Call when codeseg hase been defined
+ */
 {
     dw_cu_info      cu;
     back_handle     bck;
@@ -545,8 +549,9 @@ static const char *SetDwarfProducer( void )
 }
 
 void    DFObjInitDbgInfo( void )
-/******************************/
-/* called by objinit to init segments and dwarf writing library */
+/*******************************
+ * called by objinit to init segments and dwarf writing library
+ */
 {
     static const dw_funcs cli_funcs = {
         CLIReloc,
@@ -615,8 +620,9 @@ void    DFObjInitDbgInfo( void )
 }
 
 void    DFObjLineInitDbgInfo( void )
-/**********************************/
-/* called by objinit to init segments and dwarf writing library */
+/***********************************
+ * called by objinit to init segments and dwarf writing library
+ */
 {
     static const dw_funcs cli_funcs = {
         CLIReloc,
@@ -664,14 +670,18 @@ void    DFObjLineInitDbgInfo( void )
 
 
 pointer _CGAPI DFClient( void )
-/* return the client handle **/
+/******************************
+ * return the client handle
+ */
 {
     return( Client );
 }
 
-//TODO: maybe this should be some sort of call back
 void _CGAPI DFDwarfLocal( pointer client, pointer locid, pointer sym )
-/*** add to location expr where local sym is ************************/
+/*********************************************************************
+ * TODO: maybe this should be some sort of call back
+ * add to location expr where local sym is
+ */
 {
     name        *tmp;
     type_length offset;
@@ -679,7 +689,6 @@ void _CGAPI DFDwarfLocal( pointer client, pointer locid, pointer sym )
     tmp = DeAlias( AllocUserTemp( sym, XX ) );
     offset = NewBase( tmp );
     DWLocOp( client, locid, DW_LOC_fbreg, offset );
-
 }
 
 void    DFFiniDbgInfo( void )
@@ -808,7 +817,9 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
 }
 
 void    DFTypedef( const char *nm, dbg_type tipe )
-/*** emit a user typedef ************************/
+/*************************************************
+ * emit a user typedef
+ */
 {
      DWTypedef( Client, tipe, nm, 0, 0 );
 }
@@ -841,13 +852,15 @@ static void    SymParm( cg_sym_handle sym, dw_loc_handle loc, dw_loc_handle entr
     DWFormalParameter( Client, dbtype, loc, entry,  name, DW_DEFAULT_NONE );
 }
 
-/**/
-/* Coming out of optimizer queue*/
-/**/
+/*
+ * Coming out of optimizer queue
+ */
 
 #if _TARGET_INTEL
 static dw_loc_handle  RetLoc( uint_32 ret_offset )
-/**** make a loc for return address *************/
+/*************************************************
+ * make a loc for return address
+ */
 {
     dw_loc_id       locid;
     dw_loc_handle   df_loc;
@@ -859,7 +872,9 @@ static dw_loc_handle  RetLoc( uint_32 ret_offset )
 }
 
 static dw_loc_handle  FrameLoc( void )
-/** make a loc for frame  address ***/
+/*
+ * make a loc for frame address
+ */
 {
     uint            dsp;
     dw_loc_id       locid;
@@ -873,7 +888,9 @@ static dw_loc_handle  FrameLoc( void )
 }
 #endif
 static dw_loc_id StkLoc( uint_32 stk_offset, dw_loc_id locid )
-/**** make a loc for stack  address *************************/
+/*************************************************************
+ * make a loc for stack  address
+ */
 {
     uint            stk;
 
@@ -883,8 +900,9 @@ static dw_loc_id StkLoc( uint_32 stk_offset, dw_loc_id locid )
 }
 
 static  dbg_local *UnLinkLoc( dbg_local **owner, cg_sym_handle sym )
-/******************************************************************/
-// unlink dbg_local with sym from owner
+/*******************************************************************
+ * unlink dbg_local with sym from owner
+ */
 {
     dbg_local           *curr;
 

@@ -1167,10 +1167,9 @@ void    ObjEmitSeq( byte_seq *code )
         reloc_sym = NULL;
         ins_opcode = InsRelocInit( code_ptr );
         while( curr != NULL && curr->off == i ) {
-            back = SymBack( curr->sym );
             switch( curr->type ) {
             case OWL_RELOC_FP_OFFSET:
-                loc = TempLocation( (name *)back );
+                loc = TempLocation( SymBackUserTemp( curr->sym ) );
                 if( loc > 32767 ) {
                     FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
                 }
@@ -1179,6 +1178,7 @@ void    ObjEmitSeq( byte_seq *code )
             case OWL_RELOC_PAIR:
                 break;
             default:
+                back = FEBack( curr->sym );
                 reloc_type = curr->type;
                 reloc_sym = back->lbl;
             }

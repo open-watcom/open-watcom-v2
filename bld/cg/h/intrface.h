@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,8 @@
 
 #define cg_internal
 
-extern pointer          cg_internal LkAddBack( cg_sym_handle sym, pointer curr_back );
-extern back_handle      cg_internal SymBack( cg_sym_handle sym );
+extern name             * cg_internal LkAddBackUserTemp( cg_sym_handle sym, name *temp );
+extern name             * cg_internal SymBackUserTemp( cg_sym_handle sym );
 extern const char       * cg_internal AskName( pointer hdl, cg_class class );
 extern label_handle     cg_internal AskForSymLabel( pointer hdl, cg_class class );
 extern import_handle    cg_internal AskImportHandle( cg_sym_handle sym );

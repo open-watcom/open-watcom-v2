@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -491,14 +491,14 @@ name    *SAllocUserTemp( pointer symbol, type_class_def type_class, type_length 
     name        *new_t;
 
     type_class = OneClass[type_class];
-    new_t = LkAddBack( symbol, NULL );
+    new_t = LkAddBackUserTemp( symbol, NULL );
     if( new_t == NULL ) {
         new_t = AllocTemp( type_class );
         new_t->v.symbol = symbol;
         if( size != 0 ) {
             new_t->n.size = size;
         }
-        LkAddBack( symbol, new_t );
+        LkAddBackUserTemp( symbol, new_t );
         return( new_t );
     } else {
         if( new_t->n.type_class == type_class && type_class != XX )
