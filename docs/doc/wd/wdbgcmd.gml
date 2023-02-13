@@ -188,38 +188,38 @@ Break [|/Set|/Byte|/Word|/DWord|/Modify]
 .np
 This command deactivates a breakpoint:
 .code begin
-Break/Deactivate <brkid>
+Break /Deactivate <brkid>
 .code end
 .np
 This command enables a breakpoint:
 .code begin
-Break/Activate <brkid>
+Break /Activate <brkid>
 .code end
 .np
 This command clears a breakpoint:
 .code begin
-Break/Clear <brkid>
+Break /Clear <brkid>
 .code end
 .np
 This command toggles a breakpoint through the active/inactive/deleted
 states:
 .code begin
-Break/Toggle <brkid>
+Break /Toggle <brkid>
 .code end
 .np
 This command turns on the resume option in the breakpoint:
 .code begin
-Break/Resume <brkid>
+Break /Resume <brkid>
 .code end
 .np
 This command turns off the resume option in the breakpoint:
 .code begin
-Break/UnResume <brkid>
+Break /UnResume <brkid>
 .code end
 .np
 This command turns on/off the breakpoint for appropriate image(DLL) load:
 .code begin
-Break/Image [/Clear] <image(DLL) name>
+Break /Image [/Clear] <image(DLL) name>
 .code end
 .np
 
@@ -1062,7 +1062,7 @@ print {decimal=%d hex=%x} 100,100
 .code end
 This command opens a watch window and displays the value of argv[0]:
 .code begin
-print/window argv[0]
+print /window argv[0]
 .code end
 
 .cmddef Quit
