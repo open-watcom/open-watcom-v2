@@ -675,53 +675,68 @@ extern void ChkCallParms( void )
 bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 {
     unsigned        high;
+    unsigned long   value;
+    bool            sign;
 
     if( opnd2->op.opr == OPR_PUSHINT ) {
+        if( opnd2->u.expr_type->decl_type == TYP_LONG64 || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
+            value = opnd2->op.u2.ulong64_value.u._32[I64HI32];
+            sign = ( value == 0xffffffffU );
+            if( value != 0 && !sign ) {
+                return( typ1->decl_type == TYP_LONG64 || typ1->decl_type == TYP_ULONG64 );
+            }
+            value = opnd2->op.u2.ulong64_value.u._32[I64LO32];
+        } else {
+            sign = ( opnd2->op.u2.long_value < 0 );
+            value = opnd2->op.u2.ulong_value;
+        }
         switch( typ1->decl_type ) {
         case TYP_FIELD:
         case TYP_UFIELD:
             high = 0xffffffffU >> (MAXSIZE - (typ1->u.f.field_width));
-            if( opnd2->op.u2.ulong_value > high ) {
-                if( (opnd2->op.u2.ulong_value | (high >> 1)) != ~0U ) {
+            if( value > high ) {
+                if( (value | (high >> 1)) != ~0U ) {
                     return( false );
                 }
             }
             break;
         case TYP_CHAR:
-            if( opnd2->op.u2.long_value > 127 ||
-                opnd2->op.u2.long_value < -128 ) {
+            if( !sign && ( value > 127 )
+              || sign && ( (long)value < -128 ) )
                 return( false );
-            }
             break;
         case TYP_UCHAR:
-            if( opnd2->op.u2.ulong_value > 0xff) {
-                if( (opnd2->op.u2.ulong_value | (0xff >> 1)) != ~0U ) {
+            if( value > 0xffU ) {
+                if( (value | ( 0xffU >> 1 )) != ~0U ) {
                     return( false );
                 }
             }
             break;
-        case TYP_UINT:
-#if TARGET_INT > TARGET_SHORT
-            break;
-#endif
-            // fall throught
-        case TYP_USHORT:
-            if( opnd2->op.u2.ulong_value > 0xffff ) {
-                if( (opnd2->op.u2.ulong_value | (0xffff >> 1)) != ~0U ) {
-                    return( false );
-                }
-            }
-            break;
+#if TARGET_INT == TARGET_SHORT
         case TYP_INT:
-#if TARGET_INT > TARGET_SHORT
-            break;
 #endif
-            // fall throught
         case TYP_SHORT:
-            if( opnd2->op.u2.long_value > 32767 ||
-                opnd2->op.u2.long_value < -32768 ) {
+            if( !sign && ( value > 32767 )
+              || sign && ( (long)value < -32768 ) )
                 return( false );
+            break;
+#if TARGET_INT == TARGET_SHORT
+        case TYP_UINT:
+#endif
+        case TYP_USHORT:
+            if( value > 0xffffU ) {
+                if( (value | (0xffffU >> 1)) != ~0U ) {
+                    return( false );
+                }
             }
+            break;
+#if TARGET_INT == TARGET_LONG
+        case TYP_INT:
+#endif
+        case TYP_LONG:
+            if( !sign && ( value > 2147483647 )
+              || sign && ( (long)value < -2147483648 ) )
+                return( false );
             break;
         default:
             break;
