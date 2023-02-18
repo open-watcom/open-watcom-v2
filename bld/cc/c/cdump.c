@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -320,6 +320,7 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
 {
     SYM_ENTRY           sym;
     TYPEPTR             obj;
+    char                tempbuf[20];
 
     for( ; typ->decl_type != TYP_TYPEDEF && typ->decl_type != TYP_ENUM; ) {
         obj = Object( typ );
@@ -334,6 +335,10 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
     } else {
         if( typ->type_flags & TF2_TYP_PLAIN_CHAR ) {
             ChunkSaveStrWord( pch, "char" );
+        } else if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
+            ChunkSaveStr( pch, CTypeNames[typ->u.f.field_type] );
+            sprintf( tempbuf, ":%u", (unsigned)typ->u.f.field_width );
+            ChunkSaveStr( pch, tempbuf );
         } else {
             ChunkSaveStrWord( pch, CTypeNames[typ->decl_type] );
         }
