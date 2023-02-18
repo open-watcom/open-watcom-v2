@@ -670,8 +670,6 @@ extern void ChkCallParms( void )
     }
 }
 
-#define MAXSIZE        TARGET_BITS
-
 bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 {
     unsigned        high;
@@ -693,7 +691,7 @@ bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
         switch( typ1->decl_type ) {
         case TYP_FIELD:
         case TYP_UFIELD:
-            high = 0xffffffffU >> (MAXSIZE - (typ1->u.f.field_width));
+            high = 0xffffffffU >> (TARGET_BITFIELD * CHAR_BIT - typ1->u.f.field_width);
             if( value > high ) {
                 if( (value | (high >> 1)) != ~0U ) {
                     return( false );

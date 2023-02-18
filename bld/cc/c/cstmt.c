@@ -981,7 +981,7 @@ static void SwitchStmt( void )
     typ = TypeOf( tree );
     SKIP_ENUM( typ );
     if( typ->decl_type == TYP_UFIELD ) {
-        if( typ->u.f.field_width == (TARGET_INT * 8) ) {
+        if( typ->u.f.field_width == (TARGET_INT * CHAR_BIT) ) {
             sw->case_format = "%lu";
 //            switch_type = TYP_UINT;
         }

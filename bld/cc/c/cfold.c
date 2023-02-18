@@ -1109,7 +1109,7 @@ static bool FoldableTree( TREEPTR tree )
 
             seg_val = LongValue64( tree->left );
             off_val = LongValue64( tree->right );
-            U64ShiftL( &seg_val, TARGET_NEAR_POINTER * 8, &value );
+            U64ShiftL( &seg_val, TARGET_NEAR_POINTER * CHAR_BIT, &value );
             U64Or( &value, &off_val, &value );
             tree->op.u2.ulong64_value = value;
             tree->op.opr = OPR_PUSHINT;

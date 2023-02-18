@@ -1023,7 +1023,7 @@ static target_size GetFields( TYPEPTR decl )
     worst_alignment = 1;
     bits_available = 1;
     bits_total = 0;
-    /* assertion: bits_available != bits_total && bits_total >> 3 == 0 */
+    /* assertion: bits_available != bits_total && ( bits_total / CHAR_BIT ) == 0 */
     struct_size = start;
     next_offset = start;
     for(;;) {
@@ -1046,13 +1046,13 @@ static target_size GetFields( TYPEPTR decl )
         }
         unqualified_type = UnQualifiedType( typ );
         if( decl->decl_type == TYP_UNION ) {
-            bits_total = TypeSize( typ ) * 8;
+            bits_total = TypeSize( typ ) * CHAR_BIT;
         } else if( bits_available == bits_total ) {
-            bits_total = TypeSize( typ ) * 8;
+            bits_total = TypeSize( typ ) * CHAR_BIT;
             bits_available = bits_total;
         } else if( unqualified_type != prev_unqualified_type ) {
-            next_offset += bits_total >> 3;
-            bits_total = TypeSize( typ ) * 8;
+            next_offset += bits_total / CHAR_BIT;
+            bits_total = TypeSize( typ ) * CHAR_BIT;
             bits_available = bits_total;
         }
         prev_unqualified_type = unqualified_type;
@@ -1081,20 +1081,20 @@ static target_size GetFields( TYPEPTR decl )
                 if( (int)width < 0 ) {
                     CErr1( ERR_WIDTH_NEGATIVE );
                     width = 0;
-                } else if( width > TARGET_BITS || width > bits_total ) {
+                } else if( width > ( TARGET_BITFIELD * CHAR_BIT ) || width > bits_total ) {
                     CErr1( ERR_FIELD_TOO_WIDE );
-                    width = TARGET_BITS;
+                    width = TARGET_BITFIELD * CHAR_BIT;
                 }
                 if( width > bits_available || width == 0 ) {
                     scalar_size = TypeSize( typ );
                     if( bits_available != bits_total ) {
                         /* some bits have been used; abandon this unit */
-                        next_offset += bits_total >> 3;
+                        next_offset += bits_total / CHAR_BIT;
                     } else if( width == 0 ) {
                         /* no bits have been used; align to base type */
                         next_offset = _RoundUp( next_offset, scalar_size );
                     }
-                    bits_total = scalar_size * 8;
+                    bits_total = scalar_size * CHAR_BIT;
                     bits_available = bits_total;
                 }
                 if( field != NULL ) {
@@ -1106,9 +1106,9 @@ static target_size GetFields( TYPEPTR decl )
                 bits_available -= width;
             } else {
                 if( bits_available != bits_total ) { //changed from bit field to non
-                    next_offset += bits_total >> 3;
+                    next_offset += bits_total / CHAR_BIT;
                     field->offset = next_offset;
-                    bits_total = TypeSize( typ ) * 8;
+                    bits_total = TypeSize( typ ) * CHAR_BIT;
                     bits_available = bits_total;
                 }
                 next_offset = FieldAlign( next_offset, field, &worst_alignment );
@@ -1130,7 +1130,7 @@ static target_size GetFields( TYPEPTR decl )
         }
     }
     if( bits_available != bits_total ) { /* if last field was bit field */
-        next_offset += bits_total >> 3;
+        next_offset += bits_total / CHAR_BIT;
         if( next_offset > struct_size ) {
             struct_size = next_offset;
         }
