@@ -29,7 +29,7 @@ struct  _nec98_diskinfo_t {     /* disk parameters */
         void _WCI86FAR *buffer; /* buffer to read to,write from, or compare */
         void _WCI86FAR *result;
 };
-#define _diskinfo_t     _nec98_diskinfo
+#define _diskinfo_t     _nec98_diskinfo_t
 
 :include ext.sp
 #define diskinfo_t      _nec98_diskinfo_t
