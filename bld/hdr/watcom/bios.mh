@@ -24,7 +24,7 @@ struct  _ibm_diskinfo_t {       /* disk parameters */
         unsigned nsectors;      /* number of sectors to read/write/compare  */
         void _WCFAR *buffer;    /* buffer to read to,write from, or compare */
 };
-#define _diskinfo_t     _ibm_diskinfo
+#define _diskinfo_t     _ibm_diskinfo_t
 
 :include ext.sp
 #define diskinfo_t      _ibm_diskinfo_t
