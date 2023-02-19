@@ -3,7 +3,8 @@
 
 typedef enum {
     ALL,
-    BY_POINT
+    BY_POINT,
+    USER_REQ = 64
 } REQ_ID;
 
 typedef struct {

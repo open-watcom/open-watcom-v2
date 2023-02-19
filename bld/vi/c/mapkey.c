@@ -79,7 +79,7 @@ static vi_rc readKeyData( void )
 /*
  * MapKey - set up a key mapping
  */
-vi_rc MapKey( int flag, const char *data )
+vi_rc MapKey( map_flags mflags, const char *data )
 {
     char        keystr[MAX_STR];
 #ifndef VICOMP
@@ -90,7 +90,7 @@ vi_rc MapKey( int flag, const char *data )
     vi_rc       rc;
 
 #ifndef VICOMP
-    if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
+    if( !EditFlags.ScriptIsCompiled || (mflags & MAPFLAG_UNMAP) ) {
 #endif
         rc = readKeyData();
         if( rc != ERR_NO_ERR ) {
@@ -102,7 +102,7 @@ vi_rc MapKey( int flag, const char *data )
     /*
      * get if it is an input/regular key mapping
      */
-    if( flag & MAPFLAG_DAMMIT ) {
+    if( mflags & MAPFLAG_DAMMIT ) {
         maps = InputKeyMaps;
     } else {
         maps = KeyMaps;
@@ -117,7 +117,7 @@ vi_rc MapKey( int flag, const char *data )
      * get key we are using
      */
 #ifndef VICOMP
-    if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
+    if( !EditFlags.ScriptIsCompiled || (mflags & MAPFLAG_UNMAP) ) {
 #endif
         j = Tokenize( CharTokens, keystr, true );
         if( j == TOK_INVALID ) {
@@ -143,7 +143,7 @@ vi_rc MapKey( int flag, const char *data )
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        if( (flag & MAPFLAG_UNMAP) == 0 ) {
+        if( (mflags & MAPFLAG_UNMAP) == 0 ) {
             key_map     scr;
 
             rc = AddKeyMap( &scr, data );
@@ -168,8 +168,8 @@ vi_rc MapKey( int flag, const char *data )
     maps[key].is_base = false;
     _MemFreeArray( maps[key].data );
     maps[key].data = NULL;
-    if( (flag & MAPFLAG_UNMAP) == 0 ) {
-        if( flag & MAPFLAG_BASE ) {
+    if( (mflags & MAPFLAG_UNMAP) == 0 ) {
+        if( mflags & MAPFLAG_BASE ) {
             maps[key].is_base = true;
         }
         return( AddKeyMap( &maps[key], data ) );

@@ -130,10 +130,13 @@ typedef enum {
 
 #define MAX_IO_BUFFER           0x2000
 
-#define MAPFLAG_DAMMIT          0x01
-#define MAPFLAG_UNMAP           0x02
-#define MAPFLAG_MESSAGE         0x04
-#define MAPFLAG_BASE            0x08
+typedef enum {
+    MAPFLAG_NONE        = 0x00,
+    MAPFLAG_DAMMIT      = 0x01,
+    MAPFLAG_UNMAP       = 0x02,
+    MAPFLAG_MESSAGE     = 0x04,
+    MAPFLAG_BASE        = 0x08
+} map_flags;
 
 /*
  * generic file types

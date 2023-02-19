@@ -565,7 +565,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vars_list *vl, srcline *slin
             if( curr->token == PCL_T_MAP_DMT + SRC_T_NULL + 1 ) {
                 rc = MapKey( MAPFLAG_DAMMIT, tmp );
             } else {
-                rc = MapKey( 0, tmp );
+                rc = MapKey( MAPFLAG_NONE, tmp );
             }
             if( rc != ERR_NO_ERR ) {
                 fclose( foo );

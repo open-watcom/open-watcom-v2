@@ -560,7 +560,7 @@ void    ReplaceLLItem( ss **, ss **, ss *, ss * );
 bool    ValidateLL( ss *, ss * );
 
 /* mapkey.c */
-vi_rc   MapKey( int flag, const char *data );
+vi_rc   MapKey( map_flags flags, const char *data );
 vi_rc   DoKeyMap( vi_key );
 void    DoneInputKeyMap( void );
 vi_rc   StartInputKeyMap( vi_key );

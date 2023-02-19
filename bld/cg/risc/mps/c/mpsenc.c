@@ -741,7 +741,7 @@ static  void doZero( instruction *ins, type_class_def type_class )
         /*
          * 'andi res,op1,0xffff'
          */
-        GenIType( 0x0c, _NameReg( ins->result ), _NameReg( ins->operands[0] ), 0x0ffff );
+        GenIType( 0x0c, _NameReg( ins->result ), _NameReg( ins->operands[0] ), (signed_16)0x0ffff );
         break;
     default:
         _Zoiks( ZOIKS_091 );

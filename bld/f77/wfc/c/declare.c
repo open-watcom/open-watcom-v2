@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,9 +64,12 @@
 
 
 #define ERR_MASK                (SY_DATA_INIT | SY_CLASS | SY_USAGE)
-#define SSB_CONSTANT            0    // lo/hi subscript bound is constant
-#define SSB_NOT_CONSTANT        1    // lo/hi subscript bound not constant
-#define SSB_ERROR               2    // lo/hi subscript bound error
+
+typedef enum {
+    SSB_CONSTANT,       /* lo/hi subscript bound is constant */
+    SSB_NOT_CONSTANT,   /* lo/hi subscript bound not constant */
+    SSB_ERROR           /* lo/hi subscript bound error */
+} subscript_type;
 
 
 bool    IsFunctionDefn( void ) {
@@ -418,7 +421,7 @@ void    ArrayDecl( sym_id sym ) {
     unsigned_32         dim_elts;
     int                 ss;
     bool                var_dim;
-    bool                const_lo;
+    subscript_type      const_lo;
     bool                assumed;
     bool                pvd_ok;
     bool                allocatable;

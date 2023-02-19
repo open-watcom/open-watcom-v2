@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,25 +173,24 @@ vi_rc FancyProcessCommandLine( void )
 vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
 {
     vi_rc       rc = ERR_INVALID_COMMAND;
-    bool        mflag;
+    map_flags   mflags;
 
     switch( token ) {
     case PCL_T_MAPBASE_DMT:
     case PCL_T_MAP_DMT:
     case PCL_T_MAPBASE:
     case PCL_T_MAP:
+        mflags = MAPFLAG_NONE;
         if( iscmdline ) {
-            mflag = MAPFLAG_MESSAGE;
-        } else {
-            mflag = 0;
+            mflags |= MAPFLAG_MESSAGE;
         }
         if( token == PCL_T_MAPBASE || token == PCL_T_MAPBASE_DMT ) {
-            mflag |= MAPFLAG_BASE;
+            mflags |= MAPFLAG_BASE;
         }
         if( token == PCL_T_MAP_DMT || token == PCL_T_MAPBASE_DMT ) {
-            mflag |= MAPFLAG_DAMMIT;
+            mflags |= MAPFLAG_DAMMIT;
         }
-        rc = MapKey( mflag, data );
+        rc = MapKey( mflags, data );
         break;
     case PCL_T_MENUFILELIST:
         rc = MenuItemFileList();
@@ -278,7 +277,8 @@ vi_rc RunCommandLine( const char *cmdl )
 {
     int         i, x, y, x2, y2;
     bool        n1f, n2f;
-    int         tkn, flag;
+    int         tkn;
+    map_flags   mflags;
     bool        test1;
     linenum     n1, n2;
     char        st[FILENAME_MAX];
@@ -378,11 +378,11 @@ vi_rc RunCommandLine( const char *cmdl )
         break;
     case PCL_T_UNMAP:
     case PCL_T_UNMAP_DMT:
-        flag = MAPFLAG_MESSAGE + MAPFLAG_UNMAP;
+        mflags = MAPFLAG_MESSAGE | MAPFLAG_UNMAP;
         if( tkn == PCL_T_UNMAP_DMT ) {
-            flag |= MAPFLAG_DAMMIT;
+            mflags |= MAPFLAG_DAMMIT;
         }
-        rc = MapKey( flag, data );
+        rc = MapKey( mflags, data );
         break;
     case PCL_T_EVAL:
         data = Expand( buf, data, NULL );

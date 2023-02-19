@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -502,7 +502,7 @@ static  void    doZero( instruction *ins )
     case U2:
     case I2:
         // andi op1,0xffff -> res
-        GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), 0xffff );
+        GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), (signed_16)0xffff );
         break;
     default:
         _Zoiks( ZOIKS_091 );
