@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _M_I86
+    #include <malloc.h>
+#endif
 #include "watcom.h"
 #include "bool.h"
 #include "roundmac.h"
@@ -224,7 +227,11 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
     unsigned_16 CodeLast;
     unsigned_32 CodeCount;
     s1          CodeFree;
+#ifdef _M_I86
+    s1          _WCHUGE *CodeHeads;
+#else
     s1          *CodeHeads;
+#endif
     s1          *code;
     s2          *new;
     s2          *last;
@@ -250,15 +257,31 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
 
     // allocate memory blocks
 
+#ifdef _M_I86
+    CodeHeads = halloc( 0x10000, sizeof( s1 ) );
+#else
     CodeHeads = malloc( 0x10000 * sizeof( s1 ) );
+#endif
     if( CodeHeads == NULL ) {
         FiniOutFileBuffer( fo );
         return( 0 );
     } else {
+#ifdef _M_I86
+        int     i;
+
+        for( i = 0; i < 4; i++ ) {
+            memset( CodeHeads + i * 0x4000, 0, 0x4000 * sizeof( s1 ) );
+        }
+#else
         memset( CodeHeads, 0, 0x10000 * sizeof( s1 ) );
+#endif
         CodeFree.head = malloc( ( RepMaxSize + 8 ) * sizeof( s2 ) );
         if( CodeFree.head == NULL ) {
+#ifdef _M_I86
+            hfree( CodeHeads );
+#else
             free( CodeHeads );
+#endif
             CodeHeads = NULL;
             FiniOutFileBuffer( fo );
             return( 0 );
@@ -427,7 +450,11 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
                 code = CodeHeads + *(unsigned_16 *)( data - trail_len );
                 if( code->head == NULL ) {
                     // Error
+#ifdef _M_I86
+                    hfree( CodeHeads );
+#else
                     free( CodeHeads );
+#endif
                     return( 0 );
                 }
                 s = code->head;
@@ -491,7 +518,11 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
     fwrite( &cwc_dec, 1, sizeof( cwc_dec ), fo );
     fseek( fo, pos2, SEEK_SET );
     OutTotal += sizeof( cwc_dec );
+#ifdef _M_I86
+    hfree( CodeHeads );
+#else
     free( CodeHeads );
+#endif
     CodeHeads = NULL;
     if( CodeFree.tail != NULL ) {
         free( CodeFree.tail );
