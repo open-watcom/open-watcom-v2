@@ -34,7 +34,6 @@ extra_objs = &
         accredir.obj &
         accmisc.obj &
         accgen.obj &
-        out.obj &
         winpath.obj &
         winfile.obj &
         winrfx.obj &

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,11 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+//#define DEBUG
+
+#include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include <dos.h>
 #define INCLUDE_TOOL_H
 #include "segmcpu.h"
@@ -46,12 +49,104 @@
 #include "initfini.h"
 #include "di386cli.h"
 #include "wclbtool.h"
+#ifdef DEBUG
+    #include "dpmi.h"
+#endif
 
 
 extern WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
 static LPFNINTHCALLBACK     fault_fn;
 static LPFNNOTIFYCALLBACK   notify_fn;
+
+#ifdef DEBUG
+
+#define MONO
+
+/*
+ * Debugging output code for AT
+ */
+static unsigned             DbgFlags = OUT_ALL;
+static int                  _cnt;
+#ifdef MONO
+static int                  _line = 0;
+#endif
+
+static char *GetScreenPointer( void )
+{
+#if 0
+    static short    sel;
+    long            rc;
+
+    if( sel == 0 ) {
+        rc = _DPMISegmentToDescriptor( 0xB000 );
+        if( rc >= 0 ) {
+            sel = rc;
+        }
+    }
+    return( _MK_FP( sel, 0 ) );
+#else
+    extern char _B000H[];
+    return( _MK_FP( _B000H, 0 ) );
+#endif
+}
+
+void MyClearScreen( void )
+{
+#ifdef MONO
+    int i;
+
+    char *scrn = GetScreenPointer();
+
+    for( i = 0; i < 80 * 25; i++ ) {
+        scrn[i * 2] = ' ';
+        scrn[i * 2 + 1] = 7;
+    }
+#endif
+}
+
+void MyOut( unsigned f, char *str, ... )
+{
+    va_list     args;
+    char        res[128];
+    int         len,i;
+    char        *scr;
+    char        *scrn=GetScreenPointer();
+
+    if( (f & DbgFlags) == 0 )
+        return;
+    sprintf( res, "%03d) ", ++_cnt );
+    va_start( args, str );
+    vsprintf( &res[5], str, args );
+    va_end( args );
+#ifdef MONO
+    len = strlen( res );
+
+    scr = &scrn[_line * 80 * 2];
+
+    for( i = 0; i < len; i++ ) {
+        scr[i * 2] = res[i];
+        scr[i * 2 + 1] = 7;
+    }
+    for( i = len; i < 80; i++ ) {
+        scr[i * 2] = ' ';
+        scr[i * 2 + 1] = 7;
+    }
+    _line++;
+    if( _line > 24 )
+        _line = 0;
+
+    scr = &scrn[_line * 80 * 2];
+    for( i = 0; i < 80; i++ ) {
+        scr[i * 2] = ' ';
+        scr[i * 2 + 1] = 7;
+    }
+#else
+    MessageBox( NULL, res, "FOO", MB_SYSTEMMODAL | MB_OK );
+#endif
+}
+
+#endif
 
 void SetInputLock( bool lock_status )
 {
@@ -81,7 +176,6 @@ void SetInputLock( bool lock_status )
  */
 char *InitDebugging( void )
 {
-
     DebuggerState = ACTIVE;
     if( CheckWin386Debug() == WGOD_VERSION ) {
         WDebug386 = true;
@@ -116,7 +210,6 @@ char *InitDebugging( void )
  */
 void FinishDebugging( void )
 {
-
     InterruptUnRegister( NULL );
     if( fault_fn != NULL ) {
         FreeProcInstance_INTH( fault_fn );
@@ -171,7 +264,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
                 break;
             switch( c ) {
             case 'a':
-                bit = -1;
+                bit = OUT_ALL;
                 break;
             case 'b':
                 bit = OUT_BREAK;

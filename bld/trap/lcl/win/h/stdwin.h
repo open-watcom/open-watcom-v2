@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,8 @@
 *
 ****************************************************************************/
 
+
+//#define DEBUG
 
 #define INCLUDE_TOOLHELP_H
 #include <windows.h>
@@ -197,7 +199,6 @@ extern DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
 extern BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
 
 /* debug output */
-extern unsigned     DbgFlags;
 #ifdef DEBUG
 #define OUT_BREAK       0x0001
 #define OUT_ERR         0x0002
@@ -210,6 +211,7 @@ extern unsigned     DbgFlags;
 #define OUT_RUN         0x0100
 #define OUT_SOFT        0x0200
 #define OUT_TEMP        0x0400
+#define OUT_ALL     (OUT_BREAK | OUT_ERR | OUT_HOOK | OUT_INIT | OUT_LOAD | OUT_MAP | OUT_MSG | OUT_REQ | OUT_RUN | OUT_SOFT | OUT_TEMP)
 extern void MyOut( unsigned f, char *, ... );
 extern void MyClearScreen( void );
 #define Out( a ) MyOut a
