@@ -42,8 +42,8 @@ typedef enum {
     X86_487,
     X86_587,
     X86_687,
-    X86_P47         = 15
-    X86_EMU         = 255,
+    X86_P47         = 15,
+    X86_EMU         = 255
 } x86_fputypes;
 
 typedef enum {
