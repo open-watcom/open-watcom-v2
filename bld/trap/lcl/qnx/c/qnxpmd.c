@@ -140,7 +140,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {
         ret->fpu = X86_EMU;
     } else if( (info.sflags & _PSF_NDP_INSTALLED) == 0 ) {
-        ret->fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     } else {
         switch( info.fpu ) {
         case 87:

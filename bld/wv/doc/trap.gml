@@ -687,15 +687,15 @@ fields tells the type of FPU.
 The size of the field is unsigned_8.
 FPU types for DIG_ARCH_X86 include:
 .millust begin
-X86_EMU = -1     - Software emulated FPU
-X86_NO  =  0     - No FPU
-X86_87  =  1     - 8087
-X86_287 =  2     - 80287
-X86_387 =  3     - 80387
-X86_487 =  4     - 486 integrated FPU
-X86_587 =  5     - Pentium integrated FPU
-X86_587 =  6     - Pentium Pro/II/III integrated FPU
-X86_P47 =  15    - Pentium 4 integrated FPU
+X86_NOFPU =  0   - No FPU
+X86_87    =  1   - 8087
+X86_287   =  2   - 80287
+X86_387   =  3   - 80387
+X86_487   =  4   - 486 integrated FPU
+X86_587   =  5   - Pentium integrated FPU
+X86_687   =  6   - Pentium Pro/II/III integrated FPU
+X86_P47   =  15  - Pentium 4 integrated FPU
+X86_EMU   = 255  - Software emulated FPU
 .millust end
 .pp
 The

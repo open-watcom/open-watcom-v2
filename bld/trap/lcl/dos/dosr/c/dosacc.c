@@ -246,14 +246,14 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     ret->cpu = CPUType;
     if( Have87Emu() ) {
         ret->fpu = X86_EMU;
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         if( CPUType < X86_486 ) {
             ret->fpu = RealNPXType;
         } else {
             ret->fpu = CPUType & X86_CPU_MASK;
         }
     } else {
-        ret->fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     }
     ret->huge_shift = 12;
     ret->arch = DIG_ARCH_X86;
@@ -459,7 +459,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
     mr->x86.cpu = *(struct x86_cpu *)&TaskRegs;
     if( Have87Emu() ) {
         Read87EmuState( &mr->x86.u.fpu );
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         Read8087( &mr->x86.u.fpu );
     } else {
         memset( &mr->x86.u.fpu, 0, sizeof( mr->x86.u.fpu ) );
@@ -475,7 +475,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     *(struct x86_cpu *)&TaskRegs = mr->x86.cpu;
     if( Have87Emu() ) {
         Write87EmuState( &mr->x86.u.fpu );
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         Write8087( &mr->x86.u.fpu );
     }
     return( 0 );

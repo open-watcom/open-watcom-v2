@@ -667,7 +667,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     _DBG(("AccKillProg\r\n"));
     RedirectFini();
     AtEnd = true;
-    if( RealNPXType != X86_NO ) {
+    if( RealNPXType != X86_NOFPU ) {
         /* mask ALL floating point exception bits */
         finit();
         Mach.msb_87ctrl = 0x37f;

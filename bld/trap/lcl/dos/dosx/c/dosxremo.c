@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
         ret->os = DIG_OS_IDUNNO;
         ret->osmajor = 0;
         ret->osminor = 0;
-        ret->fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
         ret->huge_shift = 12;
         ret->cpu = X86_386;
         ret->arch = DIG_ARCH_X86;

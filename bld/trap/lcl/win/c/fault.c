@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -333,7 +333,7 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
     FaultHandlerEntered = true;
     TaskAtFault = GetCurrentTask();
 
-    if( FPUType == X86_NO ) {
+    if( FPUType == X86_NOFPU ) {
         memset( &FPResult, 0, sizeof( FPResult ) );
     } else if( FPUType < X86_387 ) {
         Read8087( &FPResult );
@@ -358,7 +358,7 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
 
     if( FPUType >= X86_387 ) {
         Write387( &FPResult );
-    } else if( FPUType != X86_NO ) {
+    } else if( FPUType != X86_NOFPU ) {
         Write8087( &FPResult );
     }
 

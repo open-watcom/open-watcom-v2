@@ -542,7 +542,7 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
         break;
     case FPU_REG_SET:
         switch( MCSystemConfig()->fpu.x86 ) {
-        case X86_NO:
+        case X86_NOFPU:
             MCString( MAD_MSTR_NONE, str, sizeof( str ) );
             break;
         case X86_EMU:
@@ -850,7 +850,7 @@ static mad_status FPUGetPiece(
         *p++ = '0' + (char)row;
         *p++ = ')';
         *p++ = '\0';
-        if( MCSystemConfig()->fpu.x86 == X86_NO )
+        if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
             break;
         *reg_p = &list0[row]->info;
         if( MADState->reg_state[FPU_REG_SET] & FT_HEX ) {
@@ -870,7 +870,7 @@ static mad_status FPUGetPiece(
         }
         break;
     case 1: /* tag registers */
-        if( MCSystemConfig()->fpu.x86 == X86_NO )
+        if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
             break;
         *p++ = 'T';
         *p++ = 'A';
@@ -899,7 +899,7 @@ static mad_status FPUGetPiece(
         }
         strcpy( p, (*reg_p)->name );
         *max_value_p = 1;
-        if( MCSystemConfig()->fpu.x86 == X86_NO )
+        if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
             break;
         *disp_type_p = X86T_BIT;
         break;
@@ -908,14 +908,14 @@ static mad_status FPUGetPiece(
         switch( row ) {
         case 0:
             strcpy( p, "status" );
-            if( MCSystemConfig()->fpu.x86 == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
                 break;
             *max_value_p = 0;
             *disp_type_p = X86T_WORD;
             break;
         case 1:
             strcpy( p, "control" );
-            if( MCSystemConfig()->fpu.x86 == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
                 break;
             *max_value_p = 0;
             *disp_type_p = X86T_WORD;
@@ -923,28 +923,28 @@ static mad_status FPUGetPiece(
         case 2:
             strcpy( p, (*reg_p)->name );
             *max_value_p = MODLEN( ModFPUPc );
-            if( MCSystemConfig()->fpu.x86 == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
                 break;
             *disp_type_p = X86T_PC;
             break;
         case 3:
             strcpy( p, (*reg_p)->name );
             *max_value_p = MODLEN( ModFPURc );
-            if( MCSystemConfig()->fpu.x86 == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
                 break;
             *disp_type_p = X86T_RC;
             break;
         case 4:
             strcpy( p, (*reg_p)->name );
             *max_value_p = MODLEN( ModFPUIc );
-            if( MCSystemConfig()->fpu.x86 == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
                 break;
             *disp_type_p = X86T_IC;
             break;
         case 5: /* iptr */
         case 6: /* optr */
             strcpy( p, (*reg_p)->name );
-            if( MCSystemConfig()->fpu.x86 == X86_NO )
+            if( MCSystemConfig()->fpu.x86 == X86_NOFPU )
                 break;
             addr_characteristics = AddrCharacteristics( GetRegIP( mr ) );
             if( addr_characteristics & X86AC_BIG ) {
@@ -1716,7 +1716,7 @@ walk_result MADIMPENTRY( RegWalk )(
         fpulevel = L3;
     } else if( level >= X86_287 ) {
         fpulevel = L2;
-    } else if( level != X86_NO ) {
+    } else if( level != X86_NOFPU ) {
         fpulevel = L1;
     } else {
         fpulevel = LN;

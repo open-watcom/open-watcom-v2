@@ -637,7 +637,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     buff.Index  = 0;                /* for 2.0: must be 0 */
     CallDosDebug( &buff );
     if( buff.Cmd != DBG_N_Success ) {
-        ret->fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     }
     ret->huge_shift = 3;
     ret->arch = DIG_ARCH_X86;

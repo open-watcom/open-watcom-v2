@@ -671,7 +671,7 @@ static LONG DebugEntry( StackFrame *frame )
     m->description = (char *)FieldExceptionDescription( frame );
     SaveRegs( m->cpu );
     DumpRegs( m, "DebugEntry" );
-    if( NPX() != X86_NO ) {
+    if( NPX() != X86_NOFPU ) {
         Read387( &m->fpu );
     }
 /*
@@ -741,7 +741,7 @@ void BigKludge( msb *m )
 #endif
     m->asleep = FALSE;
     _DBG_EVENT(( "  Waking up as MSB=%8x\r\n", m ));
-    if( NPX() != X86_NO ) {
+    if( NPX() != X86_NOFPU ) {
         Write387( &m->fpu );
     }
     if( ( m->cpu.EFL & INTR_TF ) && m->cpu.EIP == (dword)DebugEntry ) {

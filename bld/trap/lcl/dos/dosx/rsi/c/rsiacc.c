@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -389,7 +389,7 @@ static void ReadFPU( struct x86_fpu *r )
         } else {
             Read387( r );
         }
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         if( _d16info.cpumod >= 3 ) {
             Read387( r );
         } else {
@@ -406,7 +406,7 @@ static void WriteFPU( const struct x86_fpu *r )
         } else {
             Write387( r );
         }
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         if( _d16info.cpumod >= 3 ) {
             Write387( r );
         } else {

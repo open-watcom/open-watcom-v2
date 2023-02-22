@@ -107,7 +107,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     if( WindowsFlags & WF_80x87 ) {
         FPUType = fpu;
     } else {
-        FPUType = X86_NO;
+        FPUType = X86_NOFPU;
     }
     ret->fpu = FPUType;
     ret->arch = DIG_ARCH_X86;

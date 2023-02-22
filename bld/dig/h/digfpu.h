@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,7 @@
 #define DIGFPU_H_INCLUDED
 
 typedef enum {
-    X86_EMU         = -1,
-    X86_NO,
+    X86_NOFPU,
     X86_87,
     X86_287,
     X86_387,
@@ -44,6 +43,7 @@ typedef enum {
     X86_587,
     X86_687,
     X86_P47         = 15
+    X86_EMU         = 255,
 } x86_fputypes;
 
 typedef enum {

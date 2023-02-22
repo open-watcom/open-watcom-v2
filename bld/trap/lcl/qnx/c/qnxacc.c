@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -292,7 +292,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {
         ret->fpu = X86_EMU;
     } else if( (info.sflags & _PSF_NDP_INSTALLED) == 0 ) {
-        ret->fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     } else {
         switch( info.fpu ) {
         case 87:

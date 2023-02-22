@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -606,7 +606,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     buff.Index = 0;             /* for 2.0: must be 0 */
     CallDosDebug( &buff );
     if( buff.Cmd != DBG_N_Success ) {
-        ret->fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     }
     DosGetHugeShift( &shift );
     ret->huge_shift = shift;

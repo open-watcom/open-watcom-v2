@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -379,14 +379,14 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
             ret->fpu = NPXType();
         }
     } else {
-        ret->fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     }
     emu = TaskExecute( (excfn)DoGetMSW );
     if( emu != -1 && (emu & 0x04) ) { /* if EM bit is on in the MSW */
         ret->fpu = X86_EMU;
     }
     WriteRegs( &Buff );
-    if( ret->fpu != X86_NO ) {
+    if( ret->fpu != X86_NOFPU ) {
         buff.cmd = PT_CMD_READ_8087;
         buff.segv = _FP_SEG( tmp );
         buff.offv = _FP_OFF( tmp );
@@ -394,7 +394,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
         buff.pid = Pid;
         DosPTrace( &buff );
         if( buff.cmd != PT_RET_SUCCESS ) {
-            ret->fpu = X86_NO;
+            ret->fpu = X86_NOFPU;
         }
     }
     DosGetHugeShift( &shift );
