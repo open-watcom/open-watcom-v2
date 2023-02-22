@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,8 +118,8 @@ static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date
 
 #endif  /* __WATCOM_LFN__ */
 
-static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
-/***************************************************************/
+static int _utime_sfn( const char *fname, _dos_tms *dostms )
+/**********************************************************/
 {
     unsigned        handle;
     union REGS      regs;
