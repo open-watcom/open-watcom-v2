@@ -44,7 +44,6 @@
 #include <os2dbg.h>
 #include "os2v2acc.h"
 #include "digcpu.h"
-#include "digfpu.h"
 #include "trpld.h"
 #include "trpcomm.h"
 #include "trpsys.h"

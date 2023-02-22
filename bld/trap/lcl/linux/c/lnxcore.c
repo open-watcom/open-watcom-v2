@@ -36,7 +36,6 @@
 #include <fcntl.h>
 //#include <sys/stat.h>
 #include "digcpu.h"
-#include "digfpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "exeelf.h"

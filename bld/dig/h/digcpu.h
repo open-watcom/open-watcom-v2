@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,10 @@
 
 #ifndef DIGCPU_H_INCLUDED
 #define DIGCPU_H_INCLUDED
+
+/*
+ * CPU related definitions
+ */
 
 typedef enum {
     X86_86,
@@ -83,5 +87,35 @@ typedef union dig_cputypes {
     mips_cputypes       mips;
 //    jvm_cputypes        jvm;
 } dig_cputypes;
+
+/*
+ * FPU related definitions
+ */
+
+typedef enum {
+    X86_NOFPU,
+    X86_87,
+    X86_287,
+    X86_387,
+    X86_487,
+    X86_587,
+    X86_687,
+    X86_P47         = 15,
+    X86_EMU         = 255
+} x86_fputypes;
+
+typedef enum {
+    X64_FPU1        = 1
+} x64_fputypes;
+
+typedef union dig_fputypes {
+    unsigned char   byte;
+    x86_fputypes    x86;
+    x64_fputypes    x64;
+//    axp_fputypes    axp;
+//    ppc_fputypes    ppc;
+//    mips_fputypes   mips;
+//    jvm_fputypes    jvm;
+} dig_fputypes;
 
 #endif

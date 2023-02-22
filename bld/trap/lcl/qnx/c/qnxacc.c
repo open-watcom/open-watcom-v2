@@ -56,7 +56,6 @@
 #include <sys/dev.h>
 #include <string.h>
 #include "digcpu.h"
-#include "digfpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"

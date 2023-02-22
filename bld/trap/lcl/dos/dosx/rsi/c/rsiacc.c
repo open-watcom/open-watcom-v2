@@ -56,7 +56,6 @@
 #include "exeflat.h"
 
 #include "digcpu.h"
-#include "digfpu.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"

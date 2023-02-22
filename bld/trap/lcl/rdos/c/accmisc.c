@@ -34,7 +34,6 @@
 #include <string.h>
 #include <direct.h>
 #include "digcpu.h"
-#include "digfpu.h"
 #include "stdrdos.h"
 #include "rdos.h"
 #include "debug.h"
