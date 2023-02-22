@@ -383,8 +383,6 @@ ID is always 1.
 This debugger symbol represents the type of numeric data processor
 (math coprocessor) that is installed in your personal computer system.
 .begnote $compact
-.note -1
-An 80x87 emulator is installed
 .note 0
 No coprocessor is installed
 .note 1
@@ -402,6 +400,8 @@ An Intel Pentium processor integrated FPU is installed
 An Intel Pentium Pro/II/III processor integrated FPU is installed
 .note 15
 An Intel Pentium 4 processor integrated FPU is installed
+.note 255
+An 80x87 emulator is installed
 .endnote
 .ix 'predefined symbol' 'dbg$ip'
 .note dbg$ip
