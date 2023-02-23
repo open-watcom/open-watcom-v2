@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -605,7 +605,7 @@ size_t WRAPI WRFindFnOffset( const char *_name )
     const unsigned char *name = (const unsigned char *)_name;
 
     if( name == NULL ) {
-        return( -1 );
+        return( (size_t)-1 );
     }
 
     cp = name;
@@ -618,7 +618,7 @@ size_t WRAPI WRFindFnOffset( const char *_name )
     }
 
     if( *last == '\0' ) {
-        return( -1 );
+        return( (size_t)-1 );
     }
 
     return( (size_t)( last - name ) );

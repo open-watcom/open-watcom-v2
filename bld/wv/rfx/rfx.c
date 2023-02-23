@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -998,7 +998,7 @@ static error_handle DoCopy( const char *src_name, const char *dst_name, object_l
             return( StashErrCode( IO_INTERRUPT, OP_LOCAL ) );
         }
         read_len = ReadStream( fh_src, Buff, BUFF_LEN );
-        if( read_len == ERR_RETURN ) {
+        if( read_len == ERR_READ ) {
             errh = GetLastErr();
             FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( errh );
@@ -1006,7 +1006,7 @@ static error_handle DoCopy( const char *src_name, const char *dst_name, object_l
         if( read_len == 0 )
             break;
         write_len = WriteStream( fh_dst, Buff, read_len );
-        if( write_len == ERR_RETURN ) {
+        if( write_len == ERR_WRITE ) {
             errh = GetLastErr();
             FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( errh );

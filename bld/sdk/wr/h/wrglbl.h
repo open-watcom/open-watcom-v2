@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,5 +66,8 @@
 #define SIZEU8          sizeof( uint_8 )
 #define SIZEU16         sizeof( uint_16 )
 #define SIZEU32         sizeof( uint_32 )
+
+#define CHUNK_SIZE      ((unsigned short)(48 * 1024))
+#define MB_SINGLE_BEEP  ((UINT)-1)
 
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,8 +103,8 @@ unsigned __pascal VxDGet( void __far *rec, unsigned len )
     _dword      rc;
 
 #ifdef __WINDOWS__
-    while( 1 ) {
-        rc = ConvGet( __ConvId,rec, len, NO_BLOCK );
+    for( ;; ) {
+        rc = ConvGet( __ConvId, rec, len, NO_BLOCK );
         if( (rc & 0xffff) == BLOCK ) {
             messageLoop();
         } else {
@@ -111,7 +112,7 @@ unsigned __pascal VxDGet( void __far *rec, unsigned len )
         }
     }
 #else
-    rc = ConvGet( __ConvId,rec, len, BLOCK );
+    rc = ConvGet( __ConvId, rec, len, BLOCK );
 #endif
     return( rc >> 16 );
 
@@ -134,8 +135,8 @@ void __pascal VxDPut( const void __far *rec, unsigned len )
 #ifdef __WINDOWS__
     int rc;
 
-    while( 1 ) {
-        rc = ConvPut( __ConvId,rec, len, NO_BLOCK );
+    for( ;; ) {
+        rc = ConvPut( __ConvId, rec, len, NO_BLOCK );
         if( rc == BLOCK ) {
             messageLoop();
         } else {
@@ -143,7 +144,7 @@ void __pascal VxDPut( const void __far *rec, unsigned len )
         }
     }
 #else
-    ConvPut( __ConvId,rec, len, BLOCK );
+    ConvPut( __ConvId, rec, len, BLOCK );
 #endif
 
 } /* VxDPut */
@@ -170,7 +171,7 @@ char __pascal VxDConnect( void )
         _first = 0;
         rc = StartConv( __ConvId );
     }
-    while( 1 ) {
+    for( ;; ) {
         rc = IsConvAck( __ConvId );
         if( !rc ) {
             ReleaseVMTimeSlice();

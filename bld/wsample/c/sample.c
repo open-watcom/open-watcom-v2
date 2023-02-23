@@ -225,8 +225,8 @@ void SaveSamples( void )
                                                     xfer.push_n * SIZE_SAMP_ADDR );
                             j += xfer.push_n + 2;
                         } else {    /* the callgraph info was not available */
-                            xfer.pop_n = -1;        /* flag this condition for */
-                            xfer.push_n = -1;       /* the profiler. */
+                            xfer.pop_n = CGRAPH_NO_ENTRY;   /* flag this condition for */
+                            xfer.push_n = CGRAPH_NO_ENTRY;  /* the profiler. */
                             SampWrite( &xfer, SIZE_CGRAPH_SAMPLE );
                             j += 2;
                         }

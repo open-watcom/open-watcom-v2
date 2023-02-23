@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -304,7 +304,7 @@ static size_t doWrite( sys_handle sh, const void *buff, size_t len )
         CONV_LE_32( ret.err );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
-            return( ERR_RETURN );
+            return( ERR_WRITE );
         }
         CONV_LE_16( ret.len );
         total += ret.len;
@@ -350,7 +350,7 @@ static size_t doWriteConsole( const void *buff, size_t len )
         CONV_LE_32( ret.err );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
-            return( ERR_RETURN );
+            return( ERR_WRITE );
         }
         CONV_LE_16( ret.len );
         total += ret.len;
@@ -409,7 +409,7 @@ static size_t doRead( sys_handle sh, void *buff, size_t len )
         CONV_LE_32( ret.err );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
-            return( ERR_RETURN );
+            return( ERR_READ );
         }
         CONV_LE_16( ret.len );
         total += read_len;

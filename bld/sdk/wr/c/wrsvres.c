@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define CHUNK_SIZE 0x7fff
 
 /****************************************************************************/
 /* Here comes the code                                                      */
@@ -407,11 +406,9 @@ bool WRSaveResourceToRES( WRInfo *info, bool backup )
 
 bool WRCopyResFromFileToFile( FILE *src_fp, uint_32 offset, uint_32 length, FILE *dst_fp )
 {
-    uint_32     size;
     char        *buf;
     bool        ok;
 
-    size = 0;
     buf = NULL;
 
     ok = (src_fp != NULL && dst_fp != NULL);
@@ -420,13 +417,13 @@ bool WRCopyResFromFileToFile( FILE *src_fp, uint_32 offset, uint_32 length, FILE
 
     ok = ( ok && !RESSEEK( src_fp, offset, SEEK_SET ) );
 
-    while( ok && length - size > CHUNK_SIZE ) {
+    while( ok && length > CHUNK_SIZE ) {
         ok = ok && WRReadResData( src_fp, buf, CHUNK_SIZE );
         ok = ok && WRWriteResData( dst_fp, buf, CHUNK_SIZE );
-        size += CHUNK_SIZE;
+        length -= CHUNK_SIZE;
     }
-    ok = ok && WRReadResData( src_fp, buf, length - size );
-    ok = ok && WRWriteResData( dst_fp, buf, length - size );
+    ok = ok && WRReadResData( src_fp, buf, length );
+    ok = ok && WRWriteResData( dst_fp, buf, length );
 
     if( buf != NULL ) {
         MemFree( buf );
@@ -435,7 +432,7 @@ bool WRCopyResFromFileToFile( FILE *src_fp, uint_32 offset, uint_32 length, FILE
     return( ok );
 }
 
-bool WRCopyResFromDataToFile( void *ResData, uint_32 len, FILE *dst_fp )
+bool WRCopyResFromDataToFile( void *data, uint_32 len, FILE *fp )
 {
-    return( WRWriteResData( dst_fp, ResData, len ) );
+    return( WRWriteResData( fp, data, len ) );
 }

@@ -51,7 +51,8 @@ typedef enum {
     OP_EXEC         = 0x0100,
 } obj_attrs;
 
-#define ERR_RETURN      ((size_t)-1)
+#define ERR_READ        ((size_t)-1)
+#define ERR_WRITE       ((size_t)-1)
 #define ERR_SEEK        ((unsigned long)-1L)
 
 #define STD_IN          0

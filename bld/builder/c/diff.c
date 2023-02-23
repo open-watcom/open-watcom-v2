@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,12 +222,12 @@ INT main( int argc, char **argv )
                 break;
 
             case 'x':
-                xflag = DIFF_RETURN_ADD;
+                xflag = DIFF_X_RETURN_ADD;
                 break;
 
             default:
                 error( "bad option '-%c'\n", ap[ -1] );
-                exit( xflag + DIFF_NOT_COMPARED );
+                return( xflag + DIFF_NOT_COMPARED );
             }
         }
         argc--;
@@ -236,11 +236,11 @@ INT main( int argc, char **argv )
 
     if( argc != 3 ) {
         error( cmdusage );
-        exit( xflag + DIFF_NOT_COMPARED );
+        return( xflag + DIFF_NOT_COMPARED );
     }
     if( nflag + ( cflag != 0 ) + eflag > 1 ) {
         error( " -c, -n and -e are incompatible.\n" );
-        exit( xflag + DIFF_NOT_COMPARED );
+        return( xflag + DIFF_NOT_COMPARED );
     }
     argv++;
     for( i = 0; i <= 1; i++ ) {
@@ -264,7 +264,7 @@ INT main( int argc, char **argv )
 
     if( infd[0] == stdin && infd[1] == stdin ) {
         error( "Can't diff two things both on standard input." );
-        exit( xflag + DIFF_NOT_COMPARED );
+        return( xflag + DIFF_NOT_COMPARED );
     }
     if( infd[0] == NULL && infd[1] == NULL ) {
         cant( argv[0], "input", 0 );

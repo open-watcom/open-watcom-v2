@@ -1227,7 +1227,7 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     delete_file = false;
     copied = 0;
     while( (read_len = ReadStream( fh_lcl, buff, bsize )) != 0 ) {
-        if( read_len == ERR_RETURN )
+        if( read_len == ERR_READ )
             break;
         WriteStream( fh_rem, buff, read_len );
         DUICopyCopied( cookie, copied );

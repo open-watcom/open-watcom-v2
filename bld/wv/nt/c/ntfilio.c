@@ -154,7 +154,7 @@ size_t LocalRead( sys_handle sh, void *ptr, size_t len )
     ret = posix_read( SYSH2LH( sh ), ptr, len );
     if( ret < 0 ) {
         StashErrCode( errno, OP_LOCAL );
-        return( ERR_RETURN );
+        return( ERR_READ );
     }
     return( ret );
 }
@@ -166,7 +166,7 @@ size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
     ret = posix_write( SYSH2LH( sh ), ptr, len );
     if( ret < 0 ) {
         StashErrCode( errno, OP_LOCAL );
-        return( ERR_RETURN );
+        return( ERR_WRITE );
     }
     return( ret );
 }

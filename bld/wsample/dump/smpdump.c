@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -263,7 +263,7 @@ int main( int argc, char **argv )
             } else {
                 sptr = &data->d.cgraph.sample[0];
                 for( i = 0; i < j; i++ ) {
-                    if( sptr->push_n != (uint_16)-1 || sptr->pop_n != (uint_16)-1 ) {
+                    if( sptr->push_n != CGRAPH_NO_ENTRY || sptr->pop_n != CGRAPH_NO_ENTRY ) {
                         length -= sptr->pop_n;
                         if( length < 0 ) {
                             printf( "\n** Error: stack exhausted!\n\n" );

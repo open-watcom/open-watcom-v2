@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,6 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define CHUNK_SIZE 0x7fff
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -150,7 +149,6 @@ char * WRAPI WRAllocLoadResData( const char *fname, uint_32 offset, size_t lengt
     char        *data;
     FILE        *fh;
     bool        ok;
-    char        *buf;
 
     data = NULL;
     fh = NULL;
@@ -169,14 +167,8 @@ char * WRAPI WRAllocLoadResData( const char *fname, uint_32 offset, size_t lengt
         ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
     }
 
-    buf = data;
-    while( ok && length > CHUNK_SIZE ) {
-        ok = ( fread( buf, 1, CHUNK_SIZE, fh ) == CHUNK_SIZE );
-        buf += CHUNK_SIZE;
-        length -= CHUNK_SIZE;
-    }
-    if( ok && length > 0 ) {
-        ok = ( fread( buf, 1, length, fh ) == length );
+    if( ok ) {
+        ok = WRReadResData( fh, data, length );
     }
 
     if( fh != NULL ) {
@@ -205,13 +197,8 @@ bool WRAPI WRSaveResDataToFile( const char *fname, char *data, size_t length )
         ok = ( (fh = fopen( fname, "wb" )) != NULL );
     }
 
-    while( ok && length > CHUNK_SIZE ) {
-        ok = ( fwrite( data, 1, CHUNK_SIZE, fh ) == CHUNK_SIZE );
-        data += CHUNK_SIZE;
-        length -= CHUNK_SIZE;
-    }
-    if( ok && length > 0 ) {
-        ok = ( fwrite( data, 1, length, fh ) == length );
+    if( ok ) {
+        ok = WRWriteResData( fh, data, length );
     }
 
     if( fh != NULL ) {

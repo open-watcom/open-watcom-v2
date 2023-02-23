@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -261,7 +261,7 @@ void IEDisplayErrorMsg( msg_id title, msg_id msg, UINT style )
     }
 
     if( !RCMessageBox( HMainWindow, msg, title_str, style ) ) {
-        MessageBeep( (UINT)-1 );
+        MessageBeep( MB_SINGLE_BEEP );
     }
 
     if( title > 0 && title_str != NULL ) {

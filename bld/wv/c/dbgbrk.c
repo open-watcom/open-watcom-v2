@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -367,7 +367,7 @@ void GetBPText( brkp *bp, char *buff )
     size_t      max;
 
     //MAD: might be a different mad then when break set
-    max = ~0;
+    max = TXT_LEN;
     if( IS_BP_EXECUTE( bp->mth ) ) {
         if( bp->source_line != NULL ) {
             strcpy( buff, bp->source_line );
@@ -434,7 +434,7 @@ static char *StrVal( char *which, brkp *wp, char *p )
     for( *p++ = ' '; *which != NULLCHAR; *p++ = *which++ )
         {}
     *p++ = '=';
-    max = ~0;
+    max = TXT_LEN;
     MADTypeHandleToString( CurrRadix, wp->mth, &wp->item, p, &max );
     p += max;
     return( p );

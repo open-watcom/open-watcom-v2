@@ -98,7 +98,7 @@ void MyClearScreen( void )
 
     char *scrn = GetScreenPointer();
 
-    for( i = 0; i < 80 * 25; i++ ) {
+    for( i = 0; i < ( 80 * 25 ); i++ ) {
         scrn[i * 2] = ' ';
         scrn[i * 2 + 1] = 7;
     }
@@ -111,7 +111,7 @@ void MyOut( unsigned f, char *str, ... )
     char        res[128];
     int         len,i;
     char        *scr;
-    char        *scrn=GetScreenPointer();
+    char        *scrn;
 
     if( (f & DbgFlags) == 0 )
         return;
@@ -121,6 +121,8 @@ void MyOut( unsigned f, char *str, ... )
     va_end( args );
 #ifdef MONO
     len = strlen( res );
+
+    scrn = GetScreenPointer();
 
     scr = &scrn[_line * 80 * 2];
 

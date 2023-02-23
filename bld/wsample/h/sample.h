@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,7 +246,7 @@ typedef struct cgraph_sample {
     samp_address        addr[1];        /* variable # of entries to replace */
 } cgraph_sample;
 #define SIZE_CGRAPH_SAMPLE (sizeof( cgraph_sample ) - sizeof( samp_address ))
-
+#define CGRAPH_NO_ENTRY ((uint_16)-1)
 
 typedef struct samp_callgraph {
     uint_16             thread_id;      /* thread for callgraph information */

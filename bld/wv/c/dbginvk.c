@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ static int InvRead( invokes *inv, size_t *save_point )
         left = inv->in_size - *save_point;
         memmove( inv->in_buff, inv->in_buff + *save_point, left );
         size = ReadText( inv->fh, inv->in_buff + left, IN_BUFF_SIZE - left );
-        if( size == ERR_RETURN || size == 0 )
+        if( size == ERR_READ || size == 0 )
             break;
         inv->in_size = size + left;
         inv->in_off = left;

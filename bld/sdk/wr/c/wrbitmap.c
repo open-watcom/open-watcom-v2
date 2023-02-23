@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,6 @@
 /****************************************************************************/
 #define START_OF_HEADER         sizeof( BITMAPFILEHEADER )
 #define HUGE_SHIFT              8
-#define CHUNK_SIZE              (48 * 1024)
 #define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * ((size_t)1 << (bc)))
 #define SCANLINE_SIZE           32
 #define MAX_CHUNK               32768

@@ -152,7 +152,7 @@ size_t LocalRead( sys_handle sh, void *ptr, size_t len )
         ret = DosRead( SYSH2LH( sh ), ptr, piece_len, &read_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
-            return( ERR_RETURN );
+            return( ERR_READ );
         }
         total += read_len;
         if( read_len != piece_len )
@@ -178,7 +178,7 @@ size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
         ret = DosWrite( SYSH2LH( sh ), (PVOID)ptr, piece_len, &write_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
-            return( ERR_RETURN );
+            return( ERR_WRITE );
         }
         total += write_len;
         if( write_len != piece_len )

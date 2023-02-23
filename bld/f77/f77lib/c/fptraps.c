@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +94,7 @@ void    __MaskDefaultFPE( void ) {
     // the user has to make his own call to _control87.  This has to
     // be done in the "fpc" model as well in case there is an 80x87
     // present.
-    _control87( ~0, EM_UNDERFLOW | EM_DENORMAL | EM_PRECISION );
+    _control87( MCW_ALL, EM_UNDERFLOW | EM_DENORMAL | EM_PRECISION );
 #endif
 }
 
