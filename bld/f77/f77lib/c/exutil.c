@@ -42,22 +42,22 @@
 #define MAX_KW_LEN      15      // longest keyword in following tables
 
 char    *SpecId[] = {
-        "STATUS",
-        "ACCESS",
-        "FORM",
-        "BLANK",
-        "CARRIAGECONTROL",
-        "RECORDTYPE",
-        "ACTION",
-        "RECL",
-        "BLOCKSIZE",
-        "SHARE"
+    "STATUS",
+    "ACCESS",
+    "FORM",
+    "BLANK",
+    "CARRIAGECONTROL",
+    "RECORDTYPE",
+    "ACTION",
+    "RECL",
+    "BLOCKSIZE",
+    "SHARE"
 };
 
 
-int     FindKWord( char **table, int id, int def_id, string PGM *kw ) {
-//=====================================================================
-
+int     FindKWord( char **table, int id, int def_id, string PGM *kw )
+//===================================================================
+{
     int         index;
     int         kw_len;
     char        kword[MAX_KW_LEN + 1];
@@ -82,9 +82,9 @@ int     FindKWord( char **table, int id, int def_id, string PGM *kw ) {
 }
 
 
-void    ClrBuff( void ) {
-//=================
-
+void    ClrBuff( void )
+//=====================
+{
     IOCB->fileinfo->col = 0;
     IOCB->fileinfo->len = 0;
 }

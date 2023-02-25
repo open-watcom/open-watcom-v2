@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +50,7 @@
 static  int     IOBufferSize = { IO_BUFFER };
 
 static  void    ChkRedirection( b_file *fp )
+//==========================================
 // Check for redirection of standard i/o devices.
 {
     struct stat         info;
@@ -62,11 +63,14 @@ static  void    ChkRedirection( b_file *fp )
 }
 
 void    InitStd( void )
-{
+//=====================
 // Initialize standard i/o.
+{
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && defined( __WATCOMC__ )
-    // don't call setmode() since we don't want to affect higher level
-    // i/o so that if C function gets called, printf() works ok
+    /*
+     * don't call setmode() since we don't want to affect higher level
+     * i/o so that if C function gets called, printf() works ok
+     */
     __set_binary( STDIN_FILENO );
     __set_binary( STDOUT_FILENO );
     __set_binary( STDERR_FILENO );
@@ -80,6 +84,7 @@ void    InitStd( void )
 }
 
 void    SetIOBufferSize( uint buff_size )
+//=======================================
 {
     if( buff_size < MIN_BUFFER ) {
         buff_size = MIN_BUFFER;
@@ -88,6 +93,7 @@ void    SetIOBufferSize( uint buff_size )
 }
 
 b_file  *_AllocFile( int h, f_attrs attrs, long fpos )
+//====================================================
 // Allocate file structure.
 {
     b_file      *io;
@@ -137,6 +143,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long fpos )
 }
 
 b_file  *Openf( const char *f, f_attrs attrs )
+//============================================
 // Open a file.
 {
     int         retc;
@@ -184,6 +191,7 @@ b_file  *Openf( const char *f, f_attrs attrs )
 }
 
 void    Closef( b_file *io )
+//==========================
 // Close a file.
 {
     uint        cc_len;

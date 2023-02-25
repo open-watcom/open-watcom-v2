@@ -155,9 +155,8 @@ size_t SysRead( b_file *io, char *b, size_t len )
             }
         }
         return( offs_in_b );
-    } else {
-        return( readbytes( io, b, len ) );
     }
+    return( readbytes( io, b, len ) );
 }
 
 
@@ -176,21 +175,22 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             return( 0 );
         if( rs[0] == CHAR_LF )
             return( len );
-#if ! defined( __UNIX__ )
+#if !defined( __UNIX__ )
         if( rs[0] == CHAR_CR ) {
             if( SysRead( io, &rs[1], sizeof( char ) ) == READ_ERROR ) {
                 return( 0 );
             }
             if( rs[1] == CHAR_LF )
                 return( len );
-            if( ( io->attrs & CARRIAGE_CONTROL ) && ( rs[1] == CHAR_FF ) ) {
+            if( (io->attrs & CARRIAGE_CONTROL) && ( rs[1] == CHAR_FF ) ) {
                 return( len );
             }
         }
 #endif
         FSetErr( POSIO_BAD_RECORD, io );
         return( 0 );
-    } else if( io->attrs & BUFFERED ) {
+    }
+    if( io->attrs & BUFFERED ) {
         char            *ptr;
         char            *stop;
         bool            seen_cr;
@@ -259,36 +259,38 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             FSetTrunc( io );
         }
         return( read );
-    } else {    // device (CON)
-        read = 0;
-        len = readbytes( io, b, len );
-        if( len == READ_ERROR )
-            return( 0 );
-        for( ;; ) {
-            if( read == len )
-                break;
+    }
+    /*
+     * device (CON)
+     */
+    read = 0;
+    len = readbytes( io, b, len );
+    if( len == READ_ERROR )
+        return( 0 );
+    for( ;; ) {
+        if( read == len )
+            break;
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
+        if( *b == CHAR_LF )
+            return( read );
+#else
+        if( *b == CHAR_CR ) {
+            ++b;
+            if( read == len - 1 )
+                break;
             if( *b == CHAR_LF )
                 return( read );
-#else
-            if( *b == CHAR_CR ) {
-                ++b;
-                if( read == len - 1 )
-                    break;
-                if( *b == CHAR_LF )
-                    return( read );
-                --b;
-            } else if( *b == CHAR_CTRL_Z ) {
-                FSetEof( io );
-                return( read );
-            }
-#endif
-            ++b;
-            ++read;
+            --b;
+        } else if( *b == CHAR_CTRL_Z ) {
+            FSetEof( io );
+            return( read );
         }
-        FSetTrunc( io );
-        return( read );
+#endif
+        ++b;
+        ++read;
     }
+    FSetTrunc( io );
+    return( read );
 }
 
 
@@ -413,7 +415,7 @@ int     FSkipLogical( b_file *io )
     variable_rec_tag    rec_tag;
     variable_rec_tag    save_rec_tag;
 
-    for(;;) {
+    for( ;; ) {
         if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR ) {
             if( io->stat != POSIO_EOF )
                 return( -1 );

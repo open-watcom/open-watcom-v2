@@ -76,11 +76,10 @@
 static  void    SysIOInfo( ftnfile *fcb );
 static  void    ChkDisk( ftnfile *fcb );
 
-void    GetSysIOInfo( ftnfile *fcb ) {
-//====================================
-
+void    GetSysIOInfo( ftnfile *fcb )
+//==================================
 // Get system file information for an open file.
-
+{
     SysIOInfo( fcb );
     // if standard output device is carriage control (/cc option)
     if( fcb->cctrl == CC_YES ) {
@@ -89,11 +88,10 @@ void    GetSysIOInfo( ftnfile *fcb ) {
 }
 
 
-void    GetSysFileInfo( ftnfile *fcb ) {
-//======================================
-
+void    GetSysFileInfo( ftnfile *fcb )
+//====================================
 // Get system file information for a file name.
-
+{
     if( access( fcb->filename, F_OK ) == 0 ) {
         fcb->flags |= FTN_FSEXIST;
     } else {
@@ -103,20 +101,18 @@ void    GetSysFileInfo( ftnfile *fcb ) {
 }
 
 
-bool    IsDevice( ftnfile *fcb ) {
-//================================
-
+bool    IsDevice( ftnfile *fcb )
+//==============================
 // Make sure that the file is a disk file.
-
+{
     return( ( fcb->device & INFO_DEV ) != 0 );
 }
 
 
-static  char    *GetSysName( ftnfile *fcb ) {
-//===========================================
-
+static  char    *GetSysName( ftnfile *fcb )
+//=========================================
 // Return a system file name given a user name and a file structure.
-
+{
     char        buff[_MAX_PATH];
     char        *p;
 
@@ -137,11 +133,10 @@ static  char    *GetSysName( ftnfile *fcb ) {
 }
 
 
-static  void    SysIOInfo( ftnfile *fcb ) {
-//=========================================
-
+static  void    SysIOInfo( ftnfile *fcb )
+//=======================================
 // Get system file information.
-
+{
     struct stat         info;
     char                *sys_name;
     bool                exist = true;
@@ -229,11 +224,10 @@ static  void    SysIOInfo( ftnfile *fcb ) {
 }
 
 
-void    OpenAction( ftnfile *fcb ) {
-//==================================
-
+void    OpenAction( ftnfile *fcb )
+//================================
 // Open a file.
-
+{
     SetIOBufferSize( fcb->blocksize );
     fcb->fileptr = Openf( fcb->filename, _FileAttrs( fcb ) );
     if( fcb->fileptr != NULL ) {
@@ -313,12 +307,10 @@ f_attrs     _FileAttrs( ftnfile *fcb )
 // The above "open" routines correspond to WATFOR-77 "ACTION=" specifiers.
 //
 
-
-void    CloseFile( ftnfile *fcb ) {
-//=================================
-
+void    CloseFile( ftnfile *fcb )
+//===============================
 // Close a 'ftnfile'.
-
+{
     file_handle         fh;
 
     if( fcb->fileptr == NULL )
@@ -326,7 +318,9 @@ void    CloseFile( ftnfile *fcb ) {
     if( fcb->fileptr == FStdIn )
         return;
     if( fcb->fileptr == FStdOut ) {
-        // check if standard output device redirected to a disk file
+        /*
+         * check if standard output device redirected to a disk file
+         */
         if( FGetFileAttrs( fcb->fileptr ) & BUFFERED ) {
             FlushBuffer( fcb->fileptr );
             ChkIOErr( fcb );
@@ -336,14 +330,20 @@ void    CloseFile( ftnfile *fcb ) {
     if( fcb->fileptr == FStdErr )
         return;
     Closef( fcb->fileptr );
-    // save file handle
+    /*
+     * save file handle
+     */
     fh = fcb->fileptr;
-    // set file handle in fcb to NULL - we don't want
-    // to get the i/o status from the file handle since
-    // it will no longer be valid if the close succeeded
+    /*
+     * set file handle in fcb to NULL - we don't want
+     * to get the i/o status from the file handle since
+     * it will no longer be valid if the close succeeded
+     */
     fcb->fileptr = NULL;
     if( GetIOErr( fcb ) ) {
-        // close failed so restore file handle in fcb
+        /*
+         * close failed so restore file handle in fcb
+         */
         fcb->fileptr = fh;
         IOErr( IO_FILE_PROBLEM );
         // never return
@@ -351,11 +351,10 @@ void    CloseFile( ftnfile *fcb ) {
 }
 
 
-bool    Scrtched( ftnfile *fcb ) {
-//================================
-
+bool    Scrtched( ftnfile *fcb )
+//==============================
 // Erase specified file.
-
+{
     Scratchf( fcb->filename );
     return( IOOk( NULL ) );
 }
@@ -389,11 +388,10 @@ void    CloseDeleteFile( ftnfile *fcb )
 }
 
 
-bool    Errf( ftnfile *fcb ) {
-//============================
-
+bool    Errf( ftnfile *fcb )
+//==========================
 // Determine if an i/o error exists.
-
+{
     if( EOFile( fcb->fileptr ) ) {
         SetEOF();
         return( false );
@@ -402,11 +400,10 @@ bool    Errf( ftnfile *fcb ) {
 }
 
 
-void    FPutBuff( ftnfile *fcb ) {
-//================================
-
+void    FPutBuff( ftnfile *fcb )
+//==============================
 // Write a record to a file.
-
+{
     if( IOCB->flags & IOF_NOCR ) {
         FAddFileAttrs( fcb->fileptr, CC_NOCR );
     }
@@ -421,11 +418,10 @@ void    FPutBuff( ftnfile *fcb ) {
 }
 
 
-void    FGetBuff( ftnfile *fcb ) {
-//================================
-
+void    FGetBuff( ftnfile *fcb )
+//==============================
 // Read a record from a file.
-
+{
     if( _NoRecordOrganization( fcb ) ) {
         fcb->len = FGetRec( fcb->fileptr, fcb->buffer, fcb->len );
     } else {
@@ -434,31 +430,28 @@ void    FGetBuff( ftnfile *fcb ) {
 }
 
 
-void    SeekFile( ftnfile *fcb ) {
-//================================
-
+void    SeekFile( ftnfile *fcb )
+//==============================
 // Position file to specified record.
-
+{
     FSeekRec( fcb->fileptr, fcb->recnum - 1, fcb->bufflen );
 }
 
 
-bool    NoEOF( ftnfile *fcb ) {
-//=============================
-
+bool    NoEOF( ftnfile *fcb )
+//===========================
 // Determine if file has an EOF (SERIAL, TERMINAL).
-
+{
     if( fcb->fileptr == NULL )
         return( false );
     return( IsDevice( fcb ) );
 }
 
 
-void    SysClearEOF( ftnfile *fcb ) {
-//===================================
-
+void    SysClearEOF( ftnfile *fcb )
+//=================================
 // Clear EOF on file with no EOF (SERIAL, TERMINAL).
-
+{
     FSetIOOk( fcb->fileptr );
 #if defined( __DOS__ )
     if( ( fcb->fileptr == FStdIn ) && IsDevice( fcb ) ) {
@@ -470,11 +463,10 @@ void    SysClearEOF( ftnfile *fcb ) {
 }
 
 
-bool    SameFile( char *fn1, char *fn2 ) {
-//========================================
-
+bool    SameFile( char *fn1, char *fn2 )
+//======================================
 // Determine if file specifications are for the same file.
-
+{
 #if defined( __UNIX__ )
     return( strcmp( fn1, fn2 ) == 0 );
 #else
@@ -483,11 +475,10 @@ bool    SameFile( char *fn1, char *fn2 ) {
 }
 
 
-void    Rewindf( ftnfile *fcb ) {
-//===============================
-
+void    Rewindf( ftnfile *fcb )
+//=============================
 // System dependent rewind.
-
+{
     if( fcb->fileptr != NULL ) {
         ChkDisk( fcb );
         FRewind( fcb->fileptr );
@@ -496,11 +487,10 @@ void    Rewindf( ftnfile *fcb ) {
 }
 
 
-void    SysCreateFile( ftnfile *fcb ) {
-//=====================================
-
+void    SysCreateFile( ftnfile *fcb )
+//===================================
 // Cause the file to exist in the file system.
-
+{
     fcb->fileptr = Openf( fcb->filename, REC_TEXT | WRONLY );
     if( fcb->fileptr == NULL ) {
         IOErr( IO_FILE_PROBLEM );
@@ -512,9 +502,9 @@ void    SysCreateFile( ftnfile *fcb ) {
 }
 
 
-bool    CheckLogicalRecord( ftnfile *fcb ) {
-//=========================================
-
+bool    CheckLogicalRecord( ftnfile *fcb )
+//========================================
+{
     int         rc;
 
     rc = FCheckLogical( fcb->fileptr );
@@ -526,9 +516,9 @@ bool    CheckLogicalRecord( ftnfile *fcb ) {
 }
 
 
-void    SkipLogicalRecord( ftnfile *fcb ) {
-//=========================================
-
+void    SkipLogicalRecord( ftnfile *fcb )
+//=======================================
+{
     if( fcb->fileptr != NULL ) {
         FSkipLogical( fcb->fileptr );
         ChkIOErr( fcb );
@@ -536,11 +526,10 @@ void    SkipLogicalRecord( ftnfile *fcb ) {
 }
 
 
-void    BackSpacef( ftnfile *fcb ) {
-//==================================
-
+void    BackSpacef( ftnfile *fcb )
+//================================
 // System dependent file backspace.
-
+{
     if( fcb->fileptr != NULL ) {
         ChkDisk( fcb );
         FBackspace( fcb->fileptr, fcb->bufflen );
@@ -549,11 +538,10 @@ void    BackSpacef( ftnfile *fcb ) {
 }
 
 
-void    EndFilef( ftnfile *fcb ) {
-//================================
-
+void    EndFilef( ftnfile *fcb )
+//==============================
 // Chop the file off at it current position.
-
+{
     if( fcb->fileptr != NULL ) {
         FTruncate( fcb->fileptr );
         FDelFileAttrs( fcb->fileptr, TRUNC_ON_WRITE );
@@ -561,22 +549,20 @@ void    EndFilef( ftnfile *fcb ) {
 }
 
 
-static  void    ChkDisk( ftnfile *fcb ) {
-//=======================================
-
+static  void    ChkDisk( ftnfile *fcb )
+//=====================================
 // Make sure that the file is a disk file.
-
+{
     if( IsDevice( fcb ) ) {
         FSetBadOpr( fcb->fileptr );
     }
 }
 
 
-void    GetIOErrMsg( ftnfile *fcb, char *buff, size_t max_len ) {
-//===============================================
-
+void    GetIOErrMsg( ftnfile *fcb, char *buff, size_t max_len )
+//=============================================================
 // Get i/o error message.
-
+{
     file_handle fp;
 
     if( fcb == NULL ) {
@@ -588,28 +574,27 @@ void    GetIOErrMsg( ftnfile *fcb, char *buff, size_t max_len ) {
 }
 
 
-void    ReportNExist( ftnfile *fcb ) {
-//====================================
-
+void    ReportNExist( ftnfile *fcb )
+//==================================
 // Set i/o error condition to "file not found".
-
+{
     errno = ENOENT;
     FSetSysErr( fcb->fileptr );
 }
 
 
-void    ReportEOF( ftnfile *fcb ) {
-//=================================
-
+void    ReportEOF( ftnfile *fcb )
+//===============================
 // Set i/o error condition to "end-of-file".
-
+{
     FSetEof( fcb->fileptr );
 }
 
 
-void    WaitForEnter( void ) {
-//======================
-
+void    WaitForEnter( void )
+//==========================
+{
     while( GetStdChar() != '\n' ) {
+        ;
     }
 }

@@ -60,6 +60,7 @@ static  __jmp_buf       *SpawnStack = { NULL };
 
 
 int     RTSpawn( void (*fn)( void ) )
+//===================================
 {
     __jmp_buf   *save_env;
     __jmp_buf   env;
@@ -77,6 +78,7 @@ int     RTSpawn( void (*fn)( void ) )
 
 
 _WCNORETURN void    RTSuicide( void )
+//===================================
 {
     if( _SPAWNSTACK == NULL )
         exit( -1 );

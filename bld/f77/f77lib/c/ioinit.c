@@ -42,10 +42,10 @@
 #include "rtspawn.h"
 
 
-static bool         IOSysInitialized = false;
+static bool     IOSysInitialized = false;
 
-static void         IOSysFini( void )
-//===================================
+static void     IOSysFini( void )
+//===============================
 // Finalize I/O system.
 {
     RunExit();
@@ -57,7 +57,7 @@ void        IOSysInit( void )
 // Initialize I/O system.
 {
     if( !IOSysInitialized ) {
-        IOSysInitialized = 1;
+        IOSysInitialized = true;
         atexit( &IOSysFini );
         if( !RunEntry() ) {
             RTSuicide();

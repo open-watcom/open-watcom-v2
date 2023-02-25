@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,26 +36,31 @@
 
 
 int FGetFileHandle( b_file *io )
+//==============================
 {
     return( io->handle );
 }
 
 f_attrs FGetFileAttrs( b_file *io )
+//=================================
 {
     return( io->attrs );
 }
 
 void FSetFileAttrs( b_file *io, f_attrs attrs )
+//=============================================
 {
     io->attrs = attrs;
 }
 
 void FAddFileAttrs( b_file *io, f_attrs attrs )
+//=============================================
 {
     io->attrs |= attrs;
 }
 
 void FDelFileAttrs( b_file *io, f_attrs attrs )
+//=============================================
 {
     io->attrs &= ~attrs;
 }
