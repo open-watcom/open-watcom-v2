@@ -156,7 +156,10 @@ size_t SysRead( b_file *io, char *b, size_t len )
         }
         return( offs_in_b );
     }
-    return( readbytes( io, b, len ) );
+    bytes_read = readbytes( io, b, len );
+    if( bytes_read == READ_ERROR )
+        return( READ_ERROR );
+    return( bytes_read );
 }
 
 

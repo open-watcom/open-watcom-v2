@@ -88,24 +88,25 @@ static  const bit_float __FAR   SInfinity = { 0x00,0x00,0x80,0x7f };
 
 #endif
 
-static  const byte __FAR        DataSize[] = {
-            0,
-            sizeof( logstar1 ),
-            sizeof( logstar4 ),
-            sizeof( intstar1 ),
-            sizeof( intstar2 ),
-            sizeof( intstar4 ),
-            sizeof( single ),
-            sizeof( double ),
-            sizeof( extended ),
-            sizeof( single ),
-            sizeof( double ),
-            sizeof( extended ) };
+static const byte   __FAR DataSize[] = {
+    0,
+    sizeof( logstar1 ),
+    sizeof( logstar4 ),
+    sizeof( intstar1 ),
+    sizeof( intstar2 ),
+    sizeof( intstar4 ),
+    sizeof( single ),
+    sizeof( double ),
+    sizeof( extended ),
+    sizeof( single ),
+    sizeof( double ),
+    sizeof( extended )
+};
 
 
-void    R_ChkType( PTYPE lower, PTYPE upper ) {
+void    R_ChkType( PTYPE lower, PTYPE upper )
 //===========================================
-
+{
     if( ( IOCB->typ < lower ) || ( IOCB->typ > upper ) ) {
         IOErr( IO_FMT_MISMATCH );
         // never return
@@ -113,9 +114,9 @@ void    R_ChkType( PTYPE lower, PTYPE upper ) {
 }
 
 
-void    R_NewRec( void ) {
-//==================
-
+void    R_NewRec( void )
+//======================
+{
     if( IOCB->flags & IOF_OUTPT ) {
         IOCB->fileinfo->col = IOCB->fmtlen;
         CheckCCtrl();
@@ -127,14 +128,15 @@ void    R_NewRec( void ) {
 }
 
 
-void    R_ChkIType( void ) {
-//====================
-
+void    R_ChkIType( void )
+//========================
 // Check if type can be formatted using I format.
-
+{
     if( ( IOCB->typ == PT_REAL_4 ) && ( IOCB->flags & IOF_EXTEND_FORMAT ) ) {
-        // allow REAL variable containing integer data to be
-        // formatted using I edit descriptor
+        /*
+         * allow REAL variable containing integer data to be
+         * formatted using I edit descriptor
+         */
         IOCB->typ = PT_INT_4;
     }
     R_ChkType( PT_INT_1, PT_INT_4 );
@@ -257,7 +259,8 @@ void    R_FIStr( void ) {
 void    R_FOLog( void ) {
 //=================
 
-    if( UndefLogRtn() ) return;
+    if( UndefLogRtn() )
+        return;
     R_FmtLog( IOCB->fmtptr->fmt1.fld1 );
 }
 
@@ -283,10 +286,13 @@ void    R_FILog( void ) {
     fcb = IOCB->fileinfo;
     width = IOCB->fmtptr->fmt1.fld1;
     ChkBuffLen( width );
-    for(;;) {
-        if( fcb->buffer[ fcb->col ] != ' ' ) break;
+    for( ;; ) {
+        if( fcb->buffer[ fcb->col ] != ' ' )
+            break;
         fcb->col++;
-        if( --width == 0 ) break;
+        if( --width == 0 ) {
+            break;
+        }
     }
     if( fcb->buffer[ fcb->col ] == '.' ) {
          --width;
@@ -319,12 +325,11 @@ void    R_FILog( void ) {
 }
 
 
-void    R_FIFloat( void ) {
-//===================
-
+void    R_FIFloat( void )
+//=======================
 // Input an real or complex variable in D, E, F, G format.
-
-    extended     value;
+{
+    extended    value;
     fmt2 PGM    *fmtptr;
     ftnfile     *fcb;
     PTYPE       typ;
@@ -399,9 +404,9 @@ void    R_FIFloat( void ) {
 }
 
 
-bool    GetReal( extended *value ) {
+bool    GetReal( extended *value )
 //================================
-
+{
     PTYPE       typ;
     single      *short_flt;
     bool        defined;
@@ -443,9 +448,9 @@ bool    GetReal( extended *value ) {
 }
 
 
-void    R_FOF( void ) {
-//===============
-
+void    R_FOF( void )
+//===================
+{
     ftnfile     *fcb;
     fmt2 PGM    *fmt;
     char        *buf;
@@ -464,9 +469,9 @@ void    R_FOF( void ) {
 }
 
 
-void    R_FOE( int exp, char ch ) {
-//=================================
-
+void    R_FOE( int exp, char ch )
+//===============================
+{
     ftnfile     *fcb;
     fmt3 PGM    *fmt;
     char        *buf;
@@ -519,9 +524,9 @@ void    R_FOE( int exp, char ch ) {
 }
 
 
-static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
-//==============================================================================
-
+static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ )
+//============================================================================
+{
     char        ch1;
     byte        ch2;
     bool        valid;
@@ -554,14 +559,16 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
         dst += len - 1;
     }
 #endif
-    for(;;) {
+    for( ;; ) {
         valid = false;
         if( !isxdigit( ch1 ) ) {
-            if( ch1 != ' ' ) break;
+            if( ch1 != ' ' )
+                break;
             ch1 = '0';
         }
         if( !isxdigit( ch2 ) ) {
-            if( ch2 != ' ' ) break;
+            if( ch2 != ' ' )
+                break;
             ch2 = '0';
         }
         valid = true;
@@ -575,7 +582,8 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
 #else
         dst++;
 #endif
-        if( src == stop ) break;
+        if( src == stop )
+            break;
         ch1 = *src;
         src++;
         ch2 = *src;
@@ -585,9 +593,9 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
 }
 
 
-void    R_FIHex( void ) {
-//=================
-
+void    R_FIHex( void )
+//=====================
+{
     uint        width;
     int         len;
     ftnfile     *fcb;
@@ -625,9 +633,9 @@ void    R_FIHex( void ) {
 }
 
 
-static void FOHex( uint width ) {
-//===============================
-
+static void FOHex( uint width )
+//=============================
+{
     uint        len;
     int         trunc;
     ftnfile     *fcb;
@@ -638,18 +646,20 @@ static void FOHex( uint width ) {
     typ = IOCB->typ;
     len = GetLen();
     trunc = 0;
-
-//  Use this method when real and imaginary parts are formatted using
-//  one edit descriptor:
-/*
+    /*
+     *  Use this method when real and imaginary parts are formatted using
+     *  one edit descriptor:
+     */
+#if 0
     if( ( IOCB->typ == PT_CPLX_8 ) || ( IOCB->typ == PT_CPLX_16 ) ) {
         len *= 2;
         IOCB->flags &= ~IOF_FMTREALPART;  // we'll print both parts at once
     }
-*/
-//  Use this method when real and imaginary parts each require an
-//  edit descriptor:
-
+#endif
+    /*
+     *  Use this method when real and imaginary parts each require an
+     *  edit descriptor:
+     */
     if( IOCB->typ == PT_CPLX_8 ) {
         if( (IOCB->flags & IOF_FMTREALPART) == 0 ) {
             IORslt.scomplex.realpart = IORslt.scomplex.imagpart;
@@ -664,7 +674,7 @@ static void FOHex( uint width ) {
         }
     }
     if( width == 0 ) {
-        width = 2*len;
+        width = 2 * len;
     }
 
     trunc = ( len * 2 ) - width;
@@ -697,18 +707,17 @@ static void FOHex( uint width ) {
 }
 
 
-void    R_FOHex( void ) {
-//=================
-
+void    R_FOHex( void )
+//=====================
+{
     FOHex( IOCB->fmtptr->fmt1.fld1 );
 }
 
 
-static  void    HexFlip( char *src, int len ) {
-//=============================================
-
+static  void    HexFlip( char *src, int len )
+//===========================================
 // Convert number to hex string.
-
+{
     char        *ptr;
     char        *last;
     int         num_len;
@@ -728,9 +737,9 @@ static  void    HexFlip( char *src, int len ) {
 }
 
 
-void    R_FIInt( void ) {
-//=================
-
+void    R_FIInt( void )
+//=====================
+{
     intstar4    value;
     uint        width;
     uint        new_width;
@@ -771,23 +780,24 @@ void    R_FIInt( void ) {
 }
 
 
-void    R_FOInt( void ) {
-//=================
-
+void    R_FOInt( void )
+//=====================
+{
     OutInt( IOCB->fmtptr->fmt2.fld1, IOCB->fmtptr->fmt2.fld2 );
 }
 
 
-static  void    OutInt( uint width, uint min ) {
-//==============================================
-
+static  void    OutInt( uint width, uint min )
+//============================================
+{
     char        *number;
     uint        length;
     uint        space;
     bool        minus;
     intstar4    iorslt;
 
-    if( UndefIntRtn( width ) ) return;
+    if( UndefIntRtn( width ) )
+        return;
     iorslt = IORslt.intstar4;
     if( ( iorslt == 0 ) && ( min == 0 ) ) {
         SendChar( ' ', width );
@@ -829,16 +839,16 @@ static  void    OutInt( uint width, uint min ) {
 }
 
 
-static  int     Div10S( real val ) {
-//==================================
-
+static int     Div10S( real val )
+//===============================
+{
     int         retn;
 
     if( val < SInfinity.value ) {
         retn = -1;
         while( val >= 1 ) {
-          retn++;
-          val /= 10;
+            retn++;
+            val /= 10;
         }
         return( retn );
     } else {
@@ -847,57 +857,55 @@ static  int     Div10S( real val ) {
 }
 
 
-    //  this function is called to determine if a number printed in G
-    //  format is printed with the E format or the F format
+static  int     Div10L( double val )
+//==================================
+// this function is called to determine if a number printed in G
+// format is printed with the E format or the F format
+{
+    int             retn;
+    unsigned short  *ui;
 
-static  int     Div10L( double val ) {
-//====================================
-
-    int         retn;
-
-       //  check for a NaN or Inf value
-    unsigned short * ui = (unsigned short *)&val;
-    if ( (ui [3] & 0x7FF0) == 0x7FF0 ) {    /* NaN or Inf */
+    ui = (unsigned short *)&val;
+    // check for a NaN or Inf value
+    if( (ui[3] & 0x7FF0) == 0x7FF0 ) {  /* NaN or Inf */
         return( INT_MAX );
     }
 
-    if ( val < DInfinity.value ) {
+    if( val < DInfinity.value ) {
         retn = -1;
         while( val >= 1 ) {
-          retn++;
-              //   check for runaway due to a NaN
-          // if ( retn == 1000 )
-             // return ( INT_MAX );
-          val /= 10;
+            retn++;
+            // check for runaway due to a NaN
+            // if ( retn == 1000 )
+            // return ( INT_MAX );
+            val /= 10;
         }
         return( retn );
-    } else {
-        return( INT_MAX );
     }
+    return( INT_MAX );
 }
 
 
-static  int     Div10X( extended val ) {
-//======================================
-
+static  int     Div10X( extended val )
+//====================================
+{
     int         retn;
 
     if( val < XInfinity.value ) {
         retn = -1;
         while( val >= 1 ) {
-          retn++;
-          val /= 10;
+            retn++;
+            val /= 10;
         }
         return( retn );
-    } else {
-        return( INT_MAX );
     }
+    return( INT_MAX );
 }
 
 
-void    R_FOG( void ) {
-//===============
-
+void    R_FOG( void )
+//===================
+{
     int         width;
     int         dec;
     int         exp;
@@ -932,15 +940,15 @@ void    R_FOG( void ) {
             } else {
                 logval = Div10X( absvalue );
             }
-               //  use E format if less than 0.1 unless value is zero
-               //  use E format if there are more digits than the width
-            if( (( absvalue < 0.1 ) || ( logval >= dec )) &&
-                 ( value != 0.0 ) ) {
+            //  use E format if less than 0.1 unless value is zero
+            //  use E format if there are more digits than the width
+            if( ( ( absvalue < 0.1 ) || ( logval >= dec ) )
+              && ( value != 0.0 ) ) {
                 ch = 'E';
                 if( exp == 0 ) { // if Gw.d
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
-                    if( ( ( absvalue <= P1d_99 ) || ( absvalue >= P1d100 ) ) &&
-                        ( absvalue != 0.0 ) ) {
+                    if( ( ( absvalue <= P1d_99 ) || ( absvalue >= P1d100 ) )
+                      && ( absvalue != 0.0 ) ) {
                         ch = NULLCHAR;   // no exponent letter
                         exp = 3;
                     } else {
@@ -986,9 +994,9 @@ void    R_FOG( void ) {
 }
 
 
-void    ChkBuffLen( uint width ) {
-//================================
-
+void    ChkBuffLen( uint width )
+//==============================
+{
     if( IOCB->fileinfo->col + width > IOCB->fileinfo->len ) {
         IOErr( IO_BUFF_LEN );
         // never return
