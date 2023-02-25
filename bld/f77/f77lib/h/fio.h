@@ -47,6 +47,9 @@
 #define IO_BUFFER       16*1024
 #endif
 
+#define VARIABLE_REC_LOGICAL    0x80000000U
+#define VARIABLE_REC_LEN_MASK   0x7fffffffU
+
 typedef enum {
     REC_TEXT            = 0x0001,  // text records (terminated with CR/LF)
     REC_FIXED           = 0x0002,  // fixed records
@@ -80,6 +83,8 @@ typedef enum {
     CC_NOLF             = 0x4000,  // no LF
     BUFFERED            = 0x8000,  // buffered i/o
 } f_attrs;
+
+typedef unsigned_32     variable_rec_tag;
 
 typedef struct b_file   *file_handle;   // file handle
 

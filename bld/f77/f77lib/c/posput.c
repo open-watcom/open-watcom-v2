@@ -139,17 +139,17 @@ static  void    PutVariableRec( b_file *io, const char *b, size_t len )
 //=====================================================================
 // Put a record to a file with "variable" records.
 {
-    unsigned_32 tag;
+    variable_rec_tag    rec_tag;
 
-    tag = len;
+    rec_tag = len;
     if( io->attrs & LOGICAL_RECORD ) {
-        tag |= 0x80000000;
+        rec_tag |= VARIABLE_REC_LOGICAL;
     }
-    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 )
+    if( SysWrite( io, (char *)&rec_tag, sizeof( rec_tag ) ) == -1 )
         return;
     if( SysWrite( io, b, len ) == -1 )
         return;
-    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 ) {
+    if( SysWrite( io, (char *)&rec_tag, sizeof( rec_tag ) ) == -1 ) {
         return;
     }
 }
