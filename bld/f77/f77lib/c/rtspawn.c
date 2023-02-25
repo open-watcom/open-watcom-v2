@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,5 +80,7 @@ _WCNORETURN void    RTSuicide( void )
 {
     if( _SPAWNSTACK == NULL )
         exit( -1 );
+        // never return
     __longjmp( *_SPAWNSTACK, 1 );
+    // never return
 }

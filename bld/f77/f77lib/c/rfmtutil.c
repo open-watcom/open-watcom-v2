@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,6 +108,7 @@ void    R_ChkType( PTYPE lower, PTYPE upper ) {
 
     if( ( IOCB->typ < lower ) || ( IOCB->typ > upper ) ) {
         IOErr( IO_FMT_MISMATCH );
+        // never return
     }
 }
 
@@ -197,6 +198,7 @@ static void FOString( uint width ) {
     }
     if( fcb->col + width > fcb->bufflen ) {
         IOErr( IO_BUFF_LEN );
+        // never return
     }
     if( width > length ) {
         SendChar( ' ', width - length );
@@ -292,13 +294,13 @@ void    R_FILog( void ) {
     }
     if( width == 0 ) {
         IOErr( IO_BAD_CHAR );
-    } else {
-        ch = toupper( fcb->buffer[ fcb->col ] );
-        if( ch == 'F' ) {
-            SetLogValue( _LogValue( false ) );
-        } else if( ch == 'T' ) {
-            SetLogValue( _LogValue( true ) );
-        }
+        // never return
+    }
+    ch = toupper( fcb->buffer[ fcb->col ] );
+    if( ch == 'F' ) {
+        SetLogValue( _LogValue( false ) );
+    } else if( ch == 'T' ) {
+        SetLogValue( _LogValue( true ) );
     }
     if( __AllowCommaSep() ) { // don't flush but search for comma separator
         fcb->col++;
@@ -350,47 +352,48 @@ void    R_FIFloat( void ) {
     comma = __AllowCommaSep();
     status = FmtS2F( fcb->buffer + fcb->col, fmtptr->fld1, fmtptr->fld2, ( fcb->blanks == BLANK_ZERO ),
                      IOCB->scale, prec, &value, comma, &width, false );
-    if( status == FLT_OK ) {
-        if( comma && ( fmtptr->fld1 != width ) ) {
-            fcb->col += width;
-            if( fcb->buffer[ fcb->col ] == ',' ) {
-                fcb->col++;
-            } else {
-                IOErr( IO_BAD_CHAR );
-            }
-        } else {
-            fcb->col += fmtptr->fld1;
+    if( status == FLT_INVALID ) {
+        IOErr( IO_BAD_CHAR );
+        // never return
+    }
+    if( status != FLT_OK ) {
+        // FLT_RANGE_EXCEEDED
+        IOErr( IO_FRANGE_EXCEEDED );
+        // never return
+    }
+    if( comma && ( fmtptr->fld1 != width ) ) {
+        fcb->col += width;
+        if( fcb->buffer[ fcb->col ] != ',' ) {
+            IOErr( IO_BAD_CHAR );
+            // never return
         }
-        if( typ  == PT_REAL_4 ) {
-            *(single PGM *)(IORslt.pgm_ptr) = value;
-        } else if( typ  == PT_REAL_8 ) {
-            *(double PGM *)(IORslt.pgm_ptr) = value;
-        } else if( typ  == PT_REAL_16 ) {
-            *(extended PGM *)(IORslt.pgm_ptr) = value;
-        } else if( typ  == PT_CPLX_8 ) {
-            if( IOCB->flags & IOF_FMTREALPART ) {
-                ((scomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
-            } else {
-                ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
-            }
-        } else if( typ  == PT_CPLX_16 ) {
-            if( IOCB->flags & IOF_FMTREALPART ) {
-                ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
-            } else {
-                ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
-            }
+        fcb->col++;
+    } else {
+        fcb->col += fmtptr->fld1;
+    }
+    if( typ  == PT_REAL_4 ) {
+        *(single PGM *)(IORslt.pgm_ptr) = value;
+    } else if( typ  == PT_REAL_8 ) {
+        *(double PGM *)(IORslt.pgm_ptr) = value;
+    } else if( typ  == PT_REAL_16 ) {
+        *(extended PGM *)(IORslt.pgm_ptr) = value;
+    } else if( typ  == PT_CPLX_8 ) {
+        if( IOCB->flags & IOF_FMTREALPART ) {
+            ((scomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
         } else {
-            if( IOCB->flags & IOF_FMTREALPART ) {
-                ((xcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
-            } else {
-                ((xcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
-            }
+            ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
+        }
+    } else if( typ  == PT_CPLX_16 ) {
+        if( IOCB->flags & IOF_FMTREALPART ) {
+            ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
+        } else {
+            ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
         }
     } else {
-        if( status == FLT_INVALID ) {
-            IOErr( IO_BAD_CHAR );
-        } else { // FLT_RANGE_EXCEEDED
-            IOErr( IO_FRANGE_EXCEEDED );
+        if( IOCB->flags & IOF_FMTREALPART ) {
+            ((xcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
+        } else {
+            ((xcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
         }
     }
 }
@@ -616,6 +619,7 @@ void    R_FIHex( void ) {
     }
     if( !FmtH2B( &fcb->buffer[ fcb->col ], width, ptr, len, typ ) ) {
         IOErr( IO_BAD_CHAR );
+        // never return
     }
     fcb->col += width;
 }
@@ -741,26 +745,28 @@ void    R_FIInt( void ) {
     status = FmtS2I( fcb->buffer + fcb->col, width, ( fcb->blanks == BLANK_ZERO ), &value, comma, &new_width );
     if( status == INT_INVALID ) {
         IOErr( IO_BAD_CHAR );
-    } else if( status == INT_OVERFLOW ) {
+        // never return
+    }
+    if( status == INT_OVERFLOW ) {
         IOErr( IO_IOVERFLOW );
+        // never return
+    }
+    if( comma && ( width != new_width ) ) { // use comma as field separator
+        fcb->col += new_width;
+        if( fcb->buffer[ fcb->col ] != ',' ) {
+            IOErr( IO_BAD_CHAR );
+            // never return
+        }
+        fcb->col++;
     } else {
-        if( comma && ( width != new_width ) ) { // use comma as field separator
-            fcb->col += new_width;
-            if( fcb->buffer[ fcb->col ] == ',' ) {
-                fcb->col++;
-            } else {
-                IOErr( IO_BAD_CHAR );
-            }
-        } else {
-            fcb->col += width;
-        }
-        if( IOCB->typ == PT_INT_1 ) {
-            *(intstar1 PGM *)(IORslt.pgm_ptr) = value;
-        } else if( IOCB->typ == PT_INT_2 ) {
-            *(intstar2 PGM *)(IORslt.pgm_ptr) = value;
-        } else {
-            *(intstar4 PGM *)(IORslt.pgm_ptr) = value;
-        }
+        fcb->col += width;
+    }
+    if( IOCB->typ == PT_INT_1 ) {
+        *(intstar1 PGM *)(IORslt.pgm_ptr) = value;
+    } else if( IOCB->typ == PT_INT_2 ) {
+        *(intstar2 PGM *)(IORslt.pgm_ptr) = value;
+    } else {
+        *(intstar4 PGM *)(IORslt.pgm_ptr) = value;
     }
 }
 
@@ -985,5 +991,6 @@ void    ChkBuffLen( uint width ) {
 
     if( IOCB->fileinfo->col + width > IOCB->fileinfo->len ) {
         IOErr( IO_BUFF_LEN );
+        // never return
     }
 }

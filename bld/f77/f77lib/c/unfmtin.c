@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,22 +66,20 @@ void    UnFmtIn( void ) {
 }
 
 
-static void NextUnFmtRec( void ) {
-//================================
-
-    if( _LogicalRecordOrganization( IOCB->fileinfo ) ) {
-        if( CheckLogicalRecord( IOCB->fileinfo ) ) {
-            NextRec();
-            return;
-        }
+static void NextUnFmtRec( void )
+//==============================
+{
+    if( !_LogicalRecordOrganization( IOCB->fileinfo ) || !CheckLogicalRecord( IOCB->fileinfo ) ) {
+        IOErr( IO_UNFMT_RECL );
+        // never return
     }
-    IOErr( IO_UNFMT_RECL );
+    NextRec();
 }
 
 
-static  void    UnFmtItem( void *s ) {
-//====================================
-
+static  void    UnFmtItem( void *s )
+//==================================
+{
     switch( IOCB->typ ) {
     case PT_LOG_1:
         *(logstar1 PGM *)(IORslt.pgm_ptr) = *(logstar1 *)s;
@@ -139,7 +137,8 @@ static  void    RecordUnFmtIn( void ) {
     NextRec();
     for(;;) {
         IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->typ == PT_NOTYPE )
+            break;
         if( fcb->col == fcb->len ) {
             NextUnFmtRec();
         }
@@ -151,6 +150,7 @@ static  void    RecordUnFmtIn( void ) {
             len = SizeVars[ IOCB->typ ];
             if( fcb->col + len > fcb->len ) {
                 IOErr( IO_UNFMT_RECL );
+                // never return
             }
             UnFmtItem( fcb->buffer + fcb->col );
             fcb->col += len;
@@ -175,7 +175,8 @@ static  void    IUnStream( char HPGM *dst, unsigned long len ) {
         NextRec();
         pgm_memput( dst, fcb->buffer, fcb->len );
         len -= amt;
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         dst += amt;
     }
 }
@@ -189,11 +190,11 @@ static  void    StreamUnFmtIn( void ) {
     fcb = IOCB->fileinfo;
     for(;;) {
         IOCB->typ = IOTypeRtn();
-        if( IOCB->typ == PT_NOTYPE ) break;
+        if( IOCB->typ == PT_NOTYPE )
+            break;
         if( IOCB->typ == PT_CHAR ) {
             IUnStream( IORslt.string.strptr, IORslt.string.len );
         } else if( IOCB->typ == PT_ARRAY ) {
-
             uint        elmt_size;
 
             if( IORslt.arr_desc.typ == PT_CHAR ) {
@@ -207,6 +208,7 @@ static  void    StreamUnFmtIn( void ) {
             fcb->len = SizeVars[ IOCB->typ ];
             if( fcb->len > fcb->bufflen ) {
                 IOErr( IO_UNFMT_RECL );
+                // never return
             }
             NextRec();
             UnFmtItem( fcb->buffer );
@@ -225,6 +227,7 @@ static  void    IUnBytes( char HPGM *dst, unsigned long len ) {
     fcb = IOCB->fileinfo;
     if( IsFixed() && ( fcb->col + len > fcb->len ) ) {
         IOErr( IO_UNFMT_RECL );
+        // never return
     }
     src = fcb->buffer + fcb->col;
     for(;;) {
@@ -235,7 +238,8 @@ static  void    IUnBytes( char HPGM *dst, unsigned long len ) {
         pgm_memput( dst, src, amt );
         fcb->col += amt;
         len -= amt;
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         dst += amt;
         src = fcb->buffer;
         NextUnFmtRec();

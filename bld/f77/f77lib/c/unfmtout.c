@@ -99,6 +99,7 @@ static  void    OutChkRecPos( ftnfile *fcb, uint len ) {
 
     if( fcb->col + len > fcb->bufflen ) {
         IOErr( IO_UNFMT_RECL );
+        // never return
     }
 }
 
@@ -114,6 +115,7 @@ static  void    OutChkRecBuff( ftnfile *fcb, uint len ) {
 
     if( len > fcb->bufflen ) {
         IOErr( IO_UNFMT_RECL );
+        // never return
     }
     if( fcb->col + len > fcb->bufflen ) {
         SendEOR();

@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern void    IOErr( int errcode, ... );
+_WCNORETURN extern void     IOErr( int errcode, ... );

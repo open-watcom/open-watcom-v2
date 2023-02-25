@@ -59,7 +59,8 @@ size_t readbytes( b_file *io, char *buff, size_t len )
         if( bytes_read == READ_ERROR ) {
             FSetSysErr( io );
             return( READ_ERROR );
-        } else if( bytes_read == 0 ) {
+        }
+        if( bytes_read == 0 ) {
             if( total != 0 )
                 break;
             FSetEof( io );
@@ -387,6 +388,9 @@ char    GetStdChar( void )
 
 int     FCheckLogical( b_file *io )
 //=================================
+// return -1 if any error
+//         0 if no logical record
+//         1 if logical record
 {
     variable_rec_tag    rec_tag;
 

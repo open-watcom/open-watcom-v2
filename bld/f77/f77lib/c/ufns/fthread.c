@@ -156,6 +156,7 @@ void FEndThread( void )
 //=====================
 {
     RTSuicide();
+    // never return
 }
 
 

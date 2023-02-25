@@ -38,13 +38,15 @@
 
 #define CHAR_CTRL_Z     0x1a            // Ctrl/Z character (EOF marker)
 
+#define SYSIOERROR      ((size_t)-1)
+
 #define READ_ERROR      ((size_t)-1)    // read error indicator
 
 #define MIN_BUFFER      128
 #if _CPU == 8086
-#define IO_BUFFER       4*1024
+#define IO_BUFFER       (4 * 1024)
 #else
-#define IO_BUFFER       16*1024
+#define IO_BUFFER       (16 * 1024)
 #endif
 
 #define VARIABLE_REC_LOGICAL    0x80000000U

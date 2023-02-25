@@ -81,6 +81,7 @@ void    IOPrologue( void ) {
     IOCB->typ = PT_NOT_STARTED;
     if( IOCB->flags & BAD_REC ) {
         IOErr( IO_IREC );
+        // never return
     }
     if( IOCB->set_flags & SET_INTERNAL ) {
         F_Connect();
@@ -109,50 +110,64 @@ void    IOPrologue( void ) {
         }
         fcb->accmode = accm;
     } else {
-        if( ( accm == ACCM_DIRECT ) && (IOCB->set_flags & SET_RECORDNUM) == 0 ) {
-            IOErr( IO_REC1_ACCM );
-        } else if( ( ( accm == ACCM_SEQUENTIAL ) || ( accm == ACCM_APPEND ) ) &&
-                   (IOCB->set_flags & SET_RECORDNUM) ) {
-            IOErr( IO_REC2_ACCM );
+        if( IOCB->set_flags & SET_RECORDNUM ) {
+            if( ( accm == ACCM_SEQUENTIAL ) || ( accm == ACCM_APPEND ) ) {
+                IOErr( IO_REC2_ACCM );
+                // never return
+            }
+        } else {
+            if( accm == ACCM_DIRECT ) {
+                IOErr( IO_REC1_ACCM );
+                // never return
+            }
         }
     }
     if( accm == ACCM_DIRECT ) {
-        fcb->recnum = IOCB->recordnum; // set up recordnumber
+        fcb->recnum = IOCB->recordnum;  // set up recordnumber
     }
     form = fcb->formatted;
-    if( form == 0 ) {                    // set up format if it was
-        if( (IOCB->flags & IOF_NOFMT) == 0 ) {     // not previously set
-            form = FORMATTED_IO;
-        } else {
+    if( form == 0 ) {                   // set up format if it was
+        if( IOCB->flags & IOF_NOFMT ) { // not previously set
             form = UNFORMATTED_IO;
+        } else {
+            form = FORMATTED_IO;
         }
         fcb->formatted = form;
     } else {
-        if( (form == FORMATTED_IO) && (IOCB->flags & IOF_NOFMT) ) {
-            IOErr( IO_AF1 );
-        } else if( (form == UNFORMATTED_IO) && (IOCB->flags & IOF_NOFMT) == 0 ) {
-            IOErr( IO_AF2 );
+        if( IOCB->flags & IOF_NOFMT ) {
+            if( form == FORMATTED_IO ) {
+                IOErr( IO_AF1 );
+                // never return
+            }
+        } else {
+            if( form == UNFORMATTED_IO ) {
+                IOErr( IO_AF2 );
+                // never return
+            }
         }
     }
     if( fcb->internal != NULL ) {
         fcb->bufflen = fcb->internal->len;
         fcb->buffer = RChkAlloc( fcb->bufflen );
     } else {
-        if( ( accm <= ACCM_SEQUENTIAL ) &&
-            ( fcb->eofrecnum != 0 ) &&
-            ( fcb->recnum >= fcb->eofrecnum ) &&
-            // Consider: READ( 1, *, END=10 )
-            //           ...
-            //     10    WRITE( 1, * ) 'write after EOF'
-            // if an EOF condition was encounterd, we don't want IO_PAST_EOF
-            // on the write
-            (IOCB->flags & IOF_OUTPT) == 0 ) {
-            if( fcb->recnum != fcb->eofrecnum ) {
-                IOErr( IO_PAST_EOF );
-            } else {
+        if( ( accm <= ACCM_SEQUENTIAL )
+          && ( fcb->eofrecnum != 0 )
+          && ( fcb->recnum >= fcb->eofrecnum )
+            /*
+             * Consider: READ( 1, *, END=10 )
+             *           ...
+             *     10    WRITE( 1, * ) 'write after EOF'
+             * if an EOF condition was encounterd, we don't want IO_PAST_EOF
+             * on the write
+             */
+          && (IOCB->flags & IOF_OUTPT) == 0 ) {
+            if( fcb->recnum == fcb->eofrecnum ) {
                 fcb->recnum++;
                 SysEOF();
+                // never return
             }
+            IOErr( IO_PAST_EOF );
+            // never return
         }
         _AllocBuffer( fcb );
         if( fcb->fileptr == NULL ) {
@@ -173,7 +188,8 @@ void    IOPrologue( void ) {
 void    UpdateRecNum( ftnfile *fcb ) {
 //====================================
 
-    if( _NoRecordOrganization( fcb ) ) return;
+    if( _NoRecordOrganization( fcb ) )
+        return;
     if( _LogicalRecordOrganization( fcb ) ) {
         if( (fcb->flags & FTN_LOGICAL_RECORD) == 0 ) {
             // increment record count if this is first

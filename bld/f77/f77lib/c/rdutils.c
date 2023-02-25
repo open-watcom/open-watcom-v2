@@ -49,31 +49,32 @@ void    NextRec( void )
     fcb = IOCB->fileinfo;
     if( fcb->flags & FTN_EOF ) {
         IOErr( IO_PAST_EOF );
-    } else {
-        if( fcb->internal != NULL ) {
-            if( fcb->recnum > IOCB->elmts ) {
-                fcb->flags |= FTN_EOF;
-            }
-            fcb->len = fcb->internal->len;
-            NextIFBuff( fcb->buffer, fcb->len, fcb->recnum, fcb->internal );
-            fcb->recnum++;
-        } else {
-            UpdateRecNum( fcb );
-            FGetBuff( fcb );
-            ChkIOErr( fcb );
-            if( ( IOCB->set_flags & SET_FMTPTR ) &&
-                ( ( IOCB->flags & NML_DIRECTED ) == 0 ) ) {
-                memset( fcb->buffer + fcb->len, ' ', fcb->bufflen - fcb->len  );
-                fcb->len = fcb->bufflen;
-            }
-            fcb->buffer[ fcb->len ] = NULLCHAR;
-        }
-        if( fcb->flags & FTN_EOF ) {
-            if( !NoEOF( fcb ) && !_NoRecordOrganization( fcb ) ) {
-                fcb->eofrecnum = fcb->recnum - 1;
-            }
-            SysEOF();
-        }
-        fcb->col = 0;
+        // never return
     }
+    if( fcb->internal != NULL ) {
+        if( fcb->recnum > IOCB->elmts ) {
+            fcb->flags |= FTN_EOF;
+        }
+        fcb->len = fcb->internal->len;
+        NextIFBuff( fcb->buffer, fcb->len, fcb->recnum, fcb->internal );
+        fcb->recnum++;
+    } else {
+        UpdateRecNum( fcb );
+        FGetBuff( fcb );
+        ChkIOErr( fcb );
+        if( (IOCB->set_flags & SET_FMTPTR)
+          && ( (IOCB->flags & NML_DIRECTED) == 0 ) ) {
+            memset( fcb->buffer + fcb->len, ' ', fcb->bufflen - fcb->len  );
+            fcb->len = fcb->bufflen;
+        }
+        fcb->buffer[ fcb->len ] = NULLCHAR;
+    }
+    if( fcb->flags & FTN_EOF ) {
+        if( !NoEOF( fcb ) && !_NoRecordOrganization( fcb ) ) {
+            fcb->eofrecnum = fcb->recnum - 1;
+        }
+        SysEOF();
+        // never return
+    }
+    fcb->col = 0;
 }

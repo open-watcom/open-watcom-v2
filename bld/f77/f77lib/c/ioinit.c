@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,27 +42,26 @@
 #include "rtspawn.h"
 
 
-static  char            IOSysInitialized = { 0 };
+static bool         IOSysInitialized = false;
 
-static  void            IOSysFini( void ) {
+static void         IOSysFini( void )
 //===================================
-
 // Finalize I/O system.
-
+{
     RunExit();
 }
 
 
-void            IOSysInit( void ) {
+void        IOSysInit( void )
 //===========================
-
 // Initialize I/O system.
-
-    if( IOSysInitialized )
-        return;
-    IOSysInitialized = 1;
-    atexit( &IOSysFini );
-    if( RunEntry() )
-        return;
-    RTSuicide();
+{
+    if( !IOSysInitialized ) {
+        IOSysInitialized = 1;
+        atexit( &IOSysFini );
+        if( !RunEntry() ) {
+            RTSuicide();
+            // never return
+        }
+    }
 }

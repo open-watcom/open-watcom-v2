@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,6 +91,7 @@ int     IOMain( void (*io_rtn)( void ) ) {
     if( _RWD_XcptFlags & XF_FATAL_ERROR ) {
         __ReleaseIOSys(); // so other threads can continue
         RTSuicide();
+        // never return
     }
     io_stat = IOCB->status;
     if( IOCB->set_flags & SET_IOSPTR ) { // set up IOSTAT

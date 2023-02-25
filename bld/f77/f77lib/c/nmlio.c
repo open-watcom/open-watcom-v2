@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -503,6 +503,7 @@ static  void    NmlIn( void ) {
         if( nml_entry == NULL ) {
             ptr[len] = NULLCHAR;
             IOErr( IO_NML_NO_SUCH_NAME, ptr );
+            // never return
         }
         info = *nml_entry;
         ++nml_entry;
@@ -536,6 +537,7 @@ static  void    NmlIn( void ) {
                 }
                 if( !SubScr( info, adv_ss_ptr, size ) ) {
                     IOErr( IO_NML_BAD_SUBSCRIPT );
+                    // never return
                 }
             }
             if( NmlInType == PT_CHAR ) {
@@ -543,6 +545,7 @@ static  void    NmlIn( void ) {
                 if( ScanChar( '(' ) ) {
                     if( !SubStr( &scb ) ) {
                         IOErr( IO_NML_BAD_SUBSTRING );
+                        // never return
                     }
                 }
                 NmlInAddr = &scb;
@@ -555,6 +558,7 @@ static  void    NmlIn( void ) {
                 if( ScanChar( '(' ) ) {
                     if( !SubStr( &scb ) ) {
                         IOErr( IO_NML_BAD_SUBSTRING );
+                        // never return
                     }
                 }
                 NmlInAddr = &scb;
@@ -564,7 +568,7 @@ static  void    NmlIn( void ) {
         Blanks();
         if( !ScanChar( '=' ) ) {
             IOErr( IO_NML_BAD_SYNTAX );
-            break;
+            // never return
         }
         Blanks();
         if( RTSpawn( &DoFreeIn ) != 0 ) {
@@ -575,6 +579,7 @@ static  void    NmlIn( void ) {
             }
             // we got an error during NAMELIST input
             RTSuicide();
+            // never return
         }
     }
     IOTypeRtn = &IOType;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,55 +53,55 @@ static  bool    __IsUnit6CC = false;
 static  bool    __AllowCommaSeparator = false;
 
 
-void    __InitUnit6CC( void ) {
-//=======================
-
+void    __InitUnit6CC( void )
+//===========================
+{
     __IsUnit6CC = true;
 }
 
-bool    __DevicesCC( void ) {
-//=====================
-
+bool    __DevicesCC( void )
+//=========================
+{
     return( __IsUnit6CC );
 }
 
-void    __InitAllowCommaSeparator( void ) {
-//===================================
-
+void    __InitAllowCommaSeparator( void )
+//=======================================
+{
     __AllowCommaSeparator = true;
 }
 
-bool    __AllowCommaSep( void ) {
-//=========================
-
+bool    __AllowCommaSep( void )
+//=============================
+{
     return( __AllowCommaSeparator );
 }
 
-static int _InitIO( void ) {
-//==========================
-
+static void _InitIO( void )
+//=========================
+{
     InitStd();
     Files = NULL;
-    FmtBuff = NULL;
     IOCB = NULL;
     FmtBuff = RChkAlloc( SCAN_STORAGE_SIZE );
-    if( FmtBuff == NULL ) return( -1 );
-    IOCB = RChkAlloc( sizeof( iocb ) );
-    if( IOCB == NULL ) return( -1 );
-    IOCB->flags = 0;
-    IOCB->set_flags = 0;
-    return 0;
+    if( FmtBuff != NULL ) {
+        IOCB = RChkAlloc( sizeof( iocb ) );
+        if( IOCB != NULL ) {
+            IOCB->flags = 0;
+            IOCB->set_flags = 0;
+        }
+    }
 }
 
-static void DoCloseFile( void ) {
+static void DoCloseFile( void )
 //=============================
-
+{
     CloseFile( Files );
 }
 
-static void CloseAllFiles( void ) {
-//=================================
-
+static void CloseAllFiles( void )
+//===============================
+{
     while( Files != NULL ) {
         // We must spawn CloseFile() since an error can occur (i.e. a disk full)
         // on the close and if the error does occur, RTErr() will be called and
@@ -114,9 +114,9 @@ static void CloseAllFiles( void ) {
     }
 }
 
-static void _FiniEx( void ) {
-//===========================
-
+static void _FiniEx( void )
+//=========================
+{
     CloseAllFiles();
     if( FmtBuff != NULL ) {
         RMemFree( FmtBuff );
@@ -126,16 +126,16 @@ static void _FiniEx( void ) {
     }
 }
 
-bool    RunEntry( void ) {
-//==================
-
+bool    RunEntry( void )
+//======================
+{
     IOTypeRtn = &IOType;
-    RTSpawn( (void(*)( void ))_InitIO );
+    RTSpawn( _InitIO );
     return( (_RWD_XcptFlags & XF_FATAL_ERROR) == 0 );
 }
 
-void    RunExit( void ) {
-//=================
-
+void    RunExit( void )
+//=====================
+{
     _FiniEx();
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,6 +215,7 @@ void    ChkFileName( void ) {
     if( RTSpawn( &SysFileInfo ) != 0 ) {
         DiscoFile( IOCB->fileinfo );
         RTSuicide();
+        // never return
     }
 }
 
@@ -239,10 +240,12 @@ void    ChkIOOperation( ftnfile *fcb ) {
     if( IOCB->iostmt == IO_READ ) {
         if( fcb->action == ACTION_WRITE ) {
             IOErr( IO_BAD_ACTION );
+            // never return
         }
     } else {    // must be WRITE or ENDFILE
         if( fcb->action == ACTION_READ ) {
             IOErr( IO_BAD_ACTION );
+            // never return
         }
     }
 }
@@ -262,17 +265,21 @@ void    ChkIOErr( ftnfile *fcb ) {
 
     if( GetIOErr( fcb ) ) {
         IOErr( IO_FILE_PROBLEM );
+        // never return
     }
 }
 
 
-void    ChkUnitId( void ) {
-//===================
-
+void    ChkUnitId( void )
+//=======================
+{
     if( IOCB->flags & BAD_UNIT ) {
         IOErr( IO_IUNIT );
-    } else if( IOCB->unitid > PREC_MAX_UNIT ) {
+        // never return
+    }
+    if( IOCB->unitid > PREC_MAX_UNIT ) {
         IOErr( IO_UNIT_EXIST );
+        // never return
     }
 }
 
@@ -282,6 +289,7 @@ void    ChkConnected( void ) {
 
     if( IOCB->fileinfo == NULL ) {
         IOErr( IO_NOT_CONNECTED );
+        // never return
     }
 }
 
@@ -310,15 +318,17 @@ void    ClearEOF( void ) {
 }
 
 
-void    SysEOF( void ) {
-//================
-
+_WCNORETURN void    SysEOF( void )
+//================================
+{
     SetEOF();
-    if( ( IOCB->set_flags & (SET_EOFSTMT|SET_IOSPTR) ) == 0 ) {
+    if( (IOCB->set_flags & (SET_EOFSTMT | SET_IOSPTR)) == 0 ) {
         ReportEOF( IOCB->fileinfo );
         IOErr( IO_FILE_PROBLEM );
+        // never return
     }
     RTSuicide();
+    // never return
 }
 
 
@@ -341,6 +351,7 @@ void    ChkRecordStructure( void ) {
 
     if( _NoRecordOrganization( IOCB->fileinfo ) ) {
         IOErr( IO_NO_RECORDS );
+        // never return
     }
 }
 
@@ -350,6 +361,7 @@ void    ChkSequential( int errmsg ) {
 
     if( IOCB->fileinfo->accmode > ACCM_SEQUENTIAL ) {
         IOErr( errmsg );
+        // never return
     }
 }
 
@@ -360,6 +372,7 @@ void    ChkExist( void ) {
     if( (IOCB->fileinfo->flags & FTN_FSEXIST) == 0 ) {
         ReportNExist( IOCB->fileinfo );
         IOErr( IO_FILE_PROBLEM );
+        // never return
     }
 }
 

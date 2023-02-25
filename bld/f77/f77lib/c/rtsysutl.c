@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -166,7 +166,7 @@ static  void    SysIOInfo( ftnfile *fcb ) {
             if( fstat( FGetFileHandle( fcb->fileptr ), &info ) == -1 ) {
                 FSetSysErr( fcb->fileptr );
                 IOErr( IO_FILE_PROBLEM );
-                return;
+                // never return
             }
             if( S_ISCHR( info.st_mode ) ) {
                 fcb->device |= INFO_DEV;
@@ -185,7 +185,7 @@ static  void    SysIOInfo( ftnfile *fcb ) {
             if( fcb->flags & FTN_FSEXIST ) {
                 FSetSysErr( fcb->fileptr );
                 IOErr( IO_FILE_PROBLEM );
-                return;
+                // never return
             }
             exist = false;
         } else if( S_ISCHR( info.st_mode ) ) {
@@ -216,15 +216,16 @@ static  void    SysIOInfo( ftnfile *fcb ) {
         }
     }
     sys_name = GetSysName( fcb );
-    if( sys_name == NULL ) {
+    if( sys_name != NULL ) {
+        RMemFree( fcb->filename );
+        fcb->filename = sys_name;
+    } else {
         if( exist ) {
             FSetSysErr( fcb->fileptr );
             IOErr( IO_FILE_PROBLEM );
+            // never return
         }
-        return;
     }
-    RMemFree( fcb->filename );
-    fcb->filename = sys_name;
 }
 
 
@@ -345,6 +346,7 @@ void    CloseFile( ftnfile *fcb ) {
         // close failed so restore file handle in fcb
         fcb->fileptr = fh;
         IOErr( IO_FILE_PROBLEM );
+        // never return
     }
 }
 
@@ -359,25 +361,31 @@ bool    Scrtched( ftnfile *fcb ) {
 }
 
 
-void    CloseDeleteFile( ftnfile *fcb ) {
-//=======================================
-
+void    CloseDeleteFile( ftnfile *fcb )
+//=====================================
 // Close and delete 'ftnfile'.
-
-    bool win_con = false;
-
+{
 #if defined( __IS_WINDOWED__ )
-    if( fcb->fileptr ) {
+    bool    win_con;
 
+    win_con = false;
+    if( fcb->fileptr ) {
         win_con = _dwDeleteOnClose( FGetFileHandle( fcb->fileptr ) );
     }
-#endif
     CloseFile( fcb );
-    if( win_con )
-        return;
-    if( Scrtched( fcb ) )
-        return;
-    IOErr( IO_FILE_PROBLEM );
+    if( !win_con ) {
+        if( !Scrtched( fcb ) ) {
+            IOErr( IO_FILE_PROBLEM );
+            // never return
+        }
+    }
+#else
+    CloseFile( fcb );
+    if( !Scrtched( fcb ) ) {
+        IOErr( IO_FILE_PROBLEM );
+        // never return
+    }
+#endif
 }
 
 
@@ -494,13 +502,13 @@ void    SysCreateFile( ftnfile *fcb ) {
 // Cause the file to exist in the file system.
 
     fcb->fileptr = Openf( fcb->filename, REC_TEXT | WRONLY );
-    if( fcb->fileptr != NULL ) {
-        Closef( fcb->fileptr );
-        fcb->fileptr = NULL;
-        fcb->flags |= FTN_FSEXIST;
-    } else {
+    if( fcb->fileptr == NULL ) {
         IOErr( IO_FILE_PROBLEM );
+        // never return
     }
+    Closef( fcb->fileptr );
+    fcb->fileptr = NULL;
+    fcb->flags |= FTN_FSEXIST;
 }
 
 
@@ -510,8 +518,11 @@ bool    CheckLogicalRecord( ftnfile *fcb ) {
     int         rc;
 
     rc = FCheckLogical( fcb->fileptr );
-    ChkIOErr( fcb );
-    return( rc );
+    if( rc == -1 ) {
+        IOErr( IO_FILE_PROBLEM );
+        // never return
+    }
+    return( rc != 0 );
 }
 
 
