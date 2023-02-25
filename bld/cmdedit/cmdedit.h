@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +62,8 @@
 
 #ifdef __DOS__
 
-#define PASPTR /**/
-#define USHORT  unsigned short
+#define PASPTR      /**/
+#define USHORT      unsigned short
 
 enum { FALSE, TRUE };
 

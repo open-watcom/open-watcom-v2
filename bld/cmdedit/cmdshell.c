@@ -191,7 +191,7 @@ void SetCurPosWithScroll( int row, int col )
         length = 2;
         VioReadCellStr( buffer, &length, row, col, 0 );
         buffer[0] = ' ';
-        VioScrollUp( 0, 0, -1, -1, 1, (PBYTE)buffer, 0 );
+        VioScrollUp( 0, 0, (USHORT)-1, (USHORT)-1, 1, (PBYTE)buffer, 0 );
         VioSetCurPos( row, 0, 0 );
     }
 }

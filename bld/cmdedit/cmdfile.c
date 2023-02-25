@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +205,7 @@ void NextFile( void )
     int                 fattr;
     USHORT              cnt;
     int                 searchpath;
-    static              int lastrc;
+    static int          lastrc;
     static char         buff[MAX_FNAME+2];
     char                c0,c1,c2,c3;
     char                *word;
@@ -261,12 +261,12 @@ recurse:
                 if( NextFileCalls == 0 && PathCurr == NULL ) {
                     PathCurr = GetEnv( PATH, sizeof( PATH ) - 1 );
                 } else if( PathCurr == NULL ) {
-                    lastrc = ~0;
+                    lastrc = 1;
                     goto done;
                 } else if( *PathCurr == '\0' ) {
                     ++NextFileCalls;
                     PathCurr = NULL;
-                    lastrc = ~0;
+                    lastrc = 1;
                     RestoreLine();
                     goto done;
                 } else {
