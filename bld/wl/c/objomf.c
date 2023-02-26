@@ -368,9 +368,9 @@ static void ProcSegDef( void )
     }
     sdata->align = OMFAlignTab[acbp >> 5];
     if( ObjFormat & FMT_EASY_OMF ) {   // set USE_32 flag.
-        sdata->is32bit = true;
+        sdata->bits = BITS_32;
     } else if( acbp & 1 ) {
-        sdata->is32bit = true;
+        sdata->bits = BITS_32;
     }
     switch( acbp >> 5 ) {
     case ALIGN_ABS:
@@ -413,7 +413,7 @@ static void ProcSegDef( void )
         SkipIdx();                          // skip overlay name index
         if( ObjBuff < EOObjRec ) {          // the optional attribute field present
             if( (*ObjBuff & 0x4) == 0 ) {   // if USE32 bit not set
-                sdata->is32bit = false;
+                sdata->bits = BITS_16;
             }
         }
     }

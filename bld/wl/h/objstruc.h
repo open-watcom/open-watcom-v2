@@ -442,6 +442,12 @@ enum {
 #define IS_DBG_DWARF( x ) ((x)->dbgtype >= DWARF_DEBUG_INFO)
 #define IS_DBG_INFO( x ) ((x)->dbgtype != NOT_DEBUGGING_INFO)
 
+enum {
+    BITS_16     = 0x00,
+    BITS_32     = 0x01,
+    BITS_64     = 0x02
+};
+
 /*
  * these are used to keep track of each individual contribution to a segment.
  * Any field that is solely used for dead code elimination is marked "dce"
@@ -473,8 +479,8 @@ typedef struct segdata {
     unsigned            select     : 3; // comdat: selection type
     unsigned            combine    : 2; // how to combine segment with others
     unsigned            alloc      : 2; // comdat: where to allocate segment.
+    unsigned            bits       : 2; // segment bitnese
 
-    boolbit             is32bit    : 1; // true if segment is 32 bits
     boolbit             iscode     : 1; // true if a code segment.
     boolbit             isabs      : 1; // true if this is an absolute segment.
     boolbit             iscdat     : 1; // true if this is a comdat

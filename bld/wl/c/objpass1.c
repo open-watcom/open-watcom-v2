@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -405,7 +405,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
     }
 #endif
     if( sdata->iscode ) {
-        if( !sdata->is32bit ) {
+        if( sdata->bits == BITS_16 ) {
             LinkState |= LS_HAVE_16BIT_CODE;
         }
     }
@@ -418,7 +418,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
         }
 #endif
     }
-    class = FindClass( sect, clname, sdata->is32bit, sdata->iscode );
+    class = FindClass( sect, clname, sdata->bits == BITS_32, sdata->iscode );
     AddSegment( sdata, class );
 #ifdef _EXE
     if( isovlclass ) {
@@ -653,7 +653,7 @@ void AddSegment( segdata *sd, class_entry *class )
     DEBUG(( DBG_OLD, "- - size = %h, comb = %x, alignment = %x",
                       sd->length, sd->combine, sd->align ));
     info = 0;
-    if( sd->is32bit ) {
+    if( sd->bits == BITS_32 ) {
         info |= USE_32;
     }
     if( class->flags & CLASS_CODE ) {
@@ -687,7 +687,7 @@ void AddSegment( segdata *sd, class_entry *class )
     }
     leader->dbgtype = DBIColSeg( class );
     if( !IS_DBG_INFO( leader ) ) {
-        if( sd->is32bit ) {
+        if( sd->bits == BITS_32 ) {
             Set32BitMode();
 #ifdef _QNX
             CheckQNXSegMismatch( LS_HAVE_16BIT_CODE );
@@ -871,7 +871,7 @@ static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
     sdata->isuninit = true;
     if( !use_16 ) {
         info |= USE_32;
-        sdata->is32bit = true;
+        sdata->bits = BITS_32;
     }
     leader = FindALeader( sdata, class, info );
     if( group_name != NULL ) {

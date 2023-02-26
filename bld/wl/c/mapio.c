@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -411,7 +411,7 @@ static void WriteVerbSeg( void *_seg )
     } else {
         star = ' ';
     }
-    if( seg->is32bit ) {
+    if( seg->bits == BITS_32 ) {
         bang = '!';
     } else {
         bang = ' ';
@@ -423,7 +423,7 @@ static void WriteVerbSeg( void *_seg )
     }
     addr = leader->seg_addr;
     addr.off += seg->a.delta;
-    if( (FmtData.type & MK_16BIT) && seg->is32bit ) {
+    if( (FmtData.type & MK_16BIT) && ( seg->bits == BITS_32 ) ) {
         WriteFormat( 53, "%A%c%c%c", &addr, star, see, bang );
     } else {
         WriteFormat( 53, "%a%c%c%c", &addr, star, see, bang );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -419,7 +419,7 @@ void CVAddGlobal( symbol *sym )
     size_t  size;
 
     if( (sym->info & SYM_STATIC) == 0 ) {
-        if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || sym->p.seg->is32bit ) {
+        if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || ( sym->p.seg->bits == BITS_32 ) ) {
             size = sizeof( s_pub32 );
         } else {
             size = sizeof( s_pub16 );
@@ -449,7 +449,7 @@ void CVGenGlobal( symbol *sym, section *sect )
     namelen = strlen( sym->name.u.ptr );
     size = namelen + 1;
 
-    if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || sym->p.seg->is32bit ) {
+    if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || ( sym->p.seg->bits == BITS_32 ) ) {
         size += sizeof( s_pub32 );
         pub32.common.length = __ROUND_UP_SIZE( size, 4 );
         pad = pub32.common.length - size;

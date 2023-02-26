@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1123,7 +1123,7 @@ static void WriteSym( symbol * sym, char star )
     if( sym->info & SYM_STATIC ) {
         star = 's';
     }
-    if( (FmtData.type & MK_16BIT) && ( sym->p.seg != NULL ) && sym->p.seg->is32bit ) {
+    if( (FmtData.type & MK_16BIT) && ( sym->p.seg != NULL ) && ( sym->p.seg->bits == BITS_32 ) ) {
         WriteFormat( 0, "%A%c", &sym->addr, star );
     } else {
         WriteFormat( 0, "%a%c", &sym->addr, star );

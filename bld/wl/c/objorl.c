@@ -503,7 +503,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     } else {
         sdata->align = ORLSecGetAlignment( sec );
     }
-    sdata->is32bit = true;
+    sdata->bits = BITS_32;
     sdata->length = ORLSecGetSize( sec );
     sdata->u.name.u.ptr = (char *)name;
     if( flags & ORL_SEC_FLAG_EXEC ) {

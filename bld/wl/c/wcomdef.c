@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,7 +185,7 @@ static bool isCOMDEF32( void )
         // none of these are generated for Dwarf debug info so
         // we should not get confused when we are 16-bit
         if( seg->isuninit || seg->iscdat || seg->iscode ) {
-            return( seg->is32bit );
+            return( seg->bits == BITS_32 );
         }
     }
     return( (ObjFormat & FMT_32BIT_REC) != 0 );
@@ -494,7 +494,7 @@ void ProcComdat( void )
         sdata->u.leader = seg->entry->u.leader;
         sdata->iscode = ( (seg->info & SEG_CODE) != 0 );
         if( ObjFormat & FMT_32BIT_REC ) {
-            sdata->is32bit = true;
+            sdata->bits = BITS_32;
         }
         info = AllocCDatInfo();
         info->sdata = sdata;

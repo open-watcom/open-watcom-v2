@@ -1402,7 +1402,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         } else {
             targseg = GetTargetSegData( tthread );
         }
-        if( ( targseg != NULL ) && !targseg->is32bit ) {
+        if( ( targseg != NULL ) && ( targseg->bits != BITS_32 ) ) {
             switch( fixtype ) {
             case OSF_SOURCE_SEG:        // 16-bit selector
             case OSF_SOURCE_PTR_48:     // 16:32 pointer

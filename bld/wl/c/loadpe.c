@@ -1568,7 +1568,7 @@ static void CreateIDataSection( void )
         } else {
             sdata->align = 2;
         }
-        sdata->is32bit = true;
+        sdata->bits = BITS_32;
         sdata->length = IData.total_size;
         sdata->u.name.u.ptr = CoffIDataSegName;
         sdata->combine = COMBINE_ADD;
@@ -1665,7 +1665,7 @@ static void CreateTransferSegment( class_entry *class )
         } else {
             sdata->align = 2;
         }
-        sdata->is32bit = true;
+        sdata->bits = BITS_32;
         sdata->length = size;
         sdata->u.name.u.ptr = TRANSFER_SEGNAME;
         sdata->combine = COMBINE_ADD;
