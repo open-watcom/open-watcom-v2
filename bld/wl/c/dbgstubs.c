@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,46 +47,46 @@ void DBIInit( void )
 void DBISectInit( section *sect )
 /**************************************/
 {
-    sect = sect;
+    (void)sect;
 }
 
 void DBIInitModule( mod_entry *obj )
 /*****************************************/
 {
-    obj = obj;
+    (void)obj;
 }
 
 void DBIP1Source( byte *buff, byte *endbuff )
 /**************************************************/
 {
-    buff = buff;
-    endbuff = endbuff;
+    (void)buff;
+    (void)endbuff;
 }
 
 void DBIP2Source( byte *buff, byte *endbuff )
 /**************************************************/
 {
-    buff = buff;
-    endbuff = endbuff;
+    (void)buff;
+    (void)endbuff;
 }
 
-section * DBIGetSect( char *classname )
-/*****************************************/
+section * DBIGetSect( const char *classname )
+/*******************************************/
 {
-    classname = classname;
+    (void)classname;
     return( NULL );
 }
 
 void DBIColClass( class_entry *class )
 /*******************************************/
 {
-    class = class;
+    (void)class;
 }
 
 unsigned_16 DBIColSeg( class_entry *class )
 /************************************************/
 {
-    class = class;
+    (void)class;
     return( 0 );
 }
 
@@ -97,21 +98,21 @@ void DBIP1ModuleScanned( void )
 bool DBISkip( seg_leader *seg )
 /*************************************/
 {
-    seg = seg;
+    (void)seg;
     return( false );
 }
 
 bool DBINoReloc( seg_leader *seg )
 /****************************************/
 {
-    seg = seg;
+    (void)seg;
     return( false );
 }
 
 void DBIP1ModuleFinished( mod_entry *obj )
 /***********************************************/
 {
-     obj = obj;
+     (void)obj;
 }
 
 void DBIComment( void )
@@ -122,8 +123,8 @@ void DBIComment( void )
 void DBIAddModule( mod_entry *obj, section *sect )
 /*******************************************************/
 {
-    obj = obj;
-    sect = sect;
+    (void)obj;
+    (void)sect;
 }
 
 void DBIGenModule( void )
@@ -134,82 +135,82 @@ void DBIGenModule( void )
 void DBIDefClass( class_entry *class, unsigned_32 size )
 /**********************************************************/
 {
-    class = class;
-    size = size;
+    (void)class;
+    (void)size;
 }
 
 void DBIAddLocal( seg_leader *seg, offset length )
 /**********************************************************/
 {
-    seg = seg;
-    length = length;
+    (void)seg;
+    (void)length;
 }
 
 void DBIGenLocal( seg_leader * leader, offset length )
 /***********************************************************/
 {
-    leader = leader;
-    length = length;
+    (void)leader;
+    (void)length;
 }
 
 void DBIAddGlobal( symbol *sym, unsigned add )
 /*****************************************************/
 {
-    sym = sym;
-    add = add;
+    (void)sym;
+    (void)add;
 }
 
 void DBIGenGlobal( symbol * sym, section *sect )
 /********************************************************/
 {
-    sym = sym;
-    sect = sect;
+    (void)sym;
+    (void)sect;
 }
 
 void DBIAddLines( seg_leader * seg, bool is32bit, bool issdata )
 /***********************************************************************/
 {
-    seg = seg;
-    is32bit = is32bit;
-    issdata = issdata;
+    (void)seg;
+    (void)is32bit;
+    (void)issdata;
 }
 
 void DBIStoreLines( unsigned_32 size )
 /*******************************************/
 {
-    size = size;
+    (void)size;
 }
 
 void DBIGenLines( seg_leader * seg, bool is32bit )
 /*******************************************************/
 {
-    seg = seg;
-    seg2 = seg2;
-    adjust = adjust;
-    is32bit = is32bit;
+    (void)seg;
+    (void)seg2;
+    (void)adjust;
+    (void)is32bit;
 }
 
 void DBIAddAddrInfo( seg_leader *seg, offset oldsize )
 /***********************************************************/
 {
-    seg = seg;
-    oldsize = oldsize;
+    (void)seg;
+    (void)oldsize;
 }
 
 void DBIGenAddrInfo( seg_leader *seg, offset oldsize, unsigned_32 pad,
                             section *sect )
 /**************************************************************************/
 {
-    seg = seg;
-    oldsize = oldsize;
-    pad = pad;
-    sect = sect;
+    (void)seg;
+    (void)oldsize;
+    (void)pad;
+    (void)sect;
 }
 
 virt_mem DBIAlloc( virt_mem_size size )
 /*************************************/
 {
-    size = size;
+    (void)size;
     return( 0 );
 }
 
@@ -221,25 +222,25 @@ void DBIAddrStart( void )
 void DBIAddrSectStart( section * sect )
 /********************************************/
 {
-    sect = sect;
+    (void)sect;
 }
 
 void DBIP2Start( section *sect )
 /*************************************/
 {
-    sect = sect;
+    (void)sect;
 }
 
 void DBIFini( section *sect )
 /**********************************/
 {
-    sect = sect;
+    (void)sect;
 }
 
 void DBISectCleanup( section *sect )
 /*****************************************/
 {
-    sect = sect;
+    (void)sect;
 }
 
 void DBICleanup( void )

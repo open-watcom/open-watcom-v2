@@ -1147,7 +1147,7 @@ static void ReOrderClasses( section *sec )
         class->next_class = NULL;
         CheckClassUninitialized( class );
         if( (FmtData.type & (MK_NOVELL | MK_PHAR_LAP | MK_OS2_LX))
-            && (class->flags & CLASS_32BIT) == 0 ) {
+          && ( class->bits == BITS_16 ) ) {
             ord = ORD_REALMODE;
         } else {
             name = class->name.u.ptr;

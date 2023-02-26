@@ -287,16 +287,15 @@ typedef struct mod_entry {
 } mod_entry;
 
 typedef enum {
-    CLASS_32BIT         = 0x0001,
-    CLASS_TRANSFER      = 0x0002,   /* used for PE import transfer code */
-    CLASS_MS_TYPE       = 0x0004,
-    CLASS_MS_LOCAL      = 0x0008,
-    CLASS_DWARF         = 0x0010,
-    CLASS_CODE          = 0x0020,
-    CLASS_LXDATA_SEEN   = 0x0040,
-    CLASS_READ_ONLY     = 0x0080,
-    CLASS_STACK         = 0x0100,
-    CLASS_IDATA         = 0x0200,
+    CLASS_TRANSFER      = 0x0001,   /* used for PE import transfer code */
+    CLASS_MS_TYPE       = 0x0002,
+    CLASS_MS_LOCAL      = 0x0004,
+    CLASS_DWARF         = 0x0008,
+    CLASS_CODE          = 0x0010,
+    CLASS_LXDATA_SEEN   = 0x0020,
+    CLASS_READ_ONLY     = 0x0040,
+    CLASS_STACK         = 0x0080,
+    CLASS_IDATA         = 0x0100,
     CLASS_FIXED         = 0x1000,   // Class should load at specified address
     CLASS_COPY          = 0x2000,   // Class should use data from DupClass
     CLASS_NOEMIT        = 0x4000,   // Class should not generate output
@@ -311,9 +310,10 @@ typedef struct class_entry {
     SEG_LEADER          *segs;
     name_strtab         name;
     class_status        flags;
+    unsigned            bits    : 2;    // segment bitnese
     section             *section;
-    targ_addr           BaseAddr;   // Fixed location to of this class for loadfile
-    CLASS_ENTRY         *DupClass;  // Class to get data from for output
+    targ_addr           BaseAddr;       // Fixed location to of this class for loadfile
+    CLASS_ENTRY         *DupClass;      // Class to get data from for output
 } class_entry;
 
 typedef struct group_entry {

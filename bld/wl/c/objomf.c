@@ -351,27 +351,26 @@ static void ProcSegDef( void )
     list_of_names       *clname;
     list_of_names       *name;
     byte                acbp;
-    unsigned            comb;
 
     DEBUG(( DBG_OLD, "ProcSegDef()" ));
     sdata = AllocSegData();
     acbp = *ObjBuff++;
-    comb = (acbp >> 2) & 7;
-    if( comb == COMB_INVALID || comb == COMB_BAD ) {
+    switch( (acbp >> 2) & 7 ) {
+    case COMB_INVALID:
+    case COMB_BAD:
         sdata->combine = COMBINE_INVALID;
-    } else if( comb == COMB_COMMON ) {
+        break;
+    case COMB_COMMON:
         sdata->combine = COMBINE_COMMON;
-    } else if( comb == COMB_STACK ) {
+        break;
+    case COMB_STACK:
         sdata->combine = COMBINE_STACK;
-    } else {
+        break;
+    default:
         sdata->combine = COMBINE_ADD;
+        break;
     }
     sdata->align = OMFAlignTab[acbp >> 5];
-    if( ObjFormat & FMT_EASY_OMF ) {   // set USE_32 flag.
-        sdata->bits = BITS_32;
-    } else if( acbp & 1 ) {
-        sdata->bits = BITS_32;
-    }
     switch( acbp >> 5 ) {
     case ALIGN_ABS:
         sdata->isabs = true;
@@ -382,13 +381,13 @@ static void ProcSegDef( void )
         /*
          * in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
          */
-        if( (ObjFormat & FMT_32BIT_REC) || (FmtData.type & MK_RAW) )
-            break;
-        sdata->align = OMFAlignTab[ALIGN_PARA];
-        /*
-         * step over ltldat, max_seg_len, grp_offs fields
-         */
-        ObjBuff += 5;
+        if( (ObjFormat & FMT_32BIT_REC) == 0 && (FmtData.type & MK_RAW) == 0 ) {
+            sdata->align = OMFAlignTab[ALIGN_PARA];
+            /*
+             * step over ltldat, max_seg_len, grp_offs fields
+             */
+            ObjBuff += 5;
+        }
         break;
     }
     if( ObjFormat & FMT_32BIT_REC ) {
@@ -411,11 +410,16 @@ static void ProcSegDef( void )
     clname = FindName( GetIdx() );
     if( ObjFormat & FMT_EASY_OMF ) {
         SkipIdx();                          // skip overlay name index
+        sdata->bits = BITS_32;
         if( ObjBuff < EOObjRec ) {          // the optional attribute field present
             if( (*ObjBuff & 0x4) == 0 ) {   // if USE32 bit not set
                 sdata->bits = BITS_16;
             }
         }
+    } else if( acbp & 1 ) {
+        sdata->bits = BITS_32;
+    } else {
+        sdata->bits = BITS_16;
     }
     sdata->iscode = IsCodeClass( clname->name, strlen( clname->name ) );
     snode = AllocNode( SegNodes );

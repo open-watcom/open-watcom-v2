@@ -1560,15 +1560,16 @@ static void CreateIDataSection( void )
     PrepareToc();
     if( 0 != CalcIDataSize() ) {
         IDataGroup = GetGroup( IDataGrpName );
-        class = FindClass( Root, CoffIDataClassName, true, false );
+        class = FindClass( Root, CoffIDataClassName, BITS_32, false );
         class->flags |= CLASS_IDATA | CLASS_LXDATA_SEEN;
         sdata = AllocSegData();
         if( LinkState & LS_HAVE_X64_CODE ) {
             sdata->align = 4;
+            sdata->bits = BITS_64;
         } else {
             sdata->align = 2;
+            sdata->bits = BITS_32;
         }
-        sdata->bits = BITS_32;
         sdata->length = IData.total_size;
         sdata->u.name.u.ptr = CoffIDataSegName;
         sdata->combine = COMBINE_ADD;
@@ -1662,10 +1663,11 @@ static void CreateTransferSegment( class_entry *class )
         sdata = AllocSegData();
         if( LinkState & LS_HAVE_X64_CODE ) {
             sdata->align = 4;
+            sdata->bits = BITS_64;
         } else {
             sdata->align = 2;
+            sdata->bits = BITS_32;
         }
-        sdata->bits = BITS_32;
         sdata->length = size;
         sdata->u.name.u.ptr = TRANSFER_SEGNAME;
         sdata->combine = COMBINE_ADD;

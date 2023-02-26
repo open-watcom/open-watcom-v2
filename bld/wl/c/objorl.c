@@ -498,12 +498,8 @@ static orl_return DeclareSegment( orl_sec_handle sec )
         sdata->isidata = true;
     }
     sdata->combine = COMBINE_ADD;
-    if( flags & ORL_SEC_FLAG_NO_PADDING ) {
-        sdata->align = 0;
-    } else {
-        sdata->align = ORLSecGetAlignment( sec );
-    }
-    sdata->bits = BITS_32;
+    sdata->align = ( flags & ORL_SEC_FLAG_NO_PADDING ) ? 0 : ORLSecGetAlignment( sec );
+    sdata->bits = ( flags & ORL_FILE_FLAG_64BIT_MACHINE ) ? BITS_64 : BITS_32;
     sdata->length = ORLSecGetSize( sec );
     sdata->u.name.u.ptr = (char *)name;
     if( flags & ORL_SEC_FLAG_EXEC ) {
@@ -646,7 +642,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         CheckIfTocSym( sym );
         if( type & ORL_SYM_TYPE_COMMON ) {
             ORLSymbolGetValue( symhdl, &val64 );
-            sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
+            sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
         } else if( type & ORL_SYM_TYPE_UNDEFINED ) {
             DefineReference( sym );
             isweak = false;
@@ -671,7 +667,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             newnode->isdefd = true;
             ORLSymbolGetValue( symhdl, &val64 );
             if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == ORL_NULL_HANDLE ) {
-                sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
+                sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
                 DefineComdatSym( snode, sym, val64.u._32[I64LO32] );
             } else {

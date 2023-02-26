@@ -258,7 +258,7 @@ static void DoIncSymbol( void *_sym )
         }
         mainsym = SymOp( symop, sym->name.u.ptr, strlen( sym->name.u.ptr ) );
         if( IS_SYM_NICOMDEF( sym ) ) {
-            MakeCommunalSym( mainsym, sym->p.cdefsize, (sym->info & SYM_FAR_COMMUNAL) != 0, IS_SYM_COMM32( sym ) );
+            MakeCommunalSym( mainsym, sym->p.cdefsize, (sym->info & SYM_FAR_COMMUNAL) != 0, IS_SYM_COMM32( sym ) ? BITS_32 : BITS_16 );
         } else if( IS_SYM_COMDAT( sym ) ) {
             if( sym->info & SYM_HAS_DATA ) {
                 data = GetAltdefContents( sym->p.seg );
@@ -391,8 +391,8 @@ void Set16BitMode( void )
     }
 }
 
-static void DoAllocateSegment( segdata *sdata, char *clname )
-/***********************************************************/
+static void DoAllocateSegment( segdata *sdata, const char *clname )
+/*****************************************************************/
 {
     section         *sect;
     class_entry     *class;
@@ -418,7 +418,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
         }
 #endif
     }
-    class = FindClass( sect, clname, sdata->bits == BITS_32, sdata->iscode );
+    class = FindClass( sect, clname, sdata->bits, sdata->iscode );
     AddSegment( sdata, class );
 #ifdef _EXE
     if( isovlclass ) {
@@ -430,9 +430,10 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
     }
 }
 
-void AllocateSegment( segnode *newseg, char *clname )
-/***************************************************/
-// allocate a new segment (or new piece of a segment)
+void AllocateSegment( segnode *newseg, const char *clname )
+/**********************************************************
+ * allocate a new segment (or new piece of a segment)
+ */
 {
     DoAllocateSegment( newseg->entry, clname );
     newseg->info = newseg->entry->u.leader->info;
@@ -494,40 +495,28 @@ class_entry *DuplicateClass( class_entry *class )
     return( newclass );
 }
 
-class_entry *FindClass( section *sect, const char *name, bool is32bit, bool iscode )
-/**********************************************************************************/
+class_entry *FindClass( section *sect, const char *name, byte bits, bool iscode )
+/*******************************************************************************/
 {
     class_entry     *class;
     class_entry     *lastclass;
     size_t          namelen;
-    class_status    cls_is32bit;
 
-    cls_is32bit = 0;
-    if( is32bit )
-        cls_is32bit = CLASS_32BIT;
     lastclass = sect->classlist;
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
-        if( stricmp( class->name.u.ptr, name ) == 0 && (class->flags & CLASS_32BIT) == cls_is32bit ) {
+        if( stricmp( class->name.u.ptr, name ) == 0 && ( class->bits == bits ) ) {
             return( class );
         }
         lastclass = class;
     }
     namelen = strlen( name );
     class = CarveAlloc( CarveClass );
-    class->flags = 0;
+    class->bits = bits;
     class->name.u.ptr = AddBufferStringTable( &PermStrings, name, namelen + 1 );
     class->segs = NULL;
     class->section = sect;
     class->next_class = NULL;
-    if( lastclass == NULL ) {
-        sect->classlist = class;
-    } else {
-        lastclass->next_class = class;
-    }
-    DBIColClass( class );
-    if( is32bit ) {
-        class->flags |= CLASS_32BIT;
-    }
+    class->flags = 0;
     if( iscode ) {
         class->flags |= CLASS_CODE;
     }
@@ -536,6 +525,12 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     }
     if( IsStackClass( name, namelen ) ) {
         class->flags |= CLASS_STACK;
+    }
+    DBIColClass( class );
+    if( lastclass == NULL ) {
+        sect->classlist = class;
+    } else {
+        lastclass->next_class = class;
     }
     return( class );
 }
@@ -653,7 +648,7 @@ void AddSegment( segdata *sd, class_entry *class )
     DEBUG(( DBG_OLD, "- - size = %h, comb = %x, alignment = %x",
                       sd->length, sd->combine, sd->align ));
     info = 0;
-    if( sd->bits == BITS_32 ) {
+    if( sd->bits != BITS_16 ) {
         info |= USE_32;
     }
     if( class->flags & CLASS_CODE ) {
@@ -846,15 +841,15 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
 }
 
 static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
-                            unsigned align, unsigned comb, bool use_16 )
+                        unsigned align, unsigned comb, symbol *sym_communal )
 /*****************************************************************************/
 {
     section             *sect;
     class_entry         *class;
     group_entry         *group;
-    unsigned_16         info;
     segdata             *sdata;
     seg_leader          *leader;
+    byte                bits;
 
     sect = Root;
 #ifdef _EXE
@@ -862,18 +857,15 @@ static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
         sect = OvlCheckOvlSection( class_name );
     }
 #endif
-    class = FindClass( sect, class_name, !use_16, false );
-    info = 0;
+    bits = ( IS_SYM_COMM32( sym_communal ) ) ? BITS_32 : BITS_16;
+    class = FindClass( sect, class_name, bits, false );
     sdata = AllocSegData();
     sdata->u.name.u.ptr = seg_name;
+    sdata->bits = bits;
     sdata->align = align;
     sdata->combine = comb;
     sdata->isuninit = true;
-    if( !use_16 ) {
-        info |= USE_32;
-        sdata->bits = BITS_32;
-    }
-    leader = FindALeader( sdata, class, info );
+    leader = FindALeader( sdata, class, ( bits == BITS_16 ) ? 0 : USE_32 );
     if( group_name != NULL ) {
         /* put in appropriate group */
         group = GetGroup( group_name );
@@ -886,7 +878,7 @@ static void NearAllocCommunal( symbol *sym, unsigned size )
 /*********************************************************/
 {
     sym->p.seg = GetSegment( CommunalSegName, BSSClassName, DataGrpName,
-                                     2, COMBINE_ADD, !IS_SYM_COMM32( sym ) );
+                                     2, COMBINE_ADD, sym );
     sym->p.seg->length = size;
 }
 
@@ -899,7 +891,7 @@ static void FarAllocCommunal( symbol *sym, unsigned size )
     first = NULL;
     for( ;; ) {
         seg = GetSegment( sym->name.u.ptr, FarDataClassName, NULL,
-                          0, COMBINE_INVALID, !IS_SYM_COMM32( sym ) );
+                          0, COMBINE_INVALID, sym );
         if( first == NULL )
             first = seg;
         if( size < MAX_SEGMENT ) {
@@ -927,16 +919,16 @@ void AllocCommunal( symbol *sym, offset size )
     }
 }
 
-symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar, bool is32bit )
-/***************************************************************************/
+symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar, byte bits )
+/************************************************************************/
 {
     sym_info    symtype;
     symbol      *altsym;
 
-    if( is32bit ) {
-        symtype = SYM_COMMUNAL_32;
-    } else {
+    if( bits == BITS_16 ) {
         symtype = SYM_COMMUNAL_16;
+    } else {
+        symtype = SYM_COMMUNAL_32;
     }
     if( (sym->info & SYM_DEFINED) == 0 || IS_SYM_IMPORTED( sym ) ) {
         if( IS_SYM_IMPORTED( sym ) ) {
