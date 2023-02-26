@@ -674,7 +674,6 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     char        c;
     size_t      extlen;
 
-
     for( namptr = buff + len; namptr != buff; --namptr ) {
         c = namptr[-1];
         if( IS_PATH_SEP( c ) ) {
@@ -711,7 +710,9 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
         /*
          * if some extension is required then add it
          */
-        if( etype != E_NONE ) {
+        if( etype == E_NONE ) {
+            ptr = ChkToString( buff, len );
+        } else {
             extlen = DefExtLen[etype];
             _ChkAlloc( ptr, len + 1 + extlen + 1 );
             memcpy( ptr, buff, len );
@@ -720,8 +721,8 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
                 memcpy( ptr + len, DefExt[etype], extlen );
                 len += extlen;
             }
+            ptr[len] = '\0';
         }
-        ptr[len] = '\0';
     }
     return( ptr );
 }
