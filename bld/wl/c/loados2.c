@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -654,9 +654,9 @@ unsigned long ResNonResNameTable( bool dores )
             size += 2;
             if( !exp->isprivate ) {
                 if( exp->impname != NULL ) {
-                    AddImpLibEntry( exp->impname, ext_name, NOT_IMP_BY_ORDINAL );
+                    AddImpLibEntry( exp->impname, ext_name, 0, true );
                 } else {
-                    AddImpLibEntry( exp->sym->name.u.ptr, NULL, exp->ordinal );
+                    AddImpLibEntry( exp->sym->name.u.ptr, NULL, exp->ordinal, false );
                 }
             }
         }

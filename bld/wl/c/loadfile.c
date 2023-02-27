@@ -988,8 +988,8 @@ static void BufImpWrite( const char *buffer, size_t len )
     }
 }
 
-void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal )
-/********************************************************************************/
+void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal, bool by_name )
+/**********************************************************************************************/
 {
     size_t      intlen;
     size_t      otherlen;
@@ -1000,7 +1000,7 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
         return;
     ImpLib.didone = true;
     intlen = strlen( intname );
-    if( ordinal == NOT_IMP_BY_ORDINAL ) {
+    if( by_name ) {
         otherlen = strlen( extname );
     } else {
         otherlen = 10;          // max length of a 32-bit int.
@@ -1019,7 +1019,7 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
     currpos += ImpLib.module_name_len;
     *currpos++ = '\'';
     *currpos++ = '.';
-    if( ordinal == NOT_IMP_BY_ORDINAL ) {
+    if( by_name ) {
         *currpos++ = '.';
         *currpos++ = '\'';
         memcpy( currpos, extname, otherlen );

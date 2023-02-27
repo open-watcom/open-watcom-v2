@@ -611,9 +611,9 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
         ++num_entries;
         if( !exp->isprivate ) {
             if( exp->impname != NULL ) {
-                AddImpLibEntry( exp->impname, exp->name.u.ptr, NOT_IMP_BY_ORDINAL );
+                AddImpLibEntry( exp->impname, exp->name.u.ptr, 0, true );
             } else {
-                AddImpLibEntry( exp->sym->name.u.ptr, exp->name.u.ptr, NOT_IMP_BY_ORDINAL );
+                AddImpLibEntry( exp->sym->name.u.ptr, exp->name.u.ptr, 0, true );
             }
         }
     }
@@ -1556,20 +1556,17 @@ static void CreateIDataSection( void )
 {
     segdata     *sdata;
     class_entry *class;
+    byte        bits;
 
     PrepareToc();
     if( 0 != CalcIDataSize() ) {
         IDataGroup = GetGroup( IDataGrpName );
-        class = FindClass( Root, CoffIDataClassName, BITS_32, false );
+        bits = ( LinkState & LS_HAVE_X64_CODE ) ? BITS_64 : BITS_32;
+        class = FindClass( Root, CoffIDataClassName, bits, false );
         class->flags |= CLASS_IDATA | CLASS_LXDATA_SEEN;
         sdata = AllocSegData();
-        if( LinkState & LS_HAVE_X64_CODE ) {
-            sdata->align = 4;
-            sdata->bits = BITS_64;
-        } else {
-            sdata->align = 2;
-            sdata->bits = BITS_32;
-        }
+        sdata->align = ( LinkState & LS_HAVE_X64_CODE ) ? 4 : 2;
+        sdata->bits = bits;
         sdata->length = IData.total_size;
         sdata->u.name.u.ptr = CoffIDataSegName;
         sdata->combine = COMBINE_ADD;
@@ -1661,13 +1658,8 @@ static void CreateTransferSegment( class_entry *class )
     if( size != 0 ) {
         class->flags |= CLASS_TRANSFER;
         sdata = AllocSegData();
-        if( LinkState & LS_HAVE_X64_CODE ) {
-            sdata->align = 4;
-            sdata->bits = BITS_64;
-        } else {
-            sdata->align = 2;
-            sdata->bits = BITS_32;
-        }
+        sdata->align = ( LinkState & LS_HAVE_X64_CODE ) ? 4 : 2;
+        sdata->bits = ( LinkState & LS_HAVE_X64_CODE ) ? BITS_64 : BITS_32;
         sdata->length = size;
         sdata->u.name.u.ptr = TRANSFER_SEGNAME;
         sdata->combine = COMBINE_ADD;

@@ -310,7 +310,7 @@ typedef struct class_entry {
     SEG_LEADER          *segs;
     name_strtab         name;
     class_status        flags;
-    unsigned            bits    : 2;    // segment bitnese
+    byte                bits;           // segment bitnese
     section             *section;
     targ_addr           BaseAddr;       // Fixed location to of this class for loadfile
     CLASS_ENTRY         *DupClass;      // Class to get data from for output
@@ -408,14 +408,14 @@ enum {
     SEG_ABSOLUTE        = 0x0001,
     SEG_COMDAT          = 0x0002,   /* seg is a comdat */
     SEG_OVERLAYED       = 0x0040,   /* segment belongs to an overlay class */
-    MAKE_ADDR_INFO      = 0x0080,   /* set if making an addr info next time*/
-    SEG_DEAD            = 0x0080,   /* mark a segdef as being "dead"(pass 2)*/
+    MAKE_ADDR_INFO      = 0x0080,   /* set if making an addr info next time */
+    SEG_DEAD            = 0x0080,   /* mark a segdef as being "dead"(pass 2) */
     SEG_CODE            = 0x0200,   /* segment is a code segment.         */
     USE_32              = 0x0400,   /* segment uses 32 bit addresses      */
     LAST_SEGMENT        = 0x0800,   /* force last segment in a code group */
-    SEG_LXDATA_SEEN     = 0x8000,   /* LxDATA rec. seen for this segment */
     SEG_FIXED           = 0x1000,   /* Segment should start at seg_addr, not next addr */
     SEG_NOEMIT          = 0x2000,   /* Segment should not generate output */
+    SEG_LXDATA_SEEN     = 0x8000,   /* LxDATA rec. seen for this segment */
     SEG_BOTH_MASK       = 0x8641,   /* flags common to both structures */
 };
 
@@ -479,7 +479,7 @@ typedef struct segdata {
     unsigned            select     : 3; // comdat: selection type
     unsigned            combine    : 2; // how to combine segment with others
     unsigned            alloc      : 2; // comdat: where to allocate segment.
-    unsigned            bits       : 2; // segment bitnese
+    byte                bits;           // segment bitnese
 
     boolbit             iscode     : 1; // true if a code segment.
     boolbit             isabs      : 1; // true if this is an absolute segment.

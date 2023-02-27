@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
             wrote += sizeof( unsigned_32 );
             count++;
 
-            AddImpLibEntry( sym->name.u.ptr, ext_name, NOT_IMP_BY_ORDINAL );
+            AddImpLibEntry( sym->name.u.ptr, ext_name, 0, true );
         }
     }
     header->numberOfPublics = count;
