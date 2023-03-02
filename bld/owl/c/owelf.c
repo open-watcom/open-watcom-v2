@@ -58,7 +58,7 @@ static unsigned numSymbols( owl_file_handle file ) {
 }
 
 static Elf32_Half machineTypes[] = {
-    #define OWL_CPU(c,e) e,
+    #define OWL_CPU(c,e,o) e,
     OWL_CPUS
     #undef OWL_CPU
 };

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,9 @@
 
 // must correspond to owl_cpu enums in owl.h - first entry is for PowerPC
 static uint_16 cpuTypes[] = {
-    COFF_IMAGE_FILE_MACHINE_POWERPC,
-    COFF_IMAGE_FILE_MACHINE_ALPHA,
-    COFF_IMAGE_FILE_MACHINE_R4000,
-    COFF_IMAGE_FILE_MACHINE_I386
+    #define OWL_CPU(c,e,o) o,
+    OWL_CPUS
+    #undef OWL_CPU
 };
 
 #define _OWLIndexToCOFFIndex( x )       ( (x) + FIRST_USER_SECTION )
