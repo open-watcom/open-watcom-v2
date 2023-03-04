@@ -172,7 +172,7 @@ static void ReadOldLib( void )
             }
         } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
             unsigned            num_objects;
-            pe_hdr_table_entry  *table;
+            pe_hdr_dir_entry    *table;
 
             if( IS_PE64( head.pe ) ) {
                 num_objects = PE64( head.pe ).num_objects;

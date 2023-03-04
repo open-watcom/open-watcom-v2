@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -223,7 +223,7 @@ bool WRIsHeaderValidWINNT( exe_pe_header *header )
 bool WRWinNTHeaderHasResourceTable( exe_pe_header *header )
 {
     int                 num_tables;
-    pe_hdr_table_entry  *table;
+    pe_hdr_dir_entry    *table;
 
     if( IS_PE64( *header ) ) {
         num_tables = PE64( *header ).num_tables;

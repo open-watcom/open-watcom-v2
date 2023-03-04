@@ -33,10 +33,107 @@
 #ifndef _EXEPE_H
 #define _EXEPE_H
 
-#include "pushpck1.h"
+#define OLD_PE_TBL_NUMBER   9
 
-/* type of a [relative] virtual address */
-typedef unsigned_32     pe_va;
+#define PE_SIGNATURE        0x4550
+#define PL_SIGNATURE        0x4c50
+#define PX_SIGNATURE        0x5850
+
+/* Linker major/minor version numbers */
+#define PE_LNK_MAJOR        2
+#define PE_LNK_MINOR        0x12
+
+#define PE_IMAGE_BASE       (0x400000UL)    /* default image base */
+#define PE_OBJECT_ALIGN     (64UL*1024)     /* default object alignment */
+#define PE_FILE_ALIGN       (0x200U)        /* default file alignment */
+
+/* OS major/minor version numbers */
+#define PE_OS_MAJOR         1
+#define PE_OS_MINOR         0
+/* Subsystem major/minor version numbers */
+#define PE_SS_MAJOR         0
+#define PE_SS_MINOR         0
+
+/* PE object table structure */
+#define PE_OBJ_NAME_LEN     8
+
+/* object table flag field bit values */
+#define PE_OBJ_DUMMY            0x00000001UL    // reserved
+#define PE_OBJ_NOLOAD           0x00000002UL
+#define PE_OBJ_GROUPED          0x00000004UL    // for 16-bit offset code
+#define PE_OBJ_NOPAD            0x00000008UL    // don't pad sect to next bndry
+#define PE_OBJ_TYPE_COPY        0x00000010UL    // reserved
+#define PE_OBJ_CODE             0x00000020UL
+#define PE_OBJ_INIT_DATA        0x00000040UL
+#define PE_OBJ_UNINIT_DATA      0x00000080UL
+#define PE_OBJ_OTHER            0x00000100UL    // reserved
+#define PE_OBJ_LINK_INFO        0x00000200UL    // contains link information
+#define PE_OBJ_OVERLAY          0x00000400UL    // contains an overlay
+#define PE_OBJ_REMOVE           0x00000800UL
+#define PE_OBJ_COMDAT           0x00001000UL    // comdat section
+#define PE_OBJ_ALIGN_1          0x00100000UL
+#define PE_OBJ_ALIGN_2          0x00200000UL
+#define PE_OBJ_ALIGN_4          0x00300000UL
+#define PE_OBJ_ALIGN_8          0x00400000UL
+#define PE_OBJ_ALIGN_16         0x00500000UL
+#define PE_OBJ_ALIGN_32         0x00600000UL
+#define PE_OBJ_ALIGN_64         0x00700000UL
+#define PE_OBJ_DISCARDABLE      0x02000000UL
+#define PE_OBJ_NOT_CACHED       0x04000000UL
+#define PE_OBJ_NOT_PAGABLE      0x08000000UL
+#define PE_OBJ_SHARED           0x10000000UL
+#define PE_OBJ_EXECUTABLE       0x20000000UL
+#define PE_OBJ_READABLE         0x40000000UL
+#define PE_OBJ_WRITABLE         0x80000000UL
+
+#define PE_OBJ_ALIGN_MASK       0x00700000UL
+#define PE_OBJ_ALIGN_SHIFT      20
+
+/* bit flags for the import address table */
+#define PE_IMPORT_BY_NAME       0x00000000UL
+#define PE_IMPORT_BY_ORDINAL    0x80000000UL
+
+#define PE_HINT_DEFAULT         0
+
+#define PEUP                    12
+
+#define OLD_PEUP                0
+
+/* PE fixup types (stashed in 4 high bits of a pe_fixup_entry) */
+#define PE_FIX_ABS              (0x0<<PEUP)     /* absolute, skipped */
+#define PE_FIX_HIGH             (0x1<<PEUP)     /* add high 16 of delta */
+#define PE_FIX_LOW              (0x2<<PEUP)     /* add low 16 of delta */
+#define PE_FIX_HIGHLOW          (0x3<<PEUP)     /* add all 32 bits of delta */
+#define PE_FIX_HIGHADJ          (0x4<<PEUP)     /* see the doc */
+#define PE_FIX_MIPSJMP          (0x5<<PEUP)     /* see the doc */
+
+/* PE fixup types (stashed in 4 high bits of a pe_fixup_entry) */
+#define OLD_PE_FIX_ABS          (0x0<<OLD_PEUP) /* absolute, skipped */
+#define OLD_PE_FIX_HIGH         (0x1<<OLD_PEUP) /* add high 16 of delta */
+#define OLD_PE_FIX_LOW          (0x2<<OLD_PEUP) /* add low 16 of delta */
+#define OLD_PE_FIX_HIGHLOW      (0x3<<OLD_PEUP) /* add all 32 bits of delta */
+#define OLD_PE_FIX_HIGHADJ      (0x4<<OLD_PEUP) /* see the doc */
+#define OLD_PE_FIX_MIPSJMP      (0x5<<OLD_PEUP) /* see the doc */
+
+/* PE debug directory structure */
+#define DEBUG_TYPE_UNKNOWN      0
+#define DEBUG_TYPE_COFF         1
+#define DEBUG_TYPE_CODEVIEW     2
+#define DEBUG_TYPE_MISC         4
+
+#define PE_RESOURCE_MASK        0x7fffffff
+#define PE_RESOURCE_MASK_ON     0x80000000
+
+#define PE32(x)             (x).pe32
+#define PE64(x)             (x).pe64
+
+#define IS_PE64(x)          (PE32(x).magic == 0x20b)
+
+#define OLD_PE_TBL_SIZE     (sizeof(pe_header) - 2 * (16 - 9) * sizeof(pe_va))
+
+#define PE_HEADERS_SIZE(x)  (((x).pe32.magic == 0x20b) ? sizeof( (x).pe64 ) : sizeof( (x).pe32 ))
+
+#define PE_DIRECTORY(x,s)   (*(((x).pe32.magic == 0x20b) ? ((x).pe64.table + (s)) : ((x).pe32.table + (s)) ))
 
 /* PE header table types */
 enum {
@@ -58,12 +155,74 @@ enum {
     PE_TBL_NUMBER = 16
 };
 
-#define OLD_PE_TBL_NUMBER   9
+/* CPU type field values */
+enum {
+    PE_CPU_UNKNOWN          = 0,
+    PE_CPU_386              = 0x014c,
+    PE_CPU_I860             = 0x014d,
+    PE_CPU_MIPS_R3000       = 0x0162,
+    PE_CPU_MIPS_R4000       = 0x0166,
+    PE_CPU_ALPHA            = 0x0184,
+    PE_CPU_POWERPC          = 0x01F0,
+    PE_CPU_AMD64            = 0x8664
+};
+
+/* FLAG field bit values */
+enum {
+    PE_FLG_PROGRAM              = 0x0000,
+    PE_FLG_RELOCS_STRIPPED      = 0x0001,
+    PE_FLG_IS_EXECUTABLE        = 0x0002,
+    PE_FLG_LINNUM_STRIPPED      = 0x0004,
+    PE_FLG_LOCALS_STRIPPED      = 0x0008,
+    PE_FLG_MINIMAL_OBJ          = 0x0010,
+    PE_FLG_UPDATE_OBJ           = 0x0020,
+    PE_FLG_LARGE_ADDRESS_AWARE  = 0x0020,
+    PE_FLG_16BIT_MACHINE        = 0x0040,
+    PE_FLG_REVERSE_BYTE_LO      = 0x0080,       // bytes are reversed.
+    PE_FLG_32BIT_MACHINE        = 0x0100,
+    PE_FLG_FIXED                = 0x0200,
+    PE_FLG_FILE_PATCH           = 0x0400,
+    PE_FLG_FILE_SYSTEM          = 0x1000,
+    PE_FLG_LIBRARY              = 0x2000,
+    PE_FLG_REVERSE_BYTE_HI      = 0x8000
+};
+
+
+/* SUBSYSTEM field values */
+enum {
+    PE_SS_UNKNOWN           = 0x0000,
+    PE_SS_NATIVE            = 0x0001,
+    PE_SS_WINDOWS_GUI       = 0x0002,
+    PE_SS_WINDOWS_CHAR      = 0x0003,
+    PE_SS_OS2_CHAR          = 0x0005,
+    PE_SS_POSIX_CHAR        = 0x0007,
+    PE_SS_EFI_APPLICATION   = 0x000A,
+    PE_SS_EFI_BOOT          = 0x000B,
+    PE_SS_EFI_RUNTIME       = 0x000C,
+    PE_SS_EFI_ROM           = 0x000D,
+    PE_SS_PL_DOSSTYLE       = 0x0042,
+    PE_SS_RDOS              = 0xAD05
+};
+
+/* DLL FLAGS field bit values */
+enum {
+    PE_DLL_PERPROC_INIT     = 0x0001,
+    PE_DLL_PERPROC_TERM     = 0x0002,
+    PE_DLL_PERTHRD_INIT     = 0x0004,
+    PE_DLL_PERTHRD_TERM     = 0x0008
+};
+
+#include "pushpck1.h"
+
+typedef unsigned_32     pe_signature;
+
+/* type of a [relative] virtual address */
+typedef unsigned_32     pe_va;
 
 typedef struct {
         pe_va           rva;
         unsigned_32     size;
-} pe_hdr_table_entry;
+} pe_hdr_dir_entry;
 
 /* PE32 header structure */
 typedef struct {
@@ -106,7 +265,7 @@ typedef struct {
     unsigned_32         heap_commit_size;
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
-    pe_hdr_table_entry  table[PE_TBL_NUMBER];
+    pe_hdr_dir_entry    table[PE_TBL_NUMBER];
 } pe_header;
 
 /* PE32+ header structure */
@@ -149,7 +308,7 @@ typedef struct {
     unsigned_64         heap_commit_size;
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
-    pe_hdr_table_entry  table[PE_TBL_NUMBER];
+    pe_hdr_dir_entry    table[PE_TBL_NUMBER];
 } pe_header64;
 
 typedef union {
@@ -157,91 +316,7 @@ typedef union {
     pe_header64 pe64;
 } exe_pe_header;
 
-#define PE32(x) (x).pe32
-#define PE64(x) (x).pe64
-
-#define IS_PE64(x)  (PE32(x).magic == 0x20b)
-
-#define OLD_PE_TBL_SIZE (sizeof(pe_header) - 2 * (16 - 9) * sizeof(pe_va))
-
-#define PE_SIGNATURE 0x4550
-#define PL_SIGNATURE 0x4c50
-#define PX_SIGNATURE 0x5850
-
-/* CPU type field values */
-enum {
-    PE_CPU_UNKNOWN          = 0,
-    PE_CPU_386              = 0x014c,
-    PE_CPU_I860             = 0x014d,
-    PE_CPU_MIPS_R3000       = 0x0162,
-    PE_CPU_MIPS_R4000       = 0x0166,
-    PE_CPU_ALPHA            = 0x0184,
-    PE_CPU_POWERPC          = 0x01F0,
-    PE_CPU_AMD64            = 0x8664
-};
-
-/* FLAG field bit values */
-enum {
-    PE_FLG_PROGRAM              = 0x0000,
-    PE_FLG_RELOCS_STRIPPED      = 0x0001,
-    PE_FLG_IS_EXECUTABLE        = 0x0002,
-    PE_FLG_LINNUM_STRIPPED      = 0x0004,
-    PE_FLG_LOCALS_STRIPPED      = 0x0008,
-    PE_FLG_MINIMAL_OBJ          = 0x0010,
-    PE_FLG_UPDATE_OBJ           = 0x0020,
-    PE_FLG_LARGE_ADDRESS_AWARE  = 0x0020,
-    PE_FLG_16BIT_MACHINE        = 0x0040,
-    PE_FLG_REVERSE_BYTE_LO      = 0x0080,       // bytes are reversed.
-    PE_FLG_32BIT_MACHINE        = 0x0100,
-    PE_FLG_FIXED                = 0x0200,
-    PE_FLG_FILE_PATCH           = 0x0400,
-    PE_FLG_FILE_SYSTEM          = 0x1000,
-    PE_FLG_LIBRARY              = 0x2000,
-    PE_FLG_REVERSE_BYTE_HI      = 0x8000
-};
-
-
-/* Linker major/minor version numbers */
-#define PE_LNK_MAJOR    2
-#define PE_LNK_MINOR    0x12
-
-#define PE_IMAGE_BASE   (0x400000UL)    /* default image base */
-#define PE_OBJECT_ALIGN (64UL*1024)     /* default object alignment */
-#define PE_FILE_ALIGN   (0x200U)        /* default file alignment */
-
-/* OS major/minor version numbers */
-#define PE_OS_MAJOR     1
-#define PE_OS_MINOR     0
-/* Subsystem major/minor version numbers */
-#define PE_SS_MAJOR     0
-#define PE_SS_MINOR     0
-
-/* SUBSYSTEM field values */
-enum {
-    PE_SS_UNKNOWN           = 0x0000,
-    PE_SS_NATIVE            = 0x0001,
-    PE_SS_WINDOWS_GUI       = 0x0002,
-    PE_SS_WINDOWS_CHAR      = 0x0003,
-    PE_SS_OS2_CHAR          = 0x0005,
-    PE_SS_POSIX_CHAR        = 0x0007,
-    PE_SS_EFI_APPLICATION   = 0x000A,
-    PE_SS_EFI_BOOT          = 0x000B,
-    PE_SS_EFI_RUNTIME       = 0x000C,
-    PE_SS_EFI_ROM           = 0x000D,
-    PE_SS_PL_DOSSTYLE       = 0x0042,
-    PE_SS_RDOS              = 0xAD05
-};
-
-/* DLL FLAGS field bit values */
-enum {
-    PE_DLL_PERPROC_INIT     = 0x0001,
-    PE_DLL_PERPROC_TERM     = 0x0002,
-    PE_DLL_PERTHRD_INIT     = 0x0004,
-    PE_DLL_PERTHRD_TERM     = 0x0008
-};
-
 /* PE object table structure */
-#define PE_OBJ_NAME_LEN 8
 typedef struct {
     char                name[PE_OBJ_NAME_LEN];
     unsigned_32         virtual_size;
@@ -254,38 +329,6 @@ typedef struct {
     unsigned_16         num_linnums;
     unsigned_32         flags;
 } pe_object;
-
-/* object table flag field bit values */
-#define PE_OBJ_DUMMY            0x00000001UL    // reserved
-#define PE_OBJ_NOLOAD           0x00000002UL
-#define PE_OBJ_GROUPED          0x00000004UL    // for 16-bit offset code
-#define PE_OBJ_NOPAD            0x00000008UL    // don't pad sect to next bndry
-#define PE_OBJ_TYPE_COPY        0x00000010UL    // reserved
-#define PE_OBJ_CODE             0x00000020UL
-#define PE_OBJ_INIT_DATA        0x00000040UL
-#define PE_OBJ_UNINIT_DATA      0x00000080UL
-#define PE_OBJ_OTHER            0x00000100UL    // reserved
-#define PE_OBJ_LINK_INFO        0x00000200UL    // contains link information
-#define PE_OBJ_OVERLAY          0x00000400UL    // contains an overlay
-#define PE_OBJ_REMOVE           0x00000800UL
-#define PE_OBJ_COMDAT           0x00001000UL    // comdat section
-#define PE_OBJ_ALIGN_1          0x00100000UL
-#define PE_OBJ_ALIGN_2          0x00200000UL
-#define PE_OBJ_ALIGN_4          0x00300000UL
-#define PE_OBJ_ALIGN_8          0x00400000UL
-#define PE_OBJ_ALIGN_16         0x00500000UL
-#define PE_OBJ_ALIGN_32         0x00600000UL
-#define PE_OBJ_ALIGN_64         0x00700000UL
-#define PE_OBJ_DISCARDABLE      0x02000000UL
-#define PE_OBJ_NOT_CACHED       0x04000000UL
-#define PE_OBJ_NOT_PAGABLE      0x08000000UL
-#define PE_OBJ_SHARED           0x10000000UL
-#define PE_OBJ_EXECUTABLE       0x20000000UL
-#define PE_OBJ_READABLE         0x40000000UL
-#define PE_OBJ_WRITABLE         0x80000000UL
-
-#define PE_OBJ_ALIGN_MASK       0x00700000UL
-#define PE_OBJ_ALIGN_SHIFT      20
 
 /* PE export directory table structure */
 typedef struct {
@@ -313,17 +356,11 @@ typedef struct {
     pe_va               import_address_table_rva;
 } pe_import_directory;
 
-/* bit flags for the import address table */
-#define PE_IMPORT_BY_NAME       0x00000000UL
-#define PE_IMPORT_BY_ORDINAL    0x80000000UL
-
 /* PE import hint-name table structure */
 typedef struct {
     unsigned_16         hint;
     unsigned_8          name[2]; /* variable size, padded to even boundry */
 } pe_hint_name_entry;
-
-#define PE_HINT_DEFAULT         0
 
 /* PE fixup table structure */
 typedef unsigned_16     pe_fixup_entry;
@@ -334,9 +371,6 @@ typedef struct {
 /*  pe_fixup_entry      fixups[] */     /* variable size */
 } pe_fixup_header;
 
-#define PEUP 12
-
-
 typedef struct {
     pe_va       virt_addr;
     unsigned_32 value;
@@ -344,29 +378,7 @@ typedef struct {
     unsigned_16 pad;
 } old_pe_fixup_entry;
 
-#define OLD_PEUP 0
-
-/* PE fixup types (stashed in 4 high bits of a pe_fixup_entry) */
-#define PE_FIX_ABS      (0x0<<PEUP)     /* absolute, skipped */
-#define PE_FIX_HIGH     (0x1<<PEUP)     /* add high 16 of delta */
-#define PE_FIX_LOW      (0x2<<PEUP)     /* add low 16 of delta */
-#define PE_FIX_HIGHLOW  (0x3<<PEUP)     /* add all 32 bits of delta */
-#define PE_FIX_HIGHADJ  (0x4<<PEUP)     /* see the doc */
-#define PE_FIX_MIPSJMP  (0x5<<PEUP)     /* see the doc */
-
-/* PE fixup types (stashed in 4 high bits of a pe_fixup_entry) */
-#define OLD_PE_FIX_ABS          (0x0<<OLD_PEUP) /* absolute, skipped */
-#define OLD_PE_FIX_HIGH         (0x1<<OLD_PEUP) /* add high 16 of delta */
-#define OLD_PE_FIX_LOW          (0x2<<OLD_PEUP) /* add low 16 of delta */
-#define OLD_PE_FIX_HIGHLOW      (0x3<<OLD_PEUP) /* add all 32 bits of delta */
-#define OLD_PE_FIX_HIGHADJ      (0x4<<OLD_PEUP) /* see the doc */
-#define OLD_PE_FIX_MIPSJMP      (0x5<<OLD_PEUP) /* see the doc */
-
 /* PE debug directory structure */
-#define DEBUG_TYPE_UNKNOWN    0
-#define DEBUG_TYPE_COFF       1
-#define DEBUG_TYPE_CODEVIEW   2
-#define DEBUG_TYPE_MISC       4
 typedef struct {
     unsigned_32         flags;
     unsigned_32         time_stamp;
@@ -417,8 +429,6 @@ typedef struct {
     unsigned_32         id_name;        /* see below */
     pe_va               entry_rva;      /* see below */
 } resource_dir_entry;
-#define PE_RESOURCE_MASK    0x7fffffff
-#define PE_RESOURCE_MASK_ON 0x80000000
 
 /*
 If id_name & PE_RESOURCE_MASK_ON then id_name & PE_RESOURCE_MASK is a rva

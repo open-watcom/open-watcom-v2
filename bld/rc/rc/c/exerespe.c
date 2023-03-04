@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -800,7 +800,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     ResFileInfo         *errres;
     unsigned_32         file_align;
     exe_pe_header       *pehdr;
-    pe_hdr_table_entry  *table;
+    pe_hdr_dir_entry    *table;
 
     dir = &exe->u.PEInfo.Res;
 
@@ -885,7 +885,7 @@ bool RcBuildPEResourceObject( void )
     bool                error;
     ExeFileInfo         *exe;
     exe_pe_header       *pehdr;
-    pe_hdr_table_entry  *table;
+    pe_hdr_dir_entry    *table;
 
     exe = &Pass2Info.TmpFile;
     pehdr = exe->u.PEInfo.WinHead;

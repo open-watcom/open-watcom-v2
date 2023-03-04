@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );
-extern void             ReadPEExportTable( f_handle, pe_hdr_table_entry * );
+extern void             ReadPEExportTable( f_handle, pe_hdr_dir_entry * );
 extern void             AllocPETransferTable( void );
 extern void             GenPEToc( void );
 extern void             ChkPEData( void );

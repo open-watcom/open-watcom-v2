@@ -571,8 +571,8 @@ static int namecmp_exp( const void *pn1, const void *pn2 )
 }
 
 
-static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, pe_hdr_table_entry *table )
-/********************************************************************************************************/
+static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *table )
+/******************************************************************************************************/
 {
     unsigned_32         size;
     pe_export_directory dir;
@@ -696,8 +696,8 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
     return( size );
 }
 
-static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe_hdr_table_entry *table )
-/*******************************************************************************************************/
+static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *table )
+/*****************************************************************************************************/
 /* dump the fixup table */
 {
     unsigned_32         numpages;
@@ -821,8 +821,8 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
 }
 
 static unsigned_32 WriteDebugTable( pe_object *object, const char *symfilename,
-                unsigned_32 file_align, unsigned_32 time_stamp, pe_hdr_table_entry *table )
-/******************************************************************************************/
+                unsigned_32 file_align, unsigned_32 time_stamp, pe_hdr_dir_entry *table )
+/***************************************************************************************/
 {
     debug_directory     dir;
     unsigned_32         size;
@@ -893,8 +893,8 @@ static void CheckNumRelocs( void )
     LinkState &= ~LS_MAKE_RELOCS;
 }
 
-static seg_leader *SetLeaderTable( const char *name, pe_hdr_table_entry *entry )
-/******************************************************************************/
+static seg_leader *SetLeaderTable( const char *name, pe_hdr_dir_entry *entry )
+/****************************************************************************/
 {
     seg_leader *leader;
 
@@ -948,8 +948,8 @@ static bool SetPDataArray( void *_sdata, void *_array )
     return( false );
 }
 
-static void SetMiscTableEntries( pe_hdr_table_entry *table )
-/**********************************************************/
+static void SetMiscTableEntries( pe_hdr_dir_entry *table )
+/********************************************************/
 {
     seg_leader  *leader;
     virt_mem    *sortarray;
@@ -1510,9 +1510,10 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     _LnkFree( ordbuf );
 }
 
-void ReadPEExportTable( f_handle file, pe_hdr_table_entry *base )
-/***********************************************************************/
-/* read a PE export table, and set ordinal values accordingly. */
+void ReadPEExportTable( f_handle file, pe_hdr_dir_entry *base )
+/**************************************************************
+ * read a PE export table, and set ordinal values accordingly.
+ */
 {
     pe_export_directory table;
     char                *fname;

@@ -211,7 +211,7 @@ bool Dmp_pe_head( void )
     unsigned_16         i;
     unsigned_16         signature;
     unsigned_32         num_tables;
-    pe_hdr_table_entry  *tbl_entry;
+    pe_hdr_dir_entry    *tbl_entry;
     unsigned_32         offset;
     const unsigned char *data;
 
