@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,9 @@
 #ifndef _EXEDOS_H
 #define _EXEDOS_H
 
+#include "exesigns.h"
+
+
 /* DOS EXE file header */
 /* =================== */
 
@@ -54,7 +58,8 @@ typedef struct dos_exe_header {
 } dos_exe_header;
 #include "poppck.h"
 
-#define DOS_SIGNATURE   0x5a4d
+#define DOS_SIGNATURE   EXESIGN_MZ
+
 #define NH_MAGIC_REX    0x0038          /* used by wbind to save original REX size */
 #define NH_OFFSET       0x003c
 

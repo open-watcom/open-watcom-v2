@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,9 @@
 
 #ifndef _EXEOS2_H
 #define _EXEOS2_H
+
+#include "exesigns.h"
+
 
 /* OS/2 EXE file header and various tables */
 /* ======================================= */
@@ -72,8 +76,10 @@ typedef struct os2_exe_header {
     unsigned_16         expver;
 } os2_exe_header;
 
-#define OS2_SIGNATURE_WORD      0x454e  // 'NE'
-#define RAT_SIGNATURE_WORD      0x454c  // 'LE'
+#define OS2_SIGNATURE_WORD      EXESIGN_NE
+#define RAT_SIGNATURE_WORD      EXESIGN_LE
+#define NE_EXE_SIGNATURE        EXESIGN_NE
+
 #define OS2_NE_OFFSET             0x3c
 #define OS2_EXE_HEADER_FOLLOWS  0x0040  /* reloc table offset 0x40 */
 

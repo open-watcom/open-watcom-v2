@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,9 @@
 
 #ifndef _EXEFLAT_H
 #define _EXEFLAT_H
+
+#include "exesigns.h"
+
 
 #include "pushpck1.h"
 
@@ -101,9 +104,10 @@ typedef struct os2_flat_header {
     } r;
 } os2_flat_header;
 
+#define OSF_FLAT_SIGNATURE      EXESIGN_LE
+#define OSF_FLAT_LX_SIGNATURE   EXESIGN_LX
+
 #define OSF_DEF_PAGE_SIZE       4096
-#define OSF_FLAT_SIGNATURE      0x454C      // 'LE'
-#define OSF_FLAT_LX_SIGNATURE   0x584C      // 'LX'
 #define OSF_386_BYTE_ORDER      0
 #define OSF_386_WORD_ORDER      0
 #define OSF_EXE_LEVEL           0

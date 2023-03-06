@@ -33,13 +33,18 @@
 #ifndef _EXEPE_H
 #define _EXEPE_H
 
+#include "exesigns.h"
+
+
 #define OLD_PE_TBL_NUMBER   9
 
-#define PE_SIGNATURE        0x4550
-#define PL_SIGNATURE        0x4c50
-#define PX_SIGNATURE        0x5850
+#define PE_SIGNATURE        EXESIGN_PE
+#define PL_SIGNATURE        EXESIGN_PL
+#define PX_SIGNATURE        EXESIGN_PX
 
-/* Linker major/minor version numbers */
+/*
+ * Linker major/minor version numbers
+ */
 #define PE_LNK_MAJOR        2
 #define PE_LNK_MINOR        0x12
 
@@ -47,17 +52,25 @@
 #define PE_OBJECT_ALIGN     (64UL*1024)     /* default object alignment */
 #define PE_FILE_ALIGN       (0x200U)        /* default file alignment */
 
-/* OS major/minor version numbers */
+/*
+ * OS major/minor version numbers
+ */
 #define PE_OS_MAJOR         1
 #define PE_OS_MINOR         0
-/* Subsystem major/minor version numbers */
+/*
+ * Subsystem major/minor version numbers
+ */
 #define PE_SS_MAJOR         0
 #define PE_SS_MINOR         0
 
-/* PE object table structure */
+/*
+ * PE object table structure
+ */
 #define PE_OBJ_NAME_LEN     8
 
-/* object table flag field bit values */
+/*
+ * object table flag field bit values
+ */
 #define PE_OBJ_DUMMY            0x00000001UL    // reserved
 #define PE_OBJ_NOLOAD           0x00000002UL
 #define PE_OBJ_GROUPED          0x00000004UL    // for 16-bit offset code
@@ -89,7 +102,9 @@
 #define PE_OBJ_ALIGN_MASK       0x00700000UL
 #define PE_OBJ_ALIGN_SHIFT      20
 
-/* bit flags for the import address table */
+/*
+ * bit flags for the import address table
+ */
 #define PE_IMPORT_BY_NAME       0x00000000UL
 #define PE_IMPORT_BY_ORDINAL    0x80000000UL
 
@@ -99,7 +114,9 @@
 
 #define OLD_PEUP                0
 
-/* PE fixup types (stashed in 4 high bits of a pe_fixup_entry) */
+/*
+ * PE fixup types (stashed in 4 high bits of a pe_fixup_entry)
+ */
 #define PE_FIX_ABS              (0x0<<PEUP)     /* absolute, skipped */
 #define PE_FIX_HIGH             (0x1<<PEUP)     /* add high 16 of delta */
 #define PE_FIX_LOW              (0x2<<PEUP)     /* add low 16 of delta */
@@ -107,7 +124,9 @@
 #define PE_FIX_HIGHADJ          (0x4<<PEUP)     /* see the doc */
 #define PE_FIX_MIPSJMP          (0x5<<PEUP)     /* see the doc */
 
-/* PE fixup types (stashed in 4 high bits of a pe_fixup_entry) */
+/*
+ * PE fixup types (stashed in 4 high bits of a pe_fixup_entry)
+ */
 #define OLD_PE_FIX_ABS          (0x0<<OLD_PEUP) /* absolute, skipped */
 #define OLD_PE_FIX_HIGH         (0x1<<OLD_PEUP) /* add high 16 of delta */
 #define OLD_PE_FIX_LOW          (0x2<<OLD_PEUP) /* add low 16 of delta */
@@ -115,12 +134,24 @@
 #define OLD_PE_FIX_HIGHADJ      (0x4<<OLD_PEUP) /* see the doc */
 #define OLD_PE_FIX_MIPSJMP      (0x5<<OLD_PEUP) /* see the doc */
 
-/* PE debug directory structure */
+/*
+ * PE debug directory structure
+ */
 #define DEBUG_TYPE_UNKNOWN      0
 #define DEBUG_TYPE_COFF         1
 #define DEBUG_TYPE_CODEVIEW     2
 #define DEBUG_TYPE_MISC         4
 
+/*
+ * If id_name & PE_RESOURCE_MASK_ON then id_name & PE_RESOURCE_MASK is a rva
+ * (relative to the start of the resource object) to the name string otherwise
+ * it is an integer id. The name string is an unsigned_16 length followed by a
+ * unicode string of that length.
+ *
+ * If entry_rva & PE_RESOURCE_MASK_ON the entry_rva & PE_RESOURCE_MASK is a rva
+ * (relative to the start of the resource object) to another resource directory
+ * otherwise it is a rva to a resource_entry.
+ */
 #define PE_RESOURCE_MASK        0x7fffffff
 #define PE_RESOURCE_MASK_ON     0x80000000
 
@@ -135,7 +166,9 @@
 
 #define PE_DIRECTORY(x,s)   (*(((x).pe32.magic == 0x20b) ? ((x).pe64.table + (s)) : ((x).pe32.table + (s)) ))
 
-/* PE header table types */
+/*
+ * PE header table types
+ */
 enum {
     PE_TBL_EXPORT,
     PE_TBL_IMPORT,
@@ -155,7 +188,9 @@ enum {
     PE_TBL_NUMBER = 16
 };
 
-/* CPU type field values */
+/*
+ * CPU type field values
+ */
 enum {
     PE_CPU_UNKNOWN          = 0,
     PE_CPU_386              = 0x014c,
@@ -167,7 +202,9 @@ enum {
     PE_CPU_AMD64            = 0x8664
 };
 
-/* FLAG field bit values */
+/*
+ * FLAG field bit values
+ */
 enum {
     PE_FLG_PROGRAM              = 0x0000,
     PE_FLG_RELOCS_STRIPPED      = 0x0001,
@@ -187,8 +224,9 @@ enum {
     PE_FLG_REVERSE_BYTE_HI      = 0x8000
 };
 
-
-/* SUBSYSTEM field values */
+/*
+ * SUBSYSTEM field values
+ */
 enum {
     PE_SS_UNKNOWN           = 0x0000,
     PE_SS_NATIVE            = 0x0001,
@@ -204,7 +242,9 @@ enum {
     PE_SS_RDOS              = 0xAD05
 };
 
-/* DLL FLAGS field bit values */
+/*
+ * DLL FLAGS field bit values
+ */
 enum {
     PE_DLL_PERPROC_INIT     = 0x0001,
     PE_DLL_PERPROC_TERM     = 0x0002,
@@ -214,9 +254,14 @@ enum {
 
 #include "pushpck1.h"
 
+/*
+ * PE file signature
+ */
 typedef unsigned_32     pe_signature;
 
-/* type of a [relative] virtual address */
+/*
+ * type of a [relative] virtual address
+ */
 typedef unsigned_32     pe_va;
 
 typedef struct {
@@ -224,7 +269,9 @@ typedef struct {
         unsigned_32     size;
 } pe_hdr_dir_entry;
 
-/* PE32 header structure */
+/*
+ * PE32 header structure
+ */
 typedef struct {
     unsigned_32         signature;
     unsigned_16         cpu_type;
@@ -268,7 +315,9 @@ typedef struct {
     pe_hdr_dir_entry    table[PE_TBL_NUMBER];
 } pe_header;
 
-/* PE32+ header structure */
+/*
+ * PE32+ header structure
+ */
 typedef struct {
     unsigned_32         signature;
     unsigned_16         cpu_type;
@@ -316,7 +365,9 @@ typedef union {
     pe_header64 pe64;
 } exe_pe_header;
 
-/* PE object table structure */
+/*
+ * PE object table structure
+ */
 typedef struct {
     char                name[PE_OBJ_NAME_LEN];
     unsigned_32         virtual_size;
@@ -330,7 +381,9 @@ typedef struct {
     unsigned_32         flags;
 } pe_object;
 
-/* PE export directory table structure */
+/*
+ * PE export directory table structure
+ */
 typedef struct {
     unsigned_32         flags;
     unsigned_32         time_stamp;
@@ -346,7 +399,9 @@ typedef struct {
 } pe_export_directory;
 
 
-/* PE import directory table structure */
+/*
+ * PE import directory table structure
+ */
 typedef struct {
     pe_va               import_lookup_table_rva;        /* was flags */
     unsigned_32         time_stamp;
@@ -356,13 +411,17 @@ typedef struct {
     pe_va               import_address_table_rva;
 } pe_import_directory;
 
-/* PE import hint-name table structure */
+/*
+ * PE import hint-name table structure
+ */
 typedef struct {
     unsigned_16         hint;
     unsigned_8          name[2]; /* variable size, padded to even boundry */
 } pe_hint_name_entry;
 
-/* PE fixup table structure */
+/*
+ * PE fixup table structure
+ */
 typedef unsigned_16     pe_fixup_entry;
 
 typedef struct {
@@ -378,7 +437,9 @@ typedef struct {
     unsigned_16 pad;
 } old_pe_fixup_entry;
 
-/* PE debug directory structure */
+/*
+ * PE debug directory structure
+ */
 typedef struct {
     unsigned_32         flags;
     unsigned_32         time_stamp;
@@ -390,7 +451,9 @@ typedef struct {
     unsigned_32         data_seek;
 } debug_directory;
 
-/* PE DEBUG_TYPE_MISC data */
+/*
+ * PE DEBUG_TYPE_MISC data
+ */
 typedef struct {
     unsigned_32 data_type;          /* 1 == filename of debug info file */
     unsigned_32 length;             /* size of this data block */
@@ -399,8 +462,9 @@ typedef struct {
     unsigned_32 special_purpose;    /* used to pass file offset to cvpack utility */
 } debug_misc_dbgdata;
 
-/* procedure descriptor format for alpha and powerpc */
-
+/*
+ * procedure descriptor format for alpha and powerpc
+ */
 typedef struct {
     unsigned_32 beginaddress;
     unsigned_32 endaddress;
@@ -409,7 +473,9 @@ typedef struct {
     unsigned_32 prologendaddress;
 } procedure_descriptor;
 
-/* PE resource directory structure */
+/*
+ * PE resource directory structure
+ */
 typedef struct {
     unsigned_32         flags;
     unsigned_32         time_stamp;
@@ -420,26 +486,14 @@ typedef struct {
 } resource_dir_header;
 
 /*
-A resource directory is a resource_dir_header followed immediately by
-(num_name_entries + num_id_entries) resource_dir_entry's. The entries are
-ordered sorted name entries then sorted id entries.
-*/
-
+ * A resource directory is a resource_dir_header followed immediately by
+ * (num_name_entries + num_id_entries) resource_dir_entry's. The entries are
+ * ordered sorted name entries then sorted id entries.
+ */
 typedef struct {
     unsigned_32         id_name;        /* see below */
     pe_va               entry_rva;      /* see below */
 } resource_dir_entry;
-
-/*
-If id_name & PE_RESOURCE_MASK_ON then id_name & PE_RESOURCE_MASK is a rva
-(relative to the start of the resource object) to the name string otherwise
-it is an integer id. The name string is an unsigned_16 length followed by a
-unicode string of that length.
-
-If entry_rva & PE_RESOURCE_MASK_ON the entry_rva & PE_RESOURCE_MASK is a rva
-(relative to the start of the resource object) to another resource directory
-otherwise it is a rva to a resource_entry.
-*/
 
 typedef struct {
     unsigned_32     data_rva;       /* relative to Image Base */

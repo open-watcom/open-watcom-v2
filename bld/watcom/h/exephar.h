@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,17 @@
 
 #ifndef _EXEPHAR_H
 #define _EXEPHAR_H
+
+#include "exesigns.h"
+
+
+#define SIMPLE_SIGNATURE        EXESIGN_MP
+#define EXTENDED_SIGNATURE      EXESIGN_P3
+#define RTP_SIGNATURE           EXESIGN_DX
+#define REX_SIGNATURE           EXESIGN_MQ
+
+#define PHAR_FORMAT_FLAT        1
+#define PHAR_FORMAT_SEGMENTED   2
 
 #include "pushpck1.h"
 typedef struct simple_header {
@@ -113,14 +125,6 @@ typedef struct {
     unsigned_32 extra;
 } seg_info_table;
 #include "poppck.h"
-
-#define SIMPLE_SIGNATURE    0x504D      // 'MP'
-#define EXTENDED_SIGNATURE  0x3350      // 'P3'
-#define RTP_SIGNATURE       0x5844      // 'DX'
-#define REX_SIGNATURE       0x514D      // 'MQ'
-
-#define PHAR_FORMAT_FLAT        1
-#define PHAR_FORMAT_SEGMENTED   2
 
 #endif
 
