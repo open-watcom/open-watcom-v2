@@ -36,8 +36,6 @@
 #include "exesigns.h"
 
 
-#define OLD_PE_TBL_NUMBER   9
-
 #define PE_SIGNATURE        EXESIGN_PE
 #define PL_SIGNATURE        EXESIGN_PL
 #define PX_SIGNATURE        EXESIGN_PX
@@ -112,8 +110,6 @@
 
 #define PEUP                    12
 
-#define OLD_PEUP                0
-
 /*
  * PE fixup types (stashed in 4 high bits of a pe_fixup_entry)
  */
@@ -123,16 +119,6 @@
 #define PE_FIX_HIGHLOW          (0x3<<PEUP)     /* add all 32 bits of delta */
 #define PE_FIX_HIGHADJ          (0x4<<PEUP)     /* see the doc */
 #define PE_FIX_MIPSJMP          (0x5<<PEUP)     /* see the doc */
-
-/*
- * PE fixup types (stashed in 4 high bits of a pe_fixup_entry)
- */
-#define OLD_PE_FIX_ABS          (0x0<<OLD_PEUP) /* absolute, skipped */
-#define OLD_PE_FIX_HIGH         (0x1<<OLD_PEUP) /* add high 16 of delta */
-#define OLD_PE_FIX_LOW          (0x2<<OLD_PEUP) /* add low 16 of delta */
-#define OLD_PE_FIX_HIGHLOW      (0x3<<OLD_PEUP) /* add all 32 bits of delta */
-#define OLD_PE_FIX_HIGHADJ      (0x4<<OLD_PEUP) /* see the doc */
-#define OLD_PE_FIX_MIPSJMP      (0x5<<OLD_PEUP) /* see the doc */
 
 /*
  * PE debug directory structure
@@ -159,8 +145,6 @@
 #define PE64(x)             (x).pe64
 
 #define IS_PE64(x)          (PE32(x).magic == 0x20b)
-
-#define OLD_PE_TBL_SIZE     (sizeof(pe_header) - 2 * (16 - 9) * sizeof(pe_va))
 
 #define PE_HEADERS_SIZE(x)  (((x).pe32.magic == 0x20b) ? sizeof( (x).pe64 ) : sizeof( (x).pe32 ))
 
@@ -429,13 +413,6 @@ typedef struct {
     unsigned_32         block_size;
 /*  pe_fixup_entry      fixups[] */     /* variable size */
 } pe_fixup_header;
-
-typedef struct {
-    pe_va       virt_addr;
-    unsigned_32 value;
-    unsigned_16 type;
-    unsigned_16 pad;
-} old_pe_fixup_entry;
 
 /*
  * PE debug directory structure

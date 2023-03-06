@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,16 +59,6 @@
 #define PE_FIX_HIGHLOW          (0x3<<PEUP)     /* add all 32 bits of delta */
 #define PE_FIX_HIGHADJ          (0x4<<PEUP)     /* see the doc */
 #define PE_FIX_MIPSJMP          (0x5<<PEUP)     /* see the doc */
-
-/* PE fixup types (stashed in 4 high bits of a pe_fixup_entry) */
-#define OLD_PEUP 0
-
-#define OLD_PE_FIX_ABS          (0x0<<OLD_PEUP) /* absolute, skipped */
-#define OLD_PE_FIX_HIGH         (0x1<<OLD_PEUP) /* add high 16 of delta */
-#define OLD_PE_FIX_LOW          (0x2<<OLD_PEUP) /* add low 16 of delta */
-#define OLD_PE_FIX_HIGHLOW      (0x3<<OLD_PEUP) /* add all 32 bits of delta */
-#define OLD_PE_FIX_HIGHADJ      (0x4<<OLD_PEUP) /* see the doc */
-#define OLD_PE_FIX_MIPSJMP      (0x5<<OLD_PEUP) /* see the doc */
 
 #define OSF_RLIDX_MASK          0x3FF
 #define OSF_RLIDX_LOW(val)      (val & OSF_RLIDX_MASK)
@@ -169,13 +159,6 @@ typedef struct {
 } high_pe_reloc_item;
 
 typedef struct {
-    unsigned_32 virt_addr;
-    unsigned_32 value;
-    unsigned_16 type;
-    unsigned_16 pad;
-} old_pe_reloc_item;
-
-typedef struct {
     unsigned_32 reloc_offset;
     unsigned_32 info;
     unsigned_32 addend;
@@ -191,7 +174,6 @@ typedef union {
     pms_reloc_item      pms;
     os2_flat_reloc_item os2f;
     pe_reloc_item       pe;
-    old_pe_reloc_item   oldpe;
     high_pe_reloc_item  hpe;
     elf_reloc_item      elf;
     zdos_reloc_item     zdos;
