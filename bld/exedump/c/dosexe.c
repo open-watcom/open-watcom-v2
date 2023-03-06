@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +105,7 @@ int Dmp_dos_head( void )
 /**********************/
 {
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
-    if( Dos_head.hdr.signature != DOS_SIGNATURE ) {
+    if( Dos_head.hdr.signature != DOS_EXE_SIGNATURE ) {
         return( 0 );
     }
     Dos_head.load_len = Dos_head.hdr.file_size * 0x200 - (-Dos_head.hdr.mod_size & 0x1ff);
@@ -125,7 +126,7 @@ int Dmp_dos_head( void )
             return( 1 );
         }
     }
-    Wlseek( OS2_NE_OFFSET );
+    Wlseek( NE_HEADER_OFFSET );
     Wread( &New_exe_off, sizeof( New_exe_off ) );
     return( 2 );
 }

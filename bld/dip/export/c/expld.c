@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -667,7 +667,7 @@ static dip_status TryPE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
 
 static dip_status TryStub( FILE *fp, imp_image_handle *iih )
 {
-    unsigned_32         off;
+    unsigned_32         ne_header_off;
     any_header          head;
 
     switch( BRead( fp, &head.mz, sizeof( head.mz ) ) ) {
@@ -678,34 +678,34 @@ static dip_status TryStub( FILE *fp, imp_image_handle *iih )
     default:
         return( DS_FAIL );
     }
-    if( head.mz.signature != DOS_SIGNATURE )
+    if( head.mz.signature != DOS_EXE_SIGNATURE )
         return( DS_FAIL );
-    if( head.mz.reloc_offset < (OS2_NE_OFFSET + sizeof( off )) )
+    if( head.mz.reloc_offset < (NE_HEADER_OFFSET + sizeof( ne_header_off )) )
         return( DS_FAIL );
-    if( BSeek( fp, OS2_NE_OFFSET, DIG_SEEK_ORG ) != OS2_NE_OFFSET ) {
+    if( BSeek( fp, NE_HEADER_OFFSET, DIG_SEEK_ORG ) != NE_HEADER_OFFSET ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( BRead( fp, &off, sizeof( off ) ) != sizeof( off ) ) {
+    if( BRead( fp, &ne_header_off, sizeof( ne_header_off ) ) != sizeof( ne_header_off ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( BSeek( fp, off, DIG_SEEK_ORG ) != off ) {
+    if( BSeek( fp, ne_header_off, DIG_SEEK_ORG ) != ne_header_off ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( BRead( fp, &head, sizeof( head ) ) != sizeof( head ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     switch( head.ne.signature ) {
-    case OS2_SIGNATURE_WORD:
+    case NE_EXE_SIGNATURE:
         /* Hey, it's an NE executable */
-        return( TryNE( fp, iih, &head, off ) );
+        return( TryNE( fp, iih, &head, ne_header_off ) );
     case OSF_FLAT_SIGNATURE:
     case OSF_FLAT_LX_SIGNATURE:
         /* Hey, it's an LX/LE executable */
-        return( TryLX( fp, iih, &head, off ) );
-    case PE_SIGNATURE:
-    case PL_SIGNATURE:
+        return( TryLX( fp, iih, &head, ne_header_off ) );
+    case PE_EXE_SIGNATURE:
+    case PL_EXE_SIGNATURE:
         /* Hey, it's a PE executable (or Pharlap's variant of it) */
-        return( TryPE( fp, iih, &head, off ) );
+        return( TryPE( fp, iih, &head, ne_header_off ) );
     }
     return( DS_FAIL );
 }

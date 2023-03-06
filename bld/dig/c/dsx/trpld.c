@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -393,7 +393,7 @@ static char *ReadInTrap( FILE *fp )
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
     }
-    if( hdr.signature != DOS_SIGNATURE ) {
+    if( hdr.signature != DOS_EXE_SIGNATURE ) {
         return( TC_ERR_BAD_TRAP_FILE );
     }
 

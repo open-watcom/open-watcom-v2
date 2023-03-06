@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -388,7 +388,7 @@ static const char *GetHelpName( const char *exe_name )
     */
     tiny_ret_t          rc;
     tiny_handle_t       handle;
-    unsigned_32         off;
+    unsigned_32         ne_header_off;
     union {
         dos_exe_header  dos;
         pe_header       pe;
@@ -398,17 +398,17 @@ static const char *GetHelpName( const char *exe_name )
     if( TINY_OK( rc ) ) {
         handle = TINY_INFO( rc );
         TinyRead( handle, &head.dos, sizeof( head.dos ) );
-        if( head.dos.signature != DOS_SIGNATURE ) {
+        if( head.dos.signature != DOS_EXE_SIGNATURE ) {
             TinyClose( handle );
         } else {
-            TinySeek( handle, OS2_NE_OFFSET, SEEK_SET );
-            TinyRead( handle, &off, sizeof( off ) );
-            TinySeek( handle, off, SEEK_SET );
+            TinySeek( handle, NE_HEADER_OFFSET, SEEK_SET );
+            TinyRead( handle, &ne_header_off, sizeof( ne_header_off ) );
+            TinySeek( handle, ne_header_off, SEEK_SET );
             TinyRead( handle, &head.pe, sizeof( head.pe ) );
             TinyClose( handle );
             switch( head.pe.signature ) {
-            case PE_SIGNATURE:
-            case PL_SIGNATURE:
+            case PE_EXE_SIGNATURE:
+            case PL_EXE_SIGNATURE:
                 if( head.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
                     _DBG_Writeln( "Want PEDHELP" );
                     return( HELPNAME_DS );

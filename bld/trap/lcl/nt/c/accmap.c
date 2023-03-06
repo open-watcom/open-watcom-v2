@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,20 +215,20 @@ bool FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size )
 
 static void FillInExceptInfo( lib_load_info *llo )
 {
-    DWORD           pe_off;
+    DWORD           ne_header_off;
     SIZE_T          bytes;
-    exe_pe_header   hdr;
+    exe_pe_header   pehdr;
 
-    ReadProcessMemory( ProcessInfo.process_handle, llo->base + OS2_NE_OFFSET, &pe_off, sizeof( pe_off ), &bytes );
-    ReadProcessMemory( ProcessInfo.process_handle, llo->base + pe_off, &hdr, sizeof( hdr ), &bytes );
-    if( IS_PE64( hdr ) ) {
-        llo->code_size = PE64( hdr ).code_base + PE64( hdr ).code_size;
-        llo->except_base = llo->base + PE64( hdr ).table[PE_TBL_EXCEPTION].rva;
-        llo->except_size = PE64( hdr ).table[PE_TBL_EXCEPTION].size;
+    ReadProcessMemory( ProcessInfo.process_handle, llo->base + NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ), &bytes );
+    ReadProcessMemory( ProcessInfo.process_handle, llo->base + ne_header_off, &pehdr, sizeof( pehdr ), &bytes );
+    if( IS_PE64( pehdr ) ) {
+        llo->code_size = PE64( pehdr ).code_base + PE64( pehdr ).code_size;
+        llo->except_base = llo->base + PE64( pehdr ).table[PE_TBL_EXCEPTION].rva;
+        llo->except_size = PE64( pehdr ).table[PE_TBL_EXCEPTION].size;
     } else {
-        llo->code_size = PE32( hdr ).code_base + PE32( hdr ).code_size;
-        llo->except_base = llo->base + PE32( hdr ).table[PE_TBL_EXCEPTION].rva;
-        llo->except_size = PE32( hdr ).table[PE_TBL_EXCEPTION].size;
+        llo->code_size = PE32( pehdr ).code_base + PE32( pehdr ).code_size;
+        llo->except_base = llo->base + PE32( pehdr ).table[PE_TBL_EXCEPTION].rva;
+        llo->except_size = PE32( pehdr ).table[PE_TBL_EXCEPTION].size;
     }
 }
 
@@ -632,7 +632,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         if( i == num_objects ) {
             return( 0 );
         }
-        if( obj.flags & ( PE_OBJ_CODE | PE_OBJ_EXECUTABLE ) ) {
+        if( obj.flags & (PE_OBJ_CODE | PE_OBJ_EXECUTABLE) ) {
             ret->out_addr.segment = FlatCS;
         } else {
             ret->out_addr.segment = FlatDS;

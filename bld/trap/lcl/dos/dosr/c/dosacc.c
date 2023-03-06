@@ -488,10 +488,10 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
         switch( head.signature ) {
         case SIMPLE_SIGNATURE:      // 'MP'
-        case REX_SIGNATURE:         // 'MQ'
+        case REX_EXE_SIGNATURE:     // 'MQ'
         case EXTENDED_SIGNATURE:    // 'P3'
             return( EXE_PHARLAP_SIMPLE );
-        case DOS_SIGNATURE:         // 'MZ'
+        case DOS_EXE_SIGNATURE:         // 'MZ'
             if( head.reloc_offset == OS2_EXE_HEADER_FOLLOWS )
                 return( EXE_OS2 );
             return( EXE_DOS );
@@ -583,7 +583,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     opcode_type     old_opcode;
     os2_exe_header  os2_head;
     tiny_handle_t   handle;
-    dword           NEOffset;
+    dword           ne_header_off;
     dword           StartPos;
     dword           SegTable;
     addr48_ptr      start_addr;
@@ -622,15 +622,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
         exe_time.rc = TinyGetFileStamp( handle );
         exe = CheckEXEType( handle );
         if( exe == EXE_OS2 ) {
-            if( TINY_OK( TinySeek( handle, OS2_NE_OFFSET, TIO_SEEK_START ) )
-              && TINY_OK( TinyFarRead( handle, &NEOffset, sizeof( NEOffset ) ) )
-              && TINY_OK( TinySeek( handle, NEOffset, TIO_SEEK_START ) )
+            if( TINY_OK( TinySeek( handle, NE_HEADER_OFFSET, TIO_SEEK_START ) )
+              && TINY_OK( TinyFarRead( handle, &ne_header_off, sizeof( ne_header_off ) ) )
+              && TINY_OK( TinySeek( handle, ne_header_off, TIO_SEEK_START ) )
               && TINY_OK( TinyFarRead( handle, &os2_head, sizeof( os2_head ) ) ) ) {
                 if( os2_head.signature == RAT_SIGNATURE_WORD ) {
                     exe = EXE_RATIONAL_386;
-                } else if( os2_head.signature == OS2_SIGNATURE_WORD ) {
+                } else if( os2_head.signature == NE_EXE_SIGNATURE ) {
                     NumSegments = os2_head.segments;
-                    SegTable = NEOffset + os2_head.segment_off;
+                    SegTable = ne_header_off + os2_head.segment_off;
                     if( os2_head.align == 0 )
                         os2_head.align = 9;
                     TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_START );

@@ -148,15 +148,15 @@ static void ReadOldLib( void )
     fname = FmtData.u.os2fam.old_lib_name;
     the_file = QOpenR( fname );
     QRead( the_file, &head, sizeof( dos_exe_header ), fname );
-    if( head.dos.signature != DOS_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
+    if( head.dos.signature != DOS_EXE_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
         LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
     } else {
-        QSeek( the_file, NH_OFFSET, fname );
+        QSeek( the_file, NE_HEADER_OFFSET, fname );
         QRead( the_file, &val32, sizeof( val32 ), fname );
         filepos = val32;
         QSeek( the_file, filepos, fname );
         QRead( the_file, &head, sizeof( head ), fname );
-        if( head.os2.signature == OS2_SIGNATURE_WORD ) {
+        if( head.os2.signature == NE_EXE_SIGNATURE ) {
             QSeek( the_file, filepos + head.os2.resident_off, fname );
             ReadNameTable( the_file );
             QSeek( the_file, head.os2.nonres_off, fname );
@@ -170,7 +170,7 @@ static void ReadOldLib( void )
                 QSeek( the_file, head.os2f.nonres_off, fname );
                 ReadNameTable( the_file );
             }
-        } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
+        } else if( head.pe.pe32.signature == PE_EXE_SIGNATURE ) {
             unsigned            num_objects;
             pe_hdr_dir_entry    *table;
 
@@ -1076,7 +1076,7 @@ void FiniOS2LoadFile( void )
     SeekEndLoad( 0 );
     FiniNEResources( res_fp, inRes, &outRes );
     DBIWrite();
-    exe_head.signature = OS2_SIGNATURE_WORD;
+    exe_head.signature = NE_EXE_SIGNATURE;
     exe_head.version = 0x0105;          /* version 5.1 */
     exe_head.chk_sum = 0L;
     exe_head.info = 0;
@@ -1237,7 +1237,7 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
         _ChkAlloc( FmtData.u.os2fam.stub_file_name, len );
         memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
         QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
-        if( dosheader.signature != DOS_SIGNATURE ) {
+        if( dosheader.signature != DOS_EXE_SIGNATURE ) {
             LnkMsg( ERR + MSG_INV_STUB_FILE, NULL );
             stub_len = WriteDOSDefStub( stub_align );
         } else {
@@ -1252,7 +1252,7 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
             dosheader.file_size = ( stub_len + 511 ) / 512;  // round up.
             dosheader.mod_size = stub_len % 512;
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
-            PadLoad( NH_OFFSET - sizeof( dos_exe_header ) );
+            PadLoad( NE_HEADER_OFFSET - sizeof( dos_exe_header ) );
             stub_len = __ROUND_UP_SIZE( stub_len, stub_align );
             WriteLoadU32( stub_len );
             for( num_relocs = dosheader.num_relocs; num_relocs > 0; num_relocs-- ) {

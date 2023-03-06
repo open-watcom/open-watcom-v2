@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -564,22 +565,22 @@ bool Dmp_os2_exports( void )
 
     /* Check executable format; handle stubless modules */
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
-    if( Dos_head.hdr.signature == DOS_SIGNATURE ) {
+    if( Dos_head.hdr.signature == DOS_EXE_SIGNATURE ) {
         if( Dos_head.hdr.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
             return( false );
         }
-        Wlseek( OS2_NE_OFFSET );
+        Wlseek( NE_HEADER_OFFSET );
         Wread( &New_exe_off, sizeof( New_exe_off ) );
     } else if( Dos_head.hdr.signature == OSF_FLAT_LX_SIGNATURE
       || Dos_head.hdr.signature == OSF_FLAT_SIGNATURE
-      || Dos_head.hdr.signature == OS2_SIGNATURE_WORD ) {
+      || Dos_head.hdr.signature == NE_EXE_SIGNATURE ) {
         New_exe_off = 0;
     }
 
     /* Read appropriate header */
     Wlseek( New_exe_off );
     Wread( &Os2_386_head, sizeof( Os2_386_head ) );
-    if( Os2_386_head.signature == OS2_SIGNATURE_WORD ) {
+    if( Os2_386_head.signature == NE_EXE_SIGNATURE ) {
         Form = FORM_NE;
         Wlseek( New_exe_off );
         Wread( &Os2_head, sizeof( Os2_head ) );

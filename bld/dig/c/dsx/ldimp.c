@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ imp_header *ReadInImp( FILE *fp )
 
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) )
         return( NULL );
-    if( hdr.signature != REX_SIGNATURE )
+    if( hdr.signature != REX_EXE_SIGNATURE )
         return( NULL );
     hdr_size = hdr.hdr_size * 16;
     size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;

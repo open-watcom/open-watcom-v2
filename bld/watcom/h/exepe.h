@@ -36,9 +36,9 @@
 #include "exesigns.h"
 
 
-#define PE_SIGNATURE        EXESIGN_PE
-#define PL_SIGNATURE        EXESIGN_PL
-#define PX_SIGNATURE        EXESIGN_PX
+#define PE_EXE_SIGNATURE    EXESIGN_PE
+#define PL_EXE_SIGNATURE    EXESIGN_PL
+#define PX_EXE_SIGNATURE    EXESIGN_PX
 
 /*
  * Linker major/minor version numbers
@@ -141,14 +141,16 @@
 #define PE_RESOURCE_MASK        0x7fffffff
 #define PE_RESOURCE_MASK_ON     0x80000000
 
-#define PE32(x)             (x).pe32
-#define PE64(x)             (x).pe64
+#define PE32(x)                 (x).pe32
+#define PE32_SIZE(x)            sizeof(PE32(x))
+#define PE64(x)                 (x).pe64
+#define PE64_SIZE(x)            sizeof(PE64(x))
 
-#define IS_PE64(x)          (PE32(x).magic == 0x20b)
+#define IS_PE64(x)              (PE32(x).magic == 0x20b)
 
-#define PE_HEADERS_SIZE(x)  (((x).pe32.magic == 0x20b) ? sizeof( (x).pe64 ) : sizeof( (x).pe32 ))
+#define PE_SIZE(x)              (IS_PE64(x) ? PE64_SIZE(x) : PE32_SIZE(x))
 
-#define PE_DIRECTORY(x,s)   (*(((x).pe32.magic == 0x20b) ? ((x).pe64.table + (s)) : ((x).pe32.table + (s)) ))
+#define PE_DIRECTORY(x,s)       (*(IS_PE64(x) ? (PE64(x).table + (s)) : (PE32(x).table + (s))))
 
 /*
  * PE header table types

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,15 +38,17 @@
 TableOrData tableOrData( ResDirEntry *dir )
 /******************************************/
 {
-    if( dir->dir.entry_rva & PE_RESOURCE_MASK_ON )  return( TABLE );
-    else                                            return( DATA );
+    if( dir->dir.entry_rva & PE_RESOURCE_MASK_ON )
+        return( TABLE );
+    return( DATA );
 }
 
 static NameOrID nameOrID( ResDirEntry *dir )
 /******************************************/
 {
-    if( dir->dir.id_name & PE_RESOURCE_MASK_ON ) return( NAME );
-    else                                         return( ID );
+    if( dir->dir.id_name & PE_RESOURCE_MASK_ON )
+        return( NAME );
+    return( ID );
 }
 
 pe_va getDirNameRva( ResDirEntry *dir )
@@ -115,7 +117,7 @@ bool readExeHeaders( ExeFile *exeFile )
         return( false );
     }
 
-    if( fseek( exeFile->file, NH_OFFSET, SEEK_SET ) ||
+    if( fseek( exeFile->file, NE_HEADER_OFFSET, SEEK_SET ) ||
         fread( (void *) &exeFile->pexHdrAddr,
                (size_t) sizeof( unsigned_32 ),
                (size_t) 1,
@@ -138,8 +140,8 @@ bool readExeHeaders( ExeFile *exeFile )
         return( false );
     }
     fseek( exeFile->file, prevPos, SEEK_SET );
-    if( exeFile->pexHdr.signature != PE_SIGNATURE &&
-        exeFile->pexHdr.signature != PL_SIGNATURE ) {
+    if( exeFile->pexHdr.signature != PE_EXE_SIGNATURE &&
+        exeFile->pexHdr.signature != PL_EXE_SIGNATURE ) {
         printf( ERR_READ_NOT_PE_EXE );
         return( false );
     } else {

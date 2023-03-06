@@ -1008,8 +1008,8 @@ bool AddImport( arch_header *arch, libfile io )
     ok = ( LibRead( io, &signature, sizeof( signature ) ) == sizeof( signature ) );
     if( ok ) {
         header_offset = 0;
-        if( signature == DOS_SIGNATURE ) {
-            header_offset = OS2_NE_OFFSET;
+        if( signature == DOS_EXE_SIGNATURE ) {
+            header_offset = NE_HEADER_OFFSET;
             LibSeek( io, header_offset, SEEK_SET );
             ok = ( LibRead( io, &offset, sizeof( offset ) ) == sizeof( offset ) );
             if( ok ) {
@@ -1023,9 +1023,9 @@ bool AddImport( arch_header *arch, libfile io )
                 os2FlatAddImport( arch, io, header_offset );
             } else if( signature == OSF_FLAT_LX_SIGNATURE ) {
                 os2FlatAddImport( arch, io, header_offset );
-            } else if( signature == OS2_SIGNATURE_WORD ) {
+            } else if( signature == NE_EXE_SIGNATURE ) {
                 os2AddImport( arch, io, header_offset );
-            } else if( signature == PE_SIGNATURE ) {
+            } else if( signature == PE_EXE_SIGNATURE ) {
                 peAddImport( arch, io, header_offset );
             } else if( header_offset ) {
                 ok = false;

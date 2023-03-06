@@ -39,6 +39,10 @@
 /* DOS EXE file header */
 /* =================== */
 
+#define DOS_EXE_SIGNATURE   EXESIGN_MZ
+
+#define NE_HEADER_OFFSET    0x003c
+
 #include "pushpck1.h"
 typedef struct dos_exe_header {
     unsigned_16         signature;      /* signature to mark valid EXE file */
@@ -57,10 +61,5 @@ typedef struct dos_exe_header {
     unsigned_16         overlay_num;    /* overlay number (0 if resident)   */
 } dos_exe_header;
 #include "poppck.h"
-
-#define DOS_SIGNATURE   EXESIGN_MZ
-
-#define NH_MAGIC_REX    0x0038          /* used by wbind to save original REX size */
-#define NH_OFFSET       0x003c
 
 #endif

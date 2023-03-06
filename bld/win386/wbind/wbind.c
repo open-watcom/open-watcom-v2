@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -337,7 +337,7 @@ int main( int argc, char *argv[] )
     bool            uflag = false;
     bool            dllflag = false;
     const char      *wext = NULL;
-    unsigned_32     u32;
+    unsigned_32     rex_header_off;
     pgroup2         pg;
     char            rex_name[_MAX_PATH];
     char            exe_name[_MAX_PATH];
@@ -346,11 +346,10 @@ int main( int argc, char *argv[] )
     char            wrc_cmd[_MAX_PATH];
     int             wrc_parm;
     long            totalsize;
-    long            exelen;
     const char      **arglist;
     const char      *path = NULL;
     int             currarg;
-    simple_header   re;
+    simple_header   rexhdr;
     char            *desc = NULL;
     int             rc;
     bool            ok;
@@ -443,16 +442,15 @@ int main( int argc, char *argv[] )
          */
         in.name = exe_name;
         in.fp = open_file( in.name, "rb" );
-        fseek( in.fp, NH_MAGIC_REX, SEEK_SET );
-        fread( &u32, 1, sizeof( u32 ), in.fp );
-        exelen = u32;
-        fseek( in.fp, exelen, SEEK_SET );
-        fread( &re, 1, sizeof( re ), in.fp );
-        if( re.signature != ('M' & ('Q' << 8)) ) {
+        fseek( in.fp, REX_HEADER_OFFSET, SEEK_SET );
+        fread( &rex_header_off, 1, sizeof( rex_header_off ), in.fp );
+        fseek( in.fp, rex_header_off, SEEK_SET );
+        fread( &rexhdr, 1, sizeof( rexhdr ), in.fp );
+        if( rexhdr.signature != REX_EXE_SIGNATURE ) {
             fclose( in.fp );
             doError( "Not a bound Open Watcom 32-bit Windows application" );
         }
-        fseek( in.fp, exelen, SEEK_SET );
+        fseek( in.fp, rex_header_off, SEEK_SET );
         out.name = rex_name;
         out.fp = open_file( out.name, "wb" );
         copy_file( &in, &out );
@@ -541,11 +539,11 @@ int main( int argc, char *argv[] )
     in.fp = open_file( in.name, "rb" );
     out.name = exe_name;
     out.fp = open_file( out.name, "rb+" );
-    exelen = 0;
+    rex_header_off = 0;
     totalsize = 0;
     ok = false;
     if( fseek( out.fp, 0, SEEK_END ) == 0 ) {
-        exelen = ftell( out.fp );
+        rex_header_off = ftell( out.fp );
         totalsize = copy_file( &in, &out );
         ok = true;
     }
@@ -557,9 +555,8 @@ int main( int argc, char *argv[] )
          * use by the loader)
          */
         ok = false;
-        if( fseek( out.fp, NH_MAGIC_REX, SEEK_SET ) == 0 ) {
-            u32 = exelen;
-            if( fwrite( &u32, 1, sizeof( u32 ), out.fp ) == sizeof( u32 ) ) {
+        if( fseek( out.fp, REX_HEADER_OFFSET, SEEK_SET ) == 0 ) {
+            if( fwrite( &rex_header_off, 1, sizeof( rex_header_off ), out.fp ) == sizeof( rex_header_off ) ) {
                 if( updateNHStuff( out.fp, pg.fname, desc ) ) {
                     ok = true;
                 }
@@ -569,7 +566,7 @@ int main( int argc, char *argv[] )
     fclose( out.fp );
     if( ok ) {
         myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", exe_name,
-                exelen, totalsize, exelen + totalsize );
+                rex_header_off, totalsize, rex_header_off + totalsize );
         return( 0 );
     }
     errPrintf( "Error writing executable \"%s\".\n", exe_name );

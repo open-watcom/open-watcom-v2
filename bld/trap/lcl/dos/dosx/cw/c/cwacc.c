@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -388,7 +388,7 @@ static void AddModHandle( const char *name, epsp_t *epsp )
     tiny_ret_t      rc;
     int             handle;
     object_record   obj;
-    unsigned_32     off;
+    unsigned_32     ne_header_off;
     os2_flat_header os2_hdr;
     addr_off        new_base;
     unsigned        i;
@@ -412,11 +412,11 @@ static void AddModHandle( const char *name, epsp_t *epsp )
         return;
     }
     handle = TINY_INFO( rc );
-    TinySeek( handle, OS2_NE_OFFSET, SEEK_SET );
-    TinyRead( handle, &off, sizeof( off ) );
-    TinySeek( handle, off, SEEK_SET );
+    TinySeek( handle, NE_HEADER_OFFSET, SEEK_SET );
+    TinyRead( handle, &ne_header_off, sizeof( ne_header_off ) );
+    TinySeek( handle, ne_header_off, SEEK_SET );
     TinyRead( handle, &os2_hdr, sizeof( os2_hdr ) );
-    TinySeek( handle, os2_hdr.objtab_off + off, SEEK_SET );
+    TinySeek( handle, os2_hdr.objtab_off + ne_header_off, SEEK_SET );
     mod->SegCount = os2_hdr.num_objects;
     mod->ObjInfo = malloc( os2_hdr.num_objects * sizeof( seg_t ) );
     new_base = 0;

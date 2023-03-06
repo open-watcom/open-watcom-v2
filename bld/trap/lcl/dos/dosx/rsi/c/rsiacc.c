@@ -438,7 +438,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
 static void GetObjectInfo( char *name )
 {
     int                 handle;
-    unsigned_32         off;
+    unsigned_32         ne_header_off;
     unsigned            i;
     object_record       obj;
     union {
@@ -450,18 +450,18 @@ static void GetObjectInfo( char *name )
     if( handle == -1 )
         return;
     read( handle, &head.dos, sizeof( head.dos ) );
-    if( head.dos.signature != DOS_SIGNATURE ) {
+    if( head.dos.signature != DOS_EXE_SIGNATURE ) {
         close( handle );
         return;
     }
-    lseek( handle, OS2_NE_OFFSET, SEEK_SET );
-    read( handle, &off, sizeof( off ) );
-    lseek( handle, off, SEEK_SET );
+    lseek( handle, NE_HEADER_OFFSET, SEEK_SET );
+    read( handle, &ne_header_off, sizeof( ne_header_off ) );
+    lseek( handle, ne_header_off, SEEK_SET );
     read( handle, &head.os2, sizeof( head.os2 ) );
     switch( head.os2.signature ) {
     case OSF_FLAT_SIGNATURE:
     case OSF_FLAT_LX_SIGNATURE:
-        lseek( handle, head.os2.objtab_off + off, SEEK_SET );
+        lseek( handle, head.os2.objtab_off + ne_header_off, SEEK_SET );
         NumObjects = head.os2.num_objects;
         ObjInfo = realloc( ObjInfo, NumObjects * sizeof( *ObjInfo ) );
         for( i = 0; i < head.os2.num_objects; ++i ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +47,9 @@
 #endif
 
 
-#define EXE_PE  PE_SIGNATURE
-#define EXE_NE  OS2_SIGNATURE_WORD
-#define EXE_MZ  DOS_SIGNATURE
+#define EXE_PE  PE_EXE_SIGNATURE
+#define EXE_NE  NE_EXE_SIGNATURE
+#define EXE_MZ  DOS_EXE_SIGNATURE
 
 #if MADARCH & MADARCH_X64
     #define MYCONTEXT           WOW64_CONTEXT

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -398,7 +398,7 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 
-    if( (header = get_header( arg.ifile )) == NULL || (header->signature != DOS_SIGNATURE) ) {
+    if( (header = get_header( arg.ifile )) == NULL || (header->signature != DOS_EXE_SIGNATURE) ) {
         printf( "Error. %s has no valid exe-header.\n", arg.iname );
         return( EXIT_FAILURE );
     }

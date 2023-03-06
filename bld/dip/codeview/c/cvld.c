@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
         pe_header       pe;
     }                   hdr;
     pe_object           obj;
-    unsigned_32         nh_off;
+    unsigned_32         ne_header_off;
     unsigned_32         section_off;
     unsigned            i;
     unsigned_32         debug_rva;
@@ -96,22 +96,22 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( DCRead( fp, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( hdr.dos.signature != DOS_SIGNATURE ) {
+    if( hdr.dos.signature != DOS_EXE_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( DCSeek( fp, NH_OFFSET, DIG_SEEK_ORG ) ) {
+    if( DCSeek( fp, NE_HEADER_OFFSET, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DCRead( fp, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
+    if( DCRead( fp, &ne_header_off, sizeof( ne_header_off ) ) != sizeof( ne_header_off ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( DCSeek( fp, nh_off, DIG_SEEK_ORG ) ) {
+    if( DCSeek( fp, ne_header_off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
         return( DS_FAIL );
     }
-    if( hdr.pe.signature != PE_SIGNATURE ) {
+    if( hdr.pe.signature != PE_EXE_SIGNATURE ) {
         return( DS_FAIL );
     }
     if( hdr.pe.table[PE_TBL_DEBUG].rva == 0 ) {
@@ -120,7 +120,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     debug_rva = (hdr.pe.table[PE_TBL_DEBUG].rva / hdr.pe.object_align)*
                                 hdr.pe.object_align;
 
-    section_off = nh_off + offsetof( pe_header, flags ) +
+    section_off = ne_header_off + offsetof( pe_header, flags ) +
                         sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
 
     if( DCSeek( fp, section_off, DIG_SEEK_ORG ) ) {

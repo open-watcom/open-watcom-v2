@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,7 +116,7 @@ static void WritePharSimple( unsigned_32 start )
     if( FmtData.type & MK_PHAR_SIMPLE ) {
         _HostU16toTarg( SIMPLE_SIGNATURE, header.signature );
     } else {
-        _HostU16toTarg( REX_SIGNATURE, header.signature );
+        _HostU16toTarg( REX_EXE_SIGNATURE, header.signature );
     }
     _HostU16toTarg( file_size % 512U, header.mod_size );
     _HostU16toTarg( (file_size + 511U) / 512U, header.file_size );

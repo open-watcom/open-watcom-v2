@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,8 +112,8 @@ static WORD horkyFindSegment( HMODULE modid, WORD segment )
 static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
 {
     GLOBALENTRY         ge;
-    os2_exe_header      ne;
-    dos_exe_header      de;
+    os2_exe_header      nehdr;
+    dos_exe_header      doshdr;
     seg_offset          ovl;
     int                 i;
     LPVOID              ptr;
@@ -147,15 +147,15 @@ static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
 
     handle = open( name,O_BINARY | O_RDONLY );
     if( handle >= 0 ) {
-        read( handle, &de, sizeof( de ) );
-        if( de.signature == DOS_SIGNATURE ) {
-            lseek( handle, de.file_size * 512L - (-de.mod_size & 0x1ff), SEEK_SET );
+        read( handle, &doshdr, sizeof( doshdr ) );
+        if( doshdr.signature == DOS_EXE_SIGNATURE ) {
+            lseek( handle, doshdr.file_size * 512L - (-doshdr.mod_size & 0x1ff), SEEK_SET );
         } else {
             lseek( handle, 0, SEEK_SET );
         }
-        read( handle, &ne, sizeof( ne ) );
-        if( ne.signature == OS2_SIGNATURE_WORD ) {
-            numsegs = ne.segments;
+        read( handle, &nehdr, sizeof( nehdr ) );
+        if( nehdr.signature == NE_EXE_SIGNATURE ) {
+            numsegs = nehdr.segments;
             if( numsegs > 8192 ) {
                 // must not really be a valid OS2 sig.
                 numsegs = -1;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "global.h"
 #include "rcrtns.h"
 #include "rccore_2.h"
+#include "exedos.h"
 #include "exeutil.h"
 
 #include "clibext.h"
@@ -226,12 +227,10 @@ RcStatus SeekRead( FILE *fp, long newpos, void *buff, size_t size )
 } /* SeekRead */
 
 /* location within a windows executable of the offset of the os2_exe_header */
-#define WIN_EXE_HEADER_OFFSET           0x3cL
 #define DOS_RELOCATION_OFFSET           0x18L
-#define DOS_EXE_SIGNATURE               0x5a4d
 
 /* If the value at DOS_RELOCATION_ADDRESS_OFFSET < */
-/* WIN_EXE_HEADER_OFFSET + sizeof( uint_32 ) then the DOS reloction */
+/* NE_HEADER_OFFSET + sizeof( uint_32 ) then the DOS reloction */
 /* information starts before the end of the address of the os2_exe_header */
 /* so this is not a valid windows EXE file. */
 
@@ -253,11 +252,11 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset )
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
-    if( data < WIN_EXE_HEADER_OFFSET + sizeof( uint_32 ) ) {
+    if( data < NE_HEADER_OFFSET + sizeof( uint_32 ) ) {
         return( EXE_TYPE_UNKNOWN );
     }
 
-    rc = SeekRead( fp, WIN_EXE_HEADER_OFFSET, nh_offset, sizeof( uint_32 ) );
+    rc = SeekRead( fp, NE_HEADER_OFFSET, nh_offset, sizeof( uint_32 ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
@@ -266,7 +265,7 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset )
         return( EXE_TYPE_UNKNOWN );
 
     switch( data ) {
-    case OS2_SIGNATURE_WORD:
+    case NE_EXE_SIGNATURE:
         rc = SeekRead( fp, *nh_offset, &ne_header, sizeof( ne_header ) );
         if( rc != RS_OK )
             return( EXE_TYPE_UNKNOWN );
@@ -276,7 +275,7 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset )
             return( EXE_TYPE_NE_WIN );
         return( EXE_TYPE_UNKNOWN );
         break;
-    case PE_SIGNATURE:
+    case PE_EXE_SIGNATURE:
         return( EXE_TYPE_PE );
         break;
     case OSF_FLAT_LX_SIGNATURE:

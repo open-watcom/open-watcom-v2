@@ -126,7 +126,7 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
     }
 
     if( ok ) {
-        ok = !RESSEEK( fp, OS2_NE_OFFSET, SEEK_SET );
+        ok = !RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET );
     }
 
     /* check header offset */
@@ -161,7 +161,7 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
 
 bool WRIsHeaderValidWIN16( os2_exe_header *header )
 {
-    if( header->signature == OS2_SIGNATURE_WORD && header->expver >= 0x300 ) {
+    if( header->signature == NE_EXE_SIGNATURE && header->expver >= 0x300 ) {
         return( true );
     }
 
