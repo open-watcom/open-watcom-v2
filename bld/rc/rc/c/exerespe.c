@@ -800,7 +800,6 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     ResFileInfo         *errres;
     unsigned_32         file_align;
     exe_pe_header       *pehdr;
-    pe_hdr_dir_entry    *table;
 
     dir = &exe->u.PEInfo.Res;
 
@@ -854,10 +853,8 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     pehdr = exe->u.PEInfo.WinHead;
     if( IS_PE64( *pehdr ) ) {
         file_align = PE64( *pehdr ).file_align;
-        table = PE64( *pehdr ).table;
     } else {
         file_align = PE32( *pehdr ).file_align;
-        table = PE32( *pehdr ).table;
     }
     fillResourceObj( res_obj, dir, file_align );
     if( padObject( dir, exe, res_obj->physical_size ) ) {
@@ -866,8 +863,8 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     }
 
     /* set the resource element of the table in the header */
-    table[PE_TBL_RESOURCE].rva = res_obj->rva;
-    table[PE_TBL_RESOURCE].size = res_obj->physical_size;
+    PE_DIRECTORY( *pehdr, PE_TBL_RESOURCE ).rva = res_obj->rva;
+    PE_DIRECTORY( *pehdr, PE_TBL_RESOURCE ).size = res_obj->physical_size;
 
     FreePEResDir( dir );
 
@@ -885,18 +882,12 @@ bool RcBuildPEResourceObject( void )
     bool                error;
     ExeFileInfo         *exe;
     exe_pe_header       *pehdr;
-    pe_hdr_dir_entry    *table;
 
     exe = &Pass2Info.TmpFile;
     pehdr = exe->u.PEInfo.WinHead;
     if( CmdLineParms.NoResFile ) {
-        if( IS_PE64( *pehdr ) ) {
-            table = PE64( *pehdr ).table;
-        } else {
-            table = PE32( *pehdr ).table;
-        }
-        table[PE_TBL_RESOURCE].rva = 0;
-        table[PE_TBL_RESOURCE].size = 0;
+        PE_DIRECTORY( *pehdr, PE_TBL_RESOURCE ).rva = 0;
+        PE_DIRECTORY( *pehdr, PE_TBL_RESOURCE ).size = 0;
         error = false;
     } else {
         if( IS_PE64( *pehdr ) ) {

@@ -223,13 +223,11 @@ static void FillInExceptInfo( lib_load_info *llo )
     ReadProcessMemory( ProcessInfo.process_handle, llo->base + ne_header_off, &pehdr, sizeof( pehdr ), &bytes );
     if( IS_PE64( pehdr ) ) {
         llo->code_size = PE64( pehdr ).code_base + PE64( pehdr ).code_size;
-        llo->except_base = llo->base + PE64( pehdr ).table[PE_TBL_EXCEPTION].rva;
-        llo->except_size = PE64( pehdr ).table[PE_TBL_EXCEPTION].size;
     } else {
         llo->code_size = PE32( pehdr ).code_base + PE32( pehdr ).code_size;
-        llo->except_base = llo->base + PE32( pehdr ).table[PE_TBL_EXCEPTION].rva;
-        llo->except_size = PE32( pehdr ).table[PE_TBL_EXCEPTION].size;
     }
+    llo->except_base = llo->base + PE_DIRECTORY( pehdr, PE_TBL_EXCEPTION ).rva;
+    llo->except_size = PE_DIRECTORY( pehdr, PE_TBL_EXCEPTION ).size;
 }
 
 /*

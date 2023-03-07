@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,10 +284,10 @@ extern void         RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *p
 extern void         FreeMemList( MemListData *info );
 
 /* pefile.c */
-extern BOOL         GetSegmentList( ModuleNode *node );
+extern bool         GetSegmentList( ModuleNode *node );
 extern char         *GetModuleName( FILE *fp );
-extern BOOL         GetModuleSize( FILE *fp, DWORD *size );
-extern ObjectInfo   *GetModuleObjects( FILE *fp, DWORD *num_objects );
+extern bool         GetModuleSize( FILE *fp, DWORD *size );
+extern ObjectInfo   *GetModuleObjects( FILE *fp, unsigned *objects_num );
 
 /* disasm.c */
 extern bool         FindWatSymbol( address *addr, syminfo *si, bool getsrcinfo );

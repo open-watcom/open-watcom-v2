@@ -50,10 +50,10 @@ int __nullarea;
 #endif
 
 typedef union {
-        dos_exe_header  mz;
-        os2_exe_header  ne;
-        os2_flat_header lx;
-        pe_header       pe;
+    dos_exe_header      mz;
+    os2_exe_header      ne;
+    os2_flat_header     lx;
+    exe_pe_header       pe;
 } any_header;
 
 
@@ -496,8 +496,15 @@ static unsigned long ObjSize( pe_object *obj )
 static unsigned long RVAToPos( unsigned long rva, any_header *head, pe_object *obj )
 {
     unsigned    i;
-    for( i = 0; i < head->pe.num_objects; ++i ) {
-        if( rva >= obj[i].rva && rva < (obj[i].rva + ObjSize(&obj[i])) ) {
+    unsigned    num_objects;
+
+    if( IS_PE64( head->pe ) ) {
+        num_objects = PE64( head->pe ).num_objects;
+    } else {
+        num_objects = PE32( head->pe ).num_objects;
+    }
+    for( i = 0; i < num_objects; ++i ) {
+        if( rva >= obj[i].rva && rva < ( obj[i].rva + ObjSize( &obj[i] ) ) ) {
             return( rva - obj[i].rva + obj[i].physical_offset );
         }
     }
@@ -515,8 +522,8 @@ static char *CacheName( pe_export_info *exp, unsigned long rva )
       || memchr( &exp->name_cache[off], '\0', exp->cache_name_len - off ) == NULL ) {
         /* Name is not fully in the cache. Have to read it in. */
         exp->cache_name_rva = rva;
-        exp->cache_name_len = exp->head->pe.table[PE_TBL_EXPORT].rva +
-                              exp->head->pe.table[PE_TBL_EXPORT].size - rva;
+        exp->cache_name_len = PE_DIRECTORY( exp->head->pe, PE_TBL_EXPORT ).rva +
+                              PE_DIRECTORY( exp->head->pe, PE_TBL_EXPORT ).size - rva;
         if( exp->cache_name_len > NAME_CACHE_SIZE ) {
             exp->cache_name_len = NAME_CACHE_SIZE;
         }
@@ -542,6 +549,9 @@ static dip_status PEExportBlock( imp_image_handle *iih, pe_export_info *exp, uns
     unsigned long       exp_rva;
     char                *name;
     dip_status          ds;
+    unsigned            num_objects;
+    unsigned_32         export_rva;
+    unsigned_32         export_size;
 
     if( BSeek( exp->fp, exp->name_ptr_base, DIG_SEEK_ORG ) != exp->name_ptr_base ) {
         return( DS_ERR | DS_FSEEK_FAILED );
@@ -555,15 +565,22 @@ static dip_status PEExportBlock( imp_image_handle *iih, pe_export_info *exp, uns
     if( BRead( exp->fp, exp->ords, num * sizeof( unsigned_16 ) ) != num * sizeof( unsigned_16 ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
+    if( IS_PE64( exp->head->pe ) ) {
+        num_objects = PE64( exp->head->pe ).num_objects;
+    } else {
+        num_objects = PE32( exp->head->pe ).num_objects;
+    }
+    export_rva = PE_DIRECTORY( exp->head->pe, PE_TBL_EXPORT ).rva;
+    export_size = PE_DIRECTORY( exp->head->pe, PE_TBL_EXPORT ).size;
     for( i = 0; i < num; ++i ) {
         /* MS document lies about bias in export ordinal table! */
         exp_rva = exp->eat[exp->ords[i] /*- dir->ordinal_base*/];
-        if( exp_rva < exp->head->pe.table[PE_TBL_EXPORT].rva
-          || exp_rva >= (exp->head->pe.table[PE_TBL_EXPORT].rva+exp->head->pe.table[PE_TBL_EXPORT].size) ) {
+        if( exp_rva < export_rva
+          || exp_rva >= ( export_rva + export_size ) ) {
             /* not a forwarder entry */
-            for( j = 0; j < exp->head->pe.num_objects; ++j ) {
+            for( j = 0; j < num_objects; ++j ) {
                 if( exp_rva >= exp->obj[j].rva
-                  && exp_rva < (exp->obj[j].rva+ObjSize( &exp->obj[j] )) ) {
+                  && exp_rva < (exp->obj[j].rva + ObjSize( &exp->obj[j] )) ) {
                     /* found the object */
                     name = CacheName( exp, exp->name_ptrs[i] );
                     if( name == NULL ) {
@@ -583,6 +600,7 @@ static dip_status PEExportBlock( imp_image_handle *iih, pe_export_info *exp, uns
 static dip_status TryPE( FILE *fp, imp_image_handle *iih, any_header *head, unsigned_32 off )
 {
     unsigned            i;
+    unsigned            num_objects;
     pe_object           *obj;
     pe_export_directory dir;
     size_t              obj_size;
@@ -592,28 +610,30 @@ static dip_status TryPE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
     char                *name;
     unsigned            chunk;
 
-#define EXPORT_SIZE     head->pe.table[PE_TBL_EXPORT].size
-#define EXPORT_RVA      head->pe.table[PE_TBL_EXPORT].rva
-
-    if( EXPORT_SIZE == 0 )
+    if( PE_DIRECTORY( head->pe, PE_TBL_EXPORT ).size == 0 )
         return( DS_FAIL );
 
-    pos = head->pe.nt_hdr_size + offsetof( pe_header, magic ) + off;
+    pos = off + PE_SIZE( head->pe );
     if( BSeek( fp, pos, DIG_SEEK_ORG ) != pos ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    obj_size = head->pe.num_objects * sizeof( *obj );
+    if( IS_PE64( head->pe ) ) {
+        num_objects = PE64( head->pe ).num_objects;
+    } else {
+        num_objects = PE32( head->pe ).num_objects;
+    }
+    obj_size = num_objects * sizeof( *obj );
     obj = walloca( obj_size );
     if( BRead( fp, obj, obj_size ) != obj_size ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    for( i = 0; i < head->pe.num_objects; ++i ) {
+    for( i = 0; i < num_objects; ++i ) {
         ds = AddBlock( iih, i + 1, 0, ObjSize( &obj[i] ), (obj[i].flags & PE_OBJ_EXECUTABLE) != 0 );
         if( ds != DS_OK ) {
             return( ds );
         }
     }
-    pos = RVAToPos( EXPORT_RVA, head, obj );
+    pos = RVAToPos( PE_DIRECTORY( head->pe, PE_TBL_EXPORT ).rva, head, obj );
     if( BSeek( fp, pos, DIG_SEEK_ORG ) != pos ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }

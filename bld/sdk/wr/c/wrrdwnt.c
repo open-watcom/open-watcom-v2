@@ -223,16 +223,15 @@ bool WRIsHeaderValidWINNT( exe_pe_header *header )
 bool WRWinNTHeaderHasResourceTable( exe_pe_header *header )
 {
     int                 num_tables;
-    pe_hdr_dir_entry    *table;
 
     if( IS_PE64( *header ) ) {
         num_tables = PE64( *header ).num_tables;
-        table = PE64( *header ).table;
     } else {
         num_tables = PE32( *header ).num_tables;
-        table = PE32( *header ).table;
     }
-    return( num_tables > PE_TBL_RESOURCE && table[PE_TBL_RESOURCE].rva != 0 && table[PE_TBL_RESOURCE].size != 0 );
+    return( num_tables > PE_TBL_RESOURCE 
+            && PE_DIRECTORY( *header, PE_TBL_RESOURCE ).rva != 0 
+            && PE_DIRECTORY( *header, PE_TBL_RESOURCE ).size != 0 );
 }
 
 bool WRLoadWResDirFromWinNTEXE( FILE *fp, WResDir *dir )
@@ -241,7 +240,6 @@ bool WRLoadWResDirFromWinNTEXE( FILE *fp, WResDir *dir )
     pe_object           *otable;
     uint_32             physical_size;
     uint_32             physical_offset;
-    int                 i;
     bool                ok;
     unsigned_32         resource_rva;
 
@@ -273,17 +271,17 @@ bool WRLoadWResDirFromWinNTEXE( FILE *fp, WResDir *dir )
     /* find resource object in object table */
     resource_rva = 0;
     if( ok ) {
-        int         num_objects;
+        unsigned    num_objects;
+        unsigned    i;
         unsigned_32 file_align;
 
         physical_size = 0;
         physical_offset = 0;
+        resource_rva = PE_DIRECTORY( nt_header, PE_TBL_RESOURCE ).rva;
         if( IS_PE64( nt_header ) ) {
-            resource_rva = PE64( nt_header ).table[PE_TBL_RESOURCE].rva;
             num_objects = PE64( nt_header ).num_objects;
             file_align = PE64( nt_header ).file_align;
         } else {
-            resource_rva = PE32( nt_header ).table[PE_TBL_RESOURCE].rva;
             num_objects = PE32( nt_header ).num_objects;
             file_align = PE32( nt_header ).file_align;
         }

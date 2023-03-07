@@ -571,7 +571,7 @@ static int namecmp_exp( const void *pn1, const void *pn2 )
 }
 
 
-static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *table )
+static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *entry )
 /******************************************************************************************************/
 {
     unsigned_32         size;
@@ -659,8 +659,8 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     _LnkFree( sort );
     size = eat - object->rva;
     object->physical_size = __ROUND_UP_SIZE( size, file_align );
-    table[PE_TBL_EXPORT].size = size;
-    table[PE_TBL_EXPORT].rva = object->rva;
+    entry->size = size;
+    entry->rva = object->rva;
     return( size );
 }
 
@@ -696,7 +696,7 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
     return( size );
 }
 
-static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *table )
+static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *entry )
 /*****************************************************************************************************/
 /* dump the fixup table */
 {
@@ -730,8 +730,8 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
     PadLoad( sizeof( pe_fixup_header ) );
     size += sizeof( pe_fixup_header );
     object->physical_size = __ROUND_UP_SIZE( size, file_align );
-    table[PE_TBL_FIXUP].size = size - sizeof( pe_fixup_header );
-    table[PE_TBL_FIXUP].rva = object->rva;
+    entry->size = size - sizeof( pe_fixup_header );
+    entry->rva = object->rva;
     return( size );
 }
 
@@ -821,7 +821,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
 }
 
 static unsigned_32 WriteDebugTable( pe_object *object, const char *symfilename,
-                unsigned_32 file_align, unsigned_32 time_stamp, pe_hdr_dir_entry *table )
+                unsigned_32 file_align, unsigned_32 time_stamp, pe_hdr_dir_entry *entry )
 /***************************************************************************************/
 {
     debug_directory     dir;
@@ -866,8 +866,8 @@ static unsigned_32 WriteDebugTable( pe_object *object, const char *symfilename,
         WriteLoad( &dir, sizeof( debug_directory ) );
     }
 
-    table[PE_TBL_DEBUG].size = size;
-    table[PE_TBL_DEBUG].rva = object->rva;
+    entry->size = size;
+    entry->rva = object->rva;
     return( size );
 }
 
@@ -948,8 +948,8 @@ static bool SetPDataArray( void *_sdata, void *_array )
     return( false );
 }
 
-static void SetMiscTableEntries( pe_hdr_dir_entry *table )
-/********************************************************/
+static void SetMiscTableEntries( exe_pe_header *pehdr )
+/*****************************************************/
 {
     seg_leader  *leader;
     virt_mem    *sortarray;
@@ -957,13 +957,13 @@ static void SetMiscTableEntries( pe_hdr_dir_entry *table )
     unsigned    numpdatas;
     symbol      *sym;
 
-    SetLeaderTable( IDataGrpName, &table[PE_TBL_IMPORT] );
+    SetLeaderTable( IDataGrpName, &PE_DIRECTORY( *pehdr, PE_TBL_IMPORT ) );
     sym = FindISymbol( TLSSym );
     if( sym != NULL ) {
-        table[PE_TBL_THREAD].rva = FindLinearAddr( &sym->addr );
-        table[PE_TBL_THREAD].size = sym->p.seg->length;
+        PE_DIRECTORY( *pehdr, PE_TBL_THREAD ).rva = FindLinearAddr( &sym->addr );
+        PE_DIRECTORY( *pehdr, PE_TBL_THREAD ).size = sym->p.seg->length;
     }
-    leader = SetLeaderTable( CoffPDataSegName, &table[PE_TBL_EXCEPTION] );
+    leader = SetLeaderTable( CoffPDataSegName, &PE_DIRECTORY( *pehdr, PE_TBL_EXCEPTION ) );
     /* The .pdata section may end up being empty if the symbols got optimized out */
     if( leader != NULL && leader->size ) {
         numpdatas = leader->size / sizeof( procedure_descriptor );
@@ -1148,18 +1148,18 @@ void FiniPELoadFile( void )
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
         GenPETransferTable();
         WriteImportInfo();
-        SetMiscTableEntries( PE64( h ).table );
+        SetMiscTableEntries( &h );
         image_size = WriteDataPages( &h, object, file_align );
         tbl_obj = &object[NumGroups];
         if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
-            size = WriteExportInfo( tbl_obj, file_align, PE64( h ).table );
+            size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_EXPORT ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         if( LinkState & LS_MAKE_RELOCS ) {
             tbl_obj->rva = image_size;
-            size = WriteFixupInfo( tbl_obj, file_align, PE64( h ).table );
+            size = WriteFixupInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_FIXUP ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
@@ -1177,7 +1177,7 @@ void FiniPELoadFile( void )
         }
         if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
-            size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE64( h ).time_stamp, PE64( h ).table );
+            size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE64( h ).time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
@@ -1325,18 +1325,18 @@ void FiniPELoadFile( void )
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
         GenPETransferTable();
         WriteImportInfo();
-        SetMiscTableEntries( PE32( h ).table );
+        SetMiscTableEntries( &h );
         image_size = WriteDataPages( &h, object, file_align );
         tbl_obj = &object[NumGroups];
         if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
-            size = WriteExportInfo( tbl_obj, file_align, PE32( h ).table );
+            size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_EXPORT ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         if( LinkState & LS_MAKE_RELOCS ) {
             tbl_obj->rva = image_size;
-            size = WriteFixupInfo( tbl_obj, file_align, PE32( h ).table );
+            size = WriteFixupInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_FIXUP ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
@@ -1354,7 +1354,7 @@ void FiniPELoadFile( void )
         }
         if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
-            size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE32( h ).time_stamp, PE32( h ).table );
+            size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE32( h ).time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }

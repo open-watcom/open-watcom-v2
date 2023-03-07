@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,8 +319,8 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
         return( ds );
     }
 
-    debug_rva = buf.pe.table[PE_TBL_DEBUG].rva;
-    debug_len = buf.pe.table[PE_TBL_DEBUG].size;
+    debug_rva = PE_DIRECTORY( buf.pe, PE_TBL_DEBUG ).rva;
+    debug_len = PE_DIRECTORY( buf.pe, PE_TBL_DEBUG ).size;
     if( !debug_rva || !debug_len ) {
         return( DS_FAIL );
     }

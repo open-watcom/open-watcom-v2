@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,11 +95,10 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
 
     /* check for a resource object in the old exe */
     old_pehdr = old->u.PEInfo.WinHead;
+    old_res_rva = PE_DIRECTORY( *old_pehdr, PE_TBL_RESOURCE ).rva;
     if( IS_PE64( *old_pehdr ) ) {
-        old_res_rva = PE64( *old_pehdr ).table[PE_TBL_RESOURCE].rva;
         old_num_objects = PE64( *old_pehdr ).num_objects;
     } else {
-        old_res_rva = PE32( *old_pehdr ).table[PE_TBL_RESOURCE].rva;
         old_num_objects = PE32( *old_pehdr ).num_objects;
     }
     new_num_objects = old_num_objects;

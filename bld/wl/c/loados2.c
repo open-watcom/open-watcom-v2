@@ -172,23 +172,20 @@ static void ReadOldLib( void )
             }
         } else if( head.pe.pe32.signature == PE_EXE_SIGNATURE ) {
             unsigned            num_objects;
-            pe_hdr_dir_entry    *table;
 
             if( IS_PE64( head.pe ) ) {
                 num_objects = PE64( head.pe ).num_objects;
-                table = PE64( head.pe ).table;
             } else {
                 num_objects = PE32( head.pe ).num_objects;
-                table = PE32( head.pe ).table;
             }
             _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
             QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
             currobj = objects;
             for( ; num_objects > 0; --num_objects ) {
-                if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
+                if( currobj->rva == PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva ) {
                     QSeek( the_file, currobj->physical_offset, fname );
-                    table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
-                    ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
+                    PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva -= currobj->physical_offset;
+                    ReadPEExportTable( the_file, &PE_DIRECTORY( head.pe, PE_TBL_EXPORT ) );
                     break;
                 }
                 currobj++;

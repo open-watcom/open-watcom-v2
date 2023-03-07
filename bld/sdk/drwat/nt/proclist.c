@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,6 +222,7 @@ void AddModule( DWORD procid, FILE *fp, DWORD base, char *name )
     ProcNode    *process;
     ModuleNode  *new;
     ModuleNode  **cur;
+    unsigned    objects_num;
 
     process = FindProcess( procid );
     if( process != NULL ) {
@@ -241,7 +242,9 @@ void AddModule( DWORD procid, FILE *fp, DWORD base, char *name )
         if( !GetModuleSize( fp, &new->size ) ) {
             new->size = -1;
         }
-        new->objects = GetModuleObjects( fp, &new->num_objects );
+        objects_num = 0;
+        new->objects = GetModuleObjects( fp, &objects_num );
+        new->num_objects = objects_num;
     }
 }
 

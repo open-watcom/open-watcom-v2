@@ -81,14 +81,16 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
 {
     union {
         dos_exe_header  dos;
-        pe_header       pe;
+        exe_pe_header   pe;
     }                   hdr;
     pe_object           obj;
     unsigned_32         ne_header_off;
     unsigned_32         section_off;
     unsigned            i;
+    unsigned            num_objects;
     unsigned_32         debug_rva;
     debug_directory     dir;
+    unsigned_32         object_align;
 
     if( DCSeek( fp, 0, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
@@ -108,31 +110,41 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( DCSeek( fp, ne_header_off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DCRead( fp, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
+    if( DCRead( fp, &PE32( hdr.pe ), PE32_SIZE( hdr.pe ) ) != PE32_SIZE( hdr.pe ) ) {
         return( DS_FAIL );
     }
-    if( hdr.pe.signature != PE_EXE_SIGNATURE ) {
+    if( PE32( hdr.pe ).signature != PE_EXE_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( hdr.pe.table[PE_TBL_DEBUG].rva == 0 ) {
+    if( IS_PE64( hdr.pe ) ) {
+        if( DCRead( fp, &PE64( hdr.pe ), PE64_SIZE( hdr.pe ) ) != PE64_SIZE( hdr.pe ) ) {
+            return( DS_FAIL );
+        }
+    }
+    if( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva == 0 ) {
         return( DS_FAIL );
     }
-    debug_rva = (hdr.pe.table[PE_TBL_DEBUG].rva / hdr.pe.object_align)*
-                                hdr.pe.object_align;
+    if( IS_PE64( hdr.pe ) ) {
+        num_objects = PE64( hdr.pe ).num_objects;
+        object_align = PE64( hdr.pe ).object_align;
+    } else {
+        num_objects = PE32( hdr.pe ).num_objects;
+        object_align = PE32( hdr.pe ).object_align;
+    }
+    debug_rva = ( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva / object_align ) * object_align;
 
-    section_off = ne_header_off + offsetof( pe_header, flags ) +
-                        sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
+    section_off = ne_header_off + PE_SIZE( hdr.pe );
 
     if( DCSeek( fp, section_off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    for( i = 0; i < hdr.pe.num_objects; i++ ) {
+    for( i = 0; i < num_objects; i++ ) {
         if( DCRead( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( DS_ERR | DS_FREAD_FAILED );
         }
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
-                            hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
+                            PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva - debug_rva;
             if( DCSeek( fp, debug_rva, DIG_SEEK_ORG ) ) {
                 return( DS_ERR | DS_FSEEK_FAILED );
             }

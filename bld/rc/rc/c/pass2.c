@@ -789,7 +789,6 @@ static RcStatus updateDebugDirectory( void )
     size_t              read_size;
     unsigned            i;
     debug_directory     *entry;
-    pe_hdr_dir_entry    *old_table;
     exe_pe_header       *tmp_pehdr;
     exe_pe_header       *old_pehdr;
 
@@ -797,18 +796,9 @@ static RcStatus updateDebugDirectory( void )
     old = &Pass2Info.OldFile;
     tmp_pehdr = tmp->u.PEInfo.WinHead;
     old_pehdr = tmp->u.PEInfo.WinHead;
-    if( IS_PE64( *tmp_pehdr ) ) {
-        tmp_rva = PE64( *tmp_pehdr ).table[PE_TBL_DEBUG].rva;
-    } else {
-        tmp_rva = PE32( *tmp_pehdr ).table[PE_TBL_DEBUG].rva;
-    }
-    if( IS_PE64( *old_pehdr ) ) {
-        old_table = PE64( *old_pehdr ).table;
-    } else {
-        old_table = PE32( *old_pehdr ).table;
-    }
-    debug_size = old_table[PE_TBL_DEBUG].size;
-    old_rva = old_table[PE_TBL_DEBUG].rva;
+    tmp_rva = PE_DIRECTORY( *tmp_pehdr, PE_TBL_DEBUG ).rva;
+    debug_size = PE_DIRECTORY( *old_pehdr, PE_TBL_DEBUG ).size;
+    old_rva = PE_DIRECTORY( *old_pehdr, PE_TBL_DEBUG ).rva;
 
     if( old_rva == 0 )
         return( RS_OK );

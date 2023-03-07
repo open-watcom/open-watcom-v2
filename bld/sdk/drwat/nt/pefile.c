@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,64 +43,76 @@
 /*
  * seekRead
  */
-static BOOL seekRead( FILE *fp, DWORD offset, void *buf, DWORD size )
+static bool seekRead( FILE *fp, DWORD offset, void *buf, DWORD size )
 {
     if( DIGCli( Seek )( fp, offset, DIG_SEEK_ORG ) ) {
-        return( FALSE );
+        return( false );
     }
     if( DIGCli( Read )( fp, buf, size ) != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
  * getEXEHeader - verify that this is a PE executable and read the header
  */
-static BOOL getEXEHeader( FILE *fp, pe_header *hdr )
+static bool getEXEHeader( FILE *fp, exe_pe_header *pehdr )
 {
-    WORD        sig;
-    DWORD       nh_offset;
+    unsigned_16     data;
+    pe_signature    signature;
+    unsigned_32     ne_header_off;
 
-    if( !seekRead( fp, 0x00, &sig, sizeof( sig ) ) ) {
-        return( FALSE );
+    if( !seekRead( fp, 0x00, &data, sizeof( data ) ) ) {
+        return( false );
     }
-    if( sig != EXE_MZ ) {
-        return( FALSE );
-    }
-
-    if( !seekRead( fp, 0x3c, &nh_offset, sizeof( DWORD ) ) ) {
-        return( FALSE );
+    if( data != DOS_EXE_SIGNATURE ) {
+        return( false );
     }
 
-    if( !seekRead( fp, nh_offset, &sig, sizeof( sig ) ) ) {
-        return( FALSE );
+    if( !seekRead( fp, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
+        return( false );
     }
-    if( sig == EXE_PE ) {
-        if( !seekRead( fp, nh_offset, hdr, sizeof( pe_header ) ) ) {
-            return( FALSE );
+
+    if( !seekRead( fp, ne_header_off, &signature, sizeof( signature ) ) ) {
+        return( false );
+    }
+    if( signature == PE_EXE_SIGNATURE ) {
+        if( !seekRead( fp, ne_header_off, pehdr, PE32_SIZE( *pehdr ) ) ) {
+            return( false );
         }
-        return( TRUE );
+        if( IS_PE64( pehdr ) ) {
+            if( !seekRead( fp, ne_header_off, pehdr, PE64_SIZE( *pehdr ) ) ) {
+                return( false );
+            }
+        }
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
  * GetSegmentList
  */
-BOOL GetSegmentList( ModuleNode *node )
+bool GetSegmentList( ModuleNode *node )
 {
-    pe_header           header;
+    exe_pe_header       pehdr;
     pe_object           obj;
-    WORD                i;
+    unsigned            i;
+    unsigned            num_objects;
 
-    if( !getEXEHeader( node->fp, &header ) )
-        return( FALSE );
-    node->syminfo = MemAlloc( sizeof( SymInfoNode ) + header.num_objects * sizeof( SegInfo ) );
-    node->syminfo->segcnt = header.num_objects;
-    for( i = 0; i < header.num_objects; i++ ) {
+    if( !getEXEHeader( node->fp, &pehdr ) )
+        return( false );
+    if( IS_PE64( pehdr ) ) {
+        num_objects = PE64( pehdr ).num_objects;
+    } else {
+        num_objects = PE32( pehdr ).num_objects;
+    }
+    node->syminfo = MemAlloc( sizeof( SymInfoNode ) + num_objects * sizeof( SegInfo ) );
+    node->syminfo->segcnt = num_objects;
+    for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( node->fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
-            return( FALSE );
+            return( false );
         }
         node->syminfo->seginfo[i].segoff = obj.rva + node->base;
         if ( obj.flags & PE_OBJ_CODE ){
@@ -109,7 +121,7 @@ BOOL GetSegmentList( ModuleNode *node )
             node->syminfo->seginfo[i].code = FALSE;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -117,18 +129,24 @@ BOOL GetSegmentList( ModuleNode *node )
  */
 char *GetModuleName( FILE *fp )
 {
-    pe_header           header;
+    exe_pe_header       pehdr;
     pe_object           obj;
     pe_export_directory expdir;
     DWORD               export_rva;
-    DWORD               i;
     char                buf[_MAX_PATH];
     char                *ret;
+    unsigned            i;
+    unsigned            num_objects;
 
-    if( !getEXEHeader( fp, &header ) )
+    if( !getEXEHeader( fp, &pehdr ) )
         return( NULL );
-    export_rva = header.table[ PE_TBL_EXPORT ].rva;
-    for( i = 0; i < header.num_objects; i++ ) {
+    export_rva = PE_DIRECTORY( pehdr, PE_TBL_EXPORT ).rva;
+    if( IS_PE64( pehdr ) ) {
+        num_objects = PE64( pehdr ).num_objects;
+    } else {
+        num_objects = PE32( pehdr ).num_objects;
+    }
+    for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( NULL );
         }
@@ -136,7 +154,7 @@ char *GetModuleName( FILE *fp )
             break;
         }
     }
-    if( i == header.num_objects )
+    if( i == num_objects )
         return( NULL );
     if( !seekRead( fp, obj.physical_offset + export_rva - obj.rva , &expdir, sizeof( expdir ) ) ) {
         return( NULL );
@@ -149,32 +167,42 @@ char *GetModuleName( FILE *fp )
     return( ret );
 }
 
-BOOL GetModuleSize( FILE *fp, DWORD *size )
+bool GetModuleSize( FILE *fp, DWORD *size )
 {
-    pe_header           header;
+    exe_pe_header       pehdr;
 
-    if( !getEXEHeader( fp, &header ) )
-        return( FALSE );
-    *size = header.image_size;
-    return( TRUE );
+    if( !getEXEHeader( fp, &pehdr ) )
+        return( false );
+    if( IS_PE64( pehdr ) ) {
+        *size = PE64( pehdr ).image_size;
+    } else {
+        *size = PE32( pehdr ).image_size;
+    }
+    return( true );
 }
 
-ObjectInfo *GetModuleObjects( FILE *fp, DWORD *num_objects )
+ObjectInfo *GetModuleObjects( FILE *fp, unsigned *objects_num )
 {
-    pe_header           header;
+    exe_pe_header       pehdr;
     pe_object           obj;
     ObjectInfo          *ret;
-    DWORD               i;
+    unsigned            i;
+    unsigned            num_objects;
 
-    if( !getEXEHeader( fp, &header ) )
+    if( !getEXEHeader( fp, &pehdr ) )
         return( NULL );
-    ret = MemAlloc( header.num_objects * sizeof( ObjectInfo ) );
-    for( i = 0; i < header.num_objects; i++ ) {
+    if( IS_PE64( pehdr ) ) {
+        num_objects = PE64( pehdr ).num_objects;
+    } else {
+        num_objects = PE32( pehdr ).num_objects;
+    }
+    ret = MemAlloc( num_objects * sizeof( ObjectInfo ) );
+    for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( fp, &obj, sizeof( obj ) ) != sizeof( obj ) )
             break;
         ret[i].rva = obj.rva;
         strcpy( ret[i].name, obj.name );
     }
-    *num_objects = i;
+    *objects_num = i;
     return( ret );
 }

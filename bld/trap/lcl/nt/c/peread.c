@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,12 +165,11 @@ bool GetModuleName( HANDLE fhdl, char *name )
     if( seek_offset == INVALID_SET_FILE_POINTER ) {
         return( false );
     }
+    export_rva = PE_DIRECTORY( hi.u.peh, PE_TBL_EXPORT ).rva;
     if( IS_PE64( hi.u.peh ) ) {
-        export_rva = PE64( hi.u.peh ).table[PE_TBL_EXPORT].rva;
         num_objects = PE64( hi.u.peh ).num_objects;
         seek_offset += PE64( hi.u.peh ).nt_hdr_size + offsetof( pe_header64, magic ) - sizeof( exe_pe_header );
     } else {
-        export_rva = PE32( hi.u.peh ).table[PE_TBL_EXPORT].rva;
         num_objects = PE32( hi.u.peh ).num_objects;
         seek_offset += PE32( hi.u.peh ).nt_hdr_size + offsetof( pe_header, magic ) - sizeof( exe_pe_header );
     }
