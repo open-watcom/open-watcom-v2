@@ -32,6 +32,7 @@
 
 
 #include "drwatcom.h"
+#include "exedos.h"
 #include "exepe.h"
 #include "digcli.h"
 
@@ -81,7 +82,7 @@ static bool getEXEHeader( FILE *fp, exe_pe_header *pehdr )
         if( !seekRead( fp, ne_header_off, pehdr, PE32_SIZE( *pehdr ) ) ) {
             return( false );
         }
-        if( IS_PE64( pehdr ) ) {
+        if( IS_PE64( *pehdr ) ) {
             if( !seekRead( fp, ne_header_off, pehdr, PE64_SIZE( *pehdr ) ) ) {
                 return( false );
             }
