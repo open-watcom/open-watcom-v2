@@ -148,8 +148,8 @@
 
 #define IS_PE64(x)              (PE32(x).magic == 0x20b)
 
+#define PE(x,s)                 (*(IS_PE64(x) ? &(PE64(x).(s)) : &(PE32(x).(s))))
 #define PE_SIZE(x)              (IS_PE64(x) ? PE64_SIZE(x) : PE32_SIZE(x))
-
 #define PE_DIRECTORY(x,s)       (*(IS_PE64(x) ? (PE64(x).table + (s)) : (PE32(x).table + (s))))
 
 /*
