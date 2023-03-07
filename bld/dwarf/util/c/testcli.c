@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +145,7 @@ static void CLIFree( void *p ) {
 }
 
 
-void main( void )
+int  main( void )
 /***************/
 {
     dw_init_info        info;
@@ -164,7 +165,7 @@ void main( void )
         Client = DWInit( &info );
         if( Client == NULL ) {
             fputs( "error in DWInit()\n", stderr );
-            exit( 1 );
+            return( 1 );
         }
         seg = DWLocFini( Client, DWLocInit( Client ) );
         memset( &cuinfo, 0, sizeof( cuinfo ));
@@ -183,7 +184,7 @@ void main( void )
         DumpSections();
     } else {
         fputs( "fatal error %d in dwarf library\n", stderr );
-        exit( 1 );
+        return( 1 );
     }
-    exit( 0 );
+    return( 0 );
 }
