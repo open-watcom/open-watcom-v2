@@ -39,12 +39,6 @@
 #include "wdfunc.h"
 
 
-#define PE_RVA(t) \
-    (( IS_PE64( Pe_head ) ) ? PE64( Pe_head ).table[t].rva : PE32( Pe_head ).table[t].rva )
-
-#define PE_NUM_OBJECTS() \
-    (( IS_PE64( Pe_head ) ) ? PE64( Pe_head ).num_objects : PE32( Pe_head ).num_objects )
-
 #define IN_RANGE(r,o)       (r >= (o).rva && r < ((o).rva + (o).physical_size))
 
 #define PHYS_OFFSET(r,o)    ((o).physical_offset + r - (o).rva)
@@ -317,7 +311,11 @@ bool Dmp_pe_head( void )
         offset = New_exe_off + offsetof( pe_header, magic ) + PE32( Pe_head ).nt_hdr_size;
     }
     Wlseek( offset );
-    dmp_objects( PE_NUM_OBJECTS() );
+    if( IS_PE64( Pe_head ) ) {
+        dmp_objects( PE64( Pe_head ).num_objects );
+    } else {
+        dmp_objects( PE32( Pe_head ).num_objects );
+    }
     if( Exp_off != 0 ) {
         Dmp_exports();
     }
@@ -441,10 +439,10 @@ void dmp_objects( unsigned num_objects )
     pe_obj = Wmalloc( num_objects * sizeof(pe_object) );
     Wread( pe_obj, num_objects * sizeof(pe_object) );
     start = pe_obj;
-    export_rva = PE_RVA( PE_TBL_EXPORT );
-    import_rva = PE_RVA( PE_TBL_IMPORT );
-    resource_rva = PE_RVA( PE_TBL_RESOURCE );
-    fixup_rva = PE_RVA( PE_TBL_FIXUP );
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
+    import_rva = PE_DIRECTORY( Pe_head, PE_TBL_IMPORT ).rva;
+    resource_rva = PE_DIRECTORY( Pe_head, PE_TBL_RESOURCE ).rva;
+    fixup_rva = PE_DIRECTORY( Pe_head, PE_TBL_FIXUP ).rva;
     for( i = 1; i <= num_objects; i++ ) {
         Wdputs( "object " );
         Putdec( i );
@@ -519,13 +517,14 @@ bool Dmp_pe_tab( void )
         return( false );
     }
     Exp_off = 0;
-    export_rva = PE_RVA( PE_TBL_EXPORT );
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
     if( IS_PE64( Pe_head ) ) {
-        offset = New_exe_off  + sizeof( pe_header64 );
+        offset = New_exe_off + PE64_SIZE( Pe_head );
+        num_objects = PE64( Pe_head ).num_objects;
     } else {
-        offset = New_exe_off  + sizeof( pe_header );
+        offset = New_exe_off + PE32_SIZE( Pe_head );
+        num_objects = PE32( Pe_head ).num_objects;
     }
-    num_objects = PE_NUM_OBJECTS();
     for( i = 0; i < num_objects; i++ ) {
         Wlseek( offset );
         Wread( &pe_obj, sizeof( pe_object ) );

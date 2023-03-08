@@ -142,13 +142,15 @@
 #define PE_RESOURCE_MASK_ON     0x80000000
 
 #define PE32(x)                 (x).pe32
-#define PE32_SIZE(x)            sizeof(PE32(x))
 #define PE64(x)                 (x).pe64
-#define PE64_SIZE(x)            sizeof(PE64(x))
+#define PE32_SIZE(x)            sizeof(pe32_header)
+#define PE64_SIZE(x)            sizeof(pe64_header)
+#define PE32_OPT_SIZE(x)        (sizeof(pe32_header) - offsetof(pe32_header, magic))
+#define PE64_OPT_SIZE(x)        (sizeof(pe64_header) - offsetof(pe64_header, magic))
 
 #define IS_PE64(x)              (PE32(x).magic == 0x20b)
 
-#define PE(x,s)                 (*(IS_PE64(x) ? &(PE64(x).(s)) : &(PE32(x).(s))))
+#define PE(x,s)                 (*(IS_PE64(x) ? &(PE64(x).s) : &(PE32(x).s)))
 #define PE_SIZE(x)              (IS_PE64(x) ? PE64_SIZE(x) : PE32_SIZE(x))
 #define PE_DIRECTORY(x,s)       (*(IS_PE64(x) ? (PE64(x).table + (s)) : (PE32(x).table + (s))))
 
@@ -299,7 +301,7 @@ typedef struct {
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
     pe_hdr_dir_entry    table[PE_TBL_NUMBER];
-} pe_header;
+} pe_header, pe32_header;
 
 /*
  * PE32+ header structure
@@ -344,11 +346,11 @@ typedef struct {
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
     pe_hdr_dir_entry    table[PE_TBL_NUMBER];
-} pe_header64;
+} pe_header64, pe64_header;
 
 typedef union {
-    pe_header   pe32;
-    pe_header64 pe64;
+    pe32_header         pe32;
+    pe64_header         pe64;
 } exe_pe_header;
 
 /*

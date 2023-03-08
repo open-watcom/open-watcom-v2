@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +40,6 @@
 
 #include "clibext.h"
 
-
-#define PE_RVA(t) \
-    (( IS_PE64( Pe_head ) ) ? PE64( Pe_head ).table[t].rva : PE32( Pe_head ).table[t].rva )
 
 static  const_string_table pe_export_msg[] = {
     "4          export flags                      = ",
@@ -123,7 +120,7 @@ static void dmp_exp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off, unsigned
     Wdputslc( "\n" );
     Wdputslc( "  ordinal     name ptr        name\n" );
     Wdputslc( "  =======     ========        ====\n" );
-    export_rva = PE_RVA( PE_TBL_EXPORT );
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
     for( i = 0; i < num_ptr; i++ ) {
         Putdecl( ord_addr[i] + base, 6 );
         Wdputs( "        " );
@@ -212,7 +209,7 @@ static void dmp_imp_lookup( unsigned_32 offset )
 
 #define LMARG   "       "
 
-    import_rva = PE_RVA( PE_TBL_IMPORT );
+    import_rva = PE_DIRECTORY( Pe_head, PE_TBL_IMPORT ).rva;
     if( IS_PE64( Pe_head ) ) {
         Wdputslc( LMARG "import                   hint   name/ordinal\n" );
         Wdputslc( LMARG "======                   ====   ============\n" );
@@ -286,7 +283,7 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off, unsigned_32 
     ord_addr = Wmalloc( addr_size );
     Wread( ord_addr, addr_size );
     Wdputslc( "\n" );
-    export_rva = PE_RVA( PE_TBL_EXPORT );
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
     for( i = 0; i < num_ptr; i++ ) {
         Dump_asciiz( nam_addr[i] - export_rva + Exp_off );
         Wdputc( '.' );
@@ -311,7 +308,7 @@ void Dmp_exp_tab( void )
 
     Wlseek( Exp_off );
     Wread( &pe_export, sizeof( pe_export_directory ) );
-    export_rva = PE_RVA( PE_TBL_EXPORT );
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
     dmp_ord_name( pe_export.name_ptr_table_rva - export_rva + Exp_off,
             pe_export.ordinal_table_rva - export_rva + Exp_off,
             pe_export.num_name_ptrs, pe_export.ordinal_base );
@@ -330,7 +327,7 @@ void Dmp_exports( void )
     Wread( &pe_export, sizeof( pe_export_directory ) );
     Banner( "Export Directory Table" );
     Dump_header( (char *)&pe_export.flags, pe_export_msg, 4 );
-    export_rva = PE_RVA( PE_TBL_EXPORT );
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
     dmp_exp_addr( pe_export.address_table_rva - export_rva + Exp_off,
             pe_export.num_eat_entries, pe_export.ordinal_base );
     dmp_exp_ord_name( pe_export.name_ptr_table_rva - export_rva + Exp_off,
@@ -350,7 +347,7 @@ void Dmp_imports( void )
     unsigned_32             import_rva;
 
     offset = Imp_off;
-    import_rva = PE_RVA( PE_TBL_IMPORT );
+    import_rva = PE_DIRECTORY( Pe_head, PE_TBL_IMPORT ).rva;
     for( ;; ) {
         Wlseek( offset );
         Wread( &pe_import, sizeof( pe_import_directory ) );
