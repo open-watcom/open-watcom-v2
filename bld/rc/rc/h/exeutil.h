@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ extern RcStatus     CopyExeDataTilEOF( FILE *in_fp, FILE *out_fp );
 extern RcStatus     PadExeData( FILE *fp, long length );
 extern void         CheckDebugOffset( ExeFileInfo * info );
 extern RcStatus     SeekRead( FILE *fp, long newpos, void *buff, size_t size );
-extern ExeType      FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset );
+extern ExeType      FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off );
 extern unsigned_32  OffsetFromRVA( ExeFileInfo *info, pe_va rva );
 extern bool         RcPadFile( FILE *fp, size_t pad );
 

@@ -234,8 +234,8 @@ RcStatus SeekRead( FILE *fp, long newpos, void *buff, size_t size )
 /* information starts before the end of the address of the os2_exe_header */
 /* so this is not a valid windows EXE file. */
 
-ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset )
-/**********************************************************/
+ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off )
+/**************************************************************/
 /* Determine type of executable */
 {
     os2_exe_header  ne_header;
@@ -256,17 +256,17 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset )
         return( EXE_TYPE_UNKNOWN );
     }
 
-    rc = SeekRead( fp, NE_HEADER_OFFSET, nh_offset, sizeof( uint_32 ) );
+    rc = SeekRead( fp, NE_HEADER_OFFSET, ne_header_off, sizeof( *ne_header_off ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
-    rc = SeekRead( fp, *nh_offset, &data, sizeof( unsigned_16 ) );
+    rc = SeekRead( fp, *ne_header_off, &data, sizeof( data ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
     switch( data ) {
     case NE_EXE_SIGNATURE:
-        rc = SeekRead( fp, *nh_offset, &ne_header, sizeof( ne_header ) );
+        rc = SeekRead( fp, *ne_header_off, &ne_header, sizeof( ne_header ) );
         if( rc != RS_OK )
             return( EXE_TYPE_UNKNOWN );
         if( ne_header.target == TARGET_OS2 )
@@ -274,15 +274,11 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset )
         if( ne_header.target == TARGET_WINDOWS || ne_header.target == TARGET_WIN386 )
             return( EXE_TYPE_NE_WIN );
         return( EXE_TYPE_UNKNOWN );
-        break;
     case PE_EXE_SIGNATURE:
         return( EXE_TYPE_PE );
-        break;
     case OSF_FLAT_LX_SIGNATURE:
         return( EXE_TYPE_LX );
-        break;
     default:
         return( EXE_TYPE_UNKNOWN );
-        break;
     }
 } /* FindNEPEHeader */
