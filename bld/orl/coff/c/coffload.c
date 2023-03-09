@@ -443,21 +443,21 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     coff_sec_handle     coff_sec_hnd;
     coff_quantity       i;
     coff_quantity       num_sections;
-    pe_header           *pe_hdr;
+    exe_header          *exe_hdr;
     char                *PE;
     orl_file_offset     PEoffset = 0;
     coff_sec_size       *string_sec_size;
 
-    pe_hdr = _ClientRead( coff_file_hnd, 2 );
+    exe_hdr = _ClientRead( coff_file_hnd, 2 );
     _ClientSeek( coff_file_hnd, -2, SEEK_CUR );
-    if( pe_hdr->MZ[0] == 'M' && pe_hdr->MZ[1] == 'Z' ) {
-        pe_hdr = _ClientRead( coff_file_hnd, sizeof( pe_header ) );
-        _ClientSeek( coff_file_hnd, pe_hdr->offset - sizeof( pe_header ), SEEK_CUR );
+    if( exe_hdr->MZ[0] == 'M' && exe_hdr->MZ[1] == 'Z' ) {
+        exe_hdr = _ClientRead( coff_file_hnd, sizeof( exe_header ) );
+        _ClientSeek( coff_file_hnd, exe_hdr->ne_header_off - sizeof( exe_header ), SEEK_CUR );
         PE = _ClientRead( coff_file_hnd, 4 );
         if( PE[0] == 'P' && PE[1] == 'E' && PE[2] == '\0' && PE[3] == '\0' ) {
-            PEoffset = pe_hdr->offset + 4;
+            PEoffset = exe_hdr->ne_header_off + 4;
         } else {
-            _ClientSeek( coff_file_hnd, -(long)(pe_hdr->offset - 4), SEEK_CUR );
+            _ClientSeek( coff_file_hnd, SEEK_POSBACK( exe_hdr->ne_header_off - 4 ), SEEK_CUR );
         }
     }
     coff_file_hnd->f_hdr_buffer = _ClientRead( coff_file_hnd, sizeof( coff_file_header ) );

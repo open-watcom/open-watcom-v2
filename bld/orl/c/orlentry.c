@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +130,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
             }
             chksum = magic[0] + magic[1] + magic[2] + magic[3];
             magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, len );
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)( 4 + len ), SEEK_CUR ) ) {
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( 4 + len ), SEEK_CUR ) ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             if( magic != NULL ) {
@@ -190,7 +191,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
             if( magic == NULL ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)(offset+8), SEEK_CUR ) ) {
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( offset + 8 ), SEEK_CUR ) ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             machine_type = *(unsigned_16 *)magic;

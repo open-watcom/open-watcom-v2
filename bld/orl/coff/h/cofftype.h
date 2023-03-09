@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,12 +143,12 @@ ORL_STRUCT( coff_symbol_handle ) {
     boolbit             has_bf          : 1;
 };
 
-typedef struct pe_header_struct pe_header;
+typedef struct exe_header_struct exe_header;
 
-struct pe_header_struct {
+struct exe_header_struct {
     char        MZ[2];
     char        space[0x3a];
-    short       offset;
+    unsigned_32 ne_header_off;
 };
 
 typedef union pe_opt_hdr_struct pe_opt_hdr;
