@@ -145,8 +145,8 @@
 #define PE64(x)                 (x).pe64
 #define PE32_SIZE(x)            sizeof(pe32_header)
 #define PE64_SIZE(x)            sizeof(pe64_header)
-#define PE32_OPT_SIZE(x)        (sizeof(pe32_header) - offsetof(pe32_header, magic))
-#define PE64_OPT_SIZE(x)        (sizeof(pe64_header) - offsetof(pe64_header, magic))
+#define PE32_OPT_SIZE(x)        (PE32_SIZE(x) - offsetof(pe32_header, magic))
+#define PE64_OPT_SIZE(x)        (PE64_SIZE(x) - offsetof(pe64_header, magic))
 
 #define IS_PE64(x)              (PE32(x).magic == 0x20b)
 
@@ -253,8 +253,8 @@ typedef unsigned_32     pe_signature;
 typedef unsigned_32     pe_va;
 
 typedef struct {
-        pe_va           rva;
-        unsigned_32     size;
+    pe_va               rva;
+    unsigned_32         size;
 } pe_hdr_dir_entry;
 
 /*
@@ -351,7 +351,7 @@ typedef struct {
 typedef union {
     pe32_header         pe32;
     pe64_header         pe64;
-} exe_pe_header;
+} exe_pe_header, pe_exe_header;
 
 /*
  * PE object table structure
