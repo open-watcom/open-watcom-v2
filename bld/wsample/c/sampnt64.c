@@ -263,60 +263,60 @@ static void internalErrorMsg( int msg )
 /*
  * seekRead - seek to a specified spot in the file, and read some data
  */
-static BOOL seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
+static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 {
     int         rc;
     DWORD       bytes;
 
     if( SetFilePointer( handle, newpos, 0, SEEK_SET ) == INVALID_SET_FILE_POINTER ) {
-        return( FALSE );
+        return( false );
     }
     rc = ReadFile( handle, buff, size, &bytes, NULL );
     if( !rc ) {
-        return( FALSE );
+        return( false );
     }
     if( bytes != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* seekRead */
 
 /*
  * getPEHeader - get the header of the .EXE
  */
-static int getPEHeader( HANDLE handle, pe_header *peh )
+static bool getPEHeader( HANDLE handle, pe_header *peh )
 {
     WORD                data;
     WORD                sig;
     DWORD               ne_header_off;
 
     if( !seekRead( handle, 0x00, &data, sizeof( data ) ) ) {
-        return( FALSE );
+        return( false );
     }
-    if( data != DOS_EXE_SIGNATURE ) {
-        return( FALSE );
+    if( data != EXESIGN_DOS ) {
+        return( false );
     }
 
     if( !seekRead( handle, 0x18, &data, sizeof( data ) ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !seekRead( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !seekRead( handle, ne_header_off, &sig, sizeof( sig ) ) ) {
-        return( FALSE );
+        return( false );
     }
-    if( sig != PE_EXE_SIGNATURE ) {
-        return( FALSE );
+    if( sig != EXESIGN_PE ) {
+        return( false );
     }
 
     if( !seekRead( handle, ne_header_off, peh, sizeof( pe_header ) ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* getPEHeader */
 
@@ -516,7 +516,7 @@ static unsigned GetString( int unicode, LPVOID p, char *buff, unsigned max )
     return( len );
 }
 
-static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
+static bool GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
 {
     LPVOID      name;
     SIZE_T      len;
@@ -524,22 +524,22 @@ static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
 
     //NYI: spiffy up to scrounge around in the image
     if( ld->lpImageName == 0 )
-        return( FALSE );
+        return( false );
     ReadProcessMemory( processHandle, ld->lpImageName, &name, sizeof( name ), &len );
     if( len != sizeof( name ) )
-        return( FALSE );
+        return( false );
     if( name == 0 )
-        return( FALSE );
+        return( false );
     len = GetString( ld->fUnicode, name, buff, max );
     if( len == 0 )
-        return( FALSE );
+        return( false );
     if( ld->fUnicode ) {
         for( p = (wchar_t *)buff; *p != '\0'; ++p, ++buff ) {
             *buff = *p;
         }
         *buff = '\0';
     }
-    return( TRUE );
+    return( true );
 }
 
 

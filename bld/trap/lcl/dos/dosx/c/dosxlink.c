@@ -398,7 +398,7 @@ static const char *GetHelpName( const char *exe_name )
     if( TINY_OK( rc ) ) {
         handle = TINY_INFO( rc );
         TinyRead( handle, &head.dos, sizeof( head.dos ) );
-        if( head.dos.signature != DOS_EXE_SIGNATURE ) {
+        if( head.dos.signature != EXESIGN_DOS ) {
             TinyClose( handle );
         } else {
             TinySeek( handle, NE_HEADER_OFFSET, SEEK_SET );
@@ -407,8 +407,8 @@ static const char *GetHelpName( const char *exe_name )
             TinyRead( handle, &head.pe, sizeof( head.pe ) );
             TinyClose( handle );
             switch( head.pe.signature ) {
-            case PE_EXE_SIGNATURE:
-            case PL_EXE_SIGNATURE:
+            case EXESIGN_PE:
+            case EXESIGN_PL:
                 if( head.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
                     _DBG_Writeln( "Want PEDHELP" );
                     return( HELPNAME_DS );

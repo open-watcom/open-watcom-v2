@@ -72,7 +72,7 @@ imp_header *ReadInImp( FILE *fp )
 
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) )
         return( NULL );
-    if( hdr.signature != REX_EXE_SIGNATURE )
+    if( hdr.signature != EXESIGN_REX )
         return( NULL );
     hdr_size = hdr.hdr_size * 16;
     size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;

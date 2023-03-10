@@ -398,7 +398,7 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 
-    if( (header = get_header( arg.ifile )) == NULL || (header->signature != DOS_EXE_SIGNATURE) ) {
+    if( (header = get_header( arg.ifile )) == NULL || (header->signature != EXESIGN_DOS) ) {
         printf( "Error. %s has no valid exe-header.\n", arg.iname );
         return( EXIT_FAILURE );
     }

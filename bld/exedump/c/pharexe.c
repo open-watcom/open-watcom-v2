@@ -359,12 +359,12 @@ bool Dmp_phar_head( void )
         Banner( "Pharlap EXE Header" );
         Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg, 4 );
     }
-    if( Phar_head.signature == REX_EXE_SIGNATURE ) {
+    if( Phar_head.signature == EXESIGN_REX ) {
         Banner( "Pharlap REX Header" );
         Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg, 4 );
         dmp_rex_reloc();
     }
-    if( Phar_head.signature == SIMPLE_SIGNATURE || Phar_head.signature == REX_EXE_SIGNATURE ) {
+    if( Phar_head.signature == SIMPLE_SIGNATURE || Phar_head.signature == EXESIGN_REX ) {
         if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
             offset = Phar_head.hdr_size * 16;
             Wdputslc( "\n" );

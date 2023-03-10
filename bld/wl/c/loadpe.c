@@ -1033,7 +1033,7 @@ void FiniPELoadFile( void )
     if( LinkState & LS_HAVE_X64_CODE ) {
         head_size = sizeof( pe_header64 );
         PE64( h ).magic = 0x20b;
-        PE64( h ).signature = PE_EXE_SIGNATURE;
+        PE64( h ).signature = EXESIGN_PE;
         PE64( h ).cpu_type = PE_CPU_AMD64;
         PE64( h ).num_objects = num_objects;
         PE64( h ).time_stamp = (unsigned_32)time( NULL );
@@ -1188,9 +1188,9 @@ void FiniPELoadFile( void )
         head_size = sizeof( pe_header );
         PE32( h ).magic = 0x10b;
         if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
-            PE32( h ).signature = PL_EXE_SIGNATURE;
+            PE32( h ).signature = EXESIGN_PL;
         } else {
-            PE32( h ).signature = PE_EXE_SIGNATURE;
+            PE32( h ).signature = EXESIGN_PE;
         }
         switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
         case LS_HAVE_ALPHA_CODE:
@@ -1454,7 +1454,7 @@ static unsigned_32 getStubSize( void )
             _ChkAlloc( FmtData.u.os2fam.stub_file_name, len );
             memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
-            if( dosheader.signature == DOS_EXE_SIGNATURE ) {
+            if( dosheader.signature == EXESIGN_DOS ) {
                 code_start = dosheader.hdr_size * 16ul;
                 read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
                 // make sure reloc_size is a multiple of 16.

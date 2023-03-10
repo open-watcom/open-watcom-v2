@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,6 +98,7 @@ typedef struct {
 
 #define ELF_SIGNATURE   "\177ELF"
 #define ELF_SIGNATURE_LEN 4
+
 #define ELFMAG0         '\177'  // bytes of signature
 #define ELFMAG1         'E'     // bytes of signature
 #define ELFMAG2         'L'     // bytes of signature
@@ -422,13 +424,13 @@ typedef struct {
 
 // r_info field contents
 
-#define ELF32_R_SYM(i)  ((i)>>8)                // gets the symbol index
-#define ELF32_R_TYPE(i) ((unsigned_8)(i))       // gets the symbol type
-#define ELF32_R_INFO(s,t) (((s)<<8)+(unsigned_8)(t))    // make a new r_info
+#define ELF32_R_SYM(i)          ((i)>>8)                        // gets the symbol index
+#define ELF32_R_TYPE(i)         ((unsigned_8)(i))               // gets the symbol type
+#define ELF32_R_INFO(s,t)       (((s)<<8)+(unsigned_8)(t))      // make a new r_info
 
-#define ELF64_R_SYM(i)  ((i)>>32)               // gets the symbol index
-#define ELF64_R_TYPE(i) ((i)&0xffffffffL)       // gets the symbol type
-#define ELF64_R_INFO(s,t) (((s)<<32)+((t)&0xffffffffL)) // make a new r_info
+#define ELF64_R_SYM(i)          ((i)>>32)                       // gets the symbol index
+#define ELF64_R_TYPE(i)         ((i)&0xffffffffL)               // gets the symbol type
+#define ELF64_R_INFO(s,t)       (((s)<<32)+((t)&0xffffffffL))   // make a new r_info
 
 // relocation types.
 //386

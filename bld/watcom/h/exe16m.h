@@ -54,8 +54,6 @@
 
 #define D16M_USER_SEL   0x80        /* first user selector (user_gdt << 3) */
 
-#define DOS16M_SIGNATURE    EXESIGN_BW  /* 'BW' */
-
 /*
  * the values for the exp_flags field.
  */

@@ -698,7 +698,7 @@ static dip_status TryStub( FILE *fp, imp_image_handle *iih )
     default:
         return( DS_FAIL );
     }
-    if( head.mz.signature != DOS_EXE_SIGNATURE )
+    if( head.mz.signature != EXESIGN_DOS )
         return( DS_FAIL );
     if( head.mz.reloc_offset < (NE_HEADER_OFFSET + sizeof( ne_header_off )) )
         return( DS_FAIL );
@@ -715,15 +715,15 @@ static dip_status TryStub( FILE *fp, imp_image_handle *iih )
         return( DS_ERR | DS_FREAD_FAILED );
     }
     switch( head.ne.signature ) {
-    case NE_EXE_SIGNATURE:
+    case EXESIGN_NE:
         /* Hey, it's an NE executable */
         return( TryNE( fp, iih, &head, ne_header_off ) );
-    case OSF_FLAT_SIGNATURE:
-    case OSF_FLAT_LX_SIGNATURE:
+    case EXESIGN_LE:
+    case EXESIGN_LX:
         /* Hey, it's an LX/LE executable */
         return( TryLX( fp, iih, &head, ne_header_off ) );
-    case PE_EXE_SIGNATURE:
-    case PL_EXE_SIGNATURE:
+    case EXESIGN_PE:
+    case EXESIGN_PL:
         /* Hey, it's a PE executable (or Pharlap's variant of it) */
         return( TryPE( fp, iih, &head, ne_header_off ) );
     }

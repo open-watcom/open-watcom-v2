@@ -488,11 +488,11 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
         switch( head.signature ) {
         case SIMPLE_SIGNATURE:      // 'MP'
-        case REX_EXE_SIGNATURE:     // 'MQ'
+        case EXESIGN_REX:           // 'MQ'
         case EXTENDED_SIGNATURE:    // 'P3'
             return( EXE_PHARLAP_SIMPLE );
-        case DOS_EXE_SIGNATURE:         // 'MZ'
-            if( head.reloc_offset == OS2_EXE_HEADER_FOLLOWS )
+        case EXESIGN_DOS:           // 'MZ'
+            if( NE_HEADER_FOLLOWS( head.reloc_offset ) )
                 return( EXE_OS2 );
             return( EXE_DOS );
         default:
@@ -628,7 +628,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
               && TINY_OK( TinyFarRead( handle, &os2_head, sizeof( os2_head ) ) ) ) {
                 if( os2_head.signature == RAT_SIGNATURE_WORD ) {
                     exe = EXE_RATIONAL_386;
-                } else if( os2_head.signature == NE_EXE_SIGNATURE ) {
+                } else if( os2_head.signature == EXESIGN_NE ) {
                     NumSegments = os2_head.segments;
                     SegTable = ne_header_off + os2_head.segment_off;
                     if( os2_head.align == 0 )

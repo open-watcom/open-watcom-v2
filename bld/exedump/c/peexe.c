@@ -216,10 +216,10 @@ bool Dmp_pe_head( void )
     Wlseek( New_exe_off );
     Wread( &signature, sizeof( signature ) );
     switch( signature ) {
-    case PE_EXE_SIGNATURE:
+    case EXESIGN_PE:
         Banner( "Windows NT EXE Header" );
         break;
-    case PL_EXE_SIGNATURE:
+    case EXESIGN_PL:
         Banner( "PharLap TNT DosStyle Header" );
         break;
     default:
@@ -227,7 +227,7 @@ bool Dmp_pe_head( void )
     }
     Wlseek( New_exe_off );
     Wread( &Pe_head, sizeof( pe_header ) );
-    if( signature == PE_EXE_SIGNATURE && IS_PE64( Pe_head ) ) {
+    if( signature == EXESIGN_PE && IS_PE64( Pe_head ) ) {
         Wlseek( New_exe_off );
         Wread( &Pe_head, sizeof( pe_header64 ) );
     }
@@ -279,7 +279,7 @@ bool Dmp_pe_head( void )
         Puthex( tbl_entry->rva, 8 );
         Wdputs( "H    size = " );
         Puthex( tbl_entry->size, 8 );
-        if( signature == PE_EXE_SIGNATURE ) {
+        if( signature == EXESIGN_PE ) {
             switch( i ) {
             case 0: Wdputslc( "H   (Export Directory)\n" ); break;
             case 1: Wdputslc( "H   (Import Directory)\n" ); break;
@@ -495,10 +495,10 @@ bool Dmp_pe_tab( void )
     unsigned_32     num_objects;
 
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
-    if( Dos_head.hdr.signature != DOS_EXE_SIGNATURE ) {
+    if( Dos_head.hdr.signature != EXESIGN_DOS ) {
         return( false );
     }
-    if( Dos_head.hdr.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
+    if( !NE_HEADER_FOLLOWS( Dos_head.hdr.reloc_offset ) ) {
         return( false );
     }
     Wlseek( NE_HEADER_OFFSET );
@@ -510,8 +510,8 @@ bool Dmp_pe_tab( void )
         Wread( &Pe_head, sizeof( pe_header64 ) );
     }
     switch( PE32( Pe_head ).signature ) {
-    case PE_EXE_SIGNATURE:
-    case PL_EXE_SIGNATURE:
+    case EXESIGN_PE:
+    case EXESIGN_PL:
         break;
     default:
         return( false );

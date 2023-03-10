@@ -503,9 +503,9 @@ void FiniOS2FlatLoadFile( void )
         exe_head.debug_len = debug_size;
     }
     if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
-        exe_head.signature = OSF_FLAT_SIGNATURE;
+        exe_head.signature = EXESIGN_LE;
     } else {
-        exe_head.signature = OSF_FLAT_LX_SIGNATURE;
+        exe_head.signature = EXESIGN_LX;
     }
     exe_head.byte_order = OSF_386_BYTE_ORDER;
     exe_head.word_order = OSF_386_WORD_ORDER;

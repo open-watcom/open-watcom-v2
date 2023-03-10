@@ -245,7 +245,7 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off )
     rc = SeekRead( fp, 0, &data, sizeof( data ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
-    if( data != DOS_EXE_SIGNATURE )
+    if( data != EXESIGN_DOS )
         return( EXE_TYPE_UNKNOWN );
 
     rc = SeekRead( fp, DOS_RELOCATION_OFFSET, &data, sizeof( data ) );
@@ -265,7 +265,7 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off )
         return( EXE_TYPE_UNKNOWN );
 
     switch( data ) {
-    case NE_EXE_SIGNATURE:
+    case EXESIGN_NE:
         rc = SeekRead( fp, *ne_header_off, &ne_header, sizeof( ne_header ) );
         if( rc != RS_OK )
             return( EXE_TYPE_UNKNOWN );
@@ -274,9 +274,9 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off )
         if( ne_header.target == TARGET_WINDOWS || ne_header.target == TARGET_WIN386 )
             return( EXE_TYPE_NE_WIN );
         return( EXE_TYPE_UNKNOWN );
-    case PE_EXE_SIGNATURE:
+    case EXESIGN_PE:
         return( EXE_TYPE_PE );
-    case OSF_FLAT_LX_SIGNATURE:
+    case EXESIGN_LX:
         return( EXE_TYPE_LX );
     default:
         return( EXE_TYPE_UNKNOWN );

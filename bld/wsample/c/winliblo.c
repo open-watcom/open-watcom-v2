@@ -148,13 +148,13 @@ static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
     handle = open( name,O_BINARY | O_RDONLY );
     if( handle >= 0 ) {
         read( handle, &doshdr, sizeof( doshdr ) );
-        if( doshdr.signature == DOS_EXE_SIGNATURE ) {
+        if( doshdr.signature == EXESIGN_DOS ) {
             lseek( handle, doshdr.file_size * 512L - (-doshdr.mod_size & 0x1ff), SEEK_SET );
         } else {
             lseek( handle, 0, SEEK_SET );
         }
         read( handle, &nehdr, sizeof( nehdr ) );
-        if( nehdr.signature == NE_EXE_SIGNATURE ) {
+        if( nehdr.signature == EXESIGN_NE ) {
             numsegs = nehdr.segments;
             if( numsegs > 8192 ) {
                 // must not really be a valid OS2 sig.

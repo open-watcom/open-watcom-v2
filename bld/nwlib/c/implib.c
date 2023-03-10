@@ -34,6 +34,7 @@
 #include "ar.h"
 #include "coff.h"
 #include "roundmac.h"
+#include "exedos.h"
 
 #include "clibext.h"
 
@@ -1008,7 +1009,7 @@ bool AddImport( arch_header *arch, libfile io )
     ok = ( LibRead( io, &signature, sizeof( signature ) ) == sizeof( signature ) );
     if( ok ) {
         header_offset = 0;
-        if( signature == DOS_EXE_SIGNATURE ) {
+        if( signature == EXESIGN_DOS ) {
             header_offset = NE_HEADER_OFFSET;
             LibSeek( io, header_offset, SEEK_SET );
             ok = ( LibRead( io, &offset, sizeof( offset ) ) == sizeof( offset ) );
@@ -1019,13 +1020,13 @@ bool AddImport( arch_header *arch, libfile io )
             }
         }
         if( ok ) {
-            if( signature == OSF_FLAT_SIGNATURE ) {
+            if( signature == EXESIGN_LE ) {
                 os2FlatAddImport( arch, io, header_offset );
-            } else if( signature == OSF_FLAT_LX_SIGNATURE ) {
+            } else if( signature == EXESIGN_LX ) {
                 os2FlatAddImport( arch, io, header_offset );
-            } else if( signature == NE_EXE_SIGNATURE ) {
+            } else if( signature == EXESIGN_NE ) {
                 os2AddImport( arch, io, header_offset );
-            } else if( signature == PE_EXE_SIGNATURE ) {
+            } else if( signature == EXESIGN_PE ) {
                 peAddImport( arch, io, header_offset );
             } else if( header_offset ) {
                 ok = false;

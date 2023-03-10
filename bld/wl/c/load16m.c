@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -314,7 +314,7 @@ void Fini16MLoadFile( void )
     DBIWrite();
 
     SeekLoad( 0 );
-    _HostU16toTarg( DOS16M_SIGNATURE, exe_head.signature );
+    _HostU16toTarg( EXESIGN_DOS16M, exe_head.signature );
     temp = hdr_size / 16U;
     _HostU16toTarg( exe_size % 512U, exe_head.last_page_bytes );
     temp = ( exe_size + 511U ) / 512U;

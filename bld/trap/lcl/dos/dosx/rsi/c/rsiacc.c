@@ -450,7 +450,7 @@ static void GetObjectInfo( char *name )
     if( handle == -1 )
         return;
     read( handle, &head.dos, sizeof( head.dos ) );
-    if( head.dos.signature != DOS_EXE_SIGNATURE ) {
+    if( head.dos.signature != EXESIGN_DOS ) {
         close( handle );
         return;
     }
@@ -459,8 +459,8 @@ static void GetObjectInfo( char *name )
     lseek( handle, ne_header_off, SEEK_SET );
     read( handle, &head.os2, sizeof( head.os2 ) );
     switch( head.os2.signature ) {
-    case OSF_FLAT_SIGNATURE:
-    case OSF_FLAT_LX_SIGNATURE:
+    case EXESIGN_LE:
+    case EXESIGN_LX:
         lseek( handle, head.os2.objtab_off + ne_header_off, SEEK_SET );
         NumObjects = head.os2.num_objects;
         ObjInfo = realloc( ObjInfo, NumObjects * sizeof( *ObjInfo ) );

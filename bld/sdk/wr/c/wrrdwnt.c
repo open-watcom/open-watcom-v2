@@ -214,9 +214,9 @@ bool WRIsHeaderValidWINNT( exe_pe_header *header )
 {
     /* at some point will we have to check the CPUTYPE ????!!!! */
     if( IS_PE64( *header ) ) {
-        return( PE64( *header ).signature == PE_EXE_SIGNATURE );
+        return( PE64( *header ).signature == EXESIGN_PE );
     } else {
-        return( PE32( *header ).signature == PE_EXE_SIGNATURE );
+        return( PE32( *header ).signature == EXESIGN_PE );
     }
 }
 

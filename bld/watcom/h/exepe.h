@@ -36,10 +36,6 @@
 #include "exesigns.h"
 
 
-#define PE_EXE_SIGNATURE    EXESIGN_PE
-#define PL_EXE_SIGNATURE    EXESIGN_PL
-#define PX_EXE_SIGNATURE    EXESIGN_PX
-
 /*
  * Linker major/minor version numbers
  */

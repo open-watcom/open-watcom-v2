@@ -599,7 +599,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
             return( 0 );
         }
-        if( hi.sig != EXE_PE ) {
+        if( hi.sig != EXESIGN_PE ) {
             return( 0 );
         }
 

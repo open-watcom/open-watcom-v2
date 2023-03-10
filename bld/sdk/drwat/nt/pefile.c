@@ -37,10 +37,6 @@
 #include "digcli.h"
 
 
-#define EXE_PE  0x4550
-#define EXE_NE  0x454e
-#define EXE_MZ  0x5a4d
-
 /*
  * seekRead
  */
@@ -67,7 +63,7 @@ static bool getEXEHeader( FILE *fp, exe_pe_header *pehdr )
     if( !seekRead( fp, 0x00, &data, sizeof( data ) ) ) {
         return( false );
     }
-    if( data != DOS_EXE_SIGNATURE ) {
+    if( data != EXESIGN_DOS ) {
         return( false );
     }
 
@@ -78,7 +74,7 @@ static bool getEXEHeader( FILE *fp, exe_pe_header *pehdr )
     if( !seekRead( fp, ne_header_off, &signature, sizeof( signature ) ) ) {
         return( false );
     }
-    if( signature == PE_EXE_SIGNATURE ) {
+    if( signature == EXESIGN_PE ) {
         if( !seekRead( fp, ne_header_off, pehdr, PE32_SIZE( *pehdr ) ) ) {
             return( false );
         }

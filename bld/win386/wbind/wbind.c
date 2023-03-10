@@ -446,7 +446,7 @@ int main( int argc, char *argv[] )
         fread( &rex_header_off, 1, sizeof( rex_header_off ), in.fp );
         fseek( in.fp, rex_header_off, SEEK_SET );
         fread( &rexhdr, 1, sizeof( rexhdr ), in.fp );
-        if( rexhdr.signature != REX_EXE_SIGNATURE ) {
+        if( rexhdr.signature != EXESIGN_REX ) {
             fclose( in.fp );
             doError( "Not a bound Open Watcom 32-bit Windows application" );
         }

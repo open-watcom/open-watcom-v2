@@ -98,7 +98,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( DCRead( fp, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( hdr.dos.signature != DOS_EXE_SIGNATURE ) {
+    if( hdr.dos.signature != EXESIGN_DOS ) {
         return( DS_FAIL );
     }
     if( DCSeek( fp, NE_HEADER_OFFSET, DIG_SEEK_ORG ) ) {
@@ -113,7 +113,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( DCRead( fp, &PE32( hdr.pe ), PE32_SIZE( hdr.pe ) ) != PE32_SIZE( hdr.pe ) ) {
         return( DS_FAIL );
     }
-    if( PE32( hdr.pe ).signature != PE_EXE_SIGNATURE ) {
+    if( PE32( hdr.pe ).signature != EXESIGN_PE ) {
         return( DS_FAIL );
     }
     if( IS_PE64( hdr.pe ) ) {

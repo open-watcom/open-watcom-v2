@@ -116,7 +116,7 @@ static void WritePharSimple( unsigned_32 start )
     if( FmtData.type & MK_PHAR_SIMPLE ) {
         _HostU16toTarg( SIMPLE_SIGNATURE, header.signature );
     } else {
-        _HostU16toTarg( REX_EXE_SIGNATURE, header.signature );
+        _HostU16toTarg( EXESIGN_REX, header.signature );
     }
     _HostU16toTarg( file_size % 512U, header.mod_size );
     _HostU16toTarg( (file_size + 511U) / 512U, header.file_size );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -368,7 +368,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
             goto error_exit;
         }
-        if( hi.sig == EXE_PE ) {
+        if( hi.sig == EXESIGN_PE ) {
             if( IS_PE64( hi.u.peh ) ) {
                 DebugeeSubsystem = PE64( hi.u.peh ).subsystem;
             } else {
@@ -381,7 +381,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
                 cr_flags |= CREATE_NEW_CONSOLE;
             }
 #if !( MADARCH & MADARCH_X64 )
-        } else if( hi.sig == EXE_NE ) {
+        } else if( hi.sig == EXESIGN_NE ) {
             IsWOW = true;
             /*
              * find out the pid of WOW, if it is already running.

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,7 @@ int Dmp_dos_head( void )
 /**********************/
 {
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
-    if( Dos_head.hdr.signature != DOS_EXE_SIGNATURE ) {
+    if( Dos_head.hdr.signature != EXESIGN_DOS ) {
         return( 0 );
     }
     Dos_head.load_len = Dos_head.hdr.file_size * 0x200 - (-Dos_head.hdr.mod_size & 0x1ff);
@@ -116,15 +116,14 @@ int Dmp_dos_head( void )
      * the DOS exe in any way. If the file is larger than what the DOS EXE header
      * suggests, we may have a DOS/16M executable.
      */
-    if( Dos_head.hdr.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
+    if( !NE_HEADER_FOLLOWS( Dos_head.hdr.reloc_offset ) ) {
         if( Dos_head.load_len !=  WFileSize() ) {
             Wdputslc( "Additional file data follows DOS executable.\n\n" );
             New_exe_off = Dos_head.load_len;
             return( 3 );
-        } else {
-            Wdputslc( "No New Executable header.\n" );
-            return( 1 );
         }
+        Wdputslc( "No New Executable header.\n" );
+        return( 1 );
     }
     Wlseek( NE_HEADER_OFFSET );
     Wread( &New_exe_off, sizeof( New_exe_off ) );

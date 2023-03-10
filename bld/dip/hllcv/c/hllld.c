@@ -499,15 +499,15 @@ static dip_status TryFindInImage( imp_image_handle *iih )
     /*
      * LE/LX executable - Use the debug_off/len members of the header.
      */
-    if( buf.sig_16 == OSF_FLAT_LX_SIGNATURE
-     || buf.sig_16 == OSF_FLAT_SIGNATURE ) {
+    if( buf.sig_16 == EXESIGN_LX
+     || buf.sig_16 == EXESIGN_LE ) {
         return( FindHLLInLXImage( iih, nh_off ) );
     }
 
     /*
      * PE executable - Use or scan the debug directory.
      */
-    if( buf.sig_32 == PE_SIGNATURE ) {
+    if( buf.sig_32 == EXESIGN_PE ) {
         return( FindHLLInPEImage( iih, nh_off ) );
     }
 
@@ -515,7 +515,7 @@ static dip_status TryFindInImage( imp_image_handle *iih )
      * NE and MZ executables do not contain any special information
      * in the header. TryFindTrailer() will have to pick up the debug data.
      */
-    if( (buf.sig_16 == OS2_SIGNATURE_WORD) || have_mz_header ) {
+    if( (buf.sig_16 == EXESIGN_NE) || have_mz_header ) {
         iih->is_32bit = 0;
     }
 

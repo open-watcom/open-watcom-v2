@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -307,7 +308,7 @@ bool Dmp_d16m_head( void )
     retval = false;
     Wlseek( New_exe_off );
     Wread( &dos16m_head, sizeof( dos16m_head.hdr ) );
-    for( ; dos16m_head.hdr.signature == DOS16M_SIGNATURE; ) {
+    for( ; dos16m_head.hdr.signature == EXESIGN_DOS16M; ) {
         dos16m_head.load_len = (unsigned_32)dos16m_head.hdr.pages_in_file * 0x200 - (-dos16m_head.hdr.last_page_bytes & 0x1ff);
         retval = true;
         Banner( "DOS/16M EXE Header - BW" );

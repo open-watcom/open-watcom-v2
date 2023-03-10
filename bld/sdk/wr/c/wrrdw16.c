@@ -161,7 +161,7 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
 
 bool WRIsHeaderValidWIN16( os2_exe_header *header )
 {
-    if( header->signature == NE_EXE_SIGNATURE && header->expver >= 0x300 ) {
+    if( header->signature == EXESIGN_NE && header->expver >= 0x300 ) {
         return( true );
     }
 

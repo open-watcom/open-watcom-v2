@@ -71,7 +71,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     if( !SeekRead( handle, 0x00, &data, sizeof( data ) ) ) {
         return( false );
     }
-    if( data != EXE_MZ ) {
+    if( data != EXESIGN_MZ ) {
         return( false );
     }
 
@@ -90,11 +90,11 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
         sig = 0;
     }
     hi->sig = sig;
-    if( sig == EXE_PE ) {
+    if( sig == EXESIGN_PE ) {
         return( SeekRead( handle, nh_offset, &hi->u.peh, sizeof( exe_pe_header ) ) );
     }
 #if MADARCH & MADARCH_X86
-    if( sig == EXE_NE ) {
+    if( sig == EXESIGN_NE ) {
         if( !SeekRead( handle, nh_offset, &hi->u.neh, sizeof( os2_exe_header ) ) ) {
             return( false );
         }
@@ -129,7 +129,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
         }
         return( false );
     }
-    hi->sig = EXE_MZ;
+    hi->sig = EXESIGN_DOS;
     return( true );
 #elif MADARCH & MADARCH_X64
     /* unused parameters */ (void)stack;
@@ -158,7 +158,7 @@ bool GetModuleName( HANDLE fhdl, char *name )
     if( !GetEXEHeader( fhdl, &hi, &stack ) ) {
         return( false );
     }
-    if( hi.sig != EXE_PE ) {
+    if( hi.sig != EXESIGN_PE ) {
         return( false );
     }
     seek_offset = SetFilePointer( fhdl, 0, NULL, FILE_CURRENT );

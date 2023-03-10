@@ -140,8 +140,8 @@ bool readExeHeaders( ExeFile *exeFile )
         return( false );
     }
     fseek( exeFile->file, prevPos, SEEK_SET );
-    if( exeFile->pexHdr.signature != PE_EXE_SIGNATURE &&
-        exeFile->pexHdr.signature != PL_EXE_SIGNATURE ) {
+    if( exeFile->pexHdr.signature != EXESIGN_PE &&
+        exeFile->pexHdr.signature != EXESIGN_PL ) {
         printf( ERR_READ_NOT_PE_EXE );
         return( false );
     } else {
