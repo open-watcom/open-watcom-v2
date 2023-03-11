@@ -91,7 +91,13 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     }
     hi->sig = sig;
     if( sig == EXESIGN_PE ) {
-        return( SeekRead( handle, nh_offset, &hi->u.peh, sizeof( pe_exe_header ) ) );
+        DWORD      bytes;
+
+        if( !SeekRead( handle, nh_offset, &hi->u.peh, PE_HDR_SIZE ) 
+          || !ReadFile( handle, (char *)&hi->u.peh + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.peh ), &bytes, NULL ) ) {
+            return( false );
+        }
+        return( true );
     }
 #if MADARCH & MADARCH_X86
     if( sig == EXESIGN_NE ) {
@@ -166,16 +172,11 @@ bool GetModuleName( HANDLE fhdl, char *name )
         return( false );
     }
     export_rva = PE_DIRECTORY( hi.u.peh, PE_TBL_EXPORT ).rva;
-    if( IS_PE64( hi.u.peh ) ) {
-        num_objects = PE64( hi.u.peh ).num_objects;
-        seek_offset += PE64_SIZE( hi.u.peh );
-    } else {
-        num_objects = PE32( hi.u.peh ).num_objects;
-        seek_offset += PE32_SIZE( hi.u.peh );
-    }
+    num_objects = hi.u.peh.fheader.num_objects;
     if( num_objects == 0 ) {
         return( false );
     }
+    seek_offset += PE_SIZE( hi.u.peh );
     /* position to begining of object table */
     if( SetFilePointer( fhdl, seek_offset, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
         return( false );

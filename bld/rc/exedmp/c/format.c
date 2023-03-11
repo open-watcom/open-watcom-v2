@@ -306,11 +306,11 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
     if( param->dumpExeHeaderInfo ) {
         printf( MSG_PE_HEADER );
         printRuler( false, false, param );
-        printf( MSG_PE_SIGNATURE ,              PE( exeFile->pexHdr, signature ) );
-        printf( MSG_PE_CPUTYPE ,                PE( exeFile->pexHdr, cpu_type ) );
+        printf( MSG_PE_SIGNATURE ,              exeFile->pexHdr.signature );
+        printf( MSG_PE_CPUTYPE ,                exeFile->pexHdr.fheader.cpu_type );
         count = cpu_masks_table[0];
         for( i = 1; i <= count; i++ ) {
-            if( PE( exeFile->pexHdr, cpu_type ) == cpu_masks_table[i] ) {
+            if( exeFile->pexHdr.fheader.cpu_type == cpu_masks_table[i] ) {
                 printf( MSG_PE_CPUTYPETEXT, cpu_flags_labels[i] );
                 break;
             }
@@ -318,13 +318,13 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
         if( i > count ) {
             printf( MSG_PE_CPUTYPENOTRECOGNIZED );
         }
-        printf( MSG_PE_NUMOBJECTS ,             PE( exeFile->pexHdr, num_objects ) );
-        printf( MSG_PE_TIMESTAMP ,              PE( exeFile->pexHdr, time_stamp ) );
-        printf( MSG_PE_SYMTABLE ,               PE( exeFile->pexHdr, sym_table ) );
-        printf( MSG_PE_NUMSYMS ,                PE( exeFile->pexHdr, num_syms ) );
-        printf( MSG_PE_NTHDRSIZE ,              PE( exeFile->pexHdr, nt_hdr_size ) );
-        printf( MSG_PE_FLAGS ,                  PE( exeFile->pexHdr, flags ) );
-        printFlags( PE( exeFile->pexHdr, flags ),
+        printf( MSG_PE_NUMOBJECTS ,             exeFile->pexHdr.fheader.num_objects );
+        printf( MSG_PE_TIMESTAMP ,              exeFile->pexHdr.fheader.time_stamp );
+        printf( MSG_PE_SYMTABLE ,               exeFile->pexHdr.fheader.sym_table );
+        printf( MSG_PE_NUMSYMS ,                exeFile->pexHdr.fheader.num_symbols );
+        printf( MSG_PE_NTHDRSIZE ,              exeFile->pexHdr.fheader.opt_hdr_size );
+        printf( MSG_PE_FLAGS ,                  exeFile->pexHdr.fheader.flags );
+        printFlags( exeFile->pexHdr.fheader.flags,
                     hdr_masks_table, hdr_flags_labels,
                     MSG_PE_FLAGSINDENT );
         printf( MSG_PE_MAGIC ,                  PE( exeFile->pexHdr, magic ) );

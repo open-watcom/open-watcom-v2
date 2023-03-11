@@ -57,13 +57,10 @@ static bool seekRead( FILE *fp, DWORD offset, void *buf, DWORD size )
 static bool getEXEHeader( FILE *fp, pe_exe_header *pehdr )
 {
     unsigned_16     data;
-    pe_signature    signature;
     unsigned_32     ne_header_off;
 
-    if( !seekRead( fp, 0x00, &data, sizeof( data ) ) ) {
-        return( false );
-    }
-    if( data != EXESIGN_DOS ) {
+    if( !seekRead( fp, 0, &data, sizeof( data ) )
+      || data != EXESIGN_DOS ) {
         return( false );
     }
 
@@ -71,21 +68,14 @@ static bool getEXEHeader( FILE *fp, pe_exe_header *pehdr )
         return( false );
     }
 
-    if( !seekRead( fp, ne_header_off, &signature, sizeof( signature ) ) ) {
+    if( !seekRead( fp, ne_header_off, pehdr, PE_HDR_SIZE )
+      || pehdr->signature != EXESIGN_PE ) {
         return( false );
     }
-    if( signature == EXESIGN_PE ) {
-        if( !seekRead( fp, ne_header_off, pehdr, PE32_SIZE( *pehdr ) ) ) {
-            return( false );
-        }
-        if( IS_PE64( *pehdr ) ) {
-            if( !seekRead( fp, ne_header_off, pehdr, PE64_SIZE( *pehdr ) ) ) {
-                return( false );
-            }
-        }
-        return( true );
-    }
-    return( false );
+
+    if( !seekRead( fp, ne_header_off + PE_HDR_SIZE, pehdr + PE_HDR_SIZE, PE_SIZE( *pehdr ) ) )
+        return( false );
+    return( true );
 }
 
 /*
@@ -100,11 +90,7 @@ bool GetSegmentList( ModuleNode *node )
 
     if( !getEXEHeader( node->fp, &pehdr ) )
         return( false );
-    if( IS_PE64( pehdr ) ) {
-        num_objects = PE64( pehdr ).num_objects;
-    } else {
-        num_objects = PE32( pehdr ).num_objects;
-    }
+    num_objects = pehdr.fheader.num_objects;
     node->syminfo = MemAlloc( sizeof( SymInfoNode ) + num_objects * sizeof( SegInfo ) );
     node->syminfo->segcnt = num_objects;
     for( i = 0; i < num_objects; i++ ) {
@@ -138,11 +124,7 @@ char *GetModuleName( FILE *fp )
     if( !getEXEHeader( fp, &pehdr ) )
         return( NULL );
     export_rva = PE_DIRECTORY( pehdr, PE_TBL_EXPORT ).rva;
-    if( IS_PE64( pehdr ) ) {
-        num_objects = PE64( pehdr ).num_objects;
-    } else {
-        num_objects = PE32( pehdr ).num_objects;
-    }
+    num_objects = pehdr.fheader.num_objects;
     for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( NULL );
@@ -170,11 +152,7 @@ bool GetModuleSize( FILE *fp, DWORD *size )
 
     if( !getEXEHeader( fp, &pehdr ) )
         return( false );
-    if( IS_PE64( pehdr ) ) {
-        *size = PE64( pehdr ).image_size;
-    } else {
-        *size = PE32( pehdr ).image_size;
-    }
+    *size = PE( pehdr, image_size );
     return( true );
 }
 
@@ -188,11 +166,7 @@ ObjectInfo *GetModuleObjects( FILE *fp, unsigned *objects_num )
 
     if( !getEXEHeader( fp, &pehdr ) )
         return( NULL );
-    if( IS_PE64( pehdr ) ) {
-        num_objects = PE64( pehdr ).num_objects;
-    } else {
-        num_objects = PE32( pehdr ).num_objects;
-    }
+    num_objects = pehdr.fheader.num_objects;
     ret = MemAlloc( num_objects * sizeof( ObjectInfo ) );
     for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( fp, &obj, sizeof( obj ) ) != sizeof( obj ) )

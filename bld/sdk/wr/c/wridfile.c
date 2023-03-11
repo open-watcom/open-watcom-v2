@@ -196,13 +196,9 @@ static bool IdentifyWinExeHeader( FILE *fh, bool win16 )
                 return( WRIsHeaderValidWIN16( &os2_hdr ) );
             }
         } else {
-            ok = ( fread( &PE32( pe_hdr ), 1, PE32_SIZE( pe_hdr ), fh ) == PE32_SIZE( pe_hdr ) );
-            if( ok && IS_PE64( pe_hdr ) ) {
-                /* seek to the header again */
-                ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
-                if( ok ) {
-                    ok = ( fread( &PE64( pe_hdr ), 1, PE64_SIZE( pe_hdr ), fh ) == PE64_SIZE( pe_hdr ) );
-                }
+            ok = ( fread( &pe_hdr, 1, PE_HDR_SIZE, fh ) == PE_HDR_SIZE );
+            if( ok ) {
+                ok = ( fread( (char *)&pe_hdr + PE_HDR_SIZE, 1, PE_OPT_SIZE( pe_hdr ), fh ) == PE_OPT_SIZE( pe_hdr ) );
             }
             /* check for valid Win32 EXE */
             if( ok ) {

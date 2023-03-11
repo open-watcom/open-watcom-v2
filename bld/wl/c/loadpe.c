@@ -82,6 +82,11 @@
 
 #define STUB_ALIGN              8           /* for PE format */
 
+#define PE32_OPT_SIZE           sizeof(pe32_opt_header)
+#define PE64_OPT_SIZE           sizeof(pe64_opt_header)
+#define PE32_SIZE               (PE_HDR_SIZE + PE32_OPT_SIZE)
+#define PE64_SIZE               (PE_HDR_SIZE + PE64_OPT_SIZE)
+
 /* RDOS OS default major/minor version numbers */
 #define PE_RDOS_OS_MAJOR        8
 #define PE_RDOS_OS_MINOR        8
@@ -1031,25 +1036,25 @@ void FiniPELoadFile( void )
     num_objects = FindNumObjects();
     memset( &h, 0, sizeof( h ) ); /* zero all header fields */
     if( LinkState & LS_HAVE_X64_CODE ) {
-        head_size = PE64_SIZE( h );
+        h.signature = EXESIGN_PE;
+        head_size = PE64_SIZE;
         PE64( h ).magic = 0x20b;
-        PE64( h ).signature = EXESIGN_PE;
-        PE64( h ).cpu_type = PE_CPU_AMD64;
-        PE64( h ).num_objects = num_objects;
-        PE64( h ).time_stamp = (unsigned_32)time( NULL );
-        PE64( h ).nt_hdr_size = PE64_OPT_SIZE( h );
-        PE64( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE | PE_FLG_LARGE_ADDRESS_AWARE;
+        h.fheader.cpu_type = PE_CPU_AMD64;
+        h.fheader.num_objects = num_objects;
+        h.fheader.time_stamp = (unsigned_32)time( NULL );
+        h.fheader.opt_hdr_size = PE64_OPT_SIZE;
+        h.fheader.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE | PE_FLG_LARGE_ADDRESS_AWARE;
         if( FmtData.u.pe.nolargeaddressaware ) {
-            PE64( h ).flags &= ~PE_FLG_LARGE_ADDRESS_AWARE;
+            h.fheader.flags &= ~PE_FLG_LARGE_ADDRESS_AWARE;
         }
         if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
-            PE64( h ).flags |= PE_FLG_RELOCS_STRIPPED;
+            h.fheader.flags |= PE_FLG_RELOCS_STRIPPED;
         }
         if( (LinkState & LS_LINK_ERROR) == 0 ) {
-            PE64( h ).flags |= PE_FLG_IS_EXECUTABLE;
+            h.fheader.flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {
-            PE64( h ).flags |= PE_FLG_LIBRARY;
+            h.fheader.flags |= PE_FLG_LIBRARY;
             if( FmtData.u.os2fam.flags & INIT_INSTANCE_FLAG ) {
                 PE64( h ).dll_flags |= PE_DLL_PERPROC_INIT;
             } else if( FmtData.u.os2fam.flags & INIT_THREAD_FLAG ) {
@@ -1177,7 +1182,7 @@ void FiniPELoadFile( void )
         }
         if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
-            size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE64( h ).time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
+            size = WriteDebugTable( tbl_obj, SymFileName, file_align, h.fheader.time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
@@ -1185,45 +1190,45 @@ void FiniPELoadFile( void )
         PE64( h ).image_size = image_size;
         PE64( h ).header_size = object->physical_offset;
     } else {
-        head_size = PE32_SIZE( h );
-        PE32( h ).magic = 0x10b;
         if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
-            PE32( h ).signature = EXESIGN_PL;
+            h.signature = EXESIGN_PL;
         } else {
-            PE32( h ).signature = EXESIGN_PE;
+            h.signature = EXESIGN_PE;
         }
+        head_size = PE32_SIZE;
+        PE32( h ).magic = 0x10b;
         switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
         case LS_HAVE_ALPHA_CODE:
-            PE32( h ).cpu_type = PE_CPU_ALPHA;
+            h.fheader.cpu_type = PE_CPU_ALPHA;
             break;
         case LS_HAVE_MIPS_CODE:     // TODO
-//            PE32( h ).cpu_type = PE_CPU_MIPS_R3000;
-            PE32( h ).cpu_type = PE_CPU_MIPS_R4000;
+//            h.fheader.cpu_type = PE_CPU_MIPS_R3000;
+            h.fheader.cpu_type = PE_CPU_MIPS_R4000;
             break;
         case LS_HAVE_PPC_CODE:
-            PE32( h ).cpu_type = PE_CPU_POWERPC;
+            h.fheader.cpu_type = PE_CPU_POWERPC;
             break;
         case LS_HAVE_X86_CODE:
-            PE32( h ).cpu_type = PE_CPU_386;
+            h.fheader.cpu_type = PE_CPU_386;
             break;
         default:
             break;
         }
-        PE32( h ).num_objects = num_objects;
-        PE32( h ).time_stamp = (unsigned_32)time( NULL );
-        PE32( h ).nt_hdr_size = PE32_OPT_SIZE( h );
-        PE32( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
+        h.fheader.num_objects = num_objects;
+        h.fheader.time_stamp = (unsigned_32)time( NULL );
+        h.fheader.opt_hdr_size = PE32_OPT_SIZE;
+        h.fheader.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
         if( FmtData.u.pe.largeaddressaware ) {
-            PE32( h ).flags |= PE_FLG_LARGE_ADDRESS_AWARE;
+            h.fheader.flags |= PE_FLG_LARGE_ADDRESS_AWARE;
         }
         if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
-            PE32( h ).flags |= PE_FLG_RELOCS_STRIPPED;
+            h.fheader.flags |= PE_FLG_RELOCS_STRIPPED;
         }
         if( (LinkState & LS_LINK_ERROR) == 0 ) {
-            PE32( h ).flags |= PE_FLG_IS_EXECUTABLE;
+            h.fheader.flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {
-            PE32( h ).flags |= PE_FLG_LIBRARY;
+            h.fheader.flags |= PE_FLG_LIBRARY;
             if( FmtData.u.os2fam.flags & INIT_INSTANCE_FLAG ) {
                 PE32( h ).dll_flags |= PE_DLL_PERPROC_INIT;
             } else if( FmtData.u.os2fam.flags & INIT_THREAD_FLAG ) {
@@ -1354,7 +1359,7 @@ void FiniPELoadFile( void )
         }
         if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
-            size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE32( h ).time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
+            size = WriteDebugTable( tbl_obj, SymFileName, file_align, h.fheader.time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
@@ -1477,9 +1482,9 @@ unsigned long GetPEHeaderSize( void )
     num_objects = FindNumObjects();
     size = __ROUND_UP_SIZE( getStubSize(), STUB_ALIGN ) + num_objects * sizeof( pe_object );
     if( LinkState & LS_HAVE_X64_CODE ) {
-        size += PE64_SIZE( 0 );
+        size += PE64_SIZE;
     } else {
-        size += PE32_SIZE( 0 );
+        size += PE32_SIZE;
     }
     return( __ROUND_UP_SIZE( size, FmtData.objalign ) );
 }

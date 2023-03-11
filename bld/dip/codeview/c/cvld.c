@@ -85,7 +85,6 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     }                   hdr;
     pe_object           obj;
     unsigned_32         ne_header_off;
-    unsigned_32         section_off;
     unsigned            i;
     unsigned            num_objects;
     unsigned_32         debug_rva;
@@ -110,34 +109,17 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( DCSeek( fp, ne_header_off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DCRead( fp, &PE32( hdr.pe ), PE32_SIZE( hdr.pe ) ) != PE32_SIZE( hdr.pe ) ) {
+    if( DCRead( fp, &hdr.pe, PE_HDR_SIZE ) != PE_HDR_SIZE
+      || hdr.pe.signature != EXESIGN_PE
+      || DCRead( fp, (char *)&hdr.pe + PE_HDR_SIZE, PE_OPT_SIZE( hdr.pe ) ) != PE_OPT_SIZE( hdr.pe ) ) {
         return( DS_FAIL );
-    }
-    if( PE32( hdr.pe ).signature != EXESIGN_PE ) {
-        return( DS_FAIL );
-    }
-    if( IS_PE64( hdr.pe ) ) {
-        if( DCRead( fp, &PE64( hdr.pe ), PE64_SIZE( hdr.pe ) ) != PE64_SIZE( hdr.pe ) ) {
-            return( DS_FAIL );
-        }
     }
     if( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva == 0 ) {
         return( DS_FAIL );
     }
-    if( IS_PE64( hdr.pe ) ) {
-        num_objects = PE64( hdr.pe ).num_objects;
-        object_align = PE64( hdr.pe ).object_align;
-    } else {
-        num_objects = PE32( hdr.pe ).num_objects;
-        object_align = PE32( hdr.pe ).object_align;
-    }
+    num_objects = hdr.pe.fheader.num_objects;
+    object_align = PE( hdr.pe, object_align );
     debug_rva = ( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva / object_align ) * object_align;
-
-    section_off = ne_header_off + PE_SIZE( hdr.pe );
-
-    if( DCSeek( fp, section_off, DIG_SEEK_ORG ) ) {
-        return( DS_ERR | DS_FSEEK_FAILED );
-    }
     for( i = 0; i < num_objects; i++ ) {
         if( DCRead( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( DS_ERR | DS_FREAD_FAILED );

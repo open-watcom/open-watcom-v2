@@ -340,7 +340,7 @@ static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_ki
     if( !getPEHeader( handle, &peh ) ) {
         return;
     }
-    for( i = 0; i < PE( peh, num_objects ); i++ ) {
+    for( i = 0; i < peh.fheader.num_objects; i++ ) {
         ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
         if( obj.flags & (PE_OBJ_CODE | PE_OBJ_EXECUTABLE) ) {
             seg = _FP_SEG( codeLoad );

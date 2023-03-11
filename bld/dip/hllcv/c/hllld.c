@@ -38,6 +38,16 @@
 #include "exeos2.h"
 
 
+typedef union {
+    char            signature[HLL_SIG_SIZE]; /* ASSUMES >= 4 */
+    unsigned_16     signature16;
+    unsigned_32     signature32;
+    pe_exe_header   pe;
+    pe_object       sh;
+    hll_tailer      hdr;
+    debug_directory dbg_dir;
+}               hll_buf;
+
 /* WD looks for this symbol to determine module bitness */
 int __nullarea;
 #ifdef __WATCOMC__
@@ -149,18 +159,18 @@ static dip_status LoadDirectory( imp_image_handle *iih, unsigned long offent )
  * Checks for HLL signature.
  * (BUF must pointer to 4 valid bytes.)
  */
-static bool IsHllSignature( void *buf )
+static bool IsHllSignature( hll_trailer *hdr )
 {
-    return( !memcmp( buf, HLL_NB04, HLL_SIG_SIZE )
-         || !memcmp( buf, HLL_NB02, HLL_SIG_SIZE )
-         || !memcmp( buf, HLL_NB00, HLL_SIG_SIZE ) );
+    return( !memcmp( hdr, HLL_NB04, HLL_SIG_SIZE )
+         || !memcmp( hdr, HLL_NB02, HLL_SIG_SIZE )
+         || !memcmp( hdr, HLL_NB00, HLL_SIG_SIZE ) );
 }
 
 /*
  * Validates the signatures of a HLL debug info block, determining
  * the length if necessary.
  */
-static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
+static dip_status FoundHLLSignature( imp_image_handle *iih, unsigned long off,
                                 unsigned long size )
 {
     dip_status          ds;
@@ -180,7 +190,7 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
      * Read the directory info - both to verify it and to find the trailer.
      */
     off_dirent = off + hdr.offset;
-    if( !memcmp( hdr.sig, HLL_NB04, HLL_SIG_SIZE ) ) {
+    if( !memcmp( hdr.signature, HLL_NB04, HLL_SIG_SIZE ) ) {
         hll_dirinfo     dir_hdr;
 
         ds = DCReadAt( iih->sym_fp, &dir_hdr, sizeof( dir_hdr ), off_dirent );
@@ -226,7 +236,7 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
             cur = off + size;
         }
 
-        hdr.sig[0] = 0;
+        hdr.signature[0] = 0;
         do {
             char        buf[1024 + sizeof( hdr )];
             size_t      to_read;
@@ -248,10 +258,8 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
             }
 
             /* search it */
-            for( ptr = &buf[to_read - sizeof( hdr )];
-                 ptr >= &buf[0];
-                 ptr--) {
-                if( IsHllSignature(ptr) ) {
+            for( ptr = &buf[to_read - sizeof( hdr )]; ptr >= &buf[0]; ptr-- ) {
+                if( IsHllSignature( (hll_trailer *)ptr ) ) {
                     off_trailer = cur + ptr - &buf[0];
                     hdr = *(hll_trailer *)ptr;
                     break;
@@ -260,7 +268,7 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
 
             /* next */
             overlap = sizeof( hdr );
-        } while( hdr.sig[0] == 0 );
+        } while( hdr.signature[0] == 0 );
     }
 
     /*
@@ -276,11 +284,11 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
      */
     iih->bias = off;
     iih->size = off_trailer - off + sizeof( hdr );
-    if( !memcmp( hdr.sig, HLL_NB04, HLL_SIG_SIZE ) ) {
+    if( !memcmp( hdr.signature, HLL_NB04, HLL_SIG_SIZE ) ) {
         iih->format_lvl = HLL_LVL_NB04;
-    } else if( !memcmp( hdr.sig, HLL_NB02, HLL_SIG_SIZE ) ) {
+    } else if( !memcmp( hdr.signature, HLL_NB02, HLL_SIG_SIZE ) ) {
         iih->format_lvl = HLL_LVL_NB02;
-    } else if( !memcmp( hdr.sig, HLL_NB00, HLL_SIG_SIZE ) ) {
+    } else if( !memcmp( hdr.signature, HLL_NB00, HLL_SIG_SIZE ) ) {
         iih->format_lvl = iih->is_32bit ? HLL_LVL_NB00_32BIT : HLL_LVL_NB00;
     } else {
         hllConfused();
@@ -296,7 +304,7 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
 /*
  * Deals with 32-bit PE images.
  */
-static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off )
+static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long ne_header_off )
 {
     dip_status          ds;
     unsigned_32         debug_rva;
@@ -304,17 +312,14 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
     unsigned_32         image_base;
     unsigned            i;
     unsigned_32         sh_off;
-    union {
-        char            sig[HLL_SIG_SIZE]; /* ASSUMES >= 4 */
-        unsigned_16     sig_16;
-        unsigned_32     sig_32;
-        pe_header       pe;
-        pe_object       sh;
-        debug_directory dbg_dir;
-    }                   buf;
+    hll_buf             buf;
 
     /* read the header */
-    ds = DCReadAt( iih->sym_fp, &buf.pe, sizeof( buf.pe ), nh_off );
+    ds = DCReadAt( iih->sym_fp, &buf.pe, PE_HDR_SIZE, ne_header_off );
+    if( ds & DS_ERR ) {
+        return( ds );
+    }
+    ds = DCReadAt( iih->sym_fp, (char *)&buf.pe + PE_HDR_SIZE, PE_OPT_SIZE( buf.pe ), ne_header_off + PE_HDR_SIZE );
     if( ds & DS_ERR ) {
         return( ds );
     }
@@ -325,21 +330,20 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
         return( DS_FAIL );
     }
     iih->is_32bit = 1;
-    image_base = buf.pe.image_base;
+    image_base = PE( buf.pe, image_base );
 
     /*
      * Translate the rva to a file offset and read necessary
      * segment information at the same time.
      */
-    iih->seg_count = buf.pe.num_objects;
-    iih->segments = DCAlloc( sizeof( hllinfo_seg ) * buf.pe.num_objects );
+    iih->seg_count = buf.pe.fheader.num_objects;
+    iih->segments = DCAlloc( sizeof( hllinfo_seg ) * buf.pe.fheader.num_objects );
     if( iih->segments == NULL ) {
         return( DS_ERR | DS_NO_MEM );
     }
 
-    sh_off = nh_off /* vv -- watcom mixes the headers :-( */
-           + offsetof( pe_header, flags ) + sizeof( buf.pe.flags )
-           + buf.pe.nt_hdr_size;
+    sh_off = ne_header_off /* vv -- watcom mixes the headers :-( */
+           + PE_SIZE( buf.pe );
 
     for( i = 0; i < iih->seg_count; i++, sh_off += sizeof( buf.sh ) ) {
         ds = DCReadAt( iih->sym_fp, &buf.sh, sizeof( buf.sh ), sh_off );
@@ -371,8 +375,8 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
             if( ds & DS_ERR ) {
                 return( ds );
             }
-            if( IsHllSignature( &buf ) ) {
-                ds = FoundHLLSign( iih, debug_off, debug_len );
+            if( IsHllSignature( &buf.hdr ) ) {
+                ds = FoundHLLSignature( iih, debug_off, debug_len );
             } else {
                 left = debug_len / sizeof( debug_directory );
                 if( left < 16 )
@@ -380,7 +384,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
                 for( ;; ) {
                     if( buf.dbg_dir.debug_type == DEBUG_TYPE_CODEVIEW ) {
                         /* found something? */
-                        ds = FoundHLLSign( iih, buf.dbg_dir.data_seek, buf.dbg_dir.data_seek );
+                        ds = FoundHLLSignature( iih, buf.dbg_dir.data_seek, buf.dbg_dir.data_seek );
                         if( ds == DS_OK || ds & DS_ERR ) {
                             break;
                         }
@@ -409,7 +413,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
  * Deals with LX and LE images.
  * We must try grab information from the object table.
  */
-static dip_status FindHLLInLXImage( imp_image_handle *iih, unsigned long nh_off )
+static dip_status FindHLLInLXImage( imp_image_handle *iih, unsigned long ne_header_off )
 {
     union  {
         os2_flat_header flat;
@@ -418,21 +422,21 @@ static dip_status FindHLLInLXImage( imp_image_handle *iih, unsigned long nh_off 
     dip_status          ds;
 
     /* read the header */
-    ds = DCReadAt( iih->sym_fp, &buf.flat, sizeof( buf.flat ), nh_off );
+    ds = DCReadAt( iih->sym_fp, &buf.flat, sizeof( buf.flat ), ne_header_off );
     if( ds & DS_ERR ) {
         return( ds );
     }
     ds = DS_FAIL;
     if( buf.flat.debug_off && buf.flat.debug_len ) {
         iih->is_32bit = 1;
-        ds = FoundHLLSign( iih, buf.flat.debug_off, buf.flat.debug_len );
+        ds = FoundHLLSignature( iih, buf.flat.debug_off, buf.flat.debug_len );
         if( ds == DS_OK ) {
             unsigned i;
 
             /*
              * Get segment info from the object table.
              */
-            if( DCSeek( iih->sym_fp, buf.flat.objtab_off + nh_off, DIG_SEEK_ORG ) ) {
+            if( DCSeek( iih->sym_fp, buf.flat.objtab_off + ne_header_off, DIG_SEEK_ORG ) ) {
                 return( DS_ERR | DS_FSEEK_FAILED );
             }
 
@@ -465,32 +469,25 @@ static dip_status FindHLLInLXImage( imp_image_handle *iih, unsigned long nh_off 
  */
 static dip_status TryFindInImage( imp_image_handle *iih )
 {
-    union {
-        char            sig[HLL_SIG_SIZE]; /* ASSUMES >= 4 */
-        unsigned_16     sig_16;
-        unsigned_32     sig_32;
-        pe_header       pe;
-        pe_object       sh;
-        debug_directory dbg_dir;
-    }                   buf;
+    hll_buf             buf;
     bool                have_mz_header = false;
-    unsigned_32         nh_off;
+    unsigned_32         ne_header_off;
     dip_status          ds;
 
     /* Read the image header. */
-    ds = DCReadAt( iih->sym_fp, &buf.sig, sizeof( buf.sig ), 0 );
+    ds = DCReadAt( iih->sym_fp, &buf.signature, sizeof( buf.signature ), 0 );
     if( ds & DS_ERR ) {
         return( ds );
     }
-    nh_off = 0;
-    if( buf.sig_16 == DOS_SIGNATURE ) {
+    ne_header_off = 0;
+    if( buf.signature16 == DOS_SIGNATURE ) {
         have_mz_header = true;
         /* read the new exe header */
-        ds = DCReadAt( iih->sym_fp, &nh_off, sizeof( nh_off ), NH_OFFSET );
+        ds = DCReadAt( iih->sym_fp, &ne_header_off, sizeof( ne_header_off ), NE_HEADER_OFFSET );
         if( ds & DS_ERR ) {
             return( ds );
         }
-        ds = DCReadAt( iih->sym_fp, &buf.sig, sizeof( buf.sig ), nh_off );
+        ds = DCReadAt( iih->sym_fp, &buf.signature, sizeof( buf.signature ), ne_header_off );
         if( ds & DS_ERR ) {
             return( ds );
         }
@@ -499,23 +496,23 @@ static dip_status TryFindInImage( imp_image_handle *iih )
     /*
      * LE/LX executable - Use the debug_off/len members of the header.
      */
-    if( buf.sig_16 == EXESIGN_LX
-     || buf.sig_16 == EXESIGN_LE ) {
-        return( FindHLLInLXImage( iih, nh_off ) );
+    if( buf.signature16 == EXESIGN_LX
+     || buf.signature16 == EXESIGN_LE ) {
+        return( FindHLLInLXImage( iih, ne_header_off ) );
     }
 
     /*
      * PE executable - Use or scan the debug directory.
      */
-    if( buf.sig_32 == EXESIGN_PE ) {
-        return( FindHLLInPEImage( iih, nh_off ) );
+    if( buf.signature32 == EXESIGN_PE ) {
+        return( FindHLLInPEImage( iih, ne_header_off ) );
     }
 
     /*
      * NE and MZ executables do not contain any special information
      * in the header. TryFindTrailer() will have to pick up the debug data.
      */
-    if( (buf.sig_16 == EXESIGN_NE) || have_mz_header ) {
+    if( (buf.signature16 == EXESIGN_NE) || have_mz_header ) {
         iih->is_32bit = 0;
     }
 
@@ -526,8 +523,8 @@ static dip_status TryFindInImage( imp_image_handle *iih )
     /*
      * A watcom .sym file.
      */
-    if( IsHllSignature( &buf ) ) {
-        return( FoundHLLSign( iih, nh_off, ~0UL ) );
+    if( IsHllSignature( &buf.hdr ) ) {
+        return( FoundHLLSignature( iih, ne_header_off, ~0UL ) );
     }
 
     /* no idea what this is.. */
@@ -543,22 +540,22 @@ static dip_status TryFindInImage( imp_image_handle *iih )
  */
 static dip_status TryFindTrailer( imp_image_handle *iih )
 {
-    hll_trailer         sig;
+    hll_trailer         hdr;
     unsigned long       pos;
 
-    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_SEEK_END ) ) {
+    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( hdr ) ), DIG_SEEK_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( iih->sym_fp );
-    if( DCRead( iih->sym_fp,fp &sig, sizeof( sig ) ) != sizeof( sig ) ) {
+    if( DCRead( iih->sym_fp, fp & hdr, sizeof( hdr ) ) != sizeof( hdr ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( !IsHllSignature( &sig ) ) {
+    if( !IsHllSignature( &hdr ) ) {
         return( DS_FAIL );
     }
 
-    pos -= sig.offset - sizeof( sig );
-    return( FoundHLLSign( iih, pos, sig.offset - sizeof( sig ) ) );
+    pos -= hdr.offset - sizeof( hdr );
+    return( FoundHLLSignature( iih, pos, hdr.offset - sizeof( hdr ) ) );
 }
 
 /*

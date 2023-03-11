@@ -155,47 +155,52 @@ static void ReadOldLib( void )
         QRead( the_file, &val32, sizeof( val32 ), fname );
         filepos = val32;
         QSeek( the_file, filepos, fname );
-        QRead( the_file, &head, sizeof( head ), fname );
+        QRead( the_file, &head.os2, sizeof( head.os2 ), fname );
         if( head.os2.signature == EXESIGN_NE ) {
             QSeek( the_file, filepos + head.os2.resident_off, fname );
             ReadNameTable( the_file );
             QSeek( the_file, head.os2.nonres_off, fname );
             ReadNameTable( the_file );
-        } else if( head.os2f.signature == EXESIGN_LE || head.os2f.signature == EXESIGN_LX ) {
-            if( head.os2f.resname_off != 0 ) {
-                QSeek( the_file, filepos + head.os2f.resname_off, fname );
-                ReadNameTable( the_file );
-            }
-            if( head.os2f.nonres_off != 0 ) {
-                QSeek( the_file, head.os2f.nonres_off, fname );
-                ReadNameTable( the_file );
-            }
-        } else if( head.pe.pe32.signature == EXESIGN_PE ) {
-            unsigned            num_objects;
-
-            if( IS_PE64( head.pe ) ) {
-                num_objects = PE64( head.pe ).num_objects;
-            } else {
-                num_objects = PE32( head.pe ).num_objects;
-            }
-            _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
-            QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
-            currobj = objects;
-            for( ; num_objects > 0; --num_objects ) {
-                if( currobj->rva == PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva ) {
-                    QSeek( the_file, currobj->physical_offset, fname );
-                    PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva -= currobj->physical_offset;
-                    ReadPEExportTable( the_file, &PE_DIRECTORY( head.pe, PE_TBL_EXPORT ) );
-                    break;
-                }
-                currobj++;
-            }
-            _LnkFree( objects );
-            if( num_objects == 0 ) {
-                LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
-            }
         } else {
-            LnkMsg( WRN+MSG_INV_OLD_DLL, NULL );
+            QSeek( the_file, filepos, fname );
+            QRead( the_file, &head.os2f, sizeof( head.os2f ), fname );
+            if( head.os2f.signature == EXESIGN_LE || head.os2f.signature == EXESIGN_LX ) {
+                if( head.os2f.resname_off != 0 ) {
+                    QSeek( the_file, filepos + head.os2f.resname_off, fname );
+                    ReadNameTable( the_file );
+                }
+                if( head.os2f.nonres_off != 0 ) {
+                    QSeek( the_file, head.os2f.nonres_off, fname );
+                    ReadNameTable( the_file );
+                }
+            } else {
+                QSeek( the_file, filepos, fname );
+                QRead( the_file, &head.pe, PE_HDR_SIZE, fname );
+                if( head.pe.signature == EXESIGN_PE ) {
+                    unsigned    num_objects;
+
+                    QRead( the_file, &head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ), fname );
+                    num_objects = head.pe.fheader.num_objects;
+                    _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
+                    QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
+                    currobj = objects;
+                    for( ; num_objects > 0; --num_objects ) {
+                        if( currobj->rva == PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva ) {
+                            QSeek( the_file, currobj->physical_offset, fname );
+                            PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva -= currobj->physical_offset;
+                            ReadPEExportTable( the_file, &PE_DIRECTORY( head.pe, PE_TBL_EXPORT ) );
+                            break;
+                        }
+                        currobj++;
+                    }
+                    _LnkFree( objects );
+                    if( num_objects == 0 ) {
+                        LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
+                    }
+                } else {
+                    LnkMsg( WRN+MSG_INV_OLD_DLL, NULL );
+                }
+            }
         }
     }
     QClose( the_file, fname );

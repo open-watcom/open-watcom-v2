@@ -404,12 +404,13 @@ static const char *GetHelpName( const char *exe_name )
             TinySeek( handle, NE_HEADER_OFFSET, SEEK_SET );
             TinyRead( handle, &ne_header_off, sizeof( ne_header_off ) );
             TinySeek( handle, ne_header_off, SEEK_SET );
-            TinyRead( handle, &head.pe, sizeof( head.pe ) );
+            TinyRead( handle, &head.pe, PE_HDR_SIZE );
+            TinyRead( handle, (char *)&head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ) );
             TinyClose( handle );
-            switch( PE32( head.pe ).signature ) {
+            switch( head.pe.signature ) {
             case EXESIGN_PE:
             case EXESIGN_PL:
-                if( PE32( head.pe ).subsystem == PE_SS_PL_DOSSTYLE ) {
+                if( PE( head.pe, subsystem ) == PE_SS_PL_DOSSTYLE ) {
                     _DBG_Writeln( "Want PEDHELP" );
                     return( HELPNAME_DS );
                 }

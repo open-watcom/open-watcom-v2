@@ -851,11 +851,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     exe->u.PEInfo.Res.ResSize = curr_rva - rva;
 
     pehdr = exe->u.PEInfo.WinHead;
-    if( IS_PE64( *pehdr ) ) {
-        file_align = PE64( *pehdr ).file_align;
-    } else {
-        file_align = PE32( *pehdr ).file_align;
-    }
+    file_align = PE( *pehdr, file_align );
     fillResourceObj( res_obj, dir, file_align );
     if( padObject( dir, exe, res_obj->physical_size ) ) {
         RcError( ERR_WRITTING_FILE, exe->name, strerror( errno ) );
@@ -890,11 +886,7 @@ bool RcBuildPEResourceObject( void )
         PE_DIRECTORY( *pehdr, PE_TBL_RESOURCE ).size = 0;
         error = false;
     } else {
-        if( IS_PE64( *pehdr ) ) {
-            res_obj = exe->u.PEInfo.Objects + PE64( *pehdr ).num_objects - 1;
-        } else {
-            res_obj = exe->u.PEInfo.Objects + PE32( *pehdr ).num_objects - 1;
-        }
+        res_obj = exe->u.PEInfo.Objects + pehdr->fheader.num_objects - 1;
         rva = GetNextObjRVA( &exe->u.PEInfo );
         offset = GetNextObjPhysOffset( &exe->u.PEInfo );
         error = BuildPEResourceObject( exe, Pass2Info.ResFile, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );

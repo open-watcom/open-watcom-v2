@@ -203,7 +203,6 @@ bool Dmp_pe_head( void )
 /**********************/
 {
     unsigned_16         i;
-    unsigned_16         signature;
     unsigned_32         num_tables;
     pe_hdr_dir_entry    *tbl_entry;
     unsigned_32         offset;
@@ -214,8 +213,8 @@ bool Dmp_pe_head( void )
     Res_off = 0;
     Fix_off = 0;
     Wlseek( New_exe_off );
-    Wread( &signature, sizeof( signature ) );
-    switch( signature ) {
+    Wread( &Pe_head, PE_HDR_SIZE );
+    switch( Pe_head.signature ) {
     case EXESIGN_PE:
         Banner( "Windows NT EXE Header" );
         break;
@@ -225,18 +224,13 @@ bool Dmp_pe_head( void )
     default:
         return( false );
     }
-    Wlseek( New_exe_off );
-    Wread( &Pe_head, PE32_SIZE( Pe_head ) );
-    if( signature == EXESIGN_PE && IS_PE64( Pe_head ) ) {
-        Wlseek( New_exe_off );
-        Wread( &Pe_head, PE64_SIZE( Pe_head ) );
-    }
+    Wread( (char *)&Pe_head + PE_HDR_SIZE, PE_OPT_SIZE( Pe_head ) );
     Wdputs( "file offset = " );
     Puthex( New_exe_off, 8 );
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
+    data = (const unsigned char *)&Pe_head.fheader.cpu_type;
     if( IS_PE64( Pe_head ) ) {
-        data = (const unsigned char *)&PE64( Pe_head ).cpu_type;
         Dump_header( data, pe64_exe_msg1, 8 );
         data += 2;
         Dump_header( data, pe_exe_msg1,   8 );
@@ -250,11 +244,10 @@ bool Dmp_pe_head( void )
         Dump_header( data, pe_exe_msg3,   8 );
         data += 40;
         Dump_header( data, pe64_exe_msg4, 8 );
-        DumpCoffHdrFlags( PE64( Pe_head ).flags );
+        DumpCoffHdrFlags( Pe_head.fheader.flags );
         tbl_entry = PE64( Pe_head ).table;
         num_tables = PE64( Pe_head ).num_tables;
     } else {
-        data = (const unsigned char *)&PE32( Pe_head ).cpu_type;
         Dump_header( data, pe32_exe_msg1, 4 );
         data += 2;
         Dump_header( data, pe_exe_msg1,   4 );
@@ -268,7 +261,7 @@ bool Dmp_pe_head( void )
         Dump_header( data, pe_exe_msg3,   4 );
         data += 40;
         Dump_header( data, pe32_exe_msg4, 4 );
-        DumpCoffHdrFlags( PE32( Pe_head ).flags );
+        DumpCoffHdrFlags( Pe_head.fheader.flags );
         tbl_entry = PE32( Pe_head ).table;
         num_tables = PE32( Pe_head ).num_tables;
     }
@@ -279,7 +272,7 @@ bool Dmp_pe_head( void )
         Puthex( tbl_entry->rva, 8 );
         Wdputs( "H    size = " );
         Puthex( tbl_entry->size, 8 );
-        if( signature == EXESIGN_PE ) {
+        if( Pe_head.signature == EXESIGN_PE ) {
             switch( i ) {
             case 0: Wdputslc( "H   (Export Directory)\n" ); break;
             case 1: Wdputslc( "H   (Import Directory)\n" ); break;
@@ -305,17 +298,9 @@ bool Dmp_pe_head( void )
         tbl_entry++;
     }
     Wdputslc( "\n" );
-    if( IS_PE64( Pe_head ) ) {
-        offset = New_exe_off + PE64_SIZE( Pe_head );
-    } else {
-        offset = New_exe_off + PE32_SIZE( Pe_head );
-    }
+    offset = New_exe_off + PE_SIZE( Pe_head );
     Wlseek( offset );
-    if( IS_PE64( Pe_head ) ) {
-        dmp_objects( PE64( Pe_head ).num_objects );
-    } else {
-        dmp_objects( PE32( Pe_head ).num_objects );
-    }
+    dmp_objects( Pe_head.fheader.num_objects );
     if( Exp_off != 0 ) {
         Dmp_exports();
     }
@@ -504,27 +489,19 @@ bool Dmp_pe_tab( void )
     Wlseek( NE_HEADER_OFFSET );
     Wread( &New_exe_off, sizeof( New_exe_off ) );
     Wlseek( New_exe_off );
-    Wread( &Pe_head, PE32_SIZE( Pe_head ) );
-    if( IS_PE64( Pe_head ) ) {
-        Wlseek( New_exe_off );
-        Wread( &Pe_head, PE64_SIZE( Pe_head ) );
-    }
-    switch( PE32( Pe_head ).signature ) {
+    Wread( &Pe_head, PE_HDR_SIZE );
+    switch( Pe_head.signature ) {
     case EXESIGN_PE:
     case EXESIGN_PL:
         break;
     default:
         return( false );
     }
+    Wread( (char *)&Pe_head + PE_HDR_SIZE, PE_OPT_SIZE( Pe_head) );
     Exp_off = 0;
     export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
-    if( IS_PE64( Pe_head ) ) {
-        offset = New_exe_off + PE64_SIZE( Pe_head );
-        num_objects = PE64( Pe_head ).num_objects;
-    } else {
-        offset = New_exe_off + PE32_SIZE( Pe_head );
-        num_objects = PE32( Pe_head ).num_objects;
-    }
+    offset = New_exe_off + PE_SIZE( Pe_head );
+    num_objects = Pe_head.fheader.num_objects;
     for( i = 0; i < num_objects; i++ ) {
         Wlseek( offset );
         Wread( &pe_obj, sizeof( pe_object ) );

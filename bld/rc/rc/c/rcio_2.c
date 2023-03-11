@@ -153,37 +153,26 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
-        } else {
-            info->DebugOffset = info->WinHeadOffset + sizeof( os2_exe_header );
         }
+        info->DebugOffset = info->WinHeadOffset + sizeof( os2_exe_header );
         break;
     case EXE_TYPE_PE:
         pehdr = &info->u.PEInfo.WinHeadData;
         info->u.PEInfo.WinHead = pehdr;
-        status = SeekRead( info->fp, info->WinHeadOffset, &PE32( *pehdr ), PE32_SIZE( *pehdr ) );
-        if( status != RS_OK ) {
+        if( SeekRead( info->fp, info->WinHeadOffset, pehdr, PE_HDR_SIZE ) != RS_OK
+          || RESREAD( info->fp, (char *)pehdr + PE_HDR_SIZE, PE_OPT_SIZE( *pehdr ) ) != PE_OPT_SIZE( *pehdr ) ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
-        if( IS_PE64( *pehdr ) ) {
-            status = SeekRead( info->fp, info->WinHeadOffset, &PE64( *pehdr ), PE64_SIZE( *pehdr ) );
-            if( status != RS_OK ) {
-                RcError( ERR_NOT_VALID_EXE, filename );
-                return( false );
-            }
-            info->DebugOffset = info->WinHeadOffset + PE64_SIZE( *pehdr );
-        } else {
-            info->DebugOffset = info->WinHeadOffset + PE32_SIZE( *pehdr );
-        }
+        info->DebugOffset = info->WinHeadOffset + PE_SIZE( *pehdr );
         break;
     case EXE_TYPE_LX:
         status = SeekRead( info->fp, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
-        } else {
-            info->DebugOffset = info->WinHeadOffset + sizeof( os2_flat_header );
         }
+        info->DebugOffset = info->WinHeadOffset + sizeof( os2_flat_header );
         break;
     default:
         RcError( ERR_NOT_VALID_EXE, filename );

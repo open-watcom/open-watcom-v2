@@ -220,12 +220,9 @@ static void FillInExceptInfo( lib_load_info *llo )
     pe_exe_header   pehdr;
 
     ReadProcessMemory( ProcessInfo.process_handle, llo->base + NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ), &bytes );
-    ReadProcessMemory( ProcessInfo.process_handle, llo->base + ne_header_off, &pehdr, sizeof( pehdr ), &bytes );
-    if( IS_PE64( pehdr ) ) {
-        llo->code_size = PE64( pehdr ).code_base + PE64( pehdr ).code_size;
-    } else {
-        llo->code_size = PE32( pehdr ).code_base + PE32( pehdr ).code_size;
-    }
+    ReadProcessMemory( ProcessInfo.process_handle, llo->base + ne_header_off, &pehdr, PE_HDR_SIZE, &bytes );
+    ReadProcessMemory( ProcessInfo.process_handle, llo->base + ne_header_off + PE_HDR_SIZE, (char *)&pehdr + PE_HDR_SIZE, PE_OPT_SIZE( pehdr ), &bytes );
+    llo->code_size = PE( pehdr, code_base ) + PE( pehdr, code_size );
     llo->except_base = llo->base + PE_DIRECTORY( pehdr, PE_TBL_EXCEPTION ).rva;
     llo->except_size = PE_DIRECTORY( pehdr, PE_TBL_EXCEPTION ).size;
 }
@@ -607,13 +604,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
         if( seek_offset == INVALID_SET_FILE_POINTER ) {
             return( 0 );
         }
-        if( IS_PE64( hi.u.peh ) ) {
-            num_objects = PE64( hi.u.peh ).num_objects;
-            seek_offset += PE64_SIZE( hi.u.peh );
-        } else {
-            num_objects = PE32( hi.u.peh ).num_objects;
-            seek_offset += PE32_SIZE( hi.u.peh );
-        }
+        num_objects = hi.u.peh.fheader.num_objects;
+        seek_offset += PE_SIZE( hi.u.peh );
         if( num_objects == 0 ) {
             return( 0 );
         }

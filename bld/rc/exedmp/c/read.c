@@ -108,20 +108,14 @@ bool readExeHeaders( ExeFile *exeFile )
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    if( fread( (void *) &exeFile->dosHdr,
-               (size_t) sizeof( dos_exe_header ),
-               (size_t) 1,
-               exeFile->file ) != 1 ) {
+    if( fread( &exeFile->dosHdr, sizeof( dos_exe_header ), 1, exeFile->file ) != 1 ) {
         printf( ERR_READ_DOS_EXE_HEADER );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
 
-    if( fseek( exeFile->file, NE_HEADER_OFFSET, SEEK_SET ) ||
-        fread( (void *) &exeFile->pexHdrAddr,
-               (size_t) sizeof( unsigned_32 ),
-               (size_t) 1,
-               exeFile->file ) != 1 ) {
+    if( fseek( exeFile->file, NE_HEADER_OFFSET, SEEK_SET )
+      || fread( &exeFile->pexHdrAddr, sizeof( exeFile->pexHdrAddr ), 1, exeFile->file ) != 1 ) {
         printf( ERR_READ_CANNOT_FIND_PE_HEADER );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
@@ -131,22 +125,24 @@ bool readExeHeaders( ExeFile *exeFile )
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    if( fread( (void *) &PE32( exeFile->pexHdr ),
-               (size_t) PE32_SIZE( exeFile->pexHdr ),
-               (size_t) 1,
-               exeFile->file ) != 1 ) {
+    if( fread( &exeFile->pexHdr, PE_HDR_SIZE, 1, exeFile->file ) != 1 ) {
+        printf( ERR_READ_PE_EXE_HEADER );
+        fseek( exeFile->file, prevPos, SEEK_SET );
+        return( false );
+    }
+    if( exeFile->pexHdr.signature != EXESIGN_PE
+      && exeFile->pexHdr.signature != EXESIGN_PL ) {
+        printf( ERR_READ_NOT_PE_EXE );
+        fseek( exeFile->file, prevPos, SEEK_SET );
+        return( false );
+    }
+    if( fread( &exeFile->pexHdr + PE_HDR_SIZE, PE_OPT_SIZE( exeFile->pexHdr ), 1, exeFile->file ) != 1 ) {
         printf( ERR_READ_PE_EXE_HEADER );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
     fseek( exeFile->file, prevPos, SEEK_SET );
-    if( PE32( exeFile->pexHdr ).signature != EXESIGN_PE &&
-        PE32( exeFile->pexHdr ).signature != EXESIGN_PL ) {
-        printf( ERR_READ_NOT_PE_EXE );
-        return( false );
-    } else {
-        return( true );
-    }
+    return( true );
 }
 
 bool findResourceObject( ExeFile *exeFile )
@@ -156,19 +152,14 @@ bool findResourceObject( ExeFile *exeFile )
     int         i;
 
     prevPos = ftell( exeFile->file );
-    if( fseek( exeFile->file,
-               exeFile->pexHdrAddr + PE32_SIZE( exeFile->pexHdr ),
-               SEEK_SET ) ) {
+    if( fseek( exeFile->file, exeFile->pexHdrAddr + PE_SIZE( exeFile->pexHdr ), SEEK_SET ) ) {
         printf( ERR_READ_CANNOT_FIND_OBJECTS );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    for( i=0; i < PE32( exeFile->pexHdr ).num_objects; i++ ) {
+    for( i = 0; i < exeFile->pexHdr.fheader.num_objects; i++ ) {
         exeFile->resObjAddr = ftell( exeFile->file );
-        if( fread( (void *) &exeFile->resObj,
-                   (size_t) sizeof( pe_object ),
-                   (size_t) 1,
-                   exeFile->file ) != 1 ) {
+        if( fread( &exeFile->resObj, sizeof( pe_object ), 1, exeFile->file ) != 1 ) {
             printf( ERR_READ_OBJECT );
             fseek( exeFile->file, prevPos, SEEK_SET );
             return( false );

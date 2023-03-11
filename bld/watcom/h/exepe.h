@@ -137,17 +137,16 @@
 #define PE_RESOURCE_MASK        0x7fffffff
 #define PE_RESOURCE_MASK_ON     0x80000000
 
-#define PE32(x)                 (x).pe32
-#define PE64(x)                 (x).pe64
-#define PE32_SIZE(x)            sizeof(pe32_header)
-#define PE64_SIZE(x)            sizeof(pe64_header)
-#define PE32_OPT_SIZE(x)        (PE32_SIZE(x) - offsetof(pe32_header, magic))
-#define PE64_OPT_SIZE(x)        (PE64_SIZE(x) - offsetof(pe64_header, magic))
+#define PE32(x)                 (x).opt.pe32
+#define PE64(x)                 (x).opt.pe64
 
 #define IS_PE64(x)              (PE32(x).magic == 0x20b)
 
+#define PE_HDR_SIZE             (sizeof(pe_signature) + sizeof(pe_file_header))
+#define PE_OPT_SIZE(x)          (IS_PE64(x) ? (x).fheader.opt_hdr_size : (x).fheader.opt_hdr_size)
+
 #define PE(x,s)                 (*(IS_PE64(x) ? &(PE64(x).s) : &(PE32(x).s)))
-#define PE_SIZE(x)              (IS_PE64(x) ? PE64_SIZE(x) : PE32_SIZE(x))
+#define PE_SIZE(x)              (PE_HDR_SIZE + PE_OPT_SIZE(x))
 #define PE_DIRECTORY(x,s)       (*(IS_PE64(x) ? (PE64(x).table + (s)) : (PE32(x).table + (s))))
 
 /*
@@ -254,17 +253,22 @@ typedef struct {
 } pe_hdr_dir_entry;
 
 /*
- * PE32 header structure
+ * PE file header structure
  */
 typedef struct {
-    unsigned_32         signature;
     unsigned_16         cpu_type;
     unsigned_16         num_objects;
     unsigned_32         time_stamp;
     unsigned_32         sym_table;
-    unsigned_32         num_syms;
-    unsigned_16         nt_hdr_size;    /* # of bytes after the flags field */
+    unsigned_32         num_symbols;
+    unsigned_16         opt_hdr_size;
     unsigned_16         flags;
+} pe_file_header;
+
+/*
+ * PE optional header structure (32-bit)
+ */
+typedef struct {
     unsigned_16         magic;          /* currently 0x10b */
     unsigned_8          lnk_major;
     unsigned_8          lnk_minor;
@@ -297,20 +301,12 @@ typedef struct {
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
     pe_hdr_dir_entry    table[PE_TBL_NUMBER];
-} pe32_header;
+} pe32_opt_header;
 
 /*
- * PE32+ header structure
+ * PE optional header structure (64-bit)
  */
 typedef struct {
-    unsigned_32         signature;
-    unsigned_16         cpu_type;
-    unsigned_16         num_objects;
-    unsigned_32         time_stamp;
-    unsigned_32         sym_table;
-    unsigned_32         num_syms;
-    unsigned_16         nt_hdr_size;    /* # of bytes after the flags field */
-    unsigned_16         flags;
     unsigned_16         magic;          /* currently 0x20b */
     unsigned_8          lnk_major;
     unsigned_8          lnk_minor;
@@ -342,11 +338,15 @@ typedef struct {
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
     pe_hdr_dir_entry    table[PE_TBL_NUMBER];
-} pe64_header;
+} pe64_opt_header;
 
-typedef union {
-    pe32_header         pe32;
-    pe64_header         pe64;
+typedef struct {
+    pe_signature        signature;
+    pe_file_header      fheader;
+    union {
+    	pe32_opt_header pe32;
+        pe64_opt_header pe64;
+    } opt;
 } pe_exe_header;
 
 /*

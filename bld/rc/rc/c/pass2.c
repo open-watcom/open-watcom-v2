@@ -555,33 +555,18 @@ static RcStatus writePEHeadAndObjTable( void )
 
     /* adjust the image size in the header */
     pehdr = tmp->u.PEInfo.WinHead;
-    if( IS_PE64( *pehdr ) ) {
-        num_objects = PE64( *pehdr ).num_objects;
-        object_align = PE64( *pehdr ).object_align;
-    } else {
-        num_objects = PE32( *pehdr ).num_objects;
-        object_align = PE32( *pehdr ).object_align;
-    }
+    num_objects = pehdr->fheader.num_objects;
+    object_align = PE( *pehdr, object_align );
     last_object = &tmp->u.PEInfo.Objects[num_objects - 1];
     image_size = last_object->rva + last_object->physical_size;
     image_size = ALIGN_VALUE( image_size, object_align );
-    if( IS_PE64( *pehdr ) ) {
-        PE64( *pehdr ).image_size = image_size;
-    } else {
-        PE32( *pehdr ).image_size = image_size;
-    }
+    PE( *pehdr, image_size ) = image_size;
 
     if( RESSEEK( tmp->fp, tmp->WinHeadOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
-    if( IS_PE64( *pehdr ) ) {
-        if( RESWRITE( tmp->fp, &PE64( *pehdr ), PE64_SIZE( *pehdr ) ) != PE64_SIZE( *pehdr ) ) {
-            return( RS_WRITE_ERROR );
-        }
-    } else {
-        if( RESWRITE( tmp->fp, &PE32( *pehdr ), PE32_SIZE( *pehdr ) ) != PE32_SIZE( *pehdr ) ) {
-            return( RS_WRITE_ERROR );
-        }
+    if( RESWRITE( tmp->fp, pehdr, PE_SIZE( *pehdr ) ) != PE_SIZE( *pehdr ) ) {
+        return( RS_WRITE_ERROR );
     }
 
     for( obj_num = 0; obj_num < num_objects; obj_num++ ) {

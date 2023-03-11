@@ -478,7 +478,7 @@ bool SetExeFile( FILE *fp, bool overlay )
     case EXE_TYPE_PE:
     case EXE_TYPE_PL:
         /* offset into "reserved for future use" portion of the DOS EXE hdr */
-        fseek( exeFP, sizeof( dos_exe_header ) + 32, SEEK_SET );
+        fseek( exeFP, NE_HEADER_OFFSET, SEEK_SET );
         fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
         new_header = dummy_32;
 #if 0
@@ -489,10 +489,15 @@ bool SetExeFile( FILE *fp, bool overlay )
         /* exeImageOffset is in bytes and points to the object table */
         exeImageOffset = dummy_32 - dummy_16 * sizeof( pe_object );
 #else
-        fseek( exeFP, new_header + PE32_OPT_SIZE( new_header ), SEEK_SET );
-//        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        /* exeImageOffset is in bytes and points to the object table */
-        exeImageOffset = new_header + PE32_SIZE( new_header );
+        {
+            pe_exe_header   pehdr;
+
+            fseek( exeFP, new_header, SEEK_SET );
+            fread( &pehdr, 1, PE_HDR_SIZE, exeFP );
+            fread( (char *)&pehdr + PE_HDR_SIZE, 1, PE_OPT_SIZE( pehdr ), exeFP );
+            /* exeImageOffset is in bytes and points to the object table */
+            exeImageOffset = new_header + PE_SIZE( pehdr );
+        }
 #endif
         cacheSegment = 0;       /* no 0 segment in OS/2 (03-may-90 AFS) */
         break;
