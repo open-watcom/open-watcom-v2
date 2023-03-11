@@ -45,15 +45,15 @@ static RcStatus readObjectTable( ExeFileInfo *exe )
     RcStatus        ret;
     unsigned        objects_size;
     long            file_offset;
-    exe_pe_header   *pehdr;
+    pe_exe_header   *pehdr;
 
     pehdr = exe->u.PEInfo.WinHead;
     if( IS_PE64( *pehdr ) ) {
         objects_size = PE64( *pehdr ).num_objects * sizeof( pe_object );
-        file_offset = exe->WinHeadOffset + sizeof( pe_header64 );
+        file_offset = exe->WinHeadOffset + PE64_SIZE( *pehdr );
     } else {
         objects_size = PE32( *pehdr ).num_objects * sizeof( pe_object );
-        file_offset = exe->WinHeadOffset + sizeof( pe_header );
+        file_offset = exe->WinHeadOffset + PE32_SIZE( *pehdr );
     }
     exe->u.PEInfo.Objects = RESALLOC( objects_size );
     ret = SeekRead( exe->fp, file_offset, exe->u.PEInfo.Objects, objects_size );
@@ -90,8 +90,8 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
     int             old_num_objects;
     int             new_num_objects;
     pe_va           old_res_rva;
-    exe_pe_header   *old_pehdr;
-    exe_pe_header   *new_pehdr;
+    pe_exe_header   *old_pehdr;
+    pe_exe_header   *new_pehdr;
 
     /* check for a resource object in the old exe */
     old_pehdr = old->u.PEInfo.WinHead;
@@ -135,20 +135,20 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
         --new_num_objects;
     }
     if( IS_PE64( *old_pehdr ) ) {
-        old_offset = old->WinHeadOffset + sizeof( pe_header64 ) + old_obj_size;
+        old_offset = old->WinHeadOffset + PE64_SIZE( *old_pehdr ) + old_obj_size;
         old_rva = ALIGN_VALUE( old_offset, PE64( *old_pehdr ).object_align );
         old_offset = ALIGN_VALUE( old_offset, PE64( *old_pehdr ).file_align );
     } else {
-        old_offset = old->WinHeadOffset + sizeof( pe_header ) + old_obj_size;
+        old_offset = old->WinHeadOffset + PE32_SIZE( *old_pehdr ) + old_obj_size;
         old_rva = ALIGN_VALUE( old_offset, PE32( *old_pehdr ).object_align );
         old_offset = ALIGN_VALUE( old_offset, PE32( *old_pehdr ).file_align );
     }
     if( IS_PE64( *new_pehdr ) ) {
-        new_offset = new->WinHeadOffset + sizeof( pe_header64 ) + new_obj_size;
+        new_offset = new->WinHeadOffset + PE64_SIZE( *new_pehdr ) + new_obj_size;
         new_rva = ALIGN_VALUE( new_offset, PE64( *new_pehdr ).object_align );
         new_offset = ALIGN_VALUE( new_offset, PE64( *new_pehdr ).file_align );
     } else {
-        new_offset = new->WinHeadOffset + sizeof( pe_header ) + new_obj_size;
+        new_offset = new->WinHeadOffset + PE32_SIZE( *new_pehdr ) + new_obj_size;
         new_rva = ALIGN_VALUE( new_offset, PE32( *new_pehdr ).object_align );
         new_offset = ALIGN_VALUE( new_offset, PE32( *new_pehdr ).file_align );
     }
@@ -252,7 +252,7 @@ uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )
     uint_32         next_off;
     pe_object       *last_obj;
     unsigned_32     file_align;
-    exe_pe_header   *pehdr;
+    pe_exe_header   *pehdr;
 
     pehdr = peinfo->WinHead;
     if( IS_PE64( *pehdr ) ) {
@@ -274,7 +274,7 @@ pe_va GetNextObjRVA( PEExeInfo *peinfo )
     uint_32         next_rva;
     pe_object       *last_obj;
     unsigned_32     object_align;
-    exe_pe_header   *pehdr;
+    pe_exe_header   *pehdr;
 
     pehdr = peinfo->WinHead;
     if( IS_PE64( *pehdr ) ) {

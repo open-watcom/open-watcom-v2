@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool     WRLoadResourceFromWinNTEXE( WRInfo * );
-extern long     WRReadWinNTExeHeader( FILE *, exe_pe_header * );
-extern bool     WRIsHeaderValidWINNT( exe_pe_header * );
+extern long     WRReadWinNTExeHeader( FILE *, pe_exe_header * );
+extern bool     WRIsHeaderValidWINNT( pe_exe_header * );
 
 #endif

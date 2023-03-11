@@ -81,7 +81,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
 {
     union {
         dos_exe_header  dos;
-        exe_pe_header   pe;
+        pe_exe_header   pe;
     }                   hdr;
     pe_object           obj;
     unsigned_32         ne_header_off;

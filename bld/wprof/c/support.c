@@ -489,10 +489,10 @@ bool SetExeFile( FILE *fp, bool overlay )
         /* exeImageOffset is in bytes and points to the object table */
         exeImageOffset = dummy_32 - dummy_16 * sizeof( pe_object );
 #else
-        fseek( exeFP, new_header + offsetof( pe_header, nt_hdr_size ), SEEK_SET );
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
+        fseek( exeFP, new_header + PE32_OPT_SIZE( new_header ), SEEK_SET );
+//        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
         /* exeImageOffset is in bytes and points to the object table */
-        exeImageOffset = new_header + offsetof(pe_header,magic) + dummy_16;
+        exeImageOffset = new_header + PE32_SIZE( new_header );
 #endif
         cacheSegment = 0;       /* no 0 segment in OS/2 (03-may-90 AFS) */
         break;

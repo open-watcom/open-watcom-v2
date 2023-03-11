@@ -799,7 +799,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     WResMergeError      *errs;
     ResFileInfo         *errres;
     unsigned_32         file_align;
-    exe_pe_header       *pehdr;
+    pe_exe_header       *pehdr;
 
     dir = &exe->u.PEInfo.Res;
 
@@ -881,7 +881,7 @@ bool RcBuildPEResourceObject( void )
     unsigned_32         offset;
     bool                error;
     ExeFileInfo         *exe;
-    exe_pe_header       *pehdr;
+    pe_exe_header       *pehdr;
 
     exe = &Pass2Info.TmpFile;
     pehdr = exe->u.PEInfo.WinHead;

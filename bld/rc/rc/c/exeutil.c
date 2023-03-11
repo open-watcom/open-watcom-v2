@@ -181,7 +181,7 @@ unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
     pe_object           *objects;
     unsigned_16         obj_cnt;
     unsigned            i;
-    exe_pe_header       *pehdr;
+    pe_exe_header       *pehdr;
 
     pehdr = exe->u.PEInfo.WinHead;
     if( IS_PE64( *pehdr ) ) {

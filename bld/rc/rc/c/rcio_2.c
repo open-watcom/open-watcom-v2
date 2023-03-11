@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,7 +136,7 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
 /**********************************************************************/
 {
     RcStatus        status;
-    exe_pe_header   *pehdr;
+    pe_exe_header   *pehdr;
 
     info->fp = ResOpenFileRO( filename );
     if( info->fp == NULL ) {
@@ -160,20 +160,20 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     case EXE_TYPE_PE:
         pehdr = &info->u.PEInfo.WinHeadData;
         info->u.PEInfo.WinHead = pehdr;
-        status = SeekRead( info->fp, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
+        status = SeekRead( info->fp, info->WinHeadOffset, &PE32( *pehdr ), PE32_SIZE( *pehdr ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
         if( IS_PE64( *pehdr ) ) {
-            status = SeekRead( info->fp, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
+            status = SeekRead( info->fp, info->WinHeadOffset, &PE64( *pehdr ), PE64_SIZE( *pehdr ) );
             if( status != RS_OK ) {
                 RcError( ERR_NOT_VALID_EXE, filename );
                 return( false );
             }
-            info->DebugOffset = info->WinHeadOffset + sizeof( pe_header64 );
+            info->DebugOffset = info->WinHeadOffset + PE64_SIZE( *pehdr );
         } else {
-            info->DebugOffset = info->WinHeadOffset + sizeof( pe_header );
+            info->DebugOffset = info->WinHeadOffset + PE32_SIZE( *pehdr );
         }
         break;
     case EXE_TYPE_LX:

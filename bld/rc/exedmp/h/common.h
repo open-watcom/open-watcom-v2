@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,11 +57,11 @@ typedef enum {
 
 typedef struct ExeFile {
     FILE                        *file;
-    dos_exe_header               dosHdr;
-    pe_header                    pexHdr;
-    unsigned_32                  pexHdrAddr;
-    pe_object                    resObj;
-    long                         resObjAddr;
+    dos_exe_header              dosHdr;
+    pe_exe_header               pexHdr;
+    unsigned_32                 pexHdrAddr;
+    pe_object                   resObj;
+    long                        resObjAddr;
     struct ResTableEntry        *tabEnt;
 } ExeFile;
 

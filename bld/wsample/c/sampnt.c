@@ -286,7 +286,7 @@ static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 /*
  * getPEHeader - get the header of the .EXE
  */
-static bool getPEHeader( HANDLE handle, pe_header *peh )
+static bool getPEHeader( HANDLE handle, pe_exe_header *peh )
 {
     WORD                data;
     WORD                sig;
@@ -314,7 +314,7 @@ static bool getPEHeader( HANDLE handle, pe_header *peh )
         return( false );
     }
 
-    if( !seekRead( handle, ne_header_off, peh, sizeof( pe_header ) ) ) {
+    if( !seekRead( handle, ne_header_off, peh, sizeof( pe_exe_header ) ) ) {
         return( false );
     }
     return( true );
@@ -332,7 +332,7 @@ static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_ki
     WORD                seg;
     DWORD               offset;
     DWORD               bytes;
-    pe_header           peh;
+    pe_exe_header       peh;
 
     ovl.offset = 0;
     ovl.segment = 0;
@@ -340,7 +340,7 @@ static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_ki
     if( !getPEHeader( handle, &peh ) ) {
         return;
     }
-    for( i = 0; i < peh.num_objects; i++ ) {
+    for( i = 0; i < PE( peh, num_objects ); i++ ) {
         ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
         if( obj.flags & (PE_OBJ_CODE | PE_OBJ_EXECUTABLE) ) {
             seg = _FP_SEG( codeLoad );

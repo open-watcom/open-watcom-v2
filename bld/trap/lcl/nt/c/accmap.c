@@ -217,7 +217,7 @@ static void FillInExceptInfo( lib_load_info *llo )
 {
     DWORD           ne_header_off;
     SIZE_T          bytes;
-    exe_pe_header   pehdr;
+    pe_exe_header   pehdr;
 
     ReadProcessMemory( ProcessInfo.process_handle, llo->base + NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ), &bytes );
     ReadProcessMemory( ProcessInfo.process_handle, llo->base + ne_header_off, &pehdr, sizeof( pehdr ), &bytes );
@@ -609,10 +609,10 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         if( IS_PE64( hi.u.peh ) ) {
             num_objects = PE64( hi.u.peh ).num_objects;
-            seek_offset += PE64( hi.u.peh ).nt_hdr_size + offsetof( pe_header64, magic ) - sizeof( exe_pe_header );
+            seek_offset += PE64_SIZE( hi.u.peh );
         } else {
             num_objects = PE32( hi.u.peh ).num_objects;
-            seek_offset += PE32( hi.u.peh ).nt_hdr_size + offsetof( pe_header, magic ) - sizeof( exe_pe_header );
+            seek_offset += PE32_SIZE( hi.u.peh );
         }
         if( num_objects == 0 ) {
             return( 0 );

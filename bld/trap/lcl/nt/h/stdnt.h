@@ -109,7 +109,7 @@
 typedef struct {
     WORD                sig;
     union {
-        exe_pe_header   peh;
+        pe_exe_header   peh;
         os2_exe_header  neh;
     } u;
     char                modname[16];

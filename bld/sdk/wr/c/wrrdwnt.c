@@ -58,9 +58,9 @@ bool WRReadResourceEntry( FILE *fp, uint_32 offset, resource_entry *res_entry );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool     WRWinNTHeaderHasResourceTable( exe_pe_header * );
-static int      WRCalcObjTableOffset( FILE *, exe_pe_header * );
-static bool     WRReadNTObjectTable( FILE *, exe_pe_header *, pe_object ** );
+static bool     WRWinNTHeaderHasResourceTable( pe_exe_header * );
+static int      WRCalcObjTableOffset( FILE *, pe_exe_header * );
+static bool     WRReadNTObjectTable( FILE *, pe_exe_header *, pe_object ** );
 static bool     WRLoadWResDirFromWinNTEXE( FILE *, WResDir * );
 static bool     WRHandleWinNTTypeDir( FILE *, WResDir *, uint_32 );
 static bool     WRHandleWinNTTypeEntry( FILE *, WResDir *, resource_dir_entry *, bool );
@@ -98,7 +98,7 @@ bool WRLoadResourceFromWinNTEXE( WRInfo *info )
     return( ok );
 }
 
-long WRReadWinNTExeHeader( FILE *fp, exe_pe_header *header )
+long WRReadWinNTExeHeader( FILE *fp, pe_exe_header *header )
 {
     bool        old_pos;
     uint_16     offset;
@@ -133,11 +133,11 @@ long WRReadWinNTExeHeader( FILE *fp, exe_pe_header *header )
     }
 
     if( ok ) {
-        ok = ( RESREAD( fp, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ) );
+        ok = ( RESREAD( fp, &PE32( *header ), PE32_SIZE( *header ) ) == PE32_SIZE( *header ) );
         if( ok && IS_PE64( *header ) ) {
             ok = !RESSEEK( fp, offset, SEEK_SET );
             if( ok ) {
-                ok = ( RESREAD( fp, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ) );
+                ok = ( RESREAD( fp, &PE64( *header ), PE64_SIZE( *header ) ) == PE64_SIZE( *header ) );
             }
         }
     }
@@ -159,7 +159,7 @@ long WRReadWinNTExeHeader( FILE *fp, exe_pe_header *header )
     return( offset );
 }
 
-int WRCalcObjTableOffset( FILE *fp, exe_pe_header *hdr )
+int WRCalcObjTableOffset( FILE *fp, pe_exe_header *hdr )
 {
     uint_16  pe_offset;
     int      offset;
@@ -174,9 +174,9 @@ int WRCalcObjTableOffset( FILE *fp, exe_pe_header *hdr )
 
     if ( ok ) {
         if( IS_PE64( *hdr ) ) {
-            offset = pe_offset + PE64( *hdr ).nt_hdr_size + offsetof( pe_header64, magic );
+            offset = pe_offset + PE64_SIZE( *hdr );
         } else {
-            offset = pe_offset + PE32( *hdr ).nt_hdr_size + offsetof( pe_header, magic );
+            offset = pe_offset + PE32_SIZE( *hdr );
         }
     } else {
         offset = 0;
@@ -185,7 +185,7 @@ int WRCalcObjTableOffset( FILE *fp, exe_pe_header *hdr )
     return( offset );
 }
 
-bool WRReadNTObjectTable( FILE *fp, exe_pe_header *hdr, pe_object **ot )
+bool WRReadNTObjectTable( FILE *fp, pe_exe_header *hdr, pe_object **ot )
 {
     size_t  size;
     int     ot_offset;
@@ -210,7 +210,7 @@ bool WRReadNTObjectTable( FILE *fp, exe_pe_header *hdr, pe_object **ot )
     return( *ot != NULL );
 }
 
-bool WRIsHeaderValidWINNT( exe_pe_header *header )
+bool WRIsHeaderValidWINNT( pe_exe_header *header )
 {
     /* at some point will we have to check the CPUTYPE ????!!!! */
     if( IS_PE64( *header ) ) {
@@ -220,7 +220,7 @@ bool WRIsHeaderValidWINNT( exe_pe_header *header )
     }
 }
 
-bool WRWinNTHeaderHasResourceTable( exe_pe_header *header )
+bool WRWinNTHeaderHasResourceTable( pe_exe_header *header )
 {
     int                 num_tables;
 
@@ -236,7 +236,7 @@ bool WRWinNTHeaderHasResourceTable( exe_pe_header *header )
 
 bool WRLoadWResDirFromWinNTEXE( FILE *fp, WResDir *dir )
 {
-    exe_pe_header       nt_header;
+    pe_exe_header       nt_header;
     pe_object           *otable;
     uint_32             physical_size;
     uint_32             physical_offset;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,11 +65,11 @@ typedef struct NEExeInfo {
 } NEExeInfo;
 
 typedef struct PEExeInfo {
-    exe_pe_header       *WinHead;
+    pe_exe_header       *WinHead;
     pe_object           *Objects;       /* array of objects. wlink no initialize */
     PEResDir            Res;            /* non-initialized */
-    exe_pe_header       WinHeadData;    // never access this value directly.  Use
-                                        // WinHead to get at it instead
+    pe_exe_header       WinHeadData;    /* never access this value directly.  Use
+                                           WinHead to get at it instead */
 } PEExeInfo;
 
 typedef struct LXExeInfo {

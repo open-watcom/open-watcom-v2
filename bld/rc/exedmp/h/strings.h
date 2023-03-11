@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +135,8 @@
 #define MSG_PE_ENTRYRVA                 "Entrypoint rva:                               0x%8.8X\n"
 #define MSG_PE_CODEBASE                 "Code base:                                    0x%8.8X\n"
 #define MSG_PE_DATABASE                 "Data base:                                    0x%8.8X\n"
-#define MSG_PE_IMAGEBASE                "Image base:                                   0x%8.8X\n"
+#define MSG_PE32_IMAGEBASE              "Image base:                                   0x%8.8X\n"
+#define MSG_PE64_IMAGEBASE              "Image base:                                   0x%16.8llX\n"
 #define MSG_PE_OBJECTALIGN              "Object alignment, power of 2, 512 to 256M:    0x%8.8X\n"
 #define MSG_PE_FILEALIGN                "File alignment factor to align image pages:   0x%8.8X\n"
 #define MSG_PE_OSMAJOR                  "OS major version number:                      0x%8.4X\n"
@@ -152,10 +154,14 @@
 #define MSG_PE_SUBSYSTEMNOTRECOGNIZED   " (not recognized)\n"
 #define MSG_PE_DLLFLAGS                 "DLL flags:                                    0x%8.4X\n"
 #define MSG_PE_DLLFLAGSINDENT           "                                              "
-#define MSG_PE_STACKRESERVESIZE         "Stack reserve size:                           0x%8.8X\n"
-#define MSG_PE_STACKCOMMITSIZE          "Stack commit size:                            0x%8.8X\n"
-#define MSG_PE_HEAPRESERVESIZE          "Heap reserve size:                            0x%8.8X\n"
-#define MSG_PE_HEAPCOMMITSIZE           "Heap commit size:                             0x%8.8X\n"
+#define MSG_PE32_STACKRESERVESIZE       "Stack reserve size:                           0x%8.8X\n"
+#define MSG_PE32_STACKCOMMITSIZE        "Stack commit size:                            0x%8.8X\n"
+#define MSG_PE32_HEAPRESERVESIZE        "Heap reserve size:                            0x%8.8X\n"
+#define MSG_PE32_HEAPCOMMITSIZE         "Heap commit size:                             0x%8.8X\n"
+#define MSG_PE64_STACKRESERVESIZE       "Stack reserve size:                           0x%16.8llX\n"
+#define MSG_PE64_STACKCOMMITSIZE        "Stack commit size:                            0x%16.8llX\n"
+#define MSG_PE64_HEAPRESERVESIZE        "Heap reserve size:                            0x%16.8llX\n"
+#define MSG_PE64_HEAPCOMMITSIZE         "Heap commit size:                             0x%16.8llX\n"
 #define MSG_PE_TLSIDXADDR               "Address of tlx index:                         0x%8.8X\n"
 #define MSG_PE_NUMTABLES                "Number of tables:                             0x%8.8X\n"
 
@@ -196,3 +202,4 @@
 #define MSG_DATA_RSVD                   "RSVD:          0x%8.8X (must be 0)\n"
 
 #endif
+

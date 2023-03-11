@@ -53,7 +53,7 @@ typedef union {
     dos_exe_header      mz;
     os2_exe_header      ne;
     os2_flat_header     lx;
-    exe_pe_header       pe;
+    pe_exe_header       pe;
 } any_header;
 
 

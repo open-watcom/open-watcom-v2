@@ -159,7 +159,7 @@ WRFileType WRIdentifyRESFile( const char *file )
 static bool IdentifyWinExeHeader( FILE *fh, bool win16 )
 {
     os2_exe_header  os2_hdr;
-    exe_pe_header   pe_hdr;
+    pe_exe_header   pe_hdr;
     uint_16         offset;
     bool            ok;
 
@@ -196,12 +196,12 @@ static bool IdentifyWinExeHeader( FILE *fh, bool win16 )
                 return( WRIsHeaderValidWIN16( &os2_hdr ) );
             }
         } else {
-            ok = ( fread( &PE32( pe_hdr ), 1, sizeof( pe_header ), fh ) == sizeof( pe_header ) );
+            ok = ( fread( &PE32( pe_hdr ), 1, PE32_SIZE( pe_hdr ), fh ) == PE32_SIZE( pe_hdr ) );
             if( ok && IS_PE64( pe_hdr ) ) {
                 /* seek to the header again */
                 ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
                 if( ok ) {
-                    ok = ( fread( &PE64( pe_hdr ), 1, sizeof( pe_header64 ), fh ) == sizeof( pe_header64 ) );
+                    ok = ( fread( &PE64( pe_hdr ), 1, PE64_SIZE( pe_hdr ), fh ) == PE64_SIZE( pe_hdr ) );
                 }
             }
             /* check for valid Win32 EXE */

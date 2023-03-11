@@ -54,7 +54,7 @@ static bool seekRead( FILE *fp, DWORD offset, void *buf, DWORD size )
 /*
  * getEXEHeader - verify that this is a PE executable and read the header
  */
-static bool getEXEHeader( FILE *fp, exe_pe_header *pehdr )
+static bool getEXEHeader( FILE *fp, pe_exe_header *pehdr )
 {
     unsigned_16     data;
     pe_signature    signature;
@@ -93,7 +93,7 @@ static bool getEXEHeader( FILE *fp, exe_pe_header *pehdr )
  */
 bool GetSegmentList( ModuleNode *node )
 {
-    exe_pe_header       pehdr;
+    pe_exe_header       pehdr;
     pe_object           obj;
     unsigned            i;
     unsigned            num_objects;
@@ -126,7 +126,7 @@ bool GetSegmentList( ModuleNode *node )
  */
 char *GetModuleName( FILE *fp )
 {
-    exe_pe_header       pehdr;
+    pe_exe_header       pehdr;
     pe_object           obj;
     pe_export_directory expdir;
     DWORD               export_rva;
@@ -166,7 +166,7 @@ char *GetModuleName( FILE *fp )
 
 bool GetModuleSize( FILE *fp, DWORD *size )
 {
-    exe_pe_header       pehdr;
+    pe_exe_header       pehdr;
 
     if( !getEXEHeader( fp, &pehdr ) )
         return( false );
@@ -180,7 +180,7 @@ bool GetModuleSize( FILE *fp, DWORD *size )
 
 ObjectInfo *GetModuleObjects( FILE *fp, unsigned *objects_num )
 {
-    exe_pe_header       pehdr;
+    pe_exe_header       pehdr;
     pe_object           obj;
     ObjectInfo          *ret;
     unsigned            i;

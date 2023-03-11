@@ -138,7 +138,7 @@ static void ReadOldLib( void )
         dos_exe_header  dos;
         os2_exe_header  os2;
         os2_flat_header os2f;
-        exe_pe_header   pe;
+        pe_exe_header   pe;
     }           head;
     char        *fname;
     pe_object   *objects;

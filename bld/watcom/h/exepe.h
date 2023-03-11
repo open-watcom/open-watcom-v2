@@ -297,7 +297,7 @@ typedef struct {
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
     pe_hdr_dir_entry    table[PE_TBL_NUMBER];
-} pe_header, pe32_header;
+} pe32_header;
 
 /*
  * PE32+ header structure
@@ -342,12 +342,12 @@ typedef struct {
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
     pe_hdr_dir_entry    table[PE_TBL_NUMBER];
-} pe_header64, pe64_header;
+} pe64_header;
 
 typedef union {
     pe32_header         pe32;
     pe64_header         pe64;
-} exe_pe_header, pe_exe_header;
+} pe_exe_header;
 
 /*
  * PE object table structure

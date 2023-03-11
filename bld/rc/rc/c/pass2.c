@@ -549,7 +549,7 @@ static RcStatus writePEHeadAndObjTable( void )
     uint_32         image_size;
     int             num_objects;
     unsigned_32     object_align;
-    exe_pe_header   *pehdr;
+    pe_exe_header   *pehdr;
 
     tmp = &Pass2Info.TmpFile;
 
@@ -575,11 +575,11 @@ static RcStatus writePEHeadAndObjTable( void )
         return( RS_WRITE_ERROR );
 
     if( IS_PE64( *pehdr ) ) {
-        if( RESWRITE( tmp->fp, &PE64( *pehdr ), sizeof( pe_header64 ) ) != sizeof( pe_header64 ) ) {
+        if( RESWRITE( tmp->fp, &PE64( *pehdr ), PE64_SIZE( *pehdr ) ) != PE64_SIZE( *pehdr ) ) {
             return( RS_WRITE_ERROR );
         }
     } else {
-        if( RESWRITE( tmp->fp, &PE32( *pehdr ), sizeof( pe_header ) ) != sizeof( pe_header ) ) {
+        if( RESWRITE( tmp->fp, &PE32( *pehdr ), PE32_SIZE( *pehdr ) ) != PE32_SIZE( *pehdr ) ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -789,8 +789,8 @@ static RcStatus updateDebugDirectory( void )
     size_t              read_size;
     unsigned            i;
     debug_directory     *entry;
-    exe_pe_header       *tmp_pehdr;
-    exe_pe_header       *old_pehdr;
+    pe_exe_header       *tmp_pehdr;
+    pe_exe_header       *old_pehdr;
 
     tmp = &Pass2Info.TmpFile;
     old = &Pass2Info.OldFile;

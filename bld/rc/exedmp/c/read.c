@@ -131,8 +131,8 @@ bool readExeHeaders( ExeFile *exeFile )
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    if( fread( (void *) &exeFile->pexHdr,
-               (size_t) sizeof( pe_header ),
+    if( fread( (void *) &PE32( exeFile->pexHdr ),
+               (size_t) PE32_SIZE( exeFile->pexHdr ),
                (size_t) 1,
                exeFile->file ) != 1 ) {
         printf( ERR_READ_PE_EXE_HEADER );
@@ -140,8 +140,8 @@ bool readExeHeaders( ExeFile *exeFile )
         return( false );
     }
     fseek( exeFile->file, prevPos, SEEK_SET );
-    if( exeFile->pexHdr.signature != EXESIGN_PE &&
-        exeFile->pexHdr.signature != EXESIGN_PL ) {
+    if( PE32( exeFile->pexHdr ).signature != EXESIGN_PE &&
+        PE32( exeFile->pexHdr ).signature != EXESIGN_PL ) {
         printf( ERR_READ_NOT_PE_EXE );
         return( false );
     } else {
@@ -157,13 +157,13 @@ bool findResourceObject( ExeFile *exeFile )
 
     prevPos = ftell( exeFile->file );
     if( fseek( exeFile->file,
-               exeFile->pexHdrAddr + sizeof( pe_header ),
+               exeFile->pexHdrAddr + PE32_SIZE( exeFile->pexHdr ),
                SEEK_SET ) ) {
         printf( ERR_READ_CANNOT_FIND_OBJECTS );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    for( i=0; i < exeFile->pexHdr.num_objects; i++ ) {
+    for( i=0; i < PE32( exeFile->pexHdr ).num_objects; i++ ) {
         exeFile->resObjAddr = ftell( exeFile->file );
         if( fread( (void *) &exeFile->resObj,
                    (size_t) sizeof( pe_object ),

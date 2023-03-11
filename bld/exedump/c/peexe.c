@@ -226,10 +226,10 @@ bool Dmp_pe_head( void )
         return( false );
     }
     Wlseek( New_exe_off );
-    Wread( &Pe_head, sizeof( pe_header ) );
+    Wread( &Pe_head, PE32_SIZE( Pe_head ) );
     if( signature == EXESIGN_PE && IS_PE64( Pe_head ) ) {
         Wlseek( New_exe_off );
-        Wread( &Pe_head, sizeof( pe_header64 ) );
+        Wread( &Pe_head, PE64_SIZE( Pe_head ) );
     }
     Wdputs( "file offset = " );
     Puthex( New_exe_off, 8 );
@@ -306,9 +306,9 @@ bool Dmp_pe_head( void )
     }
     Wdputslc( "\n" );
     if( IS_PE64( Pe_head ) ) {
-        offset = New_exe_off + offsetof( pe_header64, magic ) + PE64( Pe_head ).nt_hdr_size;
+        offset = New_exe_off + PE64_SIZE( Pe_head );
     } else {
-        offset = New_exe_off + offsetof( pe_header, magic ) + PE32( Pe_head ).nt_hdr_size;
+        offset = New_exe_off + PE32_SIZE( Pe_head );
     }
     Wlseek( offset );
     if( IS_PE64( Pe_head ) ) {
@@ -504,10 +504,10 @@ bool Dmp_pe_tab( void )
     Wlseek( NE_HEADER_OFFSET );
     Wread( &New_exe_off, sizeof( New_exe_off ) );
     Wlseek( New_exe_off );
-    Wread( &Pe_head, sizeof( pe_header ) );
+    Wread( &Pe_head, PE32_SIZE( Pe_head ) );
     if( IS_PE64( Pe_head ) ) {
         Wlseek( New_exe_off );
-        Wread( &Pe_head, sizeof( pe_header64 ) );
+        Wread( &Pe_head, PE64_SIZE( Pe_head ) );
     }
     switch( PE32( Pe_head ).signature ) {
     case EXESIGN_PE:

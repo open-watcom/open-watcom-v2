@@ -391,7 +391,7 @@ static const char *GetHelpName( const char *exe_name )
     unsigned_32         ne_header_off;
     union {
         dos_exe_header  dos;
-        pe_header       pe;
+        pe_exe_header   pe;
     }   head;
 
     rc = TinyOpen( exe_name, 0 );
@@ -406,10 +406,10 @@ static const char *GetHelpName( const char *exe_name )
             TinySeek( handle, ne_header_off, SEEK_SET );
             TinyRead( handle, &head.pe, sizeof( head.pe ) );
             TinyClose( handle );
-            switch( head.pe.signature ) {
+            switch( PE32( head.pe ).signature ) {
             case EXESIGN_PE:
             case EXESIGN_PL:
-                if( head.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
+                if( PE32( head.pe ).subsystem == PE_SS_PL_DOSSTYLE ) {
                     _DBG_Writeln( "Want PEDHELP" );
                     return( HELPNAME_DS );
                 }

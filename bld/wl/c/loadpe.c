@@ -336,7 +336,7 @@ unsigned_32 DefStackSizePE( void )
     return( PE_DEF_STACK_SIZE );
 }
 
-static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned_32 file_align )
+static unsigned_32 WriteDataPages( pe_exe_header *h, pe_object *object, unsigned_32 file_align )
 /**********************************************************************************************/
 /* write the enumerated data pages */
 {
@@ -793,7 +793,7 @@ void DoAddResource( char *name )
     FmtData.u.pe.resources = info;
 }
 
-static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsigned_32 file_align )
+static unsigned_32 WritePEResources( pe_exe_header *h, pe_object *object, unsigned_32 file_align )
 /************************************************************************************************/
 {
     ExeFileInfo einfo;
@@ -948,7 +948,7 @@ static bool SetPDataArray( void *_sdata, void *_array )
     return( false );
 }
 
-static void SetMiscTableEntries( exe_pe_header *pehdr )
+static void SetMiscTableEntries( pe_exe_header *pehdr )
 /*****************************************************/
 {
     seg_leader  *leader;
@@ -1016,7 +1016,7 @@ void FiniPELoadFile( void )
 /*************************/
 /* make a PE executable file */
 {
-    exe_pe_header   h;
+    pe_exe_header   h;
     unsigned_32     stub_len;
     pe_object       *object;
     unsigned        num_objects;
@@ -1031,13 +1031,13 @@ void FiniPELoadFile( void )
     num_objects = FindNumObjects();
     memset( &h, 0, sizeof( h ) ); /* zero all header fields */
     if( LinkState & LS_HAVE_X64_CODE ) {
-        head_size = sizeof( pe_header64 );
+        head_size = PE64_SIZE( h );
         PE64( h ).magic = 0x20b;
         PE64( h ).signature = EXESIGN_PE;
         PE64( h ).cpu_type = PE_CPU_AMD64;
         PE64( h ).num_objects = num_objects;
         PE64( h ).time_stamp = (unsigned_32)time( NULL );
-        PE64( h ).nt_hdr_size = head_size - offsetof( pe_header64, flags ) - sizeof( PE64( h ).flags );
+        PE64( h ).nt_hdr_size = PE64_OPT_SIZE( h );
         PE64( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE | PE_FLG_LARGE_ADDRESS_AWARE;
         if( FmtData.u.pe.nolargeaddressaware ) {
             PE64( h ).flags &= ~PE_FLG_LARGE_ADDRESS_AWARE;
@@ -1185,7 +1185,7 @@ void FiniPELoadFile( void )
         PE64( h ).image_size = image_size;
         PE64( h ).header_size = object->physical_offset;
     } else {
-        head_size = sizeof( pe_header );
+        head_size = PE32_SIZE( h );
         PE32( h ).magic = 0x10b;
         if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
             PE32( h ).signature = EXESIGN_PL;
@@ -1211,7 +1211,7 @@ void FiniPELoadFile( void )
         }
         PE32( h ).num_objects = num_objects;
         PE32( h ).time_stamp = (unsigned_32)time( NULL );
-        PE32( h ).nt_hdr_size = head_size - offsetof( pe_header, flags ) - sizeof( PE32( h ).flags );
+        PE32( h ).nt_hdr_size = PE32_OPT_SIZE( h );
         PE32( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
         if( FmtData.u.pe.largeaddressaware ) {
             PE32( h ).flags |= PE_FLG_LARGE_ADDRESS_AWARE;
@@ -1477,9 +1477,9 @@ unsigned long GetPEHeaderSize( void )
     num_objects = FindNumObjects();
     size = __ROUND_UP_SIZE( getStubSize(), STUB_ALIGN ) + num_objects * sizeof( pe_object );
     if( LinkState & LS_HAVE_X64_CODE ) {
-        size += sizeof( pe_header64 );
+        size += PE64_SIZE( 0 );
     } else {
-        size += sizeof( pe_header );
+        size += PE32_SIZE( 0 );
     }
     return( __ROUND_UP_SIZE( size, FmtData.objalign ) );
 }

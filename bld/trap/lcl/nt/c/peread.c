@@ -91,7 +91,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     }
     hi->sig = sig;
     if( sig == EXESIGN_PE ) {
-        return( SeekRead( handle, nh_offset, &hi->u.peh, sizeof( exe_pe_header ) ) );
+        return( SeekRead( handle, nh_offset, &hi->u.peh, sizeof( pe_exe_header ) ) );
     }
 #if MADARCH & MADARCH_X86
     if( sig == EXESIGN_NE ) {
@@ -168,10 +168,10 @@ bool GetModuleName( HANDLE fhdl, char *name )
     export_rva = PE_DIRECTORY( hi.u.peh, PE_TBL_EXPORT ).rva;
     if( IS_PE64( hi.u.peh ) ) {
         num_objects = PE64( hi.u.peh ).num_objects;
-        seek_offset += PE64( hi.u.peh ).nt_hdr_size + offsetof( pe_header64, magic ) - sizeof( exe_pe_header );
+        seek_offset += PE64_SIZE( hi.u.peh );
     } else {
         num_objects = PE32( hi.u.peh ).num_objects;
-        seek_offset += PE32( hi.u.peh ).nt_hdr_size + offsetof( pe_header, magic ) - sizeof( exe_pe_header );
+        seek_offset += PE32_SIZE( hi.u.peh );
     }
     if( num_objects == 0 ) {
         return( false );
