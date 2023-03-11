@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,9 @@
 #include "commonui.h"
 #include "bool.h"
 #include "tinyio.h"
+#include "exedos.h"
 #include "getsaddr.h"
 
-#define EXE_NE  0x454e
-#define EXE_MZ  0x5a4d
 
 /*
  * SeekRead - seek to a specified spot in the file, and read some data
@@ -61,32 +61,23 @@ static bool SeekRead( int handle, DWORD newpos, void *buff, WORD size )
 /*
  * FindNewHeader - get a pointer to the new executable header
  */
-static bool FindNewHeader( int handle, DWORD *nh_offset )
+static bool FindNEHeader( int handle, DWORD *ne_header_off )
 {
     WORD        data;
 
-    if( !SeekRead( handle, 0x00, &data, sizeof( data ) ) ) {
-        return( false );
-    }
-    if( data != EXE_MZ ) {
-        return( false );
-    }
-
-    if( !SeekRead( handle, 0x18, &data, sizeof( data ) ) ) {
-        return( false );
-    }
-    if( data < 0x40 ) {
+    if( !SeekRead( handle, 0, &data, sizeof( data ) )
+      || data != EXESIGN_DOS ) {
         return( false );
     }
 
-    if( !SeekRead( handle, 0x3c, nh_offset, sizeof( DWORD ) ) ) {
+    if( !SeekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+      || !NE_HEADER_FOLLOWS( data ) ) {
         return( false );
     }
 
-    if( !SeekRead( handle, *nh_offset, &data, sizeof( WORD ) ) ) {
-        return( false );
-    }
-    if( data != EXE_NE ) {
+    if( !SeekRead( handle, NE_HEADER_OFFSET, ne_header_off, sizeof( *ne_header_off ) )
+      || !SeekRead( handle, *ne_header_off, &data, sizeof( data ) )
+      || data != EXESIGN_NE ) {
         return( false );
     }
 
@@ -102,7 +93,7 @@ bool GetStartAddress( char *path, addr48_ptr *res )
 {
     tiny_ret_t  rc;
     int         handle;
-    DWORD       nh_offset;
+    DWORD       ne_header_off;
     WORD        ip;
     WORD        object;
 
@@ -112,15 +103,15 @@ bool GetStartAddress( char *path, addr48_ptr *res )
     }
     handle = TINY_INFO( rc );
 
-    if( !FindNewHeader( handle, &nh_offset ) ) {
+    if( !FindNEHeader( handle, &ne_header_off ) ) {
         TinyClose( handle );
         return( false );
     }
-    if( !SeekRead( handle, nh_offset + 0x14, &ip, sizeof( ip ) ) ) {
+    if( !SeekRead( handle, ne_header_off + 0x14, &ip, sizeof( ip ) ) ) {
         TinyClose( handle );
         return( false );
     }
-    if( !SeekRead( handle, nh_offset + 0x16, &object, sizeof( object ) ) ) {
+    if( !SeekRead( handle, ne_header_off + 0x16, &object, sizeof( object ) ) ) {
         TinyClose( handle );
         return( false );
     }

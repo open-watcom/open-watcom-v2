@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,26 +72,25 @@ static bool PE_readHeader(
     OPTIONAL_HDR *opthdr)
 {
     EXE_HDR exehdr;
-    u_long  offset, signature;
+    u_long  ne_header_off;
+    u_long  signature;
 
     /* Read the EXE header and check for valid header signature */
     result = PE_invalidDLLImage;
-    DIGLoader( Seek )( fp, startOffset, SEEK_SET );
-    if( DIGLoader( Read )( fp, &exehdr, sizeof( exehdr ) ) )
-        return( false );
-    if( exehdr.signature != 0x5A4D )
+    if( DIGLoader( Seek )( fp, startOffset, SEEK_SET )
+      || DIGLoader( Read )( fp, &exehdr, sizeof( exehdr ) )
+      || exehdr.signature != EXESIGN_DOS )
         return( false );
 
     /* Now seek to the start of the PE header defined at offset 0x3C
      * in the MS-DOS EXE header, and read the signature and check it.
      */
-    DIGLoader( Seek )( fp, startOffset + 0x3C, SEEK_SET );
-    if( DIGLoader( Read )( fp, &offset, sizeof( offset ) ) )
+    if( DIGLoader( Seek )( fp, startOffset + NE_HEADER_OFFSET, SEEK_SET )
+      || DIGLoader( Read )( fp, &ne_header_off, sizeof( ne_header_off ) ) )
         return( false );
-    DIGLoader( Seek )( fp, startOffset + offset, SEEK_SET );
-    if( DIGLoader( Read )( fp, &signature, sizeof( signature ) ) )
-        return( false );
-    if( signature != 0x00004550 )
+    if( DIGLoader( Seek )( fp, startOffset + ne_header_off, SEEK_SET )
+      || DIGLoader( Read )( fp, &signature, sizeof( signature ) )
+      || signature != EXESIGN_PE )
         return( false );
 
     /* Now read the PE file header and check that it is correct */

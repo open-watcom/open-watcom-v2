@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,9 @@
 #include "watcom.h"
 
 /*---------------------- Macros and type definitions ----------------------*/
+#define EXESIGN_DOS         0x5a4d
+#define EXESIGN_PE          0x4550
+#define NE_HEADER_OFFSET    0x003c
 
 #include "pushpck1.h"
 
