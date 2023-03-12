@@ -710,7 +710,7 @@ static dip_status TryStub( FILE *fp, imp_image_handle *iih )
     if( BSeek( fp, ne_header_off, DIG_SEEK_ORG ) != ne_header_off ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    switch( head.ne.signature ) {
+    switch( signature ) {
     case EXESIGN_NE:
         /* Hey, it's an NE executable */
         return( TryNE( fp, iih, ne_header_off ) );
