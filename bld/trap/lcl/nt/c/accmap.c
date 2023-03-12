@@ -596,7 +596,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
             return( 0 );
         }
-        if( hi.sig != EXESIGN_PE ) {
+        if( hi.signature != EXESIGN_PE ) {
             return( 0 );
         }
 

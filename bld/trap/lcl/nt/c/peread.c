@@ -65,43 +65,40 @@ bool SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 {
     WORD    data;
-    WORD    sig;
-    DWORD   nh_offset;
+    WORD    signature;
+    DWORD   ne_header_off;
 
-    if( !SeekRead( handle, 0x00, &data, sizeof( data ) ) ) {
-        return( false );
-    }
-    if( data != EXESIGN_MZ ) {
-        return( false );
-    }
-
-    //    if( !SeekRead( handle, 0x18, &data, sizeof( data ) ) ) {
-    //      return( false );
-    //    }
-    //    if( data < 0x40 ) {
-    //      return( false );
-    //    }
-
-    if( !SeekRead( handle, 0x3c, &nh_offset, sizeof( unsigned_32 ) ) ) {
+    if( !SeekRead( handle, 0, &data, sizeof( data ) )
+      || data != EXESIGN_DOS ) {
         return( false );
     }
 
-    if( !SeekRead( handle, nh_offset, &sig, sizeof( sig ) ) ) {
-        sig = 0;
+    if( !SeekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+      || !NE_HEADER_FOLLOWS( data ) ) {
+        return( false );
     }
-    hi->sig = sig;
-    if( sig == EXESIGN_PE ) {
+
+    if( !SeekRead( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
+        return( false );
+    }
+
+    if( !SeekRead( handle, ne_header_off, &signature, sizeof( signature ) ) ) {
+        signature = 0;
+    }
+    if( signature == EXESIGN_PE ) {
         DWORD      bytes;
 
-        if( !SeekRead( handle, nh_offset, &hi->u.peh, PE_HDR_SIZE ) 
+        hi->signature = EXESIGN_PE;
+        if( !SeekRead( handle, ne_header_off, &hi->u.peh, PE_HDR_SIZE ) 
           || !ReadFile( handle, (char *)&hi->u.peh + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.peh ), &bytes, NULL ) ) {
             return( false );
         }
         return( true );
     }
 #if MADARCH & MADARCH_X86
-    if( sig == EXESIGN_NE ) {
-        if( !SeekRead( handle, nh_offset, &hi->u.neh, sizeof( os2_exe_header ) ) ) {
+    if( signature == EXESIGN_NE ) {
+        hi->signature = EXESIGN_NE;
+        if( !SeekRead( handle, ne_header_off, &hi->u.neh, sizeof( hi->u.neh ) ) ) {
             return( false );
         }
         if( hi->u.neh.target == TARGET_WINDOWS ) {
@@ -110,7 +107,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
             DWORD           bytes;
             DWORD           pos;
 
-            off = nh_offset + hi->u.neh.resident_off;
+            off = ne_header_off + hi->u.neh.resident_off;
             if( SetFilePointer( handle, off, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
                 return( false );
             }
@@ -124,7 +121,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
                 return( false );
             }
             hi->modname[len] = 0;
-            pos = nh_offset + hi->u.neh.segment_off +
+            pos = ne_header_off + hi->u.neh.segment_off +
                 ( hi->u.neh.adsegnum - 1 ) * sizeof( segment_record ) +
                 offsetof( segment_record, min );
             if( !SeekRead( handle, pos, stack, sizeof( *stack ) ) ) {
@@ -135,7 +132,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
         }
         return( false );
     }
-    hi->sig = EXESIGN_DOS;
+    hi->signature = EXESIGN_DOS;
     return( true );
 #elif MADARCH & MADARCH_X64
     /* unused parameters */ (void)stack;
@@ -164,7 +161,7 @@ bool GetModuleName( HANDLE fhdl, char *name )
     if( !GetEXEHeader( fhdl, &hi, &stack ) ) {
         return( false );
     }
-    if( hi.sig != EXESIGN_PE ) {
+    if( hi.signature != EXESIGN_PE ) {
         return( false );
     }
     seek_offset = SetFilePointer( fhdl, 0, NULL, FILE_CURRENT );

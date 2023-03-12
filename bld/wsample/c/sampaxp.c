@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -296,35 +296,32 @@ static BOOL seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 /*
  * getPEHeader - get the header of the .EXE
  */
-static int getPEHeader( HANDLE handle, pe_header *peh )
+static int getPEHeader( HANDLE handle, pe_exe_header *pehdr )
 {
     WORD                data;
-    WORD                sig;
-    DWORD               nh_offset;
+    DWORD               signature;
+    DWORD               ne_header_off;
 
-    if( !seekRead( handle, 0x00, &data, sizeof( data ) ) ) {
-        return( FALSE );
-    }
-    if( data != DOS_SIGNATURE ) {
+    if( !seekRead( handle, 0, &data, sizeof( data ) )
+      || data != DOS_SIGNATURE ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, 0x18, &data, sizeof( data ) ) ) {
+    if( !seekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+      || !NE_HEADER_FOLLOWS( data ) ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, 0x3c, &nh_offset, sizeof( unsigned_32 ) ) ) {
+    if( !seekRead( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, nh_offset, &sig, sizeof( sig ) ) ) {
-        return( FALSE );
-    }
-    if( sig != PE_SIGNATURE ) {
+    if( !seekRead( handle, ne_header_off, &signature, sizeof( signature ) )
+      || signature != PE_SIGNATURE ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, nh_offset, peh, sizeof( pe_header ) ) ) {
+    if( !seekRead( handle, ne_header_off, pehdr, sizeof( *pehdr ) ) ) {
         return( FALSE );
     }
     return( TRUE );

@@ -289,17 +289,16 @@ static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 static bool getPEHeader( HANDLE handle, pe_exe_header *peh )
 {
     WORD                data;
-    WORD                sig;
+    WORD                signature;
     DWORD               ne_header_off;
 
-    if( !seekRead( handle, 0, &data, sizeof( data ) ) ) {
-        return( false );
-    }
-    if( data != EXESIGN_DOS ) {
+    if( !seekRead( handle, 0, &data, sizeof( data ) )
+      || data != EXESIGN_DOS ) {
         return( false );
     }
 
-    if( !seekRead( handle, 0x18, &data, sizeof( data ) ) ) {
+    if( !seekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+      || !NE_HEADER_FOLLOWS( data ) ) {
         return( false );
     }
 
@@ -307,10 +306,10 @@ static bool getPEHeader( HANDLE handle, pe_exe_header *peh )
         return( false );
     }
 
-    if( !seekRead( handle, ne_header_off, &sig, sizeof( sig ) ) ) {
+    if( !seekRead( handle, ne_header_off, &signature, sizeof( signature ) ) ) {
         return( false );
     }
-    if( sig != EXESIGN_PE ) {
+    if( signature != EXESIGN_PE ) {
         return( false );
     }
 

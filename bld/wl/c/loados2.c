@@ -179,7 +179,7 @@ static void ReadOldLib( void )
                 if( head.pe.signature == EXESIGN_PE ) {
                     unsigned    num_objects;
 
-                    QRead( the_file, &head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ), fname );
+                    QRead( the_file, (char *)&head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ), fname );
                     num_objects = head.pe.fheader.num_objects;
                     _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
                     QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );

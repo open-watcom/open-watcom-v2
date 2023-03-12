@@ -36,6 +36,7 @@
 #include "wrmsg.h"
 #include "wrmemi.h"
 #include "rcrtns.h"
+#include "exedos.h"
 #include "wresdefn.h"
 
 
@@ -105,72 +106,66 @@ bool WRLoadResourceFromWin16EXE( WRInfo *info )
     return( ok );
 }
 
-long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
+long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *nehdr )
 {
-    bool        old_pos;
-    uint_16     offset;
+    uint_16     data;
+    uint_32     ne_header_off;
     bool        ok;
 
-    old_pos = false;
-
-    ok = ( fp != NULL && header != NULL );
-
+    ok = ( fp != NULL && nehdr != NULL );
+    /*
+     * check the reloc offset
+     */
     if( ok ) {
-        ok = old_pos = !RESSEEK( fp, 0x18, SEEK_SET );
+        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET );
+        if( ok ) {
+            ResReadUint16( &data, fp );
+            ok = ( NE_HEADER_FOLLOWS( data ) );
+        }
     }
-
-    /* check the reloc offset */
-    if( ok ) {
-        ResReadUint16( &offset, fp );
-        ok = ( offset >= 0x0040 );
-    }
-
+    /*
+     * check header offset
+     */
     if( ok ) {
         ok = !RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET );
-    }
-
-    /* check header offset */
-    if( ok ) {
-        ResReadUint16( &offset, fp );
-        ok = ( offset != 0 );
-    }
-
-    if( ok ) {
-        ok = !RESSEEK( fp, offset, SEEK_SET );
+        if( ok ) {
+            ResReadUint32( &ne_header_off, fp );
+            ok = ( ne_header_off != 0 );
+        }
     }
 
     if( ok ) {
-        ok = ( RESREAD( fp, header, sizeof( os2_exe_header ) ) == sizeof( os2_exe_header ) );
-    }
-
-    /* check for valid Win16 EXE */
-    if( ok ) {
-        ok = WRIsHeaderValidWIN16( header );
-    }
-
-    if( old_pos ) {
-        ok = ( !RESSEEK( fp, 0x18, SEEK_SET ) && ok );
+        ok = !RESSEEK( fp, ne_header_off, SEEK_SET );
     }
 
     if( ok ) {
-        return( offset );
-    } else {
-        return( 0 );
+        ok = ( RESREAD( fp, nehdr, sizeof( *nehdr ) ) == sizeof( *nehdr ) );
     }
+    /*
+     * check for valid Win16 EXE
+     */
+    if( ok ) {
+        ok = WRIsHeaderValidWIN16( nehdr );
+    }
+
+    if( ok ) {
+        return( ne_header_off );
+    }
+    return( 0 );
 }
 
-bool WRIsHeaderValidWIN16( os2_exe_header *header )
+bool WRIsHeaderValidWIN16( os2_exe_header *nehdr )
 {
-    if( header->signature == EXESIGN_NE && header->expver >= 0x300 ) {
+    if( nehdr->signature == EXESIGN_NE && nehdr->expver >= 0x300 ) {
         return( true );
     }
 
     return( false );
 }
 
-bool WRWin16HeaderHasResourceTable( os2_exe_header *header )
+bool WRWin16HeaderHasResourceTable( os2_exe_header *nehdr )
 {
-    if( header->resource_off != header->resident_off ) {
+    if( nehdr->resource_off != nehdr->resident_off ) {
         return( true );
     }
 
@@ -179,8 +174,8 @@ bool WRWin16HeaderHasResourceTable( os2_exe_header *header )
 
 bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
 {
-    os2_exe_header  win_header;
-    long            offset;
+    os2_exe_header  nehdr;
+    long            ne_header_off;
     uint_16         align_shift;
     uint_32         name_offset;
     WResTypeNode    *type_node;
@@ -197,23 +192,24 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
     }
 
     if( ok ) {
-        ok = ( (offset = WRReadWin16ExeHeader( fp, &win_header )) != 0 );
+        ok = ( (ne_header_off = WRReadWin16ExeHeader( fp, &nehdr )) != 0 );
     }
-
-    /* check if a resource table is present */
+    /*
+     * check if a resource table is present
+     */
     if( ok ) {
-        ok = WRWin16HeaderHasResourceTable( &win_header );
+        ok = WRWin16HeaderHasResourceTable( &nehdr );
         if( !ok ) {
             return( true );
         }
     }
 
     if( ok ) {
-        ok = !RESSEEK( fp, offset, SEEK_SET );
+        ok = !RESSEEK( fp, ne_header_off, SEEK_SET );
     }
 
     if( ok ) {
-        ok = !RESSEEK( fp, win_header.resource_off, SEEK_CUR );
+        ok = !RESSEEK( fp, nehdr.resource_off, SEEK_CUR );
     }
 
     if( ok ) {
@@ -239,11 +235,11 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
             (*dir)->NumTypes++;
             (*dir)->NumResources += type_node->Info.NumResources;
         }
-        name_offset = RESTELL( fp ) - offset - win_header.resource_off;
+        name_offset = RESTELL( fp ) - ne_header_off - nehdr.resource_off;
         ok = WRReadResourceNames( *dir, fp, name_offset );
     }
 
-    if( ok && win_header.expver <= 0x300 ) {
+    if( ok && nehdr.expver <= 0x300 ) {
         num_leftover = 0;
         leftover = NULL;
         name_table_len = WRReadNameTable( *dir, fp, &name_table, num_leftover, leftover );
@@ -509,7 +505,9 @@ uint_32 WRReadNameTable( WResDir dir, FILE *fp, uint_8 **name_table,
         type_node = WRFindTypeNode( dir, RESOURCE2INT( RT_NAMETABLE ), NULL );
         if( type_node != NULL ) {
             res_node = type_node->Head;
-            /* if there are two name tables we ignore all but the first */
+            /*
+             * if there are two name tables we ignore all but the first
+             */
             res_len = res_node->Head->Info.Length;
             res_offset = res_node->Head->Info.Offset;
             if( RESSEEK( fp, res_offset, SEEK_SET ) ) {
@@ -534,8 +532,8 @@ uint_32 WRReadNameTable( WResDir dir, FILE *fp, uint_8 **name_table,
     }
 
     num_read += len;
-
-    /* If there was data left over but we have a NULL pointer to the
+    /*
+     * If there was data left over but we have a NULL pointer to the
      * leftover data then we are in a very bad situation.
      * What we shall do is skip the left over data.
      * If the seek to skip the data fails then we are totally SNAFU

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,11 +63,6 @@
 
 /* Maximum watchpoints */
 #define MAX_WATCHES         32
-
-#define EXE_MZ              0x5a4d
-#define EXE_NE              0x454e
-#define EXE_LE              0x454c
-#define EXE_LX              0x584c
 
 #define OBJECT_IS_CODE      0x0004L
 #define OBJECT_IS_BIG       0x2000L
@@ -194,45 +189,21 @@ static bool SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
 /*
  * FindNewHeader - get a pointer to the new exe header
  */
-static bool FindNewHeader( char *name, HFILE *hdl,
-                          ULONG *new_head, USHORT *id )
+static bool FindNewHeader( HFILE hdl, ULONG *ne_header_off, USHORT *type )
 {
-    long        open_rc;
-    HFILE       h;
     bool        rc;
     USHORT      data; /* MUST be 16-bit! */
 
     rc = false;
-    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
-    if( open_rc >= 0 ) {
-        h = open_rc;
-        for( ;; ) {
-            if( !SeekRead( h, 0x00, &data, sizeof( data ) ) ) {
-                break;
+    if( SeekRead( hdl, 0, &data, sizeof( data ) )
+      && data == EXESIGN_DOS ) {
+        if( SeekRead( hdl, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+          && NE_HEADER_FOLLOWS( data ) ) {
+            if( SeekRead( hdl, NE_HEADER_OFFSET, ne_header_off, sizeof( *ne_header_off ) )
+              && SeekRead( hdl, *ne_header_off, type, sizeof( *type ) ) ) {
+                rc = true;
             }
-            if( data != EXE_MZ )
-                break;   /* MZ */
-
-            if( !SeekRead( h, 0x18, &data, sizeof( data ) ) ) {
-                break;
-            }
-            if( data < 0x40 )       /* offset of relocation header */
-                break;
-
-            if( !SeekRead( h, 0x3c, new_head, sizeof( ULONG ) ) ) {
-                break;
-            }
-
-            if( !SeekRead( h, *new_head, id, sizeof( USHORT ) ) ) {
-                break;
-            }
-            rc = true;
-            break;
         }
-        if( !rc ) {
-            DosClose( h );
-        }
-        *hdl = h;
     }
     return( rc );
 
@@ -241,10 +212,11 @@ static bool FindNewHeader( char *name, HFILE *hdl,
 static void GetObjectInfo( HMODULE mte )
 {
     HFILE               hdl;
-    ULONG               new_head;
+    ULONG               ne_header_off;
     USHORT              type;
     unsigned_32         objoff;
     unsigned_32         numobjs;
+    long                open_rc;
 
     char                buff[CCHMAXPATH];
 
@@ -254,21 +226,22 @@ static void GetObjectInfo( HMODULE mte )
     memset( ObjInfo, 0, sizeof( ObjInfo ) );
     DosQueryModuleName( mte, sizeof( buff ), buff );
     NumObjects = 0;
-    if( !FindNewHeader( buff, &hdl, &new_head, &type ) ) {
-        return;
-    }
-    if( type != EXE_LE && type != EXE_LX ) {
+    open_rc = OpenFile( buff, 0, OPEN_PRIVATE );
+    if( open_rc >= 0 ) {
+        hdl = open_rc;
+        if( FindNewHeader( hdl, &ne_header_off, &type ) ) {
+            if( type == EXESIGN_LE || type == EXESIGN_LX ) {
+                SeekRead( hdl, ne_header_off + 0x40, &objoff, sizeof( objoff ) );
+                SeekRead( hdl, ne_header_off + 0x44, &numobjs, sizeof( numobjs ) );
+                if( numobjs <= MAX_OBJECTS ) {
+                    SeekRead( hdl, ne_header_off + objoff, ObjInfo, numobjs * sizeof( ObjInfo[0] ) );
+                    NumObjects = numobjs;
+                }
+                LastMTE = mte;
+            }
+        }
         DosClose( hdl );
-        return;
     }
-    SeekRead( hdl, new_head + 0x40, &objoff, sizeof( objoff ) );
-    SeekRead( hdl, new_head + 0x44, &numobjs, sizeof( numobjs ) );
-    if( numobjs <= MAX_OBJECTS ) {
-        SeekRead( hdl, new_head + objoff, ObjInfo, numobjs * sizeof( ObjInfo[0] ) );
-        NumObjects = numobjs;
-    }
-    LastMTE = mte;
-    DosClose( hdl );
 }
 
 
@@ -896,80 +869,80 @@ static USHORT GetEXEFlags( char *name )
 {
     HFILE       hdl;
     USHORT      type;
-    ULONG       new_head;
+    ULONG       ne_header_off;
     USHORT      exeflags;
+    long        open_rc;
 
-    if( !FindNewHeader( name, &hdl, &new_head, &type ) ) {
-        return( 0 );
+    exeflags = 0;
+    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
+    if( open_rc >= 0 ) {
+        hdl = open_rc;
+        if( FindNewHeader( hdl, &ne_header_off, &type ) ) {
+            if( type == EXESIGN_NE ) {
+                SeekRead( hdl, ne_header_off + 0x0c, &exeflags, sizeof( exeflags ) );
+                exeflags &= 0x0700;
+            } else if( type == EXESIGN_LE || type == EXESIGN_LX ) {
+                SeekRead( hdl, ne_header_off + 0x10, &exeflags, sizeof( exeflags ) );
+                exeflags &= 0x0700;
+            }
+        }
+        DosClose( hdl );
     }
-    if( type == EXE_NE ) {
-        SeekRead( hdl, new_head + 0x0c, &exeflags, sizeof( exeflags ) );
-    } else if( type == EXE_LE || type == EXE_LX ) {
-        SeekRead( hdl, new_head + 0x10, &exeflags, sizeof( exeflags ) );
-    } else {
-        exeflags = 0;
-    }
-    DosClose( hdl );
-    exeflags &= 0x0700;
     return( exeflags );
 
 } /* GetEXEFlags */
+
+static bool setExeInfo( ULONG *pLin, ULONG objnum, ULONG eip )
+{
+    Buff.Cmd   = DBG_C_NumToAddr;
+    Buff.Value = objnum;
+    Buff.MTE   = ModHandles[0];
+    CallDosDebug( &Buff );
+    if( Buff.Cmd != DBG_N_Success ) {
+        return( false );
+    }
+    *pLin = eip + Buff.Addr;
+    Buff.MTE = ModHandles[0];
+    return( true );
+}
 
 static bool FindLinearStartAddress( ULONG *pLin, char *name )
 {
     bool        rc;
     HFILE       hdl;
     USHORT      type;
-    ULONG       new_head;
-    ULONG       objnum;
-    USHORT      sobjn;
-    ULONG       eip;
-    USHORT      ip;
+    ULONG       ne_header_off;
+    long        open_rc;
 
-    if( !FindNewHeader( name, &hdl, &new_head, &type ) ) {
-        return( false );
-    }
-    for( ;; ) {
-        rc = false;
-        if( type == EXE_NE ) {
-            if( !SeekRead( hdl, new_head + 0x14, &ip, sizeof( ip ) ) ) {
-                break;
-            }
-            eip = ip;
-            if( !SeekRead( hdl, new_head + 0x16, &sobjn, sizeof( sobjn ) ) ) {
-                break;
-            }
-            objnum = sobjn;
+    rc = false;
+    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
+    if( open_rc >= 0 ) {
+        hdl = open_rc;
+        if( FindNewHeader( hdl, &ne_header_off, &type ) ) {
+            if( type == EXESIGN_NE ) {
+                USHORT      sobjn;
+                USHORT      ip;
 
-            Is32Bit = false;
-        } else if( type == EXE_LE || type == EXE_LX ) {
-            if( !SeekRead( hdl, new_head + 0x1c, &eip, sizeof( eip ) ) ) {
-                break;
-            }
-            if( !SeekRead( hdl, new_head + 0x18, &objnum, sizeof( objnum ) ) ) {
-                break;
-            }
+                if( SeekRead( hdl, ne_header_off + 0x14, &ip, sizeof( ip ) ) ) {
+                    if( SeekRead( hdl, ne_header_off + 0x16, &sobjn, sizeof( sobjn ) ) ) {
+                        Is32Bit = false;
+                        rc = setExeInfo( pLin, sobjn, ip );
+                    }
+                }
+            } else if( type == EXESIGN_LE || type == EXESIGN_LX ) {
+                ULONG       objnum;
+                ULONG       eip;
 
-            Is32Bit = true;
-        } else {
-            break;
+                if( SeekRead( hdl, ne_header_off + 0x1c, &eip, sizeof( eip ) ) ) {
+                    if( SeekRead( hdl, ne_header_off + 0x18, &objnum, sizeof( objnum ) ) ) {
+                        Is32Bit = true;
+                        rc = setExeInfo( pLin, objnum, eip );
+                    }
+                }
+            }
         }
-
-        Buff.Cmd   = DBG_C_NumToAddr;
-        Buff.Value = objnum;
-        Buff.MTE   = ModHandles[0];
-        CallDosDebug( &Buff );
-        if( Buff.Cmd != DBG_N_Success ) {
-            break;
-        }
-        *pLin = eip + Buff.Addr;
-
-        Buff.MTE = ModHandles[0];
-
-        rc = true;
-        break;
+        DosClose( hdl );
     }
-    DosClose( hdl );
     return( rc );
 } /* FindLinearStartAddress */
 
@@ -1091,8 +1064,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( *src == '#' ) {
         src++;
         attach_pid = strtoul( src, &endsrc, 16 );
-        if( attach_pid == 0 )
+        if( attach_pid == 0 ) {
             attach_pid = -1;
+        }
 //        strcpy( buff, endsrc );
     } else {
         while( *src != '\0' ) {

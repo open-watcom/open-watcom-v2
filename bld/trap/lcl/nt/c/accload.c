@@ -368,20 +368,18 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
             goto error_exit;
         }
-        if( hi.sig == EXESIGN_PE ) {
-            if( IS_PE64( hi.u.peh ) ) {
-                DebugeeSubsystem = PE64( hi.u.peh ).subsystem;
-            } else {
-                DebugeeSubsystem = PE32( hi.u.peh ).subsystem;
+        if( hi.signature == EXESIGN_PE ) {
+            DebugeeSubsystem = PE( hi.u.peh, subsystem );
 #if MADARCH & MADARCH_X64
+            if( !IS_PE64( hi.u.peh ) ) {
                 IsWOW = true;
-#endif
             }
+#endif
             if( DebugeeSubsystem == SS_WINDOWS_CHAR ) {
                 cr_flags |= CREATE_NEW_CONSOLE;
             }
 #if !( MADARCH & MADARCH_X64 )
-        } else if( hi.sig == EXESIGN_NE ) {
+        } else if( hi.signature == EXESIGN_NE ) {
             IsWOW = true;
             /*
              * find out the pid of WOW, if it is already running.

@@ -107,7 +107,7 @@
 #endif
 
 typedef struct {
-    WORD                sig;
+    WORD                signature;
     union {
         pe_exe_header   peh;
         os2_exe_header  neh;

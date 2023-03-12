@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@
   #endif
 #else
   #include "tinyio.h"
+  #include "exedos.h"
 #endif
 #if !defined( _DEFAULT_WINDOWS )
   #include "8x8font.h"
@@ -282,9 +283,10 @@ static short addfont( long offset, tiny_handle_t handle, char *font_file )
 static short readfontfile( char *font_file )
 //==========================================
 {
-    char                sig;
-    long                ne_offset;
-    short               rs_offset;
+    unsigned_16         data;
+    unsigned_32         ne_offset;
+    unsigned_32         ne_header_off;
+    short               res_offset;
     short               shift_count;
     unsigned short      type;
     short               count;
@@ -301,25 +303,25 @@ static short readfontfile( char *font_file )
     }
     handle = TINY_INFO( rc );
     // check for signature of 0x40 at location 0x18
-    if( seek_and_read( handle, 0x18, &sig, sizeof( char ) ) == 0 ) {
+    if( seek_and_read( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) ) == 0 ) {
         return( 0 );
     }
-    if( sig != 0x40 ) {
+    if( !NE_HEADER_FOLLOWS( data ) ) {
         _ErrorStatus = _GRINVALIDFONTFILE;
         TinyClose( handle );
         return( 0 );
     }
     // get offset of NE header
-    if( seek_and_read( handle, 0x3c, &ne_offset, sizeof( long ) ) == 0 ) {
+    if( seek_and_read( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) == 0 ) {
         return( 0 );
     }
     // find start of resource table
-    if( seek_and_read( handle, ne_offset + 0x24, &rs_offset, sizeof( short ) ) == 0 ) {
+    if( seek_and_read( handle, ne_header_off + 0x24, &res_offset, sizeof( res_offset ) ) == 0 ) {
         return( 0 );
     }
     // get shift_count at start of resource table
-    ne_offset += rs_offset;
-    if( seek_and_read( handle, ne_offset, &shift_count, sizeof( short ) ) == 0 ) {
+    ne_offset = ne_header_off + res_offset;
+    if( seek_and_read( handle, ne_offset, &shift_count, sizeof( shift_count ) ) == 0 ) {
         return( 0 );
     }
     // read entries in resource table, looking for font definitions

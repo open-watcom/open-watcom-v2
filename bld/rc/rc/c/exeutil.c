@@ -222,11 +222,7 @@ RcStatus SeekRead( FILE *fp, long newpos, void *buff, size_t size )
 
 } /* SeekRead */
 
-/* location within a windows executable of the offset of the os2_exe_header */
-#define DOS_RELOCATION_OFFSET           0x18L
-
-/* If the value at DOS_RELOCATION_ADDRESS_OFFSET < */
-/* NE_HEADER_OFFSET + sizeof( uint_32 ) then the DOS reloction */
+/* If the value at DOS_RELOC_OFFSET < NE_HEADER_OFFSET then the DOS reloction */
 /* information starts before the end of the address of the os2_exe_header */
 /* so this is not a valid windows EXE file. */
 
@@ -234,47 +230,37 @@ ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off )
 /**************************************************************/
 /* Determine type of executable */
 {
-    os2_exe_header  ne_header;
+    os2_exe_header  nehdr;
     unsigned_16     data;
-    RcStatus        rc;
 
-    rc = SeekRead( fp, 0, &data, sizeof( data ) );
-    if( rc != RS_OK )
-        return( EXE_TYPE_UNKNOWN );
-    if( data != EXESIGN_DOS )
-        return( EXE_TYPE_UNKNOWN );
-
-    rc = SeekRead( fp, DOS_RELOCATION_OFFSET, &data, sizeof( data ) );
-    if( rc != RS_OK )
-        return( EXE_TYPE_UNKNOWN );
-
-    if( data < NE_HEADER_OFFSET + sizeof( uint_32 ) ) {
+    if( SeekRead( fp, 0, &data, sizeof( data ) ) != RS_OK
+      || data != EXESIGN_DOS ) {
         return( EXE_TYPE_UNKNOWN );
     }
-
-    rc = SeekRead( fp, NE_HEADER_OFFSET, ne_header_off, sizeof( *ne_header_off ) );
-    if( rc != RS_OK )
+    if( SeekRead( fp, DOS_RELOC_OFFSET, &data, sizeof( data ) ) != RS_OK
+      || !NE_HEADER_FOLLOWS( data ) ) {
         return( EXE_TYPE_UNKNOWN );
-
-    rc = SeekRead( fp, *ne_header_off, &data, sizeof( data ) );
-    if( rc != RS_OK )
+    }
+    if( SeekRead( fp, NE_HEADER_OFFSET, ne_header_off, sizeof( *ne_header_off ) ) != RS_OK
+      || *ne_header_off == 0 ) {
+        return( EXE_TYPE_UNKNOWN );
+    }
+    if( SeekRead( fp, *ne_header_off, &data, sizeof( data ) ) != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
     switch( data ) {
     case EXESIGN_NE:
-        rc = SeekRead( fp, *ne_header_off, &ne_header, sizeof( ne_header ) );
-        if( rc != RS_OK )
-            return( EXE_TYPE_UNKNOWN );
-        if( ne_header.target == TARGET_OS2 )
+        if( SeekRead( fp, *ne_header_off, &nehdr, sizeof( nehdr ) ) != RS_OK )
+            break;
+        if( nehdr.target == TARGET_OS2 )
             return( EXE_TYPE_NE_OS2 );
-        if( ne_header.target == TARGET_WINDOWS || ne_header.target == TARGET_WIN386 )
+        if( nehdr.target == TARGET_WINDOWS || nehdr.target == TARGET_WIN386 )
             return( EXE_TYPE_NE_WIN );
-        return( EXE_TYPE_UNKNOWN );
+        break;
     case EXESIGN_PE:
         return( EXE_TYPE_PE );
     case EXESIGN_LX:
         return( EXE_TYPE_LX );
-    default:
-        return( EXE_TYPE_UNKNOWN );
     }
+    return( EXE_TYPE_UNKNOWN );
 } /* FindNEPEHeader */

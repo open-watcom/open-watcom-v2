@@ -136,7 +136,7 @@ bool readExeHeaders( ExeFile *exeFile )
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    if( fread( &exeFile->pexHdr + PE_HDR_SIZE, PE_OPT_SIZE( exeFile->pexHdr ), 1, exeFile->file ) != 1 ) {
+    if( fread( (char *)&exeFile->pexHdr + PE_HDR_SIZE, PE_OPT_SIZE( exeFile->pexHdr ), 1, exeFile->file ) != 1 ) {
         printf( ERR_READ_PE_EXE_HEADER );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );

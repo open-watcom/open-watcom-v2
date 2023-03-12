@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +48,6 @@
 #include "smpstuff.h"
 #include "os2dbg.h"
 
-
-#define EXE_LX      0x584c
-#define EXE_NE      0x454e
 
 #define BUFF_SIZE   512
 #define STACK_SIZE  4096
@@ -122,24 +119,24 @@ unsigned SafeMargin( void )
 static int IsLX( void )
 {
     int                 f;
-    unsigned_32         offset;
-    unsigned_16         sig;
+    unsigned_32         ne_offset;
+    unsigned_16         signature;
     unsigned_16         flags;
 
     f = open( ExeName, O_BINARY | O_RDONLY );
     if( f == -1 )
         return( 0 );
-    if( lseek( f, 0x3c, SEEK_SET ) != 0x3c )
+    if( lseek( f, NE_HEADER_OFFSET, SEEK_SET ) != NE_HEADER_OFFSET )
         return( 0 );
-    if( read( f, &offset, sizeof( offset ) ) != sizeof( offset ) )
+    if( read( f, &ne_offset, sizeof( ne_offset ) ) != sizeof( ne_offset ) )
         return( 0 );
-    if( lseek( f, offset, SEEK_SET ) != offset )
+    if( lseek( f, ne_offset, SEEK_SET ) != ne_offset )
         return( 0 );
-    if( read( f, &sig, sizeof( sig ) ) != sizeof( sig ) )
+    if( read( f, &signature, sizeof( signature ) ) != sizeof( signature ) )
         return( 0 );
-    if( sig == EXE_NE ) {
-        offset += 12;
-        if( lseek( f, offset, SEEK_SET ) != offset )
+    if( signature == EXESIGN_NE ) {
+        ne_offset += 12;
+        if( lseek( f, ne_offset, SEEK_SET ) != ne_offset )
             return( 0 );
         if( read( f, &flags, sizeof( flags ) ) != sizeof( flags ) )
             return( 0 );
@@ -149,7 +146,7 @@ static int IsLX( void )
         }
     }
     close( f );
-    return( sig == EXE_LX );
+    return( signature == EXESIGN_LX );
 }
 
 #if 0
