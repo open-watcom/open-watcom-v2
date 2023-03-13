@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,7 @@
 #include "exepe.h"
 #include "madregs.h"
 #include "brkptcpu.h"
+#include "digcpu.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
@@ -555,32 +556,33 @@ static int map_dbe( int err )
 static void CheckForPE( char *name )
 {
     int                 handle;
-    unsigned_32         off;
+    unsigned_32         ne_header_off;
     unsigned            i;
     pe_object           obj;
     union {
         dos_exe_header  dos;
-        pe_header       pe;
+        pe_exe_header   pe;
     }   head;
 
     handle = open( name, O_BINARY | O_RDONLY, 0 );
     if( handle == -1 )
         return;
     read( handle, &head.dos, sizeof( head.dos ) );
-    if( head.dos.signature != DOS_SIGNATURE ) {
+    if( head.dos.signature != EXESIGN_DOS ) {
         close( handle );
         return;
     }
-    lseek( handle, OS2_NE_OFFSET, SEEK_SET );
-    read( handle, &off, sizeof( off ) );
-    lseek( handle, off, SEEK_SET );
-    read( handle, &head.pe, sizeof( head.pe ) );
+    lseek( handle, NE_HEADER_OFFSET, SEEK_SET );
+    read( handle, &ne_header_off, sizeof( ne_header_off ) );
+    lseek( handle, ne_header_off, SEEK_SET );
+    read( handle, &head.pe, PE_HDR_SIZE );
+    read( handle, (char *)&head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ) );
     switch( head.pe.signature ) {
-    case PE_SIGNATURE:
-    case PL_SIGNATURE:
-        for( i = 0; i < head.pe.num_objects; ++i ) {
+    case EXESIGN_PE:
+    case EXESIGN_PL:
+        for( i = 0; i < head.pe.fheader.num_objects; ++i ) {
             read( handle, &obj, sizeof( obj ) );
-            ObjOffReloc[i] = Mach.msb_eip - head.pe.entry_rva + obj.rva;
+            ObjOffReloc[i] = Mach.msb_eip - PE( head.pe, entry_rva ) + obj.rva;
         }
         break;
     }

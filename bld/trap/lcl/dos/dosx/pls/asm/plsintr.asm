@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -100,7 +100,7 @@ restintr        macro   num,reg
 endm
 
 
-_data segment word public 'data'
+_DATA segment word public 'DATA'
 saveesp         dd              0
 saveeip         dd              0
 savecs          dd              0
@@ -125,14 +125,14 @@ extrn           _FakeBreak      : byte
 extrn           _InitialSS      : word
 extrn           _InitialCS      : word
 sysregs dd      14 dup(0)       ; only need 12, but just in case
-_data ends
+_DATA ends
 
 
-dgroup group _data
+DGROUP group _DATA
 
 assume  ds:DGROUP
 
-_text segment byte public 'code'
+_TEXT segment byte public 'CODE'
 
 int05H          proc    near
                 push    ds                      ; save ds
@@ -483,6 +483,6 @@ ring_0:
                 jmp     short done
 SetMSW_         endp
 
-_text           ends
+_TEXT           ends
 
                 end
