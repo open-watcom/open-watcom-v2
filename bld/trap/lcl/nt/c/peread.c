@@ -89,8 +89,8 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
         DWORD      bytes;
 
         hi->signature = EXESIGN_PE;
-        if( !SeekRead( handle, ne_header_off, &hi->u.peh, PE_HDR_SIZE ) 
-          || !ReadFile( handle, (char *)&hi->u.peh + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.peh ), &bytes, NULL ) ) {
+        if( !SeekRead( handle, ne_header_off, &hi->u.pehdr, PE_HDR_SIZE )
+          || !ReadFile( handle, (char *)&hi->u.pehdr + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.pehdr ), &bytes, NULL ) ) {
             return( false );
         }
         return( true );
@@ -98,16 +98,16 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 #if MADARCH & MADARCH_X86
     if( signature == EXESIGN_NE ) {
         hi->signature = EXESIGN_NE;
-        if( !SeekRead( handle, ne_header_off, &hi->u.neh, sizeof( hi->u.neh ) ) ) {
+        if( !SeekRead( handle, ne_header_off, &hi->u.nehdr, sizeof( hi->u.nehdr ) ) ) {
             return( false );
         }
-        if( hi->u.neh.target == TARGET_WINDOWS ) {
+        if( hi->u.nehdr.target == TARGET_WINDOWS ) {
             DWORD           off;
             unsigned char   len;
             DWORD           bytes;
             DWORD           pos;
 
-            off = ne_header_off + hi->u.neh.resident_off;
+            off = ne_header_off + hi->u.nehdr.resident_off;
             if( SetFilePointer( handle, off, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
                 return( false );
             }
@@ -121,13 +121,13 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
                 return( false );
             }
             hi->modname[len] = 0;
-            pos = ne_header_off + hi->u.neh.segment_off +
-                ( hi->u.neh.adsegnum - 1 ) * sizeof( segment_record ) +
+            pos = ne_header_off + hi->u.nehdr.segment_off +
+                ( hi->u.nehdr.adsegnum - 1 ) * sizeof( segment_record ) +
                 offsetof( segment_record, min );
             if( !SeekRead( handle, pos, stack, sizeof( *stack ) ) ) {
                 return( false );
             }
-            *stack += hi->u.neh.stack;
+            *stack += hi->u.nehdr.stack;
             return( true );
         }
         return( false );
@@ -156,7 +156,6 @@ bool GetModuleName( HANDLE fhdl, char *name )
     char                buf[_MAX_PATH];
     WORD                stack;
     int                 num_objects;
-    DWORD               seek_offset;
 
     if( !GetEXEHeader( fhdl, &hi, &stack ) ) {
         return( false );
@@ -164,25 +163,16 @@ bool GetModuleName( HANDLE fhdl, char *name )
     if( hi.signature != EXESIGN_PE ) {
         return( false );
     }
-    seek_offset = SetFilePointer( fhdl, 0, NULL, FILE_CURRENT );
-    if( seek_offset == INVALID_SET_FILE_POINTER ) {
-        return( false );
-    }
-    export_rva = PE_DIRECTORY( hi.u.peh, PE_TBL_EXPORT ).rva;
-    num_objects = hi.u.peh.fheader.num_objects;
+    export_rva = PE_DIRECTORY( hi.u.pehdr, PE_TBL_EXPORT ).rva;
+    num_objects = hi.u.pehdr.fheader.num_objects;
     if( num_objects == 0 ) {
-        return( false );
-    }
-    seek_offset += PE_SIZE( hi.u.peh );
-    /* position to begining of object table */
-    if( SetFilePointer( fhdl, seek_offset, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
         return( false );
     }
     for( i = 0; i < num_objects; i++ ) {
         if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) || lenread != sizeof( obj ) ) {
             return( false );
         }
-        if( export_rva >= obj.rva && export_rva < obj.rva + obj.physical_size ) {
+        if( export_rva >= obj.rva && export_rva < ( obj.rva + obj.physical_size ) ) {
             break;
         }
     }

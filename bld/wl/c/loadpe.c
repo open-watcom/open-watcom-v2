@@ -437,17 +437,12 @@ static unsigned_32 WriteDataPages( pe_exe_header *h, pe_object *object, unsigned
     if( data_base == 0xFFFFFFFFUL ) {
         data_base = 0;
     }
-    if( LinkState & LS_HAVE_X64_CODE ) {
-        PE64( *h ).code_base = code_base;
-        PE64( *h ).entry_rva = entry_rva;
-        PE64( *h ).init_data_size = init_data_size;
-        PE64( *h ).code_size = code_size;
-    } else {
-        PE32( *h ).code_base = code_base;
+    PE( *h, code_base ) = code_base;
+    PE( *h, entry_rva ) = entry_rva;
+    PE( *h, init_data_size ) = init_data_size;
+    PE( *h, code_size ) = code_size;
+    if( (LinkState & LS_HAVE_X64_CODE) == 0 ) {
         PE32( *h ).data_base = data_base;
-        PE32( *h ).entry_rva = entry_rva;
-        PE32( *h ).init_data_size = init_data_size;
-        PE32( *h ).code_size = code_size;
     }
     return( linear );
 }

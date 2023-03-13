@@ -116,7 +116,7 @@ unsigned SafeMargin( void )
     return( Ceiling - 10 );
 }
 
-static int IsLX( void )
+static bool IsLX( void )
 {
     int                 f;
     unsigned_32         ne_offset;
@@ -125,21 +125,21 @@ static int IsLX( void )
 
     f = open( ExeName, O_BINARY | O_RDONLY );
     if( f == -1 )
-        return( 0 );
+        return( false );
     if( lseek( f, NE_HEADER_OFFSET, SEEK_SET ) != NE_HEADER_OFFSET )
-        return( 0 );
+        return( false );
     if( read( f, &ne_offset, sizeof( ne_offset ) ) != sizeof( ne_offset ) )
-        return( 0 );
+        return( false );
     if( lseek( f, ne_offset, SEEK_SET ) != ne_offset )
-        return( 0 );
+        return( false );
     if( read( f, &signature, sizeof( signature ) ) != sizeof( signature ) )
-        return( 0 );
+        return( false );
     if( signature == EXESIGN_NE ) {
         ne_offset += 12;
         if( lseek( f, ne_offset, SEEK_SET ) != ne_offset )
-            return( 0 );
+            return( false );
         if( read( f, &flags, sizeof( flags ) ) != sizeof( flags ) )
-            return( 0 );
+            return( false );
         if( (flags & 0x0300) == 0x0300 ) {
             /* PM app */
             NewSession = 1;

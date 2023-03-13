@@ -67,15 +67,12 @@ static bool getEXEHeader( FILE *fp, pe_exe_header *pehdr )
     if( !seekRead( fp, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
         return( false );
     }
-
     if( DIGCli( Seek )( fp, ne_header_off, DIG_SEEK_ORG ) ) {
         return( false );
     }
     if( DIGCli( Read )( fp, pehdr, PE_HDR_SIZE ) != PE_HDR_SIZE
-      || pehdr->signature != EXESIGN_PE ) {
-        return( false );
-    }
-    if( DIGCli( Read )( fp, (char *)pehdr + PE_HDR_SIZE, PE_SIZE( *pehdr ) ) != PE_SIZE( *pehdr ) ) {
+      || ( pehdr->signature != EXESIGN_PE )
+      || DIGCli( Read )( fp, (char *)pehdr + PE_HDR_SIZE, PE_OPT_SIZE( *pehdr ) ) != PE_OPT_SIZE( *pehdr ) ) {
         return( false );
     }
     return( true );

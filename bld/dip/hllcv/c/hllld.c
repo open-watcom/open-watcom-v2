@@ -342,9 +342,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long ne_head
         return( DS_ERR | DS_NO_MEM );
     }
 
-    sh_off = ne_header_off /* vv -- watcom mixes the headers :-( */
-           + PE_SIZE( buf.pe );
-
+    sh_off = ne_header_off + PE_SIZE( buf.pe );
     for( i = 0; i < iih->seg_count; i++, sh_off += sizeof( buf.sh ) ) {
         ds = DCReadAt( iih->sym_fp, &buf.sh, sizeof( buf.sh ), sh_off );
         if( ds & DS_ERR ) {

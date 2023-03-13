@@ -117,21 +117,17 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *nehdr )
      * check the reloc offset
      */
     if( ok ) {
-        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET );
-        if( ok ) {
-            ResReadUint16( &data, fp );
-            ok = ( NE_HEADER_FOLLOWS( data ) );
-        }
+        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET )
+            && !ResReadUint16( &data, fp )
+            && NE_HEADER_FOLLOWS( data );
     }
     /*
      * check header offset
      */
     if( ok ) {
-        ok = !RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET );
-        if( ok ) {
-            ResReadUint32( &ne_header_off, fp );
-            ok = ( ne_header_off != 0 );
-        }
+        ok = !RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET )
+            && !ResReadUint32( &ne_header_off, fp )
+            && ( ne_header_off != 0 );
     }
 
     if( ok ) {

@@ -286,7 +286,7 @@ static dip_status TryNE( FILE *fp, imp_image_handle *iih, unsigned_32 ne_header_
     }                   entry;
     unsigned            i;
     exp_sym             *s;
-    os2_exe_header 	nehdr;
+    os2_exe_header      nehdr;
 
     if( BRead( fp, &nehdr, sizeof( nehdr ) ) != sizeof( nehdr ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
@@ -601,7 +601,9 @@ static dip_status TryPE( FILE *fp, imp_image_handle *iih, unsigned_32 ne_header_
     unsigned            chunk;
     pe_exe_header       pehdr;
 
-    if( BRead( fp, &pehdr, PE_HDR_SIZE ) != PE_HDR_SIZE 
+    /* unused parameters */ (void)ne_header_off;
+
+    if( BRead( fp, &pehdr, PE_HDR_SIZE ) != PE_HDR_SIZE
       || pehdr.signature != EXESIGN_PE && pehdr.signature != EXESIGN_PL
       || BRead( fp, (char *)&pehdr + PE_HDR_SIZE, PE_OPT_SIZE( pehdr ) ) != PE_OPT_SIZE( pehdr ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
@@ -610,10 +612,6 @@ static dip_status TryPE( FILE *fp, imp_image_handle *iih, unsigned_32 ne_header_
     if( PE_DIRECTORY( pehdr, PE_TBL_EXPORT ).size == 0 )
         return( DS_FAIL );
 
-    pos = ne_header_off + PE_SIZE( pehdr );
-    if( BSeek( fp, pos, DIG_SEEK_ORG ) != pos ) {
-        return( DS_ERR | DS_FSEEK_FAILED );
-    }
     num_objects = pehdr.fheader.num_objects;
     obj_size = num_objects * sizeof( *obj );
     obj = walloca( obj_size );

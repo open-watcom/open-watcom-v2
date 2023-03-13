@@ -98,17 +98,18 @@ bool openExeFile( ExeFile *exeFile, Parameters *param )
 }
 
 bool readExeHeaders( ExeFile *exeFile )
-/**************************************/
+/*************************************/
 {
     long     prevPos;
 
     prevPos = ftell( exeFile->file );
-    if( fseek( exeFile->file, 0L, SEEK_SET ) ) {
+    if( fseek( exeFile->file, 0, SEEK_SET ) ) {
         printf( ERR_READ_CANNOT_FIND_START );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    if( fread( &exeFile->dosHdr, sizeof( dos_exe_header ), 1, exeFile->file ) != 1 ) {
+    if( fread( &exeFile->dosHdr, sizeof( dos_exe_header ), 1, exeFile->file ) != 1
+      || exeFile->dosHdr.signature != EXESIGN_DOS ) {
         printf( ERR_READ_DOS_EXE_HEADER );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );

@@ -158,52 +158,44 @@ WRFileType WRIdentifyRESFile( const char *file )
 
 static bool IdentifyWinExeHeader( FILE *fh, bool win16 )
 {
-    os2_exe_header  os2_hdr;
-    pe_exe_header   pe_hdr;
+    os2_exe_header  nehdr;
+    pe_exe_header   pehdr;
     uint_16         data;
     uint_32         ne_header_off;
     bool            ok;
 
     ok = ( fh != NULL );
 
-    if( ok ) {
-        ok = ( fseek( fh, DOS_RELOC_OFFSET, SEEK_SET ) == 0 );
-    }
-
     /* check the reloc offset */
     if( ok ) {
-        ok = ( fread( &data, 1, sizeof( data ), fh ) == sizeof( data )
-             && NE_HEADER_FOLLOWS( data ) );
+        ok = ( fseek( fh, DOS_RELOC_OFFSET, SEEK_SET ) == 0 )
+                && ( fread( &data, 1, sizeof( data ), fh ) == sizeof( data ) )
+                && NE_HEADER_FOLLOWS( data );
     }
-
-    if( ok ) {
-        ok = ( fseek( fh, NE_HEADER_OFFSET, SEEK_SET ) == 0 );
-    }
-
     /* check the NE header offset */
     if( ok ) {
-        ok = ( fread( &ne_header_off, 1, sizeof( ne_header_off ), fh ) == sizeof( ne_header_off )
-             && ne_header_off != 0 );
+        ok = ( fseek( fh, NE_HEADER_OFFSET, SEEK_SET ) == 0 )
+            && ( fread( &ne_header_off, 1, sizeof( ne_header_off ), fh ) == sizeof( ne_header_off ) )
+            && ( ne_header_off != 0 );
     }
 
     /* seek to the header */
     if( ok ) {
         ok = ( fseek( fh, ne_header_off, SEEK_SET ) == 0 );
     }
-
     if( ok ) {
         if( win16 ) {
-            ok = ( fread( &os2_hdr, 1, sizeof( os2_hdr ), fh ) == sizeof( os2_hdr ));
+            ok = ( fread( &nehdr, 1, sizeof( nehdr ), fh ) == sizeof( nehdr ));
             /* check for valid Win16 EXE */
             if( ok ) {
-                return( WRIsHeaderValidWIN16( &os2_hdr ) );
+                return( WRIsHeaderValidWIN16( &nehdr ) );
             }
         } else {
-            ok = ( fread( &pe_hdr, 1, PE_HDR_SIZE, fh ) == PE_HDR_SIZE
-                 && fread( (char *)&pe_hdr + PE_HDR_SIZE, 1, PE_OPT_SIZE( pe_hdr ), fh ) == PE_OPT_SIZE( pe_hdr ) );
+            ok = ( fread( &pehdr, 1, PE_HDR_SIZE, fh ) == PE_HDR_SIZE
+                 && fread( (char *)&pehdr + PE_HDR_SIZE, 1, PE_OPT_SIZE( pehdr ), fh ) == PE_OPT_SIZE( pehdr ) );
             /* check for valid Win32 EXE */
             if( ok ) {
-                return( WRIsHeaderValidWINNT( &pe_hdr ) );
+                return( WRIsHeaderValidWINNT( &pehdr ) );
             }
         }
     }

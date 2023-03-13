@@ -97,7 +97,8 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( DCRead( fp, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( hdr.dos.signature != EXESIGN_DOS ) {
+    if( hdr.dos.signature != EXESIGN_DOS
+      || !NE_HEADER_FOLLOWS( hdr.dos.reloc_offset ) ) {
         return( DS_FAIL );
     }
     if( DCSeek( fp, NE_HEADER_OFFSET, DIG_SEEK_ORG ) ) {

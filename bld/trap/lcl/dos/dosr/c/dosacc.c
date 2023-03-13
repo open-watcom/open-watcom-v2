@@ -61,14 +61,14 @@
 #define GET_LINEAR(s,o) (((dword)(s) << 4) + (o))
 
 typedef enum {
-    EXE_UNKNOWN,
-    EXE_DOS,                    /* DOS */
-    EXE_OS2,                    /* OS/2 */
-    EXE_PHARLAP_SIMPLE,         /* PharLap Simple */
-    EXE_PHARLAP_EXTENDED_286,   /* PharLap Extended 286 */
-    EXE_PHARLAP_EXTENDED_386,   /* PharLap Extended 386 (may be bound) */
-    EXE_RATIONAL_386,           /* Rational DOS/4G app */
-    EXE_LAST_TYPE
+    EXE_TYPE_UNKNOWN,
+    EXE_TYPE_DOS,                    /* DOS */
+    EXE_TYPE_OS2,                    /* OS/2 */
+    EXE_TYPE_PHARLAP_SIMPLE,         /* PharLap Simple */
+    EXE_TYPE_PHARLAP_EXTENDED_286,   /* PharLap Extended 286 */
+    EXE_TYPE_PHARLAP_EXTENDED_386,   /* PharLap Extended 386 (may be bound) */
+    EXE_TYPE_RATIONAL_386,           /* Rational DOS/4G app */
+    EXE_TYPE_LAST
 } EXE_TYPE;
 
 /********************************************************************
@@ -488,19 +488,19 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
         switch( head.signature ) {
         case SIMPLE_SIGNATURE:      // 'MP'
-        case EXESIGN_REX:           // 'MQ'
+        case EXESIGN_REX:
         case EXTENDED_SIGNATURE:    // 'P3'
-            return( EXE_PHARLAP_SIMPLE );
-        case EXESIGN_DOS:           // 'MZ'
+            return( EXE_TYPE_PHARLAP_SIMPLE );
+        case EXESIGN_DOS:
             if( NE_HEADER_FOLLOWS( head.reloc_offset ) )
-                return( EXE_OS2 );
-            return( EXE_DOS );
+                return( EXE_TYPE_OS2 );
+            return( EXE_TYPE_DOS );
         default:
             Flags |= F_Com_file;
             break;
         }
     }
-    return( EXE_UNKNOWN );
+    return( EXE_TYPE_UNKNOWN );
 }
 
 static size_t MergeArgvArray( const char *src, char __far *dst, size_t len )
@@ -572,7 +572,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            *parm;
     char            *name;
     char            exe_name[128];
-    EXE_TYPE        exe;
+    EXE_TYPE        exe_type;
     prog_load_ret   *ret;
     size_t          len;
     union {
@@ -615,19 +615,19 @@ trap_retval TRAP_CORE( Prog_load )( void )
     parmblock.fcb01.offset  = 0x5C;
     parmblock.fcb02.offset  = 0x6C;
 
-    exe = EXE_UNKNOWN;
+    exe_type = EXE_TYPE_UNKNOWN;
     rc = TinyOpen( exe_name, TIO_READ_WRITE );
     if( TINY_OK( rc ) ) {
         handle = TINY_INFO( rc );
         exe_time.rc = TinyGetFileStamp( handle );
-        exe = CheckEXEType( handle );
-        if( exe == EXE_OS2 ) {
+        exe_type = CheckEXEType( handle );
+        if( exe_type == EXE_TYPE_OS2 ) {
             if( TINY_OK( TinySeek( handle, NE_HEADER_OFFSET, TIO_SEEK_START ) )
               && TINY_OK( TinyFarRead( handle, &ne_header_off, sizeof( ne_header_off ) ) )
               && TINY_OK( TinySeek( handle, ne_header_off, TIO_SEEK_START ) )
               && TINY_OK( TinyFarRead( handle, &os2_head, sizeof( os2_head ) ) ) ) {
-                if( os2_head.signature == RAT_SIGNATURE_WORD ) {
-                    exe = EXE_RATIONAL_386;
+                if( os2_head.signature == EXESIGN_LE ) {
+                    exe_type = EXE_TYPE_RATIONAL_386;
                 } else if( os2_head.signature == EXESIGN_NE ) {
                     NumSegments = os2_head.segments;
                     SegTable = ne_header_off + os2_head.segment_off;
@@ -638,18 +638,18 @@ trap_retval TRAP_CORE( Prog_load )( void )
                     StartPos = ( (dword)value << os2_head.align ) + os2_head.IP;
                     old_opcode = place_breakpoint_file( handle, StartPos );
                 } else {
-                    exe = EXE_UNKNOWN;
+                    exe_type = EXE_TYPE_UNKNOWN;
                 }
             } else {
-                exe = EXE_UNKNOWN;
+                exe_type = EXE_TYPE_UNKNOWN;
             }
         }
         TinyClose( handle );
-        switch( exe ) {
-        case EXE_RATIONAL_386:
+        switch( exe_type ) {
+        case EXE_TYPE_RATIONAL_386:
             ret->err = ERR_RATIONAL_EXE;
             return( sizeof( *ret ) );
-        case EXE_PHARLAP_SIMPLE:
+        case EXE_TYPE_PHARLAP_SIMPLE:
             ret->err = ERR_PHARLAP_EXE;
             return( sizeof( *ret ) );
         }
@@ -676,7 +676,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     TaskRegs.ES = psp;
     if( TINY_OK( rc ) ) {
         if( (Flags & F_NoOvlMgr) || !CheckOvl( parmblock.startcsip ) ) {
-            if( exe == EXE_OS2 ) {
+            if( exe_type == EXE_TYPE_OS2 ) {
                 BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
                 start_addr.segment = TaskRegs.CS;

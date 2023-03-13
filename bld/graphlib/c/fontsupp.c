@@ -221,8 +221,8 @@ static short seek_and_read( tiny_handle_t handle, long offset,
 #define RS_DESC     ( 6 * sizeof( short ) )
 
 
-static short addfont( long offset, tiny_handle_t handle, char *font_file )
-//========================================================================
+static short addfont( unsigned long offset, tiny_handle_t handle, char *font_file )
+//=================================================================================
 {
     tiny_ret_t              rc;
     WINDOWS_FONT            w_font;
@@ -325,7 +325,7 @@ static short readfontfile( char *font_file )
         return( 0 );
     }
     // read entries in resource table, looking for font definitions
-    ne_offset += sizeof( short );   // skip over shift_count
+    ne_offset += sizeof( shift_count ); // skip over shift_count
     for( ;; ) {
         if( seek_and_read( handle, ne_offset, table, RS_HEADER ) == 0 ) {
             return( 0 );
@@ -339,7 +339,7 @@ static short readfontfile( char *font_file )
                 if( seek_and_read( handle, ne_offset + RS_HEADER + i * RS_DESC, table, RS_DESC ) == 0 ) {
                     return( 0 );
                 }
-                if( addfont( (long) table[0] << shift_count, handle, font_file ) == 0 ) {
+                if( addfont( (long)table[0] << shift_count, handle, font_file ) == 0 ) {
                     return( 0 );
                 }
             }

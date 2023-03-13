@@ -369,9 +369,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
             goto error_exit;
         }
         if( hi.signature == EXESIGN_PE ) {
-            DebugeeSubsystem = PE( hi.u.peh, subsystem );
+            DebugeeSubsystem = PE( hi.u.pehdr, subsystem );
 #if MADARCH & MADARCH_X64
-            if( !IS_PE64( hi.u.peh ) ) {
+            if( !IS_PE64( hi.u.pehdr ) ) {
                 IsWOW = true;
             }
 #endif

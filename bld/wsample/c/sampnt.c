@@ -286,34 +286,27 @@ static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 /*
  * getPEHeader - get the header of the .EXE
  */
-static bool getPEHeader( HANDLE handle, pe_exe_header *peh )
+static bool getPEHeader( HANDLE handle, pe_exe_header *pehdr )
 {
-    WORD                data;
-    WORD                signature;
-    DWORD               ne_header_off;
+    unsigned_16         data;
+    unsigned_32         ne_header_off;
+    DWORD               bytes;
 
     if( !seekRead( handle, 0, &data, sizeof( data ) )
       || data != EXESIGN_DOS ) {
         return( false );
     }
-
     if( !seekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
       || !NE_HEADER_FOLLOWS( data ) ) {
         return( false );
     }
-
     if( !seekRead( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
         return( false );
     }
-
-    if( !seekRead( handle, ne_header_off, &signature, sizeof( signature ) ) ) {
-        return( false );
-    }
-    if( signature != EXESIGN_PE ) {
-        return( false );
-    }
-
-    if( !seekRead( handle, ne_header_off, peh, sizeof( pe_exe_header ) ) ) {
+    if( !seekRead( handle, ne_header_off, pehdr, PE_HDR_SIZE )
+      || pehdr->signature != EXESIGN_PE
+      || ReadFile( handle, (char *)pehdr + PE_HDR_SIZE, PE_OPT_SIZE( *pehdr ), &bytes, NULL ) == 0
+      || bytes != PE_OPT_SIZE( *pehdr ) ) {
         return( false );
     }
     return( true );
@@ -331,23 +324,22 @@ static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_ki
     WORD                seg;
     DWORD               offset;
     DWORD               bytes;
-    pe_exe_header       peh;
+    pe_exe_header       pehdr;
 
     ovl.offset = 0;
     ovl.segment = 0;
     WriteCodeLoad( ovl, name, kind );
-    if( !getPEHeader( handle, &peh ) ) {
-        return;
-    }
-    for( i = 0; i < peh.fheader.num_objects; i++ ) {
-        ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
-        if( obj.flags & (PE_OBJ_CODE | PE_OBJ_EXECUTABLE) ) {
-            seg = _FP_SEG( codeLoad );
-        } else {
-            seg = _FP_SEG( &seg );
+    if( getPEHeader( handle, &pehdr ) ) {
+        for( i = 0; i < pehdr.fheader.num_objects; i++ ) {
+            ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
+            if( obj.flags & (PE_OBJ_CODE | PE_OBJ_EXECUTABLE) ) {
+                seg = _FP_SEG( codeLoad );
+            } else {
+                seg = _FP_SEG( &seg );
+            }
+            offset = (DWORD)base + obj.rva;
+            WriteAddrMap( i + 1, seg, offset );
         }
-        offset = (DWORD)base + obj.rva;
-        WriteAddrMap( i + 1, seg, offset );
     }
 
 } /* codeLoad */
@@ -418,15 +410,15 @@ static void loadProg( const char *exe, char *cmdline )
         internalErrorMsg( MSG_SAMPLE_3 );
     }
     rc = WaitForDebugEvent( &debugEvent, INFINITE );
-    if( !rc || (debugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT) ||
-                (debugEvent.dwProcessId != pinfo.dwProcessId) ) {
+    if( !rc || (debugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT)
+            || (debugEvent.dwProcessId != pinfo.dwProcessId) ) {
         internalErrorMsg( MSG_SAMPLE_3 );
     }
     taskPid = debugEvent.dwProcessId;
     processHandle = debugEvent.u.CreateProcessInfo.hProcess;
     newThread( debugEvent.dwThreadId, debugEvent.u.CreateProcessInfo.hThread );
     codeLoad( debugEvent.u.CreateProcessInfo.hFile,
-                (DWORD) debugEvent.u.CreateProcessInfo.lpBaseOfImage,
+                (DWORD)debugEvent.u.CreateProcessInfo.lpBaseOfImage,
                 exe,
                 SAMP_MAIN_LOAD );
 

@@ -47,10 +47,6 @@
 #endif
 
 
-#define EXE_PE  PE_EXE_SIGNATURE
-#define EXE_NE  NE_EXE_SIGNATURE
-#define EXE_MZ  DOS_EXE_SIGNATURE
-
 #if MADARCH & MADARCH_X64
     #define MYCONTEXT           WOW64_CONTEXT
     // position in Windows CONTEXT,
@@ -109,8 +105,8 @@
 typedef struct {
     WORD                signature;
     union {
-        pe_exe_header   peh;
-        os2_exe_header  neh;
+        pe_exe_header   pehdr;
+        os2_exe_header  nehdr;
     } u;
     char                modname[16];
 } header_info;

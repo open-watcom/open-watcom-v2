@@ -583,8 +583,6 @@ trap_retval TRAP_CORE( Map_addr )( void )
 #endif
 #endif
     {
-        DWORD   seek_offset;
-
         /*
          * for a 32-bit app, we get the PE header. We can look the up the
          * object in the header and determine if it is code or data, and
@@ -600,17 +598,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
             return( 0 );
         }
 
-        seek_offset = SetFilePointer( handle, 0, NULL, FILE_CURRENT );
-        if( seek_offset == INVALID_SET_FILE_POINTER ) {
-            return( 0 );
-        }
-        num_objects = hi.u.peh.fheader.num_objects;
-        seek_offset += PE_SIZE( hi.u.peh );
+        num_objects = hi.u.pehdr.fheader.num_objects;
         if( num_objects == 0 ) {
-            return( 0 );
-        }
-        /* position to begining of object table */
-        if( SetFilePointer( handle, seek_offset, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
             return( 0 );
         }
         for( i = 0; i < num_objects; i++ ) {

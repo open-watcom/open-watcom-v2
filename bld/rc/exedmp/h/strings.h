@@ -134,7 +134,7 @@
 #define MSG_PE_UNINITDATASIZE           "Uninitialized data size:                      0x%8.8X (%li bytes)\n"
 #define MSG_PE_ENTRYRVA                 "Entrypoint rva:                               0x%8.8X\n"
 #define MSG_PE_CODEBASE                 "Code base:                                    0x%8.8X\n"
-#define MSG_PE_DATABASE                 "Data base:                                    0x%8.8X\n"
+#define MSG_PE32_DATABASE               "Data base:                                    0x%8.8X\n"
 #define MSG_PE32_IMAGEBASE              "Image base:                                   0x%8.8X\n"
 #define MSG_PE64_IMAGEBASE              "Image base:                                   0x%16.8llX\n"
 #define MSG_PE_OBJECTALIGN              "Object alignment, power of 2, 512 to 256M:    0x%8.8X\n"
@@ -202,4 +202,3 @@
 #define MSG_DATA_RSVD                   "RSVD:          0x%8.8X (must be 0)\n"
 
 #endif
-

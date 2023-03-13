@@ -36,6 +36,7 @@
 #include "read.h"
 #include "main.h"
 #include "watcom.h"
+#include "exepe.h"
 
 
 extern const char *resTypes[];
@@ -341,7 +342,7 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
         if( IS_PE64( exeFile->pexHdr ) ) {
             printf( MSG_PE64_IMAGEBASE ,        PE64( exeFile->pexHdr ).image_base );
         } else {
-            printf( MSG_PE_DATABASE ,           PE32( exeFile->pexHdr ).data_base );
+            printf( MSG_PE32_DATABASE ,         PE32( exeFile->pexHdr ).data_base );
             printf( MSG_PE32_IMAGEBASE ,        PE32( exeFile->pexHdr ).image_base );
         }
         printf( MSG_PE_OBJECTALIGN ,            PE( exeFile->pexHdr, object_align ) );

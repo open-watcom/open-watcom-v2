@@ -39,6 +39,8 @@
 #include "orlflhnd.h"
 #include "exedos.h"
 #include "pcobj.h"
+#include "exedos.h"
+
 
 
 orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
@@ -160,22 +162,28 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
     if( magic == NULL ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
+    /*
+     * seek to beginning of object before return
+     */
     if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)4, SEEK_CUR ) ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
     if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
         return( ORL_ELF );
     }
-
-    // See if this is the start of an OMF object file
-    // the first record must be a THEADR record and we check that it is
-    // valid, if it is then we assume that this is an OMF object file.
+    /*
+     * See if this is the start of an OMF object file
+     * the first record must be a THEADR record and we check that it is
+     * valid, if it is then we assume that this is an OMF object file.
+     */
     if( magic[0] == CMD_THEADR ) {
         len = magic[1] | ( magic[2] << 8 );
         len -= magic[3];
         len -= 2;
         if( len == 0 ) {
-            // This looks good so far, we must now check the record
+            /*
+             * This looks good so far, we must now check the record
+             */
             len = magic[3] + 1;
             if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, 4, SEEK_CUR ) ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
@@ -186,7 +194,9 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             if( magic != NULL ) {
-                // Go on to check record checksum
+                /*
+                 * Go on to check record checksum
+                 */
                 while( len ) {
                     chksum += *magic;
                     len--;
@@ -194,7 +204,9 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
                 }
                 magic--;
                 if( *magic == 0 || chksum == 0 ) {
-                    // seems to be a correct OMF record to start the OBJ
+                    /*
+                     * seems to be a correct OMF record to start the OBJ
+                     */
                     return( ORL_OMF );
                 }
             } else {
@@ -202,6 +214,9 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
                 if( magic == NULL ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
                 }
+                /*
+                 * seek to beginning of object before return
+                 */
                 if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)4, SEEK_CUR ) ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
                 }
@@ -212,7 +227,9 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
     if( checkPEMachine( *(unsigned_16 *)magic ) ) {
         return( ORL_COFF );
     }
-    // Is it PE?
+    /*
+     * Is it PE?
+     */
     if( magic[0] == 'M' && magic[1] == 'Z' ) {
         bool    ok;
         long    pos;

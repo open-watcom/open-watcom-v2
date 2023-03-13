@@ -34,5 +34,6 @@
 #define EXESIGN_DOS16M  EXESIGN_BW
 #define EXESIGN_ELF     0x464c457f      /* '\x7fELF' ELF */
 #define EXESIGN_REX     EXESIGN_MQ
+#define EXESIGN_ZERO    0
 
 #endif
