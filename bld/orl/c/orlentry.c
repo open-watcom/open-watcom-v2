@@ -37,7 +37,9 @@
 #include "orllevel.h"
 #include "orlentry.h"
 #include "orlflhnd.h"
+#include "exedos.h"
 #include "pcobj.h"
+
 
 orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
 /*********************************************/
@@ -151,8 +153,6 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
 /*************************************************************/
 {
     unsigned char       *magic;
-    unsigned_16         machine_type;
-    unsigned_16         offset;
     unsigned_16         len;
     unsigned char       chksum;
 
