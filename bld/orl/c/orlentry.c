@@ -95,6 +95,58 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
     return( ORL_OKAY );
 }
 
+static bool checkPEMachine( unsigned_16 machine_type )
+/****************************************************/
+{
+    switch( machine_type ) {
+    case COFF_IMAGE_FILE_MACHINE_I860:
+    case COFF_IMAGE_FILE_MACHINE_I386A:
+    case COFF_IMAGE_FILE_MACHINE_I386:
+    case COFF_IMAGE_FILE_MACHINE_R3000:
+    case COFF_IMAGE_FILE_MACHINE_R4000:
+    case COFF_IMAGE_FILE_MACHINE_ALPHA:
+    case COFF_IMAGE_FILE_MACHINE_POWERPC:
+    case COFF_IMAGE_FILE_MACHINE_AMD64:
+//    case COFF_IMAGE_FILE_MACHINE_UNKNOWN:
+        return( true );
+    }
+    return( false );
+}
+
+static bool checkPE( orl_handle orl_hnd, FILE *fp, long *pos )
+/************************************************************/
+{
+    unsigned char   *magic;
+    unsigned_32     ne_header_off;
+
+    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, NE_HEADER_OFFSET, SEEK_CUR ) ) {
+        return( false );
+    }
+    *pos += NE_HEADER_OFFSET;
+    magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 0x4 );
+    if( magic == NULL ) {
+        return( false );
+    }
+    *pos += 4;
+    ne_header_off = *(unsigned_32 *)magic;
+    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, ne_header_off - *pos, SEEK_CUR ) ) {
+        return( false );
+    }
+    *pos = ne_header_off;
+    magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
+    if( magic != NULL ) {
+        *pos += 4;
+        if( magic[0]=='P' && magic[1] == 'E' && magic[2] == '\0' && magic[3] == '\0' ) {
+            magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
+            if( magic != NULL ) {
+                *pos += 4;
+                return( checkPEMachine( *(unsigned_16 *)magic ) );
+            }
+        }
+    }
+    return( false );
+}
+
 orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
 /*************************************************************/
 {
@@ -108,7 +160,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
     if( magic == NULL ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
-    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -4, SEEK_CUR ) ) {
+    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)4, SEEK_CUR ) ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
     if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
@@ -149,62 +201,32 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
                 magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
                 if( magic == NULL ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
-                } else if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -4, SEEK_CUR ) ) {
+                }
+                if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)4, SEEK_CUR ) ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
                 }
             }
         }
     }
 
-    machine_type = *(unsigned_16 *)magic;
-    switch( machine_type ) {
-    case COFF_IMAGE_FILE_MACHINE_I860:
-    case COFF_IMAGE_FILE_MACHINE_I386A:
-    case COFF_IMAGE_FILE_MACHINE_I386:
-    case COFF_IMAGE_FILE_MACHINE_R3000:
-    case COFF_IMAGE_FILE_MACHINE_R4000:
-    case COFF_IMAGE_FILE_MACHINE_ALPHA:
-    case COFF_IMAGE_FILE_MACHINE_POWERPC:
-    case COFF_IMAGE_FILE_MACHINE_AMD64:
-    case COFF_IMAGE_FILE_MACHINE_UNKNOWN:
+    if( checkPEMachine( *(unsigned_16 *)magic ) ) {
         return( ORL_COFF );
     }
     // Is it PE?
     if( magic[0] == 'M' && magic[1] == 'Z' ) {
-        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, 0x3c, SEEK_CUR ) ) {
-            return( ORL_UNRECOGNIZED_FORMAT );
+        bool    ok;
+        long    pos;
+
+        pos = 0;
+        ok = checkPE( orl_hnd, fp, &pos );
+        if( pos ) {
+            /*
+             * seek to beginning of object before return
+             */
+            ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -pos, SEEK_CUR );
         }
-        magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 0x4 );
-        if( magic == NULL ) {
-            return( ORL_UNRECOGNIZED_FORMAT );
-        }
-        offset = *(unsigned_16 *)magic;
-        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, offset - 0x40, SEEK_CUR ) ) {
-            return( ORL_UNRECOGNIZED_FORMAT );
-        }
-        magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
-        if( magic == NULL ) {
-            return( ORL_UNRECOGNIZED_FORMAT );
-        }
-        if( magic[0]=='P' && magic[1] == 'E' && magic[2] == '\0' && magic[3] == '\0' ) {
-            magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
-            if( magic == NULL ) {
-                return( ORL_UNRECOGNIZED_FORMAT );
-            }
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( offset + 8 ), SEEK_CUR ) ) {
-                return( ORL_UNRECOGNIZED_FORMAT );
-            }
-            machine_type = *(unsigned_16 *)magic;
-            switch( machine_type ) {
-            case COFF_IMAGE_FILE_MACHINE_I860:
-            case COFF_IMAGE_FILE_MACHINE_I386:
-            case COFF_IMAGE_FILE_MACHINE_R3000:
-            case COFF_IMAGE_FILE_MACHINE_R4000:
-            case COFF_IMAGE_FILE_MACHINE_ALPHA:
-            case COFF_IMAGE_FILE_MACHINE_POWERPC:
-            case COFF_IMAGE_FILE_MACHINE_AMD64:
-                return( ORL_COFF );
-            }
+        if( ok ) {
+            return( ORL_COFF );
         }
     }
     return( ORL_UNRECOGNIZED_FORMAT );
