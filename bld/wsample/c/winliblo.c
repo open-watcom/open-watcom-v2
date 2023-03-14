@@ -145,7 +145,7 @@ static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
     }
     WriteCodeLoad( ovl, name, kind );
 
-    handle = open( name,O_BINARY | O_RDONLY );
+    handle = open( name, O_BINARY | O_RDONLY );
     if( handle >= 0 ) {
         read( handle, &doshdr, sizeof( doshdr ) );
         if( doshdr.signature == EXESIGN_DOS ) {

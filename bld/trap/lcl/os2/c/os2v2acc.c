@@ -192,7 +192,7 @@ static bool FindNewHeader( HFILE hdl, ULONG *ne_header_off, USHORT *type )
     if( SeekRead( hdl, 0x00, &data, sizeof( data ) )
       && data == EXESIGN_DOS ) {
         if( SeekRead( hdl, DOS_RELOC_OFFSET, &data, sizeof( data ) )
-          && NE_HEADER_FOLLOWS( data ) )
+          && NE_HEADER_FOLLOWS( data ) ) {
             if( SeekRead( hdl, NE_HEADER_OFFSET, ne_header_off, sizeof( *ne_header_off ) )
               && SeekRead( hdl, *ne_header_off, type, sizeof( *type ) ) ) {
                 rc = true;

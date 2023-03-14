@@ -480,10 +480,8 @@ bool Dmp_pe_tab( void )
     unsigned_32     num_objects;
 
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
-    if( Dos_head.hdr.signature != EXESIGN_DOS ) {
-        return( false );
-    }
-    if( !NE_HEADER_FOLLOWS( Dos_head.hdr.reloc_offset ) ) {
+    if( ( Dos_head.hdr.signature != EXESIGN_DOS )
+      || !NE_HEADER_FOLLOWS( Dos_head.hdr.reloc_offset ) ) {
         return( false );
     }
     Wlseek( NE_HEADER_OFFSET );

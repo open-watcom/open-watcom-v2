@@ -72,7 +72,7 @@ static char *ReadInTrap( FILE *fp )
 
     hdr.signature = 0;
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
-        return( TC_ERR_BAD_TRAP_FILE );
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
     if( hdr.signature != EXESIGN_DOS ) {
         return( TC_ERR_BAD_TRAP_FILE );

@@ -79,7 +79,8 @@ static bool PE_readHeader(
     result = PE_invalidDLLImage;
     if( DIGLoader( Seek )( fp, startOffset, SEEK_SET )
       || DIGLoader( Read )( fp, &exehdr, sizeof( exehdr ) )
-      || exehdr.signature != EXESIGN_DOS )
+      || ( exehdr.signature != EXESIGN_DOS )
+      || !NE_HEADER_FOLLOWS( exehdr.reloc ) )
         return( false );
 
     /* Now seek to the start of the PE header defined at offset 0x3C
