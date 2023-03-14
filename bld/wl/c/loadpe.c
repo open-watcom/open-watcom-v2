@@ -1510,8 +1510,8 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     _LnkFree( ordbuf );
 }
 
-void ReadPEExportTable( f_handle file, pe_hdr_dir_entry *base )
-/**************************************************************
+void ReadPEExportTable( f_handle file, pe_hdr_dir_entry *export_dir )
+/********************************************************************
  * read a PE export table, and set ordinal values accordingly.
  */
 {
@@ -1530,15 +1530,15 @@ void ReadPEExportTable( f_handle file, pe_hdr_dir_entry *base )
     if( nameptrsize == 0 )                      /* NOTE: <-- premature return */
         return;
     _ChkAlloc( nameptrs, nameptrsize + sizeof( unsigned_32 ) );
-    QSeek( file, table.name_ptr_table_rva - base->rva, fname );
+    QSeek( file, table.name_ptr_table_rva - export_dir->rva, fname );
     QRead( file, nameptrs, nameptrsize, fname );
     numentries = 1;
-    entrystart = table.ordinal_table_rva - base->rva;
+    entrystart = table.ordinal_table_rva - export_dir->rva;
     curr = nameptrs;
-    *curr -= base->rva;
+    *curr -= export_dir->rva;
     namestart = *curr++;
     for( nameptrsize -= sizeof( unsigned_32 ); nameptrsize > 0; nameptrsize -= sizeof( unsigned_32 ) ) {
-        *curr -= base->rva;
+        *curr -= export_dir->rva;
         if( *curr - namestart > TokSize ) {
             ReadExports( namestart, *(curr - 1), entrystart, numentries, table.ordinal_base, file, fname );
             entrystart += numentries * sizeof( unsigned_16 );
@@ -1548,7 +1548,7 @@ void ReadPEExportTable( f_handle file, pe_hdr_dir_entry *base )
         numentries++;
         curr++;
     }   /* NOTE! this assumes the name table is at the end */
-    ReadExports( namestart, base->size + *nameptrs, entrystart, numentries, table.ordinal_base, file, fname );
+    ReadExports( namestart, export_dir->size + *nameptrs, entrystart, numentries, table.ordinal_base, file, fname );
     _LnkFree( nameptrs );
 }
 
