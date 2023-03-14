@@ -1018,7 +1018,7 @@ void FiniPELoadFile( void )
 {
     pe_exe_header   h;
     unsigned_32     stub_len;
-    pe_object       *object;
+    pe_object       *objects;
     unsigned        num_objects;
     pe_object       *tbl_obj;
     unsigned        head_size;
@@ -1142,15 +1142,15 @@ void FiniPELoadFile( void )
         CurrSect = Root;
         SeekLoad( 0 );
         stub_len = WriteStubFile( STUB_ALIGN );
-        _ChkAlloc( object, num_objects * sizeof( pe_object ) );
-        memset( object, 0, num_objects * sizeof( pe_object ) );
+        _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
+        memset( objects, 0, num_objects * sizeof( pe_object ) );
         /* leave space for the header and object table */
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
         GenPETransferTable();
         WriteImportInfo();
         SetMiscTableEntries( &h );
-        image_size = WriteDataPages( &h, object, file_align );
-        tbl_obj = &object[NumGroups];
+        image_size = WriteDataPages( &h, objects, file_align );
+        tbl_obj = &objects[NumGroups];
         if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
             size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_EXPORT ) );
@@ -1183,7 +1183,7 @@ void FiniPELoadFile( void )
         }
         NullAlign( file_align ); /* pad out last page */
         PE64( h ).image_size = image_size;
-        PE64( h ).header_size = object->physical_offset;
+        PE64( h ).header_size = objects[0].physical_offset;
     } else {
         if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
             h.signature = EXESIGN_PL;
@@ -1319,15 +1319,15 @@ void FiniPELoadFile( void )
         CurrSect = Root;
         SeekLoad( 0 );
         stub_len = WriteStubFile( STUB_ALIGN );
-        _ChkAlloc( object, num_objects * sizeof( pe_object ) );
-        memset( object, 0, num_objects * sizeof( pe_object ) );
+        _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
+        memset( objects, 0, num_objects * sizeof( pe_object ) );
         /* leave space for the header and object table */
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
         GenPETransferTable();
         WriteImportInfo();
         SetMiscTableEntries( &h );
-        image_size = WriteDataPages( &h, object, file_align );
-        tbl_obj = &object[NumGroups];
+        image_size = WriteDataPages( &h, objects, file_align );
+        tbl_obj = &objects[NumGroups];
         if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
             size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_EXPORT ) );
@@ -1360,7 +1360,7 @@ void FiniPELoadFile( void )
         }
         NullAlign( file_align ); /* pad out last page */
         PE32( h ).image_size = image_size;
-        PE32( h ).header_size = object->physical_offset;
+        PE32( h ).header_size = objects[0].physical_offset;
     }
     DBIWrite();
     SeekLoad( stub_len );
@@ -1375,7 +1375,7 @@ void FiniPELoadFile( void )
     }
 
     WriteLoad( &h, head_size );
-    WriteLoad( object, num_objects * sizeof( pe_object ) );
+    WriteLoad( objects, num_objects * sizeof( pe_object ) );
 
     if( FmtData.u.pe.checksumfile ) {
         unsigned_32     crc = 0L;
@@ -1424,7 +1424,7 @@ void FiniPELoadFile( void )
         }
     }
 
-    _LnkFree( object );
+    _LnkFree( objects );
 }
 
 static unsigned_32 getStubSize( void )
