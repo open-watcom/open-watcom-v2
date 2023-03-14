@@ -316,13 +316,12 @@ static bool getPEHeader( HANDLE handle, pe_exe_header *pehdr )
 /*
  * codeLoad - handle the loading of a new DLL/EXE
  */
-static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_kinds kind )
+static void codeLoad( HANDLE handle, DWORD image_base, const char *name, samp_block_kinds kind )
 {
     seg_offset          ovl;
     int                 i;
     pe_object           obj;
     WORD                seg;
-    DWORD               offset;
     DWORD               bytes;
     pe_exe_header       pehdr;
 
@@ -337,8 +336,7 @@ static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_ki
             } else {
                 seg = _FP_SEG( &seg );
             }
-            offset = (DWORD)base + obj.rva;
-            WriteAddrMap( i + 1, seg, offset );
+            WriteAddrMap( i + 1, seg, (DWORD)image_base + obj.rva );
         }
     }
 

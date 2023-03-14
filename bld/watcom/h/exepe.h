@@ -387,7 +387,7 @@ typedef struct {
  * PE import directory table structure
  */
 typedef struct {
-    pe_va               import_lookup_table_rva;        /* was flags */
+    pe_va               import_lookup_table_rva;    /* was flags */
     unsigned_32         time_stamp;
     unsigned_16         major;
     unsigned_16         minor;
@@ -400,7 +400,7 @@ typedef struct {
  */
 typedef struct {
     unsigned_16         hint;
-    unsigned_8          name[2]; /* variable size, padded to even boundry */
+    unsigned_8          name[2];            /* variable size, padded to even boundry */
 } pe_hint_name_entry;
 
 /*
@@ -411,7 +411,7 @@ typedef unsigned_16     pe_fixup_entry;
 typedef struct {
     pe_va               page_rva;
     unsigned_32         block_size;
-/*  pe_fixup_entry      fixups[] */     /* variable size */
+//    pe_fixup_entry      fixups[];           /* variable size */
 } pe_fixup_header;
 
 /*
@@ -432,22 +432,22 @@ typedef struct {
  * PE DEBUG_TYPE_MISC data
  */
 typedef struct {
-    unsigned_32 data_type;          /* 1 == filename of debug info file */
-    unsigned_32 length;             /* size of this data block */
-    unsigned_32 unicode;            /* LSB is unicode flag, rest is reserved */
-    char        data[256-16];       /* name + path of debug info file, null terminated */
-    unsigned_32 special_purpose;    /* used to pass file offset to cvpack utility */
+    unsigned_32         data_type;          /* 1 == filename of debug info file */
+    unsigned_32         length;             /* size of this data block */
+    unsigned_32         unicode;            /* LSB is unicode flag, rest is reserved */
+    char                data[256-16];       /* name + path of debug info file, null terminated */
+    unsigned_32         special_purpose;    /* used to pass file offset to cvpack utility */
 } debug_misc_dbgdata;
 
 /*
  * procedure descriptor format for alpha and powerpc
  */
 typedef struct {
-    unsigned_32 beginaddress;
-    unsigned_32 endaddress;
-    unsigned_32 exceptionhandler;
-    unsigned_32 handlerdata;
-    unsigned_32 prologendaddress;
+    unsigned_32         beginaddress;
+    unsigned_32         endaddress;
+    unsigned_32         exceptionhandler;
+    unsigned_32         handlerdata;
+    unsigned_32         prologendaddress;
 } procedure_descriptor;
 
 /*
@@ -468,15 +468,15 @@ typedef struct {
  * ordered sorted name entries then sorted id entries.
  */
 typedef struct {
-    unsigned_32         id_name;        /* see below */
-    pe_va               entry_rva;      /* see below */
+    unsigned_32         id_name;            /* see below */
+    pe_va               entry_rva;          /* see below */
 } resource_dir_entry;
 
 typedef struct {
-    unsigned_32     data_rva;       /* relative to Image Base */
-    unsigned_32     size;
-    unsigned_32     code_page;
-    unsigned_32     rsvd;           /* must be 0 */
+    unsigned_32         data_rva;           /* relative to Image Base */
+    unsigned_32         size;
+    unsigned_32         code_page;
+    unsigned_32         rsvd;               /* must be 0 */
 } resource_entry;
 
 #include "poppck.h"

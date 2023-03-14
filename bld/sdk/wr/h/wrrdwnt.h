@@ -49,7 +49,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool     WRLoadResourceFromWinNTEXE( WRInfo * );
-extern long     WRReadWinNTExeHeader( FILE *, pe_exe_header * );
+extern bool     WRReadWinNTExeHeader( FILE *, pe_exe_header * );
 extern bool     WRIsHeaderValidWINNT( pe_exe_header * );
 
 #endif

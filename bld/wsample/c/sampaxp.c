@@ -331,25 +331,23 @@ static int getPEHeader( HANDLE handle, pe_exe_header *pehdr )
 /*
  * codeLoad - handle the loading of a new DLL/EXE
  */
-static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_kinds kind )
+static void codeLoad( HANDLE handle, DWORD image_base, const char *name, samp_block_kinds kind )
 {
     seg_offset          ovl;
     int                 i;
     pe_object           obj;
-    DWORD               offset;
     DWORD               bytes;
-    pe_header           peh;
+    pe_exe_header       pehdr;
 
     ovl.offset = 0;
     ovl.segment = 0;
     WriteCodeLoad( ovl, name, kind );
-    if( !getPEHeader( handle, &peh ) ) {
+    if( !getPEHeader( handle, &pehdr ) ) {
         return;
     }
-    for( i = 0; i < peh.num_objects; i++ ) {
+    for( i = 0; i < pehdr.fheader.num_objects; i++ ) {
         ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
-        offset = (DWORD)base + obj.rva;
-        WriteAddrMap( i + 1, SEGMENT, offset );
+        WriteAddrMap( i + 1, SEGMENT, (DWORD)image_base + obj.rva );
     }
 
 } /* codeLoad */

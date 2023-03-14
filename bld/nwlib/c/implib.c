@@ -999,7 +999,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
 
 bool AddImport( arch_header *arch, libfile io )
 {
-    unsigned_32     offset;
+    unsigned_32     ne_header_off;
     long            header_offset;
     unsigned_16     signature;
     bool            ok;
@@ -1012,9 +1012,9 @@ bool AddImport( arch_header *arch, libfile io )
         if( signature == EXESIGN_DOS ) {
             header_offset = NE_HEADER_OFFSET;
             LibSeek( io, header_offset, SEEK_SET );
-            ok = ( LibRead( io, &offset, sizeof( offset ) ) == sizeof( offset ) );
+            ok = ( LibRead( io, &ne_header_off, sizeof( ne_header_off ) ) == sizeof( ne_header_off ) );
             if( ok ) {
-                header_offset = offset;
+                header_offset = ne_header_off;
                 LibSeek( io, header_offset, SEEK_SET );
                 ok = ( LibRead( io, &signature, sizeof( signature ) ) == sizeof( signature ) );
             }
