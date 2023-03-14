@@ -227,8 +227,9 @@ RcStatus SeekRead( FILE *fp, long newpos, void *buff, size_t size )
 /* so this is not a valid windows EXE file. */
 
 ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off )
-/**************************************************************/
-/* Determine type of executable */
+/***************************************************************
+ * Determine type of executable
+ */
 {
     os2_exe_header  nehdr;
     unsigned_16     data;

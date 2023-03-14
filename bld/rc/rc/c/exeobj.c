@@ -44,14 +44,12 @@ static RcStatus readObjectTable( ExeFileInfo *exe )
 {
     RcStatus        ret;
     unsigned        objects_size;
-    long            file_offset;
     pe_exe_header   *pehdr;
 
     pehdr = exe->u.PEInfo.WinHead;
     objects_size = pehdr->fheader.num_objects * sizeof( pe_object );
-    file_offset = exe->WinHeadOffset + PE_SIZE( *pehdr );
     exe->u.PEInfo.Objects = RESALLOC( objects_size );
-    ret = SeekRead( exe->fp, file_offset, exe->u.PEInfo.Objects, objects_size );
+    ret = SeekRead( exe->fp, exe->WinHeadOffset + PE_SIZE( *pehdr ), exe->u.PEInfo.Objects, objects_size );
     switch( ret ) {
     case RS_OK:
         break;
@@ -225,14 +223,12 @@ uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )
 {
     uint_32         next_off;
     pe_object       *last_obj;
-    unsigned_32     file_align;
     pe_exe_header   *pehdr;
 
     pehdr = peinfo->WinHead;
     last_obj = peinfo->Objects + pehdr->fheader.num_objects - 2;
-    file_align = PE( *pehdr, file_align );
     next_off = last_obj->physical_offset + last_obj->physical_size;
-    return( ALIGN_VALUE( next_off, file_align ) );
+    return( ALIGN_VALUE( next_off, PE( *pehdr, file_align ) ) );
 } /* GetNextObjPhysOffset */
 
 pe_va GetNextObjRVA( PEExeInfo *peinfo )
@@ -242,16 +238,13 @@ pe_va GetNextObjRVA( PEExeInfo *peinfo )
 {
     uint_32         next_rva;
     pe_object       *last_obj;
-    unsigned_32     object_align;
     pe_exe_header   *pehdr;
 
     pehdr = peinfo->WinHead;
     last_obj = peinfo->Objects + pehdr->fheader.num_objects - 2;
-    object_align = PE( *pehdr, object_align );
 /* This next line should work if the nt loader followed the PE spec but it */
 /* doesn't so we can't use it */
 //    next_rva = last_obj->rva + last_obj->virtual_size;
     next_rva = last_obj->rva + last_obj->physical_size;
-
-    return( ALIGN_VALUE( next_rva, object_align ) );
+    return( ALIGN_VALUE( next_rva, PE( *pehdr, object_align ) ) );
 } /* GetNextObjRVA */

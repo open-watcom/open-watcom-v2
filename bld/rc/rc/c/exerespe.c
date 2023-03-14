@@ -798,7 +798,6 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     unsigned_32         curr_rva;
     WResMergeError      *errs;
     ResFileInfo         *errres;
-    unsigned_32         file_align;
     pe_exe_header       *pehdr;
 
     dir = &exe->u.PEInfo.Res;
@@ -851,8 +850,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     exe->u.PEInfo.Res.ResSize = curr_rva - rva;
 
     pehdr = exe->u.PEInfo.WinHead;
-    file_align = PE( *pehdr, file_align );
-    fillResourceObj( res_obj, dir, file_align );
+    fillResourceObj( res_obj, dir, PE( *pehdr, file_align ) );
     if( padObject( dir, exe, res_obj->physical_size ) ) {
         RcError( ERR_WRITTING_FILE, exe->name, strerror( errno ) );
         return( true );

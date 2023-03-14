@@ -545,7 +545,7 @@ static RcStatus writePEHeadAndObjTable( void )
 {
     ExeFileInfo     *tmp;
     pe_object       *last_object;
-    int             obj_num;
+    int             i;
     uint_32         image_size;
     int             num_objects;
     unsigned_32     object_align;
@@ -569,8 +569,8 @@ static RcStatus writePEHeadAndObjTable( void )
         return( RS_WRITE_ERROR );
     }
 
-    for( obj_num = 0; obj_num < num_objects; obj_num++ ) {
-        if( RESWRITE( tmp->fp, tmp->u.PEInfo.Objects + obj_num, sizeof( pe_object ) ) != sizeof( pe_object ) ) {
+    for( i = 0; i < num_objects; i++ ) {
+        if( RESWRITE( tmp->fp, tmp->u.PEInfo.Objects + i, sizeof( pe_object ) ) != sizeof( pe_object ) ) {
             return( RS_WRITE_ERROR );
         }
     }
