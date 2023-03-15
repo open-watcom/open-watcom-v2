@@ -341,9 +341,10 @@ unsigned_32 DefStackSizePE( void )
     return( PE_DEF_STACK_SIZE );
 }
 
-static unsigned_32 WriteDataPages( pe_exe_header *h, pe_object *object, unsigned_32 file_align )
-/**********************************************************************************************/
-/* write the enumerated data pages */
+static unsigned_32 WriteDataPages( pe_exe_header *pehdr, pe_object *object, unsigned_32 file_align )
+/***************************************************************************************************
+ * write the enumerated data pages
+ */
 {
     group_entry *group;
     char        *name;
@@ -437,12 +438,12 @@ static unsigned_32 WriteDataPages( pe_exe_header *h, pe_object *object, unsigned
     if( data_base == 0xFFFFFFFFUL ) {
         data_base = 0;
     }
-    PE( *h, code_base ) = code_base;
-    PE( *h, entry_rva ) = entry_rva;
-    PE( *h, init_data_size ) = init_data_size;
-    PE( *h, code_size ) = code_size;
+    PE( *pehdr, code_base ) = code_base;
+    PE( *pehdr, entry_rva ) = entry_rva;
+    PE( *pehdr, init_data_size ) = init_data_size;
+    PE( *pehdr, code_size ) = code_size;
     if( (LinkState & LS_HAVE_X64_CODE) == 0 ) {
-        PE32( *h ).data_base = data_base;
+        PE32( *pehdr ).data_base = data_base;
     }
     return( linear );
 }
@@ -793,8 +794,8 @@ void DoAddResource( char *name )
     FmtData.u.pe.resources = info;
 }
 
-static unsigned_32 WritePEResources( pe_exe_header *h, pe_object *object, unsigned_32 file_align )
-/************************************************************************************************/
+static unsigned_32 WritePEResources( pe_exe_header *pehdr, pe_object *object, unsigned_32 file_align )
+/****************************************************************************************************/
 {
     ExeFileInfo einfo;
     ResFileInfo *rinfo;
@@ -813,7 +814,7 @@ static unsigned_32 WritePEResources( pe_exe_header *h, pe_object *object, unsign
     einfo.IsOpen = true;
     einfo.fp = POSIX2FP( Root->outfile->handle );
     einfo.name = Root->outfile->fname;
-    einfo.u.PEInfo.WinHead = h;
+    einfo.u.PEInfo.WinHead = pehdr;
     einfo.Type = EXE_TYPE_PE;
     status = BuildPEResourceObject( &einfo, rinfo, object, object->rva, NullAlign( file_align ), !allopen );
     CloseResFiles( rinfo );
@@ -1016,7 +1017,7 @@ void FiniPELoadFile( void )
 /*************************/
 /* make a PE executable file */
 {
-    pe_exe_header   h;
+    pe_exe_header   pehdr;
     unsigned_32     stub_len;
     pe_object       *objects;
     unsigned        num_objects;
@@ -1029,49 +1030,49 @@ void FiniPELoadFile( void )
     file_align = 1UL << FmtData.u.os2fam.segment_shift;
     CheckNumRelocs();
     num_objects = FindNumObjects();
-    memset( &h, 0, sizeof( h ) ); /* zero all header fields */
+    memset( &pehdr, 0, sizeof( pehdr ) ); /* zero all header fields */
     if( LinkState & LS_HAVE_X64_CODE ) {
-        h.signature = EXESIGN_PE;
+        pehdr.signature = EXESIGN_PE;
         head_size = PE64_SIZE;
-        PE64( h ).magic = 0x20b;
-        h.fheader.cpu_type = PE_CPU_AMD64;
-        h.fheader.num_objects = num_objects;
-        h.fheader.time_stamp = (unsigned_32)time( NULL );
-        h.fheader.opt_hdr_size = PE64_OPT_SIZE;
-        h.fheader.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE | PE_FLG_LARGE_ADDRESS_AWARE;
+        PE64( pehdr ).magic = 0x20b;
+        pehdr.fheader.cpu_type = PE_CPU_AMD64;
+        pehdr.fheader.num_objects = num_objects;
+        pehdr.fheader.time_stamp = (unsigned_32)time( NULL );
+        pehdr.fheader.opt_hdr_size = PE64_OPT_SIZE;
+        pehdr.fheader.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE | PE_FLG_LARGE_ADDRESS_AWARE;
         if( FmtData.u.pe.nolargeaddressaware ) {
-            h.fheader.flags &= ~PE_FLG_LARGE_ADDRESS_AWARE;
+            pehdr.fheader.flags &= ~PE_FLG_LARGE_ADDRESS_AWARE;
         }
         if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
-            h.fheader.flags |= PE_FLG_RELOCS_STRIPPED;
+            pehdr.fheader.flags |= PE_FLG_RELOCS_STRIPPED;
         }
         if( (LinkState & LS_LINK_ERROR) == 0 ) {
-            h.fheader.flags |= PE_FLG_IS_EXECUTABLE;
+            pehdr.fheader.flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {
-            h.fheader.flags |= PE_FLG_LIBRARY;
+            pehdr.fheader.flags |= PE_FLG_LIBRARY;
             if( FmtData.u.os2fam.flags & INIT_INSTANCE_FLAG ) {
-                PE64( h ).dll_flags |= PE_DLL_PERPROC_INIT;
+                PE64( pehdr ).dll_flags |= PE_DLL_PERPROC_INIT;
             } else if( FmtData.u.os2fam.flags & INIT_THREAD_FLAG ) {
-                PE64( h ).dll_flags |= PE_DLL_PERTHRD_INIT;
+                PE64( pehdr ).dll_flags |= PE_DLL_PERTHRD_INIT;
             }
             if( FmtData.u.os2fam.flags & TERM_INSTANCE_FLAG ) {
-                PE64( h ).dll_flags |= PE_DLL_PERPROC_TERM;
+                PE64( pehdr ).dll_flags |= PE_DLL_PERPROC_TERM;
             } else if( FmtData.u.os2fam.flags & TERM_THREAD_FLAG ) {
-                PE64( h ).dll_flags |= PE_DLL_PERTHRD_TERM;
+                PE64( pehdr ).dll_flags |= PE_DLL_PERTHRD_TERM;
             }
         }
 
         if( FmtData.u.pe.lnk_specd ) {
-            PE64( h ).lnk_major = FmtData.u.pe.linkmajor;
-            PE64( h ).lnk_minor = FmtData.u.pe.linkminor;
+            PE64( pehdr ).lnk_major = FmtData.u.pe.linkmajor;
+            PE64( pehdr ).lnk_minor = FmtData.u.pe.linkminor;
         } else {
-            PE64( h ).lnk_major = PE_LNK_MAJOR;
-            PE64( h ).lnk_minor = PE_LNK_MINOR;
+            PE64( pehdr ).lnk_major = PE_LNK_MAJOR;
+            PE64( pehdr ).lnk_minor = PE_LNK_MINOR;
         }
-        PE64( h ).image_base.u._32[0] = FmtData.base;
-        PE64( h ).image_base.u._32[1] = 0;
-        PE64( h ).object_align = FmtData.objalign;
+        PE64( pehdr ).image_base.u._32[0] = FmtData.base;
+        PE64( pehdr ).image_base.u._32[1] = 0;
+        PE64( pehdr ).object_align = FmtData.objalign;
 
         /*
          *  I have changed this to allow programmers to control this shift. MS has 0x20 byte segments
@@ -1082,37 +1083,37 @@ void FiniPELoadFile( void )
             FmtData.u.os2fam.segment_shift = DEFAULT_SEG_SHIFT;
         }
 
-        PE64( h ).file_align = file_align;
+        PE64( pehdr ).file_align = file_align;
 
         if( FmtData.u.pe.osv_specd ) {
-            PE64( h ).os_major = FmtData.u.pe.osmajor;
-            PE64( h ).os_minor = FmtData.u.pe.osminor;
+            PE64( pehdr ).os_major = FmtData.u.pe.osmajor;
+            PE64( pehdr ).os_minor = FmtData.u.pe.osminor;
         } else {
-            PE64( h ).os_major = PE_OS_MAJOR;
-            PE64( h ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
+            PE64( pehdr ).os_major = PE_OS_MAJOR;
+            PE64( pehdr ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
         }
 
-        PE64( h ).user_major = FmtData.major;
-        PE64( h ).user_minor = FmtData.minor;
+        PE64( pehdr ).user_major = FmtData.major;
+        PE64( pehdr ).user_minor = FmtData.minor;
         if( FmtData.u.pe.sub_specd ) {
-            PE64( h ).subsys_major = FmtData.u.pe.submajor;
-            PE64( h ).subsys_minor = FmtData.u.pe.subminor;
+            PE64( pehdr ).subsys_major = FmtData.u.pe.submajor;
+            PE64( pehdr ).subsys_minor = FmtData.u.pe.subminor;
         } else {
-            PE64( h ).subsys_major = 3;
-            PE64( h ).subsys_minor = 0xa;
+            PE64( pehdr ).subsys_major = 3;
+            PE64( pehdr ).subsys_minor = 0xa;
         }
         if( FmtData.u.pe.subsystem != PE_SS_UNKNOWN ) {
-            PE64( h ).subsystem = FmtData.u.pe.subsystem;
+            PE64( pehdr ).subsystem = FmtData.u.pe.subsystem;
         } else {
-            PE64( h ).subsystem = PE_SS_WINDOWS_GUI;
+            PE64( pehdr ).subsystem = PE_SS_WINDOWS_GUI;
         }
         /*
          * set stack reserved and committed size for executable
          * zero for DLL (StackSize is already set to zero)
          */
         size = StackSize;
-        PE64( h ).stack_reserve_size.u._32[0] = size;
-        PE64( h ).stack_reserve_size.u._32[1] = 0;
+        PE64( pehdr ).stack_reserve_size.u._32[0] = size;
+        PE64( pehdr ).stack_reserve_size.u._32[1] = 0;
         if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
             if( size > PE_DEF_STACK_COMMIT ) {
                 size = PE_DEF_STACK_COMMIT;
@@ -1120,8 +1121,8 @@ void FiniPELoadFile( void )
         } else if( size > FmtData.u.pe.stackcommit ) {
             size = FmtData.u.pe.stackcommit;
         }
-        PE64( h ).stack_commit_size.u._32[0] = size;
-        PE64( h ).stack_commit_size.u._32[1] = 0;
+        PE64( pehdr ).stack_commit_size.u._32[0] = size;
+        PE64( pehdr ).stack_commit_size.u._32[1] = 0;
         /*
          * set heap reserved and committed size for executable
          * zero for DLL
@@ -1130,15 +1131,15 @@ void FiniPELoadFile( void )
         if( FmtData.dll ) {
             size = 0;
         }
-        PE64( h ).heap_reserve_size.u._32[0] = size;
-        PE64( h ).heap_reserve_size.u._32[1] = 0;
+        PE64( pehdr ).heap_reserve_size.u._32[0] = size;
+        PE64( pehdr ).heap_reserve_size.u._32[1] = 0;
         if( size > FmtData.u.pe.heapcommit ) {
             size = FmtData.u.pe.heapcommit;
         }
-        PE64( h ).heap_commit_size.u._32[0] = size;
-        PE64( h ).heap_commit_size.u._32[1] = 0;
+        PE64( pehdr ).heap_commit_size.u._32[0] = size;
+        PE64( pehdr ).heap_commit_size.u._32[1] = 0;
 
-        PE64( h ).num_tables = PE_TBL_NUMBER;
+        PE64( pehdr ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
         stub_len = WriteStubFile( STUB_ALIGN );
@@ -1148,18 +1149,18 @@ void FiniPELoadFile( void )
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
         GenPETransferTable();
         WriteImportInfo();
-        SetMiscTableEntries( &h );
-        image_size = WriteDataPages( &h, objects, file_align );
+        SetMiscTableEntries( &pehdr );
+        image_size = WriteDataPages( &pehdr, objects, file_align );
         tbl_obj = &objects[NumGroups];
         if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
-            size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_EXPORT ) );
+            size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( pehdr, PE_TBL_EXPORT ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         if( LinkState & LS_MAKE_RELOCS ) {
             tbl_obj->rva = image_size;
-            size = WriteFixupInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_FIXUP ) );
+            size = WriteFixupInfo( tbl_obj, file_align, &PE_DIRECTORY( pehdr, PE_TBL_FIXUP ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
@@ -1171,80 +1172,80 @@ void FiniPELoadFile( void )
         }
         if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
-            size = WritePEResources( &h, tbl_obj, file_align );
+            size = WritePEResources( &pehdr, tbl_obj, file_align );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
-            size = WriteDebugTable( tbl_obj, SymFileName, file_align, h.fheader.time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
+            size = WriteDebugTable( tbl_obj, SymFileName, file_align, pehdr.fheader.time_stamp, &PE_DIRECTORY( pehdr, PE_TBL_DEBUG ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         NullAlign( file_align ); /* pad out last page */
-        PE64( h ).image_size = image_size;
-        PE64( h ).header_size = objects[0].physical_offset;
+        PE64( pehdr ).image_size = image_size;
+        PE64( pehdr ).header_size = objects[0].physical_offset;
     } else {
         if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
-            h.signature = EXESIGN_PL;
+            pehdr.signature = EXESIGN_PL;
         } else {
-            h.signature = EXESIGN_PE;
+            pehdr.signature = EXESIGN_PE;
         }
         head_size = PE32_SIZE;
-        PE32( h ).magic = 0x10b;
+        PE32( pehdr ).magic = 0x10b;
         switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
         case LS_HAVE_ALPHA_CODE:
-            h.fheader.cpu_type = PE_CPU_ALPHA;
+            pehdr.fheader.cpu_type = PE_CPU_ALPHA;
             break;
         case LS_HAVE_MIPS_CODE:     // TODO
-//            h.fheader.cpu_type = PE_CPU_MIPS_R3000;
-            h.fheader.cpu_type = PE_CPU_MIPS_R4000;
+//            pehdr.fheader.cpu_type = PE_CPU_MIPS_R3000;
+            pehdr.fheader.cpu_type = PE_CPU_MIPS_R4000;
             break;
         case LS_HAVE_PPC_CODE:
-            h.fheader.cpu_type = PE_CPU_POWERPC;
+            pehdr.fheader.cpu_type = PE_CPU_POWERPC;
             break;
         case LS_HAVE_X86_CODE:
-            h.fheader.cpu_type = PE_CPU_386;
+            pehdr.fheader.cpu_type = PE_CPU_386;
             break;
         default:
             break;
         }
-        h.fheader.num_objects = num_objects;
-        h.fheader.time_stamp = (unsigned_32)time( NULL );
-        h.fheader.opt_hdr_size = PE32_OPT_SIZE;
-        h.fheader.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
+        pehdr.fheader.num_objects = num_objects;
+        pehdr.fheader.time_stamp = (unsigned_32)time( NULL );
+        pehdr.fheader.opt_hdr_size = PE32_OPT_SIZE;
+        pehdr.fheader.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
         if( FmtData.u.pe.largeaddressaware ) {
-            h.fheader.flags |= PE_FLG_LARGE_ADDRESS_AWARE;
+            pehdr.fheader.flags |= PE_FLG_LARGE_ADDRESS_AWARE;
         }
         if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
-            h.fheader.flags |= PE_FLG_RELOCS_STRIPPED;
+            pehdr.fheader.flags |= PE_FLG_RELOCS_STRIPPED;
         }
         if( (LinkState & LS_LINK_ERROR) == 0 ) {
-            h.fheader.flags |= PE_FLG_IS_EXECUTABLE;
+            pehdr.fheader.flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {
-            h.fheader.flags |= PE_FLG_LIBRARY;
+            pehdr.fheader.flags |= PE_FLG_LIBRARY;
             if( FmtData.u.os2fam.flags & INIT_INSTANCE_FLAG ) {
-                PE32( h ).dll_flags |= PE_DLL_PERPROC_INIT;
+                PE32( pehdr ).dll_flags |= PE_DLL_PERPROC_INIT;
             } else if( FmtData.u.os2fam.flags & INIT_THREAD_FLAG ) {
-                PE32( h ).dll_flags |= PE_DLL_PERTHRD_INIT;
+                PE32( pehdr ).dll_flags |= PE_DLL_PERTHRD_INIT;
             }
             if( FmtData.u.os2fam.flags & TERM_INSTANCE_FLAG ) {
-                PE32( h ).dll_flags |= PE_DLL_PERPROC_TERM;
+                PE32( pehdr ).dll_flags |= PE_DLL_PERPROC_TERM;
             } else if( FmtData.u.os2fam.flags & TERM_THREAD_FLAG ) {
-                PE32( h ).dll_flags |= PE_DLL_PERTHRD_TERM;
+                PE32( pehdr ).dll_flags |= PE_DLL_PERTHRD_TERM;
             }
         }
 
         if( FmtData.u.pe.lnk_specd ) {
-            PE32( h ).lnk_major = FmtData.u.pe.linkmajor;
-            PE32( h ).lnk_minor = FmtData.u.pe.linkminor;
+            PE32( pehdr ).lnk_major = FmtData.u.pe.linkmajor;
+            PE32( pehdr ).lnk_minor = FmtData.u.pe.linkminor;
         } else {
-            PE32( h ).lnk_major = PE_LNK_MAJOR;
-            PE32( h ).lnk_minor = PE_LNK_MINOR;
+            PE32( pehdr ).lnk_major = PE_LNK_MAJOR;
+            PE32( pehdr ).lnk_minor = PE_LNK_MINOR;
         }
-        PE32( h ).image_base = FmtData.base;
-        PE32( h ).object_align = FmtData.objalign;
+        PE32( pehdr ).image_base = FmtData.base;
+        PE32( pehdr ).object_align = FmtData.objalign;
 
         /*
          *  I have changed this to allow programmers to control this shift. MS has 0x20 byte segments
@@ -1256,44 +1257,44 @@ void FiniPELoadFile( void )
         }
 
         file_align = 1UL << FmtData.u.os2fam.segment_shift;
-        PE32( h ).file_align = file_align;
+        PE32( pehdr ).file_align = file_align;
 
         if( FmtData.u.pe.osv_specd ) {
-            PE32( h ).os_major = FmtData.u.pe.osmajor;
-            PE32( h ).os_minor = FmtData.u.pe.osminor;
+            PE32( pehdr ).os_major = FmtData.u.pe.osmajor;
+            PE32( pehdr ).os_minor = FmtData.u.pe.osminor;
         } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
             // RDOS default
-            PE32( h ).os_major = PE_RDOS_OS_MAJOR;
-            PE32( h ).os_minor = PE_RDOS_OS_MINOR;
+            PE32( pehdr ).os_major = PE_RDOS_OS_MAJOR;
+            PE32( pehdr ).os_minor = PE_RDOS_OS_MINOR;
         } else {
-            PE32( h ).os_major = PE_OS_MAJOR;
-            PE32( h ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
+            PE32( pehdr ).os_major = PE_OS_MAJOR;
+            PE32( pehdr ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
         }
 
-        PE32( h ).user_major = FmtData.major;
-        PE32( h ).user_minor = FmtData.minor;
+        PE32( pehdr ).user_major = FmtData.major;
+        PE32( pehdr ).user_minor = FmtData.minor;
         if( FmtData.u.pe.sub_specd ) {
-            PE32( h ).subsys_major = FmtData.u.pe.submajor;
-            PE32( h ).subsys_minor = FmtData.u.pe.subminor;
+            PE32( pehdr ).subsys_major = FmtData.u.pe.submajor;
+            PE32( pehdr ).subsys_minor = FmtData.u.pe.subminor;
         } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
             // RDOS default
-            PE32( h ).subsys_major = PE_RDOS_SS_MAJOR;
-            PE32( h ).subsys_minor = PE_RDOS_SS_MINOR;
+            PE32( pehdr ).subsys_major = PE_RDOS_SS_MAJOR;
+            PE32( pehdr ).subsys_minor = PE_RDOS_SS_MINOR;
         } else {
-            PE32( h ).subsys_major = 3;
-            PE32( h ).subsys_minor = 0xa;
+            PE32( pehdr ).subsys_major = 3;
+            PE32( pehdr ).subsys_minor = 0xa;
         }
         if( FmtData.u.pe.subsystem != PE_SS_UNKNOWN ) {
-            PE32( h ).subsystem = FmtData.u.pe.subsystem;
+            PE32( pehdr ).subsystem = FmtData.u.pe.subsystem;
         } else {
-            PE32( h ).subsystem = PE_SS_WINDOWS_GUI;
+            PE32( pehdr ).subsystem = PE_SS_WINDOWS_GUI;
         }
         /*
          * set stack reserved and committed size for executable
          * zero for DLL (StackSize is already set to zero)
          */
         size = StackSize;
-        PE32( h ).stack_reserve_size = size;
+        PE32( pehdr ).stack_reserve_size = size;
         if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
             if( size > PE_DEF_STACK_COMMIT ) {
                 size = PE_DEF_STACK_COMMIT;
@@ -1301,7 +1302,7 @@ void FiniPELoadFile( void )
         } else if( size > FmtData.u.pe.stackcommit ) {
             size = FmtData.u.pe.stackcommit;
         }
-        PE32( h ).stack_commit_size = size;
+        PE32( pehdr ).stack_commit_size = size;
         /*
          * set heap reserved and committed size for executable
          * zero for DLL
@@ -1313,9 +1314,9 @@ void FiniPELoadFile( void )
         if( size > FmtData.u.pe.heapcommit ) {
             size = FmtData.u.pe.heapcommit;
         }
-        PE32( h ).heap_commit_size = size;
+        PE32( pehdr ).heap_commit_size = size;
 
-        PE32( h ).num_tables = PE_TBL_NUMBER;
+        PE32( pehdr ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
         stub_len = WriteStubFile( STUB_ALIGN );
@@ -1325,18 +1326,18 @@ void FiniPELoadFile( void )
         PadLoad( head_size + num_objects * sizeof( pe_object ) );
         GenPETransferTable();
         WriteImportInfo();
-        SetMiscTableEntries( &h );
-        image_size = WriteDataPages( &h, objects, file_align );
+        SetMiscTableEntries( &pehdr );
+        image_size = WriteDataPages( &pehdr, objects, file_align );
         tbl_obj = &objects[NumGroups];
         if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
-            size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_EXPORT ) );
+            size = WriteExportInfo( tbl_obj, file_align, &PE_DIRECTORY( pehdr, PE_TBL_EXPORT ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         if( LinkState & LS_MAKE_RELOCS ) {
             tbl_obj->rva = image_size;
-            size = WriteFixupInfo( tbl_obj, file_align, &PE_DIRECTORY( h, PE_TBL_FIXUP ) );
+            size = WriteFixupInfo( tbl_obj, file_align, &PE_DIRECTORY( pehdr, PE_TBL_FIXUP ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
@@ -1348,19 +1349,19 @@ void FiniPELoadFile( void )
         }
         if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
-            size = WritePEResources( &h, tbl_obj, file_align );
+            size = WritePEResources( &pehdr, tbl_obj, file_align );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
-            size = WriteDebugTable( tbl_obj, SymFileName, file_align, h.fheader.time_stamp, &PE_DIRECTORY( h, PE_TBL_DEBUG ) );
+            size = WriteDebugTable( tbl_obj, SymFileName, file_align, pehdr.fheader.time_stamp, &PE_DIRECTORY( pehdr, PE_TBL_DEBUG ) );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
         NullAlign( file_align ); /* pad out last page */
-        PE32( h ).image_size = image_size;
-        PE32( h ).header_size = objects[0].physical_offset;
+        PE32( pehdr ).image_size = image_size;
+        PE32( pehdr ).header_size = objects[0].physical_offset;
     }
     DBIWrite();
     SeekLoad( stub_len );
@@ -1368,13 +1369,13 @@ void FiniPELoadFile( void )
     if( FmtData.u.pe.checksumfile ) {
         /* Ensure checksum is 0 before we calculate it */
         if( LinkState & LS_HAVE_X64_CODE ) {
-            PE64( h ).file_checksum = 0L;
+            PE64( pehdr ).file_checksum = 0L;
         } else {
-            PE32( h ).file_checksum = 0L;
+            PE32( pehdr ).file_checksum = 0L;
         }
     }
 
-    WriteLoad( &h, head_size );
+    WriteLoad( &pehdr, head_size );
     WriteLoad( objects, num_objects * sizeof( pe_object ) );
 
     if( FmtData.u.pe.checksumfile ) {
@@ -1415,12 +1416,12 @@ void FiniPELoadFile( void )
             crc += totalsize;
 
             if( LinkState & LS_HAVE_X64_CODE ) {
-                PE64( h ).file_checksum = crc;
+                PE64( pehdr ).file_checksum = crc;
             } else {
-                PE32( h ).file_checksum = crc;
+                PE32( pehdr ).file_checksum = crc;
             }
             SeekLoad( stub_len );
-            WriteLoad( &h, head_size );
+            WriteLoad( &pehdr, head_size );
         }
     }
 
