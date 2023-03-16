@@ -34,25 +34,37 @@ jobs:
         tarCompression: 'xz'
         archiveFile: '$(owroot)/$(owsnapshotfile)'
         replaceExistingArchive: true
-    - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
-      displayName: "Get current timestamp"
-    - bash: echo "##vso[task.setvariable variable=owgitstamp;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${{ variables.owtag }}^{}:\1:p\"`"
-      displayName: "Get 'Last-CI-build' tag commit"
-    - script: |
-        if [ ! "$OWGITSTAMP" = "$BUILD_SOURCEVERSION" ]; then
-          git tag -d $OWTAG
-          git push --delete origin $OWTAG
-          git tag -a -m "$OWTAGSTAMP" $OWTAG $BUILD_SOURCEVERSION
-          git push $(owgitverbose) origin $OWTAG
-        else
-          echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
-        fi
-      displayName: "Recreate 'Last-CI-build' tag"
-    - template: doreleas.yml
-      parameters:
-        arch:      'lnx'
-        update:    'true'
-        disp:      'Update Last-CI-build'
-        title:     '$(owtag)'
-        tag:       '$(owtag)'
-        timestamp: '$(owtagstamp)'
+    - {{ if and(eq(variables['Build.Reason'], 'PullRequest'), ne(variables['System.PullRequest.PullRequestId'], 'Null')) }}:
+      - task: PublishPipelineArtifact@1
+        displayName: Save Archive '$(owroot)/$(owsnapshotfile)'
+        inputs:
+          artifactName: 'owsnapshot'
+          path:         $(owroot)/$(owsnapshotfile)
+      - task: DeleteFiles@1
+        displayName: Remove Artifact Archive
+        inputs:
+          SourceFolder: $(owroot)
+          Contents:     $(owsnapshotfile)
+    - {{ else }}:
+      - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
+        displayName: "Get current timestamp"
+      - bash: echo "##vso[task.setvariable variable=owgitstamp;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${{ variables.owtag }}^{}:\1:p\"`"
+        displayName: "Get 'Last-CI-build' tag commit"
+      - script: |
+          if [ ! "$OWGITSTAMP" = "$BUILD_SOURCEVERSION" ]; then
+            git tag -d $OWTAG
+            git push --delete origin $OWTAG
+            git tag -a -m "$OWTAGSTAMP" $OWTAG $BUILD_SOURCEVERSION
+            git push $(owgitverbose) origin $OWTAG
+          else
+            echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
+          fi
+        displayName: "Recreate 'Last-CI-build' tag"
+      - template: doreleas.yml
+        parameters:
+          arch:      'lnx'
+          update:    'true'
+          disp:      'Update Last-CI-build'
+          title:     '$(owtag)'
+          tag:       '$(owtag)'
+          timestamp: '$(owtagstamp)'
