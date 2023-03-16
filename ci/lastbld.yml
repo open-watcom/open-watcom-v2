@@ -34,7 +34,7 @@ jobs:
         tarCompression: 'xz'
         archiveFile: '$(owroot)/$(owsnapshotfile)'
         replaceExistingArchive: true
-    - {{ if and(eq(variables['Build.Reason'], 'PullRequest'), ne(variables['System.PullRequest.PullRequestId'], 'Null')) }}:
+    - ${{ if and(eq('$(Build.Reason)', 'PullRequest'), ne('$(System.PullRequest.PullRequestId)', 'Null')) }}:
       - task: PublishPipelineArtifact@1
         displayName: Save Archive '$(owroot)/$(owsnapshotfile)'
         inputs:
@@ -45,7 +45,7 @@ jobs:
         inputs:
           SourceFolder: $(owroot)
           Contents:     $(owsnapshotfile)
-    - {{ else }}:
+    - ${{ else }}:
       - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
         displayName: "Get current timestamp"
       - bash: echo "##vso[task.setvariable variable=owgitstamp;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${{ variables.owtag }}^{}:\1:p\"`"
