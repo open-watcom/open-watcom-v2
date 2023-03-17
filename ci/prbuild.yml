@@ -1,0 +1,36 @@
+parameters:
+  title:    ''
+  artifsuflnx: ''
+
+jobs:
+  - job: prbuild
+    displayName: "${{ parameters.title }}"
+    variables:
+      owimage:      $(owimage_lnx)
+    pool:
+      vmImage:      $(owimage_lnx)
+    steps:
+    - template: gituser.yml
+    - checkout: self
+      persistCredentials: true
+    # display values
+    - script:
+      echo "trigger: $(Build.Reason)"
+      echo "trigger ID: $(System.PullRequest.PullRequestId)"
+      env
+    # consolidate binaries
+    - template: artfload.yml
+      parameters:
+        path:       rel
+        artifname:  rel-nt
+    - template: artfload.yml
+      parameters:
+        path:       rel
+        artifname:  rel-lnx${{ parameters.artifsuflnx }}
+    # consolidate documentation
+    - template: docsload.yml
+    # create full binary archive artifact
+    - template: artfsave.yml
+      parameters:
+        path:       rel
+        artifname:  owsnapshot
