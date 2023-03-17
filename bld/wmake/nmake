@@ -32,7 +32,7 @@ usage.gh : ..\h\usage.sp wsplice.exe
 <<
 
 cretype.exe : ..\c\cretype.c
-        $(CC) -nologo -I..\..\watcom\h -Fe$@ $** $(LFLAGS)
+        $(CC) -nologo -I..\..\watcom\h -D__NT__ -Fe$@ $** $(LFLAGS)
 
 isarray.gh : cretype.exe
         cretype.exe $@

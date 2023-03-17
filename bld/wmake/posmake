@@ -82,7 +82,7 @@ usage.gh : ../h/usage.sp wsplice.exe
 	./wsplice.exe -kENGLISH -f 'pick((MSG_USAGE_BASE+%#%+), "%s", "")' ../h/usage.sp $@
 
 cretype.exe : ../c/cretype.c
-	$(CC) -I../../watcom/h -o $@ $?
+	$(CC) -I../../watcom/h -D__UNIX__ -o $@ $?
 
 isarray.gh : cretype.exe
 	./cretype.exe $@

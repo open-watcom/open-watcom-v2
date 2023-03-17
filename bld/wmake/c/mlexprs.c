@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +121,7 @@ MTOKEN_T LexPath( STRM_T s )
 
         if( s == STRM_MAGIC ) {
             InsString( DeMacro( TOK_EOL ), true );
-        } else if( !sisfilec( s ) && !IS_PATH_SPLIT( s ) && s != '\"' && !sisws( s ) ) {
+        } else if( !sisfilec( s ) && !siswildc( s ) && !sisdirc( s ) && !sisdotc( s ) && !IS_PATH_SPLIT( s ) && s != '\"' && !sisws( s ) ) {
             PrtMsg( ERR | LOC | EXPECTING_M, M_PATH );
         } else if( !sisws( s ) ) {
             break;
@@ -129,7 +130,7 @@ MTOKEN_T LexPath( STRM_T s )
         s = PreGetCHR(); /* keep fetching characters */
     }
     /* just so you know what we've got now */
-    assert( sisfilec( s ) || IS_PATH_SPLIT( s ) || s == '\"' );
+    assert( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || IS_PATH_SPLIT( s ) || s == '\"' );
 
     vec = StartVec();
 
@@ -170,7 +171,7 @@ MTOKEN_T LexPath( STRM_T s )
                 } else {
                     if( dquote ) {
                         path[pos++] = s;
-                    } else if( sisfilec( s ) ) {
+                    } else if( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) ) {
                         path[pos++] = s;
                     } else {
                         break; // not valid path character, break out.
@@ -230,7 +231,7 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
     char        file[_MAX_PATH];
     unsigned    pos;
 
-    assert( sisfilec( s ) || s == '\"' ||
+    assert( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || s == '\"' ||
        ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) );
 
     if( s == '\"' ) {
@@ -238,7 +239,7 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
     }
 
     pos = 0;
-    while( pos < _MAX_PATH && (sisfilec( s ) ||
+    while( pos < _MAX_PATH && (sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) ||
             ( s == SPECIAL_TMP_DOLLAR && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
         file[pos++] = s;
         s = PreGetCHR();
@@ -397,7 +398,7 @@ STATIC MTOKEN_T lexDotName( void )
             return( lexFileName( '.' ) );
         }
     } else {    /* get string {extc}+ */
-        while( pos < MAX_SUFFIX && sisextc( s ) && s != '{' ) {
+        while( pos < MAX_SUFFIX && ( sisextc( s ) || siswildc( s ) ) && s != '{' ) {
             ext[pos++] = s;
             s = PreGetCHR();
         }
@@ -417,7 +418,7 @@ STATIC MTOKEN_T lexDotName( void )
 
     if( s == '.' ) {        /* maybe of form "."{extc}*"."{extc}* */
         ext[pos++] = s;
-        for( s = PreGetCHR(); pos < MAX_SUFFIX && sisextc( s ); s = PreGetCHR() ) {
+        for( s = PreGetCHR(); pos < MAX_SUFFIX && ( sisextc( s ) || siswildc( s ) ); s = PreGetCHR() ) {
             ext[pos++] = s;
         }
         if( pos == MAX_SUFFIX ) {
@@ -739,7 +740,7 @@ MTOKEN_T LexParser( STRM_T s )
             UnGetCHR( s );
             return( TOK_SCOLON );
         default:
-            if( sisfilec( s ) || s == '\"' || ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) ) {
+            if( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || s == '\"' || ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) ) {
                 return( lexFileName( s ) );
             }
             PrtMsg( WRN | LOC | UNKNOWN_TOKEN, s );
