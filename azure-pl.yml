@@ -341,8 +341,6 @@ stages:
     variables:
       owbuild.stage: inst
     jobs:
-      - script:
-        env
       - ${{ if and(eq('$(Build.Reason)', 'PullRequest'), ne('$(System.PullRequest.PullRequestId)', 'Null')) }}:
         - template: ci/prbuild.yml
           parameters:
