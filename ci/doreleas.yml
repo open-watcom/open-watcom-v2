@@ -31,21 +31,21 @@ steps:
         releaseNotesSource: 'input'
         ${{ if eq(parameters.update, 'true') }}:
           releaseNotes: 'Last updated ${{ parameters.timestamp }}'
-        ${{ if not(eq(parameters.update, 'true')) }}:
+        ${{ else }}:
           releaseNotes: 'Created ${{ parameters.timestamp }}'
         ${{ if eq(parameters.arch, 'nt') }}:
           ${{ if eq(parameters.fullset, 'true') }}:
             assets: |
               distrib\ow\bin\open-watcom-*
               distrib\ow\bin\$(owsnapshotfile)
-          ${{ if not(eq(parameters.fullset, 'true')) }}:
+          ${{ else }}:
             assets: $(owroot)\$(owsnapshotfile)
         ${{ if in(parameters.arch, 'lnx', 'osx') }}:
           ${{ if eq(parameters.fullset, 'true') }}:
             assets: |
               distrib/ow/bin/open-watcom-*
               distrib/ow/bin/$(owsnapshotfile)
-          ${{ if not(eq(parameters.fullset, 'true')) }}:
+          ${{ else }}:
             assets: $(owroot)/$(owsnapshotfile)
         isPreRelease: true
         addChangeLog: false

@@ -26,22 +26,21 @@ jobs:
         artifname:  rel-lnx${{ parameters.artifsuflnx }}
     # consolidate documentation
     - template: docsload.yml
-    - ${{ if and(eq('$(Build.Reason)', 'PullRequest'), ne('$(System.PullRequest.PullRequestId)', 'Null')) }}:
-      # create full binary archive artifact
-      - template: artfsave.yml
-        parameters:
-          path:       rel
-          artifname:  owsnapshot
-    - ${{ else }}:
-      # create full binary archive
-      - task: ArchiveFiles@2
-        inputs:
-          rootFolderOrFile: '$(owroot)/rel'
-          includeRootFolder: false
-          archiveType: 'tar'
-          tarCompression: 'xz'
-          archiveFile: '$(owroot)/$(owsnapshotfile)'
-          replaceExistingArchive: true
+    # create full binary archive
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(owroot)/rel'
+        includeRootFolder: false
+        archiveType: 'tar'
+        tarCompression: 'xz'
+        archiveFile: '$(owroot)/$(owsnapshotfile)'
+        replaceExistingArchive: true
+    - task: PublishPipelineArtifact@1
+      displayName: Save Archive owsnapshot
+      inputs:
+        artifactName: owsnapshot
+        path:         '$(owroot)/$(owsnapshotfile)'
+    - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
       - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
         displayName: "Get current timestamp"
       - bash: echo "##vso[task.setvariable variable=owgitstamp;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${{ variables.owtag }}^{}:\1:p\"`"

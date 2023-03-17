@@ -49,6 +49,7 @@ stages:
           vmImage: $(owimage_lnx)
         steps:
         - checkout: none
+        - bash: env
   - stage: bootlnxow
     displayName: "Bootstrap Linux OW"
     dependsOn:
@@ -341,13 +342,7 @@ stages:
     variables:
       owbuild.stage: inst
     jobs:
-      - ${{ if and(eq('$(Build.Reason)', 'PullRequest'), ne('$(System.PullRequest.PullRequestId)', 'Null')) }}:
-        - template: ci/prbuild.yml
-          parameters:
-            title:    PR Build
-            artifsuflnx: gcc
-      - ${{ else }}:
-        - template: ci/lastbld.yml
-          parameters:
-            title:    Last CI Build
-            artifsuflnx: gcc
+      - template: ci/lastbld.yml
+        parameters:
+          title:    Last CI Build
+          artifsuflnx: gcc
