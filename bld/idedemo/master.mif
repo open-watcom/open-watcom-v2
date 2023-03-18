@@ -19,10 +19,10 @@ $(src_objs) : .SYMBOLIC
     @SET WATCOM=
     $(ide2make) -l -r $(targ_file).tgt -i $(ide_cfg_dir_$(host_os))
     sed -f "$(idedemo_dir)/convtool.sed" -f "$(idedemo_dir)/conv$(host_os).sed" $(targ_file).mk1 >temp.mk1
-    $(noecho)!$(nested_wmake) -i -h -f temp.mk1 tree_depth=4 "$@"
+    $(noecho)!$(nested_wmake) -i -h -f temp.mk1 tree_depth=$(tree_depth) "$@"
 !else
 $(host_os)_3d.dll: $(host_os)_3d.mk1
-    $(noecho)!$(nested_wmake) -i -h -f project.mk tree_depth=4
+    $(noecho)!$(nested_wmake) -i -h -f project.mk tree_depth=$(tree_depth)
 
 $(host_os)_3d.mk1: $(host_os)_3d.tgt
     @SET WATCOM=

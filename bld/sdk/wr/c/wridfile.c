@@ -166,34 +166,43 @@ static bool IdentifyWinExeHeader( FILE *fh, bool win16 )
 
     ok = ( fh != NULL );
 
-    /* check the reloc offset */
+    /*
+     * check the reloc offset
+     */
     if( ok ) {
         ok = ( fseek( fh, DOS_RELOC_OFFSET, SEEK_SET ) == 0 )
                 && ( fread( &data, 1, sizeof( data ), fh ) == sizeof( data ) )
                 && NE_HEADER_FOLLOWS( data );
     }
-    /* check the NE header offset */
+    /*
+     * check the NE header offset
+     */
     if( ok ) {
         ok = ( fseek( fh, NE_HEADER_OFFSET, SEEK_SET ) == 0 )
             && ( fread( &ne_header_off, 1, sizeof( ne_header_off ), fh ) == sizeof( ne_header_off ) )
             && ( ne_header_off != 0 );
     }
-
-    /* seek to the header */
+    /*
+     * seek to the header
+     */
     if( ok ) {
         ok = ( fseek( fh, ne_header_off, SEEK_SET ) == 0 );
     }
     if( ok ) {
         if( win16 ) {
+            /*
+             * check for valid Win16 EXE
+             */
             ok = ( fread( &nehdr, 1, sizeof( nehdr ), fh ) == sizeof( nehdr ));
-            /* check for valid Win16 EXE */
             if( ok ) {
                 return( WRIsHeaderValidWIN16( &nehdr ) );
             }
         } else {
+            /*
+             * check for valid Win32 EXE
+             */
             ok = ( fread( &pehdr, 1, PE_HDR_SIZE, fh ) == PE_HDR_SIZE
                  && fread( (char *)&pehdr + PE_HDR_SIZE, 1, PE_OPT_SIZE( pehdr ), fh ) == PE_OPT_SIZE( pehdr ) );
-            /* check for valid Win32 EXE */
             if( ok ) {
                 return( WRIsHeaderValidWINNT( &pehdr ) );
             }

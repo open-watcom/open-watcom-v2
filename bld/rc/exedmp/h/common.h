@@ -84,5 +84,4 @@ typedef struct ResDataEntry {
     resource_entry          entry;
 } ResDataEntry;
 
-
 #endif

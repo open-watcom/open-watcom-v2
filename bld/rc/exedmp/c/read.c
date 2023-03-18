@@ -60,8 +60,7 @@ pe_va getDirNameRva( ResDirEntry *dir )
 long getDirNameAbs( ResDirEntry *dir, ExeFile *exeFile )
 /******************************************************/
 {
-    return( exeFile->resObj.physical_offset +
-            getDirNameRva( dir ) );
+    return( exeFile->resObj.physical_offset + getDirNameRva( dir ) );
 }
 
 long getDirChildAbs( ResDirEntry *dir, ExeFile *exeFile )
@@ -92,9 +91,8 @@ bool openExeFile( ExeFile *exeFile, Parameters *param )
     if( exeFile->file == NULL ) {
         printf( ERR_READ_CANNOT_OPEN_FILE, param->filename );
         return( false );
-    } else {
-        return( true );
     }
+    return( true );
 }
 
 bool readExeHeaders( ExeFile *exeFile )
@@ -187,24 +185,18 @@ bool loadTableEntry( ResTableEntry *table, ExeFile *exeFile, long addr )
     table->dirs = NULL;
 
     prevPos = ftell( exeFile->file );
-    if( fseek( exeFile->file,
-               (size_t) addr,
-               SEEK_SET ) ) {
+    if( fseek( exeFile->file, addr, SEEK_SET ) ) {
         printf( ERR_READ_CANNOT_FIND_TABLE_HEADER );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    if( fread( (void *) &table->header,
-               (size_t) sizeof( resource_dir_header ),
-               (size_t) 1,
-               exeFile->file ) != 1 ) {
+    if( fread( &table->header, sizeof( resource_dir_header ), 1, exeFile->file ) != 1 ) {
         printf( ERR_READ_TABLE_HEADER );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
 
-    entriesCount = table->header.num_name_entries +
-                   table->header.num_id_entries;
+    entriesCount = table->header.num_name_entries + table->header.num_id_entries;
     table->dirs = (ResDirEntry *) malloc( sizeof( ResDirEntry ) * entriesCount );
     if( table->dirs == NULL ) {
         printf( ERR_READ_OUT_OF_MEMORY );
@@ -234,10 +226,7 @@ bool loadDirEntry( ResDirEntry *dir, ExeFile *exeFile )
     dir->name = NULL;
     dir->nameSize = 0;
 
-    if( fread( (void *) &dir->dir,
-               (size_t) sizeof( resource_dir_entry ),
-               (size_t) 1,
-               exeFile->file ) != 1 ) {
+    if( fread( &dir->dir, sizeof( resource_dir_entry ), 1, exeFile->file ) != 1 ) {
         printf( ERR_READ_DIR_ENTRY );
         return( false );
     }
@@ -245,17 +234,12 @@ bool loadDirEntry( ResDirEntry *dir, ExeFile *exeFile )
     if( nameOrID( dir ) == NAME ) {
         dir->nameID = NAME;
         prevPos = ftell( exeFile->file );
-        if( fseek( exeFile->file,
-                   getDirNameAbs( dir, exeFile ),
-                   SEEK_SET ) ) {
+        if( fseek( exeFile->file, getDirNameAbs( dir, exeFile ), SEEK_SET ) ) {
             printf( ERR_READ_DIR_ENTRY_NAME );
             fseek( exeFile->file, prevPos, SEEK_SET );
             return( false );
         }
-        if( fread( (void *) &dir->nameSize,
-                   (size_t) sizeof( unsigned_16 ),
-                   (size_t) 1,
-                   exeFile->file ) != 1 ) {
+        if( fread( &dir->nameSize, sizeof( unsigned_16 ), 1, exeFile->file ) != 1 ) {
             printf( ERR_READ_DIR_ENTRY_NAME );
             fseek( exeFile->file, prevPos, SEEK_SET );
             return( false );
@@ -266,10 +250,7 @@ bool loadDirEntry( ResDirEntry *dir, ExeFile *exeFile )
             fseek( exeFile->file, prevPos, SEEK_SET );
             return( false );
         }
-        if( fread( (void *) dir->name,
-                   (size_t) sizeof( unsigned_16 ),
-                   (size_t) dir->nameSize,
-                   exeFile->file ) != dir->nameSize ) {
+        if( fread( dir->name, sizeof( unsigned_16 ), dir->nameSize, exeFile->file ) != dir->nameSize ) {
             printf( ERR_READ_DIR_ENTRY_NAME );
             fseek( exeFile->file, prevPos, SEEK_SET );
             return( false );
@@ -305,17 +286,12 @@ bool loadDataEntry( ResDataEntry *data, ExeFile *exeFile, long addr )
     long prevPos;
 
     prevPos = ftell( exeFile->file );
-    if( fseek( exeFile->file,
-               (size_t) addr,
-               SEEK_SET ) ) {
+    if( fseek( exeFile->file, addr, SEEK_SET ) ) {
         printf( ERR_READ_CANNOT_FIND_DATA_ENTRY );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );
     }
-    if( fread( (void *) &data->entry,
-               (size_t) sizeof( resource_entry ),
-               (size_t) 1,
-               exeFile->file ) != 1 ) {
+    if( fread( &data->entry, sizeof( resource_entry ), 1, exeFile->file ) != 1 ) {
         printf( ERR_READ_DATA_ENTRY );
         fseek( exeFile->file, prevPos, SEEK_SET );
         return( false );

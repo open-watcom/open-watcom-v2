@@ -473,7 +473,6 @@ void dmp_objects( unsigned num_objects )
 bool Dmp_pe_tab( void )
 /*********************/
 {
-    unsigned_32     offset;        /* current offset position */
     unsigned_16     i;
     pe_object       pe_obj;
     unsigned_32     export_rva;
@@ -498,12 +497,9 @@ bool Dmp_pe_tab( void )
     Wread( (char *)&Pe_head + PE_HDR_SIZE, PE_OPT_SIZE( Pe_head) );
     Exp_off = 0;
     export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
-    offset = New_exe_off + PE_SIZE( Pe_head );
     num_objects = Pe_head.fheader.num_objects;
     for( i = 0; i < num_objects; i++ ) {
-        Wlseek( offset );
         Wread( &pe_obj, sizeof( pe_object ) );
-        offset += sizeof( pe_object );
         if( IN_RANGE( export_rva, pe_obj ) ) {
             Exp_off = PHYS_OFFSET( export_rva, pe_obj );
         }

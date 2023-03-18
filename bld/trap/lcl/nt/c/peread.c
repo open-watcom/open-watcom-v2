@@ -37,6 +37,7 @@
 #include "madconf.h"
 #include "stdnt.h"
 
+
 /*
  * SeekRead - seek to a specified spot in the file, and read some data
  */

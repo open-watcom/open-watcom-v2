@@ -205,7 +205,7 @@ STATIC int exeHeader( FILE *fp )
     dos_exe_header      head;
     uint_32             pharlap_config;
     uint_32             pharlap_header;
-    uint_32             os2_header;
+    uint_32             ne_header_off;
     uint_16             format_level;
     uint_16             data16;
     uint_16             signature;
@@ -234,10 +234,10 @@ STATIC int exeHeader( FILE *fp )
             if( fseek( fp, NE_HEADER_OFFSET, SEEK_SET ) ) {
                 return( EXE_TYPE_MZ );
             }
-            if( fread( &os2_header, 1, sizeof( os2_header ), fp ) != sizeof( os2_header ) ) {
+            if( fread( &ne_header_off, 1, sizeof( ne_header_off ), fp ) != sizeof( ne_header_off ) ) {
                 return( EXE_TYPE_MZ );
             }
-            if( fseek( fp, os2_header, SEEK_SET ) ) {
+            if( fseek( fp, ne_header_off, SEEK_SET ) ) {
                 return( EXE_TYPE_MZ );
             }
             if( fread( &signature, 1, sizeof( signature ), fp ) != sizeof( signature ) ) {
