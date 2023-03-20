@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,6 +87,30 @@ extern short    __psp;
 
 #endif
 
+#define ALLOCATED       1
+
+#define MAX_SIZE        14  /* 16384 (2 ^ 14) */
+#define MIN_SIZE        4   /* 16    (2 ^ 4) */
+#define MAX_CLASS       (MAX_SIZE - MIN_SIZE)
+
+#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
+#define MEM_WORD_SIZE   16  /* Needed to keep alignment. */
+#define MEMPTR_SIZE     8
+#define TAG_SIZE        8
+#else
+#define MEM_WORD_SIZE   4
+#define MEMPTR_SIZE     4
+#define TAG_SIZE        4
+#endif
+
+#if (1 << MIN_SIZE) < (TAG_SIZE + MEMPTR_SIZE)
+    #error "Free list will not fit into freed chunk"
+#endif
+
+#define MIN_ALLOC       _RoundUp( sizeof( frl ), MEM_WORD_SIZE )
+#define MAX_ALLOC       (1 << MAX_SIZE)
+#define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
+
 typedef pointer_uint    tag;
 
 static  pointer     MemFromSys( size_t );
@@ -99,17 +123,6 @@ static pointer_uint PeakAlloc    = 0;
 #endif
 
 
-#define ALLOCATED       1
-
-#define MAX_SIZE        14 /* 16384 (2 ^ 14) */
-#define MIN_SIZE        4  /* 16    (2 ^ 4) */
-#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
-#define MEM_WORD_SIZE   8  /* Needed to keep alignment. */
-#else
-#define MEM_WORD_SIZE   4
-#endif
-#define MAX_CLASS       (MAX_SIZE - MIN_SIZE)
-
 /* Free list structure - length holds the size of memory block, which
  * is necessary for freeing memory. Note that the length field is set
  * when the block is first allocated and never changes afterwards.
@@ -120,10 +133,6 @@ typedef struct frl {
     tag         length;
     struct frl  *link;
 } frl;
-
-#if (1 << MIN_SIZE) < (2 * MEM_WORD_SIZE)
-    #error "Free list will not fit into freed chunk"
-#endif
 
 /* Memory block structure - memory is allocated from the OS in large
  * chunks (perhaps 64K, perhaps more or less than that). If there is
@@ -140,12 +149,6 @@ typedef struct blk_hdr {
     struct mem_blk  *block;
     tag             size;   /* This must be the last member! */
 } blk_hdr;
-
-#define TAG_SIZE        sizeof( tag )
-
-#define MIN_ALLOC _RoundUp( sizeof( frl ), MEM_WORD_SIZE )
-#define MAX_ALLOC (1 << MAX_SIZE)
-#define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
 
 static mem_blk  *_Blks;
 static frl      *_FreeList[MAX_CLASS + 1];
