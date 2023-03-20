@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -452,22 +452,31 @@ void init_arrays( unsigned first_index, unsigned last_index )
         freq[c] = 0;
     }
     for( i = 1; i <= num_keywords; ++i ) {
-        len[i] = (unsigned)strlen( tokens[i] );
-        if( len[i] > first_index ) {
-            first[i] = make_letter( tokens[i][first_index] );
-        } else {
-            first[i] = make_letter( tokens[i][len[i] - 1] );
-        }
-        if( len[i] > last_index ) {
-            last[i] = make_letter( tokens[i][len[i] - last_index - 1] );
-        } else {
-            last[i] = make_letter( tokens[i][0] );
-        }
         done[i] = 0;
-        // these improve the hash function
-        init_hash[i] = len[i] + (unsigned char)tokens[i][min_len];
-        //init_hash[i] = len[i] + (unsigned)tokens[i][len[i] >> 1];
-        //init_hash[i] = len[i];
+        len[i] = (unsigned)strlen( tokens[i] );
+        if( flags.tiny_output ) {
+            first[i] = make_letter( tokens[i][first_index] );
+            last[i] = make_letter( tokens[i][len[i] - ( last_index + 1 )] );
+            // these improve the hash function
+            //init_hash[i] = len[i] + tokens[i][min_len];
+            //init_hash[i] = len[i] + tokens[i][len[i] >> 1];
+            init_hash[i] = len[i];
+        } else {
+            if( len[i] > first_index ) {
+                first[i] = make_letter( tokens[i][first_index] );
+            } else {
+                first[i] = make_letter( tokens[i][len[i] - 1] );
+            }
+            if( len[i] > last_index ) {
+                last[i] = make_letter( tokens[i][len[i] - last_index - 1] );
+            } else {
+                last[i] = make_letter( tokens[i][0] );
+            }
+            // these improve the hash function
+            init_hash[i] = len[i] + (unsigned char)tokens[i][min_len];
+            //init_hash[i] = len[i] + (unsigned)tokens[i][len[i] >> 1];
+            //init_hash[i] = len[i];
+        }
         hash[i] = init_hash[i];
         ++freq[first[i]];
         ++freq[last[i]];
