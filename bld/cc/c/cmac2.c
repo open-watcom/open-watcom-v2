@@ -39,7 +39,9 @@
 #include "ppexpn.h"
 
 
-#define HasVarArgs(m)      (((m) & MFLAG_HAS_VAR_ARGS) != 0)
+#define HasVarArgs(m)       (((m) & MFLAG_HAS_VAR_ARGS) != 0)
+
+#define PREPROC_WEIGHT(c)   ((c >= 'a' && c < 'a' + sizeof( PreProcWeights )) ? PreProcWeights[c - 'a'] : 0)
 
 extern bool PrintWhiteSpace;  //ppc printing   (from ccmain.c)
 
@@ -53,12 +55,13 @@ static void    CIf( void );
 static void    CElif( void );
 static void    CElse( void );
 static void    CEndif( void );
-static void    CUndef( void );
+static void    CUnDef( void );
 static void    CLine( void );
 static void    CError( void );
 static void    CIdent( void );
+static void    CWarning( void );
 
-static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *src_loc );
+static MEPTR   GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *src_loc );
 static mac_parm_count FormalParm( MPPTR formal_parms );
 
 struct preproc {
@@ -68,27 +71,27 @@ struct preproc {
 };
 
 static unsigned char PreProcWeights[] = {
-//a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
-  2, 0, 0,11, 1, 4, 0, 0, 5, 0, 0,12, 0, 0, 0,13, 0,14, 0, 9,15, 0, 0, 0, 0,0
+//a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z
+  2, 0, 0, 9, 1, 4, 3, 0, 5, 0, 0, 7, 0, 0, 0,10, 0,11, 0,13,12, 0,14
 };
 
 static struct preproc PreProcTable[] = {
-    { "",       NULL,           NULL },     // 0
-    { "line",   CLine,          CSkip },    // 4 +12 + 1 = 17 mod 16 = 1
-    { "define", CDefine,        CSkip },    // 6 +11 + 1 = 18 mod 16 = 2
-    { "ident",  CIdent,         CSkip },    // 5 + 5 + 9 = 19 mod 16 = 3
-    { "error",  CError,         CSkip },    // 5 + 1 +14 = 20 mod 16 = 4
-    { "pragma", CPragma,        CSkip },    // 6 +13 + 2 = 21 mod 16 = 5
-    { "else",   CElse,          CElse },    // 4 + 1 + 1 = 6
-    { "",       NULL,           NULL },     // 7
-    { "undef",  CUndef,         CSkip },    // 5 +15 + 4 = 24 mod 16 = 8
-    { "elif",   CElif,          CElif },    // 4 + 1 + 4 = 9
-    { "endif",  CEndif,         CEndif },   // 5 + 1 + 4 = 10
-    { "if",     CIf,            CSkipIf },  // 2 + 5 + 4 = 11
-    { "",       NULL,           NULL },     // 12
-    { "include",CInclude,       CSkip },    // 7 + 5 + 1 = 13
-    { "ifdef",  CIfDef,         CSkipIf },  // 5 + 5 + 4 = 14
-    { "ifndef", CIfNDef,        CSkipIf },  // 6 + 5 + 4 = 15
+    { "define",     CDefine,    CSkip },
+    { "error",      CError,     CSkip },
+    { "pragma",     CPragma,    CSkip },
+    { "",           NULL,       NULL },
+    { "",           NULL,       NULL },
+    { "undef",      CUnDef,     CSkip },
+    { "else",       CElse,      CElse },
+    { "ident",      CIdent,     CSkip },
+    { "warning",    CWarning,   CSkip },
+    { "elif",       CElif,      CElif },
+    { "endif",      CEndif,     CEndif },
+    { "if",         CIf,        CSkipIf },
+    { "line",       CLine,      CSkip },
+    { "include",    CInclude,   CSkip },
+    { "ifdef",      CIfDef,     CSkipIf },
+    { "ifndef",     CIfNDef,    CSkipIf },
 };
 
 enum    pp_types {
@@ -176,8 +179,7 @@ static void PreProcStmt( void )
     NextChar();                 /* skip over '#' */
     PPNextToken();
     if( CurToken == T_ID ) {
-        hash = (TokenLen + PreProcWeights[Buffer[0] - 'a']
-                 + PreProcWeights[Buffer[TokenLen - 1] - 'a']) & 15;
+        hash = ( TokenLen + PREPROC_WEIGHT( Buffer[0] ) + PREPROC_WEIGHT( Buffer[TokenLen - 1] ) ) & 0x0f;
         pp = &PreProcTable[hash];
         if( strcmp( pp->directive, Buffer ) == 0 ) {
             if( SkipLevel == NestLevel ) {
@@ -737,7 +739,7 @@ bool MacroDel( const char *name )
 }
 
 
-static void CUndef( void )
+static void CUnDef( void )
 {
 
     PPNextToken();
@@ -794,8 +796,7 @@ static void CLine( void )
     PPCTL_DISABLE_MACROS();
 }
 
-
-static void CError( void )
+static void get_arg_message( void )
 {
     while( CurrChar == ' ' )
         NextChar();
@@ -805,8 +806,25 @@ static void CError( void )
         NextChar();
     }
     WriteBufferNullChar();
+}
+
+static void CError( void )
+{
+    get_arg_message();
     /* Force #error output to be reported, even with preprocessor */
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
+}
+
+
+static void CWarning( void )
+{
+    if( CompFlags.extensions_enabled ) {
+        get_arg_message();
+        /* Force #error output to be reported, even with preprocessor */
+        CWarn2p( ERR_USER_WARNING_MSG, Buffer );
+    } else {
+        CUnknown();
+    }
 }
 
 

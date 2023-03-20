@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,9 @@
 #include "clibext.h"
 
 
-#define HasVarArgs(m)      ((m) & MFLAG_HAS_VAR_ARGS)
+#define HasVarArgs(m)       ((m) & MFLAG_HAS_VAR_ARGS)
+
+#define PREPROC_WEIGHT(c)   ((c >= 'a' && c < 'a' + sizeof( preprocWeights )) ? preprocWeights[c - 'a'] : 0)
 
 typedef struct mac_parm MAC_PARM;
 struct mac_parm {
@@ -81,6 +83,7 @@ static void CError( void );
 extern void CPragma( void );
 static void CIdent( void );
 static void CUnknown( void );
+static void CWarning( void );
 
 typedef struct {
     char        *directive;
@@ -89,26 +92,26 @@ typedef struct {
 } PPCTRL;
 
 static const unsigned char preprocWeights[] = {
-//a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
-  2, 0, 0,11, 1, 4, 0, 0, 5, 0, 0,12, 0, 0, 0,13, 0,14, 0, 9,15, 0, 0, 0, 0,0
+//a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z
+  2, 0, 0, 9, 1, 4, 3, 0, 5, 0, 0, 7, 0, 0, 0,10, 0,11, 0,13,12, 0,14, 0, 0, 0
 };
 static const PPCTRL controlTable[] = {
-    { "",       NULL,           NULL },  // 0
-    { "line",   CLine,          CSkip }, // 4 +12 + 1 = 17 mod 16 = 1
-    { "define", CDefine,        CSkip }, // 6 +11 + 1 = 18 mod 16 = 2
-    { "ident",  CIdent,         CSkip }, // 5 + 5 + 9 = 19 mod 16 = 3
-    { "error",  CError,         CSkip }, // 5 + 1 +14 = 20 mod 16 = 4
-    { "pragma", CPragma,        CSkip }, // 6 +13 + 2 = 21 mod 16 = 5
-    { "else",   CElse,          CElse }, // 4 + 1 + 1 = 6
-    { "",       NULL,           NULL },  // 7
-    { "undef",  CUnDef,         CSkip }, // 5 +15 + 4 = 24 mod 16 = 8
-    { "elif",   CElif,          CElif }, // 4 + 1 + 4 = 9
-    { "endif",  CEndif,         CEndif },// 5 + 1 + 4 = 10
-    { "if",     CIf,            CSkipIf },//2 + 5 + 4 = 11
-    { "",       NULL,           NULL },  // 12
-    { "include",CInclude,       CSkip }, // 7 + 5 + 1 = 13
-    { "ifdef",  CIfDef,         CSkipIf },//5 + 5 + 4 = 14
-    { "ifndef", CIfNDef,        CSkipIf },//6 + 5 + 4 = 15
+    { "define",     CDefine,    CSkip },
+    { "error",      CError,     CSkip },
+    { "pragma",     CPragma,    CSkip },
+    { "",           NULL,       NULL },
+    { "",           NULL,       NULL },
+    { "undef",      CUnDef,     CSkip },
+    { "else",       CElse,      CElse },
+    { "ident",      CIdent,     CSkip },
+    { "warning",    CWarning,   CSkip },
+    { "elif",       CElif,      CElif },
+    { "endif",      CEndif,     CEndif },
+    { "if",         CIf,        CSkipIf },
+    { "line",       CLine,      CSkip },
+    { "include",    CInclude,   CSkip },
+    { "ifdef",      CIfDef,     CSkipIf },
+    { "ifndef",     CIfNDef,    CSkipIf },
 };
 
 enum pp_stack_states {
@@ -669,10 +672,8 @@ static void CLine( void )
     PPCTL_DISABLE_MACROS();
 }
 
-static void CError( void )
+static void get_arg_message( void )
 {
-    bool save;
-
     while( CurrChar == ' ' )
         NextChar();
     TokenLen = 0;
@@ -681,11 +682,34 @@ static void CError( void )
         NextChar();
     }
     WriteBufferNullChar();
+}
+
+static void CError( void )
+{
+    bool save;
+
+    get_arg_message();
     /* Force #error output to be reported, even with preprocessor */
     save = CompFlags.cpp_output;
     CompFlags.cpp_output = false;
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
     CompFlags.cpp_output = save;
+}
+
+static void CWarning( void )
+{
+    bool save;
+
+    if( !CompFlags.extensions_enabled ) {
+        get_arg_message();
+        /* Force #error output to be reported, even with preprocessor */
+        save = CompFlags.cpp_output;
+        CompFlags.cpp_output = false;
+        CErr2p( WARN_USER_WARNING_MSG, Buffer );
+        CompFlags.cpp_output = save;
+    } else {
+        CUnknown();
+    }
 }
 
 static void CIdent( void )
@@ -703,8 +727,7 @@ static void preProcStmt( void )
     NextChar();
     NextToken();
     if( CurToken == T_ID ) {
-        hash = (TokenLen + preprocWeights[Buffer[0] - 'a']
-                 + preprocWeights[Buffer[TokenLen - 1] - 'a']) & 15;
+        hash = (TokenLen + PREPROC_WEIGHT( Buffer[0] ) + PREPROC_WEIGHT( Buffer[TokenLen - 1] )) & 0x0f;
         pp = &controlTable[hash];
         if( strcmp( pp->directive, Buffer ) == 0 ) {
             if( SkipLevel == NestLevel ) {

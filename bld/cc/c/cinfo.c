@@ -777,7 +777,7 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_DATA_SIZE:
         break;
     case MSG_ERROR:
-        CErr2p( ERR_USER_ERROR_MSG, parm );
+        CErr2p( ERR_INTERNAL_ERROR_MSG, parm );
         break;
     case MSG_FATAL:
         CErr2p( ERR_FATAL_ERROR, parm );
