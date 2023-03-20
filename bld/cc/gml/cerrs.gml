@@ -527,7 +527,7 @@ The new warning level that can be used for the warning can be in the range
 warnings.  The -w option sets an upper limit on the level for warnings.
 By setting the level above the command line limit, you effectively
 ignore all cases where the warning shows up.
-MSGSYM. ERR_USER_WARNING_MSG
+:MSGSYM. ERR_USER_WARNING_MSG
 :MSGTXT. %s
 :MSGJTXT. %s
 :WARNING. 1
