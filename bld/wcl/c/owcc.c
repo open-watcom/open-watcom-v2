@@ -92,6 +92,27 @@
 #define ASM         BPRFX "wasmps"      /* Open Watcom assembler             */
 #define _TARGET_    "MIPS"
 #define ARCH        TARGET_ARCH_MIPS
+#elif defined( _M_X64_AS_DEFAULT )
+#define CC          BPRFX "wccx64"      /* Open Watcom C compiler (64-bit)   */
+#define CCXX        BPRFX "wppx64"      /* Open Watcom C++ compiler (64-bit) */
+#define FC          BPRFX "wfcx64"      /* Open Watcom F77 compiler (64-bit) */
+#define ASM         BPRFX "wasm"        /* Open Watcom assembler             */
+#define _TARGET_    "x86 64-bit"
+#define ARCH        TARGET_ARCH_X64
+#elif defined( _M_ARM )
+#define CC          BPRFX "wccarm"      /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wpparm"      /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfcarm"      /* Open Watcom F77 compiler (32-bit) */
+#define ASM         BPRFX "wasarm"      /* Open Watcom assembler             */
+#define _TARGET_    "ARM 32-bit"
+#define ARCH        TARGET_ARCH_ARM
+#elif defined( _M_ARM64 )
+#define CC          BPRFX "wcca64"      /* Open Watcom C compiler (64-bit)   */
+#define CCXX        BPRFX "wppa64"      /* Open Watcom C++ compiler (64-bit) */
+#define FC          BPRFX "wfca64"      /* Open Watcom F77 compiler (64-bit) */
+#define ASM         BPRFX "wasa64"      /* Open Watcom assembler             */
+#define _TARGET_    "ARM 64-bit"
+#define ARCH        TARGET_ARCH_ARM64
 #else
 #define CC          BPRFX "wcc386"      /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wpp386"      /* Open Watcom C++ compiler (32-bit) */
@@ -123,6 +144,9 @@ typedef enum {
     TARGET_ARCH_AXP,
     TARGET_ARCH_MIPS,
     TARGET_ARCH_PPC,
+    TARGET_ARCH_X64,
+    TARGET_ARCH_ARM,
+    TARGET_ARCH_ARM64,
     TARGET_ARCH_COUNT
 } owcc_target_arch;
 
@@ -284,6 +308,9 @@ static etool tools_asm_arch[TARGET_ARCH_COUNT] = {
     { BPRFX "wasaxp", BPRFX "wasaxp" TOOL_EXE_EXT, NULL },   // axp
     { BPRFX "wasmps", BPRFX "wasmps" TOOL_EXE_EXT, NULL },   // mips
     { BPRFX "wasppc", BPRFX "wasppc" TOOL_EXE_EXT, NULL },   // ppc
+    { BPRFX "wasm",   BPRFX "wasm" TOOL_EXE_EXT,   NULL },   // x86_64
+    { BPRFX "wasarm", BPRFX "wasarm" TOOL_EXE_EXT, NULL },   // arm
+    { BPRFX "wasa64", BPRFX "wasa64" TOOL_EXE_EXT, NULL },   // arm64
 };
 
 static etool tools_cc_arch[TARGET_ARCH_COUNT] = {
@@ -293,6 +320,9 @@ static etool tools_cc_arch[TARGET_ARCH_COUNT] = {
     { BPRFX "wccaxp", BPRFX "wccaxp" TOOL_EXE_EXT, NULL },   // axp
     { BPRFX "wccmps", BPRFX "wccmps" TOOL_EXE_EXT, NULL },   // mips
     { BPRFX "wccppc", BPRFX "wccppc" TOOL_EXE_EXT, NULL },   // ppc
+    { BPRFX "wccx64", BPRFX "wccx64" TOOL_EXE_EXT, NULL },   // x86_64
+    { BPRFX "wccarm", BPRFX "wccarm" TOOL_EXE_EXT, NULL },   // arm
+    { BPRFX "wcca64", BPRFX "wcca64" TOOL_EXE_EXT, NULL },   // arm64
 };
 
 static etool tools_ccxx_arch[TARGET_ARCH_COUNT] = {
@@ -302,6 +332,9 @@ static etool tools_ccxx_arch[TARGET_ARCH_COUNT] = {
     { BPRFX "wppaxp", BPRFX "wppaxp" TOOL_EXE_EXT, NULL },   // axp
     { BPRFX "wppmps", BPRFX "wppmps" TOOL_EXE_EXT, NULL },   // mips
     { BPRFX "wppppc", BPRFX "wppppc" TOOL_EXE_EXT, NULL },   // ppc
+    { BPRFX "wppx64", BPRFX "wppx64" TOOL_EXE_EXT, NULL },   // x86_64
+    { BPRFX "wpparm", BPRFX "wpparm" TOOL_EXE_EXT, NULL },   // arm
+    { BPRFX "wppa64", BPRFX "wppa64" TOOL_EXE_EXT, NULL },   // arm64
 };
 
 static etool tools_f77_arch[TARGET_ARCH_COUNT] = {
@@ -311,6 +344,9 @@ static etool tools_f77_arch[TARGET_ARCH_COUNT] = {
     { BPRFX "wfcaxp", BPRFX "wfcaxp" TOOL_EXE_EXT, NULL },   // axp
     { BPRFX "wfcmps", BPRFX "wfcmps" TOOL_EXE_EXT, NULL },   // mips
     { BPRFX "wfcppc", BPRFX "wfcppc" TOOL_EXE_EXT, NULL },   // ppc
+    { BPRFX "wfcx64", BPRFX "wfcx64" TOOL_EXE_EXT, NULL },   // x86_64
+    { BPRFX "wfcarm", BPRFX "wfcarm" TOOL_EXE_EXT, NULL },   // arm
+    { BPRFX "wfca64", BPRFX "wfca64" TOOL_EXE_EXT, NULL },   // arm64
 };
 
 static void print_banner( void )
@@ -511,14 +547,31 @@ static  int  ConsultSpecsFile( const char *target )
                         break;
                     }
                     break;
-                case 'a':       // axp
-                    CPU_Arch = TARGET_ARCH_AXP;
+                case 'a':
+                    switch( p[1] ) {
+                    case '6':   // a64 for arm64
+                    case 'a':   // aarch64 for arm64
+                        CPU_Arch = TARGET_ARCH_ARM64;
+                        break;
+                    case 'm':   // amd64
+                        CPU_Arch = TARGET_ARCH_X64;
+                        break;
+                    case 'r':   // arm
+                        CPU_Arch = TARGET_ARCH_ARM;
+                        break;
+                    case 'x':   // axp
+                        CPU_Arch = TARGET_ARCH_AXP;
+                        break;
+                    }
                     break;
                 case 'm':       // mips
                     CPU_Arch = TARGET_ARCH_MIPS;
                     break;
                 case 'p':       // ppc
                     CPU_Arch = TARGET_ARCH_PPC;
+                    break;
+                case 'x':       // x64 or x86_64 for amd64
+                    CPU_Arch = TARGET_ARCH_X64;
                     break;
                 default:
                     CPU_Arch = TARGET_ARCH_DEFAULT;
@@ -765,14 +818,31 @@ static  int  ParseArgs( int argc, char **argv )
                         break;
                     }
                     break;
-                case 'a':       // axp
-                    CPU_Arch = TARGET_ARCH_AXP;
+                case 'a':
+                    switch( Word[6] ) {
+                    case '6':   // a64 for arm64
+                    case 'a':   // aarch64 for arm64
+                        CPU_Arch = TARGET_ARCH_ARM64;
+                        break;
+                    case 'm':   // amd64
+                        CPU_Arch = TARGET_ARCH_X64;
+                        break;
+                    case 'r':   // arm
+                        CPU_Arch = TARGET_ARCH_ARM;
+                        break;
+                    case 'x':   // axp
+                        CPU_Arch = TARGET_ARCH_AXP;
+                        break;
+                    }
                     break;
                 case 'm':       // mips
                     CPU_Arch = TARGET_ARCH_MIPS;
                     break;
                 case 'p':       // ppc
                     CPU_Arch = TARGET_ARCH_PPC;
+                    break;
+                case 'x':       // x64 or x86_64 for amd64
+                    CPU_Arch = TARGET_ARCH_X64;
                     break;
                 default:
                     CPU_Arch = TARGET_ARCH_DEFAULT;
