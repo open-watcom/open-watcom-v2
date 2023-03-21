@@ -164,7 +164,7 @@ typedef int filedesc;
 :include poppack.sp
 
   inline void ifstream::open( char const *__n, ios::openmode __m, int __p ) {
-    fstreambase::open( __n, __m, __p );
+    fstreambase::open( __n, __m | ios::in, __p );
   }
 
   // **************************** OFSTREAM ***********************************
@@ -187,7 +187,7 @@ typedef int filedesc;
 :include poppack.sp
 
   inline void ofstream::open( char const *__n, ios::openmode __m, int __p ) {
-    fstreambase::open( __n, __m, __p );
+    fstreambase::open( __n, __m | ios::out, __p );
   }
 
   // **************************** FSTREAM ************************************
