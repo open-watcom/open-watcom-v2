@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2022-2022 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2022-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -1059,17 +1059,24 @@
 :usage. disable all extensions (strict ISO/ANSI C)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI Cのみ受け付けます)
 
+:option. za89
+:target. any
+:internal.
+:enumerate. iso
+:usage. use ISO/ANSI C89 standard (default)
+:jusage. use ISO/ANSI C89 standard (default)
+
 :option. za99
 :target. any
 :internal.
 :enumerate. iso
-:usage. disable extensions (i.e., accept only ISO/ANSI C99)
-:jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI C99のみ受け付けます)
+:usage. use ISO/ANSI C99 standard
+:jusage. use ISO/ANSI C99 standard
 
 :option. zam
 :target. any
-:usage. disable all compiler non-ISO compliant names (macros, symbols)
-:jusage. disable all compiler non-ISO compliant names (macros, symbols)
+:usage. disable all non-ISO compliant names (macros, symbols)
+:jusage. disable all non-ISO compliant names (macros, symbols)
 
 :option. zc
 :target. i86 386

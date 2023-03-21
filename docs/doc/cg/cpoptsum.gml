@@ -840,6 +840,14 @@ disable/enable language extensions (default is ze)
 :optref refid='SWza'.
 :optref refid='SWze'.
 .*
+.note za89
+use ISO/ANSI C89 language standard
+:optref refid='SWza89'.
+.*
+.note za99
+use ISO/ANSI C99 language standard
+:optref refid='SWza89'.
+.*
 .note zam
 :CMT. .ix 'options' 'zam'
 disable all predefined old extension macros (keyword macros, non-ISO names)

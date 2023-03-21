@@ -401,6 +401,16 @@ disable/enable language extensions
 :optref refid='SWza'.
 :optref refid='SWze'.
 .do end
+.if &e'&$SWza89 ne 0 .do begin
+.note za89
+use ISO/ANSI C89 language standard
+:optref refid='SWza89'.
+.do end
+.if &e'&$SWza99 ne 0 .do begin
+.note za99
+use ISO/ANSI C99 language standard
+:optref refid='SWza99'.
+.do end
 .if &e'&$SWzq ne 0 .do begin
 .note zq
 operate quietly
@@ -2567,6 +2577,22 @@ See also the description of the "ze" option.
 When using the C compiler, there is an exception to the enforcement of
 the ISO C standard programming language specification.
 The use of C++ style comments (// comment) are not diagnosed.
+.do end
+.*
+.if &e'&$SWza89 ne 0 .do begin
+:OPT refid='SWza89' name='za89'.
+.ix 'options' 'za89'
+.ix 'ISO/ANSI C89 language standard compatibility'
+This option helps to ensure that the module to be compiled conforms to
+the ISO/ANSI C programming language standard
+.do end
+.*
+.if &e'&$SWza99 ne 0 .do begin
+:OPT refid='SWza99' name='za99'.
+.ix 'options' 'za99'
+.ix 'ISO/ANSI C99 language standard compatibility'
+This option helps to ensure that the module to be compiled conforms to
+the ISO/ANSI C programming language standard
 .do end
 .*
 .if &e'&$SWze ne 0 .do begin
