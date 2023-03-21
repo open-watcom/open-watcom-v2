@@ -157,7 +157,7 @@ namespace std {
 #pragma pack( __pop )
 
   inline void ifstream::open( char const *__n, ios::openmode __m, int __p ) {
-    fstreambase::open( __n, __m | ios::in, __p );
+    fstreambase::open( __n, __m, __p );
   }
 
   // **************************** OFSTREAM ***********************************
@@ -180,7 +180,7 @@ namespace std {
 #pragma pack( __pop )
 
   inline void ofstream::open( char const *__n, ios::openmode __m, int __p ) {
-    fstreambase::open( __n, __m | ios::out, __p );
+    fstreambase::open( __n, __m, __p );
   }
 
   // **************************** FSTREAM ************************************
