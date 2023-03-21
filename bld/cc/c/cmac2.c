@@ -818,7 +818,7 @@ static void CError( void )
 
 static void CWarning( void )
 {
-    if( CompFlags.extensions_enabled ) {
+    if( CompFlags.extensions_enabled || CompVars.cstd >= CSTD_C23 ) {
         get_arg_message();
         /* Force #error output to be reported, even with preprocessor */
         CWarn2p( ERR_USER_WARNING_MSG, Buffer );
