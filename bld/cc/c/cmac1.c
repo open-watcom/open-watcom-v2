@@ -414,12 +414,12 @@ TOKEN SpecialMacro( MEPTR mentry )
         ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
-        if( CompFlags.c99_extensions ) {
-            WriteBufferString( "199901L" );
-            Constant = 199901;
-        } else {
+        if( CompVars.cstd < CSTD_C99 ) {
             WriteBufferString( "199409L" );
             Constant = 199409;
+        } else {
+            WriteBufferString( "199901L" );
+            Constant = 199901;
         }
         ConstType = TYP_LONG;
         return( T_CONSTANT );

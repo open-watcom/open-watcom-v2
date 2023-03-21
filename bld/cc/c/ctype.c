@@ -241,7 +241,7 @@ type_modifiers TypeQualifier( void )
         default:
             return( flags );
         }
-        if( (flags & bit) && !CompFlags.c99_extensions )
+        if( (flags & bit) && CompVars.cstd < CSTD_C99 )
             CErr1( ERR_REPEATED_MODIFIER );
         flags |= bit;
         NextToken();

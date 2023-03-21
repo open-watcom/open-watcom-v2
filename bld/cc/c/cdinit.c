@@ -737,7 +737,7 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
     target_size     offs;
     static bool     new_field = true;
 
-    if( !CompFlags.extensions_enabled && !CompFlags.c99_extensions ) {
+    if( !CompFlags.extensions_enabled && CompVars.cstd < CSTD_C99 ) {
         return( field );
     }
 

@@ -261,6 +261,7 @@ global size_t       MacroSize;
 global ppctl_t      PPControl;
 global comp_flags   CompFlags;
 global global_comp_flags GlobalCompFlags;
+global comp_vars    CompVars;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
 global segment_id   FarStringSegId;
 

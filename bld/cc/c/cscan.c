@@ -209,7 +209,7 @@ TOKEN KwLookup( const char *buf, size_t len )
     token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
 
     /* look up id in keyword table */
-    if( !CompFlags.c99_extensions ) {
+    if( CompVars.cstd < CSTD_C99 ) {
         switch( token ) {
         case T_INLINE:
             if( CompFlags.extensions_enabled )
@@ -445,7 +445,7 @@ static TOKEN doScanPPNumber( void )
         if( (CharSet[c] & (C_AL | C_DI)) || c == '.' ) {
             WriteBufferChar( c );
         } else if( ( prevc == 'e' || prevc == 'E'
-          || CompFlags.c99_extensions && ( prevc == 'p' || prevc == 'P' ) )
+          || CompVars.cstd >= CSTD_C99 && ( prevc == 'p' || prevc == 'P' ) )
           && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
@@ -644,7 +644,7 @@ static TOKEN doScanNum( void )
                 c = WriteBufferCharNextChar( c );
             }
 
-            if (CompFlags.c99_extensions) {
+            if( CompVars.cstd >= CSTD_C99 ) {
                 if ( c == '.' || c == 'p' || c == 'P' ) {
                     return( doScanFloat( true ) );
                 }

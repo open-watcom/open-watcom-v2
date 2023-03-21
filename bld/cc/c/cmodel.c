@@ -316,6 +316,9 @@ void InitModInfo( void )
     PackAmount = 8;
 #endif
     PreProcChar = '#';
+
+    CompVars.cstd                               = CSTD_C89;
+
     CompFlags.check_syntax                      = false;
     CompFlags.signed_char                       = false;
     CompFlags.use_full_codegen_od               = false;

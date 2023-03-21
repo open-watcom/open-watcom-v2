@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,6 +226,7 @@ void InitGlobalVars( void )
     Check_global_prototype  = 0;
 
     memset( &CompFlags, 0, sizeof( CompFlags ) );
+    memset( &CompVars, 0, sizeof( CompVars ) );
 
     InitMacroSegments();                /* initialize pointer to list of macro segments */
     InitStmt();

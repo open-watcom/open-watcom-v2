@@ -656,7 +656,6 @@ typedef struct comp_flags {
     boolbit trigraph_alert                      : 1;    /* trigraph char alert */
     boolbit generate_auto_depend                : 1;    /* Generate make auto depend file */
 
-    boolbit c99_extensions                      : 1;    /* C99 extensions enabled */
     boolbit use_long_double                     : 1;    /* Make CC send long double types to code gen */
     boolbit track_includes                      : 1;    /* report opens of include files */
     boolbit cpp_ignore_env                      : 1;    /* ignore *INCLUDE env var(s) */
@@ -676,6 +675,16 @@ typedef struct global_comp_flags {  // things that live across compiles
     boolbit progress_messages                   : 1;
 //    boolbit dll_active                          : 1;
 } global_comp_flags;
+
+typedef enum {
+    CSTD_C89,
+    CSTD_C99,
+    CSTD_C23
+} cstd_ver;
+
+typedef struct comp_vars {
+    cstd_ver    cstd;
+} comp_vars;
 
 /* Target System types */
 enum {
