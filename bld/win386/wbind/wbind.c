@@ -104,11 +104,13 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     }
 }
 
-static bool updateNHStuff( FILE *fp, const char *basename, const char *desc )
+static bool updateNEStuff( FILE *fp, const char *basename, const char *desc )
 {
-    dos_exe_header      dh;
-    os2_exe_header      nh;
-    long                off;
+    union {
+        dos_exe_header  dos;
+        os2_exe_header  ne;
+    } hdr;
+    unsigned_32         ne_header_off;
     size_t              len;
     char                modname[8];
 
@@ -120,15 +122,14 @@ static bool updateNHStuff( FILE *fp, const char *basename, const char *desc )
         memcpy( modname, basename, 8 );
     }
     fseek( fp, 0, SEEK_SET );
-    if( fread( &dh, 1, sizeof( dh ), fp ) != sizeof( dh ) )
+    if( fread( &hdr.dos, 1, sizeof( hdr.dos ), fp ) != sizeof( hdr.dos ) )
         return( false );
-    off = dh.file_size * 512L - (-dh.mod_size & 0x1ff);
-    if( fseek( fp, off, SEEK_SET ) )
+    ne_header_off = hdr.dos.file_size * 512L - (-hdr.dos.mod_size & 0x1ff);
+    if( fseek( fp, ne_header_off, SEEK_SET ) )
         return( false );
-    if( fread( &nh, 1, sizeof( nh ), fp ) != sizeof( nh ) )
+    if( fread( &hdr.ne, 1, sizeof( hdr.ne ), fp ) != sizeof( hdr.ne ) )
         return( false );
-    off += nh.resident_off + 1L;
-    if( fseek( fp, off, SEEK_SET ) )
+    if( fseek( fp, ne_header_off + hdr.ne.resident_off + 1L, SEEK_SET ) )
         return( false );
     if( fwrite( modname, 1, 8, fp ) != 8 )
         return( false );
@@ -141,8 +142,7 @@ static bool updateNHStuff( FILE *fp, const char *basename, const char *desc )
             len = MAX_DESC;
         }
     }
-    off = nh.nonres_off + 1L;
-    if( fseek( fp, off, SEEK_SET ) )
+    if( fseek( fp, hdr.ne.nonres_off + 1L, SEEK_SET ) )
         return( false );
     return( fwrite( desc, 1, len, fp ) == len );
 }
@@ -557,7 +557,7 @@ int main( int argc, char *argv[] )
         ok = false;
         if( fseek( out.fp, REX_HEADER_OFFSET, SEEK_SET ) == 0 ) {
             if( fwrite( &rex_header_off, 1, sizeof( rex_header_off ), out.fp ) == sizeof( rex_header_off ) ) {
-                if( updateNHStuff( out.fp, pg.fname, desc ) ) {
+                if( updateNEStuff( out.fp, pg.fname, desc ) ) {
                     ok = true;
                 }
             }

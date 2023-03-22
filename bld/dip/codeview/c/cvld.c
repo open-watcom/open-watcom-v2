@@ -86,7 +86,6 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     pe_object           obj;
     unsigned_32         ne_header_off;
     unsigned            i;
-    unsigned            num_objects;
     unsigned_32         debug_rva;
     debug_directory     dir;
     unsigned_32         object_align;
@@ -118,10 +117,9 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva == 0 ) {
         return( DS_FAIL );
     }
-    num_objects = hdr.pe.fheader.num_objects;
     object_align = PE( hdr.pe, object_align );
     debug_rva = ( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva / object_align ) * object_align;
-    for( i = 0; i < num_objects; i++ ) {
+    for( i = 0; i < hdr.pe.fheader.num_objects; i++ ) {
         if( DCRead( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( DS_ERR | DS_FREAD_FAILED );
         }
