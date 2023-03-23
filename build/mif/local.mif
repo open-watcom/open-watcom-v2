@@ -139,8 +139,8 @@ common_clflags_exe =
 !endif
 
 # Options for building DLLs
-common_cflags_lib_shared  = -LD
-common_clflags_lib_shared = -MT -LD
+common_cflags_lib_shared  = -MD
+common_clflags_lib_shared = -MD
 
 # Target specific options
 target_cflags_386   =
