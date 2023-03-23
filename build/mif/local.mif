@@ -119,7 +119,7 @@ common_flags = $(common_flags_dbg)
 # -wd4702 "unreachable code"
 #common_cflags_wng = -wd4068 -wd4102 -wd4127 -wd4214 -wd4244 -wd4306 -wd4702
 common_cflags_wng = -W4 -wd4214
-common_cflags = $(common_cflags_wng) -MT -D_STATIC_CPPLIB
+common_cflags = $(common_cflags_wng) -D_STATIC_CPPLIB
 
 common_ldflags_rel =
 common_ldflags_dbg =
@@ -139,8 +139,8 @@ common_clflags_exe =
 !endif
 
 # Options for building DLLs
-common_cflags_lib_shared  = -LD
-common_clflags_lib_shared = -MT -LD
+common_cflags_lib_shared  = -MD
+common_clflags_lib_shared = -MD
 
 # Target specific options
 target_cflags_386   =
