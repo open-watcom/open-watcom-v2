@@ -228,6 +228,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _settextcursor( short shape )
         _ErrorStatus = _GRNOTINPROPERMODE;
         return( -1 );
     }
+    _InitState();
     previous = _CursorShape;
     _CursorShape = shape;
 
