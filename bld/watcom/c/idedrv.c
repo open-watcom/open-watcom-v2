@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include "idedll.h"
 #include "idedrv.h"
 #include "walloca.h"
-#include "errout.h"
 
 
 #ifdef DLLS_IMPLEMENTED
@@ -247,9 +246,9 @@ static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *message )
     /* unused parameters */ (void)hdl;
 
 #ifndef NDEBUG
-    fputs( "stubPrintMsgFn called!\n", errout );
-    fputs( message, errout );
-    fputc( '\n', errout );
+    fputs( "stubPrintMsgFn called!\n", stderr );
+    fputs( message, stderr );
+    fputc( '\n', stderr );
 #else
     /* unused parameters */ (void)message;
 #endif
@@ -261,7 +260,7 @@ static void IDEAPI printProgressIndex( IDECBHdl hdl, unsigned index )
 {
     /* unused parameters */ (void)hdl;
 
-    fprintf( errout, "progress: %u\n", index );
+    fprintf( stderr, "progress: %u\n", index );
 }
 #else
 #define printProgressIndex      NULL
@@ -271,9 +270,9 @@ static IDEBool IDEAPI printMessage( IDECBHdl hdl, char const *message )
 {
     /* unused parameters */ (void)hdl;
 
-    fputs( message, errout );
-    fputc( '\n', errout );
-    fflush( errout );
+    fputs( message, stderr );
+    fputc( '\n', stderr );
+    fflush( stderr );
     return( false );
 }
 
@@ -299,7 +298,7 @@ static IDEBool IDEAPI printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
     case IDEMSGSEV_ERROR:
     case IDEMSGSEV_NOTE:
     default:
-        fp = errout;
+        fp = stderr;
     }
     fputs( prt_buffer, fp );
     fputc( '\n', fp );
@@ -311,8 +310,8 @@ static IDEBool IDEAPI printWithCrLf( IDECBHdl hdl, const char *message )
 {
     /* unused parameters */ (void)hdl;
 
-    fputs( message, errout );
-    fflush( errout );
+    fputs( message, stderr );
+    fflush( stderr );
     return( false );
 }
 
@@ -783,12 +782,12 @@ int IdeDrvPrintError            // UNLOAD THE DLL
         } else {
             message = messages[ retcode ];
         }
-        fprintf( errout, "ERROR with dll: %s\n    %s", inf->dll_name, message );
+        fprintf( stderr, "ERROR with dll: %s\n    %s", inf->dll_name, message );
         if( inf->dll_status != 0 ) {
-            fprintf( errout, "    return code: %d", inf->dll_status );
+            fprintf( stderr, "    return code: %d", inf->dll_status );
         }
-        fputc( '\n', errout );
-        fflush( errout );
+        fputc( '\n', stderr );
+        fflush( stderr );
     }
     return( inf->drv_status );
 }
