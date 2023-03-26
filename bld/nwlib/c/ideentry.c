@@ -79,7 +79,7 @@ int IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
     argv[0] = "";
     argv[1] = (char *)opts;
     argv[2] = NULL;
-    return( WlibMainLine( argv ) != 0 );
+    return( WlibMainLine( argv ) );
 }
 
 int IDEAPI IDERunYourSelfArgv(  // COMPILE A PROGRAM (ARGV ARGS)
@@ -91,7 +91,7 @@ int IDEAPI IDERunYourSelfArgv(  // COMPILE A PROGRAM (ARGV ARGS)
     /* unused parameters */ (void)hdl; (void)argc;
 
     *fatal_error = false;
-    return( WlibMainLine( argv ) != 0 );
+    return( WlibMainLine( argv ) );
 }
 
 void IDEAPI IDEStopRunning( void )

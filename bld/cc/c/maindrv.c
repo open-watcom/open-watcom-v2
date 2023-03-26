@@ -51,14 +51,14 @@
 #define DLL_NAME_STR    _str(DLL_NAME)
 
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
-    int     retcode;
-    IDEDRV  info;
+    int         retcode;
+    IDEDRV      info;
 #ifndef __UNIX__
-    int     cmdlen;
-    char    *cmdline;
+    int         cmdlen;
+    char        *cmdline;
 #endif
 
 #if !defined( __WATCOMC__ )

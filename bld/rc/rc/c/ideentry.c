@@ -361,7 +361,7 @@ int IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
     rc = RCMainLine( opts, 0, NULL );
     if( rc == -1 && fatalerr != NULL )
         *fatalerr = true;
-    return( rc != 0 );
+    return( rc );
 }
 
 int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
@@ -382,7 +382,7 @@ int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fa
     rc = RCMainLine( NULL, argc, argv );
     if( rc == -1 && fatalerr != NULL )
         *fatalerr = true;
-    return( rc != 0 );
+    return( rc );
 }
 
 void IDEAPI IDEFreeHeap( void )
