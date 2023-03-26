@@ -74,9 +74,11 @@ int main( int argc, char *argv[] )
     if( cmdline != NULL )
         _bgetcmd( cmdline, cmdlen );
     retcode = IdeDrvExecDLL( &info, cmdline );
+    free( cmdline );
 #endif
     switch( retcode ) {
     case IDEDRV_SUCCESS:
+    case IDEDRV_ERR_RUN:
     case IDEDRV_ERR_RUN_EXEC:
     case IDEDRV_ERR_RUN_FATAL:
         break;
@@ -85,5 +87,5 @@ int main( int argc, char *argv[] )
         break;
     }
     IdeDrvUnloadDLL( &info );
-    return( retcode != IDEDRV_SUCCESS );
+    return( retcode == IDEDRV_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE );
 }

@@ -57,8 +57,8 @@ int main( int argc, char *argv[] )
     int         retcode;
     IDEDRV      info;
 #ifndef __UNIX__
-    char        *cmdline;
     int         cmdlen;
+    char        *cmdline;
 #endif
 
 #if !defined( __WATCOMC__ )
@@ -77,6 +77,7 @@ int main( int argc, char *argv[] )
     if( cmdline != NULL )
         _bgetcmd( cmdline, cmdlen );
     retcode = IdeDrvExecDLL( &info, cmdline );
+    free( cmdline );
 #endif
     switch( retcode ) {
     case IDEDRV_SUCCESS:
@@ -89,5 +90,5 @@ int main( int argc, char *argv[] )
         break;
     }
     IdeDrvUnloadDLL( &info );
-    return( retcode );
+    return( retcode == IDEDRV_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE );
 }
