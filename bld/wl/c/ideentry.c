@@ -231,8 +231,8 @@ void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
     FiniSubSystems();
 }
 
-IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatalerr )
-/**********************************************************************************/
+int IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatalerr )
+/******************************************************************************/
 {
     /* unused parameters */ (void)hdl;
 
@@ -241,8 +241,8 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatale
     return( *fatalerr );
 }
 
-IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
-/******************************************************************************************/
+int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
+/**************************************************************************************/
 {
     /* unused parameters */ (void)hdl;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -283,7 +283,7 @@ static void getFrontEndArgv( char **argv, char *infile, char *outfile )
 }
 
 
-IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
+int IDEAPI IDERunYourSelf       // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
     , IDEBool* fatal_error ) {  // - addr[fatality indication]
@@ -295,7 +295,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     char        infile[_MAX_PATH];      // - input file name
     char        outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char        *argv[4];
-    IDEBool     ret;
+    int         ret;
 
     /* unused parameters */ (void)hdl;
 
@@ -343,11 +343,11 @@ static char **init_argv( char **args, int argc, char *infile, char *outfile )
     return( argv );
 }
 
-IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
-    ( IDEDllHdl hdl,                // - handle for this instantiation
-    int argc,                       // - # of arguments
-    char **args,                    // - argument vector
-    IDEBool* fatal_error )          // - addr[fatality indication]
+int IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
+    ( IDEDllHdl hdl,            // - handle for this instantiation
+    int argc,                   // - # of arguments
+    char **args,                // - argument vector
+    IDEBool* fatal_error )      // - addr[fatality indication]
 {
     //****************************
     // Do a compile of a file
@@ -356,7 +356,7 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     char                infile[_MAX_PATH];      // - input file name
     char                outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char                **argv;
-    IDEBool             ret;
+    int                 ret;
 
     /* unused parameters */ (void)hdl;
 

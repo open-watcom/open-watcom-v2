@@ -248,7 +248,7 @@ static void initDLLInfo( DLL_DATA *data )
 
 
 
-IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
+int IDEAPI IDERunYourSelf       // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
     , IDEBool* fatal_error )    // - addr[ fatality indication ]
@@ -266,11 +266,11 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     fillInputOutput( input, output );
     WppCompile( &dllinfo, input, output );
     *fatal_error = (IDEBool)CompFlags.fatal_error;
-    return( (IDEBool)CompFlags.compile_failed );
+    return( CompFlags.compile_failed );
 }
 
 
-IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
+int IDEAPI IDERunYourSelfArgv(  // COMPILE A PROGRAM (ARGV ARGS)
     IDEDllHdl hdl,              // - handle for this instantiation
     int argc,                   // - # of arguments
     char **argv,                // - argument vector
@@ -290,7 +290,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     fillInputOutput( input, output );
     WppCompile( &dllinfo, input, output );
     *fatal_error = (IDEBool)CompFlags.fatal_error;
-    return( (IDEBool)CompFlags.compile_failed );
+    return( CompFlags.compile_failed );
 }
 
 void IDEAPI IDEStopRunning( void )
