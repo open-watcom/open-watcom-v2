@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,12 +58,13 @@
 , _IDEDRV( IDEDRV_ERR_RUN_FATAL , "fatal return from run-self routine" ) \
 , _IDEDRV( IDEDRV_ERR_STOP      , "cannot find stop routine" )
 
+#define IDEDRV_STATUS_VALID(x)  ((x) >= IDEDRV_SUCCESS && (x) <= IDEDRV_ERR_STOP)
+
 typedef enum                    // error codes
 {
 #define _IDEDRV(e,m) e
 __IDEDRV
 #undef _IDEDRV
-, IDEDRV_ERR_MAXIMUM
 } IDEDRV_STATUS;
 
 typedef struct {                // IDEDRV structure
