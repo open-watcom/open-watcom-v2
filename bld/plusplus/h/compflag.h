@@ -70,7 +70,6 @@ typedef struct comp_flags {
     boolbit     codegen_active                  : 1;    // code generator is active
     boolbit     dt_method_pragma                : 1;    // pragma destruct encountered
     boolbit     dll_subsequent                  : 1;    // DLL called second time thru
-    boolbit     dll_active                      : 1;    // DLL version of compiler
     boolbit     compile_failed                  : 1;    // compilation failed
     boolbit     cmdline_error                   : 1;    // error in cmd line
     boolbit     watch_for_pcheader              : 1;    // watch for first #include

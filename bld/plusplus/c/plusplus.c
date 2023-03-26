@@ -403,7 +403,6 @@ static void initCompFlags( void )
         boolbit     ignore_current_dir      : 1;
         boolbit     ide_cmd_line_has_files  : 1;
         boolbit     ide_console_output      : 1;
-        boolbit     dll_active              : 1;
     } xfer_flags;
 
     #define __save_flag( x ) xfer_flags.x = CompFlags.x;
@@ -413,13 +412,11 @@ static void initCompFlags( void )
     __save_flag( ignore_current_dir );
     __save_flag( ide_cmd_line_has_files );
     __save_flag( ide_console_output );
-    __save_flag( dll_active );
     memset( &CompFlags, 0, sizeof( CompFlags ) );
     __restore_flag( ignore_environment );
     __restore_flag( ignore_current_dir );
     __restore_flag( ide_cmd_line_has_files );
     __restore_flag( ide_console_output );
-    __restore_flag( dll_active );
     CompFlags.dll_subsequent = true;
     CompFlags.banner_printed = true;
 

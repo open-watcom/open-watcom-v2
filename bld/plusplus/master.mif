@@ -71,8 +71,8 @@ extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_initfini = -DSPLIT_REQD
 !ifdef plusplus_dll
 extra_cpp_flags_ideentry = -Dwpp_dll
-extra_cpp_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dlltarg_name)
 !endif
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
 extra_cpp_flags_memmgr = $(trmem_cpp_flags)
 
 #extra_c_flags = -pcl
