@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,19 +80,18 @@ static IDEMsgSeverity SeverityMap[] = {
 };
 
 #if defined( DLLS_IMPLEMENTED )
-bool ExecDLLPgm( const char *pname, const char *cmdline )
-/*******************************************************/
+int ExecDLLPgm( const char *pname, const char *cmdline )
+/******************************************************/
 // return true if an error
 {
-    IDEDRV              inf;
-    IDEDRV_STATUS       status;
+    int         retcode;
+    IDEDRV      info;
 
-    status = IDEDRV_ERR_LOAD;
-    IdeDrvInit( &inf, pname, NULL );
+    IdeDrvInit( &info, pname, NULL );
     IdeDrvChainCallbacks( IdeCbs, &InitInfo );
-    status = IdeDrvExecDLL( &inf, cmdline );
-    IdeDrvUnloadDLL( &inf );
-    return( status != IDEDRV_SUCCESS );
+    retcode = IdeDrvExecDLL( &info, cmdline );
+    IdeDrvUnloadDLL( &info );
+    return( retcode );
 }
 #endif
 
