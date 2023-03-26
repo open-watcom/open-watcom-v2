@@ -79,9 +79,9 @@ static IDEMsgSeverity SeverityMap[] = {
 static char     formatBuffer[PRINTF_BUF_SIZE];
 static char     *curBufPos;
 
-static void flushPrintf( void ) {
-/********************************/
-
+static void flushPrintf( void )
+/*****************************/
+{
     OutPutInfo          info;
 
     if( curBufPos != formatBuffer ) {
@@ -131,21 +131,17 @@ int RcMsgFprintf( OutPutInfo *info, const char *format, ... )
     err = vsnprintf( curBufPos, PRINTF_BUF_SIZE - ( curBufPos - formatBuffer ), format, args );
     va_end( args );
     start = formatBuffer;
-    end = curBufPos;
-    for( ;; ) {
+    for( end = curBufPos; *end != '\0'; end++ ) {
         if( *end == '\n' ) {
             *end = '\0';
             setPrintInfo( &msginfo, info, start );
             IDEFN( PrintWithInfo )( IdeHdl, &msginfo );
             start = end + 1;
-        } else if( *end == '\0' ) {
-            len = strlen( start );
-            memmove( formatBuffer, start, len + 1 );
-            curBufPos = formatBuffer + len;
-            break;
         }
-        end++;
     }
+    len = strlen( start );
+    memmove( formatBuffer, start, len + 1 );
+    curBufPos = formatBuffer + len;
     return( err );
 }
 
@@ -296,8 +292,9 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     return( rc );
 }
 
-unsigned IDEAPI IDEGetVersion( void ) {
-/*************************************/
+unsigned IDEAPI IDEGetVersion( void )
+/***********************************/
+{
     return( IDE_CUR_DLL_VER );
 }
 
@@ -308,7 +305,9 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
     IdeCbs = cb;
     *hdl = 0;
     initInfo = NULL;
-    // init wrc
+    /*
+     * init wrc
+     */
     IgnoreINCLUDE = false;
     IgnoreCWD = false;
     return( false );
@@ -365,7 +364,7 @@ int IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
     return( rc != 0 );
 }
 
-int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool* fatalerr )
+int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
 /**************************************************************************************/
 {
     int         rc;
@@ -399,5 +398,7 @@ void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
 {
     /* unused parameters */ (void)hdl;
 
-    // fini wrc
+    /*
+     * fini wrc
+     */
 }

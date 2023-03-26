@@ -46,7 +46,8 @@
 
 #include "clibext.h"
 
-#define PREFIX_SIZE 8
+
+#define PREFIX_SIZE     8
 
 #define IDEFN(x)        IdeCbs->x
 
@@ -81,8 +82,9 @@ static IDEMsgSeverity SeverityMap[] = {
 
 #if defined( DLLS_IMPLEMENTED )
 int ExecDLLPgm( const char *pname, const char *cmdline )
-/******************************************************/
-// return true if an error
+/*******************************************************
+ * return true if an error
+ */
 {
     int         retcode;
     IDEDRV      info;

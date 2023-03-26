@@ -35,16 +35,15 @@
 #include <stdio.h>
 #include <limits.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #ifdef IDE_PGM
-#include "main.h"
+    #include "main.h"
 #endif
 #include "idedrv.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
-#include "clibint.h"
 
 
 #ifndef DLL_NAME
@@ -63,15 +62,12 @@
 #define FNCMP           stricmp
 #endif
 
-static IDEDRV info =
-{   DLL_NAME_STR
-};
 
-static void setWlibModeInfo( void )
+static void setWlibModeInfo( const char *argv0 )
 {
     pgroup2 pg1;
 
-    _splitpath2( _argv[0], pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+    _splitpath2( argv0, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     if( FNCMP( pg1.fname, "ar" ) == 0 ) {
         putenv( AR_MODE_ENV "=AR" );
     } else if( FNCMP( pg1.fname, "owar" ) == 0 ) {
@@ -79,12 +75,14 @@ static void setWlibModeInfo( void )
     }
 }
 
-int main( int argc, char *argv[] )  // MAIN-LINE FOR DLL DRIVER
+int main( int argc, char *argv[] ) 
+/********************************/
 {
-    int retcode;                // - return code
+    int         retcode;
+    IDEDRV      info;
 #ifndef __UNIX__
-    int len;
-    char *cmd_line;
+    int         cmdlen;
+    char        *cmdline;
 #endif
 
 #if !defined( __WATCOMC__ )
@@ -93,20 +91,19 @@ int main( int argc, char *argv[] )  // MAIN-LINE FOR DLL DRIVER
 #elif !defined( __UNIX__ )
     /* unused parameters */ (void)argc; (void)argv;
 #endif
+    setWlibModeInfo( argv[0] );
 
-    setWlibModeInfo();
-
-#ifndef __UNIX__
-    len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = malloc( len );
-    _bgetcmd( cmd_line, len );
-    retcode = IdeDrvExecDLL( &info, cmd_line );
-    free( cmd_line );
-#else
+    IdeDrvInit( &info, DLL_NAME_STR, NULL );
+#ifdef __UNIX__
     retcode = IdeDrvExecDLLArgv( &info, argc, argv );
+#else
+    cmdlen = _bgetcmd( NULL, 0 ) + 1;
+    cmdline = malloc( cmdlen );
+    if( cmdline != NULL )
+        _bgetcmd( cmdline, cmdlen );
+    retcode = IdeDrvExecDLL( &info, cmdline );
+    free( cmdline );
 #endif
-    if( retcode != IDEDRV_ERR_INIT_EXEC ) {
-        IdeDrvUnloadDLL( &info );               // UNLOAD THE DLL
-    }
+    IdeDrvUnloadDLL( &info );
     return( retcode );
 }

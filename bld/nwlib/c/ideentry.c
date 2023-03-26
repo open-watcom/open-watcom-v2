@@ -98,9 +98,9 @@ void IDEAPI IDEStopRunning( void )
 {
     if( ideInfo == NULL || ideInfo->ver <= 2 || ideInfo->console_output ) {
         exit( 1 );
-    } else {
-        longjmp( Env, 1 );
+        // never return
     }
+    longjmp( Env, 1 );
 }
 
 void IDEAPI IDEFreeHeap( void )

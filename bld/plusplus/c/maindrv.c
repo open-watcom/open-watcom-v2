@@ -34,7 +34,7 @@
 #include "plusplus.h"
 #include <limits.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "memmgr.h"
 #include "idedrv.h"
@@ -51,13 +51,14 @@
 #define DLL_NAME_STR    _str(DLL_NAME)
 
 
-int main( int argc, char **argv )
+int main( int argc, char *argv[] ) 
+/********************************/
 {
-    int     retcode;    // - return code
-    IDEDRV  info;
+    int         retcode;
+    IDEDRV      info;
 #ifndef __UNIX__
-    char    *cmdline;
-    int     cmdlen;
+    char        *cmdline;
+    int         cmdlen;
 #endif
 
 #if !defined( __WATCOMC__ )
@@ -68,7 +69,7 @@ int main( int argc, char **argv )
 #endif
 
     IdeDrvInit( &info, DLL_NAME_STR, NULL );
-#if defined( __UNIX__ )
+#ifdef __UNIX__
     retcode = IdeDrvExecDLLArgv( &info, argc, argv );
 #else
     cmdlen = _bgetcmd( NULL, 0 ) + 1;

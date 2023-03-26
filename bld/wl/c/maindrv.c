@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "walloca.h"
-#include "idedrv.h"
+#include <stdlib.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
+#include "idedrv.h"
 
 #include "clibext.h"
 
@@ -48,14 +48,15 @@
 #define DLL_NAME_STR    _str(DLL_NAME)
 
 
-int main( int argc, char **argv )
+int main( int argc, char *argv[] ) 
+/********************************/
 {
-    IDEDRV          inf;
-#if !defined( __UNIX__ )
-    char            *cmdline;
+    int             retcode;
+    IDEDRV          info;
+#ifndef __UNIX__
     int             cmdlen;
+    char            *cmdline;
 #endif
-    IDEDRV_STATUS   status;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -64,31 +65,25 @@ int main( int argc, char **argv )
     /* unused parameters */ (void)argc; (void)argv;
 #endif
 
-    status = IDEDRV_ERR_LOAD;
-    IdeDrvInit( &inf, DLL_NAME_STR, NULL );
-#if !defined( __UNIX__ )
-    cmdline = NULL;
-    cmdlen = _bgetcmd( NULL, 0 );
-    if( cmdlen != 0 ) {
-        cmdlen++;               // add 1 for null char
-        cmdline = alloca( cmdlen );
-        if( cmdline != NULL ) {
-            _bgetcmd( cmdline, cmdlen );
-        }
-    }
-    status = IdeDrvExecDLL( &inf, cmdline );
+    IdeDrvInit( &info, DLL_NAME_STR, NULL );
+#ifdef __UNIX__
+    retcode = IdeDrvExecDLLArgv( &info, argc, argv );
 #else
-    status = IdeDrvExecDLLArgv( &inf, argc, argv );
+    cmdlen = _bgetcmd( NULL, 0 ) + 1;
+    cmdline = malloc( cmdlen );
+    if( cmdline != NULL )
+        _bgetcmd( cmdline, cmdlen );
+    retcode = IdeDrvExecDLL( &info, cmdline );
 #endif
-    switch( status ) {
+    switch( retcode ) {
     case IDEDRV_SUCCESS:
     case IDEDRV_ERR_RUN_EXEC:
     case IDEDRV_ERR_RUN_FATAL:
         break;
     default:
-        IdeDrvPrintError( &inf );
+        IdeDrvPrintError( &info );
         break;
     }
-    IdeDrvUnloadDLL( &inf );
-    return( status != IDEDRV_SUCCESS );
+    IdeDrvUnloadDLL( &info );
+    return( retcode != IDEDRV_SUCCESS );
 }

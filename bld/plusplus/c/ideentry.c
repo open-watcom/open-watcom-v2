@@ -51,7 +51,7 @@
 #endif
 
 typedef uint_16 OptionSize;     // size of option written to file
-typedef char NUMBER_STR[8];     // number string
+typedef char    NUMBER_STR[8];  // number string
 
 
 #if 0
@@ -180,8 +180,10 @@ static void printLine           // PRINT A LINE
 // IDE INTERFACE
 
 
-unsigned IDEAPI IDEGetVersion // GET IDE VERSION
-    ( void )
+unsigned IDEAPI IDEGetVersion( void )
+/************************************
+ * GET IDE VERSION
+ */
 {
     return( IDE_CUR_DLL_VER );
 }
@@ -587,12 +589,13 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 
 
 const char *CppGetEnv           // COVER FOR getenv
-    ( char const * name )       // - environment variable
+    ( char const *env_name )    // - environment variable name
 {
-    const char *env_val = NULL; // - NULL or value of environment variable
+    const char *env_val;        // - NULL or value of environment variable
 
+    env_val = NULL;
     if( !CompFlags.ignore_environment ) {
-        if( IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
+        if( IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)env_name, (IDEGetInfoLParam)&env_val ) ) {
             env_val = NULL;
         }
     }

@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "idedrv.h"
 
@@ -49,17 +49,14 @@
 #define DLL_NAME_STR    _str(DLL_NAME)
 
 
-static IDEDRV info = {
-    DLL_NAME_STR
-};
-
-int main( int argc, char *argv[] )
-/*********************************/
+int main( int argc, char *argv[] ) 
+/********************************/
 {
-    int retcode;
+    int         retcode;
+    IDEDRV      info;
 #ifndef __UNIX__
-    int len;
-    char *cmd_line;
+    int         cmdlen;
+    char        *cmdline;
 #endif
 
 #ifndef __WATCOMC__
@@ -68,17 +65,18 @@ int main( int argc, char *argv[] )
 #elif !defined( __UNIX__ )
     /* unused parameters */ (void)argc; (void)argv;
 #endif
-#ifndef __UNIX__
-    len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = malloc( len );
-    _bgetcmd( cmd_line, len );
-    retcode = IdeDrvExecDLL( &info, cmd_line );
-    free( cmd_line );
-#else
+
+    IdeDrvInit( &info, DLL_NAME_STR, NULL );
+#ifdef __UNIX__
     retcode = IdeDrvExecDLLArgv( &info, argc, argv );
+#else
+    cmdlen = _bgetcmd( NULL, 0 ) + 1;
+    cmdline = malloc( cmdlen );
+    if( cmdline != NULL )
+        _bgetcmd( cmdline, cmdlen );
+    retcode = IdeDrvExecDLL( &info, cmdline );
+    free( cmdline );
 #endif
-    if( retcode != IDEDRV_ERR_INIT_EXEC ) {
-        IdeDrvUnloadDLL( &info );               // UNLOAD THE DLL
-    }
+    IdeDrvUnloadDLL( &info );
     return( retcode );
 }
