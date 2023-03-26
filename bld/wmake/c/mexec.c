@@ -328,8 +328,9 @@ STATIC bool processInlineFile( FILE *fp, const char *body, const char *fileName 
     assert( body != NULL );
 
     ok = true;
-    // we will push the whole body back into the stream to be fully
-    // deMacroed
+    /*
+     * we will push the whole body back into the stream to be fully deMacroed
+     */
     for( index = 0; (c = body[index++]) != NULLCHAR; ) {
         if( c == '\n' ) {
             InsString( body + currentSent, false );
@@ -414,7 +415,10 @@ STATIC bool verbosePrintTempFile( const FLIST *head )
     FLIST const *current;
     bool        ok;
 
-    ok = true;      // success if list empty
+    /*
+     * success if list empty
+     */
+    ok = true;
     for( current = head; current != NULL; current = current->next ) {
         assert( current->fileName != NULL );
         ok = processInlineFile( NULL, current->body, current->fileName );
@@ -486,8 +490,8 @@ STATIC bool writeInlineFiles( FLIST *head, char **commandIn )
     FLIST   *current;
     bool    ok;
     VECSTR  newCommand;
-    size_t  start;  // start of cmdText to be copied into newCommand;
-    size_t  index;  // current index of cmdText
+    size_t  start;  /* start of cmdText to be copied into newCommand */
+    size_t  index;  /* current index of cmdText */
     NKLIST  *temp;
 
     assert( *commandIn != NULL );
@@ -502,8 +506,10 @@ STATIC bool writeInlineFiles( FLIST *head, char **commandIn )
         current != NULL && ok && cmdText[index] != NULLCHAR;
         current = current->next )
     {
-        // if the filename is the inline symbol then we need change
-        // the filename into a temp filename
+        /*
+         * if the filename is the inline symbol then we need change
+         * the filename into a temp filename
+         */
         if( strcmp( current->fileName, INLINE_SYMBOL ) == 0 ) {
             for( ;; ) {
                 if( cmdText[index] == '<' ) {
@@ -512,7 +518,9 @@ STATIC bool writeInlineFiles( FLIST *head, char **commandIn )
                         break;
                     }
                 } else if( cmdText[index] == NULLCHAR ) {
-                    /* not possible to come here*/
+                    /*
+                     * not possible to come here
+                     */
                     ok = false;
                     break;
                 }
@@ -568,11 +576,15 @@ STATIC int findInternal( const char *cmd )
 #endif
     while( (key = bsearch( &cmd, dosInternals, CNUM, sizeof( char * ), KWCompare )) == NULL ) {
         len = strlen( cmd );
-        // should work if buff == cmd (i.e., cd..)
+        /*
+         * should work if buff == cmd (i.e., cd..)
+         */
         if( len < 2 || len > COM_MAX_LEN || cmd[len - 1] != '.' ) {
             return( -1 );
         }
-        // remove '.' from the command end
+        /*
+         * remove '.' from the command end
+         */
         strcpy( buff, cmd );
         buff[len - 1] = NULLCHAR;
         cmd = buff;
@@ -870,6 +882,9 @@ STATIC int intSystem( const char *cmd )
         return( -1 );
     }
     if( pid == 0 ) {
+        /*
+         * child process
+         */
         execl( "/bin/sh", "sh", "-c", cmd, NULL );
         exit( 127 );
         // never return
@@ -1360,11 +1375,12 @@ STATIC RET_T handleCD( char *cmd )
         }
     }
 #endif
-
-    /* handle File name */
+    /*
+     * handle File name
+     */
     p = CmdGetFileName( p, &path, true );
-    *p = NULLCHAR;      /* terminate path */
-    if( chdir( path ) != 0 ) {         /* an error changing path */
+    *p = NULLCHAR;                  /* terminate path */
+    if( chdir( path ) != 0 ) {      /* an error changing path */
         PrtMsg( ERR | CHANGING_DIR, path );
         return( RET_ERROR );
     }
@@ -1413,8 +1429,9 @@ STATIC bool getRMArgs( char *line, rm_flags *flags, char **name )
         flags->bForce   = false;
         flags->bDirs    = false;
         flags->bVerbose = false;
-
-        /* find all options after "RM " */
+        /*
+         * find all options after "RM "
+         */
         for( p = SkipWS( line + 3 ); p[0] == '-'; p = SkipWS( p ) ) {
             p++;
             while( cisalpha( p[0] ) ) {
@@ -1484,8 +1501,10 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
 }
 
 static bool IsDotOrDotDot( const char *fname )
+/*********************************************
+ * return true if fname is "." or "..", false otherwise
+ */
 {
-    /* return 1 if fname is "." or "..", 0 otherwise */
     return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
 }
 
@@ -1511,7 +1530,9 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
     struct dirent       *dire;
     bool                rc = true;
 
-    /* separate file name to path and file name parts */
+    /*
+     * separate file name to path and file name parts
+     */
     len = strlen( fullpath );
     for( i = len; i > 0; --i ) {
         if( cisdirc( fullpath[i - 1] ) ) {
@@ -1519,7 +1540,9 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
         }
     }
     j = i;
-    /* if no path then use current directory */
+    /*
+     * if no path then use current directory
+     */
     if( i == 0 ) {
         fpath[i++] = '.';
         fpath[i++] = PATH_SEP_CHAR;
@@ -1547,14 +1570,20 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
     while( ( dire = readdir( dirp ) ) != NULL ) {
         if( ENTRY_INVALID( fname, dire ) )
             continue;
-        /* set up file name, then try to delete it */
+        /*
+         * set up file name, then try to delete it
+         */
         len = strlen( dire->d_name );
         memcpy( fpathend, dire->d_name, len );
         fpathend[len] = NULLCHAR;
         if( ENTRY_SUBDIR( fpath, dire ) ) {
-            /* process a directory */
+            /*
+             * process a directory
+             */
             if( flags->bDirs ) {
-                /* build directory list */
+                /*
+                 * build directory list
+                 */
                 len += i + 1;
                 tmp = MallocSafe( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
@@ -1581,7 +1610,9 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
         }
     }
     closedir( dirp );
-    /* process any directories found */
+    /*
+     * process any directories found
+     */
     for( tmp = dhead; tmp != NULL; tmp = dhead ) {
         dhead = tmp->next;
         if( !RecursiveRM( tmp->name, flags ) ) {
@@ -1594,18 +1625,23 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
 
 
 static bool RecursiveRM( const char *dir, const rm_flags *flags )
-/***************************************************************/
-/* RecursiveRM - do an RM recursively on all files */
+/****************************************************************
+ * RecursiveRM - do an RM recursively on all files
+ */
 {
     bool        rc;
     bool        rc2;
     char        fname[_MAX_PATH];
 
-    /* purge the files */
+    /*
+     * purge the files
+     */
     strcpy( fname, dir );
     strcat( fname, PATH_SEP_STR MASK_ALL_ITEMS );
     rc = doRM( fname, flags );
-    /* purge the directory */
+    /*
+     * purge the directory
+     */
     rc2 = remove_item( dir, flags, true );
     if( rc )
         rc = rc2;
@@ -1619,7 +1655,9 @@ STATIC bool processRM( const char *name, const rm_flags *flags )
         if( strcmp( name, MASK_ALL_ITEMS ) == 0 ) {
             return( RecursiveRM( ".", flags ) );
         } else if( strpbrk( name, WILD_METAS ) != NULL ) {
-            /* don't process wild cards on directories */
+            /*
+             * don't process wild cards on directories
+             */
         } else if( chk_is_dir( name ) ) {
             return( RecursiveRM( name, flags ) );
         } else {
@@ -1657,7 +1695,9 @@ STATIC RET_T handleRM( char *cmd )
         return( RET_SUCCESS );
 
     for( ok = getRMArgs( cmd, &flags, &p ); ok && p != NULL && *p != NULLCHAR; ok = getRMArgs( NULL, NULL, &p ) ) {
-        /* handle File name */
+        /*
+         * handle File name
+         */
         p = CmdGetFileName( p, &name, true );
         *p = NULLCHAR;      /* terminate file name */
         if( !processRM( name, &flags ) ) {
@@ -1685,27 +1725,38 @@ STATIC bool processMkdir( char *path, bool mkparents )
     if( mkparents ) {
         p = path;
 #ifndef __UNIX__
-        /* special case for drive letters */
+        /*
+         * special case for drive letters
+         */
         if( cisalpha( p[0] ) && p[1] == ':' ) {
             p += 2;
         }
 #endif
-        /* find the next path component */
+        /*
+         * find the next path component
+         */
         while( *p != NULLCHAR ) {
-            /* skip initial path separator if present */
+            /*
+             * skip initial path separator if present
+             */
             SKIP_PATH_SEP( p );
 
             while( *p != NULLCHAR && !IS_PATH_SEP( p ) )
                 ++p;
             save_char = *p;
             *p = NULLCHAR;
-
-            /* create directory */
+            /*
+             * create directory
+             */
             if( !DOMKDIR( path ) ) {
-                /* Can not create directory for some reason */
+                /*
+                 * Can not create directory for some reason
+                 */
                 return( false );
             }
-            /* put back the path separator */
+            /*
+             * put back the path separator
+             */
             *p = save_char;
         }
         return( true );
@@ -1733,7 +1784,9 @@ STATIC RET_T handleMkdir( char *cmd )
         return( RET_SUCCESS );
 
     mkparents = false;
-    /* find "-p" options after "MKDIR " */
+    /*
+     * find "-p" options after "MKDIR "
+     */
     p = SkipWS( cmd + 6 );
     if( p[0] == '-' ) {
         p++;
@@ -1743,7 +1796,9 @@ STATIC RET_T handleMkdir( char *cmd )
         mkparents = true;
         p = SkipWS( p + 1 );
     }
-    /* handle File name */
+    /*
+     * handle File name
+     */
     p = CmdGetFileName( p, &path, true );
     if( *p != NULLCHAR ) {
         return( handleMkdirSyntaxError() );
@@ -1867,9 +1922,12 @@ STATIC RET_T handleCopy( char *arg )
     if( Glob.noexec ) {
         return( RET_SUCCESS );
     }
-
-    /* Get first LFN */
-    p = arg + 4;    /* skip "COPY" */
+    /*
+     * Get first LFN
+     *
+     * skip "COPY"
+     */
+    p = arg + 4;
     p = SkipWS( p );
     p = CmdGetFileName( p, &fn1, true );
     if( *p == NULLCHAR || !cisws( *p ) ) {
@@ -1879,9 +1937,13 @@ STATIC RET_T handleCopy( char *arg )
         return( RET_ERROR );
     }
     *p++ = NULLCHAR;        /* terminate first file name */
-    /* skip ws after first and before second file name */
+    /*
+     * skip ws after first and before second file name
+     */
     p = SkipWS( p );
-    /* Get second LFN as well */
+    /*
+     * Get second LFN as well
+     */
     p = CmdGetFileName( p, &fn2, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_COPY] );
@@ -1909,9 +1971,13 @@ STATIC RET_T handleRmdir( char *cmd )
     if( Glob.noexec )
         return( RET_SUCCESS );
 
-    /* find argument after "RMDIR " */
+    /*
+     * find argument after "RMDIR "
+     */
     p = SkipWS( cmd + 6 );
-    /* handle File name */
+    /*
+     * handle File name
+     */
     p = CmdGetFileName( p, &path, true );
     if( *p != NULLCHAR ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RMDIR] );
@@ -1965,7 +2031,9 @@ static void dumpCommand( char *cmd )
     char    *p;
     char    *z;
 
-    // trim trailing white space before printing
+    /*
+     * trim trailing white space before printing
+     */
     z = cmd;
     for( p = cmd; *p != NULLCHAR; ++p ) {
         if( !cisws( *p ) ) {
@@ -2063,7 +2131,9 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     assert( cmd != NULL );
 
     percent_cmd = ( cmd[0] == '%' );
-    /* split cmd name from args */
+    /*
+     * split cmd name from args
+     */
     dquote = false;     /* no double quotes yet */
     quotes_size = 0;
     for( arg = cmd; *arg != NULLCHAR; arg++ ) {
@@ -2082,7 +2152,9 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         return( RET_ERROR );
     }
     if( dquote ) {
-        /* closing double quote is missing */
+        /*
+         * closing double quote is missing
+         */
         PrtMsg( ERR | SYNTAX_ERROR_IN, cmd );
         return( RET_ERROR );
     }
@@ -2090,11 +2162,15 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     memcpy( cmdname, cmd + ( quotes_size / 2 ), arg - cmd - quotes_size );  /* copy command */
     cmdname[arg - cmd - quotes_size] = NULLCHAR;      /* null terminate it */
     if( *cmdname == NULLCHAR ) {
-        // handle blank command by shell
+        /*
+         * handle blank command by shell
+         */
         flags |= FLAG_SHELL;
     }
 
-    /* skip whitespace between the command and the argument */
+    /*
+     * skip whitespace between the command and the argument
+     */
     while( cisws( *arg ) ) {
         arg++;
     }
@@ -2107,9 +2183,14 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         _splitpath2( cmdname, ext_buf, NULL, NULL, NULL, &ext );
         if( ext[0] == '.' ) {
             FixName( ext );
-            /* if extension specified let the shell handle it */
+            /*
+             * if extension specified let the shell handle it
+             */
             if( !FNameEq( ext + 1, "exe" ) && !FNameEq( ext + 1, "com" ) ) {
-                flags |= FLAG_SHELL; /* .bat and .cmd need the shell anyway */
+                /*
+                 * .bat and .cmd need the shell anyway
+                 */
+                flags |= FLAG_SHELL;
             }
         }
     }
@@ -2134,7 +2215,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
      * metacharacters. Stupid Microsoft...
      */
     if( hasMetas( cmd ) && comnum != COM_SET && comnum != COM_FOR && comnum != COM_IF ) {
-        flags |= FLAG_SHELL; /* pass to shell because of '>','<' or '|' */
+        /*
+         * pass to shell because of '>','<' or '|'
+         */
+        flags |= FLAG_SHELL;
     }
     if( (flags & FLAG_ENV_ARGS) && (flags & FLAG_SHELL) == 0 ) {
         tmp_env = makeTmpEnv( arg );
@@ -2238,7 +2322,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
             my_ret = retcode ? RET_ERROR : RET_SUCCESS;
         }
     }
-    if( flags & FLAG_ENV_ARGS ) {    /* cleanup for makeTmpEnv */
+    if( flags & FLAG_ENV_ARGS ) {
+        /*
+         * cleanup for makeTmpEnv
+         */
         killTmpEnv( tmp_env );
     }
     return( my_ret );
@@ -2261,7 +2348,9 @@ STATIC bool execLine( char *line )
 
     CheckForBreak();
     flags = 0;
-    /* make a copy of global flags */
+    /*
+     * make a copy of global flags
+     */
     if( Glob.silent && !Glob.silentno )
         flags |= FLAG_SILENT;
     if( Glob.ignore )
@@ -2269,7 +2358,10 @@ STATIC bool execLine( char *line )
     if( Glob.shell )
         flags |= FLAG_SHELL;
 
-    for( p = line; ; ++p ) {         /* process @*!- and strip leading ws */
+    /*
+     * process @*!- and strip leading ws
+     */
+    for( p = line; ; ++p ) {
         p = SkipWS( p );
         if( *p == '@' ) {
             if( !Glob.silentno ) {
@@ -2285,10 +2377,10 @@ STATIC bool execLine( char *line )
             break;
         }
     }
-
     assert( !cisws( *p ) );
-
-    // NMAKE quietly ignores empty commands
+    /*
+     * NMAKE quietly ignores empty commands
+     */
     if( Glob.compat_nmake && *p == NULLCHAR ) {
         return( true );
     }
@@ -2319,12 +2411,15 @@ INT32 ExecCommand( char *line )
     CheckForBreak();
     p = SkipWS( line );
     assert( !cisws( *p ) );
-
-    // NMAKE quietly ignores empty commands here; should we as well?
+    /*
+     * NMAKE quietly ignores empty commands here; should we as well?
+     */
     if( Glob.compat_nmake && *p == NULLCHAR ) {
         return( RET_SUCCESS );
     }
-    // Execute command - run it always, always silent, and get real retcode
+    /*
+     * Execute command - run it always, always silent, and get real retcode
+     */
     rc = shellSpawn( p, FLAG_SILENT | FLAG_SHELL_RC );
     if( OSCorrupted() ) {
         PrtMsg( FTL | OS_CORRUPTED );
@@ -2332,11 +2427,13 @@ INT32 ExecCommand( char *line )
         // never return
     }
     CheckForBreak();
-
-    // Errors during [cmd] execution don't count
+    /*
+     * Errors during [cmd] execution don't count
+     */
     Glob.erroryet = old_err;
-
-    // Report return code from shell
+    /*
+     * Report return code from shell
+     */
     return( (UINT8)rc );
 }
 
@@ -2410,7 +2507,9 @@ void ExecInit( void )
     lastErrorLevel = 0;
     currentFileName = NULL;
     currentFileHandle = NULL;
-    /* Take any number first */
+    /*
+     * Take any number first
+     */
     tmpFileNumber = (UINT16)( time( NULL ) % 100000 );
 }
 
@@ -2418,6 +2517,8 @@ void ExecInit( void )
 void ExecFini( void )
 /*******************/
 {
-    // destroy all the files that will not be kept
+    /*
+     * destroy all the files that will not be kept
+     */
     destroyNKList();
 }
