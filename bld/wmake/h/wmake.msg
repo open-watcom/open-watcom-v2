@@ -29,8 +29,8 @@ pick( COMMAND_TOO_LONG,         "Program name is too long",
                                 "コマンドラインが長すぎます" )
 pick( CTRL_CHAR_IN_CMD,         "No control characters allowed in options",
                                 "オプション指定では、制御文字は使用できません" )
-pick( UNABLE_TO_EXEC,           "Cannot execute %E: %Z",
-                                "実行中 %E: %Z" )
+pick( UNABLE_TO_EXEC,           "Cannot execute %E: %s",
+                                "実行中 %E: %s" )
 pick( SYNTAX_ERROR_IN,          "Syntax error in %s command",
                                 "%s コマンドで構文エラーです" )
 pick( NO_NESTED_FOR,            "Nested %s loops not allowed",

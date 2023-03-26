@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "directiv.h"
 #include "asminput.h"
 #include "fatal.h"
-#include "errout.h"
 #include "standalo.h"
 
 
@@ -77,8 +76,8 @@ int InternalError( const char *file, unsigned line )
     char msgbuf[MAX_MESSAGE_SIZE];
 
     MsgGet( MSG_INTERNAL_ERROR, msgbuf );
-    fprintf( errout, msgbuf, file, line );
-    fflush( errout );
+    fprintf( stderr, msgbuf, file, line );
+    fflush( stderr );
     exit( EXIT_FAILURE );
     return( 0 );
 }
@@ -171,8 +170,8 @@ static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2
             AsmFiles.file[ERR] = fopen( AsmFiles.fname[ERR], "w" );
         }
     }
-    PutMsg( errout, prefix, msgnum, args1 );
-    fflush( errout );
+    PutMsg( stderr, prefix, msgnum, args1 );
+    fflush( stderr );
     if( AsmFiles.file[ERR] != NULL ) {
         Errfile_Written = true;
         PutMsg( AsmFiles.file[ERR], prefix, msgnum, args2 );

@@ -910,13 +910,15 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
 #ifdef __UNIX__
     retcode = intSystem( cmd );
     lastErrorLevel = (UINT8)retcode;
-    if( retcode != -1 && WIFEXITED( retcode ) ) {
+    if( retcode == -1 ) {
+        PrtMsg( ERR | UNABLE_TO_EXEC, cmdname, strerror( errno ) );
+    } else if( WIFEXITED( retcode ) ) {
         lastErrorLevel = WEXITSTATUS( retcode );
         if( lastErrorLevel == 0 ) {
             return( RET_SUCCESS );
         }
         if( lastErrorLevel == 127 ) {
-            PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
+            PrtMsg( ERR | UNABLE_TO_EXEC, cmdname, "command not found" );
         }
     }
 #else
@@ -925,8 +927,8 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
   #endif
     retcode = system( cmd );
     lastErrorLevel = (UINT8)retcode;
-    if( retcode < 0 ) {
-        PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
+    if( retcode == -1 ) {
+        PrtMsg( ERR | UNABLE_TO_EXEC, cmdname, strerror( errno ) );
     }
     if( retcode == 0 ) {
         return( RET_SUCCESS );
@@ -2137,11 +2139,11 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     if( (flags & FLAG_ENV_ARGS) && (flags & FLAG_SHELL) == 0 ) {
         tmp_env = makeTmpEnv( arg );
     }
-/*
-    makeTmpEnv has cleanup - any returns after this point must do this
-    cleanup which is why these if else constructs don't have return
-    statements in them.
-*/
+    /*
+     * makeTmpEnv has cleanup - any returns after this point must do this
+     * cleanup which is why these if else constructs don't have return
+     * statements in them.
+     */
     if( flags & FLAG_SHELL ) {
         my_ret = mySystem( cmdname, cmd );
     } else if( comnum >= 0 ) {              /* check if we interpret it */
@@ -2165,7 +2167,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         }
     } else if( Glob.noexec ) {
         my_ret = RET_SUCCESS;
-    } else {                                /* pass to spawnvp */
+    } else {                    /* pass to spawnvp */
         DLL_CMD     *dll_cmd;
 
         argv[0] = cmdname;
@@ -2188,37 +2190,46 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
             retcode = (UINT8)lastErrorLevel;
 #else
             retcode = (int)spawnvp( P_WAIT, cmdname, argv );
-#endif
-            if( retcode < 0 ) {
-                PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
+            if( retcode == -1 ) {
+                PrtMsg( ERR | UNABLE_TO_EXEC, cmdname, strerror( errno ) );
             }
+#endif
         } else {
             retcode = OSExecDLL( dll_cmd, argv[1] );
 #ifdef DLLS_IMPLEMENTED
-            if( retcode != IDEDRV_SUCCESS ) {
-                if( retcode == IDEDRV_ERR_RUN_FATAL ) {
-                    retcode = 2;
-                } else if( retcode == IDEDRV_ERR_RUN_EXEC ) {
-                    retcode = 1;
-                } else if( retcode == IDEDRV_ERR_RUN ) {
-                    PrtMsg( ERR | DLL_BAD_RETURN_STATUS, dll_cmd->inf.dll_name );
-                    retcode = 4;
-                } else if( retcode == IDEDRV_ERR_LOAD ||
-                           retcode == IDEDRV_ERR_UNLOAD ) {
-                    PrtMsg( ERR | UNABLE_TO_LOAD_DLL, dll_cmd->inf.dll_name );
-                    retcode = 4;
-                } else {
-                    PrtMsg( ERR | DLL_BAD_INIT_STATUS, dll_cmd->inf.dll_name );
-                    retcode = 4;
-                }
+            switch( retcode ) {
+            case IDEDRV_SUCCESS:
+                retcode = 0;
+                break;
+            case IDEDRV_ERR_RUN_EXEC:
+                retcode = 1;
+                break;
+            case IDEDRV_ERR_RUN_FATAL:
+                retcode = 2;
+                break;
+            case IDEDRV_ERR_RUN:
+                PrtMsg( ERR | DLL_BAD_RETURN_STATUS, dll_cmd->inf.dll_name );
+                retcode = 4;
+                break;
+            case IDEDRV_ERR_LOAD:
+            case IDEDRV_ERR_UNLOAD:
+                PrtMsg( ERR | UNABLE_TO_LOAD_DLL, dll_cmd->inf.dll_name );
+                retcode = 4;
+                break;
+            default:
+                PrtMsg( ERR | DLL_BAD_INIT_STATUS, dll_cmd->inf.dll_name );
+                retcode = 4;
+                break;
+            }
 #else
             if( retcode != 0 ) {
-                PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
+                char    buffer[40];
+
+                sprintf( buffer, "retcode=%d", retcode );
+                PrtMsg( ERR | UNABLE_TO_EXEC, cmdname, buffer );
                 retcode = 4;
-#endif
-            } else {
-                retcode = 0;
             }
+#endif
         }
         lastErrorLevel = (UINT8)retcode;
         if( flags & FLAG_SHELL_RC ) {
