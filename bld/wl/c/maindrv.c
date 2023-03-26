@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,12 +40,13 @@
 
 
 #ifndef DLL_NAME
-  #error DLL_NAME must be given with -d switch when DLL Driver
-#else
-  #define quoted_str( name ) # name
-  #define _str(x)            quoted_str(x)
-  #define DLL_NAME_STR       _str(DLL_NAME)
+    #error      DLL_NAME must be given with -d switch when DLL Driver
 #endif
+
+#define quoted(name)    # name
+#define _str(x)         quoted(x)
+#define DLL_NAME_STR    _str(DLL_NAME)
+
 
 int main( int argc, char **argv )
 {

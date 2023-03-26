@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,20 +47,20 @@
 #include "clibint.h"
 
 
-#define AR_MODE_ENV "WLIB_AR"
-
 #ifndef DLL_NAME
-  #error DLL_NAME must be given with -d switch when DLL Driver
-#else
-  #define quoted( name ) # name
-  #define _str(x) quoted(x)
-  #define DLL_NAME_STR _str(DLL_NAME)
+    #error      DLL_NAME must be given with -d switch when DLL Driver
 #endif
 
+#define quoted(name)    # name
+#define _str(x)         quoted(x)
+#define DLL_NAME_STR    _str(DLL_NAME)
+
+#define AR_MODE_ENV     "WLIB_AR"
+
 #ifdef __UNIX__
-#define FNCMP strcmp
+#define FNCMP           strcmp
 #else
-#define FNCMP stricmp
+#define FNCMP           stricmp
 #endif
 
 static IDEDRV info =

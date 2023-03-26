@@ -589,7 +589,6 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 const char *CppGetEnv           // COVER FOR getenv
     ( char const * name )       // - environment variable
 {
-#if defined(wpp_dll)
     const char *env_val = NULL; // - NULL or value of environment variable
 
     if( !CompFlags.ignore_environment ) {
@@ -598,16 +597,12 @@ const char *CppGetEnv           // COVER FOR getenv
         }
     }
     return( env_val );
-#else
-    return( getenv( name ) );
-#endif
 }
 
 
 void CppStartFuncMessage( SYMBOL sym )
 /************************************/
 {
-#if defined(wpp_dll)
     VBUF buff;
 
     DbgAssert( CompFlags.progress_messages );
@@ -615,7 +610,4 @@ void CppStartFuncMessage( SYMBOL sym )
         IDEFN( ProgressMessage )( CompInfo.idehdl, FormatSymWithTypedefs( sym, &buff ) );
         VbufFree( &buff );
     }
-#else
-    /* unused parameters */ (void)sym;
-#endif
 }
