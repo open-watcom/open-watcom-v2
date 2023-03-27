@@ -92,10 +92,6 @@ MTool::MTool( const char* name, const char* tag )
 MTool::~MTool()
 {
     _families.deleteContents();
-#if IDE_CFG_VERSION_MAJOR > 4
-    _switchesTexts.deleteContents();
-    _switchesIds.deleteContents();
-#endif
 }
 
 #ifndef NOPERSIST
@@ -157,52 +153,47 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
     return( NULL );
 }
 
-WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
-{
 #if IDE_CFG_VERSION_MAJOR > 4
-    WString *switchid = &sw->text();
-    WString *switchtext;
-    int icount;
-
+WString *WEXPORT MTool::translateID( MSwitch *sw, WString& text )
+{
     if( _config->version() > 4 ) {
-        switchtext = (WString *)_switchesTexts.findThis( switchid );
-        if( switchtext != NULL ) {
-            text = *switchtext;
-            sw->displayText( text );
-            return( &text );
+        int icount = _families.count();
+        for( int i = 0; i < icount; i++ ) {
+            MFamily* family = (MFamily*)_families[i];
+            if( family->translateID( sw, text ) != NULL ) {
+                return( &text );
+            }
         }
         icount = _incTools.count();
         for( int i = 0; i < icount; i++ ) {
             MTool* tool = (MTool*)_incTools[i];
-            if( tool->displayText( sw, text, false ) != NULL ) {
+            if( tool->translateID( sw, text ) != NULL ) {
                 return( &text );
             }
         }
-        if( !first ) {
-            return( NULL );
-        }
     }
-    text = *switchid;
-#else
-    /* unused parameters */ (void)first;
+    return( NULL );
+}
 
-    text = sw->text();
+WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text )
+{
+#if IDE_CFG_VERSION_MAJOR > 4
+    if( translateID( sw, text ) != NULL ) {
+        sw->displayText( text );
+        return( &text );
+    }
 #endif
+    text = sw->text();
     sw->displayText( text );
     return( &text );
 }
 
-#if IDE_CFG_VERSION_MAJOR > 4
 WString* WEXPORT MTool::findSwitchByText( WString& id, WString& text, int kludge )
 {
-    int icount;
-
-    if( kludge == 0 ) {         // check current text
-        if( text.isEqual( (WString *)_switchesTexts.findThis( &id ) ) ) {
-            return( &id );
-        }
-    } else if( kludge == 1 ) {  // check old text
-        if( id.isEqual( (WString *)_switchesIds.findThis( &text, &id ) ) ) {
+    int icount = _families.count();
+    for( int i = 0; i < icount; i++ ) {
+        MFamily* family = (MFamily*)_families[i];
+        if( family->findSwitchByText( id, text, kludge ) != NULL ) {
             return( &id );
         }
     }

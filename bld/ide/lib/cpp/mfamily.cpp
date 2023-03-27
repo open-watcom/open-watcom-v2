@@ -60,6 +60,24 @@ MFamily::MFamily( WTokenFile& fil, WString& tok )
             _switches.add( new MCSwitch( fil, tok ) );
         } else if( tok == "RSwitch" ) {
             _switches.add( new MRSwitch( fil, tok, rGroup ) );
+#if IDE_CFG_VERSION_MAJOR > 4
+        } else if( _config->version() > 4 && tok == "SwitchText" ) {
+            WString id;
+            fil.token( id );
+            fil.token( tok );
+            if( tok.size() > 0 ) {
+                _switchesTexts.setThis( new WString( tok ), new WString( id ) );
+            }
+            // define map "text -> id" for older versions of project files
+            while( !fil.eol() ) {
+                fil.token( tok );
+                if( tok.size() > 0 ) {
+                    // define new switch text for map
+                    _switchesIds.setThis( new WString( id ), new WString( tok ) );
+                }
+            }
+            fil.token( tok );
+#endif
         } else if( tok == "rem" ) {
             fil.flushLine( tok );
         } else {
@@ -71,6 +89,10 @@ MFamily::MFamily( WTokenFile& fil, WString& tok )
 MFamily::~MFamily()
 {
     _switches.deleteContents();
+#if IDE_CFG_VERSION_MAJOR > 4
+    _switchesTexts.deleteContents();
+    _switchesIds.deleteContents();
+#endif
 }
 
 #ifndef NOPERSIST
@@ -182,3 +204,32 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
         }
     }
 }
+
+#if IDE_CFG_VERSION_MAJOR > 4
+WString *WEXPORT MFamily::translateID( MSwitch *sw, WString& text )
+{
+    if( _config->version() > 4 ) {
+        WString *swtext;
+        swtext = (WString *)_switchesTexts.findThis( sw->text() );
+        if( swtext != NULL ) {
+            text = *swtext;
+            return( &text );
+        }
+    }
+    return( NULL );
+}
+
+WString* WEXPORT MFamily::findSwitchByText( WString& id, WString& text, int kludge )
+{
+    if( kludge == 0 ) {         // check current text
+        if( text.isEqual( (WString *)_switchesTexts.findThis( &id ) ) ) {
+            return( &id );
+        }
+    } else if( kludge == 1 ) {  // check old text
+        if( id.isEqual( (WString *)_switchesIds.findThis( &text, &id ) ) ) {
+            return( &id );
+        }
+    }
+    return( NULL );
+}
+#endif
