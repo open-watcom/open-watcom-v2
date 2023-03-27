@@ -134,7 +134,7 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
                 continue;
 #if IDE_CFG_VERSION_MAJOR > 4
             // upgrade switchtag to current configuration files version
-            if( _config->version() > 4 || fixed_version < 41 ) {
+            if( _config->version() > 4 || fixed_version < 50 ) {
                 // check for old text
                 if( sw->isTagEqual( tool, switchtag, 1 ) ) {
                     sw->getTag( switchtag );

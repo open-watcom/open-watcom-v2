@@ -132,7 +132,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
-    if( fixed_version != 0 && fixed_version < 41 && _config->version() < 5 ) {
+    if( fixed_version != 0 && fixed_version < 50 && _config->version() < 5 ) {
         //
         // hack for buggy version of configuration/project files
         //
