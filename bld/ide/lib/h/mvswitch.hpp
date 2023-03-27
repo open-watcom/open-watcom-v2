@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,10 +48,8 @@ WCLASS MVSwitch : public MSwitch
         virtual void getText( WString& str, MState* state );
         WString& value( SwMode m ) { return( _value[m] ); }
         bool state( SwMode m ) { return( _state[m] ); }
-        WString& on() { return( _on ); }
         bool optional() { return( _optional ); }
     private:
-        WString         _on;
         WString         _connector;
         char            _quote;
         WString         _value[SWMODE_COUNT];

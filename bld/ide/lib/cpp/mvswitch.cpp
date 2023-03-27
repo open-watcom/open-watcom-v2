@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@ MVSwitch::MVSwitch( WTokenFile& fil, WString& tok )
     , _optional( false )
     , _multiple( false )
 {
-    fil.token( _on );
     fil.token( _connector );
     _multiple = ( fil.token( tok ) == "MULTI" );
     _optional = true;
@@ -79,7 +78,6 @@ MVSwitch* WEXPORT MVSwitch::createSelf( WObjectFile& )
 void WEXPORT MVSwitch::readSelf( WObjectFile& p )
 {
     MSwitch::readSelf( p );
-    p.readObject( &_on );
     if( p.version() > 30 ) {
         p.readObject( &_connector );
     }
@@ -103,7 +101,6 @@ void WEXPORT MVSwitch::readSelf( WObjectFile& p )
 void WEXPORT MVSwitch::writeSelf( WObjectFile& p )
 {
     MSwitch::writeSelf( p );
-    p.writeObject( &_on );
     p.writeObject( &_connector );
     for( int i=0; i<SWMODE_COUNT; i++ ) {
         p.writeObject( &_value[i] );
@@ -135,7 +132,7 @@ void MVSwitch::addValues( WString& str, WStringList& values, bool& first )
         if( !first )
             str.concat( ' ' );
         first = false;
-        str.concat( _on );
+        str.concat( on() );
 #if 1
         WString& val = values.stringAt( i );
         WString fmt( _connector );
@@ -172,7 +169,7 @@ void MVSwitch::addone( WString& str, bool state, WString* value, bool& first )
                 if( !first )
                     str.concat( ' ' );
                 first = false;
-                str.concat( _on );
+                str.concat( on() );
             }
         }
     } else if( count > 0 ) {

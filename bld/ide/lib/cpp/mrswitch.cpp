@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,6 @@ MRSwitch::MRSwitch( WTokenFile& fil, WString& tok, const char* group )
     : MSwitch( fil, tok )
     , _group( group )
 {
-    fil.token( _on );
     bool state = false;
     for( int i=0; i<SWMODE_COUNT; i++ ) {
         if( !fil.eol() ) {
@@ -60,7 +60,6 @@ MRSwitch* WEXPORT MRSwitch::createSelf( WObjectFile& )
 void WEXPORT MRSwitch::readSelf( WObjectFile& p )
 {
     MSwitch::readSelf( p );
-    p.readObject( &_on );
     if( p.version() > 28 ) {
         for( int i=0; i<SWMODE_COUNT; i++ ) {
             p.readObject( &_state[i] );
@@ -75,7 +74,6 @@ void WEXPORT MRSwitch::readSelf( WObjectFile& p )
 void WEXPORT MRSwitch::writeSelf( WObjectFile& p )
 {
     MSwitch::writeSelf( p );
-    p.writeObject( &_on );
     for( int i=0; i<SWMODE_COUNT; i++ ) {
         p.writeObject( _state[i] );
     }
@@ -85,8 +83,8 @@ void WEXPORT MRSwitch::writeSelf( WObjectFile& p )
 
 void MRSwitch::addone( WString& str, bool state )
 {
-    if( state && _on.size() > 0 ) {
-        str.concat( _on );
+    if( state && on().size() > 0 ) {
+        str.concat( on() );
     }
 }
 

@@ -43,6 +43,7 @@ MSwitch::MSwitch( WTokenFile& fil, WString& tok )
     _panel = (int)fil.token( tok );
     fil.token( _mask );
     fil.token( _text );
+    fil.token( _on );
 }
 
 #ifndef NOPERSIST
@@ -56,6 +57,7 @@ void WEXPORT MSwitch::readSelf( WObjectFile& p )
     p.readObject( &_panel );
     p.readObject( &_mask );
     p.readObject( &_text );
+    p.readObject( &_on );
 }
 
 void WEXPORT MSwitch::writeSelf( WObjectFile& p )
@@ -63,15 +65,16 @@ void WEXPORT MSwitch::writeSelf( WObjectFile& p )
     p.writeObject( _panel );
     p.writeObject( &_mask );
     p.writeObject( &_text );
+    p.writeObject( &_on );
 }
 #endif
 
 void MSwitch::displayText( WString& s )
 {
-    if( on().size() > 0 ) {
+    if( _on.size() > 0 ) {
         s.concat( ' ' );
         s.concat( '[' );
-        const char* c = on();
+        const char* c = _on;
         size_t i;
         for( i=strlen( c ); i>0; i-- ) {
             if( c[i-1] == '\\' ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,6 @@ Define( MC2Switch )
 MC2Switch::MC2Switch( WTokenFile& fil, WString& tok )
     : MSwitch( fil, tok )
 {
-    fil.token( _on );
     fil.token( _off );
     bool state = false;
     for( int i=0; i<SWMODE_COUNT; i++ ) {
@@ -60,7 +60,6 @@ MC2Switch* WEXPORT MC2Switch::createSelf( WObjectFile& )
 void WEXPORT MC2Switch::readSelf( WObjectFile& p )
 {
     MSwitch::readSelf( p );
-    p.readObject( &_on );
     if( p.version() > 28 ) {
         for( int i=0; i<SWMODE_COUNT; i++ ) {
             p.readObject( &_state[i] );
@@ -74,7 +73,6 @@ void WEXPORT MC2Switch::readSelf( WObjectFile& p )
 void WEXPORT MC2Switch::writeSelf( WObjectFile& p )
 {
     MSwitch::writeSelf( p );
-    p.writeObject( &_on );
     for( int i=0; i<SWMODE_COUNT; i++ ) {
         p.writeObject( _state[i] );
     }
@@ -83,8 +81,8 @@ void WEXPORT MC2Switch::writeSelf( WObjectFile& p )
 
 void MC2Switch::addone( WString& str, bool state )
 {
-    if( state && _on.size() > 0 ) {
-        str.concat( _on );
+    if( state && on().size() > 0 ) {
+        str.concat( on() );
     } else if( !state && _off.size() > 0 ) {
         str.concat( _off );
     }

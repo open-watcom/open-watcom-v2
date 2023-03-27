@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,13 +65,14 @@ WCLASS MSwitch : public WObject
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;
-        virtual WString& on() =0;
+        WString& on() { return( _on ); }
     protected:
         void findStates( WVList* states, WVList& found );
     private:
         int             _panel;
         WString         _mask;
         WString         _text;
+        WString         _on;
 };
 
 #endif
