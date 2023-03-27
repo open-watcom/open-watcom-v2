@@ -160,24 +160,24 @@ Tool WDEBUG "Local Debugger"
     CSwitch 0, d?6eo, "", "$(%watcom)\\binw\\vdmserv -once -tr=$(%watcom)\\binw\\std.trp $&\n", ON
 :segment !C_FOR_PB
     RGroup "Debugger"
-        RSwitch 0, w???o, "Windowed", "!Fullscreen $(%watcom)\\binw\\wdw", ON
-        RSwitch 0, w???n, "Windowed", $(%watcom)\binnt\wdw, ON
-        RSwitch 0, w???a, "Windowed", $(%watcom)\axpnt\wdw, ON
-        RSwitch 0, w???w, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, w???j, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, w???8, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, w???s, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, n????, "Windowed", $(%watcom)\binnt\wdw, ON
-        RSwitch 0, w???n, "Character mode", "!Fullscreen $(%watcom)\\binnt\\wd.exe", OFF
-        RSwitch 0, w???a, "Character mode", "!Fullscreen $(%watcom)\\axpnt\\wd.exe", OFF
-        RSwitch 0, w???8, "Character mode", "!Fullscreen $(%watcom)\\n98bw\\wdc.exe", OFF
-        RSwitch 0, w???w, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
-        RSwitch 0, w???j, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
-        RSwitch 0, w???o, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
-        RSwitch 0, w???s, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
-        RSwitch 0, n????, "Character mode", $(%watcom)\binnt\wd, OFF
-        RSwitch 0, o????, "PM", $(%watcom)\binp\wdw, ON
-        RSwitch 0, o????, "Character mode", "!Fullscreen $(%watcom)\\binp\\wd", OFF
+      RSwitch 0, w???o, "Windowed", "!Fullscreen $(%watcom)\\binw\\wdw", ON
+      RSwitch 0, w???n, "Windowed", $(%watcom)\binnt\wdw, ON
+      RSwitch 0, w???a, "Windowed", $(%watcom)\axpnt\wdw, ON
+      RSwitch 0, w???w, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, w???j, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, w???8, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, w???s, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, n????, "Windowed", $(%watcom)\binnt\wdw, ON
+      RSwitch 0, w???n, "Character mode", "!Fullscreen $(%watcom)\\binnt\\wd.exe", OFF
+      RSwitch 0, w???a, "Character mode", "!Fullscreen $(%watcom)\\axpnt\\wd.exe", OFF
+      RSwitch 0, w???8, "Character mode", "!Fullscreen $(%watcom)\\n98bw\\wdc.exe", OFF
+      RSwitch 0, w???w, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
+      RSwitch 0, w???j, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
+      RSwitch 0, w???o, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
+      RSwitch 0, w???s, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
+      RSwitch 0, n????, "Character mode", $(%watcom)\binnt\wd, OFF
+      RSwitch 0, o????, "PM", $(%watcom)\binp\wdw, ON
+      RSwitch 0, o????, "Character mode", "!Fullscreen $(%watcom)\\binp\\wd", OFF
 :endsegment
     CSwitch 0, dr2ew, " Run", "$(%watcom)\\binw\\wd.pif", ON
     CSwitch 0, dw2ew, " Run", "$(%watcom)\\binw\\wd.pif", ON
@@ -284,20 +284,20 @@ rem binw\wd is used because wdw doesn't load trap files
     VSwitch 0, ?????, "Lines of character mode screen:", -li, =, ONE, REQ, ""
     VSwitch 0, ?????, "Columns of character mode screen:", -co, =, ONE, REQ, ""
     RGroup "Character mode screen"
-        RSwitch 0, ?????, "Default adapter", , ON
-        RSwitch 0, ?????, "Monochrome adapter", -m, OFF
-        RSwitch 0, ?????, "Color adapter", -c, OFF
-        RSwitch 0, ?????, "43-line EGA adapter", -e, OFF
-        RSwitch 0, ?????, "50-line VGA adapter", -v, OFF
+      RSwitch 0, ?????, "Default adapter", , ON
+      RSwitch 0, ?????, "Monochrome adapter", -m, OFF
+      RSwitch 0, ?????, "Color adapter", -c, OFF
+      RSwitch 0, ?????, "43-line EGA adapter", -e, OFF
+      RSwitch 0, ?????, "50-line VGA adapter", -v, OFF
     RGroup "Character mode screen protocol"
-        RSwitch 1, ?????, "Default protocol", , ON
+      RSwitch 1, ?????, "Default protocol", , ON
 :segment !C_FOR_PB
-        RSwitch 1, ?????, "Overwrite protocol", -o, OFF
+      RSwitch 1, ?????, "Overwrite protocol", -o, OFF
 :endsegment
-        RSwitch 1, ?????, "Page protocol", -p, OFF
-        RSwitch 1, ?????, "Swap protocol", -s, OFF
-        RSwitch 1, ?????, "Fast-swap protocol", -f, OFF
-        RSwitch 1, ?????, "Two protocol", -t, OFF
+      RSwitch 1, ?????, "Page protocol", -p, OFF
+      RSwitch 1, ?????, "Swap protocol", -s, OFF
+      RSwitch 1, ?????, "Fast-swap protocol", -f, OFF
+      RSwitch 1, ?????, "Two protocol", -t, OFF
     CSwitch 1, wp6d?, " Name", "$(%watcom)\\binw\\dlldbg.exe $@", ON
     CSwitch 1, np2d?, " Name",, ON
 rem For remote debugging, don't put a full path name
@@ -331,26 +331,26 @@ rem For remote debugging, don't put a full path name
 Tool RDEBUG "Remote Debugging"
   Family "Debugging Session"
     RGroup "Debugger"
-        RSwitch 0, ????o, "PM", $(%watcom)\binp\wdw, ON
-        RSwitch 0, ????s, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, ????n, "Windowed", $(%watcom)\binnt\wdw, ON
-        RSwitch 0, ????9, "Windowed", $(%watcom)\binnt\wdw, ON
-        RSwitch 0, ????w, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, ????j, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, ????8, "Windowed", $(%watcom)\binw\wdw, ON
-        RSwitch 0, ????a, "Windowed", $(%watcom)\axpnt\wdw, ON
-        RSwitch 0, ????o, "Character mode", "!Fullscreen $(%watcom)\\binp\\wd", OFF
-        RSwitch 0, ????s, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
-        RSwitch 0, ????n, "Character mode", $(%watcom)\binnt\wd, OFF
-        RSwitch 0, ????9, "Character mode", $(%watcom)\binnt\wd, OFF
-        RSwitch 0, ????w, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
-        RSwitch 0, ????j, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
-        RSwitch 0, ????8, "Character mode", "!Fullscreen $(%watcom)\\n98bw\\wdc.exe", OFF
-        RSwitch 0, ????a, "Character mode", "!Fullscreen $(%watcom)\\axpnt\\wd.exe", OFF
+      RSwitch 0, ????o, "PM", $(%watcom)\binp\wdw, ON
+      RSwitch 0, ????s, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, ????n, "Windowed", $(%watcom)\binnt\wdw, ON
+      RSwitch 0, ????9, "Windowed", $(%watcom)\binnt\wdw, ON
+      RSwitch 0, ????w, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, ????j, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, ????8, "Windowed", $(%watcom)\binw\wdw, ON
+      RSwitch 0, ????a, "Windowed", $(%watcom)\axpnt\wdw, ON
+      RSwitch 0, ????o, "Character mode", "!Fullscreen $(%watcom)\\binp\\wd", OFF
+      RSwitch 0, ????s, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
+      RSwitch 0, ????n, "Character mode", $(%watcom)\binnt\wd, OFF
+      RSwitch 0, ????9, "Character mode", $(%watcom)\binnt\wd, OFF
+      RSwitch 0, ????w, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
+      RSwitch 0, ????j, "Character mode", "!Fullscreen $(%watcom)\\binw\\wdc.exe", OFF
+      RSwitch 0, ????8, "Character mode", "!Fullscreen $(%watcom)\\n98bw\\wdc.exe", OFF
+      RSwitch 0, ????a, "Character mode", "!Fullscreen $(%watcom)\\axpnt\\wd.exe", OFF
     VSwitch 1, ?????, "Local trap file:", -tr, =, ONE, REQ, ""
     RGroup "Target location"
-        RSwitch 1, ?????, "Exists on target", -rem, OFF
-        RSwitch 2, ?????, "Download to target", -do, ON
+      RSwitch 1, ?????, "Exists on target", -rem, OFF
+      RSwitch 2, ?????, "Download to target", -do, ON
     VSwitch 1, ?????, "Local info:", -lo, =, MULTI, REQ, ""
   Family "Debugger Options"
     VSwitch 0, wp6d?, "Configuration file:", -i, =, ONE, REQ, "pbwd.dbg"
@@ -368,11 +368,11 @@ Tool RDEBUG "Remote Debugging"
     VSwitch 1, ?????, "Lines of character mode screen:", -li, =, ONE, REQ, ""
     VSwitch 1, ?????, "Columns of character mode screen:", -co, =, ONE, REQ, ""
     RGroup "Character mode screen"
-        RSwitch 1, ?????, "Default adapter", , ON
-        RSwitch 1, ?????, "Monochrome adapter", -m, OFF
-        RSwitch 1, ?????, "Color adapter", -c, OFF
-        RSwitch 1, ?????, "43-line EGA adapter", -e, OFF
-        RSwitch 1, ?????, "50-line VGA adapter", -v, OFF
+      RSwitch 1, ?????, "Default adapter", , ON
+      RSwitch 1, ?????, "Monochrome adapter", -m, OFF
+      RSwitch 1, ?????, "Color adapter", -c, OFF
+      RSwitch 1, ?????, "43-line EGA adapter", -e, OFF
+      RSwitch 1, ?????, "50-line VGA adapter", -v, OFF
     VSwitch 1, ?????, "Application parameters:",,, ONE, REQ, ""
 ::
 :segment !C_FOR_PB
@@ -448,16 +448,16 @@ Tool WDIS "Disassembler"
 Tool WCG "Code Generator"
   Family Optimization
     RGroup "Style of optimization"
-        RSwitch 0, ?????, "No optimizations", -od, OFF, ON
-        RSwitch 0, ?????, "Average space and time", -ox , OFF
-        RSwitch 0, ?????, "Space optimizations", -os, OFF
-        RSwitch 0, ?????, "Time optimizations", -ot, OFF
-        RSwitch 0, ?????, "Fastest possible code", -otexan, ON, OFF
+      RSwitch 0, ?????, "No optimizations", -od, OFF, ON
+      RSwitch 0, ?????, "Average space and time", -ox , OFF
+      RSwitch 0, ?????, "Space optimizations", -os, OFF
+      RSwitch 0, ?????, "Time optimizations", -ot, OFF
+      RSwitch 0, ?????, "Fastest possible code", -otexan, ON, OFF
 :segment !C_FOR_PB
     RGroup "Stack frames"
-        RSwitch 0, ?????, "Do not generate stack frames", , ON
-        RSwitch 0, ?????, "Generate as needed", -of, OFF
-        RSwitch 0, ?????, "Always generate", -of+, OFF
+      RSwitch 0, ?????, "Do not generate stack frames", , ON
+      RSwitch 0, ?????, "Generate as needed", -of, OFF
+      RSwitch 0, ?????, "Always generate", -of+, OFF
 :endsegment
     CSwitch 0, ?????, "Disable stack depth checking", -s, OFF
     CSwitch 1, ?????, "Branch prediction", -ob, OFF
@@ -474,16 +474,16 @@ Tool WCG "Code Generator"
     VSwitch 1, ?????, "Expand function in-line:", -oe,, ONE, OFF, "20"
   Family Debugging
     RGroup "Debugging style"
-        RSwitch 0, ?????, "No debugging information", , OFF
-        RSwitch 0, ?????, "Line number information", -d1, ON, OFF
-        RSwitch 0, ?????, "Full debugging info", -d2, OFF, ON
-        RSwitch 0, ?????, "Full info plus unused types", -d3, OFF
+      RSwitch 0, ?????, "No debugging information", , OFF
+      RSwitch 0, ?????, "Line number information", -d1, ON, OFF
+      RSwitch 0, ?????, "Full debugging info", -d2, OFF, ON
+      RSwitch 0, ?????, "Full info plus unused types", -d3, OFF
     RGroup "Debugging format"
-        RSwitch 0, ?????, "Compiler default", , ON
-        RSwitch 0, ?????, "Watcom debugging format", -hw, OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, ?????, "Watcom debugging format", -hw, OFF
 :segment !C_FOR_PB
-        RSwitch 0, ?????, "Dwarf debugging format", -hd, OFF
-        RSwitch 0, ?????, "CodeView debugging format", -hc, OFF
+      RSwitch 0, ?????, "Dwarf debugging format", -hd, OFF
+      RSwitch 0, ?????, "CodeView debugging format", -hc, OFF
     CSwitch 1, ?????, "Emit Browser information", -db, OFF
     CSwitch 1, ?????, "Emit routine names in code", -en, OFF
     VSwitch 1, ?????, "Call prolog routine:", -ep,, ONE, OFF, ""
@@ -509,40 +509,40 @@ Tool WCG "Code Generator"
     CSwitch 0, w????, "Default-window application", -bw, OFF
 :endsegment
     RGroup "Floating-point level"
-        RSwitch 0, ?????, "Compiler default", , ON
-        RSwitch 0, ?????, "Inline 80287 instructions", -fp2, OFF
-        RSwitch 0, ?????, "Inline 80387 instructions", -fp3, OFF
-        RSwitch 0, ?????, "Inline Pentium instructions", -fp5, OFF
-        RSwitch 0, ?????, "Inline Pentium Pro instructions", -fp6, OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, ?????, "Inline 80287 instructions", -fp2, OFF
+      RSwitch 0, ?????, "Inline 80387 instructions", -fp3, OFF
+      RSwitch 0, ?????, "Inline Pentium instructions", -fp5, OFF
+      RSwitch 0, ?????, "Inline Pentium Pro instructions", -fp6, OFF
     RGroup "Floating-point model"
-        RSwitch 1, r????, "Compiler default", , OFF
-        RSwitch 1, ?????, "Compiler default", , ON
-        RSwitch 1, ?????, "Inline with emulator", -fpi, OFF
-        RSwitch 1, r????, "Inline with coprocessor", -fpi87, ON
-        RSwitch 1, ?????, "Inline with coprocessor", -fpi87, OFF
-        RSwitch 1, ?????, "Floating-point calls", -fpc, OFF
+      RSwitch 1, r????, "Compiler default", , OFF
+      RSwitch 1, ?????, "Compiler default", , ON
+      RSwitch 1, ?????, "Inline with emulator", -fpi, OFF
+      RSwitch 1, r????, "Inline with coprocessor", -fpi87, ON
+      RSwitch 1, ?????, "Inline with coprocessor", -fpi87, OFF
+      RSwitch 1, ?????, "Floating-point calls", -fpc, OFF
     RGroup "Floating-point rounding"
-        RSwitch, 1, ?????, "Default rounding", , ON
-        RSwitch, 1, ?????, "Omit rounding", -zro, OFF
-        RSwitch, 1, ??2??, "Inline rounding", -zri, OFF
+      RSwitch, 1, ?????, "Default rounding", , ON
+      RSwitch, 1, ?????, "Omit rounding", -zro, OFF
+      RSwitch, 1, ??2??, "Inline rounding", -zri, OFF
 :segment !C_FOR_PB
   Family "Register Usage"
     RGroup "DS register"
-        RSwitch 0, rk2e?, "Compiler default", , OFF
-        RSwitch 0, ?????, "Compiler default", , ON
-        RSwitch 0, rk2e?, "DS pegged to DGROUP", -zdp, ON
-        RSwitch 0, ?????, "DS pegged to DGROUP", -zdp, OFF
-        RSwitch 0, ?????, "DS can float", -zdf, OFF
+      RSwitch 0, rk2e?, "Compiler default", , OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, rk2e?, "DS pegged to DGROUP", -zdp, ON
+      RSwitch 0, ?????, "DS pegged to DGROUP", -zdp, OFF
+      RSwitch 0, ?????, "DS can float", -zdf, OFF
     RGroup "FS register"
-        RSwitch 0, rk2e?, "Compiler default", , OFF
-        RSwitch 0, ?????, "Compiler default", , ON
-        RSwitch 0, ?????, "FS cannot be used", -zfp, OFF
-        RSwitch 0, rk2e?, "FS can be used", -zff, ON
-        RSwitch 0, ?????, "FS can be used", -zff, OFF
+      RSwitch 0, rk2e?, "Compiler default", , OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, ?????, "FS cannot be used", -zfp, OFF
+      RSwitch 0, rk2e?, "FS can be used", -zff, ON
+      RSwitch 0, ?????, "FS can be used", -zff, OFF
     RGroup "GS register"
-        RSwitch 0, ?????, "Compiler default", , ON
-        RSwitch 0, ?????, "GS cannot be used", -zgp, OFF
-        RSwitch 0, ?????, "GS can be used", -zgf, OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, ?????, "GS cannot be used", -zgp, OFF
+      RSwitch 0, ?????, "GS can be used", -zgf, OFF
 :endsegment
   Family "Code Generation Option"
 :segment !C_FOR_PB
@@ -569,33 +569,33 @@ Tool WCG "Code Generator"
 :endsegment
   Family "Memory Model and Processor"
     RGroup "Target processor"
-        RSwitch 0, wm???, "8086", ,  OFF
-        RSwitch 0, wa???, "8086", ,  OFF
-        RSwitch 0, ??6??, "8086", ,  ON
-        RSwitch 0, ??6??, "80186", -1, OFF
-        RSwitch 0, wm???, "80286", -2, ON
-        RSwitch 0, wa???, "80286", -2, ON
-        RSwitch 0, ??6??, "80286", -2, OFF
-        RSwitch 0, ??6??, "80386", -3, OFF
-        RSwitch 0, ??6??, "80486", -4, OFF
-        RSwitch 0, ??6??, "Pentium", -5, OFF
-        RSwitch 0, ??6??, "Pentium Pro", -6, OFF
-        RSwitch 0, r?2??, "80386 register-based calling", -3r, ON
-        RSwitch 0, ??2??, "80386 register-based calling", -3r, OFF
-        RSwitch 0, ??2??, "80386 stack-based calling", -3s, OFF
-        RSwitch 0, ??2??, "80486 register-based calling", -4r, OFF
-        RSwitch 0, ??2??, "80486 stack-based calling", -4s, OFF
-        RSwitch 0, ??2??, "Pentium register-based calling", -5r, OFF
-        RSwitch 0, ??2??, "Pentium stack-based calling", -5s, OFF
-        RSwitch 0, ds2??, "Pentium Pro register-based calling", -6r, OFF
-        RSwitch 0, dy2??, "Pentium Pro register-based calling", -6r, OFF
-        RSwitch 0, l?2??, "Pentium Pro register-based calling", -6r, OFF
-        RSwitch 0, r?2??, "Pentium Pro register-based calling", -6r, OFF
-        RSwitch 0, ??2??, "Pentium Pro register-based calling", -6r, ON
-        RSwitch 0, ds2??, "Pentium Pro stack-based calling", -6s, ON
-        RSwitch 0, dy2??, "Pentium Pro stack-based calling", -6s, ON
-        RSwitch 0, l?2??, "Pentium Pro stack-based calling", -6s, ON
-        RSwitch 0, ??2??, "Pentium Pro stack-based calling", -6s, OFF
+      RSwitch 0, wm???, "8086", ,  OFF
+      RSwitch 0, wa???, "8086", ,  OFF
+      RSwitch 0, ??6??, "8086", ,  ON
+      RSwitch 0, ??6??, "80186", -1, OFF
+      RSwitch 0, wm???, "80286", -2, ON
+      RSwitch 0, wa???, "80286", -2, ON
+      RSwitch 0, ??6??, "80286", -2, OFF
+      RSwitch 0, ??6??, "80386", -3, OFF
+      RSwitch 0, ??6??, "80486", -4, OFF
+      RSwitch 0, ??6??, "Pentium", -5, OFF
+      RSwitch 0, ??6??, "Pentium Pro", -6, OFF
+      RSwitch 0, r?2??, "80386 register-based calling", -3r, ON
+      RSwitch 0, ??2??, "80386 register-based calling", -3r, OFF
+      RSwitch 0, ??2??, "80386 stack-based calling", -3s, OFF
+      RSwitch 0, ??2??, "80486 register-based calling", -4r, OFF
+      RSwitch 0, ??2??, "80486 stack-based calling", -4s, OFF
+      RSwitch 0, ??2??, "Pentium register-based calling", -5r, OFF
+      RSwitch 0, ??2??, "Pentium stack-based calling", -5s, OFF
+      RSwitch 0, ds2??, "Pentium Pro register-based calling", -6r, OFF
+      RSwitch 0, dy2??, "Pentium Pro register-based calling", -6r, OFF
+      RSwitch 0, l?2??, "Pentium Pro register-based calling", -6r, OFF
+      RSwitch 0, r?2??, "Pentium Pro register-based calling", -6r, OFF
+      RSwitch 0, ??2??, "Pentium Pro register-based calling", -6r, ON
+      RSwitch 0, ds2??, "Pentium Pro stack-based calling", -6s, ON
+      RSwitch 0, dy2??, "Pentium Pro stack-based calling", -6s, ON
+      RSwitch 0, l?2??, "Pentium Pro stack-based calling", -6s, ON
+      RSwitch 0, ??2??, "Pentium Pro stack-based calling", -6s, OFF
     CSwitch 0, w????, "", -bt=windows, ON
     CSwitch 0, d????, "", -bt=dos, ON
     CSwitch 0, o????, "", -bt=os2, ON
@@ -615,27 +615,27 @@ Tool WCG "Code Generator"
 :endsegment
 :segment !C_FOR_PB
     RGroup "Memory model"
-        RSwitch 1, ??A??, "Compiler default", , ON
-        RSwitch 1, ?????, "Compiler default", , OFF
-        RSwitch 1, dc6e?, "Small model", -ms, ON
-        RSwitch 1, rk6??, "Small model", -ms, ON
-        RSwitch 1, rb6??, "Small model", -ms, ON
-        RSwitch 1, rm6??, "Small model", -ms, ON
-        RSwitch 1, ??6??, "Small model", -ms, OFF
-        RSwitch 1, ??6??, "Medium model", -mm, OFF
-        RSwitch 1, ??6??, "Compact model", -mc, OFF
-        RSwitch 1, dc6e?, "Large model", -ml, OFF
-        RSwitch 1, rk6??, "Large model", -ml, OFF
-        RSwitch 1, rb6??, "Large model", -ml, OFF
-        RSwitch 1, rm6??, "Large model", -ml, OFF
-        RSwitch 1, ??6??, "Large model", -ml, ON
-        RSwitch 1, ??6??, "Huge model", -mh, OFF
-        RSwitch 1, l?2??, "32-bit flat model", -mf, OFF
-        RSwitch 1, rk2??, "32-bit flat model", -mf, OFF
-        RSwitch 1, ??2??, "32-bit flat model", -mf, ON
-        RSwitch 1, l?2??, "32-bit small model", -ms, ON
-        RSwitch 1, rk2??, "32-bit small model", -mc, ON
-        RSwitch 1, ??2??, "32-bit small model", -ms, OFF
+      RSwitch 1, ??A??, "Compiler default", , ON
+      RSwitch 1, ?????, "Compiler default", , OFF
+      RSwitch 1, dc6e?, "Small model", -ms, ON
+      RSwitch 1, rk6??, "Small model", -ms, ON
+      RSwitch 1, rb6??, "Small model", -ms, ON
+      RSwitch 1, rm6??, "Small model", -ms, ON
+      RSwitch 1, ??6??, "Small model", -ms, OFF
+      RSwitch 1, ??6??, "Medium model", -mm, OFF
+      RSwitch 1, ??6??, "Compact model", -mc, OFF
+      RSwitch 1, dc6e?, "Large model", -ml, OFF
+      RSwitch 1, rk6??, "Large model", -ml, OFF
+      RSwitch 1, rb6??, "Large model", -ml, OFF
+      RSwitch 1, rm6??, "Large model", -ml, OFF
+      RSwitch 1, ??6??, "Large model", -ml, ON
+      RSwitch 1, ??6??, "Huge model", -mh, OFF
+      RSwitch 1, l?2??, "32-bit flat model", -mf, OFF
+      RSwitch 1, rk2??, "32-bit flat model", -mf, OFF
+      RSwitch 1, ??2??, "32-bit flat model", -mf, ON
+      RSwitch 1, l?2??, "32-bit small model", -ms, ON
+      RSwitch 1, rk2??, "32-bit small model", -mc, ON
+      RSwitch 1, ??2??, "32-bit small model", -ms, OFF
 :endsegment
     CSwitch 1, wp6d?, "", -ml, ON
 
@@ -665,23 +665,23 @@ Tool WLANG "Languages"
     CSwitch 0, ?????, "Use precompiled headers", -fh, OFF
   Family Diagnostics
     RGroup "Warning level"
-        RSwitch 0, ?????, "Warning level 0", -w0, OFF
-        RSwitch 0, ?????, "Warning level 1", -w1, OFF
-        RSwitch 0, wa???, "Warning level 2", -w2, ON
-        RSwitch 0, wm???, "Warning level 2", -w2, ON
-        RSwitch 0, ?????, "Warning level 2", -w2, OFF
-        RSwitch 0, nm???, "Warning level 3", -w3, ON
-        RSwitch 0, na???, "Warning level 3", -w3, ON
-        RSwitch 0, nu???, "Warning level 3", -w3, ON
-        RSwitch 0, no???, "Warning level 3", -w3, ON
-        RSwitch 0, ?????, "Warning level 3", -w3, OFF
-        RSwitch 0, wm???, "Warning level 4", -w4, OFF
-        RSwitch 0, wa???, "Warning level 4", -w4, OFF
-        RSwitch 0, nm???, "Warning level 4", -w4, OFF
-        RSwitch 0, na???, "Warning level 4", -w4, OFF
-        RSwitch 0, no???, "Warning level 4", -w4, OFF
-        RSwitch 0, nu???, "Warning level 4", -w4, OFF
-        RSwitch 0, ?????, "Warning level 4", -w4, ON
+      RSwitch 0, ?????, "Warning level 0", -w0, OFF
+      RSwitch 0, ?????, "Warning level 1", -w1, OFF
+      RSwitch 0, wa???, "Warning level 2", -w2, ON
+      RSwitch 0, wm???, "Warning level 2", -w2, ON
+      RSwitch 0, ?????, "Warning level 2", -w2, OFF
+      RSwitch 0, nm???, "Warning level 3", -w3, ON
+      RSwitch 0, na???, "Warning level 3", -w3, ON
+      RSwitch 0, nu???, "Warning level 3", -w3, ON
+      RSwitch 0, no???, "Warning level 3", -w3, ON
+      RSwitch 0, ?????, "Warning level 3", -w3, OFF
+      RSwitch 0, wm???, "Warning level 4", -w4, OFF
+      RSwitch 0, wa???, "Warning level 4", -w4, OFF
+      RSwitch 0, nm???, "Warning level 4", -w4, OFF
+      RSwitch 0, na???, "Warning level 4", -w4, OFF
+      RSwitch 0, no???, "Warning level 4", -w4, OFF
+      RSwitch 0, nu???, "Warning level 4", -w4, OFF
+      RSwitch 0, ?????, "Warning level 4", -w4, ON
     CSwitch 0, ?????, "Treat warnings as errors", -we, OFF
     VSwitch 0, ?????, "Error count:", -e,, ONE, REQ, "25"
     CSwitch 1, ?????, "Force ANSI compliance", -za, OFF
@@ -716,32 +716,32 @@ Tool WLANG "Languages"
     CSwitch 0, nu???, "Force enums to be type int", -ei, ON
     CSwitch 0, ?????, "Force enums to be type int", -ei, OFF
     RGroup "Structure alignment"
-        RSwitch 1, nm???, "Compiler default", , OFF
-        RSwitch 1, na???, "Compiler default", , OFF
-        RSwitch 1, no???, "Compiler default", , OFF
-        RSwitch 1, nu???, "Compiler default", , OFF
-        RSwitch 1, r????, "Compiler default", , OFF
-        RSwitch 1, ?????, "Compiler default", , ON
-        RSwitch 1, r????, "1-byte alignment", -zp1, ON
-        RSwitch 1, ?????, "1-byte alignment", -zp1, OFF
-        RSwitch 1, ?????, "2-byte alignment", -zp2, OFF
-        RSwitch 1, nm???, "4-byte alignment", -zp4, ON
-        RSwitch 1, na???, "4-byte alignment", -zp4, ON
-        RSwitch 1, no???, "4-byte alignment", -zp4, ON
-        RSwitch 1, nu???, "4-byte alignment", -zp4, ON
-        RSwitch 1, ?????, "4-byte alignment", -zp4, OFF
-        RSwitch 1, ?????, "8-byte alignment", -zp8, OFF
-        RSwitch 1, ?????, "16-byte alignment", -zp16, OFF
+      RSwitch 1, nm???, "Compiler default", , OFF
+      RSwitch 1, na???, "Compiler default", , OFF
+      RSwitch 1, no???, "Compiler default", , OFF
+      RSwitch 1, nu???, "Compiler default", , OFF
+      RSwitch 1, r????, "Compiler default", , OFF
+      RSwitch 1, ?????, "Compiler default", , ON
+      RSwitch 1, r????, "1-byte alignment", -zp1, ON
+      RSwitch 1, ?????, "1-byte alignment", -zp1, OFF
+      RSwitch 1, ?????, "2-byte alignment", -zp2, OFF
+      RSwitch 1, nm???, "4-byte alignment", -zp4, ON
+      RSwitch 1, na???, "4-byte alignment", -zp4, ON
+      RSwitch 1, no???, "4-byte alignment", -zp4, ON
+      RSwitch 1, nu???, "4-byte alignment", -zp4, ON
+      RSwitch 1, ?????, "4-byte alignment", -zp4, OFF
+      RSwitch 1, ?????, "8-byte alignment", -zp8, OFF
+      RSwitch 1, ?????, "16-byte alignment", -zp16, OFF
   Family Miscellaneous
     VSwitch 0, ??6??, "Data Threshold:", -zt,, ONE, REQ, ""
     RGroup "Double byte characters"
-        RSwitch 0, ?????, "No double-byte character support", , ON
-        RSwitch 0, ?????, "Kanji", -zk0, OFF
-        RSwitch 0, ?????, "Kanji (Unicode)", -zk0u, OFF
-        RSwitch 0, ?????, "Traditional Chinese", -zk1, OFF
-        RSwitch 0, ?????, "Simplified Chinese", -zk3, OFF
-        RSwitch 0, ?????, "Korean", -zk2, OFF
-        RSwitch 0, ?????, "Current code page", -zkl, OFF
+      RSwitch 0, ?????, "No double-byte character support", , ON
+      RSwitch 0, ?????, "Kanji", -zk0, OFF
+      RSwitch 0, ?????, "Kanji (Unicode)", -zk0u, OFF
+      RSwitch 0, ?????, "Traditional Chinese", -zk1, OFF
+      RSwitch 0, ?????, "Simplified Chinese", -zk3, OFF
+      RSwitch 0, ?????, "Korean", -zk2, OFF
+      RSwitch 0, ?????, "Current code page", -zkl, OFF
     VSwitch 1, ?????, "Unicode translate table:", -zku, =, ONE, REQ, ""
     CSwitch 1, ?????, "Quiet operation", -zq, ON
     VSwitch 1, ?????, "Other options:",,, MULTI, REQ, ""
@@ -750,9 +750,9 @@ Tool CCOMP "C Compiler"
   Family "C Compiler"
     CSwitch 0, ?????, "Return char and short as int", -ri, OFF
     RGroup "Create definition file (.def)"
-        RSwitch 0, ?????, "No definition file",  , ON
-        RSwitch 0, ?????, "With typedef names", -v, OFF
-        RSwitch 0, ?????, "With base type names", -zg, OFF
+      RSwitch 0, ?????, "No definition file",  , ON
+      RSwitch 0, ?????, "With typedef names", -v, OFF
+      RSwitch 0, ?????, "With base type names", -zg, OFF
 
 Tool CPPCOMP "C++ Compiler"
   Family "C++ Compiler"
@@ -762,10 +762,10 @@ Tool CPPCOMP "C++ Compiler"
     CSwitch 0, wa?e?, "Smart Windows callbacks", -zws, ON
     CSwitch 0, w?6??, "Smart Windows callbacks", -zws, OFF
     RGroup "Exception handling"
-        RSwitch 0, ?????, "None", -xd, OFF
-        RSwitch 0, ?????, "Normal exception handling", -xs, ON
-        RSwitch 0, ?????, "Direct calls for destruction", -xst, OFF
-        RSwitch 0, ?????, "Table driven destructors", -xss, OFF
+      RSwitch 0, ?????, "None", -xd, OFF
+      RSwitch 0, ?????, "Normal exception handling", -xs, ON
+      RSwitch 0, ?????, "Direct calls for destruction", -xst, OFF
+      RSwitch 0, ?????, "Table driven destructors", -xss, OFF
     CSwitch 0, wm6??, "Functions in separate segments.", -zmf, ON
     CSwitch 0, wa6??, "Functions in separate segments.", -zmf, ON
     CSwitch 0, ?????, "Functions in separate segments.", -zmf, OFF
@@ -800,11 +800,11 @@ Tool WFOR "Fortran Compiler"
     CSwitch 0, ??a??, "", "wfcaxp $@", ON
   Family "File Option"
     RGroup "Listing file"
-        RSwitch 0, ?????, "Compiler default", , ON
-        RSwitch 0, ?????, "No listing file", -nolis , OFF
-        RSwitch 0, ?????, "Listing file to printer", "-lis -pr" , OFF
-        RSwitch 0, ?????, "Listing file to screen", "-lis -ty" , OFF
-        RSwitch 0, ?????, "Listing file to disk", "-lis -di" , OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, ?????, "No listing file", -nolis , OFF
+      RSwitch 0, ?????, "Listing file to printer", "-lis -pr" , OFF
+      RSwitch 0, ?????, "Listing file to screen", "-lis -ty" , OFF
+      RSwitch 0, ?????, "Listing file to disk", "-lis -di" , OFF
     CSwitch 0, ?????, "Include files in listing file", -incl, OFF
     C2Switch 0, ?????, "Generate error file", "", -noer, ON
     VSwitch 1, w????, "Path for include files:", -incp, =, ONE, REQ, "\"$(%watcom)/src/fortran/win;$(%watcom)/src/fortran\""
@@ -826,14 +826,14 @@ Tool WFOR "Fortran Compiler"
     CSwitch 0, ?????, "Store messages as resources", -res, OFF
   Family "Debugging"
     RGroup "Debugging style"
-        RSwitch 0, ?????, "No debugging information", , OFF
-        RSwitch 0, ?????, "Line number information", -d1, ON, OFF
-        RSwitch 0, ?????, "Full debugging information", -d2, OFF, ON
+      RSwitch 0, ?????, "No debugging information", , OFF
+      RSwitch 0, ?????, "Line number information", -d1, ON, OFF
+      RSwitch 0, ?????, "Full debugging information", -d2, OFF, ON
     RGroup "Debugging format"
-        RSwitch 0, ?????, "Compiler default", , ON
-        RSwitch 0, ?????, "Watcom debugging format", -hw, OFF
-        RSwitch 0, ?????, "CodeView debugging format", -hc, OFF
-        RSwitch 0, ?????, "DWARF debugging format", -hd, OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, ?????, "Watcom debugging format", -hw, OFF
+      RSwitch 0, ?????, "CodeView debugging format", -hc, OFF
+      RSwitch 0, ?????, "DWARF debugging format", -hd, OFF
   Family "Code Generation Strategy"
     RGroup "Target CPU"
       RSwitch 0, ?????, "Compiler default", , ON
@@ -862,68 +862,68 @@ Tool WFOR "Fortran Compiler"
       RSwitch 1, ?????, "Inline 80x87 instructions", -fpi87, OFF
     CSwitch 1, ?????, "80x87 reverse compatibility", -fpr OFF
   Family "Code Generation Option"
-      VSwitch 0, ?????, "Set data threshold:", -dt, =, ONE, REQ, ""
-      CSwitch 0, ?????, "Put constants in code segment", -co, OFF
-      CSwitch 0, ?????, "SAVE local variables", -sa, OFF
-      CSwitch 0, ?????, "Short INTEGER/LOGICAL size", -sh, OFF
-      CSwitch 0, ?????, "Align COMMON segments", -al, OFF
-      CSwitch 0, ?????, "Local variables on the stack", -au, OFF
-      CSwitch 0, ?????, "Pass character descriptors", -des, OFF
+    VSwitch 0, ?????, "Set data threshold:", -dt, =, ONE, REQ, ""
+    CSwitch 0, ?????, "Put constants in code segment", -co, OFF
+    CSwitch 0, ?????, "SAVE local variables", -sa, OFF
+    CSwitch 0, ?????, "Short INTEGER/LOGICAL size", -sh, OFF
+    CSwitch 0, ?????, "Align COMMON segments", -al, OFF
+    CSwitch 0, ?????, "Local variables on the stack", -au, OFF
+    CSwitch 0, ?????, "Pass character descriptors", -des, OFF
   Family "Register Usage"
-      CSwitch 0, ?????, "Save segment registers", -sr, OFF
-      C2Switch 0, ?????, "Compiler can use GS", "", -nogs, ON
-      C2Switch 0, ??6??, "Compiler can use FS", "", -nofs, ON
-      C2Switch 0, ?????, "Compiler can use FS", -fs, "", OFF
-      C2Switch 0, o?6??, "SS points to DGROUP", "", -ss, OFF
-      C2Switch 0, ??6??, "SS points to DGROUP", "", -ss, ON
+    CSwitch 0, ?????, "Save segment registers", -sr, OFF
+    C2Switch 0, ?????, "Compiler can use GS", "", -nogs, ON
+    C2Switch 0, ??6??, "Compiler can use FS", "", -nofs, ON
+    C2Switch 0, ?????, "Compiler can use FS", -fs, "", OFF
+    C2Switch 0, o?6??, "SS points to DGROUP", "", -ss, OFF
+    C2Switch 0, ??6??, "SS points to DGROUP", "", -ss, ON
   Family "Optimizations"
     RGroup "Optimization Style"
-          RSwitch 0, ?????, "Compiler default", , ON
-          RSwitch 0, ?????, "Disable optimizations", -od , OFF
-          RSwitch 0, ?????, "Optimize for time", -ot, OFF
-          RSwitch 0, ?????, "Optimize for space", -os , OFF
-          RSwitch 0, ?????, "Fastest possible code", -ox , OFF
-      CSwitch 1, ?????, "Base pointer optimizations", -ob, OFF
-      CSwitch 1, ?????, "Branch prediction", -obp, OFF
-      CSwitch 1, ?????, "No call-return optimizations", -oc, OFF
-      CSwitch 1, ?????, "No stack frame optimizations", -of, OFF
-      CSwitch 1, ?????, "Optimize at expense of compile-time", -oh, OFF
-      CSwitch 1, ?????, "Statement functions inline", -oi, OFF
-      CSwitch 1, ?????, "Move register saves into flow path", -ok, OFF
-      CSwitch 1, ?????, "Loop optimizations", -ol, OFF
-      CSwitch 1, ?????, "Loop unrolling", -ol+, OFF
-      CSwitch 1, ?????, "Math optimizations", -om, OFF
-      CSwitch 1, ?????, "Numerical optimizations", -on, OFF
-      CSwitch 1, ?????, "Precision optimizations", -op, OFF
-      CSwitch 1, ?????, "Instruction scheduling", -or, OFF
-      CSwitch 1, ?????, "No loop overflow checking", -odo, OFF
-    Family "Application Type"
-      CSwitch 0, w????, "Default windowed application", -bw, OFF
-      CSwitch 0, r????, "Multithreaded application", -bm, ON
-      CSwitch 0, ?????, "Multithreaded application", -bm, OFF
-      CSwitch 0, ???d?, "Dynamic link library", -bd, ON
-      CSwitch 0, ?????, "Dynamic link library", -bd, OFF
-      CSwitch 0, w????, "Generate code for Windows", -win, ON
-      CSwitch 0, ?????, "Generate code for Windows", -win, OFF
-    Family "Miscellaneous"
-      VSwitch 0, ?????, "Define macro:", -def, =, ONE, REQ, ""
-      VSwitch  0, ?????, "Other options(,):",,, MULTI, REQ, ""
-      CSwitch 0, ?????, "Syntax check only", -sy, OFF
-      CSwitch 0, ?????, "Extend floating-point precision", -xf, OFF
-      CSwitch 0, ?????, "Operate quietly",-q, ON
-      CSwitch 0, ?????, "Generate file dependencies", -dep, ON
-      CSwitch 0, ?????, "LF with FF", -lf, OFF
-      C2Switch 0, ?????, "Include default library info", "", -nolib, ON
-      CSwitch 0, ?????, "Unit 6 is a CC device", -cc, OFF
-      RGroup "Character set"
-        RSwitch 1, ?????, "Compiler default", , ON
-        RSwitch 1, ?????, "Chinese character set", -chi, OFF
-        RSwitch 1, ?????, "Japanese character set", -j, OFF
-        RSwitch 1, ?????, "Korean characer set", -ko , OFF
-      RGroup "Line length"
-        RSwitch 1, ?????, "Compiler default", , ON
-        RSwitch 1, ?????, "Standard length", -noxl , OFF
-        RSwitch 1, ?????, "Extended length", -xl , OFF
+      RSwitch 0, ?????, "Compiler default", , ON
+      RSwitch 0, ?????, "Disable optimizations", -od , OFF
+      RSwitch 0, ?????, "Optimize for time", -ot, OFF
+      RSwitch 0, ?????, "Optimize for space", -os , OFF
+      RSwitch 0, ?????, "Fastest possible code", -ox , OFF
+    CSwitch 1, ?????, "Base pointer optimizations", -ob, OFF
+    CSwitch 1, ?????, "Branch prediction", -obp, OFF
+    CSwitch 1, ?????, "No call-return optimizations", -oc, OFF
+    CSwitch 1, ?????, "No stack frame optimizations", -of, OFF
+    CSwitch 1, ?????, "Optimize at expense of compile-time", -oh, OFF
+    CSwitch 1, ?????, "Statement functions inline", -oi, OFF
+    CSwitch 1, ?????, "Move register saves into flow path", -ok, OFF
+    CSwitch 1, ?????, "Loop optimizations", -ol, OFF
+    CSwitch 1, ?????, "Loop unrolling", -ol+, OFF
+    CSwitch 1, ?????, "Math optimizations", -om, OFF
+    CSwitch 1, ?????, "Numerical optimizations", -on, OFF
+    CSwitch 1, ?????, "Precision optimizations", -op, OFF
+    CSwitch 1, ?????, "Instruction scheduling", -or, OFF
+    CSwitch 1, ?????, "No loop overflow checking", -odo, OFF
+  Family "Application Type"
+    CSwitch 0, w????, "Default windowed application", -bw, OFF
+    CSwitch 0, r????, "Multithreaded application", -bm, ON
+    CSwitch 0, ?????, "Multithreaded application", -bm, OFF
+    CSwitch 0, ???d?, "Dynamic link library", -bd, ON
+    CSwitch 0, ?????, "Dynamic link library", -bd, OFF
+    CSwitch 0, w????, "Generate code for Windows", -win, ON
+    CSwitch 0, ?????, "Generate code for Windows", -win, OFF
+  Family "Miscellaneous"
+    VSwitch 0, ?????, "Define macro:", -def, =, ONE, REQ, ""
+    VSwitch  0, ?????, "Other options(,):",,, MULTI, REQ, ""
+    CSwitch 0, ?????, "Syntax check only", -sy, OFF
+    CSwitch 0, ?????, "Extend floating-point precision", -xf, OFF
+    CSwitch 0, ?????, "Operate quietly",-q, ON
+    CSwitch 0, ?????, "Generate file dependencies", -dep, ON
+    CSwitch 0, ?????, "LF with FF", -lf, OFF
+    C2Switch 0, ?????, "Include default library info", "", -nolib, ON
+    CSwitch 0, ?????, "Unit 6 is a CC device", -cc, OFF
+    RGroup "Character set"
+      RSwitch 1, ?????, "Compiler default", , ON
+      RSwitch 1, ?????, "Chinese character set", -chi, OFF
+      RSwitch 1, ?????, "Japanese character set", -j, OFF
+      RSwitch 1, ?????, "Korean characer set", -ko , OFF
+    RGroup "Line length"
+      RSwitch 1, ?????, "Compiler default", , ON
+      RSwitch 1, ?????, "Standard length", -noxl , OFF
+      RSwitch 1, ?????, "Extended length", -xl , OFF
 ::
 :endsegment
 ::
@@ -942,46 +942,46 @@ Tool WASM "Assembler"
     VSwitch 0, ?????, "Name error file:", -fe, =, ONE, REQ, ""
   Family "Memory Model and Processor"
     RGroup "Memory model"
-        RSwitch 0, ??6??, "Tiny model", -mt, OFF
-        RSwitch 0, rk6??, "Small model", -ms, ON
-        RSwitch 0, rb6??, "Small model", -ms, ON
-        RSwitch 0, rm6??, "Small model", -ms, ON
-        RSwitch 0, ??6??, "Small model", -ms, OFF
-        RSwitch 0, ??6??, "Medium model", -mm, OFF
-        RSwitch 0, ??6??, "Compact model", -mc, OFF
-        RSwitch 0, rk6??, "Large model", -ml, OFF
-        RSwitch 0, rb6??, "Large model", -ml, OFF
-        RSwitch 0, rm6??, "Large model", -ml, OFF
-        RSwitch 0, ??6??, "Large model", -ml, ON
-        RSwitch 0, ??6??, "Huge model", -mh, OFF
-        RSwitch 0, ??2??, "32-bit flat model", -mf, ON
-        RSwitch 0, ??2??, "32-bit small model", -ms, OFF
+      RSwitch 0, ??6??, "Tiny model", -mt, OFF
+      RSwitch 0, rk6??, "Small model", -ms, ON
+      RSwitch 0, rb6??, "Small model", -ms, ON
+      RSwitch 0, rm6??, "Small model", -ms, ON
+      RSwitch 0, ??6??, "Small model", -ms, OFF
+      RSwitch 0, ??6??, "Medium model", -mm, OFF
+      RSwitch 0, ??6??, "Compact model", -mc, OFF
+      RSwitch 0, rk6??, "Large model", -ml, OFF
+      RSwitch 0, rb6??, "Large model", -ml, OFF
+      RSwitch 0, rm6??, "Large model", -ml, OFF
+      RSwitch 0, ??6??, "Large model", -ml, ON
+      RSwitch 0, ??6??, "Huge model", -mh, OFF
+      RSwitch 0, ??2??, "32-bit flat model", -mf, ON
+      RSwitch 0, ??2??, "32-bit small model", -ms, OFF
     RGroup "Target processor"
-        RSwitch 1, rk6??, "8086", ,  OFF
-        RSwitch 1, rb6??, "8086", ,  OFF
-        RSwitch 1, rm6??, "8086", ,  OFF
-        RSwitch 1, ??6??, "8086", ,  ON
-        RSwitch 1, ??6??, "80186", -1, OFF
-        RSwitch 1, rk6??, "80286", -2, ON
-        RSwitch 1, ??6??, "80286", -2, OFF
-        RSwitch 1, rb6??, "80386", -3, ON
-        RSwitch 1, rm6??, "80386", -3, ON
-        RSwitch 1, ??6??, "80386", -3, OFF
-        RSwitch 1, ??6??, "80486", -4, OFF
-        RSwitch 1, ??6??, "Pentium", -5, OFF
-        RSwitch 1, ??6??, "Pentium Pro", -6, OFF
-        RSwitch 1, ??2??, "80386 register-based calling", -3r, OFF
-        RSwitch 1, ??2??, "80386 stack-based calling", -3s, OFF
-        RSwitch 1, ??2??, "80486 register-based calling", -4r, OFF
-        RSwitch 1, ??2??, "80486 stack-based calling", -4s, OFF
-        RSwitch 1, ??2??, "Pentium register-based calling", -5r, OFF
-        RSwitch 1, ??2??, "Pentium stack-based calling", -5s, OFF
-        RSwitch 1, ds2??, "Pentium Pro register-based calling", -6r, OFF
-        RSwitch 1, dy2??, "Pentium Pro register-based calling", -6r, OFF
-        RSwitch 1, ??2??, "Pentium Pro register-based calling", -6r, ON
-        RSwitch 1, ds2??, "Pentium Pro stack-based calling", -6s, ON
-        RSwitch 1, dy2??, "Pentium Pro stack-based calling", -6s, ON
-        RSwitch 1, ??2??, "Pentium Pro stack-based calling", -6s, OFF
+      RSwitch 1, rk6??, "8086", ,  OFF
+      RSwitch 1, rb6??, "8086", ,  OFF
+      RSwitch 1, rm6??, "8086", ,  OFF
+      RSwitch 1, ??6??, "8086", ,  ON
+      RSwitch 1, ??6??, "80186", -1, OFF
+      RSwitch 1, rk6??, "80286", -2, ON
+      RSwitch 1, ??6??, "80286", -2, OFF
+      RSwitch 1, rb6??, "80386", -3, ON
+      RSwitch 1, rm6??, "80386", -3, ON
+      RSwitch 1, ??6??, "80386", -3, OFF
+      RSwitch 1, ??6??, "80486", -4, OFF
+      RSwitch 1, ??6??, "Pentium", -5, OFF
+      RSwitch 1, ??6??, "Pentium Pro", -6, OFF
+      RSwitch 1, ??2??, "80386 register-based calling", -3r, OFF
+      RSwitch 1, ??2??, "80386 stack-based calling", -3s, OFF
+      RSwitch 1, ??2??, "80486 register-based calling", -4r, OFF
+      RSwitch 1, ??2??, "80486 stack-based calling", -4s, OFF
+      RSwitch 1, ??2??, "Pentium register-based calling", -5r, OFF
+      RSwitch 1, ??2??, "Pentium stack-based calling", -5s, OFF
+      RSwitch 1, ds2??, "Pentium Pro register-based calling", -6r, OFF
+      RSwitch 1, dy2??, "Pentium Pro register-based calling", -6r, OFF
+      RSwitch 1, ??2??, "Pentium Pro register-based calling", -6r, ON
+      RSwitch 1, ds2??, "Pentium Pro stack-based calling", -6s, ON
+      RSwitch 1, dy2??, "Pentium Pro stack-based calling", -6s, ON
+      RSwitch 1, ??2??, "Pentium Pro stack-based calling", -6s, OFF
   Family "Code Generation Options"
     VSwitch 0, ?????, "Name of data segment:", -nd,, ONE, REQ, ""
     VSwitch 0, ?????, "Name of text segment:", -nt,, ONE, REQ, ""
@@ -989,30 +989,30 @@ Tool WASM "Assembler"
     CSwitch 0, ?????, "Mangle C names like MASM", -zcm
     CSwitch 0, ?????, "Allow C-style octal constants", -o, OFF
     RGroup "Floating-point level"
-        RSwitch 1, ?????, "Compiler default", , ON
-        RSwitch 1, ?????, "Inline 8087 instructions", -fp0, OFF
-        RSwitch 1, ?????, "Inline 80287 instructions", -fp2, OFF
-        RSwitch 1, ?????, "Inline 80387 instructions", -fp3, OFF
-        RSwitch 1, ?????, "Inline Pentium instructions", -fp5, OFF
-        RSwitch 1, ?????, "Inline Pentium Pro instructions", -fp6, OFF
+      RSwitch 1, ?????, "Compiler default", , ON
+      RSwitch 1, ?????, "Inline 8087 instructions", -fp0, OFF
+      RSwitch 1, ?????, "Inline 80287 instructions", -fp2, OFF
+      RSwitch 1, ?????, "Inline 80387 instructions", -fp3, OFF
+      RSwitch 1, ?????, "Inline Pentium instructions", -fp5, OFF
+      RSwitch 1, ?????, "Inline Pentium Pro instructions", -fp6, OFF
     RGroup "Floating-point model"
-        RSwitch 1, r????, "Compiler default", , OFF
-        RSwitch 1, ?????, "Compiler default", , ON
-        RSwitch 1, ?????, "Inline with emulator", -fpi, OFF
-        RSwitch 1, r????, "Inline with coprocessor", -fpi87, ON
-        RSwitch 1, ?????, "Inline with coprocessor", -fpi87, OFF
-        RSwitch 1, ?????, "Floating-point calls", -fpc, OFF
+      RSwitch 1, r????, "Compiler default", , OFF
+      RSwitch 1, ?????, "Compiler default", , ON
+      RSwitch 1, ?????, "Inline with emulator", -fpi, OFF
+      RSwitch 1, r????, "Inline with coprocessor", -fpi87, ON
+      RSwitch 1, ?????, "Inline with coprocessor", -fpi87, OFF
+      RSwitch 1, ?????, "Floating-point calls", -fpc, OFF
   Family Debugging
     RGroup "Debugging style"
-        RSwitch 0, ?????, "No debugging information", , ON, OFF
-        RSwitch 0, ?????, "Line number information", -d1, OFF, ON
+      RSwitch 0, ?????, "No debugging information", , ON, OFF
+      RSwitch 0, ?????, "Line number information", -d1, OFF, ON
   Family Diagnostics
     RGroup "Warning level"
-        RSwitch 0, ?????, "Warning level 0", -w0, OFF
-        RSwitch 0, ?????, "Warning level 1", -w1, OFF
-        RSwitch 0, ?????, "Warning level 2", -w2, OFF
-        RSwitch 0, ?????, "Warning level 3", -w3, OFF
-        RSwitch 0, ?????, "Warning level 4", -w4, ON
+      RSwitch 0, ?????, "Warning level 0", -w0, OFF
+      RSwitch 0, ?????, "Warning level 1", -w1, OFF
+      RSwitch 0, ?????, "Warning level 2", -w2, OFF
+      RSwitch 0, ?????, "Warning level 3", -w3, OFF
+      RSwitch 0, ?????, "Warning level 4", -w4, ON
     CSwitch 0, ?????, "Treat warnings as errors", -we, OFF
     VSwitch 0, ?????, "Error count:", -e,, ONE, REQ, "25"
     CSwitch 0, ?????, "Full pathnames in error messages:", -ef
@@ -1029,15 +1029,15 @@ Tool WLINK "Linker"
     CSwitch  0, ?????, "", "wlink", ON
     CSwitch  0, ?????, " name", "name $'", ON
     RGroup "Debugging information"
-        RSwitch  0, ?????, "No debug information", , ON, OFF
-        RSwitch  0, ?????, "Debug CodeView", "d codeview op cvp", OFF
-        RSwitch  0, ?????, "Debug Dwarf", "d dwarf", OFF
-        RSwitch  0, l?2e?, "Netware symbols", "d novell", OFF
-        RSwitch  0, ?????, "Debug Watcom", "d watcom", OFF
-        RSwitch  0, ?????, "Debug line numbers", "d lines", OFF
-        RSwitch  0, ?????, "Debug types", "d types", OFF
-        RSwitch  0, ?????, "Debug locals", "d locals", OFF
-        RSwitch  0, ?????, "Debug all", "d all", OFF, ON
+      RSwitch  0, ?????, "No debug information", , ON, OFF
+      RSwitch  0, ?????, "Debug CodeView", "d codeview op cvp", OFF
+      RSwitch  0, ?????, "Debug Dwarf", "d dwarf", OFF
+      RSwitch  0, l?2e?, "Netware symbols", "d novell", OFF
+      RSwitch  0, ?????, "Debug Watcom", "d watcom", OFF
+      RSwitch  0, ?????, "Debug line numbers", "d lines", OFF
+      RSwitch  0, ?????, "Debug types", "d types", OFF
+      RSwitch  0, ?????, "Debug locals", "d locals", OFF
+      RSwitch  0, ?????, "Debug all", "d all", OFF, ON
     VSwitch  1, w?6d?, "System:", sys, " ", ONE, REQ, windows_dll
     VSwitch  1, w?6??, "System:", sys, " ", ONE, REQ, windows
     VSwitch  1, d?6??, "System:", sys, " ", ONE, REQ, dos
@@ -1169,9 +1169,9 @@ rem    CSwitch  1, x??d?, " Link DLL", , ON
   Family Advanced
     CSwitch  0, ?????, "Verbose map file", "op v", OFF
     RGroup "Case-sensitive link"
-        RSwitch 0, ?????, "Default", , ON
-        RSwitch 0, ?????, "Case sensitive:", "op c", OFF
-        RSwitch 0, ?????, "No case sensitive:", "op nocase", OFF
+      RSwitch 0, ?????, "Default", , ON
+      RSwitch 0, ?????, "Case sensitive:", "op c", OFF
+      RSwitch 0, ?????, "No case sensitive:", "op nocase", OFF
     VSwitch  0, ?????, "Error count:", "op maxe", =, ONE, REQ, 25
     CSwitch  0, w?6??, "Check relocation of RW data", "op rwr", OFF
     CSwitch  0, ?????, "Dosseg", "op d", OFF
@@ -1220,34 +1220,34 @@ rem PackCode, PackData for DOS, OS/2, QNX, Win16?
 :segment !C_FOR_PB
   Family Special
     RGroup "DGROUP sharing"
-        RSwitch  0, w?2d?, "Use linker default", "", ON
-        RSwitch  0, n??d?, "Use linker default", "", ON
+      RSwitch  0, w?2d?, "Use linker default", "", ON
+      RSwitch  0, n??d?, "Use linker default", "", ON
 rem     RSwitch  0, x??d?, "Use linker default", "", ON
-        RSwitch  0, w?6d?, "Use linker default", "", ON
-        RSwitch  0, r??d?, "Use linker default", "", ON
-        RSwitch  0, ???d?, "Use linker default", "", OFF
-        RSwitch  0, ?????, "Use linker default", "", ON
-        RSwitch  0, w?2d?, "DGROUP is shared", "op one", OFF
-        RSwitch  0, n??d?, "DGROUP is shared", "op one", OFF
+      RSwitch  0, w?6d?, "Use linker default", "", ON
+      RSwitch  0, r??d?, "Use linker default", "", ON
+      RSwitch  0, ???d?, "Use linker default", "", OFF
+      RSwitch  0, ?????, "Use linker default", "", ON
+      RSwitch  0, w?2d?, "DGROUP is shared", "op one", OFF
+      RSwitch  0, n??d?, "DGROUP is shared", "op one", OFF
 rem     RSwitch  0, x??d?, "DGROUP is shared", "op one", OFF
-        RSwitch  0, w?6d?, "DGROUP is shared", "op one", OFF
-        RSwitch  0, o?2d?, "DGROUP is shared", "op one", OFF
-        RSwitch  0, ???d?, "DGROUP is shared", "op one", OFF
-        RSwitch  0, ?????, "DGROUP is shared", "op one", OFF
-        RSwitch  0, n??d?, "DGROUP is not shared", "op many", OFF
-        RSwitch  0, w??d?, "DGROUP is not shared", "op many", OFF
-        RSwitch  0, r??d?, "DGROUP is not shared", "op many", OFF
-        RSwitch  0, ???d?, "DGROUP is not shared", "op many", ON
-        RSwitch  0, ?????, "DGROUP is not shared", "op many", OFF
+      RSwitch  0, w?6d?, "DGROUP is shared", "op one", OFF
+      RSwitch  0, o?2d?, "DGROUP is shared", "op one", OFF
+      RSwitch  0, ???d?, "DGROUP is shared", "op one", OFF
+      RSwitch  0, ?????, "DGROUP is shared", "op one", OFF
+      RSwitch  0, n??d?, "DGROUP is not shared", "op many", OFF
+      RSwitch  0, w??d?, "DGROUP is not shared", "op many", OFF
+      RSwitch  0, r??d?, "DGROUP is not shared", "op many", OFF
+      RSwitch  0, ???d?, "DGROUP is not shared", "op many", ON
+      RSwitch  0, ?????, "DGROUP is not shared", "op many", OFF
     RGroup "Runtime environment"
-        RSwitch  0, nw???, "Default GUI", "", ON
-        RSwitch  0, nw???, "Win32s Windows 3.x:", "ru win=3.10", OFF
-        RSwitch  0, nc???, "Default character mode", "", ON
-        RSwitch  0, nc???, "16-bit OS/2 1.x:", "ru os2=3.10", OFF
-        RSwitch  0, n?2d?, "Default GUI", "", ON
-        RSwitch  0, n?2d?, "Character mode:", "ru con=4.0", OFF
-        RSwitch  0, n?2d?, "Win32s Windows 3.x:", "ru win=3.10", OFF
-        RSwitch  0, r????, "Default character mode", "", ON
+      RSwitch  0, nw???, "Default GUI", "", ON
+      RSwitch  0, nw???, "Win32s Windows 3.x:", "ru win=3.10", OFF
+      RSwitch  0, nc???, "Default character mode", "", ON
+      RSwitch  0, nc???, "16-bit OS/2 1.x:", "ru os2=3.10", OFF
+      RSwitch  0, n?2d?, "Default GUI", "", ON
+      RSwitch  0, n?2d?, "Character mode:", "ru con=4.0", OFF
+      RSwitch  0, n?2d?, "Win32s Windows 3.x:", "ru win=3.10", OFF
+      RSwitch  0, r????, "Default character mode", "", ON
     VSwitch  0, o????, "Stub executable", "op stub", =, ONE, REQ, ""
     CSwitch  0, na?e?, "Eliminate dead code", "op el", ON, OFF
     CSwitch  0, no?e?, "Eliminate dead code", "op el", ON, OFF
@@ -1278,13 +1278,13 @@ Tool WLIB "Library Manager"
     VSwitch  1, ???s?, "Output library name:", -o, =, ONE, REQ, ""
   Family "Import Library"
     RGroup "Resident symbols"
-        RSwitch  0, ???s?, "Do not import", , ON
-        RSwitch  0, ???s?, "Import by name", -irn, OFF
-        RSwitch  0, ???s?, "Import by ordinal", -iro, OFF
+      RSwitch  0, ???s?, "Do not import", , ON
+      RSwitch  0, ???s?, "Import by name", -irn, OFF
+      RSwitch  0, ???s?, "Import by ordinal", -iro, OFF
     RGroup "Non-resident symbols"
-        RSwitch  0, ???s?, "Do not import", , ON
-        RSwitch  0, ???s?, "Import by name", -inn, OFF
-        RSwitch  0, ???s?, "Import by ordinal", -ino, OFF
+      RSwitch  0, ???s?, "Do not import", , ON
+      RSwitch  0, ???s?, "Import by name", -inn, OFF
+      RSwitch  0, ???s?, "Import by ordinal", -ino, OFF
 ::
 :endsegment
 ::
@@ -1293,25 +1293,25 @@ Tool WRC "Resource Compiler"
   Family Resource
     CSwitch 0, ?????, "", "wrc $*.rc", ON
     RGroup "Build target"
-        RSwitch  0, w????, "Win16", -bt=windows, ON
+      RSwitch  0, w????, "Win16", -bt=windows, ON
 :segment !C_FOR_PB
-        RSwitch  0, w????, "Win32", -bt=nt, OFF
-        RSwitch  0, w????, "OS/2", -bt=os2, OFF
-        RSwitch  0, n????, "Win16", -bt=windows, OFF
-        RSwitch  0, n????, "Win32", -bt=nt, ON
-        RSwitch  0, n????, "OS/2", -bt=os2, OFF
-        RSwitch  0, o????, "Win16", -bt=windows, OFF
-        RSwitch  0, o????, "Win32", -bt=nt, OFF
-        RSwitch  0, o????, "OS/2", -bt=os2, ON
-        RSwitch  0, r????, "RDOS", -bt=nt, ON
+      RSwitch  0, w????, "Win32", -bt=nt, OFF
+      RSwitch  0, w????, "OS/2", -bt=os2, OFF
+      RSwitch  0, n????, "Win16", -bt=windows, OFF
+      RSwitch  0, n????, "Win32", -bt=nt, ON
+      RSwitch  0, n????, "OS/2", -bt=os2, OFF
+      RSwitch  0, o????, "Win16", -bt=windows, OFF
+      RSwitch  0, o????, "Win32", -bt=nt, OFF
+      RSwitch  0, o????, "OS/2", -bt=os2, ON
+      RSwitch  0, r????, "RDOS", -bt=nt, ON
 :endsegment
     RGroup "Multi-byte character support"
-        RSwitch  0, ?????, "Single byte characters only", , ON
-        RSwitch  0, ?????, "Kanji", -zk0, OFF
-        RSwitch  0, ?????, "Traditional Chinese", -zk1, OFF
-        RSwitch  0, ?????, "Korean", -zk2, OFF
-        RSwitch  0, ?????, "Simplified Chinese", -zk3, OFF
-        RSwitch  0, ?????, "Unicode UTF-8", -zku8, OFF
+      RSwitch  0, ?????, "Single byte characters only", , ON
+      RSwitch  0, ?????, "Kanji", -zk0, OFF
+      RSwitch  0, ?????, "Traditional Chinese", -zk1, OFF
+      RSwitch  0, ?????, "Korean", -zk2, OFF
+      RSwitch  0, ?????, "Simplified Chinese", -zk3, OFF
+      RSwitch  0, ?????, "Unicode UTF-8", -zku8, OFF
     VSwitch 1, wa???, "Macro definitions:", -d, , MULTI, REQ, "_AFXDLL"
     VSwitch 1, na???, "Macro definitions:", -d, , MULTI, REQ, "_AFXDLL WIN32 _WIN32 __NT__"
     VSwitch 1, no???, "Macro definitions:", -d, , MULTI, REQ, "_AFXDLL _UNICODE WIN32 _WIN32 __NT__"
@@ -1340,9 +1340,9 @@ Tool WRC2 "Resource Compiler (pass 2)"
     CSwitch 0, ?????, "Private DLL", -p, OFF
     CSwitch 0, ?????, "Protected mode only", -t, OFF
     RGroup "Segements in fastload section"
-        RSwitch 1, w????, "No fastload section", -s0, ON
-        RSwitch 1, w????, "Preload only", -s1, OFF
-        RSwitch 1, w????, "Preload/Data/Non-discardable", -s2, OFF
+      RSwitch 1, w????, "No fastload section", -s0, ON
+      RSwitch 1, w????, "Preload only", -s1, OFF
+      RSwitch 1, w????, "Preload/Data/Non-discardable", -s2, OFF
 ::
 :segment !C_FOR_PB
 ::
@@ -1362,9 +1362,9 @@ Tool ESQL "Embedded SQL compiler"
     CSwitch 0, ?????, "", "sqlpp $@ $*.cxx", ON
     CSwitch 0, ?????, "Preprocessor quiet", -q, ON
     RGroup Optimizations
-        RSwitch 0, ?????, "No optimizations", , ON
-        RSwitch 0, ?????, "Favour code size", -c, OFF
-        RSwitch 0, ?????, "Favour data size", -d, OFF
+      RSwitch 0, ?????, "No optimizations", , ON
+      RSwitch 0, ?????, "Favour code size", -c, OFF
+      RSwitch 0, ?????, "Favour data size", -d, OFF
     CSwitch 0, ?????, "Generated static data is FAR", -f, OFF
     CSwitch 0, ?????, "Use long ints", -il, OFF
     CSwitch 0, ?????, "Generate line numbers", -n, OFF
@@ -1428,10 +1428,10 @@ Tool WINHC "Windows Help Compiler"
   Family Compiler
     RGroup "Help Compiler"
 rem These must be in the user's path
-        RSwitch 0, ?????, "HTML Help", hhw , OFF
-        RSwitch 0, ?????, "Version 4.0", hcw , OFF
-        RSwitch 0, ?????, "Version 3.1", hc31 , ON
-        RSwitch 0, ?????, "Version 3.0", hc30 , OFF
+      RSwitch 0, ?????, "HTML Help", hhw , OFF
+      RSwitch 0, ?????, "Version 4.0", hcw , OFF
+      RSwitch 0, ?????, "Version 3.1", hc31 , ON
+      RSwitch 0, ?????, "Version 3.0", hc30 , OFF
 
 Tool OIPF "OS/2 Help Compiler"
   Family Compiler
@@ -1441,9 +1441,9 @@ Tool OIPF "OS/2 Help Compiler"
     VSwitch 0, ?????, "Code page:", /CODEPAGE, =, ONE, REQ, ""
     VSwitch 0, ?????, "Language:", /L, =, ONE, REQ, ""
     RGroup "Warning level"
-        RSwitch 0, ?????, "Warning level 1", /W1, OFF
-        RSwitch 0, ?????, "Warning level 2", /W2, OFF
-        RSwitch 0, ?????, "Warning level 3", /W3, ON
+      RSwitch 0, ?????, "Warning level 1", /W1, OFF
+      RSwitch 0, ?????, "Warning level 2", /W2, OFF
+      RSwitch 0, ?????, "Warning level 3", /W3, ON
 :endsegment
 
 Rule ASMOBJ, WASM, ?????
