@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #ifndef mswitch_class
 #define mswitch_class
 
+#include "idecfg.h"
 #include "wtokfile.hpp"
 #include "wvlist.hpp"
 
@@ -57,7 +59,7 @@ WCLASS MSwitch : public WObject
         bool hasText() { return( _text.size() > 0 ); }
         bool isSetable() { return( _text.size() > 0 && *_text != ' ' ); }
         bool isTagEqual( WString& tag, int kludge=0 );
-#if CUR_CFG_VERSION > 4
+#if IDE_CFG_VERSION_MAJOR > 4
         bool isTagEqual( MTool *tool, WString& mask, int kludge=0 );
 #endif
         MSwitch* addSwitch( WVList& list, const char* mask );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include <io.h>
 #include <stdlib.h>
+#include "idecfg.h"
 #include "ide.rh"
 #include "banner.h"
 
@@ -73,18 +74,6 @@
 
 #include "clibext.h"
 
-
-/*
- * increment LATEST_SUPPORTED_VERSION macro
- * when some change in file formats is done
- */
-#define LATEST_SUPPORTED_VERSION 40
-/*
- * 39 and 40 are written the same, but read in differently
- * 39 messed up .BEFORE / .AFTER containing CR/LF's
- * since this is the same as the separator char.
- */
-#define OLDEST_SUPPORTED_VERSION 23
 
 static char _projectIdent[] = { "projectIdent" };
 

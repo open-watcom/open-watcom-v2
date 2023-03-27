@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "idecfg.h"
 #include "mconfig.hpp"
 #include "mvswitch.hpp"
 #include "mcswitch.hpp"
@@ -114,7 +115,7 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
-#if CUR_CFG_VERSION < 5
+#if IDE_CFG_VERSION_MAJOR < 5
     /* unused parameters */ (void)tool;
 #endif
     int icount = _switches.count();
@@ -131,7 +132,7 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
             MSwitch* sw = (MSwitch*)_switches[i];
             if( !sw->isSetable() )
                 continue;
-#if CUR_CFG_VERSION > 4
+#if IDE_CFG_VERSION_MAJOR > 4
             // upgrade switchtag to current configuration files version
             if( _config->version() > 4 || fixed_version < 41 ) {
                 // check for old text

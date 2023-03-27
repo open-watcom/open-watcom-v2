@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "idecfg.h"
 #include "wobjfile.hpp"
 #include "mconfig.hpp"
 #include "mfamily.hpp"
@@ -52,7 +53,7 @@ MTool::MTool( WTokenFile& fil, WString& tok )
                 _incTools.add( tool );
             }
             fil.token( tok );
-#if CUR_CFG_VERSION > 4
+#if IDE_CFG_VERSION_MAJOR > 4
         } else if( _config->version() > 4 && tok == "SwitchText" ) {
             WString id;
             fil.token( id );
@@ -91,7 +92,7 @@ MTool::MTool( const char* name, const char* tag )
 MTool::~MTool()
 {
     _families.deleteContents();
-#if CUR_CFG_VERSION > 4
+#if IDE_CFG_VERSION_MAJOR > 4
     _switchesTexts.deleteContents();
     _switchesIds.deleteContents();
 #endif
@@ -158,7 +159,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
 
 WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
 {
-#if CUR_CFG_VERSION > 4
+#if IDE_CFG_VERSION_MAJOR > 4
     WString *switchid = &sw->text();
     WString *switchtext;
     int icount;
@@ -191,7 +192,7 @@ WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
     return( &text );
 }
 
-#if CUR_CFG_VERSION > 4
+#if IDE_CFG_VERSION_MAJOR > 4
 WString* WEXPORT MTool::findSwitchByText( WString& id, WString& text, int kludge )
 {
     int icount;

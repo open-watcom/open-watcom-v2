@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "idecfg.h"
 #include "wobjfile.hpp"
 #include "mconfig.hpp"
 #include "mstate.hpp"
@@ -134,7 +135,7 @@ bool MSwitch::isTagEqual( WString& switchtag, int kludge )
     return( false );
 }
 
-#if CUR_CFG_VERSION > 4
+#if IDE_CFG_VERSION_MAJOR > 4
 bool MSwitch::isTagEqual( MTool *tool, WString& switchtag, int kludge )
 {
     // first check mask

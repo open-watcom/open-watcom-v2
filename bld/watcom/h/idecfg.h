@@ -25,53 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  IDE configuration file format version macros
 *
 ****************************************************************************/
 
 
-#ifndef mtool_class
-#define mtool_class
+#ifndef _IDECFG_H_INCLUDED
+#define _IDECFG_H_INCLUDED
 
-#include "idecfg.h"
-#include "wstring.hpp"
-#include "wpicklst.hpp"
-#include "wtokfile.hpp"
-#include "wstrmap.hpp"
-
-WCLASS MFamily;
-WCLASS MSwitch;
-WCLASS MTool : public WObject
-{
-    Declare( MTool )
-    public:
-        MTool( const char* name, const char* tag );
-        MTool( WTokenFile& fil, WString& tok );
-        ~MTool();
-        int compare( const WObject* o ) const { return( _tag.compare( &((MTool*)o)->_tag ) ); }
-
-        WString& tag() { return( _tag ); };
-        void name( WString& s ) { s = _name; }
-        const WString& help() { return( _help ); }
-        MSwitch* findSwitch( WString& switchtag, long fixed_version=0 );
-        WString *displayText( MSwitch *sw, WString& text, bool first=true );
-#if IDE_CFG_VERSION_MAJOR > 4
-        WString* findSwitchByText( WString& id, WString& text, int kludge=0 );
-#endif
-        bool hasSwitches( bool setable );
-        void addSwitches( WVList& list, const char* mask, bool setable );
-        void addFamilies( WVList& list );
-    private:
-        WString         _tag;
-        WString         _name;
-        WString         _help;
-        WPickList       _families;
-        WVList          _incTools;
-#if IDE_CFG_VERSION_MAJOR > 4
-        WStringMap      _switchesTexts; //<WString>
-        WStringMap      _switchesIds;   //<WString>
-#endif
-};
+/*
+ * increment IDE_CFG_VERSION_MINOR macro
+ * when some change in file formats is done
+ */
+#define IDE_CFG_VERSION_MAJOR   4
+#define IDE_CFG_VERSION_MINOR   0
+/*
+ * 39 and 40 are written the same, but read in differently
+ * 39 messed up .BEFORE / .AFTER containing CR/LF's
+ * since this is the same as the separator char.
+ */
+#define LATEST_SUPPORTED_VERSION (IDE_CFG_VERSION_MAJOR * 10 + IDE_CFG_VERSION_MINOR)
+#define OLDEST_SUPPORTED_VERSION 23
 
 #endif
+
