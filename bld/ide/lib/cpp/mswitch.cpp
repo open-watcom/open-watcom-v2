@@ -109,7 +109,8 @@ bool MSwitch::isTagEqual( WString& switchtag, int kludge )
 {
     WString tag;
 
-    getTag( tag );
+    tag = _mask;
+    tag.concat( _text );
     if( tag == switchtag )
         return( true );
     if( kludge == 1 ) {

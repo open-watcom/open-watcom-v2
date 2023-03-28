@@ -53,24 +53,6 @@ MTool::MTool( WTokenFile& fil, WString& tok )
                 _incTools.add( tool );
             }
             fil.token( tok );
-#if IDE_CFG_VERSION_MAJOR > 4
-        } else if( _config->version() > 4 && tok == "SwitchText" ) {
-            WString id;
-            fil.token( id );
-            fil.token( tok );
-            if( tok.size() > 0 ) {
-                _switchesTexts.setThis( new WString( tok ), new WString( id ) );
-            }
-            // define map "text -> id" for older versions of project files
-            while( !fil.eol() ) {
-                fil.token( tok );
-                if( tok.size() > 0 ) {
-                    // define new switch text for map
-                    _switchesIds.setThis( new WString( id ), new WString( tok ) );
-                }
-            }
-            fil.token( tok );
-#endif
         } else if( tok == "Help" ) {
             fil.token( _help );
             fil.token( tok );
