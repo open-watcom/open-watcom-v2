@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,6 @@
 #include "mcommand.hpp"
 
 #define LOG_HELP_WIDTH      3
-
-#define MASK_SIZE           5
 
 //these are used for indexing by MConfig::zapTargetMasks()
 typedef enum HostType {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,10 @@
  */
 #define LATEST_SUPPORTED_VERSION (IDE_CFG_VERSION_MAJOR * 10 + IDE_CFG_VERSION_MINOR)
 #define OLDEST_SUPPORTED_VERSION 23
+/*
+ * target mask size
+ */
+#define MASK_SIZE                5
 
 #endif
 
