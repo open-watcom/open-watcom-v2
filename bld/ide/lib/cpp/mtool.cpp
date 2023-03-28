@@ -157,19 +157,6 @@ WString *WEXPORT MTool::translateID( MSwitch *sw, WString& text )
     return( NULL );
 }
 
-WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text )
-{
-#if IDE_CFG_VERSION_MAJOR > 4
-    if( translateID( sw, text ) != NULL ) {
-        sw->displayText( text );
-        return( &text );
-    }
-#endif
-    text = sw->text();
-    sw->displayText( text );
-    return( &text );
-}
-
 WString* WEXPORT MTool::findSwitchByText( WString& id, WString& text, int kludge )
 {
     int icount = _families.count();
@@ -189,6 +176,19 @@ WString* WEXPORT MTool::findSwitchByText( WString& id, WString& text, int kludge
     return( NULL );
 }
 #endif
+
+WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text )
+{
+#if IDE_CFG_VERSION_MAJOR > 4
+    if( translateID( sw, text ) != NULL ) {
+        sw->displayText( text );
+        return( &text );
+    }
+#endif
+    text = sw->text();
+    sw->displayText( text );
+    return( &text );
+}
 
 bool MTool::hasSwitches( bool setable )
 {
