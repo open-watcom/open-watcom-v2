@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,12 +39,13 @@
 
 Define( MState )
 
-MState::MState( MTool* tool, SwMode mode, MSwitch* sw )
+MState::MState( MTool* tool, SwMode mode, MSwitch* sw, bool state )
         : _toolTag( tool->tag() )
         , _tool( tool )
         , _switchTag( "" )
         , _switch( sw )
         , _mode( mode )
+        , _state( state )
 {
     if( _switch != NULL ) {
         sw->getTag( _switchTag );
@@ -87,6 +88,14 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     if( p.version() > 27 ) {
         p.readObject( &_mode );
     }
+    if( p.version() >= 50 ) {
+        p.readObject( &_state );
+    }
+}
+
+void WEXPORT MState::readState( WObjectFile& p )
+{
+    p.readObject( &_state );
 }
 
 void WEXPORT MState::writeSelf( WObjectFile& p )

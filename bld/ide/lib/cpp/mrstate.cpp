@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,8 @@
 
 Define( MRState )
 
-MRState::MRState( MTool* tool, SwMode mode, MRSwitch* sw, bool b )
-    : MState( tool, mode, sw )
-    , _state( b )
+MRState::MRState( MTool* tool, SwMode mode, MRSwitch* sw, bool state )
+    : MState( tool, mode, sw, state )
 {
 }
 
@@ -52,12 +52,13 @@ MRState* WEXPORT MRState::createSelf( WObjectFile& )
 void WEXPORT MRState::readSelf( WObjectFile& p )
 {
     MState::readSelf( p );
-    p.readObject( &_state );
+    if( p.version() < 50 ) {
+        MState::readState( p );
+    }
 }
 
 void WEXPORT MRState::writeSelf( WObjectFile& p )
 {
     MState::writeSelf( p );
-    p.writeObject( _state );
 }
 #endif

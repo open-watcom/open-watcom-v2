@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,24 +38,30 @@
 #include "wstring.hpp"
 
 #include "mswitch.hpp"
+
 WCLASS MTool;
 WCLASS MState : public WObject
 {
         Declare( MState )
         public:
-                MState( MTool* tool, SwMode mode, MSwitch* sw=NULL );
+                MState( MTool* tool, SwMode mode, MSwitch* sw=NULL, bool state=false );
                 ~MState() {}
 
                 MSwitch* sw() { return( _switch ); }
                 SwMode mode() { return( _mode ); }
                 void resetRuleRefs();
                 bool legal();
+                bool state() { return( _state ); }
+#ifndef NOPERSIST
+                void WEXPORT readState( WObjectFile& p );
+#endif
         private:
                 WString         _toolTag;
                 MTool*          _tool;
                 WString         _switchTag;
                 MSwitch*        _switch;
                 SwMode          _mode;
+                bool            _state;
 };
 
 #endif
