@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,10 @@
 
 #include "wtokfile.hpp"
 
-WString& WTokenFile::token( WString& tok, bool* eol )
+WString& WTokenFile::token( WString& tok, bool* quoted, bool* eol )
 {
     tok = "";
+    _quoted = false;
     _eol = false;
     char ch = 0;
     for(;;) {
@@ -44,6 +46,7 @@ WString& WTokenFile::token( WString& tok, bool* eol )
         }
     }
     if( ch == '"' ) {
+        _quoted = true;
         ch = getch();
         for(;;) {
             if( ch == '"' )
@@ -91,6 +94,8 @@ WString& WTokenFile::token( WString& tok, bool* eol )
     if( ch != ',' ) {
         ungetch( ch );
     }
+    if( quoted != NULL )
+        *quoted = _quoted;
     if( eol != NULL )
         *eol = _eol;
     return( tok );
