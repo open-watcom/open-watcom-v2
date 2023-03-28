@@ -76,7 +76,6 @@ MFamily::MFamily( WTokenFile& fil, WString& tok )
                     _switchesIds.setThis( new WString( id ), new WString( tok ) );
                 }
             }
-            fil.token( tok );
 #endif
         } else if( tok == "rem" ) {
             fil.flushLine( tok );
