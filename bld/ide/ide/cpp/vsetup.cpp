@@ -536,33 +536,28 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
         if( useStates ) {
             st = findState( sw, mode );
         }
-        if( !sw ) {
-        } else if( streq( sw->className(), "MRSwitch" ) ) {
-            bool b = false;
-            if( st ) {
-                b = st->state();
+        if( sw != NULL ) {
+            if( streq( sw->className(), "MVSwitch" ) ) {
+                if( ((MVSwitch*)sw)->optional() ) {
+                    bool b = false;
+                    if( st ) {
+                        b = st->state();
+                    } else {
+                        b = sw->state( mode );
+                    }
+                    m->ctl()->setCheck( b );
+                }
+                WString* v;
+                if( st ) {
+                    v = &((MVState*)st)->value();
+                } else {
+                    v = &((MVSwitch*)sw)->value( mode );
+                }
+                m->ctl2()->setText( *v );
             } else {
-                b = sw->state( mode );
-            }
-            m->ctl()->setCheck( b );
-        } else if( streq( sw->className(), "MCSwitch" ) ) {
-            bool b = false;
-            if( st ) {
-                b = st->state();
-            } else {
-                b = sw->state( mode );
-            }
-            m->ctl()->setCheck( b );
-        } else if( streq( sw->className(), "MC2Switch" ) ) {
-            bool b = false;
-            if( st ) {
-                b = st->state();
-            } else {
-                b = sw->state( mode );
-            }
-            m->ctl()->setCheck( b );
-        } else if( streq( sw->className(), "MVSwitch" ) ) {
-            if( ((MVSwitch*)sw)->optional() ) {
+                /*
+                 * MCSwitch, MC2Switch, MRSwitch
+                 */
                 bool b = false;
                 if( st ) {
                     b = st->state();
@@ -571,13 +566,6 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
                 }
                 m->ctl()->setCheck( b );
             }
-            WString* v;
-            if( st ) {
-                v = &((MVState*)st)->value();
-            } else {
-                v = &((MVSwitch*)sw)->value( mode );
-            }
-            m->ctl2()->setText( *v );
         }
     }
 }

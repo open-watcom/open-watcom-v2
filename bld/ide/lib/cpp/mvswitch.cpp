@@ -48,21 +48,22 @@ MVSwitch::MVSwitch( WTokenFile& fil, WString& tok )
     _optional = true;
     WString value;
     bool state = false;
-    for( int i=0; i<SWMODE_COUNT; i++ ) {
+    for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
         if( !fil.eol() ) {
             fil.token( tok );
-            if( _optional && tok == "ON" ) {
-                state = true;
-                fil.token( value );
-            } else if( _optional && tok == "OFF" ) {
-                state = false;
-                fil.token( value );
-            } else if( _optional && tok == "REQ" ) {
-                _optional = false;
-                fil.token( value );
-            } else {
-                value = tok;
+            if( _optional ) {
+                if( tok == "ON" ) {
+                    state = true;
+                    fil.token( tok );
+                } else if( tok == "OFF" ) {
+                    state = false;
+                    fil.token( tok );
+                } else if( tok == "REQ" ) {
+                    _optional = false;
+                    fil.token( tok );
+                }
             }
+            value = tok;
         }
         MSwitch::state( i, state );
         _value[i] = value;
@@ -82,7 +83,7 @@ void WEXPORT MVSwitch::readSelf( WObjectFile& p )
         p.readObject( &_connector );
     }
     if( p.version() > 28 ) {
-        for( int i=0; i<SWMODE_COUNT; i++ ) {
+        for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
             p.readObject( &_value[i] );
             MSwitch::readState( p, i );
         }
@@ -102,7 +103,7 @@ void WEXPORT MVSwitch::writeSelf( WObjectFile& p )
 {
     MSwitch::writeSelf( p );
     p.writeObject( &_connector );
-    for( int i=0; i<SWMODE_COUNT; i++ ) {
+    for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
         p.writeObject( &_value[i] );
         MSwitch::writeState( p, i );
     }
