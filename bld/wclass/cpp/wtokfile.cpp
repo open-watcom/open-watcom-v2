@@ -82,6 +82,8 @@ WString& WTokenFile::token( WString& tok, bool* quoted, bool* eol )
     for(;;) {
         ch = getch();
         if( ch == 0 || ch == 10 ) {
+            if( quoted != NULL )
+                *quoted = _quoted;
             _eol = true;
             if( eol != NULL )
                 *eol = _eol;

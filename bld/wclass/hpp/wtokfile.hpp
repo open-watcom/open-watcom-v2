@@ -53,6 +53,3 @@ class WTokenFile : public WFile
 };
 
 #endif
-
-
-
