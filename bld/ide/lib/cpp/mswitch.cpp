@@ -69,7 +69,7 @@ void WEXPORT MSwitch::writeSelf( WObjectFile& p )
 }
 #endif
 
-void MSwitch::displayText( WString& s )
+void MSwitch::concatOptText( WString& s )
 {
     if( _on.size() > 0 ) {
         s.concat( ' ' );

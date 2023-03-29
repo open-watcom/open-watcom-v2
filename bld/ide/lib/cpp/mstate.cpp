@@ -93,11 +93,6 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     }
 }
 
-void WEXPORT MState::readState( WObjectFile& p )
-{
-    p.readObject( &_state );
-}
-
 void WEXPORT MState::writeSelf( WObjectFile& p )
 {
     p.writeObject( &_toolTag );
@@ -107,13 +102,6 @@ void WEXPORT MState::writeSelf( WObjectFile& p )
     p.writeObject( _state );
   #endif
 }
-
-  #if IDE_CFG_VERSION_MAJOR < 5
-void WEXPORT MState::writeState( WObjectFile& p )
-{
-    p.writeObject( _state );
-}
-  #endif
 #endif
 
 void MState::resetRuleRefs()

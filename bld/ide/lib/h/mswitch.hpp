@@ -57,7 +57,7 @@ WCLASS MSwitch : public WObject
         void name( WString& name ) { name = _text; }
         WString& text() { return( _text ); }
         void getTag( WString& tag );
-        virtual void displayText( WString& s );
+        virtual void concatOptText( WString& s );
         bool hasText() { return( _text.size() > 0 ); }
         bool isSetable() { return( _text.size() > 0 && *_text != ' ' ); }
         bool isTagEqual( WString& tag, int kludge=0 );

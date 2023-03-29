@@ -209,7 +209,8 @@ WString *WEXPORT MFamily::translateID( MSwitch *sw, WString& text )
 {
     if( _config->version() > 4 ) {
         WString *swtext;
-        swtext = (WString *)_switchesTexts.findThis( sw->text() );
+        text = sw->text();
+        swtext = (WString *)_switchesTexts.findThis( &text );
         if( swtext != NULL ) {
             text = *swtext;
             return( &text );
@@ -237,11 +238,11 @@ WString *WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
 {
   #if IDE_CFG_VERSION_MAJOR > 4
     if( translateID( sw, text ) != NULL ) {
-        sw->displayText( text );
+        sw->concatOptText( text );
         return( &text );
     }
   #endif
     text = sw->text();
-    sw->displayText( text );
+    sw->concatOptText( text );
     return( &text );
 }
