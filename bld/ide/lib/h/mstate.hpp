@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023 2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,6 +54,9 @@ WCLASS MState : public WObject
                 bool state() { return( _state ); }
 #ifndef NOPERSIST
                 void WEXPORT readState( WObjectFile& p );
+    #if IDE_CFG_VERSION_MAJOR < 5
+                void WEXPORT writeState( WObjectFile& p );
+    #endif
 #endif
         private:
                 WString         _toolTag;

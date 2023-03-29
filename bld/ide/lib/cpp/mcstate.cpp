@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023 2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,5 +60,8 @@ void WEXPORT MCState::readSelf( WObjectFile& p )
 void WEXPORT MCState::writeSelf( WObjectFile& p )
 {
     MState::writeSelf( p );
+  #if IDE_CFG_VERSION_MAJOR < 5
+    MState::writeState( p );
+  #endif
 }
 #endif
