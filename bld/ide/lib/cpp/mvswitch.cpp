@@ -64,7 +64,7 @@ MVSwitch::MVSwitch( WTokenFile& fil, WString& tok )
                 value = tok;
             }
         }
-        _state[i] = state;
+        MSwitch::state( i, state );
         _value[i] = value;
     }
 }
@@ -84,13 +84,13 @@ void WEXPORT MVSwitch::readSelf( WObjectFile& p )
     if( p.version() > 28 ) {
         for( int i=0; i<SWMODE_COUNT; i++ ) {
             p.readObject( &_value[i] );
-            p.readObject( &_state[i] );
+            MSwitch::readState( p, i );
         }
     } else {
         p.readObject( &_value[SWMODE_RELEASE] );
-        p.readObject( &_state[SWMODE_RELEASE] );
+        MSwitch::readState( p, SWMODE_RELEASE );
         _value[SWMODE_DEBUG] = _value[SWMODE_RELEASE];
-        _state[SWMODE_DEBUG] = _state[SWMODE_RELEASE];
+        MSwitch::copyState( SWMODE_DEBUG, SWMODE_RELEASE );
     }
     if( p.version() > 28 ) {
         p.readObject( &_multiple );
@@ -104,7 +104,7 @@ void WEXPORT MVSwitch::writeSelf( WObjectFile& p )
     p.writeObject( &_connector );
     for( int i=0; i<SWMODE_COUNT; i++ ) {
         p.writeObject( &_value[i] );
-        p.writeObject( _state[i] );
+        MSwitch::writeState( p, i );
     }
     p.writeObject( _multiple );
     p.writeObject( _optional );
@@ -202,7 +202,7 @@ void MVSwitch::getText( WString& str, WVList* states, SwMode mode )
         }
     }
     if( !found_match ) {
-        addone( str, _state[mode], &_value[mode], first );
+        addone( str, MSwitch::state( mode ), &_value[mode], first );
     }
 }
 

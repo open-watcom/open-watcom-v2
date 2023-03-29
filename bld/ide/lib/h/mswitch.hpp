@@ -37,6 +37,7 @@
 #include "idecfg.h"
 #include "wtokfile.hpp"
 #include "wvlist.hpp"
+#include "wobjfile.hpp"
 
 typedef unsigned char SwMode;
 #define SWMODE_RELEASE  0
@@ -67,6 +68,13 @@ WCLASS MSwitch : public WObject
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;
         WString& on() { return( _on ); }
+        bool state( SwMode m ) { return( _state[m] ); }
+        void state( SwMode m, bool state ) { _state[m] = state; }
+#ifndef NOPERSIST
+        void WEXPORT readState( WObjectFile& p, SwMode m ) { p.readObject( &_state[m] ); }
+        void WEXPORT writeState( WObjectFile& p, SwMode m ) { p.writeObject( _state[m] ); }
+        void WEXPORT copyState( SwMode md, SwMode ms ) { _state[md] = _state[ms]; }
+#endif
     protected:
         void findStates( WVList* states, WVList& found );
     private:
@@ -74,6 +82,7 @@ WCLASS MSwitch : public WObject
         WString         _mask;
         WString         _text;
         WString         _on;
+        bool            _state[SWMODE_COUNT];
 };
 
 #endif

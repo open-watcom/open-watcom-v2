@@ -540,34 +540,34 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
         } else if( streq( sw->className(), "MRSwitch" ) ) {
             bool b = false;
             if( st ) {
-                b = ((MRState*)st)->state();
+                b = st->state();
             } else {
-                b = ((MRSwitch*)sw)->state( mode );
+                b = sw->state( mode );
             }
             m->ctl()->setCheck( b );
         } else if( streq( sw->className(), "MCSwitch" ) ) {
             bool b = false;
             if( st ) {
-                b = ((MCState*)st)->state();
+                b = st->state();
             } else {
-                b = ((MCSwitch*)sw)->state( mode );
+                b = sw->state( mode );
             }
             m->ctl()->setCheck( b );
         } else if( streq( sw->className(), "MC2Switch" ) ) {
             bool b = false;
             if( st ) {
-                b = ((MCState*)st)->state();
+                b = st->state();
             } else {
-                b = ((MC2Switch*)sw)->state( mode );
+                b = sw->state( mode );
             }
             m->ctl()->setCheck( b );
         } else if( streq( sw->className(), "MVSwitch" ) ) {
             if( ((MVSwitch*)sw)->optional() ) {
                 bool b = false;
                 if( st ) {
-                    b = ((MVState*)st)->state();
+                    b = st->state();
                 } else {
-                    b = ((MVSwitch*)sw)->state( mode );
+                    b = sw->state( mode );
                 }
                 m->ctl()->setCheck( b );
             }
@@ -611,19 +611,19 @@ void VSetup::okButton( WWindow* )
             if( !sw ) {
             } else if( streq( sw->className(), "MRSwitch" ) ) {
                 bool b = m->ctl()->checked();
-                if( b != ((MRSwitch*)sw)->state( _mode ) ) {
+                if( b != sw->state( _mode ) ) {
                     MRState* st = new MRState( _tool, _mode, (MRSwitch*)sw, b );
                     _states->add( st );
                 }
             } else if( streq( sw->className(), "MCSwitch" ) ) {
                 bool b = m->ctl()->checked();
-                if( b != ((MCSwitch*)sw)->state( _mode ) ) {
+                if( b != sw->state( _mode ) ) {
                     MCState* st = new MCState( _tool, _mode, (MCSwitch*)sw, b );
                     _states->add( st );
                 }
             } else if( streq( sw->className(), "MC2Switch" ) ) {
                 bool b = m->ctl()->checked();
-                if( b != ((MC2Switch*)sw)->state( _mode ) ) {
+                if( b != sw->state( _mode ) ) {
                     MCState* st = new MCState( _tool, _mode, (MCSwitch*)sw, b );
                     _states->add( st );
                 }
@@ -635,7 +635,7 @@ void VSetup::okButton( WWindow* )
                 WString v;
                 m->ctl2()->getText( v );
                 v.trim();
-                if( b != ((MVSwitch*)sw)->state( _mode ) || !(((MVSwitch*)sw)->value( _mode ) == v) ) {
+                if( b != sw->state( _mode ) || !(((MVSwitch*)sw)->value( _mode ) == v) ) {
                     MVState* st = new MVState( _tool, _mode, (MVSwitch*)sw, b, &v );
                     _states->add( st );
                 }

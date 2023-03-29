@@ -47,13 +47,11 @@ WCLASS MVSwitch : public MSwitch
         virtual void getText( WString& str, WVList* states, SwMode mode );
         virtual void getText( WString& str, MState* state );
         WString& value( SwMode m ) { return( _value[m] ); }
-        bool state( SwMode m ) { return( _state[m] ); }
         bool optional() { return( _optional ); }
     private:
         WString         _connector;
         char            _quote;
         WString         _value[SWMODE_COUNT];
-        bool            _state[SWMODE_COUNT];
         bool            _optional;
         bool            _multiple;
         void    addone( WString& str, bool state, WString* value, bool& first );

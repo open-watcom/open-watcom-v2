@@ -104,14 +104,14 @@ void WEXPORT MState::writeSelf( WObjectFile& p )
     p.writeObject( &_switchTag );
     p.writeObject( _mode );
   #if IDE_CFG_VERSION_MAJOR > 4
-    p.writeObject( &_state );
+    p.writeObject( _state );
   #endif
 }
 
   #if IDE_CFG_VERSION_MAJOR < 5
 void WEXPORT MState::writeState( WObjectFile& p )
 {
-    p.writeObject( &_state );
+    p.writeObject( _state );
 }
   #endif
 #endif
