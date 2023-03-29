@@ -232,3 +232,16 @@ WString* WEXPORT MFamily::findSwitchByText( WString& id, WString& text, int klud
     return( NULL );
 }
 #endif
+
+WString *WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
+{
+  #if IDE_CFG_VERSION_MAJOR > 4
+    if( translateID( sw, text ) != NULL ) {
+        sw->displayText( text );
+        return( &text );
+    }
+  #endif
+    text = sw->text();
+    sw->displayText( text );
+    return( &text );
+}

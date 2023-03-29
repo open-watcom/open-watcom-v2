@@ -53,6 +53,7 @@ WCLASS MFamily : public WObject
         bool WEXPORT hasSwitches( bool setable );
         MSwitch* WEXPORT findSwitch( MTool *tool, WString& switchtag, long fixed_version=0 );
         void WEXPORT addSwitches( WVList& list, const char* mask, bool setable );
+        WString *WEXPORT displayText( MSwitch *sw, WString& text );
 #if IDE_CFG_VERSION_MAJOR > 4
         WString* findSwitchByText( WString& id, WString& text, int kludge=0 );
         WString *WEXPORT translateID( MSwitch *sw, WString& text );

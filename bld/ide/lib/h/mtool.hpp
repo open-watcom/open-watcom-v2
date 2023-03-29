@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,8 @@ WCLASS MTool : public WObject
         void name( WString& s ) { s = _name; }
         const WString& help() { return( _help ); }
         MSwitch* findSwitch( WString& switchtag, long fixed_version=0 );
-        WString *displayText( MSwitch *sw, WString& text );
 #if IDE_CFG_VERSION_MAJOR > 4
         WString* findSwitchByText( WString& id, WString& text, int kludge=0 );
-        WString *WEXPORT translateID( MSwitch *sw, WString& text );
 #endif
         bool hasSwitches( bool setable );
         void addSwitches( WVList& list, const char* mask, bool setable );

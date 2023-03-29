@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -333,7 +333,7 @@ void VSetup::initialize()
                             } else {
                                 style = RStyleGroupLast;
                             }
-                            _tool->displayText( sw, text );
+                            fam->displayText( sw, text );
                             WRect rbrect( xoff+xgoff, yoff+ygoff, wid-2*xgoff, radiobutton_hite );
                             WRadioButton* t = new WRadioButton( w, rbrect, text, style );
                             swList->add( new SwitchMap( sw, t, st ) );
@@ -355,7 +355,7 @@ void VSetup::initialize()
                     //
                     } else if( streq( sw->className(), "MCSwitch" )
                                || streq( sw->className(), "MC2Switch" ) ) {
-                        _tool->displayText( sw, text );
+                        fam->displayText( sw, text );
                         WCheckBox* t = new WCheckBox( w, WRect(xoff,yoff,wid,checkbox_hite), text );
                         swList->add( new SwitchMap( sw, t, st ) );
 #ifndef TEST
@@ -368,7 +368,7 @@ void VSetup::initialize()
                     //
                     } else if( streq( sw->className(), "MVSwitch" ) ) {
                         WBoolSwitch* tt = NULL;
-                        _tool->displayText( sw, text );
+                        fam->displayText( sw, text );
                         if( ((MVSwitch*)sw)->optional() ) {
                             tt = new WCheckBox( w, WRect(xoff,yoff,wid, checkbox_hite), text );
 #ifndef TEST
