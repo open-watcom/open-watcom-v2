@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@ typedef unsigned char SwMode;
 #define SWMODE_COUNT    2
 
 WCLASS MState;
+WCLASS MTool;
 WCLASS MSwitch : public WObject
 {
     Declare( MSwitch )
