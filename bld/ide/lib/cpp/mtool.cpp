@@ -101,7 +101,7 @@ void WEXPORT MTool::writeSelf( WObjectFile& p )
 }
 #endif
 
-MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
+MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version, int kludge )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -119,7 +119,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
     int icount = _families.count();
     for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
-        MSwitch* sw = family->findSwitch( this, switchtag, fixed_version );
+        MSwitch* sw = family->findSwitch( switchtag, fixed_version, kludge );
         if( sw != NULL ) {
             return( sw );
         }
@@ -127,7 +127,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
     icount = _incTools.count();
     for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
-        MSwitch* sw = tool->findSwitch( switchtag, fixed_version );
+        MSwitch* sw = tool->findSwitch( switchtag, fixed_version, kludge );
         if( sw != NULL ) {
             return( sw );
         }

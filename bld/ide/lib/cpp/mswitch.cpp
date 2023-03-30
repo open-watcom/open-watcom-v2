@@ -135,6 +135,7 @@ bool MSwitch::isTagEqual( WString& switchtag, int kludge )
             }
             return( true );
         }
+    } else if( kludge == 2 ) {
     }
     return( false );
 }

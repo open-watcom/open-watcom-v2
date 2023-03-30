@@ -85,6 +85,9 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     // it use various hacks in dependency on project files version
     //
     _switch = _tool->findSwitch( _switchTag, p.version() );
+    if( _switch == NULL ) {
+        _switch = _tool->findSwitch( _switchTag, p.version(), 1 );
+    }
     if( p.version() > 27 ) {
         p.readObject( &_mode );
     }

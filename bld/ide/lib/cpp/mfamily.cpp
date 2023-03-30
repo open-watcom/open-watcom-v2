@@ -127,7 +127,7 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     return( false );
 }
 
-MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixed_version )
+MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version, int kludge )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -136,15 +136,16 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
-#if IDE_CFG_VERSION_MAJOR < 5
-    /* unused parameters */ (void)tool;
-#endif
     int icount = _switches.count();
     bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[(size_t)MASK_SIZE] != ' ' );
     if( fixed_version == 0 || !isSetable ) {
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];
-            if( sw->isTagEqual( switchtag ) ) {
+            if( sw->isTagEqual( switchtag, kludge ) ) {
+                if( kludge == 1 ) {
+                    // upgrade switchtag to current configuration files version
+                    sw->getTag( switchtag );
+                }
                 return( sw );
             }
         }
@@ -153,34 +154,12 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
             MSwitch* sw = (MSwitch*)_switches[i];
             if( !sw->isSetable() )
                 continue;
-#if IDE_CFG_VERSION_MAJOR > 4
-            // upgrade switchtag to current configuration files version
-            if( _config->version() > 4 || fixed_version < 50 ) {
-                // check for old text
-                if( sw->isTagEqual( tool, switchtag, 1 ) ) {
-                    sw->getTag( switchtag );
-                    return( sw );
-                }
-                // check for current text
-                if( sw->isTagEqual( tool, switchtag ) ) {
-                    sw->getTag( switchtag );
-                    return( sw );
-                }
-                continue;
-            }
-#endif
-            if( sw->isTagEqual( switchtag ) ) {
-                return( sw );
-            }
-            //
-            // hack for buggy version of configuration/project files
-            //
-            if( _config->version() == 4 || fixed_version == 40 ) {
-                if( sw->isTagEqual( switchtag, 1 ) ) {
+            if( sw->isTagEqual( switchtag, kludge ) ) {
+                if( kludge == 1 ) {
                     // upgrade switchtag to current configuration files version
                     sw->getTag( switchtag );
-                    return( sw );
                 }
+                return( sw );
             }
         }
     }
