@@ -137,8 +137,7 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version, in
     // there vere no change to version number of project files
     //
     int icount = _switches.count();
-    bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[(size_t)MASK_SIZE] != ' ' );
-    if( fixed_version == 0 || !isSetable ) {
+    if( fixed_version == 0 || !isSetable( switchtag ) ) {
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];
             if( sw->isTagEqual( switchtag, kludge ) ) {
@@ -172,9 +171,8 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
     int icount = _switches.count();
     for( int i = 0; i < icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
-        bool hasText = sw->hasText();
-        if( !setable || hasText ) {
-            if( !lastSw || !hasText || lastSw->text() != sw->text() ) {
+        if( !setable || sw->hasText() ) {
+            if( !sw->isTextEqual( lastSw ) ) {
                 if( sw->addSwitch( list, mask ) ) {
                     lastSw = sw;
                 }
@@ -184,12 +182,10 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
 }
 
 #if IDE_CFG_VERSION_MAJOR > 4
-WString *WEXPORT MFamily::translateID( MSwitch *sw, WString& text )
+WString *WEXPORT MFamily::translateID( WString* id, WString& text )
 {
     if( _config->version() > 4 ) {
-        WString *swtext;
-        text = sw->text();
-        swtext = (WString *)_switchesTexts.findThis( &text );
+        WString *swtext = (WString *)_switchesTexts.findThis( id );
         if( swtext != NULL ) {
             text = *swtext;
             return( &text );
@@ -215,13 +211,10 @@ WString* WEXPORT MFamily::findSwitchByText( WString& id, WString& text, int klud
 
 WString *WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
 {
-  #if IDE_CFG_VERSION_MAJOR > 4
-    if( translateID( sw, text ) != NULL ) {
-        sw->concatOptText( text );
-        return( &text );
-    }
-  #endif
     text = sw->text();
+  #if IDE_CFG_VERSION_MAJOR > 4
+    translateID( &text, text );
+  #endif
     sw->concatOptText( text );
     return( &text );
 }

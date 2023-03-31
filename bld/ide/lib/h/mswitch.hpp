@@ -64,6 +64,8 @@ WCLASS MSwitch : public WObject
 #if IDE_CFG_VERSION_MAJOR > 4
         bool isTagEqual( MTool *tool, WString& mask, int kludge=0 );
 #endif
+        bool isTextEqual( MSwitch* text )
+            { return( text != NULL && _text.size() > 0 && _text == text->text() ); }
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;

@@ -54,6 +54,7 @@ WCLASS MFamily : public WObject
         MSwitch* WEXPORT findSwitch( WString& switchtag, long fixed_version=0, int kludge=0 );
         void WEXPORT addSwitches( WVList& list, const char* mask, bool setable );
         WString *WEXPORT displayText( MSwitch *sw, WString& text );
+        bool isSetable( WString& text ) { return( text.size() > 0 && *text != ' ' ); }
 #if IDE_CFG_VERSION_MAJOR > 4
         WString* findSwitchByText( WString& id, WString& text, int kludge=0 );
         WString *WEXPORT translateID( MSwitch *sw, WString& text );
