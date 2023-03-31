@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@ static unsigned         ExceptNum;
 static int              NewSession;
 static int              sleepProcId = 0;
 
-static seg_offset       CommonAddr;
+static far_address      CommonAddr;
 
 unsigned NextThread( unsigned tid )
 {
@@ -270,7 +270,7 @@ void StopProg( void )
 
 static void CodeLoad( uDB_t FAR_PTR *buff, ULONG mte, const char *name, samp_block_kinds kind )
 {
-    seg_offset  ovl;
+    far_address ovl;
     int         i;
 
     ovl.offset = 0;
@@ -491,7 +491,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     ULONG       drive;
     ULONG       map;
     ULONG       len;
-    seg_offset  where;
+    far_address where;
     TID         tid;
     ULONG       rc;
     char        *cmd_args;

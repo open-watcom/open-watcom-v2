@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ static volatile bool    TimerTicked;
 static unsigned short   FlatSeg = 1;    // hardcoded value, no real segments
 static opcode_type      saved_opcode;
 
-static seg_offset       CommonAddr;
+static far_address      CommonAddr;
 
 static lib_load_info    *ModuleInfo;
 static int              ModuleTop;
@@ -440,7 +440,7 @@ void StopProg( void )
 
 static void CodeLoad( const char *name, u_long addr, samp_block_kinds kind )
 {
-    seg_offset  ovl;
+    far_address ovl;
 
     ovl.offset = 0;
     ovl.segment = 0;
@@ -472,7 +472,7 @@ static bool ProcessMark( pid_t pid, user_regs_struct *regs )
     if( (regs->edx & 0xffff) != 0 ) {   /* this is a mark */
         char            buff[BUFF_SIZE];
         int             len = 0;
-        seg_offset      where;
+        far_address     where;
 
         /* read the mark string char by char */
         for( ;; ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ void FAR PASCAL IntHandler( void );
 
 volatile WORD           __near WaitForFirst=0;
 volatile WORD           __near IsSecondOK=0;
-seg_offset              CommonAddr = { 0, 0 };
+far_address             CommonAddr = { 0, 0 };
 bool                    WDebug386 = false;
 samp_save               __far * __near SampSave;
 

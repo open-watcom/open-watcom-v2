@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,7 +151,7 @@ void StopProg( void )
 
 void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
-    seg_offset  where;
+    far_address where;
     addr48_ptr  addr;
     bool        err;
     char        buff[BSIZE];
