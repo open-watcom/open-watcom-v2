@@ -42,7 +42,7 @@ MSwitch::MSwitch( WTokenFile& fil, WString& tok )
 {
     _panel = (int)fil.token( tok );
     fil.token( _mask );
-    fil.token( _text );
+    fil.token( _id );
     fil.token( _on );
 }
 
@@ -56,7 +56,7 @@ void WEXPORT MSwitch::readSelf( WObjectFile& p )
 {
     p.readObject( &_panel );
     p.readObject( &_mask );
-    p.readObject( &_text );
+    p.readObject( &_id );
     p.readObject( &_on );
 }
 
@@ -64,7 +64,7 @@ void WEXPORT MSwitch::writeSelf( WObjectFile& p )
 {
     p.writeObject( _panel );
     p.writeObject( &_mask );
-    p.writeObject( &_text );
+    p.writeObject( &_id );
     p.writeObject( &_on );
 }
 #endif
@@ -102,7 +102,7 @@ void MSwitch::findStates( WVList* states, WVList& found )
 void MSwitch::getTag( WString& tag )
 {
     tag = _mask;
-    tag.concat( _text );
+    tag.concat( _id );
 }
 
 bool MSwitch::isTagEqual( WString& swtag, int kludge )
@@ -110,7 +110,7 @@ bool MSwitch::isTagEqual( WString& swtag, int kludge )
     WString tag;
 
     tag = _mask;
-    tag.concat( _text );
+    tag.concat( _id );
     if( tag == swtag )
         return( true );
     if( kludge == 1 ) {

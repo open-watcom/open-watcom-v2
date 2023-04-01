@@ -50,19 +50,19 @@ WCLASS MSwitch : public WObject
 {
     Declare( MSwitch )
     public:
-        MSwitch ( const char* name=NULL ) : _text( name ) {}
+        MSwitch ( const char* id=NULL ) : _id( id ) {}
         MSwitch( WTokenFile& fil, WString& tok );
         ~MSwitch() {}
         int panel() { return( _panel ); }
-        void name( WString& name ) { name = _text; }
-        WString& text() { return( _text ); }
+        void id( WString& id ) { id = _id; }
+        WString& id() { return( _id ); }
         void getTag( WString& tag );
         virtual void concatOptText( WString& s );
-        bool hasText() { return( _text.size() > 0 ); }
-        bool isSetable() { return( _text.size() > 0 && *_text != ' ' ); }
+        bool hasId() { return( _id.size() > 0 ); }
+        bool isSetable() { return( _id.size() > 0 && *_id != ' ' ); }
         bool isTagEqual( WString& tag, int kludge=0 );
-        bool isTextEqual( MSwitch* text )
-            { return( text != NULL && _text.size() > 0 && _text == text->text() ); }
+        bool isIdEqual( MSwitch* sw )
+            { return( sw != NULL && _id.size() > 0 && _id == sw->id() ); }
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;
@@ -79,7 +79,7 @@ WCLASS MSwitch : public WObject
     private:
         int             _panel;
         WString         _mask;
-        WString         _text;
+        WString         _id;
         WString         _on;
         bool            _state[SWMODE_COUNT];
 };

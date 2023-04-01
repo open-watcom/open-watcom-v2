@@ -165,8 +165,8 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
     int icount = _switches.count();
     for( int i = 0; i < icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
-        if( !setable || sw->hasText() ) {
-            if( !sw->isTextEqual( lastSw ) ) {
+        if( !setable || sw->hasId() ) {
+            if( !sw->isIdEqual( lastSw ) ) {
                 if( sw->addSwitch( list, mask ) ) {
                     lastSw = sw;
                 }
@@ -205,7 +205,7 @@ WString* WEXPORT MFamily::findSwitchByText( WString& id, WString& text, int klud
 
 WString *WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
 {
-    text = sw->text();
+    sw->id( text );
   #if IDE_CFG_VERSION_MAJOR > 4
     translateID( &text, text );
   #endif
