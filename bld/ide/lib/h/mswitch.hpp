@@ -61,9 +61,6 @@ WCLASS MSwitch : public WObject
         bool hasText() { return( _text.size() > 0 ); }
         bool isSetable() { return( _text.size() > 0 && *_text != ' ' ); }
         bool isTagEqual( WString& tag, int kludge=0 );
-#if IDE_CFG_VERSION_MAJOR > 4
-        bool isTagEqual( MTool *tool, WString& mask, int kludge=0 );
-#endif
         bool isTextEqual( MSwitch* text )
             { return( text != NULL && _text.size() > 0 && _text == text->text() ); }
         MSwitch* addSwitch( WVList& list, const char* mask );

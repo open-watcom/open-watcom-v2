@@ -45,13 +45,14 @@ void AddTypo( WString &good, WString &bad )
     SwitchTypos.add( t );
 }
 
-void FixTypo( WString &word )
+WString* FixTypo( WString &word )
 {
     for( int i = 0; i < SwitchTypos.count(); i++ ) {
         WTypo *t = (WTypo *)SwitchTypos[i];
         if( t->bad() == word ) {
             word = t->good();
-            break;
+            return( &word );
         }
     }
+    return( NULL );
 }

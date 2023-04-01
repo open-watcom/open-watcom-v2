@@ -36,6 +36,7 @@
 #include "mconfig.hpp"
 #include "mstate.hpp"
 #include "mrule.hpp"            //temp
+#include "mtypo.hpp"
 
 Define( MState )
 
@@ -87,6 +88,20 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     _switch = _tool->findSwitch( _switchTag, p.version() );
     if( _switch == NULL ) {
         _switch = _tool->findSwitch( _switchTag, p.version(), 1 );
+        if( _switch == NULL ) {
+            if( p.version() >= 40 && p.version() < 50 && _config->version() == 4 ) {
+                //
+                // hack for buggy version of configuration/project files
+                //
+                if( FixTypo( _switchTag ) != NULL ) {
+                    _switch = _tool->findSwitch( _switchTag, p.version() );
+                }
+            }
+        }
+        if( _switch != NULL ) {
+            // upgrade swtag to current configuration files version
+            _switch->getTag( _switchTag );
+        }
     }
     if( p.version() > 27 ) {
         p.readObject( &_mode );

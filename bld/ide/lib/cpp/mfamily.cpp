@@ -127,7 +127,7 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     return( false );
 }
 
-MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version, int kludge )
+MSwitch* WEXPORT MFamily::findSwitch( WString& swtag, long fixed_version, int kludge )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -136,15 +136,13 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version, in
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
+    // type of non-exact search is defined by kludge parameter
+    //
     int icount = _switches.count();
-    if( fixed_version == 0 || !isSetable( switchtag ) ) {
+    if( fixed_version == 0 || !isSetable( swtag ) ) {
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];
-            if( sw->isTagEqual( switchtag, kludge ) ) {
-                if( kludge == 1 ) {
-                    // upgrade switchtag to current configuration files version
-                    sw->getTag( switchtag );
-                }
+            if( sw->isTagEqual( swtag, kludge ) ) {
                 return( sw );
             }
         }
@@ -153,11 +151,7 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version, in
             MSwitch* sw = (MSwitch*)_switches[i];
             if( !sw->isSetable() )
                 continue;
-            if( sw->isTagEqual( switchtag, kludge ) ) {
-                if( kludge == 1 ) {
-                    // upgrade switchtag to current configuration files version
-                    sw->getTag( switchtag );
-                }
+            if( sw->isTagEqual( swtag, kludge ) ) {
                 return( sw );
             }
         }

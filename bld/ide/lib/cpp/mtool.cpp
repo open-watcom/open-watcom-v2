@@ -35,7 +35,6 @@
 #include "wobjfile.hpp"
 #include "mconfig.hpp"
 #include "mfamily.hpp"
-#include "mtypo.hpp"
 
 Define( MTool )
 
@@ -101,7 +100,7 @@ void WEXPORT MTool::writeSelf( WObjectFile& p )
 }
 #endif
 
-MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version, int kludge )
+MSwitch* WEXPORT MTool::findSwitch( WString& swtag, long fixed_version, int kludge )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -110,16 +109,10 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version, int 
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
-    if( fixed_version != 0 && fixed_version < 50 && _config->version() < 5 ) {
-        //
-        // hack for buggy version of configuration/project files
-        //
-        FixTypo( switchtag );
-    }
     int icount = _families.count();
     for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
-        MSwitch* sw = family->findSwitch( switchtag, fixed_version, kludge );
+        MSwitch* sw = family->findSwitch( swtag, fixed_version, kludge );
         if( sw != NULL ) {
             return( sw );
         }
@@ -127,7 +120,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version, int 
     icount = _incTools.count();
     for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
-        MSwitch* sw = tool->findSwitch( switchtag, fixed_version, kludge );
+        MSwitch* sw = tool->findSwitch( swtag, fixed_version, kludge );
         if( sw != NULL ) {
             return( sw );
         }

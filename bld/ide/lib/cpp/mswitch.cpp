@@ -105,20 +105,20 @@ void MSwitch::getTag( WString& tag )
     tag.concat( _text );
 }
 
-bool MSwitch::isTagEqual( WString& switchtag, int kludge )
+bool MSwitch::isTagEqual( WString& swtag, int kludge )
 {
     WString tag;
 
     tag = _mask;
     tag.concat( _text );
-    if( tag == switchtag )
+    if( tag == swtag )
         return( true );
     if( kludge == 1 ) {
-        size_t jcount = switchtag.size();
+        size_t jcount = swtag.size();
         if( jcount > MASK_SIZE && jcount == tag.size() ) {
             for( size_t j = 0; j < jcount; j++ ) {
                 int ct = (unsigned char)tag[j];
-                int cs = (unsigned char)switchtag[j];
+                int cs = (unsigned char)swtag[j];
                 if( ct == cs )
                     continue;
                 // mask must be same
@@ -139,25 +139,6 @@ bool MSwitch::isTagEqual( WString& switchtag, int kludge )
     }
     return( false );
 }
-
-#if IDE_CFG_VERSION_MAJOR > 4
-bool MSwitch::isTagEqual( MTool *tool, WString& switchtag, int kludge )
-{
-    // first check mask
-    for( int i = 0; i < MASK_SIZE; ++i ) {
-        if( _mask[i] != switchtag[i] ) {
-            return( false );
-        }
-    }
-    // second check text/id
-    WString tag = switchtag;
-    tag.chop( MASK_SIZE );
-    if( tool->findSwitchByText( _text, tag, kludge ) == NULL ) {
-        return( false );
-    }
-    return( true );
-}
-#endif
 
 MSwitch* MSwitch::addSwitch( WVList& list, const char* mask )
 {
