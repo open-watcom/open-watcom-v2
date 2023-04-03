@@ -34,22 +34,22 @@
 #define _IDECFG_H_INCLUDED
 
 /*
- * increment IDE_CFG_VERSION_MINOR macro
+ * increment LATEST_SUPPORTED_VERSION macro
  * when some change in file formats is done
  */
-#define IDE_CFG_VERSION_MAJOR   4
-#define IDE_CFG_VERSION_MINOR   0
+
+#define IDE_CFG_VERSION             4
 /*
  * 39 and 40 are written the same, but read in differently
  * 39 messed up .BEFORE / .AFTER containing CR/LF's
  * since this is the same as the separator char.
  */
-#define LATEST_SUPPORTED_VERSION (IDE_CFG_VERSION_MAJOR * 10 + IDE_CFG_VERSION_MINOR)
-#define OLDEST_SUPPORTED_VERSION 23
+#define LATEST_SUPPORTED_VERSION    41
+#define OLDEST_SUPPORTED_VERSION    23
 /*
  * target mask size
  */
-#define MASK_SIZE                5
+#define MASK_SIZE                   5
 
 #endif
 

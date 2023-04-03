@@ -53,7 +53,7 @@ MRState* WEXPORT MRState::createSelf( WObjectFile& )
 void WEXPORT MRState::readSelf( WObjectFile& p )
 {
     MState::readSelf( p );
-    if( p.version() < 50 ) {
+    if( p.version() < 41 ) {
         MState::readState( p );
     }
 }
@@ -61,8 +61,5 @@ void WEXPORT MRState::readSelf( WObjectFile& p )
 void WEXPORT MRState::writeSelf( WObjectFile& p )
 {
     MState::writeSelf( p );
-  #if IDE_CFG_VERSION_MAJOR < 5
-    MState::writeState( p );
-  #endif
 }
 #endif

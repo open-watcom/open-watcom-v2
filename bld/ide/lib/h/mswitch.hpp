@@ -55,14 +55,11 @@ WCLASS MSwitch : public WObject
         ~MSwitch() {}
         int panel() { return( _panel ); }
         void id( WString& id ) { id = _id; }
-        WString& id() { return( _id ); }
+        const char* id() { return( _id ); }
         void getTag( WString& tag );
         virtual void concatOptText( WString& s );
-        bool hasId() { return( _id.size() > 0 ); }
         bool isSetable() { return( _id.size() > 0 && *_id != ' ' ); }
-        bool isTagEqual( WString& tag, int kludge=0 );
-        bool isIdEqual( MSwitch* sw )
-            { return( sw != NULL && _id.size() > 0 && _id == sw->id() ); }
+        bool isTagEqual( const char* tag, int kludge=0 );
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;

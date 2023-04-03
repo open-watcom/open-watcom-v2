@@ -54,10 +54,8 @@ WCLASS MTool : public WObject
         WString& tag() { return( _tag ); };
         void name( WString& s ) { s = _name; }
         const WString& help() { return( _help ); }
-        MSwitch* findSwitch( WString& swtag, long fixed_version=0, int kludge=0 );
-#if IDE_CFG_VERSION_MAJOR > 4
-        WString* findSwitchByText( WString& id, WString& text, int kludge=0 );
-#endif
+        MSwitch* WEXPORT findSwitch( const char* swtag, int kludge=0 );
+        WString* WEXPORT findSwitchIdByText( WString* text, int kludge=0 );
         bool hasSwitches( bool setable );
         void addSwitches( WVList& list, const char* mask, bool setable );
         void addFamilies( WVList& list );

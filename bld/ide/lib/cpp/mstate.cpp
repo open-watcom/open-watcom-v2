@@ -85,17 +85,15 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     // fix _switchTag for current version of configuration files
     // it use various hacks in dependency on project files version
     //
-    _switch = _tool->findSwitch( _switchTag, p.version() );
+    _switch = _tool->findSwitch( _switchTag );
     if( _switch == NULL ) {
-        _switch = _tool->findSwitch( _switchTag, p.version(), 1 );
+        _switch = _tool->findSwitch( _switchTag, 1 );
         if( _switch == NULL ) {
-            if( p.version() >= 40 && p.version() < 50 && _config->version() == 4 ) {
-                //
-                // hack for buggy version of configuration/project files
-                //
-                if( FixTypo( _switchTag ) != NULL ) {
-                    _switch = _tool->findSwitch( _switchTag, p.version() );
-                }
+            //
+            // hack for buggy version of configuration/project files
+            //
+            if( FixTypo( _switchTag ) != NULL ) {
+                _switch = _tool->findSwitch( _switchTag );
             }
         }
         if( _switch != NULL ) {
@@ -106,7 +104,7 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     if( p.version() > 27 ) {
         p.readObject( &_mode );
     }
-    if( p.version() >= 50 ) {
+    if( p.version() > 40 ) {
         p.readObject( &_state );
     }
 }
@@ -116,9 +114,7 @@ void WEXPORT MState::writeSelf( WObjectFile& p )
     p.writeObject( &_toolTag );
     p.writeObject( &_switchTag );
     p.writeObject( _mode );
-  #if IDE_CFG_VERSION_MAJOR > 4
     p.writeObject( _state );
-  #endif
 }
 #endif
 

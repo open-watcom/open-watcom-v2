@@ -105,17 +105,17 @@ void MSwitch::getTag( WString& tag )
     tag.concat( _id );
 }
 
-bool MSwitch::isTagEqual( WString& swtag, int kludge )
+bool MSwitch::isTagEqual( const char* swtag, int kludge )
 {
     WString tag;
 
     tag = _mask;
     tag.concat( _id );
-    if( tag == swtag )
+    if( strcmp( (const char*)tag, swtag ) == 0 )
         return( true );
     if( kludge == 1 ) {
-        size_t jcount = swtag.size();
-        if( jcount > MASK_SIZE && jcount == tag.size() ) {
+        size_t jcount = tag.size();
+        if( jcount == strlen( swtag ) ) {
             for( size_t j = 0; j < jcount; j++ ) {
                 int ct = (unsigned char)tag[j];
                 int cs = (unsigned char)swtag[j];

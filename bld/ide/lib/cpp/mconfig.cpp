@@ -232,10 +232,16 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
                 fil.token( tok );
             } else if( tok == "Version" ) {
                 _version = (int)fil.token( tok );
-                if( _version > IDE_CFG_VERSION_MAJOR ) {
+                if( _version > IDE_CFG_VERSION ) {
                     _ok = false;
                     _errMsg.printf( "Configuration file '%s' format is too new.  "
                                     "you must use a newer version of the IDE.",
+                                    (const char*)filename );
+                    break;
+                } else if( _version < IDE_CFG_VERSION ) {
+                    _ok = false;
+                    _errMsg.printf( "Configuration file '%s' format is too old."
+                                    "  You must use a current IDE version file.",
                                     (const char*)filename );
                     break;
                 }

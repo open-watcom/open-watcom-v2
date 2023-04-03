@@ -127,7 +127,7 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     return( false );
 }
 
-MSwitch* WEXPORT MFamily::findSwitch( WString& swtag, long fixed_version, int kludge )
+MSwitch* WEXPORT MFamily::findSwitch( const char* swtag, int kludge )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -139,21 +139,10 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& swtag, long fixed_version, int kl
     // type of non-exact search is defined by kludge parameter
     //
     int icount = _switches.count();
-    if( fixed_version == 0 || !isSetable( swtag ) ) {
-        for( int i = 0; i < icount; i++ ) {
-            MSwitch* sw = (MSwitch*)_switches[i];
-            if( sw->isTagEqual( swtag, kludge ) ) {
-                return( sw );
-            }
-        }
-    } else {
-        for( int i = 0; i < icount; i++ ) {
-            MSwitch* sw = (MSwitch*)_switches[i];
-            if( !sw->isSetable() )
-                continue;
-            if( sw->isTagEqual( swtag, kludge ) ) {
-                return( sw );
-            }
+    for( int i = 0; i < icount; i++ ) {
+        MSwitch* sw = (MSwitch*)_switches[i];
+        if( sw->isTagEqual( swtag, kludge ) ) {
+            return( sw );
         }
     }
     return( NULL );
@@ -165,9 +154,24 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
     int icount = _switches.count();
     for( int i = 0; i < icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
-        if( !setable || sw->hasId() ) {
-            if( !sw->isIdEqual( lastSw ) ) {
+        if( !setable || sw->isSetable() ) {
+            /*
+             * Important notes how switch definitions are selected
+             * into the list.
+             *
+             * 1. switch definition without ID
+                    every active definition (by mask) is included
+             * 2. switch definition with ID 
+             *      only first active definition (by mask) is included
+             */
+            if(  /* first switch */ lastSw == NULL
+              || /* no ID switch */ sw->id()[0] == '\0'
+              || /* new switch */   strcmp( sw->id(), lastSw->id() ) != 0 ) {
                 if( sw->addSwitch( list, mask ) ) {
+                    /*
+                     * save first active switch definition
+                     * for switch change comparision
+                     */
                     lastSw = sw;
                 }
             }
@@ -175,8 +179,7 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
     }
 }
 
-#if IDE_CFG_VERSION_MAJOR > 4
-WString *WEXPORT MFamily::translateID( WString* id, WString& text )
+WString* WEXPORT MFamily::translateID( WString* id, WString& text )
 {
     if( _config->version() > 4 ) {
         WString *swtext = (WString *)_switchesTexts.findThis( id );
@@ -188,22 +191,23 @@ WString *WEXPORT MFamily::translateID( WString* id, WString& text )
     return( NULL );
 }
 
-WString* WEXPORT MFamily::findSwitchByText( WString& id, WString& text, int kludge )
+WString* WEXPORT MFamily::findSwitchIdByText( WString* text, int kludge )
 {
     if( kludge == 0 ) {         // check current text
-        if( text.isEqual( (WString *)_switchesTexts.findThis( &id ) ) ) {
-            return( &id );
+        WString* id = (WString *)_switchesTexts.findThis( text );
+        if( id != NULL ) {
+            return( id );
         }
     } else if( kludge == 1 ) {  // check old text
-        if( id.isEqual( (WString *)_switchesIds.findThis( &text, &id ) ) ) {
-            return( &id );
+        WString* id = (WString *)_switchesIds.findThis( text );
+        if( id != NULL ) {
+            return( id );
         }
     }
     return( NULL );
 }
-#endif
 
-WString *WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
+WString* WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
 {
     sw->id( text );
   #if IDE_CFG_VERSION_MAJOR > 4

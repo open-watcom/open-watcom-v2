@@ -100,7 +100,7 @@ void WEXPORT MTool::writeSelf( WObjectFile& p )
 }
 #endif
 
-MSwitch* WEXPORT MTool::findSwitch( WString& swtag, long fixed_version, int kludge )
+MSwitch* WEXPORT MTool::findSwitch( const char* swtag, int kludge )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -112,7 +112,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& swtag, long fixed_version, int klud
     int icount = _families.count();
     for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
-        MSwitch* sw = family->findSwitch( swtag, fixed_version, kludge );
+        MSwitch* sw = family->findSwitch( swtag, kludge );
         if( sw != NULL ) {
             return( sw );
         }
@@ -120,7 +120,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& swtag, long fixed_version, int klud
     icount = _incTools.count();
     for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
-        MSwitch* sw = tool->findSwitch( swtag, fixed_version, kludge );
+        MSwitch* sw = tool->findSwitch( swtag, kludge );
         if( sw != NULL ) {
             return( sw );
         }
@@ -128,26 +128,26 @@ MSwitch* WEXPORT MTool::findSwitch( WString& swtag, long fixed_version, int klud
     return( NULL );
 }
 
-#if IDE_CFG_VERSION_MAJOR > 4
-WString* WEXPORT MTool::findSwitchByText( WString& id, WString& text, int kludge )
+WString* WEXPORT MTool::findSwitchIdByText( WString* text, int kludge )
 {
     int icount = _families.count();
     for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
-        if( family->findSwitchByText( id, text, kludge ) != NULL ) {
-            return( &id );
+        WString* id = family->findSwitchIdByText( text, kludge );
+        if( id != NULL ) {
+            return( id );
         }
     }
     icount = _incTools.count();
     for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
-        if( tool->findSwitchByText( id, text, kludge ) != NULL ) {
-            return( &id );
+        WString* id = tool->findSwitchIdByText( text, kludge );
+        if( id != NULL ) {
+            return( id );
         }
     }
     return( NULL );
 }
-#endif
 
 bool MTool::hasSwitches( bool setable )
 {

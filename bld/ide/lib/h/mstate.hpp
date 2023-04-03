@@ -55,9 +55,6 @@ WCLASS MState : public WObject
                 bool state() { return( _state ); }
 #ifndef NOPERSIST
                 void WEXPORT readState( WObjectFile& p ) { p.readObject( &_state ); }
-    #if IDE_CFG_VERSION_MAJOR < 5
-                void WEXPORT writeState( WObjectFile& p ) { p.writeObject( _state ); }
-    #endif
 #endif
         private:
                 WString         _toolTag;
