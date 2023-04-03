@@ -572,8 +572,8 @@ static int namecmp_exp( const void *pn1, const void *pn2 )
 }
 
 
-static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *entry )
-/******************************************************************************************************/
+static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, pe_dir_entry *entry )
+/**************************************************************************************************/
 {
     unsigned_32         size;
     pe_export_directory dir;
@@ -697,8 +697,8 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
     return( size );
 }
 
-static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe_hdr_dir_entry *entry )
-/*****************************************************************************************************/
+static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe_dir_entry *entry )
+/*************************************************************************************************/
 /* dump the fixup table */
 {
     unsigned_32         numpages;
@@ -822,8 +822,8 @@ static unsigned_32 WritePEResources( pe_exe_header *pehdr, pe_object *object, un
 }
 
 static unsigned_32 WriteDebugTable( pe_object *object, const char *symfilename,
-                unsigned_32 file_align, unsigned_32 time_stamp, pe_hdr_dir_entry *entry )
-/***************************************************************************************/
+                unsigned_32 file_align, unsigned_32 time_stamp, pe_dir_entry *entry )
+/***********************************************************************************/
 {
     debug_directory     dir;
     unsigned_32         size;
@@ -894,8 +894,8 @@ static void CheckNumRelocs( void )
     LinkState &= ~LS_MAKE_RELOCS;
 }
 
-static seg_leader *SetLeaderTable( const char *name, pe_hdr_dir_entry *entry )
-/****************************************************************************/
+static seg_leader *SetLeaderTable( const char *name, pe_dir_entry *entry )
+/************************************************************************/
 {
     seg_leader *leader;
 
@@ -1511,8 +1511,8 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     _LnkFree( ordbuf );
 }
 
-void ReadPEExportTable( f_handle file, pe_hdr_dir_entry *export_dir )
-/********************************************************************
+void ReadPEExportTable( f_handle file, pe_dir_entry *export_dir )
+/****************************************************************
  * read a PE export table, and set ordinal values accordingly.
  */
 {

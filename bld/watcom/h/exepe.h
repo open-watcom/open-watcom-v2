@@ -250,7 +250,7 @@ typedef unsigned_32     pe_va;
 typedef struct {
     pe_va               rva;
     unsigned_32         size;
-} pe_hdr_dir_entry;
+} pe_dir_entry;
 
 /*
  * PE file header structure
@@ -300,7 +300,7 @@ typedef struct {
     unsigned_32         heap_commit_size;
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
-    pe_hdr_dir_entry    table[PE_TBL_NUMBER];
+    pe_dir_entry        table[PE_TBL_NUMBER];
 } pe32_opt_header;
 
 /*
@@ -337,7 +337,7 @@ typedef struct {
     unsigned_64         heap_commit_size;
     unsigned_32         tls_idx_addr;
     unsigned_32         num_tables;
-    pe_hdr_dir_entry    table[PE_TBL_NUMBER];
+    pe_dir_entry        table[PE_TBL_NUMBER];
 } pe64_opt_header;
 
 typedef struct {
