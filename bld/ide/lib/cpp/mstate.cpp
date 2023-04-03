@@ -80,13 +80,27 @@ void WEXPORT MState::readSelf( WObjectFile& p )
         _toolTag = _tool->tag();
     }
     p.readObject( &_switchTag );
+    //
+    // if necessary then update mask in _switchTag to current configuration
+    // file version
+    //
     _config->kludgeMask( _switchTag );
     //
-    // fix _switchTag for current version of configuration files
-    // it use various hacks in dependency on project files version
+    // Open Watcom IDE configuration/project files are buggy
+    // There are many switch ID's which were changed by incompatible way
+    // IDE uses various hacks to fix it later instead of proper solution
+    // It is very hard to detect what was broken in each OW version because
+    // there vere no change to version number of project files
+    //
+    // try explicit search of _switchTag for current configuration file
     //
     _switch = _tool->findSwitch( _switchTag );
     if( _switch == NULL ) {
+        //
+        // try un-exact search of _switchTag for current configuration file
+        // ignore character case
+        // try to ignore difference between space and dash
+        //
         _switch = _tool->findSwitch( _switchTag, 1 );
         if( _switch == NULL ) {
             //
@@ -96,8 +110,10 @@ void WEXPORT MState::readSelf( WObjectFile& p )
                 _switch = _tool->findSwitch( _switchTag );
             }
         }
+        //
+        // update _switchTag to current configuration file version
+        //
         if( _switch != NULL ) {
-            // upgrade swtag to current configuration files version
             _switch->getTag( _switchTag );
         }
     }

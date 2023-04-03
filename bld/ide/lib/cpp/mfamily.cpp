@@ -40,6 +40,60 @@
 #include "mfamily.hpp"
 #include "wobjfile.hpp"
 
+
+WCLASS StrMapItem : public WObject {
+    public:
+        StrMapItem( WString& id, WString& text, bool id2text );
+        virtual bool isEqual( const WObject* obj ) const;
+        bool isIdEqual( const char* id ) const
+            { return( strcmp( _id, id ) == 0 && _id2text ); }
+        bool isTextEqual( const char* text, int kludge ) const;
+
+        WString     _id;
+        WString     _text;
+        int         _textlen;
+        bool        _id2text;
+};
+
+StrMapItem::StrMapItem( WString& id, WString& text, bool id2text )
+{
+    _id = id;
+    _text = text;
+    _id2text = id2text;
+    _textlen = strlen( text );
+}
+
+bool StrMapItem::isEqual( const WObject* o ) const
+{
+    return( ((StrMapItem*)o)->_id2text == _id2text
+            && ((StrMapItem*)o)->_text.isEqual( &_text )
+            && ((StrMapItem*)o)->_id.isEqual( &_id ) );
+}
+
+bool StrMapItem::isTextEqual( const char* text, int kludge ) const
+{
+    for( int i = 0; i < _textlen; i++ ) {
+        int ct = (unsigned char)_text[i];
+        int cs = (unsigned char)*text++;
+        if( cs == '\0' )
+            return( false );
+        if( ct == cs )
+            continue;
+        if( kludge == 1 ) {
+            // ignore dash/space mismatch
+            if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
+                continue;
+            // ignore upper/lower case mismatch
+            if( toupper( cs ) == toupper( ct ) ) {
+                continue;
+            }
+        }
+        return( false );
+    }
+    return( *text == '\0' );
+}
+
+
 Define( MFamily )
 
 MFamily::MFamily( WTokenFile& fil, WString& tok )
@@ -60,23 +114,22 @@ MFamily::MFamily( WTokenFile& fil, WString& tok )
             _switches.add( new MCSwitch( fil, tok ) );
         } else if( tok == "RSwitch" ) {
             _switches.add( new MRSwitch( fil, tok, rGroup ) );
-#if IDE_CFG_VERSION_MAJOR > 4
         } else if( _config->version() > 4 && tok == "SwitchText" ) {
             WString id;
             fil.token( id );
-            fil.token( tok );
-            if( tok.size() > 0 ) {
-                _switchesTexts.setThis( new WString( tok ), new WString( id ) );
-            }
-            // define map "text -> id" for older versions of project files
-            while( !fil.eol() ) {
+            if( id.size() > 0 ) {
                 fil.token( tok );
                 if( tok.size() > 0 ) {
-                    // define new switch text for map
-                    _switchesIds.setThis( new WString( id ), new WString( tok ) );
+                    _switchesIds.add( new StrMapItem( id, tok, true ) );
+                }
+                // define map "text -> id" for older versions of project files
+                while( !fil.eol() ) {
+                    fil.token( tok );
+                    if( tok.size() > 0 ) {
+                        _switchesIds.add( new StrMapItem( id, tok, false ) );
+                    }
                 }
             }
-#endif
         } else if( tok == "rem" ) {
             fil.flushLine( tok );
         } else {
@@ -88,10 +141,7 @@ MFamily::MFamily( WTokenFile& fil, WString& tok )
 MFamily::~MFamily()
 {
     _switches.deleteContents();
-#if IDE_CFG_VERSION_MAJOR > 4
-    _switchesTexts.deleteContents();
     _switchesIds.deleteContents();
-#endif
 }
 
 #ifndef NOPERSIST
@@ -179,29 +229,26 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
     }
 }
 
-WString* WEXPORT MFamily::translateID( WString* id, WString& text )
+WString* WEXPORT MFamily::translateID( const char* id, WString& text )
 {
-    if( _config->version() > 4 ) {
-        WString *swtext = (WString *)_switchesTexts.findThis( id );
-        if( swtext != NULL ) {
-            text = *swtext;
+    int icount = _switchesIds.count();
+    for( int i = 0; i < icount; i++ ) {
+        StrMapItem* x = (StrMapItem*)_switchesIds[i];
+        if( x->isIdEqual( id ) ) {
+            text = x->_text;
             return( &text );
         }
     }
     return( NULL );
 }
 
-WString* WEXPORT MFamily::findSwitchIdByText( WString* text, int kludge )
+WString* WEXPORT MFamily::findSwitchIdByText( const char* text, int kludge )
 {
-    if( kludge == 0 ) {         // check current text
-        WString* id = (WString *)_switchesTexts.findThis( text );
-        if( id != NULL ) {
-            return( id );
-        }
-    } else if( kludge == 1 ) {  // check old text
-        WString* id = (WString *)_switchesIds.findThis( text );
-        if( id != NULL ) {
-            return( id );
+    int icount = _switchesIds.count();
+    for( int i = 0; i < icount; i++ ) {
+        StrMapItem* x = (StrMapItem*)_switchesIds[i];
+        if( x->isTextEqual( text, kludge ) ) {
+            return( &(x->_id) );
         }
     }
     return( NULL );
@@ -209,10 +256,10 @@ WString* WEXPORT MFamily::findSwitchIdByText( WString* text, int kludge )
 
 WString* WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
 {
-    sw->id( text );
+    sw->getId( text );
   #if IDE_CFG_VERSION_MAJOR > 4
-    translateID( &text, text );
+    translateID( text, text );
   #endif
-    sw->concatOptText( text );
+    sw->addOptText( text );
     return( &text );
 }

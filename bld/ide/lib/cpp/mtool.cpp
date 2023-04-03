@@ -128,7 +128,7 @@ MSwitch* WEXPORT MTool::findSwitch( const char* swtag, int kludge )
     return( NULL );
 }
 
-WString* WEXPORT MTool::findSwitchIdByText( WString* text, int kludge )
+WString* WEXPORT MTool::findSwitchIdByText( const char* text, int kludge )
 {
     int icount = _families.count();
     for( int i = 0; i < icount; i++ ) {

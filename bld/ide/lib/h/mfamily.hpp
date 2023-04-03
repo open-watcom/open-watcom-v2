@@ -54,13 +54,12 @@ WCLASS MFamily : public WObject
         MSwitch* WEXPORT findSwitch( const char* switchtag, int kludge=0 );
         void WEXPORT addSwitches( WVList& list, const char* mask, bool setable );
         WString* WEXPORT displayText( MSwitch *sw, WString& text );
-        WString* WEXPORT findSwitchIdByText( WString* text, int kludge=0 );
-        WString* WEXPORT translateID( WString* id, WString& text );
+        WString* WEXPORT findSwitchIdByText( const char* text, int kludge=0 );
+        WString* WEXPORT translateID( const char* id, WString& text );
     private:
         WString         _name;
         WPickList       _switches;      //<MSwitch>
-        WStringMap      _switchesTexts; //<WString>
-        WStringMap      _switchesIds;   //<WString>
+        WVList          _switchesIds;
 };
 
 #endif

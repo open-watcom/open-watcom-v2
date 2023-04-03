@@ -44,6 +44,7 @@ MSwitch::MSwitch( WTokenFile& fil, WString& tok )
     fil.token( _mask );
     fil.token( _id );
     fil.token( _on );
+    fixup();
 }
 
 #ifndef NOPERSIST
@@ -58,6 +59,7 @@ void WEXPORT MSwitch::readSelf( WObjectFile& p )
     p.readObject( &_mask );
     p.readObject( &_id );
     p.readObject( &_on );
+    fixup();
 }
 
 void WEXPORT MSwitch::writeSelf( WObjectFile& p )
@@ -69,7 +71,7 @@ void WEXPORT MSwitch::writeSelf( WObjectFile& p )
 }
 #endif
 
-void MSwitch::concatOptText( WString& s )
+void MSwitch::addOptText( WString& s )
 {
     if( _on.size() > 0 ) {
         s.concat( ' ' );
@@ -99,45 +101,33 @@ void MSwitch::findStates( WVList* states, WVList& found )
     }
 }
 
-void MSwitch::getTag( WString& tag )
-{
-    tag = _mask;
-    tag.concat( _id );
-}
-
 bool MSwitch::isTagEqual( const char* swtag, int kludge )
 {
-    WString tag;
-
-    tag = _mask;
-    tag.concat( _id );
-    if( strcmp( (const char*)tag, swtag ) == 0 )
-        return( true );
-    if( kludge == 1 ) {
-        size_t jcount = tag.size();
-        if( jcount == strlen( swtag ) ) {
-            for( size_t j = 0; j < jcount; j++ ) {
-                int ct = (unsigned char)tag[j];
-                int cs = (unsigned char)swtag[j];
-                if( ct == cs )
-                    continue;
-                // mask must be same
-                if( j < MASK_SIZE ) {
-                    return( false );
-                }
-                // ignore dash/space mismatch
-                if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
-                    continue;
-                // ignore upper/lower case mismatch
-                if( toupper( cs ) != toupper( ct ) ) {
-                    return( false );
-                }
-            }
-            return( true );
+    for( int i = 0; i < MASK_SIZE; i++ ) {
+        if( _mask[i] != *swtag++ ) {
+            return( false );
         }
-    } else if( kludge == 2 ) {
     }
-    return( false );
+    for( int i = 0; i < _idlen; i++ ) {
+        int ct = (unsigned char)_id[i];
+        int cs = (unsigned char)*swtag++;
+        if( cs == '\0' )
+            return( false );
+        if( ct == cs )
+            continue;
+        if( kludge == 1 ) {
+            // ignore dash/space mismatch
+            if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
+                continue;
+            // ignore upper/lower case mismatch
+            if( toupper( cs ) == toupper( ct ) ) {
+                continue;
+            }
+//        } else if( kludge == 2 ) {
+        }
+        return( false );
+    }
+    return( *swtag == '\0' );
 }
 
 MSwitch* MSwitch::addSwitch( WVList& list, const char* mask )
