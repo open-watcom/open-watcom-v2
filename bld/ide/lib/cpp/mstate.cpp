@@ -48,6 +48,9 @@ MState::MState( MTool* tool, SwMode mode, MSwitch* sw, bool state )
         , _mode( mode )
         , _state( state )
 {
+    //
+    // update _switchTag to current configuration file version
+    //
     if( _switch != NULL ) {
         sw->getTag( _switchTag );
     }
@@ -92,22 +95,37 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
-    // try explicit search of _switchTag for current configuration file
+    // explicit search of _switchTag for current configuration file
     //
     _switch = _tool->findSwitch( _switchTag );
     if( _switch == NULL ) {
-        //
-        // try un-exact search of _switchTag for current configuration file
-        // ignore character case
-        // try to ignore difference between space and dash
-        //
-        _switch = _tool->findSwitch( _switchTag, 1 );
-        if( _switch == NULL ) {
+        if( p.version() < 42 ) {
             //
-            // hack for buggy version of configuration/project files
+            // old project files use switch GUI description as switch tag
+            // this old "tag" need to be translated to new tag/ID used by
+            // new version 5 of configuration file format
             //
-            if( FixTypo( _switchTag ) != NULL ) {
-                _switch = _tool->findSwitch( _switchTag );
+            // first try explicit search of _switchTag for current configuration
+            // file
+            //
+            WString* swid;
+            WString swtext = _switchTag;
+            swtext.chop( MASK_SIZE );
+            swid = _tool->findSwitchIdByText( swtext );
+            if( swid == NULL ) {
+                //
+                // try un-exact search of _switchTag for current configuration
+                // file
+                // - ignore character case
+                // - try to ignore difference between space and dash
+                //
+                swid = _tool->findSwitchIdByText( swtext, 1 );
+            }
+            if( swid != NULL ) {
+                swtext = _switchTag;
+                swtext.truncate( MASK_SIZE );
+                swtext.concat( *swid );
+                _switch = _tool->findSwitch( swtext );
             }
         }
         //

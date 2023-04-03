@@ -51,9 +51,9 @@ WCLASS MFamily : public WObject
         void name( WString& name ) { name = _name; }
         WPickList& switches() { return( _switches ); }
         bool WEXPORT hasSwitches( bool setable );
-        MSwitch* WEXPORT findSwitch( const char* switchtag, int kludge=0 );
+        MSwitch* WEXPORT findSwitch( const char* swtag, int kludge=0 );
         void WEXPORT addSwitches( WVList& list, const char* mask, bool setable );
-        WString* WEXPORT displayText( MSwitch *sw, WString& text );
+        WString* WEXPORT displayText( MSwitch* sw, WString& text );
         WString* WEXPORT findSwitchIdByText( const char* text, int kludge=0 );
         WString* WEXPORT translateID( const char* id, WString& text );
     private:

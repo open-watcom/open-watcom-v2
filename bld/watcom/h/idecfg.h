@@ -34,17 +34,20 @@
 #define _IDECFG_H_INCLUDED
 
 /*
- * increment LATEST_SUPPORTED_VERSION macro
- * when some change in file formats is done
- */
-
-#define IDE_CFG_VERSION             4
-/*
  * 39 and 40 are written the same, but read in differently
  * 39 messed up .BEFORE / .AFTER containing CR/LF's
  * since this is the same as the separator char.
  */
-#define LATEST_SUPPORTED_VERSION    41
+
+/*
+ * current ide.cfg file format
+ */
+#define IDE_CFG_VERSION             5
+/*
+ * increment LATEST_SUPPORTED_VERSION macro
+ * when some change in file formats is done
+ */
+#define LATEST_SUPPORTED_VERSION    42
 #define OLDEST_SUPPORTED_VERSION    23
 /*
  * target mask size

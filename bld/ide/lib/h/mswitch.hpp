@@ -50,15 +50,15 @@ WCLASS MSwitch : public WObject
 {
     Declare( MSwitch )
     public:
-        MSwitch ( const char* id=NULL ) { _id = id; fixup(); }
+        MSwitch( const char* id=NULL ) { _id = id; fixup(); }
         MSwitch( WTokenFile& fil, WString& tok );
         ~MSwitch() {}
-        int panel() { return( _panel ); }
-        const char* id() { return( _id ); }
+        int panel() const { return( _panel ); }
+        const char* id() const { return( _id ); }
         void getId( WString& id ) { id = _id; }
         void getTag( WString& tag ) { tag = _mask; tag.concat( _id ); }
-        bool isSetable() { return( _panel >= 0 ); }
-        bool isTagEqual( const char* tag, int kludge=0 );
+        bool isSetable() const { return( _panel >= 0 ); }
+        bool isTagEqual( const char* tag, int kludge=0 ) const;
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void addOptText( WString& s );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
@@ -73,7 +73,7 @@ WCLASS MSwitch : public WObject
 #endif
     protected:
         void findStates( WVList* states, WVList& found );
-        void fixup() { _idlen = _id.size(); if( _idlen == 0 || _id[0] == ' ' ) _panel = -1; }
+        void fixup() { _idlen = _id.size(); }
     private:
         int             _panel;
         WString         _mask;

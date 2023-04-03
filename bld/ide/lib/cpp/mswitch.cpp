@@ -90,7 +90,7 @@ void MSwitch::addOptText( WString& s )
 
 void MSwitch::findStates( WVList* states, WVList& found )
 {
-    if( states ) {
+    if( states != NULL ) {
         int icount = states->count();
         for( int i=0; i<icount; i++ ) {
             MState* st = (MState*)(*states)[i];
@@ -101,7 +101,7 @@ void MSwitch::findStates( WVList* states, WVList& found )
     }
 }
 
-bool MSwitch::isTagEqual( const char* swtag, int kludge )
+bool MSwitch::isTagEqual( const char* swtag, int kludge ) const
 {
     for( int i = 0; i < MASK_SIZE; i++ ) {
         if( _mask[i] != *swtag++ ) {

@@ -114,7 +114,7 @@ MFamily::MFamily( WTokenFile& fil, WString& tok )
             _switches.add( new MCSwitch( fil, tok ) );
         } else if( tok == "RSwitch" ) {
             _switches.add( new MRSwitch( fil, tok, rGroup ) );
-        } else if( _config->version() > 4 && tok == "SwitchText" ) {
+        } else if( tok == "SwitchText" ) {
             WString id;
             fil.token( id );
             if( id.size() > 0 ) {
@@ -211,7 +211,7 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
              *
              * 1. switch definition without ID
                     every active definition (by mask) is included
-             * 2. switch definition with ID 
+             * 2. switch definition with ID
              *      only first active definition (by mask) is included
              */
             if(  /* first switch */ lastSw == NULL
@@ -257,9 +257,7 @@ WString* WEXPORT MFamily::findSwitchIdByText( const char* text, int kludge )
 WString* WEXPORT MFamily::displayText( MSwitch *sw, WString& text )
 {
     sw->getId( text );
-  #if IDE_CFG_VERSION_MAJOR > 4
     translateID( text, text );
-  #endif
     sw->addOptText( text );
     return( &text );
 }
