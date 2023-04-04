@@ -307,10 +307,10 @@ rem binw\wd is used because wdw doesn't load trap files
     VSwitch 1, ?????, WDEBUG_dy, -dy, =, ONE, REQ, ""
     VSwitch 1, ?????, WDEBUG_ch, -ch, =, ONE, REQ, ""
     SwitchText WDEBUG_nosy, "Don't process symbolic info"
-    SwitchText WDEBUG_nof, "Ignore any floating point hardware"
+    SwitchText WDEBUG_nof, "Ignore any floating point hardware", "Ignore any floating point hdwr"
     SwitchText WDEBUG_nom, "Ignore any attached mouse"
     SwitchText WDEBUG_nog, "Don't use graphical mouse"
-    SwitchText WDEBUG_noch, "Don't do character remapping"
+    SwitchText WDEBUG_noch, "Don't do character remapping", "Don't do char remapping"
     SwitchText WDEBUG_di, "Dip files:"
     SwitchText WDEBUG_dy, "Dynamic memory:"
     SwitchText WDEBUG_ch, "Free guarantee:"
@@ -318,8 +318,8 @@ rem binw\wd is used because wdw doesn't load trap files
   Family "Debugger Display"
     VSwitch 0, ?????, WDEBUG_li, -li, =, ONE, REQ, ""
     VSwitch 0, ?????, WDEBUG_co, -co, =, ONE, REQ, ""
-    SwitchText WDEBUG_li, "Lines of character mode screen:"
-    SwitchText WDEBUG_co, "Columns of character mode screen:"
+    SwitchText WDEBUG_li, "Lines of character mode screen:", "Lines of char mode screen:"
+    SwitchText WDEBUG_co, "Columns of character mode screen:", "Columns of char mode screen:"
     RGroup "Character mode screen"
       RSwitch 0, ?????, WDEBUG_def_adapter, , ON
       RSwitch 0, ?????, WDEBUG_m, -m, OFF
@@ -428,11 +428,11 @@ Tool RDEBUG "Remote Debugging"
     SwitchText RDEBUG_symf, "Use symbol file"
     SwitchText RDEBUG_nosy, "Don't process symbolic info"
     SwitchText RDEBUG_nof, "Ignore any floating point hardware"
-    SwitchText RDEBUG_noch, "Don't do character remapping"
+    SwitchText RDEBUG_noch, "Don't do character remapping", "Don't do char remapping"
     SwitchText RDEBUG_di, "Dip files:"
     SwitchText RDEBUG_dy, "Dynamic memory:"
-    SwitchText RDEBUG_li, "Lines of character mode screen:"
-    SwitchText RDEBUG_co, "Columns of character mode screen:"
+    SwitchText RDEBUG_li, "Lines of character mode screen:", "Lines of char mode screen:"
+    SwitchText RDEBUG_co, "Columns of character mode screen:", "Columns of char mode screen:"
     RGroup "Character mode screen"
       RSwitch 1, ?????, RDEBUG_def_adapter, , ON
       RSwitch 1, ?????, RDEBUG_m, -m, OFF
@@ -707,7 +707,7 @@ Tool WCG "Code Generator"
     SwitchText WCG_nd, "Name of data segment:"
     SwitchText WCG_nt, "Name of text segment:"
     SwitchText WCG_nm, "Name of module:"
-    SwitchText WCG_zl, "Don't generate default library information"
+    SwitchText WCG_zl, "Don't generate default library information", "Don't gen default library info"
     SwitchText WCG_zld, "No file dependency information"
     SwitchText WCG_ez, "Generate Easy OMF object files"
     SwitchText WCG_r, "Save/restore segment registers"
@@ -723,7 +723,7 @@ Tool WCG "Code Generator"
     CSwitch 1, ?????, WCG_zm, -zm, OFF
     CSwitch 1, ?????, WCG_zc, -zc, OFF
     CSwitch 1, ??2??, WCG_zdl, -zdl, OFF
-    SwitchText WCG_zm, "Put functions in separate segments"
+    SwitchText WCG_zm, "Put functions in separate segments", "Put functions in separate segs"
     SwitchText WCG_zc, "Constants in code segment"
     SwitchText WCG_zdl, "Load DS from DGROUP"
 :endsegment
@@ -787,7 +787,7 @@ Tool WCG "Code Generator"
     CSwitch -1, ?????, "", -fo=.obj, ON
 :segment C_FOR_PB
     CSwitch 1, n?2d?, WCG_mf32, -mf, ON
-    SwitchText WCG_mf32, "32-bit flat model"
+    SwitchText WCG_mf32, "32-bit flat model", "32bit Flat model"
 :elsesegment
     RGroup "Memory model"
       RSwitch 1, ??A??, WCG_def7, , ON
@@ -817,9 +817,9 @@ Tool WCG "Code Generator"
       SwitchText WCG_mc16, "Compact model"
       SwitchText WCG_ml16, "Large model"
       SwitchText WCG_mh16, "Huge model"
-      SwitchText WCG_ms32, "32-bit small model"
+      SwitchText WCG_ms32, "32-bit small model", "32bit Small model"
       SwitchText WCG_mc32, "32-bit compact model"
-      SwitchText WCG_mf32, "32-bit flat model"
+      SwitchText WCG_mf32, "32-bit flat model", "32bit Flat model"
 :endsegment
     CSwitch 1, wp6d?, "", -ml, ON
 
@@ -936,7 +936,7 @@ Tool WLANG "Languages"
       RSwitch 1, ?????, WLANG_zp4, -zp4, OFF
       RSwitch 1, ?????, WLANG_zp8, -zp8, OFF
       RSwitch 1, ?????, WLANG_zp16, -zp16, OFF
-      SwitchText WLANG_zp_def, "Compiler default"
+      SwitchText WLANG_zp_def, "Compiler default", "Default byte alignment"
       SwitchText WLANG_zp1, "1-byte alignment"
       SwitchText WLANG_zp2, "2-byte alignment"
       SwitchText WLANG_zp4, "4-byte alignment"
@@ -1065,7 +1065,7 @@ Tool WFOR "Fortran Compiler"
     C2Switch 0, ?????, WFOR_note, "", -note, ON
     SwitchText WFOR_exp, "Require symbol declaration"
     SwitchText WFOR_ex, "Warn when extensions used"
-    SwitchText WFOR_nor, "Warn about unreferenced symbols"
+    SwitchText WFOR_nor, "Warn about unreferenced symbols", "Warn about unref'ed symbols"
     SwitchText WFOR_wil, "Ignore wild branches"
     SwitchText WFOR_nowa, "Enable warning messages"
     SwitchText WFOR_note, "Print diagnostics to the screen"
@@ -1077,8 +1077,8 @@ Tool WFOR "Fortran Compiler"
     CSwitch 0, ?????, WFOR_res, -res, OFF
     SwitchText WFOR_st, "Perform stack checking"
     SwitchText WFOR_for, "Perform format type checking"
-    SwitchText WFOR_tr, "Generate runtime trace backs"
-    SwitchText WFOR_bo, "Add runtime bounds checks"
+    SwitchText WFOR_tr, "Generate runtime trace backs", "Generate run-time trace backs"
+    SwitchText WFOR_bo, "Add runtime bounds checks", "Add run-time bounds checks"
     SwitchText WFOR_res, "Store messages as resources"
   Family "Debugging"
     RGroup "Debugging style"
@@ -1351,7 +1351,7 @@ Tool WASM "Assembler"
     SwitchText WASM_nt, "Name of text segment:"
     SwitchText WASM_nm, "Name of module:"
     SwitchText WASM_zcm, "Mangle C names like MASM"
-    SwitchText WASM_o, "Allow C-style octal constants"
+    SwitchText WASM_o, "Allow C-style octal constants", "Allow C-style octal consants"
     RGroup "Floating-point level"
       RSwitch 1, ?????, WASM_def1, , ON
       RSwitch 1, ?????, WASM_fp0, -fp0, OFF
@@ -1589,8 +1589,8 @@ rem    CSwitch  -1, x??d?, *WLINK_dll, , ON
       RSwitch 0, ?????, WLINK_def1, , ON
       RSwitch 0, ?????, WLINK_op_c, "op c", OFF
       RSwitch 0, ?????, WLINK_op_nocase, "op nocase", OFF
-      SwitchText WLINK_def1, "Default"
-      SwitchText WLINK_op_c, "Case sensitive:", "Yes:"
+      SwitchText WLINK_def1, "Default", "Linker default"
+      SwitchText WLINK_op_c, "Case sensitive:", "Yes:", "Case sensitive link"
       SwitchText WLINK_op_nocase, "No case sensitive:", "No:"
     VSwitch  0, ?????, WLINK_op_maxe, "op maxe", =, ONE, REQ, 25
     CSwitch  0, w?6??, WLINK_op_rwr, "op rwr", OFF
@@ -1800,7 +1800,7 @@ Tool WRC "Resource Compiler"
     CSwitch 1, ?????, WRC_ad, -ad, ON
     SwitchText WRC_d, "Macro definitions:"
     SwitchText WRC_i, "Include directories:"
-    SwitchText WRC_x, "Ignore INCLUDE environment variable"
+    SwitchText WRC_x, "Ignore INCLUDE environment variable", "Ignore INCLUDE env variable"
     SwitchText WRC_zm, "Microsoft format .res file"
     SwitchText WRC_zn, "Do not preprocess the file", "Do not proprocess the file"
     SwitchText WRC_q, "Quiet operation"
@@ -1820,7 +1820,7 @@ Tool WRC2 "Resource Compiler (pass 2)"
     SwitchText WRC2_q, "Quiet operation"
     SwitchText WRC2_ad, "Output autodepend info"
     SwitchText WRC2_30, "Requires Windows 3.0 or later"
-    SwitchText WRC2_e, "Uses global memory above EMS"
+    SwitchText WRC2_e, "Uses global memory above EMS", "Uses global mem above EMS"
     SwitchText WRC2_l, "Uses LIM 3.2 EMS directly"
     SwitchText WRC2_m, "EMS bank for each instance"
     SwitchText WRC2_p, "Private DLL"
@@ -1851,16 +1851,25 @@ Tool ORC2 "OS/2 Resource Compiler (pass 2)"
 Tool ESQL "Embedded SQL compiler"
   Family Processor
     CSwitch -1, ?????, "", "sqlpp $@ $*.cxx", ON
-    CSwitch 0, ?????, "Preprocessor quiet", -q, ON
+    CSwitch 0, ?????, ESQL_q, -q, ON
+    SwitchText ESQL_q, "Preprocessor quiet"
     RGroup Optimizations
-      RSwitch 0, ?????, "No optimizations", , ON
-      RSwitch 0, ?????, "Favour code size", -c, OFF
-      RSwitch 0, ?????, "Favour data size", -d, OFF
-    CSwitch 0, ?????, "Generated static data is FAR", -f, OFF
-    CSwitch 0, ?????, "Use long ints", -il, OFF
-    CSwitch 0, ?????, "Generate line numbers", -n, OFF
-    VSwitch 0, ?????, "Maximum string constant length:", -s, " ", ONE, REQ, ""
-    VSwitch 0, ?????, "Login(id,pswd):", -l, " ", ONE, REQ, ""
+      RSwitch 0, ?????, ESQL_no_optim, , ON
+      RSwitch 0, ?????, ESQL_c, -c, OFF
+      RSwitch 0, ?????, ESQL_d, -d, OFF
+      SwitchText ESQL_no_optim, "No optimizations"
+      SwitchText ESQL_c, "Favour code size"
+      SwitchText ESQL_d, "Favour data size"
+    CSwitch 0, ?????, ESQL_f, -f, OFF
+    CSwitch 0, ?????, ESQL_il, -il, OFF
+    CSwitch 0, ?????, ESQL_n, -n, OFF
+    VSwitch 0, ?????, ESQL_s, -s, " ", ONE, REQ, ""
+    VSwitch 0, ?????, ESQL_l, -l, " ", ONE, REQ, ""
+    SwitchText ESQL_f, "Generated static data is FAR"
+    SwitchText ESQL_il, "Use long ints"
+    SwitchText ESQL_n, "Generate line numbers"
+    SwitchText ESQL_s, "Maximum string constant length:"
+    SwitchText ESQL_l, "Login(id,pswd):"
     CSwitch -1, d?6??, "", "-o DOS", ON
     CSwitch -1, d?2??, "", "-o DOS32", ON
     CSwitch -1, w?6??, "", "-o WINDOWS", ON
@@ -1923,7 +1932,7 @@ rem These must be in the user's path
       RSwitch 0, ?????, WINHC_hcw, hcw , OFF
       RSwitch 0, ?????, WINHC_hc31, hc31 , ON
       RSwitch 0, ?????, WINHC_hc30, hc30 , OFF
-      SwitchText WINHC_hhw, "HTML Help"
+      SwitchText WINHC_hhw, "HTML Help", "HTMLHelp"
       SwitchText WINHC_hcw, "Version 4.0"
       SwitchText WINHC_hc31, "Version 3.1"
       SwitchText WINHC_hc30, "Version 3.0"
@@ -1936,7 +1945,7 @@ Tool OIPF "OS/2 Help Compiler"
     VSwitch 0, ?????, OIPF_cp, /CODEPAGE, =, ONE, REQ, ""
     VSwitch 0, ?????, OIPF_l, /L, =, ONE, REQ, ""
     SwitchText OIPF_cc, "Country Code:"
-    SwitchText OIPF_cp, "Code page:"
+    SwitchText OIPF_cp, "Code page:", "CodePage:"
     SwitchText OIPF_l, "Language:"
     RGroup "Warning level"
       RSwitch 0, ?????, OIPF_w1, /W1, OFF
