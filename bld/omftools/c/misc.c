@@ -290,8 +290,7 @@ unsigned_16 GetUInt( void )
 {
     unsigned_16 word;
 
-    word = *(unsigned_16 *)ReadRecPtr;
-    CONV_LE_16( word );
+    word = MGET_LE_16( ReadRecPtr );
     ReadRecPtr += sizeof( unsigned_16 );
     return( word );
 }
@@ -302,15 +301,13 @@ unsigned_32 GetOffset( bool wide )
     if( wide ) {
         unsigned_32 dword;
 
-        dword = *(unsigned_32 *)ReadRecPtr;
-        CONV_LE_32( dword );
+        dword = MGET_LE_32( ReadRecPtr );
         ReadRecPtr += sizeof( unsigned_32 );
         return( dword );
     } else {
         unsigned_16 word;
 
-        word = *(unsigned_16 *)ReadRecPtr;
-        CONV_LE_16( word );
+        word = MGET_LE_16( ReadRecPtr );
         ReadRecPtr += sizeof( unsigned_16 );
         return( word );
     }

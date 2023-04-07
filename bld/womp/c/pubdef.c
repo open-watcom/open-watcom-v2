@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,13 +108,13 @@ STATIC void doAnAddr( addr_info *addr, symb_handle symb ) {
         return;     /* can't handle any of these */
     case FIX_OFFSET:
     case FIX_POINTER:
-        offset += (int_32)ReadS16( addr->data );
+        offset += (int_32)(int_16)MGET_LE_16( addr->data );
         break;
     case FIX_BASE:
         break;
     case FIX_OFFSET386:
     case FIX_POINTER386:
-        offset += ReadS32( addr->data );
+        offset += (int_32)MGET_LE_32( addr->data );
         break;
     default:
 /**/    never_reach();
@@ -194,10 +194,10 @@ void TypePubdefs( void ) {
                 code_offset = 0UL;
                 break;
             case FIX_POINTER:
-                code_offset = (uint_32)ReadU16( seg->data );
+                code_offset = (uint_32)MGET_LE_16( seg->data );
                 break;
             case FIX_POINTER386:
-                code_offset = ReadU32( seg->data );
+                code_offset = MGET_LE_32( seg->data );
                 break;
             default:
 /**/            never_reach();
@@ -209,7 +209,7 @@ void TypePubdefs( void ) {
             if( block_level == 1 && seg != CANA_NULL ) {
                      /* procedure entry */
                 *myfix = *seg->fixup;
-                WriteU32( tmp.data, code_offset + cur->d.block.start_offset );
+                MPUT_LE_32( tmp.data, code_offset + cur->d.block.start_offset );
 /**/            myassert( tmp.fixup == myfix );
                 doAnAddr( &tmp, cur );
             }

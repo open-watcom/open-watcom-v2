@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -292,8 +292,7 @@ unsigned_16 GetUInt( void )
 {
     unsigned_16 word;
 
-    word = *(unsigned_16 *)RecPtr;
-    CONV_LE_16( word );
+    word = MGET_LE_16( RecPtr );
     RecPtr += 2;
     return( word );
 }
@@ -303,8 +302,7 @@ unsigned_32 GetLInt( void )
 {
     unsigned_32 dword;
 
-    dword = *(unsigned_32 *)RecPtr;
-    CONV_LE_32( dword );
+    dword = MGET_LE_32( RecPtr );
     RecPtr += 4;
     return( dword );
 }

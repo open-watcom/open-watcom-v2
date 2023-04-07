@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,9 +96,9 @@ static unsigned GblNameHash( const char *name, size_t name_len )
     unsigned    rtrn;
 
     rtrn = name_len;
-    rtrn += toupper( GETU8( name ) );
-    rtrn += toupper( GETU8( name + name_len / 2 ) );
-    rtrn += toupper( GETU8( name + name_len - 1 ) );
+    rtrn += toupper( MGET_U8( name ) );
+    rtrn += toupper( MGET_U8( name + name_len / 2 ) );
+    rtrn += toupper( MGET_U8( name + name_len - 1 ) );
     return( rtrn & (SYM_TAB_SIZE - 1) );
 }
 
@@ -535,7 +535,8 @@ unsigned SymHdl2GblName( imp_image_handle *iih, imp_sym_handle *ish, char *buff,
     /* unused parameters */ (void)iih;
 
     gbl = (const char *)ish->u.gbl + ish->name_off;
-    len = GETU8( gbl++ );
+    len = MGET_U8( gbl );
+    gbl++;
     __unmangled_name( gbl, len, &gbl, &len );
     if( buff_size > 0 ) {
         --buff_size;
@@ -555,7 +556,8 @@ unsigned SymHdl2ObjGblName( imp_image_handle *iih, imp_sym_handle *ish, char *bu
     /* unused parameters */ (void)iih;
 
     gbl = (const char *)ish->u.gbl + ish->name_off;
-    len = GETU8( gbl++ );
+    len = MGET_U8( gbl );
+    gbl++;
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > len )

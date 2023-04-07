@@ -90,13 +90,13 @@ static uint_8 *putIndex( uint_8 *p, uint_16 index )
 
 static uint_8 *put16( uint_8 *p, uint_16 word )
 {
-    WriteU16( p, word );
+    MPUT_LE_16( p, word );
     return( p + 2 );
 }
 
 static uint_8 *put32( uint_8 *p, uint_32 dword )
 {
-    WriteU32( p, dword );
+    MPUT_LE_32( p, dword );
     return( p + 4 );
 }
 

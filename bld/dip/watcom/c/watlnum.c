@@ -80,7 +80,7 @@ static bool CueFind( const char *base, line_number cue, cue_state *ret )
 
     if( base == NULL )
         return( 0 );
-    hi = GETU16( base );
+    hi = MGET_U16( base );
     base =  base + 2;
     ok = false;
     lo = 0;
@@ -155,10 +155,10 @@ static size_t SpecCueFile( imp_image_handle *iih, imp_cue_handle *icueh,
     len = 0;
     start = FindSpecCueTable( iih, icueh->imh, &base );
     if( start != NULL ) {
-        size  = GETU16( start );
+        size  = MGET_U16( start );
         start += 2;
         start += size * sizeof( cue_state );
-        size  = GETU16( start );
+        size  = MGET_U16( start );
         start += 2;
         index = (const unsigned_16 *)start;
         name = start + size * sizeof( unsigned_16 );

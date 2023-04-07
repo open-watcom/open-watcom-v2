@@ -159,14 +159,14 @@ static unsigned_32 GetLeaf( void )
     if( leaf <= COMDEF_LEAF_SIZE ) {
         value = leaf;
     } else if( leaf == COMDEF_LEAF_2 ) {
-        value = GET_U16_UN( ObjBuff );
+        value = MGET_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
     } else if( leaf == COMDEF_LEAF_3 ) {
-        value = GET_U16_UN( ObjBuff );
+        value = MGET_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
         value += ( (unsigned_32)*ObjBuff++ ) << 16;
     } else if( leaf == COMDEF_LEAF_4 ) {
-        value = GET_U32_UN( ObjBuff );
+        value = MGET_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     }
     return( value );
@@ -350,13 +350,13 @@ static offset CountIDBlock( unsigned_8 **buffptr )
 
     buff = *buffptr;
     if( ObjFormat & FMT_MS_386 ) {
-        _TargU32toHost( _GetU32( buff ), repeat );
+        _TargU32toHost( MGET_U32( buff ), repeat );
         buff += sizeof( unsigned_32 );
     } else {
-        _TargU16toHost( _GetU16( buff ), repeat );
+        _TargU16toHost( MGET_U16( buff ), repeat );
         buff += sizeof( unsigned_16 );
     }
-    _TargU16toHost( _GetU16( buff ), count );
+    _TargU16toHost( MGET_U16( buff ), count );
     buff += sizeof( unsigned_16 );
     if( count == 0 ) {  // this is followed by actual data
         repeat *= *buff;
@@ -437,10 +437,10 @@ void ProcComdat( void )
         align = OMFAlignTab[align];
     }
     if( ObjFormat & FMT_32BIT_REC ) {
-        _TargU32toHost( _GetU32UN( ObjBuff ), dataoff );
+        _TargU32toHost( MGET_U32_UN( ObjBuff ), dataoff );
         ObjBuff += sizeof( unsigned_32 );
     } else {
-        _TargU16toHost( _GetU16UN( ObjBuff ), dataoff );
+        _TargU16toHost( MGET_U16_UN( ObjBuff ), dataoff );
         ObjBuff += sizeof( unsigned_16 );
     }
     SkipIdx();  /* not interested in the type index */

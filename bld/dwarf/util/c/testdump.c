@@ -251,11 +251,7 @@ static char *sectionNames[] = {
 static uint_32  getU32( uint_32 *src )
 {
     if( byte_swap ) {
-#ifdef __BIG_ENDIAN__
-        return( GET_LE_32( *src ) );
-#else
-        return( GET_BE_32( *src ) );
-#endif
+        return( SWAP_32( *src ) );
     } else {
         return( *src );
     }
@@ -264,11 +260,7 @@ static uint_32  getU32( uint_32 *src )
 static uint_16  getU16( uint_16 *src )
 {
     if( byte_swap ) {
-#ifdef __BIG_ENDIAN__
-        return( GET_LE_16( *src ) );
-#else
-        return( GET_BE_16( *src ) );
-#endif
+        return( SWAP_16( *src ) );
     } else {
         return( *src );
     }

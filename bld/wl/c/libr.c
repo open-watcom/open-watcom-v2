@@ -89,7 +89,7 @@ static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
     unsigned        reclength;
 
     header += sizeof( unsigned_8 );
-    reclength = _ReadLittleEndian16UN( header ) + 3;
+    reclength = MGET_LE_16_UN( header ) + 3;
     if( makedict ) {
         if( list->u.dict == NULL ) {
             _ChkAlloc( list->u.dict, sizeof( dict_entry ) );
@@ -97,9 +97,9 @@ static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
         omf_dict = &list->u.dict->o;
         omf_dict->cache = NULL;
         header += sizeof( unsigned_16 );
-        omf_dict->start = _ReadLittleEndian32UN( header );
+        omf_dict->start = MGET_LE_32_UN( header );
         header += sizeof( unsigned_32 );
-        omf_dict->pages = _ReadLittleEndian16UN( header );
+        omf_dict->pages = MGET_LE_16_UN( header );
         header += sizeof( unsigned_16 );
         if( omf_dict->start == 0 || omf_dict->pages == 0 || ( omf_dict->start + omf_dict->pages * DIC_REC_SIZE ) > list->infile->len ) {
             BadLibrary( list );
@@ -234,11 +234,11 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
     dict = &list->u.dict->a;
     data = CachePermRead( list, *loc, size );
     if( numdicts == 1 ) {
-        num = _ReadBigEndian32UN( data ); /* number of symbols */
+        num = MGET_BE_32_UN( data ); /* number of symbols */
         data += sizeof( unsigned_32 );
         dict->filepostab = (unsigned_32 *)data;
         for( index = 0; index < num; index++ ) {
-            dict->filepostab[index] = _ReadBigEndian32UN( data );
+            dict->filepostab[index] = MGET_BE_32_UN( data );
             data += sizeof( unsigned_32 );
         }
         dict->num_entries = num;
@@ -248,18 +248,18 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
             _ChkAlloc( dict->symbtab, sizeof( char * ) * num );
         }
     } else /* if( numdicts == 2 ) */ {
-        num = _ReadLittleEndian32UN( data );    /* number of files */
+        num = MGET_LE_32_UN( data );    /* number of files */
         data += sizeof( unsigned_32 );
         dict->filepostab = (unsigned_32 *)data; /* first file off */
         for( index = 0; index < num; index++ ) {
-            dict->filepostab[index] = _ReadLittleEndian32UN( data );
+            dict->filepostab[index] = MGET_LE_32_UN( data );
             data += sizeof( unsigned_32 );
         }
-        num = _ReadLittleEndian32UN( data );    /* number of symbols */
+        num = MGET_LE_32_UN( data );    /* number of symbols */
         data += sizeof( unsigned_32 );
         dict->offsettab = (unsigned_16 *)data;  /* first offset */
         for( index = 0; index < num; index++ ) {
-            dict->offsettab[index] = _ReadLittleEndian16UN( data );
+            dict->offsettab[index] = MGET_LE_16_UN( data );
             data += sizeof( unsigned_16 );
         }
         dict->num_entries = num;
@@ -463,7 +463,7 @@ static unsigned OMFCompName( const char *name, const char *buff, unsigned index 
         result = strnicmp( buff, name, len );
     }
     if( result == 0 && name[len] == '\0' ) {
-        returnval = _ReadLittleEndian16UN( buff + len );
+        returnval = MGET_LE_16_UN( buff + len );
     }
     return( returnval );
 }
