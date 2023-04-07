@@ -597,7 +597,7 @@ static bool checkEnum( int *value )
         if( sym_handle == NULL ) {
             ep = EnumLookup( hash, Buffer );
             if( ep != NULL ) {
-                *value = ep->value;
+                *value = ep->value.u._64[0];
                 return( true );
             }
         }
