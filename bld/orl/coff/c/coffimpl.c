@@ -588,6 +588,7 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
     /*
      * other symbols
      */
+    symb_toc = 0;
     if( import->processor == COFF_IMAGE_FILE_MACHINE_POWERPC ) {
         symb_toc = AddCoffSymbol( &c_file, 0, ".toc", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }

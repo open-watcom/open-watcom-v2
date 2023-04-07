@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,71 +68,71 @@ struct enum_range           // describe range for enum
 
 static struct enum_range const range_table[] =
 #if _CPU == 386 || _CPU == _AXP
-{   {   I64Val( 0xFFFFFFFF, 0xFFFFFF80 )
-      , I64Val( 0x00000000, 0x0000007F )
+{   {   Init64Val( 0xFFFFFFFF, 0xFFFFFF80 )
+      , Init64Val( 0x00000000, 0x0000007F )
       , TYP_SCHAR
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0x00000000, 0x000000FF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0x000000FF )
       , TYP_UCHAR
     }
-,   {   I64Val( 0xFFFFFFFF, 0xFFFF8000 )
-      , I64Val( 0x00000000, 0x00007FFF )
+,   {   Init64Val( 0xFFFFFFFF, 0xFFFF8000 )
+      , Init64Val( 0x00000000, 0x00007FFF )
       , TYP_SSHORT
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0x00000000, 0x0000FFFF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0x0000FFFF )
       , TYP_USHORT
     }
-,   {   I64Val( 0xFFFFFFFF, 0x80000000 )
-      , I64Val( 0x00000000, 0x7FFFFFFF )
+,   {   Init64Val( 0xFFFFFFFF, 0x80000000 )
+      , Init64Val( 0x00000000, 0x7FFFFFFF )
       , TYP_SINT
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0x00000000, 0xFFFFFFFF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0xFFFFFFFF )
       , TYP_UINT
     }
-,   {   I64Val( 0x80000000, 0x00000000 )
-      , I64Val( 0x7FFFFFFF, 0xFFFFFFFF )
+,   {   Init64Val( 0x80000000, 0x00000000 )
+      , Init64Val( 0x7FFFFFFF, 0xFFFFFFFF )
       , TYP_SLONG64
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0xFFFFFFFF, 0xFFFFFFFF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0xFFFFFFFF, 0xFFFFFFFF )
       , TYP_ULONG64
     }
 };
     #define RANGE_INDEX_SINT 4
 #elif _CPU == 8086
-{   {   I64Val( 0xFFFFFFFF, 0xFFFFFF80 )
-      , I64Val( 0x00000000, 0x0000007F )
+{   {   Init64Val( 0xFFFFFFFF, 0xFFFFFF80 )
+      , Init64Val( 0x00000000, 0x0000007F )
       , TYP_SCHAR
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0x00000000, 0x000000FF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0x000000FF )
       , TYP_UCHAR
     }
-,   {   I64Val( 0xFFFFFFFF, 0xFFFF8000 )
-      , I64Val( 0x00000000, 0x00007FFF )
+,   {   Init64Val( 0xFFFFFFFF, 0xFFFF8000 )
+      , Init64Val( 0x00000000, 0x00007FFF )
       , TYP_SINT
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0x00000000, 0x0000FFFF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0x0000FFFF )
       , TYP_UINT
     }
-,   {   I64Val( 0xFFFFFFFF, 0x80000000 )
-      , I64Val( 0x00000000, 0x7FFFFFFF )
+,   {   Init64Val( 0xFFFFFFFF, 0x80000000 )
+      , Init64Val( 0x00000000, 0x7FFFFFFF )
       , TYP_SLONG
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0x00000000, 0xFFFFFFFF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0xFFFFFFFF )
       , TYP_ULONG
     }
-,   {   I64Val( 0x80000000, 0x00000000 )
-      , I64Val( 0x7FFFFFFF, 0xFFFFFFFF )
+,   {   Init64Val( 0x80000000, 0x00000000 )
+      , Init64Val( 0x7FFFFFFF, 0xFFFFFFFF )
       , TYP_SLONG64
     }
-,   {   I64Val( 0x00000000, 0x00000000 )
-      , I64Val( 0xFFFFFFFF, 0xFFFFFFFF )
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0xFFFFFFFF, 0xFFFFFFFF )
       , TYP_ULONG64
     }
 };
