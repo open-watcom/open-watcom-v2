@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,19 +29,21 @@
 *
 ****************************************************************************/
 
+
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <time.h>
+#include <errno.h>
 #ifndef __UNIX__
-#include <share.h>
+    #include <share.h>
 #endif
 #include "watcom.h"
 #include "builder.h"
 #include "memutils.h"
 #ifdef TRMEM
-#include "trmem.h"
+    #include "trmem.h"
 #endif
 
 #include "clibext.h"

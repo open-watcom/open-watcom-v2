@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +42,15 @@ typedef struct _IntlData {
     char                *usage_text;
 } IntlData;
 
-extern _crtn IntlData *LoadInternationalData(
-    const char *file_prefix )
-;
-extern _crtn void FreeInternationalData(
-    IntlData *handle )
-;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern IntlData     *LoadInternationalData( const char *file_prefix );
+extern void         FreeInternationalData( IntlData *handle );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

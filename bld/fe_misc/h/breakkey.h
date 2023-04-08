@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,18 @@
 
 #include "watcom.h"
 
-extern _crtn void WBreakInit( void );
-extern _crtn void WBreakFini( void );
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern _crtn void WBreakSet( void );
-extern _crtn int WBreakGet( void );
+extern void     WBreakInit( void );
+extern void     WBreakFini( void );
+
+extern void     WBreakSet( void );
+extern int      WBreakGet( void );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

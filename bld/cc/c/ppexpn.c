@@ -32,6 +32,7 @@
 
 #include "cvars.h"
 #include <limits.h>
+#include <errno.h>
 #include "i64.h"
 #include "cmacadd.h"
 #include "ppexpn.h"

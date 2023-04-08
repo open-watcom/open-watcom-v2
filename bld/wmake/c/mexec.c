@@ -32,6 +32,7 @@
 
 #include <ctype.h>
 #include <time.h>
+#include <errno.h>
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <utime.h>
     #include <fnmatch.h>

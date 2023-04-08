@@ -47,8 +47,6 @@
 #define _WCUNALIGNED
 #endif
 
-#include <errno.h>
-
 /* Macros for low/high end access on little and big endian machines */
 
 #if defined( __BIG_ENDIAN__ )
@@ -226,17 +224,6 @@
 #else
     #define SCONV_LE_64(w)
     #define SCONV_BE_64(w)  (w).u._64[0] = SWAPNC_64((w).u._64[0])
-#endif
-
-/* Define _crtn for prototypes for external C routines called from C++.
- * Eg. extern _crtn void Foo();
- */
-#if !defined( _crtn )
-    #if defined( __cplusplus )
-        #define _crtn   "C"
-    #else
-        #define _crtn
-    #endif
 #endif
 
 #if !defined(__sun__) && !defined(sun) && !defined(__sgi) && !defined(__hppa) && !defined(_AIX) && !defined(__alpha) && !defined(_TYPES_H_) && !defined(_SYS_TYPES_H)

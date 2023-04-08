@@ -31,6 +31,7 @@
 
 
 #include <stddef.h>
+#include <errno.h>
 #include "global.h"
 #include "rcerrors.h"
 #include "rcstrblk.h"

@@ -34,8 +34,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #include <sys/types.h>
 #include "bool.h"

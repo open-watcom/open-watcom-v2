@@ -33,6 +33,7 @@
 #include <direct.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #include <io.h>
 #include <process.h>
 #include "builder.h"

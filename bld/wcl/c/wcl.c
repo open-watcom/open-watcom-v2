@@ -30,18 +30,19 @@
 ****************************************************************************/
 
 
-#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
+#include <sys/types.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #ifdef __UNIX__
-#include <dirent.h>
+    #include <dirent.h>
 #else
-#include <direct.h>
+    #include <direct.h>
 #endif
 #include "bool.h"
 #include "wio.h"

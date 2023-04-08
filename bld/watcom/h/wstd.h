@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -412,26 +412,15 @@ typedef unsigned_8      sbit;
 #endif
 
 #if !defined( _NULL )
-    #define _NULL               ((void *) 0)
+    #define _NULL               ((void *)0)
 #endif
 
 #if !defined( _FNULL )
-    #define _FNULL              ((void __far *) 0)
+    #define _FNULL              ((void __far *)0)
 #endif
 
 #if !defined( _NNULL )
-    #define _NNULL              ((void __near *) 0)
-#endif
-
-/* Define _crtn for prototypes for external C routines called from C++.
- * Eg. extern _crtn void Foo();
- */
-#if !defined( _crtn )
-    #if defined( __cplusplus )
-        #define _crtn   "C"
-    #else
-        #define _crtn
-    #endif
+    #define _NNULL              ((void __near *)0)
 #endif
 
 /* Fill an object with zeroes:

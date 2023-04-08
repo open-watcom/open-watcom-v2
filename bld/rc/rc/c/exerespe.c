@@ -32,6 +32,7 @@
 
 
 #include <time.h>
+#include <errno.h>
 #include "global.h"
 #include "rcstrblk.h"
 #include "rcstr.h"

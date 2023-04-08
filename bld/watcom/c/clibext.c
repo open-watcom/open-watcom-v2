@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,6 +37,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #if defined(__UNIX__)
     #include <dirent.h>
   #if defined(__QNX__)

@@ -31,6 +31,7 @@
 
 
 #include "wlib.h"
+#include <errno.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
