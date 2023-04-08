@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,4 +52,4 @@ WCLASS WTypo : public WObject
 #endif //wtypo_class
 
 void AddTypo( WString &good, WString &bad );
-void FixTypo( WString &word );
+WString* FixTypo( WString &word );

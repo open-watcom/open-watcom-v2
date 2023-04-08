@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,9 +152,9 @@ void Dmp_seg_tab( void )
     }
     Wlseek( New_exe_off + Os2_head.segment_off );
     segtabsize = sizeof( struct segment_record ) * num_segs;
-    segtab = Wmalloc( segtabsize );
+    Int_seg_tab = Wmalloc( segtabsize );
+    segtab = Int_seg_tab;
     Wread( segtab, segtabsize );
-    Int_seg_tab = segtab;
     ++num_segs;
     Wdputslc( "seg  fileoff  len  alloc prior priv flag\n" );
     Wdputslc( "==== ======== ==== ====  ====  ==== ====\n" );
@@ -162,5 +163,4 @@ void Dmp_seg_tab( void )
         dmp_seg_ent( segtab++ );
     }
     Wdputslc( "\n" );
-    free( segtab );
 }

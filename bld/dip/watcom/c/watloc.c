@@ -115,11 +115,11 @@ static unsigned SizeLocation( const char *e )
 {
     unsigned    subclass;
 
-    if( GETU8( e ) & LOC_EXPR_IND ) {
-        return( GETU8( e ) & ~LOC_EXPR_IND );
+    if( MGET_U8( e ) & LOC_EXPR_IND ) {
+        return( MGET_U8( e ) & ~LOC_EXPR_IND );
     }
-    subclass = GETU8( e ) & SUBCLASS_MASK;
-    switch( GETU8( e ) & CLASS_MASK ) {
+    subclass = MGET_U8( e ) & SUBCLASS_MASK;
+    switch( MGET_U8( e ) & CLASS_MASK ) {
     case NOLOCATION:
     case REG:
         return( 1 );
@@ -181,14 +181,14 @@ location_info InfoLocation( const char *e )
     unsigned    subclass;
 
     size = SizeLocation( e );
-    if( GETU8( e ) & LOC_EXPR_IND ) {
+    if( MGET_U8( e ) & LOC_EXPR_IND ) {
         --size;
         ++e;
     }
     info = NEED_NOTHING | EMPTY_EXPR;
     depth = 0;
     while( size != 0 ) {
-        switch( GETU8( e ) & CLASS_MASK ) {
+        switch( MGET_U8( e ) & CLASS_MASK ) {
         case BP_OFFSET:
         case MULTI_REG:
         case REG:
@@ -200,7 +200,7 @@ location_info InfoLocation( const char *e )
             ++depth;
             break;
         case OPERATOR:
-            subclass = GETU8( e ) & SUBCLASS_MASK;
+            subclass = MGET_U8( e ) & SUBCLASS_MASK;
             if( subclass != LOP_NOP )
                 info &= ~EMPTY_EXPR;
             if( depth < OpNeed[subclass] )
@@ -221,20 +221,21 @@ static const char *ParseLocEntry( imp_image_handle *iih, const char *ptr,
 {
     byte    numregs;
 
-    location->bp_offset.class = GETU8( ptr++ );
+    location->bp_offset.class = MGET_U8( ptr );
+    ptr++;
     switch( location->bp_offset.class & CLASS_MASK ) {
     case BP_OFFSET :
         switch( location->bp_offset.class ) {
         case BP_OFFSET | BP_OFF_BYTE:
-            location->bp_offset.offset = GETS8( ptr );
+            location->bp_offset.offset = MGET_S8( ptr );
             ptr += 1;
             break;
         case BP_OFFSET | BP_OFF_WORD:
-            location->bp_offset.offset = GETS16( ptr );
+            location->bp_offset.offset = MGET_S16( ptr );
             ptr += 2;
             break;
         case BP_OFFSET | BP_OFF_DWORD:
-            location->bp_offset.offset = GETS32( ptr );
+            location->bp_offset.offset = MGET_S32( ptr );
             ptr += 4;
             break;
         }
@@ -250,17 +251,17 @@ static const char *ParseLocEntry( imp_image_handle *iih, const char *ptr,
             location->constant.class = CONSTANT | ADDR386;
             break;
         case CONSTANT | INT_1:
-            location->constant.val = GETS8( ptr );
+            location->constant.val = MGET_S8( ptr );
             ptr += 1;
             location->constant.class = CONSTANT | INT_4;
             break;
         case CONSTANT | INT_2:
-            location->constant.val = GETS16( ptr );
+            location->constant.val = MGET_S16( ptr );
             ptr += 2;
             location->constant.class = CONSTANT | INT_4;
             break;
         case CONSTANT | INT_4:
-            location->constant.val = GETS32( ptr );
+            location->constant.val = MGET_S32( ptr );
             ptr += 4;
             location->constant.class = CONSTANT | INT_4;
             break;
@@ -283,18 +284,22 @@ static const char *ParseLocEntry( imp_image_handle *iih, const char *ptr,
         switch( location->ind_reg_far.class & SUBCLASS_MASK ) {
         case IR_CALLOC_NEAR:
         case IR_RALLOC_NEAR:
-            location->ind_reg_near.off_reg = GETU8( ptr++ );
+            location->ind_reg_near.off_reg = MGET_U8( ptr );
+            ptr++;
             break;
         default:
-            location->ind_reg_far.off_reg = GETU8( ptr++ );
-            location->ind_reg_far.seg_reg = GETU8( ptr++ );
+            location->ind_reg_far.off_reg = MGET_U8( ptr );
+            ptr++;
+            location->ind_reg_far.seg_reg = MGET_U8( ptr );
+            ptr++;
             break;
         }
         break;
     case OPERATOR:
         switch( location->op.class ) {
         case OPERATOR | LOP_XCHG:
-            location->op.stk = GETU8( ptr++ );
+            location->op.stk = MGET_U8( ptr );
+            ptr++;
             break;
         }
         break;

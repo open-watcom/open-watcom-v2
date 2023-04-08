@@ -774,13 +774,14 @@ int IdeDrvPrintError            // UNLOAD THE DLL
     ( IDEDRV *inf )             // - driver control information
 {
     char const  *message;
-    int         retcode = inf->drv_status;
+    int         retcode;
 
+    retcode = inf->drv_status;
     if( retcode != IDEDRV_SUCCESS ) {
-        if( retcode <= 0 || retcode >= IDEDRV_ERR_MAXIMUM ) {
-            message = "impossible error";
+        if( IDEDRV_STATUS_VALID( retcode ) ) {
+            message = messages[retcode];
         } else {
-            message = messages[ retcode ];
+            message = "impossible error";
         }
         fprintf( stderr, "ERROR with dll: %s\n    %s", inf->dll_name, message );
         if( inf->dll_status != 0 ) {
@@ -789,7 +790,7 @@ int IdeDrvPrintError            // UNLOAD THE DLL
         fputc( '\n', stderr );
         fflush( stderr );
     }
-    return( inf->drv_status );
+    return( retcode );
 }
 
 void IdeDrvChainCallbacks       // SET CALLBACKS FOR DLL CALLLING A DLL

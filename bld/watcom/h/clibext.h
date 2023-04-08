@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,7 +38,6 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
 #include <stdarg.h>
 #ifdef __BSD__
 #include <unistd.h>         /* for off_t */

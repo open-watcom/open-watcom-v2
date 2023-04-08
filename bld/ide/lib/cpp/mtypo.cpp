@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "idecfg.h"
 #include "wobjfile.hpp"
 #include "mtypo.hpp"
 #include "wvlist.hpp"
@@ -43,13 +45,14 @@ void AddTypo( WString &good, WString &bad )
     SwitchTypos.add( t );
 }
 
-void FixTypo( WString &word )
+WString* FixTypo( WString &word )
 {
     for( int i = 0; i < SwitchTypos.count(); i++ ) {
         WTypo *t = (WTypo *)SwitchTypos[i];
         if( t->bad() == word ) {
             word = t->good();
-            break;
+            return( &word );
         }
     }
+    return( NULL );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -204,7 +205,7 @@ STATIC void putIndex( type_rec *tr, uint_16 word ) {
 
     p = getTrData( tr, 3 );
     p[0] = MS_BCL_INDEX;
-    WriteU16( p + 1, word );
+    MPUT_LE_16( p + 1, word );
 }
 
 STATIC void putName( type_rec *tr, name_handle name_hdl ) {
@@ -235,11 +236,11 @@ STATIC void putUnsigned( type_rec *tr, uint_32 num ) {
     } else if( num < 0x10000 ) {
         p = getTrData( tr, 3 );
         p[0] = MS_BCL_UINT_16;
-        WriteU16( p+1, num );
+        MPUT_LE_16( p+1, num );
     } else {
         p = getTrData( tr, 5 );
         p[0] = MS_BCL_UINT_32;
-        WriteU32( p+1, num );
+        MPUT_LE_32( p+1, num );
     }
 }
 
@@ -256,11 +257,11 @@ STATIC void putSigned( type_rec *tr, int_32 num ) {
     } else if( mag < 0x8000 ) {
         p = getTrData( tr, 3 );
         p[0] = MS_BCL_INT_16;
-        WriteS16( p+1, num );
+        MPUT_LE_16( p + 1, num );
     } else {
         p = getTrData( tr, 5 );
         p[0] = MS_BCL_INT_32;
-        WriteS32( p+1, num );
+        MPUT_LE_32( p + 1, num );
     }
 }
 
@@ -357,7 +358,7 @@ STATIC void endType( type_rec *rec ) {
         /* write the linkage and length fields */
         ledataBuf[ ledataOffset++ ] = 1;    /* linkage always 1 */
         rec_len = rec->len;
-        WriteU16( ledataBuf + ledataOffset, rec_len );
+        MPUT_LE_16( ledataBuf + ledataOffset, rec_len );
         ledataOffset += 2;
         rec_offset = 0;
         while( rec_offset < rec_len ) {

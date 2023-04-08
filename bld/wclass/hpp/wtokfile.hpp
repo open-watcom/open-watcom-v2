@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,14 +43,13 @@ class WTokenFile : public WFile
         WEXPORT WTokenFile() {}
         WEXPORT ~WTokenFile() {}
         bool eol() { return( _eol ); }
+        bool quoted() { return( _quoted ); }
 
-        WString& token( WString& tok, bool* eol=NULL );
+        WString& token( WString& tok, bool* quoted=NULL, bool* eol=NULL );
         void flushLine( WString& tok );
     private:
+        bool    _quoted;
         bool    _eol;
 };
 
 #endif
-
-
-

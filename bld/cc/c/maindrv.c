@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,35 +31,35 @@
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
-#include <process.h>
-#endif
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef __WATCOMC__
+    #include <process.h>
+#endif
 #include "idedrv.h"
-#include "walloca.h"
-#include "watcom.h"
 
 #include "clibext.h"
 
 
 #ifndef DLL_NAME
-  #error DLL_NAME must be given with -d switch when DLL Driver
-#else
-  #define quoted( name ) # name
-  #define _str(x) quoted(x)
-  #define DLL_NAME_STR _str(DLL_NAME)
+    #error      DLL_NAME must be given with -d switch when DLL Driver
 #endif
 
-int main( int argc, char* argv[] ) {
-/**********************************/
-    IDEDRV  info;
+#define quoted(name)    # name
+#define _str(x)         quoted(x)
+#define DLL_NAME_STR    _str(DLL_NAME)
+
+
+int main( int argc, char *argv[] )
+/********************************/
+{
+    int         retcode;
+    IDEDRV      info;
 #ifndef __UNIX__
-    char    *cmdline;
-    int     cmdlen;
+    int         cmdlen;
+    char        *cmdline;
 #endif
-    int     retcode;                 // - return code
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -69,31 +69,26 @@ int main( int argc, char* argv[] ) {
 #endif
 
     IdeDrvInit( &info, DLL_NAME_STR, NULL );
-    retcode = IDEDRV_ERR_RUN_FATAL;
-#ifndef __UNIX__
-    cmdline = NULL;
-    cmdlen = _bgetcmd( NULL, 0 );
-    if( cmdlen != 0 ) {
-        cmdlen++;               // add 1 for null char
-        cmdline = alloca( cmdlen );
-        if( cmdline != NULL ) {
-            _bgetcmd( cmdline, cmdlen );
-        }
-    }
-    retcode = IdeDrvExecDLL( &info, cmdline );
-#else
+#ifdef __UNIX__
     retcode = IdeDrvExecDLLArgv( &info, argc, argv );
+#else
+    cmdlen = _bgetcmd( NULL, 0 ) + 1;
+    cmdline = malloc( cmdlen );
+    if( cmdline != NULL )
+        _bgetcmd( cmdline, cmdlen );
+    retcode = IdeDrvExecDLL( &info, cmdline );
+    free( cmdline );
 #endif
     switch( retcode ) {
-    case IDEDRV_SUCCESS :
-    case IDEDRV_ERR_RUN :
-    case IDEDRV_ERR_RUN_EXEC :
-    case IDEDRV_ERR_RUN_FATAL :
+    case IDEDRV_SUCCESS:
+    case IDEDRV_ERR_RUN:
+    case IDEDRV_ERR_RUN_EXEC:
+    case IDEDRV_ERR_RUN_FATAL:
         break;
     default:
-        retcode = IdeDrvPrintError( &info );
+        IdeDrvPrintError( &info );
         break;
     }
-//    IdeDrvUnloadDLL( &info );
-    return( retcode != IDEDRV_SUCCESS );
+    IdeDrvUnloadDLL( &info );
+    return( retcode == IDEDRV_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE );
 }

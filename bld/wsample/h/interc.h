@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,6 @@ extern void __interrupt (* _CODE_BASED old_intxx_handlers[])();
 extern void __interrupt (* intxx_handlers[])();
 extern unsigned char    intr_list[];
 
-extern seg_offset       _CODE_BASED SysCallerAddr;
+extern far_address      _CODE_BASED SysCallerAddr;
 extern unsigned char    _CODE_BASED SysCaught;
 extern unsigned char    _CODE_BASED SysNoDOS;

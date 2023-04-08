@@ -32,6 +32,7 @@
 
 
 #include "global.h"
+#include <errno.h>
 #include "rcerrors.h"
 #include "rcrtns.h"
 #include "rccore_2.h"

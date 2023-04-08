@@ -578,7 +578,7 @@ void WriteMapLines( void )
         state.col = 0;
         state.is_32 = false;
         state.has_seg = false;
-        unit_length = GET_U32( p );
+        unit_length = MGET_U32( p );
         p += sizeof( unsigned_32 );
         unit_base = p;
 
@@ -590,10 +590,10 @@ void WriteMapLines( void )
         default_is_stmt = ( *p != 0 );
         p += 1;
 
-        line_base = GET_I8( p );
+        line_base = MGET_S8( p );
         p += 1;
 
-        line_range = GET_U8( p );
+        line_range = MGET_U8( p );
         p += 1;
 
         opcode_base = *p;
@@ -650,10 +650,10 @@ void WriteMapLines( void )
                     break;
                 case DW_LNE_set_address:
                     if( op_len == 4 ) {
-                        tmp = GET_U32( p );
+                        tmp = MGET_U32( p );
                         state.is_32 = true;
                     } else if( op_len == 2 ) {
-                        tmp = GET_U16( p );
+                        tmp = MGET_U16( p );
                         state.is_32 = false;
                     } else {
                         tmp = 0xffffffff;
@@ -665,9 +665,9 @@ void WriteMapLines( void )
                 case DW_LNE_WATCOM_set_segment:
                     state.has_seg = true;
                     if( op_len == 4 ) {
-                        tmp = GET_U32( p );
+                        tmp = MGET_U32( p );
                     } else if( op_len == 2 ) {
-                        tmp = GET_U16( p );
+                        tmp = MGET_U16( p );
                     } else {
                         tmp = 0xffffffff;
                     }
@@ -720,7 +720,7 @@ void WriteMapLines( void )
                     state.address += ( value / line_range ) * min_instr;
                     break;
                 case DW_LNS_fixed_advance_pc:
-                    tmp = GET_U16( p );
+                    tmp = MGET_U16( p );
                     p += sizeof( unsigned_16 );
                     state.address += tmp;
                     break;

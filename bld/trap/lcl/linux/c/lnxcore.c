@@ -46,14 +46,6 @@
 #include "madregs.h"
 
 
-#ifdef __BIG_ENDIAN__
-    #define SWAP_16     CONV_LE_16
-    #define SWAP_32     CONV_LE_32
-#else
-    #define SWAP_16     CONV_BE_16
-    #define SWAP_32     CONV_BE_32
-#endif
-
 #define NO_FILE         (-1)
 
 enum {

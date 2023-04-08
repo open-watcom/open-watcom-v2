@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ appl_action __cdecl __far FaultHandler( fault_frame ff )
     WORD        seg;
     WORD        value;
     int         len;
-    seg_offset  where;
+    far_address where;
     char        buff[256];
 
     fault32 = false;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ typedef unsigned long off;
 typedef struct {
     off         offset;
     seg         segment;
-} seg_offset;
+} far_address;
 
 
 typedef struct info_struct {
@@ -116,7 +116,7 @@ extern void             OutputMsgParmNL( int msg, const char FAR_PTR *str );
 extern void             OutputMsgCharNL( int msg, char chr );
 extern unsigned         GetNumber( unsigned, unsigned, const char **, unsigned );
 extern void             StopAndSave( void );
-extern void             WriteCodeLoad( seg_offset, const char *, samp_block_kinds );
+extern void             WriteCodeLoad( far_address, const char *, samp_block_kinds );
 extern void             WriteAddrMap( seg, seg, off );
 extern void             AllocSamples( unsigned );
 extern void             RecordCGraph( void );
@@ -133,10 +133,10 @@ extern void             StopProg( void );
 extern void             GetProg( const char *cmd, size_t len );
 #if defined( __DOS__ ) && !defined( __PHARLAP__ ) && !defined( __DOS4G__ )
 extern bool             __near VersionCheck( void );
-extern void             __near WriteMark( const char FAR_PTR *str, seg_offset where );
+extern void             __near WriteMark( const char FAR_PTR *str, far_address where );
 #else
 extern bool             VersionCheck( void );
-extern void             WriteMark( const char FAR_PTR *str, seg_offset where );
+extern void             WriteMark( const char FAR_PTR *str, far_address where );
 #endif
 
 extern void             FAR_PTR *my_alloc( size_t size );

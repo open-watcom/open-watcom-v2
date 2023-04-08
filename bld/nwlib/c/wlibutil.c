@@ -31,6 +31,7 @@
 
 
 #include "wlib.h"
+#include <errno.h>
 #include "wio.h"
 #include "pathgrp2.h"
 #include "roundmac.h"

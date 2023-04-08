@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 #endif
 
 typedef uint_16 OptionSize;     // size of option written to file
-typedef char NUMBER_STR[8];     // number string
+typedef char    NUMBER_STR[8];  // number string
 
 
 #if 0
@@ -180,8 +180,10 @@ static void printLine           // PRINT A LINE
 // IDE INTERFACE
 
 
-unsigned IDEAPI IDEGetVersion // GET IDE VERSION
-    ( void )
+unsigned IDEAPI IDEGetVersion( void )
+/************************************
+ * GET IDE VERSION
+ */
 {
     return( IDE_CUR_DLL_VER );
 }
@@ -248,7 +250,7 @@ static void initDLLInfo( DLL_DATA *data )
 
 
 
-IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
+int IDEAPI IDERunYourSelf       // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
     , IDEBool* fatal_error )    // - addr[ fatality indication ]
@@ -266,11 +268,11 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     fillInputOutput( input, output );
     WppCompile( &dllinfo, input, output );
     *fatal_error = (IDEBool)CompFlags.fatal_error;
-    return( (IDEBool)CompFlags.compile_failed );
+    return( CompFlags.compile_failed );
 }
 
 
-IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
+int IDEAPI IDERunYourSelfArgv(  // COMPILE A PROGRAM (ARGV ARGS)
     IDEDllHdl hdl,              // - handle for this instantiation
     int argc,                   // - # of arguments
     char **argv,                // - argument vector
@@ -290,7 +292,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     fillInputOutput( input, output );
     WppCompile( &dllinfo, input, output );
     *fatal_error = (IDEBool)CompFlags.fatal_error;
-    return( (IDEBool)CompFlags.compile_failed );
+    return( CompFlags.compile_failed );
 }
 
 void IDEAPI IDEStopRunning( void )
@@ -582,35 +584,28 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
             }
         }
     }
-#if defined(wpp_dll)
-    CompFlags.dll_active = true;
-#endif
     return( false );
 }
 
 
 const char *CppGetEnv           // COVER FOR getenv
-    ( char const * name )       // - environment variable
+    ( char const *env_name )    // - environment variable name
 {
-#if defined(wpp_dll)
-    const char *env_val = NULL; // - NULL or value of environment variable
+    const char *env_val;        // - NULL or value of environment variable
 
+    env_val = NULL;
     if( !CompFlags.ignore_environment ) {
-        if( IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
+        if( IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)env_name, (IDEGetInfoLParam)&env_val ) ) {
             env_val = NULL;
         }
     }
     return( env_val );
-#else
-    return( getenv( name ) );
-#endif
 }
 
 
 void CppStartFuncMessage( SYMBOL sym )
 /************************************/
 {
-#if defined(wpp_dll)
     VBUF buff;
 
     DbgAssert( CompFlags.progress_messages );
@@ -618,7 +613,4 @@ void CppStartFuncMessage( SYMBOL sym )
         IDEFN( ProgressMessage )( CompInfo.idehdl, FormatSymWithTypedefs( sym, &buff ) );
         VbufFree( &buff );
     }
-#else
-    /* unused parameters */ (void)sym;
-#endif
 }

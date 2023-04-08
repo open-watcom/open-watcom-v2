@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #ifndef mtool_class
 #define mtool_class
 
+#include "idecfg.h"
 #include "wstring.hpp"
 #include "wpicklst.hpp"
 #include "wtokfile.hpp"
@@ -52,11 +54,8 @@ WCLASS MTool : public WObject
         WString& tag() { return( _tag ); };
         void name( WString& s ) { s = _name; }
         const WString& help() { return( _help ); }
-        MSwitch* findSwitch( WString& switchtag, long fixed_version=0 );
-        WString *displayText( MSwitch *sw, WString& text, bool first=true );
-#if CUR_CFG_VERSION > 4
-        WString* findSwitchByText( WString& id, WString& text, int kludge=0 );
-#endif
+        MSwitch* WEXPORT findSwitch( const char* swtag, int kludge=0 );
+        WString* WEXPORT findSwitchIdByText( const char* text, int kludge=0 );
         bool hasSwitches( bool setable );
         void addSwitches( WVList& list, const char* mask, bool setable );
         void addFamilies( WVList& list );
@@ -66,10 +65,6 @@ WCLASS MTool : public WObject
         WString         _help;
         WPickList       _families;
         WVList          _incTools;
-#if CUR_CFG_VERSION > 4
-        WStringMap      _switchesTexts; //<WString>
-        WStringMap      _switchesIds;   //<WString>
-#endif
 };
 
 #endif

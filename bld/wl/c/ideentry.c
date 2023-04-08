@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,8 @@
 
 #include "clibext.h"
 
-#define PREFIX_SIZE 8
+
+#define PREFIX_SIZE     8
 
 #define IDEFN(x)        IdeCbs->x
 
@@ -80,19 +81,19 @@ static IDEMsgSeverity SeverityMap[] = {
 };
 
 #if defined( DLLS_IMPLEMENTED )
-bool ExecDLLPgm( const char *pname, const char *cmdline )
-/*******************************************************/
-// return true if an error
+int ExecDLLPgm( const char *pname, const char *cmdline )
+/*******************************************************
+ * return true if an error
+ */
 {
-    IDEDRV              inf;
-    IDEDRV_STATUS       status;
+    int         retcode;
+    IDEDRV      info;
 
-    status = IDEDRV_ERR_LOAD;
-    IdeDrvInit( &inf, pname, NULL );
+    IdeDrvInit( &info, pname, NULL );
     IdeDrvChainCallbacks( IdeCbs, &InitInfo );
-    status = IdeDrvExecDLL( &inf, cmdline );
-    IdeDrvUnloadDLL( &inf );
-    return( status != IDEDRV_SUCCESS );
+    retcode = IdeDrvExecDLL( &info, cmdline );
+    IdeDrvUnloadDLL( &info );
+    return( retcode );
 }
 #endif
 
@@ -232,8 +233,8 @@ void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
     FiniSubSystems();
 }
 
-IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatalerr )
-/**********************************************************************************/
+int IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatalerr )
+/******************************************************************************/
 {
     /* unused parameters */ (void)hdl;
 
@@ -242,8 +243,8 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatale
     return( *fatalerr );
 }
 
-IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
-/******************************************************************************************/
+int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
+/**************************************************************************************/
 {
     /* unused parameters */ (void)hdl;
 

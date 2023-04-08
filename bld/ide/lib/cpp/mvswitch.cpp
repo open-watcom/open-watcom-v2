@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,29 +43,29 @@ MVSwitch::MVSwitch( WTokenFile& fil, WString& tok )
     , _optional( false )
     , _multiple( false )
 {
-    fil.token( _on );
     fil.token( _connector );
     _multiple = ( fil.token( tok ) == "MULTI" );
     _optional = true;
     WString value;
     bool state = false;
-    for( int i=0; i<SWMODE_COUNT; i++ ) {
+    for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
         if( !fil.eol() ) {
             fil.token( tok );
-            if( _optional && tok == "ON" ) {
-                state = true;
-                fil.token( value );
-            } else if( _optional && tok == "OFF" ) {
-                state = false;
-                fil.token( value );
-            } else if( _optional && tok == "REQ" ) {
-                _optional = false;
-                fil.token( value );
-            } else {
-                value = tok;
+            if( _optional ) {
+                if( tok == "ON" ) {
+                    state = true;
+                    fil.token( tok );
+                } else if( tok == "OFF" ) {
+                    state = false;
+                    fil.token( tok );
+                } else if( tok == "REQ" ) {
+                    _optional = false;
+                    fil.token( tok );
+                }
             }
+            value = tok;
         }
-        _state[i] = state;
+        MSwitch::state( i, state );
         _value[i] = value;
     }
 }
@@ -79,20 +79,19 @@ MVSwitch* WEXPORT MVSwitch::createSelf( WObjectFile& )
 void WEXPORT MVSwitch::readSelf( WObjectFile& p )
 {
     MSwitch::readSelf( p );
-    p.readObject( &_on );
     if( p.version() > 30 ) {
         p.readObject( &_connector );
     }
     if( p.version() > 28 ) {
-        for( int i=0; i<SWMODE_COUNT; i++ ) {
+        for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
             p.readObject( &_value[i] );
-            p.readObject( &_state[i] );
+            MSwitch::readState( p, i );
         }
     } else {
         p.readObject( &_value[SWMODE_RELEASE] );
-        p.readObject( &_state[SWMODE_RELEASE] );
+        MSwitch::readState( p, SWMODE_RELEASE );
         _value[SWMODE_DEBUG] = _value[SWMODE_RELEASE];
-        _state[SWMODE_DEBUG] = _state[SWMODE_RELEASE];
+        MSwitch::copyState( SWMODE_DEBUG, SWMODE_RELEASE );
     }
     if( p.version() > 28 ) {
         p.readObject( &_multiple );
@@ -103,11 +102,10 @@ void WEXPORT MVSwitch::readSelf( WObjectFile& p )
 void WEXPORT MVSwitch::writeSelf( WObjectFile& p )
 {
     MSwitch::writeSelf( p );
-    p.writeObject( &_on );
     p.writeObject( &_connector );
-    for( int i=0; i<SWMODE_COUNT; i++ ) {
+    for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
         p.writeObject( &_value[i] );
-        p.writeObject( _state[i] );
+        MSwitch::writeState( p, i );
     }
     p.writeObject( _multiple );
     p.writeObject( _optional );
@@ -135,7 +133,7 @@ void MVSwitch::addValues( WString& str, WStringList& values, bool& first )
         if( !first )
             str.concat( ' ' );
         first = false;
-        str.concat( _on );
+        str.concat( on() );
 #if 1
         WString& val = values.stringAt( i );
         WString fmt( _connector );
@@ -172,7 +170,7 @@ void MVSwitch::addone( WString& str, bool state, WString* value, bool& first )
                 if( !first )
                     str.concat( ' ' );
                 first = false;
-                str.concat( _on );
+                str.concat( on() );
             }
         }
     } else if( count > 0 ) {
@@ -205,7 +203,7 @@ void MVSwitch::getText( WString& str, WVList* states, SwMode mode )
         }
     }
     if( !found_match ) {
-        addone( str, _state[mode], &_value[mode], first );
+        addone( str, MSwitch::state( mode ), &_value[mode], first );
     }
 }
 

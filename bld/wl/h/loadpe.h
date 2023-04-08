@@ -45,7 +45,7 @@
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );
-extern void             ReadPEExportTable( f_handle, pe_hdr_dir_entry * );
+extern void             ReadPEExportTable( f_handle, pe_dir_entry * );
 extern void             AllocPETransferTable( void );
 extern void             GenPEToc( void );
 extern void             ChkPEData( void );

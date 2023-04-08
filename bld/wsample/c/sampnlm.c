@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,7 +116,7 @@ void StopProg( void )
 #if 0
 void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind )
 {
-    seg_offset          ovl_tbl;
+    far_address         ovl_tbl;
     char                buff[256];
 
     ovl_tbl.segment = 0;
@@ -145,7 +145,7 @@ static void RecordCodeLoad( struct LoadDefinitionStructure *loaded, samp_block_k
 
 static void WriteRecordedLoads( void )
 {
-    seg_offset          ovl_tbl;
+    far_address         ovl_tbl;
     code_load           *curr,*next;
 
     ovl_tbl.segment = 0;

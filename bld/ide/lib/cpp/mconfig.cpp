@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>    //temporary ?
 #endif
+#include "idecfg.h"
 #include "mconfig.hpp"
 #include "mrule.hpp"
 #include "mtarget.hpp"
@@ -231,10 +232,16 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
                 fil.token( tok );
             } else if( tok == "Version" ) {
                 _version = (int)fil.token( tok );
-                if( _version > CUR_CFG_VERSION ) {
+                if( _version > IDE_CFG_VERSION ) {
                     _ok = false;
-                    _errMsg.printf( "Configuration file '%s' format is too new.  "
-                                    "you must use a newer version of the IDE.",
+                    _errMsg.printf( "Configuration file '%s' format is too new."
+                                    "  You must use a newer version of the IDE.",
+                                    (const char*)filename );
+                    break;
+                } else if( _version < IDE_CFG_VERSION ) {
+                    _ok = false;
+                    _errMsg.printf( "Configuration file '%s' format is too old."
+                                    "  You must use a current IDE version file.",
                                     (const char*)filename );
                     break;
                 }
@@ -242,7 +249,7 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
             } else if( tok == "rem" ) {
                 fil.flushLine( tok );
                 fil.token( tok );
-            } else if( _version < 5 && tok == "Compat" ) {
+            } else if( tok == "Compat" ) {
                 WString good;
                 WString bad;
                 fil.token( good );

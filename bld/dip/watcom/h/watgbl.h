@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,6 @@
 *
 ****************************************************************************/
 
-
-#define GETU8(x)        *(unsigned_8 *)(x)
-#define GETU16(x)       *(unsigned_16 *)(x)
-#define GETU32(x)       *(unsigned_32 *)(x)
-
-#define GETS8(x)        *(signed_8 *)(x)
-#define GETS16(x)       *(signed_16 *)(x)
-#define GETS32(x)       *(signed_32 *)(x)
 
 extern void             GblSymFini( section_info *inf );
 extern void             AdjustSyms( imp_image_handle *, unsigned sectno );

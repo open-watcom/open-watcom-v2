@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,4 +36,4 @@ extern void     WriteStdOutNL( void );
 extern void     WriteStdOutInfo( const char *, unsigned, const char * );
 extern char     *GetEnvString( const char * );
 extern void     GetExtraCommands( void );
-extern bool     ExecDLLPgm( const char *, const char * );
+extern int      ExecDLLPgm( const char *, const char * );

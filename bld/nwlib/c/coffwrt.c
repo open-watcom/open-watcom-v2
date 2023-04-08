@@ -716,6 +716,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
             | COFF_IMAGE_SCN_MEM_WRITE );
         symb_hints = AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
     }
+    symb_toc = 0;
     if( sfile->import->processor == WL_PROC_PPC ) {
         symb_toc = AddCoffSymbol( c_file, 0, ".toc", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }

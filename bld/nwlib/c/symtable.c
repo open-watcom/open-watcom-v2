@@ -31,6 +31,7 @@
 
 
 #include "wlib.h"
+#include <errno.h>
 #include "ar.h"
 #include "convert.h"
 #include "roundmac.h"

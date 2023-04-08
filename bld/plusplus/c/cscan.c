@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,11 +117,11 @@ static uint_8 InitClassTable[] = {
 };
 
 #if TARGET_INT == 2
-static unsigned_64 intMax   = I64Val( 0x00000000, 0x00007fff );
-static unsigned_64 uintMax  = I64Val( 0x00000000, 0x0000ffff );
+static unsigned_64 intMax   = Init64Val( 0x00000000, 0x00007fff );
+static unsigned_64 uintMax  = Init64Val( 0x00000000, 0x0000ffff );
 #else
-static unsigned_64 intMax   = I64Val( 0x00000000, 0x7fffffff );
-static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
+static unsigned_64 intMax   = Init64Val( 0x00000000, 0x7fffffff );
+static unsigned_64 uintMax  = Init64Val( 0x00000000, 0xffffffff );
 #endif
 
 void ReScanInit( const char *ptr )

@@ -62,16 +62,6 @@
 #define CATLIT(s,c)     (char *)memcpy( s, c, sizeof( c ) - 1 ) + sizeof( c ) - 1
 #define CATSTR(s,c,l)   (char *)memcpy( s, c, l ) + l
 
-#define ReadU16(p)      GET_LE_16(*(uint_16*)(p))
-#define ReadU32(p)      GET_LE_32(*(uint_32*)(p))
-#define ReadS16(p)      GET_LE_16(*(int_16*)(p))
-#define ReadS32(p)      GET_LE_32(*(int_32*)(p))
-
-#define WriteU16(p,n)   (*(uint_16*)(p) = GET_LE_16((uint_16)(n)))
-#define WriteU32(p,n)   (*(uint_32*)(p) = GET_LE_32((uint_32)(n)))
-#define WriteS16(p,n)   (*(int_16*)(p) = GET_LE_16((int_16)(n)))
-#define WriteS32(p,n)   (*(int_32*)(p) = GET_LE_32((int_32)(n)))
-
 #define BIT_012                 0x07
 #define BIT_345                 0x38
 #define BIT_67                  0xC0

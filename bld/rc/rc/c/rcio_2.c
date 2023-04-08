@@ -34,6 +34,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <time.h>
+#include <errno.h>
 #ifdef __UNIX__
     #include <sys/stat.h>
 #else

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,15 +39,7 @@
 #define BIT_OFF( who ) BYTES2BITS( offsetof( mad_registers, ppc.who ) )
 #define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
-#define PPC_SWAP_REG_64(x)                          \
-    {                                               \
-        unsigned_32     temp;                       \
-        CONV_BE_32( (x).u._32[I64LO32] );           \
-        CONV_BE_32( (x).u._32[I64HI32] );           \
-        temp = (x).u._32[I64LO32];                  \
-        (x).u._32[I64LO32] = (x).u._32[I64HI32];    \
-        (x).u._32[I64HI32] = temp;                  \
-    }
+#define PPC_SWAP_REG_64(x)  SCONV_BE_64( x )
 
 enum {
     RS_NONE,

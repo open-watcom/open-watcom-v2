@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,15 +58,6 @@
 #if ( defined( _M_I86SM ) || defined( _M_I86MM ) ) && defined( _M_I86 )
   #error This code can only be compiled for a large data model
 #endif
-
-#define ReadU16(p)      GET_LE_16(*(uint_16*)(p))
-#define ReadU32(p)      GET_LE_32(*(uint_32*)(p))
-#define ReadS16(p)      GET_LE_16(*(int_16*)(p))
-#define ReadS32(p)      GET_LE_32(*(int_32*)(p))
-#define WriteU16(p,n)   (*(uint_16*)(p) = GET_LE_16((uint_16)(n)))
-#define WriteU32(p,n)   (*(uint_32*)(p) = GET_LE_32((uint_32)(n)))
-#define WriteS16(p,n)   (*(int_16*)(p) = GET_LE_16((int_16)(n)))
-#define WriteS32(p,n)   (*(int_32*)(p) = GET_LE_32((int_32)(n)))
 
 #endif
 

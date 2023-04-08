@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,59 +25,34 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  IDE configuration file format version macros
 *
 ****************************************************************************/
 
 
-#include "ppc.h"
+#ifndef _IDECFG_H_INCLUDED
+#define _IDECFG_H_INCLUDED
 
-void MADIMPENTRY( AddrAdd )( address *a, long b, mad_address_format af )
-{
-    /* unused parameters */ (void)af;
+/*
+ * 39 and 40 are written the same, but read in differently
+ * 39 messed up .BEFORE / .AFTER containing CR/LF's
+ * since this is the same as the separator char.
+ */
 
-    a->mach.offset += b;
-}
+/*
+ * current ide.cfg file format
+ */
+#define IDE_CFG_VERSION             5
+/*
+ * increment LATEST_SUPPORTED_VERSION macro
+ * when some change in file formats is done
+ */
+#define LATEST_SUPPORTED_VERSION    42
+#define OLDEST_SUPPORTED_VERSION    23
+/*
+ * target mask size
+ */
+#define MASK_SIZE                   5
 
-int MADIMPENTRY( AddrComp )( address const *ap, address const *bp, mad_address_format af )
-{
-    /* unused parameters */ (void)af;
+#endif
 
-    if( ap->mach.offset == bp->mach.offset )
-        return(  0 );
-    if( ap->mach.offset >  bp->mach.offset )
-        return( +1 );
-    return( -1 );
-}
-
-long MADIMPENTRY( AddrDiff )( address const *a, address const *b, mad_address_format af )
-{
-    long        diff;
-
-    /* unused parameters */ (void)af;
-
-    diff = a->mach.offset - b->mach.offset;
-    return( diff );
-}
-
-mad_status MADIMPENTRY( AddrMap )( addr_ptr *a, addr_ptr const *map, addr_ptr const *real, mad_registers const *mr )
-{
-    /* unused parameters */ (void)a; (void)map; (void)real; (void)mr;
-
-    return( MS_FAIL );
-}
-
-mad_status MADIMPENTRY( AddrFlat )( mad_registers const *mr )
-{
-    /* unused parameters */ (void)mr;
-
-    return( MS_FAIL );
-}
-
-mad_status MADIMPENTRY( AddrInterrupt )( addr_ptr const *a, unsigned size, mad_registers const *mr )
-{
-    /* unused parameters */ (void)a; (void)size; (void)mr;
-
-    return( MS_FAIL );
-}

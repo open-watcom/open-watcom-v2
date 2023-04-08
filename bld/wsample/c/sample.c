@@ -70,9 +70,9 @@ static int              stackSize = 0;
 
 
 #if defined( __DOS__ ) && !defined( __PHARLAP__ ) && !defined( __DOS4G__ )
-void __near WriteMark( const char FAR_PTR *str, seg_offset where )
+void __near WriteMark( const char FAR_PTR *str, far_address where )
 #else
-void WriteMark( const char FAR_PTR *str, seg_offset where )
+void WriteMark( const char FAR_PTR *str, far_address where )
 #endif
 {
     struct {
@@ -103,7 +103,7 @@ void WriteMark( const char FAR_PTR *str, seg_offset where )
     SamplerOff--;
 }
 
-void WriteCodeLoad( seg_offset ovl_tbl, const char *name, samp_block_kinds kind )
+void WriteCodeLoad( far_address ovl_tbl, const char *name, samp_block_kinds kind )
 {
     struct {
         struct samp_block_prefix    pref;

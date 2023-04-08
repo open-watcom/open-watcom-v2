@@ -36,6 +36,7 @@
 #include <setjmp.h>
 #include <string.h>
 #include <limits.h>
+#include <errno.h>
 #include "wio.h"
 #include "wdglb.h"
 #include "wdfunc.h"

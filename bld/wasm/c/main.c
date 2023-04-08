@@ -780,7 +780,7 @@ static char *ReadIndirectFile( char *name )
         len = ftell( fp );
         fseek( fp, 0, SEEK_SET );
         env = AsmAlloc( len + 1 );
-        fread( env, 1, len, fp );
+        len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
         // zip through characters changing \r, \n etc into ' '

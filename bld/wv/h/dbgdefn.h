@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +39,7 @@
 #define NULLCHAR        '\0'
 #define ARG_TERMINATE   '\xff'
 
-#define GETU8(x)        (*(unsigned char *)(x))
-#define GETI8(x)        (*(signed char *)(x))
-#define GETWORD(x)      (GETU8((x)) + ( GETU8((x + 1)) << 8 ))
+#define GETWORD(x)      (MGET_U8((x)) + ( MGET_U8((x + 1)) << 8 ))
 
 #define FH2SYSH(sh,fh)  (sh).u._32[0]=fh;(sh).u._32[1]=0
 

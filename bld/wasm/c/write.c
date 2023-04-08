@@ -707,7 +707,7 @@ static bool write_autodep( void )
         objr = ObjNewRec( CMD_COMENT );
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEPENDENCY;
-        WriteU32( buff, _timet2dos( curr->mtime ) );
+        MPUT_LE_32( buff, _timet2dos( curr->mtime ) );
         buff[4] = (unsigned char)len;
         memcpy( buff + 4 + 1, curr->fullname, len );
         ObjAttachData( objr, (uint_8 *)buff, (uint_16)( 4 + 1 + len ) );

@@ -584,6 +584,27 @@ void AsmSysLine( const char *buff )
 #endif
 }
 
+static bool checkEnum( int *value )
+/*********************************/
+{
+    id_hash_idx hash;
+    SYM_HANDLE  sym_handle;
+    ENUMPTR     ep;
+
+    if( CurToken == T_ID ) {
+        hash = CalcHashID( Buffer );
+        sym_handle = SymLook( hash, Buffer );
+        if( sym_handle == NULL ) {
+            ep = EnumLookup( hash, Buffer );
+            if( ep != NULL ) {
+                *value = ep->value.u._64[0];
+                return( true );
+            }
+        }
+    }
+    return( false );
+}
+
 static bool GetByteSeq( aux_info *info )
 /**************************************/
 {
@@ -593,6 +614,7 @@ static bool GetByteSeq( aux_info *info )
     fix_words           fixword;
     bool                uses_auto;
     bool                too_many_bytes;
+    int                 value;
 #if _CPU == 8086
     bool                use_fpu_emu = false;
 #endif
@@ -622,6 +644,9 @@ static bool GetByteSeq( aux_info *info )
             }
 #endif
             AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
+            PPNextToken();
+        } else if( checkEnum( &value ) ) {
+            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)value;
             PPNextToken();
         } else {
 #if _CPU == 8086

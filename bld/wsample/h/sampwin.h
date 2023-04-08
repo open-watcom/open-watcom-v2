@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ typedef struct {
  */
 extern volatile WORD    __near WaitForFirst;
 extern volatile WORD    __near IsSecondOK;
-extern seg_offset       CommonAddr;
+extern far_address      CommonAddr;
 extern samp_save        __far * __near SampSave;
 
 /* somewhere in the common part of the sampler */

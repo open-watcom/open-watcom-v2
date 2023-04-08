@@ -45,6 +45,7 @@
 #include "fixup.h"
 #include "objprs.h"
 #include "objrec.h"
+#include "watcom.h"
 
 /*
     We keep a pointer to the obj_rec for our segdef so we can set seg_length
@@ -211,14 +212,14 @@ STATIC void put8( uint_8 byte ) {
 
 STATIC void put16( uint_16 word ) {
 
-    WriteU16( myRecPtr, word );
+    MPUT_LE_16( myRecPtr, word );
     myRecPtr += 2;
 /**/myassert( myRecPtr - myRecBuf < MAX_REC );
 }
 
 STATIC void put32( uint_32 dword ) {
 
-    WriteU32( myRecPtr, dword );
+    MPUT_LE_32( myRecPtr, dword );
     myRecPtr += 4;
 /**/myassert( myRecPtr - myRecBuf < MAX_REC );
 }
@@ -342,7 +343,7 @@ STATIC void symbChangeSeg( symb_handle cur ) {
     case FIX_POINTER:
         /* not so great, this is a pointer fixup and we can only do seg
            fixups */
-        codeOffset = (uint_32)ReadU16( seg->data );
+        codeOffset = (uint_32)MGET_LE_16( seg->data );
         offsetFixup = FixDup( newfix );
         offsetFixup->loc_method = FIX_OFFSET;
         newfix->loc_method = FIX_BASE;
@@ -352,7 +353,7 @@ STATIC void symbChangeSeg( symb_handle cur ) {
     case FIX_POINTER386:
         /* not so great, this is a pointer fixup and we can only do seg
            fixups */
-        codeOffset = ReadU32( seg->data );
+        codeOffset = MGET_LE_32( seg->data );
         offsetFixup = FixDup( newfix );
         offsetFixup->loc_method = FIX_OFFSET386;
         newfix->loc_method = FIX_BASE;
@@ -377,7 +378,7 @@ STATIC void symbBlock( symb_handle cur ) {
     codeOffset += cur->d.block.start_offset;
     if( offsetFixup != NULL ) {
         myfix = FixDup( offsetFixup );
-        WriteU32( buf, codeOffset );
+        MPUT_LE_32( buf, codeOffset );
     } else {
         myfix = NULL;
     }

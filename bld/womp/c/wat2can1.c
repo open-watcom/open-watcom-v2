@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,7 +122,7 @@ STATIC uint_16 get16( void ) {
 
     uint_16 word;
 
-    word = ReadU16( wat->ptr );
+    word = MGET_LE_16( wat->ptr );
     wat->ptr += 2;
     return( word );
 }
@@ -131,7 +131,7 @@ STATIC uint_32 get32( void ) {
 
     uint_32 dword;
 
-    dword = ReadU32( wat->ptr );
+    dword = MGET_LE_32( wat->ptr );
     wat->ptr += 4;
     return( dword );
 }

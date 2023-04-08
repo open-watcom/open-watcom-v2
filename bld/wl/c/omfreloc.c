@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,7 @@ static void GetFrame( unsigned method, frame_spec *frame )
         }
         break;
     case FRAME_ABS:
-        _TargU16toHost( _GetU16UN( ObjBuff ), frame->u.abs );
+        _TargU16toHost( MGET_U16_UN( ObjBuff ), frame->u.abs );
         ObjBuff += sizeof( unsigned_16 );
         frame->type = FIX_FRAME_ABS;
         break;
@@ -144,7 +144,7 @@ static void GetTarget( unsigned method, target_spec *target )
         target->type = FIX_TARGET_EXT;
         break;
     case TARGET_ABS:
-        _TargU16toHost( _GetU16UN( ObjBuff ), target->u.abs );
+        _TargU16toHost( MGET_U16_UN( ObjBuff ), target->u.abs );
         ObjBuff += sizeof( unsigned_16 );
         target->type = FIX_TARGET_ABS;
         break;
@@ -242,10 +242,10 @@ void DoRelocs( void )
             addend = 0;
             if( (typ & FIXDAT_PBIT) == 0 ) {
                 if( ObjFormat & FMT_32BIT_REC ) {
-                    addend = GET_U32_UN( ObjBuff );
+                    addend = MGET_U32_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_32 );
                 } else {
-                    addend = GET_U16_UN( ObjBuff );
+                    addend = MGET_U16_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_16 );
                 }
             }
@@ -317,15 +317,15 @@ void DoBakPats( void )
         value = 0;
         while( bkptr->len > 0 ) {
             if( bkptr->is32bit ) {
-                _TargU32toHost( _GetU32( data ), off );
+                _TargU32toHost( MGET_U32( data ), off );
                 data += sizeof( unsigned_32 );
-                _TargU32toHost( _GetU32( data ), value );
+                _TargU32toHost( MGET_U32( data ), value );
                 data += sizeof( unsigned_32 );
                 bkptr->len -= 2 * sizeof( unsigned_32 );
             } else {
-                _TargU16toHost( _GetU16( data ), off );
+                _TargU16toHost( MGET_U16( data ), off );
                 data += sizeof( unsigned_16 );
-                _TargU16toHost( _GetU16( data ), value );
+                _TargU16toHost( MGET_U16( data ), value );
                 data += sizeof( unsigned_16 );
                 bkptr->len -= 2 * sizeof( unsigned_16 );
             }

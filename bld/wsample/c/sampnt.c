@@ -65,7 +65,7 @@ typedef struct {
 
 static char             utilBuff[BUFF_SIZE];
 static ULONG            sleepTime;
-static seg_offset       commonAddr;
+static far_address      commonAddr;
 static thread_info      *threadInfo;
 static int              threadCount;
 static DEBUG_EVENT      debugEvent;
@@ -318,7 +318,7 @@ static bool getPEHeader( HANDLE handle, pe_exe_header *pehdr )
  */
 static void codeLoad( HANDLE handle, DWORD image_base, const char *name, samp_block_kinds kind )
 {
-    seg_offset          ovl;
+    far_address         ovl;
     int                 i;
     pe_object           obj;
     WORD                seg;
@@ -546,7 +546,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     DWORD       len;
     DWORD       continue_how;
     BOOL        rc;
-    seg_offset  where;
+    far_address where;
     DWORD       ttid;
     HANDLE      tth;
 

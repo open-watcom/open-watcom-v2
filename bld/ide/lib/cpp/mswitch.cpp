@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "idecfg.h"
 #include "wobjfile.hpp"
 #include "mconfig.hpp"
 #include "mstate.hpp"
@@ -41,7 +42,9 @@ MSwitch::MSwitch( WTokenFile& fil, WString& tok )
 {
     _panel = (int)fil.token( tok );
     fil.token( _mask );
-    fil.token( _text );
+    fil.token( _id );
+    fil.token( _on );
+    fixup();
 }
 
 #ifndef NOPERSIST
@@ -54,23 +57,26 @@ void WEXPORT MSwitch::readSelf( WObjectFile& p )
 {
     p.readObject( &_panel );
     p.readObject( &_mask );
-    p.readObject( &_text );
+    p.readObject( &_id );
+    p.readObject( &_on );
+    fixup();
 }
 
 void WEXPORT MSwitch::writeSelf( WObjectFile& p )
 {
     p.writeObject( _panel );
     p.writeObject( &_mask );
-    p.writeObject( &_text );
+    p.writeObject( &_id );
+    p.writeObject( &_on );
 }
 #endif
 
-void MSwitch::displayText( WString& s )
+void MSwitch::addOptText( WString& s )
 {
-    if( on().size() > 0 ) {
+    if( _on.size() > 0 ) {
         s.concat( ' ' );
         s.concat( '[' );
-        const char* c = on();
+        const char* c = _on;
         size_t i;
         for( i=strlen( c ); i>0; i-- ) {
             if( c[i-1] == '\\' ) {
@@ -84,7 +90,7 @@ void MSwitch::displayText( WString& s )
 
 void MSwitch::findStates( WVList* states, WVList& found )
 {
-    if( states ) {
+    if( states != NULL ) {
         int icount = states->count();
         for( int i=0; i<icount; i++ ) {
             MState* st = (MState*)(*states)[i];
@@ -95,63 +101,34 @@ void MSwitch::findStates( WVList* states, WVList& found )
     }
 }
 
-void MSwitch::getTag( WString& tag )
+bool MSwitch::isTagEqual( const char* swtag, int kludge ) const
 {
-    tag = _mask;
-    tag.concat( _text );
-}
-
-bool MSwitch::isTagEqual( WString& switchtag, int kludge )
-{
-    WString tag;
-
-    getTag( tag );
-    if( tag == switchtag )
-        return( true );
-    if( kludge == 1 ) {
-        size_t jcount = switchtag.size();
-        if( jcount > MASK_SIZE && jcount == tag.size() ) {
-            for( size_t j = 0; j < jcount; j++ ) {
-                int ct = (unsigned char)tag[j];
-                int cs = (unsigned char)switchtag[j];
-                if( ct == cs )
-                    continue;
-                // mask must be same
-                if( j < MASK_SIZE ) {
-                    return( false );
-                }
-                // ignore dash/space mismatch
-                if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
-                    continue;
-                // ignore upper/lower case mismatch
-                if( toupper( cs ) != toupper( ct ) ) {
-                    return( false );
-                }
-            }
-            return( true );
-        }
-    }
-    return( false );
-}
-
-#if CUR_CFG_VERSION > 4
-bool MSwitch::isTagEqual( MTool *tool, WString& switchtag, int kludge )
-{
-    // first check mask
-    for( int i = 0; i < MASK_SIZE; ++i ) {
-        if( _mask[i] != switchtag[i] ) {
+    for( int i = 0; i < MASK_SIZE; i++ ) {
+        if( _mask[i] != *swtag++ ) {
             return( false );
         }
     }
-    // second check text/id
-    WString tag = switchtag;
-    tag.chop( MASK_SIZE );
-    if( tool->findSwitchByText( _text, tag, kludge ) == NULL ) {
+    for( int i = 0; i < _idlen; i++ ) {
+        int ct = (unsigned char)_id[i];
+        int cs = (unsigned char)*swtag++;
+        if( cs == '\0' )
+            return( false );
+        if( ct == cs )
+            continue;
+        if( kludge == 1 ) {
+            // ignore dash/space mismatch
+            if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
+                continue;
+            // ignore upper/lower case mismatch
+            if( toupper( cs ) == toupper( ct ) ) {
+                continue;
+            }
+//        } else if( kludge == 2 ) {
+        }
         return( false );
     }
-    return( true );
+    return( *swtag == '\0' );
 }
-#endif
 
 MSwitch* MSwitch::addSwitch( WVList& list, const char* mask )
 {

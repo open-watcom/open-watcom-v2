@@ -114,7 +114,7 @@ static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
     GLOBALENTRY         ge;
     os2_exe_header      nehdr;
     dos_exe_header      doshdr;
-    seg_offset          ovl;
+    far_address         ovl;
     int                 i;
     LPVOID              ptr;
     WORD                sel;
