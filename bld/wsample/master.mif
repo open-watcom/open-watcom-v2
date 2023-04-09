@@ -106,7 +106,7 @@ extra_l_flags_nov = debug novell option stack=10k @nversion.tmp &
     opt description 'Open Watcom Sampler' &
     module clib import @$(nwoss_dir)/common/imp/ownwos.imp
 !ifeq target rsi
-lflags_dos_i86 = sys dos16m opt stub=$(wstub_dir)/dos386/wstubq.exe runtime auto lib doslfn$(memory_model_i86).lib
+lflags_dos_i86 = sys dos16m opt stub=$(wstub_dir)/dos386/wstubq.exe runtime auto $(lflags_doslfn_i86)
 !else ifeq target pls
 lflags_dos_386 = sys pharlap ext opt nodefaultlibs, maxdata=0 runtime maxreal=1023K, maxibuf=4K, flag=2 &
     lib { clib3r.lib math3r.lib } file { $(plsdir)/dilseg.obj $(plsdir)/dilglue.obj }
