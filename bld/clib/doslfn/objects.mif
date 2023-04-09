@@ -43,7 +43,6 @@
 !inject uopen.obj       d16 d32 dpm
 !inject urenm.obj       d16 d32 dpm
 !inject urmdr.obj       d16 d32 dpm
-!inject uselfn.obj      d16 d32 dpm
 !inject usplit2.obj     d16 d32 dpm
 !inject uspltpat.obj    d16 d32 dpm
 !inject usrchen.obj     d16 d32 dpm

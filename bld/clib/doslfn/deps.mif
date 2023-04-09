@@ -39,7 +39,6 @@ unlnk.obj    : ../../../c/unlnk.c    ../../../../handleio/c/unlnk.c
 uopen.obj    : ../../../c/uopen.c    ../../../../handleio/c/uopen.c  ../../../../handleio/c/open.c
 urenm.obj    : ../../../c/urenm.c    ../../../../file/c/urenm.c      ../../../../file/c/renam.c
 urmdr.obj    : ../../../c/urmdr.c    ../../../../direct/c/urmdr.c    ../../../../direct/c/rmdir.c
-uselfn.obj   : ../../../c/uselfn.c
 usplit2.obj  : ../../../c/usplit2.c  ../../../../misc/c/usplit2.c    ../../../../misc/c/split2.c
 uspltpat.obj : ../../../c/uspltpat.c ../../../../misc/c/uspltpat.c   ../../../../misc/c/splitpat.c
 usrchen.obj  : ../../../c/usrchen.c  ../../../../environ/c/usrchen.c ../../../../environ/c/searchen.c
