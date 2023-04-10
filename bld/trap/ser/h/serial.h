@@ -31,8 +31,13 @@
 ****************************************************************************/
 
 
-#define MILLISEC_PER_TICK       55L
-#define TICK_TYPE               unsigned char
+#if defined( __UNIX__ ) && !defined( __QNX__ )
+    #define MILLISEC_PER_TICK   1UL
+    #define TICK_TYPE           unsigned short
+#else
+    #define MILLISEC_PER_TICK   55UL
+    #define TICK_TYPE           unsigned char
+#endif
 
 #define MSEC2TICK( amt )        ((2 * (amt) + MILLISEC_PER_TICK) / (2 * MILLISEC_PER_TICK))
 #define SEC2TICK( amt )         (MSEC2TICK( (amt) * 1000L ))
@@ -100,7 +105,7 @@ typedef enum {
 #define MIN_BAUD    Baud_1200
 
 typedef struct baud_entry {
-    char            *name;
-    int             len;
-    TICK_TYPE       full_test_ticks;
+    char        *name;
+    int         len;
+    TICK_TYPE   full_test_ticks;
 } baud_entry;

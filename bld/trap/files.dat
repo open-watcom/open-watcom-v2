@@ -165,12 +165,15 @@ usr="tcp.trp"   keys="!newdbg"
 usr="tcp??.trp" keys="newdbg"
 usr="par.trp"   keys="!newdbg"
 usr="par??.trp" keys="newdbg"
+usr="ser.trp"   keys="!newdbg"
+usr="ser??.trp" keys="newdbg"
 [ DEFAULT type="e" dir="binl" cond="lnxtarg" where="c f77 jc jf77" ]
 usr="std.trp"   keys="!newdbg"
 usr="std??.trp" keys="newdbg"
 [ DEFAULT type="e" dir="binl" cond="lnxtarg" where="c f77 jc jf77" ]
 usr="tcpserv"
 usr="parserv"
+usr="serserv"
 
 #######################
 # Linux - X64
@@ -180,6 +183,8 @@ usr="tcp.so"   keysa="!newdbg"
 usr="tcp??.so" keysa="newdbg"
 usr="par.so"   keysa="!newdbg"
 usr="par??.so" keysa="newdbg"
+usr="ser.so"   keysa="!newdbg"
+usr="ser??.so" keysa="newdbg"
 
 #######################
 # Novell - 386

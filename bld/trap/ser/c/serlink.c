@@ -717,7 +717,7 @@ static char *SetLinkParms( const char **pparm )
          * 16-bit OS/2 doesn't support 115200
          * but why 57600 is not used ?
          */
-        result = SetMaxBaud( "19200" );
+        MaxBaud = Baud_19200;
     }
 #endif
     return( result );

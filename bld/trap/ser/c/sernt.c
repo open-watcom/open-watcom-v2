@@ -41,12 +41,11 @@
 int ErrorFlag;
 int BreakFlag;
 
-static baud_index CurrentBaud;
-static DWORD resetTickCount;
-
-static HANDLE hSerial = INVALID_HANDLE_VALUE;
-static int comPortNumber = 1;
-static char comPortName[64];
+static baud_index   CurrentBaud;
+static DWORD        resetTickCount;
+static HANDLE       hSerial = INVALID_HANDLE_VALUE;
+static int          comPortNumber = 1;
+static char         comPortName[64];
 
 //////////////////////////////////////////////////////////////////////////
 // Read and write caches to reduce the number of ReadFile and WriteFile
