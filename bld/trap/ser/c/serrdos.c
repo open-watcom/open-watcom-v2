@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +38,19 @@
 #include "serial.h"
 #include "serlink.h"
 
-static int currentBaudRateIndex;
 
-static int hSerial = 0;
-static int hWait = 0;
-static int comPortNumber = 1;
-static unsigned long lastLsb;
+static baud_index       CurrentBaud;
+static int              hSerial = 0;
+static int              hWait = 0;
+static int              comPortNumber = 1;
+static unsigned long    lastLsb;
+
+static int Divisor[] = {
+    #define BAUD_ENTRY(x,v,d)   d,
+    BAUD_ENTRIES
+    #undef BAUD_ENTRY
+    0
+};
 
 void ResetTimerTicks( void )
 {
@@ -74,7 +81,7 @@ char *InitSys( void )
         RdosSetDtr( hSerial );
         RdosSetRts( hSerial );
     }
-    currentBaudRateIndex = -1;
+    CurrentBaud = UNDEF_BAUD;
     return( NULL );
 }
 
@@ -149,11 +156,12 @@ bool TestForBreak( void )
 }
 #endif
 
-static int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
-
-bool Baud( int index )
+bool Baud( baud_index index )
 {
-    if( index == currentBaudRateIndex )
+    if( index == MODEM_BAUD )
+        return( true );
+
+    if( index == CurrentBaud )
         return( true );
 
     if( hSerial )
@@ -166,7 +174,7 @@ bool Baud( int index )
 
     hSerial = RdosOpenCom( comPortNumber - 1, 115200 / Divisor[index], 'N', 8, 1, 0x1000, 0x1000 );
 
-    currentBaudRateIndex = index;
+    CurrentBaud = index;
 
     return( true );
 }

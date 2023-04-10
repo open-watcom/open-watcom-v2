@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,11 +46,12 @@
 #include "trpimp.h"
 #include "trperr.h"
 
-int                                     CurrentBaud;
+
+#define GET_MSECS (SysTime->nsec / NSecScale + (SysTime->seconds-StartSecs) * 1000)
+
 unsigned long                           MSecsAtZero;
 unsigned long                           StartSecs;
 struct _timesel                         __far *SysTime;
-int                                     ComPort = 0;
 struct termios                          SavePort;
 struct termios                          CurrPort;
 bool                                    HadError;
@@ -60,10 +61,16 @@ int                                     BlockIndex;
 
 unsigned long                           NSecScale;
 
-extern int                              MaxBaud;
+static int                              ComPort = 0;
+static baud_index                       CurrentBaud;
 
+static speed_t Rate[] = {
+    #define BAUD_ENTRY(x,v,d)   B ## x,
+    BAUD_ENTRIES
+    #undef BAUD_ENTRY
+    B0
+};
 
-#define GET_MSECS (SysTime->nsec / NSecScale + (SysTime->seconds-StartSecs) * 1000)
 
 void ResetTimerTicks( void )
 {
@@ -139,23 +146,11 @@ int GetByte( void )
 }
 
 
-speed_t Rate[] = {
-        B115200,
-        B57600,
-        B38400,
-        B19200,
-        B9600,
-        B4800,
-        B2400,
-        B1200,
-        B0 };
-
-
-bool Baud( int index )
+bool Baud( baud_index index )
 {
     speed_t     temp;
 
-    if( index == MIN_BAUD )
+    if( index == MODEM_BAUD )
         return( true );
     if( index == CurrentBaud )
         return( true );
@@ -301,7 +296,7 @@ char *InitSys( void )
     SysTime = _MK_FP( osinfo.timesel, 0 );
     NSecScale = (osinfo.version >= 410) ? 1000000 : (64UL*1024)*10;
     StartSecs = SysTime->seconds;
-    CurrentBaud = -1;
+    CurrentBaud = UNDEF_BAUD;
     BlockIndex = -1;
     return( NULL );
 }

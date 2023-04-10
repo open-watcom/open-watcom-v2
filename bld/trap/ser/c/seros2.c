@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,9 +45,26 @@
 #include "trpimp.h"
 #include "trperr.h"
 
-int                             CurrentBaud;
+
+#define SERIAL          0x0001
+
+#define SETLINECTRL     0x0042
+#define DATA_BITS_8     0x08
+#define STOP_BITS_1     0x00
+#define PARITY_NONE     0x00
+
+#define SETBAUDRATE     0x0041
+
+#define GETCOMMEVENT    0x0072
+#define LAST_CHAR_SENT  0x0004
+#define CHAR_AVAILABLE  0x0001
+#define ERROR_DETECTED  0x0080
+
+#define FLUSH           0x000B
+#define INPUT           0x0001
+#define OUTPUT          0x0002
+
 long                            MSecsAtZero;
-HFILE                           ComPort = 0;
 #ifdef _M_I86
 GINFOSEG                        __far *GInfoSeg;
 LINFOSEG                        __far *LInfoSeg;
@@ -70,25 +87,20 @@ TID                             ReaderId;
 bool                            OverRun;
 bool                            BlockTransmission;
 
-extern int                      MaxBaud;
+static HFILE                    ComPort = 0;
+static baud_index               CurrentBaud;
 
-#define SERIAL          0x0001
-
-#define SETLINECTRL     0x0042
-#define DATA_BITS_8     0x08
-#define STOP_BITS_1     0x00
-#define PARITY_NONE     0x00
-
-#define SETBAUDRATE     0x0041
-
-#define GETCOMMEVENT    0x0072
-#define LAST_CHAR_SENT  0x0004
-#define CHAR_AVAILABLE  0x0001
-#define ERROR_DETECTED  0x0080
-
-#define FLUSH           0x000B
-#define INPUT           0x0001
-#define OUTPUT          0x0002
+static UINT Rate[] = {
+#ifdef _M_I86
+    /* 16-bit OS/2 can't handle 115200 */
+    #define BAUD_ENTRY(x,v,d)   v,
+#else
+    #define BAUD_ENTRY(x,v,d)   x,
+#endif
+    BAUD_ENTRIES
+    #undef BAUD_ENTRY
+    0
+};
 
 void ResetTimerTicks( void )
 {
@@ -252,24 +264,7 @@ int GetByte( void )
 }
 
 
-UINT Rate[] = {
-#ifdef _M_I86
-        0,              /* 16-bit OS/2 can't handle 115200 */
-#else
-        115200,
-#endif
-        57600,
-        38400,
-        19200,
-        9600,
-        4800,
-        2400,
-        1200,
-        0
-};
-
-
-bool Baud( int index )
+bool Baud( baud_index index )
 {
     USHORT      temp;
     BYTE        lc[3];
@@ -278,7 +273,7 @@ bool Baud( int index )
     ULONG       ulParmLen;
 #endif
 
-    if( index == MIN_BAUD )
+    if( index == MODEM_BAUD )
         return( true );
     if( index == CurrentBaud )
         return( true );
@@ -394,9 +389,6 @@ char *InitSys( void )
     SEL         sel_local;
 #endif
 
-    if( MaxBaud == 0 ) {
-        MaxBaud = 3; /* 19200 -- see table */
-    }
 #ifdef _M_I86
     if( DosGetInfoSeg( &sel_global, &sel_local ) )
 #else
@@ -426,7 +418,7 @@ char *InitSys( void )
     if( DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, ReaderId ) )
 #endif
         return( TRP_OS2_cannot_set_thread_priority );
-    CurrentBaud = -1;
+    CurrentBaud = UNDEF_BAUD;
     return( NULL );
 }
 

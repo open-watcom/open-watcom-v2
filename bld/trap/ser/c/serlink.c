@@ -40,27 +40,20 @@
 #endif
 #include "serlink.h"
 
-static int BaudCounter;                 /* baud rate counter */
-static int LastResponse = SDATA_NAK;    /* last response holder */
-static int Errors = 0;                  /* Errors so far */
-static int PrevErrors = 0;              /* Errors of previous BlockSend() operation */
-static unsigned SendBlkNo = 0;          /* next block number to send */
-static unsigned ReceiveBlkNo = 0;       /* next block number to receive */
-static unsigned BytesReceived;          /* # bytes from last receive */
 
-int MaxBaud;
+static baud_index   MaxBaud;
+static baud_index   BaudCounter;                /* baud rate counter */
+static int          LastResponse = SDATA_NAK;   /* last response holder */
+static int          Errors = 0;                 /* Errors so far */
+static int          PrevErrors = 0;             /* Errors of previous BlockSend() operation */
+static unsigned     SendBlkNo = 0;              /* next block number to send */
+static unsigned     ReceiveBlkNo = 0;           /* next block number to receive */
+static unsigned     BytesReceived;              /* # bytes from last receive */
 
-#define BAUD_ENTRY( x ) #x, sizeof( #x ) - 1, (TICK_TYPE)TEST_TIME( x )
-
-baud_entry BaudTable[] = {
-    BAUD_ENTRY( 115200 ),
-    BAUD_ENTRY( 57600 ),
-    BAUD_ENTRY( 38400 ),
-    BAUD_ENTRY( 19200 ),
-    BAUD_ENTRY( 9600 ),
-    BAUD_ENTRY( 4800 ),
-    BAUD_ENTRY( 2400 ),
-    BAUD_ENTRY( 1200 ),
+static baud_entry BaudTable[] = {
+    #define BAUD_ENTRY(x,v,d)   #x, sizeof( #x ) - 1, (TICK_TYPE)TEST_TIME( x ),
+    BAUD_ENTRIES
+    #undef BAUD_ENTRY
     "0", 1, 0,
 };
 
@@ -81,7 +74,7 @@ static bool SenderHandshake( void )
     int      reply;         /* storing data received from other machine */
 
     wait_time = GetTimerTicks() + MSEC2TICK( SYNC_TIME_OUT_MS );   /* limit for time out */
-    if( MaxBaud == MIN_BAUD )
+    if( MaxBaud == MODEM_BAUD )
         wait_time += SEC2TICK( 1 );
     SendByte( SYNC_BYTE );      /* send SYNC_BYTE */
     for( ;; ) {                 /* loop until ACK received or time out */
@@ -116,9 +109,9 @@ static bool SetBaudSender( void )
     }
     StopBlockTrans();
     wait_time = GetTimerTicks() + MSEC2TICK( SYNC_TIME_OUT_MS );    /* limit for time out */
-    /* If MaxBaud == MIN_BAUD, we're talking over a modem and it might
+    /* If MaxBaud == MODEM_BAUD, we're talking over a modem and it might
        have buffered characters that haven't been transmitted yet. */
-    if( MaxBaud == MIN_BAUD )
+    if( MaxBaud == MODEM_BAUD )
         wait_time += SEC2TICK( 2 );
     for( ;; ) {
         if( WaitByte( 1 ) == SDATA_TAK ) {
@@ -148,7 +141,7 @@ static bool CheckSyncString( void )
 
     if( CheckPendingError() )
         return( false );
-    wait = (MaxBaud == MIN_BAUD) ? SEC2TICK( 2 ) : MSEC2TICK( 250 );
+    wait = ( MaxBaud == MODEM_BAUD ) ? SEC2TICK( 2 ) : MSEC2TICK( 250 );
     for( syn_c = i = 0; i < SYNC_LEN; ++i, syn_c = (syn_c + SYNC_INC) & 0xff ) {
         if( WaitByte( wait ) != syn_c ) {  /* error -- timeout or incorrect data */
             return( false );
@@ -168,7 +161,7 @@ static bool ReceiverHandshake( void )
     unsigned    wait_time;
 
     wait_time = GetTimerTicks() + MSEC2TICK( SYNC_TIME_OUT_MS );
-    if( MaxBaud == MIN_BAUD )
+    if( MaxBaud == MODEM_BAUD )
         wait_time += SEC2TICK( 1 );
     for( ;; ) {                         /* loop until SYNC_END received or time out */
         reply = WaitByte( 1 );              /* get character */
@@ -198,7 +191,7 @@ static bool SetBaudReceiver( void )
        CheckSyncString() checks if sync string is received successfully */
     if( CheckSyncString() ) {
         SendByte( SDATA_TAK );
-        wait = (MaxBaud == MIN_BAUD) ? SEC2TICK( 2 ) : MSEC2TICK( 500 );
+        wait = ( MaxBaud == MODEM_BAUD ) ? SEC2TICK( 2 ) : MSEC2TICK( 500 );
         if( WaitByte( wait ) == SDATA_ACK ) {
             SendByte( SDATA_TAK );
             return( true );
@@ -216,14 +209,14 @@ static bool SetBaudReceiver( void )
    baud rate.    baud_index contains the baud rate index
    Output:   true or false  */
 
-static bool SetBaud( int baud_index, int *sync_point_p )
+static bool SetBaud( baud_index index, int *sync_point_p )
 {
     int reply;         /* storing data received from other machine */
     int sync_point;
 
     sync_point = *sync_point_p;
     *sync_point_p += MSEC2TICK( MAX_BAUD_SET_MS ) + 3 * MSEC2TICK( SYNC_SLOP_MS );
-    if( !Baud( baud_index ) )
+    if( !Baud( index ) )
         return( false );        /* sets up baud rate */
     SyncPoint( sync_point );
     ClearCom();
@@ -234,7 +227,7 @@ static bool SetBaud( int baud_index, int *sync_point_p )
         return( false );
     }
     /* now go the other way */
-    *sync_point_p += BaudTable[baud_index].full_test_ticks;
+    *sync_point_p += BaudTable[index].full_test_ticks;
 #ifdef SERVER
     if( !SetBaudReceiver() )
         return( false );
@@ -280,8 +273,8 @@ static bool MarchToTheSameDrummer( void )
 
 static bool SetSyncTime( void )
 {
-    if( MaxBaud != MIN_BAUD ) {
-        if( !Baud( LOW_BAUD ) ) {
+    if( MaxBaud != MODEM_BAUD ) {
+        if( !Baud( MIN_BAUD ) ) {
             return( false );
         }
     }
@@ -298,14 +291,12 @@ static bool SetSyncTime( void )
 /*========================================================================*/
 /*========================================================================*/
 
-
-/*
+static bool Speed( void )
+/************************
  * This routine sets up the highest possible baud rate.
  * BaudCounter contains the baud rate index
  * Returns:  true or false
  */
-
-static bool Speed( void )
 {
     int  sync_point;
 
@@ -316,8 +307,8 @@ static bool Speed( void )
         if( SetBaud( BaudCounter, &sync_point ) )
             break;
         ++BaudCounter;                /*  ... try next slower speed */
-        if( BaudCounter >= MIN_BAUD ) {
-            BaudCounter = MIN_BAUD;
+        if( BaudCounter >= MODEM_BAUD ) {
+            BaudCounter = MODEM_BAUD;
             return( false );
         }
     }
@@ -430,7 +421,7 @@ static bool BlockSend( trap_elen len, const void *data, unsigned timeout )
     crc_low = crc_value & 0xff;        /* low 8 bits of crc_value */
     crc_hi  = crc_value >> 8;          /* high 8 bits of crc_value */
 
-    wait = ( MaxBaud == MIN_BAUD ) ? SEC2TICK( 2 ) : SEC2TICK( 1 );
+    wait = ( MaxBaud == MODEM_BAUD ) ? SEC2TICK( 2 ) : SEC2TICK( 1 );
     for( ;; ) {                 /* send block loop */
         /* send the block */
         StartBlockTrans();
@@ -506,7 +497,7 @@ static bool BlockReceive( byte *err, trap_elen max_len, void *p )
 
     ResetTimerTicks();
     BytesReceived = 0;
-    wait = (MaxBaud == MIN_BAUD) ? MSEC2TICK( 500 ) : MSEC2TICK( 250 );
+    wait = ( MaxBaud == MODEM_BAUD ) ? MSEC2TICK( 500 ) : MSEC2TICK( 250 );
     /* Receiving bytes before actual data (up to err byte) */
     for( i = 1; i <= 7; ++i ) {
         c = WaitByte( wait );
@@ -612,8 +603,8 @@ static bool WaitReceive( byte *err, trap_elen max_len, void *p, unsigned timeout
 static bool ReSync( void )
 {
     ++BaudCounter;              /* next slower speed */
-    if( BaudCounter > MIN_BAUD )
-        BaudCounter = MIN_BAUD;
+    if( BaudCounter > MODEM_BAUD )
+        BaudCounter = MODEM_BAUD;
     while( !SetSyncTime() )
         {}
     return( Speed() );  /* sync */
@@ -626,7 +617,7 @@ static bool ReSync( void )
 /* Function to see if two strings (pointed to by far pointers) are
    identical.   Returns true (identical) or false (not identical) */
 
-static bool StrEq( char *s1, char *s2 )
+static bool StrEq( const char *s1, const char *s2 )
 {
     while( (*s1 != '\0') && (*s2 != '\0') && (*s1 == *s2) ) {
         ++s1;
@@ -640,13 +631,21 @@ static bool StrEq( char *s1, char *s2 )
 /*========================================================================*/
 
 
-/* Routine used by RemoteLink() to set maximum baud rate */
-
-static char *SetMaxBaud( char *str )
+static char *SetMaxBaud( const char *str )
+/*****************************************
+ * Routine used by RemoteLink() to set maximum baud rate
+ */
 {
-    int i;              /* loop index */
+    baud_index  i;  /* loop index */
 
-    for( i = 0; i <= MIN_BAUD; ++i ) {
+    if( StrEq( str, "0" ) ) {
+        MaxBaud = MODEM_BAUD;
+        return( NULL );
+    }
+    if( strlen( str ) < 2 )
+        return( TRP_ERR_ambiguous_baud_rate );
+
+    for( i = MAX_BAUD; i <= MIN_BAUD; ++i ) {
         if( StrEq( str, BaudTable[i].name ) ) {  /* strings are equal */
             MaxBaud = i;
             return( NULL );
@@ -686,7 +685,7 @@ static char *SetLinkParms( const char **pparm )
     char        *result;        /* result of ParsePortSpec or SetComPort */
 
     parm = *pparm;
-    MaxBaud = 0;                /* default max baud is 115200 */
+    MaxBaud = MAX_BAUD;         /* default max baud is 115200 */
 
     /* strip leading white spaces */
     while( *parm == ' ' || *parm == '\t' )
@@ -705,16 +704,23 @@ static char *SetLinkParms( const char **pparm )
         }
     }
     *pparm = parm;
-    if( arg1_len == 0 )
-        return( NULL );
-    arg1[arg1_len] = '\0';
-    if( StrEq( arg1, "0" ) ) {
-        MaxBaud = MIN_BAUD;
-        return( NULL );
+    if( arg1_len ) {
+        arg1[arg1_len] = '\0';
+        result = SetMaxBaud( arg1 );
     }
-    if( arg1_len < 2 )
-        return( TRP_ERR_ambiguous_baud_rate );
-    return( SetMaxBaud( arg1 ) );
+#if defined( __OS2__ )
+    if( MaxBaud == MAX_BAUD ) {
+        /*
+         * This is not clear why 115200
+         * is replaced by 19200
+         * somehow can be related to fact that
+         * 16-bit OS/2 doesn't support 115200
+         * but why 57600 is not used ?
+         */
+        result = SetMaxBaud( "19200" );
+    }
+#endif
+    return( result );
 }
 
 
@@ -888,10 +894,10 @@ void RemoteUnLink( void )
 
 bool RemoteConnect( void )
 {
-    int     baud_limit;     /* maximum baud that BOTH sides can achieve */
-    byte    err;            /* hold values that we don't need here */
-    char    data;
-    int     MaxBaud2;
+    baud_index  baud_limit;     /* maximum baud that BOTH sides can achieve */
+    byte        err;            /* hold values that we don't need here */
+    byte        data;
+    baud_index  MaxBaud2;
 
     SendBlkNo = ReceiveBlkNo = 0;
     LastResponse = SDATA_NAK;
@@ -902,7 +908,7 @@ bool RemoteConnect( void )
     if( !WaitReceive( &err, 1, &data, SEC2TICK( 2 ) ) ) {
         return( false );
     }
-    MaxBaud2 = (byte)data;
+    MaxBaud2 = data;
     data = MaxBaud;
     if( !BlockSend( 1, &data, SEC2TICK( 2 ) ) ) {
         return( false );
@@ -915,7 +921,7 @@ bool RemoteConnect( void )
     if( !WaitReceive( &err, 1, &data, SEC2TICK( 2 ) ) ) {
         return( false );
     }
-    MaxBaud2 = (byte)data;
+    MaxBaud2 = data;
 #endif
     /* MaxBaud2 now contains the other side's baud rate limit */
     if( MaxBaud > MaxBaud2 ) {
@@ -931,7 +937,7 @@ bool RemoteConnect( void )
     {
         char    buff[128];
 
-        if( BaudCounter == MIN_BAUD ) {
+        if( BaudCounter == MODEM_BAUD ) {
             strcpy( buff, "pre-set" );
         } else {
             strcpy( buff, BaudTable[BaudCounter].name );
