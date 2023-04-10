@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +32,12 @@
 
 
 #define MILLISEC_PER_TICK       55L
+#define TICK_TYPE               unsigned char
 
-#define MSEC2TICK( amt )        (((amt) + MILLISEC_PER_TICK / 2) / MILLISEC_PER_TICK)
+#define MSEC2TICK( amt )        ((2 * (amt) + MILLISEC_PER_TICK) / (2 * MILLISEC_PER_TICK))
 #define SEC2TICK( amt )         (MSEC2TICK( (amt) * 1000L ))
-#define MAX_BAUD_SET_TICKS      6
-#define BREAK_TIME_MS           250 /* ms (~4 tiscks) */
+#define MAX_BAUD_SET_MS         330 /* ms */
+#define BREAK_TIME_MS           250 /* ms */
 #define FOREVER                 0   /* must be defined as 0 */
 
 #define SDATA_HI                0x01 /* start of conversation */
@@ -65,26 +67,25 @@
 
 #define CRC_VAL                 0x1021 /* value for CRC */
 
-typedef struct baud_entry {
-    char            *name;
-    int             len;
-    unsigned char   full_test_ticks;
-} baud_entry;
-
 /* define the time needed to send a SYNC_LEN characters back and forth */
-#define TICKS_PER_SEC   19L       /* really 18.2 but 19 is conservative */
-#define BITS_PER_CHAR   12L       /* */
-#define SYNC_SLOP       2         /* 10 */
-#define TEST_SLOP       10
-#define SYNC_TIME_OUT   10
+#define BITS_PER_CHAR           12L       /* */
+#define SYNC_SLOP_MS            110       /* ms */
+#define TEST_SLOP_MS            550       /* ms */
+#define SYNC_TIME_OUT_MS        550       /* ms */
 
 #define TEST_TIME( x ) \
-    ( SYNC_SLOP \
-    + TEST_SLOP                                 /* max time executing */ \
-    + ( 2*SYNC_TIME_OUT )                       /* max timeout wait */ \
-    + ( ( SYNC_LEN*2 )                          /* number characters sent */ \
-      / ( x / (BITS_PER_CHAR*TICKS_PER_SEC) ) ) )/* characters per timer tick */
+    ( MSEC2TICK( SYNC_SLOP_MS ) \
+    + MSEC2TICK( TEST_SLOP_MS )                 /* max time executing */ \
+    + (2 * MSEC2TICK( SYNC_TIME_OUT_MS ))       /* max timeout wait */ \
+    + ((2 * SYNC_LEN)                           /* number characters sent */ \
+      / ((x) / (BITS_PER_CHAR * MSEC2TICK(1000 + MILLISEC_PER_TICK - 1)))) ) /* characters per timer tick */
 
 #define LOW_BAUD    7
 #define MIN_BAUD    8
+
+typedef struct baud_entry {
+    char            *name;
+    int             len;
+    TICK_TYPE       full_test_ticks;
+} baud_entry;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ static unsigned BytesReceived;          /* # bytes from last receive */
 
 int MaxBaud;
 
-#define BAUD_ENTRY( x ) #x, sizeof( #x ) - 1, TEST_TIME( x )
+#define BAUD_ENTRY( x ) #x, sizeof( #x ) - 1, (TICK_TYPE)TEST_TIME( x )
 
 baud_entry BaudTable[] = {
     BAUD_ENTRY( 115200 ),
@@ -80,7 +80,7 @@ static bool SenderHandshake( void )
     unsigned wait_time;     /* used to test for time-out */
     int      reply;         /* storing data received from other machine */
 
-    wait_time = GetTimerTicks() + SYNC_TIME_OUT;   /* limit for time out */
+    wait_time = GetTimerTicks() + MSEC2TICK( SYNC_TIME_OUT_MS );   /* limit for time out */
     if( MaxBaud == MIN_BAUD )
         wait_time += SEC2TICK( 1 );
     SendByte( SYNC_BYTE );      /* send SYNC_BYTE */
@@ -115,7 +115,7 @@ static bool SetBaudSender( void )
         SendByte( data );            /* send sync string bytes */
     }
     StopBlockTrans();
-    wait_time = GetTimerTicks() + SYNC_TIME_OUT;    /* limit for time out */
+    wait_time = GetTimerTicks() + MSEC2TICK( SYNC_TIME_OUT_MS );    /* limit for time out */
     /* If MaxBaud == MIN_BAUD, we're talking over a modem and it might
        have buffered characters that haven't been transmitted yet. */
     if( MaxBaud == MIN_BAUD )
@@ -167,7 +167,7 @@ static bool ReceiverHandshake( void )
     int         reply;         /* storing data received from other machine */
     unsigned    wait_time;
 
-    wait_time = GetTimerTicks() + SYNC_TIME_OUT;
+    wait_time = GetTimerTicks() + MSEC2TICK( SYNC_TIME_OUT_MS );
     if( MaxBaud == MIN_BAUD )
         wait_time += SEC2TICK( 1 );
     for( ;; ) {                         /* loop until SYNC_END received or time out */
@@ -222,14 +222,14 @@ static bool SetBaud( int baud_index, int *sync_point_p )
     int sync_point;
 
     sync_point = *sync_point_p;
-    *sync_point_p += MAX_BAUD_SET_TICKS + 3*SYNC_SLOP;
+    *sync_point_p += MSEC2TICK( MAX_BAUD_SET_MS ) + 3 * MSEC2TICK( SYNC_SLOP_MS );
     if( !Baud( baud_index ) )
         return( false );        /* sets up baud rate */
     SyncPoint( sync_point );
     ClearCom();
-    Wait( SYNC_SLOP );
+    Wait( MSEC2TICK( SYNC_SLOP_MS ) );
     SendByte( SDATA_HI );
-    reply = WaitByte( SYNC_SLOP * 2 );
+    reply = WaitByte( 2 * MSEC2TICK( SYNC_SLOP_MS ) );
     if( reply != SDATA_HI ) {
         return( false );
     }
@@ -311,7 +311,7 @@ static bool Speed( void )
 
     if( !MarchToTheSameDrummer() )
         return( false );
-    sync_point = MAX_BAUD_SET_TICKS;
+    sync_point = MSEC2TICK( MAX_BAUD_SET_MS );
     for( ;; ) {
         if( SetBaud( BaudCounter, &sync_point ) )
             break;
