@@ -117,27 +117,32 @@ int WaitByte( unsigned ticks )
     if( ticks > 0 && timeout == 0 )
         timeout = 1;    /* 0.1 sec */
 
-    data = SDATA_NO_DATA;
     CurrPort.c_cc[VTIME] = timeout;
     rc = tcsetattr( ComPort, TCSADRAIN, &CurrPort );
 //    return( TRP_ERR_could_not_set_serial_port_characteristics );
     CurrPort.c_cc[VTIME] = 1;
-    if( rc == 0 ) {
-        if( read( ComPort, &data, 1 ) == 1 ) {
+    if( rc != 0 ) {
+        rc = SDATA_NO_DATA;
+    } else {
+        if( read( ComPort, &data, 1 ) != 1 ) {
+            rc = SDATA_NO_DATA;
+        } else {
+            rc = data;
             if( data == 0xff ) {
                 read( ComPort, &data, 1 );
+                rc = data;
                 if( data != 0xff ) {
                     /* a transmission error has occured */
                     HadError = true;
                     read( ComPort, &data, 1 );
-                    data = SDATA_NO_DATA;
+                    rc = SDATA_NO_DATA;
                 }
             }
         }
         tcsetattr( ComPort, TCSADRAIN, &CurrPort );
 //        return( TRP_ERR_could_not_set_serial_port_characteristics );
     }
-    return( data );
+    return( rc );
 }
 
 
