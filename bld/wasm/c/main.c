@@ -47,6 +47,7 @@
 #include "omfgenio.h"
 #include "omfobjre.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 

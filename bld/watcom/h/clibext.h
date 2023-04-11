@@ -30,11 +30,11 @@
 
 
 #ifndef __WATCOMC__
-
-/* clibext.h:
-   This file contains defines and prototypes of functions that are present
-   in Watcom's CLIB but not in many other C libraries */
-
+/*
+ * clibext.h:
+ * This file contains defines and prototypes of functions that are present
+ * in Watcom's CLIB but not in many other C libraries
+ */
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -54,7 +54,6 @@
 #ifdef __UNIX__
     #include <sys/wait.h>
 #endif
-#include "clibint.h"
 
 #define _WCRTLINK
 #define _WCNEAR

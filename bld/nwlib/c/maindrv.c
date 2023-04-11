@@ -43,6 +43,7 @@
 #include "idedrv.h"
 #include "pathgrp2.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 

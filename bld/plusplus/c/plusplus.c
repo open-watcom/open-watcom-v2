@@ -66,8 +66,8 @@
     #include "togglesd.h"
 #endif
 
-#include "clibext.h"
 #include "clibint.h"
+#include "clibext.h"
 
 
 #define DEFAULT_PREINCLUDE_FILE     "_preincl.h"

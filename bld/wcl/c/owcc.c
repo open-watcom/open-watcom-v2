@@ -56,6 +56,7 @@
 #include "clcommon.h"
 #include "banner.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
