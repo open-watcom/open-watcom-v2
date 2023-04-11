@@ -42,9 +42,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-const IN_ADDR __cdecl in4addr_any = {{ INADDR_ANY }};
+const IN_ADDR __cdecl in4addr_any = {{ { 0, 0, 0, 0 } }};
 const IN_ADDR __cdecl in4addr_loopback = {{ { 0x7F, 0, 0, 0x01 } }};
-const IN_ADDR __cdecl in4addr_broadcast = {{ INADDR_BROADCAST }};
+const IN_ADDR __cdecl in4addr_broadcast = {{ { 0xFF, 0xFF, 0xFF, 0xFF } }};
 const IN_ADDR __cdecl in4addr_allnodesonlink = {{ { 0xE0, 0, 0, 0x01 } }};
 const IN_ADDR __cdecl in4addr_allroutersonlink = {{ { 0xE0, 0, 0, 0x02 } }};
 const IN_ADDR __cdecl in4addr_alligmpv3routersonlink = {{ { 0xE0, 0, 0, 0x16 } }};
