@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +130,7 @@ static void work( const char *path_list, const char *name )
             writeNL( "Path too long in environment variable!" );
             exit( 1 );
         }
-        memcpy( path, path_list, path_len );
+        strncpy( path, path_list, path_len );
         path[path_len] = '\0';      /* path to search */
         checkDir();
         if( foundAFile && !findAll )
