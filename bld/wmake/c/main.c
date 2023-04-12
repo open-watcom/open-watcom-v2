@@ -50,6 +50,7 @@
 #include "mautodep.h"
 
 #include "clibint.h"
+#include "clibext.h"
 
 
 STATIC TLIST    *mustTargs;         /* targets we must update           */

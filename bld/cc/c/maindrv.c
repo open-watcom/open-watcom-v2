@@ -40,6 +40,7 @@
 #include "idedrv.h"
 
 #include "clibint.h"
+#include "clibext.h"
 
 
 #ifndef DLL_NAME

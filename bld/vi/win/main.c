@@ -42,6 +42,7 @@
 #include "ldstr.h"
 
 #include "clibint.h"
+#include "clibext.h"
 
 
 window_id       _NEAR root_window_id;
