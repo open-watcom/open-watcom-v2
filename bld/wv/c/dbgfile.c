@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -431,7 +431,7 @@ static size_t MakeNameWithPath( obj_attrs oattrs,
         oattrs = DefaultLoc( oattrs );
     }
     if( path != NULL ) {
-        memcpy( p, path, plen );
+        strncpy( p, path, plen );
         p += plen;
         if( oattrs & OP_LOCAL ) {
             info = &LclFile;
@@ -442,7 +442,7 @@ static size_t MakeNameWithPath( obj_attrs oattrs,
             *p++ = info->path_separator[0];
         }
     }
-    memcpy( p, name, nlen );
+    strncpy( p, name, nlen );
     p += nlen;
     *p = NULLCHAR;
     return( p - res );
@@ -477,7 +477,7 @@ file_handle LclStringToFullName( const char *name, size_t len, char *full )
  *
  */
 static file_handle FullPathOpenInternal( const char *name, size_t name_len, const char *ext,
-                                    char *result, size_t max_result, bool force_local )
+                                    char *result, size_t result_len, bool force_local )
 {
     char                    buffer[TXT_LEN];
     char                    *p;
@@ -521,7 +521,7 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     }
     *p = NULLCHAR;
     if( oattrs & OP_REMOTE ) {
-        RemoteStringToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)max_result );
+        RemoteStringToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)result_len );
         fh = FileOpen( result, OP_READ | OP_REMOTE );
     } else if( have_path ) {
         StrCopyDst( buffer, result );
@@ -538,14 +538,14 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     return( fh );
 }
 
-file_handle FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+file_handle FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t result_len )
 {
-    return( FullPathOpenInternal( name, name_len, ext, result, max_result, false ) );
+    return( FullPathOpenInternal( name, name_len, ext, result, result_len, false ) );
 }
 
-file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t result_len )
 {
-    return( FullPathOpenInternal( name, name_len, ext, result, max_result, true ) );
+    return( FullPathOpenInternal( name, name_len, ext, result, result_len, true ) );
 }
 
 static file_handle PathOpenInternal( const char *name, size_t name_len, const char *ext, bool force_local )
@@ -672,7 +672,7 @@ static void parsePathList( char_ring **owner, char *src )
             *owner = new;
             owner = &new->next;
             new->next = NULL;
-            memcpy( new->name, start, len );
+            strncpy( new->name, start, len );
             new->name[len] = NULLCHAR;
             if( *end == NULLCHAR )
                 return;
@@ -720,7 +720,7 @@ void PathInit( void )
             p = strrchr( cmd, LclFile.path_separator[0] );
             if( p != NULL ) {
                 /* look in a sibling directory of where the executable is */
-                memcpy( p + 1, "wd", 3 );
+                strcpy( p + 1, "wd" );
                 parsePathList( &LclPath, cmd );
             }
         }
@@ -765,7 +765,72 @@ static size_t MakeName( const char *path, const char *name, size_t nlen, char *r
     return( p - res );
 }
 
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+/************************************************************************************************************************************/
+{
+    char        buffer[TXT_LEN];
+    char        temp[TXT_LEN];
+    char        *p;
+    bool        have_ext;
+    bool        have_path;
+    char        c;
+    char_ring   *curr;
+    size_t      len;
+
+    /* unused parameters */ (void)ftype;
+
+    have_ext = false;
+    have_path = false;
+    p = buffer;
+    while( name_len-- > 0 ) {
+        c = *name++;
+        *p++ = c;
+        if( CHK_PATH_SEP( c, &LclFile ) ) {
+            have_ext = false;
+            have_path = true;
+        } else if( c == LclFile.ext_separator ) {
+            have_ext = true;
+        }
+    }
+    if( !have_ext ) {
+        *p++ = LclFile.ext_separator;
+        p = StrCopyDst( defext, p );
+    }
+    *p = NULLCHAR;
+    if( have_path ) {
+        p = buffer;
+    } else {
+        // check open file in current directory or in full path
+        MakeName( NULL, buffer, p - buffer, temp, sizeof( temp ) );
+        if( access( temp, F_OK ) == 0 ) {
+            p = temp;
+        } else {
+            p = "";
+            // check open file in debugger directory list
+            for( curr = LclPath; curr != NULL; curr = curr->next ) {
+                if( MakeName( curr->name, buffer, p - buffer, temp, sizeof( temp ) ) ) {
+                    if( access( temp, F_OK ) == 0 ) {
+                        p = temp;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    len = strlen( p );
+    if( result_len > 0 ) {
+        result_len--;
+        if( result_len > len )
+            result_len = len;
+        if( result_len > 0 )
+            strncpy( result, p, result_len );
+        result[result_len] = '\0';
+    }
+    return( len );
+}
+
 FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *buff, size_t buff_size )
+/************************************************************************************************************/
 {
     char            buffer[TXT_LEN];
     char            *p;

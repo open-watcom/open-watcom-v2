@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,60 @@
 #include "servio.h"
 
 
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+/************************************************************************************************************************************/
+{
+    bool        has_ext;
+    bool        has_path;
+    char        *p;
+    char        trpfile[256];
+    char        c;
+    size_t      len;
+
+    /* unused parameters */ (void)ftype;
+
+    has_ext = false;
+    has_path = false;
+    p = trpfile;
+    while( name_len-- > 0 ) {
+        c = *name++;
+        *p++ = c;
+        switch( c ) {
+        case '.':
+            has_ext = true;
+            break;
+        case '/':
+            has_ext = false;
+            has_path = true;
+            break;
+        }
+    }
+    if( !has_ext ) {
+        *p++ = '.';
+        p = StrCopyDst( defext, p );
+    }
+    *p = '\0';
+    if( has_path ) {
+        p = trpfile;
+    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, RWBuff ) ) {
+        p = RWBuff;
+    } else {
+        p = "";
+    }
+    len = strlen( p );
+    if( result_len > 0 ) {
+        result_len--;
+        if( result_len > len )
+            result_len = len;
+        if( result_len > 0 )
+            strncpy( result, p, result_len );
+        result[result_len] = '\0';
+    }
+    return( len );
+}
+
 FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext, char *result, unsigned max_result )
+/*******************************************************************************************************************/
 {
     bool                has_ext;
     bool                has_path;
