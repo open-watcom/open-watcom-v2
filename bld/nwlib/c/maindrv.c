@@ -76,7 +76,7 @@ static void setWlibModeInfo( const char *argv0 )
     }
 }
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
     int         retcode;

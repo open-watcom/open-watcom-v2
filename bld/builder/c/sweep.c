@@ -448,14 +448,14 @@ static int GetNumber( int default_num )
 
 
 #ifndef __WATCOMC__
-int main( int argc, char **argv ) 
+int main( int argc, char **argv )
 {
     int rc;
 
     _argv = argv;
     _argc = argc;
 #else
-int main( void ) 
+int main( void )
 {
     int rc;
 #endif

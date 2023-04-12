@@ -199,11 +199,11 @@ int main( int argc, char **argv )
 /*******************************/
 {
 #if !defined( __WATCOMC__ )
-    _argc = argc;                                                                                                           
-    _argv = argv;                                                                                                       
-#else                                                                                                                       
-    /* unused parameters */ (void)argc; (void)argv;                                                                     
-#endif 
+    _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
+#endif
 
     MemInit();
     UtilsInit();
