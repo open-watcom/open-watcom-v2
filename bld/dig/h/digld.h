@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #define DIGLoader(n)    DIGLoader ## n
 
 extern size_t   DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *buff, size_t buff_size );
-extern FILE     *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *buff, size_t buff_size );
+extern FILE     *DIGLoader( Open )( const char *filename );
 extern int      DIGLoader( Close )( FILE *fp );
 extern int      DIGLoader( Read )( FILE *fp, void *buff, size_t len );
 extern int      DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where );

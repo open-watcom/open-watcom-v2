@@ -769,7 +769,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
 /************************************************************************************************************************************/
 {
     char        buffer[TXT_LEN];
-    char        temp[TXT_LEN];
+    char        filename[TXT_LEN];
     char        *p;
     bool        have_ext;
     bool        have_path;
@@ -801,16 +801,17 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
         p = buffer;
     } else {
         // check open file in current directory or in full path
-        MakeName( NULL, buffer, p - buffer, temp, sizeof( temp ) );
-        if( access( temp, F_OK ) == 0 ) {
-            p = temp;
+        len = p - buffer;
+        MakeName( NULL, buffer, len, filename, sizeof( filename ) );
+        if( access( filename, F_OK ) == 0 ) {
+            p = filename;
         } else {
             p = "";
             // check open file in debugger directory list
             for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                if( MakeName( curr->name, buffer, p - buffer, temp, sizeof( temp ) ) ) {
-                    if( access( temp, F_OK ) == 0 ) {
-                        p = temp;
+                if( MakeName( curr->name, buffer, len, filename, sizeof( filename ) ) ) {
+                    if( access( filename, F_OK ) == 0 ) {
+                        p = filename;
                         break;
                     }
                 }
@@ -829,65 +830,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     return( len );
 }
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *buff, size_t buff_size )
-/************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *filename )
 {
-    char            buffer[TXT_LEN];
-    char            *p;
-    bool            have_ext;
-    bool            have_path;
-    char            c;
-    char            dummy[TXT_LEN];
-    FILE            *fp;
-    char_ring       *curr;
-
-    if( buff == NULL ) {
-        buff = dummy;
-        buff_size = sizeof( dummy );
-    }
-    have_ext = false;
-    have_path = false;
-    p = buffer;
-    while( name_len-- > 0 ) {
-        c = *name++;
-        *p++ = c;
-        if( CHK_PATH_SEP( c, &LclFile ) ) {
-            have_ext = false;
-            have_path = true;
-        } else if( c == LclFile.ext_separator ) {
-            have_ext = true;
-        }
-    }
-    if( !have_ext ) {
-        *p++ = LclFile.ext_separator;
-        p = StrCopyDst( defext, p );
-    }
-    *p = NULLCHAR;
-    if( have_path ) {
-        fp = fopen( buffer, "rb" );
-    } else {
-        // check open file in current directory or in full path
-        MakeName( NULL, buffer, p - buffer, buff, buff_size );
-        fp = fopen( buff, "rb" );
-        if( fp != NULL )
-            return( fp );
-        // check open file in debugger directory list
-        for( curr = LclPath; curr != NULL; curr = curr->next ) {
-            if( MakeName( curr->name, buffer, p - buffer, buff, buff_size ) ) {
-                fp = fopen( buff, "rb" );
-                if( fp != NULL ) {
-                    return( fp );
-                }
-            }
-        }
-    }
-    if( buff_size > 0 ) {
-        --buff_size;
-        if( buff_size > 0 )
-            strncpy( buff, buffer, buff_size );
-        buff[buff_size] = '\0';
-    }
-    return( fp );
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )

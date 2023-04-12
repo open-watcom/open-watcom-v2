@@ -91,53 +91,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     return( len );
 }
 
-FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext, char *result, unsigned max_result )
-/*******************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *filename )
 {
-    bool                has_ext;
-    bool                has_path;
-    const char          *src;
-    char                *dst;
-    char                trpfile[256];
-    FILE                *fp;
-    char                c;
-
-    max_result = max_result;
-    has_ext = false;
-    has_path = false;
-    src = name;
-    dst = trpfile;
-    while( name_len-- > 0 ) {
-        c = *src++;
-        *dst++ = c;
-        switch( c ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-            has_ext = false;
-            has_path = true;
-            break;
-        }
-    }
-    if( !has_ext ) {
-        *dst++ = '.';
-        dst = StrCopyDst( defext, dst );
-    }
-    *dst = '\0';
-    fp = NULL;
-    if( has_path ) {
-        fp = fopen( trpfile, "rb" );
-        for( src = trpfile, dst = result; (*dst = *src++) != '\0'; ++dst ) {
-            if( max_result-- < 2 ) {
-                *dst = '\0';
-                break;
-            }
-        }
-    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, result ) ) {
-        fp = fopen( result, "rb" );
-    }
-    return( fp );
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )

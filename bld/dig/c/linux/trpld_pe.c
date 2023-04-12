@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,14 +83,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     char                chr;
 #if !defined( BUILTIN_TRAP_FILE )
     FILE                *fp;
-    char                trap_name[_MAX_PATH];
+    char                filename[_MAX_PATH];
     char                *p;
 #endif
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
 #if !defined( BUILTIN_TRAP_FILE )
-    p = trap_name;
+    p = filename;
 #endif
     for( ; (chr = *parms) != '\0'; parms++ ) {
         if( chr == TRAP_PARM_SEPARATOR ) {
@@ -107,15 +107,18 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
   #endif
     *p = '\0';
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trap_name );
-    fp = DIGLoader( Open )( trap_name, p - trap_name, "trp", trap_name, sizeof( trap_name ) );
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) == 0 ) {
+        return( buff );
+    }
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         return( buff );
     }
-    TrapFile = PE_loadLibraryFile( fp, trap_name );
+    TrapFile = PE_loadLibraryFile( fp, filename );
     DIGLoader( Close )( fp );
     if( TrapFile == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trap_name );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );

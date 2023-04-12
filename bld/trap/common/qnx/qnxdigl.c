@@ -95,47 +95,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     return( len );
 }
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *result, size_t max_result )
+FILE *DIGLoader( Open )( const char *filename )
 {
-    bool            has_ext;
-    bool            has_path;
-    const char      *src;
-    char            *dst;
-    char            c;
-    char            trpfile[PATH_MAX + 1];
-    FILE            *fp;
-
-    (void)result; (void)max_result;
-
-    has_ext = false;
-    has_path = false;
-    src = name;
-    dst = trpfile;
-    while( name_len-- > 0 ) {
-        c = *src++;
-        *dst++ = c;
-        switch( c ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-            has_ext = false;
-            has_path = true;
-            break;
-        }
-    }
-    if( !has_ext ) {
-        *dst++ = '.';
-        dst = StrCopyDst( defext, dst );
-    }
-    *dst = '\0';
-    fp = NULL;
-    if( has_path ) {
-        fp = fopen( trpfile, "rb" );
-    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, RWBuff ) ) {
-        fp = fopen( RWBuff, "rb" );
-    }
-    return( fp );
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )

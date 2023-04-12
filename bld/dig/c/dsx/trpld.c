@@ -502,14 +502,17 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
     *p = '\0';
-    fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) == 0 ) {
+        return( buff );
+    }
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     p = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
     if( p == NULL ) {
         if( (p = SetTrapHandler()) != NULL || (p = CopyEnv()) != NULL ) {
             strcpy( buff, p );

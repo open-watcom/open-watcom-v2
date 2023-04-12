@@ -98,49 +98,11 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     return( len );
 }
 
-FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext, char *result, unsigned result_len )
-/*******************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *filename )
 {
-    bool        has_ext;
-    bool        has_path;
-    const char  *src;
-    char        *dst;
-    char        trpfile[256];
     tiny_ret_t  rc;
-    char        c;
 
-    result = result; result_len = result_len;
-    has_ext = false;
-    has_path = false;
-    src = name;
-    dst = trpfile;
-    while( name_len-- > 0 ) {
-        c = *src++;
-        *dst++ = c;
-        switch( c ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-        case '\\':
-            has_ext = false;
-                /* fall through */
-        case ':':
-            has_path = true;
-            break;
-        }
-    }
-    if( !has_ext ) {
-        *dst++ = '.';
-        dst = StrCopyDst( defext, dst );
-    }
-    *dst = '\0';
-    src = trpfile;
-    if( !has_path ) {
-        _searchenv( trpfile, "PATH", RWBuff );
-        src = RWBuff;
-    }
-    rc = TinyOpen( src, TIO_READ );
+    rc = TinyOpen( filename, TIO_READ );
     if( TINY_ERROR( rc ) )
         return( NULL );
     return( HANDLE2FP( TINY_INFO( rc ) ) );

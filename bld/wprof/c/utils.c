@@ -185,31 +185,10 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     return( len );
 }
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/***************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *filename )
+/*********************************************/
 {
-    char        realname[ _MAX_PATH2 ];
-    char        *filename;
-    FILE        *fp;
-
-    /* unused parameters */ (void)result_len;
-
-    strncpy( realname, name, name_len );
-    realname[name_len] = '\0';
-    if( defext != NULL && *defext != NULLCHAR ) {
-        pgroup2     pg;
-
-        _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( realname, NULL, NULL, pg.fname, defext );
-    }
-    filename = findFile( result, realname, FilePathList );
-    if( filename == NULL ) {
-        filename = findFile( result, realname, DipExePathList );
-    }
-    fp = NULL;
-    if( filename != NULL )
-        fp = fopen( filename, "rb" );
-    return( fp );
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
@@ -244,7 +223,7 @@ static char *AddPath( char *old_list, const char *path_list )
         } else {
             old_len = strlen( old_list );
             new_list = ProfAlloc( old_len + 1 + len + 1 );
-            strncpy( new_list, old_list, old_len );
+            strcpy( new_list, old_list );
             ProfFree( old_list );
             p = new_list + old_len;
         }
