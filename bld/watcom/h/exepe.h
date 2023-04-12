@@ -344,7 +344,7 @@ typedef struct {
     pe_signature        signature;
     pe_file_header      fheader;
     union {
-    	pe32_opt_header pe32;
+        pe32_opt_header pe32;
         pe64_opt_header pe64;
     } opt;
 } pe_exe_header;
