@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 extern char     *ParsePortSpec( const char ** );
 extern char     *InitSys( void );
 extern void     ResetSys( void );
-extern bool     Baud( int );
+extern bool     Baud( baud_index );
 extern void     ClearCom( void );
 extern int      GetByte( void );
 extern void     SendByte( int );

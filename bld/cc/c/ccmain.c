@@ -47,8 +47,8 @@
 #include "pathgrp2.h"
 #include "cscanbuf.h"
 
-#include "clibext.h"
 #include "clibint.h"
+#include "clibext.h"
 
 
 #if defined(__UNIX__)

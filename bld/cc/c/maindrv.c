@@ -39,6 +39,7 @@
 #endif
 #include "idedrv.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 

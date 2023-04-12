@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "memmgr.h"
 #include "idedrv.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -51,7 +52,7 @@
 #define DLL_NAME_STR    _str(DLL_NAME)
 
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
     int         retcode;

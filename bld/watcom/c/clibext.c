@@ -56,6 +56,7 @@
 #include "wio.h"
 #include "wreslang.h"
 
+#include "clibint.h"
 #include "clibext.h"
 #if defined(__NT__)
     #include "ntext.h"

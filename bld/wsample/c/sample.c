@@ -50,7 +50,7 @@
     #include "sampwin.h"
 #endif
 
-#include "clibext.h"
+#include "clibint.h"
 
 
 static samp_header          Header = {

@@ -44,6 +44,7 @@
 #include "wlnkmsg.h"
 #include "cmdline.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 

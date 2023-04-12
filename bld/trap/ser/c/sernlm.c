@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,16 +41,24 @@
 #include "trpimp.h"
 #include "trperr.h"
 
+
 extern struct ResourceTagStructure      *TimerTag;
-static struct ResourceTagStructure      *SerialTag;
 extern struct LoadDefinitionStruct      *MyNLMHandle;
 
 int                                     PortNumber = -1;
-int                                     ComPortHandle;
 struct TimerDataStructure               TimerData;
-int                                     CurrentBaud;
 
+static int                              ComPortHandle;
+static struct ResourceTagStructure      *SerialTag;
 static unsigned                         TimerTicks;
+static baud_index                       CurrentBaud;
+
+static int Divisor[] = {
+    #define BAUD_ENTRY(x,v,d)   AIO_BAUD_ ## x,
+    BAUD_ENTRIES
+    #undef BAUD_ENTRY
+    0
+};
 
 static void Tick( LONG dummy )
 {
@@ -92,7 +100,7 @@ char *InitSys( void )
 {
     SetupTimerData();
     CScheduleInterruptTimeCallBack( &TimerData );
-    CurrentBaud = -1;
+    CurrentBaud = UNDEF_BAUD;
     return( NULL );
 }
 
@@ -138,35 +146,22 @@ int GetByte( void )
     return( data );
 }
 
-static int Divisor[] = {
-    AIO_BAUD_115200,
-    AIO_BAUD_57600,
-    AIO_BAUD_38400,
-    AIO_BAUD_19200,
-    AIO_BAUD_9600,
-    AIO_BAUD_4800,
-    AIO_BAUD_2400,
-    AIO_BAUD_1200,
-    0
-};
-
-
-bool Baud( int index )
+bool Baud( baud_index index )
 {
     LONG        rc;
 
-    if( index == MIN_BAUD )
-        return( TRUE );
+    if( index == MODEM_BAUD )
+        return( true );
     if( index == CurrentBaud )
-        return( TRUE );
+        return( true );
     rc = AIOConfigurePort( ComPortHandle, Divisor[index], AIO_DATA_BITS_8,
                     AIO_STOP_BITS_1, AIO_PARITY_NONE,
                     AIO_HARDWARE_FLOW_CONTROL_OFF );
     if( rc != AIO_SUCCESS ) {
-        return( FALSE );
+        return( false );
     }
     CurrentBaud = index;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -267,7 +262,7 @@ void DonePort( void )
 
 bool CheckPendingError( void )
 {
-    return( FALSE );                    // NYI -- waiting for Rich Jeske
+    return( false );                    // NYI -- waiting for Rich Jeske
 }
 
 void ClearLastChar( void )

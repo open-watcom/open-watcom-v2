@@ -1003,6 +1003,31 @@ void AsmSysLine( const char *buf )
 #endif
 }
 
+static bool checkEnum( int *value )
+{
+    SYMBOL          sym;
+    SEARCH_RESULT   *result;
+    bool            ok;
+
+    ok = false;
+    if( CurToken == T_ID ) {
+        result = ScopeFindNaked( GetCurrScope(), NameCreateNoLen( Buffer ) );
+        if( result != NULL ) {
+            if( result->simple ) {
+                sym = result->sym_name->name_syms;
+                if( sym != NULL ) {
+                    if( SymIsEnumeration( sym ) ) {
+                        *value = sym->u.sval;
+                        ok = true;
+                    }
+                }
+            }
+            ScopeFreeResult( result );
+        }
+    }
+    return( ok );
+}
+
 static int GetByteSeq( void )
 {
     int             len;
@@ -1011,6 +1036,7 @@ static int GetByteSeq( void )
     unsigned        fixword;
     int             uses_auto;
     VBUF            code_buffer;
+    int             value;
 #if _CPU == 8086
     bool            use_fpu_emu = false;
 #endif
@@ -1047,6 +1073,9 @@ static int GetByteSeq( void )
             }
 #endif
             VbufBuffer( &code_buffer )[len++] = U32Fetch( Constant64 );
+            NextToken();
+        } else if( checkEnum( &value ) ) {
+            VbufBuffer( &code_buffer )[len++] = value;
             NextToken();
         } else {
 #if _CPU == 8086

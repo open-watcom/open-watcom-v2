@@ -37,6 +37,7 @@
 #endif
 #include "idedrv.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -49,7 +50,7 @@
 #define DLL_NAME_STR    _str(DLL_NAME)
 
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
     int         retcode;

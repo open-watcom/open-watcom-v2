@@ -37,9 +37,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sys/osinfo.h>
-#include <sys/dev.h>
-#include <sys/kernel.h>
+#include <sched.h>
 #include "bool.h"
 #include "serial.h"
 #include "serlink.h"
@@ -47,22 +45,16 @@
 #include "trperr.h"
 
 
-#define GET_MSECS (SysTime->nsec / NSecScale + (SysTime->seconds-StartSecs) * 1000)
+static baud_index                              CurrentBaud;
+static int                                     ComPort = 0;
+static struct termios                          SavePort;
+static struct termios                          CurrPort;
+static bool                                    HadError;
 
-unsigned long                           MSecsAtZero;
-unsigned long                           StartSecs;
-struct _timesel                         __far *SysTime;
-struct termios                          SavePort;
-struct termios                          CurrPort;
-bool                                    HadError;
+static char                                    BlockBuff[300];
+static int                                     BlockIndex;
 
-char                                    BlockBuff[300];
-int                                     BlockIndex;
-
-unsigned long                           NSecScale;
-
-static int                              ComPort = 0;
-static baud_index                       CurrentBaud;
+static clock_t                          start_clock;
 
 static speed_t Rate[] = {
     #define BAUD_ENTRY(x,v,d)   B ## x,
@@ -74,13 +66,13 @@ static speed_t Rate[] = {
 
 void ResetTimerTicks( void )
 {
-    MSecsAtZero = GET_MSECS;
+    start_clock = clock();
 }
 
 
 unsigned GetTimerTicks( void )
 {
-    return( ( GET_MSECS - MSecsAtZero ) / MILLISEC_PER_TICK );
+    return( clock() - start_clock );
 }
 
 
@@ -119,24 +111,38 @@ int WaitByte( unsigned ticks )
 {
     unsigned char       data;
     unsigned            timeout;
+    int                 rc;
 
     timeout = (ticks * MILLISEC_PER_TICK) / 100;
     if( ticks > 0 && timeout == 0 )
-        timeout = 1;
+        timeout = 1;    /* 0.1 sec */
 
-    if( dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 ) != 1 ) {
-        return( SDATA_NO_DATA );
+    CurrPort.c_cc[VTIME] = timeout;
+    rc = tcsetattr( ComPort, TCSADRAIN, &CurrPort );
+//    return( TRP_ERR_could_not_set_serial_port_characteristics );
+    CurrPort.c_cc[VTIME] = 1;
+    if( rc != 0 ) {
+        rc = SDATA_NO_DATA;
+    } else {
+        if( read( ComPort, &data, 1 ) != 1 ) {
+            rc = SDATA_NO_DATA;
+        } else {
+            rc = data;
+            if( data == 0xff ) {
+                read( ComPort, &data, 1 );
+                rc = data;
+                if( data != 0xff ) {
+                    /* a transmission error has occured */
+                    HadError = true;
+                    read( ComPort, &data, 1 );
+                    rc = SDATA_NO_DATA;
+                }
+            }
+        }
+        tcsetattr( ComPort, TCSADRAIN, &CurrPort );
+//        return( TRP_ERR_could_not_set_serial_port_characteristics );
     }
-    if( data == 0xff ) {
-        dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 );
-        if( data == 0xff )
-            return( data );
-        /* a transmission error has occured */
-        HadError = true;
-        dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 );
-        return( SDATA_NO_DATA );
-    }
-    return( data );
+    return( rc );
 }
 
 
@@ -150,7 +156,7 @@ bool Baud( baud_index index )
 {
     speed_t     temp;
 
-    if( index == MODEM_BAUD )
+    if( index == MIN_BAUD )
         return( true );
     if( index == CurrentBaud )
         return( true );
@@ -171,15 +177,13 @@ bool Baud( baud_index index )
 char *ParsePortSpec( const char **spec )
 {
     int         port;
-    int         nid;
     char        ch;
     const char  *parm;
     char        *start;
     static char name[PATH_MAX + 1];
 
     parm = (spec == NULL) ? "" : *spec;
-    nid = 0;
-    port = 0;
+    port = -1;
     if( *parm == '/' ) {
         start = name;
         do {
@@ -202,34 +206,20 @@ char *ParsePortSpec( const char **spec )
             port = port * 10 + ( ch - '0' );
             ++parm;
         }
-        if( ch == ',' ) {
-            nid = port;
-            if( nid > 255 )
-                return( TRP_QNX_invalid_node_number );
+        if( port == -1 )
             port = 0;
-            for( ;; ) {
-                ++parm;
-                ch = *parm;
-                if( ch < '0' || ch > '9' )
-                    break;
-                port = port * 10 + (ch-'0');
-            }
-        }
-        if( port == 0 )
-            port = 1;
         if( port > 99 )
             return( TRP_ERR_invalid_serial_port_number );
         if( spec != NULL )
             *spec = parm;
-        strcpy( name, "//___/dev/ser__" );
-        name[4] = nid % 10 + '0';
-        nid /= 10;
-        name[3] = nid % 10 + '0';
-        nid /= 10;
-        name[2] = nid % 10 + '0';
+        strcpy( name, "/dev/ttyS" );
         if( ComPort != 0 ) {
-        name[14] = port % 10 + '0';
-        name[13] = port / 10 + '0';
+            if( port > 9 ) {
+                name[9] = port / 10 + '0';
+                name[10] = port % 10 + '0';
+            } else {
+                name[9] = port % 10 + '0';
+            }
             DonePort();
         }
         ComPort = open( name, O_RDWR );
@@ -245,6 +235,8 @@ char *ParsePortSpec( const char **spec )
     CurrPort.c_oflag = 0;
     CurrPort.c_cflag = CREAD | CS8;
     CurrPort.c_lflag = 0;
+    CurrPort.c_cc[VMIN] = 0;    /* non-blocking read */
+    CurrPort.c_cc[VTIME] = 1;   /* timeout 0.1 sec */
     if( tcsetattr( ComPort, TCSADRAIN, &CurrPort ) != 0 ) {
         return( TRP_ERR_could_not_set_serial_port_characteristics );
     }
@@ -283,19 +275,13 @@ void Wait( unsigned timer_ticks )
 
     wait_time = GetTimerTicks() + timer_ticks;
     while( GetTimerTicks() < wait_time ) {
-        Yield();
+        sched_yield();
     }
 }
 
 
 char *InitSys( void )
 {
-    struct _osinfo  osinfo;
-
-    qnx_osinfo( 0, &osinfo );
-    SysTime = _MK_FP( osinfo.timesel, 0 );
-    NSecScale = (osinfo.version >= 410) ? 1000000 : (64UL*1024)*10;
-    StartSecs = SysTime->seconds;
     CurrentBaud = UNDEF_BAUD;
     BlockIndex = -1;
     return( NULL );

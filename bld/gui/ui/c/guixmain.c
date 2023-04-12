@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,7 @@
     #include <windows.h>
 #endif
 
-#if defined(__WATCOMC__)
-    #include "clibint.h"
-#else
-    #include "clibext.h"
-#endif
+#include "clibint.h"
 
 
 // This makes sure that the main routine is actually linked in

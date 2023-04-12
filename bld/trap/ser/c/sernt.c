@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,12 +41,11 @@
 int ErrorFlag;
 int BreakFlag;
 
-static int currentBaudRateIndex;
-static DWORD resetTickCount;
-
-static HANDLE hSerial = INVALID_HANDLE_VALUE;
-static int comPortNumber = 1;
-static char comPortName[64];
+static baud_index   CurrentBaud;
+static DWORD        resetTickCount;
+static HANDLE       hSerial = INVALID_HANDLE_VALUE;
+static int          comPortNumber = 1;
+static char         comPortName[64];
 
 //////////////////////////////////////////////////////////////////////////
 // Read and write caches to reduce the number of ReadFile and WriteFile
@@ -60,6 +59,12 @@ static BYTE readCache[1024];
 static size_t readCacheIndex;
 static DWORD readCacheLevel;
 
+static int Divisor[] = {
+    #define BAUD_ENTRY(x,v,d)   d,
+    BAUD_ENTRIES
+    #undef BAUD_ENTRY
+    0
+};
 
 static void Trace(const char* fmt, ...)
 {
@@ -100,7 +105,7 @@ char *InitSys( void )
 
     Trace( "InitSys: '%s'\n", deviceFileName );
 
-    currentBaudRateIndex = -1;
+    CurrentBaud = UNDEF_BAUD;
 
     ResetTimerTicks();
 
@@ -169,7 +174,7 @@ void ResetSys( void )
 bool Terminate( void )
 {
     ResetSys();
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -202,12 +207,12 @@ void SendByte( int value )
 
 void StartBlockTrans( void )
 {
-    bBlockWriteMode = TRUE;
+    bBlockWriteMode = true;
 }
 
 void StopBlockTrans( void )
 {
-    bBlockWriteMode = FALSE;
+    bBlockWriteMode = false;
     FlushWriteCache();
 }
 
@@ -249,37 +254,35 @@ bool TestForBreak( void )
 
     if( ClearCommError( hSerial, &errors, &comStat ) ) {
         if( errors & CE_BREAK ) {
-            return TRUE;
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
-static int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
-
-bool Baud( int index )
+bool Baud( baud_index index )
 {
     DCB devCon;
 
     ErrorFlag = 0;
     BreakFlag = 0;
-    if( index == MIN_BAUD ) {
+    if( index == MODEM_BAUD ) {
         Trace("Ser: Modem flag set\n");
-        return( TRUE );
+        return( true );
     }
 
-    if( index == currentBaudRateIndex )
-        return( TRUE );
+    if( index == CurrentBaud )
+        return( true );
 
     GetCommState(hSerial, &devCon);
     devCon.BaudRate = 115200 / Divisor[index];
     Trace("Ser: Baud set: %d\n", devCon.BaudRate);
     SetCommState(hSerial, &devCon);
 
-    currentBaudRateIndex = index;
+    CurrentBaud = index;
 
-    return( TRUE );
+    return( true );
 }
 
 char *ParsePortSpec( const char **spec )
