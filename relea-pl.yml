@@ -19,9 +19,6 @@ variables:
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
-  owciroot_lnx:     $(owroot)/ci
-  owciroot_nt:      $(owroot)\ci
-  owciroot_osx:     $(owroot)/ci
 
 stages:
   - stage: start
@@ -118,7 +115,7 @@ stages:
       owimage:      $(owimage_nt)
       owtools:      VISUALC
       owdosbox:     dosbox.exe
-      owdosboxpath: $(owciroot_nt)\nt386
+      owdosboxpath: $(owroot)\ci\nt386
     jobs:
       - template: ci/build.yml
         parameters:
@@ -134,9 +131,8 @@ stages:
       owbuild.stage: docs
       owtools:      VISUALC
       owimage:      $(owimage_nt)
-      owciroot:     $(owciroot_nt)
       owdosbox:     dosbox.exe
-      owdosboxpath: $(owciroot_nt)\nt386
+      owdosboxpath: $(owroot)\ci\nt386
     jobs:
       - template: ci/docbuild.yml
         parameters:
