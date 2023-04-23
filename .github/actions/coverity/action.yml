@@ -59,7 +59,7 @@ runs:
     shell: pwsh
   - name: "Download Coverity Tools"
     run: |
-      curl $OWCURLOPTS -o ${{ steps.cov_archive.outputs.path }} https://scan.coverity.com/download/cxx/${{ inputs.tool_src }} -d "project=${OWCOVERITY_PROJECT}&token=${{ inputs.coverity_token }}"
+      curl -s -o ${{ steps.cov_archive.outputs.path }} https://scan.coverity.com/download/cxx/${{ inputs.tool_src }} -d "project=${OWCOVERITY_PROJECT}&token=${{ inputs.coverity_token }}"
       mkdir -p ${{ steps.cov_path.outputs.path }}
     shell: bash
   - if: inputs.arch == 'lnx'
@@ -104,7 +104,7 @@ runs:
       del lst.txt
     shell: cmd
   - name: "Upload Coverity data"
-    run: response=$(curl $OWCURLOPTS --write-out "\n%{http_code}\n" --form project=$OWCOVERITY_PROJECT --form token=${{ inputs.coverity_token }} --form email=malak.jiri@gmail.com --form file=@${{ inputs.result_archive }} --form version=$OWSHA --form description="Open Watcom V2 Azure Pipelines CI build" https://scan.coverity.com/builds)
+    run: response=$(curl -s --write-out "\n%{http_code}\n" --form project=$OWCOVERITY_PROJECT --form token=${{ inputs.coverity_token }} --form email=malak.jiri@gmail.com --form file=@${{ inputs.result_archive }} --form version=$OWSHA --form description="Open Watcom V2 Azure Pipelines CI build" https://scan.coverity.com/builds)
     shell: bash
   - run: |
       New-Item -Path "${{ github.workspace }}" -Name "xxxxx" -ItemType "directory"

@@ -10,7 +10,6 @@ env:
   OWROOT: ${{ github.workspace }}
   OWCOVERITY_PROJECT: open-watcom/open-watcom-v2
   OWCOVERITY_TOOL_BASE: coverity-scan-analysis
-  OWCURLOPTS: -s
 jobs:
   start-start:
     name: Start
