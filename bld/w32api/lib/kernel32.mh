@@ -647,7 +647,7 @@ InitOnceBeginInitialize@16
 InitOnceComplete@12
 InitOnceExecuteOnce@16
 InitOnceInitialize@4
-InitializeConiditionVariable@4
+InitializeConditionVariable@4
 InitializeCriticalSection@4
 InitializeCriticalSectionAndSpinCount@8
 InitializeCriticalSectionEx@12
@@ -1065,6 +1065,7 @@ WaitForThreadpoolWorkCallbacks@8
 WaitNamedPipeA@8
 WaitNamedPipeW@8
 WakeAllConditionVariable@4
+WakeConditionVariable@4
 WaitConditionVariable@4
 WideCharToMultiByte@32
 WinExec@8
