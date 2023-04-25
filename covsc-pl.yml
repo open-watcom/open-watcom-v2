@@ -34,7 +34,6 @@ stages:
     variables:
       owtools:      GCC
       owimage:      $(owimage_lnx)
-      owcoverity.script: $(owroot)/ci/covbuild.sh
       owcoverity.tool.src: linux64
       owcoverity.tool.archive: /tmp/cov-analysis-linux.tgz
       owcoverity.tool.base: /tmp/coverity-scan-analysis
@@ -46,6 +45,7 @@ stages:
           arch:     lnx
           title:    Coverity Scan Linux
           image:    $(owimage_lnx)
+          cscript:  $(owroot)/ci/covbuild.sh
           pscript:  $(owroot)/ci/coverity.sh
 #  - stage: scannt
 #    displayName: "Coverity Scan Windows"
@@ -54,7 +54,6 @@ stages:
 #    variables:
 #      owtools:      VISUALC
 #      owimage:      $(owimage_nt)
-#      owcoverity.script: $(owroot)\ci\covbuild.cmd
 #      owcoverity.tool.src: win64
 #      owcoverity.tool.archive: $(TEMP)\cov-analysis-windows.zip
 #      owcoverity.tool.base: $(TEMP)\coverity-scan-analysis
@@ -67,4 +66,5 @@ stages:
 #          arch:     nt
 #          title:    Coverity Scan Windows
 #          image:    $(owimage_nt)
+#          cscript:  $(owroot)\ci\covbuild.cmd
 #          pscript:  $(owroot)\ci\coverity.cmd

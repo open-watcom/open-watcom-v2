@@ -78,13 +78,13 @@ runs:
     shell: cmd
   - if: inputs.arch == 'lnx'
     name: "Build Coverity data"
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.cscript }}
     env:
       OWCOVERITY_SCRIPT: ${{ inputs.cscript }}
     shell: bash
   - if: inputs.arch == 'nt'
     name: "Build Coverity data"
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.cscript }}
     env:
       OWCOVERITY_SCRIPT: ${{ inputs.cscript }}
     shell: cmd
