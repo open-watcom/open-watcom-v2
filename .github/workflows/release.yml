@@ -3,11 +3,6 @@ run-name: Release build (daily and monthly)
 on:
   schedule:
     - cron:  '30 0 * * *'
-env:
-  OWDEBUG: '1'
-  OWVERBOSE: '1'
-  OWGITVERBOSE: "-v"
-  OWROOT: ${{ github.workspace }}
 jobs:
   start-start:
     name: Start
