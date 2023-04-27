@@ -1,9 +1,9 @@
 ## Open Watcom v2 Fork
 |Project Build Status||Download|
 |---|---|---|
-|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-CI?branchName=master&stageName=Last%20CI%20build)|CI Build|[Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Last-CI-build) , [Azure Pipelines Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)|
-|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Release?branchName=master&stageName=GitHub%20Release)|Current Release Build|[Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) , [Azure Pipelines Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=14&branchName=master)|
-|![Build Status](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml/badge.svg)|Coverity Scan|[Analysis Results](https://scan.coverity.com/projects/open-watcom-open-watcom-v2) , [GitHub Build](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml)|
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-CI?branchName=master&stageName=Last%20CI%20build)|CI Build|[Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Last-CI-build) , [GitHub Actions Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)|
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Release?branchName=master&stageName=GitHub%20Release)|Current Release Build|[Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) , [GitHub Actions Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=14&branchName=master)|
+|![Build Status](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml/badge.svg)|Coverity Scan|[Analysis Results](https://scan.coverity.com/projects/open-watcom-open-watcom-v2) , [GitHub Actions Build](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml)|
 ||Releases Archive|[**All Github Releases**](https://github.com/open-watcom/open-watcom-v2/releases)
 ###
 ![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
