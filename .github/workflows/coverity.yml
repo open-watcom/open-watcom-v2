@@ -4,10 +4,6 @@ on:
   schedule:
     - cron:  '0 1 * * *'
 env:
-  OWDEBUG: '1'
-  OWVERBOSE: '1'
-  OWGITVERBOSE: "-v"
-  OWROOT: ${{ github.workspace }}
   OWCOVERITY_PROJECT: open-watcom/open-watcom-v2
   OWCOVERITY_TOOL_BASE: coverity-scan-analysis
 jobs:
@@ -36,6 +32,7 @@ jobs:
         tool_archive: cov-analysis-linux.tgz
         result_archive: open-watcom-v2.tgz
         coverity_token: ${{ secrets.OWCOVERITY_TOKEN }}
+        owdebug: ${{ vars.OWDEBUG }}
       env:
         OWTOOLS: GCC
         OWDOSBOX: dosbox
@@ -58,6 +55,7 @@ jobs:
 #        tool_archive: cov-analysis-linux.zip
 #        result_archive: open-watcom-v2.zip
 #        coverity_token: ${{ secrets.OWCOVERITY_TOKEN }}
+#        owdebug: ${{ vars.OWDEBUG }}
 #      env:
 #        OWTOOLS: VISUALC
 #        OWIMAGE: windows-2022

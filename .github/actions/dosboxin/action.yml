@@ -9,7 +9,7 @@ runs:
   steps:
   - if: inputs.arch == 'lnx'
     name: Install DOSBOX
-    run: |-
+    run: |
       for i in {1..3}
       do
         sudo apt update --fix-missing

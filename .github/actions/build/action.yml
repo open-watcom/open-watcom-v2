@@ -1,0 +1,98 @@
+name: build
+description: ''
+inputs:
+  arch:
+    required: false
+    default: ''
+    type: string
+  pscript:
+    required: false
+    default: ''
+    type: string
+  tools:
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: ''
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - uses: "./.github/actions/dosboxin"
+    with:
+      arch: ${{ inputs.arch }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'bld watcom binbuild'
+      artifname: bld watcom ${{ inputs.arch }}
+      tools: ${{ inputs.tools }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'build binbuild'
+      artifname: build ${{ inputs.arch }}
+      tools: ${{ inputs.tools }}
+  - if: inputs.arch == 'lnx' && inputs.tools == 'gcc'
+    name: Build
+    run: ${{ inputs.pscript }}
+    env:
+      OWBUILD_STAGE: 'build'
+      OWTOOLS:       'GCC'
+      OWROOT:        ${{ github.workspace }}
+      OWDOSBOX:      'dosbox'
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     '1'
+    shell: bash
+  - if: inputs.arch == 'lnx' && inputs.tools == 'clang'
+    name: Build
+    run: ${{ inputs.pscript }}
+    env:
+      OWBUILD_STAGE: 'build'
+      OWTOOLS:       'CLANG'
+      OWROOT:        ${{ github.workspace }}
+      OWDOSBOX:      'dosbox'
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     '1'
+    shell: bash
+  - if: inputs.arch == 'nt'
+    name: Build
+    run: ${{ inputs.pscript }}
+    env:
+      OWBUILD_STAGE: 'build'
+      OWTOOLS:       'VISUALC'
+      OWROOT:        ${{ github.workspace }}
+      OWIMAGE:       'windows-2019'
+      OWDOSBOX:      'dosbox.exe'
+      OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     '1'
+    shell: cmd
+  - if: inputs.arch == 'osx'
+    name: Build
+    run: ${{ inputs.pscript }}
+    env:
+      OWBUILD_STAGE: 'build'
+      OWTOOLS:       'CLANG'
+      OWROOT:        ${{ github.workspace }}
+      OWDOSBOX:      'dosbox'
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     '1'
+    shell: bash
+  - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
+    uses: "./.github/actions/artfsave"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'rel'
+      artifname: rel ${{ inputs.arch }}
+      tools: ${{ inputs.tools }}
+  - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
+    uses: "./.github/actions/artfsave"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'bld setupgui'
+      artifname: bld setupgui ${{ inputs.arch }}
+      tools: ${{ inputs.tools }}

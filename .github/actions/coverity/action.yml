@@ -37,6 +37,11 @@ inputs:
     required: false
     default: ''
     type: string
+  owdebug:
+    description: ''
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -59,8 +64,11 @@ runs:
     shell: pwsh
   - name: "Download Coverity Tools"
     run: |
-      curl -s -o ${{ steps.cov_archive.outputs.path }} https://scan.coverity.com/download/cxx/${{ inputs.tool_src }} -d "project=${OWCOVERITY_PROJECT}&token=${{ inputs.coverity_token }}"
+      response=$(curl -s -o ${{ steps.cov_archive.outputs.path }} "https://scan.coverity.com/download/cxx/${{ inputs.tool_src }}" -d "project=${OWCOVERITY_PROJECT}&token=${{ inputs.coverity_token }}")
       mkdir -p ${{ steps.cov_path.outputs.path }}
+    shell: bash
+  - if: inputs.owdebug == '1'
+    run: echo "$response"
     shell: bash
   - if: inputs.arch == 'lnx'
     name: "Restore Coverity Tools"
@@ -80,17 +88,18 @@ runs:
     name: "Build Coverity data"
     run: ${{ inputs.pscript }} ${{ inputs.cscript }}
     env:
-      OWCOVERITY_SCRIPT: ${{ inputs.cscript }}
+      OWROOT:        ${{ github.workspace }}
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     '1'
     shell: bash
   - if: inputs.arch == 'nt'
     name: "Build Coverity data"
     run: ${{ inputs.pscript }} ${{ inputs.cscript }}
     env:
-      OWCOVERITY_SCRIPT: ${{ inputs.cscript }}
+      OWROOT:        ${{ github.workspace }}
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     '1'
     shell: cmd
-  - name: "Get commit SHA"
-    run: echo "OWSHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-    shell: bash
   - if: inputs.arch == 'lnx'
     name: "Archive Coverity data"
     run: tar czf ${{ inputs.result_archive }} cov-int
@@ -104,7 +113,11 @@ runs:
       del lst.txt
     shell: cmd
   - name: "Upload Coverity data"
-    run: response=$(curl -s --write-out "\n%{http_code}\n" --form project=$OWCOVERITY_PROJECT --form token=${{ inputs.coverity_token }} --form email=malak.jiri@gmail.com --form file=@${{ inputs.result_archive }} --form version=$OWSHA --form description="Open Watcom V2 Azure Pipelines CI build" https://scan.coverity.com/builds)
+    run: |
+      response=$(curl -s --write-out "\n%{http_code}\n" --form project=$OWCOVERITY_PROJECT --form token=${{ inputs.coverity_token }} --form email=malak.jiri@gmail.com --form file=@${{ inputs.result_archive }} --form version=${{ github.sha }} --form description="Open Watcom V2 GitHub Actions CI build" "https://scan.coverity.com/builds")
+    shell: bash
+  - if: inputs.owdebug == '1'
+    run: echo "$response"
     shell: bash
   - run: |
       New-Item -Path "${{ github.workspace }}" -Name "xxxxx" -ItemType "directory"
