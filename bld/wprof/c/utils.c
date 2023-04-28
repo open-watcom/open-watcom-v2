@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,31 +150,45 @@ char *FindHelpFile( char *fullname, const char *help_name )
 }
 
 #if defined( __UNIX__ ) || defined( __DOS__ )
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *result, size_t max_result )
-/***************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+/************************************************************************************************************************************/
 {
-    char        realname[ _MAX_PATH2 ];
-    char        *filename;
-    FILE        *fp;
+    char        realname[_MAX_PATH2];
+    char        *p;
+    pgroup2     pg;
+    size_t      len;
 
-    /* unused parameters */ (void)max_result;
+    /* unused parameters */ (void)ftype;
 
-    memcpy( realname, name, name_len );
+    strncpy( realname, name, name_len );
     realname[name_len] = '\0';
     if( defext != NULL && *defext != NULLCHAR ) {
-        pgroup2     pg;
-
         _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
         _makepath( realname, NULL, NULL, pg.fname, defext );
     }
-    filename = findFile( result, realname, FilePathList );
-    if( filename == NULL ) {
-        filename = findFile( result, realname, DipExePathList );
+    p = findFile( pg.buffer, realname, FilePathList );
+    if( p == NULL ) {
+        p = findFile( pg.buffer, realname, DipExePathList );
+        if( p == NULL ) {
+            p = "";
+        }
     }
-    fp = NULL;
-    if( filename != NULL )
-        fp = fopen( filename, "rb" );
-    return( fp );
+    len = strlen( p );
+    if( result_len > 0 ) {
+        result_len--;
+        if( result_len > len )
+            result_len = len;
+        if( result_len > 0 )
+            strncpy( result, p, result_len );
+        result[result_len] = '\0';
+    }
+    return( len );
+}
+
+FILE *DIGLoader( Open )( const char *filename )
+/*********************************************/
+{
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
@@ -209,7 +223,7 @@ static char *AddPath( char *old_list, const char *path_list )
         } else {
             old_len = strlen( old_list );
             new_list = ProfAlloc( old_len + 1 + len + 1 );
-            memcpy( new_list, old_list, old_len );
+            strcpy( new_list, old_list );
             ProfFree( old_list );
             p = new_list + old_len;
         }
@@ -283,15 +297,12 @@ void AssertionFailed( char * file, unsigned line )
 {
     pgroup2     pg;
     char        buff[13 + _MAX_FNAME];
-    size_t      size;
 
     _splitpath2( file, pg.buffer, NULL, NULL, &pg.fname, NULL ); /* _MAX_FNAME */
-    size = strlen( pg.fname );
-    memcpy( buff, pg.fname, size );
-    sprintf( buff + size, " %u", line );                /*  10 */
-                                                        /* '\0' + 1 */
-                                                        /* --- */
-                                                        /*  12+_MAX_FNAME */
+    sprintf( buff, "%s %u", pg.fname, line );   /*  10 */
+                                                /* '\0' + 1 */
+                                                /* --- */
+                                                /*  12+_MAX_FNAME */
     fatal( LIT( Assertion_Failed ), buff );
 }
 #endif

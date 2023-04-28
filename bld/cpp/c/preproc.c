@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,7 +164,7 @@ static char *AddIncludePath( char *old_list, const char *path_list )
         } else {
             old_len = strlen( old_list );
             new_list = PP_Malloc( old_len + 1 + len + 1 );
-            memcpy( new_list, old_list, old_len );
+            strcpy( new_list, old_list );
             PP_Free( old_list );
             p = new_list + old_len;
         }
@@ -413,8 +413,8 @@ static void PP_TimeInit( void )
 
     time_of_day = time( &time_of_day );
     tod = localtime( &time_of_day );
-    FormatTime_tm( PP__TIME__ + 1, tod ); 
-    FormatDate_tm( PP__DATE__ + 1, tod ); 
+    FormatTime_tm( PP__TIME__ + 1, tod );
+    FormatDate_tm( PP__DATE__ + 1, tod );
 }
 
 int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )

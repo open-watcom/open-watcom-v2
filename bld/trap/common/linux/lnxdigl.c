@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,24 +39,24 @@
 #include "servio.h"
 
 
-FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext, char *result, unsigned max_result )
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+/************************************************************************************************************************************/
 {
-    bool                has_ext;
-    bool                has_path;
-    const char          *src;
-    char                *dst;
-    char                trpfile[256];
-    FILE                *fp;
-    char                c;
+    bool        has_ext;
+    bool        has_path;
+    char        *p;
+    char        trpfile[256];
+    char        c;
+    size_t      len;
 
-    max_result = max_result;
+    /* unused parameters */ (void)ftype;
+
     has_ext = false;
     has_path = false;
-    src = name;
-    dst = trpfile;
+    p = trpfile;
     while( name_len-- > 0 ) {
-        c = *src++;
-        *dst++ = c;
+        c = *name++;
+        *p++ = c;
         switch( c ) {
         case '.':
             has_ext = true;
@@ -68,23 +68,32 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext
         }
     }
     if( !has_ext ) {
-        *dst++ = '.';
-        dst = StrCopyDst( defext, dst );
+        *p++ = '.';
+        p = StrCopyDst( defext, p );
     }
-    *dst = '\0';
-    fp = NULL;
+    *p = '\0';
     if( has_path ) {
-        fp = fopen( trpfile, "rb" );
-        for( src = trpfile, dst = result; (*dst = *src++) != '\0'; ++dst ) {
-            if( max_result-- < 2 ) {
-                *dst = '\0';
-                break;
-            }
-        }
-    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, result ) ) {
-        fp = fopen( result, "rb" );
+        p = trpfile;
+    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, RWBuff ) ) {
+        p = RWBuff;
+    } else {
+        p = "";
     }
-    return( fp );
+    len = strlen( p );
+    if( result_len > 0 ) {
+        result_len--;
+        if( result_len > len )
+            result_len = len;
+        if( result_len > 0 )
+            strncpy( result, p, result_len );
+        result[result_len] = '\0';
+    }
+    return( len );
+}
+
+FILE *DIGLoader( Open )( const char *filename )
+{
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )

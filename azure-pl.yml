@@ -36,9 +36,6 @@ variables:
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
-  owciroot_lnx:     $(owroot)/ci
-  owciroot_nt:      $(owroot)\ci
-  owciroot_osx:     $(owroot)/ci
 
 stages:
   - stage: start
@@ -58,9 +55,9 @@ stages:
       owbuild.stage: boot
       owimage:      $(owimage_lnx)
       owtools:      WATCOM
-      watcom:       $(owciroot_lnx)/ow
-      include:      $(owciroot_lnx)/ow/lh
-      watcom.path:  $(owciroot_lnx)/ow/binl
+      watcom:       $(owroot)/ci/ow
+      include:      $(owroot)/ci/ow/lh
+      watcom.path:  $(owroot)/ci/ow/binl
     jobs:
       - template: ci/bootow.yml
         parameters:
@@ -76,9 +73,9 @@ stages:
       owbuild.stage: boot
       owimage:      $(owimage_nt)
       owtools:      WATCOM
-      watcom:       $(owciroot_nt)\ow
-      include:      $(owciroot_nt)\ow\h;$(owciroot_nt)\ow\h\nt
-      watcom.path:  $(owciroot_nt)\ow\binnt
+      watcom:       $(owroot)\ci\ow
+      include:      $(owroot)\ci\ow\h;$(owroot)\ci\ow\h\nt
+      watcom.path:  $(owroot)\ci\ow\binnt
     jobs:
       - template: ci/bootow.yml
         parameters:
@@ -191,7 +188,7 @@ stages:
       owimage:      $(owimage_nt)
       owtools:      VISUALC
       owdosbox:     dosbox.exe
-      owdosboxpath: $(owciroot_nt)\nt386
+      owdosboxpath: $(owroot)\ci\nt386
     jobs:
       - template: ci/build.yml
         parameters:
@@ -223,9 +220,8 @@ stages:
       owbuild.stage: docs
       owtools:      VISUALC
       owimage:      $(owimage_nt)
-      owciroot:     $(owciroot_nt)
       owdosbox:     dosbox.exe
-      owdosboxpath: $(owciroot_nt)\nt386
+      owdosboxpath: $(owroot)\ci\nt386
     jobs:
       - template: ci/docbuild.yml
         parameters:

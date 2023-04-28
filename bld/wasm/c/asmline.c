@@ -327,14 +327,12 @@ static FILE *open_file_in_include_path( const char *name, char *fullpath )
     char            *p;
     FILE            *file = NULL;
     char            c;
-    size_t          len;
 
     while( isspace( *name ) )
         name++;
 
     path_list = IncludePath;
     if( path_list != NULL ) {
-        len = strlen( name ) + 1;
         while( (c = *path_list) != '\0' ) {
             p = fullpath;
             do {
@@ -348,7 +346,7 @@ static FILE *open_file_in_include_path( const char *name, char *fullpath )
             if( !IS_PATH_SEP( c ) ) {
                 *p++ = DIR_SEP;
             }
-            memcpy( p, name, len );
+            strcpy( p, name );
             file = fopen( fullpath, "r" );
             if( file != NULL ) {
                 break;
@@ -562,7 +560,7 @@ void AddItemToIncludePath( const char *path_list, const char *end )
             old_list = IncludePath;
             old_len = strlen( old_list );
             IncludePath = AsmAlloc( old_len + 1 + len + 1 );
-            memcpy( IncludePath, old_list, old_len );
+            strcpy( IncludePath, old_list );
             AsmFree( old_list );
             p = IncludePath + old_len;
         }

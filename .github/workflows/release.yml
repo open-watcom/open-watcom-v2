@@ -1,0 +1,285 @@
+name: Release-Build
+run-name: Release build (daily and monthly)
+on:
+  schedule:
+    - cron:  '30 0 * * *'
+jobs:
+  start-start:
+    name: Start
+    runs-on: ubuntu-20.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+  boot-lnx-gcc:
+    needs: start-start
+    name: Bootstrap Linux GCC
+    runs-on: ubuntu-20.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Bootstrap Linux
+      uses: "./.github/actions/boot"
+      with:
+        arch:    'lnx'
+        pscript: 'ci/buildx.sh'
+        tools:   'gcc'
+        owdebug: ${{ vars.OWDEBUG }}
+  boot-nt:
+    name: Bootstrap Windows
+    needs: start-start
+    runs-on: windows-2019
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Bootstrap Windows
+      uses: "./.github/actions/boot"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        owdebug: ${{ vars.OWDEBUG }}
+#  boot-osx:
+#    name: Bootstrap OSX
+#    needs: start-start
+#    runs-on: macos-11
+#    steps:
+#    - name: checkout
+#      uses: actions/checkout@v3.5.0
+#    - name: Bootstrap OSX
+#      uses: "./.github/actions/boot"
+#      with:
+#        arch:    'osx'
+#        pscript: 'ci/buildx.sh'
+#        owdebug: ${{ vars.OWDEBUG }}
+  build-lnx-gcc:
+    name: Build Linux GCC
+    needs: boot-lnx-gcc
+    runs-on: ubuntu-20.04
+    timeout-minutes: 120
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Build Linux GCC
+      uses: "./.github/actions/build"
+      with:
+        arch:    'lnx'
+        pscript: 'ci/buildx.sh'
+        tools:   'gcc'
+        owdebug: ${{ vars.OWDEBUG }}
+  build-nt:
+    name: Build Windows
+    needs: boot-nt
+    runs-on: windows-2019
+    timeout-minutes: 120
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Build Windows
+      uses: "./.github/actions/build"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        owdebug: ${{ vars.OWDEBUG }}
+#  build-osx:
+#    name: Build OSX
+#    needs: boot-osx
+#    runs-on: macos-11
+#    timeout-minutes: 120
+#    steps:
+#    - name: checkout
+#      uses: actions/checkout@v3.5.0
+#    - name: Build OSX
+#      uses: "./.github/actions/build"
+#      with:
+#        arch:    'osx'
+#        pscript: 'ci/buildx.sh'
+#        owdebug: ${{ vars.OWDEBUG }}
+  docsbuild-dos:
+    name: Documentation Build DOS
+    needs: boot-nt
+    runs-on: windows-2019
+    timeout-minutes: 90
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/docbuild"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        target:  'docdos'
+        owdebug: ${{ vars.OWDEBUG }}
+  docsbuild-chm:
+    name: Documentation Build CHM
+    needs: boot-nt
+    runs-on: windows-2019
+    timeout-minutes: 90
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/docbuild"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        target:  'docchm'
+        owdebug: ${{ vars.OWDEBUG }}
+  docsbuild-nt:
+    name: Documentation Build NT
+    needs: boot-nt
+    runs-on: windows-2019
+    timeout-minutes: 90
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/docbuild"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        target:  'docnt'
+        owdebug: ${{ vars.OWDEBUG }}
+  docsbuild-os2:
+    name: Documentation Build OS2
+    needs: boot-nt
+    runs-on: windows-2019
+    timeout-minutes: 90
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/docbuild"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        target:  'docos2'
+        owdebug: ${{ vars.OWDEBUG }}
+  docsbuild-pdf:
+    name: Documentation Build PDF
+    needs: boot-nt
+    runs-on: windows-2019
+    timeout-minutes: 90
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/docbuild"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        target:  'docpdf'
+        owdebug: ${{ vars.OWDEBUG }}
+  docsbuild-win:
+    name: Documentation Build WIN
+    needs: boot-nt
+    runs-on: windows-2019
+    timeout-minutes: 90
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/docbuild"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+        target:  'docwin'
+        owdebug: ${{ vars.OWDEBUG }}
+  docsbuild:
+    name: Consolidate Documentation
+    needs:
+    - docsbuild-dos
+    - docsbuild-chm
+    - docsbuild-nt
+    - docsbuild-os2
+    - docsbuild-pdf
+    - docsbuild-win
+    runs-on: windows-2019
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/artfload"
+      with:
+        arch:      'nt'
+        gitpath:   'rel'
+        artifname: 'rel docdos'
+    - uses: "./.github/actions/artfload"
+      with:
+        arch:      'nt'
+        gitpath:   'rel'
+        artifname: 'rel docchm'
+    - uses: "./.github/actions/artfload"
+      with:
+        arch:      'nt'
+        gitpath:   'rel'
+        artifname: 'rel docnt'
+    - uses: "./.github/actions/artfload"
+      with:
+        arch:      'nt'
+        gitpath:   'rel'
+        artifname: 'rel docos2'
+    - uses: "./.github/actions/artfload"
+      with:
+        arch:      'nt'
+        gitpath:   'rel'
+        artifname: 'rel docpdf'
+    - uses: "./.github/actions/artfload"
+      with:
+        arch:      'nt'
+        gitpath:   'rel'
+        artifname: 'rel docwin'
+    - uses: "./.github/actions/artfsave"
+      with:
+        arch:      'nt'
+        gitpath:   'rel'
+        artifname: 'rel docsall'
+  tests-lnx-gcc:
+    name: Tests Linux GCC
+    needs: build-lnx-gcc
+    runs-on: ubuntu-20.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Tests Linux GCC
+      uses: "./.github/actions/tests"
+      with:
+        arch:    'lnx'
+        pscript: 'ci/buildx.sh'
+        tools:   'gcc'
+  tests-nt:
+    name: Tests Windows
+    needs: build-nt
+    runs-on: windows-2019
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Tests Windows
+      uses: "./.github/actions/tests"
+      with:
+        arch:    'nt'
+        pscript: 'ci/buildx.cmd'
+  install-lnx:
+    name: Installers Build Linux
+    runs-on: ubuntu-20.04
+    needs:
+    - tests-lnx-gcc
+    - tests-nt
+    - docsbuild
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Last CI Build
+      uses: "./.github/actions/install"
+      with:
+        arch:    'lnx'
+        tools:   'gcc'
+        pscript: 'ci/buildx.sh'
+        owdebug: ${{ vars.OWDEBUG }}
+  release-lnx:
+    name: "GitHub Release"
+    runs-on: ubuntu-20.04
+    needs: install-lnx
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: GitHub Release
+      uses: "./.github/actions/release"
+      with:
+        arch:    'lnx'
+        tools:   'gcc'
+        owdebug: ${{ vars.OWDEBUG }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        UPLOAD_TOKEN: ${{ secrets.UPLOAD_TOKEN }}

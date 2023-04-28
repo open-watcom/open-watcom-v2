@@ -17,9 +17,6 @@ variables:
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
-  owciroot_lnx:     $(owroot)/ci
-  owciroot_nt:      $(owroot)\ci
-  owciroot_osx:     $(owroot)/ci
 
 stages:
   - stage: start
@@ -37,8 +34,6 @@ stages:
     variables:
       owtools:      GCC
       owimage:      $(owimage_lnx)
-      owciroot:     $(owciroot_lnx)
-      owcoverity.script: $(owciroot_lnx)/covbuild.sh
       owcoverity.tool.src: linux64
       owcoverity.tool.archive: /tmp/cov-analysis-linux.tgz
       owcoverity.tool.base: /tmp/coverity-scan-analysis
@@ -50,7 +45,8 @@ stages:
           arch:     lnx
           title:    Coverity Scan Linux
           image:    $(owimage_lnx)
-          pscript:  $(owciroot_lnx)/coverity.sh
+          cscript:  $(owroot)/ci/covbuild.sh
+          pscript:  $(owroot)/ci/coverity.sh
 #  - stage: scannt
 #    displayName: "Coverity Scan Windows"
 #    dependsOn:
@@ -58,18 +54,17 @@ stages:
 #    variables:
 #      owtools:      VISUALC
 #      owimage:      $(owimage_nt)
-#      owciroot:     $(owciroot_nt)
-#      owcoverity.script: $(owciroot_nt)\covbuild.cmd
 #      owcoverity.tool.src: win64
 #      owcoverity.tool.archive: $(TEMP)\cov-analysis-windows.zip
 #      owcoverity.tool.base: $(TEMP)\coverity-scan-analysis
 #      owcoverity.results.archive: open-watcom-v2.zip
 #      owdosbox:     dosbox.exe
-#      owdosboxpath: $(owciroot_nt)\nt386
+#      owdosboxpath: $(owroot)\ci\nt386
 #    jobs:
 #      - template: ci/coverity.yml
 #        parameters:
 #          arch:     nt
 #          title:    Coverity Scan Windows
 #          image:    $(owimage_nt)
-#          pscript:  $(owciroot_nt)\coverity.cmd
+#          cscript:  $(owroot)\ci\covbuild.cmd
+#          pscript:  $(owroot)\ci\coverity.cmd

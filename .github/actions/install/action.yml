@@ -1,0 +1,93 @@
+name: install
+description: ''
+inputs:
+  arch:
+    required: false
+    default: ''
+    type: string
+  pscript:
+    required: false
+    default: ''
+    type: string
+  tools:
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: ''
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:       ${{ inputs.arch }}
+      gitpath:    'build binbuild'
+      artifname:  build ${{ inputs.arch }}
+      tools:      ${{ inputs.tools }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:       ${{ inputs.arch }}
+      gitpath:    'bld setupgui'
+      artifname:  'bld setupgui nt'
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:       ${{ inputs.arch }}
+      gitpath:    'bld setupgui'
+      artifname:  'bld setupgui lnx'
+  # consolidate binaries
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:       ${{ inputs.arch }}
+      gitpath:    'rel'
+      artifname:  'rel nt'
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:       ${{ inputs.arch }}
+      gitpath:    'rel'
+      artifname:  'rel lnx'
+      tools:      'gcc'
+  # consolidated documentation
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:       ${{ inputs.arch }}
+      gitpath:    'rel'
+      artifname:  'rel docsall'
+  # run build script
+  - if: (inputs.arch == 'lnx' || inputs.arch == 'osx')
+    name: Build Installers
+    run: ${{ inputs.pscript }}
+    env:
+      OWROOT:        ${{ github.workspace }}
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: bash
+  - if: inputs.arch == 'nt'
+    name: Build Installers
+    run: ${{ inputs.pscript }}
+    env:
+      OWROOT:        ${{ github.workspace }}
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: cmd
+  # create full binary snapshot archive
+  - id: tarname
+    run: |
+      Join-Path ${{ github.workspace }} distrib ow bin ow-snapshot.tar.xz `
+      | Join-String -OutputPrefix "path=" `
+      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    shell: pwsh
+  - uses: "./.github/actions/tarsave"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:  'rel'
+      tarname:  ${{ steps.tarname.outputs.path }}
+  # save all artifacts for distribution
+  # full content of directory, cannot specify files
+  - uses: "./.github/actions/artfsave"
+    with:
+      arch:      ${{ inputs.arch }}
+      gitpath:   'distrib ow bin'
+      artifname: 'distrib bin'

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,14 +100,17 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
     *p = '\0';
-    fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) ) {
+        return( buff );
+    }
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     TrapCode = ReadInImp( fp );
     DIGLoader( Close )( fp );
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
     if( TrapCode != NULL ) {
 #ifdef __WATCOMC__
         if( TrapCode->sig == TRAPSIG ) {

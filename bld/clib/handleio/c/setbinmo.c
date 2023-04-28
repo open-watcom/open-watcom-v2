@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,11 @@
     #include <windows.h>
 #endif
 #include "iomode.h"
-
 #if defined( __DOS__ )
+    #include "tinyio.h"
+    #include "seterrno.h"
+#endif
 
-#include "tinyio.h"
-#include "seterrno.h"
 
 int __set_binary( int handle )
 {
@@ -51,6 +51,7 @@ int __set_binary( int handle )
     iomode_flags = __GetIOMode( handle );
     iomode_flags |= _BINARY;
     __SetIOMode( handle, iomode_flags );
+#if defined( __DOS__ )
     if( iomode_flags & _ISTTY ) {
         tiny_ret_t rc;
 
@@ -63,20 +64,6 @@ int __set_binary( int handle )
             return( __set_errno_dos( TINY_INFO( rc ) ) );
         }
     }
-    return( 0 );
-}
-
-#else
-
-int __set_binary( int handle )
-{
-    unsigned        iomode_flags;
-
-    __ChkTTYIOMode( handle );
-    iomode_flags = __GetIOMode( handle );
-    iomode_flags |= _BINARY;
-    __SetIOMode( handle, iomode_flags );
-    return( 0 );
-}
-
 #endif
+    return( 0 );
+}

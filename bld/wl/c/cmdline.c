@@ -616,7 +616,7 @@ void AddLibPathsToEndList( const char *path_list )
     if( path_list != NULL && *path_list != '\0' ) {
         len = strlen( path_list );
         _ChkAlloc( newpath, sizeof( path_entry ) + len );
-        memcpy( newpath->name, path_list, len + 1 );
+        strcpy( newpath->name, path_list );
         LinkList( &UsrLibPath, newpath );
     }
 }

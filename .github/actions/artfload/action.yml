@@ -1,0 +1,49 @@
+name: artifact-load
+inputs:
+  arch:
+    required: false
+    default: ''
+    type: string
+  gitpath:
+    required: false
+    default: ''
+    type: string
+  artifname:
+    required: false
+    default: ''
+    type: string
+  tools:
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - name: Get Artifact name
+    id: artifact
+    run: |
+      -Split "${{ inputs.artifname }} ${{ inputs.tools }}" `
+      | Join-String -Separator "-" -OutputPrefix "name=" `
+      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    shell: pwsh
+  - name: Download Artifact ${{ steps.artifact.outputs.name }}
+    uses: actions/download-artifact@v3
+    with:
+      name: ${{ steps.artifact.outputs.name }}
+      path: ${{ runner.temp }}
+  - name: Get tar file name
+    id: tarname
+    run: |
+      Join-Path ${{ runner.temp }} owartifact.tar.xz `
+      | Join-String -OutputPrefix "path=" `
+      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    shell: pwsh
+  - name: Restore Artifact
+    uses: "./.github/actions/tarload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath: ${{ inputs.gitpath }}
+      tarname: ${{ steps.tarname.outputs.path }}
+  - name: Delete Temporary Artifact tar file
+    run: rm -f ${{ steps.tarname.outputs.path }}
+    shell: bash

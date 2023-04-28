@@ -1,0 +1,95 @@
+name: last-build
+description: ''
+inputs:
+  arch:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: ''
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+###########################################
+# load all parts(artifacts) of distribution
+###########################################
+  - uses: "./.github/actions/artfload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'rel'
+      artifname: 'rel nt'
+  - uses: "./.github/actions/artfload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'rel'
+      artifname: 'rel lnx'
+      tools:     'gcc'
+  - uses: "./.github/actions/artfload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'rel'
+      artifname: 'rel docsall'
+###########################################
+# create CI snapshot artifact, upload it
+###########################################
+  - id: tarname
+    run: |
+      Join-Path ${{ runner.temp }} ow-snapshot.tar.xz `
+      | Join-String -OutputPrefix "path=" `
+      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    shell: pwsh
+  - uses: "./.github/actions/tarsave"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath: 'rel'
+      tarname: ${{ steps.tarname.outputs.path }}
+  - id: snapshot
+    run: |
+      Join-Path ${{ github.workspace }} ow-snapshot.tar.xz `
+      | Join-String -OutputPrefix "path=" `
+      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    shell: pwsh
+  - run: |
+      Move-Item -Path ${{ steps.tarname.outputs.path }} -Destination ${{ steps.snapshot.outputs.path }}
+    shell: pwsh
+  - name: Upload Artifact owsnapshot
+    uses: actions/upload-artifact@v3
+    with:
+      name: owsnapshot
+      path: ${{ steps.snapshot.outputs.path }}
+      retention-days: 2
+###########################################
+# create CI release, overwrite existin one
+###########################################
+  - if: github.event_name != 'PullRequest'
+    id: citag
+    run: |
+      echo "tag=Last-CI-build" >> $GITHUB_OUTPUT
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+    shell: bash
+  - if: github.event_name != 'PullRequest'
+    uses: "./.github/actions/ghreldel"
+    with:
+      tag:     ${{ steps.citag.outputs.tag }}
+      owdebug: ${{ inputs.owdebug }}
+    env:
+      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+  - if: github.event_name != 'PullRequest'
+    uses: "./.github/actions/ghrelcre"
+    with:
+      note:    Last updated ${{ steps.citag.outputs.timestamp }}
+      title:   ${{ steps.citag.outputs.tag }}
+      tag:     ${{ steps.citag.outputs.tag }}
+      tagmsg:  ${{ steps.citag.outputs.timestamp }}
+      owdebug: ${{ inputs.owdebug }}
+    env:
+      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

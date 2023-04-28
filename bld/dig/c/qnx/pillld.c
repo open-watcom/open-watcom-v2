@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,16 +42,20 @@
 
 #include "qnxload.h"
 
-int PILLSysLoad( const char *path, const pill_client_routines *cli,
+int PILLSysLoad( const char *name, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
     FILE                *fp;
     supp_header         *pill;
     pill_init_func      *init_func;
+    char                filename[_MAX_PATH];
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    fp = DIGLoader( Open )( path, strlen( path ), "pil", NULL, 0 );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, name, strlen( name ), "pil", filename, sizeof( filename ) + 1 ) == 0 ) {
+        return( 0 );
+    }
+    fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         msg->data.code = errno;
         return( 0 );

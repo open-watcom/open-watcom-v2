@@ -93,7 +93,7 @@ void HFileAppend(               // APPEND HFILE TO LIST
             old_list = hfile_list;
             old_len = strlen( old_list );
             hfile_list = CMemAlloc( old_len + 1 + len + 1 );
-            memcpy( hfile_list, old_list, old_len );
+            strcpy( hfile_list, old_list );
             CMemFree( old_list );
             p = hfile_list + old_len;
         } else {

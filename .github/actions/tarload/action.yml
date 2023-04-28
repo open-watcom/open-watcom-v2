@@ -1,0 +1,48 @@
+name: tar-load
+description: ''
+inputs:
+  arch:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  gitpath:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  tarname:
+    description: ''
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - name: Get destination folder
+    id: dstpath
+    run: |
+      Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} `
+      | Join-String -OutputPrefix "path=" `
+      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    shell: pwsh
+  - if: inputs.arch == 'lnx'
+    name: Restore Artifact
+    run: |
+      mkdir -p ${{ steps.dstpath.outputs.path }}
+      tar -xJf ${{ inputs.tarname }} -C ${{ steps.dstpath.outputs.path }} . --overwrite
+    shell: bash
+  - if: inputs.arch == 'nt'
+    name: Restore Artifact
+    run: |
+      mkdir ${{ steps.dstpath.outputs.path }}
+      7z x -txz ${{ inputs.tarname }} -o${{ runner.temp }}
+      tar -xf ${{ runner.temp }}\owartifact.tar -C ${{ steps.dstpath.outputs.path }} *
+      del ${{ runner.temp }}\owartifact.tar
+    shell: cmd
+  - if: inputs.arch == 'osx'
+    name: Restore Artifact
+    run: |
+      mkdir -p ${{ steps.dstpath.outputs.path }}
+      gtar -xJf ${{ inputs.tarname }} -C ${{ steps.dstpath.outputs.path }} . --overwrite
+    shell: bash

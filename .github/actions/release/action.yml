@@ -1,0 +1,98 @@
+name: release
+description: ''
+inputs:
+  arch:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: ''
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+##############################################
+# load build tools for current architecture
+##############################################
+  - name: Load build tools
+    uses: "./.github/actions/artfload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'build binbuild'
+      artifname: build ${{ parameters.arch }}
+      tools: ${{ inputs.tools }}
+##############################################
+# load all parts(artifacts) of distribution
+##############################################
+  - name: Load full distribution
+    uses: "./.github/actions/artfload"
+    with:
+      arch: ${{ inputs.arch }}
+      gitpath:   'distrib ow bin'
+      artifname: 'distrib bin'
+##############################################
+# create daily release, delete existing one
+##############################################
+  - name: 'Prepare build information for Release'
+    id: drelease
+    run: |
+      echo "tag=Current-build" >> $GITHUB_OUTPUT
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+    shell: bash
+  - name: 'Remove daily Release if exists'
+    uses: "./.github/actions/ghreldel"
+    with:
+      tag:     ${{ steps.drelease.outputs.tag }}
+      owdebug: ${{ inputs.owdebug }}
+    env:
+      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+  - name: 'Create daily Release'
+    uses: "./.github/actions/ghrelcre"
+    with:
+      note:    Last updated ${{ steps.drelease.outputs.timestamp }}
+      title:   ${{ steps.drelease.outputs.tag }}
+      tag:     ${{ steps.drelease.outputs.tag }}
+      tagmsg:  ${{ steps.drelease.outputs.timestamp }}
+      fullset: 1
+      owdebug: ${{ inputs.owdebug }}
+    env:
+      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+##############################################
+# create monthly release, only if not exists
+##############################################
+  - name: 'Check monthly Release exists'
+    id: mtag
+    run: |
+      mask=$(date +'%Y-%m')-[0-3][0-9]-Build
+      echo "sha=$(git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${mask}^{}:\1:p\")" >> $GITHUB_OUTPUT
+    shell: bash
+  - if: "${{ steps.mtag.outputs.sha }}xxx" == "xxx"
+    name: 'Prepare information for monthly Release'
+    id: mrelease
+    run: |
+      tagstamp=$(date +'%Y-%m-%d')
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      echo "tag=$tagstamp-Build" >> $GITHUB_OUTPUT
+      echo "tagmsg=$tagstamp $tagstamp-Build" >> $GITHUB_OUTPUT
+      echo "title=$tagstamp Build" >> $GITHUB_OUTPUT
+    shell: bash
+  - if: "${{ steps.mtag.outputs.sha }}xxx" == "xxx"
+    name: 'Create monthly Release'
+    uses: "./.github/actions/ghrelcre"
+    with:
+      note:    Created ${{ steps.mrelease.outputs.timestamp }}
+      title:   ${{ steps.mrelease.outputs.title }}
+      tag:     ${{ steps.mrelease.outputs.tag }}
+      tagmsg:  ${{ steps.mrelease.outputs.tagmsg }}
+      fullset: 1
+      owdebug: ${{ inputs.owdebug }}
+    env:
+      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

@@ -36,6 +36,7 @@
 #endif
 
 #include "clibint.h"
+#include "clibext.h"
 
 
 int main( int argc, char *argv[] )

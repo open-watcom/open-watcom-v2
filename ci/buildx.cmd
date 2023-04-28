@@ -18,9 +18,9 @@ REM ...
 REM setup Help Compilers
 REM ...
 if "%OWBUILD_STAGE%" == "docs" (
-    set OWGHOSTSCRIPTPATH=%OWCIROOT%\ntx64
-    set OWWIN95HC=%OWCIROOT%\nt386\hcrtf.exe
-    set OWHHC=%OWCIROOT%\nt386\hhc.exe
+    set OWGHOSTSCRIPTPATH=%OWROOT%\ci\ntx64
+    set OWWIN95HC=%OWROOT%\ci\nt386\hcrtf.exe
+    set OWHHC=%OWROOT%\ci\nt386\hhc.exe
 )
 REM ...
 call %OWROOT%\cmnvars.bat
@@ -71,7 +71,7 @@ REM    set RC=!ERRORLEVEL!
 if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
-    regsvr32 -s %OWCIROOT%\nt386\itcc.dll
+    regsvr32 -s %OWROOT%\ci\nt386\itcc.dll
     builder docs %OWDOCTARGET%
     set RC=!ERRORLEVEL!
 )

@@ -43,25 +43,24 @@
 #include "servio.h"
 
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *result, size_t max_result )
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+/************************************************************************************************************************************/
 {
-    bool            has_ext;
-    bool            has_path;
-    const char      *src;
-    char            *dst;
-    char            c;
-    char            trpfile[PATH_MAX + 1];
-    FILE            *fp;
+    bool        has_ext;
+    bool        has_path;
+    char        *p;
+    char        c;
+    char        trpfile[PATH_MAX + 1];
+    size_t      len;
 
-    (void)result; (void)max_result;
+    /* unused parameters */ (void)ftype;
 
     has_ext = false;
     has_path = false;
-    src = name;
-    dst = trpfile;
+    p = trpfile;
     while( name_len-- > 0 ) {
-        c = *src++;
-        *dst++ = c;
+        c = *name++;
+        *p++ = c;
         switch( c ) {
         case '.':
             has_ext = true;
@@ -73,17 +72,32 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, 
         }
     }
     if( !has_ext ) {
-        *dst++ = '.';
-        dst = StrCopyDst( defext, dst );
+        *p++ = '.';
+        p = StrCopyDst( defext, p );
     }
-    *dst = '\0';
-    fp = NULL;
+    *p = '\0';
     if( has_path ) {
-        fp = fopen( trpfile, "rb" );
+        p = trpfile;
     } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, RWBuff ) ) {
-        fp = fopen( RWBuff, "rb" );
+        p = RWBuff;
+    } else {
+        p = "";
     }
-    return( fp );
+    len = strlen( p );
+    if( result_len > 0 ) {
+        result_len--;
+        if( result_len > len )
+            result_len = len;
+        if( result_len > 0 )
+            strncpy( result, p, result_len );
+        result[result_len] = '\0';
+    }
+    return( len );
+}
+
+FILE *DIGLoader( Open )( const char *filename )
+{
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
