@@ -9,6 +9,7 @@ on: [push]
 
 jobs:
   build:
+    if: github.repository == 'open-watcom/open-watcom-v2'
     name: Mirror to SourceForge
     runs-on: ubuntu-latest
     steps:
