@@ -28,6 +28,7 @@ runs:
       arch: ${{ inputs.arch }}
       gitpath:   'build binbuild'
       artifname: build ${{ parameters.arch }}
+      tools: ${{ inputs.tools }}
 ##############################################
 # load all parts(artifacts) of distribution
 ##############################################

@@ -26,6 +26,7 @@ runs:
       arch:       ${{ inputs.arch }}
       gitpath:    'build binbuild'
       artifname:  build ${{ inputs.arch }}
+      tools:      ${{ inputs.tools }}
   - uses: "./.github/actions/artfload"
     with:
       arch:       ${{ inputs.arch }}

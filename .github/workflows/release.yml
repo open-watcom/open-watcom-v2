@@ -251,7 +251,7 @@ jobs:
         arch:    'nt'
         pscript: 'ci/buildx.cmd'
   install-lnx:
-    name: Last CI Build
+    name: Installers Build Linux
     runs-on: ubuntu-20.04
     needs:
     - tests-lnx-gcc
