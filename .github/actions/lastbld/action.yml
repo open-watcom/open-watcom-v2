@@ -32,7 +32,7 @@ runs:
       arch: ${{ inputs.arch }}
       gitpath:   'rel'
       artifname: 'rel lnx'
-      tools: ${{ inputs.tools }}
+      tools:     'gcc'
   - uses: "./.github/actions/artfload"
     with:
       arch: ${{ inputs.arch }}

@@ -32,7 +32,7 @@ runs:
       OWTOOLS:       'GCC'
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'lnx' && inputs.tools == 'clang'
     name: Bootstrap
@@ -42,7 +42,7 @@ runs:
       OWTOOLS:       'CLANG'
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: Bootstrap
@@ -53,7 +53,7 @@ runs:
       OWIMAGE:       'windows-2019'
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: cmd
   - if: inputs.arch == 'osx'
     name: Bootstrap
@@ -63,7 +63,7 @@ runs:
       OWTOOLS:       'CLANG'
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - uses: "./.github/actions/artfsave"
     with:

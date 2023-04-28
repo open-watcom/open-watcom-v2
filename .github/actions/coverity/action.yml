@@ -67,7 +67,7 @@ runs:
       response=$(curl -s -o ${{ steps.cov_archive.outputs.path }} "https://scan.coverity.com/download/cxx/${{ inputs.tool_src }}" -d "project=${OWCOVERITY_PROJECT}&token=${{ inputs.coverity_token }}")
       mkdir -p ${{ steps.cov_path.outputs.path }}
     shell: bash
-  - if: inputs.owdebug == '1'
+  - if: inputs.owdebug == 1
     run: echo "$response"
     shell: bash
   - if: inputs.arch == 'lnx'
@@ -90,7 +90,7 @@ runs:
     env:
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: "Build Coverity data"
@@ -98,7 +98,7 @@ runs:
     env:
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: cmd
   - if: inputs.arch == 'lnx'
     name: "Archive Coverity data"
@@ -116,7 +116,7 @@ runs:
     run: |
       response=$(curl -s --write-out "\n%{http_code}\n" --form project=$OWCOVERITY_PROJECT --form token=${{ inputs.coverity_token }} --form email=malak.jiri@gmail.com --form file=@${{ inputs.result_archive }} --form version=${{ github.sha }} --form description="Open Watcom V2 GitHub Actions CI build" "https://scan.coverity.com/builds")
     shell: bash
-  - if: inputs.owdebug == '1'
+  - if: inputs.owdebug == 1
     run: echo "$response"
     shell: bash
   - run: |

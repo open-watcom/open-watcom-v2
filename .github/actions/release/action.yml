@@ -61,7 +61,7 @@ runs:
       title:   ${{ steps.drelease.outputs.tag }}
       tag:     ${{ steps.drelease.outputs.tag }}
       tagmsg:  ${{ steps.drelease.outputs.timestamp }}
-      fullset: '1'
+      fullset: 1
       owdebug: ${{ inputs.owdebug }}
     env:
       GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
@@ -92,7 +92,7 @@ runs:
       title:   ${{ steps.mrelease.outputs.title }}
       tag:     ${{ steps.mrelease.outputs.tag }}
       tagmsg:  ${{ steps.mrelease.outputs.tagmsg }}
-      fullset: '1'
+      fullset: 1
       owdebug: ${{ inputs.owdebug }}
     env:
       GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

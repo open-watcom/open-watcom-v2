@@ -45,7 +45,7 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox'
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'lnx' && inputs.tools == 'clang'
     name: Build
@@ -56,7 +56,7 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox'
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: Build
@@ -69,7 +69,7 @@ runs:
       OWDOSBOX:      'dosbox.exe'
       OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: cmd
   - if: inputs.arch == 'osx'
     name: Build
@@ -80,7 +80,7 @@ runs:
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox'
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
     uses: "./.github/actions/artfsave"

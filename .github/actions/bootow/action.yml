@@ -30,7 +30,7 @@ runs:
       INCLUDE:       ${{ github.workspace }}/ci/ow/lh
       WATCOM_PATH:   ${{ github.workspace }}/ci/ow/binl
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: Bootstrap OW
@@ -43,5 +43,5 @@ runs:
       INCLUDE:       ${{ github.workspace }}\ci\ow\h;${{ github.workspace }}\ci\ow\h\nt
       WATCOM_PATH:   ${{ github.workspace }}\ci\ow\binnt
       OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     '1'
+      OWVERBOSE:     1
     shell: cmd
