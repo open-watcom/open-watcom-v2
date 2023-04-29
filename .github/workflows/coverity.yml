@@ -7,15 +7,26 @@ env:
   OWCOVERITY_PROJECT: open-watcom/open-watcom-v2
   OWCOVERITY_TOOL_BASE: coverity-scan-analysis
 jobs:
-  start-start:
+  check-run:
     name: Start
     runs-on: ubuntu-latest
+    outputs:
+      runit: ${{ steps.check-tag.outputs.old }}
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
+    - name: Check tag reference
+      id: check-tag
+      uses: "./.github/actions/ghtagchk"
+      with:
+        tag:     Coverity-scan
+        owdebug: 1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   scan-lnx:
+    needs: check-run
+    if: needs.check-run.outputs.runit
     name: "Coverity Scan Linux"
-    needs: start-start
     runs-on: ubuntu-latest
     #timeoutInMinutes: 90
     steps:
@@ -38,8 +49,9 @@ jobs:
         OWDOSBOX: dosbox
       
 #  scan-nt:
+#    needs: check-run
+#    if: needs.check-run.outputs.runit
 #    name: "Coverity Scan Windows"
-#    needs: start-start
 #    runs-on: windows-2022
 #    timeoutInMinutes: 90
 #    - name: checkout
