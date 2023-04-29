@@ -167,8 +167,8 @@ jobs:
     - name: Setup Git User
       shell: cmd
       run: |
-        git config --global user.email "openwatcomazure@gmail.com"
-        git config --global user.name "Open Watcom Azure"
+        git config --global user.email "openwatcom.github@gmail.com"
+        git config --global user.name "Open Watcom GitHub"
     - name: Wiki Repo clone
       shell: cmd
       run: |

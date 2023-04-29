@@ -37,6 +37,7 @@ runs:
       arch:       ${{ inputs.arch }}
       gitpath:    'bld setupgui'
       artifname:  'bld setupgui lnx'
+      tools:      'gcc'
   # consolidate binaries
   - uses: "./.github/actions/artfload"
     with:
@@ -56,10 +57,22 @@ runs:
       gitpath:    'rel'
       artifname:  'rel docsall'
   # run build script
-  - if: (inputs.arch == 'lnx' || inputs.arch == 'osx')
+  - if: inputs.arch == 'lnx'
     name: Build Installers
     run: ${{ inputs.pscript }}
     env:
+      OWBUILD_STAGE: 'inst'
+      OWTOOLS:       'GCC'
+      OWROOT:        ${{ github.workspace }}
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: bash
+  - if: inputs.arch == 'osx'
+    name: Build Installers
+    run: ${{ inputs.pscript }}
+    env:
+      OWBUILD_STAGE: 'inst'
+      OWTOOLS:       'CLANG'
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
@@ -68,6 +81,9 @@ runs:
     name: Build Installers
     run: ${{ inputs.pscript }}
     env:
+      OWBUILD_STAGE: 'inst'
+      OWTOOLS:       'VISUALC'
+      OWIMAGE:       'windows-2019'
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1

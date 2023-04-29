@@ -8,7 +8,7 @@ inputs:
     required: false
     default: ''
     type: string
-  target:
+  doctarget:
     required: false
     default: ''
     type: string
@@ -33,7 +33,7 @@ runs:
     run: ${{ inputs.pscript }}
     env:
       OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.target }}
+      OWDOCTARGET:   ${{ inputs.doctarget }}
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox'
       OWDEBUG:       ${{ inputs.owdebug }}
@@ -44,7 +44,7 @@ runs:
     run: ${{ inputs.pscript }}
     env:
       OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.target }}
+      OWDOCTARGET:   ${{ inputs.doctarget }}
       OWTOOLS:       'VISUALC'
       OWROOT:        ${{ github.workspace }}
       OWIMAGE:       'windows-2019'
@@ -57,4 +57,4 @@ runs:
     with:
       arch: ${{ inputs.arch }}
       gitpath:   'rel'
-      artifname: rel ${{ inputs.target }}
+      artifname: rel ${{ inputs.doctarget }}

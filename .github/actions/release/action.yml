@@ -27,7 +27,7 @@ runs:
     with:
       arch: ${{ inputs.arch }}
       gitpath:   'build binbuild'
-      artifname: build ${{ parameters.arch }}
+      artifname: build ${{ inputs.arch }}
       tools: ${{ inputs.tools }}
 ##############################################
 # load all parts(artifacts) of distribution
@@ -74,7 +74,7 @@ runs:
       mask=$(date +'%Y-%m')-[0-3][0-9]-Build
       echo "sha=$(git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${mask}^{}:\1:p\")" >> $GITHUB_OUTPUT
     shell: bash
-  - if: "${{ steps.mtag.outputs.sha }}xxx" == "xxx"
+  - if: steps.mtag.outputs.sha == ''
     name: 'Prepare information for monthly Release'
     id: mrelease
     run: |
@@ -84,7 +84,7 @@ runs:
       echo "tagmsg=$tagstamp $tagstamp-Build" >> $GITHUB_OUTPUT
       echo "title=$tagstamp Build" >> $GITHUB_OUTPUT
     shell: bash
-  - if: "${{ steps.mtag.outputs.sha }}xxx" == "xxx"
+  - if: steps.mtag.outputs.sha == ''
     name: 'Create monthly Release'
     uses: "./.github/actions/ghrelcre"
     with:
