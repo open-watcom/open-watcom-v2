@@ -25,7 +25,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   scan-lnx:
     needs: check-run
-    if: needs.check-run.outputs.runit
+    if: needs.check-run.outputs.runit && github.repository == 'open-watcom/open-watcom-v2'
     name: "Coverity Scan Linux"
     runs-on: ubuntu-latest
     #timeoutInMinutes: 90
@@ -50,7 +50,7 @@ jobs:
       
 #  scan-nt:
 #    needs: check-run
-#    if: needs.check-run.outputs.runit
+#    if: needs.check-run.outputs.runit && github.repository == 'open-watcom/open-watcom-v2'
 #    name: "Coverity Scan Windows"
 #    runs-on: windows-2022
 #    timeoutInMinutes: 90

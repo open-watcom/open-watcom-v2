@@ -22,7 +22,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   boot-lnx-gcc:
     needs: check-run
-    if: needs.check-run.outputs.runit
+    if: needs.check-run.outputs.runit && github.repository == 'open-watcom/open-watcom-v2'
     name: Bootstrap Linux GCC
     runs-on: ubuntu-20.04
     steps:
@@ -37,7 +37,7 @@ jobs:
         owdebug: ${{ vars.OWDEBUG }}
   boot-nt:
     needs: check-run
-    if: needs.check-run.outputs.runit
+    if: needs.check-run.outputs.runit && github.repository == 'open-watcom/open-watcom-v2'
     name: Bootstrap Windows
     runs-on: windows-2019
     steps:
@@ -51,7 +51,7 @@ jobs:
         owdebug: ${{ vars.OWDEBUG }}
 #  boot-osx:
 #    needs: check-run
-#    if: needs.check-run.outputs.runit
+#    if: needs.check-run.outputs.runit && github.repository == 'open-watcom/open-watcom-v2'
 #    name: Bootstrap OSX
 #    runs-on: macos-11
 #    steps:
