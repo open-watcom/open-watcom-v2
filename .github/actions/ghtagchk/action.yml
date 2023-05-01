@@ -50,7 +50,7 @@ runs:
       if( "${{ inputs.owdebug }}" -eq '1' ) { "sha=$sha" }
       $sha | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       if( "$sha" -ne "${{ github.sha }}" ) {
-        'old=1' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
         if( "${{ inputs.owdebug }}" -eq '1' ) { 'old=1' }
+        'old=1' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh
