@@ -17,7 +17,7 @@ jobs:
       uses: "./.github/actions/ghtagchk"
       with:
         tag:     Current-build
-        owdebug: 1
+        owdebug: ${{ vars.OWDEBUG }}
   boot-lnx-gcc:
     needs: check-run
     if: needs.check-run.outputs.runit && github.repository == 'open-watcom/open-watcom-v2'

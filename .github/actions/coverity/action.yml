@@ -70,7 +70,7 @@ runs:
     shell: bash
   - run: mkdir -p ${{ steps.cov_path.outputs.path }}
     shell: bash
-  - if: inputs.owdebug == 1
+  - if: inputs.owdebug == '1'
     run: echo "$response"
     shell: bash
   - if: inputs.arch == 'lnx'
@@ -126,7 +126,7 @@ runs:
       --form description="Open Watcom V2 GitHub Actions CI build"
       "https://scan.coverity.com/builds")
     shell: bash
-  - if: inputs.owdebug == 1
+  - if: inputs.owdebug == '1'
     run: echo "$response"
     shell: bash
   - run: |

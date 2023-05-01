@@ -20,7 +20,7 @@ jobs:
       uses: "./.github/actions/ghtagchk"
       with:
         tag:     Coverity-scan
-        owdebug: 1
+        owdebug: ${{ vars.OWDEBUG }}
   scan-lnx:
     needs: check-run
     if: needs.check-run.outputs.runit && github.repository == 'open-watcom/open-watcom-v2'
