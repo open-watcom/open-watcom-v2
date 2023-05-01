@@ -1,6 +1,7 @@
 @set OWECHO=off
 @if "%OWDEBUG%" == "1" set OWECHO=on
 @echo %OWECHO%
+@if "%OWDEBUG%" == "1" set | sort
 REM ...
 REM Script to build the Open Watcom bootstrap tools
 REM ...
@@ -76,7 +77,7 @@ if "%OWBUILD_STAGE%" == "docs" (
     set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "inst" (
-    builder install
+    builder install %OWINSTTARGET%
     set RC=!ERRORLEVEL!
 )
 cd %OWROOT%
