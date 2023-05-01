@@ -42,10 +42,10 @@ runs:
 # create CI snapshot artifact, upload it
 ###########################################
   - id: tarname
-    run: |
-      Join-Path ${{ runner.temp }} ow-snapshot.tar.xz `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ runner.temp }} ow-snapshot.tar.xz
+      | Join-String -OutputPrefix "path="
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - uses: "./.github/actions/tarsave"
     with:
@@ -53,10 +53,10 @@ runs:
       gitpath: 'rel'
       tarname: ${{ steps.tarname.outputs.path }}
   - id: snapshot
-    run: |
-      Join-Path ${{ github.workspace }} ow-snapshot.tar.xz `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ github.workspace }} ow-snapshot.tar.xz
+      | Join-String -OutputPrefix "path="
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - run: |
       Move-Item -Path ${{ steps.tarname.outputs.path }} -Destination ${{ steps.snapshot.outputs.path }}
@@ -73,16 +73,14 @@ runs:
   - if: github.event_name != 'PullRequest'
     id: citag
     run: |
-      echo "tag=Last-CI-build" >> $GITHUB_OUTPUT
-      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      echo "tag=Last-CI-build" >> ${{ github.output }}
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
     shell: bash
   - if: github.event_name != 'PullRequest'
     uses: "./.github/actions/ghreldel"
     with:
       tag:     ${{ steps.citag.outputs.tag }}
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
   - if: github.event_name != 'PullRequest'
     uses: "./.github/actions/ghrelcre"
     with:
@@ -91,5 +89,3 @@ runs:
       tag:     ${{ steps.citag.outputs.tag }}
       tagmsg:  ${{ steps.citag.outputs.timestamp }}
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

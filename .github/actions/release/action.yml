@@ -44,16 +44,14 @@ runs:
   - name: 'Prepare build information for Release'
     id: drelease
     run: |
-      echo "tag=Current-build" >> $GITHUB_OUTPUT
-      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      echo "tag=Current-build" >> ${{ github.output }}
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
     shell: bash
   - name: 'Remove daily Release if exists'
     uses: "./.github/actions/ghreldel"
     with:
       tag:     ${{ steps.drelease.outputs.tag }}
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
   - name: 'Create daily Release'
     uses: "./.github/actions/ghrelcre"
     with:
@@ -63,8 +61,6 @@ runs:
       tagmsg:  ${{ steps.drelease.outputs.timestamp }}
       fullset: 1
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
 ##############################################
 # create monthly release, only if not exists
 ##############################################
@@ -72,17 +68,17 @@ runs:
     id: mtag
     run: |
       mask=$(date +'%Y-%m')-[0-3][0-9]-Build
-      echo "sha=$(git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${mask}^{}:\1:p\")" >> $GITHUB_OUTPUT
+      echo "sha=$(git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${mask}^{}:\1:p\")" >> ${{ github.output }}
     shell: bash
   - if: steps.mtag.outputs.sha == ''
     name: 'Prepare information for monthly Release'
     id: mrelease
     run: |
       tagstamp=$(date +'%Y-%m-%d')
-      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-      echo "tag=$tagstamp-Build" >> $GITHUB_OUTPUT
-      echo "tagmsg=$tagstamp $tagstamp-Build" >> $GITHUB_OUTPUT
-      echo "title=$tagstamp Build" >> $GITHUB_OUTPUT
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
+      echo "tag=$tagstamp-Build" >> ${{ github.output }}
+      echo "tagmsg=$tagstamp $tagstamp-Build" >> ${{ github.output }}
+      echo "title=$tagstamp Build" >> ${{ github.output }}
     shell: bash
   - if: steps.mtag.outputs.sha == ''
     name: 'Create monthly Release'
@@ -94,5 +90,3 @@ runs:
       tagmsg:  ${{ steps.mrelease.outputs.tagmsg }}
       fullset: 1
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

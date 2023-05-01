@@ -50,22 +50,25 @@ runs:
       arch: ${{ inputs.arch }}
   - name: Get tar file name
     id: cov_archive
-    run: |
-      Join-Path ${{ runner.temp }} ${{ inputs.tool_archive }} `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ runner.temp }} ${{ inputs.tool_archive }}
+      | Join-String -OutputPrefix "path="
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: Get tar file name
     id: cov_path
-    run: |
-      Join-Path ${{ runner.temp }} ${{ inputs.tool_base }} `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ runner.temp }} ${{ inputs.tool_base }}
+      | Join-String -OutputPrefix "path="
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: "Download Coverity Tools"
-    run: |
-      response=$(curl -s -o ${{ steps.cov_archive.outputs.path }} "https://scan.coverity.com/download/cxx/${{ inputs.tool_src }}" -d "project=${OWCOVERITY_PROJECT}&token=${{ inputs.coverity_token }}")
-      mkdir -p ${{ steps.cov_path.outputs.path }}
+    run: >
+      response=$(curl -s -o ${{ steps.cov_archive.outputs.path }}
+      "https://scan.coverity.com/download/cxx/${{ inputs.tool_src }}"
+      -d "project=${OWCOVERITY_PROJECT}&token=${{ inputs.coverity_token }}")
+    shell: bash
+  - run: mkdir -p ${{ steps.cov_path.outputs.path }}
     shell: bash
   - if: inputs.owdebug == 1
     run: echo "$response"
@@ -113,8 +116,15 @@ runs:
       del lst.txt
     shell: cmd
   - name: "Upload Coverity data"
-    run: |
-      response=$(curl -s --write-out "\n%{http_code}\n" --form project=$OWCOVERITY_PROJECT --form token=${{ inputs.coverity_token }} --form email=malak.jiri@gmail.com --form file=@${{ inputs.result_archive }} --form version=${{ github.sha }} --form description="Open Watcom V2 GitHub Actions CI build" "https://scan.coverity.com/builds")
+    run: >
+      response=$(curl -s --write-out "\n%{http_code}\n"
+      --form project=$OWCOVERITY_PROJECT
+      --form token=${{ inputs.coverity_token }}
+      --form email=malak.jiri@gmail.com
+      --form file=@${{ inputs.result_archive }}
+      --form version=${{ github.sha }}
+      --form description="Open Watcom V2 GitHub Actions CI build"
+      "https://scan.coverity.com/builds")
     shell: bash
   - if: inputs.owdebug == 1
     run: echo "$response"

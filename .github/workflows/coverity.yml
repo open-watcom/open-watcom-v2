@@ -20,7 +20,6 @@ jobs:
       uses: "./.github/actions/ghtagchk"
       with:
         tag:     Coverity-scan
-        ghtoken: ${{ secrets.GITHUB_TOKEN }}
         owdebug: 1
   scan-lnx:
     needs: check-run

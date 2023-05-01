@@ -20,10 +20,10 @@ runs:
   using: composite
   steps:
   - id: tarname
-    run: |
-      Join-Path ${{ runner.temp }} owartifact.tar.xz `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ runner.temp }} owartifact.tar.xz
+      | Join-String -OutputPrefix 'path='
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - uses: "./.github/actions/tarsave"
     with:
@@ -32,10 +32,10 @@ runs:
       tarname: ${{ steps.tarname.outputs.path }}
   - name: Get Artifact name
     id: artifact
-    run: |
-      -Split "${{ inputs.artifname }} ${{ inputs.tools }}" `
-      | Join-String -Separator "-" -OutputPrefix "name=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      -Split "${{ inputs.artifname }} ${{ inputs.tools }}"
+      | Join-String -Separator '-' -OutputPrefix 'name='
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: Upload Artifact ${{ steps.artifact.outputs.name }}
     uses: actions/upload-artifact@v3

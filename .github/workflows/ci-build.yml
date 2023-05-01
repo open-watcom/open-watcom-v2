@@ -392,5 +392,4 @@ jobs:
         tools:   'gcc'
         owdebug: ${{ vars.OWDEBUG }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         UPLOAD_TOKEN: ${{ secrets.UPLOAD_TOKEN }}

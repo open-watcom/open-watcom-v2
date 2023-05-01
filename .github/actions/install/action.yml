@@ -90,10 +90,10 @@ runs:
     shell: cmd
   # create full binary snapshot archive
   - id: tarname
-    run: |
-      Join-Path ${{ github.workspace }} distrib ow bin ow-snapshot.tar.xz `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ github.workspace }} distrib ow bin ow-snapshot.tar.xz
+      | Join-String -OutputPrefix "path="
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - uses: "./.github/actions/tarsave"
     with:

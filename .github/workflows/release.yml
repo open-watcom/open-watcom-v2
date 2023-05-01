@@ -17,7 +17,6 @@ jobs:
       uses: "./.github/actions/ghtagchk"
       with:
         tag:     Current-build
-        ghtoken: ${{ secrets.GITHUB_TOKEN }}
         owdebug: 1
   boot-lnx-gcc:
     needs: check-run
@@ -293,5 +292,4 @@ jobs:
         tools:   'gcc'
         owdebug: ${{ vars.OWDEBUG }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         UPLOAD_TOKEN: ${{ secrets.UPLOAD_TOKEN }}

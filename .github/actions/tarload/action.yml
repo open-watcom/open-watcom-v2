@@ -21,10 +21,10 @@ runs:
   steps:
   - name: Get destination folder
     id: dstpath
-    run: |
-      Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
+      | Join-String -OutputPrefix "path="
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: inputs.arch == 'lnx'
     name: Restore Artifact
