@@ -24,7 +24,7 @@ runs:
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $id = $response | jq -r .id
       if( "$id" -eq 'null' ) { $id = '' }
-      $id | Join-String -OutputPrefix "id=" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      $id | Join-String -OutputPrefix 'id=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: steps.ghrelease.outputs.id != ''
     name: 'Remove Release Assets'

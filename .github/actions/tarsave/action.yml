@@ -23,7 +23,7 @@ runs:
     id: srcpath
     run: >
       Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
-      | Join-String -OutputPrefix "path="
+      | Join-String -OutputPrefix 'path='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: inputs.arch == 'lnx'

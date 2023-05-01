@@ -52,14 +52,14 @@ runs:
     id: cov_archive
     run: >
       Join-Path ${{ runner.temp }} ${{ inputs.tool_archive }}
-      | Join-String -OutputPrefix "path="
+      | Join-String -OutputPrefix 'path='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: Get tar file name
     id: cov_path
     run: >
       Join-Path ${{ runner.temp }} ${{ inputs.tool_base }}
-      | Join-String -OutputPrefix "path="
+      | Join-String -OutputPrefix 'path='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: "Download Coverity Tools"

@@ -44,7 +44,7 @@ runs:
   - id: tarname
     run: >
       Join-Path ${{ runner.temp }} ow-snapshot.tar.xz
-      | Join-String -OutputPrefix "path="
+      | Join-String -OutputPrefix 'path='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - uses: "./.github/actions/tarsave"
@@ -55,7 +55,7 @@ runs:
   - id: snapshot
     run: >
       Join-Path ${{ github.workspace }} ow-snapshot.tar.xz
-      | Join-String -OutputPrefix "path="
+      | Join-String -OutputPrefix 'path='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - run: |

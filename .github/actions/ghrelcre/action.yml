@@ -46,7 +46,7 @@ runs:
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $sha = $response | jq -r .sha
       if( "$sha" -eq 'null' ) { $sha = '' }
-      $sha | Join-String -OutputPrefix "sha=" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      $sha | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: steps.ghtag.outputs.sha != ''
     name: Create new Release tag reference
@@ -73,7 +73,7 @@ runs:
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $id = $response | jq -r .id
       if( "$id" -eq 'null' ) { $id = '' }
-      $id | Join-String -OutputPrefix "id=" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      $id | Join-String -OutputPrefix 'id=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: inputs.fullset && steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
     run: |
