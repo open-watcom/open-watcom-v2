@@ -291,5 +291,3 @@ jobs:
         arch:    'lnx'
         tools:   'gcc'
         owdebug: ${{ vars.OWDEBUG }}
-      env:
-        UPLOAD_TOKEN: ${{ secrets.UPLOAD_TOKEN }}

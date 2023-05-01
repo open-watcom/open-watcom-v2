@@ -16,6 +16,11 @@ inputs:
     required: false
     default: ''
     type: string
+  format:
+    description: ''
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -26,18 +31,34 @@ runs:
       | Join-String -OutputPrefix 'path='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - if: inputs.arch == 'lnx'
+  - if: inputs.arch == 'lnx' && inputs.format == 'gzip'
     name: Create tar File Linux
-    run: tar -cJf ${{ inputs.tarname }} -C ${{ steps.srcpath.outputs.path }} . --overwrite
+    run: tar -czf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.arch == 'nt'
-    name: Create tar File Windows
+  - if: inputs.arch == 'lnx' && inputs.format != 'gzip'
+    name: Create tar File Linux
+    run: tar -cJf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    shell: bash
+  - if: inputs.arch == 'osx' && inputs.format == 'gzip'
+    name: Create tar File OSX
+    run: gtar -czf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    shell: bash
+  - if: inputs.arch == 'osx' && inputs.format != 'gzip'
+    name: Create tar File OSX
+    run: gtar -cJf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    shell: bash
+  - if: inputs.arch == 'nt' && inputs.format == 'gzip'
+    name: Create tar File (Windows)
     run: |
-      tar -cf ${{ runner.temp }}\owartifact.tar -C ${{ steps.srcpath.outputs.path }} .
-      7z a -txz ${{ inputs.tarname }} ${{ runner.temp }}\owartifact.tar
+      7z a "${{ inputs.tarname }}" "${{ steps.srcpath.outputs.path }}"
+      ci\slash.cmd "${{ inputs.tarname }}" > lst.txt
+      7z rn "${{ inputs.tarname }}" @lst.txt
+      del lst.txt
+    shell: cmd
+  - if: inputs.arch == 'nt' && inputs.format != 'gzip'
+    name: Create tar File (Windows)
+    run: |
+      tar -cf ${{ runner.temp }}\owartifact.tar -C "${{ steps.srcpath.outputs.path }}" .
+      7z a -txz "${{ inputs.tarname }}" ${{ runner.temp }}\owartifact.tar
       del ${{ runner.temp }}\owartifact.tar
     shell: cmd
-  - if: inputs.arch == 'osx'
-    name: Create tar File OSX
-    run: gtar -cJf ${{ inputs.tarname }} -C ${{ steps.srcpath.outputs.path }} . --overwrite
-    shell: bash
