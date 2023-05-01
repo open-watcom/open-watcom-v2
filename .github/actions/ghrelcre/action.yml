@@ -45,7 +45,7 @@ runs:
       -d '{\"tag\":\"${{ inputs.tag }}\",\"message\":\"${{ inputs.tagmsg }}\",\"object\":\"${{ github.sha }}\",\"type\":\"commit\",\"tagger\":{\"name\":\"Open Watcom GitHub\",\"email\":\"openwatcom.github@gmail.com\"}}'
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $sha = $response | jq -r .sha
-      if( $sha -eq 'null' ) { $sha = "" }
+      if( "$sha" -eq 'null' ) { $sha = '' }
       $sha | Join-String -OutputPrefix "sha=" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: steps.ghtag.outputs.sha != ''
@@ -72,7 +72,7 @@ runs:
       -d '{\"tag_name\":\"${{ inputs.tag }}\",\"target_commitish\":\"master\",\"name\":\"${{ inputs.title }}\",\"body\":\"${{ inputs.note }}\",\"draft\":false,\"prerelease\":true,\"generate_release_notes\":false}'
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $id = $response | jq -r .id
-      if( $id -eq 'null' ) { $id = "" }
+      if( "$id" -eq 'null' ) { $id = '' }
       $id | Join-String -OutputPrefix "id=" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - if: inputs.fullset && steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
@@ -94,7 +94,7 @@ runs:
   - if: steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
     run: |
       echo "${{ steps.ghrelease.outputs.id }}"
-      if( ${{ inputs.fullset }} == ${{ true }} ) {
+      if( ${{ inputs.fullset }} -eq ${{ true }} ) {
         $fname = Join-Path ${{ github.workspace }} distrib ow bin ow-snapshot.tar.xz
       } else {
         $fname = Join-Path ${{ github.workspace }} ow-snapshot.tar.xz
