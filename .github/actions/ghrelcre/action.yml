@@ -89,7 +89,7 @@ runs:
         -H "Content-Type: application/octet-stream" `
         --data-binary "@$($_.FullName)"
         if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
-      }      
+      }
     shell: pwsh
   - if: steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
     run: |
@@ -98,7 +98,7 @@ runs:
         $fname = Join-Path ${{ github.workspace }} distrib ow bin ow-snapshot.tar.xz
       } else {
         $fname = Join-Path ${{ github.workspace }} ow-snapshot.tar.xz
-      } 
+      }
       $response = curl -s -L -X POST `
       "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrelease.outputs.id }}/assets?name=ow-snapshot.tar.xz" `
       -H "Accept: application/vnd.github+json" `
