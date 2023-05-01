@@ -2,10 +2,10 @@ name: github-release-create
 description: ''
 inputs:
   fullset:
-    description: '1 - include installers files, otherwise snapshot only'
+    description: 'true - include installers files, otherwise snapshot only'
     required: false
-    default: ''
-    type: string
+    default: false
+    type: boolean
   title:
     description: 'release text'
     required: false
@@ -75,56 +75,36 @@ runs:
       if( $id -eq 'null' ) { $id = "" }
       $id | Join-String -OutputPrefix "id=" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - if: inputs.fullset == 1 && steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
+  - if: inputs.fullset && steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
     run: |
       echo "${{ steps.ghrelease.outputs.id }}"
       Join-Path ${{ github.workspace }} distrib ow bin `
       | Get-ChildItem -File -Filter open-watcom-* `
       | Foreach-Object {
-        $name = $_.Name
-        $fname = $_.FullName
         $response = curl -s -L -X POST `
-        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrelease.outputs.id }}/assets?name=$name" `
+        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrelease.outputs.id }}/assets?name=$($_.Name)" `
         -H "Accept: application/vnd.github+json" `
         -H "Authorization: Bearer ${{ github.token }}" `
         -H "X-GitHub-Api-Version: 2022-11-28" `
         -H "Content-Type: application/octet-stream" `
-        --data-binary "@$fname"
+        --data-binary "@$($_.FullName)"
         if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       }      
     shell: pwsh
-  - if: inputs.fullset == 1 && steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
+  - if: steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
     run: |
       echo "${{ steps.ghrelease.outputs.id }}"
-      Join-Path ${{ github.workspace }} distrib ow bin `
-      | Get-ChildItem -File -Filter ow-snapshot.tar.xz `
-      | Foreach-Object {
-        $name = $_.Name
-        $fname = $_.FullName
-        $response = curl -s -L -X POST `
-        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrelease.outputs.id }}/assets?name=$name" `
-        -H "Accept: application/vnd.github+json" `
-        -H "Authorization: Bearer ${{ github.token }}" `
-        -H "X-GitHub-Api-Version: 2022-11-28" `
-        -H "Content-Type: application/octet-stream" `
-        --data-binary "@$fname"
-        if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
-      }      
-    shell: pwsh
-  - if: inputs.fullset != 1 && steps.ghtag.outputs.sha != '' && steps.ghrelease.outputs.id != ''
-    run: |
-      echo "${{ steps.ghrelease.outputs.id }}"
-      Get-ChildItem ${{ github.workspace }} -File -Filter ow-snapshot.tar.xz `
-      | Foreach-Object {
-        $name = $_.Name
-        $fname = $_.FullName
-        $response = curl -s -L -X POST `
-        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrelease.outputs.id }}/assets?name=$name" `
-        -H "Accept: application/vnd.github+json" `
-        -H "Authorization: Bearer ${{ github.token }}" `
-        -H "X-GitHub-Api-Version: 2022-11-28" `
-        -H "Content-Type: application/octet-stream" `
-        --data-binary "@$fname"
-        if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
-      }      
+      if( ${{ inputs.fullset }} == ${{ true }} ) {
+        $fname = Join-Path ${{ github.workspace }} distrib ow bin ow-snapshot.tar.xz
+      } else {
+        $fname = Join-Path ${{ github.workspace }} ow-snapshot.tar.xz
+      } 
+      $response = curl -s -L -X POST `
+      "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrelease.outputs.id }}/assets?name=ow-snapshot.tar.xz" `
+      -H "Accept: application/vnd.github+json" `
+      -H "Authorization: Bearer ${{ github.token }}" `
+      -H "X-GitHub-Api-Version: 2022-11-28" `
+      -H "Content-Type: application/octet-stream" `
+      --data-binary "@$fname"
+      if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
     shell: pwsh

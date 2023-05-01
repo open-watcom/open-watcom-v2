@@ -59,7 +59,7 @@ runs:
       title:   ${{ steps.drelease.outputs.tag }}
       tag:     ${{ steps.drelease.outputs.tag }}
       tagmsg:  ${{ steps.drelease.outputs.timestamp }}
-      fullset: 1
+      fullset: true
       owdebug: ${{ inputs.owdebug }}
 ##############################################
 # create monthly release, only if not exists
@@ -88,5 +88,5 @@ runs:
       title:   ${{ steps.mrelease.outputs.title }}
       tag:     ${{ steps.mrelease.outputs.tag }}
       tagmsg:  ${{ steps.mrelease.outputs.tagmsg }}
-      fullset: 1
+      fullset: true
       owdebug: ${{ inputs.owdebug }}
