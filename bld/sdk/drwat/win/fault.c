@@ -35,7 +35,6 @@
 #include <dos.h>
 #include "wclbproc.h"
 #include "wdebug.h"
-#include "winfault.h"
 #include "intdata.h"
 #include "jdlg.h"
 
