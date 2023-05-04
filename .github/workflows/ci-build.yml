@@ -172,10 +172,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:      'nt'
-        pscript:   'ci/buildx.cmd'
-        doctarget: 'docdos'
-        owdebug:   ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        pscript:    'ci/buildx.cmd'
+        target:     'docdos'
+        owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-chm:
     name: Documentation Build CHM
     needs: boot-nt
@@ -186,10 +186,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:      'nt'
-        pscript:   'ci/buildx.cmd'
-        doctarget: 'docchm'
-        owdebug:   ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        pscript:    'ci/buildx.cmd'
+        target:     'docchm'
+        owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-nt:
     name: Documentation Build NT
     needs: boot-nt
@@ -200,10 +200,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:      'nt'
-        pscript:   'ci/buildx.cmd'
-        doctarget: 'docnt'
-        owdebug:   ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        pscript:    'ci/buildx.cmd'
+        target:     'docnt'
+        owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-os2:
     name: Documentation Build OS2
     needs: boot-nt
@@ -214,10 +214,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:      'nt'
-        pscript:   'ci/buildx.cmd'
-        doctarget: 'docos2'
-        owdebug:   ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        pscript:    'ci/buildx.cmd'
+        target:     'docos2'
+        owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-pdf:
     name: Documentation Build PDF
     needs: boot-nt
@@ -228,10 +228,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:      'nt'
-        pscript:   'ci/buildx.cmd'
-        doctarget: 'docpdf'
-        owdebug:   ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        pscript:    'ci/buildx.cmd'
+        target:     'docpdf'
+        owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-win:
     name: Documentation Build WIN
     needs: boot-nt
@@ -242,10 +242,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:      'nt'
-        pscript:   'ci/buildx.cmd'
-        doctarget: 'docwin'
-        owdebug:   ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        pscript:    'ci/buildx.cmd'
+        target:     'docwin'
+        owdebug:    ${{ vars.OWDEBUG }}
   docsbuild:
     name: Consolidate Documentation
     needs:

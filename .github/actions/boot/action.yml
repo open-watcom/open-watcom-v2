@@ -69,11 +69,11 @@ runs:
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'bld watcom binbuild'
-      artifact: bld watcom ${{ inputs.arch }}
+      artifact: "bld watcom ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
   - uses: "./.github/actions/artfsave"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'build binbuild'
-      artifact: build ${{ inputs.arch }}
+      artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}

@@ -8,7 +8,7 @@ inputs:
     required: false
     default: ''
     type: string
-  doctarget:
+  target:
     required: false
     default: ''
     type: string
@@ -22,18 +22,18 @@ runs:
   steps:
   - uses: "./.github/actions/dosboxin"
     with:
-      arch: ${{ inputs.arch }}
+      arch:     ${{ inputs.arch }}
   - uses: "./.github/actions/artfload"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'build binbuild'
-      artifact: build ${{ inputs.arch }}
+      artifact: "build ${{ inputs.arch }}"
   - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Documentation Build
     run: ${{ inputs.pscript }}
     env:
       OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.doctarget }}
+      OWDOCTARGET:   ${{ inputs.target }}
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox'
       OWDEBUG:       ${{ inputs.owdebug }}
@@ -44,7 +44,7 @@ runs:
     run: ${{ inputs.pscript }}
     env:
       OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.doctarget }}
+      OWDOCTARGET:   ${{ inputs.target }}
       OWTOOLS:       'VISUALC'
       OWROOT:        ${{ github.workspace }}
       OWIMAGE:       'windows-2019'
@@ -57,4 +57,4 @@ runs:
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'rel'
-      artifact: rel ${{ inputs.doctarget }}
+      artifact: "rel ${{ inputs.target }}"

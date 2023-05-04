@@ -16,33 +16,38 @@ inputs:
     required: false
     default: ''
     type: string
+  retention-days:
+    description: ''
+    required: false
+    default: 3
+    type: string
 runs:
   using: composite
   steps:
   - id: tarname
     run: >
       Join-Path ${{ runner.temp }} owartifact.tar.xz
-      | Join-String -OutputPrefix 'path='
+      | Join-String -OutputPrefix 'fullname='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - uses: "./.github/actions/tarsave"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  ${{ inputs.gitpath }}
-      tarname:  ${{ steps.tarname.outputs.path }}
+      fullname: ${{ steps.tarname.outputs.fullname }}
   - name: Get Artifact name
     id: artifact-name
     run: >
       -Split "${{ inputs.artifact }} ${{ inputs.tools }}"
-      | Join-String -Separator '-' -OutputPrefix 'name='
+      | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - name: Upload Artifact ${{ steps.artifact-name.outputs.name }}
+  - name: Upload Artifact ${{ steps.artifact-name.outputs.id }}
     uses: actions/upload-artifact@v3
     with:
-      name: ${{ steps.artifact-name.outputs.name }}
-      path: ${{ steps.tarname.outputs.path }}
-      retention-days: 2
+      name:             ${{ steps.artifact-name.outputs.id }}
+      path:             ${{ steps.tarname.outputs.fullname }}
+      retention-days:   ${{ inputs.retention-days }}
   - name: Delete Temporary Artifact tar file
-    run: rm -f ${{ steps.tarname.outputs.path }}
+    run: rm -f ${{ steps.tarname.outputs.fullname }}
     shell: bash

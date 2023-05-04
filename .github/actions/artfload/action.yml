@@ -23,19 +23,19 @@ runs:
     id: artifact-name
     run: >
       -Split "${{ inputs.artifact }} ${{ inputs.tools }}"
-      | Join-String -Separator '-' -OutputPrefix 'name='
+      | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - name: Download Artifact ${{ steps.artifact-name.outputs.name }}
+  - name: Download Artifact ${{ steps.artifact-name.outputs.id }}
     uses: actions/download-artifact@v3
     with:
-      name: ${{ steps.artifact-name.outputs.name }}
+      name: ${{ steps.artifact-name.outputs.id }}
       path: ${{ runner.temp }}
   - name: Get tar file name
     id: tarname
     run: >
       Join-Path ${{ runner.temp }} owartifact.tar.xz
-      | Join-String -OutputPrefix 'path='
+      | Join-String -OutputPrefix 'fullname='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: Restore Artifact
@@ -43,7 +43,7 @@ runs:
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  ${{ inputs.gitpath }}
-      tarname:  ${{ steps.tarname.outputs.path }}
+      fullname: ${{ steps.tarname.outputs.fullname }}
   - name: Delete Temporary Artifact tar file
-    run: rm -f ${{ steps.tarname.outputs.path }}
+    run: rm -f ${{ steps.tarname.outputs.fullname }}
     shell: bash

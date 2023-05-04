@@ -25,7 +25,7 @@ runs:
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'build binbuild'
-      artifact: build ${{ inputs.arch }}
+      artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
   - uses: "./.github/actions/artfload"
     with:
@@ -92,14 +92,14 @@ runs:
   - id: tarname
     run: >
       Join-Path ${{ github.workspace }} distrib ow bin ow-snapshot.tar.xz
-      | Join-String -OutputPrefix 'path='
+      | Join-String -OutputPrefix 'fullname='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - uses: "./.github/actions/tarsave"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'rel'
-      tarname:  ${{ steps.tarname.outputs.path }}
+      fullname: ${{ steps.tarname.outputs.fullname }}
   # save all artifacts for distribution
   # full content of directory, cannot specify files
   - uses: "./.github/actions/artfsave"

@@ -29,7 +29,7 @@ runs:
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'rel'
-      artifact: rel ${{ inputs.arch }}
+      artifact: "rel ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
   - if: inputs.arch == 'lnx'
     name: Test Bootstrap OW

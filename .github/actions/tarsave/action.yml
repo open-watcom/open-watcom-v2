@@ -11,7 +11,7 @@ inputs:
     required: false
     default: ''
     type: string
-  tarname:
+  fullname:
     description: ''
     required: false
     default: ''
@@ -33,32 +33,32 @@ runs:
     shell: pwsh
   - if: inputs.arch == 'lnx' && inputs.format == 'gzip'
     name: Create tar File Linux
-    run: tar -czf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: tar -czf "${{ inputs.fullname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
   - if: inputs.arch == 'lnx' && inputs.format != 'gzip'
     name: Create tar File Linux
-    run: tar -cJf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: tar -cJf "${{ inputs.fullname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
   - if: inputs.arch == 'osx' && inputs.format == 'gzip'
     name: Create tar File OSX
-    run: gtar -czf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: gtar -czf "${{ inputs.fullname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
   - if: inputs.arch == 'osx' && inputs.format != 'gzip'
     name: Create tar File OSX
-    run: gtar -cJf "${{ inputs.tarname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
+    run: gtar -cJf "${{ inputs.fullname }}" --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
   - if: inputs.arch == 'nt' && inputs.format == 'gzip'
     name: Create tar File (Windows)
     run: |
-      7z a "${{ inputs.tarname }}" "${{ steps.srcpath.outputs.path }}"
-      ci\slash.cmd "${{ inputs.tarname }}" > lst.txt
-      7z rn "${{ inputs.tarname }}" @lst.txt
+      7z a "${{ inputs.fullname }}" "${{ steps.srcpath.outputs.path }}"
+      ci\slash.cmd "${{ inputs.fullname }}" > lst.txt
+      7z rn "${{ inputs.fullname }}" @lst.txt
       del lst.txt
     shell: cmd
   - if: inputs.arch == 'nt' && inputs.format != 'gzip'
     name: Create tar File (Windows)
     run: |
       tar -cf ${{ runner.temp }}\owartifact.tar -C "${{ steps.srcpath.outputs.path }}" .
-      7z a -txz "${{ inputs.tarname }}" ${{ runner.temp }}\owartifact.tar
+      7z a -txz "${{ inputs.fullname }}" ${{ runner.temp }}\owartifact.tar
       del ${{ runner.temp }}\owartifact.tar
     shell: cmd

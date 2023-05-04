@@ -28,13 +28,13 @@ runs:
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'bld watcom binbuild'
-      artifact: bld watcom ${{ inputs.arch }}
+      artifact: "bld watcom ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
   - uses: "./.github/actions/artfload"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'build binbuild'
-      artifact: build ${{ inputs.arch }}
+      artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
   - if: inputs.arch == 'lnx' && inputs.tools == 'gcc'
     name: Build
@@ -87,12 +87,12 @@ runs:
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'rel'
-      artifact: rel ${{ inputs.arch }}
+      artifact: "rel ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
   - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
     uses: "./.github/actions/artfsave"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'bld setupgui'
-      artifact: bld setupgui ${{ inputs.arch }}
+      artifact: "bld setupgui ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
