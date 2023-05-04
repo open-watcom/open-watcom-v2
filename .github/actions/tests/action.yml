@@ -22,7 +22,7 @@ runs:
   - name: Load Artifact
     uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   "build binbuild"
-      artifname: build ${{ inputs.arch }}
-      tools: ${{ inputs.tools }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: build ${{ inputs.arch }}
+      tools:    ${{ inputs.tools }}

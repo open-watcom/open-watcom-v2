@@ -24,20 +24,20 @@ runs:
 ###########################################
   - uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'rel'
-      artifname: 'rel nt'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: 'rel nt'
   - uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'rel'
-      artifname: 'rel lnx'
-      tools:     'gcc'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: 'rel lnx'
+      tools:    'gcc'
   - uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'rel'
-      artifname: 'rel docsall'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: 'rel docsall'
 ###########################################
 # create CI snapshot artifact, upload it
 ###########################################

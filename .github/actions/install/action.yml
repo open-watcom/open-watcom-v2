@@ -23,39 +23,39 @@ runs:
   steps:
   - uses: "./.github/actions/artfload"
     with:
-      arch:       ${{ inputs.arch }}
-      gitpath:    'build binbuild'
-      artifname:  build ${{ inputs.arch }}
-      tools:      ${{ inputs.tools }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: build ${{ inputs.arch }}
+      tools:    ${{ inputs.tools }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:       ${{ inputs.arch }}
-      gitpath:    'bld setupgui'
-      artifname:  'bld setupgui nt'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'bld setupgui'
+      artifact: 'bld setupgui nt'
   - uses: "./.github/actions/artfload"
     with:
-      arch:       ${{ inputs.arch }}
-      gitpath:    'bld setupgui'
-      artifname:  'bld setupgui lnx'
-      tools:      'gcc'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'bld setupgui'
+      artifact: 'bld setupgui lnx'
+      tools:    'gcc'
   # consolidate binaries
   - uses: "./.github/actions/artfload"
     with:
-      arch:       ${{ inputs.arch }}
-      gitpath:    'rel'
-      artifname:  'rel nt'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: 'rel nt'
   - uses: "./.github/actions/artfload"
     with:
-      arch:       ${{ inputs.arch }}
-      gitpath:    'rel'
-      artifname:  'rel lnx'
-      tools:      'gcc'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: 'rel lnx'
+      tools:    'gcc'
   # consolidated documentation
   - uses: "./.github/actions/artfload"
     with:
-      arch:       ${{ inputs.arch }}
-      gitpath:    'rel'
-      artifname:  'rel docsall'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: 'rel docsall'
   # run build script
   - if: inputs.arch == 'lnx'
     name: Build Installers
@@ -97,13 +97,13 @@ runs:
     shell: pwsh
   - uses: "./.github/actions/tarsave"
     with:
-      arch: ${{ inputs.arch }}
+      arch:     ${{ inputs.arch }}
       gitpath:  'rel'
       tarname:  ${{ steps.tarname.outputs.path }}
   # save all artifacts for distribution
   # full content of directory, cannot specify files
   - uses: "./.github/actions/artfsave"
     with:
-      arch:      ${{ inputs.arch }}
-      gitpath:   'distrib ow bin'
-      artifname: 'distrib bin'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'distrib ow bin'
+      artifact: 'distrib bin'

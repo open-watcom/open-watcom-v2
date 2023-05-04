@@ -136,6 +136,6 @@ runs:
   - uses: "./.github/actions/artfsave"
     name: "Save Coverity data"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath: xxxxx
-      artifname: ${{ inputs.tool_src }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'xxxxx'
+      artifact: ${{ inputs.tool_src }}

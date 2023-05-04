@@ -27,10 +27,10 @@ runs:
   - name: Load Artifact
     uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'rel'
-      artifname: rel ${{ inputs.arch }}
-      tools: ${{ inputs.tools }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: rel ${{ inputs.arch }}
+      tools:    ${{ inputs.tools }}
   - if: inputs.arch == 'lnx'
     name: Test Bootstrap OW
     run: ${{ inputs.pscript }}

@@ -203,39 +203,39 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/artfload"
       with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docdos'
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel docdos'
     - uses: "./.github/actions/artfload"
       with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docchm'
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel docchm'
     - uses: "./.github/actions/artfload"
       with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docnt'
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel docnt'
     - uses: "./.github/actions/artfload"
       with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docos2'
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel docos2'
     - uses: "./.github/actions/artfload"
       with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docpdf'
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel docpdf'
     - uses: "./.github/actions/artfload"
       with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docwin'
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel docwin'
     - uses: "./.github/actions/artfsave"
       with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docsall'
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel docsall'
   tests-lnx-gcc:
     name: Tests Linux GCC
     needs: build-lnx-gcc

@@ -25,9 +25,9 @@ runs:
       arch: ${{ inputs.arch }}
   - uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'build binbuild'
-      artifname: build ${{ inputs.arch }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: build ${{ inputs.arch }}
   - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Documentation Build
     run: ${{ inputs.pscript }}
@@ -55,6 +55,6 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'rel'
-      artifname: rel ${{ inputs.doctarget }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: rel ${{ inputs.doctarget }}

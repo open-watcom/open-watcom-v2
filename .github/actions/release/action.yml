@@ -25,19 +25,19 @@ runs:
   - name: Load build tools
     uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'build binbuild'
-      artifname: build ${{ inputs.arch }}
-      tools: ${{ inputs.tools }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: build ${{ inputs.arch }}
+      tools:    ${{ inputs.tools }}
 ##############################################
 # load all parts(artifacts) of distribution
 ##############################################
   - name: Load full distribution
     uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'distrib ow bin'
-      artifname: 'distrib bin'
+      arch:     ${{ inputs.arch }}
+      gitpath:  'distrib ow bin'
+      artifact: 'distrib bin'
 ##############################################
 # create daily release, delete existing one
 ##############################################
