@@ -74,6 +74,7 @@ extern void             PragmaLinkage( void );
 extern void             CheckFar16Call( sym_id sp );
 #endif
 extern aux_info         *InfoLookup( sym_id sym );
+extern const char       *NameLookup( sym_id sym );
 extern call_handle      InitCall( RTCODE rtn_id );
 extern void             InitRtRtns( void );
 extern void             FreeRtRtns( void );
