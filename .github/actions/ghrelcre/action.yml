@@ -1,11 +1,6 @@
 name: github-release-create
 description: ''
 inputs:
-  fullset:
-    description: 'true - include installers files, otherwise snapshot only'
-    required: false
-    default: false
-    type: boolean
   title:
     description: 'release text'
     required: false
@@ -34,7 +29,7 @@ inputs:
 outputs:
   id:
     description: ''
-    value: ${{ steps.newrel.output.id }}
+    value: ${{ steps.newrel.outputs.id }}
 runs:
   using: composite
   steps:
