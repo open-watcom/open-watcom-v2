@@ -1,5 +1,6 @@
 name: CI-Build
 run-name: CI build
+
 on:
   pull_request:
     branches:
@@ -17,6 +18,7 @@ on:
       - "!relea-pl.yml"
       - "!covsc-pl.yml"
       - "!README.md"
+
 jobs:
   start-start:
     name: Start
