@@ -1,18 +1,23 @@
 name: artifact-save
+description: ''
 inputs:
   arch:
+    description: ''
     required: false
     default: ''
     type: string
   gitpath:
+    description: ''
     required: false
     default: ''
     type: string
   artifact:
+    description: ''
     required: false
     default: ''
     type: string
   tools:
+    description: ''
     required: false
     default: ''
     type: string
@@ -20,6 +25,11 @@ inputs:
     description: ''
     required: false
     default: 3
+    type: string
+  verbose:
+    description: ''
+    required: false
+    default: ''
     type: string
 runs:
   using: composite
@@ -35,6 +45,7 @@ runs:
       arch:     ${{ inputs.arch }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
+      verbose:  ${{ inputs.verbose }}
   - name: Get Artifact name
     id: artifact-name
     run: >

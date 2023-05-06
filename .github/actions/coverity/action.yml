@@ -5,15 +5,19 @@ inputs:
     required: false
     default: ''
     type: string
+  tools:
+    required: false
+    default: ''
+    type: string
+  owtools:
+    required: false
+    default: ''
+    type: string
   cscript:
     required: false
     default: ''
     type: string
   pscript:
-    required: false
-    default: ''
-    type: string
-  tools:
     required: false
     default: ''
     type: string
@@ -89,16 +93,18 @@ runs:
     shell: cmd
   - if: inputs.arch == 'lnx'
     name: "Build Coverity data"
-    run: ${{ inputs.pscript }} ${{ inputs.cscript }}
+    run: ${{ inputs.pscript }} $OWCOVERITY_TOOL_CMD ${{ inputs.cscript }} ${{ inputs.tools }}
     env:
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: "Build Coverity data"
-    run: ${{ inputs.pscript }} ${{ inputs.cscript }}
+    run: ${{ inputs.pscript }} %OWCOVERITY_TOOL_CMD% ${{ inputs.cscript }} ${{ inputs.tools }}
     env:
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1

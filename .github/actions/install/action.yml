@@ -13,6 +13,10 @@ inputs:
     required: false
     default: ''
     type: string
+  owtools:
+    required: false
+    default: ''
+    type: string
   owdebug:
     description: ''
     required: false
@@ -57,33 +61,22 @@ runs:
       gitpath:  'rel'
       artifact: 'rel docsall'
   # run build script
-  - if: inputs.arch == 'lnx'
+  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Build Installers
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'inst'
-      OWTOOLS:       'GCC'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     1
-    shell: bash
-  - if: inputs.arch == 'osx'
-    name: Build Installers
-    run: ${{ inputs.pscript }}
-    env:
-      OWBUILD_STAGE: 'inst'
-      OWTOOLS:       'CLANG'
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: Build Installers
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'inst'
-      OWTOOLS:       'VISUALC'
-      OWIMAGE:       'windows-2019'
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1

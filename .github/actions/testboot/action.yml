@@ -6,12 +6,12 @@ inputs:
     required: false
     default: ''
     type: string
-  pscript:
+  gitpath:
     description: ''
     required: false
     default: ''
     type: string
-  tools:
+  pscript:
     description: ''
     required: false
     default: ''
@@ -24,13 +24,6 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Load Artifact
-    uses: "./.github/actions/artfload"
-    with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  'rel'
-      artifact: "rel ${{ inputs.arch }}"
-      tools:    ${{ inputs.tools }}
   - if: inputs.arch == 'lnx'
     name: Test Bootstrap OW
     run: ${{ inputs.pscript }}
@@ -38,9 +31,9 @@ runs:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      WATCOM:        ${{ github.workspace }}/rel
-      INCLUDE:       ${{ github.workspace }}/rel/lh
-      WATCOM_PATH:   ${{ github.workspace }}/rel/binl
+      WATCOM:        ${{ github.workspace }}/${{ inputs.gitpath }}
+      INCLUDE:       ${{ github.workspace }}/${{ inputs.gitpath }}/lh
+      WATCOM_PATH:   ${{ github.workspace }}/${{ inputs.gitpath }}/binl
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
@@ -51,9 +44,9 @@ runs:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      WATCOM:        ${{ github.workspace }}\rel
-      INCLUDE:       ${{ github.workspace }}\rel\h;${{ github.workspace }}\rel\h\nt
-      WATCOM_PATH:   ${{ github.workspace }}\rel\binnt
+      WATCOM:        ${{ github.workspace }}\${{ inputs.gitpath }}
+      INCLUDE:       ${{ github.workspace }}\${{ inputs.gitpath }}\h;${{ github.workspace }}\${{ inputs.gitpath }}\h\nt
+      WATCOM_PATH:   ${{ github.workspace }}\${{ inputs.gitpath }}\binnt
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd

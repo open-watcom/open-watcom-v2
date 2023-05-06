@@ -1,18 +1,28 @@
 name: artifact-load
+description: ''
 inputs:
   arch:
+    description: ''
     required: false
     default: ''
     type: string
   gitpath:
+    description: ''
     required: false
     default: ''
     type: string
   artifact:
+    description: ''
     required: false
     default: ''
     type: string
   tools:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  verbose:
+    description: ''
     required: false
     default: ''
     type: string
@@ -44,6 +54,7 @@ runs:
       arch:     ${{ inputs.arch }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
+      verbose:  ${{ inputs.verbose }}
   - name: Delete Temporary Artifact tar file
     run: rm -f ${{ steps.tarname.outputs.fullname }}
     shell: bash

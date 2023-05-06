@@ -32,11 +32,12 @@ jobs:
     - name: checkout
       uses: actions/checkout@v3.5.0
     - name: Bootstrap Linux OW
-      uses: "./.github/actions/bootow"
+      uses: "./.github/actions/testboot"
       with:
-        arch:    'lnx'
-        pscript: 'ci/buildx.sh'
-        owdebug: ${{ vars.OWDEBUG }}
+        arch:       'lnx'
+        gitpath:    'ci/ow'
+        pscript:    'ci/buildx.sh'
+        owdebug:    ${{ vars.OWDEBUG }}
   bootow-nt:
     needs: start-start
     name: Bootstrap Windows OW
@@ -45,11 +46,12 @@ jobs:
     - name: checkout
       uses: actions/checkout@v3.5.0
     - name: Bootstrap Windows OW
-      uses: "./.github/actions/bootow"
+      uses: "./.github/actions/testboot"
       with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        owdebug: ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        gitpath:    'ci\ow'
+        pscript:    'ci/buildx.cmd'
+        owdebug:    ${{ vars.OWDEBUG }}
   boot-lnx-gcc:
     needs: bootow-lnx
     name: Bootstrap Linux GCC
@@ -63,6 +65,7 @@ jobs:
         arch:    'lnx'
         pscript: 'ci/buildx.sh'
         tools:   'gcc'
+        owtools: 'GCC'
         owdebug: ${{ vars.OWDEBUG }}
   boot-lnx-clang:
     needs: bootow-lnx
@@ -77,6 +80,7 @@ jobs:
         arch:    'lnx'
         pscript: 'ci/buildx.sh'
         tools:   'clang'
+        owtools: 'CLANG'
         owdebug: ${{ vars.OWDEBUG }}
   boot-nt:
     name: Bootstrap Windows
@@ -90,6 +94,8 @@ jobs:
       with:
         arch:    'nt'
         pscript: 'ci/buildx.cmd'
+        tools:   'vs2019'
+        owtools: 'VISUALC'
         owdebug: ${{ vars.OWDEBUG }}
   boot-osx:
     name: Bootstrap OSX
@@ -103,6 +109,8 @@ jobs:
       with:
         arch:    'osx'
         pscript: 'ci/buildx.sh'
+        tools:   'clang'
+        owtools: 'CLANG'
         owdebug: ${{ vars.OWDEBUG }}
   build-lnx-gcc:
     name: Build Linux GCC
@@ -118,6 +126,7 @@ jobs:
         arch:    'lnx'
         pscript: 'ci/buildx.sh'
         tools:   'gcc'
+        owtools: 'GCC'
         owdebug: ${{ vars.OWDEBUG }}
   build-lnx-clang:
     name: Build Linux Clang
@@ -133,6 +142,7 @@ jobs:
         arch:    'lnx'
         pscript: 'ci/buildx.sh'
         tools:   'clang'
+        owtools: 'CLANG'
         owdebug: ${{ vars.OWDEBUG }}
   build-nt:
     name: Build Windows
@@ -147,6 +157,8 @@ jobs:
       with:
         arch:    'nt'
         pscript: 'ci/buildx.cmd'
+        tools:   'vs2019'
+        owtools: 'VISUALC'
         owdebug: ${{ vars.OWDEBUG }}
   build-osx:
     name: Build OSX
@@ -161,6 +173,8 @@ jobs:
       with:
         arch:    'osx'
         pscript: 'ci/buildx.sh'
+        tools:   'clang'
+        owtools: 'CLANG'
         owdebug: ${{ vars.OWDEBUG }}
   docsbuild-dos:
     name: Documentation Build DOS
@@ -339,13 +353,20 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
+    - name: Load Artifact
+      uses: "./.github/actions/artfload"
+      with:
+        arch:       'lnx'
+        gitpath:    'rel'
+        artifact:   'rel lnx'
+        tools:      'gcc'
     - name: Test Bootstrap Linux GCC
       uses: "./.github/actions/testboot"
       with:
-        arch:    'lnx'
-        pscript: 'ci/buildx.sh'
-        tools:   'gcc'
-        owdebug: ${{ vars.OWDEBUG }}
+        arch:       'lnx'
+        pscript:    'ci/buildx.sh'
+        tools:      'gcc'
+        owdebug:    ${{ vars.OWDEBUG }}
   testboot-lnx-clang:
     name: Test Bootstrap Linux Clang
     needs: tests-lnx-clang
@@ -353,13 +374,20 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
+    - name: Load Artifact
+      uses: "./.github/actions/artfload"
+      with:
+        arch:       'lnx'
+        gitpath:    'rel'
+        artifact:   'rel lnx'
+        tools:      'clang'
     - name: Test Bootstrap Linux Clang
       uses: "./.github/actions/testboot"
       with:
-        arch:    'lnx'
-        pscript: 'ci/buildx.sh'
-        tools:   'clang'
-        owdebug: ${{ vars.OWDEBUG }}
+        arch:       'lnx'
+        pscript:    'ci/buildx.sh'
+        tools:      'clang'
+        owdebug:    ${{ vars.OWDEBUG }}
   testboot-nt:
     name: Test Bootstrap Windows
     needs: tests-nt
@@ -367,12 +395,18 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
+    - name: Load Artifact
+      uses: "./.github/actions/artfload"
+      with:
+        arch:       'nt'
+        gitpath:    'rel'
+        artifact:   'rel nt'
     - name: Test Bootstrap Windows
       uses: "./.github/actions/testboot"
       with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        owdebug: ${{ vars.OWDEBUG }}
+        arch:       'nt'
+        pscript:    'ci/buildx.cmd'
+        owdebug:    ${{ vars.OWDEBUG }}
   lastbld:
     name: Last CI Build
     runs-on: ubuntu-latest

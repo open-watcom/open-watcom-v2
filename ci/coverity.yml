@@ -4,6 +4,7 @@ parameters:
   image:    ''
   cscript:  ''
   pscript:  ''
+  tools:    ''
 
 jobs:
   - job: scan${{ parameters.arch }}
@@ -33,7 +34,7 @@ jobs:
             for /f %%a in ('dir /b /s cov-build.exe') do echo ##vso[task.setvariable variable=owcoverity.tool.cmd;]%%a
             popd
           displayName: "Restore Coverity Tools"
-      - script: ${{ parameters.pscript }} ${{ parameters.cscript }}
+      - script: ${{ parameters.pscript }} $(owcoverity.tool.cmd) ${{ parameters.cscript }} ${{ parameters.tools }}
         displayName: "Build Coverity data"
       - bash: echo "##vso[task.setvariable variable=owsha;]`git rev-parse --short HEAD`"
         displayName: "Get commit SHA"

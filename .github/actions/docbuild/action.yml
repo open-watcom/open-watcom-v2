@@ -30,7 +30,7 @@ runs:
       artifact: "build ${{ inputs.arch }}"
   - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Documentation Build
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }}
@@ -41,13 +41,12 @@ runs:
     shell: bash
   - if: inputs.arch == 'nt'
     name: Documentation Build
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }}
       OWTOOLS:       'VISUALC'
       OWROOT:        ${{ github.workspace }}
-      OWIMAGE:       'windows-2019'
       OWDOSBOX:      'dosbox.exe'
       OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
       OWDEBUG:       ${{ inputs.owdebug }}

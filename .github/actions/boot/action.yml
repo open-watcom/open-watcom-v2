@@ -16,6 +16,11 @@ inputs:
     required: false
     default: ''
     type: string
+  owtools:
+    description: ''
+    required: false
+    default: ''
+    type: string
   owdebug:
     description: ''
     required: false
@@ -24,47 +29,26 @@ inputs:
 runs:
   using: composite
   steps:
-  - if: inputs.arch == 'lnx' && inputs.tools == 'gcc'
+  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Bootstrap
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'GCC'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     1
-    shell: bash
-  - if: inputs.arch == 'lnx' && inputs.tools == 'clang'
-    name: Bootstrap
-    run: ${{ inputs.pscript }}
-    env:
-      OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'CLANG'
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: Bootstrap
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.pscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'VISUALC'
-      OWIMAGE:       'windows-2019'
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd
-  - if: inputs.arch == 'osx'
-    name: Bootstrap
-    run: ${{ inputs.pscript }}
-    env:
-      OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'CLANG'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     1
-    shell: bash
   - uses: "./.github/actions/artfsave"
     with:
       arch:     ${{ inputs.arch }}
