@@ -186,9 +186,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:       'nt'
-        pscript:    'ci/buildx.cmd'
         target:     'docdos'
+        arch:       'nt'
+        tools:      'vs2019'
+        owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-chm:
     name: Documentation Build CHM
@@ -200,9 +201,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:       'nt'
-        pscript:    'ci/buildx.cmd'
         target:     'docchm'
+        arch:       'nt'
+        tools:      'vs2019'
+        owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-nt:
     name: Documentation Build NT
@@ -214,9 +216,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:       'nt'
-        pscript:    'ci/buildx.cmd'
         target:     'docnt'
+        arch:       'nt'
+        tools:      'vs2019'
+        owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-os2:
     name: Documentation Build OS2
@@ -228,9 +231,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:       'nt'
-        pscript:    'ci/buildx.cmd'
         target:     'docos2'
+        arch:       'nt'
+        tools:      'vs2019'
+        owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-pdf:
     name: Documentation Build PDF
@@ -242,9 +246,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:       'nt'
-        pscript:    'ci/buildx.cmd'
         target:     'docpdf'
+        arch:       'nt'
+        tools:      'vs2019'
+        owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}
   docsbuild-win:
     name: Documentation Build WIN
@@ -256,9 +261,10 @@ jobs:
       uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/docbuild"
       with:
-        arch:       'nt'
-        pscript:    'ci/buildx.cmd'
         target:     'docwin'
+        arch:       'nt'
+        tools:      'vs2019'
+        owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}
   docsbuild:
     name: Consolidate Documentation
@@ -278,31 +284,37 @@ jobs:
         arch:       'nt'
         gitpath:    'rel'
         artifact:   'rel docdos'
+        tools:      'vs2019'
     - uses: "./.github/actions/artfload"
       with:
         arch:       'nt'
         gitpath:    'rel'
         artifact:   'rel docchm'
+        tools:      'vs2019'
     - uses: "./.github/actions/artfload"
       with:
         arch:       'nt'
         gitpath:    'rel'
         artifact:   'rel docnt'
+        tools:      'vs2019'
     - uses: "./.github/actions/artfload"
       with:
         arch:       'nt'
         gitpath:    'rel'
         artifact:   'rel docos2'
+        tools:      'vs2019'
     - uses: "./.github/actions/artfload"
       with:
         arch:       'nt'
         gitpath:    'rel'
         artifact:   'rel docpdf'
+        tools:      'vs2019'
     - uses: "./.github/actions/artfload"
       with:
         arch:       'nt'
         gitpath:    'rel'
         artifact:   'rel docwin'
+        tools:      'vs2019'
     - uses: "./.github/actions/artfsave"
       with:
         arch:       'nt'

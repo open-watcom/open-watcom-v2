@@ -1,14 +1,23 @@
 name: documentation-build
+description: ''
 inputs:
-  arch:
-    required: false
-    default: ''
-    type: string
-  pscript:
-    required: false
-    default: ''
-    type: string
   target:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  arch:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: ''
+    required: false
+    default: ''
+    type: string
+  owtools:
+    description: ''
     required: false
     default: ''
     type: string
@@ -28,24 +37,13 @@ runs:
       arch:     ${{ inputs.arch }}
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.arch }}"
-  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
-    name: Documentation Build
-    run: ${{ inputs.pscript }} ${{ inputs.tools }}
+      tools:    ${{ inputs.tools }}
+  - name: Documentation Build
+    run: ci/buildx.cmd ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }}
-      OWROOT:        ${{ github.workspace }}
-      OWDOSBOX:      'dosbox'
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     1
-    shell: bash
-  - if: inputs.arch == 'nt'
-    name: Documentation Build
-    run: ${{ inputs.pscript }} ${{ inputs.tools }}
-    env:
-      OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.target }}
-      OWTOOLS:       'VISUALC'
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox.exe'
       OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
@@ -57,3 +55,4 @@ runs:
       arch:     ${{ inputs.arch }}
       gitpath:  'rel'
       artifact: "rel ${{ inputs.target }}"
+      tools:    ${{ inputs.tools }}
