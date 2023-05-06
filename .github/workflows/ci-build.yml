@@ -3,20 +3,20 @@ run-name: CI build
 on:
   pull_request:
     branches:
-    - master
+      - master
     paths:
-    - "*"
-    - "!relea-pl.yml"
-    - "!covsc-pl.yml"
-    - "!README.md"
+      - "*"
+      - "!relea-pl.yml"
+      - "!covsc-pl.yml"
+      - "!README.md"
   push:
     branches:
-    - master
+      - master
     paths:
-    - "*"
-    - "!relea-pl.yml"
-    - "!covsc-pl.yml"
-    - "!README.md"
+      - "*"
+      - "!relea-pl.yml"
+      - "!covsc-pl.yml"
+      - "!README.md"
 jobs:
   start-start:
     name: Start
