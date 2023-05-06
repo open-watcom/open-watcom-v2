@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2023Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,7 +40,7 @@
 #include "_ptint.h"
 
 
-_WCRTLINK void pthread_exit( void *value_ptr )
+_WCRTLINK _WCNORETURN void pthread_exit( void *value_ptr )
 {
     pthread_t myself;
 
@@ -50,18 +50,15 @@ _WCRTLINK void pthread_exit( void *value_ptr )
     __call_all_pthread_cleaners();
 
     myself = __get_current_thread();
-    if( myself == NULL ) {
-        _endthread();
-        // never return
+    if( myself != NULL ) {
+        /* Unlock to release any joins */
+        pthread_mutex_unlock( __get_thread_running_mutex( myself ) );
+
+        /* If detached, destroy all internal memory for this thread */
+        if( __get_thread_detached( myself ) == 1 ) {
+            __unregister_thread( myself );
+        }
     }
-
-    /* Unlock to release any joins */
-    pthread_mutex_unlock( __get_thread_running_mutex( myself ) );
-
-    /* If detached, destroy all internal memory for this thread */
-    if( __get_thread_detached( myself ) == 1 )
-        __unregister_thread( myself );
-
     _endthread();
     // never return
 }
