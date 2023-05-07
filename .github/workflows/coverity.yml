@@ -199,7 +199,7 @@ jobs:
 #      shell: pwsh
 #    - name: "Build Coverity output data Windows"
 #      run: |
-#        ci/coverity.sh ${{ steps.covtool.outputs.cmd }} ci/covbuild.sh vs2019
+#        ci\coverity.cmd ${{ steps.covtool.outputs.cmd }} ci\covbuild.cmd vs2019
 #      env:
 #        OWROOT:         ${{ github.workspace }}
 #        OWTOOLS:        VISUALC
@@ -207,7 +207,7 @@ jobs:
 #        OWDOSBOXPATH:   ci\nt386
 #        OWDEBUG:        ${{ vars.OWDEBUG }}
 #        OWVERBOSE:      1
-#      shell: bash
+#      shell: cmd
 #    - name: Get Coverity output data path
 #      id: tarname
 #      run: >

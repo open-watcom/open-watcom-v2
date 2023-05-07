@@ -11,8 +11,13 @@ inputs:
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
+  tools_nt:
+    description: 'used compiler toolchain (for Windows)'
+    required: false
+    default: ''
+    type: string
+  tools_lnx:
+    description: 'used compiler toolchain (for Linux)'
     required: false
     default: ''
     type: string
@@ -34,34 +39,43 @@ inputs:
 runs:
   using: composite
   steps:
+  if: ${{ inputs.arch }} == 'lnx'
   - uses: "./.github/actions/artfload"
     with:
-      arch:         ${{ inputs.arch }}
+      arch:         'lnx'
       gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.arch }}"
-      tools:        ${{ inputs.tools }}
+      artifact:     'build lnx'
+      tools:        ${{ inputs.tools_lnx }}
+      owdebug:      ${{ inputs.owdebug }}
+  if: ${{ inputs.arch }} == 'nt'
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:         'nt'
+      gitpath:      'build binbuild'
+      artifact:     'build nt'
+      tools:        ${{ inputs.tools_nt }}
       owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
       arch:         ${{ inputs.arch }}
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui nt'
-      tools:        'vs2019'
+      tools:        ${{ inputs.tools_nt }}
       owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
       arch:         ${{ inputs.arch }}
       gitpath:      'bld setupgui'
       artifact:     'bld setupgui lnx'
-      tools:        'gcc'
+      tools:        ${{ inputs.tools_lnx }}
       owdebug:      ${{ inputs.owdebug }}
   # load all release binaries
   - uses: "./.github/actions/relload"
     with:
       arch:         ${{ inputs.arch }}
       gitpath:      'rel'
-      tools_nt:     'vs2019'
-      tools_lnx:    'gcc'
+      tools_nt:     ${{ inputs.tools_nt }}
+      tools_lnx:    ${{ inputs.tools_lnx }}
       owdebug:      ${{ inputs.owdebug }}
   - if: inputs.target == 'snapshot'
     name: Create OW snapshot
@@ -72,9 +86,9 @@ runs:
       gitpath:      'rel'
       owdebug:      ${{ inputs.owdebug }}
   # run build script
-  - if: inputs.target != 'snapshot' && ( inputs.arch == 'lnx' || inputs.arch == 'osx' )
+  - if: inputs.target != 'snapshot' && ( inputs.arch == 'lnx' )
     name: Build Installers
-    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools_lnx }}
     env:
       OWBUILD_STAGE: 'inst'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -85,7 +99,7 @@ runs:
     shell: bash
   - if: inputs.target != 'snapshot' && inputs.arch == 'nt'
     name: Build Installers
-    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools_nt }}
     env:
       OWBUILD_STAGE: 'inst'
       OWTOOLS:       ${{ inputs.owtools }}

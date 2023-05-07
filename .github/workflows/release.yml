@@ -109,7 +109,8 @@ jobs:
       with:
         target:     ${{ matrix.insttype }}
         arch:       'lnx'
-        tools:      'gcc'
+        tools_nt:   'vs2019'
+        tools_lnx:  'gcc'
         owtools:    'GCC'
         bldscript:  'ci/buildx.sh'
         owdebug:    ${{ vars.OWDEBUG }}
