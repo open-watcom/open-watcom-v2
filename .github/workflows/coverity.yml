@@ -136,6 +136,10 @@ jobs:
         -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
         if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
       shell: pwsh
+    - uses: "./.github/actions/artfdel"
+      with:
+        exclude:    ''
+        owdebug:    ${{ vars.OWDEBUG }}
 
 #  scan-nt:
 #    needs: check_run
