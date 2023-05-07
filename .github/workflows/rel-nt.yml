@@ -1,0 +1,98 @@
+name: Release-Build-nt
+run-name: Release workflow Windows (daily and monthly)
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      bldscript:
+        required: true
+        type: string
+      tools:
+        required: true
+        type: string
+      owtools:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      owdebug:
+        required: true
+        type: string
+jobs:
+  boot-nt:
+    name: Bootstrap
+    runs-on: ${{ inputs.image }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Bootstrap
+      uses: "./.github/actions/boot"
+      with:
+        arch:       ${{ inputs.arch }}
+        bldscript:  ${{ inputs.bldscript }}
+        tools:      ${{ inputs.tools }}
+        owtools:    ${{ inputs.owtools }}
+        owdebug:    ${{ inputs.owdebug }}
+  build-nt:
+    needs: boot-nt
+    name: Build
+    runs-on: ${{ inputs.image }}
+    timeout-minutes: 120
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Build
+      uses: "./.github/actions/build"
+      with:
+        arch:       ${{ inputs.arch }}
+        bldscript:  ${{ inputs.bldscript }}
+        tools:      ${{ inputs.tools }}
+        owtools:    ${{ inputs.owtools }}
+        owdebug:    ${{ inputs.owdebug }}
+  docsbuild:
+    needs: boot-nt
+    name: Documentation
+    runs-on: ${{ inputs.image }}
+    timeout-minutes: 90
+    strategy:
+      matrix:
+        include:
+        - display: DOS
+          doctype: docdos
+        - display: OS/2
+          doctype: docos2
+        - display: NT
+          doctype: docnt
+        - display: CHM
+          doctype: docchm
+        - display: PDF
+          doctype: docpdf
+        - display: WIN
+          doctype: docwin
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Documentation
+      uses: "./.github/actions/docbuild"
+      with:
+        target:     ${{ matrix.doctype }}
+        arch:       ${{ inputs.arch }}
+        tools:      ${{ inputs.tools }}
+        owtools:    ${{ inputs.owtools }}
+        owdebug:    ${{ inputs.owdebug }}
+  tests-nt:
+    needs: build-nt
+    name: Tests
+    runs-on: ${{ inputs.image }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Tests
+      uses: "./.github/actions/tests"
+      with:
+        arch:       ${{ inputs.arch }}
+        bldscript:  ${{ inputs.bldscript }}
+        tools:      ${{ inputs.tools }}

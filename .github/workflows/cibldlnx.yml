@@ -1,0 +1,89 @@
+name: CI-Build-lnx
+run-name: CI workflow Linux
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      bldscript:
+        required: true
+        type: string
+      tools:
+        required: true
+        type: string
+      owtools:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      owdebug:
+        required: true
+        type: string
+jobs:
+  boot-lnx:
+    name: Bootstrap
+    runs-on: ${{ inputs.image }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Bootstrap
+      uses: "./.github/actions/boot"
+      with:
+        arch:       ${{ inputs.arch }}
+        bldscript:  ${{ inputs.bldscript }}
+        tools:      ${{ inputs.tools }}
+        owtools:    ${{ inputs.owtools }}
+        owdebug:    ${{ inputs.owdebug }}
+  build-lnx:
+    name: Build
+    needs: boot-lnx
+    runs-on: ${{ inputs.image }}
+    timeout-minutes: 120
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Build
+      uses: "./.github/actions/build"
+      with:
+        arch:       ${{ inputs.arch }}
+        bldscript:  ${{ inputs.bldscript }}
+        tools:      ${{ inputs.tools }}
+        owtools:    ${{ inputs.owtools }}
+        owdebug:    ${{ inputs.owdebug }}
+  tests-lnx:
+    name: Tests
+    needs: build-lnx
+    runs-on: ${{ inputs.image }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Tests
+      uses: "./.github/actions/tests"
+      with:
+        arch:       ${{ inputs.arch }}
+        bldscript:  ${{ inputs.bldscript }}
+        tools:      ${{ inputs.tools }}
+  testboot-lnx:
+    name: Test Bootstrap
+    needs: tests-lnx
+    runs-on: ${{ inputs.image }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Load Artifact
+      uses: "./.github/actions/artfload"
+      with:
+        arch:     ${{ inputs.arch }}
+        gitpath:  'rel'
+        artifact: "rel ${{ inputs.arch }}"
+        tools:    ${{ inputs.tools }}
+        owdebug:  ${{ inputs.owdebug }}
+    - name: Test Bootstrap
+      uses: "./.github/actions/testboot"
+      with:
+        arch:       ${{ inputs.arch }}
+        gitpath:    'rel'
+        bldscript:  ${{ inputs.bldscript }}
+        owdebug:    ${{ inputs.owdebug }}
