@@ -43,8 +43,6 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owdebug:  ${{ inputs.owdebug }}
   - run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -X POST `

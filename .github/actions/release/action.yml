@@ -29,8 +29,6 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owdebug:  ${{ inputs.owdebug }}
 ##############################################
 # create daily release, delete existing one
 ##############################################

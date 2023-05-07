@@ -36,8 +36,6 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owdebug:  ${{ inputs.owdebug }}
   - id: last_commit
     run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh

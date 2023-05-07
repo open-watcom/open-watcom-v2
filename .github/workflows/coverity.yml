@@ -11,6 +11,7 @@ env:
   OWCOV_TOOLS_GITPATH:   'coverity-scan-analysis'
   OWCOV_RESULTS_GITPATH: 'cov-int'
   OWCOV_TAG:             'Coverity-scan'
+  OWCURLOPTS:            ${{ vars.OWCURLOPTS }}
 jobs:
   check_run:
     if: github.repository == 'open-watcom/open-watcom-v2'
@@ -46,8 +47,6 @@ jobs:
     - name: Setup curl options
       id: curlcmd
       uses: "./.github/actions/curlcmd"
-      with:
-        owdebug:  ${{ inputs.owdebug }}
     - name: "Download Coverity Tools"
       run: |
         $response = ${{ steps.curlcmd.outputs.cov }} `
@@ -157,8 +156,6 @@ jobs:
 #    - name: Setup curl options
 #      id: curlcmd
 #      uses: "./.github/actions/curlcmd"
-#      with:
-#        owdebug:  ${{ inputs.owdebug }}
 #    - name: "Download Coverity Tools"
 #      run: |
 #        $response = ${{ steps.curlcmd.outputs.cov }} `

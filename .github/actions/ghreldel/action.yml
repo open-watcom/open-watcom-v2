@@ -17,8 +17,6 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owdebug:  ${{ inputs.owdebug }}
   - id: ghrel
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} `

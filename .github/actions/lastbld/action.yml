@@ -27,8 +27,6 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-    with:
-      owdebug:  ${{ inputs.owdebug }}
   - id: cireldata
     run: |
       echo "tag=Last-CI-build" >> ${{ github.output }}
