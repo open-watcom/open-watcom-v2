@@ -68,8 +68,7 @@ runs:
   - name: 'Check monthly Release exists'
     id: oldmrel
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} `
-      -H "Authorization: Bearer ${{ github.token }}" `
+      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{ steps.mreldata.outputs.mtag }}"
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $sha = $response | jq -r .[].object.sha

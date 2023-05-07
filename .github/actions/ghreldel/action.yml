@@ -19,9 +19,8 @@ runs:
     uses: "./.github/actions/curlcmd"
   - id: ghrel
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} `
-      -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ inputs.tag }}" `
+      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+      "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ inputs.tag }}"
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $id = $response | jq -r .id
       if( "$id" -eq 'null' ) { $id = '' }
@@ -31,31 +30,27 @@ runs:
     name: "Remove Release Assets"
     run: |
       echo "${{ steps.ghrel.outputs.id }}"
-      $response = ${{ steps.curlcmd.outputs.gh }} `
-      -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}/assets" `
+      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+      "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}/assets"
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $id = $response | jq -r .[].id
       if( "$id" -eq 'null' ) { $id = '' }
       $id | Foreach-Object {
-        $response = ${{ steps.curlcmd.outputs.gh }} -X DELETE `
-        -H "Authorization: Bearer ${{ github.token }}" `
-        "https://api.github.com/repos/${{ github.repository }}/releases/assets/$_" `
+        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+        -X DELETE "https://api.github.com/repos/${{ github.repository }}/releases/assets/$_"
         if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       }
     shell: pwsh
   - if: steps.ghrel.outputs.id != ''
     name: "Remove Release"
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -X DELETE `
-      -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}" `
+      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+      -X DELETE "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}"
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
     shell: pwsh
   - name: "Remove Release Tag"
     run: |
-      $response = ${{ steps.curlcmd.outputs.gh }} -X DELETE `
-      -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ inputs.tag }}" `
+      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+      -X DELETE "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ inputs.tag }}"
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
     shell: pwsh

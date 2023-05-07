@@ -123,16 +123,16 @@ jobs:
     - if: steps.check_tag.outputs.sha == ''
       name: Create new Coverity scan tag
       run: |
-        $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
-        "https://api.github.com/repos/${{ github.repository }}/git/refs" `
+        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+        -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
         -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
         if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
       shell: pwsh
     - if: steps.check_tag.outputs.sha != ''
       name: Update Coverity scan tag
       run: |
-        $response = ${{ steps.curlcmd.outputs.gh }} -X PATCH `
-        "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
+        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+        -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
         -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
         if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
       shell: pwsh
@@ -238,16 +238,16 @@ jobs:
 #    - if: steps.check_tag.outputs.sha == ''
 #      name: Create new Coverity scan tag
 #      run: |
-#        $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
-#        "https://api.github.com/repos/${{ github.repository }}/git/refs" `
+#        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+#        -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
 #        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
 #        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
 #      shell: pwsh
 #    - if: steps.check_tag.outputs.sha != ''
 #      name: Update Coverity scan tag
 #      run: |
-#        $response = ${{ steps.curlcmd.outputs.gh }} -X PATCH `
-#        "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
+#        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+#        -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
 #        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
 #        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
 #      shell: pwsh
