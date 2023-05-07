@@ -137,6 +137,11 @@ jobs:
         name:           'owsnapshot'
         path:           ${{ steps.owsnapshot.outputs.fullname }}
         retention-days: 10
+    - name: Delete Artifacs
+      uses: "./.github/actions/artfdel"
+      with:
+        exclude:    'owsnapshot'
+        owdebug:    ${{ vars.OWDEBUG }}
   snapshot-push:
     needs:
     - workflow-lnx
@@ -168,14 +173,8 @@ jobs:
         tools:      'gcc'
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
-  artifacs-delete:
-    needs:
-    - snapshot-push:
-    - snapshot-pull:
-    name: Delete Artifacs
-    runs-on: ubuntu-latest
-    - uses: "./.github/actions/artfdel"
-      with:
+    - name: Delete Artifacs
+      uses: "./.github/actions/artfdel"
       with:
         exclude:    'owsnapshot'
         owdebug:    ${{ vars.OWDEBUG }}
