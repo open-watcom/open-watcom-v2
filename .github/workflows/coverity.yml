@@ -145,6 +145,7 @@ jobs:
         -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
         if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
       shell: pwsh
+
 #  scan-nt:
 #    needs: check_run
 #    if: needs.check_run.outputs.runit
@@ -154,176 +155,114 @@ jobs:
 #      OWCOV_SRC:             'win64'
 #      OWCOV_TOOLS_ARCHIVE:   'cov-analysis-linux.zip'
 #      OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.zip'
-    steps:
-    - name: Checkout Actions
-      uses: actions/checkout@v3.5.0
-    - name: Install DOSBOX
-      uses: "./.github/actions/dosboxin"
-      with:
-        arch:       'nt'
-    - id: curlcmd
-      run: >
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) {
-          'opts=-sv' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-        } else {
-          'opts=-s' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-        }
-      shell: pwsh      
-    - name: "Download Coverity Tools"
-      run: |
-        $response = curl ${{ steps.curlcmd.outputs.opts }} `
-        -o $env:OWCOV_TOOLS_ARCHIVE `
-        "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
-        -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
-      shell: pwsh
-    - name: "Restore Coverity Tools"
-      uses: "./.github/actions/tarload"
-      with:
-        arch:       'nt'
-        fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
-        gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
-        format:     'gzip'
-        owdebug:    ${{ vars.OWDEBUG }}
-    - name: "Remove Coverity Tools Archive"
-      run: rm -f $OWCOV_SRC_ARCHIVE
-      shell: bash
-    - name: Find Coverity Tool command
-      id: covtool
-      run: |
-        $path = Join-Path ${{ github.workspace }} $env:OWCOV_TOOLS_GITPATH
-        (Get-ChildItem -Recurse -Path $path -File "cov-build" | Select-Object -First 1).FullName `
-        | Join-String -OutputPrefix 'cmd=' `
-        | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-      shell: pwsh
-    - name: "Build Coverity output data Windows"
-      run: |
-        ci/coverity.sh ${{ steps.covtool.outputs.cmd }} ci/covbuild.sh vs2019
-      env:
-        OWROOT:     ${{ github.workspace }}
-        OWTOOLS:    GCC
-        OWDOSBOX:   dosbox
-        OWDEBUG:    ${{ vars.OWDEBUG }}
-        OWVERBOSE:  1
-      shell: bash
-    - name: Get Coverity output data path
-      id: tarname
-      run: >
-        Join-Path ${{ github.workspace }} $env:OWCOV_RESULTS_ARCHIVE
-        | Join-String -OutputPrefix 'fullname='
-        | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-      shell: pwsh
-    - id: last_commit
-      run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-      shell: pwsh
-    - name: "Archive Coverity output data"
-      uses: "./.github/actions/tarsave"
-      with:
-        arch:       'nt'
-        fullname:   ${{ steps.tarname.outputs.fullname }}
-        gitpath:    ${{ env.OWCOV_RESULTS_GITPATH }}
-        format:     'gzip'
-        owdebug:    ${{ vars.OWDEBUG }}
-    - name: "Upload Coverity output data Archive"
-      run: >
-        $response=curl ${{ steps.curlcmd.outputs.opts }}
-        --write-out "\n%{http_code}\n"
-        --form project=$env:OWCOV_PROJECT
-        --form token=${{ secrets.OWCOVERITY_TOKEN }}
-        --form email=malak.jiri@gmail.com
-        --form file=`@${{ steps.tarname.outputs.fullname }}
-        --form version=${{ steps.last_commit.outputs.sha }}
-        --form description="Open Watcom V2 Azure Pipelines CI build"
-        https://scan.coverity.com/builds
-      shell: pwsh
-    - name: Check tag reference
-      id: check_tag
-      uses: "./.github/actions/ghtagchk"
-      with:
-        tag:     ${{ env.OWCOV_TAG }}
-        owdebug: ${{ vars.OWDEBUG }}
-    - if: steps.check_tag.outputs.sha == ''
-      name: Create new Coverity scan tag
-      run: |
-        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X POST `
-        -H "Accept: application/vnd.github+json" `
-        -H "Authorization: Bearer ${{ github.token }}" `
-        -H "X-GitHub-Api-Version: 2022-11-28" `
-        "https://api.github.com/repos/${{ github.repository }}/git/refs" `
-        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
-      shell: pwsh
-    - if: steps.check_tag.outputs.sha != ''
-      name: Update Coverity scan tag
-      run: |
-        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X PATCH `
-        -H "Accept: application/vnd.github+json" `
-        -H "Authorization: Bearer ${{ github.token }}" `
-        -H "X-GitHub-Api-Version: 2022-11-28" `
-        "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
-        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
-      shell: pwsh
-
-#    env:
-#      OWCOV_SRC:             'win64'
-#      OWCOV_TOOLS_ARCHIVE:   'cov-analysis-linux.zip'
-#      OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.zip'
 #    steps:
-#    - name: checkout
+#    - name: Checkout Actions
 #      uses: actions/checkout@v3.5.0
-#    - uses: "./.github/actions/covload"
+#    - name: Install DOSBOX
+#      uses: "./.github/actions/dosboxin"
 #      with:
-#        arch:            'nt'
-#        tool_src:        'win64'
-#        tool_gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
-#        tool_archive:    'cov-analysis-linux.zip'
-#        coverity_token:  ${{ secrets.OWCOVERITY_TOKEN }}
-#        owdebug:         ${{ vars.OWDEBUG }}
-#      env:
-#        OWTOOLS: VISUALC
-#  scan-nt:
-#    needs: scan-load-nt
-#    name: "Coverity Scan Windows"
-#    runs-on: windows-2022
-#    timeoutInMinutes: 90
-#    steps:
-#    - name: checkout
-#      uses: actions/checkout@v3.5.0
-#    - id: covtool
+#        arch:       'nt'
+#    - id: curlcmd
+#      run: >
+#        if( "${{ vars.OWDEBUG }}" -eq '1' ) {
+#          'opts=-sv' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+#        } else {
+#          'opts=-s' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+#        }
+#      shell: pwsh      
+#    - name: "Download Coverity Tools"
 #      run: |
-#        $path = Join-Path ${{ github.workspace }} ${{ env.OWCOV_TOOLS_GITPATH }}
-#        (Get-ChildItem -Recurse -Path $path -File 'cov-build.exe' | Select-Object -First 1).FullName `
+#        $response = curl ${{ steps.curlcmd.outputs.opts }} `
+#        -o $env:OWCOV_TOOLS_ARCHIVE `
+#        "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
+#        -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
+#        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+#      shell: pwsh
+#    - name: "Restore Coverity Tools"
+#      uses: "./.github/actions/tarload"
+#      with:
+#        arch:       'nt'
+#        fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
+#        gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
+#        format:     'gzip'
+#        owdebug:    ${{ vars.OWDEBUG }}
+#    - name: "Remove Coverity Tools Archive"
+#      run: rm -f $OWCOV_SRC_ARCHIVE
+#      shell: bash
+#    - name: Find Coverity Tool command
+#      id: covtool
+#      run: |
+#        $path = Join-Path ${{ github.workspace }} $env:OWCOV_TOOLS_GITPATH
+#        (Get-ChildItem -Recurse -Path $path -File "cov-build.exe" | Select-Object -First 1).FullName `
 #        | Join-String -OutputPrefix 'cmd=' `
 #        | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
 #      shell: pwsh
-#    - name: "Build Coverity data"
-#      run: 'ci\coverity.cmd' ${{ steps.covtool.outputs.cmd }} 'ci\covbuild.cmd' vs2022
+#    - name: "Build Coverity output data Windows"
+#      run: |
+#        ci/coverity.sh ${{ steps.covtool.outputs.cmd }} ci/covbuild.sh vs2019
 #      env:
-#        OWROOT:              ${{ github.workspace }}
-#        OWTOOLS:             VISUALC
-#        OWDOSBOX:            dosbox.exe
-#        OWDOSBOXPATH:        ci\nt386
-#        OWDEBUG:             ${{ vars.OWDEBUG }}
-#        OWVERBOSE:           1
-#      shell: cmd
-#  scan-save-nt:
-#    needs: scan-nt
-#    name: "Upload Coverity Scan Windows"
-#    runs-on: windows-2022
-#    timeoutInMinutes: 90
-#    - name: checkout
-#      uses: actions/checkout@v3.5.0
-#    - uses: "./.github/actions/covsave"
+#        OWROOT:         ${{ github.workspace }}
+#        OWTOOLS:        VISUALC
+#        OWDOSBOX:       dosbox.exe
+#        OWDOSBOXPATH:   ci\nt386
+#        OWDEBUG:        ${{ vars.OWDEBUG }}
+#        OWVERBOSE:      1
+#      shell: bash
+#    - name: Get Coverity output data path
+#      id: tarname
+#      run: >
+#        Join-Path ${{ github.workspace }} $env:OWCOV_RESULTS_ARCHIVE
+#        | Join-String -OutputPrefix 'fullname='
+#        | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+#      shell: pwsh
+#    - id: last_commit
+#      run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+#      shell: pwsh
+#    - name: "Archive Coverity output data"
+#      uses: "./.github/actions/tarsave"
 #      with:
-#        arch:            'nt'
-#        tool_gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
-#        tool_archive:    'cov-analysis-linux.zip'
-#        result_archive:  'open-watcom-v2.zip'
-#        result_artifact: 'win64'
-#        coverity_token:  ${{ secrets.OWCOVERITY_TOKEN }}
-#        owdebug:         ${{ vars.OWDEBUG }}
-#      env:
-#        OWTOOLS:         VISUALC
-#        OWDOSBOX:        dosbox.exe
-#        OWDOSBOXPATH:    ci\nt386
+#        arch:       'nt'
+#        fullname:   ${{ steps.tarname.outputs.fullname }}
+#        gitpath:    ${{ env.OWCOV_RESULTS_GITPATH }}
+#        format:     'gzip'
+#        owdebug:    ${{ vars.OWDEBUG }}
+#    - name: "Upload Coverity output data Archive"
+#      run: >
+#        $response=curl ${{ steps.curlcmd.outputs.opts }}
+#        --write-out "\n%{http_code}\n"
+#        --form project=$env:OWCOV_PROJECT
+#        --form token=${{ secrets.OWCOVERITY_TOKEN }}
+#        --form email=malak.jiri@gmail.com
+#        --form file=`@${{ steps.tarname.outputs.fullname }}
+#        --form version=${{ steps.last_commit.outputs.sha }}
+#        --form description="Open Watcom V2 Azure Pipelines CI build"
+#        https://scan.coverity.com/builds
+#      shell: pwsh
+#    - name: Check tag reference
+#      id: check_tag
+#      uses: "./.github/actions/ghtagchk"
+#      with:
+#        tag:     ${{ env.OWCOV_TAG }}
+#        owdebug: ${{ vars.OWDEBUG }}
+#    - if: steps.check_tag.outputs.sha == ''
+#      name: Create new Coverity scan tag
+#      run: |
+#        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X POST `
+#        -H "Accept: application/vnd.github+json" `
+#        -H "Authorization: Bearer ${{ github.token }}" `
+#        -H "X-GitHub-Api-Version: 2022-11-28" `
+#        "https://api.github.com/repos/${{ github.repository }}/git/refs" `
+#        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+#        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+#      shell: pwsh
+#    - if: steps.check_tag.outputs.sha != ''
+#      name: Update Coverity scan tag
+#      run: |
+#        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X PATCH `
+#        -H "Accept: application/vnd.github+json" `
+#        -H "Authorization: Bearer ${{ github.token }}" `
+#        -H "X-GitHub-Api-Version: 2022-11-28" `
+#        "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
+#        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+#        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+#      shell: pwsh
