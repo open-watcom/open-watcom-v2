@@ -1,79 +1,65 @@
 name: boot
-description: 'Process boot build steps'
+description: 'Process OW bootstrap build'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
-  pscript:
-    description: ''
+  bldscript:
+    description: 'script to build action'
     required: false
     default: ''
     type: string
   tools:
-    description: ''
+    description: 'used compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owtools:
+    description: 'OW build compiler toolchain'
     required: false
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
 runs:
   using: composite
   steps:
-  - if: inputs.arch == 'lnx' && inputs.tools == 'gcc'
+  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Bootstrap
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'GCC'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     1
-    shell: bash
-  - if: inputs.arch == 'lnx' && inputs.tools == 'clang'
-    name: Bootstrap
-    run: ${{ inputs.pscript }}
-    env:
-      OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'CLANG'
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
   - if: inputs.arch == 'nt'
     name: Bootstrap
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'VISUALC'
-      OWIMAGE:       'windows-2019'
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd
-  - if: inputs.arch == 'osx'
-    name: Bootstrap
-    run: ${{ inputs.pscript }}
-    env:
-      OWBUILD_STAGE: 'boot'
-      OWTOOLS:       'CLANG'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     1
-    shell: bash
   - uses: "./.github/actions/artfsave"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'bld watcom binbuild'
-      artifname: bld watcom ${{ inputs.arch }}
-      tools: ${{ inputs.tools }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'bld watcom binbuild'
+      artifact: "bld watcom ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfsave"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'build binbuild'
-      artifname: build ${{ inputs.arch }}
-      tools: ${{ inputs.tools }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: "build ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

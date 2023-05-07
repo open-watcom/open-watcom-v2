@@ -1,285 +1,177 @@
 name: Release-Build
 run-name: Release build (daily and monthly)
+
 on:
   schedule:
     - cron:  '30 0 * * *'
+
 jobs:
-  start-start:
+  check_run:
+    if: github.repository == 'open-watcom/open-watcom-v2'
     name: Start
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    outputs:
+      runit: ${{ steps.check_tag.outputs.old }}
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
-  boot-lnx-gcc:
-    needs: start-start
-    name: Bootstrap Linux GCC
-    runs-on: ubuntu-20.04
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Bootstrap Linux
-      uses: "./.github/actions/boot"
+    - name: Check tag reference
+      id: check_tag
+      uses: "./.github/actions/ghtagchk"
       with:
-        arch:    'lnx'
-        pscript: 'ci/buildx.sh'
-        tools:   'gcc'
+        tag:     'Current-build'
         owdebug: ${{ vars.OWDEBUG }}
-  boot-nt:
-    name: Bootstrap Windows
-    needs: start-start
-    runs-on: windows-2019
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Bootstrap Windows
-      uses: "./.github/actions/boot"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        owdebug: ${{ vars.OWDEBUG }}
-#  boot-osx:
-#    name: Bootstrap OSX
-#    needs: start-start
-#    runs-on: macos-11
-#    steps:
-#    - name: checkout
-#      uses: actions/checkout@v3.5.0
-#    - name: Bootstrap OSX
-#      uses: "./.github/actions/boot"
-#      with:
-#        arch:    'osx'
-#        pscript: 'ci/buildx.sh'
-#        owdebug: ${{ vars.OWDEBUG }}
-  build-lnx-gcc:
-    name: Build Linux GCC
-    needs: boot-lnx-gcc
-    runs-on: ubuntu-20.04
-    timeout-minutes: 120
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Build Linux GCC
-      uses: "./.github/actions/build"
-      with:
-        arch:    'lnx'
-        pscript: 'ci/buildx.sh'
-        tools:   'gcc'
-        owdebug: ${{ vars.OWDEBUG }}
-  build-nt:
-    name: Build Windows
-    needs: boot-nt
-    runs-on: windows-2019
-    timeout-minutes: 120
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Build Windows
-      uses: "./.github/actions/build"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        owdebug: ${{ vars.OWDEBUG }}
-#  build-osx:
-#    name: Build OSX
-#    needs: boot-osx
-#    runs-on: macos-11
-#    timeout-minutes: 120
-#    steps:
-#    - name: checkout
-#      uses: actions/checkout@v3.5.0
-#    - name: Build OSX
-#      uses: "./.github/actions/build"
-#      with:
-#        arch:    'osx'
-#        pscript: 'ci/buildx.sh'
-#        owdebug: ${{ vars.OWDEBUG }}
-  docsbuild-dos:
-    name: Documentation Build DOS
-    needs: boot-nt
-    runs-on: windows-2019
-    timeout-minutes: 90
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/docbuild"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        target:  'docdos'
-        owdebug: ${{ vars.OWDEBUG }}
-  docsbuild-chm:
-    name: Documentation Build CHM
-    needs: boot-nt
-    runs-on: windows-2019
-    timeout-minutes: 90
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/docbuild"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        target:  'docchm'
-        owdebug: ${{ vars.OWDEBUG }}
-  docsbuild-nt:
-    name: Documentation Build NT
-    needs: boot-nt
-    runs-on: windows-2019
-    timeout-minutes: 90
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/docbuild"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        target:  'docnt'
-        owdebug: ${{ vars.OWDEBUG }}
-  docsbuild-os2:
-    name: Documentation Build OS2
-    needs: boot-nt
-    runs-on: windows-2019
-    timeout-minutes: 90
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/docbuild"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        target:  'docos2'
-        owdebug: ${{ vars.OWDEBUG }}
-  docsbuild-pdf:
-    name: Documentation Build PDF
-    needs: boot-nt
-    runs-on: windows-2019
-    timeout-minutes: 90
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/docbuild"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        target:  'docpdf'
-        owdebug: ${{ vars.OWDEBUG }}
-  docsbuild-win:
-    name: Documentation Build WIN
-    needs: boot-nt
-    runs-on: windows-2019
-    timeout-minutes: 90
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/docbuild"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-        target:  'docwin'
-        owdebug: ${{ vars.OWDEBUG }}
-  docsbuild:
-    name: Consolidate Documentation
+  workflow-lnx:
+    needs: check_run
+    if: needs.check_run.outputs.runit
+    name: Linux
+    strategy:
+      matrix:
+        include:
+        - owtools: 'GCC'
+          tools:   'gcc'
+          image:   'ubuntu-20.04'
+    uses: "./.github/workflows/rel-lnx.yml"
+    with:
+      arch:         'lnx'
+      bldscript:    'ci/buildx.sh'
+      tools:        ${{ matrix.tools }}
+      owtools:      ${{ matrix.owtools }}
+      image:        ${{ matrix.image }}
+      owdebug:      ${{ vars.OWDEBUG }}
+  workflow-nt:
+    needs: check_run
+    if: needs.check_run.outputs.runit
+    name: Windows
+    strategy:
+      matrix:
+        include:
+        - owtools: 'VISUALC'
+          tools:   'vs2019'
+          image:   'windows-2019'
+    uses: "./.github/workflows/rel-nt.yml"
+    with:
+      arch:         'nt'
+      bldscript:    'ci/buildx.cmd'
+      tools:        ${{ matrix.tools }}
+      owtools:      ${{ matrix.owtools }}
+      image:        ${{ matrix.image }}
+      owdebug:      ${{ vars.OWDEBUG }}
+#  workflow-osx:
+#    needs: check_run
+#    if: needs.check_run.outputs.runit
+#    name: OSX
+#    strategy:
+#      matrix:
+#        include:
+#        - owtools: 'CLANG'
+#          tools:   'clang'
+#          image:   'macos-11'
+#    uses: "./.github/workflows/rel-osx.yml"
+#    with:
+#      arch:         'osx'
+#      bldscript:    'ci/buildx.sh'
+#      tools:        ${{ matrix.tools }}
+#      owtools:      ${{ matrix.owtools }}
+#      image:        ${{ matrix.image }}
+#      owdebug:      ${{ vars.OWDEBUG }}
+  install:
     needs:
-    - docsbuild-dos
-    - docsbuild-chm
-    - docsbuild-nt
-    - docsbuild-os2
-    - docsbuild-pdf
-    - docsbuild-win
-    runs-on: windows-2019
+    - workflow-lnx
+    - workflow-nt
+#    - workflow-osx
+    name: Installers
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - display: DOS
+          insttype: instdos
+        - display: OS/2
+          insttype: instos2
+        - display: Linux(32-bit)
+          insttype: instlnx32
+        - display: Linux(64-bit)
+          insttype: instlnx64
+        - display: Windows(16-bit)
+          insttype: instwin16
+        - display: Windows(32-bit)
+          insttype: instwin32
+        - display: Windows(64-bit)
+          insttype: instwin64
+        - display: OW Snapshot
+          insttype: snapshot
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/artfload"
-      with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docdos'
-    - uses: "./.github/actions/artfload"
-      with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docchm'
-    - uses: "./.github/actions/artfload"
-      with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docnt'
-    - uses: "./.github/actions/artfload"
-      with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docos2'
-    - uses: "./.github/actions/artfload"
-      with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docpdf'
-    - uses: "./.github/actions/artfload"
-      with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docwin'
-    - uses: "./.github/actions/artfsave"
-      with:
-        arch:      'nt'
-        gitpath:   'rel'
-        artifname: 'rel docsall'
-  tests-lnx-gcc:
-    name: Tests Linux GCC
-    needs: build-lnx-gcc
-    runs-on: ubuntu-20.04
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Tests Linux GCC
-      uses: "./.github/actions/tests"
-      with:
-        arch:    'lnx'
-        pscript: 'ci/buildx.sh'
-        tools:   'gcc'
-  tests-nt:
-    name: Tests Windows
-    needs: build-nt
-    runs-on: windows-2019
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Tests Windows
-      uses: "./.github/actions/tests"
-      with:
-        arch:    'nt'
-        pscript: 'ci/buildx.cmd'
-  install-lnx:
-    name: Installers Build Linux
-    runs-on: ubuntu-20.04
-    needs:
-    - tests-lnx-gcc
-    - tests-nt
-    - docsbuild
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Last CI Build
+    - name: Installer
       uses: "./.github/actions/install"
       with:
-        arch:    'lnx'
-        tools:   'gcc'
-        pscript: 'ci/buildx.sh'
-        owdebug: ${{ vars.OWDEBUG }}
-  release-lnx:
-    name: "GitHub Release"
-    runs-on: ubuntu-20.04
-    needs: install-lnx
+        target:     ${{ matrix.insttype }}
+        arch:       'lnx'
+        tools:      'gcc'
+        owtools:    'GCC'
+        bldscript:  'ci/buildx.sh'
+        owdebug:    ${{ vars.OWDEBUG }}
+  release:
+    needs: install
+    name: "Create GitHub Release"
+    runs-on: ubuntu-latest
+    outputs:
+      drelid: ${{ steps.rel_rel.outputs.drelid }}
+      mrelid: ${{ steps.rel_rel.outputs.mrelid }}
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
     - name: GitHub Release
+      id: rel_rel
       uses: "./.github/actions/release"
       with:
         arch:    'lnx'
         tools:   'gcc'
         owdebug: ${{ vars.OWDEBUG }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        UPLOAD_TOKEN: ${{ secrets.UPLOAD_TOKEN }}
+    - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
+      shell: bash
+  assets:
+    needs: release
+    name: "Upload Installers"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - display: DOS
+          asset: instdos
+        - display: OS/2
+          asset: instos2
+        - display: Linux(32-bit)
+          asset: instlnx32
+        - display: Linux(64-bit)
+          asset: instlnx64
+        - display: Windows(16-bit)
+          asset: instwin16
+        - display: Windows(32-bit)
+          asset: instwin32
+        - display: Windows(64-bit)
+          asset: instwin64
+        - display: OW Snapshot
+          asset: snapshot
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - run: echo "drelid=${{ needs.release.outputs.drelid }};mrelid=${{ needs.release.outputs.mrelid }}"
+      shell: bash
+    - name: Upload ${{ matrix.display }} Asset
+      uses: "./.github/actions/ghassets"
+      with:
+        target:     ${{ matrix.asset }}
+        drelid:     ${{ needs.release.outputs.drelid }}
+        mrelid:     ${{ needs.release.outputs.mrelid }}
+        arch:       'lnx'
+        owdebug:    ${{ vars.OWDEBUG }}
+  end-end:
+    needs: assets
+    name: End
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo
+      shell: bash

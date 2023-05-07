@@ -331,8 +331,8 @@ static aux_info *LookupMagicKeyword( void )
     return( NULL );
 }
 
-static aux_info *AuxLookup( const char *name, size_t name_len )
-//=============================================================
+static aux_entry *AuxEntryLookup( const char *name, size_t name_len )
+//===================================================================
 {
     aux_entry   *ent;
 
@@ -343,6 +343,16 @@ static aux_info *AuxLookup( const char *name, size_t name_len )
             }
         }
     }
+    return( ent );
+}
+
+
+static aux_info *AuxLookup( const char *name, size_t name_len )
+//=============================================================
+{
+    aux_entry   *ent;
+
+    ent = AuxEntryLookup( name, name_len );
     if( ent == NULL )
         return( NULL );
     return( &ent->info );
@@ -1506,11 +1516,9 @@ static aux_info    *RTAuxInfo( sym_id rtn )
     return( NULL );
 }
 
-aux_info    *InfoLookup( sym_id sym )
-//===================================
+static aux_info    *InfoLookupFT( sym_id sym )
+//============================================
 {
-    aux_info    *info;
-
     if( sym != NULL ) {
         if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
             if( sym->u.ns.flags & SY_INTRINSIC ) {
@@ -1536,12 +1544,40 @@ aux_info    *InfoLookup( sym_id sym )
                 return( &ProgramInfo );
             }
         }
-        info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
-        if( info != NULL ) {
-            return( info );
-        }
+        return( NULL );
     }
     return( &FortranInfo );
+}
+
+
+aux_info    *InfoLookup( sym_id sym )
+//===================================
+{
+    aux_info    *info;
+
+    info = InfoLookupFT( sym );
+    if( info != NULL )
+        return( info );
+    info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
+    if( info != NULL ) {
+        return( info );
+    }
+    return( &FortranInfo );
+}
+
+
+const char  *NameLookup( sym_id sym )
+//===================================
+{
+    aux_entry   *ent;
+
+    if( InfoLookupFT( sym ) == NULL ) {
+        ent = AuxEntryLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
+        if( ent != NULL ) {
+            return( ent->sym_name );
+        }
+    }
+    return( sym->u.ns.name );
 }
 
 

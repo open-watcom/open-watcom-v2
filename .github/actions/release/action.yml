@@ -1,98 +1,100 @@
 name: release
-description: ''
+description: 'Create new day and month Release on GitHub'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
   tools:
-    description: ''
+    description: 'used compiler toolchain'
     required: false
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
+outputs:
+  drelid:
+    description: 'day release ID'
+    value: ${{ steps.newdrel.outputs.id }}
+  mrelid:
+    description: 'month release ID'
+    value: ${{ steps.newmrel.outputs.id }}
 runs:
   using: composite
   steps:
-##############################################
-# load build tools for current architecture
-##############################################
-  - name: Load build tools
-    uses: "./.github/actions/artfload"
-    with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'build binbuild'
-      artifname: build ${{ parameters.arch }}
-      tools: ${{ inputs.tools }}
-##############################################
-# load all parts(artifacts) of distribution
-##############################################
-  - name: Load full distribution
-    uses: "./.github/actions/artfload"
-    with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'distrib ow bin'
-      artifname: 'distrib bin'
+  - id: curlcmd
+    run: >
+      if( "${{ inputs.owdebug }}" -eq '1' ) {
+        'opts=-sv' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      } else {
+        'opts=-s' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      }
+    shell: pwsh      
 ##############################################
 # create daily release, delete existing one
 ##############################################
   - name: 'Prepare build information for Release'
-    id: drelease
+    id: dreldata
     run: |
-      echo "tag=Current-build" >> $GITHUB_OUTPUT
-      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      echo "tag=Current-build" >> ${{ github.output }}
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
     shell: bash
   - name: 'Remove daily Release if exists'
     uses: "./.github/actions/ghreldel"
     with:
-      tag:     ${{ steps.drelease.outputs.tag }}
+      tag:     ${{ steps.dreldata.outputs.tag }}
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
   - name: 'Create daily Release'
+    id: newdrel
     uses: "./.github/actions/ghrelcre"
     with:
-      note:    Last updated ${{ steps.drelease.outputs.timestamp }}
-      title:   ${{ steps.drelease.outputs.tag }}
-      tag:     ${{ steps.drelease.outputs.tag }}
-      tagmsg:  ${{ steps.drelease.outputs.timestamp }}
-      fullset: 1
+      note:    "Last updated ${{ steps.dreldata.outputs.timestamp }}"
+      title:   ${{ steps.dreldata.outputs.tag }}
+      tag:     ${{ steps.dreldata.outputs.tag }}
+      tagmsg:  ${{ steps.dreldata.outputs.timestamp }}
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
 ##############################################
 # create monthly release, only if not exists
 ##############################################
-  - name: 'Check monthly Release exists'
-    id: mtag
-    run: |
-      mask=$(date +'%Y-%m')-[0-3][0-9]-Build
-      echo "sha=$(git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${mask}^{}:\1:p\")" >> $GITHUB_OUTPUT
-    shell: bash
-  - if: "${{ steps.mtag.outputs.sha }}xxx" == "xxx"
-    name: 'Prepare information for monthly Release'
-    id: mrelease
+  - name: 'Prepare information for monthly Release'
+    id: mreldata
     run: |
       tagstamp=$(date +'%Y-%m-%d')
-      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-      echo "tag=$tagstamp-Build" >> $GITHUB_OUTPUT
-      echo "tagmsg=$tagstamp $tagstamp-Build" >> $GITHUB_OUTPUT
-      echo "title=$tagstamp Build" >> $GITHUB_OUTPUT
+      echo "mtag=$(date +'%Y-%m-')" >> ${{ github.output }}
+      echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> ${{ github.output }}
+      echo "tag=$tagstamp-Build" >> ${{ github.output }}
+      echo "tagmsg=$tagstamp $tagstamp-Build" >> ${{ github.output }}
+      echo "title=$tagstamp Build" >> ${{ github.output }}
     shell: bash
-  - if: "${{ steps.mtag.outputs.sha }}xxx" == "xxx"
+  - name: 'Check monthly Release exists'
+    id: oldmrel
+    run: |
+      $response = curl ${{ steps.curlcmd.outputs.opts }} -L `
+      -H "Accept: application/vnd.github+json" `
+      -H "Authorization: Bearer ${{ github.token }}" `
+      -H "X-GitHub-Api-Version: 2022-11-28" `
+      "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{ steps.mreldata.outputs.mtag }}"
+      if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
+      $sha = $response | jq -r .[].object.sha
+      if( "$sha" -eq 'null' ) { $sha = '' }
+      $sha | Join-String -OutputPrefix 'sha=' `
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    shell: pwsh
+  - if: steps.oldmrel.outputs.sha == ''
+    id: newmrel
     name: 'Create monthly Release'
     uses: "./.github/actions/ghrelcre"
     with:
-      note:    Created ${{ steps.mrelease.outputs.timestamp }}
-      title:   ${{ steps.mrelease.outputs.title }}
-      tag:     ${{ steps.mrelease.outputs.tag }}
-      tagmsg:  ${{ steps.mrelease.outputs.tagmsg }}
-      fullset: 1
+      note:    "Created ${{ steps.mreldata.outputs.timestamp }}"
+      title:   ${{ steps.mreldata.outputs.title }}
+      tag:     ${{ steps.mreldata.outputs.tag }}
+      tagmsg:  ${{ steps.mreldata.outputs.tagmsg }}
       owdebug: ${{ inputs.owdebug }}
-    env:
-      GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+  - if: steps.oldmrel.outputs.sha == ''
+    id: mdata
+    run: echo "tag=${{ steps.mreldata.outputs.tag }}" >> ${{ github.output }}
+    shell: bash

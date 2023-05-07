@@ -1124,7 +1124,7 @@ static aux_info *GetAuxInfo( sym_id sym )
 static const char *GetBaseName( sym_id sym )
 {
     _UnShadow( sym );
-    return( sym->u.ns.name );
+    return( NameLookup( sym ) );
 }
 
 static const char *GetNamePattern( sym_id sym )

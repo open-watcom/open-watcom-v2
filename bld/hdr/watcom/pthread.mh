@@ -58,7 +58,7 @@
 
 /* Creation/destruction */
 _WCRTLINK extern int  pthread_create( pthread_t *__thread, const pthread_attr_t *__attr, void *(_WCCALLBACK *__start_routine)(void *), void *__arg );
-_WCRTLINK extern void pthread_exit( void *__exit_val );
+_WCRTLINK _WCNORETURN extern void pthread_exit( void *__exit_val );
 
 /* Thread cleanup */
 _WCRTLINK extern void pthread_cleanup_push( void (_WCCALLBACK *__routine)(void*), void *__arg );

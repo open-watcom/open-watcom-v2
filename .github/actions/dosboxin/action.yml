@@ -1,6 +1,8 @@
 name: dosbox-instalation
+description: 'Install DOSBOX run-time if necessary'
 inputs:
   arch:
+    description: 'run-time platform'
     required: false
     default: ''
     type: string

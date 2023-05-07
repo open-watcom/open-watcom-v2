@@ -2,4 +2,4 @@
 
 . $OWROOT/cmnvars.sh
 
-$OWCOVERITY_TOOL_CMD --dir cov-int $1
+$1 --dir cov-int $2

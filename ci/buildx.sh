@@ -84,7 +84,7 @@ build_proc()
             RC=$?
             ;;
         "inst")
-            builder install
+            builder install $OWINSTTARGET
             RC=$?
             ;;
         *)
@@ -93,5 +93,7 @@ build_proc()
     cd $OWROOT
     return $RC
 }
-
+if [ "$OWDEBUG" = "1" ]; then
+    env | sort
+fi
 build_proc $*

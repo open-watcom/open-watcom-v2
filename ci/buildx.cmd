@@ -1,6 +1,7 @@
 @set OWECHO=off
 @if "%OWDEBUG%" == "1" set OWECHO=on
 @echo %OWECHO%
+@if "%OWDEBUG%" == "1" set | sort
 REM ...
 REM Script to build the Open Watcom bootstrap tools
 REM ...
@@ -8,9 +9,9 @@ if "%OWTOOLS%" == "WATCOM" (
     set PATH=%WATCOM_PATH%
 )
 if "%OWTOOLS%" == "VISUALC" (
-    if "%OWIMAGE%" == "vs2017-win2016" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
-    if "%OWIMAGE%" == "windows-2019" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
-    if "%OWIMAGE%" == "windows-2022" call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+    if "%1" == "vs2017" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+    if "%1" == "vs2019" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+    if "%1" == "vs2022" call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
 )
 REM ...
 @echo %OWECHO%
@@ -76,7 +77,7 @@ if "%OWBUILD_STAGE%" == "docs" (
     set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "inst" (
-    builder install
+    builder install %OWINSTTARGET%
     set RC=!ERRORLEVEL!
 )
 cd %OWROOT%

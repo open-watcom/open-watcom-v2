@@ -1,19 +1,28 @@
 name: documentation-build
+description: 'Process OW single documentation type build'
 inputs:
-  arch:
-    required: false
-    default: ''
-    type: string
-  pscript:
-    required: false
-    default: ''
-    type: string
   target:
+    description: 'documentation type to process'
+    required: false
+    default: ''
+    type: string
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: 'used compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owtools:
+    description: 'OW build compiler toolchain'
     required: false
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -22,32 +31,21 @@ runs:
   steps:
   - uses: "./.github/actions/dosboxin"
     with:
-      arch: ${{ inputs.arch }}
+      arch:     ${{ inputs.arch }}
   - uses: "./.github/actions/artfload"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'build binbuild'
-      artifname: build ${{ inputs.arch }}
-  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
-    name: Documentation Build
-    run: ${{ inputs.pscript }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: "build ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
+  - name: Documentation Build
+    run: ci/buildx.cmd ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }}
+      OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
-      OWDOSBOX:      'dosbox'
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWVERBOSE:     1
-    shell: bash
-  - if: inputs.arch == 'nt'
-    name: Documentation Build
-    run: ${{ inputs.pscript }}
-    env:
-      OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.target }}
-      OWTOOLS:       'VISUALC'
-      OWROOT:        ${{ github.workspace }}
-      OWIMAGE:       'windows-2019'
       OWDOSBOX:      'dosbox.exe'
       OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
       OWDEBUG:       ${{ inputs.owdebug }}
@@ -55,6 +53,8 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      arch: ${{ inputs.arch }}
-      gitpath:   'rel'
-      artifname: rel ${{ inputs.target }}
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: "rel ${{ inputs.target }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

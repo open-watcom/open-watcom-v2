@@ -17,7 +17,8 @@ on:
       - 'bld/wpi/doc/**'
       - 'bld/wv/doc/**'
 jobs:
-  info:
+  start-start:
+    if: github.repository == 'open-watcom/open-watcom-v2'
     name: Info
     runs-on: windows-2019
     steps:
@@ -27,6 +28,7 @@ jobs:
       shell: cmd
       run: echo %MESSAGE%
   boot:
+    needs: start-start
     if: github.ref == 'refs/heads/master'
     name: Build Tools
     runs-on: windows-2019
@@ -163,8 +165,8 @@ jobs:
     - name: Setup Git User
       shell: cmd
       run: |
-        git config --global user.email "openwatcomazure@gmail.com"
-        git config --global user.name "Open Watcom Azure"
+        git config --global user.email "openwatcom.github@gmail.com"
+        git config --global user.name "Open Watcom GitHub"
     - name: Wiki Repo clone
       shell: cmd
       run: |

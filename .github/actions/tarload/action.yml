@@ -1,18 +1,28 @@
 name: tar-load
-description: ''
+description: 'Extract tar file to git sub-directory, create it if necessary'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
   gitpath:
-    description: ''
+    description: 'git subdirectory'
     required: false
     default: ''
     type: string
-  tarname:
-    description: ''
+  fullname:
+    description: 'tar file full name'
+    required: false
+    default: ''
+    type: string
+  format:
+    description: 'tar file compression method, by default .xz'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -21,28 +31,47 @@ runs:
   steps:
   - name: Get destination folder
     id: dstpath
-    run: |
-      Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} `
-      | Join-String -OutputPrefix "path=" `
-      | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    run: >
+      Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
+      | Join-String -OutputPrefix 'path='
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - if: inputs.arch == 'lnx'
-    name: Restore Artifact
-    run: |
-      mkdir -p ${{ steps.dstpath.outputs.path }}
-      tar -xJf ${{ inputs.tarname }} -C ${{ steps.dstpath.outputs.path }} . --overwrite
+  - id: tarcmd
+    run: >
+      if( "${{ inputs.owdebug }}" -eq '1' ) {
+        'opts=-xvf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      } else {
+        'opts=-xf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      }
+    shell: pwsh      
+  - name: Create destination folder
+    run: New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path ${{ steps.dstpath.outputs.path }} > $null
+    shell: pwsh
+  - if: inputs.arch == 'lnx' && inputs.format == 'gzip'
+    name: Restore Artifact Linux
+    run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
     shell: bash
-  - if: inputs.arch == 'nt'
-    name: Restore Artifact
+  - if: inputs.arch == 'lnx' && inputs.format != 'gzip'
+    name: Restore Artifact Linux
+    run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
+    shell: bash
+  - if: inputs.arch == 'osx' && inputs.format == 'gzip'
+    name: Restore Artifact OSX
+    run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.dstpath.outputs.path }}"
+    shell: bash
+  - if: inputs.arch == 'osx' && inputs.format != 'gzip'
+    name: Restore Artifact OSX
+    run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.dstpath.outputs.path }}"
+    shell: bash
+  - if: inputs.arch == 'nt' && inputs.format == 'gzip'
+    name: Restore Artifact (Windows)
     run: |
-      mkdir ${{ steps.dstpath.outputs.path }}
-      7z x -txz ${{ inputs.tarname }} -o${{ runner.temp }}
-      tar -xf ${{ runner.temp }}\owartifact.tar -C ${{ steps.dstpath.outputs.path }} *
+      7z x -aoa "${{ inputs.fullname }}" -o${{ steps.dstpath.outputs.path }}
+    shell: cmd
+  - if: inputs.arch == 'nt' && inputs.format != 'gzip'
+    name: Restore Artifact (Windows)
+    run: |
+      7z x -txz "${{ inputs.fullname }}" -o${{ runner.temp }}
+      tar ${{ steps.tarcmd.outputs.opts }} ${{ runner.temp }}\owartifact.tar -C "${{ steps.dstpath.outputs.path }}" *
       del ${{ runner.temp }}\owartifact.tar
     shell: cmd
-  - if: inputs.arch == 'osx'
-    name: Restore Artifact
-    run: |
-      mkdir -p ${{ steps.dstpath.outputs.path }}
-      gtar -xJf ${{ inputs.tarname }} -C ${{ steps.dstpath.outputs.path }} . --overwrite
-    shell: bash
