@@ -21,7 +21,7 @@ runs:
     id: artflist
       $response = ${{ steps.curlcmd.outputs.gh }} `
       -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" `
+      "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts"
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $list = $response | jq -r .artifacts
       $list | Foreach-Object {
