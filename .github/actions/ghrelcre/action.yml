@@ -43,6 +43,7 @@ runs:
     name: Create new Release tag
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+      -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/git/tags" `
       -d '{\"tag\":\"${{ inputs.tag }}\",\"message\":\"${{ inputs.tagmsg }}\",\"object\":\"${{ steps.last_commit.outputs.sha }}\",\"type\":\"commit\",\"tagger\":{\"name\":\"Open Watcom GitHub\",\"email\":\"openwatcom.github@gmail.com\"}}'
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
@@ -55,6 +56,7 @@ runs:
     run: |
       echo "${{ steps.ghtag.outputs.sha }}"
       $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+      -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/git/refs" `
       -d '{\"ref\":\"refs/tags/${{ inputs.tag }}\",\"sha\":\"${{ steps.ghtag.outputs.sha }}\"}'
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
@@ -64,6 +66,7 @@ runs:
     id: newrel
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+      -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/releases" `
       -d '{\"tag_name\":\"${{ inputs.tag }}\",\"target_commitish\":\"master\",\"name\":\"${{ inputs.title }}\",\"body\":\"${{ inputs.note }}\",\"draft\":false,\"prerelease\":true,\"generate_release_notes\":false}'
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }

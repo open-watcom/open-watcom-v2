@@ -49,6 +49,7 @@ runs:
   - run: |
       $name = Split-Path -Path ${{ inputs.fullname }} -Leaf
       $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+      -H "Authorization: Bearer ${{ github.token }}" `
       "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.cinewrel.outputs.id }}/assets?name=$($name)" `
       -H "Content-Type: application/octet-stream" `
       --data-binary `@${{ inputs.fullname }}

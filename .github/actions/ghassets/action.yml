@@ -46,6 +46,7 @@ runs:
   - run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+        -H "Authorization: Bearer ${{ github.token }}" `
         "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.drelid }}/assets?name=$($_.Name)" `
         -H "Content-Type: application/octet-stream" `
         --data-binary `@$($_.FullName)
@@ -56,6 +57,7 @@ runs:
     run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+        -H "Authorization: Bearer ${{ github.token }}" `
         "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.mrelid }}/assets?name=$($_.Name)" `
         -H "Content-Type: application/octet-stream" `
         --data-binary `@$($_.FullName)

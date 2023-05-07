@@ -20,12 +20,14 @@ runs:
   - name: Delete artifacts list
     id: artflist
       $response = ${{ steps.curlcmd.outputs.gh }} `
+      -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" `
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $list = $response | jq -r .artifacts
       $list | Foreach-Object {
         if( ! startsWith( $($_.name), ${{ inputs.exclude }} ) ) {
           $response = ${{ steps.curlcmd.outputs.gh }} -X DELETE `
+          -H "Authorization: Bearer ${{ github.token }}" `
           "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$($_.id)" `
           if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
         }
