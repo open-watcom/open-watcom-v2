@@ -19,6 +19,7 @@ runs:
     uses: "./.github/actions/curlcmd"
   - name: Delete artifacts list
     id: artflist
+    run: |
       $response = ${{ steps.curlcmd.outputs.gh }} `
       -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts"
