@@ -1,0 +1,87 @@
+name: release-load-all
+description: 'Load all artifact for OW Release'
+inputs:
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  gitpath:
+    description: 'git subdirectory'
+    required: false
+    default: ''
+    type: string
+  tools_nt:
+    description: 'used compiler toolchain (for Windows)'
+    required: false
+    default: ''
+    type: string
+  tools_lnx:
+    description: 'used compiler toolchain (for Linux)'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel nt'
+      tools:    ${{ inputs.tools_nt }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel lnx'
+      tools:    ${{ inputs.tools_lnx }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel docdos'
+      tools:    ${{ inputs.tools_nt }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel docchm'
+      tools:    ${{ inputs.tools_nt }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel docnt'
+      tools:    ${{ inputs.tools_nt }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel docos2'
+      tools:    ${{ inputs.tools_nt }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel docpdf'
+      tools:    ${{ inputs.tools_nt }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      artifact: 'rel docwin'
+      tools:    ${{ inputs.tools_nt }}
+      owdebug:  ${{ inputs.owdebug }}

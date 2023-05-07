@@ -1,0 +1,66 @@
+name: github-release-create
+description: 'Upload release asset file (day and month release)'
+inputs:
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  drelid:
+    description: 'day release ID'
+    required: false
+    default: ''
+    type: string
+  mrelid:
+    description: 'month release ID'
+    required: false
+    default: ''
+    type: string
+  target:
+    description: 'install component to process'
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: 'used compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      artifact: "install ${{ inputs.target }}"
+      gitpath:  'temp'
+      owdebug:  ${{ inputs.owdebug }}
+  - name: Setup curl options
+    id: curlcmd
+    uses: "./.github/actions/curlcmd"
+    with:
+      owdebug:  ${{ inputs.owdebug }}
+  - run: |
+      Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
+        $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.drelid }}/assets?name=$($_.Name)" `
+        -H "Content-Type: application/octet-stream" `
+        --data-binary `@$($_.FullName)
+        if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
+      }
+    shell: pwsh
+  - if: inputs.mrelid != ''
+    run: |
+      Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
+        $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
+        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ inputs.mrelid }}/assets?name=$($_.Name)" `
+        -H "Content-Type: application/octet-stream" `
+        --data-binary `@$($_.FullName)
+        if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
+      }
+    shell: pwsh
