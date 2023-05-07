@@ -3,23 +3,20 @@ run-name: CI build
 
 on:
   pull_request:
-    branches:
-    - master
+    branches: '*'
     paths:
-    - "*"
-    - "!relea-pl.yml"
-    - "!covsc-pl.yml"
-    - "!README.md"
+      - '**'
+      - '!README.md'
   push:
     branches:
-    - master
+      - master
     paths:
-    - "*"
-    - "!relea-pl.yml"
-    - "!covsc-pl.yml"
-    - "!README.md"
+      - '**'
+      - '!README.md'
   workflow_dispatch:
 
+env:
+  OWCURLOPTS:       ${{ vars.OWCURLOPTS }}
 jobs:
   start-start:
     if: github.repository == 'open-watcom/open-watcom-v2'

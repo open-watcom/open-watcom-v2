@@ -6,6 +6,8 @@ on:
     - cron:  '30 0 * * *'
   workflow_dispatch:
 
+env:
+  OWCURLOPTS:       ${{ vars.OWCURLOPTS }}
 jobs:
   check_run:
     if: github.repository == 'open-watcom/open-watcom-v2'
