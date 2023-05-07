@@ -174,8 +174,10 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
   end-end:
     needs: assets
-    name: End
+    name: Delete Artifacs
     runs-on: ubuntu-latest
     steps:
-    - run: echo
-      shell: bash
+    - uses: "./.github/actions/artfdel"
+      with:
+        exclude:    ''
+        owdebug:    ${{ vars.OWDEBUG }}

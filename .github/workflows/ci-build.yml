@@ -168,3 +168,14 @@ jobs:
         tools:      'gcc'
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
+  artifacs-delete:
+    needs:
+    - snapshot-push:
+    - snapshot-pull:
+    name: Delete Artifacs
+    runs-on: ubuntu-latest
+    - uses: "./.github/actions/artfdel"
+      with:
+      with:
+        exclude:    'owsnapshot'
+        owdebug:    ${{ vars.OWDEBUG }}
