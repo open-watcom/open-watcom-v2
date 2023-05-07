@@ -215,7 +215,8 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
-    - uses: "./.github/actions/artfdel"
+    - name: Delete Artifacts
+      uses: "./.github/actions/artfdel"
       with:
         exclude:    ''
         owdebug:    ${{ vars.OWDEBUG }}

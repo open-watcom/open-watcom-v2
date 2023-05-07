@@ -125,7 +125,8 @@ jobs:
         tools_nt:   'vs2019'
         tools_lnx:  'gcc'
         owdebug:    ${{ vars.OWDEBUG }}
-    - id: owsnapshot
+    - name: Create OW snapshot
+      id: owsnapshot
       uses: "./.github/actions/snapshot"
       with:
         arch:       'lnx'
@@ -160,7 +161,8 @@ jobs:
         tools_nt:   'vs2019'
         tools_lnx:  'gcc'
         owdebug:    ${{ vars.OWDEBUG }}
-    - id: owsnapshot
+    - name: Create OW snapshot
+      id: owsnapshot
       uses: "./.github/actions/snapshot"
       with:
         arch:       'lnx'
