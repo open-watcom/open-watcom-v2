@@ -43,17 +43,14 @@ jobs:
       uses: "./.github/actions/dosboxin"
       with:
         arch:       'lnx'
-    - id: curlcmd
-      run: >
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) {
-          'opts=-sv' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-        } else {
-          'opts=-s' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-        }
-      shell: pwsh      
+    - name: Setup curl options
+      id: curlcmd
+      uses: "./.github/actions/curlcmd"
+      with:
+        owdebug:  ${{ inputs.owdebug }}
     - name: "Download Coverity Tools"
       run: |
-        $response = curl ${{ steps.curlcmd.outputs.opts }} `
+        $response = ${{ steps.curlcmd.outputs.cov }} `
         -o $env:OWCOV_TOOLS_ARCHIVE `
         "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
         -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
@@ -108,7 +105,7 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
     - name: "Upload Coverity output data Archive"
       run: >
-        $response=curl ${{ steps.curlcmd.outputs.opts }}
+        $response = ${{ steps.curlcmd.outputs.cov }}
         --write-out "\n%{http_code}\n"
         --form project=$env:OWCOV_PROJECT
         --form token=${{ secrets.OWCOVERITY_TOKEN }}
@@ -127,10 +124,7 @@ jobs:
     - if: steps.check_tag.outputs.sha == ''
       name: Create new Coverity scan tag
       run: |
-        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X POST `
-        -H "Accept: application/vnd.github+json" `
-        -H "Authorization: Bearer ${{ github.token }}" `
-        -H "X-GitHub-Api-Version: 2022-11-28" `
+        $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
         "https://api.github.com/repos/${{ github.repository }}/git/refs" `
         -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
         if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
@@ -138,10 +132,7 @@ jobs:
     - if: steps.check_tag.outputs.sha != ''
       name: Update Coverity scan tag
       run: |
-        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X PATCH `
-        -H "Accept: application/vnd.github+json" `
-        -H "Authorization: Bearer ${{ github.token }}" `
-        -H "X-GitHub-Api-Version: 2022-11-28" `
+        $response = ${{ steps.curlcmd.outputs.gh }} -X PATCH `
         "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
         -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
         if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
@@ -163,17 +154,14 @@ jobs:
 #      uses: "./.github/actions/dosboxin"
 #      with:
 #        arch:       'nt'
-#    - id: curlcmd
-#      run: >
-#        if( "${{ vars.OWDEBUG }}" -eq '1' ) {
-#          'opts=-sv' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-#        } else {
-#          'opts=-s' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-#        }
-#      shell: pwsh      
+#    - name: Setup curl options
+#      id: curlcmd
+#      uses: "./.github/actions/curlcmd"
+#      with:
+#        owdebug:  ${{ inputs.owdebug }}
 #    - name: "Download Coverity Tools"
 #      run: |
-#        $response = curl ${{ steps.curlcmd.outputs.opts }} `
+#        $response = ${{ steps.curlcmd.outputs.cov }} `
 #        -o $env:OWCOV_TOOLS_ARCHIVE `
 #        "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
 #        -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
@@ -229,7 +217,7 @@ jobs:
 #        owdebug:    ${{ vars.OWDEBUG }}
 #    - name: "Upload Coverity output data Archive"
 #      run: >
-#        $response=curl ${{ steps.curlcmd.outputs.opts }}
+#        $response = ${{ steps.curlcmd.outputs.cov }}
 #        --write-out "\n%{http_code}\n"
 #        --form project=$env:OWCOV_PROJECT
 #        --form token=${{ secrets.OWCOVERITY_TOKEN }}
@@ -248,10 +236,7 @@ jobs:
 #    - if: steps.check_tag.outputs.sha == ''
 #      name: Create new Coverity scan tag
 #      run: |
-#        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X POST `
-#        -H "Accept: application/vnd.github+json" `
-#        -H "Authorization: Bearer ${{ github.token }}" `
-#        -H "X-GitHub-Api-Version: 2022-11-28" `
+#        $response = ${{ steps.curlcmd.outputs.gh }} -X POST `
 #        "https://api.github.com/repos/${{ github.repository }}/git/refs" `
 #        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
 #        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
@@ -259,10 +244,7 @@ jobs:
 #    - if: steps.check_tag.outputs.sha != ''
 #      name: Update Coverity scan tag
 #      run: |
-#        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X PATCH `
-#        -H "Accept: application/vnd.github+json" `
-#        -H "Authorization: Bearer ${{ github.token }}" `
-#        -H "X-GitHub-Api-Version: 2022-11-28" `
+#        $response = ${{ steps.curlcmd.outputs.gh }} -X PATCH `
 #        "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
 #        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
 #        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
