@@ -1,5 +1,5 @@
 name: do-release
-description: ''
+description: 'Delete existing OW release on GitHub'
 inputs:
   tag:
     description: 'tag used for release'
@@ -7,16 +7,24 @@ inputs:
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
 runs:
   using: composite
   steps:
+  - id: curlcmd
+    run: >
+      if( "${{ inputs.owdebug }}" -eq '1' ) {
+        'opts=-sv' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      } else {
+        'opts=-s' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      }
+    shell: pwsh      
   - id: ghrel
     run: |
-      $response = curl -s -L `
+      $response = curl ${{ steps.curlcmd.outputs.opts }} -L `
       "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ inputs.tag }}" `
       -H "Accept: application/vnd.github+json" `
       -H "Authorization: Bearer ${{ github.token }}" `
@@ -30,7 +38,7 @@ runs:
     name: "Remove Release Assets"
     run: |
       echo "${{ steps.ghrel.outputs.id }}"
-      $response = curl -s -L `
+      $response = curl ${{ steps.curlcmd.outputs.opts }} -L `
       "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}/assets" `
       -H "Accept: application/vnd.github+json" `
       -H "Authorization: Bearer ${{ github.token }}" `
@@ -39,7 +47,7 @@ runs:
       $id = $response | jq -r .[].id
       if( "$id" -eq 'null' ) { $id = '' }
       $id | Foreach-Object {
-        $response = curl -s -L -X DELETE `
+        $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X DELETE `
         "https://api.github.com/repos/${{ github.repository }}/releases/assets/$_" `
         -H "Accept: application/vnd.github+json" `
         -H "Authorization: Bearer ${{ github.token }}" `
@@ -50,7 +58,7 @@ runs:
   - if: steps.ghrel.outputs.id != ''
     name: "Remove Release"
     run: |
-      $response = curl -s -L -X DELETE `
+      $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X DELETE `
       "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.ghrel.outputs.id }}" `
       -H "Accept: application/vnd.github+json" `
       -H "Authorization: Bearer ${{ github.token }}" `
@@ -59,7 +67,7 @@ runs:
     shell: pwsh
   - name: "Remove Release Tag"
     run: |
-      $response = curl -s -L -X DELETE `
+      $response = curl ${{ steps.curlcmd.outputs.opts }} -L -X DELETE `
       "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ inputs.tag }}" `
       -H "Accept: application/vnd.github+json" `
       -H "Authorization: Bearer ${{ github.token }}" `

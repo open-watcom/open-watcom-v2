@@ -1,23 +1,23 @@
 name: test-boot
-description: ''
+description: 'Process test bootstrap build by OW (for test compatibility)'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
   gitpath:
-    description: ''
+    description: 'git subdirectory'
     required: false
     default: ''
     type: string
-  pscript:
-    description: ''
+  bldscript:
+    description: 'script to build action'
     required: false
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -26,7 +26,7 @@ runs:
   steps:
   - if: inputs.arch == 'lnx'
     name: Test Bootstrap OW
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.bldscript }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
@@ -39,7 +39,7 @@ runs:
     shell: bash
   - if: inputs.arch == 'nt'
     name: Test Bootstrap OW
-    run: ${{ inputs.pscript }}
+    run: ${{ inputs.bldscript }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'

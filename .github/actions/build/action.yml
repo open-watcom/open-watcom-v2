@@ -1,28 +1,28 @@
 name: build
-description: ''
+description: 'Process OW build'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
-  pscript:
-    description: ''
+  bldscript:
+    description: 'script to build action'
     required: false
     default: ''
     type: string
   tools:
-    description: ''
+    description: 'used compiler toolchain'
     required: false
     default: ''
     type: string
   owtools:
-    description: ''
+    description: 'OW build compiler toolchain'
     required: false
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -38,15 +38,17 @@ runs:
       gitpath:  'bld watcom binbuild'
       artifact: "bld watcom ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
   - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Build
-    run: ${{ inputs.pscript }} ${{ inputs.tools }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -57,7 +59,7 @@ runs:
     shell: bash
   - if: inputs.arch == 'nt'
     name: Build
-    run: ${{ inputs.pscript }} ${{ inputs.tools }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'build'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -74,6 +76,7 @@ runs:
       gitpath:  'rel'
       artifact: "rel ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
   - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
     uses: "./.github/actions/artfsave"
     with:
@@ -81,3 +84,4 @@ runs:
       gitpath:  'bld setupgui'
       artifact: "bld setupgui ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

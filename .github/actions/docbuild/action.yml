@@ -1,28 +1,28 @@
 name: documentation-build
-description: ''
+description: 'Process OW single documentation type build'
 inputs:
   target:
-    description: ''
+    description: 'documentation type to process'
     required: false
     default: ''
     type: string
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
   tools:
-    description: ''
+    description: 'used compiler toolchain'
     required: false
     default: ''
     type: string
   owtools:
-    description: ''
+    description: 'OW build compiler toolchain'
     required: false
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -38,6 +38,7 @@ runs:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
   - name: Documentation Build
     run: ci/buildx.cmd ${{ inputs.tools }}
     env:
@@ -56,3 +57,4 @@ runs:
       gitpath:  'rel'
       artifact: "rel ${{ inputs.target }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

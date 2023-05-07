@@ -1,18 +1,23 @@
 name: tests
-description: ''
+description: 'Process OW tests'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
-  pscript:
-    description: ''
+  bldscript:
+    description: 'script to build action'
     required: false
     default: ''
     type: string
   tools:
-    description: ''
+    description: 'used compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -26,3 +31,4 @@ runs:
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

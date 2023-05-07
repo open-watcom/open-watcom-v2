@@ -1,28 +1,28 @@
 name: boot
-description: 'Process boot build steps'
+description: 'Process OW bootstrap build'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
-  pscript:
-    description: ''
+  bldscript:
+    description: 'script to build action'
     required: false
     default: ''
     type: string
   tools:
-    description: ''
+    description: 'used compiler toolchain'
     required: false
     default: ''
     type: string
   owtools:
-    description: ''
+    description: 'OW build compiler toolchain'
     required: false
     default: ''
     type: string
   owdebug:
-    description: ''
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -31,7 +31,7 @@ runs:
   steps:
   - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
     name: Bootstrap
-    run: ${{ inputs.pscript }} ${{ inputs.tools }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -41,7 +41,7 @@ runs:
     shell: bash
   - if: inputs.arch == 'nt'
     name: Bootstrap
-    run: ${{ inputs.pscript }} ${{ inputs.tools }}
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -55,9 +55,11 @@ runs:
       gitpath:  'bld watcom binbuild'
       artifact: "bld watcom ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfsave"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

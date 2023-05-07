@@ -1,28 +1,28 @@
 name: tar-load
-description: ''
+description: 'Extract tar file to git sub-directory, create it if necessary'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
   gitpath:
-    description: ''
+    description: 'git subdirectory'
     required: false
     default: ''
     type: string
   fullname:
-    description: ''
+    description: 'tar file full name'
     required: false
     default: ''
     type: string
   format:
-    description: ''
+    description: 'tar file compression method, by default .xz'
     required: false
     default: ''
     type: string
-  verbose:
-    description: ''
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -37,12 +37,15 @@ runs:
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - id: tarcmd
-    run: |
-      if( "${{ inputs.verbose }}" -eq '1' ) { $taropts = '-xvf' } else { $taropts = '-xf' }
-      $taropts | Join-String -OutputPrefix 'opts=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    run: >
+      if( "${{ inputs.owdebug }}" -eq '1' ) {
+        'opts=-xvf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      } else {
+        'opts=-xf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      }
     shell: pwsh      
   - name: Create destination folder
-    run: New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path ${{ steps.dstpath.outputs.path }}
+    run: New-Item -ErrorAction SilentlyContinue -ItemType Directory -Path ${{ steps.dstpath.outputs.path }} > $null
     shell: pwsh
   - if: inputs.arch == 'lnx' && inputs.format == 'gzip'
     name: Restore Artifact Linux

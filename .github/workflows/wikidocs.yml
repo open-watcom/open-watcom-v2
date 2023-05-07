@@ -17,7 +17,7 @@ on:
       - 'bld/wpi/doc/**'
       - 'bld/wv/doc/**'
 jobs:
-  info:
+  start-start:
     if: github.repository == 'open-watcom/open-watcom-v2'
     name: Info
     runs-on: windows-2019
@@ -28,7 +28,8 @@ jobs:
       shell: cmd
       run: echo %MESSAGE%
   boot:
-    if: github.repository == 'open-watcom/open-watcom-v2' && github.ref == 'refs/heads/master'
+    needs: start-start
+    if: github.ref == 'refs/heads/master'
     name: Build Tools
     runs-on: windows-2019
     steps:
@@ -67,7 +68,6 @@ jobs:
         name: boot
         path: build\binbuild
   wikihtml:
-    if: github.repository == 'open-watcom/open-watcom-v2'
     name: Wiki Html Documentation
     needs: boot
     runs-on: windows-2019
@@ -114,7 +114,6 @@ jobs:
         name: wikihtml
         path: artifact
   wikipdf:
-    if: github.repository == 'open-watcom/open-watcom-v2'
     name: Wiki PDF Documentation
     needs: boot
     runs-on: windows-2019
@@ -159,7 +158,6 @@ jobs:
         name: wikipdf
         path: artifact
   wikiupdate:
-    if: github.repository == 'open-watcom/open-watcom-v2'
     name: Wiki Documentation Update
     needs: [wikihtml, wikipdf]
     runs-on: windows-2019

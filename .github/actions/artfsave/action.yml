@@ -1,33 +1,33 @@
 name: artifact-save
-description: ''
+description: 'Upload Artifact (tar file), first create it from git subdirectory'
 inputs:
   arch:
-    description: ''
+    description: 'run-time platform'
     required: false
     default: ''
     type: string
   gitpath:
-    description: ''
+    description: 'git subdirectory'
     required: false
     default: ''
     type: string
   artifact:
-    description: ''
+    description: 'artifact name, worlds separated by space, spaces are replased by dash characters (-)'
     required: false
     default: ''
     type: string
   tools:
-    description: ''
+    description: 'used compiler toolchain'
     required: false
     default: ''
     type: string
-  retention-days:
-    description: ''
+  retention_days:
+    description: 'how many days artifact is preserved before deletion'
     required: false
     default: 3
     type: string
-  verbose:
-    description: ''
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -45,20 +45,20 @@ runs:
       arch:     ${{ inputs.arch }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
-      verbose:  ${{ inputs.verbose }}
+      owdebug:  ${{ inputs.owdebug }}
   - name: Get Artifact name
-    id: artifact-name
+    id: artifact_name
     run: >
       -Split "${{ inputs.artifact }} ${{ inputs.tools }}"
       | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - name: Upload Artifact ${{ steps.artifact-name.outputs.id }}
+  - name: Upload Artifact ${{ steps.artifact_name.outputs.id }}
     uses: actions/upload-artifact@v3
     with:
-      name:             ${{ steps.artifact-name.outputs.id }}
+      name:             ${{ steps.artifact_name.outputs.id }}
       path:             ${{ steps.tarname.outputs.fullname }}
-      retention-days:   ${{ inputs.retention-days }}
+      retention-days:   ${{ inputs.retention_days }}
   - name: Delete Temporary Artifact tar file
     run: rm -f ${{ steps.tarname.outputs.fullname }}
     shell: bash
