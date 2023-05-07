@@ -8,6 +8,8 @@ on:
   push:
     paths:
       - '.github/workflows/wikidocs.yml'
+      - '.github/actions/artfdel/action.yml'
+      - '.github/actions/curlcmd/action.yml'
       - 'docs/**'
       - 'bld/cc/gml/**'
       - 'bld/cg/doc/**'
@@ -166,18 +168,8 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
-    - name: Setup Git User
-      shell: cmd
-      run: |
-        git config --global user.email "openwatcom.github@gmail.com"
-        git config --global user.name "Open Watcom GitHub"
-    - name: Wiki Repo clone
-      shell: cmd
-      run: |
-        git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
-      env:
-        OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
-        OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
+      with:
+        repository: open-watcom/open-watcom-v2-wikidocs
     - name: Create docs subdirectory
       shell: cmd
       run: if not exist docs\* mkdir docs
@@ -205,6 +197,8 @@ jobs:
     - name: Wiki Repo Update
       shell: cmd
       run: |
+        git config --global user.email "openwatcom.github@gmail.com"
+        git config --global user.name "Open Watcom GitHub"
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v

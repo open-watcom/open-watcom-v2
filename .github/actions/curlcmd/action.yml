@@ -1,5 +1,5 @@
-name: github-release-create
-description: 'Upload release asset file (day and month release)'
+name: curl-command
+description: 'handle curl command line common options'
 
 outputs:
   cov:

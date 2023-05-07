@@ -1,4 +1,4 @@
-name: github-release-create
+name: github-release-assets
 description: 'Upload release asset file (day and month release)'
 inputs:
   arch:
