@@ -35,8 +35,8 @@ jobs:
     name: Build Tools
     runs-on: windows-2019
     steps:
-    - name: OW Repo clone
-      uses: actions/checkout@v1
+    - name: checkout
+      uses: actions/checkout@v3.5.0
     - name: Build Bootstrap Tools
       shell: cmd
       run: |
@@ -74,8 +74,8 @@ jobs:
     needs: boot
     runs-on: windows-2019
     steps:
-    - name: OW Repo clone
-      uses: actions/checkout@v1
+    - name: checkout
+      uses: actions/checkout@v3.5.0
     - name: Create Build Tools subdirectory
       shell: cmd
       run: mkdir build\binbuild
@@ -120,8 +120,8 @@ jobs:
     needs: boot
     runs-on: windows-2019
     steps:
-    - name: OW Repo clone
-      uses: actions/checkout@v1
+    - name: checkout
+      uses: actions/checkout@v3.5.0
     - name: Create Build Tools subdirectory
       shell: cmd
       run: mkdir build\binbuild
@@ -164,6 +164,8 @@ jobs:
     needs: [wikihtml, wikipdf]
     runs-on: windows-2019
     steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
     - name: Setup Git User
       shell: cmd
       run: |
@@ -211,6 +213,8 @@ jobs:
     name: Delete Artifacs
     runs-on: ubuntu-latest
     steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
     - uses: "./.github/actions/artfdel"
       with:
         exclude:    ''
