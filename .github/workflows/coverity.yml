@@ -4,6 +4,7 @@ run-name: Coverity Scan tools download, build and send data to analysis
 on:
   schedule:
     - cron:  '0 23 * * *'
+  workflow_dispatch:
 
 env:
   OWCOV_PROJECT:         'open-watcom/open-watcom-v2'

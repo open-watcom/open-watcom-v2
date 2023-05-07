@@ -18,6 +18,7 @@ on:
     - "!relea-pl.yml"
     - "!covsc-pl.yml"
     - "!README.md"
+  workflow_dispatch:
 
 jobs:
   start-start:

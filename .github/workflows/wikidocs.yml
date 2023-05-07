@@ -16,6 +16,8 @@ on:
       - 'bld/plusplus/gml/**'
       - 'bld/wpi/doc/**'
       - 'bld/wv/doc/**'
+  workflow_dispatch:
+
 jobs:
   start-start:
     if: github.repository == 'open-watcom/open-watcom-v2'
