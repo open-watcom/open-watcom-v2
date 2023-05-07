@@ -38,7 +38,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v1
     - name: Build Bootstrap Tools
       shell: cmd
       run: |
@@ -77,7 +77,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v1
     - name: Create Build Tools subdirectory
       shell: cmd
       run: mkdir build\binbuild
@@ -123,7 +123,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v1
     - name: Create Build Tools subdirectory
       shell: cmd
       run: mkdir build\binbuild
@@ -166,11 +166,18 @@ jobs:
     needs: [wikihtml, wikipdf]
     runs-on: windows-2019
     steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-      with:
-        repository: open-watcom/open-watcom-v2-wikidocs
-        token: ${{ secrets.OWGHTOKEN }}
+    - name: Setup Git User
+      shell: cmd
+      run: |
+        git config --global user.email "openwatcom.github@gmail.com"
+        git config --global user.name "Open Watcom GitHub"
+    - name: Wiki Repo clone
+      shell: cmd
+      run: |
+        git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
+      env:
+        OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
+        OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
     - name: Create docs subdirectory
       shell: cmd
       run: if not exist docs\* mkdir docs
@@ -198,8 +205,6 @@ jobs:
     - name: Wiki Repo Update
       shell: cmd
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
