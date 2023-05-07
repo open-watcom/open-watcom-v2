@@ -197,8 +197,8 @@ jobs:
     - name: Wiki Repo Update
       shell: cmd
       run: |
-        git config --global user.email "openwatcom.github@gmail.com"
-        git config --global user.name "Open Watcom GitHub"
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
