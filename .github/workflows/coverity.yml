@@ -138,7 +138,6 @@ jobs:
       shell: pwsh
     - uses: "./.github/actions/artfdel"
       with:
-      with:
         exclude:    ''
         owdebug:    ${{ vars.OWDEBUG }}
 
