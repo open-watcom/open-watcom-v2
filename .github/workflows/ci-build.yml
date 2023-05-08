@@ -6,12 +6,14 @@ on:
     branches: '*'
     paths:
       - '**'
+      - '!.github/**'
       - '!README.md'
   push:
     branches:
       - master
     paths:
       - '**'
+      - '!.github/**'
       - '!README.md'
   workflow_dispatch:
 
