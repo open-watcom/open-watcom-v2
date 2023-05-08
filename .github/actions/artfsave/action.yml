@@ -63,13 +63,11 @@ runs:
   - name: Get source
     id: srcpath
     run: |
-      $path=''
       if( '${{ inputs.noarchive }}' -eq '' ) {
-        $path = ${{ steps.tarname.outputs.fullname }}
+        ${{ steps.tarname.outputs.fullname }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       } else {
-        $path = Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
+        Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
-      "path=$path" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: Upload Artifact ${{ steps.artifact_name.outputs.id }}
     uses: actions/upload-artifact@v3

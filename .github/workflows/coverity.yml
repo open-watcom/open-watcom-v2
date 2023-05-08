@@ -69,8 +69,8 @@ jobs:
     - name: Find Coverity Tool command
       id: covtool
       run: |
-        $path = Join-Path ${{ github.workspace }} $env:OWCOV_TOOLS_GITPATH
-        (Get-ChildItem -Recurse -Path $path -File "cov-build" | Select-Object -First 1).FullName `
+        $xpath = Join-Path ${{ github.workspace }} $env:OWCOV_TOOLS_GITPATH
+        (Get-ChildItem -Recurse -Path $xpath -File "cov-build" | Select-Object -First 1).FullName `
         | Join-String -OutputPrefix 'cmd=' `
         | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
@@ -178,8 +178,8 @@ jobs:
 #    - name: Find Coverity Tool command
 #      id: covtool
 #      run: |
-#        $path = Join-Path ${{ github.workspace }} $env:OWCOV_TOOLS_GITPATH
-#        (Get-ChildItem -Recurse -Path $path -File "cov-build.exe" | Select-Object -First 1).FullName `
+#        $xpath = Join-Path ${{ github.workspace }} $env:OWCOV_TOOLS_GITPATH
+#        (Get-ChildItem -Recurse -Path $xpath -File "cov-build.exe" | Select-Object -First 1).FullName `
 #        | Join-String -OutputPrefix 'cmd=' `
 #        | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
 #      shell: pwsh

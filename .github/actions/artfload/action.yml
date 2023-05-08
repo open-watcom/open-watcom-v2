@@ -44,13 +44,11 @@ runs:
   - name: Get destination folder
     id: dstpath
     run: |
-      $path=''
       if( '${{ inputs.noarchive }}' -eq '' ) {
-        $path = Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
+        Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       } else {
-        $path = ${{ runner.temp }}
+        ${{ runner.temp }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
-      "path=$path" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
   - name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
     uses: actions/download-artifact@v3
