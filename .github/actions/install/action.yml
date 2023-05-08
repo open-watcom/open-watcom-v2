@@ -39,16 +39,16 @@ inputs:
 runs:
   using: composite
   steps:
-  if: ${{ inputs.arch }} == 'lnx'
-  - uses: "./.github/actions/artfload"
+  - if: ${{ inputs.arch }} == 'lnx'
+    uses: "./.github/actions/artfload"
     with:
       arch:         'lnx'
       gitpath:      'build binbuild'
       artifact:     'build lnx'
       tools:        ${{ inputs.tools_lnx }}
       owdebug:      ${{ inputs.owdebug }}
-  if: ${{ inputs.arch }} == 'nt'
-  - uses: "./.github/actions/artfload"
+  - if: ${{ inputs.arch }} == 'nt'
+    uses: "./.github/actions/artfload"
     with:
       arch:         'nt'
       gitpath:      'build binbuild'
