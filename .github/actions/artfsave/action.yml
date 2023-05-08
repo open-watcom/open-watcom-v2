@@ -21,6 +21,11 @@ inputs:
     required: false
     default: ''
     type: string
+  noarchive:
+    description: 'not use tar archive for artifact'
+    required: false
+    default: ''
+    type: string
   retention_days:
     description: 'how many days artifact is preserved before deletion'
     required: false
@@ -34,18 +39,6 @@ inputs:
 runs:
   using: composite
   steps:
-  - id: tarname
-    run: >
-      Join-Path ${{ runner.temp }} owartifact.tar.xz
-      | Join-String -OutputPrefix 'fullname='
-      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-    shell: pwsh
-  - uses: "./.github/actions/tarsave"
-    with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      fullname: ${{ steps.tarname.outputs.fullname }}
-      owdebug:  ${{ inputs.owdebug }}
   - name: Get Artifact name
     id: artifact_name
     run: >
@@ -53,12 +46,37 @@ runs:
       | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
+  - if: inputs.noarchive == ''
+    id: tarname
+    run: >
+      Join-Path ${{ runner.temp }} owartifact.tar.xz
+      | Join-String -OutputPrefix 'fullname='
+      | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    shell: pwsh
+  - if: inputs.noarchive == ''
+    uses: "./.github/actions/tarsave"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  ${{ inputs.gitpath }}
+      fullname: ${{ steps.tarname.outputs.fullname }}
+      owdebug:  ${{ inputs.owdebug }}
+  - name: Get source
+    id: srcpath
+    run: |
+      if( "${{ inputs.noarchive }}" -eq '' ) {
+        $path = ${{ steps.tarname.outputs.fullname }}
+      } else {
+        $path = Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
+      }
+      "path=$path" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    shell: pwsh
   - name: Upload Artifact ${{ steps.artifact_name.outputs.id }}
     uses: actions/upload-artifact@v3
     with:
       name:             ${{ steps.artifact_name.outputs.id }}
-      path:             ${{ steps.tarname.outputs.fullname }}
+      path:             ${{ steps.srcpath.outputs.path }}
       retention-days:   ${{ inputs.retention_days }}
-  - name: Delete Temporary Artifact tar file
+  - if: inputs.noarchive == ''
+    name: Delete Temporary Artifact tar file
     run: rm -f ${{ steps.tarname.outputs.fullname }}
     shell: bash

@@ -75,6 +75,7 @@ jobs:
         tools:      'vs2019'
         owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}
+        noarchive:  '1'
   wiki-update:
     name: Wiki Documentation Update
     needs: wiki-build
@@ -92,20 +93,19 @@ jobs:
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
-    - uses: "./.github/actions/artfload"
+    - name: Create docs sub-directory
+      run: mkdir docs
+      shell: cmd
+    - name: Download Artifact html
+      uses: actions/download-artifact@v3
       with:
-        arch:     'nt'
-        gitpath:  'docs'
-        artifact: 'rel wikihtml'
-        tools:    'vs2019'
-        owdebug:  ${{ vars.OWDEBUG }}
-    - uses: "./.github/actions/artfload"
+        name: 'rel-wikihtml-vs2019'
+        path: docs
+    - name: Download Artifact pdf
+      uses: actions/download-artifact@v3
       with:
-        arch:     'nt'
-        gitpath:  'docs'
-        artifact: 'rel wikipdf'
-        tools:    'vs2019'
-        owdebug:  ${{ vars.OWDEBUG }}
+        name: 'rel-wikipdf-vs2019'
+        path: docs
     - name: Wiki Repo Update
       shell: cmd
       run: |

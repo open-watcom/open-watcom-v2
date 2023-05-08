@@ -21,6 +21,11 @@ inputs:
     required: false
     default: ''
     type: string
+  noarchive:
+    description: 'not use tar archive for artifacts'
+    required: false
+    default: ''
+    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false
@@ -36,25 +41,38 @@ runs:
       | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - name: Download Artifact ${{ steps.artifact_name.outputs.id }}
+  - name: Get destination folder
+    id: dstpath
+    run: |
+      if( "${{ inputs.noarchive }}" -eq '' ) {
+        $path = Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
+      } else {
+        $path = ${{ runner.temp }}
+      }
+      "path=$path" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+    shell: pwsh
+  - name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
     uses: actions/download-artifact@v3
     with:
       name: ${{ steps.artifact_name.outputs.id }}
-      path: ${{ runner.temp }}
-  - name: Get tar file name
+      path: ${{ steps.dstpath.outputs.path }}
+  - if: inputs.noarchive == ''
+    name: Get tar file name
     id: tarname
     run: >
       Join-Path ${{ runner.temp }} owartifact.tar.xz
       | Join-String -OutputPrefix 'fullname='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
-  - name: Restore Artifact
+  - if: inputs.noarchive == ''
+    name: Restore Artifact
     uses: "./.github/actions/tarload"
     with:
       arch:     ${{ inputs.arch }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}
-  - name: Delete Temporary Artifact tar file
+  - if: inputs.noarchive == ''
+    name: Delete Temporary Artifact tar file
     run: rm -f ${{ steps.tarname.outputs.fullname }}
     shell: bash
