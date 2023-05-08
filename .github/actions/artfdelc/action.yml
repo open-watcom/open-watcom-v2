@@ -14,17 +14,13 @@ inputs:
 runs:
   using: composite
   steps:
-    needs: wikiupdate
-    name: Delete Artifacs
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup curl options
-      id: curlcmd
-      uses: "./.github/actions/curlcmd"
-    - name: Delete Artifacts
-      run: |
-        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X POST "https://api.github.com/repos/${{ github.repository }}/dispatches" `
-        --data-raw "{\"event_type\": \"delete_artifacts\", \"client_payload\": {\"runid\": \"${{ github.run-id }}\"}}"
-        if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
-      shell: pwsh
+  - name: Setup curl options
+    id: curlcmd
+    uses: "./.github/actions/curlcmd"
+  - name: Delete Artifacts
+    run: |
+      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+      -X POST "https://api.github.com/repos/${{ github.repository }}/dispatches" `
+      --data-raw "{\"event_type\": \"delete_artifacts\", \"client_payload\": {\"runid\": \"${{ github.run-id }}\"}}"
+      if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
+    shell: pwsh
