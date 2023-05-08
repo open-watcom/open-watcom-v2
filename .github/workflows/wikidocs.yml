@@ -8,8 +8,15 @@ on:
   push:
     paths:
       - '.github/workflows/wikidocs.yml'
-      - '.github/actions/artfdel/action.yml'
+      - '.github/actions/artfdelc/action.yml'
+      - '.github/actions/artfload/action.yml'
+      - '.github/actions/artfsave/action.yml'
+      - '.github/actions/boot/action.yml'
+      - '.github/actions/dosboxin/action.yml'
+      - '.github/actions/docbuild/action.yml'
       - '.github/actions/curlcmd/action.yml'
+      - '.github/actions/tarload/action.yml'
+      - '.github/actions/tarsave/action.yml'
       - 'docs/**'
       - 'bld/cc/gml/**'
       - 'bld/cg/doc/**'
@@ -22,148 +29,53 @@ on:
 
 jobs:
   start-start:
-    if: github.repository == 'open-watcom/open-watcom-v2'
-    name: Info
-    runs-on: windows-2019
+    if: github.repository == 'open-watcom/open-watcom-v2' && github.ref == 'refs/heads/master'
+    name: Start
+    runs-on: ubuntu-latest
     steps:
-    - name: Branch Info
-      env:
-        MESSAGE: ${{ github.ref }}
-      shell: cmd
-      run: echo %MESSAGE%
+    - run: echo ""
+      shell: bash
   boot:
     needs: start-start
     if: github.ref == 'refs/heads/master'
-    name: Build Tools
+    name: Bootstrap
     runs-on: windows-2019
     steps:
     - name: checkout
-      uses: actions/checkout@v1
-    - name: Build Bootstrap Tools
-      shell: cmd
-      run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
-          set OWROOT=%GITHUB_WORKSPACE%
-          call %OWROOT%\cmnvars.bat
-          mkdir %OWROOT%\build\%OWOBJDIR%
-          REM build OW wmake
-          mkdir %OWROOT%\bld\wmake\%OWOBJDIR%
-          cd %OWROOT%\bld\wmake\%OWOBJDIR%
-          nmake -f ..\nmake
-          REM build OW builder
-          mkdir %OWROOT%\bld\builder\%OWOBJDIR%
-          cd %OWROOT%\bld\builder\%OWOBJDIR%
-          %OWROOT%\build\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
-          REM build OW tools
-          cd %OWROOT%\bld\watcom
-          builder boot
-          cd %OWROOT%\bld\builder
-          builder boot
-          cd %OWROOT%\bld\whpcvt
-          builder boot
-          cd %OWROOT%\bld\bmp2eps
-          builder boot
-          cd %OWROOT%
-      env:
-        OWTOOLS: VISUALC
-    - name: Save Build Tools Artifact
-      uses: actions/upload-artifact@master
+      uses: actions/checkout@v3.5.0
+    - name: Bootstrap
+      uses: "./.github/actions/boot"
       with:
-        name: boot
-        path: build\binbuild
-  wikihtml:
-    name: Wiki Html Documentation
+        arch:       'nt'
+        bldscript:  ${{ inputs.bldscript }}
+        tools:      'vs2019'
+        owtools:    'VISUALC'
+        owdebug:    ${{ vars.OWDEBUG }}
+  wiki-build:
     needs: boot
+    name: Wiki build
     runs-on: windows-2019
+    strategy:
+      matrix:
+        include:
+        - display: 'HTML'
+          doctype: 'wikihtml'
+        - display: 'PDF'
+          doctype: 'wikipdf'
     steps:
     - name: checkout
-      uses: actions/checkout@v1
-    - name: Create Build Tools subdirectory
-      shell: cmd
-      run: mkdir build\binbuild
-    - name: Load Build Tools Artifact
-      uses: actions/download-artifact@master
+      uses: actions/checkout@v3.5.0
+    - name: Docs Build
+      uses: "./.github/actions/docbuild"
       with:
-        name: boot
-        path: build\binbuild
-    - name: Build Wiki Documentation
-      shell: cmd
-      run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
-          set OWROOT=%GITHUB_WORKSPACE%
-          set OWCIBIN32=%OWROOT%\ci\nt386
-          set OWCIBIN64=%OWROOT%\ci\ntx64
-          set OWDOSBOXPATH=%OWCIBIN32%
-          set OWGHOSTSCRIPTPATH=%OWCIBIN64%
-          set OWWIN95HC=%OWCIBIN32%\hcrtf.exe
-          set OWHHC=%OWCIBIN32%\hhc.exe
-          call %OWROOT%\cmnvars.bat
-          REM Build Wiki Documentation
-          cd %OWROOT%\bld
-          builder -i docs wikihtml .and wikihtml .or -- -- docset=wikihtml -i
-          cd %OWROOT%
-          mkdir artifact
-          copy docs\html\*.bmp artifact\
-          copy docs\html\*.htm artifact\
-          ren artifact\*.htm *.html
-      env:
-        OWTOOLS: VISUALC
-        OWDOSBOX: dosbox.exe
-        SDL_VIDEODRIVER: dummy
-        SDL_AUDIODRIVER: disk
-        SDL_DISKAUDIOFILE: NUL
-    - name: Save Html Documentation Artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: wikihtml
-        path: artifact
-  wikipdf:
-    name: Wiki PDF Documentation
-    needs: boot
-    runs-on: windows-2019
-    steps:
-    - name: checkout
-      uses: actions/checkout@v1
-    - name: Create Build Tools subdirectory
-      shell: cmd
-      run: mkdir build\binbuild
-    - name: Load Build Tools Artifact
-      uses: actions/download-artifact@master
-      with:
-        name: boot
-        path: build\binbuild
-    - name: Build Wiki Documentation
-      shell: cmd
-      run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
-          set OWROOT=%GITHUB_WORKSPACE%
-          set OWCIBIN32=%OWROOT%\ci\nt386
-          set OWCIBIN64=%OWROOT%\ci\ntx64
-          set OWDOSBOXPATH=%OWCIBIN32%
-          set OWGHOSTSCRIPTPATH=%OWCIBIN64%
-          set OWWIN95HC=%OWCIBIN32%\hcrtf.exe
-          set OWHHC=%OWCIBIN32%\hhc.exe
-          call %OWROOT%\cmnvars.bat
-          REM Build Wiki Documentation
-          cd %OWROOT%\bld
-          builder -i docs wikipdf .and wikipdf .or -- -- docset=wikipdf -i
-          cd %OWROOT%
-          mkdir artifact
-          copy docs\pdf\*.pdf artifact\
-      env:
-        OWTOOLS: VISUALC
-        OWDOSBOX: dosbox
-        SDL_VIDEODRIVER: dummy
-        SDL_AUDIODRIVER: disk
-        SDL_DISKAUDIOFILE: NUL
-    - name: Save PDF Documentation Artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: wikipdf
-        path: artifact
-  wikiupdate:
+        target:     ${{ matrix.doctype }}
+        arch:       'nt'
+        tools:      'vs2019'
+        owtools:    'VISUALC'
+        owdebug:    ${{ vars.OWDEBUG }}
+  wiki-update:
     name: Wiki Documentation Update
-    needs: [wikihtml, wikipdf]
+    needs: wiki-build
     runs-on: windows-2019
     steps:
     - name: Setup Git User
@@ -178,30 +90,20 @@ jobs:
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
-    - name: Create docs subdirectory
-      shell: cmd
-      run: if not exist docs\* mkdir docs
-    - name: Load Html Documentation Artifact
-      uses: actions/download-artifact@master
+    - uses: "./.github/actions/artfload"
       with:
-        name: wikihtml
-        path: artifact
-    - name: Copy artifact to docs subdirectory
-      shell: cmd
-      run: copy /Y artifact\*.* docs\
-    - name: Load PDF Documentation Artifact
-      uses: actions/download-artifact@master
+        arch:     'nt'
+        gitpath:  'docs'
+        artifact: 'rel wikihtml'
+        tools:    'vs2019'
+        owdebug:  ${{ vars.OWDEBUG }}
+    - uses: "./.github/actions/artfload"
       with:
-        name: wikipdf
-        path: artifact
-    - name: Copy artifact to docs subdirectory
-      shell: cmd
-      run: copy /Y artifact\*.* docs\
-    - name: Delete artifact subdirectory
-      shell: cmd
-      run: |
-        del /F /Q artifact\*.*
-        rmdir artifact
+        arch:     'nt'
+        gitpath:  'docs'
+        artifact: 'rel wikipdf'
+        tools:    'vs2019'
+        owdebug:  ${{ vars.OWDEBUG }}
     - name: Wiki Repo Update
       shell: cmd
       run: |
@@ -209,7 +111,7 @@ jobs:
         git commit -v -m "GitHub Workflow build"
         git push -v
   cleanup:
-    needs: wikiupdate
+    needs: wiki-update
     name: Call to delete Artifacts
     runs-on: ubuntu-latest
     steps:
