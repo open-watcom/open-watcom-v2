@@ -47,7 +47,7 @@ runs:
       if( '${{ inputs.noarchive }}' -eq '' ) {
         Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       } else {
-        "${{ runner.temp }}" | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+        "${{ github.workspace }}" | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh
   - name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
@@ -59,7 +59,7 @@ runs:
     name: Get tar file name
     id: tarname
     run: >
-      Join-Path ${{ runner.temp }} owartifact.tar.xz
+      Join-Path ${{ github.workspace }} owartifact.tar.xz
       | Join-String -OutputPrefix 'fullname='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
