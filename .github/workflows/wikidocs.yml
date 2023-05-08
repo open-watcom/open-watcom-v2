@@ -75,6 +75,7 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         target:     ${{ matrix.doctype }}
+        gitpath:    'docs wiki'
         owtarget:   ${{ matrix.owtarget }}
         arch:       'nt'
         tools:      'vs2019'
