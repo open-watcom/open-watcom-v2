@@ -45,9 +45,9 @@ runs:
     id: dstpath
     run: |
       if( '${{ inputs.noarchive }}' -eq '' ) {
-        Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
-      } else {
         "${{ github.workspace }}" | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      } else {
+        Join-Path ${{ github.workspace }} ${{ inputs.gitpath }} | Join-String -OutputPrefix 'path=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh
   - name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
