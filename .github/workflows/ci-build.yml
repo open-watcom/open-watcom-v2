@@ -180,5 +180,4 @@ jobs:
     - name: Call to Delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:
-        exclude:    'owsnapshot'
         owdebug:    ${{ vars.OWDEBUG }}
