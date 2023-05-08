@@ -1,0 +1,14 @@
+name: delete calling job's artifacts
+on: repository_dispatch
+
+jobs:
+  main:
+    if: github.event.action == 'delete_artifacts'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete artifacts
+      uses: "./.github/actions/artfdel"
+      with:
+        runid: ${{ github.event.client_payload.runid  }}
+        exclude: ${{ github.event.client_payload.exclude }}
+        owdebug: ${{ vars.OWDEBUG }}
