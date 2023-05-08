@@ -21,6 +21,11 @@ inputs:
     required: false
     default: ''
     type: string
+  noarchive:
+    description: 'not use tar archive for artifacts'
+    required: false
+    default: ''
+    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false
@@ -51,15 +56,17 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  'bld watcom binbuild'
-      artifact: "bld watcom ${{ inputs.arch }}"
-      tools:    ${{ inputs.tools }}
-      owdebug:  ${{ inputs.owdebug }}
+      arch:         ${{ inputs.arch }}
+      gitpath:      'bld watcom binbuild'
+      artifact:     "bld watcom ${{ inputs.arch }}"
+      tools:        ${{ inputs.tools }}
+      noarchive:    ${{ inputs.noarchive }}
+      owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfsave"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  'build binbuild'
-      artifact: "build ${{ inputs.arch }}"
-      tools:    ${{ inputs.tools }}
-      owdebug:  ${{ inputs.owdebug }}
+      arch:         ${{ inputs.arch }}
+      gitpath:      'build binbuild'
+      artifact:     "build ${{ inputs.arch }}"
+      tools:        ${{ inputs.tools }}
+      noarchive:    ${{ inputs.noarchive }}
+      owdebug:      ${{ inputs.owdebug }}
