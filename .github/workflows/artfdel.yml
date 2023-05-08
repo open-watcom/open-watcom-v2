@@ -1,4 +1,4 @@
-name: Delete Artifacts
+name: Delete Artifacts (Workflow run)
 on: repository_dispatch
 
 jobs:

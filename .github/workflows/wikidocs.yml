@@ -98,9 +98,6 @@ jobs:
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
-    - name: Create docs sub-directory
-      run: mkdir docs
-      shell: cmd
     - name: Download Artifact html
       uses: actions/download-artifact@v3
       with:
