@@ -36,14 +36,15 @@ runs:
   steps:
   - uses: "./.github/actions/dosboxin"
     with:
-      arch:     ${{ inputs.arch }}
+      arch:         ${{ inputs.arch }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  'build binbuild'
-      artifact: "build ${{ inputs.arch }}"
-      tools:    ${{ inputs.tools }}
-      owdebug:  ${{ inputs.owdebug }}
+      arch:         ${{ inputs.arch }}
+      gitpath:      'build binbuild'
+      artifact:     "build ${{ inputs.arch }}"
+      tools:        ${{ inputs.tools }}
+      noarchive:    ${{ inputs.noarchive }}
+      owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
     run: ci/buildx.cmd ${{ inputs.tools }}
     env:
