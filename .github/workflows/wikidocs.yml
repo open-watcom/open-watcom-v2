@@ -226,10 +226,10 @@ jobs:
           \"event_type\": \"delete_artifacts\", `
           \"client_payload\": { `
             \"parent_runid\": \"${{ github.run-id }}\", `
-            \"parent_repo\": \"${{ github.repository }}\", `
-            \"exclude\": \"\"} `
-          }"
-        if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
+            \"parent_repo\": \"${{ github.repository }}\" `
+          } `
+        }"
+        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
       shell: pwsh
 #    - name: Delete Artifacts
 #      uses: "./.github/actions/artfdel"
