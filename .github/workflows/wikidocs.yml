@@ -51,6 +51,7 @@ jobs:
         bldscript:      'ci\buildx.cmd'
         tools:          'vs2019'
         owtools:        'VISUALC'
+        noarchive:      '1'
         owdebug:        ${{ vars.OWDEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
