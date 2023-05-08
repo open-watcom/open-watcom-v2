@@ -1,4 +1,4 @@
-name: delete calling job's artifacts
+name: Delete Artifacts
 on: repository_dispatch
 
 jobs:
