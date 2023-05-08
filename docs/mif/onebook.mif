@@ -320,7 +320,7 @@ $(hbook).pdf : $(hbook).ps
     !$(hc_pdf) -r600 $[@ $(hbook).pdf
 !ifeq docset wikipdf
     @if not exist ..\wiki mkdir ..\wiki
-    copy *.pdf ..\wiki\
+    @copy $(hbook).pdf ..\wiki\$(hbook).pdf
 !endif
 
 ####################################################
@@ -397,9 +397,8 @@ $(hbook).gh $(hbook).htm : $(cop_files) $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 !ifeq docset wikihtml
     @if not exist ..\wiki mkdir ..\wiki
-    copy *.bmp ..\wiki\
-    copy *.htm ..\wiki\
-    ren ..\wiki\*.htm *.html
+    @copy $(hbook).htm ..\wiki\$(hbook).html
+    @for %f in (*.bmp) do if not exist ..\wiki\%f $(noecho)copy %f ..\wiki\%f
 !endif
 
 !endif
