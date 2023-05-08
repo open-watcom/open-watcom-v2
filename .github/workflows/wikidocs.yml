@@ -39,7 +39,6 @@ jobs:
       shell: bash
   wiki-boot:
     needs: start-start
-    if: github.ref == 'refs/heads/master'
     name: Bootstrap
     runs-on: windows-2019
     steps:
@@ -56,7 +55,7 @@ jobs:
       env:
         OWDOCTARGET:    'bootdocs'
   wiki-build:
-    needs: boot
+    needs: wiki-boot
     name: Wiki build
     runs-on: windows-2019
     strategy:
