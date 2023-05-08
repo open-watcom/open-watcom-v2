@@ -136,8 +136,8 @@ jobs:
         -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
         if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
       shell: pwsh
-    - name: Delete Artifacs
-      uses: "./.github/actions/artfdel"
+    - name: Call to Delete Artifacs
+      uses: "./.github/actions/artfdelc"
       with:
         exclude:    ''
         owdebug:    ${{ vars.OWDEBUG }}

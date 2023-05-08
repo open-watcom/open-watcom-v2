@@ -177,8 +177,9 @@ jobs:
     name: Delete Artifacs
     runs-on: ubuntu-latest
     steps:
-    - name: Delete Artifacts
-      uses: "./.github/actions/artfdel"
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: Call to Delete Artifacs
+      uses: "./.github/actions/artfdelc"
       with:
-        exclude:    ''
         owdebug:    ${{ vars.OWDEBUG }}
