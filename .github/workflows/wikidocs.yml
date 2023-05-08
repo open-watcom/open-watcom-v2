@@ -46,11 +46,13 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        arch:       'nt'
-        bldscript:  'ci\buildx.cmd'
-        tools:      'vs2019'
-        owtools:    'VISUALC'
-        owdebug:    ${{ vars.OWDEBUG }}
+        arch:           'nt'
+        bldscript:      'ci\buildx.cmd'
+        tools:          'vs2019'
+        owtools:        'VISUALC'
+        owdebug:        ${{ vars.OWDEBUG }}
+      env:
+        OWDOCTARGET:    'bootdocs'
   wiki-build:
     needs: boot
     name: Wiki build
