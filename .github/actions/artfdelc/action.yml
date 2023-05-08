@@ -24,12 +24,7 @@ runs:
     - name: Delete Artifacts
       run: |
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-        -X POST "https://api.github.com/repos/${{ github.repository }}/dispatch" `
-        --data-raw "{ `
-          \"event_type\": \"delete_artifacts\", `
-          \"client_payload\": { `
-            \"runid\": \"${{ github.run-id }}\" `
-          } `
-        }"
+        -X POST "https://api.github.com/repos/${{ github.repository }}/dispatches" `
+        --data-raw "{\"event_type\": \"delete_artifacts\", \"client_payload\": {\"runid\": \"${{ github.run-id }}\"}}"
         if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       shell: pwsh
