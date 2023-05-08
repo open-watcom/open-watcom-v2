@@ -55,9 +55,21 @@ if "%OWBUILD_STAGE%" == "boot" (
         %OWROOT%\build\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
         set RC=!ERRORLEVEL!
         if not %RC% == 1 (
-            cd %OWROOT%\bld
-            builder boot
-            set RC=!ERRORLEVEL!
+            if "%OWDOCTARGET%" == "" (
+                cd %OWROOT%\bld
+                builder boot
+                set RC=!ERRORLEVEL!
+            ) else (
+                cd %OWROOT%\bld\watcom
+                builder boot
+                cd %OWROOT%\bld\builder
+                builder boot
+                cd %OWROOT%\bld\whpcvt
+                builder boot
+                cd %OWROOT%\bld\bmp2eps
+                builder boot
+                set RC=!ERRORLEVEL!
+            )
         )
     )
 )

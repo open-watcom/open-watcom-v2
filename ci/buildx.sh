@@ -66,9 +66,21 @@ build_proc()
         "boot")
             bootutil_proc
             if [ $RC -eq 0 ]; then
-                cd $OWROOT/bld
-                builder boot
-                RC=$?
+                if [ "$OWDOCTARGET" = "" ]; then
+                    cd $OWROOT/bld
+                    builder boot
+                    RC=$?
+                else
+                    cd $OWROOT/bld/watcom
+                    builder boot
+                    cd $OWROOT/bld/builder
+                    builder boot
+                    cd $OWROOT/bld/whpcvt
+                    builder boot
+                    cd $OWROOT/bld/bmp2eps
+                    builder boot
+                    RC=$?
+                fi
             fi
             ;;
         "build")

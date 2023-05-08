@@ -6,6 +6,8 @@ name: WikiDocs
 
 on:
   push:
+    branches:
+      - master
     paths:
       - '.github/workflows/wikidocs.yml'
       - '.github/actions/artfdelc/action.yml'
@@ -29,13 +31,13 @@ on:
 
 jobs:
   start-start:
-    if: github.repository == 'open-watcom/open-watcom-v2' && github.ref == 'refs/heads/master'
+    if: github.repository == 'open-watcom/open-watcom-v2'
     name: Start
     runs-on: ubuntu-latest
     steps:
     - run: echo ""
       shell: bash
-  boot:
+  wiki-boot:
     needs: start-start
     if: github.ref == 'refs/heads/master'
     name: Bootstrap
@@ -77,7 +79,7 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
   wiki-update:
-    name: Wiki Documentation Update
+    name: Wiki Update
     needs: wiki-build
     runs-on: windows-2019
     steps:
