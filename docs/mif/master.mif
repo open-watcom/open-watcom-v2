@@ -4,7 +4,7 @@ all: .SYMBOLIC $(books)
     @%null
 
 $(books) : .SYMBOLIC
-    @$(nested_wmake) -h -f ../mif/onebook.mif hbook=$@ dotarget=$(dotarget) header=$(header) $(%OW_BOOK_CLEAN)
+    @$(nested_wmake) -h -f ../mif/onebook.mif hbook=$@ dotarget=$(dotarget) header=$(header) docset=$(docset) $(%OW_BOOK_CLEAN)
 
 clean: set_clean .SYMBOLIC $(books)
     @set OW_BOOK_CLEAN=
