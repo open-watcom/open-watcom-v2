@@ -62,10 +62,12 @@ jobs:
     strategy:
       matrix:
         include:
-        - display: 'HTML'
-          doctype: 'wikihtml'
-        - display: 'PDF'
-          doctype: 'wikipdf'
+        - display:  'HTML'
+          doctype:  'wikihtml'
+          owtarget: '.and wikihtml .or -- -- docset=wikihtml -i'
+        - display:  'PDF'
+          doctype:  'wikipdf'
+          owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
@@ -73,6 +75,7 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         target:     ${{ matrix.doctype }}
+        owtarget:   ${{ matrix.owtarget }}
         arch:       'nt'
         tools:      'vs2019'
         owtools:    'VISUALC'

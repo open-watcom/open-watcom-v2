@@ -6,6 +6,11 @@ inputs:
     required: false
     default: ''
     type: string
+  owtarget:
+    description: 'OW builder additional cmd line arguments'
+    required: false
+    default: ''
+    type: string
   arch:
     description: 'run-time platform'
     required: false
@@ -49,7 +54,7 @@ runs:
     run: ci/buildx.cmd ${{ inputs.tools }}
     env:
       OWBUILD_STAGE: 'docs'
-      OWDOCTARGET:   ${{ inputs.target }}
+      OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}
       OWTOOLS:       ${{ inputs.owtools }}
       OWROOT:        ${{ github.workspace }}
       OWDOSBOX:      'dosbox.exe'
