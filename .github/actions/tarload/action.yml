@@ -39,7 +39,7 @@ runs:
   - name: Setup tar options
     id: tarcmd
     run: >
-      if( "${{ inputs.owdebug }}" -eq '1' ) {
+      if( '${{ inputs.owdebug }}' -eq '1' ) {
         'opts=-xvf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       } else {
         'opts=-xf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append

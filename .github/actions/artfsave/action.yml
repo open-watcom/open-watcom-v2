@@ -63,7 +63,7 @@ runs:
   - name: Get source
     id: srcpath
     run: |
-      if( "${{ inputs.noarchive }}" -eq '' ) {
+      if( '${{ inputs.noarchive }}' -eq '' ) {
         $path = ${{ steps.tarname.outputs.fullname }}
       } else {
         $path = Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}

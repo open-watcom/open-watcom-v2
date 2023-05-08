@@ -44,7 +44,7 @@ runs:
   - name: Get destination folder
     id: dstpath
     run: |
-      if( "${{ inputs.noarchive }}" -eq '' ) {
+      if( '${{ inputs.noarchive }}' -eq '' ) {
         $path = Join-Path ${{ github.workspace }} ${{ inputs.gitpath }}
       } else {
         $path = ${{ runner.temp }}

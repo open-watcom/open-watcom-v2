@@ -53,7 +53,7 @@ jobs:
         -o $env:OWCOV_TOOLS_ARCHIVE `
         "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
         -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
     - name: "Restore Coverity Tools"
       uses: "./.github/actions/tarload"
@@ -126,7 +126,7 @@ jobs:
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
         -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
     - if: steps.check_tag.outputs.sha != ''
       name: Update Coverity scan tag
@@ -134,7 +134,7 @@ jobs:
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
         -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
-        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
 
 #  scan-nt:
@@ -162,7 +162,7 @@ jobs:
 #        -o $env:OWCOV_TOOLS_ARCHIVE `
 #        "https://scan.coverity.com/download/cxx/$env:OWCOV_SRC" `
 #        -d "project=$env:OWCOV_PROJECT&token=${{ secrets.OWCOVERITY_TOKEN }}"
-#        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+#        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - name: "Restore Coverity Tools"
 #      uses: "./.github/actions/tarload"
@@ -236,7 +236,7 @@ jobs:
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
 #        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
-#        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+#        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - if: steps.check_tag.outputs.sha != ''
 #      name: Update Coverity scan tag
@@ -244,5 +244,5 @@ jobs:
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
 #        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
-#        if( "${{ vars.OWDEBUG }}" -eq '1' ) { $response }
+#        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh

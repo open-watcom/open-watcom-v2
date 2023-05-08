@@ -52,5 +52,5 @@ runs:
       -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.cinewrel.outputs.id }}/assets?name=$($name)" `
       -H "Content-Type: application/octet-stream" `
       --data-binary `@${{ inputs.fullname }}
-      if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
+      if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
     shell: pwsh
