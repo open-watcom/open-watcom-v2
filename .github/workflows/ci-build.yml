@@ -140,7 +140,7 @@ jobs:
         name:           'owsnapshot'
         path:           ${{ steps.owsnapshot.outputs.fullname }}
         retention-days: 10
-    - name: Call to Delete Artifacs
+    - name: Call to delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         exclude:    'owsnapshot'
@@ -177,7 +177,7 @@ jobs:
         tools:      'gcc'
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
-    - name: Call to Delete Artifacs
+    - name: Call to delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}

@@ -210,7 +210,7 @@ jobs:
         git push -v
   cleanup:
     needs: wikiupdate
-    name: Delete Artifacs
+    name: Call to delete Artifacts
     runs-on: ubuntu-latest
     steps:
     - name: checkout

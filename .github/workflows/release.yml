@@ -174,12 +174,12 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
   end-end:
     needs: assets
-    name: Delete Artifacs
+    name: Call to delete Artifacts
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
-    - name: Call to Delete Artifacs
+    - name: Call to delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}

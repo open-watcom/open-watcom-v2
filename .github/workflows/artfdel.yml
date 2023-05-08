@@ -2,13 +2,14 @@ name: delete calling job's artifacts
 on: repository_dispatch
 
 jobs:
-  main:
+  delete-artifacts:
     if: github.event.action == 'delete_artifacts'
+    name: Delete Artifacts
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
-    - name: Delete artifacts
+    - name: Delete Artifacts
       uses: "./.github/actions/artfdel"
       with:
         runid: ${{ github.event.client_payload.runid  }}

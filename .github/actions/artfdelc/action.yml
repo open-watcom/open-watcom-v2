@@ -17,7 +17,7 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
-  - name: Delete Artifacts
+  - name: Call to delete Artifacts
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
       -X POST "https://api.github.com/repos/${{ github.repository }}/dispatches" `
