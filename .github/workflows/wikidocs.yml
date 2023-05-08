@@ -215,8 +215,24 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v3.5.0
+    - name: Setup curl options
+      id: curlcmd
+      uses: "./.github/actions/curlcmd"
     - name: Delete Artifacts
-      uses: "./.github/actions/artfdel"
-      with:
-        exclude:    ''
-        owdebug:    ${{ vars.OWDEBUG }}
+      run: |
+        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+        -X POST "https://api.github.com/repos/${{ github.repository }}/dispatch" `
+        --data-raw "{ `
+          \"event_type\": \"delete_artifacts\", `
+          \"client_payload\": { `
+            \"parent_runid\": \"${{ github.run-id }}\", `
+            \"parent_repo\": \"${{ github.repository }}\", `
+            \"exclude\": \"\"} `
+          }"
+        if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
+      shell: pwsh
+#    - name: Delete Artifacts
+#      uses: "./.github/actions/artfdel"
+#      with:
+#        exclude:    ''
+#        owdebug:    ${{ vars.OWDEBUG }}
