@@ -1,6 +1,11 @@
 name: install
 description: 'Build OW install component'
 inputs:
+  target:
+    description: 'install component to process'
+    required: false
+    default: ''
+    type: string
   arch:
     description: 'run-time platform'
     required: false
@@ -26,11 +31,6 @@ inputs:
     required: false
     default: ''
     type: string
-  target:
-    description: 'install component to process'
-    required: false
-    default: ''
-    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false
@@ -39,7 +39,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - if: ${{ inputs.arch }} == 'lnx'
+  - if: inputs.arch == 'lnx'
     uses: "./.github/actions/artfload"
     with:
       arch:         'lnx'
@@ -47,7 +47,7 @@ runs:
       artifact:     'build lnx'
       tools:        ${{ inputs.tools_lnx }}
       owdebug:      ${{ inputs.owdebug }}
-  - if: ${{ inputs.arch }} == 'nt'
+  - if: inputs.arch == 'nt'
     uses: "./.github/actions/artfload"
     with:
       arch:         'nt'
