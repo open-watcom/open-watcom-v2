@@ -1,12 +1,8 @@
 name: artifacts-delete
 description: 'Delete workflow run artifacs'
+
 inputs:
-  parent_repo:
-    description: 'Repository where delete'
-    required: false
-    default: ''
-    type: string
-  parent_runid:
+  runid:
     description: 'Workflow run-id where delete'
     required: false
     default: ''
@@ -31,13 +27,13 @@ runs:
     id: artflist
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ inputs.parent_repo }}/actions/runs/${{ inputs.parent_runid }}/artifacts"
+      "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ inputs.runid }}/artifacts"
       if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
       $list = $response | jq -r .artifacts
       $list | Foreach-Object {
         if( "${{ inputs.exclude }}" -eq '' || "$($_.name)" -ne "${{ inputs.exclude }}" ) {
           $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-          -X DELETE "https://api.github.com/repos/${{ inputs.parent_repo }}/actions/artifacts/$($_.id)"
+          -X DELETE "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$($_.id)"
           if( "${{ inputs.owdebug }}" -eq '1' ) { $response }
         }
       }
