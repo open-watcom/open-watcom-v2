@@ -47,7 +47,7 @@ runs:
     id: newdrel
     uses: "./.github/actions/ghrelcre"
     with:
-      note:    "Last updated ${{ steps.dreldata.outputs.timestamp }}"
+      note:    "Last updated ${{ steps.dreldata.outputs.timestamp }} UTC"
       title:   ${{ steps.dreldata.outputs.tag }}
       tag:     ${{ steps.dreldata.outputs.tag }}
       tagmsg:  ${{ steps.dreldata.outputs.timestamp }}
@@ -80,7 +80,7 @@ runs:
     name: 'Create monthly Release'
     uses: "./.github/actions/ghrelcre"
     with:
-      note:    "Created ${{ steps.mreldata.outputs.timestamp }}"
+      note:    "Created ${{ steps.mreldata.outputs.timestamp }} UTC"
       title:   ${{ steps.mreldata.outputs.title }}
       tag:     ${{ steps.mreldata.outputs.tag }}
       tagmsg:  ${{ steps.mreldata.outputs.tagmsg }}

@@ -29,7 +29,7 @@ runs:
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ inputs.runid }}/artifacts"
       if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
-      $list = $response | jq -r .artifacts
+      $list = $response | jq -r .artifacts[]
       $list | Foreach-Object {
         if( '${{ inputs.owdebug }}' -eq '1' ) { $_ }
         if( '${{ inputs.exclude }}' -eq '' || "$($_.name)" -ne "${{ inputs.exclude }}" ) {

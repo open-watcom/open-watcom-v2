@@ -41,7 +41,7 @@ runs:
     uses: "./.github/actions/ghrelcre"
     id: cinewrel
     with:
-      note:    Last updated ${{ steps.cireldata.outputs.timestamp }}
+      note:    "Last updated ${{ steps.cireldata.outputs.timestamp }} UTC"
       title:   ${{ steps.cireldata.outputs.tag }}
       tag:     ${{ steps.cireldata.outputs.tag }}
       tagmsg:  ${{ steps.cireldata.outputs.timestamp }}
