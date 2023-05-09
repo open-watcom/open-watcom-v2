@@ -29,12 +29,13 @@ runs:
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
       "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ inputs.runid }}/artifacts"
       if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
-      $list = $response | jq -r .artifacts[]
-      $list | Foreach-Object {
-        if( '${{ inputs.owdebug }}' -eq '1' ) { $_ }
-        if( '${{ inputs.exclude }}' -eq '' || "$($_.name)" -ne "${{ inputs.exclude }}" ) {
+      $list_id = $response | jq -r .artifacts[].id
+      $list_name = $response | jq -r .artifacts[].name
+      for ($i = 0; $i -lt $list_id.Length; ++$i) {
+        if( '${{ inputs.owdebug }}' -eq '1' ) { "$($list_id[$i]),$($list_name[$i])" }
+        if( '${{ inputs.exclude }}' -eq '' || "$($list_name[$i])" -ne "${{ inputs.exclude }}" ) {
           $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-          -X DELETE "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$($_.id)"
+          -X DELETE "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$($list_id[$i])"
           if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
         }
       }
