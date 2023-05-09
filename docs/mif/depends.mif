@@ -575,7 +575,7 @@ objs_gui = &
 ../doc/gui/wguiwide.gml &
 ../doc/gui/wguizoom.gml &
 ../doc/gui/wrc.gml &
-../doc/gui/wrcerrs.gml &
+../doc/gui/wrcerrs1.gml &
 ../doc/gui/wrcmacs.gml &
 ../doc/gui/wre.gml
 objs_gui_bmp = &

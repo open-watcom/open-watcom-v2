@@ -23,7 +23,7 @@
 .chap &wrcname Diagnostic Messages
 .*
 :INCLUDE file='WRCMACS'.
-:INCLUDE file='WRCERRS'.
+:INCLUDE file='WRCERRS1'.
 .*
 .cntents end_of_book
 :eGDOC.
