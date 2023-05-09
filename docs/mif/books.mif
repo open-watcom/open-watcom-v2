@@ -6,12 +6,12 @@
 !inject cgdoc$(e)                                              wikihtml  wikipdf
 !inject cguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject cguideq$(e)
-!inject clbtst$(e)
 !inject clib$(e)        dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject clib_fox$(e)
 !inject clib_nec$(e)
-!inject clibnt$(e)
-!inject clibqnx$(e)
+!inject clib_nt$(e)
+!inject clib_qnx$(e)
+!inject clib_tst$(e)
 !inject clr$(e)         dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject clslib$(e)
 !inject cpplib$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
@@ -146,20 +146,12 @@ cguideq_book_bmroot=$(bmroot_cg)
 cguideq_book_src=cguideq
 cguideq_book_multi_chapter=1
 
-# clbtst
-clbtst_book_title=$(company) $(bld_ver_str) C Library Reference
-clbtst_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-clbtst_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-clbtst_book_bmroot=$(bmroot_lr3)
-clbtst_book_src=clib_tst
-clbtst_book_multi_chapter=1
-
 # clib
 clib_book_title=$(company) $(bld_ver_str) C Library Reference
 clib_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 clib_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 clib_book_bmroot=$(bmroot_lr3)
-clib_book_src=clib_dos
+clib_book_src=clib
 clib_book_multi_chapter=1
 
 # clib_fox
@@ -176,27 +168,35 @@ clib_nec_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 clib_nec_book_bmroot=$(bmroot_lr3)
 clib_nec_book_src=clib_nec
 
-# clibnt
-clibnt_book_title=$(company) $(bld_ver_str) C Library Reference for Win32
-clibnt_book_objs=$(objs_lr1) $(objs_lr2) $(objs_cmn)
-clibnt_book_incs=$(incs_lr1);$(incs_lr2);$(incs_cmn)
-clibnt_book_src=clib_nt
-clibnt_book_multi_chapter=1
+# clib_nt
+clib_nt_book_title=$(company) $(bld_ver_str) C Library Reference for Win32
+clib_nt_book_objs=$(objs_lr1) $(objs_lr2) $(objs_cmn)
+clib_nt_book_incs=$(incs_lr1);$(incs_lr2);$(incs_cmn)
+clib_nt_book_src=clib_nt
+clib_nt_book_multi_chapter=1
 
-# clibqnx
-clibqnx_book_title=$(company) $(bld_ver_str) C Library Reference for QNX
-clibqnx_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-clibqnx_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-clibqnx_book_bmroot=$(bmroot_lr3)
-clibqnx_book_src=clib_qnx
-clibqnx_book_multi_chapter=1
+# clib_qnx
+clib_qnx_book_title=$(company) $(bld_ver_str) C Library Reference for QNX
+clib_qnx_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
+clib_qnx_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
+clib_qnx_book_bmroot=$(bmroot_lr3)
+clib_qnx_book_src=clib_qnx
+clib_qnx_book_multi_chapter=1
+
+# clib_tst
+clib_tst_book_title=$(company) $(bld_ver_str) C Library Reference
+clib_tst_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
+clib_tst_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
+clib_tst_book_bmroot=$(bmroot_lr3)
+clib_tst_book_src=clib_tst
+clib_tst_book_multi_chapter=1
 
 # clr
 clr_book_title=$(company) $(bld_ver_str) C Language Reference
 clr_book_objs=$(objs_cl)
 clr_book_incs=$(incs_cl)
 clr_book_bmroot=$(bmroot_cl)
-clr_book_src=c
+clr_book_src=clr
 clr_book_multi_chapter=1
 
 # clslib
@@ -464,7 +464,7 @@ wd_book_objs=$(objs_wd)
 wd_book_objs_ps=$(objs_wd_ps)
 wd_book_incs=$(incs_wd)
 wd_book_bmroot=$(bmroot_wd)
-wd_book_src=wdbg
+wd_book_src=wd
 wd_book_multi_chapter=1
 wd_book_os2_help=1
 
@@ -488,7 +488,7 @@ wjcerrs_book_os2_help=1
 wlnkerrs_book_title=$(company) $(bld_ver_str) Linker Diagnostic Messages
 wlnkerrs_book_objs=$(objs_lg)
 wlnkerrs_book_incs=$(incs_lg)
-wlnkerrs_book_src=wlinkerr
+wlnkerrs_book_src=wlnkerrs
 wlnkerrs_book_os2_help=1
 
 # wpperrs
@@ -513,7 +513,7 @@ wrcerrs_book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messag
 wrcerrs_book_objs=$(objs_gui) $(objs_gui_bmp)
 wrcerrs_book_incs=$(incs_gui)
 wrcerrs_book_bmroot=$(bmroot_gui)
-wrcerrs_book_src=rcerrs
+wrcerrs_book_src=wrcerrs
 wrcerrs_book_os2_help=1
 
 # zoom
@@ -557,7 +557,7 @@ wgmlref_book_objs=$(objs_wgmlref) $(objs_wgmlref_bmp)
 wgmlref_book_objs_ps=$(objs_wgmlref_ps)
 wgmlref_book_incs=$(incs_wgmlref)
 wgmlref_book_bmroot=$(bmroot_wgmlref)
-wgmlref_book_src=rfman
+wgmlref_book_src=wgmlref
 wgmlref_book_multi_chapter=1
 
 # wipfc

@@ -58,7 +58,7 @@ objs_cl = &
 ../doc/cl/basicty.gml &
 ../doc/cl/boxmac.gml &
 ../doc/cl/bubble.gml &
-../doc/cl/c.gml &
+../doc/cl/clr.gml &
 ../doc/cl/charset.gml &
 ../doc/cl/clr.bmp &
 ../doc/cl/cmac.gml &
@@ -554,7 +554,6 @@ incs_gui = ../doc/gui;../doc/gui/snaps
 objs_gui = &
 ../doc/gui/guitool.gml &
 ../doc/gui/prof.gml &
-../doc/gui/rcerrs.gml &
 ../doc/gui/wedref.gml &
 ../doc/gui/wedregx.gml &
 ../doc/gui/wedtutor.gml &
@@ -575,6 +574,7 @@ objs_gui = &
 ../doc/gui/wguiwide.gml &
 ../doc/gui/wguizoom.gml &
 ../doc/gui/wrc.gml &
+../doc/gui/wrcerrs.gml &
 ../doc/gui/wrcerrs1.gml &
 ../doc/gui/wrcmacs.gml &
 ../doc/gui/wre.gml
@@ -1135,7 +1135,7 @@ objs_lg = &
 ../doc/lg/wlerror.gml &
 ../doc/lg/wlfcopt.gml &
 ../doc/lg/wlib.gml &
-../doc/lg/wlinkerr.gml &
+../doc/lg/wlnkerrs.gml &
 ../doc/lg/wlinklnk.gml &
 ../doc/lg/wlintro.gml &
 ../doc/lg/wlmem.gml &
@@ -1154,6 +1154,7 @@ incs_lr1 = ../doc/lr
 objs_lr1 = &
 ../doc/lr/authors.gml &
 ../doc/lr/cfunrems.gml &
+../doc/lr/clib.gml &
 ../doc/lr/clib_dos.gml &
 ../doc/lr/clib_nec.gml &
 ../doc/lr/clib_nt.gml &
@@ -2428,6 +2429,7 @@ objs_wd = &
 ../doc/wd/dlgopt.bmp &
 ../doc/wd/dlgwopt.bmp &
 ../doc/wd/symbuttn.gml &
+../doc/wd/wd.gml &
 ../doc/wd/wdbg.gml &
 ../doc/wd/wdbgasm.gml &
 ../doc/wd/wdbgbrkp.gml &
@@ -3101,7 +3103,8 @@ objs_wgmlref = &
 ../doc/wgmlref/rftustrt.gml &
 ../doc/wgmlref/rftustru.gml &
 ../doc/wgmlref/rftut.gml &
-../doc/wgmlref/rftuxmp.gml
+../doc/wgmlref/rftuxmp.gml &
+../doc/wgmlref/wgmlref.gml
 objs_wgmlref_bmp = &
 $(bmroot_wgmlref)/frconf.bmp &
 $(bmroot_wgmlref)/frdev.bmp &
