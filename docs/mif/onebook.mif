@@ -18,7 +18,7 @@ lowercase = %ren
 !include ../mif/depends.mif
 !include ../mif/books.mif
 
-wgml_cmdl_params = $($(hbook)_book_src) ( file $(wgml_optfile)
+wgml_cmdl_params = $(hbook) ( file $(wgml_optfile)
 gendev_cmdl_params = $[@
 
 !include wgmlcmd.mif
@@ -135,9 +135,9 @@ dep_pdf = $(hbook).pdf
 .BEFORE
 ! ifneq header 1
 !  ifdef __UNIX__
-    @echo ===== $(dotarget) $+$(%cwd)$--$(hbook)/$($(hbook)_book_src) =====
+    @echo ===== $(dotarget) $+$(%cwd)$-/$(hbook) =====
 !  else
-    @echo ===== $(dotarget) $+$(%cdrive):$(%cwd)$--$(hbook)/$($(hbook)_book_src) =====
+    @echo ===== $(dotarget) $+$(%cdrive):$(%cwd)$-/$(hbook) =====
 !  endif
 ! endif
 !else

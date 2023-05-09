@@ -112,7 +112,6 @@ books=$(hbook)
 foo_book_title=foo
 foo_book_objs=$(objs_cmn)
 foo_book_incs=$(incs_cmn)
-foo_book_src=foo
 
 # c_readme
 c_readme_book_title=$(company) $(bld_ver_str) C/C++ Getting Started
@@ -120,7 +119,6 @@ c_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp) $(objs_cg)
 c_readme_book_objs_ps=$(objs_gs_readme_ps)
 c_readme_book_incs=$(incs_gs);$(incs_cg)
 c_readme_book_bmroot=$(bmroot_gs)
-c_readme_book_src=c_readme
 c_readme_book_multi_chapter=1
 
 # cbooks
@@ -128,14 +126,12 @@ cbooks_book_title=$(company) $(bld_ver_str) C/C++ On-line Documentation
 cbooks_book_objs=$(objs_gs_books)
 cbooks_book_incs=$(incs_gs)
 cbooks_book_bmroot=$(bmroot_gs)
-cbooks_book_src=cbooks
 
 # cguide
 cguide_book_title=$(company) $(bld_ver_str) C/C++ User's Guide
 cguide_book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
 cguide_book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
 cguide_book_bmroot=$(bmroot_cg)
-cguide_book_src=cguide
 cguide_book_multi_chapter=1
 
 # cguideq
@@ -143,7 +139,6 @@ cguideq_book_title=$(company) $(bld_ver_str) C/C++ User's Guide for QNX
 cguideq_book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
 cguideq_book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
 cguideq_book_bmroot=$(bmroot_cg)
-cguideq_book_src=cguideq
 cguideq_book_multi_chapter=1
 
 # clib
@@ -151,7 +146,6 @@ clib_book_title=$(company) $(bld_ver_str) C Library Reference
 clib_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 clib_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 clib_book_bmroot=$(bmroot_lr3)
-clib_book_src=clib
 clib_book_multi_chapter=1
 
 # clib_fox
@@ -159,20 +153,17 @@ clib_fox_book_title=$(company) $(bld_ver_str) C Library Reference for FoxPro
 clib_fox_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 clib_fox_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 clib_fox_book_bmroot=$(bmroot_lr3)
-clib_fox_book_src=clib_fox
 
 # clib_nec
 clib_nec_book_title=$(company) $(bld_ver_str) C Library Reference Kanji Functions subset
 clib_nec_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 clib_nec_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 clib_nec_book_bmroot=$(bmroot_lr3)
-clib_nec_book_src=clib_nec
 
 # clib_nt
 clib_nt_book_title=$(company) $(bld_ver_str) C Library Reference for Win32
 clib_nt_book_objs=$(objs_lr1) $(objs_lr2) $(objs_cmn)
 clib_nt_book_incs=$(incs_lr1);$(incs_lr2);$(incs_cmn)
-clib_nt_book_src=clib_nt
 clib_nt_book_multi_chapter=1
 
 # clib_qnx
@@ -180,7 +171,6 @@ clib_qnx_book_title=$(company) $(bld_ver_str) C Library Reference for QNX
 clib_qnx_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 clib_qnx_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 clib_qnx_book_bmroot=$(bmroot_lr3)
-clib_qnx_book_src=clib_qnx
 clib_qnx_book_multi_chapter=1
 
 # clib_tst
@@ -188,7 +178,6 @@ clib_tst_book_title=$(company) $(bld_ver_str) C Library Reference
 clib_tst_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 clib_tst_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 clib_tst_book_bmroot=$(bmroot_lr3)
-clib_tst_book_src=clib_tst
 clib_tst_book_multi_chapter=1
 
 # clr
@@ -196,26 +185,22 @@ clr_book_title=$(company) $(bld_ver_str) C Language Reference
 clr_book_objs=$(objs_cl)
 clr_book_incs=$(incs_cl)
 clr_book_bmroot=$(bmroot_cl)
-clr_book_src=clr
 clr_book_multi_chapter=1
 
 # clslib
 clslib_book_title=$(company) $(bld_ver_str) C++ Class Library Reference
 clslib_book_objs=$(objs_cpplib)
 clslib_book_incs=$(incs_cpplib)
-clslib_book_src=clslib
 
 # cmix
 cmix_book_title=$(company) $(bld_ver_str) C/C++ Master Index
 cmix_book_objs=$(hlpmix_objs)
 cmix_book_incs=$(hlpmix_incs)
-cmix_book_src=cmix
 
 # cpplib
 cpplib_book_title=$(company) $(bld_ver_str) C++ Class Library Reference
 cpplib_book_objs=$(objs_cpplib)
 cpplib_book_incs=$(incs_cpplib)
-cpplib_book_src=cpplib
 cpplib_book_multi_chapter=1
 
 # ctools
@@ -223,55 +208,47 @@ ctools_book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
 ctools_book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
 ctools_book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
 ctools_book_bmroot=$(bmroot_cg)
-ctools_book_src=ctools
 ctools_book_multi_chapter=1
 
 # cw
 cw_book_title=CauseWay User's Guide
 cw_book_objs=$(objs_cw) $(objs_cmn)
 cw_book_incs=$(incs_cw);$(incs_cmn)
-cw_book_src=cw
 
 # ddespy
 ddespy_book_title=$(company) $(bld_ver_str) DDE Spy
 ddespy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 ddespy_book_incs=$(incs_gui);$(incs_cg)
 ddespy_book_bmroot=$(bmroot_gui)
-ddespy_book_src=ddespy
 
 # devguide
 devguide_book_title=$(company) $(bld_ver_str) Developer's Guide
 devguide_book_objs=$(objs_devguide) $(objs_cmn)
 devguide_book_incs=$(incs_devguide);$(incs_cmn)
-devguide_book_src=devguide
 
 # drnt
 drnt_book_title=Dr. Watcom $(bld_ver_str) NT
 drnt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 drnt_book_incs=$(incs_gui);$(incs_cg)
 drnt_book_bmroot=$(bmroot_gui)
-drnt_book_src=drnt
 
 # drwatcom
 drwatcom_book_title=Dr. Watcom $(bld_ver_str)
 drwatcom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 drwatcom_book_incs=$(incs_gui);$(incs_cg)
 drwatcom_book_bmroot=$(bmroot_gui)
-drwatcom_book_src=drwatcom
 
 # ebooks
 ebooks_book_title=$(company) $(bld_ver_str) Editor On-line Documentation
 ebooks_book_objs=$(objs_gs_books)
 ebooks_book_incs=$(incs_gs)
 ebooks_book_bmroot=$(bmroot_gs)
-ebooks_book_src=ebooks
 
 # editor
 editor_book_title=$(company) $(bld_ver_str) Editor
 editor_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 editor_book_incs=$(incs_gui);$(incs_cg)
 editor_book_bmroot=$(bmroot_gui)
-editor_book_src=editor
 editor_book_multi_chapter=1
 
 # f_readme
@@ -280,7 +257,6 @@ f_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp)
 f_readme_book_objs_ps=$(objs_gs_readme_ps)
 f_readme_book_incs=$(incs_gs)
 f_readme_book_bmroot=$(bmroot_gs)
-f_readme_book_src=f_readme
 f_readme_book_multi_chapter=1
 
 # f77graph
@@ -288,14 +264,12 @@ f77graph_book_title=$(company) $(bld_ver_str) FORTRAN 77 Graphics Library Refere
 f77graph_book_objs=$(objs_lr1) $(objs_lr3) $(objs_cmn)
 f77graph_book_incs=$(incs_lr1);$(incs_lr3);$(incs_cmn)
 f77graph_book_bmroot=$(bmroot_lr3)
-f77graph_book_src=f77graph
 f77graph_book_multi_chapter=1
 
 # f77lr
 f77lr_book_title=$(company) $(bld_ver_str) FORTRAN 77 Language Reference
 f77lr_book_objs=$(objs_fl)
 f77lr_book_incs=$(incs_fl)
-f77lr_book_src=f77lr
 f77lr_book_multi_chapter=1
 
 # fbooks
@@ -303,20 +277,17 @@ fbooks_book_title=$(company) $(bld_ver_str) FORTRAN 77 On-line Documentation
 fbooks_book_objs=$(objs_gs_books)
 fbooks_book_incs=$(incs_gs)
 fbooks_book_bmroot=$(bmroot_gs)
-fbooks_book_src=fbooks
 
 # fmix
 fmix_book_title=$(company) $(bld_ver_str) FORTRAN 77 Master Index
 fmix_book_objs=$(hlpmix_objs)
 fmix_book_incs=$(hlpmix_incs)
-fmix_book_src=fmix
 
 # fpguide
 fpguide_book_title=$(company) $(bld_ver_str) FORTRAN 77 Programmer's Guide
 fpguide_book_objs=$(objs_pg) $(objs_cmn) $(objs_fg) $(objs_rsi) $(objs_win386) $(objs_lr1)
 fpguide_book_incs=$(incs_pg);$(incs_cmn);$(incs_fg);$(incs_rsi);$(incs_win386);$(incs_lr1);
 fpguide_book_bmroot=$(bmroot_pg)
-fpguide_book_src=fpguide
 fpguide_book_multi_chapter=1
 
 # ftools
@@ -324,7 +295,6 @@ ftools_book_title=$(company) $(bld_ver_str) FORTRAN 77 Tools User's Guide
 ftools_book_objs=$(objs_cmn) $(objs_lg) $(objs_fg)
 ftools_book_incs=$(incs_cmn);$(incs_lg);$(incs_fg)
 ftools_book_bmroot=$(bmroot_fg)
-ftools_book_src=ftools
 ftools_book_multi_chapter=1
 
 # fuguide
@@ -332,7 +302,6 @@ fuguide_book_title=$(company) $(bld_ver_str) FORTRAN 77 User's Guide
 fuguide_book_objs=$(objs_fg) $(objs_wfc) $(objs_lg) $(objs_cmn)
 fuguide_book_incs=$(incs_fg);$(incs_wfc);$(incs_lg);$(incs_cmn)
 fuguide_book_bmroot=$(bmroot_fg)
-fuguide_book_src=fuguide
 fuguide_book_multi_chapter=1
 
 # guitool
@@ -341,14 +310,12 @@ guitool_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 guitool_book_objs_ps=$(objs_gui_ps)
 guitool_book_incs=$(incs_gui);$(incs_cg)
 guitool_book_bmroot=$(bmroot_gui)
-guitool_book_src=guitool
 
 # heapwalk
 heapwalk_book_title=$(company) $(bld_ver_str) Heap Walker
 heapwalk_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 heapwalk_book_incs=$(incs_gui);$(incs_cg)
 heapwalk_book_bmroot=$(bmroot_gui)
-heapwalk_book_src=heapwalk
 
 # ide
 ide_book_title=$(company) $(bld_ver_str) IDE
@@ -356,28 +323,24 @@ ide_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 ide_book_objs_ps=$(objs_gui_ps)
 ide_book_incs=$(incs_gui);$(incs_cg)
 ide_book_bmroot=$(bmroot_gui)
-ide_book_src=ide
 ide_book_os2_help=1
 
 # lguide
 lguide_book_title=$(company) $(bld_ver_str) Linker Guide
 lguide_book_objs=$(objs_lg)
 lguide_book_incs=$(incs_lg)
-lguide_book_src=lguide
 lguide_book_multi_chapter=1
 
 # owstldg
 owstl_book_title=$(company) $(bld_ver_str) OWSTL developer guide
 owstl_book_objs=$(objs_owstldev)
 owstl_book_incs=$(incs_owstldev)
-owstl_book_src=owstl
 
 # pguide
 pguide_book_title=$(company) $(bld_ver_str) C/C++ Programmer's Guide
 pguide_book_objs=$(objs_pg) $(objs_cmn) $(objs_cg) $(objs_rsi) $(objs_win386) $(objs_lr1)
 pguide_book_incs=$(incs_pg);$(incs_cmn);$(incs_cg);$(incs_rsi);$(incs_win386);$(incs_lr1);
 pguide_book_bmroot=$(bmroot_pg)
-pguide_book_src=pguide
 pguide_book_multi_chapter=1
 
 # resacc
@@ -385,69 +348,59 @@ resacc_book_title=$(company) $(bld_ver_str) Accelerator Editor
 resacc_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resacc_book_incs=$(incs_gui);$(incs_cg)
 resacc_book_bmroot=$(bmroot_gui)
-resacc_book_src=resacc
 
 # rescomp
 rescomp_book_title=$(company) $(bld_ver_str) Resource Compiler
 rescomp_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 rescomp_book_incs=$(incs_gui);$(incs_cg)
 rescomp_book_bmroot=$(bmroot_gui)
-rescomp_book_src=rescomp
 
 # resdlg
 resdlg_book_title=$(company) $(bld_ver_str) Dialog Editor
 resdlg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resdlg_book_incs=$(incs_gui);$(incs_cg)
 resdlg_book_bmroot=$(bmroot_gui)
-resdlg_book_src=resdlg
 
 # resedt
 resedt_book_title=$(company) $(bld_ver_str) Resource Editor
 resedt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resedt_book_incs=$(incs_gui);$(incs_cg)
 resedt_book_bmroot=$(bmroot_gui)
-resedt_book_src=resedt
 
 # resimg
 resimg_book_title=$(company) $(bld_ver_str) Image Editor
 resimg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resimg_book_incs=$(incs_gui);$(incs_cg)
 resimg_book_bmroot=$(bmroot_gui)
-resimg_book_src=resimg
 
 # resmnu
 resmnu_book_title=$(company) $(bld_ver_str) Menu Editor
 resmnu_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resmnu_book_incs=$(incs_gui);$(incs_cg)
 resmnu_book_bmroot=$(bmroot_gui)
-resmnu_book_src=resmnu
 
 # resstr
 resstr_book_title=$(company) $(bld_ver_str) String Table Editor
 resstr_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resstr_book_incs=$(incs_gui);$(incs_cg)
 resstr_book_bmroot=$(bmroot_gui)
-resstr_book_src=resstr
 
 # spy
 spy_book_title=$(company) $(bld_ver_str) Spy
 spy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 spy_book_incs=$(incs_gui);$(incs_cg)
 spy_book_bmroot=$(bmroot_gui)
-spy_book_src=spy
 
 # wasaxp
 wasaxp_book_title=wasaxp $(bld_ver_str)
 wasaxp_book_objs=$(objs_cmn)
 wasaxp_book_incs=$(incs_cmn)
-wasaxp_book_src=wasaxp
 
 # wbrw
 wbrw_book_title=$(company) $(bld_ver_str) Source Browser
 wbrw_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 wbrw_book_incs=$(incs_gui);$(incs_cg)
 wbrw_book_bmroot=$(bmroot_gui)
-wbrw_book_src=wbrw
 wbrw_book_os2_help=1
 
 # wccerrs
@@ -455,7 +408,6 @@ wccerrs_book_title=$(company) $(bld_ver_str) C Diagnostic Messages
 wccerrs_book_objs=$(objs_cg) $(objs_plusplus) $(objs_cc)
 wccerrs_book_incs=$(incs_cg);$(incs_plusplus);$(incs_cc)
 wccerrs_book_bmroot=$(bmroot_cg)
-wccerrs_book_src=wccerrs
 wccerrs_book_os2_help=1
 
 # wd
@@ -464,7 +416,6 @@ wd_book_objs=$(objs_wd)
 wd_book_objs_ps=$(objs_wd_ps)
 wd_book_incs=$(incs_wd)
 wd_book_bmroot=$(bmroot_wd)
-wd_book_src=wd
 wd_book_multi_chapter=1
 wd_book_os2_help=1
 
@@ -473,7 +424,6 @@ wfcerrs_book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
 wfcerrs_book_objs=$(objs_fg) $(objs_wfc)
 wfcerrs_book_incs=$(incs_fg);$(incs_wfc)
 wfcerrs_book_bmroot=$(bmroot_fg)
-wfcerrs_book_src=wfcerrs
 wfcerrs_book_os2_help=1
 
 # wjcerrs
@@ -481,14 +431,12 @@ wjcerrs_book_title=Sybase Java Compiler Diagnostic Messages
 wjcerrs_book_objs=$(objs_cl)
 wjcerrs_book_incs=$(incs_cl)
 wjcerrs_book_bmroot=$(bmroot_cl)
-wjcerrs_book_src=wjcerrs
 wjcerrs_book_os2_help=1
 
 # wlnkerrs
 wlnkerrs_book_title=$(company) $(bld_ver_str) Linker Diagnostic Messages
 wlnkerrs_book_objs=$(objs_lg)
 wlnkerrs_book_incs=$(incs_lg)
-wlnkerrs_book_src=wlnkerrs
 wlnkerrs_book_os2_help=1
 
 # wpperrs
@@ -496,7 +444,6 @@ wpperrs_book_title=$(company) $(bld_ver_str) C++ Diagnostic Messages
 wpperrs_book_objs=$(objs_cg) $(objs_plusplus)
 wpperrs_book_incs=$(incs_cg);$(incs_plusplus)
 wpperrs_book_bmroot=$(bmroot_cg)
-wpperrs_book_src=wpperrs
 wpperrs_book_os2_help=1
 
 # wprof
@@ -504,7 +451,6 @@ wprof_book_title=$(company) $(bld_ver_str) Profiler
 wprof_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 wprof_book_incs=$(incs_gui);$(incs_cg)
 wprof_book_bmroot=$(bmroot_gui)
-wprof_book_src=wprof
 wprof_book_multi_chapter=1
 wprof_book_os2_help=1
 
@@ -513,7 +459,6 @@ wrcerrs_book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messag
 wrcerrs_book_objs=$(objs_gui) $(objs_gui_bmp)
 wrcerrs_book_incs=$(incs_gui)
 wrcerrs_book_bmroot=$(bmroot_gui)
-wrcerrs_book_src=wrcerrs
 wrcerrs_book_os2_help=1
 
 # zoom
@@ -521,25 +466,21 @@ zoom_book_title=$(company) $(bld_ver_str) Zoom
 zoom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 zoom_book_incs=$(incs_gui);$(incs_cg)
 zoom_book_bmroot=$(bmroot_gui)
-zoom_book_src=zoom
 
 # cgdoc
 cgdoc_book_title=$(company) $(bld_ver_str) Code Generator
 cgdoc_book_objs=$(objs_cgdoc)
 cgdoc_book_incs=$(incs_cgdoc)
-cgdoc_book_src=cgdoc
 
 # dwdoc
 dwdoc_book_title=$(company) $(bld_ver_str) DWARF Writer
 dwdoc_book_objs=$(objs_dwdoc)
 dwdoc_book_incs=$(incs_dwdoc)
-dwdoc_book_src=dwdoc
 
 # wddoc
 wddoc_book_title=$(company) $(bld_ver_str) Debugger Developers Guide
 wddoc_book_objs=$(objs_wddoc)
 wddoc_book_incs=$(incs_wddoc)
-wddoc_book_src=wddoc
 wddoc_book_multi_chapter=1
 
 # vi
@@ -548,7 +489,6 @@ vi_book_objs=$(objs_vi) $(objs_vi_bmp)
 vi_book_objs_ps=$(objs_vi_ps)
 vi_book_incs=$(incs_vi)
 vi_book_bmroot=$(bmroot_vi)
-vi_book_src=vi
 vi_book_multi_chapter=1
 
 # wgmlref
@@ -557,14 +497,12 @@ wgmlref_book_objs=$(objs_wgmlref) $(objs_wgmlref_bmp)
 wgmlref_book_objs_ps=$(objs_wgmlref_ps)
 wgmlref_book_incs=$(incs_wgmlref)
 wgmlref_book_bmroot=$(bmroot_wgmlref)
-wgmlref_book_src=wgmlref
 wgmlref_book_multi_chapter=1
 
 # wipfc
 wipfc_book_title=OS/2 Help Compiler Reference Manual
 wipfc_book_objs=$(objs_wipfc)
 wipfc_book_incs=$(incs_wipfc)
-wipfc_book_src=wipfc
 wipfc_book_multi_chapter=1
 
 # freadme
@@ -575,10 +513,8 @@ wipfc_book_multi_chapter=1
 wpidoc_book_title=$(company) $(bld_ver_str) WATCOM Windows Programming Interface (WPI)
 wpidoc_book_objs=$(objs_wpidoc)
 wpidoc_book_incs=$(incs_wpidoc)
-wpidoc_book_src=wpidoc
 
 # fmedidoc
 fmedidoc_book_title=$(company) $(bld_ver_str) WATCOM Forms Editor Application Interface
 fmedidoc_book_objs=$(objs_fmedidoc)
 fmedidoc_book_incs=$(incs_fmedidoc)
-fmedidoc_book_src=fmedidoc
