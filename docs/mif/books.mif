@@ -237,7 +237,7 @@ ddespy_book_title=$(company) $(bld_ver_str) DDE Spy
 ddespy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 ddespy_book_incs=$(incs_gui);$(incs_cg)
 ddespy_book_bmroot=$(bmroot_gui)
-ddespy_book_src=guitool
+ddespy_book_src=ddespy
 
 # devguide
 devguide_book_title=$(company) $(bld_ver_str) Developer's Guide
@@ -250,14 +250,14 @@ drnt_book_title=Dr. Watcom $(bld_ver_str) NT
 drnt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 drnt_book_incs=$(incs_gui);$(incs_cg)
 drnt_book_bmroot=$(bmroot_gui)
-drnt_book_src=guitool
+drnt_book_src=drnt
 
 # drwatcom
 drwatcom_book_title=Dr. Watcom $(bld_ver_str)
 drwatcom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 drwatcom_book_incs=$(incs_gui);$(incs_cg)
 drwatcom_book_bmroot=$(bmroot_gui)
-drwatcom_book_src=guitool
+drwatcom_book_src=drwatcom
 
 # ebooks
 ebooks_book_title=$(company) $(bld_ver_str) Editor On-line Documentation
@@ -271,7 +271,7 @@ editor_book_title=$(company) $(bld_ver_str) Editor
 editor_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 editor_book_incs=$(incs_gui);$(incs_cg)
 editor_book_bmroot=$(bmroot_gui)
-editor_book_src=guitool
+editor_book_src=editor
 editor_book_multi_chapter=1
 
 # f_readme
@@ -348,7 +348,7 @@ heapwalk_book_title=$(company) $(bld_ver_str) Heap Walker
 heapwalk_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 heapwalk_book_incs=$(incs_gui);$(incs_cg)
 heapwalk_book_bmroot=$(bmroot_gui)
-heapwalk_book_src=guitool
+heapwalk_book_src=heapwalk
 
 # ide
 ide_book_title=$(company) $(bld_ver_str) IDE
@@ -356,7 +356,7 @@ ide_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 ide_book_objs_ps=$(objs_gui_ps)
 ide_book_incs=$(incs_gui);$(incs_cg)
 ide_book_bmroot=$(bmroot_gui)
-ide_book_src=guitool
+ide_book_src=ide
 ide_book_os2_help=1
 
 # lguide
@@ -385,56 +385,56 @@ resacc_book_title=$(company) $(bld_ver_str) Accelerator Editor
 resacc_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resacc_book_incs=$(incs_gui);$(incs_cg)
 resacc_book_bmroot=$(bmroot_gui)
-resacc_book_src=guitool
+resacc_book_src=resacc
 
 # rescomp
 rescomp_book_title=$(company) $(bld_ver_str) Resource Compiler
 rescomp_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 rescomp_book_incs=$(incs_gui);$(incs_cg)
 rescomp_book_bmroot=$(bmroot_gui)
-rescomp_book_src=guitool
+rescomp_book_src=rescomp
 
 # resdlg
 resdlg_book_title=$(company) $(bld_ver_str) Dialog Editor
 resdlg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resdlg_book_incs=$(incs_gui);$(incs_cg)
 resdlg_book_bmroot=$(bmroot_gui)
-resdlg_book_src=guitool
+resdlg_book_src=resdlg
 
 # resedt
 resedt_book_title=$(company) $(bld_ver_str) Resource Editor
 resedt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resedt_book_incs=$(incs_gui);$(incs_cg)
 resedt_book_bmroot=$(bmroot_gui)
-resedt_book_src=guitool
+resedt_book_src=resedt
 
 # resimg
 resimg_book_title=$(company) $(bld_ver_str) Image Editor
 resimg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resimg_book_incs=$(incs_gui);$(incs_cg)
 resimg_book_bmroot=$(bmroot_gui)
-resimg_book_src=guitool
+resimg_book_src=resimg
 
 # resmnu
 resmnu_book_title=$(company) $(bld_ver_str) Menu Editor
 resmnu_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resmnu_book_incs=$(incs_gui);$(incs_cg)
 resmnu_book_bmroot=$(bmroot_gui)
-resmnu_book_src=guitool
+resmnu_book_src=resmnu
 
 # resstr
 resstr_book_title=$(company) $(bld_ver_str) String Table Editor
 resstr_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 resstr_book_incs=$(incs_gui);$(incs_cg)
 resstr_book_bmroot=$(bmroot_gui)
-resstr_book_src=guitool
+resstr_book_src=resstr
 
 # spy
 spy_book_title=$(company) $(bld_ver_str) Spy
 spy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 spy_book_incs=$(incs_gui);$(incs_cg)
 spy_book_bmroot=$(bmroot_gui)
-spy_book_src=guitool
+spy_book_src=spy
 
 # wasaxp
 wasaxp_book_title=wasaxp $(bld_ver_str)
@@ -447,7 +447,7 @@ wbrw_book_title=$(company) $(bld_ver_str) Source Browser
 wbrw_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 wbrw_book_incs=$(incs_gui);$(incs_cg)
 wbrw_book_bmroot=$(bmroot_gui)
-wbrw_book_src=guitool
+wbrw_book_src=wbrw
 wbrw_book_os2_help=1
 
 # wccerrs
@@ -504,7 +504,7 @@ wprof_book_title=$(company) $(bld_ver_str) Profiler
 wprof_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 wprof_book_incs=$(incs_gui);$(incs_cg)
 wprof_book_bmroot=$(bmroot_gui)
-wprof_book_src=guitool
+wprof_book_src=wprof
 wprof_book_multi_chapter=1
 wprof_book_os2_help=1
 
@@ -521,7 +521,7 @@ zoom_book_title=$(company) $(bld_ver_str) Zoom
 zoom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 zoom_book_incs=$(incs_gui);$(incs_cg)
 zoom_book_bmroot=$(bmroot_gui)
-zoom_book_src=guitool
+zoom_book_src=zoom
 
 # cgdoc
 cgdoc_book_title=$(company) $(bld_ver_str) Code Generator
