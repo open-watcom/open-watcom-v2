@@ -1,69 +1,69 @@
-# help type         dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-# distributed       yes  yes  yes  yes yes  yes  no  no    no        no
-#===========================================================================
-!inject c_readme    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject cbooks                     nt
-!inject cgdoc                                              wikihtml  wikipdf
-!inject cguide      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject cguideq
-!inject clbtst
-!inject clib        dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject clib_fox
-!inject clib_nec
-!inject clibnt
-!inject clibqnx
-!inject clr         dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject clslib
-!inject cpplib      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject ctools      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject cw          dos       chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject ddespy           win  chm  nt                html
-!inject devguide                                           wikihtml  wikipdf
-!inject drnt             win  chm  nt                html
-!inject drwatcom         win  chm  nt                html
-!inject dwdoc                                              wikihtml  wikipdf
-!inject ebooks                     nt
-!inject editor           win  chm  nt                html
-!inject f77graph    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject f77lr       dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject f_readme    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject fbooks                     nt
-!inject fmedidoc
-!inject fpguide     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject ftools      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject fuguide     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject guitool                             pdf  ps  html  wikihtml  wikipdf
-!inject heapwalk         win  chm  nt                html
-!inject ide              win  chm  nt  os2           html
-!inject lguide      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject owstl                                              wikihtml  wikipdf
-!inject pguide      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject resacc           win  chm  nt                html
-!inject rescomp     dos  win  chm  nt  os2           html
-!inject resdlg           win  chm  nt                html
-!inject resedt           win  chm  nt                html
-!inject resimg           win  chm  nt                html
-!inject resmnu           win  chm  nt                html
-!inject resstr           win  chm  nt                html
-!inject spy              win  chm  nt                html
-!inject vi          dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject wasaxp
-!inject wbrw             win  chm  nt  os2           html
-!inject wccerrs     dos  win  chm  nt  os2           html  wikihtml  wikipdf
-!inject wd          dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject wddoc                               pdf  ps  html  wikihtml  wikipdf
-!inject wfcerrs     dos  win  chm  nt  os2           html  wikihtml  wikipdf
-!inject wjcerrs
-!inject wlnkerrs         win  chm  nt                html
-!inject wpidoc                              pdf  ps        wikihtml  wikipdf
-!inject wpperrs     dos  win  chm  nt  os2           html  wikihtml  wikipdf
-!inject wprof       dos  win  chm  nt  os2           html
-!inject wrcerrs          win  chm  nt                html
-!inject zoom             win  chm  nt                html
-!inject cmix        dos  win           os2           html                     # depends on zoom, etc.
-!inject fmix        dos  win           os2           html                     # depends on zoom, etc.
-!inject wgmlref                             pdf  ps        wikihtml  wikipdf
-!inject wipfc       dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+# help type             dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+# distributed           yes  yes  yes  yes yes  yes  no  no    no        no
+#===============================================================================
+!inject c_readme$(e)    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject cbooks$(e)                     nt
+!inject cgdoc$(e)                                              wikihtml  wikipdf
+!inject cguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject cguideq$(e)
+!inject clbtst$(e)
+!inject clib$(e)        dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject clib_fox$(e)
+!inject clib_nec$(e)
+!inject clibnt$(e)
+!inject clibqnx$(e)
+!inject clr$(e)         dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject clslib$(e)
+!inject cpplib$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject ctools$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject cw$(e)          dos       chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject ddespy$(e)           win  chm  nt                html
+!inject devguide$(e)                                           wikihtml  wikipdf
+!inject drnt$(e)             win  chm  nt                html
+!inject drwatcom$(e)         win  chm  nt                html
+!inject dwdoc$(e)                                              wikihtml  wikipdf
+!inject ebooks$(e)                     nt
+!inject editor$(e)           win  chm  nt                html
+!inject f77graph$(e)    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject f77lr$(e)       dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject f_readme$(e)    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject fbooks$(e)                     nt
+!inject fmedidoc$(e)
+!inject fpguide$(e)     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject ftools$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject fuguide$(e)     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject guitool$(e)                             pdf  ps  html  wikihtml  wikipdf
+!inject heapwalk$(e)         win  chm  nt                html
+!inject ide$(e)              win  chm  nt  os2           html
+!inject lguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject owstl$(e)                                              wikihtml  wikipdf
+!inject pguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject resacc$(e)           win  chm  nt                html
+!inject rescomp$(e)     dos  win  chm  nt  os2           html
+!inject resdlg$(e)           win  chm  nt                html
+!inject resedt$(e)           win  chm  nt                html
+!inject resimg$(e)           win  chm  nt                html
+!inject resmnu$(e)           win  chm  nt                html
+!inject resstr$(e)           win  chm  nt                html
+!inject spy$(e)              win  chm  nt                html
+!inject vi$(e)          dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject wasaxp$(e)
+!inject wbrw$(e)             win  chm  nt  os2           html
+!inject wccerrs$(e)     dos  win  chm  nt  os2           html  wikihtml  wikipdf
+!inject wd$(e)          dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject wddoc$(e)                               pdf  ps  html  wikihtml  wikipdf
+!inject wfcerrs$(e)     dos  win  chm  nt  os2           html  wikihtml  wikipdf
+!inject wjcerrs$(e)
+!inject wlnkerrs$(e)         win  chm  nt                html
+!inject wpidoc$(e)                              pdf  ps        wikihtml  wikipdf
+!inject wpperrs$(e)     dos  win  chm  nt  os2           html  wikihtml  wikipdf
+!inject wprof$(e)       dos  win  chm  nt  os2           html
+!inject wrcerrs$(e)          win  chm  nt                html
+!inject zoom$(e)             win  chm  nt                html
+!inject cmix$(e)        dos  win           os2           html                     # depends on zoom, etc.
+!inject fmix$(e)        dos  win           os2           html                     # depends on zoom, etc.
+!inject wgmlref$(e)                             pdf  ps        wikihtml  wikipdf
+!inject wipfc$(e)       dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
 
 #
 # check configuration macros
@@ -91,564 +91,494 @@ wgml_target = $(dotarget)
 
 !ifndef hbook
 
-books=$($(docset))
+e=
+books=$+$($(docset))$-
 
 !else
+
+books=$(hbook)
+
+!endif
+
 #############################################################
 #
 # Books definition
 #
 #############################################################
 
-!ifeq hbook clean
+# clean
 
-# special definition for clean operation
-
-!else ifeq hbook foo
 # foo
-book_title=foo
-book_objs=$(objs_cmn)
-book_incs=$(incs_cmn)
-book_src=foo
+foo_book_title=foo
+foo_book_objs=$(objs_cmn)
+foo_book_incs=$(incs_cmn)
+foo_book_src=foo
 
-!else ifeq hbook c_readme
 # c_readme
-book_title=$(company) $(bld_ver_str) C/C++ Getting Started
-book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp) $(objs_cg)
-book_objs_ps=$(objs_gs_readme_ps)
-book_incs=$(incs_gs);$(incs_cg)
-book_bmroot=$(bmroot_gs)
-book_src=c_readme
-book_multi_chapter=1
+c_readme_book_title=$(company) $(bld_ver_str) C/C++ Getting Started
+c_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp) $(objs_cg)
+c_readme_book_objs_ps=$(objs_gs_readme_ps)
+c_readme_book_incs=$(incs_gs);$(incs_cg)
+c_readme_book_bmroot=$(bmroot_gs)
+c_readme_book_src=c_readme
+c_readme_book_multi_chapter=1
 
-!else ifeq hbook cbooks
 # cbooks
-book_title=$(company) $(bld_ver_str) C/C++ On-line Documentation
-book_objs=$(objs_gs_books)
-book_incs=$(incs_gs)
-book_bmroot=$(bmroot_gs)
-book_src=cbooks
+cbooks_book_title=$(company) $(bld_ver_str) C/C++ On-line Documentation
+cbooks_book_objs=$(objs_gs_books)
+cbooks_book_incs=$(incs_gs)
+cbooks_book_bmroot=$(bmroot_gs)
+cbooks_book_src=cbooks
 
-!else ifeq hbook cguide
 # cguide
-book_title=$(company) $(bld_ver_str) C/C++ User's Guide
-book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
-book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
-book_bmroot=$(bmroot_cg)
-book_src=cguide
-book_multi_chapter=1
+cguide_book_title=$(company) $(bld_ver_str) C/C++ User's Guide
+cguide_book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
+cguide_book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
+cguide_book_bmroot=$(bmroot_cg)
+cguide_book_src=cguide
+cguide_book_multi_chapter=1
 
-!else ifeq hbook cguideq
 # cguideq
-book_title=$(company) $(bld_ver_str) C/C++ User's Guide for QNX
-book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
-book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
-book_bmroot=$(bmroot_cg)
-book_src=cguideq
-book_multi_chapter=1
+cguideq_book_title=$(company) $(bld_ver_str) C/C++ User's Guide for QNX
+cguideq_book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
+cguideq_book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
+cguideq_book_bmroot=$(bmroot_cg)
+cguideq_book_src=cguideq
+cguideq_book_multi_chapter=1
 
-!else ifeq hbook clbtst
 # clbtst
-book_title=$(company) $(bld_ver_str) C Library Reference
-book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-book_bmroot=$(bmroot_lr3)
-book_src=clib_tst
-book_multi_chapter=1
+clbtst_book_title=$(company) $(bld_ver_str) C Library Reference
+clbtst_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
+clbtst_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
+clbtst_book_bmroot=$(bmroot_lr3)
+clbtst_book_src=clib_tst
+clbtst_book_multi_chapter=1
 
-!else ifeq hbook clib
 # clib
-book_title=$(company) $(bld_ver_str) C Library Reference
-book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-book_bmroot=$(bmroot_lr3)
-book_src=clib_dos
-book_multi_chapter=1
+clib_book_title=$(company) $(bld_ver_str) C Library Reference
+clib_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
+clib_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
+clib_book_bmroot=$(bmroot_lr3)
+clib_book_src=clib_dos
+clib_book_multi_chapter=1
 
-!else ifeq hbook clib_fox
 # clib_fox
-book_title=$(company) $(bld_ver_str) C Library Reference for FoxPro
-book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-book_bmroot=$(bmroot_lr3)
-book_src=clib_fox
+clib_fox_book_title=$(company) $(bld_ver_str) C Library Reference for FoxPro
+clib_fox_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
+clib_fox_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
+clib_fox_book_bmroot=$(bmroot_lr3)
+clib_fox_book_src=clib_fox
 
-!else ifeq hbook clib_nec
 # clib_nec
-book_title=$(company) $(bld_ver_str) C Library Reference Kanji Functions subset
-book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-book_bmroot=$(bmroot_lr3)
-book_src=clib_nec
+clib_nec_book_title=$(company) $(bld_ver_str) C Library Reference Kanji Functions subset
+clib_nec_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
+clib_nec_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
+clib_nec_book_bmroot=$(bmroot_lr3)
+clib_nec_book_src=clib_nec
 
-!else ifeq hbook clibnt
 # clibnt
-book_title=$(company) $(bld_ver_str) C Library Reference for Win32
-book_objs=$(objs_lr1) $(objs_lr2) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr2);$(incs_cmn)
-book_src=clib_nt
-book_multi_chapter=1
+clibnt_book_title=$(company) $(bld_ver_str) C Library Reference for Win32
+clibnt_book_objs=$(objs_lr1) $(objs_lr2) $(objs_cmn)
+clibnt_book_incs=$(incs_lr1);$(incs_lr2);$(incs_cmn)
+clibnt_book_src=clib_nt
+clibnt_book_multi_chapter=1
 
-!else ifeq hbook clibqnx
 # clibqnx
-book_title=$(company) $(bld_ver_str) C Library Reference for QNX
-book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-book_bmroot=$(bmroot_lr3)
-book_src=clib_qnx
-book_multi_chapter=1
+clibqnx_book_title=$(company) $(bld_ver_str) C Library Reference for QNX
+clibqnx_book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
+clibqnx_book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
+clibqnx_book_bmroot=$(bmroot_lr3)
+clibqnx_book_src=clib_qnx
+clibqnx_book_multi_chapter=1
 
-!else ifeq hbook clr
 # clr
-book_title=$(company) $(bld_ver_str) C Language Reference
-book_objs=$(objs_cl)
-book_incs=$(incs_cl)
-book_bmroot=$(bmroot_cl)
-book_src=c
-book_multi_chapter=1
+clr_book_title=$(company) $(bld_ver_str) C Language Reference
+clr_book_objs=$(objs_cl)
+clr_book_incs=$(incs_cl)
+clr_book_bmroot=$(bmroot_cl)
+clr_book_src=c
+clr_book_multi_chapter=1
 
-!else ifeq hbook clslib
 # clslib
-book_title=$(company) $(bld_ver_str) C++ Class Library Reference
-book_objs=$(objs_cpplib)
-book_incs=$(incs_cpplib)
-book_src=clslib
+clslib_book_title=$(company) $(bld_ver_str) C++ Class Library Reference
+clslib_book_objs=$(objs_cpplib)
+clslib_book_incs=$(incs_cpplib)
+clslib_book_src=clslib
 
-!else ifeq hbook cmix
 # cmix
-book_title=$(company) $(bld_ver_str) C/C++ Master Index
-book_objs=$(hlpmix_objs)
-book_incs=$(hlpmix_incs)
-book_src=cmix
+cmix_book_title=$(company) $(bld_ver_str) C/C++ Master Index
+cmix_book_objs=$(hlpmix_objs)
+cmix_book_incs=$(hlpmix_incs)
+cmix_book_src=cmix
 
-!else ifeq hbook cpplib
 # cpplib
-book_title=$(company) $(bld_ver_str) C++ Class Library Reference
-book_objs=$(objs_cpplib)
-book_incs=$(incs_cpplib)
-book_src=cpplib
-book_multi_chapter=1
+cpplib_book_title=$(company) $(bld_ver_str) C++ Class Library Reference
+cpplib_book_objs=$(objs_cpplib)
+cpplib_book_incs=$(incs_cpplib)
+cpplib_book_src=cpplib
+cpplib_book_multi_chapter=1
 
-!else ifeq hbook ctools
 # ctools
-book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
-book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
-book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
-book_bmroot=$(bmroot_cg)
-book_src=ctools
-book_multi_chapter=1
+ctools_book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
+ctools_book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
+ctools_book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
+ctools_book_bmroot=$(bmroot_cg)
+ctools_book_src=ctools
+ctools_book_multi_chapter=1
 
-!else ifeq hbook cw
 # cw
-book_title=CauseWay User's Guide
-book_objs=$(objs_cw) $(objs_cmn)
-book_incs=$(incs_cw);$(incs_cmn)
-book_src=cw
+cw_book_title=CauseWay User's Guide
+cw_book_objs=$(objs_cw) $(objs_cmn)
+cw_book_incs=$(incs_cw);$(incs_cmn)
+cw_book_src=cw
 
-!else ifeq hbook ddespy
 # ddespy
-book_title=$(company) $(bld_ver_str) DDE Spy
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+ddespy_book_title=$(company) $(bld_ver_str) DDE Spy
+ddespy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+ddespy_book_incs=$(incs_gui);$(incs_cg)
+ddespy_book_bmroot=$(bmroot_gui)
+ddespy_book_src=guitool
 
-!else ifeq hbook devguide
 # devguide
-book_title=$(company) $(bld_ver_str) Developer's Guide
-book_objs=$(objs_devguide) $(objs_cmn)
-book_incs=$(incs_devguide);$(incs_cmn)
-book_src=devguide
+devguide_book_title=$(company) $(bld_ver_str) Developer's Guide
+devguide_book_objs=$(objs_devguide) $(objs_cmn)
+devguide_book_incs=$(incs_devguide);$(incs_cmn)
+devguide_book_src=devguide
 
-!else ifeq hbook drnt
 # drnt
-book_title=Dr. Watcom $(bld_ver_str) NT
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+drnt_book_title=Dr. Watcom $(bld_ver_str) NT
+drnt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+drnt_book_incs=$(incs_gui);$(incs_cg)
+drnt_book_bmroot=$(bmroot_gui)
+drnt_book_src=guitool
 
-!else ifeq hbook drwatcom
 # drwatcom
-book_title=Dr. Watcom $(bld_ver_str)
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+drwatcom_book_title=Dr. Watcom $(bld_ver_str)
+drwatcom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+drwatcom_book_incs=$(incs_gui);$(incs_cg)
+drwatcom_book_bmroot=$(bmroot_gui)
+drwatcom_book_src=guitool
 
-!else ifeq hbook ebooks
 # ebooks
-book_title=$(company) $(bld_ver_str) Editor On-line Documentation
-book_objs=$(objs_gs_books)
-book_incs=$(incs_gs)
-book_bmroot=$(bmroot_gs)
-book_src=ebooks
+ebooks_book_title=$(company) $(bld_ver_str) Editor On-line Documentation
+ebooks_book_objs=$(objs_gs_books)
+ebooks_book_incs=$(incs_gs)
+ebooks_book_bmroot=$(bmroot_gs)
+ebooks_book_src=ebooks
 
-!else ifeq hbook editor
 # editor
-book_title=$(company) $(bld_ver_str) Editor
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
-book_multi_chapter=1
+editor_book_title=$(company) $(bld_ver_str) Editor
+editor_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+editor_book_incs=$(incs_gui);$(incs_cg)
+editor_book_bmroot=$(bmroot_gui)
+editor_book_src=guitool
+editor_book_multi_chapter=1
 
-!else ifeq hbook f_readme
 # f_readme
-book_title=$(company) $(bld_ver_str) FORTRAN 77 Getting Started
-book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp)
-book_objs_ps=$(objs_gs_readme_ps)
-book_incs=$(incs_gs)
-book_bmroot=$(bmroot_gs)
-book_src=f_readme
-book_multi_chapter=1
+f_readme_book_title=$(company) $(bld_ver_str) FORTRAN 77 Getting Started
+f_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp)
+f_readme_book_objs_ps=$(objs_gs_readme_ps)
+f_readme_book_incs=$(incs_gs)
+f_readme_book_bmroot=$(bmroot_gs)
+f_readme_book_src=f_readme
+f_readme_book_multi_chapter=1
 
-!else ifeq hbook f77graph
 # f77graph
-book_title=$(company) $(bld_ver_str) FORTRAN 77 Graphics Library Reference
-book_objs=$(objs_lr1) $(objs_lr3) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr3);$(incs_cmn)
-book_bmroot=$(bmroot_lr3)
-book_src=f77graph
-book_multi_chapter=1
+f77graph_book_title=$(company) $(bld_ver_str) FORTRAN 77 Graphics Library Reference
+f77graph_book_objs=$(objs_lr1) $(objs_lr3) $(objs_cmn)
+f77graph_book_incs=$(incs_lr1);$(incs_lr3);$(incs_cmn)
+f77graph_book_bmroot=$(bmroot_lr3)
+f77graph_book_src=f77graph
+f77graph_book_multi_chapter=1
 
-!else ifeq hbook f77lr
 # f77lr
-book_title=$(company) $(bld_ver_str) FORTRAN 77 Language Reference
-book_objs=$(objs_fl)
-book_incs=$(incs_fl)
-book_src=f77lr
-book_multi_chapter=1
+f77lr_book_title=$(company) $(bld_ver_str) FORTRAN 77 Language Reference
+f77lr_book_objs=$(objs_fl)
+f77lr_book_incs=$(incs_fl)
+f77lr_book_src=f77lr
+f77lr_book_multi_chapter=1
 
-!else ifeq hbook fbooks
 # fbooks
-book_title=$(company) $(bld_ver_str) FORTRAN 77 On-line Documentation
-book_objs=$(objs_gs_books)
-book_incs=$(incs_gs)
-book_bmroot=$(bmroot_gs)
-book_src=fbooks
+fbooks_book_title=$(company) $(bld_ver_str) FORTRAN 77 On-line Documentation
+fbooks_book_objs=$(objs_gs_books)
+fbooks_book_incs=$(incs_gs)
+fbooks_book_bmroot=$(bmroot_gs)
+fbooks_book_src=fbooks
 
-!else ifeq hbook fmix
 # fmix
-book_title=$(company) $(bld_ver_str) FORTRAN 77 Master Index
-book_objs=$(hlpmix_objs)
-book_incs=$(hlpmix_incs)
-book_src=fmix
+fmix_book_title=$(company) $(bld_ver_str) FORTRAN 77 Master Index
+fmix_book_objs=$(hlpmix_objs)
+fmix_book_incs=$(hlpmix_incs)
+fmix_book_src=fmix
 
-!else ifeq hbook fpguide
 # fpguide
-book_title=$(company) $(bld_ver_str) FORTRAN 77 Programmer's Guide
-book_objs=$(objs_pg) $(objs_cmn) $(objs_fg) $(objs_rsi) $(objs_win386) $(objs_lr1)
-book_incs=$(incs_pg);$(incs_cmn);$(incs_fg);$(incs_rsi);$(incs_win386);$(incs_lr1);
-book_bmroot=$(bmroot_pg)
-book_src=fpguide
-book_multi_chapter=1
+fpguide_book_title=$(company) $(bld_ver_str) FORTRAN 77 Programmer's Guide
+fpguide_book_objs=$(objs_pg) $(objs_cmn) $(objs_fg) $(objs_rsi) $(objs_win386) $(objs_lr1)
+fpguide_book_incs=$(incs_pg);$(incs_cmn);$(incs_fg);$(incs_rsi);$(incs_win386);$(incs_lr1);
+fpguide_book_bmroot=$(bmroot_pg)
+fpguide_book_src=fpguide
+fpguide_book_multi_chapter=1
 
-!else ifeq hbook ftools
 # ftools
-book_title=$(company) $(bld_ver_str) FORTRAN 77 Tools User's Guide
-book_objs=$(objs_cmn) $(objs_lg) $(objs_fg)
-book_incs=$(incs_cmn);$(incs_lg);$(incs_fg)
-book_bmroot=$(bmroot_fg)
-book_src=ftools
-book_multi_chapter=1
+ftools_book_title=$(company) $(bld_ver_str) FORTRAN 77 Tools User's Guide
+ftools_book_objs=$(objs_cmn) $(objs_lg) $(objs_fg)
+ftools_book_incs=$(incs_cmn);$(incs_lg);$(incs_fg)
+ftools_book_bmroot=$(bmroot_fg)
+ftools_book_src=ftools
+ftools_book_multi_chapter=1
 
-!else ifeq hbook fuguide
 # fuguide
-book_title=$(company) $(bld_ver_str) FORTRAN 77 User's Guide
-book_objs=$(objs_fg) $(objs_wfc) $(objs_lg) $(objs_cmn)
-book_incs=$(incs_fg);$(incs_wfc);$(incs_lg);$(incs_cmn)
-book_bmroot=$(bmroot_fg)
-book_src=fuguide
-book_multi_chapter=1
+fuguide_book_title=$(company) $(bld_ver_str) FORTRAN 77 User's Guide
+fuguide_book_objs=$(objs_fg) $(objs_wfc) $(objs_lg) $(objs_cmn)
+fuguide_book_incs=$(incs_fg);$(incs_wfc);$(incs_lg);$(incs_cmn)
+fuguide_book_bmroot=$(bmroot_fg)
+fuguide_book_src=fuguide
+fuguide_book_multi_chapter=1
 
-!else ifeq hbook guitool
 # guitool
-book_title=$(company) $(bld_ver_str) Graphical Tools User's Guide
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_objs_ps=$(objs_gui_ps)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+guitool_book_title=$(company) $(bld_ver_str) Graphical Tools User's Guide
+guitool_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+guitool_book_objs_ps=$(objs_gui_ps)
+guitool_book_incs=$(incs_gui);$(incs_cg)
+guitool_book_bmroot=$(bmroot_gui)
+guitool_book_src=guitool
 
-!else ifeq hbook heapwalk
 # heapwalk
-book_title=$(company) $(bld_ver_str) Heap Walker
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+heapwalk_book_title=$(company) $(bld_ver_str) Heap Walker
+heapwalk_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+heapwalk_book_incs=$(incs_gui);$(incs_cg)
+heapwalk_book_bmroot=$(bmroot_gui)
+heapwalk_book_src=guitool
 
-!else ifeq hbook ide
 # ide
-book_title=$(company) $(bld_ver_str) IDE
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_objs_ps=$(objs_gui_ps)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
-!define book_os2_help
+ide_book_title=$(company) $(bld_ver_str) IDE
+ide_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+ide_book_objs_ps=$(objs_gui_ps)
+ide_book_incs=$(incs_gui);$(incs_cg)
+ide_book_bmroot=$(bmroot_gui)
+ide_book_src=guitool
+ide_book_os2_help=1
 
-!else ifeq hbook lguide
 # lguide
-book_title=$(company) $(bld_ver_str) Linker Guide
-book_objs=$(objs_lg)
-book_incs=$(incs_lg)
-book_src=lguide
-book_multi_chapter=1
+lguide_book_title=$(company) $(bld_ver_str) Linker Guide
+lguide_book_objs=$(objs_lg)
+lguide_book_incs=$(incs_lg)
+lguide_book_src=lguide
+lguide_book_multi_chapter=1
 
-!else ifeq hbook owstl
 # owstldg
-book_title=$(company) $(bld_ver_str) OWSTL developer guide
-book_objs=$(objs_owstldev)
-book_incs=$(incs_owstldev)
-book_src=owstl
+owstl_book_title=$(company) $(bld_ver_str) OWSTL developer guide
+owstl_book_objs=$(objs_owstldev)
+owstl_book_incs=$(incs_owstldev)
+owstl_book_src=owstl
 
-!else ifeq hbook pguide
 # pguide
-book_title=$(company) $(bld_ver_str) C/C++ Programmer's Guide
-book_objs=$(objs_pg) $(objs_cmn) $(objs_cg) $(objs_rsi) $(objs_win386) $(objs_lr1)
-book_incs=$(incs_pg);$(incs_cmn);$(incs_cg);$(incs_rsi);$(incs_win386);$(incs_lr1);
-book_bmroot=$(bmroot_pg)
-book_src=pguide
-book_multi_chapter=1
+pguide_book_title=$(company) $(bld_ver_str) C/C++ Programmer's Guide
+pguide_book_objs=$(objs_pg) $(objs_cmn) $(objs_cg) $(objs_rsi) $(objs_win386) $(objs_lr1)
+pguide_book_incs=$(incs_pg);$(incs_cmn);$(incs_cg);$(incs_rsi);$(incs_win386);$(incs_lr1);
+pguide_book_bmroot=$(bmroot_pg)
+pguide_book_src=pguide
+pguide_book_multi_chapter=1
 
-!else ifeq hbook resacc
 # resacc
-book_title=$(company) $(bld_ver_str) Accelerator Editor
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+resacc_book_title=$(company) $(bld_ver_str) Accelerator Editor
+resacc_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resacc_book_incs=$(incs_gui);$(incs_cg)
+resacc_book_bmroot=$(bmroot_gui)
+resacc_book_src=guitool
 
-!else ifeq hbook rescomp
 # rescomp
-book_title=$(company) $(bld_ver_str) Resource Compiler
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+rescomp_book_title=$(company) $(bld_ver_str) Resource Compiler
+rescomp_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+rescomp_book_incs=$(incs_gui);$(incs_cg)
+rescomp_book_bmroot=$(bmroot_gui)
+rescomp_book_src=guitool
 
-!else ifeq hbook resdlg
 # resdlg
-book_title=$(company) $(bld_ver_str) Dialog Editor
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+resdlg_book_title=$(company) $(bld_ver_str) Dialog Editor
+resdlg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resdlg_book_incs=$(incs_gui);$(incs_cg)
+resdlg_book_bmroot=$(bmroot_gui)
+resdlg_book_src=guitool
 
-!else ifeq hbook resedt
 # resedt
-book_title=$(company) $(bld_ver_str) Resource Editor
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+resedt_book_title=$(company) $(bld_ver_str) Resource Editor
+resedt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resedt_book_incs=$(incs_gui);$(incs_cg)
+resedt_book_bmroot=$(bmroot_gui)
+resedt_book_src=guitool
 
-!else ifeq hbook resimg
 # resimg
-book_title=$(company) $(bld_ver_str) Image Editor
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+resimg_book_title=$(company) $(bld_ver_str) Image Editor
+resimg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resimg_book_incs=$(incs_gui);$(incs_cg)
+resimg_book_bmroot=$(bmroot_gui)
+resimg_book_src=guitool
 
-!else ifeq hbook resmnu
 # resmnu
-book_title=$(company) $(bld_ver_str) Menu Editor
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+resmnu_book_title=$(company) $(bld_ver_str) Menu Editor
+resmnu_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resmnu_book_incs=$(incs_gui);$(incs_cg)
+resmnu_book_bmroot=$(bmroot_gui)
+resmnu_book_src=guitool
 
-!else ifeq hbook resstr
 # resstr
-book_title=$(company) $(bld_ver_str) String Table Editor
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+resstr_book_title=$(company) $(bld_ver_str) String Table Editor
+resstr_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resstr_book_incs=$(incs_gui);$(incs_cg)
+resstr_book_bmroot=$(bmroot_gui)
+resstr_book_src=guitool
 
-!else ifeq hbook spy
 # spy
-book_title=$(company) $(bld_ver_str) Spy
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+spy_book_title=$(company) $(bld_ver_str) Spy
+spy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+spy_book_incs=$(incs_gui);$(incs_cg)
+spy_book_bmroot=$(bmroot_gui)
+spy_book_src=guitool
 
-!else ifeq hbook wasaxp
 # wasaxp
-book_title=wasaxp $(bld_ver_str)
-book_objs=$(objs_cmn)
-book_incs=$(incs_cmn)
-book_src=wasaxp
+wasaxp_book_title=wasaxp $(bld_ver_str)
+wasaxp_book_objs=$(objs_cmn)
+wasaxp_book_incs=$(incs_cmn)
+wasaxp_book_src=wasaxp
 
-!else ifeq hbook wbrw
 # wbrw
-book_title=$(company) $(bld_ver_str) Source Browser
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
-!define book_os2_help
+wbrw_book_title=$(company) $(bld_ver_str) Source Browser
+wbrw_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+wbrw_book_incs=$(incs_gui);$(incs_cg)
+wbrw_book_bmroot=$(bmroot_gui)
+wbrw_book_src=guitool
+wbrw_book_os2_help=1
 
-!else ifeq hbook wccerrs
 # wccerrs
-book_title=$(company) $(bld_ver_str) C Diagnostic Messages
-book_objs=$(objs_cg) $(objs_plusplus) $(objs_cc)
-book_incs=$(incs_cg);$(incs_plusplus);$(incs_cc)
-book_bmroot=$(bmroot_cg)
-book_src=wccerrs
-!define book_os2_help
+wccerrs_book_title=$(company) $(bld_ver_str) C Diagnostic Messages
+wccerrs_book_objs=$(objs_cg) $(objs_plusplus) $(objs_cc)
+wccerrs_book_incs=$(incs_cg);$(incs_plusplus);$(incs_cc)
+wccerrs_book_bmroot=$(bmroot_cg)
+wccerrs_book_src=wccerrs
+wccerrs_book_os2_help=1
 
-!else ifeq hbook wd
 # wd
-book_title=$(company) $(bld_ver_str) Debugger Guide
-book_objs=$(objs_wd)
-book_objs_ps=$(objs_wd_ps)
-book_incs=$(incs_wd)
-book_bmroot=$(bmroot_wd)
-book_src=wdbg
-book_multi_chapter=1
-!define book_os2_help
+wd_book_title=$(company) $(bld_ver_str) Debugger Guide
+wd_book_objs=$(objs_wd)
+wd_book_objs_ps=$(objs_wd_ps)
+wd_book_incs=$(incs_wd)
+wd_book_bmroot=$(bmroot_wd)
+wd_book_src=wdbg
+wd_book_multi_chapter=1
+wd_book_os2_help=1
 
-!else ifeq hbook wfcerrs
 # wfcerrs
-book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
-book_objs=$(objs_fg) $(objs_wfc)
-book_incs=$(incs_fg);$(incs_wfc)
-book_bmroot=$(bmroot_fg)
-book_src=wfcerrs
-!define book_os2_help
+wfcerrs_book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
+wfcerrs_book_objs=$(objs_fg) $(objs_wfc)
+wfcerrs_book_incs=$(incs_fg);$(incs_wfc)
+wfcerrs_book_bmroot=$(bmroot_fg)
+wfcerrs_book_src=wfcerrs
+wfcerrs_book_os2_help=1
 
-!else ifeq hbook wjcerrs
 # wjcerrs
-book_title=Sybase Java Compiler Diagnostic Messages
-book_objs=$(objs_cl)
-book_incs=$(incs_cl)
-book_bmroot=$(bmroot_cl)
-book_src=wjcerrs
-!define book_os2_help
+wjcerrs_book_title=Sybase Java Compiler Diagnostic Messages
+wjcerrs_book_objs=$(objs_cl)
+wjcerrs_book_incs=$(incs_cl)
+wjcerrs_book_bmroot=$(bmroot_cl)
+wjcerrs_book_src=wjcerrs
+wjcerrs_book_os2_help=1
 
-!else ifeq hbook wlnkerrs
 # wlnkerrs
-book_title=$(company) $(bld_ver_str) Linker Diagnostic Messages
-book_objs=$(objs_lg)
-book_incs=$(incs_lg)
-book_src=wlinkerr
-!define book_os2_help
+wlnkerrs_book_title=$(company) $(bld_ver_str) Linker Diagnostic Messages
+wlnkerrs_book_objs=$(objs_lg)
+wlnkerrs_book_incs=$(incs_lg)
+wlnkerrs_book_src=wlinkerr
+wlnkerrs_book_os2_help=1
 
-!else ifeq hbook wpperrs
 # wpperrs
-book_title=$(company) $(bld_ver_str) C++ Diagnostic Messages
-book_objs=$(objs_cg) $(objs_plusplus)
-book_incs=$(incs_cg);$(incs_plusplus)
-book_bmroot=$(bmroot_cg)
-book_src=wpperrs
-!define book_os2_help
+wpperrs_book_title=$(company) $(bld_ver_str) C++ Diagnostic Messages
+wpperrs_book_objs=$(objs_cg) $(objs_plusplus)
+wpperrs_book_incs=$(incs_cg);$(incs_plusplus)
+wpperrs_book_bmroot=$(bmroot_cg)
+wpperrs_book_src=wpperrs
+wpperrs_book_os2_help=1
 
-!else ifeq hbook wprof
 # wprof
-book_title=$(company) $(bld_ver_str) Profiler
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
-book_multi_chapter=1
-!define book_os2_help
+wprof_book_title=$(company) $(bld_ver_str) Profiler
+wprof_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+wprof_book_incs=$(incs_gui);$(incs_cg)
+wprof_book_bmroot=$(bmroot_gui)
+wprof_book_src=guitool
+wprof_book_multi_chapter=1
+wprof_book_os2_help=1
 
-!else ifeq hbook wrcerrs
 # wrcerrs
-book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messages
-book_objs=$(objs_gui) $(objs_gui_bmp)
-book_incs=$(incs_gui)
-book_bmroot=$(bmroot_gui)
-book_src=rcerrs
-!define book_os2_help
+wrcerrs_book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messages
+wrcerrs_book_objs=$(objs_gui) $(objs_gui_bmp)
+wrcerrs_book_incs=$(incs_gui)
+wrcerrs_book_bmroot=$(bmroot_gui)
+wrcerrs_book_src=rcerrs
+wrcerrs_book_os2_help=1
 
-!else ifeq hbook zoom
 # zoom
-book_title=$(company) $(bld_ver_str) Zoom
-book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-book_incs=$(incs_gui);$(incs_cg)
-book_bmroot=$(bmroot_gui)
-book_src=guitool
+zoom_book_title=$(company) $(bld_ver_str) Zoom
+zoom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+zoom_book_incs=$(incs_gui);$(incs_cg)
+zoom_book_bmroot=$(bmroot_gui)
+zoom_book_src=guitool
 
-!else ifeq hbook cgdoc
 # cgdoc
-book_title=$(company) $(bld_ver_str) Code Generator
-book_objs=$(objs_cgdoc)
-book_incs=$(incs_cgdoc)
-book_src=cgdoc
+cgdoc_book_title=$(company) $(bld_ver_str) Code Generator
+cgdoc_book_objs=$(objs_cgdoc)
+cgdoc_book_incs=$(incs_cgdoc)
+cgdoc_book_src=cgdoc
 
-!else ifeq hbook dwdoc
 # dwdoc
-book_title=$(company) $(bld_ver_str) DWARF Writer
-book_objs=$(objs_dwdoc)
-book_incs=$(incs_dwdoc)
-book_src=dwdoc
+dwdoc_book_title=$(company) $(bld_ver_str) DWARF Writer
+dwdoc_book_objs=$(objs_dwdoc)
+dwdoc_book_incs=$(incs_dwdoc)
+dwdoc_book_src=dwdoc
 
-!else ifeq hbook wddoc
 # wddoc
-book_title=$(company) $(bld_ver_str) Debugger Developers Guide
-book_objs=$(objs_wddoc)
-book_incs=$(incs_wddoc)
-book_src=wddoc
-book_multi_chapter=1
+wddoc_book_title=$(company) $(bld_ver_str) Debugger Developers Guide
+wddoc_book_objs=$(objs_wddoc)
+wddoc_book_incs=$(incs_wddoc)
+wddoc_book_src=wddoc
+wddoc_book_multi_chapter=1
 
-!else ifeq hbook vi
 # vi
-book_title=$(company) $(bld_ver_str) VI Editor
-book_objs=$(objs_vi) $(objs_vi_bmp)
-book_objs_ps=$(objs_vi_ps)
-book_incs=$(incs_vi)
-book_bmroot=$(bmroot_vi)
-book_src=vi
-book_multi_chapter=1
+vi_book_title=$(company) $(bld_ver_str) VI Editor
+vi_book_objs=$(objs_vi) $(objs_vi_bmp)
+vi_book_objs_ps=$(objs_vi_ps)
+vi_book_incs=$(incs_vi)
+vi_book_bmroot=$(bmroot_vi)
+vi_book_src=vi
+vi_book_multi_chapter=1
 
-!else ifeq hbook wgmlref
 # wgmlref
-book_title=WGML Reference Manual
-book_objs=$(objs_wgmlref) $(objs_wgmlref_bmp)
-book_objs_ps=$(objs_wgmlref_ps)
-book_incs=$(incs_wgmlref)
-book_bmroot=$(bmroot_wgmlref)
-book_src=rfman
-book_multi_chapter=1
+wgmlref_book_title=WGML Reference Manual
+wgmlref_book_objs=$(objs_wgmlref) $(objs_wgmlref_bmp)
+wgmlref_book_objs_ps=$(objs_wgmlref_ps)
+wgmlref_book_incs=$(incs_wgmlref)
+wgmlref_book_bmroot=$(bmroot_wgmlref)
+wgmlref_book_src=rfman
+wgmlref_book_multi_chapter=1
 
-!else ifeq hbook wipfc
 # wipfc
-book_title=OS/2 Help Compiler Reference Manual
-book_objs=$(objs_wipfc)
-book_incs=$(incs_wipfc)
-book_src=wipfc
-book_multi_chapter=1
+wipfc_book_title=OS/2 Help Compiler Reference Manual
+wipfc_book_objs=$(objs_wipfc)
+wipfc_book_incs=$(incs_wipfc)
+wipfc_book_src=wipfc
+wipfc_book_multi_chapter=1
 
-!else ifeq hbook freadme
+# freadme
 
-!else ifeq hbook readme
+# readme
 
-!else ifeq hbook wpidoc
 # wpidoc
-book_title=$(company) $(bld_ver_str) WATCOM Windows Programming Interface (WPI)
-book_objs=$(objs_wpidoc)
-book_incs=$(incs_wpidoc)
-book_src=wpidoc
+wpidoc_book_title=$(company) $(bld_ver_str) WATCOM Windows Programming Interface (WPI)
+wpidoc_book_objs=$(objs_wpidoc)
+wpidoc_book_incs=$(incs_wpidoc)
+wpidoc_book_src=wpidoc
 
-!else ifeq hbook fmedidoc
 # fmedidoc
-book_title=$(company) $(bld_ver_str) WATCOM Forms Editor Application Interface
-book_objs=$(objs_fmedidoc)
-book_incs=$(incs_fmedidoc)
-book_src=fmedidoc
-
-!else
-
-!error $(hbook) is Undefined $(company) documentation book
-
-!endif
-
-books=$(hbook)
-
-!endif
+fmedidoc_book_title=$(company) $(bld_ver_str) WATCOM Forms Editor Application Interface
+fmedidoc_book_objs=$(objs_fmedidoc)
+fmedidoc_book_incs=$(incs_fmedidoc)
+fmedidoc_book_src=fmedidoc
