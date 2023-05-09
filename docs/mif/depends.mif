@@ -553,6 +553,7 @@ bmroot_gui = ../doc/gui/snaps
 incs_gui = ../doc/gui;../doc/gui/snaps
 objs_gui = &
 ../doc/gui/guitool.gml &
+../doc/gui/prof.gml &
 ../doc/gui/rcerrs.gml &
 ../doc/gui/wedref.gml &
 ../doc/gui/wedregx.gml &
@@ -573,7 +574,6 @@ objs_gui = &
 ../doc/gui/wguistrg.gml &
 ../doc/gui/wguiwide.gml &
 ../doc/gui/wguizoom.gml &
-../doc/gui/wprof.gml &
 ../doc/gui/wrc.gml &
 ../doc/gui/wrcerrs.gml &
 ../doc/gui/wrcmacs.gml &
