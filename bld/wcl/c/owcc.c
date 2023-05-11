@@ -918,9 +918,9 @@ static  int  ParseArgs( int argc, char **argv )
         case 'b':
             Flags.link_for_sys = true;
             MemFree( SystemName );
-            SystemName = MemStrDup( Word );
-            /* if Word found in specs.owc, add options from there: */
-            if( ConsultSpecsFile( Word ) ) {
+            SystemName = MemStrDup( Word[0] == '=' ? (Word + 1) : Word );
+            /* if new target found in specs.owc, add options from there: */
+            if( ConsultSpecsFile( SystemName ) ) {
                 /* all set */
                 wcc_option = false;
             } else {
