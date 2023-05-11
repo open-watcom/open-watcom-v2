@@ -224,13 +224,13 @@ $(hbook).hpj : $(proj_objs)
     @%make compile_hpj_nt
 
 !ifeq hbook cbooks
-$(hbook).cnt : ../doc/gs/$(hbook).cnt
+$(hbook).cnt : $(root_gs)/$(hbook).cnt
     awk -f ../makecnt1.awk $[@ > $@
 !else ifeq hbook ebooks
-$(hbook).cnt : ../doc/gs/$(hbook).cnt
+$(hbook).cnt : $(root_gs)/$(hbook).cnt
     awk -f ../makecnt1.awk $[@ > $@
 !else ifeq hbook fbooks
-$(hbook).cnt : ../doc/gs/$(hbook).cnt
+$(hbook).cnt : $(root_gs)/$(hbook).cnt
     awk -f ../makecnt1.awk $[@ > $@
 !else
 $(hbook).cnt : $(hbook).cn1
@@ -380,8 +380,8 @@ $(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 
 .EXTENSIONS: .ps .bmp
 
-$(hbook).ps : $(cop_files) $($(hbook)_book_objs) $($(hbook)_book_objs_ps) $(proj_objs)
-    $(noecho)set OWGMLINC=.;$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
+$(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+    $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
     @%make echo_wgml
     -$(noecho)$(WGMLCMD)
@@ -511,7 +511,7 @@ prepare_whpcvt_opts : .PROCEDURE
 #
 ####################################################
 wgml_optfile_1_cpplib   = @%append $(wgml_optfile) ( setsymbol target DOS
-wgml_optfile_1_guitool  = @%append $(wgml_optfile) ( setsymbol allinone 1
+wgml_optfile_1_guitools = @%append $(wgml_optfile) ( setsymbol allinone 1
 
 wgml_optfile_2_f77lr    = nbpsshad.opt
 wgml_optfile_2_clr      = nbpsshad.opt
@@ -521,7 +521,7 @@ wgml_optfile_2          = nb7x9ps.opt
 wgml_optfile_3_c_readme = 3
 wgml_optfile_3_cguide   = 3
 wgml_optfile_3_cguideq  = 3
-wgml_optfile_3_guitool  = 3
+wgml_optfile_3_guitools = 3
 wgml_optfile_3_wd       = 3
 wgml_optfile_3_wddoc    = 3
 wgml_optfile_3_lguide   = 3
@@ -634,7 +634,7 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.idx @%create $*.idx
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
-    $(noecho)set OWGMLINC=.;$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
+    $(noecho)set OWGMLINC=.;$(root_books);$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
     @%make prepare_wgml_opts
     @%make echo_wgml
     -$(noecho)$(WGMLCMD)

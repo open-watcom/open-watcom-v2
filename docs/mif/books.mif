@@ -32,7 +32,7 @@
 !inject fpguide$(e)     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject ftools$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject fuguide$(e)     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject guitool$(e)                             pdf  ps  html  wikihtml  wikipdf
+!inject guitools$(e)                            pdf  ps  html  wikihtml  wikipdf
 !inject heapwalk$(e)         win  chm  nt                html
 !inject ide$(e)              win  chm  nt  os2           html
 !inject lguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
@@ -115,8 +115,11 @@ foo_book_incs=$(incs_cmn)
 
 # c_readme
 c_readme_book_title=$(company) $(bld_ver_str) C/C++ Getting Started
+!ifeq wgml_target ps
+c_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_ps) $(objs_cg)
+!else
 c_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp) $(objs_cg)
-c_readme_book_objs_ps=$(objs_gs_readme_ps)
+!endif
 c_readme_book_incs=$(incs_gs);$(incs_cg)
 c_readme_book_bmroot=$(bmroot_gs)
 c_readme_book_multi_chapter=1
@@ -253,8 +256,11 @@ editor_book_multi_chapter=1
 
 # f_readme
 f_readme_book_title=$(company) $(bld_ver_str) FORTRAN 77 Getting Started
+!ifeq wgml_target ps
+f_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_ps)
+!else
 f_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp)
-f_readme_book_objs_ps=$(objs_gs_readme_ps)
+!endif
 f_readme_book_incs=$(incs_gs)
 f_readme_book_bmroot=$(bmroot_gs)
 f_readme_book_multi_chapter=1
@@ -304,12 +310,15 @@ fuguide_book_incs=$(incs_fg);$(incs_wfc);$(incs_lg);$(incs_cmn)
 fuguide_book_bmroot=$(bmroot_fg)
 fuguide_book_multi_chapter=1
 
-# guitool
-guitool_book_title=$(company) $(bld_ver_str) Graphical Tools User's Guide
-guitool_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-guitool_book_objs_ps=$(objs_gui_ps)
-guitool_book_incs=$(incs_gui);$(incs_cg)
-guitool_book_bmroot=$(bmroot_gui)
+# guitools
+guitools_book_title=$(company) $(bld_ver_str) Graphical Tools User's Guide
+!ifeq wgml_target ps
+guitools_book_objs=$(objs_gui) $(objs_gui_ps) $(objs_cg)
+!else
+guitools_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+!endif
+guitools_book_incs=$(incs_gui);$(incs_cg)
+guitools_book_bmroot=$(bmroot_gui)
 
 # heapwalk
 heapwalk_book_title=$(company) $(bld_ver_str) Heap Walker
@@ -319,8 +328,11 @@ heapwalk_book_bmroot=$(bmroot_gui)
 
 # ide
 ide_book_title=$(company) $(bld_ver_str) IDE
+!ifeq wgml_target ps
+ide_book_objs=$(objs_gui) $(objs_gui_ps) $(objs_cg)
+!else
 ide_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
-ide_book_objs_ps=$(objs_gui_ps)
+!endif
 ide_book_incs=$(incs_gui);$(incs_cg)
 ide_book_bmroot=$(bmroot_gui)
 ide_book_os2_help=1
@@ -412,8 +424,11 @@ wccerrs_book_os2_help=1
 
 # wd
 wd_book_title=$(company) $(bld_ver_str) Debugger Guide
-wd_book_objs=$(objs_wd)
-wd_book_objs_ps=$(objs_wd_ps)
+!ifeq wgml_target ps
+wd_book_objs=$(objs_wd) $(objs_wd_ps)
+!else
+wd_book_objs=$(objs_wd) $(objs_wd_bmp)
+!endif
 wd_book_incs=$(incs_wd)
 wd_book_bmroot=$(bmroot_wd)
 wd_book_multi_chapter=1
@@ -485,16 +500,22 @@ wddoc_book_multi_chapter=1
 
 # vi
 vi_book_title=$(company) $(bld_ver_str) VI Editor
+!ifeq wgml_target ps
+vi_book_objs=$(objs_vi) $(objs_vi_ps)
+!else
 vi_book_objs=$(objs_vi) $(objs_vi_bmp)
-vi_book_objs_ps=$(objs_vi_ps)
+!endif
 vi_book_incs=$(incs_vi)
 vi_book_bmroot=$(bmroot_vi)
 vi_book_multi_chapter=1
 
 # wgmlref
 wgmlref_book_title=WGML Reference Manual
+!ifeq wgml_target ps
+wgmlref_book_objs=$(objs_wgmlref) $(objs_wgmlref_ps)
+!else
 wgmlref_book_objs=$(objs_wgmlref) $(objs_wgmlref_bmp)
-wgmlref_book_objs_ps=$(objs_wgmlref_ps)
+!endif
 wgmlref_book_incs=$(incs_wgmlref)
 wgmlref_book_bmroot=$(bmroot_wgmlref)
 wgmlref_book_multi_chapter=1

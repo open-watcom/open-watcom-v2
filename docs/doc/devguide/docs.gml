@@ -78,7 +78,7 @@ f_readme    F77 Read Me First
 fpguide     F77 Programmer's Guide
 ftools      F77 Tools User's Guide
 fuguide     F77 User's Guide
-guitool     Graphical Tools User's Guide
+guitools    Graphical Tools User's Guide
 ide         IDE User's Guide
 lguide      Linker User's Guide
 pguide      C/C++ Programmer's Guide
