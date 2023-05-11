@@ -3102,8 +3102,7 @@ $(root_wgmlref)/rftuscr.gml &
 $(root_wgmlref)/rftustrt.gml &
 $(root_wgmlref)/rftustru.gml &
 $(root_wgmlref)/rftut.gml &
-$(root_wgmlref)/rftuxmp.gml &
-$(root_wgmlref)/wgmlref.gml
+$(root_wgmlref)/rftuxmp.gml
 objs_wgmlref_bmp = &
 $(bmroot_wgmlref)/frconf.bmp &
 $(bmroot_wgmlref)/frdev.bmp &
