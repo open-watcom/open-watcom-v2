@@ -40,8 +40,9 @@ clean : .procedure
 
  @if exist *.ch? rm -f *.ch?
 
- @if exist tmp rm -rf tmp
-
+!ifdef dirs
+ @rm -rf $(dirs)
+!endif
 !ifeq dotarget chm
  @for %f in ($(books)) do @if exist %f rm -rf %f
 !endif

@@ -78,6 +78,10 @@ docset = $(dotarget)
 !error $$(docset) value is not known. Please consult books.mif file for configured values.
 !endif
 
+tmpdir     = tmp
+wikidir    = ..\wiki
+root_books = ../doc/books
+
 #
 # wgml targets
 #
@@ -89,15 +93,11 @@ wgml_target = html
 wgml_target = $(dotarget)
 !endif
 
-!ifndef hbook
-
+!ifdef hbook
+books=$(hbook)
+!else
 e=
 books=$+$($(docset))$-
-
-!else
-
-books=$(hbook)
-
 !endif
 
 #############################################################

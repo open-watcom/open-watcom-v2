@@ -18,7 +18,7 @@ lowercase = %ren
 !include ../mif/depends.mif
 !include ../mif/books.mif
 
-wgml_cmdl_params = $(hbook) ( file $(wgml_optfile)
+wgml_cmdl_params = $^& ( file $(wgml_optfile)
 gendev_cmdl_params = $[@
 
 !include wgmlcmd.mif
@@ -176,8 +176,27 @@ proj_objs= &
 #    ../builder.ctl &
 #    makefile
 
-all : $(dep_$(dotarget)) .SYMBOLIC
+!ifeq wgml_target ps
+dirs = $(tmpdir)
+!ifeq dotarget pdf
+!ifeq docset wikipdf
+    mkdir $(wikidir)
+!endif
+!endif
+!endif
+!ifeq wgml_target html
+!ifeq docset wikihtml
+    mkdir $(wikidir)
+!endif
+!endif
+
+all : $(dirs) $(dep_$(dotarget)) .SYMBOLIC
     @%null
+
+!ifdef dirs
+$(dirs):
+    mkdir $@
+!endif
 
 ####################################################
 #
@@ -193,12 +212,12 @@ $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
     # this lowercase help file name in wine
-    @%append $(wine_hc_batch) ren $(hbook).hlp xxxxxxxx.tmp
-    @%append $(wine_hc_batch) ren xxxxxxxx.tmp $(hbook).hlp
+    @%append $(wine_hc_batch) ren $@ xxxxxxxx.tmp
+    @%append $(wine_hc_batch) ren xxxxxxxx.tmp $@
     wine cmd /c $(wine_hc_batch)
 !else
     $(hc_nt) -xn $*.hpj
-    $(lowercase) $@ $@	    # change file name to lower case
+    $(lowercase) $@ $@    # change file name to lower case
 !endif
 
 $(hbook).hpj : $(proj_objs)
@@ -206,16 +225,16 @@ $(hbook).hpj : $(proj_objs)
 
 !ifeq hbook cbooks
 $(hbook).cnt : ../doc/gs/$(hbook).cnt
-    awk -f ../makecnt1.awk $[@ > $(hbook).cnt
+    awk -f ../makecnt1.awk $[@ > $@
 !else ifeq hbook ebooks
 $(hbook).cnt : ../doc/gs/$(hbook).cnt
-    awk -f ../makecnt1.awk $[@ > $(hbook).cnt
+    awk -f ../makecnt1.awk $[@ > $@
 !else ifeq hbook fbooks
 $(hbook).cnt : ../doc/gs/$(hbook).cnt
-    awk -f ../makecnt1.awk $[@ > $(hbook).cnt
+    awk -f ../makecnt1.awk $[@ > $@
 !else
 $(hbook).cnt : $(hbook).cn1
-    awk -f ../makecnt2.awk -v file=$(hbook).hlp -v title="$($(hbook)_book_title)" -v multi=$($(hbook)_book_multi_chapter) $[@ > $(hbook).cnt
+    awk -f ../makecnt2.awk -v file=$^&.hlp -v title="$($^&_book_title)" -v multi=$($^&_book_multi_chapter) $[@ > $@
 !endif
 
 $(hbook).rtf $(hbook).cn1 $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
@@ -231,7 +250,7 @@ $(hbook).rtf $(hbook).cn1 $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book
 .EXTENSIONS: .hlp .hpj .rtf
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh
-    $(whc) $(hbook).hpj
+    $(whc) $[@
 
 $(hbook).hpj : $(proj_objs)
     @%make compile_hpj_win
@@ -249,7 +268,7 @@ $(hbook).rtf $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book_objs) $(proj
 .EXTENSIONS: .ihp .ib
 
 $(hbook).ihp : $(hbook).ib
-    $(hcdos) -h 25 -w 80 $(hbook).ib $(hbook).ihp
+    $(hcdos) -h 25 -w 80 $[@ $@
 
 $(hbook).ib $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
@@ -272,32 +291,32 @@ $(hbook).ib $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 .EXTENSIONS: .chm
 
 $(hbook).chm : $(hbook).htm $(hbook).gh
-    @if not exist $(hbook) mkdir $(hbook)
-!ifdef $(hbook)_book_bmroot
-    @for %f in ($($(hbook)_book_bmroot)/*.bmp) do $(noecho)copy %f $(hbook)
+    @if not exist $^& mkdir $^&
+!ifdef $^&_book_bmroot
+    @for %f in ($($^&_book_bmroot)/*.bmp) do $(noecho)copy %f $^&
 !endif
-    copy $(hbook).gh $(hbook)/$(hbook).gh
-    awk -f ../splithtm.awk -v dir=$(hbook) $(hbook).htm
-    awk -f ../makehha.awk $(hbook).htm >$(hbook)/$(hbook).hha
-    awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
-    awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
-    awk -f ../makehhp.awk -v hbook=$(hbook) $(hbook).htm >$(hbook)/$(hbook).hhp
+    copy $^&.gh $^&/$^&.gh
+    awk -f ../splithtm.awk -v dir=$^& $^&.htm
+    awk -f ../makehha.awk $^&.htm >$^&/$^&.hha
+    awk -f ../makehhc.awk $^&.htm >$^&/$^&.hhc
+    awk -f ../makehhk.awk $^&.mix >$^&/$^&.hhk
+    awk -f ../makehhp.awk -v book=$^& $^&.htm >$^&/$^&.hhp
 !ifdef %OWCHMCMD
-    cd $(hbook)
-    -$(hc_chmcmd) --no-html-scan $(hbook).hhp
+    cd $^&
+    -$(hc_chmcmd) --no-html-scan $^&.hhp
 !ifeq bld_os linux
-    -chmod +rw $(hbook).chm
+    -chmod +rw $@
 !endif
     cd ..
-    copy $(hbook)/$(hbook).chm $(hbook).chm
+    copy $^&/$^&.chm $@
 !else ifeq bld_os linux
     @%create $(wine_hc_batch)
-    @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
-    @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chm $(hbook).chm
+    @%append $(wine_hc_batch) $(hc_hh) $^&/$^&.hhp
+    @%append $(wine_hc_batch) copy /y $^&\$^&.chm $^&.chm
     -wine cmd /c $(wine_hc_batch)
 !else
-    -$(hc_hh) $(hbook)/$(hbook).hhp
-    copy $(hbook)/$(hbook).chm $(hbook).chm
+    -$(hc_hh) $^&/$^&.hhp
+    copy $^&/$^&.chm $^&.chm
 !endif
 
 ####################################################
@@ -317,10 +336,9 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-    !$(hc_pdf) -r600 $[@ $(hbook).pdf
+    !$(hc_pdf) -r600 $[@ $@
 !ifeq docset wikipdf
-    @if not exist ..\wiki mkdir ..\wiki
-    $(noecho)copy $(hbook).pdf ..\wiki\$(hbook).pdf
+    $(noecho)copy $^&.pdf $(wikidir)\$^&.pdf
 !endif
 
 ####################################################
@@ -333,17 +351,17 @@ $(hbook).pdf : $(hbook).ps
 .EXTENSIONS: .hlp .inf .ipf
 
 $(hbook).inf : $(hbook).ipf
-    $(noecho)set IPFCARTWORK=$($(hbook)_book_incs)
+    $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
-    $(wipfc) -q -inf $(hbook).ipf
-    $(lowercase) $@ $@	    # change file name to lower case
+    $(wipfc) -q -inf $[@
+    $(lowercase) $@ $@    # change file name to lower case
 
 !ifdef $(hbook)_book_os2_help
 $(hbook).hlp : $(hbook).ipf
-    $(noecho)set IPFCARTWORK=$($(hbook)_book_incs)
+    $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
-    $(wipfc) -q $(hbook).ipf
-    $(lowercase) $@ $@	    # change file name to lower case
+    $(wipfc) -q $[@
+    $(lowercase) $@ $@    # change file name to lower case
 !else
 $(hbook).hlp : .symbolic
 !endif
@@ -363,21 +381,18 @@ $(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 .EXTENSIONS: .ps .bmp
 
 $(hbook).ps : $(cop_files) $($(hbook)_book_objs) $($(hbook)_book_objs_ps) $(proj_objs)
-    $(noecho)set OWGMLINC=.;tmp;$(ps_incs);$($(hbook)_book_incs);$(whelp_incs);$(gml_incs)
+    $(noecho)set OWGMLINC=.;$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
-!ifeq verbose 0
-    @echo wgml $@
-!endif
+    @%make echo_wgml
     -$(noecho)$(WGMLCMD)
     @if exist $@ $(noecho)%erase $@
     $(noecho)%ren $(wgml_tmpfile) $@
 
 .bmp: $($(hbook)_book_bmroot)
-.ps: tmp
+.ps: $(tmpdir)
 
 .bmp.ps:
-    @if not exist tmp mkdir tmp
-    $(bmp2eps) -c $< tmp/$^.
+    $(bmp2eps) -c $< $(tmpdir)/$^.
 
 ####################################################
 #
@@ -390,15 +405,14 @@ $(hbook).ps : $(cop_files) $($(hbook)_book_objs) $($(hbook)_book_objs_ps) $(proj
 
 $(hbook).gh $(hbook).htm : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 !ifneq dotarget chm
-!ifdef $(hbook)_book_bmroot
-    @for %f in ($($(hbook)_book_bmroot)/*.bmp) do $(noecho)copy %f .
+!ifdef $^&_book_bmroot
+    @for %f in ($($^&_book_bmroot)/*.bmp) do $(noecho)copy %f .
 !endif
 !endif
     @%make compile_gml_to_xxx
 !ifeq docset wikihtml
-    @if not exist ..\wiki mkdir ..\wiki
-    $(noecho)copy $(hbook).htm ..\wiki\$(hbook).html
-    @for %f in (*.bmp) do @if not exist ..\wiki\%f $(noecho)copy %f ..\wiki\%f
+    $(noecho)copy $^&.htm $(wikidir)\$^&.html
+    @for %f in (*.bmp) do @if not exist $(wikidir)\%f $(noecho)copy %f $(wikidir)\%f
 !endif
 
 !endif
@@ -442,9 +456,7 @@ whelpdrv.cop : ../gml/syslib/whelpdrv.pcd
 gencop : .procedure .explicit
     @set GMLINC=.
     %make prepare_gendev_tmp_batch
-!ifeq verbose 0
-    @echo gendev $@
-!endif
+    @%make echo_gendev
     $(noecho)$(GENDEVCMD)
 
 ####################################################
@@ -457,13 +469,13 @@ prepare_whpcvt_opts : .PROCEDURE
 !ifeq wgml_target os2
     @%append $(whpcvt_optfile) -ipf
     @%append $(whpcvt_optfile) -tl
-    @%append $(whpcvt_optfile) $($(hbook)_book_title)
+    @%append $(whpcvt_optfile) $($^&_book_title)
 !else ifeq wgml_target dos
     @%append $(whpcvt_optfile) -ib
     @%append $(whpcvt_optfile) -dt
     @%append $(whpcvt_optfile) Table of Contents
     @%append $(whpcvt_optfile) -ds
-    @%append $(whpcvt_optfile) $($(hbook)_book_title)
+    @%append $(whpcvt_optfile) $($^&_book_title)
     @%append $(whpcvt_optfile) -t
     @%append $(whpcvt_optfile) -e
     @%append $(whpcvt_optfile) -lk
@@ -476,7 +488,7 @@ prepare_whpcvt_opts : .PROCEDURE
 !else ifeq wgml_target html
     @%append $(whpcvt_optfile) -html
     @%append $(whpcvt_optfile) -tl
-    @%append $(whpcvt_optfile) $($(hbook)_book_title)
+    @%append $(whpcvt_optfile) $($^&_book_title)
 !else
     @%append $(whpcvt_optfile) -rtf
     @%append $(whpcvt_optfile) -t
@@ -498,6 +510,25 @@ prepare_whpcvt_opts : .PROCEDURE
 # Set up environment for the wgml utility
 #
 ####################################################
+wgml_optfile_1_cpplib   = @%append $(wgml_optfile) ( setsymbol target DOS
+wgml_optfile_1_guitool  = @%append $(wgml_optfile) ( setsymbol allinone 1
+
+wgml_optfile_2_f77lr    = nbpsshad.opt
+wgml_optfile_2_clr      = nbpsshad.opt
+wgml_optfile_2_wgmlref  = wbrfman.opt
+wgml_optfile_2          = nb7x9ps.opt
+
+wgml_optfile_3_c_readme = 3
+wgml_optfile_3_cguide   = 3
+wgml_optfile_3_cguideq  = 3
+wgml_optfile_3_guitool  = 3
+wgml_optfile_3_wd       = 3
+wgml_optfile_3_wddoc    = 3
+wgml_optfile_3_lguide   = 3
+wgml_optfile_3_vi       = 3
+wgml_optfile_3_wgmlref  = 3
+wgml_optfile_3          = 2
+
 prepare_wgml_opts : .PROCEDURE
 #-------------------------------------------------------
 # set up environment variables used by wgml utility
@@ -512,11 +543,7 @@ prepare_wgml_opts : .PROCEDURE
 # common settings for any processing
 #--------------------------------------
     @%create $(wgml_optfile)
-!ifeq hbook cpplib
-    @%append $(wgml_optfile) ( setsymbol target DOS
-!else ifeq hbook guitool
-    @%append $(wgml_optfile) ( setsymbol allinone 1
-!endif
+    $(wgml_optfile_1_$^&)
 # add default windowing for NT
 #    @%append $(wgml_optfile) ( setsymbol defwinnt 1
 # add default windowing for OS/2
@@ -534,15 +561,8 @@ prepare_wgml_opts : .PROCEDURE
 #
 # layout setting
 #
-!ifeq hbook f77lr
-    @%append $(wgml_optfile) ( file nbpsshad.opt
-!else ifeq hbook clr
-    @%append $(wgml_optfile) ( file nbpsshad.opt
-!else ifeq hbook wgmlref
-    @%append $(wgml_optfile) ( file wbrfman.opt
-!else
-    @%append $(wgml_optfile) ( file nb7x9ps.opt
-!endif
+    if not "$(wgml_optfile_2_$^&)" == "" @%append $(wgml_optfile) ( file $(wgml_optfile_2_$^&)
+    if "$(wgml_optfile_2_$^&)" == "" @%append $(wgml_optfile) ( file $(wgml_optfile_2)
 #
 # change output format to 8.5x11i
 # remove it if you want old 7x9i format
@@ -551,27 +571,8 @@ prepare_wgml_opts : .PROCEDURE
 #
 # number of passes
 #
-!ifeq hbook c_readme
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook cguide
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook cguideq
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook guitool
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook wd
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook wddoc
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook lguide
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook vi
-    @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook wgmlref
-    @%append $(wgml_optfile) ( passes 3
-!else
-    @%append $(wgml_optfile) ( passes 2
-!endif
+    if not "$(wgml_optfile_3_$^&)" == "" @%append $(wgml_optfile) ( passes $(wgml_optfile_3_$^&)
+    if "$(wgml_optfile_3_$^&)" == "" @%append $(wgml_optfile) ( passes $(wgml_optfile_3)
 #
 # output format
 #
@@ -593,7 +594,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( passes 2
     @%append $(wgml_optfile) ( setsymbol dohelp 1
     @%append $(wgml_optfile) ( output (text:2200)$(wgml_tmpfile)
-    @%append $(wgml_optfile) ( setsymbol book $(hbook)
+    @%append $(wgml_optfile) ( setsymbol book $^&
 !endif
 #
 # details about wgml processing
@@ -633,20 +634,16 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.idx @%create $*.idx
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
-    $(noecho)set OWGMLINC=.;$(hlp_incs);$($(hbook)_book_incs);$(whelp_incs);$(gml_incs);
+    $(noecho)set OWGMLINC=.;$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
     @%make prepare_wgml_opts
-!ifeq verbose 0
-    @echo wgml $@
-!endif
+    @%make echo_wgml
     -$(noecho)$(WGMLCMD)
     @if exist $*.$(wgml1_ext) $(noecho)%erase $*.$(wgml1_ext)
     $(noecho)%ren $(wgml_tmpfile) $*.$(wgml1_ext)
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.$(wgml1_ext)
     @%create $(wgml_sysfile_02)
-!ifeq verbose 0
-    @echo wgml $@
-!endif
+    @%make echo_wgml
     -$(noecho)$(WGMLCMD)
     @if exist $*.$(wgml2_ext) $(noecho)%erase $*.$(wgml2_ext)
     $(noecho)%ren $(wgml_tmpfile) $*.$(wgml2_ext)
@@ -669,23 +666,23 @@ compile_hpj_win : .PROCEDURE
     @%append $@ COMPRESS=TRUE
     @%append $@ WARNING=3
     @%append $@ CONTENTS=table_of_contents
-    @%append $@ Title=$($(hbook)_book_title) Help
+    @%append $@ Title=$($^&_book_title) Help
     @%append $@ COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved.
-!ifdef $(hbook)_book_bmroot
-    @%append $@ BMROOT=$($(hbook)_book_bmroot)
+!ifdef $^&_book_bmroot
+    @%append $@ BMROOT=$($^&_book_bmroot)
 !else
-    @%append $@ BMROOT=$($(hbook)_book_incs)
+    @%append $@ BMROOT=$($^&_book_incs)
 !endif
     @%append $@ OLDKEYPHRASE=NO
     @%append $@ ROOT=.
     @%append $@ [Config]
     @%append $@ BrowseButtons()
-    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
+    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$^&.hlp', `index_of_topics' )" )
     @%append $@ CreateButton( "btn_up", "&Up", "Contents()" )
     @%append $@ [Files]
-    @%append $@ $(hbook).rtf
+    @%append $@ $^&.rtf
     @%append $@ [MAP]
-    @%append $@ $#include <$(hbook).hh>
+    @%append $@ $#include <$^&.hh>
     @%append $@ ; end of HPJ file
 
 ####################################################
@@ -699,31 +696,41 @@ compile_hpj_nt : .PROCEDURE
     @%append $@ LCID=0x409 0x0 0x0 ;English (United States)
     @%append $@ REPORT=Yes
     @%append $@ CONTENTS=table_of_contents
-    @%append $@ TITLE=$($(hbook)_book_title) Help
+    @%append $@ TITLE=$($^&_book_title) Help
     @%append $@ COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
-!ifdef $(hbook)_book_bmroot
-    @%append $@ BMROOT=$($(hbook)_book_bmroot:/=\)
+!ifdef $^&_book_bmroot
+    @%append $@ BMROOT=$($^&_book_bmroot:/=\)
 !else
-    @%append $@ BMROOT=$($(hbook)_book_incs:/=\)
+    @%append $@ BMROOT=$($^&_book_incs:/=\)
 !endif
     @%append $@ ROOT=.
-    @%append $@ HLP=.\$(hbook).hlp
-    @%append $@ ERRORLOG=.\$(hbook).err
+    @%append $@ HLP=.\$^&.hlp
+    @%append $@ ERRORLOG=.\$^&.err
     @%append $@
     @%append $@ [FILES]
-    @%append $@ $(hbook).rtf
+    @%append $@ $^&.rtf
     @%append $@
     @%append $@ [MAP]
-    @%append $@ $#include <$(hbook).hh>
+    @%append $@ $#include <$^&.hh>
     @%append $@
     @%append $@ [WINDOWS]
-    @%append $@ main="$($(hbook)_book_title) Help",,28932
+    @%append $@ main="$($^&_book_title) Help",,28932
     @%append $@
     @%append $@ [CONFIG]
     @%append $@ BrowseButtons()
-    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
+    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$^&.hlp', `index_of_topics' )" )
     @%append $@ CreateButton( "btn_up", "&Up", "Contents()" )
 
 ####################################################
 
 !include ../mif/clean.mif
+
+echo_wgml : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wgml $@
+!endif
+
+echo_gendev : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo gendev $@
+!endif

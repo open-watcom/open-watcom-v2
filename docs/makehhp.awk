@@ -2,13 +2,13 @@ BEGIN {
     print "[OPTIONS]"
     print "Binary TOC=Yes"
     print "Compatibility=1.1 or later"
-    print "Contents file=" hbook ".hhc"
+    print "Contents file=" book ".hhc"
     print "Create CHI file=Yes"
     print "Default Window=Main"
     print "Full-text search=Yes"
-    print "Index file=" hbook ".hhk"
+    print "Index file=" book ".hhk"
     print "Language=0x409 English (United States)"
-    print "Compiled File=" hbook ".chm"
+    print "Compiled File=" book ".chm"
 
     # Future processing...
     fcount = 0
@@ -45,7 +45,7 @@ BEGIN {
             # poorly) and let Windows make decisions about the
             # window.
             #print "[WINDOWS]"
-            #print "Main=\"" title "\",\"" hbook ".hhc\",\"" hbook ".hhk\",,,,,,,0x2420,,0x60300e,,,,,,,,0"
+            #print "Main=\"" title "\",\"" book ".hhc\",\"" book ".hhk\",,,,,,,0x2420,,0x60300e,,,,,,,,0"
             #print ""
 
             print "[FILES]"
@@ -64,14 +64,14 @@ END {
     print ""
 
     print "[MAP]"
-    print "#include " hbook ".gh"
+    print "#include " book ".gh"
     print ""
 
     # Directly write aliases into the project rather
     # than an include since it seems to work a bit
     # better.
     print "[ALIAS]"
-    while ((getline line < (hbook "/" hbook ".hha")) > 0)
+    while ((getline line < (book "/" book ".hha")) > 0)
         print line
     print ""
 
