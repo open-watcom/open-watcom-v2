@@ -39,7 +39,7 @@ dosbox_cfg = $(%OWROOT)/build/dosbox.cfg
 dosbox_cfg = $(%OWROOT)\build\dosbox.cfg
 !endif
 
-!ifdef %WGMLDEBUG
+!ifdef %OWWGMLDEBUG
 dosbox_options_nt =
 dosbox_options_osx = -c "config -set cpu core=normal"
 !else
@@ -84,7 +84,7 @@ prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
 #-------------------------------------------------------
 # DOSBOX version
 #-------------------------------------------------------
-!ifndef %WGMLDEBUG
+!ifndef %OWWGMLDEBUG
     $(noecho)set SDL_VIDEODRIVER=dummy
     $(noecho)set SDL_AUDIODRIVER=disk
     $(noecho)set SDL_DISKAUDIOFILE=NUL
@@ -97,7 +97,7 @@ prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
 !endif
     @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
     @%append $(dos_wgml_tmp_batch) \docs\gml\dos\wgml.exe $(wgml_cmdl_params)
-!ifndef %WGMLDEBUG
+!ifndef %OWWGMLDEBUG
     @%append $(dos_wgml_tmp_batch) exit
 !endif
 !else
@@ -112,7 +112,7 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
 #-------------------------------------------------------
 # DOSBOX version
 #-------------------------------------------------------
-!ifndef %WGMLDEBUG
+!ifndef %OWWGMLDEBUG
     $(noecho)set SDL_VIDEODRIVER=dummy
     $(noecho)set SDL_AUDIODRIVER=disk
     $(noecho)set SDL_DISKAUDIOFILE=NUL
@@ -123,7 +123,7 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
     @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
     @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
     @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\)
-!ifndef %WGMLDEBUG
+!ifndef %OWWGMLDEBUG
     @%append $(dos_gendev_tmp_batch) exit
 !endif
 !else
