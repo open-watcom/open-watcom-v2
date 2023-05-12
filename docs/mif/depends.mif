@@ -42,8 +42,8 @@ objs_cg = &
 ../doc/cg/errnoqnx.gml &
 ../doc/cg/inlintab.gml &
 ../doc/cg/seh.gml &
-../doc/cg/wccerrs.gml &
-../doc/cg/wpperrs.gml
+../doc/cg/wcc_errs.gml &
+../doc/cg/wpp_errs.gml
 
 # cl sub-directory
 bmroot_cl = ../doc/cl
@@ -64,7 +64,7 @@ objs_cl = &
 ../doc/cl/basicty.gml &
 ../doc/cl/boxmac.gml &
 ../doc/cl/bubble.gml &
-../doc/cl/clr.gml &
+../doc/cl/c_lr.gml &
 ../doc/cl/charset.gml &
 ../doc/cl/clr.bmp &
 ../doc/cl/cmac.gml &
@@ -163,7 +163,7 @@ objs_cmn = &
 ../doc/cmn/toolpref.gml &
 ../doc/cmn/tools.gml &
 ../doc/cmn/was.gml &
-../doc/cmn/wasaxp.gml &
+../doc/cmn/was_axp.gml &
 ../doc/cmn/wasm.gml &
 ../doc/cmn/wasqual.gml &
 ../doc/cmn/wasvqual.gml &
@@ -194,7 +194,7 @@ objs_cpplib = &
 ../doc/cpplib/_keyequ.gml &
 ../doc/cpplib/_valequ.gml &
 ../doc/cpplib/alloctor.cpp &
-../doc/cpplib/clslib.gml &
+../doc/cpplib/cls_lib.gml &
 ../doc/cpplib/complex_.gml &
 ../doc/cpplib/contdef.gml &
 ../doc/cpplib/cpplibr.gml &
@@ -324,7 +324,7 @@ objs_fg = &
 ../doc/fg/include.gml &
 ../doc/fg/optdflts.gml &
 ../doc/fg/optsumry.gml &
-../doc/fg/wfcerrs.gml &
+../doc/fg/wfc_errs.gml &
 ../doc/fg/wfcopts.gml
 
 # fl sub-directory
@@ -343,7 +343,7 @@ objs_fl = &
 ../doc/fl/dealloc.for &
 ../doc/fl/equiv.for &
 ../doc/fl/f77ext.gml &
-../doc/fl/f77lr.gml &
+../doc/fl/f77_lr.gml &
 ../doc/fl/farrays.gml &
 ../doc/fl/fassmnt.gml &
 ../doc/fl/fexit.for &
@@ -580,7 +580,7 @@ $(root_gui)/wguistrg.gml &
 $(root_gui)/wguiwide.gml &
 $(root_gui)/wguizoom.gml &
 $(root_gui)/wrc.gml &
-$(root_gui)/wrcerrs.gml &
+$(root_gui)/wrc_errs.gml &
 $(root_gui)/wrcerrs1.gml &
 $(root_gui)/wrcmacs.gml &
 $(root_gui)/wre.gml
@@ -1141,7 +1141,7 @@ objs_lg = &
 ../doc/lg/wlerror.gml &
 ../doc/lg/wlfcopt.gml &
 ../doc/lg/wlib.gml &
-../doc/lg/wlnkerrs.gml &
+../doc/lg/wln_errs.gml &
 ../doc/lg/wlinklnk.gml &
 ../doc/lg/wlintro.gml &
 ../doc/lg/wlmem.gml &
@@ -1162,7 +1162,7 @@ objs_lr1 = &
 ../doc/lr/cfunrems.gml &
 ../doc/lr/clibref.gml &
 ../doc/lr/cmanmac.gml &
-../doc/lr/f77graph.gml &
+../doc/lr/f77_grap.gml &
 ../doc/lr/gfunmacs.gml &
 ../doc/lr/gfunrems.gml &
 ../doc/lr/libfuns.gml &
@@ -2406,7 +2406,7 @@ incs_wd = $(root_wd)
 objs_wd = &
 $(root_wd)/brian.ans &
 $(root_wd)/symbuttn.gml &
-$(root_wd)/wdbg.gml &
+$(root_wd)/wdbgref.gml &
 $(root_wd)/wdbgasm.gml &
 $(root_wd)/wdbgbrkp.gml &
 $(root_wd)/wdbgcmd.gml &
