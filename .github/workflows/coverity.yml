@@ -75,8 +75,7 @@ jobs:
         | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
     - name: "Build Coverity output data Linux"
-      run: |
-        ci/coverity.sh ${{ steps.covtool.outputs.cmd }} ci/covbuild.sh
+      run: ci/coverity.sh ${{ steps.covtool.outputs.cmd }} $OWCOV_RESULTS_GITPATH ci/covbuild.sh
       env:
         OWROOT:     ${{ github.workspace }}
         OWTOOLS:    GCC
@@ -91,17 +90,23 @@ jobs:
         | Join-String -OutputPrefix 'fullname='
         | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
+    - name: "Create Archive with Coverity output data"
+      run: |
+        if [ "${{ vars.OWDEBUG }}" = "1" ]; then
+          tar -cvf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
+        else
+          tar -cf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
+        fi
+      shell: bash
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name:             'coverity'
+        path:             ${{ steps.tarname.outputs.fullname }}
+        retention-days:   3
     - id: last_commit
       run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
-    - name: "Archive Coverity output data"
-      uses: "./.github/actions/tarsave"
-      with:
-        arch:       'lnx'
-        fullname:   ${{ steps.tarname.outputs.fullname }}
-        gitpath:    ${{ env.OWCOV_RESULTS_GITPATH }}
-        format:     'gzip'
-        owdebug:    ${{ vars.OWDEBUG }}
     - name: "Upload Coverity output data Archive"
       run: >
         $response = ${{ steps.curlcmd.outputs.cov }}
@@ -185,7 +190,7 @@ jobs:
 #      shell: pwsh
 #    - name: "Build Coverity output data Windows"
 #      run: |
-#        ci\coverity.cmd ${{ steps.covtool.outputs.cmd }} ci\covbuild.cmd vs2019
+#        ci\coverity.cmd ${{ steps.covtool.outputs.cmd }} ${{ env.OWCOV_RESULTS_GITPATH }} ci\covbuild.cmd vs2019
 #      env:
 #        OWROOT:         ${{ github.workspace }}
 #        OWTOOLS:        VISUALC
