@@ -1,1 +1,1 @@
-:INCLUDE file='wdbg'.
+:INCLUDE file='wdbgref'.
