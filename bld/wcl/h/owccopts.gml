@@ -131,8 +131,10 @@
 :usage. show sub program invocations
 :target. any
 
-:option. x{c,c++}
+:option. x
 :usage. treat source files as C or C++ code
+:argequal. ..
+:id. . {c,c++}
 :target. any
 
 :cmt
