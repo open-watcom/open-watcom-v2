@@ -236,6 +236,7 @@ typedef struct option {
     boolbit         is_prefix         : 1;
     boolbit         is_timestamp      : 1;
     boolbit         is_negate         : 1;
+    char            equal_char;
     CHAIN           *chain;
     GROUP           *group;
     size_t          name_len;
@@ -864,6 +865,7 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     newo->synonym = o;
     newo->is_simple = true;
     newo->next = optionList;
+    newo->equal_char = '\0';
     optionList = newo;
     return( newo );
 }
@@ -902,15 +904,26 @@ static char *pickUpRest( const char *p )
 // :argequal. <char>
 static void doARGEQUAL( const char *p )
 {
+    char    c;
+
     if( *p == '\0' ) {
         fail( ":argequal. must have <char> specified\n" );
     } else {
         if( p[0] == '.' && p[1] == '.' ) {
-            alternateEqual = ' ';
+            c = ' ';
         } else {
-            alternateEqual = *p;
+            c = *p;
         }
-        optFlag.alternate_equal = true;
+        if( getsUsage == TAG_NULL ) {
+            alternateEqual = c;
+            optFlag.alternate_equal = true;
+        } else if( getsUsage == TAG_OPTION ) {
+            OPTION *o;
+
+            for( o = optionList; o != NULL; o = o->synonym ) {
+                o->equal_char = c;
+            }
+        }
     }
 }
 
@@ -2265,10 +2278,16 @@ static int usageCmp( const void *v1, const void *v2 )
     }
 }
 
-static char *catArg( char *arg, char *buf )
+static char *catArg( char *arg, char *buf, char equal_char )
 {
     for( ; *arg != '\0'; ++arg ) {
-        if( optFlag.no_equal ) {
+        if( equal_char != '\0' ) {
+            if( *arg != '=' ) {
+                *buf++ = *arg;
+            } else {
+                *buf++ = equal_char;
+            }
+        } else if( optFlag.no_equal ) {
             if( *arg != '=' ) {
                 *buf++ = *arg;
             }
@@ -2306,45 +2325,45 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
         }
     } else if( o->usage_argid != NULL ) {
         if( o->is_optional ) {
-            buf = catArg( "[=", buf );
-            buf = catArg( o->usage_argid, buf );
-            buf = catArg( "]", buf );
+            buf = catArg( "[=", buf, o->equal_char );
+            buf = catArg( o->usage_argid, buf, '\0' );
+            buf = catArg( "]", buf, '\0' );
         } else {
-            buf = catArg( "=", buf );
-            buf = catArg( o->usage_argid, buf );
+            buf = catArg( "=", buf, o->equal_char );
+            buf = catArg( o->usage_argid, buf, '\0' );
         }
     } else if( o->is_number ) {
         if( o->default_specified || o->is_optional ) {
-            buf = catArg( "[=<num>]", buf );
+            buf = catArg( "[=<num>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<num>", buf );
+            buf = catArg( "=<num>", buf, o->equal_char );
         }
     } else if( o->is_char ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<char>]", buf );
+            buf = catArg( "[=<char>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<char>", buf );
+            buf = catArg( "=<char>", buf, o->equal_char );
         }
     } else if( o->is_id ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<id>]", buf );
+            buf = catArg( "[=<id>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<id>", buf );
+            buf = catArg( "=<id>", buf, o->equal_char );
         }
     } else if( o->is_file ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<file>]", buf );
+            buf = catArg( "[=<file>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<file>", buf );
+            buf = catArg( "=<file>", buf, o->equal_char );
         }
     } else if( o->is_path ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<path>]", buf );
+            buf = catArg( "[=<path>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<path>", buf );
+            buf = catArg( "=<path>", buf, o->equal_char );
         }
     } else if( o->is_negate ) {
-        buf = catArg( "[-]", buf );
+        buf = catArg( "[-]", buf, '\0' );
     }
     return( buf );
 }
