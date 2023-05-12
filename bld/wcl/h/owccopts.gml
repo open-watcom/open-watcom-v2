@@ -113,6 +113,7 @@
 
 :option. b
 :usage. compile and link for <target>
+:argequal. ..
 :id. . <target>
 :target. any
 
@@ -122,6 +123,7 @@
 
 :option. o
 :usage. set output file name
+:argequal. ..
 :file.
 :target. any
 
