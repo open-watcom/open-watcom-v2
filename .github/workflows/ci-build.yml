@@ -17,6 +17,10 @@ on:
       - '!README.md'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   OWCURLOPTS:       ${{ vars.OWCURLOPTS }}
 jobs:
