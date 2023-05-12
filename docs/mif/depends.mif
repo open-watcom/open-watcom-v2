@@ -291,7 +291,7 @@ objs_cpplib = &
 # cw sub-directory
 incs_cw = ../doc/cw
 objs_cw = &
-../doc/cw/cw.gml &
+../doc/cw/cwref.gml &
 ../doc/cw/gloss.gml &
 ../doc/cw/guide.gml &
 ../doc/cw/intro.gml &
@@ -490,10 +490,10 @@ bmroot_gs = $(root_gs)
 incs_gs = $(root_gs)
 objs_gs_readme = &
 $(root_gs)/bench.gml &
-$(root_gs)/c_readme.gml &
+$(root_gs)/creadme.gml &
 $(root_gs)/diffs.gml &
 $(root_gs)/docson.gml &
-$(root_gs)/f_readme.gml &
+$(root_gs)/freadme.gml &
 $(root_gs)/install.gml &
 $(root_gs)/intro.gml &
 $(root_gs)/lic.gml &
@@ -2302,7 +2302,7 @@ objs_owstldev = &
 ../doc/owstl/intro.gml &
 ../doc/owstl/list.gml &
 ../doc/owstl/owgml.gml &
-../doc/owstl/owstl.gml &
+../doc/owstl/wowstl.gml &
 ../doc/owstl/rbtree.gml &
 ../doc/owstl/stack.gml &
 ../doc/owstl/string.gml &
@@ -2347,7 +2347,7 @@ objs_pg = &
 ../doc/pg/pgqa.gml &
 ../doc/pg/pgqnx.gml &
 ../doc/pg/pguide.bmp &
-../doc/pg/pguide.gml &
+../doc/pg/cpguide.gml &
 ../doc/pg/pgvbdll.gml &
 ../doc/pg/pgwdll32.gml &
 ../doc/pg/pgwin16.gml &
@@ -2611,18 +2611,18 @@ hlp_objs =                     &
 # hlp sub-directory for ?mix
 hlpmix_incs = ../doc/hlp
 hlpmix_objs =               &
-../doc/hlp/cmix.gml  &
-../doc/hlp/fmix.gml
+../doc/hlp/c_mix.gml  &
+../doc/hlp/f_mix.gml
 
 # cgdoc sub-directory
 incs_cgdoc = ../../bld/cg/doc
 objs_cgdoc = &
-../../bld/cg/doc/cgdoc.gml
+../../bld/cg/doc/cgref.gml
 
 # dwdoc sub-directory
 incs_dwdoc = ../../bld/dwarf/dw/doc
 objs_dwdoc = &
-../../bld/dwarf/dw/doc/dwdoc.gml &
+../../bld/dwarf/dw/doc/dwref.gml &
 ../../bld/dwarf/dw/doc/dwarfw.gml &
 ../../bld/dwarf/dw/doc/extra.gml
 
@@ -2633,7 +2633,7 @@ objs_wddoc = &
 ../../bld/wv/doc/ovl.gml &
 ../../bld/wv/doc/trap.gml &
 ../../bld/wv/doc/wtrap.gml &
-../../bld/wv/doc/wddoc.gml &
+../../bld/wv/doc/wdref.gml &
 ../../bld/wv/doc/extra.gml
 
 # vi sub-directory
@@ -2664,7 +2664,7 @@ $(root_vi)/rxexp.gml &
 $(root_vi)/speckeys.gml &
 $(root_vi)/spmapkey.gml &
 $(root_vi)/textsel.gml &
-$(root_vi)/vi.gml &
+$(root_vi)/viref.gml &
 $(root_vi)/vipref.gml &
 $(root_vi)/worddef.gml &
 $(root_vi)/win_menu.gml &
@@ -3155,7 +3155,7 @@ root_wipfc = ../doc/wipfc
 bmroot_wipfc = $(root_wipfc)
 incs_wipfc = $(root_wipfc)
 objs_wipfc = &
-$(root_wipfc)/wipfc.gml &
+$(root_wipfc)/ipfcref.gml &
 $(root_wipfc)/ipfdefs.gml &
 $(root_wipfc)/ipfintro.gml &
 $(root_wipfc)/ipfuse.gml &
@@ -3210,13 +3210,13 @@ $(root_wipfc)/xmp.gml
 # wpidoc sub-directory
 incs_wpidoc = ../../bld/wpi/doc
 objs_wpidoc = &
-../../bld/wpi/doc/wpidoc.gml &
+../../bld/wpi/doc/wpiref.gml &
 ../../bld/wpi/doc/wpi.gml
 
 # fmedidoc sub-directory
 incs_fmedidoc = ../../bld/sdk/fmedit/doc
 objs_fmedidoc = &
-../../bld/sdk/fmedit/doc/fmedidoc.gml &
+../../bld/sdk/fmedit/doc/fmediref.gml &
 ../../bld/sdk/fmedit/doc/fmedit.gml
 
 #############################################################

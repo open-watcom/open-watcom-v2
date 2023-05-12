@@ -3407,7 +3407,7 @@ The following types are defined by the code generator header files:
 .note reallong
 (double)
 .note pointer
-(void*)
+(void *)
 .endnote
 .begnote
 .notehd1 Type
@@ -3415,9 +3415,9 @@ The following types are defined by the code generator header files:
 .note aux_class
 (enum) Passed as 2nd parameter to FEAuxInfo.
 .note aux_handle
-(void*) A handle used as 1st parameter to FEAuxInfo.
+(void *) A handle used as 1st parameter to FEAuxInfo.
 .note back_handle
-(void*) A handle for a back end symbol table entry.
+(void *) A handle for a back end symbol table entry.
 .note byte_seq
 (struct) Passed to back end in response to FEINF_CALL_BYTES FEAuxInfo
 request.
@@ -3425,11 +3425,11 @@ request.
 (unsigned long) A set of combinable bits indicating the call
 attributes for a routine.
 .note call_handle
-(void*) A handle to be used in CGInitCall, CGAddParm and CGCall.
+(void *) A handle to be used in CGInitCall, CGAddParm and CGCall.
 .note cg_init_info
 (union) The return value of BEInit.
 .note cg_name
-(void*) A handle for a back end expression tree node.
+(void *) A handle for a back end expression tree node.
 .note cg_op
 (enum) An operator to be used in building expressions.
 .note cg_switches
@@ -3444,7 +3444,7 @@ generator options.
 .note hw_reg_set
 (struct hw_reg_set) A structure representing a hardware register.
 .note label_handle
-(void*) A handle for a code generator code label.
+(void *) A handle for a code generator code label.
 .note linkage_regs
 (struct) For 370 linkage conventions.
 .note more_cg_types
@@ -3459,9 +3459,9 @@ segment.
 .note segment_id
 (int) A segment identifier.
 .note sel_handle
-(void*) A handle to be used in the CGSel calls.
+(void *) A handle to be used in the CGSel calls.
 .note temp_handle
-(void*) A handle for a code generator temporary.
+(void *) A handle for a code generator temporary.
 .endnote
 .begnote
 .notehd1 Misc Type
@@ -3471,15 +3471,15 @@ hw_reg_part
 .note hw_reg_part
 (unsigned)
 .note dbg_enum
-(void*)
+(void *)
 .note dbg_ftn_type
 (enum)
 .note dbg_name
-(void*)
+(void *)
 .note dbg_proc
-(void*)
+(void *)
 .note dbg_struct
-(void*)
+(void *)
 .note dbg_type
 (unsigned short)
 .note predefined_cg_types
