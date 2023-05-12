@@ -165,6 +165,17 @@ static  char        *cpp_linewrap;          /* line length for cpp output       
  */
 
 static const char *UsageText[] = {
+#if defined( _BETAVER )
+    banner1w1( "C/C++ " _TARGET_ " Compiler Driver Program" ),
+    banner1w2( _WCL_VERSION_ ),
+#else
+    banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ),
+#endif
+    banner2,
+    banner2a( 1988 ),
+    banner3,
+    banner3a,
+    "",
     #include "usage.gh"
     NULL
 };
@@ -322,16 +333,18 @@ static void print_banner( void )
     if( !printed ) {
         printed = true;
         if( !Flags.be_quiet ) {
+            int     i = 0;
 #if defined( _BETAVER )
-            puts( banner1w1( "C/C++ " _TARGET_ " Compiler Driver Program" ) );
-            puts( banner1w2( _WCL_VERSION_ ) );
+            puts( UsageText[i++] );
+            puts( UsageText[i++] );
 #else
-            puts( banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ) );
+            puts( UsageText[i++] );
 #endif
-            puts( banner2 );
-            puts( banner2a( 1988 ) );
-            puts( banner3 );
-            puts( banner3a );
+            puts( UsageText[i++] );
+            puts( UsageText[i++] );
+            puts( UsageText[i++] );
+            puts( UsageText[i++] );
+            puts( UsageText[i++] );
         }
     }
 }
@@ -1563,6 +1576,8 @@ int main( int argc, char **argv )
 
     if( argc <= 1 ) {
         /* no arguments: just tell the user who I am */
+        Flags.be_quiet = false;
+        print_banner();
         puts( "Usage: owcc [-?] [options] file ..." );
         exit( EXIT_SUCCESS );
     }
