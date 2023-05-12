@@ -22,8 +22,8 @@ incs_cg = ../doc/cg
 objs_cg = &
 ../doc/cg/ccall.gml &
 ../doc/cg/cguide.bmp &
-../doc/cg/cguide.gml &
-../doc/cg/cguideq.gml &
+../doc/cg/c_guide.gml &
+../doc/cg/c_guideq.gml &
 ../doc/cg/cmsgs.gml &
 ../doc/cg/cpasm.gml &
 ../doc/cg/cpbench.gml &
@@ -150,11 +150,9 @@ objs_cmn = &
 ../doc/cmn/bpatch.gml &
 ../doc/cmn/cmpenv.gml &
 ../doc/cmn/complink.gml &
-../doc/cmn/ctools.gml &
 ../doc/cmn/environ.gml &
 ../doc/cmn/envsetup.gml &
 ../doc/cmn/exe2bin.gml &
-../doc/cmn/ftools.gml &
 ../doc/cmn/ide2make.gml &
 ../doc/cmn/owcc.gml &
 ../doc/cmn/owccopts.gml &
@@ -301,7 +299,7 @@ objs_cw = &
 incs_devguide = ../doc/devguide
 objs_devguide = &
 ../doc/devguide/arch.gml &
-../doc/devguide/devguide.gml &
+../doc/devguide/wdevguid.gml &
 ../doc/devguide/docs.gml &
 ../doc/devguide/style.gml &
 ../doc/devguide/tour.gml
@@ -322,7 +320,7 @@ objs_fg = &
 ../doc/fg/fpopts.gml &
 ../doc/fg/fpref.gml &
 ../doc/fg/fpwfc.gml &
-../doc/fg/fuguide.gml &
+../doc/fg/f_uguide.gml &
 ../doc/fg/include.gml &
 ../doc/fg/optdflts.gml &
 ../doc/fg/optsumry.gml &
@@ -503,12 +501,12 @@ $(root_gs)/tshoot.gml &
 $(root_gs)/tutorial.gml
 objs_gs_books = &
 $(root_gs)/cbooks.cnt &
-$(root_gs)/cbooks.gml &
+$(root_gs)/c_books.gml &
 $(root_gs)/cbooks.bmp &
 $(root_gs)/ebooks.cnt &
-$(root_gs)/ebooks.gml &
+$(root_gs)/e_books.gml &
 $(root_gs)/fbooks.cnt &
-$(root_gs)/fbooks.gml &
+$(root_gs)/f_books.gml &
 $(root_gs)/fbooks.bmp
 objs_gs_readme_bmp = &
 $(bmroot_gs)/ide10c.bmp &
@@ -1031,7 +1029,7 @@ objs_lg = &
 ../doc/lg/ldsymtrc.gml &
 ../doc/lg/ldsystem.gml &
 ../doc/lg/ldvector.gml &
-../doc/lg/lguide.gml &
+../doc/lg/l_guide.gml &
 ../doc/lg/lnkdir.gml &
 ../doc/lg/lnkmain.gml &
 ../doc/lg/lnkvalue.gml &
@@ -2315,7 +2313,7 @@ incs_pg = ../doc/pg
 objs_pg = &
 ../doc/pg/dynlink.gml &
 ../doc/pg/fpguide.bmp &
-../doc/pg/fpguide.gml &
+../doc/pg/f_pguide.gml &
 ../doc/pg/fstruct.bmp &
 ../doc/pg/fstruct.ps &
 ../doc/pg/mem1.bmp &

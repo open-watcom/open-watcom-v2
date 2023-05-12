@@ -79,8 +79,12 @@ docset = $(dotarget)
 !endif
 
 !ifdef hbook
-books=$(hbook)
+mbooks_list=$($(hbook$(x)))
 !else
-e=
-books=$+$($(docset))$-
+mbooks_list=$($(docset))
 !endif
+
+x=
+books_list=$+$(mbooks_list)$-
+
+books=$+$(books_list)$-
