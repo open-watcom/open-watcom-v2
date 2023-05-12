@@ -199,7 +199,7 @@ objs_cpplib = &
 ../doc/cpplib/clslib.gml &
 ../doc/cpplib/complex_.gml &
 ../doc/cpplib/contdef.gml &
-../doc/cpplib/cpplib.gml &
+../doc/cpplib/cpplibr.gml &
 ../doc/cpplib/cpx_asgn.gml &
 ../doc/cpplib/cpx_op.gml &
 ../doc/cpplib/filebuf_.gml &
