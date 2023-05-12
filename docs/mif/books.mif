@@ -1,69 +1,69 @@
-# help type             dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-# distributed           yes  yes  yes  yes yes  yes  no  no    no        no
-#===============================================================================
-!inject c_readme$(e)    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject cbooks$(e)                     nt
-!inject cgdoc$(e)                                              wikihtml  wikipdf
-!inject cguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject cguideq$(e)
-!inject clib$(e)        dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject clib_fox$(e)
-!inject clib_nec$(e)
-!inject clib_nt$(e)
-!inject clib_qnx$(e)
-!inject clib_tst$(e)
-!inject clr$(e)         dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject clslib$(e)
-!inject cpplib$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject ctools$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject cw$(e)          dos       chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject ddespy$(e)           win  chm  nt                html
-!inject devguide$(e)                                           wikihtml  wikipdf
-!inject drnt$(e)             win  chm  nt                html
-!inject drwatcom$(e)         win  chm  nt                html
-!inject dwdoc$(e)                                              wikihtml  wikipdf
-!inject ebooks$(e)                     nt
-!inject editor$(e)           win  chm  nt                html
-!inject f77graph$(e)    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject f77lr$(e)       dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject f_readme$(e)    dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject fbooks$(e)                     nt
-!inject fmedidoc$(e)
-!inject fpguide$(e)     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject ftools$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject fuguide$(e)     dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject guitools$(e)                            pdf  ps  html  wikihtml  wikipdf
-!inject heapwalk$(e)         win  chm  nt                html
-!inject ide$(e)              win  chm  nt  os2           html
-!inject lguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject owstl$(e)                                              wikihtml  wikipdf
-!inject pguide$(e)      dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject resacc$(e)           win  chm  nt                html
-!inject rescomp$(e)     dos  win  chm  nt  os2           html
-!inject resdlg$(e)           win  chm  nt                html
-!inject resedt$(e)           win  chm  nt                html
-!inject resimg$(e)           win  chm  nt                html
-!inject resmnu$(e)           win  chm  nt                html
-!inject resstr$(e)           win  chm  nt                html
-!inject spy$(e)              win  chm  nt                html
-!inject vi$(e)          dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject wasaxp$(e)
-!inject wbrw$(e)             win  chm  nt  os2           html
-!inject wccerrs$(e)     dos  win  chm  nt  os2           html  wikihtml  wikipdf
-!inject wd$(e)          dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
-!inject wddoc$(e)                               pdf  ps  html  wikihtml  wikipdf
-!inject wfcerrs$(e)     dos  win  chm  nt  os2           html  wikihtml  wikipdf
-!inject wjcerrs$(e)
-!inject wlnkerrs$(e)         win  chm  nt                html
-!inject wpidoc$(e)                              pdf  ps        wikihtml  wikipdf
-!inject wpperrs$(e)     dos  win  chm  nt  os2           html  wikihtml  wikipdf
-!inject wprof$(e)       dos  win  chm  nt  os2           html
-!inject wrcerrs$(e)          win  chm  nt                html
-!inject zoom$(e)             win  chm  nt                html
-!inject cmix$(e)        dos  win           os2           html                     # depends on zoom, etc.
-!inject fmix$(e)        dos  win           os2           html                     # depends on zoom, etc.
-!inject wgmlref$(e)                             pdf  ps        wikihtml  wikipdf
-!inject wipfc$(e)       dos  win  chm  nt  os2  pdf  ps  html  wikihtml  wikipdf
+# help type                 dos  win  chm  nt  os2  os2h pdf  ps  html  wikihtml  wikipdf
+# distributed               yes  yes  yes  yes yes  yes  yes  no  no    no        no
+#=========================================================================================
+!inject $$(c_readme$$(x))   dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(cbooks$$(x))                    nt
+!inject $$(cgdoc$$(x))                                                  wikihtml  wikipdf
+!inject $$(cguide$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(cguideq$$(x))
+!inject $$(clib$$(x))       dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(clib_fox$$(x))
+!inject $$(clib_nec$$(x))
+!inject $$(clib_nt$$(x))
+!inject $$(clib_qnx$$(x))
+!inject $$(clib_tst$$(x))
+!inject $$(clr$$(x))        dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(clslib$$(x))
+!inject $$(cpplib$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(ctools$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(cw$$(x))         dos       chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(ddespy$$(x))          win  chm  nt                     html
+!inject $$(devguide$$(x))                                               wikihtml  wikipdf
+!inject $$(drnt$$(x))            win  chm  nt                     html
+!inject $$(drwatcom$$(x))        win  chm  nt                     html
+!inject $$(dwdoc$$(x))                                                  wikihtml  wikipdf
+!inject $$(ebooks$$(x))                    nt
+!inject $$(editor$$(x))          win  chm  nt                     html
+!inject $$(f77graph$$(x))   dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(f77lr$$(x))      dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(f_readme$$(x))   dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(fbooks$$(x))                    nt
+!inject $$(fmedidoc$$(x))
+!inject $$(fpguide$$(x))    dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(ftools$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(fuguide$$(x))    dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(guitools$$(x))                                pdf  ps  html  wikihtml  wikipdf
+!inject $$(heapwalk$$(x))        win  chm  nt                     html
+!inject $$(ide$$(x))             win  chm  nt  os2  os2h          html
+!inject $$(lguide$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(owstl$$(x))                                                  wikihtml  wikipdf
+!inject $$(pguide$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(resacc$$(x))          win  chm  nt                     html
+!inject $$(rescomp$$(x))    dos  win  chm  nt  os2                html
+!inject $$(resdlg$$(x))          win  chm  nt                     html
+!inject $$(resedt$$(x))          win  chm  nt                     html
+!inject $$(resimg$$(x))          win  chm  nt                     html
+!inject $$(resmnu$$(x))          win  chm  nt                     html
+!inject $$(resstr$$(x))          win  chm  nt                     html
+!inject $$(spy$$(x))             win  chm  nt                     html
+!inject $$(vi$$(x))         dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(wasaxp$$(x))
+!inject $$(wbrw$$(x))            win  chm  nt  os2  os2h          html
+!inject $$(wccerrs$$(x))    dos  win  chm  nt  os2  os2h          html  wikihtml  wikipdf
+!inject $$(wd$$(x))         dos  win  chm  nt  os2  os2h pdf  ps  html  wikihtml  wikipdf
+!inject $$(wddoc$$(x))                                   pdf  ps  html  wikihtml  wikipdf
+!inject $$(wfcerrs$$(x))    dos  win  chm  nt  os2  os2h          html  wikihtml  wikipdf
+!inject $$(wjcerrs$$(x))
+!inject $$(wlnkerrs$$(x))        win  chm  nt       os2h          html
+!inject $$(wpidoc$$(x))                                  pdf  ps        wikihtml  wikipdf
+!inject $$(wpperrs$$(x))    dos  win  chm  nt  os2  os2h          html  wikihtml  wikipdf
+!inject $$(wprof$$(x))      dos  win  chm  nt  os2  os2h          html
+!inject $$(wrcerrs$$(x))         win  chm  nt       os2h          html
+!inject $$(zoom$$(x))            win  chm  nt                     html
+!inject $$(cmix$$(x))       dos  win           os2                html                     # depends on zoom, etc.
+!inject $$(fmix$$(x))       dos  win           os2                html                     # depends on zoom, etc.
+!inject $$(wgmlref$$(x))                                 pdf  ps        wikihtml  wikipdf
+!inject $$(wipfc$$(x))      dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 
 #
 # check configuration macros
@@ -84,7 +84,72 @@ mbooks_list=$($(hbook$(x)))
 mbooks_list=$($(docset))
 !endif
 
+c_readme = c_readme$$(e)
+cbooks   = cbooks$$(e)
+cgdoc    = cgdoc$$(e)
+cguide   = cguide$$(e)
+cguideq  = cguideq$$(e)
+clib     = clib$$(e)
+clib_fox = clib_fox$$(e)
+clib_nec = clib_nec$$(e)
+clib_nt  = clib_nt$$(e)
+clib_qnx = clib_qnx$$(e)
+clib_tst = clib_tst$$(e)
+clr      = clr$$(e)
+clslib   = clslib$$(e)
+cpplib   = cpplib$$(e)
+ctools   = ctools$$(e)
+cw       = cw$$(e)
+ddespy   = ddespy$$(e)
+devguide = devguide$$(e)
+drnt     = drnt$$(e)
+drwatcom = drwatcom$$(e)
+dwdoc    = dwdoc$$(e)
+ebooks   = ebooks$$(e)
+editor   = editor$$(e)
+f77graph = f77graph$$(e)
+f77lr    = f77lr$$(e)
+f_readme = f_readme$$(e)
+fbooks   = fbooks$$(e)
+fmedidoc = fmedidoc$$(e)
+fpguide  = fpguide$$(e)
+ftools   = ftools$$(e)
+fuguide  = fuguide$$(e)
+guitools = guitools$$(e)
+heapwalk = heapwalk$$(e)
+ide      = ide$$(e)
+lguide   = lguide$$(e)
+owstl    = owstl$$(e)
+pguide   = pguide$$(e)
+resacc   = resacc$$(e)
+rescomp  = rescomp$$(e)
+resdlg   = resdlg$$(e)
+resedt   = resedt$$(e)
+resimg   = resimg$$(e)
+resmnu   = resmnu$$(e)
+resstr   = resstr$$(e)
+spy      = spy$$(e)
+vi       = vi$$(e)
+wasaxp   = wasaxp$$(e)
+wbrw     = wbrw$$(e)
+wccerrs  = wccerrs$$(e)
+wd       = wd$$(e)
+wddoc    = wddoc$$(e)
+wfcerrs  = wfcerrs$$(e)
+wjcerrs  = wjcerrs$$(e)
+wlnkerrs = wlnkerrs$$(e)
+wpidoc   = wpidoc$$(e)
+wpperrs  = wpperrs$$(e)
+wprof    = wprof$$(e)
+wrcerrs  = wrcerrs$$(e)
+zoom     = zoom$$(e)
+cmix     = cmix$$(e)
+fmix     = fmix$$(e)
+wgmlref  = wgmlref$$(e)
+wipfc    = wipfc$$(e)
+
 x=
 books_list=$+$(mbooks_list)$-
 
 books=$+$(books_list)$-
+
