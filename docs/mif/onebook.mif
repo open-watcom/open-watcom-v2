@@ -15,8 +15,23 @@ lowercase = %null
 lowercase = %ren
 !endif
 
-!include ../mif/depends.mif
+#
+# wgml targets
+#
+!ifeq dotarget pdf
+wgml_target = ps
+!else ifeq dotarget chm
+wgml_target = html
+!else
+wgml_target = $(dotarget)
+!endif
+
+tmpdir     = tmp
+wikidir    = ..\wiki
+root_books = ../doc/books
+
 !include ../mif/books.mif
+!include ../mif/depends.mif
 
 wgml_cmdl_params = $^& ( file $(wgml_optfile)
 gendev_cmdl_params = $[@
@@ -510,8 +525,8 @@ prepare_whpcvt_opts : .PROCEDURE
 # Set up environment for the wgml utility
 #
 ####################################################
-wgml_optfile_1_cpplib   = @%append $(wgml_optfile) ( setsymbol target DOS
-wgml_optfile_1_guitools = @%append $(wgml_optfile) ( setsymbol allinone 1
+wgml_optfile_1_cpplib   = %append $(wgml_optfile) ( setsymbol target DOS
+wgml_optfile_1_guitools = %append $(wgml_optfile) ( setsymbol allinone 1
 
 wgml_optfile_2_f77lr    = nbpsshad.opt
 wgml_optfile_2_clr      = nbpsshad.opt
@@ -543,7 +558,7 @@ prepare_wgml_opts : .PROCEDURE
 # common settings for any processing
 #--------------------------------------
     @%create $(wgml_optfile)
-    $(wgml_optfile_1_$^&)
+    @$(wgml_optfile_1_$^&)
 # add default windowing for NT
 #    @%append $(wgml_optfile) ( setsymbol defwinnt 1
 # add default windowing for OS/2
@@ -561,8 +576,8 @@ prepare_wgml_opts : .PROCEDURE
 #
 # layout setting
 #
-    if not "$(wgml_optfile_2_$^&)" == "" @%append $(wgml_optfile) ( file $(wgml_optfile_2_$^&)
-    if "$(wgml_optfile_2_$^&)" == "" @%append $(wgml_optfile) ( file $(wgml_optfile_2)
+    @if not "$(wgml_optfile_2_$^&)" == "" @%append $(wgml_optfile) ( file $(wgml_optfile_2_$^&)
+    @if "$(wgml_optfile_2_$^&)" == "" @%append $(wgml_optfile) ( file $(wgml_optfile_2)
 #
 # change output format to 8.5x11i
 # remove it if you want old 7x9i format
@@ -571,8 +586,8 @@ prepare_wgml_opts : .PROCEDURE
 #
 # number of passes
 #
-    if not "$(wgml_optfile_3_$^&)" == "" @%append $(wgml_optfile) ( passes $(wgml_optfile_3_$^&)
-    if "$(wgml_optfile_3_$^&)" == "" @%append $(wgml_optfile) ( passes $(wgml_optfile_3)
+    @if not "$(wgml_optfile_3_$^&)" == "" @%append $(wgml_optfile) ( passes $(wgml_optfile_3_$^&)
+    @if "$(wgml_optfile_3_$^&)" == "" @%append $(wgml_optfile) ( passes $(wgml_optfile_3)
 #
 # output format
 #
