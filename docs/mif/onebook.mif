@@ -220,7 +220,7 @@ $(dirs):
 ####################################################
 !ifeq dotarget nt
 
-.EXTENSIONS: .hlp .hpj .cnt .rtf .cn1
+.EXTENSIONS: .hlp .hpj .cnt .rtf .cn1 .gml
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
 !ifeq bld_os linux
@@ -262,7 +262,7 @@ $(hbook).rtf $(hbook).cn1 $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book
 ####################################################
 !else ifeq dotarget win
 
-.EXTENSIONS: .hlp .hpj .rtf
+.EXTENSIONS: .hlp .hpj .rtf .gml
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh
     $(whc) $[@
@@ -280,7 +280,7 @@ $(hbook).rtf $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book_objs) $(proj
 ####################################################
 !else ifeq dotarget dos
 
-.EXTENSIONS: .ihp .ib
+.EXTENSIONS: .ihp .ib .gml
 
 $(hbook).ihp : $(hbook).ib
     $(hcdos) -h 25 -w 80 $[@ $@
@@ -291,19 +291,85 @@ $(hbook).ib $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 
 ####################################################
 #
-# make HTML files
+# make OS2 help files
 #
 ####################################################
-!else ifeq dotarget html
+!else ifeq dotarget os2
+
+.EXTENSIONS: .hlp .inf .ipf .gml
+
+$(hbook).inf : $(hbook).ipf
+    $(noecho)set IPFCARTWORK=$($^&_book_incs)
+    $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
+    $(wipfc) -q -inf $[@
+    $(lowercase) $@ $@    # change file name to lower case
+
+!ifdef $(hbook)_book_os2_help
+$(hbook).hlp : $(hbook).ipf
+    $(noecho)set IPFCARTWORK=$($^&_book_incs)
+    $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
+    $(wipfc) -q $[@
+    $(lowercase) $@ $@    # change file name to lower case
+!else
+$(hbook).hlp : .symbolic
+!endif
+
+$(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+    @%make compile_gml_to_xxx
 
 ####################################################
 #
+# make Post Script files
+# make Portable Document Format files
+#
+####################################################
+!else ifeq wgml_target ps
+
+!ifeq dotarget ps
+
+.EXTENSIONS: .ps .bmp .gml
+
+!else ifeq dotarget pdf
+
+.EXTENSIONS: .pdf .ps .bmp .gml
+
+$(hbook).pdf : $(hbook).ps
+    !$(hc_pdf) -r600 $[@ $@
+!ifeq docset wikipdf
+    $(noecho)copy $^&.pdf $(wikidir)\$^&.pdf
+!endif
+
+!endif
+
+$(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+    $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
+    %make prepare_wgml_opts
+    @%make echo_wgml
+    -$(noecho)$(WGMLCMD)
+    @if exist $@ $(noecho)%erase $@
+    $(noecho)%ren $(wgml_tmpfile) $@
+
+.bmp: $($(hbook)_book_bmroot)
+.ps: $(tmpdir)
+
+.bmp.ps:
+    $(bmp2eps) -c $< $(tmpdir)/$^.
+
+####################################################
+#
+# make HTML files
 # make HTML Help files
 #
 ####################################################
+!else ifeq wgml_target html
+
+!ifeq dotarget html
+
+.EXTENSIONS: .htm .gh .gml
+
 !else ifeq dotarget chm
 
-.EXTENSIONS: .chm
+.EXTENSIONS: .chm .htm .gh .gml
 
 $(hbook).chm : $(hbook).htm $(hbook).gh
     @if not exist $^& mkdir $^&
@@ -334,89 +400,7 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
     copy $^&/$^&.chm $^&.chm
 !endif
 
-####################################################
-#
-# make Post Script documentation
-#
-####################################################
-!else ifeq dotarget ps
-
-####################################################
-#
-# make Portable Document Format documentation
-#
-####################################################
-!else ifeq dotarget pdf
-
-.EXTENSIONS: .pdf
-
-$(hbook).pdf : $(hbook).ps
-    !$(hc_pdf) -r600 $[@ $@
-!ifeq docset wikipdf
-    $(noecho)copy $^&.pdf $(wikidir)\$^&.pdf
 !endif
-
-####################################################
-#
-# make OS2 help files
-#
-####################################################
-!else ifeq dotarget os2
-
-.EXTENSIONS: .hlp .inf .ipf
-
-$(hbook).inf : $(hbook).ipf
-    $(noecho)set IPFCARTWORK=$($^&_book_incs)
-    $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
-    $(wipfc) -q -inf $[@
-    $(lowercase) $@ $@    # change file name to lower case
-
-!ifdef $(hbook)_book_os2_help
-$(hbook).hlp : $(hbook).ipf
-    $(noecho)set IPFCARTWORK=$($^&_book_incs)
-    $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
-    $(wipfc) -q $[@
-    $(lowercase) $@ $@    # change file name to lower case
-!else
-$(hbook).hlp : .symbolic
-!endif
-
-$(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
-    @%make compile_gml_to_xxx
-
-!endif
-
-####################################################
-#
-# make Post Script
-#
-####################################################
-!ifeq wgml_target ps
-
-.EXTENSIONS: .ps .bmp
-
-$(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
-    $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
-    %make prepare_wgml_opts
-    @%make echo_wgml
-    -$(noecho)$(WGMLCMD)
-    @if exist $@ $(noecho)%erase $@
-    $(noecho)%ren $(wgml_tmpfile) $@
-
-.bmp: $($(hbook)_book_bmroot)
-.ps: $(tmpdir)
-
-.bmp.ps:
-    $(bmp2eps) -c $< $(tmpdir)/$^.
-
-####################################################
-#
-# make HTML
-#
-####################################################
-!else ifeq wgml_target html
-
-.EXTENSIONS: .htm
 
 $(hbook).gh $(hbook).htm : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 !ifneq dotarget chm
@@ -430,6 +414,7 @@ $(hbook).gh $(hbook).htm : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
     @for %f in (*.bmp) do @if not exist $(wikidir)\%f $(noecho)copy %f $(wikidir)\%f
 !endif
 
+####################################################
 !endif
 
 ####################################################
