@@ -115,7 +115,9 @@
 #define MAX_CC_OPTS 256
 
 #define IS_ASM(x)   (x[0] == '.' && (fname_cmp(x + 1, ASM_EXT) == 0 || stricmp(x + 1, ASMS_EXT) == 0))
-#define IS_FOR(x)   (x[0] == '.' && (fname_cmp(x + 1, "f") == 0 || stricmp(x + 1, "for") == 0 || fname_cmp(x + 1, "ftn") == 0))
+#define IS_FOR(x)   (x[0] == '.' && (fname_cmp(x + 1, "f") == 0 || stricmp(x + 1, "for") == 0 || \
+                    fname_cmp(x + 1, "ftn") == 0 || stricmp(x + 1, "f77") == 0 || \
+                    stricmp(x + 1, "f90") == 0 || stricmp(x + 1, "f95") == 0))
 #define IS_LIB(x)   (HasFileExtension( x, LIB_EXT ) || HasFileExtension( x, LIB_EXT_SECONDARY ))
 
 typedef enum {
