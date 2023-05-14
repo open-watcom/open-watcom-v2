@@ -80,6 +80,10 @@
 .dm warning begin
 .dm warning end
 .gt warning add warning att
+:cmt. :ERROR
+.dm error begin
+.dm error end
+.gt error add error att
 .*
 :cmt. :errgood.
 .dm errgood begin
