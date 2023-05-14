@@ -98,7 +98,8 @@ jobs:
           tar -cf "${{ steps.tarname.outputs.fullname }}" -J --overwrite $OWCOV_RESULTS_GITPATH
         fi
       shell: bash
-    - name: Upload Artifact
+    - if: vars.OWDEBUG == 1
+      name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name:             'coverity'
