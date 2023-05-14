@@ -114,7 +114,7 @@ hc_hh = hhc
 
 hcdos   = hcdos
 whc     = bwhc
-wipfc   = bwipfc
+ipfc    = bwipfc
 bmp2eps = bmp2eps
 
 #
@@ -301,13 +301,13 @@ $(hbook).ib $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 $(hbook).inf : $(hbook).ipf
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
-    $(wipfc) -q -inf $[@
+    $(ipfc) -q -inf $[@
     $(lowercase) $@ $@    # change file name to lower case
 
 $(hbook).hlp : $(hbook).ipf
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
-    $(wipfc) -q $[@
+    $(ipfc) -q $[@
     $(lowercase) $@ $@    # change file name to lower case
 
 $(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
