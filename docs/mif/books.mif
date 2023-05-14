@@ -152,4 +152,3 @@ x=
 books_list=$+$(mbooks_list)$-
 
 books=$+$(books_list)$-
-

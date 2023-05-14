@@ -3462,7 +3462,6 @@ ide_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 !endif
 ide_book_incs=$(incs_gui);$(incs_cg)
 ide_book_bmroot=$(bmroot_gui)
-ide_book_os2_help=1
 
 # lguide
 lguide_book_title=$(company) $(bld_ver_str) Linker Guide
@@ -3540,14 +3539,12 @@ wbrw_book_title=$(company) $(bld_ver_str) Source Browser
 wbrw_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 wbrw_book_incs=$(incs_gui);$(incs_cg)
 wbrw_book_bmroot=$(bmroot_gui)
-wbrw_book_os2_help=1
 
 # wccerrs
 wccerrs_book_title=$(company) $(bld_ver_str) C Diagnostic Messages
 wccerrs_book_objs=$(objs_cg) $(objs_plusplus) $(objs_cc)
 wccerrs_book_incs=$(incs_cg);$(incs_plusplus);$(incs_cc)
 wccerrs_book_bmroot=$(bmroot_cg)
-wccerrs_book_os2_help=1
 
 # wd
 wd_book_title=$(company) $(bld_ver_str) Debugger Guide
@@ -3559,34 +3556,29 @@ wd_book_objs=$(objs_wd) $(objs_wd_bmp)
 wd_book_incs=$(incs_wd)
 wd_book_bmroot=$(bmroot_wd)
 wd_book_multi_chapter=1
-wd_book_os2_help=1
 
 # wfcerrs
 wfcerrs_book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
 wfcerrs_book_objs=$(objs_fg) $(objs_wfc)
 wfcerrs_book_incs=$(incs_fg);$(incs_wfc)
 wfcerrs_book_bmroot=$(bmroot_fg)
-wfcerrs_book_os2_help=1
 
 # wjcerrs
 wjcerrs_book_title=Sybase Java Compiler Diagnostic Messages
 wjcerrs_book_objs=$(objs_cl)
 wjcerrs_book_incs=$(incs_cl)
 wjcerrs_book_bmroot=$(bmroot_cl)
-wjcerrs_book_os2_help=1
 
 # wlnkerrs
 wlnkerrs_book_title=$(company) $(bld_ver_str) Linker Diagnostic Messages
 wlnkerrs_book_objs=$(objs_lg)
 wlnkerrs_book_incs=$(incs_lg)
-wlnkerrs_book_os2_help=1
 
 # wpperrs
 wpperrs_book_title=$(company) $(bld_ver_str) C++ Diagnostic Messages
 wpperrs_book_objs=$(objs_cg) $(objs_plusplus)
 wpperrs_book_incs=$(incs_cg);$(incs_plusplus)
 wpperrs_book_bmroot=$(bmroot_cg)
-wpperrs_book_os2_help=1
 
 # wprof
 wprof_book_title=$(company) $(bld_ver_str) Profiler
@@ -3594,14 +3586,12 @@ wprof_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 wprof_book_incs=$(incs_gui);$(incs_cg)
 wprof_book_bmroot=$(bmroot_gui)
 wprof_book_multi_chapter=1
-wprof_book_os2_help=1
 
 # wrcerrs
 wrcerrs_book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messages
 wrcerrs_book_objs=$(objs_gui) $(objs_gui_bmp)
 wrcerrs_book_incs=$(incs_gui)
 wrcerrs_book_bmroot=$(bmroot_gui)
-wrcerrs_book_os2_help=1
 
 # zoom
 zoom_book_title=$(company) $(bld_ver_str) Zoom

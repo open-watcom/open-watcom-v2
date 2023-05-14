@@ -1,5 +1,7 @@
 proj_name = docs
 
+.JUST_ENOUGH
+
 !ifdef __UNIX__
 to_os_path=\=/
 !else
@@ -119,34 +121,50 @@ bmp2eps = bmp2eps
 # define what should be build
 # header file / documentation / nothing
 #
+hlpext_dos  = .ihp
+hlpext_win  = .hlp
+hlpext_chm  = .chm
+hlpext_nt   = .hlp
+hlpext_os2  = .inf
+hlpext_os2h = .hlp
+hlpext_pdf  = .pdf
+hlpext_ps   = .ps
+hlpext_html = .htm
 
 !ifeq header 1
-dep_nt = $(hbook).gh
-dep_win = $(hbook).gh
-dep_os2 = $(hbook).gh
-dep_dos = $(hbook).gh
+e=.gh
+files_to_build = $+$(books_list)$-
 !else
-! ifneq hc_nt
-dep_nt = $(hbook).hlp $(hbook).cnt
-! endif
-dep_win = $(hbook).hlp
-dep_os2 = $(hbook).inf $(hbook).hlp
-dep_dos = $(hbook).ihp
-dep_html = $(hbook).htm
-! ifneq hc_hh
-dep_chm = $(hbook).chm
-! else ifdef %OWCHMCMD
-dep_chm = $(hbook).chm
-! endif
-dep_ps = $(hbook).ps
-! ifneq hc_pdf
-dep_pdf = $(hbook).pdf
+e=$(hlpext_$(dotarget))
+files_to_build = $+$(books_list)$-
+! ifeq dotarget nt
+!  ifeq hc_hh
+files_to_build =
+!  endif
+! else ifeq dotarget os2
+!  ifdef hbook
+mx_list=$($(hbook))
+!  else
+mx_list=$(os2h)
+!  endif
+e=.hlp
+files_to_build += $+$(mx_list)$-
+! else ifeq dotarget pdf
+!  ifeq hc_pdf
+files_to_build =
+!  endif
+! else ifeq dotarget chm
+!  ifeq hc_hh
+!   ifndef %OWCHMCMD
+files_to_build =
+!   endif
+!  endif
 ! endif
 !endif
 
 #############################################################
 
-!ifdef dep_$(dotarget)
+!ifdef files_to_build
 .BEFORE
 ! ifneq header 1
 !  ifdef __UNIX__
@@ -205,7 +223,7 @@ dirs = $(tmpdir)
 !endif
 !endif
 
-all : $(dirs) $(dep_$(dotarget)) .SYMBOLIC
+all : $(dirs) $(files_to_build) .SYMBOLIC
     @%null
 
 !ifdef dirs
@@ -220,9 +238,10 @@ $(dirs):
 ####################################################
 !ifeq dotarget nt
 
-.EXTENSIONS: .hlp .hpj .cnt .rtf .cn1 .gml
+.EXTENSIONS: .hlp .rtf .gml
 
-$(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
+$(hbook).hlp : $(hbook).rtf
+    @%make compile_hpj_nt
 !ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
@@ -235,24 +254,7 @@ $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
     $(lowercase) $@ $@    # change file name to lower case
 !endif
 
-$(hbook).hpj : $(proj_objs)
-    @%make compile_hpj_nt
-
-!ifeq hbook cbooks
-$(hbook).cnt : $(root_gs)/$(hbook).cnt
-    awk -f ../makecnt1.awk $[@ > $@
-!else ifeq hbook ebooks
-$(hbook).cnt : $(root_gs)/$(hbook).cnt
-    awk -f ../makecnt1.awk $[@ > $@
-!else ifeq hbook fbooks
-$(hbook).cnt : $(root_gs)/$(hbook).cnt
-    awk -f ../makecnt1.awk $[@ > $@
-!else
-$(hbook).cnt : $(hbook).cn1
-    awk -f ../makecnt2.awk -v file=$^&.hlp -v title="$($^&_book_title)" -v multi=$($^&_book_multi_chapter) $[@ > $@
-!endif
-
-$(hbook).rtf $(hbook).cn1 $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+$(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -262,15 +264,13 @@ $(hbook).rtf $(hbook).cn1 $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book
 ####################################################
 !else ifeq dotarget win
 
-.EXTENSIONS: .hlp .hpj .rtf .gml
+.EXTENSIONS: .hlp .rtf .gml
 
-$(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh
+$(hbook).hlp : $(hbook).rtf
+    @%make compile_hpj_win
     $(whc) $[@
 
-$(hbook).hpj : $(proj_objs)
-    @%make compile_hpj_win
-
-$(hbook).rtf $(hbook).gh $(hbook).hh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+$(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -304,15 +304,11 @@ $(hbook).inf : $(hbook).ipf
     $(wipfc) -q -inf $[@
     $(lowercase) $@ $@    # change file name to lower case
 
-!ifdef $(hbook)_book_os2_help
 $(hbook).hlp : $(hbook).ipf
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(wipfc) -q $[@
     $(lowercase) $@ $@    # change file name to lower case
-!else
-$(hbook).hlp : .symbolic
-!endif
 
 $(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
@@ -623,7 +619,6 @@ prepare_wgml_opts : .PROCEDURE
 # !!!!!!!!!!!!!!!  IMPORTANT   !!!!!!!!!!!!!!!!!!!!
 #
 ####################################################
-
 compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.idx @%create $*.idx
     @if not exist $*.tbl @%create $*.tbl
@@ -646,74 +641,85 @@ compile_gml_to_xxx : .PROCEDURE
     @if exist $(wgml_sysfile_01) @%ren $(wgml_sysfile_01) $*.mix
     @if exist $*.gh @%erase $*.gh
     @%ren $(wgml_sysfile_02) $*.gh
-    @if exist $*.cn1 @%erase $*.cn1
-    @if not exist $(wgml_sysfile_03) @%create $*.cn1
-    @if exist $(wgml_sysfile_03) @%ren $(wgml_sysfile_03) $*.cn1
+!ifeq dotarget nt
+    @%make create_cnt_nt
+!endif
     whpcvt -h -@ $(whpcvt_optfile) $*.$(wgml2_ext)
 
 ####################################################
 compile_hpj_win : .PROCEDURE
-    @%create $@
-    @%append $@ ; This file is maintained by WMAKE. Do not modify this file directly.
-    @%append $@
-    @%append $@ [Options]
-    @%append $@ COMPRESS=TRUE
-    @%append $@ WARNING=3
-    @%append $@ CONTENTS=table_of_contents
-    @%append $@ Title=$($^&_book_title) Help
-    @%append $@ COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved.
+    @%create $*.hpj
+    @%append $*.hpj ; This file is maintained by WMAKE. Do not modify this file directly.
+    @%append $*.hpj
+    @%append $*.hpj [Options]
+    @%append $*.hpj COMPRESS=TRUE
+    @%append $*.hpj WARNING=3
+    @%append $*.hpj CONTENTS=table_of_contents
+    @%append $*.hpj Title=$($^&_book_title) Help
+    @%append $*.hpj COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved.
 !ifdef $^&_book_bmroot
-    @%append $@ BMROOT=$($^&_book_bmroot)
+    @%append $*.hpj BMROOT=$($^&_book_bmroot)
 !else
-    @%append $@ BMROOT=$($^&_book_incs)
+    @%append $*.hpj BMROOT=$($^&_book_incs)
 !endif
-    @%append $@ OLDKEYPHRASE=NO
-    @%append $@ ROOT=.
-    @%append $@ [Config]
-    @%append $@ BrowseButtons()
-    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$^&.hlp', `index_of_topics' )" )
-    @%append $@ CreateButton( "btn_up", "&Up", "Contents()" )
-    @%append $@ [Files]
-    @%append $@ $^&.rtf
-    @%append $@ [MAP]
-    @%append $@ $#include <$^&.hh>
-    @%append $@ ; end of HPJ file
+    @%append $*.hpj OLDKEYPHRASE=NO
+    @%append $*.hpj ROOT=.
+    @%append $*.hpj [Config]
+    @%append $*.hpj BrowseButtons()
+    @%append $*.hpj CreateButton( "btn_index", "&Index", "JumpId( `$^&.hlp', `index_of_topics' )" )
+    @%append $*.hpj CreateButton( "btn_up", "&Up", "Contents()" )
+    @%append $*.hpj [Files]
+    @%append $*.hpj $^&.rtf
+    @%append $*.hpj [MAP]
+    @%append $*.hpj $#include <$^&.hh>
+    @%append $*.hpj ; end of HPJ file
 
 ####################################################
 compile_hpj_nt : .PROCEDURE
-    @%create $@
-    @%append $@ ; This file is maintained by WMAKE. Do not modify this file directly.
-    @%append $@
-    @%append $@ [OPTIONS]
-    @%append $@ HCW=0
-    @%append $@ COMPRESS=60 Hall Zeck
-    @%append $@ LCID=0x409 0x0 0x0 ;English (United States)
-    @%append $@ REPORT=Yes
-    @%append $@ CONTENTS=table_of_contents
-    @%append $@ TITLE=$($^&_book_title) Help
-    @%append $@ COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
+    @%create $*.hpj
+    @%append $*.hpj ; This file is maintained by WMAKE. Do not modify this file directly.
+    @%append $*.hpj
+    @%append $*.hpj [OPTIONS]
+    @%append $*.hpj HCW=0
+    @%append $*.hpj COMPRESS=60 Hall Zeck
+    @%append $*.hpj LCID=0x409 0x0 0x0 ;English (United States)
+    @%append $*.hpj REPORT=Yes
+    @%append $*.hpj CONTENTS=table_of_contents
+    @%append $*.hpj TITLE=$($^&_book_title) Help
+    @%append $*.hpj COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
 !ifdef $^&_book_bmroot
-    @%append $@ BMROOT=$($^&_book_bmroot:/=\)
+    @%append $*.hpj BMROOT=$($^&_book_bmroot:/=\)
 !else
-    @%append $@ BMROOT=$($^&_book_incs:/=\)
+    @%append $*.hpj BMROOT=$($^&_book_incs:/=\)
 !endif
-    @%append $@ ROOT=.
-    @%append $@ HLP=.\$^&.hlp
-    @%append $@ ERRORLOG=.\$^&.err
-    @%append $@
-    @%append $@ [FILES]
-    @%append $@ $^&.rtf
-    @%append $@
-    @%append $@ [MAP]
-    @%append $@ $#include <$^&.hh>
-    @%append $@
-    @%append $@ [WINDOWS]
-    @%append $@ main="$($^&_book_title) Help",,28932
-    @%append $@
-    @%append $@ [CONFIG]
-    @%append $@ BrowseButtons()
-    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$^&.hlp', `index_of_topics' )" )
-    @%append $@ CreateButton( "btn_up", "&Up", "Contents()" )
+    @%append $*.hpj ROOT=.
+    @%append $*.hpj HLP=.\$^&.hlp
+    @%append $*.hpj ERRORLOG=.\$^&.err
+    @%append $*.hpj
+    @%append $*.hpj [FILES]
+    @%append $*.hpj $^&.rtf
+    @%append $*.hpj
+    @%append $*.hpj [MAP]
+    @%append $*.hpj $#include <$^&.hh>
+    @%append $*.hpj
+    @%append $*.hpj [WINDOWS]
+    @%append $*.hpj main="$($^&_book_title) Help",,28932
+    @%append $*.hpj
+    @%append $*.hpj [CONFIG]
+    @%append $*.hpj BrowseButtons()
+    @%append $*.hpj CreateButton( "btn_index", "&Index", "JumpId( `$^&.hlp', `index_of_topics' )" )
+    @%append $*.hpj CreateButton( "btn_up", "&Up", "Contents()" )
+
+####################################################
+create_cnt_nt_cbooks = 1
+create_cnt_nt_ebooks = 1
+create_cnt_nt_fbooks = 1
+####################################################
+create_cnt_nt : .PROCEDURE
+    @if exist $*.cnt @%erase $*.cnt
+    @if not exist $(wgml_sysfile_03) @%create $(wgml_sysfile_03)
+    @if not "$(create_cnt_nt_$^&)" == "" @awk -f ../makecnt1.awk $(root_gs)/$^&.cnt > $^&.cnt
+    @if "$(create_cnt_nt_$^&)" == "" @awk -f ../makecnt2.awk -v file=$^&.hlp -v title="$($^&_book_title)" -v multi=$($^&_book_multi_chapter) $(wgml_sysfile_03) > $^&.cnt
 
 ####################################################
 
