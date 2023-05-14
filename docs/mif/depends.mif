@@ -45,7 +45,7 @@ $(root_cg)/wcc_errs.gml &
 $(root_cg)/wpp_errs.gml
 bmroot_cg = $(root_cg)
 objs_cg_bmp = &
-$(root_cg)/cguide.bmp
+$(bmroot_cg)/cguide.bmp
 
 # cl sub-directory
 root_cl = ../doc/cl
@@ -121,7 +121,6 @@ $(root_cl)/program.gml &
 $(root_cl)/ptr16.gml &
 $(root_cl)/register.gml &
 $(root_cl)/regtypes.gml &
-$(root_cl)/shade.ps &
 $(root_cl)/statemen.gml &
 $(root_cl)/static.gml &
 $(root_cl)/statstg.gml &
@@ -140,10 +139,11 @@ $(root_cl)/union.gml &
 $(root_cl)/usebook.gml &
 $(root_cl)/uses.gml &
 $(root_cl)/void.gml &
-$(root_cl)/volatile.gml
+$(root_cl)/volatile.gml &
+$(root_cl)/shade.ps
 bmroot_cl = $(root_cl)
 objs_cl_bmp = &
-$(root_cl)/clr.bmp
+$(bmroot_cl)/clr.bmp
 
 # cmn sub-directory
 root_cmn = ../doc/cmn
@@ -334,7 +334,7 @@ $(root_fg)/wfc_errs.gml &
 $(root_fg)/wfcopts.gml
 bmroot_fg = $(root_fg)
 objs_fg_bmp = &
-$(root_fg)/fguide.bmp
+$(bmroot_fg)/fguide.bmp
 
 # fl sub-directory
 root_fl = ../doc/fl
@@ -517,8 +517,8 @@ $(root_gs)/fbooks.cnt &
 $(root_gs)/f_books.gml
 bmroot_gs = $(root_gs)
 objs_gs_books_bmp = &
-$(root_gs)/cbooks.bmp &
-$(root_gs)/fbooks.bmp
+$(bmroot_gs)/cbooks.bmp &
+$(bmroot_gs)/fbooks.bmp
 !ifeq wgml_target ps
 objs_gs_readme_ps = &
 $(tmpdir)/ide10c.ps &
@@ -569,7 +569,6 @@ $(bmroot_gs)/ide9f.bmp
 
 # gui;gui/snaps sub-directory
 root_gui = ../doc/gui
-bmroot_gui = $(root_gui)/snaps
 incs_gui = $(root_gui);$(bmroot_gui)
 objs_gui = &
 $(root_gui)/guitool.gml &
@@ -598,6 +597,7 @@ $(root_gui)/wrc_errs.gml &
 $(root_gui)/wrcerrs1.gml &
 $(root_gui)/wrcmacs.gml &
 $(root_gui)/wre.gml
+bmroot_gui = $(root_gui)/snaps
 !ifeq wgml_target ps
 objs_gui_ps = &
 $(tmpdir)/acc1.ps &
@@ -784,7 +784,7 @@ $(tmpdir)/wprof08.ps &
 $(tmpdir)/wzm1.ps &
 $(tmpdir)/wzm2.ps
 !else
-objs_gui_bmp = &
+objs_gui_resacc_bmp = &
 $(bmroot_gui)/acc1.bmp &
 $(bmroot_gui)/acc10.bmp &
 $(bmroot_gui)/acc11.bmp &
@@ -797,8 +797,8 @@ $(bmroot_gui)/acc5.bmp &
 $(bmroot_gui)/acc6.bmp &
 $(bmroot_gui)/acc7.bmp &
 $(bmroot_gui)/acc8.bmp &
-$(bmroot_gui)/acc9.bmp &
-$(bmroot_gui)/bmatch.bmp &
+$(bmroot_gui)/acc9.bmp
+objs_gui_wbrw_bmp = &
 $(bmroot_gui)/brow1.bmp &
 $(bmroot_gui)/brow10.bmp &
 $(bmroot_gui)/brow11.bmp &
@@ -817,10 +817,8 @@ $(bmroot_gui)/brow5.bmp &
 $(bmroot_gui)/brow6.bmp &
 $(bmroot_gui)/brow7.bmp &
 $(bmroot_gui)/brow8.bmp &
-$(bmroot_gui)/brow9.bmp &
-$(bmroot_gui)/browtarg.bmp &
-$(bmroot_gui)/copy.bmp &
-$(bmroot_gui)/cut.bmp &
+$(bmroot_gui)/brow9.bmp
+objs_gui_ddespy_bmp = &
 $(bmroot_gui)/dde1.bmp &
 $(bmroot_gui)/dde1a.bmp &
 $(bmroot_gui)/dde10.bmp &
@@ -830,8 +828,8 @@ $(bmroot_gui)/dde13.bmp &
 $(bmroot_gui)/dde2.bmp &
 $(bmroot_gui)/dde5.bmp &
 $(bmroot_gui)/dde6.bmp &
-$(bmroot_gui)/dde9.bmp &
-$(bmroot_gui)/debgtarg.bmp &
+$(bmroot_gui)/dde9.bmp
+objs_gui_resdlg_bmp = &
 $(bmroot_gui)/dia1.bmp &
 $(bmroot_gui)/dia10.bmp &
 $(bmroot_gui)/dia11.bmp &
@@ -842,7 +840,8 @@ $(bmroot_gui)/dia5.bmp &
 $(bmroot_gui)/dia6.bmp &
 $(bmroot_gui)/dia7.bmp &
 $(bmroot_gui)/dia8.bmp &
-$(bmroot_gui)/dia9.bmp &
+$(bmroot_gui)/dia9.bmp
+objs_gui_drwatcom_bmp = &
 $(bmroot_gui)/drw1.bmp &
 $(bmroot_gui)/drw10.bmp &
 $(bmroot_gui)/drw11.bmp &
@@ -858,11 +857,8 @@ $(bmroot_gui)/drw5.bmp &
 $(bmroot_gui)/drw6.bmp &
 $(bmroot_gui)/drw7.bmp &
 $(bmroot_gui)/drw8.bmp &
-$(bmroot_gui)/drw9.bmp &
-$(bmroot_gui)/edititem.bmp &
-$(bmroot_gui)/files.bmp &
-$(bmroot_gui)/finddlg.bmp &
-$(bmroot_gui)/hammer.bmp &
+$(bmroot_gui)/drw9.bmp
+objs_gui_heapwalk_bmp = &
 $(bmroot_gui)/hw1.bmp &
 $(bmroot_gui)/hw10.bmp &
 $(bmroot_gui)/hw11.bmp &
@@ -878,7 +874,11 @@ $(bmroot_gui)/hw5.bmp &
 $(bmroot_gui)/hw6.bmp &
 $(bmroot_gui)/hw7.bmp &
 $(bmroot_gui)/hw8.bmp &
-$(bmroot_gui)/hw9.bmp &
+$(bmroot_gui)/hw9.bmp
+objs_gui_ide_bmp = &
+$(bmroot_gui)/browtarg.bmp &
+$(bmroot_gui)/debgtarg.bmp &
+$(bmroot_gui)/edititem.bmp &
 $(bmroot_gui)/ide1.bmp &
 $(bmroot_gui)/ide10.bmp &
 $(bmroot_gui)/ide11.bmp &
@@ -909,16 +909,25 @@ $(bmroot_gui)/ide7.bmp &
 $(bmroot_gui)/ide8.bmp &
 $(bmroot_gui)/ide9.bmp &
 $(bmroot_gui)/ide_s.bmp &
+$(bmroot_gui)/makeitem.bmp &
+$(bmroot_gui)/makeproj.bmp &
+$(bmroot_gui)/maketarg.bmp &
+$(bmroot_gui)/newproj.bmp &
+$(bmroot_gui)/openproj.bmp &
+$(bmroot_gui)/proftarg.bmp &
+$(bmroot_gui)/rdbgtarg.bmp &
+$(bmroot_gui)/runtarg.bmp &
+$(bmroot_gui)/samptarg.bmp &
+$(bmroot_gui)/saveproj.bmp
+objs_gui_resimg_bmp = &
 $(bmroot_gui)/img1.bmp &
 $(bmroot_gui)/img2.bmp &
 $(bmroot_gui)/img3.bmp &
 $(bmroot_gui)/img4.bmp &
 $(bmroot_gui)/img5.bmp &
 $(bmroot_gui)/img6.bmp &
-$(bmroot_gui)/img7.bmp &
-$(bmroot_gui)/makeitem.bmp &
-$(bmroot_gui)/makeproj.bmp &
-$(bmroot_gui)/maketarg.bmp &
+$(bmroot_gui)/img7.bmp
+objs_gui_resmnu_bmp = &
 $(bmroot_gui)/mnu4.bmp &
 $(bmroot_gui)/mnu1.bmp &
 $(bmroot_gui)/mnu2.bmp &
@@ -927,17 +936,8 @@ $(bmroot_gui)/mnu5.bmp &
 $(bmroot_gui)/mnu6.bmp &
 $(bmroot_gui)/mnu7.bmp &
 $(bmroot_gui)/mnu8.bmp &
-$(bmroot_gui)/mnu9.bmp &
-$(bmroot_gui)/new.bmp &
-$(bmroot_gui)/newproj.bmp &
-$(bmroot_gui)/nextfile.bmp &
-$(bmroot_gui)/open.bmp &
-$(bmroot_gui)/openproj.bmp &
-$(bmroot_gui)/paste.bmp &
-$(bmroot_gui)/prevfile.bmp &
-$(bmroot_gui)/proftarg.bmp &
-$(bmroot_gui)/redo.bmp &
-$(bmroot_gui)/refind.bmp &
+$(bmroot_gui)/mnu9.bmp
+objs_gui_resedt_bmp = &
 $(bmroot_gui)/res1.bmp &
 $(bmroot_gui)/res10.bmp &
 $(bmroot_gui)/res11.bmp &
@@ -949,12 +949,8 @@ $(bmroot_gui)/res5.bmp &
 $(bmroot_gui)/res6.bmp &
 $(bmroot_gui)/res7.bmp &
 $(bmroot_gui)/res8.bmp &
-$(bmroot_gui)/res9.bmp &
-$(bmroot_gui)/rdbgtarg.bmp &
-$(bmroot_gui)/runtarg.bmp &
-$(bmroot_gui)/samptarg.bmp &
-$(bmroot_gui)/save.bmp &
-$(bmroot_gui)/saveproj.bmp &
+$(bmroot_gui)/res9.bmp
+objs_gui_spy_bmp = &
 $(bmroot_gui)/spy1.bmp &
 $(bmroot_gui)/spy1a.bmp &
 $(bmroot_gui)/spy10.bmp &
@@ -964,7 +960,8 @@ $(bmroot_gui)/spy2.bmp &
 $(bmroot_gui)/spy5.bmp &
 $(bmroot_gui)/spy6.bmp &
 $(bmroot_gui)/spy8.bmp &
-$(bmroot_gui)/spy9.bmp &
+$(bmroot_gui)/spy9.bmp
+objs_gui_resstr_bmp = &
 $(bmroot_gui)/str1.bmp &
 $(bmroot_gui)/str2.bmp &
 $(bmroot_gui)/str3.bmp &
@@ -972,7 +969,22 @@ $(bmroot_gui)/str4.bmp &
 $(bmroot_gui)/str5.bmp &
 $(bmroot_gui)/str6.bmp &
 $(bmroot_gui)/str7.bmp &
-$(bmroot_gui)/str8.bmp &
+$(bmroot_gui)/str8.bmp
+objs_gui_editor_bmp = &
+$(bmroot_gui)/bmatch.bmp &
+$(bmroot_gui)/copy.bmp &
+$(bmroot_gui)/cut.bmp &
+$(bmroot_gui)/files.bmp &
+$(bmroot_gui)/finddlg.bmp &
+$(bmroot_gui)/hammer.bmp &
+$(bmroot_gui)/new.bmp &
+$(bmroot_gui)/nextfile.bmp &
+$(bmroot_gui)/open.bmp &
+$(bmroot_gui)/paste.bmp &
+$(bmroot_gui)/prevfile.bmp &
+$(bmroot_gui)/redo.bmp &
+$(bmroot_gui)/refind.bmp &
+$(bmroot_gui)/save.bmp &
 $(bmroot_gui)/undo.bmp &
 $(bmroot_gui)/vi0.bmp &
 $(bmroot_gui)/vi1.bmp &
@@ -986,7 +998,8 @@ $(bmroot_gui)/vi5.bmp &
 $(bmroot_gui)/vi6.bmp &
 $(bmroot_gui)/vi7.bmp &
 $(bmroot_gui)/vi8.bmp &
-$(bmroot_gui)/vi9.bmp &
+$(bmroot_gui)/vi9.bmp
+objs_gui_wprof_bmp = &
 $(bmroot_gui)/wprof01.bmp &
 $(bmroot_gui)/wprof02.bmp &
 $(bmroot_gui)/wprof03.bmp &
@@ -994,9 +1007,26 @@ $(bmroot_gui)/wprof04.bmp &
 $(bmroot_gui)/wprof05.bmp &
 $(bmroot_gui)/wprof06.bmp &
 $(bmroot_gui)/wprof07.bmp &
-$(bmroot_gui)/wprof08.bmp &
+$(bmroot_gui)/wprof08.bmp
+objs_gui_zoom_bmp = &
 $(bmroot_gui)/wzm1.bmp &
 $(bmroot_gui)/wzm2.bmp
+objs_gui_bmp = &
+$(objs_gui_resacc_bmp) &
+$(objs_gui_wbrw_bmp) &
+$(objs_gui_ddespy_bmp) &
+$(objs_gui_resdlg_bmp) &
+$(objs_gui_drwatcom_bmp) &
+$(objs_gui_heapwalk_bmp) &
+$(objs_gui_ide_bmp) &
+$(objs_gui_resimg_bmp) &
+$(objs_gui_resmnu_bmp) &
+$(objs_gui_resedt_bmp) &
+$(objs_gui_spy_bmp) &
+$(objs_gui_resstr_bmp) &
+$(objs_gui_editor_bmp) &
+$(objs_gui_wprof_bmp) &
+$(objs_gui_zoom_bmp)
 !endif
 
 # lg sub-directory
@@ -2271,50 +2301,50 @@ $(root_lr_graphr)/grsyms.gml
 bmroot_lr_graph = $(root_lr_graph)
 !ifeq wgml_target ps
 objs_lr_graph_ps = &
-$(root_lr_graph)/eg_arc.ps &
-$(root_lr_graph)/eg_ellip.ps &
-$(root_lr_graph)/eg_getai.ps &
-$(root_lr_graph)/eg_getfm.ps &
-$(root_lr_graph)/eg_getls.ps &
-$(root_lr_graph)/eg_gette.ps &
-$(root_lr_graph)/eg_getts.ps &
-$(root_lr_graph)/eg_grtxt.ps &
-$(root_lr_graph)/eg_movto.ps &
-$(root_lr_graph)/eg_pgc.ps &
-$(root_lr_graph)/eg_pgcp.ps &
-$(root_lr_graph)/eg_pgcs.ps &
-$(root_lr_graph)/eg_pie.ps &
-$(root_lr_graph)/eg_polyg.ps &
-$(root_lr_graph)/eg_rect.ps &
-$(root_lr_graph)/eg_setcs.ps &
-$(root_lr_graph)/eg_setta.ps &
-$(root_lr_graph)/eg_setto.ps &
-$(root_lr_graph)/eg_settx.ps &
-$(root_lr_graph)/pic1.ps &
-$(root_lr_graph)/pic2.ps
+$(bmroot_lr_graph)/eg_arc.ps &
+$(bmroot_lr_graph)/eg_ellip.ps &
+$(bmroot_lr_graph)/eg_getai.ps &
+$(bmroot_lr_graph)/eg_getfm.ps &
+$(bmroot_lr_graph)/eg_getls.ps &
+$(bmroot_lr_graph)/eg_gette.ps &
+$(bmroot_lr_graph)/eg_getts.ps &
+$(bmroot_lr_graph)/eg_grtxt.ps &
+$(bmroot_lr_graph)/eg_movto.ps &
+$(bmroot_lr_graph)/eg_pgc.ps &
+$(bmroot_lr_graph)/eg_pgcp.ps &
+$(bmroot_lr_graph)/eg_pgcs.ps &
+$(bmroot_lr_graph)/eg_pie.ps &
+$(bmroot_lr_graph)/eg_polyg.ps &
+$(bmroot_lr_graph)/eg_rect.ps &
+$(bmroot_lr_graph)/eg_setcs.ps &
+$(bmroot_lr_graph)/eg_setta.ps &
+$(bmroot_lr_graph)/eg_setto.ps &
+$(bmroot_lr_graph)/eg_settx.ps &
+$(bmroot_lr_graph)/pic1.ps &
+$(bmroot_lr_graph)/pic2.ps
 !else
 objs_lr_graph_bmp = &
-$(root_lr_graph)/eg_arc.bmp &
-$(root_lr_graph)/eg_ellip.bmp &
-$(root_lr_graph)/eg_getai.bmp &
-$(root_lr_graph)/eg_getfm.bmp &
-$(root_lr_graph)/eg_getls.bmp &
-$(root_lr_graph)/eg_gette.bmp &
-$(root_lr_graph)/eg_getts.bmp &
-$(root_lr_graph)/eg_grtxt.bmp &
-$(root_lr_graph)/eg_movto.bmp &
-$(root_lr_graph)/eg_pgc.bmp &
-$(root_lr_graph)/eg_pgcp.bmp &
-$(root_lr_graph)/eg_pgcs.bmp &
-$(root_lr_graph)/eg_pie.bmp &
-$(root_lr_graph)/eg_polyg.bmp &
-$(root_lr_graph)/eg_rect.bmp &
-$(root_lr_graph)/eg_setcs.bmp &
-$(root_lr_graph)/eg_setta.bmp &
-$(root_lr_graph)/eg_setto.bmp &
-$(root_lr_graph)/eg_settx.bmp &
-$(root_lr_graph)/pic1.bmp &
-$(root_lr_graph)/pic2.bmp
+$(bmroot_lr_graph)/eg_arc.bmp &
+$(bmroot_lr_graph)/eg_ellip.bmp &
+$(bmroot_lr_graph)/eg_getai.bmp &
+$(bmroot_lr_graph)/eg_getfm.bmp &
+$(bmroot_lr_graph)/eg_getls.bmp &
+$(bmroot_lr_graph)/eg_gette.bmp &
+$(bmroot_lr_graph)/eg_getts.bmp &
+$(bmroot_lr_graph)/eg_grtxt.bmp &
+$(bmroot_lr_graph)/eg_movto.bmp &
+$(bmroot_lr_graph)/eg_pgc.bmp &
+$(bmroot_lr_graph)/eg_pgcp.bmp &
+$(bmroot_lr_graph)/eg_pgcs.bmp &
+$(bmroot_lr_graph)/eg_pie.bmp &
+$(bmroot_lr_graph)/eg_polyg.bmp &
+$(bmroot_lr_graph)/eg_rect.bmp &
+$(bmroot_lr_graph)/eg_setcs.bmp &
+$(bmroot_lr_graph)/eg_setta.bmp &
+$(bmroot_lr_graph)/eg_setto.bmp &
+$(bmroot_lr_graph)/eg_settx.bmp &
+$(bmroot_lr_graph)/pic1.bmp &
+$(bmroot_lr_graph)/pic2.bmp
 !endif
 
 # owstl
@@ -2400,8 +2430,8 @@ $(bmroot_pg)/struct.ps &
 $(bmroot_pg)/struct2.ps
 !else
 objs_pg_bmp = &
-$(root_pg)/fpguide.bmp &
-$(root_pg)/pguide.bmp &
+$(bmroot_pg)/fpguide.bmp &
+$(bmroot_pg)/pguide.bmp &
 $(bmroot_pg)/fstruct.bmp &
 $(bmroot_pg)/mem1.bmp &
 $(bmroot_pg)/mem2.bmp &
@@ -2432,7 +2462,6 @@ objs_rsi = &
 
 # wd sub-directory
 root_wd = ../doc/wd
-bmroot_wd = $(root_wd)
 incs_wd = $(root_wd)
 objs_wd = &
 $(root_wd)/brian.ans &
@@ -2459,6 +2488,7 @@ $(root_wd)/wdbgstrt.gml &
 $(root_wd)/wdbgsymb.gml &
 $(root_wd)/wdbgtech.gml &
 $(root_wd)/wdbgwire.gml
+bmroot_wd = $(root_wd)
 !ifeq wgml_target ps
 objs_wd_ps = &
 $(tmpdir)/dbg87.ps &
@@ -3191,7 +3221,6 @@ $(bmroot_wgmlref)/wgmlmain.bmp
 
 # wipfc sub-directory
 root_wipfc = ../doc/wipfc
-bmroot_wipfc = $(root_wipfc)
 incs_wipfc = $(root_wipfc)
 objs_wipfc = &
 $(root_wipfc)/ipfcref.gml &
@@ -3372,7 +3401,8 @@ clib_tst_book_multi_chapter=1
 
 # clr
 clr_book_title=$(company) $(bld_ver_str) C Language Reference
-clr_book_objs=$(objs_cl)
+clr_book_bmps=$(objs_cl_bmp)
+clr_book_objs=$(objs_cl) $(objs_cl_bmp)
 clr_book_incs=$(incs_cl)
 clr_book_bmroot=$(bmroot_cl)
 clr_book_multi_chapter=1
@@ -3407,7 +3437,8 @@ cw_book_incs=$(incs_cw);$(incs_cmn)
 
 # ddespy
 ddespy_book_title=$(company) $(bld_ver_str) DDE Spy
-ddespy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+ddespy_book_bmps=$(objs_gui_ddespy_bmp) $(objs_gui_drwatcom_bmp) $(objs_gui_spy_bmp)
+ddespy_book_objs=$(objs_gui) $(objs_gui_ddespy_bmp) $(objs_gui_drwatcom_bmp) $(objs_gui_spy_bmp) $(objs_cg)
 ddespy_book_incs=$(incs_gui);$(incs_cg)
 ddespy_book_bmroot=$(bmroot_gui)
 
@@ -3418,13 +3449,15 @@ devguide_book_incs=$(incs_devguide);$(incs_cmn)
 
 # drnt
 drnt_book_title=Dr. Watcom $(bld_ver_str) NT
-drnt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+drnt_book_bmps=$(objs_gui_drwatcom_bmp)
+drnt_book_objs=$(objs_gui) $(objs_gui_drwatcom_bmp) $(objs_cg)
 drnt_book_incs=$(incs_gui);$(incs_cg)
 drnt_book_bmroot=$(bmroot_gui)
 
 # drwatcom
 drwatcom_book_title=Dr. Watcom $(bld_ver_str)
-drwatcom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+drwatcom_book_bmps=$(objs_gui_drwatcom_bmp)
+drwatcom_book_objs=$(objs_gui) $(objs_gui_drwatcom_bmp) $(objs_cg)
 drwatcom_book_incs=$(incs_gui);$(incs_cg)
 drwatcom_book_bmroot=$(bmroot_gui)
 
@@ -3437,7 +3470,8 @@ ebooks_book_bmroot=$(bmroot_gs)
 
 # editor
 editor_book_title=$(company) $(bld_ver_str) Editor
-editor_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+editor_book_bmps=$(objs_gui_editor_bmp)
+editor_book_objs=$(objs_gui) $(objs_gui_editor_bmp) $(objs_cg)
 editor_book_incs=$(incs_gui);$(incs_cg)
 editor_book_bmroot=$(bmroot_gui)
 editor_book_multi_chapter=1
@@ -3498,7 +3532,8 @@ fpguide_book_multi_chapter=1
 
 # ftools
 ftools_book_title=$(company) $(bld_ver_str) FORTRAN 77 Tools User's Guide
-ftools_book_objs=$(objs_cmn) $(objs_lg) $(objs_fg)
+ftools_book_bmps=$(objs_fg_bmp)
+ftools_book_objs=$(objs_cmn) $(objs_fg_bmp) $(objs_lg) $(objs_fg)
 ftools_book_incs=$(incs_cmn);$(incs_lg);$(incs_fg)
 ftools_book_bmroot=$(bmroot_fg)
 ftools_book_multi_chapter=1
@@ -3523,17 +3558,18 @@ guitools_book_bmroot=$(bmroot_gui)
 
 # heapwalk
 heapwalk_book_title=$(company) $(bld_ver_str) Heap Walker
-heapwalk_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+heapwalk_book_bmps=$(objs_gui_heapwalk_bmp)
+heapwalk_book_objs=$(objs_gui) $(objs_gui_heapwalk_bmp) $(objs_cg)
 heapwalk_book_incs=$(incs_gui);$(incs_cg)
 heapwalk_book_bmroot=$(bmroot_gui)
 
 # ide
 ide_book_title=$(company) $(bld_ver_str) IDE
 !ifeq wgml_target ps
-ide_book_objs=$(objs_gui) $(objs_gui_ps) $(objs_cg)
+ide_book_objs=$(objs_gui) $(objs_gui_ide_ps) $(objs_cg)
 !else
-ide_book_bmps=$(objs_gui_bmp)
-ide_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+ide_book_bmps=$(objs_gui_ide_bmp)
+ide_book_objs=$(objs_gui) $(objs_gui_ide_bmp) $(objs_cg)
 !endif
 ide_book_incs=$(incs_gui);$(incs_cg)
 ide_book_bmroot=$(bmroot_gui)
@@ -3563,49 +3599,55 @@ pguide_book_multi_chapter=1
 
 # resacc
 resacc_book_title=$(company) $(bld_ver_str) Accelerator Editor
-resacc_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resacc_book_bmps=$(objs_gui_resacc_bmp)
+resacc_book_objs=$(objs_gui) $(objs_gui_resacc_bmp) $(objs_cg)
 resacc_book_incs=$(incs_gui);$(incs_cg)
 resacc_book_bmroot=$(bmroot_gui)
 
 # rescomp
 rescomp_book_title=$(company) $(bld_ver_str) Resource Compiler
-rescomp_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+rescomp_book_objs=$(objs_gui) $(objs_cg)
 rescomp_book_incs=$(incs_gui);$(incs_cg)
-rescomp_book_bmroot=$(bmroot_gui)
 
 # resdlg
 resdlg_book_title=$(company) $(bld_ver_str) Dialog Editor
-resdlg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resdlg_book_bmps=$(objs_gui_resdlg_bmp)
+resdlg_book_objs=$(objs_gui) $(objs_gui_resdlg_bmp) $(objs_cg)
 resdlg_book_incs=$(incs_gui);$(incs_cg)
 resdlg_book_bmroot=$(bmroot_gui)
 
 # resedt
 resedt_book_title=$(company) $(bld_ver_str) Resource Editor
-resedt_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resedt_book_bmps=$(objs_gui_resedt_bmp)
+resedt_book_objs=$(objs_gui) $(objs_gui_resedt_bmp) $(objs_cg)
 resedt_book_incs=$(incs_gui);$(incs_cg)
 resedt_book_bmroot=$(bmroot_gui)
 
 # resimg
 resimg_book_title=$(company) $(bld_ver_str) Image Editor
-resimg_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resimg_book_bmps=$(objs_gui_resimg_bmp)
+resimg_book_objs=$(objs_gui) $(objs_gui_resimg_bmp) $(objs_cg)
 resimg_book_incs=$(incs_gui);$(incs_cg)
 resimg_book_bmroot=$(bmroot_gui)
 
 # resmnu
 resmnu_book_title=$(company) $(bld_ver_str) Menu Editor
-resmnu_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resmnu_book_bmps=$(objs_gui_resmnu_bmp)
+resmnu_book_objs=$(objs_gui) $(objs_gui_resmnu_bmp) $(objs_cg)
 resmnu_book_incs=$(incs_gui);$(incs_cg)
 resmnu_book_bmroot=$(bmroot_gui)
 
 # resstr
 resstr_book_title=$(company) $(bld_ver_str) String Table Editor
-resstr_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+resstr_book_bmps=$(objs_gui_resstr_bmp)
+resstr_book_objs=$(objs_gui) $(objs_gui_resstr_bmp) $(objs_cg)
 resstr_book_incs=$(incs_gui);$(incs_cg)
 resstr_book_bmroot=$(bmroot_gui)
 
 # spy
 spy_book_title=$(company) $(bld_ver_str) Spy
-spy_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+spy_book_bmps=$(objs_gui_spy_bmp) $(objs_gui_drwatcom_bmp)
+spy_book_objs=$(objs_gui) $(objs_gui_spy_bmp) $(objs_gui_drwatcom_bmp) $(objs_cg)
 spy_book_incs=$(incs_gui);$(incs_cg)
 spy_book_bmroot=$(bmroot_gui)
 
@@ -3616,7 +3658,8 @@ wasaxp_book_incs=$(incs_cmn)
 
 # wbrw
 wbrw_book_title=$(company) $(bld_ver_str) Source Browser
-wbrw_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+wbrw_book_bmps=$(objs_gui_wbrw_bmp)
+wbrw_book_objs=$(objs_gui) $(objs_gui_wbrw_bmp) $(objs_cg)
 wbrw_book_incs=$(incs_gui);$(incs_cg)
 wbrw_book_bmroot=$(bmroot_gui)
 
@@ -3659,7 +3702,8 @@ wpperrs_book_incs=$(incs_cg);$(incs_plusplus)
 
 # wprof
 wprof_book_title=$(company) $(bld_ver_str) Profiler
-wprof_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+wprof_book_bmps=$(objs_gui_wprof_bmp)
+wprof_book_objs=$(objs_gui) $(objs_gui_wprof_bmp) $(objs_cg)
 wprof_book_incs=$(incs_gui);$(incs_cg)
 wprof_book_bmroot=$(bmroot_gui)
 wprof_book_multi_chapter=1
@@ -3671,7 +3715,8 @@ wrcerrs_book_incs=$(incs_gui)
 
 # zoom
 zoom_book_title=$(company) $(bld_ver_str) Zoom
-zoom_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+zoom_book_bmps=$(objs_gui_zoom_bmp)
+zoom_book_objs=$(objs_gui) $(objs_gui_zoom_bmp) $(objs_cg)
 zoom_book_incs=$(incs_gui);$(incs_cg)
 zoom_book_bmroot=$(bmroot_gui)
 
