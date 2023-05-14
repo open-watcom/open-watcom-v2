@@ -2541,6 +2541,7 @@ $(bmroot_wd)/dbgvar.bmp &
 $(bmroot_wd)/dbgxmmb.bmp &
 $(bmroot_wd)/dlgbrk.bmp &
 $(bmroot_wd)/dlgopt.bmp &
+$(bmroot_wd)/dlgsrch.bmp &
 $(bmroot_wd)/dlgwopt.bmp
 !endif
 
@@ -2574,8 +2575,7 @@ $(root_win386)/windefs.gml &
 $(root_win386)/windemos.gml &
 $(root_win386)/winfun16.gml &
 $(root_win386)/winfuns.gml &
-$(root_win386)/winspvar.gml &
-
+$(root_win386)/winspvar.gml
 
 # gml sub-directory
 gml_incs = ../doc/gml
@@ -2690,14 +2690,15 @@ objs_dwdoc = &
 ../../bld/dwarf/dw/doc/extra.gml
 
 # wddoc sub-directory
-incs_wddoc = ../../bld/wv/doc
+root_wddoc = ../../bld/wv/doc
+incs_wddoc = $(root_wddoc)
 objs_wddoc = &
-../../bld/wv/doc/dbg.gml &
-../../bld/wv/doc/ovl.gml &
-../../bld/wv/doc/trap.gml &
-../../bld/wv/doc/wtrap.gml &
-../../bld/wv/doc/wdref.gml &
-../../bld/wv/doc/extra.gml
+$(root_wddoc)/dbg.gml &
+$(root_wddoc)/ovl.gml &
+$(root_wddoc)/trap.gml &
+$(root_wddoc)/wtrap.gml &
+$(root_wddoc)/wdref.gml &
+$(root_wddoc)/extra.gml
 
 # vi sub-directory
 root_vi = ../doc/vi
@@ -2808,7 +2809,7 @@ $(bmroot_vi)/vi031.bmp
 incs_wfc = ../../bld/f77/wfc/gml
 objs_wfc = &
 ../../bld/f77/wfc/gml/wfcmsgs.gml &
-../../bld/f77/wfc/gml/msgmacs.gml &
+../../bld/f77/wfc/gml/msgmacs.gml
 
 # wgmlref sub-directory
 root_wgmlref = ../doc/wgmlref
@@ -3276,16 +3277,18 @@ $(root_wipfc)/warning.gml &
 $(root_wipfc)/xmp.gml
 
 # wpidoc sub-directory
-incs_wpidoc = ../../bld/wpi/doc
+root_wpidoc = ../../bld/wpi/doc
+incs_wpidoc = $(root_wpidoc)
 objs_wpidoc = &
-../../bld/wpi/doc/wpiref.gml &
-../../bld/wpi/doc/wpi.gml
+$(root_wpidoc)/wpiref.gml &
+$(root_wpidoc)/wpi.gml
 
 # fmedidoc sub-directory
-incs_fmedidoc = ../../bld/sdk/fmedit/doc
+root_fmedidoc = ../../bld/sdk/fmedit/doc
+incs_fmedidoc = $(root_fmedidoc)
 objs_fmedidoc = &
-../../bld/sdk/fmedit/doc/fmediref.gml &
-../../bld/sdk/fmedit/doc/fmedit.gml
+$(root_fmedidoc)/fmediref.gml &
+$(root_fmedidoc)/fmedit.gml
 
 #############################################################
 #
