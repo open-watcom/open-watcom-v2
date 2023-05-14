@@ -345,11 +345,12 @@ $(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
     @if exist $@ $(noecho)%erase $@
     $(noecho)%ren $(wgml_tmpfile) $@
 
-.bmp: $($(hbook)_book_bmroot)
-.ps: $(tmpdir)
-
-.bmp.ps:
-    $(bmp2eps) -c $< $(tmpdir)/$^.
+{$(bmroot_gs)}.bmp{$(tmpdir)}.ps &
+{$(bmroot_gui)}.bmp{$(tmpdir)}.ps &
+{$(bmroot_wd)}.bmp{$(tmpdir)}.ps &
+{$(bmroot_vi)}.bmp{$(tmpdir)}.ps &
+{$(bmroot_wgmlref)}.bmp{$(tmpdir)}.ps:
+    $(bmp2eps) -c $< $@
 
 ####################################################
 #
@@ -369,9 +370,7 @@ $(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 
 $(hbook).chm : $(hbook).htm $(hbook).gh
     @if not exist $^& mkdir $^&
-!ifdef $^&_book_bmroot
-    @for %f in ($($^&_book_bmroot)/*.bmp) do $(noecho)copy %f $^&
-!endif
+    @for %f in ($($^&_book_bmps)) do $(noecho)copy %f $^&
     copy $^&.gh $^&/$^&.gh
     awk -f ../splithtm.awk -v dir=$^& $^&.htm
     awk -f ../makehha.awk $^&.htm >$^&/$^&.hha
@@ -400,9 +399,7 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
 
 $(hbook).gh $(hbook).htm : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 !ifneq dotarget chm
-!ifdef $^&_book_bmroot
-    @for %f in ($($^&_book_bmroot)/*.bmp) do $(noecho)copy %f .
-!endif
+    @for %f in ($($^&_book_bmps)) do $(noecho)copy %f .
 !endif
     @%make compile_gml_to_xxx
 !ifeq docset wikihtml
@@ -657,11 +654,7 @@ compile_hpj_win : .PROCEDURE
     @%append $*.hpj CONTENTS=table_of_contents
     @%append $*.hpj Title=$($^&_book_title) Help
     @%append $*.hpj COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved.
-!ifdef $^&_book_bmroot
     @%append $*.hpj BMROOT=$($^&_book_bmroot)
-!else
-    @%append $*.hpj BMROOT=$($^&_book_incs)
-!endif
     @%append $*.hpj OLDKEYPHRASE=NO
     @%append $*.hpj ROOT=.
     @%append $*.hpj [Config]
@@ -687,11 +680,7 @@ compile_hpj_nt : .PROCEDURE
     @%append $*.hpj CONTENTS=table_of_contents
     @%append $*.hpj TITLE=$($^&_book_title) Help
     @%append $*.hpj COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
-!ifdef $^&_book_bmroot
     @%append $*.hpj BMROOT=$($^&_book_bmroot:/=\)
-!else
-    @%append $*.hpj BMROOT=$($^&_book_incs:/=\)
-!endif
     @%append $*.hpj ROOT=.
     @%append $*.hpj HLP=.\$^&.hlp
     @%append $*.hpj ERRORLOG=.\$^&.err
