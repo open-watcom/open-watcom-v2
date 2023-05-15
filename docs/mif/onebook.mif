@@ -164,6 +164,7 @@ mx_list=$($(hbook))
 mx_list=$(os2h)
 !  endif
 e=.hlp
+mx_list=$+$(mx_list)$-
 files_to_build += $+$(mx_list)$-
 ! else ifeq dotarget pdf
 !  ifeq hc_pdf
