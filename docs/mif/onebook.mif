@@ -237,9 +237,9 @@ $(wikidir):
 ####################################################
 !ifeq wgml_target nt
 
-.EXTENSIONS: .hlp .rtf .gml
+.EXTENSIONS: .hlp .rtf .gh .gml
 
-$(hbook).hlp : $(hbook).rtf
+.rtf.hlp :
     @%make compile_hpj_nt
 !ifeq bld_os linux
     @%create $(wine_hc_batch)
@@ -253,7 +253,8 @@ $(hbook).hlp : $(hbook).rtf
     $(lowercase) $@ $@    # change file name to lower case
 !endif
 
-$(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+{$(root_books)}.gml.rtf &
+{$(root_books)}.gml.gh :
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -263,13 +264,14 @@ $(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 ####################################################
 !else ifeq wgml_target win
 
-.EXTENSIONS: .hlp .rtf .gml
+.EXTENSIONS: .hlp .rtf .gh .gml
 
-$(hbook).hlp : $(hbook).rtf
+.rtf.hlp :
     @%make compile_hpj_win
     $(whc) $[@
 
-$(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+{$(root_books)}.gml.rtf &
+{$(root_books)}.gml.gh :
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -279,14 +281,14 @@ $(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 ####################################################
 !else ifeq wgml_target dos
 
-.EXTENSIONS: .ihp .ib .gml
+.EXTENSIONS: .ihp .ib .gh .gml
 
-$(hbook).ihp : $(hbook).ib
+.ib.ihp :
     $(hcdos) -h 25 -w 80 $[@ $@
 
-$(hbook).ib $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+{$(root_books)}.gml.ib &
+{$(root_books)}.gml.gh :
     @%make compile_gml_to_xxx
-
 
 ####################################################
 #
@@ -295,21 +297,22 @@ $(hbook).ib $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 ####################################################
 !else ifeq wgml_target os2
 
-.EXTENSIONS: .hlp .inf .ipf .gml
+.EXTENSIONS: .hlp .inf .ipf .gh .gml
 
-$(hbook).inf : $(hbook).ipf
+.ipf.inf :
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q -inf $[@
     $(lowercase) $@ $@    # change file name to lower case
 
-$(hbook).hlp : $(hbook).ipf
+.ipf.hlp :
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q $[@
     $(lowercase) $@ $@    # change file name to lower case
 
-$(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+{$(root_books)}.gml.ipf &
+{$(root_books)}.gml.gh :
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -322,13 +325,13 @@ $(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 
 .EXTENSIONS: .pdf .ps .bmp .gml
 
-$(hbook).pdf : $(hbook).ps
+.ps.pdf :
     !$(hc_pdf) -r600 $[@ $@
 !ifdef wikidir
     $(noecho)copy $^&.pdf $(wikidir)\$^&.pdf
 !endif
 
-$(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
+{$(root_books)}.gml.ps :
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
     @%make run_wgml
@@ -352,7 +355,8 @@ $(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 
 .EXTENSIONS: .chm .htm .gh .gml
 
-$(hbook).chm : $(hbook).htm $(hbook).gh
+! ifeq dotarget chm
+.htm.chm :
     @if not exist $^& mkdir $^&
     @for %f in ($($^&_book_bmps)) do $(noecho)copy %f $^&
     copy $^&.gh $^&/$^&.gh
@@ -361,33 +365,35 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
     awk -f ../makehhc.awk $^&.htm >$^&/$^&.hhc
     awk -f ../makehhk.awk $^&.mix >$^&/$^&.hhk
     awk -f ../makehhp.awk -v book=$^& $^&.htm >$^&/$^&.hhp
-!ifdef %OWCHMCMD
+!  ifdef %OWCHMCMD
     cd $^&
     -$(hc_chmcmd) --no-html-scan $^&.hhp
-!ifeq bld_os linux
+!   ifeq bld_os linux
     -chmod +rw $@
-!endif
+!   endif
     cd ..
     copy $^&/$^&.chm $@
-!else ifeq bld_os linux
+!  else ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $^&/$^&.hhp
     @%append $(wine_hc_batch) copy /y $^&\$^&.chm $^&.chm
     -wine cmd /c $(wine_hc_batch)
-!else
+!  else
     -$(hc_hh) $^&/$^&.hhp
     copy $^&/$^&.chm $^&.chm
-!endif
+!  endif
+! endif
 
-$(hbook).gh $(hbook).htm : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
-!ifneq dotarget chm
+{$(root_books)}.gml.htm &
+{$(root_books)}.gml.gh :
+! ifeq dotarget html
     @for %f in ($($^&_book_bmps)) do $(noecho)copy %f .
-!endif
+! endif
     @%make compile_gml_to_xxx
-!ifdef wikidir
+! ifdef wikidir
     $(noecho)copy $^&.htm $(wikidir)\$^&.html
     @for %f in (*.bmp) do @if not exist $(wikidir)\%f $(noecho)copy %f $(wikidir)\%f
-!endif
+! endif
 
 ####################################################
 !endif
@@ -692,3 +698,149 @@ create_cnt_nt : .PROCEDURE
 ####################################################
 
 !include ../mif/clean.mif
+
+####################################################
+#
+# define rules to build Books
+#
+####################################################
+!ifeq dotarget nt
+rulex = $(b).rtf $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+!else ifeq dotarget win
+rulex = $(b).rtf $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+!else ifeq dotarget dos
+rulex = $(b).ib $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+!else ifeq dotarget os2
+rulex = $(b).ipf $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+!else ifeq wgml_target html
+rulex = $(b).gh $(b).htm : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+!else ifeq wgml_target ps
+rulex = $(b).ps : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $($(b)_book_objs_ps) $(proj_objs)
+!endif
+b=c_readme
+$+$(rulex)$-
+b=cbooks
+$+$(rulex)$-
+b=cgdoc
+$+$(rulex)$-
+b=cguide
+$+$(rulex)$-
+b=cguideq
+$+$(rulex)$-
+b=clib
+$+$(rulex)$-
+b=clib_fox
+$+$(rulex)$-
+b=clib_nec
+$+$(rulex)$-
+b=clib_nt
+$+$(rulex)$-
+b=clib_qnx
+$+$(rulex)$-
+b=clib_tst
+$+$(rulex)$-
+b=clr
+$+$(rulex)$-
+b=clslib
+$+$(rulex)$-
+b=cpplib
+$+$(rulex)$-
+b=ctools
+$+$(rulex)$-
+b=cw
+$+$(rulex)$-
+b=ddespy
+$+$(rulex)$-
+b=devguide
+$+$(rulex)$-
+b=drnt
+$+$(rulex)$-
+b=drwatcom
+$+$(rulex)$-
+b=dwdoc
+$+$(rulex)$-
+b=ebooks
+$+$(rulex)$-
+b=editor
+$+$(rulex)$-
+b=f77graph
+$+$(rulex)$-
+b=f77lr
+$+$(rulex)$-
+b=f_readme
+$+$(rulex)$-
+b=fbooks
+$+$(rulex)$-
+b=fmedidoc
+$+$(rulex)$-
+b=fpguide
+$+$(rulex)$-
+b=ftools
+$+$(rulex)$-
+b=fuguide
+$+$(rulex)$-
+b=guitools
+$+$(rulex)$-
+b=heapwalk
+$+$(rulex)$-
+b=ide
+$+$(rulex)$-
+b=lguide
+$+$(rulex)$-
+b=owstl
+$+$(rulex)$-
+b=pguide
+$+$(rulex)$-
+b=resacc
+$+$(rulex)$-
+b=rescomp
+$+$(rulex)$-
+b=resdlg
+$+$(rulex)$-
+b=resedt
+$+$(rulex)$-
+b=resimg
+$+$(rulex)$-
+b=resmnu
+$+$(rulex)$-
+b=resstr
+$+$(rulex)$-
+b=spy
+$+$(rulex)$-
+b=vi
+$+$(rulex)$-
+b=wasaxp
+$+$(rulex)$-
+b=wbrw
+$+$(rulex)$-
+b=wccerrs
+$+$(rulex)$-
+b=wd
+$+$(rulex)$-
+b=wddoc
+$+$(rulex)$-
+b=wfcerrs
+$+$(rulex)$-
+b=wjcerrs
+$+$(rulex)$-
+b=wlnkerrs
+$+$(rulex)$-
+b=wpidoc
+$+$(rulex)$-
+b=wpperrs
+$+$(rulex)$-
+b=wprof
+$+$(rulex)$-
+b=wrcerrs
+$+$(rulex)$-
+b=zoom
+$+$(rulex)$-
+b=cmix
+$+$(rulex)$-
+b=fmix
+$+$(rulex)$-
+b=wgmlref
+$+$(rulex)$-
+b=wipfc
+$+$(rulex)$-
+b=
