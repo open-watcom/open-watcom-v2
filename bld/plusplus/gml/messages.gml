@@ -79,6 +79,8 @@
 :cmt    been found to be easier when searching for messages that
 :cmt    still need to be translated.
 
+:INCLUDE file='msgmacs'.
+
 :MSGSYM. ERR_CALL_WATCOM
 :MSGTXT. internal compiler error
 :MSGJTXT. 内部のコンパイラ・エラー

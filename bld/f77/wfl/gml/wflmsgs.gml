@@ -79,6 +79,8 @@
 :cmt    been found to be easier when searching for messages that
 :cmt    still need to be translated.
 
+:include file='msgmacs'.
+
 :cmt -------------------------------------------------------------------
 :MSGGRP. CL
 :MSGGRPTXT. Additional Messages
