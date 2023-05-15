@@ -28,9 +28,28 @@ wgml_target = html
 wgml_target = $(dotarget)
 !endif
 
-tmpdir     = tmp
-wikidir    = ..\wiki
+# If 'verbose' is set to 1, wgml displays warnings and statistics.
+# The default is a quiet build.
+doc_verbose = $(verbose)
+# 'OWDOCQUIET' is used by build server to disable documentation verbose output.
+!ifeq %OWDOCQUIET 1
+doc_verbose = 0
+!endif
+
 root_books = ../doc/books
+tmpdir     = tmp
+!ifeq docset wikipdf
+wikidir    = ..\wiki
+!endif
+!ifeq docset wikihtml
+wikidir    = ..\wiki
+!endif
+
+!ifeq wgml_target ps
+cop_files = mono01.cop ps.cop psdrv.cop
+!else
+cop_files = mono01.cop whelp.cop whelpdrv.cop
+!endif
 
 !include ../mif/books.mif
 !include ../mif/depends.mif
@@ -53,20 +72,6 @@ wgml_tmpfile=tmp.ptf
 wgml_sysfile_01=sysusr01.gml
 wgml_sysfile_02=sysusr02.gml
 wgml_sysfile_03=sysusr03.gml
-!endif
-
-!ifeq wgml_target ps
-cop_files = mono01.cop ps.cop psdrv.cop
-!else
-cop_files = mono01.cop whelp.cop whelpdrv.cop
-!endif
-
-# If 'verbose' is set to 1, wgml displays warnings and statistics.
-# The default is a quiet build.
-doc_verbose = $(verbose)
-# 'OWDOCQUIET' is used by build server to disable documentation verbose output.
-!ifeq %OWDOCQUIET 1
-doc_verbose = 0
 !endif
 
 #############################################################
@@ -211,23 +216,17 @@ proj_objs= &
 
 !ifeq wgml_target ps
 dirs = $(tmpdir)
-!ifeq dotarget pdf
-!ifeq docset wikipdf
-    mkdir $(wikidir)
-!endif
-!endif
-!endif
-!ifeq wgml_target html
-!ifeq docset wikihtml
-    mkdir $(wikidir)
-!endif
 !endif
 
-all : $(dirs) $(files_to_build) .SYMBOLIC
+all : $(dirs) $(wikidir) $(files_to_build) .SYMBOLIC
     @%null
 
 !ifdef dirs
 $(dirs):
+    mkdir $@
+!endif
+!ifdef wikidir
+$(wikidir):
     mkdir $@
 !endif
 
@@ -236,7 +235,7 @@ $(dirs):
 # make WIN32 help files
 #
 ####################################################
-!ifeq dotarget nt
+!ifeq wgml_target nt
 
 .EXTENSIONS: .hlp .rtf .gml
 
@@ -262,7 +261,7 @@ $(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 # make WIN help files
 #
 ####################################################
-!else ifeq dotarget win
+!else ifeq wgml_target win
 
 .EXTENSIONS: .hlp .rtf .gml
 
@@ -278,7 +277,7 @@ $(hbook).rtf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 # make DOS help files
 #
 ####################################################
-!else ifeq dotarget dos
+!else ifeq wgml_target dos
 
 .EXTENSIONS: .ihp .ib .gml
 
@@ -294,7 +293,7 @@ $(hbook).ib $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 # make OS2 help files
 #
 ####################################################
-!else ifeq dotarget os2
+!else ifeq wgml_target os2
 
 .EXTENSIONS: .hlp .inf .ipf .gml
 
@@ -321,27 +320,18 @@ $(hbook).ipf $(hbook).gh : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 ####################################################
 !else ifeq wgml_target ps
 
-!ifeq dotarget ps
-
-.EXTENSIONS: .ps .bmp .gml
-
-!else ifeq dotarget pdf
-
 .EXTENSIONS: .pdf .ps .bmp .gml
 
 $(hbook).pdf : $(hbook).ps
     !$(hc_pdf) -r600 $[@ $@
-!ifeq docset wikipdf
+!ifdef wikidir
     $(noecho)copy $^&.pdf $(wikidir)\$^&.pdf
-!endif
-
 !endif
 
 $(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
-    @%make echo_wgml
-    -$(noecho)$(WGMLCMD)
+    @%make run_wgml
     @if exist $@ $(noecho)%erase $@
     $(noecho)%ren $(wgml_tmpfile) $@
 
@@ -359,12 +349,6 @@ $(hbook).ps : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 #
 ####################################################
 !else ifeq wgml_target html
-
-!ifeq dotarget html
-
-.EXTENSIONS: .htm .gh .gml
-
-!else ifeq dotarget chm
 
 .EXTENSIONS: .chm .htm .gh .gml
 
@@ -395,14 +379,12 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
     copy $^&/$^&.chm $^&.chm
 !endif
 
-!endif
-
 $(hbook).gh $(hbook).htm : $(cop_files) $($(hbook)_book_objs) $(proj_objs)
 !ifneq dotarget chm
     @for %f in ($($^&_book_bmps)) do $(noecho)copy %f .
 !endif
     @%make compile_gml_to_xxx
-!ifeq docset wikihtml
+!ifdef wikidir
     $(noecho)copy $^&.htm $(wikidir)\$^&.html
     @for %f in (*.bmp) do @if not exist $(wikidir)\%f $(noecho)copy %f $(wikidir)\%f
 !endif
@@ -449,8 +431,7 @@ whelpdrv.cop : ../gml/syslib/whelpdrv.pcd
 gencop : .procedure .explicit
     @set GMLINC=.
     %make prepare_gendev_tmp_batch
-    @%make echo_gendev
-    $(noecho)$(GENDEVCMD)
+    @%make run_gendev
 
 ####################################################
 #
@@ -622,15 +603,13 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.kw @%create $*.kw
     $(noecho)set OWGMLINC=.;$(root_books);$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
     @%make prepare_wgml_opts
-    @%make echo_wgml
-    -$(noecho)$(WGMLCMD)
+    @%make run_wgml
     @if exist $*.$(wgml1_ext) $(noecho)%erase $*.$(wgml1_ext)
     $(noecho)%ren $(wgml_tmpfile) $*.$(wgml1_ext)
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.$(wgml1_ext)
     @%create $(wgml_sysfile_02)
-    @%make echo_wgml
-    -$(noecho)$(WGMLCMD)
+    @%make run_wgml
     @if exist $*.$(wgml2_ext) $(noecho)%erase $*.$(wgml2_ext)
     $(noecho)%ren $(wgml_tmpfile) $*.$(wgml2_ext)
     @if exist $*.mix @%erase $*.mix
@@ -713,13 +692,3 @@ create_cnt_nt : .PROCEDURE
 ####################################################
 
 !include ../mif/clean.mif
-
-echo_wgml : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo wgml $@
-!endif
-
-echo_gendev : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo gendev $@
-!endif

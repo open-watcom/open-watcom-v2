@@ -206,10 +206,7 @@ gencop : .procedure
         @set GMLLIB=..\testlib
         @set GMLINC=..\testsrc
         %make prepare_gendev_tmp_batch
-!ifeq verbose 0
-    	@echo gendev $@
-!endif
-        $(noecho)$(GENDEVCMD)
+        @%make run_gendev
 
 clean   : .SYMBOLIC
         rm -f *.bat *.cop *.COP *.tmp
