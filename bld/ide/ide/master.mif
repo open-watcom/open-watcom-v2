@@ -112,5 +112,5 @@ $(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
 $(docs_host_dir)/ide.gh : $(docs_host_dir) .ALWAYS
-    $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os) tree_depth=2
+    $(noecho)!$(nested_wmake) -h -f ../mif/master.mif hbook=ide header=1 dotarget=$(host_os) tree_depth=2
     $(noecho)cd "$(curr_dir)"

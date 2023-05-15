@@ -149,7 +149,7 @@ $(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
 $(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
-    $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os) tree_depth=2
+    $(noecho)!$(nested_wmake) -h -f ../mif/master.mif hbook=wbrw header=1 dotarget=$(host_os) tree_depth=2
     $(noecho)cd "$(curr_dir)"
 
 # implicit rules
