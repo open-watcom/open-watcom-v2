@@ -80,6 +80,7 @@ def_tag( eerrgood ) \
 def_tag( errbreak ) \
 def_tag( style ) \
 def_tag( jck ) \
+def_tag( include ) \
 
 #define NEXT_ARG() \
         --argc1; ++argv1
@@ -756,6 +757,11 @@ static void do_jck( const char *p )
 
     m->mtype = MSG_TYPE_JCK;
     m->level = pickUpLevel( p );
+}
+
+static void do_include( const char *p )
+{
+    /* unused parameters */ (void)p;
 }
 
 static void do_error( const char *p )
