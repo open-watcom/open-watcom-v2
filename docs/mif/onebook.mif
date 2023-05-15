@@ -51,6 +51,17 @@ cop_files = mono01.cop ps.cop psdrv.cop
 cop_files = mono01.cop whelp.cop whelpdrv.cop
 !endif
 
+#
+# project configuration files
+#
+proj_objs= &
+#    ../mif/onebook.mif
+#    ../mif/depends.mif
+#    ../mif/books.mif &
+#    ../mif/master.mif &
+#    ../builder.ctl &
+#    makefile
+
 !include ../mif/books.mif
 !include ../mif/depends.mif
 
@@ -166,6 +177,7 @@ files_to_build =
 !  endif
 ! endif
 !endif
+e=
 
 #############################################################
 
@@ -173,9 +185,9 @@ files_to_build =
 .BEFORE
 ! ifneq header 1
 !  ifdef __UNIX__
-    @echo ===== $(dotarget) $+$(%cwd)$-/$(hbook) =====
+    @echo ====== $(dotarget) $+$(%cwd)$- ======
 !  else
-    @echo ===== $(dotarget) $+$(%cdrive):$(%cwd)$-/$(hbook) =====
+    @echo ====== $(dotarget) $+$(%cdrive):$(%cwd)$- ======
 !  endif
 ! endif
 !else
@@ -202,17 +214,6 @@ files_to_build =
 !  message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! endif
 !endif
-
-#
-# project configuration files
-#
-proj_objs= &
-#    ../mif/onebook.mif
-#    ../mif/depends.mif
-#    ../mif/books.mif &
-#    ../mif/master.mif &
-#    ../builder.ctl &
-#    makefile
 
 !ifeq wgml_target ps
 dirs = $(tmpdir)
@@ -255,6 +256,7 @@ $(wikidir):
 
 {$(root_books)}.gml.rtf &
 {$(root_books)}.gml.gh :
+    @echo "BOOK : $^&"
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -272,6 +274,7 @@ $(wikidir):
 
 {$(root_books)}.gml.rtf &
 {$(root_books)}.gml.gh :
+    @echo "BOOK : $^&"
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -288,6 +291,7 @@ $(wikidir):
 
 {$(root_books)}.gml.ib &
 {$(root_books)}.gml.gh :
+    @echo "BOOK : $^&"
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -303,16 +307,17 @@ $(wikidir):
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q -inf $[@
-    $(lowercase) $@ $@    # change file name to lower case
+    $(lowercase) $@ $@	     # change file name to lower case
 
 .ipf.hlp :
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q $[@
-    $(lowercase) $@ $@    # change file name to lower case
+    $(lowercase) $@ $@	     # change file name to lower case
 
 {$(root_books)}.gml.ipf &
 {$(root_books)}.gml.gh :
+    @echo "BOOK : $^&"
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -325,13 +330,16 @@ $(wikidir):
 
 .EXTENSIONS: .pdf .ps .bmp .gml
 
+! ifeq dotarget pdf
 .ps.pdf :
     !$(hc_pdf) -r600 $[@ $@
-!ifdef wikidir
+!  ifdef wikidir
     $(noecho)copy $^&.pdf $(wikidir)\$^&.pdf
-!endif
+!  endif
+! endif
 
 {$(root_books)}.gml.ps :
+    @echo "BOOK : $^&"
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
     @%make run_wgml
@@ -386,6 +394,7 @@ $(wikidir):
 
 {$(root_books)}.gml.htm &
 {$(root_books)}.gml.gh :
+    @echo "BOOK : $^&"
 ! ifeq dotarget html
     @for %f in ($($^&_book_bmps)) do $(noecho)copy %f .
 ! endif
