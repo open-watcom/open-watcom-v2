@@ -3521,6 +3521,7 @@ clib_fox_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_bm
 !endif
 clib_fox_book_incs=$(incs_lr);$(incs_lr_src);$(incs_lr_graph);$(incs_cmn)
 clib_fox_book_bmroot=$(bmroot_lr_graph)
+clib_fox_book_multi_chapter=1
 
 # clib_nec
 clib_nec_book_title=$(company) $(bld_ver_str) C Library Reference Kanji Functions subset
@@ -3532,6 +3533,7 @@ clib_nec_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_bm
 !endif
 clib_nec_book_incs=$(incs_lr);$(incs_lr_src);$(incs_lr_graph);$(incs_cmn)
 clib_nec_book_bmroot=$(bmroot_lr_graph)
+clib_nec_book_multi_chapter=1
 
 # clib_nt
 clib_nt_book_title=$(company) $(bld_ver_str) C Library Reference for Win32
@@ -3603,7 +3605,6 @@ cpplib_book_multi_chapter=1
 ctools_book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
 ctools_book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
 ctools_book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
-ctools_book_bmroot=$(bmroot_cg)
 ctools_book_multi_chapter=1
 
 # cw
@@ -3708,10 +3709,8 @@ fpguide_book_multi_chapter=1
 
 # ftools
 ftools_book_title=$(company) $(bld_ver_str) FORTRAN 77 Tools User's Guide
-ftools_book_bmps=$(objs_fg_bmp)
 ftools_book_objs=$(objs_cmn) $(objs_fg_bmp) $(objs_lg) $(objs_fg)
 ftools_book_incs=$(incs_cmn);$(incs_lg);$(incs_fg)
-ftools_book_bmroot=$(bmroot_fg)
 ftools_book_multi_chapter=1
 
 # fguide
