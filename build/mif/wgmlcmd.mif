@@ -126,8 +126,9 @@ run_wgml : .PROCEDURE .EXPLICIT
 !else ifeq bld_os os2
     -$(noecho)..\gml\os2\wgml $(wgml_cmdl_params)
 !else ifdef dosbox
-    @rm dosbox.lst
+    @rm -f dosbox.lst
     -$(noecho)$(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c \"$(%OWROOT)\"" -c "c:$(wgml_subdir)\$(dos_wgml_tmp_batch)"
+    @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
 !else ifeq bld_os nt
     -$(noecho)..\gml\dos\wgml $(wgml_cmdl_params)
