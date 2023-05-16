@@ -6,7 +6,7 @@
         (CGUIDE)
 
      Watcom C/C++ Programmer's Guide, 3rd Edition (399 pages)
-        (PGUIDE)
+        (CPGUIDE)
 
      Watcom C/C++ Tools User's Guide, 3rd Edition (149 pages)
         (CTOOLS)
@@ -45,7 +45,7 @@
         Document Number BA0615 (F_README)
 
      Watcom FORTRAN 77 User's Guide, 2nd Edition (337 pages)
-        (FUGUIDE)
+        (FGUIDE)
 
      Watcom FORTRAN 77 Programmer's Guide, 2nd Edition (354 pages)
         (FPGUIDE)

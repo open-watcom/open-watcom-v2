@@ -1,3 +1,4 @@
+:INCLUDE file='cpoptmac'.
 .chap *refid=cpopts &product Compiler Options
 .*
 .np

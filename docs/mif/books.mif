@@ -1,3 +1,8 @@
+##########################################################################################
+#
+# Books build definitions
+#
+##########################################################################################
 # help type                 dos  win  chm  nt  os2  os2h pdf  ps  html  wikihtml  wikipdf
 # distributed               yes  yes  yes  yes yes  yes  yes  no  no    no        no
 #=========================================================================================
@@ -14,6 +19,7 @@
 !inject $$(clib_tst$$(x))
 !inject $$(clr$$(x))        dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(clslib$$(x))
+!inject $$(cpguide$$(x))    dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(cpplib$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(ctools$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(cw$$(x))         dos       chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
@@ -31,13 +37,12 @@
 !inject $$(fmedidoc$$(x))
 !inject $$(fpguide$$(x))    dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(ftools$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
-!inject $$(fuguide$$(x))    dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
+!inject $$(fguide$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(guitools$$(x))                                pdf  ps  html  wikihtml  wikipdf
 !inject $$(heapwalk$$(x))        win  chm  nt                     html
 !inject $$(ide$$(x))             win  chm  nt  os2  os2h          html
 !inject $$(lguide$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(owstl$$(x))                                                  wikihtml  wikipdf
-!inject $$(pguide$$(x))     dos  win  chm  nt  os2       pdf  ps  html  wikihtml  wikipdf
 !inject $$(resacc$$(x))          win  chm  nt                     html
 !inject $$(rescomp$$(x))    dos  win  chm  nt  os2                html
 !inject $$(resdlg$$(x))          win  chm  nt                     html
@@ -97,6 +102,7 @@ clib_qnx = clib_qnx$$(e)
 clib_tst = clib_tst$$(e)
 clr      = clr$$(e)
 clslib   = clslib$$(e)
+cpguide  = cpguide$$(e)
 cpplib   = cpplib$$(e)
 ctools   = ctools$$(e)
 cw       = cw$$(e)
@@ -114,13 +120,12 @@ fbooks   = fbooks$$(e)
 fmedidoc = fmedidoc$$(e)
 fpguide  = fpguide$$(e)
 ftools   = ftools$$(e)
-fuguide  = fuguide$$(e)
+fguide   = fguide$$(e)
 guitools = guitools$$(e)
 heapwalk = heapwalk$$(e)
 ide      = ide$$(e)
 lguide   = lguide$$(e)
 owstl    = owstl$$(e)
-pguide   = pguide$$(e)
 resacc   = resacc$$(e)
 rescomp  = rescomp$$(e)
 resdlg   = resdlg$$(e)
@@ -152,3 +157,3789 @@ x=
 books_list=$+$(mbooks_list)$-
 
 books=$+$(books_list)$-
+
+
+#############################################################
+#
+# Books Component Dependecies and Definitions
+#
+#############################################################
+
+#############################################################
+#
+# Books Dependecies
+#
+#############################################################
+
+# cc sub-directory
+incs_cc = ../../bld/cc/gml
+objs_cc = &
+../../bld/cc/gml/cerrs.gml &
+../../bld/cc/gml/msgmacs.gml &
+
+# cg sub-directory
+root_cg = ../doc/cg
+incs_cg = $(root_cg)
+objs_cg = &
+$(root_cg)/ccall.gml &
+$(root_cg)/c_guide.gml &
+$(root_cg)/c_guideq.gml &
+$(root_cg)/cmsgs.gml &
+$(root_cg)/cpasm.gml &
+$(root_cg)/cpbench.gml &
+$(root_cg)/cpheader.gml &
+$(root_cg)/cplibr.gml &
+$(root_cg)/cpoptlst.gml &
+$(root_cg)/cpoptmdl.gml &
+$(root_cg)/cpopts.gml &
+$(root_cg)/cpoptsum.gml &
+$(root_cg)/cppmsgs.gml &
+$(root_cg)/cpref.gml &
+$(root_cg)/cpwcc.gml &
+$(root_cg)/cromable.gml &
+$(root_cg)/crtmsgs.gml &
+$(root_cg)/errnodos.gml &
+$(root_cg)/errnoqnx.gml &
+$(root_cg)/inlintab.gml &
+$(root_cg)/seh.gml &
+$(root_cg)/wcc_errs.gml &
+$(root_cg)/wpp_errs.gml
+bmroot_cg = $(root_cg)
+objs_cg_bmp = &
+$(bmroot_cg)/cguide.bmp
+
+# cl sub-directory
+root_cl = ../doc/cl
+incs_cl = $(root_cl)
+objs_cl = &
+$(root_cl)/advantag.gml &
+$(root_cl)/advanty.gml &
+$(root_cl)/appescap.gml &
+$(root_cl)/appkword.gml &
+$(root_cl)/apporder.gml &
+$(root_cl)/appprepr.gml &
+$(root_cl)/apptrigr.gml &
+$(root_cl)/array.gml &
+$(root_cl)/auto.gml &
+$(root_cl)/autostg.gml &
+$(root_cl)/basedptr.gml &
+$(root_cl)/basicle.gml &
+$(root_cl)/basicty.gml &
+$(root_cl)/boxmac.gml &
+$(root_cl)/bubble.gml &
+$(root_cl)/c_lr.gml &
+$(root_cl)/charset.gml &
+$(root_cl)/cmac.gml &
+$(root_cl)/comments.gml &
+$(root_cl)/const.gml &
+$(root_cl)/constant.gml &
+$(root_cl)/convert.gml &
+$(root_cl)/cover.gml &
+$(root_cl)/csymbol.gml &
+$(root_cl)/declare.gml &
+$(root_cl)/defmacro.gml &
+$(root_cl)/enum.gml &
+$(root_cl)/enumtab.gml &
+$(root_cl)/escape.gml &
+$(root_cl)/examples.gml &
+$(root_cl)/express.gml &
+$(root_cl)/extern.gml &
+$(root_cl)/float.gml &
+$(root_cl)/float370.gml &
+$(root_cl)/float87.gml &
+$(root_cl)/fltround.gml &
+$(root_cl)/function.gml &
+$(root_cl)/glossary.gml &
+$(root_cl)/grammar.gml &
+$(root_cl)/history.gml &
+$(root_cl)/ids.gml &
+$(root_cl)/if.gml &
+$(root_cl)/impldef1.gml &
+$(root_cl)/impldef2.gml &
+$(root_cl)/init.gml &
+$(root_cl)/integer.gml &
+$(root_cl)/intro.gml &
+$(root_cl)/keywords.gml &
+$(root_cl)/kwlist.gml &
+$(root_cl)/kwwatcom.gml &
+$(root_cl)/macro.gml &
+$(root_cl)/memos.gml &
+$(root_cl)/memos2.gml &
+$(root_cl)/modular.gml &
+$(root_cl)/notation.gml &
+$(root_cl)/notes &
+$(root_cl)/numlimit.gml &
+$(root_cl)/orddesc.gml &
+$(root_cl)/orderop.gml &
+$(root_cl)/ordtrans.gml &
+$(root_cl)/pcptrs.gml &
+$(root_cl)/pitfalls.gml &
+$(root_cl)/pointer.gml &
+$(root_cl)/portable.gml &
+$(root_cl)/preface.gml &
+$(root_cl)/preproc.gml &
+$(root_cl)/program.gml &
+$(root_cl)/ptr16.gml &
+$(root_cl)/register.gml &
+$(root_cl)/regtypes.gml &
+$(root_cl)/statemen.gml &
+$(root_cl)/static.gml &
+$(root_cl)/statstg.gml &
+$(root_cl)/stgclass.gml &
+$(root_cl)/string.gml &
+$(root_cl)/struct.gml &
+$(root_cl)/style.gml &
+$(root_cl)/sysmacro.gml &
+$(root_cl)/thanks.gml &
+$(root_cl)/tqwatcom.gml &
+$(root_cl)/trademrk.gml &
+$(root_cl)/translim.gml &
+$(root_cl)/trigraph.gml &
+$(root_cl)/typedef.gml &
+$(root_cl)/union.gml &
+$(root_cl)/usebook.gml &
+$(root_cl)/uses.gml &
+$(root_cl)/void.gml &
+$(root_cl)/volatile.gml &
+$(root_cl)/shade.ps
+bmroot_cl = $(root_cl)
+objs_cl_bmp = &
+$(bmroot_cl)/clr.bmp
+
+# cmn sub-directory
+root_cmn = ../doc/cmn
+incs_cmn = $(root_cmn)
+objs_cmn = &
+$(root_cmn)/386arch.gml &
+$(root_cmn)/86arch.gml &
+$(root_cmn)/about.gml &
+$(root_cmn)/bpatch.gml &
+$(root_cmn)/cmpenv.gml &
+$(root_cmn)/complink.gml &
+$(root_cmn)/environ.gml &
+$(root_cmn)/envsetup.gml &
+$(root_cmn)/exe2bin.gml &
+$(root_cmn)/ide2make.gml &
+$(root_cmn)/owcc.gml &
+$(root_cmn)/owccopts.gml &
+$(root_cmn)/pcbugfrm.gml &
+$(root_cmn)/prag16.gml &
+$(root_cmn)/pragma.gml &
+$(root_cmn)/pragstx.gml &
+$(root_cmn)/toolpref.gml &
+$(root_cmn)/tools.gml &
+$(root_cmn)/was.gml &
+$(root_cmn)/was_axp.gml &
+$(root_cmn)/wasm.gml &
+$(root_cmn)/wasqual.gml &
+$(root_cmn)/wasvqual.gml &
+$(root_cmn)/wbsymbol.gml &
+$(root_cmn)/wcgmem.gml &
+$(root_cmn)/wcl.gml &
+$(root_cmn)/wdis.gml &
+$(root_cmn)/wdisasm.gml &
+$(root_cmn)/wfl.gml &
+$(root_cmn)/winio.gml &
+$(root_cmn)/wmake.gml &
+$(root_cmn)/wmakemsg.gml &
+$(root_cmn)/wmemlay.gml &
+$(root_cmn)/wmodels.gml &
+$(root_cmn)/wmodl386.gml &
+$(root_cmn)/womp.gml &
+$(root_cmn)/wompexam.gml &
+$(root_cmn)/wtouch.gml
+
+# cpplib sub-directory
+root_cpplib = ../doc/cpplib
+incs_cpplib = $(root_cpplib)
+objs_cpplib = &
+$(root_cpplib)/_alocfns.gml &
+$(root_cpplib)/_dtor.gml &
+$(root_cpplib)/_dtor2.gml &
+$(root_cpplib)/_expt_bc.gml &
+$(root_cpplib)/_iext_bc.gml &
+$(root_cpplib)/_keyequ.gml &
+$(root_cpplib)/_valequ.gml &
+$(root_cpplib)/alloctor.cpp &
+$(root_cpplib)/cls_lib.gml &
+$(root_cpplib)/complex_.gml &
+$(root_cpplib)/contdef.gml &
+$(root_cpplib)/cpplibr.gml &
+$(root_cpplib)/cpx_asgn.gml &
+$(root_cpplib)/cpx_op.gml &
+$(root_cpplib)/filebuf_.gml &
+$(root_cpplib)/flb_desc.gml &
+$(root_cpplib)/fs_ovflw.gml &
+$(root_cpplib)/fs_unflw.gml &
+$(root_cpplib)/fstr_ct1.gml &
+$(root_cpplib)/fstr_ct2.gml &
+$(root_cpplib)/fstr_ct3.gml &
+$(root_cpplib)/fstr_ct4.gml &
+$(root_cpplib)/fstr_dt.gml &
+$(root_cpplib)/fstr_op.gml &
+$(root_cpplib)/fstrbse_.gml &
+$(root_cpplib)/fstream_.gml &
+$(root_cpplib)/hdrs.gml &
+$(root_cpplib)/ifstrm_.gml &
+$(root_cpplib)/intro.gml &
+$(root_cpplib)/ios_.gml &
+$(root_cpplib)/ios_stat.gml &
+$(root_cpplib)/iosinit.gml &
+$(root_cpplib)/iostrm_.gml &
+$(root_cpplib)/iotypes.gml &
+$(root_cpplib)/ipword.gml &
+$(root_cpplib)/isstrm_.gml &
+$(root_cpplib)/istr_in.gml &
+$(root_cpplib)/istream_.gml &
+$(root_cpplib)/libftyp.gml &
+$(root_cpplib)/listcont.gml &
+$(root_cpplib)/listiter.gml &
+$(root_cpplib)/manip_.gml &
+$(root_cpplib)/ofstrm_.gml &
+$(root_cpplib)/osstrm_.gml &
+$(root_cpplib)/ostr_out.gml &
+$(root_cpplib)/ostream_.gml &
+$(root_cpplib)/predef.gml &
+$(root_cpplib)/preface.gml &
+$(root_cpplib)/queue.gml &
+$(root_cpplib)/sb_rgp.gml &
+$(root_cpplib)/sb_sbmpc.gml &
+$(root_cpplib)/sb_spkc.gml &
+$(root_cpplib)/seekdir.gml &
+$(root_cpplib)/seekmode.gml &
+$(root_cpplib)/ssb_desc.gml &
+$(root_cpplib)/sst_str.gml &
+$(root_cpplib)/sstr_ct1.gml &
+$(root_cpplib)/sstr_ct2.gml &
+$(root_cpplib)/sstr_dt.gml &
+$(root_cpplib)/sstrbse_.gml &
+$(root_cpplib)/sstrbuf_.gml &
+$(root_cpplib)/sstrm_.gml &
+$(root_cpplib)/stack.gml &
+$(root_cpplib)/std_desc.gml &
+$(root_cpplib)/stdiobu_.gml &
+$(root_cpplib)/str_b.gml &
+$(root_cpplib)/str_subs.gml &
+$(root_cpplib)/streamb_.gml &
+$(root_cpplib)/string_.gml &
+$(root_cpplib)/wcalloc.gml &
+$(root_cpplib)/wcdlink.gml &
+$(root_cpplib)/wcexcep.gml &
+$(root_cpplib)/wchash.gml &
+$(root_cpplib)/wchashdi.gml &
+$(root_cpplib)/wchashit.gml &
+$(root_cpplib)/wchashst.gml &
+$(root_cpplib)/wchiter.gml &
+$(root_cpplib)/wcisv.gml &
+$(root_cpplib)/wcisvit.gml &
+$(root_cpplib)/wcitexc.gml &
+$(root_cpplib)/wcldintr.cpp &
+$(root_cpplib)/wcldptr.cpp &
+$(root_cpplib)/wcldval.cpp &
+$(root_cpplib)/wclist.gml &
+$(root_cpplib)/wclistit.gml &
+$(root_cpplib)/wcptr.gml &
+$(root_cpplib)/wcptrit.gml &
+$(root_cpplib)/wcqueue.cpp &
+$(root_cpplib)/wcskip.gml &
+$(root_cpplib)/wcskipdi.gml &
+$(root_cpplib)/wcskipst.gml &
+$(root_cpplib)/wcslink.gml &
+$(root_cpplib)/wcstack.cpp &
+$(root_cpplib)/wcval.gml &
+$(root_cpplib)/wcvalit.gml &
+$(root_cpplib)/wcvdli.cpp &
+$(root_cpplib)/wcvect.gml &
+$(root_cpplib)/wcvector.gml &
+$(root_cpplib)/wcvectos.gml
+
+# cw sub-directory
+root_cw = ../doc/cw
+incs_cw = $(root_cw)
+objs_cw = &
+$(root_cw)/cwref.gml &
+$(root_cw)/gloss.gml &
+$(root_cw)/guide.gml &
+$(root_cw)/intro.gml &
+$(root_cw)/ref.gml
+
+# devguide sub-directory
+incs_devguide = ../doc/devguide
+objs_devguide = &
+../doc/devguide/arch.gml &
+../doc/devguide/wdevguid.gml &
+../doc/devguide/docs.gml &
+../doc/devguide/style.gml &
+../doc/devguide/tour.gml
+
+# fg sub-directory
+root_fg = ../doc/fg
+incs_fg = $(root_fg)
+objs_fg = &
+$(root_fg)/fcall.gml &
+$(root_fg)/fcond.gml &
+$(root_fg)/fdata.gml &
+$(root_fg)/fdosfile.gml &
+$(root_fg)/ferrmsg.gml &
+$(root_fg)/fgkslib.old &
+$(root_fg)/flib.gml &
+$(root_fg)/fplibr.gml &
+$(root_fg)/fpopts.gml &
+$(root_fg)/fpref.gml &
+$(root_fg)/fpwfc.gml &
+$(root_fg)/f_guide.gml &
+$(root_fg)/include.gml &
+$(root_fg)/optdflts.gml &
+$(root_fg)/optsumry.gml &
+$(root_fg)/wfc_errs.gml &
+$(root_fg)/wfcopts.gml
+bmroot_fg = $(root_fg)
+objs_fg_bmp = &
+$(bmroot_fg)/fguide.bmp
+
+# fl sub-directory
+root_fl = ../doc/fl
+incs_fl = $(root_fl)
+objs_fl = &
+$(root_fl)/alloc.for &
+$(root_fl)/appoint.for &
+$(root_fl)/bit.for &
+$(root_fl)/bit2.for &
+$(root_fl)/bit3.for &
+$(root_fl)/bl.for &
+$(root_fl)/case.for &
+$(root_fl)/char.for &
+$(root_fl)/cycle.for &
+$(root_fl)/cycle1.for &
+$(root_fl)/dealloc.for &
+$(root_fl)/equiv.for &
+$(root_fl)/f77ext.gml &
+$(root_fl)/f77_lr.gml &
+$(root_fl)/farrays.gml &
+$(root_fl)/fassmnt.gml &
+$(root_fl)/fexit.for &
+$(root_fl)/fexpr.gml &
+$(root_fl)/fformats.gml &
+$(root_fl)/finote1.gml &
+$(root_fl)/finote10.gml &
+$(root_fl)/finote11.gml &
+$(root_fl)/finote2.gml &
+$(root_fl)/finote3.gml &
+$(root_fl)/finote4.gml &
+$(root_fl)/finote4a.gml &
+$(root_fl)/finote4b.gml &
+$(root_fl)/finote5a.gml &
+$(root_fl)/finote5b.gml &
+$(root_fl)/finote6.gml &
+$(root_fl)/finote7.gml &
+$(root_fl)/finote8.gml &
+$(root_fl)/finote9.gml &
+$(root_fl)/fio.gml &
+$(root_fl)/fitab.gml &
+$(root_fl)/fitabmon.gml &
+$(root_fl)/flmacs.gml &
+$(root_fl)/flpref.gml &
+$(root_fl)/fmt.for &
+$(root_fl)/fordoc.gml &
+$(root_fl)/frecord.gml &
+$(root_fl)/frstfont.gml &
+$(root_fl)/fsrcfmt.gml &
+$(root_fl)/fstats.gml &
+$(root_fl)/fstruct.gml &
+$(root_fl)/fsubp.gml &
+$(root_fl)/fsubstr.gml &
+$(root_fl)/ftypes.gml &
+$(root_fl)/guess.for &
+$(root_fl)/guess1.for &
+$(root_fl)/intran.tbl &
+$(root_fl)/item.for &
+$(root_fl)/items.dat &
+$(root_fl)/items.for &
+$(root_fl)/loc.for &
+$(root_fl)/map.for &
+$(root_fl)/namel.for &
+$(root_fl)/namel2.for &
+$(root_fl)/nbpsf77.opt &
+$(root_fl)/people.dat &
+$(root_fl)/people.for &
+$(root_fl)/person.for &
+$(root_fl)/ps.pcd &
+$(root_fl)/psdrv.pcd &
+$(root_fl)/psshade.fon &
+$(root_fl)/sadmit.gml &
+$(root_fl)/sallocat.gml &
+$(root_fl)/sassign.gml &
+$(root_fl)/sat.gml &
+$(root_fl)/sbackspa.gml &
+$(root_fl)/sblock.gml &
+$(root_fl)/scall.gml &
+$(root_fl)/scase.gml &
+$(root_fl)/schar.gml &
+$(root_fl)/scharact.gml &
+$(root_fl)/sclose.gml &
+$(root_fl)/scommon.gml &
+$(root_fl)/scomplex.gml &
+$(root_fl)/scontinu.gml &
+$(root_fl)/screen.for &
+$(root_fl)/scycle.gml &
+$(root_fl)/sdata.gml &
+$(root_fl)/sdealloc.gml &
+$(root_fl)/sdimensi.gml &
+$(root_fl)/sdo.gml &
+$(root_fl)/sdouble.gml &
+$(root_fl)/sdowhile.gml &
+$(root_fl)/selse.gml &
+$(root_fl)/selseif.gml &
+$(root_fl)/send.gml &
+$(root_fl)/sendaten.gml &
+$(root_fl)/sendbloc.gml &
+$(root_fl)/senddo.gml &
+$(root_fl)/sendfile.gml &
+$(root_fl)/sendgues.gml &
+$(root_fl)/sendif.gml &
+$(root_fl)/sendloop.gml &
+$(root_fl)/sendmap.gml &
+$(root_fl)/sendsele.gml &
+$(root_fl)/sendstru.gml &
+$(root_fl)/sendunio.gml &
+$(root_fl)/sendwhil.gml &
+$(root_fl)/sentry.gml &
+$(root_fl)/sequival.gml &
+$(root_fl)/sexecute.gml &
+$(root_fl)/sexit.gml &
+$(root_fl)/sexterna.gml &
+$(root_fl)/sformat.gml &
+$(root_fl)/sfunctio.gml &
+$(root_fl)/sgo.gml &
+$(root_fl)/sguess.gml &
+$(root_fl)/shade.fil &
+$(root_fl)/sif.gml &
+$(root_fl)/simplici.gml &
+$(root_fl)/sinclude.gml &
+$(root_fl)/sinquire.gml &
+$(root_fl)/sinteger.gml &
+$(root_fl)/sintrins.gml &
+$(root_fl)/slogical.gml &
+$(root_fl)/sloop.gml &
+$(root_fl)/smap.gml &
+$(root_fl)/snamelis.gml &
+$(root_fl)/sopen.gml &
+$(root_fl)/sotherwi.gml &
+$(root_fl)/sparamet.gml &
+$(root_fl)/spause.gml &
+$(root_fl)/sprint.gml &
+$(root_fl)/sprogram.gml &
+$(root_fl)/squit.gml &
+$(root_fl)/sread.gml &
+$(root_fl)/sreal.gml &
+$(root_fl)/srecord.gml &
+$(root_fl)/sremote.gml &
+$(root_fl)/sreturn.gml &
+$(root_fl)/srewind.gml &
+$(root_fl)/ssave.gml &
+$(root_fl)/sselect.gml &
+$(root_fl)/sstop.gml &
+$(root_fl)/sstructu.gml &
+$(root_fl)/ssubrout.gml &
+$(root_fl)/stmtclas.gml &
+$(root_fl)/student.for &
+$(root_fl)/stypdat.gml &
+$(root_fl)/stype.gml &
+$(root_fl)/stypext.gml &
+$(root_fl)/sunion.gml &
+$(root_fl)/suntil.gml &
+$(root_fl)/svolatil.gml &
+$(root_fl)/swhile.gml &
+$(root_fl)/swrite.gml &
+$(root_fl)/while.for
+
+# gs sub-directory
+root_gs = ../doc/gs
+incs_gs = $(root_gs)
+objs_gs_readme = &
+$(root_gs)/bench.gml &
+$(root_gs)/creadme.gml &
+$(root_gs)/diffs.gml &
+$(root_gs)/docson.gml &
+$(root_gs)/freadme.gml &
+$(root_gs)/install.gml &
+$(root_gs)/intro.gml &
+$(root_gs)/lic.gml &
+$(root_gs)/redist.gml &
+$(root_gs)/tshoot.gml &
+$(root_gs)/tutorial.gml &
+$(root_gs)/light2.bmp
+objs_gs_books = &
+$(root_gs)/cbooks.cnt &
+$(root_gs)/c_books.gml &
+$(root_gs)/ebooks.cnt &
+$(root_gs)/e_books.gml &
+$(root_gs)/fbooks.cnt &
+$(root_gs)/f_books.gml
+bmroot_gs = $(root_gs)
+objs_gs_books_bmp = &
+$(bmroot_gs)/cbooks.bmp &
+$(bmroot_gs)/fbooks.bmp
+!ifeq wgml_target ps
+objs_gs_readme_ps = &
+$(tmpdir)/ide10c.ps &
+$(tmpdir)/ide11c.ps &
+$(tmpdir)/ide12c.ps &
+$(tmpdir)/ide13c.ps &
+$(tmpdir)/ide14c.ps &
+$(tmpdir)/ide14f.ps &
+$(tmpdir)/ide1c.ps &
+$(tmpdir)/ide2c.ps &
+$(tmpdir)/ide2f.ps &
+$(tmpdir)/ide3c.ps &
+$(tmpdir)/ide3f.ps &
+$(tmpdir)/ide4c.ps &
+$(tmpdir)/ide5c.ps &
+$(tmpdir)/ide5f.ps &
+$(tmpdir)/ide6c.ps &
+$(tmpdir)/ide7c.ps &
+$(tmpdir)/ide7f.ps &
+$(tmpdir)/ide8c.ps &
+$(tmpdir)/ide8f.ps &
+$(tmpdir)/ide9c.ps &
+$(tmpdir)/ide9f.ps
+!else
+objs_gs_readme_bmp = &
+$(bmroot_gs)/ide10c.bmp &
+$(bmroot_gs)/ide11c.bmp &
+$(bmroot_gs)/ide12c.bmp &
+$(bmroot_gs)/ide13c.bmp &
+$(bmroot_gs)/ide14c.bmp &
+$(bmroot_gs)/ide14f.bmp &
+$(bmroot_gs)/ide1c.bmp &
+$(bmroot_gs)/ide2c.bmp &
+$(bmroot_gs)/ide2f.bmp &
+$(bmroot_gs)/ide3c.bmp &
+$(bmroot_gs)/ide3f.bmp &
+$(bmroot_gs)/ide4c.bmp &
+$(bmroot_gs)/ide5c.bmp &
+$(bmroot_gs)/ide5f.bmp &
+$(bmroot_gs)/ide6c.bmp &
+$(bmroot_gs)/ide7c.bmp &
+$(bmroot_gs)/ide7f.bmp &
+$(bmroot_gs)/ide8c.bmp &
+$(bmroot_gs)/ide8f.bmp &
+$(bmroot_gs)/ide9c.bmp &
+$(bmroot_gs)/ide9f.bmp
+!endif
+
+# gui;gui/snaps sub-directory
+root_gui = ../doc/gui
+incs_gui = $(root_gui);$(bmroot_gui)
+objs_gui = &
+$(root_gui)/guitool.gml &
+$(root_gui)/prof.gml &
+$(root_gui)/wedref.gml &
+$(root_gui)/wedregx.gml &
+$(root_gui)/wedtutor.gml &
+$(root_gui)/wguiaccl.gml &
+$(root_gui)/wguibrow.gml &
+$(root_gui)/wguidlog.gml &
+$(root_gui)/wguidrnt.gml &
+$(root_gui)/wguidrwc.gml &
+$(root_gui)/wguidspy.gml &
+$(root_gui)/wguiheap.gml &
+$(root_gui)/wguilog.gml &
+$(root_gui)/wguimage.gml &
+$(root_gui)/wguimark.gml &
+$(root_gui)/wguimenu.gml &
+$(root_gui)/wguipref.gml &
+$(root_gui)/wguispy.gml &
+$(root_gui)/wguistrg.gml &
+$(root_gui)/wguiwide.gml &
+$(root_gui)/wguizoom.gml &
+$(root_gui)/wrc.gml &
+$(root_gui)/wrc_errs.gml &
+$(root_gui)/wrcerrs1.gml &
+$(root_gui)/wrcmacs.gml &
+$(root_gui)/wre.gml
+bmroot_gui = $(root_gui)/snaps
+!ifeq wgml_target ps
+objs_gui_ps = &
+$(tmpdir)/acc1.ps &
+$(tmpdir)/acc10.ps &
+$(tmpdir)/acc11.ps &
+$(tmpdir)/acc12.ps &
+$(tmpdir)/acc13.ps &
+$(tmpdir)/acc2.ps &
+$(tmpdir)/acc3.ps &
+$(tmpdir)/acc4.ps &
+$(tmpdir)/acc5.ps &
+$(tmpdir)/acc6.ps &
+$(tmpdir)/acc7.ps &
+$(tmpdir)/acc8.ps &
+$(tmpdir)/acc9.ps &
+$(tmpdir)/brow1.ps &
+$(tmpdir)/brow10.ps &
+$(tmpdir)/brow11.ps &
+$(tmpdir)/brow12.ps &
+$(tmpdir)/brow13.ps &
+$(tmpdir)/brow14.ps &
+$(tmpdir)/brow15.ps &
+$(tmpdir)/brow16.ps &
+$(tmpdir)/brow17.ps &
+$(tmpdir)/brow18.ps &
+$(tmpdir)/brow19.ps &
+$(tmpdir)/brow2.ps &
+$(tmpdir)/brow3.ps &
+$(tmpdir)/brow4.ps &
+$(tmpdir)/brow5.ps &
+$(tmpdir)/brow6.ps &
+$(tmpdir)/brow7.ps &
+$(tmpdir)/brow8.ps &
+$(tmpdir)/brow9.ps &
+$(tmpdir)/dde1.ps &
+$(tmpdir)/dde1a.ps &
+$(tmpdir)/dde10.ps &
+$(tmpdir)/dde11.ps &
+$(tmpdir)/dde12.ps &
+$(tmpdir)/dde13.ps &
+$(tmpdir)/dde2.ps &
+$(tmpdir)/dde5.ps &
+$(tmpdir)/dde6.ps &
+$(tmpdir)/dde9.ps &
+$(tmpdir)/dia1.ps &
+$(tmpdir)/dia10.ps &
+$(tmpdir)/dia11.ps &
+$(tmpdir)/dia2.ps &
+$(tmpdir)/dia3.ps &
+$(tmpdir)/dia4.ps &
+$(tmpdir)/dia5.ps &
+$(tmpdir)/dia6.ps &
+$(tmpdir)/dia7.ps &
+$(tmpdir)/dia8.ps &
+$(tmpdir)/dia9.ps &
+$(tmpdir)/drw1.ps &
+$(tmpdir)/drw10.ps &
+$(tmpdir)/drw11.ps &
+$(tmpdir)/drw12.ps &
+$(tmpdir)/drw13.ps &
+$(tmpdir)/drw14.ps &
+$(tmpdir)/drw15.ps &
+$(tmpdir)/drw16.ps &
+$(tmpdir)/drw2.ps &
+$(tmpdir)/drw3.ps &
+$(tmpdir)/drw4.ps &
+$(tmpdir)/drw5.ps &
+$(tmpdir)/drw6.ps &
+$(tmpdir)/drw7.ps &
+$(tmpdir)/drw8.ps &
+$(tmpdir)/drw9.ps &
+$(tmpdir)/hw1.ps &
+$(tmpdir)/hw10.ps &
+$(tmpdir)/hw11.ps &
+$(tmpdir)/hw12.ps &
+$(tmpdir)/hw13.ps &
+$(tmpdir)/hw14.ps &
+$(tmpdir)/hw15.ps &
+$(tmpdir)/hw16.ps &
+$(tmpdir)/hw2.ps &
+$(tmpdir)/hw3.ps &
+$(tmpdir)/hw4.ps &
+$(tmpdir)/hw5.ps &
+$(tmpdir)/hw6.ps &
+$(tmpdir)/hw7.ps &
+$(tmpdir)/hw8.ps &
+$(tmpdir)/hw9.ps &
+$(tmpdir)/ide1.ps &
+$(tmpdir)/ide10.ps &
+$(tmpdir)/ide11.ps &
+$(tmpdir)/ide12.ps &
+$(tmpdir)/ide13.ps &
+$(tmpdir)/ide14.ps &
+$(tmpdir)/ide15.ps &
+$(tmpdir)/ide16.ps &
+$(tmpdir)/ide17.ps &
+$(tmpdir)/ide18.ps &
+$(tmpdir)/ide19.ps &
+$(tmpdir)/ide2.ps &
+$(tmpdir)/ide20.ps &
+$(tmpdir)/ide21.ps &
+$(tmpdir)/ide22.ps &
+$(tmpdir)/ide23.ps &
+$(tmpdir)/ide24.ps &
+$(tmpdir)/ide25.ps &
+$(tmpdir)/ide26.ps &
+$(tmpdir)/ide27.ps &
+$(tmpdir)/ide28.ps &
+$(tmpdir)/ide29.ps &
+$(tmpdir)/ide3.ps &
+$(tmpdir)/ide4.ps &
+$(tmpdir)/ide5.ps &
+$(tmpdir)/ide6.ps &
+$(tmpdir)/ide7.ps &
+$(tmpdir)/ide8.ps &
+$(tmpdir)/ide9.ps &
+$(tmpdir)/img1.ps &
+$(tmpdir)/img2.ps &
+$(tmpdir)/img3.ps &
+$(tmpdir)/img4.ps &
+$(tmpdir)/img5.ps &
+$(tmpdir)/img6.ps &
+$(tmpdir)/img7.ps &
+$(tmpdir)/mnu1.ps &
+$(tmpdir)/mnu2.ps &
+$(tmpdir)/mnu3.ps &
+$(tmpdir)/mnu4.ps &
+$(tmpdir)/mnu5.ps &
+$(tmpdir)/mnu6.ps &
+$(tmpdir)/mnu7.ps &
+$(tmpdir)/mnu8.ps &
+$(tmpdir)/mnu9.ps &
+$(tmpdir)/res1.ps &
+$(tmpdir)/res10.ps &
+$(tmpdir)/res11.ps &
+$(tmpdir)/res12.ps &
+$(tmpdir)/res2.ps &
+$(tmpdir)/res3.ps &
+$(tmpdir)/res4.ps &
+$(tmpdir)/res5.ps &
+$(tmpdir)/res6.ps &
+$(tmpdir)/res7.ps &
+$(tmpdir)/res8.ps &
+$(tmpdir)/res9.ps &
+$(tmpdir)/spy1.ps &
+$(tmpdir)/spy1a.ps &
+$(tmpdir)/spy10.ps &
+$(tmpdir)/spy11.ps &
+$(tmpdir)/spy13.ps &
+$(tmpdir)/spy2.ps &
+$(tmpdir)/spy5.ps &
+$(tmpdir)/spy6.ps &
+$(tmpdir)/spy8.ps &
+$(tmpdir)/spy9.ps &
+$(tmpdir)/str1.ps &
+$(tmpdir)/str2.ps &
+$(tmpdir)/str3.ps &
+$(tmpdir)/str4.ps &
+$(tmpdir)/str5.ps &
+$(tmpdir)/str6.ps &
+$(tmpdir)/str7.ps &
+$(tmpdir)/str8.ps &
+$(tmpdir)/vi0.ps &
+$(tmpdir)/vi1.ps &
+$(tmpdir)/vi10.ps &
+$(tmpdir)/vi11.ps &
+$(tmpdir)/vi12.ps &
+$(tmpdir)/vi2.ps &
+$(tmpdir)/vi3.ps &
+$(tmpdir)/vi4.ps &
+$(tmpdir)/vi5.ps &
+$(tmpdir)/vi6.ps &
+$(tmpdir)/vi7.ps &
+$(tmpdir)/vi8.ps &
+$(tmpdir)/vi9.ps &
+$(tmpdir)/wprof01.ps &
+$(tmpdir)/wprof02.ps &
+$(tmpdir)/wprof03.ps &
+$(tmpdir)/wprof04.ps &
+$(tmpdir)/wprof05.ps &
+$(tmpdir)/wprof06.ps &
+$(tmpdir)/wprof07.ps &
+$(tmpdir)/wprof08.ps &
+$(tmpdir)/wzm1.ps &
+$(tmpdir)/wzm2.ps
+!else
+objs_gui_resacc_bmp = &
+$(bmroot_gui)/acc1.bmp &
+$(bmroot_gui)/acc10.bmp &
+$(bmroot_gui)/acc11.bmp &
+$(bmroot_gui)/acc12.bmp &
+$(bmroot_gui)/acc13.bmp &
+$(bmroot_gui)/acc2.bmp &
+$(bmroot_gui)/acc3.bmp &
+$(bmroot_gui)/acc4.bmp &
+$(bmroot_gui)/acc5.bmp &
+$(bmroot_gui)/acc6.bmp &
+$(bmroot_gui)/acc7.bmp &
+$(bmroot_gui)/acc8.bmp &
+$(bmroot_gui)/acc9.bmp
+objs_gui_wbrw_bmp = &
+$(bmroot_gui)/brow1.bmp &
+$(bmroot_gui)/brow10.bmp &
+$(bmroot_gui)/brow11.bmp &
+$(bmroot_gui)/brow12.bmp &
+$(bmroot_gui)/brow13.bmp &
+$(bmroot_gui)/brow14.bmp &
+$(bmroot_gui)/brow15.bmp &
+$(bmroot_gui)/brow16.bmp &
+$(bmroot_gui)/brow17.bmp &
+$(bmroot_gui)/brow18.bmp &
+$(bmroot_gui)/brow19.bmp &
+$(bmroot_gui)/brow2.bmp &
+$(bmroot_gui)/brow3.bmp &
+$(bmroot_gui)/brow4.bmp &
+$(bmroot_gui)/brow5.bmp &
+$(bmroot_gui)/brow6.bmp &
+$(bmroot_gui)/brow7.bmp &
+$(bmroot_gui)/brow8.bmp &
+$(bmroot_gui)/brow9.bmp
+objs_gui_ddespy_bmp = &
+$(bmroot_gui)/dde1.bmp &
+$(bmroot_gui)/dde1a.bmp &
+$(bmroot_gui)/dde10.bmp &
+$(bmroot_gui)/dde11.bmp &
+$(bmroot_gui)/dde12.bmp &
+$(bmroot_gui)/dde13.bmp &
+$(bmroot_gui)/dde2.bmp &
+$(bmroot_gui)/dde5.bmp &
+$(bmroot_gui)/dde6.bmp &
+$(bmroot_gui)/dde9.bmp
+objs_gui_resdlg_bmp = &
+$(bmroot_gui)/dia1.bmp &
+$(bmroot_gui)/dia10.bmp &
+$(bmroot_gui)/dia11.bmp &
+$(bmroot_gui)/dia2.bmp &
+$(bmroot_gui)/dia3.bmp &
+$(bmroot_gui)/dia4.bmp &
+$(bmroot_gui)/dia5.bmp &
+$(bmroot_gui)/dia6.bmp &
+$(bmroot_gui)/dia7.bmp &
+$(bmroot_gui)/dia8.bmp &
+$(bmroot_gui)/dia9.bmp
+objs_gui_drwatcom_bmp = &
+$(bmroot_gui)/drw1.bmp &
+$(bmroot_gui)/drw10.bmp &
+$(bmroot_gui)/drw11.bmp &
+$(bmroot_gui)/drw12.bmp &
+$(bmroot_gui)/drw13.bmp &
+$(bmroot_gui)/drw14.bmp &
+$(bmroot_gui)/drw15.bmp &
+$(bmroot_gui)/drw16.bmp &
+$(bmroot_gui)/drw2.bmp &
+$(bmroot_gui)/drw3.bmp &
+$(bmroot_gui)/drw4.bmp &
+$(bmroot_gui)/drw5.bmp &
+$(bmroot_gui)/drw6.bmp &
+$(bmroot_gui)/drw7.bmp &
+$(bmroot_gui)/drw8.bmp &
+$(bmroot_gui)/drw9.bmp
+objs_gui_heapwalk_bmp = &
+$(bmroot_gui)/hw1.bmp &
+$(bmroot_gui)/hw10.bmp &
+$(bmroot_gui)/hw11.bmp &
+$(bmroot_gui)/hw12.bmp &
+$(bmroot_gui)/hw13.bmp &
+$(bmroot_gui)/hw14.bmp &
+$(bmroot_gui)/hw15.bmp &
+$(bmroot_gui)/hw16.bmp &
+$(bmroot_gui)/hw2.bmp &
+$(bmroot_gui)/hw3.bmp &
+$(bmroot_gui)/hw4.bmp &
+$(bmroot_gui)/hw5.bmp &
+$(bmroot_gui)/hw6.bmp &
+$(bmroot_gui)/hw7.bmp &
+$(bmroot_gui)/hw8.bmp &
+$(bmroot_gui)/hw9.bmp
+objs_gui_ide_bmp = &
+$(bmroot_gui)/browtarg.bmp &
+$(bmroot_gui)/debgtarg.bmp &
+$(bmroot_gui)/edititem.bmp &
+$(bmroot_gui)/ide1.bmp &
+$(bmroot_gui)/ide10.bmp &
+$(bmroot_gui)/ide11.bmp &
+$(bmroot_gui)/ide12.bmp &
+$(bmroot_gui)/ide13.bmp &
+$(bmroot_gui)/ide14.bmp &
+$(bmroot_gui)/ide15.bmp &
+$(bmroot_gui)/ide16.bmp &
+$(bmroot_gui)/ide17.bmp &
+$(bmroot_gui)/ide18.bmp &
+$(bmroot_gui)/ide19.bmp &
+$(bmroot_gui)/ide2.bmp &
+$(bmroot_gui)/ide20.bmp &
+$(bmroot_gui)/ide21.bmp &
+$(bmroot_gui)/ide22.bmp &
+$(bmroot_gui)/ide23.bmp &
+$(bmroot_gui)/ide24.bmp &
+$(bmroot_gui)/ide25.bmp &
+$(bmroot_gui)/ide26.bmp &
+$(bmroot_gui)/ide27.bmp &
+$(bmroot_gui)/ide28.bmp &
+$(bmroot_gui)/ide29.bmp &
+$(bmroot_gui)/ide3.bmp &
+$(bmroot_gui)/ide4.bmp &
+$(bmroot_gui)/ide5.bmp &
+$(bmroot_gui)/ide6.bmp &
+$(bmroot_gui)/ide7.bmp &
+$(bmroot_gui)/ide8.bmp &
+$(bmroot_gui)/ide9.bmp &
+$(bmroot_gui)/ide_s.bmp &
+$(bmroot_gui)/makeitem.bmp &
+$(bmroot_gui)/makeproj.bmp &
+$(bmroot_gui)/maketarg.bmp &
+$(bmroot_gui)/newproj.bmp &
+$(bmroot_gui)/openproj.bmp &
+$(bmroot_gui)/proftarg.bmp &
+$(bmroot_gui)/rdbgtarg.bmp &
+$(bmroot_gui)/runtarg.bmp &
+$(bmroot_gui)/samptarg.bmp &
+$(bmroot_gui)/saveproj.bmp
+objs_gui_resimg_bmp = &
+$(bmroot_gui)/img1.bmp &
+$(bmroot_gui)/img2.bmp &
+$(bmroot_gui)/img3.bmp &
+$(bmroot_gui)/img4.bmp &
+$(bmroot_gui)/img5.bmp &
+$(bmroot_gui)/img6.bmp &
+$(bmroot_gui)/img7.bmp
+objs_gui_resmnu_bmp = &
+$(bmroot_gui)/mnu4.bmp &
+$(bmroot_gui)/mnu1.bmp &
+$(bmroot_gui)/mnu2.bmp &
+$(bmroot_gui)/mnu3.bmp &
+$(bmroot_gui)/mnu5.bmp &
+$(bmroot_gui)/mnu6.bmp &
+$(bmroot_gui)/mnu7.bmp &
+$(bmroot_gui)/mnu8.bmp &
+$(bmroot_gui)/mnu9.bmp
+objs_gui_resedt_bmp = &
+$(bmroot_gui)/res1.bmp &
+$(bmroot_gui)/res10.bmp &
+$(bmroot_gui)/res11.bmp &
+$(bmroot_gui)/res12.bmp &
+$(bmroot_gui)/res2.bmp &
+$(bmroot_gui)/res3.bmp &
+$(bmroot_gui)/res4.bmp &
+$(bmroot_gui)/res5.bmp &
+$(bmroot_gui)/res6.bmp &
+$(bmroot_gui)/res7.bmp &
+$(bmroot_gui)/res8.bmp &
+$(bmroot_gui)/res9.bmp
+objs_gui_spy_bmp = &
+$(bmroot_gui)/spy1.bmp &
+$(bmroot_gui)/spy1a.bmp &
+$(bmroot_gui)/spy10.bmp &
+$(bmroot_gui)/spy11.bmp &
+$(bmroot_gui)/spy13.bmp &
+$(bmroot_gui)/spy2.bmp &
+$(bmroot_gui)/spy5.bmp &
+$(bmroot_gui)/spy6.bmp &
+$(bmroot_gui)/spy8.bmp &
+$(bmroot_gui)/spy9.bmp
+objs_gui_resstr_bmp = &
+$(bmroot_gui)/str1.bmp &
+$(bmroot_gui)/str2.bmp &
+$(bmroot_gui)/str3.bmp &
+$(bmroot_gui)/str4.bmp &
+$(bmroot_gui)/str5.bmp &
+$(bmroot_gui)/str6.bmp &
+$(bmroot_gui)/str7.bmp &
+$(bmroot_gui)/str8.bmp
+objs_gui_editor_bmp = &
+$(bmroot_gui)/bmatch.bmp &
+$(bmroot_gui)/copy.bmp &
+$(bmroot_gui)/cut.bmp &
+$(bmroot_gui)/files.bmp &
+$(bmroot_gui)/finddlg.bmp &
+$(bmroot_gui)/hammer.bmp &
+$(bmroot_gui)/new.bmp &
+$(bmroot_gui)/nextfile.bmp &
+$(bmroot_gui)/open.bmp &
+$(bmroot_gui)/paste.bmp &
+$(bmroot_gui)/prevfile.bmp &
+$(bmroot_gui)/redo.bmp &
+$(bmroot_gui)/refind.bmp &
+$(bmroot_gui)/save.bmp &
+$(bmroot_gui)/undo.bmp &
+$(bmroot_gui)/vi0.bmp &
+$(bmroot_gui)/vi1.bmp &
+$(bmroot_gui)/vi10.bmp &
+$(bmroot_gui)/vi11.bmp &
+$(bmroot_gui)/vi12.bmp &
+$(bmroot_gui)/vi2.bmp &
+$(bmroot_gui)/vi3.bmp &
+$(bmroot_gui)/vi4.bmp &
+$(bmroot_gui)/vi5.bmp &
+$(bmroot_gui)/vi6.bmp &
+$(bmroot_gui)/vi7.bmp &
+$(bmroot_gui)/vi8.bmp &
+$(bmroot_gui)/vi9.bmp
+objs_gui_wprof_bmp = &
+$(bmroot_gui)/wprof01.bmp &
+$(bmroot_gui)/wprof02.bmp &
+$(bmroot_gui)/wprof03.bmp &
+$(bmroot_gui)/wprof04.bmp &
+$(bmroot_gui)/wprof05.bmp &
+$(bmroot_gui)/wprof06.bmp &
+$(bmroot_gui)/wprof07.bmp &
+$(bmroot_gui)/wprof08.bmp
+objs_gui_zoom_bmp = &
+$(bmroot_gui)/wzm1.bmp &
+$(bmroot_gui)/wzm2.bmp
+objs_gui_bmp = &
+$(objs_gui_resacc_bmp) &
+$(objs_gui_wbrw_bmp) &
+$(objs_gui_ddespy_bmp) &
+$(objs_gui_resdlg_bmp) &
+$(objs_gui_drwatcom_bmp) &
+$(objs_gui_heapwalk_bmp) &
+$(objs_gui_ide_bmp) &
+$(objs_gui_resimg_bmp) &
+$(objs_gui_resmnu_bmp) &
+$(objs_gui_resedt_bmp) &
+$(objs_gui_spy_bmp) &
+$(objs_gui_resstr_bmp) &
+$(objs_gui_editor_bmp) &
+$(objs_gui_wprof_bmp) &
+$(objs_gui_zoom_bmp)
+!endif
+
+# lg sub-directory
+root_lg = ../doc/lg
+incs_lg = $(root_lg)
+objs_lg = &
+$(root_lg)/dosfiles.gml &
+$(root_lg)/ldalias.gml &
+$(root_lg)/ldanonym.gml &
+$(root_lg)/ldautose.gml &
+$(root_lg)/ldbegin.gml &
+$(root_lg)/ldcmt.gml &
+$(root_lg)/ldcommit.gml &
+$(root_lg)/lddebug.gml &
+$(root_lg)/lddisabl.gml &
+$(root_lg)/ldend.gml &
+$(root_lg)/ldendlin.gml &
+$(root_lg)/ldexport.gml &
+$(root_lg)/ldfile.gml &
+$(root_lg)/ldfixedl.gml &
+$(root_lg)/ldforcev.gml &
+$(root_lg)/ldformat.gml &
+$(root_lg)/ldimport.gml &
+$(root_lg)/ldinclud.gml &
+$(root_lg)/ldlangua.gml &
+$(root_lg)/ldlibfil.gml &
+$(root_lg)/ldlibpat.gml &
+$(root_lg)/ldlibrar.gml &
+$(root_lg)/ldmodfil.gml &
+$(root_lg)/ldmodtrc.gml &
+$(root_lg)/ldmodule.gml &
+$(root_lg)/ldname.gml &
+$(root_lg)/ldnewseg.gml &
+$(root_lg)/ldnovect.gml &
+$(root_lg)/ldoption.gml &
+$(root_lg)/ldoptlib.gml &
+$(root_lg)/ldorder.gml &
+$(root_lg)/ldoutput.gml &
+$(root_lg)/ldoverla.gml &
+$(root_lg)/ldpath.gml &
+$(root_lg)/ldrefere.gml &
+$(root_lg)/ldresour.gml &
+$(root_lg)/ldruntim.gml &
+$(root_lg)/ldsectio.gml &
+$(root_lg)/ldsegmen.gml &
+$(root_lg)/ldsort.gml &
+$(root_lg)/ldstartl.gml &
+$(root_lg)/ldsymtrc.gml &
+$(root_lg)/ldsystem.gml &
+$(root_lg)/ldvector.gml &
+$(root_lg)/l_guide.gml &
+$(root_lg)/lnkdir.gml &
+$(root_lg)/lnkmain.gml &
+$(root_lg)/lnkvalue.gml &
+$(root_lg)/lpref.gml &
+$(root_lg)/ms2wlink.gml &
+$(root_lg)/objfile.gml &
+$(root_lg)/opalignm.gml &
+$(root_lg)/oparea.gml &
+$(root_lg)/opartifi.gml &
+$(root_lg)/opcache.gml &
+$(root_lg)/opcaseex.gml &
+$(root_lg)/opcheck.gml &
+$(root_lg)/opcopyri.gml &
+$(root_lg)/opcsum.gml &
+$(root_lg)/opcustom.gml &
+$(root_lg)/opcvpack.gml &
+$(root_lg)/opdescri.gml &
+$(root_lg)/opdistri.gml &
+$(root_lg)/opdosseg.gml &
+$(root_lg)/opdynami.gml &
+$(root_lg)/opelimin.gml &
+$(root_lg)/opexit.gml &
+$(root_lg)/opfarcal.gml &
+$(root_lg)/opfilchr.gml &
+$(root_lg)/opheap.gml &
+$(root_lg)/ophelp.gml &
+$(root_lg)/ophshift.gml &
+$(root_lg)/opimpfil.gml &
+$(root_lg)/opimplib.gml &
+$(root_lg)/opincrem.gml &
+$(root_lg)/opintern.gml &
+$(root_lg)/oplargaw.gml &
+$(root_lg)/oplinear.gml &
+$(root_lg)/oplnkver.gml &
+$(root_lg)/oplongli.gml &
+$(root_lg)/opmangle.gml &
+$(root_lg)/opmanyau.gml &
+$(root_lg)/opmap.gml &
+$(root_lg)/opmaxdat.gml &
+$(root_lg)/opmaxerr.gml &
+$(root_lg)/opmessag.gml &
+$(root_lg)/opmindat.gml &
+$(root_lg)/opmodnam.gml &
+$(root_lg)/opmultil.gml &
+$(root_lg)/opnamele.gml &
+$(root_lg)/opnewfil.gml &
+$(root_lg)/opnlmfla.gml &
+$(root_lg)/opnoauto.gml &
+$(root_lg)/opnodefa.gml &
+$(root_lg)/opnoexte.gml &
+$(root_lg)/opnoindi.gml &
+$(root_lg)/opnolarg.gml &
+$(root_lg)/opnorelo.gml &
+$(root_lg)/opnostdc.gml &
+$(root_lg)/opobjali.gml &
+$(root_lg)/opoffset.gml &
+$(root_lg)/opoldlib.gml &
+$(root_lg)/oponeaut.gml &
+$(root_lg)/oposdoma.gml &
+$(root_lg)/oposname.gml &
+$(root_lg)/oposver.gml &
+$(root_lg)/oppackco.gml &
+$(root_lg)/oppackda.gml &
+$(root_lg)/opprivil.gml &
+$(root_lg)/opprotmo.gml &
+$(root_lg)/oppseudo.gml &
+$(root_lg)/opquiet.gml &
+$(root_lg)/opredefs.gml &
+$(root_lg)/opreentr.gml &
+$(root_lg)/opresour.gml &
+$(root_lg)/oprwrelo.gml &
+$(root_lg)/opscreen.gml &
+$(root_lg)/opsharel.gml &
+$(root_lg)/opshowde.gml &
+$(root_lg)/opsmall.gml &
+$(root_lg)/opstack.gml &
+$(root_lg)/opstanda.gml &
+$(root_lg)/opstart.gml &
+$(root_lg)/opstatic.gml &
+$(root_lg)/opstub.gml &
+$(root_lg)/opsymfil.gml &
+$(root_lg)/opsynchr.gml &
+$(root_lg)/opthread.gml &
+$(root_lg)/optoggle.gml &
+$(root_lg)/opundefs.gml &
+$(root_lg)/opverbos.gml &
+$(root_lg)/opversio.gml &
+$(root_lg)/opvfremo.gml &
+$(root_lg)/opxdcdat.gml &
+$(root_lg)/qnxfiles.gml &
+$(root_lg)/spdos.gml &
+$(root_lg)/spelf.gml &
+$(root_lg)/spnov.gml &
+$(root_lg)/spos2.gml &
+$(root_lg)/spos2win.gml &
+$(root_lg)/spphar.gml &
+$(root_lg)/spqnx.gml &
+$(root_lg)/spwin16.gml &
+$(root_lg)/spwin32.gml &
+$(root_lg)/tutmain.gml &
+$(root_lg)/tutqnx.gml &
+$(root_lg)/tutsteps.gml &
+$(root_lg)/wlberror.gml &
+$(root_lg)/wlbimp.gml &
+$(root_lg)/wlbintro.gml &
+$(root_lg)/wlbmain.gml &
+$(root_lg)/wlerrfmt.gml &
+$(root_lg)/wlerrmsg.gml &
+$(root_lg)/wlerror.gml &
+$(root_lg)/wlfcopt.gml &
+$(root_lg)/wlib.gml &
+$(root_lg)/wln_errs.gml &
+$(root_lg)/wlinklnk.gml &
+$(root_lg)/wlintro.gml &
+$(root_lg)/wlmem.gml &
+$(root_lg)/wlmemlay.gml &
+$(root_lg)/wlprompt.gml &
+$(root_lg)/wlsorder.gml &
+$(root_lg)/wlsyntax.gml &
+$(root_lg)/wlusage.gml &
+$(root_lg)/wsterror.gml &
+$(root_lg)/wstintro.gml &
+$(root_lg)/wstmain.gml &
+$(root_lg)/wstrip.gml
+
+# lr sub-directory
+root_lr = ../doc/lr
+incs_lr = $(root_lr)
+objs_lr = &
+$(root_lr)/authors.gml &
+$(root_lr)/cfunrems.gml &
+$(root_lr)/clibref.gml &
+$(root_lr)/cmanmac.gml &
+$(root_lr)/f77_grap.gml &
+$(root_lr)/gfunmacs.gml &
+$(root_lr)/gfunrems.gml &
+$(root_lr)/libfuns.gml &
+$(root_lr)/liblist7.gml &
+$(root_lr)/libmacs.gml &
+$(root_lr)/os2help.gml &
+$(root_lr)/safecmac.gml &
+$(root_lr)/lrsyms.gml
+
+# lr/src sub-directory
+root_lr_src = $(root_lr)/src
+incs_lr_src = $(root_lr_src)
+objs_lr_src = &
+$(root_lr_src)/_atouni.gml &
+$(root_lr_src)/_bfreese.gml &
+$(root_lr_src)/_bgetcmd.gml &
+$(root_lr_src)/_bheapse.gml &
+$(root_lr_src)/_bprintf.gml &
+$(root_lr_src)/_bthread.gml &
+$(root_lr_src)/_clear87.gml &
+$(root_lr_src)/_cmdname.gml &
+$(root_lr_src)/_commit.gml &
+$(root_lr_src)/_ctime.gml &
+$(root_lr_src)/_disable.gml &
+$(root_lr_src)/_dwdelcl.gml &
+$(root_lr_src)/_dwshutd.gml &
+$(root_lr_src)/_dwstabo.gml &
+$(root_lr_src)/_dwstapt.gml &
+$(root_lr_src)/_dwstcnt.gml &
+$(root_lr_src)/_dwyield.gml &
+$(root_lr_src)/_enable.gml &
+$(root_lr_src)/_ethread.gml &
+$(root_lr_src)/_exit.gml &
+$(root_lr_src)/_expand.gml &
+$(root_lr_src)/_finite.gml &
+$(root_lr_src)/_fpreset.gml &
+$(root_lr_src)/_freect.gml &
+$(root_lr_src)/_fsopen.gml &
+$(root_lr_src)/_fullpat.gml &
+$(root_lr_src)/_gmtime.gml &
+$(root_lr_src)/_grow_ha.gml &
+$(root_lr_src)/_harderr.gml &
+$(root_lr_src)/_hdopen.gml &
+$(root_lr_src)/_heapchk.gml &
+$(root_lr_src)/_heapena.gml &
+$(root_lr_src)/_heapgrw.gml &
+$(root_lr_src)/_heapmin.gml &
+$(root_lr_src)/_heapset.gml &
+$(root_lr_src)/_heapshr.gml &
+$(root_lr_src)/_heapwal.gml &
+$(root_lr_src)/_localti.gml &
+$(root_lr_src)/_lrotl.gml &
+$(root_lr_src)/_lrotr.gml &
+$(root_lr_src)/_makepat.gml &
+$(root_lr_src)/_mbsret1.gml &
+$(root_lr_src)/_mbsret2.gml &
+$(root_lr_src)/_mbsret3.gml &
+$(root_lr_src)/_mbsret4.gml &
+$(root_lr_src)/_mbsret5.gml &
+$(root_lr_src)/_mbsret6.gml &
+$(root_lr_src)/_memavl.gml &
+$(root_lr_src)/_memmax.gml &
+$(root_lr_src)/_msize.gml &
+$(root_lr_src)/_pclose.gml &
+$(root_lr_src)/_pipe.gml &
+$(root_lr_src)/_popen.gml &
+$(root_lr_src)/_rotl.gml &
+$(root_lr_src)/_rotr.gml &
+$(root_lr_src)/_searche.gml &
+$(root_lr_src)/_setmath.gml &
+$(root_lr_src)/_snprntf.gml &
+$(root_lr_src)/_splitp2.gml &
+$(root_lr_src)/_splitpa.gml &
+$(root_lr_src)/_status8.gml &
+$(root_lr_src)/_vbprint.gml &
+$(root_lr_src)/_vsnprnt.gml &
+$(root_lr_src)/_wdirent.gml &
+$(root_lr_src)/abort.gml &
+$(root_lr_src)/abrt_hnd.gml &
+$(root_lr_src)/abs.gml &
+$(root_lr_src)/access.gml &
+$(root_lr_src)/acos.gml &
+$(root_lr_src)/acosh.gml &
+$(root_lr_src)/alloca.gml &
+$(root_lr_src)/allocmem.gml &
+$(root_lr_src)/asctim_s.gml &
+$(root_lr_src)/asctime.gml &
+$(root_lr_src)/asin.gml &
+$(root_lr_src)/asinh.gml &
+$(root_lr_src)/assert.gml &
+$(root_lr_src)/atan.gml &
+$(root_lr_src)/atan2.gml &
+$(root_lr_src)/atanh.gml &
+$(root_lr_src)/atexit.gml &
+$(root_lr_src)/atof.gml &
+$(root_lr_src)/atoi.gml &
+$(root_lr_src)/atol.gml &
+$(root_lr_src)/atoll.gml &
+$(root_lr_src)/b_disk.gml &
+$(root_lr_src)/b_disk98.gml &
+$(root_lr_src)/b_equi98.gml &
+$(root_lr_src)/b_equip.gml &
+$(root_lr_src)/b_keyb98.gml &
+$(root_lr_src)/b_keybrd.gml &
+$(root_lr_src)/b_mems98.gml &
+$(root_lr_src)/b_memsiz.gml &
+$(root_lr_src)/b_prin98.gml &
+$(root_lr_src)/b_print.gml &
+$(root_lr_src)/b_seri98.gml &
+$(root_lr_src)/b_serial.gml &
+$(root_lr_src)/b_time.gml &
+$(root_lr_src)/b_time98.gml &
+$(root_lr_src)/basename.gml &
+$(root_lr_src)/bcmp.gml &
+$(root_lr_src)/bcopy.gml &
+$(root_lr_src)/bdos.gml &
+$(root_lr_src)/bessel.gml &
+$(root_lr_src)/breakoff.gml &
+$(root_lr_src)/bsearch.gml &
+$(root_lr_src)/bsrch_s.gml &
+$(root_lr_src)/btom.gml &
+$(root_lr_src)/btowc.gml &
+$(root_lr_src)/bzero.gml &
+$(root_lr_src)/cabs.gml &
+$(root_lr_src)/calloc.gml &
+$(root_lr_src)/cbrt.gml &
+$(root_lr_src)/ceil.gml &
+$(root_lr_src)/cfunmacs.gml &
+$(root_lr_src)/cgets.gml &
+$(root_lr_src)/chainint.gml &
+$(root_lr_src)/chdir.gml &
+$(root_lr_src)/chdrive.gml &
+$(root_lr_src)/chkctype.gml &
+$(root_lr_src)/chmod.gml &
+$(root_lr_src)/chsize.gml &
+$(root_lr_src)/clearenv.gml &
+$(root_lr_src)/clearerr.gml &
+$(root_lr_src)/clibdesc.gml &
+$(root_lr_src)/clibdos.gml &
+$(root_lr_src)/clibfnam.gml &
+$(root_lr_src)/clibfunc.gml &
+$(root_lr_src)/clibfuns.gml &
+$(root_lr_src)/clibindx.gml &
+$(root_lr_src)/clibover.gml &
+$(root_lr_src)/clock.gml &
+$(root_lr_src)/close.gml &
+$(root_lr_src)/closedir.gml &
+$(root_lr_src)/control8.gml &
+$(root_lr_src)/controlf.gml &
+$(root_lr_src)/copysign.gml &
+$(root_lr_src)/cos.gml &
+$(root_lr_src)/cosh.gml &
+$(root_lr_src)/cprintf.gml &
+$(root_lr_src)/cputs.gml &
+$(root_lr_src)/creat.gml &
+$(root_lr_src)/creatatt.gml &
+$(root_lr_src)/creatnew.gml &
+$(root_lr_src)/crefuns.gml &
+$(root_lr_src)/cscanf.gml &
+$(root_lr_src)/csumfuns.gml &
+$(root_lr_src)/ctime.gml &
+$(root_lr_src)/ctime_s.gml &
+$(root_lr_src)/cwait.gml &
+$(root_lr_src)/d_close.gml &
+$(root_lr_src)/d_creat.gml &
+$(root_lr_src)/d_open.gml &
+$(root_lr_src)/d_read.gml &
+$(root_lr_src)/d_write.gml &
+$(root_lr_src)/dblslash.gml &
+$(root_lr_src)/delay.gml &
+$(root_lr_src)/dgetdriv.gml &
+$(root_lr_src)/dgetdskf.gml &
+$(root_lr_src)/dieee2ms.gml &
+$(root_lr_src)/difftime.gml &
+$(root_lr_src)/dirent.gml &
+$(root_lr_src)/dirname.gml &
+$(root_lr_src)/div.gml &
+$(root_lr_src)/dms2ieee.gml &
+$(root_lr_src)/dosattr.gml &
+$(root_lr_src)/doscommi.gml &
+$(root_lr_src)/dosexter.gml &
+$(root_lr_src)/dosfind.gml &
+$(root_lr_src)/dup.gml &
+$(root_lr_src)/dup2.gml &
+$(root_lr_src)/ecvt.gml &
+$(root_lr_src)/eof.gml &
+$(root_lr_src)/erf.gml &
+$(root_lr_src)/erfc.gml &
+$(root_lr_src)/errnocnv.gml &
+$(root_lr_src)/errnodom.gml &
+$(root_lr_src)/errnoref.gml &
+$(root_lr_src)/errnorng.gml &
+$(root_lr_src)/exec.gml &
+$(root_lr_src)/execcom.gml &
+$(root_lr_src)/exit.gml &
+$(root_lr_src)/exp.gml &
+$(root_lr_src)/exp2.gml &
+$(root_lr_src)/expm1.gml &
+$(root_lr_src)/fabs.gml &
+$(root_lr_src)/fclose.gml &
+$(root_lr_src)/fcloseal.gml &
+$(root_lr_src)/fcvt.gml &
+$(root_lr_src)/fdim.gml &
+$(root_lr_src)/fdopen.gml &
+$(root_lr_src)/fecleare.gml &
+$(root_lr_src)/fedisabl.gml &
+$(root_lr_src)/feenable.gml &
+$(root_lr_src)/fegetenv.gml &
+$(root_lr_src)/fegetexc.gml &
+$(root_lr_src)/fegetrnd.gml &
+$(root_lr_src)/feholdex.gml &
+$(root_lr_src)/feof.gml &
+$(root_lr_src)/feraise.gml &
+$(root_lr_src)/ferror.gml &
+$(root_lr_src)/fesetenv.gml &
+$(root_lr_src)/fesetexc.gml &
+$(root_lr_src)/fesetrnd.gml &
+$(root_lr_src)/fetestex.gml &
+$(root_lr_src)/feupdenv.gml &
+$(root_lr_src)/fflush.gml &
+$(root_lr_src)/ffs.gml &
+$(root_lr_src)/fgetc.gml &
+$(root_lr_src)/fgetchar.gml &
+$(root_lr_src)/fgetpos.gml &
+$(root_lr_src)/fgets.gml &
+$(root_lr_src)/fieee2ms.gml &
+$(root_lr_src)/fileleng.gml &
+$(root_lr_src)/filenmax.gml &
+$(root_lr_src)/fileno.gml &
+$(root_lr_src)/findclos.gml &
+$(root_lr_src)/findfirs.gml &
+$(root_lr_src)/findnext.gml &
+$(root_lr_src)/floor.gml &
+$(root_lr_src)/flushall.gml &
+$(root_lr_src)/fma.gml &
+$(root_lr_src)/fmax.gml &
+$(root_lr_src)/fmin.gml &
+$(root_lr_src)/fmod.gml &
+$(root_lr_src)/fms2ieee.gml &
+$(root_lr_src)/fnmatch.gml &
+$(root_lr_src)/fopen.gml &
+$(root_lr_src)/fopen_s.gml &
+$(root_lr_src)/fp_off.gml &
+$(root_lr_src)/fp_seg.gml &
+$(root_lr_src)/fpclassf.gml &
+$(root_lr_src)/fprintf.gml &
+$(root_lr_src)/fprntf_s.gml &
+$(root_lr_src)/fputc.gml &
+$(root_lr_src)/fputchar.gml &
+$(root_lr_src)/fputs.gml &
+$(root_lr_src)/fread.gml &
+$(root_lr_src)/free.gml &
+$(root_lr_src)/freemem.gml &
+$(root_lr_src)/freop_s.gml &
+$(root_lr_src)/freopen.gml &
+$(root_lr_src)/frexp.gml &
+$(root_lr_src)/fscanf.gml &
+$(root_lr_src)/fscanf_s.gml &
+$(root_lr_src)/fseek.gml &
+$(root_lr_src)/fsetpos.gml &
+$(root_lr_src)/fstat.gml &
+$(root_lr_src)/fsync.gml &
+$(root_lr_src)/ftell.gml &
+$(root_lr_src)/ftime.gml &
+$(root_lr_src)/fwide.gml &
+$(root_lr_src)/fwrite.gml &
+$(root_lr_src)/gcvt.gml &
+$(root_lr_src)/getc.gml &
+$(root_lr_src)/getch.gml &
+$(root_lr_src)/getchar.gml &
+$(root_lr_src)/getche.gml &
+$(root_lr_src)/getcmd.gml &
+$(root_lr_src)/getcwd.gml &
+$(root_lr_src)/getdate.gml &
+$(root_lr_src)/getdcwd.gml &
+$(root_lr_src)/getdelim.gml &
+$(root_lr_src)/getdiskf.gml &
+$(root_lr_src)/getdrive.gml &
+$(root_lr_src)/getenv.gml &
+$(root_lr_src)/getenv_s.gml &
+$(root_lr_src)/getfattr.gml &
+$(root_lr_src)/getftime.gml &
+$(root_lr_src)/getline.gml &
+$(root_lr_src)/getmbcp.gml &
+$(root_lr_src)/getopt.gml &
+$(root_lr_src)/getosfha.gml &
+$(root_lr_src)/getpid.gml &
+$(root_lr_src)/gets.gml &
+$(root_lr_src)/gets_s.gml &
+$(root_lr_src)/gettime.gml &
+$(root_lr_src)/getvect.gml &
+$(root_lr_src)/getw.gml &
+$(root_lr_src)/globdata.gml &
+$(root_lr_src)/gmtime.gml &
+$(root_lr_src)/gmtime_s.gml &
+$(root_lr_src)/halloc.gml &
+$(root_lr_src)/hantozen.gml &
+$(root_lr_src)/header.gml &
+$(root_lr_src)/hfree.gml &
+$(root_lr_src)/hypot.gml &
+$(root_lr_src)/ign_hnd.gml &
+$(root_lr_src)/ilogb.gml &
+$(root_lr_src)/imaxabs.gml &
+$(root_lr_src)/imaxdiv.gml &
+$(root_lr_src)/inp.gml &
+$(root_lr_src)/inpd.gml &
+$(root_lr_src)/inpw.gml &
+$(root_lr_src)/int386.gml &
+$(root_lr_src)/int386x.gml &
+$(root_lr_src)/int86.gml &
+$(root_lr_src)/int86x.gml &
+$(root_lr_src)/intdos.gml &
+$(root_lr_src)/intdosx.gml &
+$(root_lr_src)/intr.gml &
+$(root_lr_src)/isalkana.gml &
+$(root_lr_src)/isalnmka.gml &
+$(root_lr_src)/isalnum.gml &
+$(root_lr_src)/isalpha.gml &
+$(root_lr_src)/isascii.gml &
+$(root_lr_src)/isatty.gml &
+$(root_lr_src)/isblank.gml &
+$(root_lr_src)/iscntrl.gml &
+$(root_lr_src)/iscsym.gml &
+$(root_lr_src)/iscsymf.gml &
+$(root_lr_src)/isdigit.gml &
+$(root_lr_src)/isfinite.gml &
+$(root_lr_src)/isgraph.gml &
+$(root_lr_src)/isgrkana.gml &
+$(root_lr_src)/isinf.gml &
+$(root_lr_src)/iskana.gml &
+$(root_lr_src)/iskanji.gml &
+$(root_lr_src)/iskanji2.gml &
+$(root_lr_src)/iskmoji.gml &
+$(root_lr_src)/iskpun.gml &
+$(root_lr_src)/isleadb.gml &
+$(root_lr_src)/islower.gml &
+$(root_lr_src)/ismbbaln.gml &
+$(root_lr_src)/ismbbalp.gml &
+$(root_lr_src)/ismbbgra.gml &
+$(root_lr_src)/ismbbkal.gml &
+$(root_lr_src)/ismbbkan.gml &
+$(root_lr_src)/ismbbkap.gml &
+$(root_lr_src)/ismbbkpr.gml &
+$(root_lr_src)/ismbbkpu.gml &
+$(root_lr_src)/ismbblea.gml &
+$(root_lr_src)/ismbbpri.gml &
+$(root_lr_src)/ismbbpun.gml &
+$(root_lr_src)/ismbbtra.gml &
+$(root_lr_src)/ismbcaln.gml &
+$(root_lr_src)/ismbcalp.gml &
+$(root_lr_src)/ismbccnt.gml &
+$(root_lr_src)/ismbcdig.gml &
+$(root_lr_src)/ismbcgra.gml &
+$(root_lr_src)/ismbchir.gml &
+$(root_lr_src)/ismbckat.gml &
+$(root_lr_src)/ismbcl0.gml &
+$(root_lr_src)/ismbcl1.gml &
+$(root_lr_src)/ismbcl2.gml &
+$(root_lr_src)/ismbcleg.gml &
+$(root_lr_src)/ismbclow.gml &
+$(root_lr_src)/ismbcpri.gml &
+$(root_lr_src)/ismbcpun.gml &
+$(root_lr_src)/ismbcspa.gml &
+$(root_lr_src)/ismbcsym.gml &
+$(root_lr_src)/ismbcupp.gml &
+$(root_lr_src)/ismbcxdi.gml &
+$(root_lr_src)/ismbdaln.gml &
+$(root_lr_src)/ismbdalp.gml &
+$(root_lr_src)/ismbdcnt.gml &
+$(root_lr_src)/ismbddig.gml &
+$(root_lr_src)/ismbdgra.gml &
+$(root_lr_src)/ismbdlow.gml &
+$(root_lr_src)/ismbdpri.gml &
+$(root_lr_src)/ismbdpun.gml &
+$(root_lr_src)/ismbdspa.gml &
+$(root_lr_src)/ismbdupp.gml &
+$(root_lr_src)/ismbdxdi.gml &
+$(root_lr_src)/isnan.gml &
+$(root_lr_src)/isnormal.gml &
+$(root_lr_src)/ispnkana.gml &
+$(root_lr_src)/isprint.gml &
+$(root_lr_src)/isprkana.gml &
+$(root_lr_src)/ispunct.gml &
+$(root_lr_src)/isspace.gml &
+$(root_lr_src)/isupper.gml &
+$(root_lr_src)/iswctype.gml &
+$(root_lr_src)/isxdigit.gml &
+$(root_lr_src)/itoa.gml &
+$(root_lr_src)/jasctime.gml &
+$(root_lr_src)/jctime.gml &
+$(root_lr_src)/jgetmoji.gml &
+$(root_lr_src)/jisalpha.gml &
+$(root_lr_src)/jisdigit.gml &
+$(root_lr_src)/jishira.gml &
+$(root_lr_src)/jiskana.gml &
+$(root_lr_src)/jiskigou.gml &
+$(root_lr_src)/jisl0.gml &
+$(root_lr_src)/jisl1.gml &
+$(root_lr_src)/jisl2.gml &
+$(root_lr_src)/jislower.gml &
+$(root_lr_src)/jisprint.gml &
+$(root_lr_src)/jisspace.gml &
+$(root_lr_src)/jistojms.gml &
+$(root_lr_src)/jisupper.gml &
+$(root_lr_src)/jiszen.gml &
+$(root_lr_src)/jmstojis.gml &
+$(root_lr_src)/jperror.gml &
+$(root_lr_src)/jputmoji.gml &
+$(root_lr_src)/jstradv.gml &
+$(root_lr_src)/jstrcat.gml &
+$(root_lr_src)/jstrchr.gml &
+$(root_lr_src)/jstrcmp.gml &
+$(root_lr_src)/jstrcspn.gml &
+$(root_lr_src)/jstrerro.gml &
+$(root_lr_src)/jstricmp.gml &
+$(root_lr_src)/jstrlen.gml &
+$(root_lr_src)/jstrlwr.gml &
+$(root_lr_src)/jstrmatc.gml &
+$(root_lr_src)/jstrncat.gml &
+$(root_lr_src)/jstrncmp.gml &
+$(root_lr_src)/jstrncpy.gml &
+$(root_lr_src)/jstrnicm.gml &
+$(root_lr_src)/jstrnset.gml &
+$(root_lr_src)/jstrrchr.gml &
+$(root_lr_src)/jstrrev.gml &
+$(root_lr_src)/jstrset.gml &
+$(root_lr_src)/jstrskip.gml &
+$(root_lr_src)/jstrspn.gml &
+$(root_lr_src)/jstrstr.gml &
+$(root_lr_src)/jstrtok.gml &
+$(root_lr_src)/jstrupr.gml &
+$(root_lr_src)/jtohira.gml &
+$(root_lr_src)/jtokata.gml &
+$(root_lr_src)/jtolower.gml &
+$(root_lr_src)/jtoupper.gml &
+$(root_lr_src)/kbhit.gml &
+$(root_lr_src)/keep.gml &
+$(root_lr_src)/labs.gml &
+$(root_lr_src)/lcltim_s.gml &
+$(root_lr_src)/ldexp.gml &
+$(root_lr_src)/ldiv.gml &
+$(root_lr_src)/lfind.gml &
+$(root_lr_src)/lgamma.gml &
+$(root_lr_src)/lgamma_r.gml &
+$(root_lr_src)/libpref.gml &
+$(root_lr_src)/llabs.gml &
+$(root_lr_src)/lldiv.gml &
+$(root_lr_src)/lltoa.gml &
+$(root_lr_src)/localeco.gml &
+$(root_lr_src)/localtim.gml &
+$(root_lr_src)/lock.gml &
+$(root_lr_src)/locking.gml &
+$(root_lr_src)/log.gml &
+$(root_lr_src)/log10.gml &
+$(root_lr_src)/log1p.gml &
+$(root_lr_src)/log2.gml &
+$(root_lr_src)/logb.gml &
+$(root_lr_src)/longjmp.gml &
+$(root_lr_src)/lsearch.gml &
+$(root_lr_src)/lseek.gml &
+$(root_lr_src)/ltoa.gml &
+$(root_lr_src)/main.gml &
+$(root_lr_src)/malloc.gml &
+$(root_lr_src)/matherr.gml &
+$(root_lr_src)/max.gml &
+$(root_lr_src)/mbbtombc.gml &
+$(root_lr_src)/mbbtype.gml &
+$(root_lr_src)/mbccmp.gml &
+$(root_lr_src)/mbccpy.gml &
+$(root_lr_src)/mbcicmp.gml &
+$(root_lr_src)/mbcjisto.gml &
+$(root_lr_src)/mbcjmsto.gml &
+$(root_lr_src)/mbclen.gml &
+$(root_lr_src)/mbcrstrt.gml &
+$(root_lr_src)/mbctohir.gml &
+$(root_lr_src)/mbctokat.gml &
+$(root_lr_src)/mbctolow.gml &
+$(root_lr_src)/mbctombb.gml &
+$(root_lr_src)/mbctoupp.gml &
+$(root_lr_src)/mbgetcod.gml &
+$(root_lr_src)/mbislead.gml &
+$(root_lr_src)/mblen.gml &
+$(root_lr_src)/mbptov.gml &
+$(root_lr_src)/mbputcha.gml &
+$(root_lr_src)/mbrlen.gml &
+$(root_lr_src)/mbrtowc.gml &
+$(root_lr_src)/mbsbtype.gml &
+$(root_lr_src)/mbsdec.gml &
+$(root_lr_src)/mbsinc.gml &
+$(root_lr_src)/mbsinit.gml &
+$(root_lr_src)/mbsnbcat.gml &
+$(root_lr_src)/mbsnbcmp.gml &
+$(root_lr_src)/mbsnbcnt.gml &
+$(root_lr_src)/mbsnbcpy.gml &
+$(root_lr_src)/mbsnbicm.gml &
+$(root_lr_src)/mbsnbset.gml &
+$(root_lr_src)/mbsnccnt.gml &
+$(root_lr_src)/mbsnextc.gml &
+$(root_lr_src)/mbsninc.gml &
+$(root_lr_src)/mbsrstrt.gml &
+$(root_lr_src)/mbsrto_s.gml &
+$(root_lr_src)/mbsrtowc.gml &
+$(root_lr_src)/mbsspnp.gml &
+$(root_lr_src)/mbstow_s.gml &
+$(root_lr_src)/mbstowcs.gml &
+$(root_lr_src)/mbterm.gml &
+$(root_lr_src)/mbtowc.gml &
+$(root_lr_src)/mbvtop.gml &
+$(root_lr_src)/memccpy.gml &
+$(root_lr_src)/memchr.gml &
+$(root_lr_src)/memcmp.gml &
+$(root_lr_src)/memcpy.gml &
+$(root_lr_src)/memcpy_s.gml &
+$(root_lr_src)/memicmp.gml &
+$(root_lr_src)/memmov_s.gml &
+$(root_lr_src)/memmove.gml &
+$(root_lr_src)/mempty.gml &
+$(root_lr_src)/memset.gml &
+$(root_lr_src)/mfromint.gml &
+$(root_lr_src)/min.gml &
+$(root_lr_src)/mk_fp.gml &
+$(root_lr_src)/mkdir.gml &
+$(root_lr_src)/mkit.c &
+$(root_lr_src)/mkstemp.gml &
+$(root_lr_src)/mktemp.gml &
+$(root_lr_src)/mktime.gml &
+$(root_lr_src)/modf.gml &
+$(root_lr_src)/movedata.gml &
+$(root_lr_src)/mpaddb.gml &
+$(root_lr_src)/mpaddd.gml &
+$(root_lr_src)/mpaddsb.gml &
+$(root_lr_src)/mpaddsw.gml &
+$(root_lr_src)/mpaddusb.gml &
+$(root_lr_src)/mpaddusw.gml &
+$(root_lr_src)/mpaddw.gml &
+$(root_lr_src)/mpand.gml &
+$(root_lr_src)/mpandn.gml &
+$(root_lr_src)/mpckssdw.gml &
+$(root_lr_src)/mpcksswb.gml &
+$(root_lr_src)/mpckuswb.gml &
+$(root_lr_src)/mpcmpeqb.gml &
+$(root_lr_src)/mpcmpeqd.gml &
+$(root_lr_src)/mpcmpeqw.gml &
+$(root_lr_src)/mpcmpgtb.gml &
+$(root_lr_src)/mpcmpgtd.gml &
+$(root_lr_src)/mpcmpgtw.gml &
+$(root_lr_src)/mpmaddwd.gml &
+$(root_lr_src)/mpmulhw.gml &
+$(root_lr_src)/mpmullw.gml &
+$(root_lr_src)/mpor.gml &
+$(root_lr_src)/mpslld.gml &
+$(root_lr_src)/mpslldi.gml &
+$(root_lr_src)/mpsllq.gml &
+$(root_lr_src)/mpsllqi.gml &
+$(root_lr_src)/mpsllw.gml &
+$(root_lr_src)/mpsllwi.gml &
+$(root_lr_src)/mpsrad.gml &
+$(root_lr_src)/mpsradi.gml &
+$(root_lr_src)/mpsraw.gml &
+$(root_lr_src)/mpsrawi.gml &
+$(root_lr_src)/mpsrld.gml &
+$(root_lr_src)/mpsrldi.gml &
+$(root_lr_src)/mpsrlq.gml &
+$(root_lr_src)/mpsrlqi.gml &
+$(root_lr_src)/mpsrlw.gml &
+$(root_lr_src)/mpsrlwi.gml &
+$(root_lr_src)/mpsubb.gml &
+$(root_lr_src)/mpsubd.gml &
+$(root_lr_src)/mpsubsb.gml &
+$(root_lr_src)/mpsubsw.gml &
+$(root_lr_src)/mpsubusb.gml &
+$(root_lr_src)/mpsubusw.gml &
+$(root_lr_src)/mpsubw.gml &
+$(root_lr_src)/mpxor.gml &
+$(root_lr_src)/mtob.gml &
+$(root_lr_src)/mtoint.gml &
+$(root_lr_src)/mupckhbw.gml &
+$(root_lr_src)/mupckhdq.gml &
+$(root_lr_src)/mupckhwd.gml &
+$(root_lr_src)/mupcklbw.gml &
+$(root_lr_src)/mupckldq.gml &
+$(root_lr_src)/mupcklwd.gml &
+$(root_lr_src)/nanf.gml &
+$(root_lr_src)/necbios.doc &
+$(root_lr_src)/nosound.gml &
+$(root_lr_src)/nrbyint.gml &
+$(root_lr_src)/nthctype.gml &
+$(root_lr_src)/nxtafter.gml &
+$(root_lr_src)/offsetof.gml &
+$(root_lr_src)/onexit.gml &
+$(root_lr_src)/open.gml &
+$(root_lr_src)/openacc.gml &
+$(root_lr_src)/opendir.gml &
+$(root_lr_src)/openosfh.gml &
+$(root_lr_src)/openper.gml &
+$(root_lr_src)/openperv.gml &
+$(root_lr_src)/oshandle.gml &
+$(root_lr_src)/outp.gml &
+$(root_lr_src)/outpd.gml &
+$(root_lr_src)/outpw.gml &
+$(root_lr_src)/pclose.gml &
+$(root_lr_src)/perror.gml &
+$(root_lr_src)/popen.gml &
+$(root_lr_src)/portdesc.gml &
+$(root_lr_src)/pow.gml &
+$(root_lr_src)/printf.gml &
+$(root_lr_src)/printf_s.gml &
+$(root_lr_src)/printfs.gml &
+$(root_lr_src)/privity.gml &
+$(root_lr_src)/putc.gml &
+$(root_lr_src)/putch.gml &
+$(root_lr_src)/putchar.gml &
+$(root_lr_src)/putenv.gml &
+$(root_lr_src)/puts.gml &
+$(root_lr_src)/putw.gml &
+$(root_lr_src)/qsort.gml &
+$(root_lr_src)/qsort_s.gml &
+$(root_lr_src)/raise.gml &
+$(root_lr_src)/rand.gml &
+$(root_lr_src)/read.gml &
+$(root_lr_src)/readdir.gml &
+$(root_lr_src)/readlink.gml &
+$(root_lr_src)/realloc.gml &
+$(root_lr_src)/remove.gml &
+$(root_lr_src)/rename.gml &
+$(root_lr_src)/rewind.gml &
+$(root_lr_src)/rewinddi.gml &
+$(root_lr_src)/rint.gml &
+$(root_lr_src)/rmdir.gml &
+$(root_lr_src)/rmnder.gml &
+$(root_lr_src)/round.gml &
+$(root_lr_src)/sbrk.gml &
+$(root_lr_src)/scalbn.gml &
+$(root_lr_src)/scanf.gml &
+$(root_lr_src)/scanf_s.gml &
+$(root_lr_src)/scanfs.gml &
+$(root_lr_src)/seealloc.gml &
+$(root_lr_src)/seeenv.gml &
+$(root_lr_src)/seeint.gml &
+$(root_lr_src)/seeiocon.gml &
+$(root_lr_src)/seeiodir.gml &
+$(root_lr_src)/seeioos.gml &
+$(root_lr_src)/seeis.gml &
+$(root_lr_src)/seeismbb.gml &
+$(root_lr_src)/seeismbc.gml &
+$(root_lr_src)/seeismbd.gml &
+$(root_lr_src)/seejis.gml &
+$(root_lr_src)/seejto.gml &
+$(root_lr_src)/seembc.gml &
+$(root_lr_src)/seemmadd.gml &
+$(root_lr_src)/seemmbit.gml &
+$(root_lr_src)/seemmcmp.gml &
+$(root_lr_src)/seemmfun.gml &
+$(root_lr_src)/seemmmul.gml &
+$(root_lr_src)/seemmpck.gml &
+$(root_lr_src)/seemmsll.gml &
+$(root_lr_src)/seemmsra.gml &
+$(root_lr_src)/seemmsrl.gml &
+$(root_lr_src)/seemmsub.gml &
+$(root_lr_src)/seemmupk.gml &
+$(root_lr_src)/seeproc.gml &
+$(root_lr_src)/seeprtf.gml &
+$(root_lr_src)/seeqnxsg.gml &
+$(root_lr_src)/seestoi.gml &
+$(root_lr_src)/seetime.gml &
+$(root_lr_src)/seevarg.gml &
+$(root_lr_src)/seevprtf.gml &
+$(root_lr_src)/seevscnf.gml &
+$(root_lr_src)/segread.gml &
+$(root_lr_src)/segregs.gml &
+$(root_lr_src)/set_chnd.gml &
+$(root_lr_src)/setblock.gml &
+$(root_lr_src)/setbuf.gml &
+$(root_lr_src)/setdate.gml &
+$(root_lr_src)/setdrive.gml &
+$(root_lr_src)/setenv.gml &
+$(root_lr_src)/setfattr.gml &
+$(root_lr_src)/setftime.gml &
+$(root_lr_src)/setjmp.gml &
+$(root_lr_src)/setlocal.gml &
+$(root_lr_src)/setmbcp.gml &
+$(root_lr_src)/setmode.gml &
+$(root_lr_src)/setnew.gml &
+$(root_lr_src)/settime.gml &
+$(root_lr_src)/setvbuf.gml &
+$(root_lr_src)/setvect.gml &
+$(root_lr_src)/signal.gml &
+$(root_lr_src)/sin.gml &
+$(root_lr_src)/sinh.gml &
+$(root_lr_src)/sleep.gml &
+$(root_lr_src)/snprintf.gml &
+$(root_lr_src)/snprtf_s.gml &
+$(root_lr_src)/sopen.gml &
+$(root_lr_src)/sort.prg &
+$(root_lr_src)/sound.gml &
+$(root_lr_src)/spawn.gml &
+$(root_lr_src)/sprintf.gml &
+$(root_lr_src)/sprntf_s.gml &
+$(root_lr_src)/sqrt.gml &
+$(root_lr_src)/srand.gml &
+$(root_lr_src)/sscanf.gml &
+$(root_lr_src)/sscanf_s.gml &
+$(root_lr_src)/stackava.gml &
+$(root_lr_src)/stat.gml &
+$(root_lr_src)/statdesc.gml &
+$(root_lr_src)/statrtn.gml &
+$(root_lr_src)/strcase.gml &
+$(root_lr_src)/strcat.gml &
+$(root_lr_src)/strcat_s.gml &
+$(root_lr_src)/strchr.gml &
+$(root_lr_src)/strcmp.gml &
+$(root_lr_src)/strcmpi.gml &
+$(root_lr_src)/strcoll.gml &
+$(root_lr_src)/strcpy.gml &
+$(root_lr_src)/strcpy_s.gml &
+$(root_lr_src)/strcspn.gml &
+$(root_lr_src)/strdate.gml &
+$(root_lr_src)/strdup.gml &
+$(root_lr_src)/streln_s.gml &
+$(root_lr_src)/strerr_s.gml &
+$(root_lr_src)/strerror.gml &
+$(root_lr_src)/strerror.msg &
+$(root_lr_src)/strerror.qnx &
+$(root_lr_src)/strftime.gml &
+$(root_lr_src)/stricmp.gml &
+$(root_lr_src)/stricoll.gml &
+$(root_lr_src)/strlcat.gml &
+$(root_lr_src)/strlcpy.gml &
+$(root_lr_src)/strlen.gml &
+$(root_lr_src)/strlwr.gml &
+$(root_lr_src)/strncase.gml &
+$(root_lr_src)/strncat.gml &
+$(root_lr_src)/strncmp.gml &
+$(root_lr_src)/strncoll.gml &
+$(root_lr_src)/strncpy.gml &
+$(root_lr_src)/strnicmp.gml &
+$(root_lr_src)/strnicol.gml &
+$(root_lr_src)/strnln_s.gml &
+$(root_lr_src)/strnset.gml &
+$(root_lr_src)/strpbrk.gml &
+$(root_lr_src)/strrchr.gml &
+$(root_lr_src)/strrev.gml &
+$(root_lr_src)/strset.gml &
+$(root_lr_src)/strspn.gml &
+$(root_lr_src)/strspnp.gml &
+$(root_lr_src)/strstr.gml &
+$(root_lr_src)/strtime.gml &
+$(root_lr_src)/strtod.gml &
+$(root_lr_src)/strtoimx.gml &
+$(root_lr_src)/strtok.gml &
+$(root_lr_src)/strtok_s.gml &
+$(root_lr_src)/strtol.gml &
+$(root_lr_src)/strtoll.gml &
+$(root_lr_src)/strtoul.gml &
+$(root_lr_src)/strtoull.gml &
+$(root_lr_src)/strtoumx.gml &
+$(root_lr_src)/struchst.gml &
+$(root_lr_src)/strucnet.gml &
+$(root_lr_src)/strucpro.gml &
+$(root_lr_src)/strucsrv.gml &
+$(root_lr_src)/structms.gml &
+$(root_lr_src)/structtm.gml &
+$(root_lr_src)/strupr.gml &
+$(root_lr_src)/strxfrm.gml &
+$(root_lr_src)/swab.gml &
+$(root_lr_src)/system.gml &
+$(root_lr_src)/tan.gml &
+$(root_lr_src)/tanh.gml &
+$(root_lr_src)/tell.gml &
+$(root_lr_src)/tempnam.gml &
+$(root_lr_src)/tgamma.gml &
+$(root_lr_src)/time.gml &
+$(root_lr_src)/tmpfil_s.gml &
+$(root_lr_src)/tmpfile.gml &
+$(root_lr_src)/tmpnam.gml &
+$(root_lr_src)/tmpnam_s.gml &
+$(root_lr_src)/tolower.gml &
+$(root_lr_src)/toupper.gml &
+$(root_lr_src)/towctrns.gml &
+$(root_lr_src)/ttyname.gml &
+$(root_lr_src)/trunc.gml &
+$(root_lr_src)/tzos2.gml &
+$(root_lr_src)/tzref.gml &
+$(root_lr_src)/tzset.gml &
+$(root_lr_src)/ulltoa.gml &
+$(root_lr_src)/ultoa.gml &
+$(root_lr_src)/umask.gml &
+$(root_lr_src)/ungetc.gml &
+$(root_lr_src)/ungetch.gml &
+$(root_lr_src)/unlink.gml &
+$(root_lr_src)/unlock.gml &
+$(root_lr_src)/utime.gml &
+$(root_lr_src)/utoa.gml &
+$(root_lr_src)/va_arg.gml &
+$(root_lr_src)/va_end.gml &
+$(root_lr_src)/va_start.gml &
+$(root_lr_src)/vcprintf.gml &
+$(root_lr_src)/vcscanf.gml &
+$(root_lr_src)/vfprintf.gml &
+$(root_lr_src)/vfprtf_s.gml &
+$(root_lr_src)/vfscanf.gml &
+$(root_lr_src)/vfscnf_s.gml &
+$(root_lr_src)/vprintf.gml &
+$(root_lr_src)/vprntf_s.gml &
+$(root_lr_src)/vscanf.gml &
+$(root_lr_src)/vscanf_s.gml &
+$(root_lr_src)/vsnprint.gml &
+$(root_lr_src)/vsnprt_s.gml &
+$(root_lr_src)/vsprintf.gml &
+$(root_lr_src)/vsprtf_s.gml &
+$(root_lr_src)/vsscanf.gml &
+$(root_lr_src)/vsscnf_s.gml &
+$(root_lr_src)/wait.gml &
+$(root_lr_src)/waitstat.gml &
+$(root_lr_src)/wcrtom_s.gml &
+$(root_lr_src)/wcrtomb.gml &
+$(root_lr_src)/wcsrto_s.gml &
+$(root_lr_src)/wcsrtomb.gml &
+$(root_lr_src)/wcstom_s.gml &
+$(root_lr_src)/wcstombs.gml &
+$(root_lr_src)/wctob.gml &
+$(root_lr_src)/wctomb.gml &
+$(root_lr_src)/wctomb_s.gml &
+$(root_lr_src)/wctrans.gml &
+$(root_lr_src)/wctype.gml &
+$(root_lr_src)/write.gml &
+$(root_lr_src)/zentohan.gml
+
+# lr;lr/ge;lr/gr sub-directory
+root_lr_graph = ../doc/lr/ge
+root_lr_graphr = ../doc/lr/gr
+incs_lr_graph = $(root_lr_graph);$(root_lr_graphr)
+objs_lr_graph = &
+$(root_lr_graph)/eg_arc.c &
+$(root_lr_graph)/eg_arc.for &
+$(root_lr_graph)/eg_clear.c &
+$(root_lr_graph)/eg_clear.for &
+$(root_lr_graph)/eg_disp.c &
+$(root_lr_graph)/eg_disp.for &
+$(root_lr_graph)/eg_ellip.c &
+$(root_lr_graph)/eg_ellip.for &
+$(root_lr_graph)/eg_flood.c &
+$(root_lr_graph)/eg_flood.for &
+$(root_lr_graph)/eg_getai.c &
+$(root_lr_graph)/eg_getai.for &
+$(root_lr_graph)/eg_getbc.c &
+$(root_lr_graph)/eg_getbc.for &
+$(root_lr_graph)/eg_getc.c &
+$(root_lr_graph)/eg_getc.for &
+$(root_lr_graph)/eg_getcp.c &
+$(root_lr_graph)/eg_getcp.for &
+$(root_lr_graph)/eg_getfi.c &
+$(root_lr_graph)/eg_getfi.for &
+$(root_lr_graph)/eg_getfm.c &
+$(root_lr_graph)/eg_getfm.for &
+$(root_lr_graph)/eg_getim.c &
+$(root_lr_graph)/eg_getim.for &
+$(root_lr_graph)/eg_getlc.c &
+$(root_lr_graph)/eg_getlc.for &
+$(root_lr_graph)/eg_getls.c &
+$(root_lr_graph)/eg_getls.for &
+$(root_lr_graph)/eg_getpa.c &
+$(root_lr_graph)/eg_getpa.for &
+$(root_lr_graph)/eg_getpc.c &
+$(root_lr_graph)/eg_getpc.for &
+$(root_lr_graph)/eg_getpx.c &
+$(root_lr_graph)/eg_getpx.for &
+$(root_lr_graph)/eg_gettc.c &
+$(root_lr_graph)/eg_gettc.for &
+$(root_lr_graph)/eg_gette.c &
+$(root_lr_graph)/eg_gette.for &
+$(root_lr_graph)/eg_gettp.c &
+$(root_lr_graph)/eg_gettp.for &
+$(root_lr_graph)/eg_getts.c &
+$(root_lr_graph)/eg_getts.for &
+$(root_lr_graph)/eg_gettu.c &
+$(root_lr_graph)/eg_gettu.for &
+$(root_lr_graph)/eg_gettv.c &
+$(root_lr_graph)/eg_gettv.for &
+$(root_lr_graph)/eg_getvc.c &
+$(root_lr_graph)/eg_getvc.for &
+$(root_lr_graph)/eg_getwc.c &
+$(root_lr_graph)/eg_getwc.for &
+$(root_lr_graph)/eg_grtxt.c &
+$(root_lr_graph)/eg_grtxt.for &
+$(root_lr_graph)/eg_mappa.c &
+$(root_lr_graph)/eg_mappa.for &
+$(root_lr_graph)/eg_mappc.c &
+$(root_lr_graph)/eg_mappc.for &
+$(root_lr_graph)/eg_movto.c &
+$(root_lr_graph)/eg_movto.for &
+$(root_lr_graph)/eg_outm.c &
+$(root_lr_graph)/eg_outm.for &
+$(root_lr_graph)/eg_outtx.c &
+$(root_lr_graph)/eg_outtx.for &
+$(root_lr_graph)/eg_pal.c2 &
+$(root_lr_graph)/eg_pgac.c &
+$(root_lr_graph)/eg_pgac.for &
+$(root_lr_graph)/eg_pgap.c &
+$(root_lr_graph)/eg_pgap.for &
+$(root_lr_graph)/eg_pgas.c &
+$(root_lr_graph)/eg_pgas.for &
+$(root_lr_graph)/eg_pgc.c &
+$(root_lr_graph)/eg_pgc.for &
+$(root_lr_graph)/eg_pgcp.c &
+$(root_lr_graph)/eg_pgcp.for &
+$(root_lr_graph)/eg_pgcs.c &
+$(root_lr_graph)/eg_pgcs.for &
+$(root_lr_graph)/eg_pggc.c &
+$(root_lr_graph)/eg_pggc.for &
+$(root_lr_graph)/eg_pggp.c &
+$(root_lr_graph)/eg_pggp.for &
+$(root_lr_graph)/eg_pggy.c &
+$(root_lr_graph)/eg_pggy.for &
+$(root_lr_graph)/eg_pghl.c &
+$(root_lr_graph)/eg_pghl.for &
+$(root_lr_graph)/eg_pic1.c2 &
+$(root_lr_graph)/eg_pic2.c2 &
+$(root_lr_graph)/eg_pie.c &
+$(root_lr_graph)/eg_pie.for &
+$(root_lr_graph)/eg_polyg.c &
+$(root_lr_graph)/eg_polyg.for &
+$(root_lr_graph)/eg_rect.c &
+$(root_lr_graph)/eg_rect.for &
+$(root_lr_graph)/eg_reg.c &
+$(root_lr_graph)/eg_reg.for &
+$(root_lr_graph)/eg_scrtw.c &
+$(root_lr_graph)/eg_scrtw.for &
+$(root_lr_graph)/eg_selpa.c &
+$(root_lr_graph)/eg_selpa.for &
+$(root_lr_graph)/eg_setap.c &
+$(root_lr_graph)/eg_setap.for &
+$(root_lr_graph)/eg_setcr.c &
+$(root_lr_graph)/eg_setcr.for &
+$(root_lr_graph)/eg_setcs.c &
+$(root_lr_graph)/eg_setcs.for &
+$(root_lr_graph)/eg_setlg.c &
+$(root_lr_graph)/eg_setlg.for &
+$(root_lr_graph)/eg_setta.c &
+$(root_lr_graph)/eg_setta.for &
+$(root_lr_graph)/eg_setto.c &
+$(root_lr_graph)/eg_setto.for &
+$(root_lr_graph)/eg_settr.c &
+$(root_lr_graph)/eg_settr.for &
+$(root_lr_graph)/eg_settw.c &
+$(root_lr_graph)/eg_settw.for &
+$(root_lr_graph)/eg_settx.c &
+$(root_lr_graph)/eg_settx.for &
+$(root_lr_graph)/eg_setvp.c &
+$(root_lr_graph)/eg_setvp.for &
+$(root_lr_graph)/eg_setvr.c &
+$(root_lr_graph)/eg_setvr.for &
+$(root_lr_graph)/eg_setw.c &
+$(root_lr_graph)/eg_setw.for &
+$(root_lr_graph)/eg_stat.c &
+$(root_lr_graph)/eg_stat.for &
+$(root_lr_graph)/eg_wrap.c &
+$(root_lr_graph)/eg_wrap.for &
+$(root_lr_graph)/graph.fi &
+$(root_lr_graph)/graphapi.fi &
+$(root_lr_graph)/grdemo1.c &
+$(root_lr_graph)/grdemo1.for &
+$(root_lr_graph)/grdemo2.c &
+$(root_lr_graph)/grdemo2.for &
+$(root_lr_graph)/mksizes.wat &
+$(root_lr_graph)/pg.fi &
+$(root_lr_graph)/pgapi.fi &
+$(root_lr_graph)/pgchart.h &
+$(root_lr_graph)/pic1.c &
+$(root_lr_graph)/pic1.for &
+$(root_lr_graph)/pic2.c &
+$(root_lr_graph)/pic2.for &
+$(root_lr_graph)/uline.ps &
+$(root_lr_graphr)/gr_arc.gml &
+$(root_lr_graphr)/gr_clrsc.gml &
+$(root_lr_graphr)/gr_dispc.gml &
+$(root_lr_graphr)/gr_ellip.gml &
+$(root_lr_graphr)/gr_fgfil.gml &
+$(root_lr_graphr)/gr_fillm.gml &
+$(root_lr_graphr)/gr_flood.gml &
+$(root_lr_graphr)/gr_fnbeg.gml &
+$(root_lr_graphr)/gr_getai.gml &
+$(root_lr_graphr)/gr_getap.gml &
+$(root_lr_graphr)/gr_getbc.gml &
+$(root_lr_graphr)/gr_getc.gml &
+$(root_lr_graphr)/gr_getcp.gml &
+$(root_lr_graphr)/gr_getcr.gml &
+$(root_lr_graphr)/gr_getfi.gml &
+$(root_lr_graphr)/gr_getfm.gml &
+$(root_lr_graphr)/gr_getge.gml &
+$(root_lr_graphr)/gr_getim.gml &
+$(root_lr_graphr)/gr_getlc.gml &
+$(root_lr_graphr)/gr_getls.gml &
+$(root_lr_graphr)/gr_getpa.gml &
+$(root_lr_graphr)/gr_getpc.gml &
+$(root_lr_graphr)/gr_getpx.gml &
+$(root_lr_graphr)/gr_gettc.gml &
+$(root_lr_graphr)/gr_gette.gml &
+$(root_lr_graphr)/gr_gettp.gml &
+$(root_lr_graphr)/gr_getts.gml &
+$(root_lr_graphr)/gr_gettu.gml &
+$(root_lr_graphr)/gr_gettv.gml &
+$(root_lr_graphr)/gr_gettw.gml &
+$(root_lr_graphr)/gr_getvc.gml &
+$(root_lr_graphr)/gr_getvp.gml &
+$(root_lr_graphr)/gr_getwc.gml &
+$(root_lr_graphr)/gr_grtxt.gml &
+$(root_lr_graphr)/gr_imsiz.gml &
+$(root_lr_graphr)/gr_index.gml &
+$(root_lr_graphr)/gr_lines.gml &
+$(root_lr_graphr)/gr_linto.gml &
+$(root_lr_graphr)/gr_mappa.gml &
+$(root_lr_graphr)/gr_mappc.gml &
+$(root_lr_graphr)/gr_movto.gml &
+$(root_lr_graphr)/gr_noarc.gml &
+$(root_lr_graphr)/gr_outgt.gml &
+$(root_lr_graphr)/gr_outm.gml &
+$(root_lr_graphr)/gr_outtx.gml &
+$(root_lr_graphr)/gr_pages.gml &
+$(root_lr_graphr)/gr_pgac.gml &
+$(root_lr_graphr)/gr_pgap.gml &
+$(root_lr_graphr)/gr_pgas.gml &
+$(root_lr_graphr)/gr_pgc.gml &
+$(root_lr_graphr)/gr_pgcp.gml &
+$(root_lr_graphr)/gr_pgcs.gml &
+$(root_lr_graphr)/gr_pgdc.gml &
+$(root_lr_graphr)/gr_pggc.gml &
+$(root_lr_graphr)/gr_pggp.gml &
+$(root_lr_graphr)/gr_pggy.gml &
+$(root_lr_graphr)/gr_pghl.gml &
+$(root_lr_graphr)/gr_pgic.gml &
+$(root_lr_graphr)/gr_pgrp.gml &
+$(root_lr_graphr)/gr_pgry.gml &
+$(root_lr_graphr)/gr_pgsc.gml &
+$(root_lr_graphr)/gr_pgsp.gml &
+$(root_lr_graphr)/gr_pgsy.gml &
+$(root_lr_graphr)/gr_pgvl.gml &
+$(root_lr_graphr)/gr_pie.gml &
+$(root_lr_graphr)/gr_pixvl.gml &
+$(root_lr_graphr)/gr_plot.gml &
+$(root_lr_graphr)/gr_polyg.gml &
+$(root_lr_graphr)/gr_putim.gml &
+$(root_lr_graphr)/gr_rect.gml &
+$(root_lr_graphr)/gr_reg.gml &
+$(root_lr_graphr)/gr_retdr.gml &
+$(root_lr_graphr)/gr_samp.gml &
+$(root_lr_graphr)/gr_scrtw.gml &
+$(root_lr_graphr)/gr_selp.gml &
+$(root_lr_graphr)/gr_setap.gml &
+$(root_lr_graphr)/gr_setbc.gml &
+$(root_lr_graphr)/gr_setc.gml &
+$(root_lr_graphr)/gr_setcr.gml &
+$(root_lr_graphr)/gr_setcs.gml &
+$(root_lr_graphr)/gr_setcx.gml &
+$(root_lr_graphr)/gr_setf.gml &
+$(root_lr_graphr)/gr_setfm.gml &
+$(root_lr_graphr)/gr_setlo.gml &
+$(root_lr_graphr)/gr_setls.gml &
+$(root_lr_graphr)/gr_setpa.gml &
+$(root_lr_graphr)/gr_setpx.gml &
+$(root_lr_graphr)/gr_setta.gml &
+$(root_lr_graphr)/gr_settc.gml &
+$(root_lr_graphr)/gr_setto.gml &
+$(root_lr_graphr)/gr_settp.gml &
+$(root_lr_graphr)/gr_settr.gml &
+$(root_lr_graphr)/gr_settt.gml &
+$(root_lr_graphr)/gr_settu.gml &
+$(root_lr_graphr)/gr_settv.gml &
+$(root_lr_graphr)/gr_settw.gml &
+$(root_lr_graphr)/gr_setvm.gml &
+$(root_lr_graphr)/gr_setvp.gml &
+$(root_lr_graphr)/gr_setvr.gml &
+$(root_lr_graphr)/gr_setvw.gml &
+$(root_lr_graphr)/gr_setw.gml &
+$(root_lr_graphr)/gr_sizes.gml &
+$(root_lr_graphr)/gr_stat.gml &
+$(root_lr_graphr)/gr_temp.gml &
+$(root_lr_graphr)/gr_text.gml &
+$(root_lr_graphr)/gr_txtco.gml &
+$(root_lr_graphr)/gr_unreg.gml &
+$(root_lr_graphr)/gr_vect.gml &
+$(root_lr_graphr)/gr_wrpon.gml &
+$(root_lr_graphr)/graphov.gml &
+$(root_lr_graphr)/grmacs.gml &
+$(root_lr_graphr)/grpref.gml &
+$(root_lr_graphr)/grsyms.gml
+bmroot_lr_graph = $(root_lr_graph)
+!ifeq wgml_target ps
+objs_lr_graph_ps = &
+$(bmroot_lr_graph)/eg_arc.ps &
+$(bmroot_lr_graph)/eg_ellip.ps &
+$(bmroot_lr_graph)/eg_getai.ps &
+$(bmroot_lr_graph)/eg_getfm.ps &
+$(bmroot_lr_graph)/eg_getls.ps &
+$(bmroot_lr_graph)/eg_gette.ps &
+$(bmroot_lr_graph)/eg_getts.ps &
+$(bmroot_lr_graph)/eg_grtxt.ps &
+$(bmroot_lr_graph)/eg_movto.ps &
+$(bmroot_lr_graph)/eg_pgc.ps &
+$(bmroot_lr_graph)/eg_pgcp.ps &
+$(bmroot_lr_graph)/eg_pgcs.ps &
+$(bmroot_lr_graph)/eg_pie.ps &
+$(bmroot_lr_graph)/eg_polyg.ps &
+$(bmroot_lr_graph)/eg_rect.ps &
+$(bmroot_lr_graph)/eg_setcs.ps &
+$(bmroot_lr_graph)/eg_setta.ps &
+$(bmroot_lr_graph)/eg_setto.ps &
+$(bmroot_lr_graph)/eg_settx.ps &
+$(bmroot_lr_graph)/pic1.ps &
+$(bmroot_lr_graph)/pic2.ps
+!else
+objs_lr_graph_bmp = &
+$(bmroot_lr_graph)/eg_arc.bmp &
+$(bmroot_lr_graph)/eg_ellip.bmp &
+$(bmroot_lr_graph)/eg_getai.bmp &
+$(bmroot_lr_graph)/eg_getfm.bmp &
+$(bmroot_lr_graph)/eg_getls.bmp &
+$(bmroot_lr_graph)/eg_gette.bmp &
+$(bmroot_lr_graph)/eg_getts.bmp &
+$(bmroot_lr_graph)/eg_grtxt.bmp &
+$(bmroot_lr_graph)/eg_movto.bmp &
+$(bmroot_lr_graph)/eg_pgc.bmp &
+$(bmroot_lr_graph)/eg_pgcp.bmp &
+$(bmroot_lr_graph)/eg_pgcs.bmp &
+$(bmroot_lr_graph)/eg_pie.bmp &
+$(bmroot_lr_graph)/eg_polyg.bmp &
+$(bmroot_lr_graph)/eg_rect.bmp &
+$(bmroot_lr_graph)/eg_setcs.bmp &
+$(bmroot_lr_graph)/eg_setta.bmp &
+$(bmroot_lr_graph)/eg_setto.bmp &
+$(bmroot_lr_graph)/eg_settx.bmp &
+$(bmroot_lr_graph)/pic1.bmp &
+$(bmroot_lr_graph)/pic2.bmp
+!endif
+
+# owstl
+incs_owstldev = ../doc/owstl
+objs_owstldev = &
+../doc/owstl/algorith.gml &
+../doc/owstl/deque.gml &
+../doc/owstl/intro.gml &
+../doc/owstl/list.gml &
+../doc/owstl/owgml.gml &
+../doc/owstl/wowstl.gml &
+../doc/owstl/rbtree.gml &
+../doc/owstl/stack.gml &
+../doc/owstl/string.gml &
+../doc/owstl/type_tra.gml &
+../doc/owstl/vector.gml
+
+# pg sub-directory
+root_pg = ../doc/pg
+incs_pg = $(root_pg)
+objs_pg = &
+$(root_pg)/dynlink.gml &
+$(root_pg)/f_pguide.gml &
+$(root_pg)/mthread.gml &
+$(root_pg)/os2pdd.gml &
+$(root_pg)/os2pm.gml &
+$(root_pg)/pgbldbnd.gml &
+$(root_pg)/pgblddw.gml &
+$(root_pg)/pgbldwin.gml &
+$(root_pg)/pgbuild.gml &
+$(root_pg)/pgcmixf.gml &
+$(root_pg)/pgdos16.gml &
+$(root_pg)/pgdos32d.gml &
+$(root_pg)/pgdos32p.gml &
+$(root_pg)/pgdos32q.gml &
+$(root_pg)/pgdwlib.gml &
+$(root_pg)/pgintro.gml &
+$(root_pg)/pgnlm.gml &
+$(root_pg)/pgos216.gml &
+$(root_pg)/pgos232.gml &
+$(root_pg)/pgpref.gml &
+$(root_pg)/pgqa.gml &
+$(root_pg)/pgqnx.gml &
+$(root_pg)/c_pguide.gml &
+$(root_pg)/pgvbdll.gml &
+$(root_pg)/pgwdll32.gml &
+$(root_pg)/pgwin16.gml &
+$(root_pg)/pgwin16w.gml &
+$(root_pg)/pgwin32.gml &
+$(root_pg)/pgwin32q.gml &
+$(root_pg)/pgwin32w.gml &
+$(root_pg)/pgwinnt.gml &
+$(root_pg)/pgwinntc.gml &
+$(root_pg)/pgwinntw.gml &
+$(root_pg)/pgwinpsx.gml &
+$(root_pg)/rational.gml &
+$(root_pg)/wcl1.gml &
+$(root_pg)/wcl2.gml &
+$(root_pg)/wcl3861.gml &
+$(root_pg)/wcl3862.gml &
+$(root_pg)/wcl386w1.gml &
+$(root_pg)/wcl386w2.gml &
+$(root_pg)/wclw1.gml &
+$(root_pg)/wclw2.gml &
+$(root_pg)/wfl1.gml &
+$(root_pg)/wfl2.gml &
+$(root_pg)/wfl3861.gml &
+$(root_pg)/wfl3862.gml &
+$(root_pg)/wfl386w1.gml &
+$(root_pg)/wfl386w2.gml &
+$(root_pg)/wflw1.gml &
+$(root_pg)/wflw2.gml &
+$(root_pg)/winnt.gml
+bmroot_pg = $(root_pg)
+!ifeq wgml_target ps
+objs_pg_ps = &
+$(bmroot_pg)/fstruct.ps &
+$(bmroot_pg)/mem1.ps &
+$(bmroot_pg)/mem2.ps &
+$(bmroot_pg)/mem3.ps &
+$(bmroot_pg)/mem4.ps &
+$(bmroot_pg)/struct.ps &
+$(bmroot_pg)/struct2.ps
+!else
+objs_pg_bmp = &
+$(bmroot_pg)/fpguide.bmp &
+$(bmroot_pg)/cpguide.bmp &
+$(bmroot_pg)/fstruct.bmp &
+$(bmroot_pg)/mem1.bmp &
+$(bmroot_pg)/mem2.bmp &
+$(bmroot_pg)/mem3.bmp &
+$(bmroot_pg)/mem4.bmp &
+$(bmroot_pg)/struct.bmp &
+$(bmroot_pg)/struct2.bmp
+!endif
+
+# plusplus sub-directory
+incs_plusplus = ../../bld/plusplus/gml
+objs_plusplus = &
+../../bld/plusplus/gml/messages.gml &
+../../bld/plusplus/gml/msgmacs.gml &
+../../bld/plusplus/gml/options.gml
+
+# rsi sub-directory
+incs_rsi = ../doc/rsi
+objs_rsi = &
+../doc/rsi/config.gml &
+../doc/rsi/dos4gwqa.gml &
+../doc/rsi/errors.gml &
+../doc/rsi/int31.gml &
+../doc/rsi/linexe.gml &
+../doc/rsi/nt2cls.gml &
+../doc/rsi/utilts.gml &
+../doc/rsi/vmm.gml
+
+# wd sub-directory
+root_wd = ../doc/wd
+incs_wd = $(root_wd)
+objs_wd = &
+$(root_wd)/brian.ans &
+$(root_wd)/symbuttn.gml &
+$(root_wd)/wdbgref.gml &
+$(root_wd)/wdbgasm.gml &
+$(root_wd)/wdbgbrkp.gml &
+$(root_wd)/wdbgcmd.gml &
+$(root_wd)/wdbgds32.gml &
+$(root_wd)/wdbgenvr.gml &
+$(root_wd)/wdbgexam.gml &
+$(root_wd)/wdbgexec.gml &
+$(root_wd)/wdbgexpr.gml &
+$(root_wd)/wdbgintp.gml &
+$(root_wd)/wdbgintr.gml &
+$(root_wd)/wdbgnav.gml &
+$(root_wd)/wdbgnlm.gml &
+$(root_wd)/wdbgopt.gml &
+$(root_wd)/wdbgos.gml &
+$(root_wd)/wdbgprep.gml &
+$(root_wd)/wdbgrem.gml &
+$(root_wd)/wdbgrfx.gml &
+$(root_wd)/wdbgstrt.gml &
+$(root_wd)/wdbgsymb.gml &
+$(root_wd)/wdbgtech.gml &
+$(root_wd)/wdbgwire.gml
+bmroot_wd = $(root_wd)
+!ifeq wgml_target ps
+objs_wd_ps = &
+$(tmpdir)/dbg87.ps &
+$(tmpdir)/dbgacc.ps &
+$(tmpdir)/dbgass.ps &
+$(tmpdir)/dbgbrk.ps &
+$(tmpdir)/dbgcall.ps &
+$(tmpdir)/dbgfpu.ps &
+$(tmpdir)/dbgfunc.ps &
+$(tmpdir)/dbgglob.ps &
+$(tmpdir)/dbgimg.ps &
+$(tmpdir)/dbgio.ps &
+$(tmpdir)/dbglog.ps &
+$(tmpdir)/dbgmem.ps &
+$(tmpdir)/dbgmmxb.ps &
+$(tmpdir)/dbgmod.ps &
+$(tmpdir)/dbgreg.ps &
+$(tmpdir)/dbgrep.ps &
+$(tmpdir)/dbgshot.ps &
+$(tmpdir)/dbgsrc.ps &
+$(tmpdir)/dbgthrd.ps &
+$(tmpdir)/dbgvar.ps &
+$(tmpdir)/dbgxmmb.ps &
+$(tmpdir)/dlgbrk.ps &
+$(tmpdir)/dlgopt.ps &
+$(tmpdir)/dlgsrch.ps &
+$(tmpdir)/dlgwopt.ps
+!else
+objs_wd_bmp = &
+$(bmroot_wd)/dbg87.bmp &
+$(bmroot_wd)/dbgacc.bmp &
+$(bmroot_wd)/dbgass.bmp &
+$(bmroot_wd)/dbgbrk.bmp &
+$(bmroot_wd)/dbgcall.bmp &
+$(bmroot_wd)/dbgfpu.bmp &
+$(bmroot_wd)/dbgfunc.bmp &
+$(bmroot_wd)/dbgglob.bmp &
+$(bmroot_wd)/dbgimg.bmp &
+$(bmroot_wd)/dbgio.bmp &
+$(bmroot_wd)/dbglog.bmp &
+$(bmroot_wd)/dbgmem.bmp &
+$(bmroot_wd)/dbgmmxb.bmp &
+$(bmroot_wd)/dbgmod.bmp &
+$(bmroot_wd)/dbgreg.bmp &
+$(bmroot_wd)/dbgrep.bmp &
+$(bmroot_wd)/dbgshot.bmp &
+$(bmroot_wd)/dbgsrc.bmp &
+$(bmroot_wd)/dbgthrd.bmp &
+$(bmroot_wd)/dbgvar.bmp &
+$(bmroot_wd)/dbgxmmb.bmp &
+$(bmroot_wd)/dlgbrk.bmp &
+$(bmroot_wd)/dlgopt.bmp &
+$(bmroot_wd)/dlgsrch.bmp &
+$(bmroot_wd)/dlgwopt.bmp
+!endif
+
+# win386 sub-directory
+root_win386 = ../doc/win386
+incs_win386 = $(root_win386)
+objs_win386 = &
+$(root_win386)/aalias.gml &
+$(root_win386)/ahalias.gml &
+$(root_win386)/call16.gml &
+$(root_win386)/cl.gml &
+$(root_win386)/ddllent.gml &
+$(root_win386)/defp16.gml &
+$(root_win386)/falias.gml &
+$(root_win386)/fhalias.gml &
+$(root_win386)/freeindr.gml &
+$(root_win386)/g-gen.gml &
+$(root_win386)/g-po.gml &
+$(root_win386)/getindr.gml &
+$(root_win386)/getp16.gml &
+$(root_win386)/invindr.gml &
+$(root_win386)/libpref.gml &
+$(root_win386)/mapa2f.gml &
+$(root_win386)/mkfp16.gml &
+$(root_win386)/mkfp32.gml &
+$(root_win386)/mklcl32.gml &
+$(root_win386)/pwap.gml &
+$(root_win386)/relp16.gml &
+$(root_win386)/restrict.gml &
+$(root_win386)/windefs.gml &
+$(root_win386)/windemos.gml &
+$(root_win386)/winfun16.gml &
+$(root_win386)/winfuns.gml &
+$(root_win386)/winspvar.gml
+
+# gml sub-directory
+gml_incs = ../doc/gml
+gml_objs = &
+../doc/gml/banner.gml    &
+../doc/gml/bantop.gml    &
+../doc/gml/booklay.gml   &
+../doc/gml/boxes.gml     &
+../doc/gml/copyriow.gml  &
+../doc/gml/copyrite.gml  &
+../doc/gml/copyrrsi.gml  &
+../doc/gml/cppextra.gml  &
+../doc/gml/defs.gml      &
+../doc/gml/disclaim.gml  &
+../doc/gml/doctitle.gml  &
+../doc/gml/dup.ps        &
+../doc/gml/enlarge.ps    &
+../doc/gml/eoj.ps        &
+../doc/gml/fmtmacro.gml  &
+../doc/gml/gmlack.gml    &
+../doc/gml/gmlmacs.gml   &
+../doc/gml/light2.eps    &
+../doc/gml/ltning.eps    &
+../doc/gml/lytchg.gml    &
+../doc/gml/nb6x8lay.gml  &
+../doc/gml/nb6x8ps.opt   &
+../doc/gml/nb7x9lay.gml  &
+../doc/gml/nb7x9lyn.gml  &
+../doc/gml/nb7x9ps.opt   &
+../doc/gml/nb7x9psc.opt  &
+../doc/gml/nb7x9psn.opt  &
+../doc/gml/nbhlp.opt     &
+../doc/gml/nbhlplay.gml  &
+../doc/gml/nblay.gml     &
+../doc/gml/nbps.opt      &
+../doc/gml/nbpsshad.opt  &
+../doc/gml/newslett.gml  &
+../doc/gml/nn7x9lay.gml  &
+../doc/gml/nn7x9ps.opt   &
+../doc/gml/nobanner.gml  &
+../doc/gml/nodup.ps      &
+../doc/gml/owlogo.eps    &
+../doc/gml/ps269.ps      &
+../doc/gml/ps269r.ps     &
+../doc/gml/ps2811.ps     &
+../doc/gml/ps2epi.ps     &
+../doc/gml/pwrs.eps      &
+../doc/gml/rev.gml       &
+../doc/gml/rmfmacro.gml  &
+../doc/gml/rule.eps      &
+../doc/gml/rule6x8.eps   &
+../doc/gml/rule7x9.eps   &
+../doc/gml/shrink.ps     &
+../doc/gml/symbols.gml   &
+../doc/gml/to85x11.gml   &
+../doc/gml/ul.ps         &
+../doc/gml/wbls.opt      &
+../doc/gml/wblslay.gml   &
+../doc/gml/wbps.opt      &
+../doc/gml/wbpslay.gml   &
+../doc/gml/wmodels.gml   &
+../doc/gml/wtrdmrk.gml   &
+../doc/gml/xdefs.gml
+
+# whelp sub-directory
+whelp_incs = ../doc/whelp
+whelp_objs =               &
+../doc/whelp/whelp.gml     &
+../doc/whelp/whelplay.gml  &
+../doc/whelp/wnohelp.gml   &
+../doc/whelp/whelp.opt
+
+# gml/syslib sub-directory
+gml_syslib_incs = ../gml/syslib
+gml_syslib_objs =           &
+../gml/syslib/mono01.fon   &
+../gml/syslib/whelp.pcd     &
+../gml/syslib/whelpdrv.pcd
+
+# ps sub-directory
+ps_incs = ../doc/ps
+ps_objs =                     &
+../doc/hlp/banner.gml   &
+../doc/hlp/bantop.gml   &
+../doc/hlp/fmtmacro.gml &
+../doc/hlp/gmlmacs.gml
+
+# hlp sub-directory
+hlp_incs = ../doc/hlp
+hlp_objs =                     &
+../doc/hlp/banner.gml   &
+../doc/hlp/bantop.gml   &
+../doc/hlp/fmtmacro.gml &
+../doc/hlp/gmlmacs.gml
+
+# hlp sub-directory for ?mix
+hlpmix_incs = ../doc/hlp
+hlpmix_objs =               &
+../doc/hlp/c_mix.gml  &
+../doc/hlp/f_mix.gml
+
+# cgdoc sub-directory
+incs_cgdoc = ../../bld/cg/doc
+objs_cgdoc = &
+../../bld/cg/doc/cgref.gml
+
+# dwdoc sub-directory
+incs_dwdoc = ../../bld/dwarf/dw/doc
+objs_dwdoc = &
+../../bld/dwarf/dw/doc/dwref.gml &
+../../bld/dwarf/dw/doc/dwarfw.gml &
+../../bld/dwarf/dw/doc/extra.gml
+
+# wddoc sub-directory
+root_wddoc = ../../bld/wv/doc
+incs_wddoc = $(root_wddoc)
+objs_wddoc = &
+$(root_wddoc)/dbg.gml &
+$(root_wddoc)/ovl.gml &
+$(root_wddoc)/trap.gml &
+$(root_wddoc)/wtrap.gml &
+$(root_wddoc)/wdref.gml &
+$(root_wddoc)/extra.gml
+
+# vi sub-directory
+root_vi = ../doc/vi
+bmroot_vi = $(root_vi)/snaps
+incs_vi = $(root_vi);$(bmroot_vi)
+objs_vi = &
+$(root_vi)/advan.gml &
+$(root_vi)/basic.gml &
+$(root_vi)/basicdis.gml &
+$(root_vi)/basicmv.gml &
+$(root_vi)/cmds.gml &
+$(root_vi)/cmdintro.gml &
+$(root_vi)/env.gml &
+$(root_vi)/exerquit.gml &
+$(root_vi)/exitvi.gml &
+$(root_vi)/extra.gml &
+$(root_vi)/fsdesc.gml &
+$(root_vi)/gkey.gml &
+$(root_vi)/ids.gml &
+$(root_vi)/inter.gml &
+$(root_vi)/intro.gml &
+$(root_vi)/markinfo.gml &
+$(root_vi)/modes.gml &
+$(root_vi)/oper.gml &
+$(root_vi)/operlist.gml &
+$(root_vi)/rxexp.gml &
+$(root_vi)/speckeys.gml &
+$(root_vi)/spmapkey.gml &
+$(root_vi)/textsel.gml &
+$(root_vi)/viref.gml &
+$(root_vi)/vipref.gml &
+$(root_vi)/worddef.gml &
+$(root_vi)/win_menu.gml &
+$(root_vi)/settings.gml &
+$(root_vi)/regexp.gml &
+$(root_vi)/scripts.gml &
+$(root_vi)/a_cmdmod.gml &
+$(root_vi)/a_errmsg.gml &
+$(root_vi)/int_err.gml &
+$(root_vi)/a_ctags.gml &
+$(root_vi)/a_symkey.gml &
+$(root_vi)/symkey.gml &
+$(root_vi)/a_errcod.gml
+!ifeq wgml_target ps
+objs_vi_ps=&
+$(tmpdir)/vi001.ps &
+$(tmpdir)/vi003.ps &
+$(tmpdir)/vi004.ps &
+$(tmpdir)/vi005.ps &
+$(tmpdir)/vi006.ps &
+$(tmpdir)/vi007.ps &
+$(tmpdir)/vi008.ps &
+$(tmpdir)/vi009.ps &
+$(tmpdir)/vi010.ps &
+$(tmpdir)/vi012.ps &
+$(tmpdir)/vi013.ps &
+$(tmpdir)/vi014.ps &
+$(tmpdir)/vi015.ps &
+$(tmpdir)/vi016.ps &
+$(tmpdir)/vi017.ps &
+$(tmpdir)/vi018.ps &
+$(tmpdir)/vi019.ps &
+$(tmpdir)/vi020.ps &
+$(tmpdir)/vi021.ps &
+$(tmpdir)/vi022.ps &
+$(tmpdir)/vi023.ps &
+$(tmpdir)/vi024.ps &
+$(tmpdir)/vi025.ps &
+$(tmpdir)/vi026.ps &
+$(tmpdir)/vi027.ps &
+$(tmpdir)/vi028.ps &
+$(tmpdir)/vi029.ps &
+$(tmpdir)/vi030.ps &
+$(tmpdir)/vi031.ps
+!else
+objs_vi_bmp=&
+$(bmroot_vi)/vi001.bmp &
+$(bmroot_vi)/vi003.bmp &
+$(bmroot_vi)/vi004.bmp &
+$(bmroot_vi)/vi005.bmp &
+$(bmroot_vi)/vi006.bmp &
+$(bmroot_vi)/vi007.bmp &
+$(bmroot_vi)/vi008.bmp &
+$(bmroot_vi)/vi009.bmp &
+$(bmroot_vi)/vi010.bmp &
+$(bmroot_vi)/vi012.bmp &
+$(bmroot_vi)/vi013.bmp &
+$(bmroot_vi)/vi015.bmp &
+$(bmroot_vi)/vi016.bmp &
+$(bmroot_vi)/vi017.bmp &
+$(bmroot_vi)/vi018.bmp &
+$(bmroot_vi)/vi019.bmp &
+$(bmroot_vi)/vi020.bmp &
+$(bmroot_vi)/vi021.bmp &
+$(bmroot_vi)/vi022.bmp &
+$(bmroot_vi)/vi023.bmp &
+$(bmroot_vi)/vi024.bmp &
+$(bmroot_vi)/vi025.bmp &
+$(bmroot_vi)/vi026.bmp &
+$(bmroot_vi)/vi027.bmp &
+$(bmroot_vi)/vi028.bmp &
+$(bmroot_vi)/vi029.bmp &
+$(bmroot_vi)/vi030.bmp &
+$(bmroot_vi)/vi031.bmp
+!endif
+
+# wfc sub-directory
+incs_wfc = ../../bld/f77/wfc/gml
+objs_wfc = &
+../../bld/f77/wfc/gml/wfcmsgs.gml &
+../../bld/f77/wfc/gml/msgmacs.gml
+
+# wgmlref sub-directory
+root_wgmlref = ../doc/wgmlref
+bmroot_wgmlref = $(root_wgmlref)/screens
+incs_wgmlref = $(root_wgmlref);$(bmroot_wgmlref)
+objs_wgmlref = &
+$(root_wgmlref)/extra.gml &
+$(root_wgmlref)/mspslay.gml &
+$(root_wgmlref)/rfabst.gml &
+$(root_wgmlref)/rfdaddr.gml &
+$(root_wgmlref)/rfdaugd.gml &
+$(root_wgmlref)/rfdcrdev.gml &
+$(root_wgmlref)/rfddef.gml &
+$(root_wgmlref)/rfddev.gml &
+$(root_wgmlref)/rfddriv.gml &
+$(root_wgmlref)/rfderra.gml &
+$(root_wgmlref)/rfderrm.gml &
+$(root_wgmlref)/rfdev.gml &
+$(root_wgmlref)/rfdfont.gml &
+$(root_wgmlref)/rfdgen.gml &
+$(root_wgmlref)/rfdgtag.gml &
+$(root_wgmlref)/rfdindd.gml &
+$(root_wgmlref)/rfdindex.gml &
+$(root_wgmlref)/rfdmem.gml &
+$(root_wgmlref)/rfdmisin.gml &
+$(root_wgmlref)/rfdrgen.gml &
+$(root_wgmlref)/rfdropt.gml &
+$(root_wgmlref)/rfdrun.gml &
+$(root_wgmlref)/rfdspec.gml &
+$(root_wgmlref)/rfdvalue.gml &
+$(root_wgmlref)/rferrp.gml &
+$(root_wgmlref)/rffgen.gml &
+$(root_wgmlref)/rffhead.gml &
+$(root_wgmlref)/rffile.gml &
+$(root_wgmlref)/rffpcdos.gml &
+$(root_wgmlref)/rffvms.gml &
+$(root_wgmlref)/rffvmsp.gml &
+$(root_wgmlref)/rfg2pd.gml &
+$(root_wgmlref)/rfgbeg.gml &
+$(root_wgmlref)/rfgcite.gml &
+$(root_wgmlref)/rfgdl.gml &
+$(root_wgmlref)/rfgerra.gml &
+$(root_wgmlref)/rfgerrm.gml &
+$(root_wgmlref)/rfgfhref.gml &
+$(root_wgmlref)/rfgfig1.gml &
+$(root_wgmlref)/rfgfig2.gml &
+$(root_wgmlref)/rfgfig3.gml &
+$(root_wgmlref)/rfghead.gml &
+$(root_wgmlref)/rfghp.gml &
+$(root_wgmlref)/rfgindx.gml &
+$(root_wgmlref)/rfgindx2.gml &
+$(root_wgmlref)/rfgindx3.gml &
+$(root_wgmlref)/rfgint.gml &
+$(root_wgmlref)/rfgisym.gml &
+$(root_wgmlref)/rfglgen.gml &
+$(root_wgmlref)/rfglgqut.gml &
+$(root_wgmlref)/rfglp.gml &
+$(root_wgmlref)/rfglpc.gml &
+$(root_wgmlref)/rfglvax.gml &
+$(root_wgmlref)/rfglvm.gml &
+$(root_wgmlref)/rfgnest.gml &
+$(root_wgmlref)/rfgnote.gml &
+$(root_wgmlref)/rfgol.gml &
+$(root_wgmlref)/rfgpc.gml &
+$(root_wgmlref)/rfgshid.gml &
+$(root_wgmlref)/rfgshqut.gml &
+$(root_wgmlref)/rfgsl.gml &
+$(root_wgmlref)/rfgsym.gml &
+$(root_wgmlref)/rfgtitpg.gml &
+$(root_wgmlref)/rfgul.gml &
+$(root_wgmlref)/rfgxmp.gml &
+$(root_wgmlref)/rfintro.gml &
+$(root_wgmlref)/rfl2pd.gml &
+$(root_wgmlref)/rflaaln.gml &
+$(root_wgmlref)/rflacol.gml &
+$(root_wgmlref)/rfladaf.gml &
+$(root_wgmlref)/rflafil.gml &
+$(root_wgmlref)/rflafon.gml &
+$(root_wgmlref)/rflahdr.gml &
+$(root_wgmlref)/rflahdr2.gml &
+$(root_wgmlref)/rflaina.gml &
+$(root_wgmlref)/rflalad.gml &
+$(root_wgmlref)/rflalev.gml &
+$(root_wgmlref)/rflalii.gml &
+$(root_wgmlref)/rflalin.gml &
+$(root_wgmlref)/rflanfo.gml &
+$(root_wgmlref)/rflanfo2.gml &
+$(root_wgmlref)/rflanfon.gml &
+$(root_wgmlref)/rflanst.gml &
+$(root_wgmlref)/rflanst2.gml &
+$(root_wgmlref)/rflapes.gml &
+$(root_wgmlref)/rflapge.gml &
+$(root_wgmlref)/rflapgp.gml &
+$(root_wgmlref)/rflapgp2.gml &
+$(root_wgmlref)/rflapgr.gml &
+$(root_wgmlref)/rflapli.gml &
+$(root_wgmlref)/rflapos.gml &
+$(root_wgmlref)/rflapts.gml &
+$(root_wgmlref)/rflarad.gml &
+$(root_wgmlref)/rflarin.gml &
+$(root_wgmlref)/rflasiz.gml &
+$(root_wgmlref)/rflaskp.gml &
+$(root_wgmlref)/rflaspc.gml &
+$(root_wgmlref)/rflathr.gml &
+$(root_wgmlref)/rflay.gml &
+$(root_wgmlref)/rflay1.gml &
+$(root_wgmlref)/rflay2.gml &
+$(root_wgmlref)/rflbeg.gml &
+$(root_wgmlref)/rflcase.gml &
+$(root_wgmlref)/rfldl.gml &
+$(root_wgmlref)/rflfhref.gml &
+$(root_wgmlref)/rflfig1.gml &
+$(root_wgmlref)/rflfig2.gml &
+$(root_wgmlref)/rflfig3.gml &
+$(root_wgmlref)/rflgroup.gml &
+$(root_wgmlref)/rflhead.gml &
+$(root_wgmlref)/rflib.gml &
+$(root_wgmlref)/rflint.gml &
+$(root_wgmlref)/rflisym.gml &
+$(root_wgmlref)/rfllgqut.gml &
+$(root_wgmlref)/rfllp.gml &
+$(root_wgmlref)/rflnest.gml &
+$(root_wgmlref)/rflnote.gml &
+$(root_wgmlref)/rflnumr.gml &
+$(root_wgmlref)/rflol.gml &
+$(root_wgmlref)/rflpc.gml &
+$(root_wgmlref)/rflshqut.gml &
+$(root_wgmlref)/rflsl.gml &
+$(root_wgmlref)/rflsym.gml &
+$(root_wgmlref)/rfltabs.gml &
+$(root_wgmlref)/rfltadd.gml &
+$(root_wgmlref)/rfltags.gml &
+$(root_wgmlref)/rfltalin.gml &
+$(root_wgmlref)/rfltapp.gml &
+$(root_wgmlref)/rfltattn.gml &
+$(root_wgmlref)/rfltauth.gml &
+$(root_wgmlref)/rfltback.gml &
+$(root_wgmlref)/rfltbann.gml &
+$(root_wgmlref)/rfltbanr.gml &
+$(root_wgmlref)/rfltbody.gml &
+$(root_wgmlref)/rfltcit.gml &
+$(root_wgmlref)/rfltclos.gml &
+$(root_wgmlref)/rfltdate.gml &
+$(root_wgmlref)/rfltdd.gml &
+$(root_wgmlref)/rfltddhd.gml &
+$(root_wgmlref)/rfltdef.gml &
+$(root_wgmlref)/rfltdist.gml &
+$(root_wgmlref)/rfltdl.gml &
+$(root_wgmlref)/rfltdoc.gml &
+$(root_wgmlref)/rfltdt.gml &
+$(root_wgmlref)/rfltdthd.gml &
+$(root_wgmlref)/rflteban.gml &
+$(root_wgmlref)/rfltebre.gml &
+$(root_wgmlref)/rflteclo.gml &
+$(root_wgmlref)/rfltelay.gml &
+$(root_wgmlref)/rfltfig.gml &
+$(root_wgmlref)/rfltfigc.gml &
+$(root_wgmlref)/rfltfigd.gml &
+$(root_wgmlref)/rfltfigl.gml &
+$(root_wgmlref)/rfltflp.gml &
+$(root_wgmlref)/rfltfn.gml &
+$(root_wgmlref)/rfltfnre.gml &
+$(root_wgmlref)/rfltfrom.gml &
+$(root_wgmlref)/rfltgd.gml &
+$(root_wgmlref)/rfltgl.gml &
+$(root_wgmlref)/rfltgt.gml &
+$(root_wgmlref)/rflth0.gml &
+$(root_wgmlref)/rflthead.gml &
+$(root_wgmlref)/rflti1.gml &
+$(root_wgmlref)/rfltindx.gml &
+$(root_wgmlref)/rfltitpg.gml &
+$(root_wgmlref)/rfltixh.gml &
+$(root_wgmlref)/rfltixm.gml &
+$(root_wgmlref)/rfltixp.gml &
+$(root_wgmlref)/rfltlay.gml &
+$(root_wgmlref)/rfltletd.gml &
+$(root_wgmlref)/rfltlp.gml &
+$(root_wgmlref)/rfltlq.gml &
+$(root_wgmlref)/rfltnote.gml &
+$(root_wgmlref)/rfltol.gml &
+$(root_wgmlref)/rfltopen.gml &
+$(root_wgmlref)/rfltp.gml &
+$(root_wgmlref)/rfltpage.gml &
+$(root_wgmlref)/rfltpc.gml &
+$(root_wgmlref)/rfltpref.gml &
+$(root_wgmlref)/rfltsl.gml &
+$(root_wgmlref)/rfltsubj.gml &
+$(root_wgmlref)/rflttitl.gml &
+$(root_wgmlref)/rflttitp.gml &
+$(root_wgmlref)/rfltto.gml &
+$(root_wgmlref)/rflttoc.gml &
+$(root_wgmlref)/rflttoc0.gml &
+$(root_wgmlref)/rflttocp.gml &
+$(root_wgmlref)/rfltul.gml &
+$(root_wgmlref)/rfltwid.gml &
+$(root_wgmlref)/rfltxmp.gml &
+$(root_wgmlref)/rflul.gml &
+$(root_wgmlref)/rflxmp.gml &
+$(root_wgmlref)/rfman.gml &
+$(root_wgmlref)/rfmlay.gml &
+$(root_wgmlref)/rfpcincl.gml &
+$(root_wgmlref)/rfpref.gml &
+$(root_wgmlref)/rfrgen.gml &
+$(root_wgmlref)/rfropt.gml &
+$(root_wgmlref)/rfrun.gml &
+$(root_wgmlref)/rfrvmpc.gml &
+$(root_wgmlref)/rfrvms.gml &
+$(root_wgmlref)/rfsapp.gml &
+$(root_wgmlref)/rfsattr.gml &
+$(root_wgmlref)/rfsbak.gml &
+$(root_wgmlref)/rfsbde.gml &
+$(root_wgmlref)/rfsbod.gml &
+$(root_wgmlref)/rfscrgg.gml &
+$(root_wgmlref)/rfscrip.gml &
+$(root_wgmlref)/rfscripa.gml &
+$(root_wgmlref)/rfsdbd.gml &
+$(root_wgmlref)/rfsflnk.gml &
+$(root_wgmlref)/rfsfrt.gml &
+$(root_wgmlref)/rfsgel.gml &
+$(root_wgmlref)/rfsgen.gml &
+$(root_wgmlref)/rfshor.gml &
+$(root_wgmlref)/rfsid.gml &
+$(root_wgmlref)/rfsintr.gml &
+$(root_wgmlref)/rfslet.gml &
+$(root_wgmlref)/rfspec.gml &
+$(root_wgmlref)/rfspos.gml &
+$(root_wgmlref)/rfspre.gml &
+$(root_wgmlref)/rfsproc.gml &
+$(root_wgmlref)/rfssymb.gml &
+$(root_wgmlref)/rfsum.gml &
+$(root_wgmlref)/rfsvert.gml &
+$(root_wgmlref)/rftags.gml &
+$(root_wgmlref)/rftgabst.gml &
+$(root_wgmlref)/rftgacon.gml &
+$(root_wgmlref)/rftgaddr.gml &
+$(root_wgmlref)/rftgadep.gml &
+$(root_wgmlref)/rftgalin.gml &
+$(root_wgmlref)/rftgapp.gml &
+$(root_wgmlref)/rftgauth.gml &
+$(root_wgmlref)/rftgback.gml &
+$(root_wgmlref)/rftgbinc.gml &
+$(root_wgmlref)/rftgbody.gml &
+$(root_wgmlref)/rftgcit.gml &
+$(root_wgmlref)/rftgcmt.gml &
+$(root_wgmlref)/rftgdate.gml &
+$(root_wgmlref)/rftgdd.gml &
+$(root_wgmlref)/rftgddhd.gml &
+$(root_wgmlref)/rftgdl.gml &
+$(root_wgmlref)/rftgdnum.gml &
+$(root_wgmlref)/rftgdt.gml &
+$(root_wgmlref)/rftgdthd.gml &
+$(root_wgmlref)/rftgeadd.gml &
+$(root_wgmlref)/rftgecit.gml &
+$(root_wgmlref)/rftgedl.gml &
+$(root_wgmlref)/rftgefig.gml &
+$(root_wgmlref)/rftgefn.gml &
+$(root_wgmlref)/rftgegdo.gml &
+$(root_wgmlref)/rftgegl.gml &
+$(root_wgmlref)/rftgehp.gml &
+$(root_wgmlref)/rftgelay.gml &
+$(root_wgmlref)/rftgelq.gml &
+$(root_wgmlref)/rftgeol.gml &
+$(root_wgmlref)/rftgepsc.gml &
+$(root_wgmlref)/rftgeq.gml &
+$(root_wgmlref)/rftgesf.gml &
+$(root_wgmlref)/rftgesl.gml &
+$(root_wgmlref)/rftgetpg.gml &
+$(root_wgmlref)/rftgeul.gml &
+$(root_wgmlref)/rftgexmp.gml &
+$(root_wgmlref)/rftgfig.gml &
+$(root_wgmlref)/rftgfigc.gml &
+$(root_wgmlref)/rftgfigd.gml &
+$(root_wgmlref)/rftgfigl.gml &
+$(root_wgmlref)/rftgfigr.gml &
+$(root_wgmlref)/rftgfn.gml &
+$(root_wgmlref)/rftgfnre.gml &
+$(root_wgmlref)/rftgfrnt.gml &
+$(root_wgmlref)/rftggd.gml &
+$(root_wgmlref)/rftggdoc.gml &
+$(root_wgmlref)/rftggl.gml &
+$(root_wgmlref)/rftggraf.gml &
+$(root_wgmlref)/rftggt.gml &
+$(root_wgmlref)/rftghdre.gml &
+$(root_wgmlref)/rftghead.gml &
+$(root_wgmlref)/rftghp.gml &
+$(root_wgmlref)/rftgi.gml &
+$(root_wgmlref)/rftgih.gml &
+$(root_wgmlref)/rftgii.gml &
+$(root_wgmlref)/rftgimbe.gml &
+$(root_wgmlref)/rftgincl.gml &
+$(root_wgmlref)/rftgindx.gml &
+$(root_wgmlref)/rftgint.gml &
+$(root_wgmlref)/rftgipg.gml &
+$(root_wgmlref)/rftgiref.gml &
+$(root_wgmlref)/rftgisee.gml &
+$(root_wgmlref)/rftgisid.gml &
+$(root_wgmlref)/rftglay.gml &
+$(root_wgmlref)/rftgli.gml &
+$(root_wgmlref)/rftglire.gml &
+$(root_wgmlref)/rftglp.gml &
+$(root_wgmlref)/rftglq.gml &
+$(root_wgmlref)/rftgnote.gml &
+$(root_wgmlref)/rftgol.gml &
+$(root_wgmlref)/rftgp.gml &
+$(root_wgmlref)/rftgpc.gml &
+$(root_wgmlref)/rftgpref.gml &
+$(root_wgmlref)/rftgpsc.gml &
+$(root_wgmlref)/rftgq.gml &
+$(root_wgmlref)/rftgset.gml &
+$(root_wgmlref)/rftgsf.gml &
+$(root_wgmlref)/rftgsl.gml &
+$(root_wgmlref)/rftgtitl.gml &
+$(root_wgmlref)/rftgtoc.gml &
+$(root_wgmlref)/rftgtpg.gml &
+$(root_wgmlref)/rftgul.gml &
+$(root_wgmlref)/rftgxmp.gml &
+$(root_wgmlref)/rftitle.gml &
+$(root_wgmlref)/rftlatt.gml &
+$(root_wgmlref)/rftlclo.gml &
+$(root_wgmlref)/rftldat.gml &
+$(root_wgmlref)/rftldis.gml &
+$(root_wgmlref)/rftldit.gml &
+$(root_wgmlref)/rftldoc.gml &
+$(root_wgmlref)/rftlecl.gml &
+$(root_wgmlref)/rftledi.gml &
+$(root_wgmlref)/rftlfro.gml &
+$(root_wgmlref)/rftlope.gml &
+$(root_wgmlref)/rftlsub.gml &
+$(root_wgmlref)/rftlto.gml &
+$(root_wgmlref)/rftrade.gml &
+$(root_wgmlref)/rftuapp.gml &
+$(root_wgmlref)/rftuback.gml &
+$(root_wgmlref)/rftubegn.gml &
+$(root_wgmlref)/rftubody.gml &
+$(root_wgmlref)/rftucite.gml &
+$(root_wgmlref)/rftuconc.gml &
+$(root_wgmlref)/rftudstr.gml &
+$(root_wgmlref)/rftufco.gml &
+$(root_wgmlref)/rftufdp.gml &
+$(root_wgmlref)/rftufds.gml &
+$(root_wgmlref)/rftufdv.gml &
+$(root_wgmlref)/rftufig.gml &
+$(root_wgmlref)/rftufom.gml &
+$(root_wgmlref)/rftufop.gml &
+$(root_wgmlref)/rftufrd.gml &
+$(root_wgmlref)/rftufrnt.gml &
+$(root_wgmlref)/rftufsm.gml &
+$(root_wgmlref)/rftuhead.gml &
+$(root_wgmlref)/rftuhp.gml &
+$(root_wgmlref)/rftuidx.gml &
+$(root_wgmlref)/rftulay.gml &
+$(root_wgmlref)/rftulban.gml &
+$(root_wgmlref)/rftulcnv.gml &
+$(root_wgmlref)/rftuldoc.gml &
+$(root_wgmlref)/rftulgen.gml &
+$(root_wgmlref)/rftulist.gml &
+$(root_wgmlref)/rftulmdo.gml &
+$(root_wgmlref)/rftulspc.gml &
+$(root_wgmlref)/rftuprd.gml &
+$(root_wgmlref)/rftuquot.gml &
+$(root_wgmlref)/rfturef.gml &
+$(root_wgmlref)/rftuscr.gml &
+$(root_wgmlref)/rftustrt.gml &
+$(root_wgmlref)/rftustru.gml &
+$(root_wgmlref)/rftut.gml &
+$(root_wgmlref)/rftuxmp.gml
+!ifeq wgml_target ps
+objs_wgmlref_ps = &
+$(tmpdir)/frconf.ps &
+$(tmpdir)/frdev.ps &
+$(tmpdir)/frdeval.ps &
+$(tmpdir)/frdevav.ps &
+$(tmpdir)/frdevfa.ps &
+$(tmpdir)/frdevfn.ps &
+$(tmpdir)/frdevld.ps &
+$(tmpdir)/frdoc.ps &
+$(tmpdir)/frdocct.ps &
+$(tmpdir)/frdocpr.ps &
+$(tmpdir)/frdocse.ps &
+$(tmpdir)/frhelp.ps &
+$(tmpdir)/froptsv.ps &
+$(tmpdir)/frsymed.ps &
+$(tmpdir)/frsymva.ps &
+$(tmpdir)/rfopsel.ps &
+$(tmpdir)/rfopt.ps &
+$(tmpdir)/wgmlerr.ps &
+$(tmpdir)/wgmlmain.ps
+!else
+objs_wgmlref_bmp = &
+$(bmroot_wgmlref)/frconf.bmp &
+$(bmroot_wgmlref)/frdev.bmp &
+$(bmroot_wgmlref)/frdeval.bmp &
+$(bmroot_wgmlref)/frdevav.bmp &
+$(bmroot_wgmlref)/frdevfa.bmp &
+$(bmroot_wgmlref)/frdevfn.bmp &
+$(bmroot_wgmlref)/frdevld.bmp &
+$(bmroot_wgmlref)/frdoc.bmp &
+$(bmroot_wgmlref)/frdocct.bmp &
+$(bmroot_wgmlref)/frdocpr.bmp &
+$(bmroot_wgmlref)/frdocse.bmp &
+$(bmroot_wgmlref)/frhelp.bmp &
+$(bmroot_wgmlref)/froptsv.bmp &
+$(bmroot_wgmlref)/frsymed.bmp &
+$(bmroot_wgmlref)/frsymva.bmp &
+$(bmroot_wgmlref)/rfopsel.bmp &
+$(bmroot_wgmlref)/rfopt.bmp &
+$(bmroot_wgmlref)/wgmlerr.bmp &
+$(bmroot_wgmlref)/wgmlmain.bmp
+!endif
+
+# wipfc sub-directory
+root_wipfc = ../doc/wipfc
+incs_wipfc = $(root_wipfc)
+objs_wipfc = &
+$(root_wipfc)/ipfcref.gml &
+$(root_wipfc)/ipfdefs.gml &
+$(root_wipfc)/ipfintro.gml &
+$(root_wipfc)/ipfuse.gml &
+$(root_wipfc)/ipftags.gml &
+$(root_wipfc)/ipfcmds.gml &
+$(root_wipfc)/ipftref.gml &
+$(root_wipfc)/ipferr.gml &
+$(root_wipfc)/ipfsym.gml &
+$(root_wipfc)/acvwprt.gml &
+$(root_wipfc)/artlink.gml &
+$(root_wipfc)/artwork.gml &
+$(root_wipfc)/caution.gml &
+$(root_wipfc)/cgraphic.gml &
+$(root_wipfc)/color.gml &
+$(root_wipfc)/ctrl.gml &
+$(root_wipfc)/ctrldef.gml &
+$(root_wipfc)/ddf.gml &
+$(root_wipfc)/dl.gml &
+$(root_wipfc)/docprof.gml &
+$(root_wipfc)/fig.gml &
+$(root_wipfc)/figcap.gml &
+$(root_wipfc)/font.gml &
+$(root_wipfc)/fn.gml &
+$(root_wipfc)/hn.gml &
+$(root_wipfc)/hdref.gml &
+$(root_wipfc)/hide.gml &
+$(root_wipfc)/hpn.gml &
+$(root_wipfc)/i1.gml &
+$(root_wipfc)/i2.gml &
+$(root_wipfc)/icmd.gml &
+$(root_wipfc)/isyn.gml &
+$(root_wipfc)/li.gml &
+$(root_wipfc)/lines.gml &
+$(root_wipfc)/link.gml &
+$(root_wipfc)/lm.gml &
+$(root_wipfc)/lp.gml &
+$(root_wipfc)/note.gml &
+$(root_wipfc)/nt.gml &
+$(root_wipfc)/ol.gml &
+$(root_wipfc)/p.gml &
+$(root_wipfc)/parml.gml &
+$(root_wipfc)/pbutton.gml &
+$(root_wipfc)/rm.gml &
+$(root_wipfc)/sl.gml &
+$(root_wipfc)/table.gml &
+$(root_wipfc)/title.gml &
+$(root_wipfc)/ul.gml &
+$(root_wipfc)/userdoc.gml &
+$(root_wipfc)/warning.gml &
+$(root_wipfc)/xmp.gml
+
+# wpidoc sub-directory
+root_wpidoc = ../../bld/wpi/doc
+incs_wpidoc = $(root_wpidoc)
+objs_wpidoc = &
+$(root_wpidoc)/wpiref.gml &
+$(root_wpidoc)/wpi.gml
+
+# fmedidoc sub-directory
+root_fmedidoc = ../../bld/sdk/fmedit/doc
+incs_fmedidoc = $(root_fmedidoc)
+objs_fmedidoc = &
+$(root_fmedidoc)/fmediref.gml &
+$(root_fmedidoc)/fmedit.gml
+
+#############################################################
+#
+# Books definition
+#
+#############################################################
+
+# clean
+
+# foo
+foo_book_title=foo
+foo_book_objs=$(objs_cmn)
+foo_book_incs=$(incs_cmn)
+
+# c_readme
+c_readme_book_title=$(company) $(bld_ver_str) C/C++ Getting Started
+!ifeq wgml_target ps
+c_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_ps) $(objs_cg)
+!else
+c_readme_book_bmps=$(objs_gs_readme_bmp)
+c_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp) $(objs_cg)
+!endif
+c_readme_book_incs=$(incs_gs);$(incs_cg)
+c_readme_book_bmroot=$(bmroot_gs)
+c_readme_book_multi_chapter=1
+
+# cbooks
+cbooks_book_title=$(company) $(bld_ver_str) C/C++ On-line Documentation
+cbooks_book_bmps=$(objs_gs_books_bmp)
+cbooks_book_objs=$(objs_gs_books) $(objs_gs_books_bmp)
+cbooks_book_incs=$(incs_gs)
+cbooks_book_bmroot=$(bmroot_gs)
+
+# cguide
+cguide_book_title=$(company) $(bld_ver_str) C/C++ User's Guide
+cguide_book_bmps=$(objs_cg_bmp)
+cguide_book_objs=$(objs_cg) $(objs_cg_bmp) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
+cguide_book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
+cguide_book_bmroot=$(bmroot_cg)
+cguide_book_multi_chapter=1
+
+# cguideq
+cguideq_book_title=$(company) $(bld_ver_str) C/C++ User's Guide for QNX
+cguideq_book_bmps=$(objs_cg_bmp)
+cguideq_book_objs=$(objs_cg) $(objs_cg_bmp) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
+cguideq_book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
+cguideq_book_bmroot=$(bmroot_cg)
+cguideq_book_multi_chapter=1
+
+# clib
+clib_book_title=$(company) $(bld_ver_str) C Library Reference
+!ifeq wgml_target ps
+clib_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_ps) $(objs_cmn)
+!else
+clib_book_bmps=$(objs_lr_graph_bmp)
+clib_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_bmp) $(objs_cmn)
+!endif
+clib_book_incs=$(incs_lr);$(incs_lr_src);$(incs_lr_graph);$(incs_cmn)
+clib_book_bmroot=$(bmroot_lr_graph)
+clib_book_multi_chapter=1
+
+# clib_fox
+clib_fox_book_title=$(company) $(bld_ver_str) C Library Reference for FoxPro
+!ifeq wgml_target ps
+clib_fox_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_ps) $(objs_cmn)
+!else
+clib_fox_book_bmps=$(objs_lr_graph_bmp)
+clib_fox_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_bmp) $(objs_cmn)
+!endif
+clib_fox_book_incs=$(incs_lr);$(incs_lr_src);$(incs_lr_graph);$(incs_cmn)
+clib_fox_book_bmroot=$(bmroot_lr_graph)
+
+# clib_nec
+clib_nec_book_title=$(company) $(bld_ver_str) C Library Reference Kanji Functions subset
+!ifeq wgml_target ps
+clib_nec_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_ps) $(objs_cmn)
+!else
+clib_nec_book_bmps=$(objs_lr_graph_bmp)
+clib_nec_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_bmp) $(objs_cmn)
+!endif
+clib_nec_book_incs=$(incs_lr);$(incs_lr_src);$(incs_lr_graph);$(incs_cmn)
+clib_nec_book_bmroot=$(bmroot_lr_graph)
+
+# clib_nt
+clib_nt_book_title=$(company) $(bld_ver_str) C Library Reference for Win32
+clib_nt_book_objs=$(objs_lr) $(objs_lr_src) $(objs_cmn)
+clib_nt_book_incs=$(incs_lr);$(incs_lr_src);$(incs_cmn)
+clib_nt_book_multi_chapter=1
+
+# clib_qnx
+clib_qnx_book_title=$(company) $(bld_ver_str) C Library Reference for QNX
+!ifeq wgml_target ps
+clib_qnx_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_ps) $(objs_cmn)
+!else
+clib_qnx_book_bmps=$(objs_lr_graph_bmp)
+clib_qnx_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_bmp) $(objs_cmn)
+!endif
+clib_qnx_book_incs=$(incs_lr);$(incs_lr_src);$(incs_lr_graph);$(incs_cmn)
+clib_qnx_book_bmroot=$(bmroot_lr_graph)
+clib_qnx_book_multi_chapter=1
+
+# clib_tst
+clib_tst_book_title=$(company) $(bld_ver_str) C Library Reference
+!ifeq wgml_target ps
+clib_tst_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_ps) $(objs_cmn)
+!else
+clib_tst_book_bmps=$(objs_lr_graph_bmp)
+clib_tst_book_objs=$(objs_lr) $(objs_lr_src) $(objs_lr_graph) $(objs_lr_graph_bmp) $(objs_cmn)
+!endif
+clib_tst_book_incs=$(incs_lr);$(incs_lr_src);$(incs_lr_graph);$(incs_cmn)
+clib_tst_book_bmroot=$(bmroot_lr_graph)
+clib_tst_book_multi_chapter=1
+
+# clr
+clr_book_title=$(company) $(bld_ver_str) C Language Reference
+clr_book_bmps=$(objs_cl_bmp)
+clr_book_objs=$(objs_cl) $(objs_cl_bmp)
+clr_book_incs=$(incs_cl)
+clr_book_bmroot=$(bmroot_cl)
+clr_book_multi_chapter=1
+
+# clslib
+clslib_book_title=$(company) $(bld_ver_str) C++ Class Library Reference
+clslib_book_objs=$(objs_cpplib)
+clslib_book_incs=$(incs_cpplib)
+
+# cmix
+cmix_book_title=$(company) $(bld_ver_str) C/C++ Master Index
+cmix_book_objs=$(hlpmix_objs)
+cmix_book_incs=$(hlpmix_incs)
+
+# cpguide
+cpguide_book_title=$(company) $(bld_ver_str) C/C++ Programmer's Guide
+!ifeq wgml_target ps
+cpguide_book_objs=$(objs_pg) $(objs_pg_ps) $(objs_cmn) $(objs_cg) $(objs_rsi) $(objs_win386) $(objs_lr)
+!else
+cpguide_book_bmps=$(objs_pg_bmp)
+cpguide_book_objs=$(objs_pg) $(objs_pg_bmp) $(objs_cmn) $(objs_cg) $(objs_rsi) $(objs_win386) $(objs_lr)
+!endif
+cpguide_book_incs=$(incs_pg);$(incs_cmn);$(incs_cg);$(incs_rsi);$(incs_win386);$(incs_lr);
+cpguide_book_bmroot=$(bmroot_pg)
+cpguide_book_multi_chapter=1
+
+# cpplib
+cpplib_book_title=$(company) $(bld_ver_str) C++ Class Library Reference
+cpplib_book_objs=$(objs_cpplib)
+cpplib_book_incs=$(incs_cpplib)
+cpplib_book_multi_chapter=1
+
+# ctools
+ctools_book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
+ctools_book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
+ctools_book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
+ctools_book_bmroot=$(bmroot_cg)
+ctools_book_multi_chapter=1
+
+# cw
+cw_book_title=CauseWay User's Guide
+cw_book_objs=$(objs_cw) $(objs_cmn)
+cw_book_incs=$(incs_cw);$(incs_cmn)
+
+# ddespy
+ddespy_book_title=$(company) $(bld_ver_str) DDE Spy
+ddespy_book_bmps=$(objs_gui_ddespy_bmp) $(objs_gui_drwatcom_bmp) $(objs_gui_spy_bmp)
+ddespy_book_objs=$(objs_gui) $(objs_gui_ddespy_bmp) $(objs_gui_drwatcom_bmp) $(objs_gui_spy_bmp) $(objs_cg)
+ddespy_book_incs=$(incs_gui);$(incs_cg)
+ddespy_book_bmroot=$(bmroot_gui)
+
+# devguide
+devguide_book_title=$(company) $(bld_ver_str) Developer's Guide
+devguide_book_objs=$(objs_devguide) $(objs_cmn)
+devguide_book_incs=$(incs_devguide);$(incs_cmn)
+
+# drnt
+drnt_book_title=Dr. Watcom $(bld_ver_str) NT
+drnt_book_bmps=$(objs_gui_drwatcom_bmp)
+drnt_book_objs=$(objs_gui) $(objs_gui_drwatcom_bmp) $(objs_cg)
+drnt_book_incs=$(incs_gui);$(incs_cg)
+drnt_book_bmroot=$(bmroot_gui)
+
+# drwatcom
+drwatcom_book_title=Dr. Watcom $(bld_ver_str)
+drwatcom_book_bmps=$(objs_gui_drwatcom_bmp)
+drwatcom_book_objs=$(objs_gui) $(objs_gui_drwatcom_bmp) $(objs_cg)
+drwatcom_book_incs=$(incs_gui);$(incs_cg)
+drwatcom_book_bmroot=$(bmroot_gui)
+
+# ebooks
+ebooks_book_title=$(company) $(bld_ver_str) Editor On-line Documentation
+ebooks_book_bmps=$(objs_gs_books_bmp)
+ebooks_book_objs=$(objs_gs_books) $(objs_gs_books_bmp)
+ebooks_book_incs=$(incs_gs)
+ebooks_book_bmroot=$(bmroot_gs)
+
+# editor
+editor_book_title=$(company) $(bld_ver_str) Editor
+editor_book_bmps=$(objs_gui_editor_bmp)
+editor_book_objs=$(objs_gui) $(objs_gui_editor_bmp) $(objs_cg)
+editor_book_incs=$(incs_gui);$(incs_cg)
+editor_book_bmroot=$(bmroot_gui)
+editor_book_multi_chapter=1
+
+# f_readme
+f_readme_book_title=$(company) $(bld_ver_str) FORTRAN 77 Getting Started
+!ifeq wgml_target ps
+f_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_ps)
+!else
+f_readme_book_bmps=$(objs_gs_readme_bmp)
+f_readme_book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp)
+!endif
+f_readme_book_incs=$(incs_gs)
+f_readme_book_bmroot=$(bmroot_gs)
+f_readme_book_multi_chapter=1
+
+# f77graph
+f77graph_book_title=$(company) $(bld_ver_str) FORTRAN 77 Graphics Library Reference
+!ifeq wgml_target ps
+f77graph_book_objs=$(objs_lr) $(objs_lr_graph) $(objs_lr_graph_ps) $(objs_cmn)
+!else
+f77graph_book_bmps=$(objs_lr_graph_bmp)
+f77graph_book_objs=$(objs_lr) $(objs_lr_graph) $(objs_lr_graph_bmp) $(objs_cmn)
+!endif
+f77graph_book_incs=$(incs_lr);$(incs_lr_graph);$(incs_cmn)
+f77graph_book_bmroot=$(bmroot_lr_graph)
+f77graph_book_multi_chapter=1
+
+# f77lr
+f77lr_book_title=$(company) $(bld_ver_str) FORTRAN 77 Language Reference
+f77lr_book_objs=$(objs_fl)
+f77lr_book_incs=$(incs_fl)
+f77lr_book_multi_chapter=1
+
+# fbooks
+fbooks_book_title=$(company) $(bld_ver_str) FORTRAN 77 On-line Documentation
+fbooks_book_bmps=$(objs_gs_books_bmp)
+fbooks_book_objs=$(objs_gs_books) $(objs_gs_books_bmp)
+fbooks_book_incs=$(incs_gs)
+fbooks_book_bmroot=$(bmroot_gs)
+
+# fmix
+fmix_book_title=$(company) $(bld_ver_str) FORTRAN 77 Master Index
+fmix_book_objs=$(hlpmix_objs)
+fmix_book_incs=$(hlpmix_incs)
+
+# fpguide
+fpguide_book_title=$(company) $(bld_ver_str) FORTRAN 77 Programmer's Guide
+!ifeq wgml_target ps
+fpguide_book_objs=$(objs_pg) $(objs_pg_ps) $(objs_cmn) $(objs_fg) $(objs_rsi) $(objs_win386) $(objs_lr)
+!else
+fpguide_book_bmps=$(objs_pg_bmp)
+fpguide_book_objs=$(objs_pg) $(objs_pg_bmp) $(objs_cmn) $(objs_fg) $(objs_rsi) $(objs_win386) $(objs_lr)
+!endif
+fpguide_book_incs=$(incs_pg);$(incs_cmn);$(incs_fg);$(incs_rsi);$(incs_win386);$(incs_lr);
+fpguide_book_bmroot=$(bmroot_pg)
+fpguide_book_multi_chapter=1
+
+# ftools
+ftools_book_title=$(company) $(bld_ver_str) FORTRAN 77 Tools User's Guide
+ftools_book_bmps=$(objs_fg_bmp)
+ftools_book_objs=$(objs_cmn) $(objs_fg_bmp) $(objs_lg) $(objs_fg)
+ftools_book_incs=$(incs_cmn);$(incs_lg);$(incs_fg)
+ftools_book_bmroot=$(bmroot_fg)
+ftools_book_multi_chapter=1
+
+# fguide
+fguide_book_title=$(company) $(bld_ver_str) FORTRAN 77 User's Guide
+fguide_book_objs=$(objs_fg) $(objs_wfc) $(objs_lg) $(objs_cmn)
+fguide_book_incs=$(incs_fg);$(incs_wfc);$(incs_lg);$(incs_cmn)
+fguide_book_bmroot=$(bmroot_fg)
+fguide_book_multi_chapter=1
+
+# guitools
+guitools_book_title=$(company) $(bld_ver_str) Graphical Tools User's Guide
+!ifeq wgml_target ps
+guitools_book_objs=$(objs_gui) $(objs_gui_ps) $(objs_cg)
+!else
+guitools_book_bmps=$(objs_gui_bmp)
+guitools_book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
+!endif
+guitools_book_incs=$(incs_gui);$(incs_cg)
+guitools_book_bmroot=$(bmroot_gui)
+
+# heapwalk
+heapwalk_book_title=$(company) $(bld_ver_str) Heap Walker
+heapwalk_book_bmps=$(objs_gui_heapwalk_bmp)
+heapwalk_book_objs=$(objs_gui) $(objs_gui_heapwalk_bmp) $(objs_cg)
+heapwalk_book_incs=$(incs_gui);$(incs_cg)
+heapwalk_book_bmroot=$(bmroot_gui)
+
+# ide
+ide_book_title=$(company) $(bld_ver_str) IDE
+!ifeq wgml_target ps
+ide_book_objs=$(objs_gui) $(objs_gui_ide_ps) $(objs_cg)
+!else
+ide_book_bmps=$(objs_gui_ide_bmp)
+ide_book_objs=$(objs_gui) $(objs_gui_ide_bmp) $(objs_cg)
+!endif
+ide_book_incs=$(incs_gui);$(incs_cg)
+ide_book_bmroot=$(bmroot_gui)
+
+# lguide
+lguide_book_title=$(company) $(bld_ver_str) Linker Guide
+lguide_book_objs=$(objs_lg)
+lguide_book_incs=$(incs_lg)
+lguide_book_multi_chapter=1
+
+# owstldg
+owstl_book_title=$(company) $(bld_ver_str) OWSTL developer guide
+owstl_book_objs=$(objs_owstldev)
+owstl_book_incs=$(incs_owstldev)
+
+# resacc
+resacc_book_title=$(company) $(bld_ver_str) Accelerator Editor
+resacc_book_bmps=$(objs_gui_resacc_bmp)
+resacc_book_objs=$(objs_gui) $(objs_gui_resacc_bmp) $(objs_cg)
+resacc_book_incs=$(incs_gui);$(incs_cg)
+resacc_book_bmroot=$(bmroot_gui)
+
+# rescomp
+rescomp_book_title=$(company) $(bld_ver_str) Resource Compiler
+rescomp_book_objs=$(objs_gui) $(objs_cg)
+rescomp_book_incs=$(incs_gui);$(incs_cg)
+
+# resdlg
+resdlg_book_title=$(company) $(bld_ver_str) Dialog Editor
+resdlg_book_bmps=$(objs_gui_resdlg_bmp)
+resdlg_book_objs=$(objs_gui) $(objs_gui_resdlg_bmp) $(objs_cg)
+resdlg_book_incs=$(incs_gui);$(incs_cg)
+resdlg_book_bmroot=$(bmroot_gui)
+
+# resedt
+resedt_book_title=$(company) $(bld_ver_str) Resource Editor
+resedt_book_bmps=$(objs_gui_resedt_bmp)
+resedt_book_objs=$(objs_gui) $(objs_gui_resedt_bmp) $(objs_cg)
+resedt_book_incs=$(incs_gui);$(incs_cg)
+resedt_book_bmroot=$(bmroot_gui)
+
+# resimg
+resimg_book_title=$(company) $(bld_ver_str) Image Editor
+resimg_book_bmps=$(objs_gui_resimg_bmp)
+resimg_book_objs=$(objs_gui) $(objs_gui_resimg_bmp) $(objs_cg)
+resimg_book_incs=$(incs_gui);$(incs_cg)
+resimg_book_bmroot=$(bmroot_gui)
+
+# resmnu
+resmnu_book_title=$(company) $(bld_ver_str) Menu Editor
+resmnu_book_bmps=$(objs_gui_resmnu_bmp)
+resmnu_book_objs=$(objs_gui) $(objs_gui_resmnu_bmp) $(objs_cg)
+resmnu_book_incs=$(incs_gui);$(incs_cg)
+resmnu_book_bmroot=$(bmroot_gui)
+
+# resstr
+resstr_book_title=$(company) $(bld_ver_str) String Table Editor
+resstr_book_bmps=$(objs_gui_resstr_bmp)
+resstr_book_objs=$(objs_gui) $(objs_gui_resstr_bmp) $(objs_cg)
+resstr_book_incs=$(incs_gui);$(incs_cg)
+resstr_book_bmroot=$(bmroot_gui)
+
+# spy
+spy_book_title=$(company) $(bld_ver_str) Spy
+spy_book_bmps=$(objs_gui_spy_bmp) $(objs_gui_drwatcom_bmp)
+spy_book_objs=$(objs_gui) $(objs_gui_spy_bmp) $(objs_gui_drwatcom_bmp) $(objs_cg)
+spy_book_incs=$(incs_gui);$(incs_cg)
+spy_book_bmroot=$(bmroot_gui)
+
+# wasaxp
+wasaxp_book_title=wasaxp $(bld_ver_str)
+wasaxp_book_objs=$(objs_cmn)
+wasaxp_book_incs=$(incs_cmn)
+
+# wbrw
+wbrw_book_title=$(company) $(bld_ver_str) Source Browser
+wbrw_book_bmps=$(objs_gui_wbrw_bmp)
+wbrw_book_objs=$(objs_gui) $(objs_gui_wbrw_bmp) $(objs_cg)
+wbrw_book_incs=$(incs_gui);$(incs_cg)
+wbrw_book_bmroot=$(bmroot_gui)
+
+# wccerrs
+wccerrs_book_title=$(company) $(bld_ver_str) C Diagnostic Messages
+wccerrs_book_objs=$(objs_cg) $(objs_plusplus) $(objs_cc)
+wccerrs_book_incs=$(incs_cg);$(incs_plusplus);$(incs_cc)
+
+# wd
+wd_book_title=$(company) $(bld_ver_str) Debugger Guide
+!ifeq wgml_target ps
+wd_book_objs=$(objs_wd) $(objs_wd_ps)
+!else
+wd_book_bmps=$(objs_wd_bmp)
+wd_book_objs=$(objs_wd) $(objs_wd_bmp)
+!endif
+wd_book_incs=$(incs_wd)
+wd_book_bmroot=$(bmroot_wd)
+wd_book_multi_chapter=1
+
+# wfcerrs
+wfcerrs_book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
+wfcerrs_book_objs=$(objs_fg) $(objs_wfc)
+wfcerrs_book_incs=$(incs_fg);$(incs_wfc)
+
+# wjcerrs
+wjcerrs_book_title=Sybase Java Compiler Diagnostic Messages
+wjcerrs_book_objs=$(objs_cl)
+wjcerrs_book_incs=$(incs_cl)
+
+# wlnkerrs
+wlnkerrs_book_title=$(company) $(bld_ver_str) Linker Diagnostic Messages
+wlnkerrs_book_objs=$(objs_lg)
+wlnkerrs_book_incs=$(incs_lg)
+
+# wpperrs
+wpperrs_book_title=$(company) $(bld_ver_str) C++ Diagnostic Messages
+wpperrs_book_objs=$(objs_cg) $(objs_plusplus)
+wpperrs_book_incs=$(incs_cg);$(incs_plusplus)
+
+# wprof
+wprof_book_title=$(company) $(bld_ver_str) Profiler
+wprof_book_bmps=$(objs_gui_wprof_bmp)
+wprof_book_objs=$(objs_gui) $(objs_gui_wprof_bmp) $(objs_cg)
+wprof_book_incs=$(incs_gui);$(incs_cg)
+wprof_book_bmroot=$(bmroot_gui)
+wprof_book_multi_chapter=1
+
+# wrcerrs
+wrcerrs_book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messages
+wrcerrs_book_objs=$(objs_gui) $(objs_gui_bmp)
+wrcerrs_book_incs=$(incs_gui)
+
+# zoom
+zoom_book_title=$(company) $(bld_ver_str) Zoom
+zoom_book_bmps=$(objs_gui_zoom_bmp)
+zoom_book_objs=$(objs_gui) $(objs_gui_zoom_bmp) $(objs_cg)
+zoom_book_incs=$(incs_gui);$(incs_cg)
+zoom_book_bmroot=$(bmroot_gui)
+
+# cgdoc
+cgdoc_book_title=$(company) $(bld_ver_str) Code Generator
+cgdoc_book_objs=$(objs_cgdoc)
+cgdoc_book_incs=$(incs_cgdoc)
+
+# dwdoc
+dwdoc_book_title=$(company) $(bld_ver_str) DWARF Writer
+dwdoc_book_objs=$(objs_dwdoc)
+dwdoc_book_incs=$(incs_dwdoc)
+
+# wddoc
+wddoc_book_title=$(company) $(bld_ver_str) Debugger Developers Guide
+wddoc_book_objs=$(objs_wddoc)
+wddoc_book_incs=$(incs_wddoc)
+wddoc_book_multi_chapter=1
+
+# vi
+vi_book_title=$(company) $(bld_ver_str) VI Editor
+!ifeq wgml_target ps
+vi_book_objs=$(objs_vi) $(objs_vi_ps)
+!else
+vi_book_bmps=$(objs_vi_bmp)
+vi_book_objs=$(objs_vi) $(objs_vi_bmp)
+!endif
+vi_book_incs=$(incs_vi)
+vi_book_bmroot=$(bmroot_vi)
+vi_book_multi_chapter=1
+
+# wgmlref
+wgmlref_book_title=WGML Reference Manual
+!ifeq wgml_target ps
+wgmlref_book_objs=$(objs_wgmlref) $(objs_wgmlref_ps)
+!else
+wgmlref_book_bmps=$(objs_wgmlref_bmp)
+wgmlref_book_objs=$(objs_wgmlref) $(objs_wgmlref_bmp)
+!endif
+wgmlref_book_incs=$(incs_wgmlref)
+wgmlref_book_bmroot=$(bmroot_wgmlref)
+wgmlref_book_multi_chapter=1
+
+# wipfc
+wipfc_book_title=OS/2 Help Compiler Reference Manual
+wipfc_book_objs=$(objs_wipfc)
+wipfc_book_incs=$(incs_wipfc)
+wipfc_book_multi_chapter=1
+
+# freadme
+
+# readme
+
+# wpidoc
+wpidoc_book_title=$(company) $(bld_ver_str) WATCOM Windows Programming Interface (WPI)
+wpidoc_book_objs=$(objs_wpidoc)
+wpidoc_book_incs=$(incs_wpidoc)
+
+# fmedidoc
+fmedidoc_book_title=$(company) $(bld_ver_str) WATCOM Forms Editor Application Interface
+fmedidoc_book_objs=$(objs_fmedidoc)
+fmedidoc_book_incs=$(incs_fmedidoc)

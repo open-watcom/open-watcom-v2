@@ -28,7 +28,7 @@
 .do end
 .*
 .ixbook &product User's Guide
-.ixhelp fuguide
+.ixhelp fguide
 .ixbook &product Programmer's Guide
 .ixhelp fpguide
 .ixbook &product Language Reference

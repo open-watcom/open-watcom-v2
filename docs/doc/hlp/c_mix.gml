@@ -30,7 +30,7 @@
 .ixbook &product User's Guide
 .ixhelp cguide
 .ixbook &product Programmer's Guide
-.ixhelp pguide
+.ixhelp cpguide
 .ixbook &product Tools User's Guide
 .ixhelp ctools
 .if '&dotarget' ne 'os2' .do begin

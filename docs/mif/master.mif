@@ -55,15 +55,12 @@ cop_files = mono01.cop whelp.cop whelpdrv.cop
 # project configuration files
 #
 proj_objs= &
-#    ../mif/onebook.mif
-#    ../mif/depends.mif
 #    ../mif/books.mif &
 #    ../mif/master.mif &
 #    ../builder.ctl &
 #    makefile
 
 !include ../mif/books.mif
-!include ../mif/depends.mif
 
 wgml_cmdl_params = $^& ( file $(wgml_optfile)
 gendev_cmdl_params = $[@
@@ -257,7 +254,7 @@ $(wikidir):
 
 {$(root_books)}.gml.rtf &
 {$(root_books)}.gml.gh :
-    @echo "BOOK : $^&"
+    @echo BOOK : $^&
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -275,7 +272,7 @@ $(wikidir):
 
 {$(root_books)}.gml.rtf &
 {$(root_books)}.gml.gh :
-    @echo "BOOK : $^&"
+    @echo BOOK : $^&
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -292,7 +289,7 @@ $(wikidir):
 
 {$(root_books)}.gml.ib &
 {$(root_books)}.gml.gh :
-    @echo "BOOK : $^&"
+    @echo BOOK : $^&
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -318,7 +315,7 @@ $(wikidir):
 
 {$(root_books)}.gml.ipf &
 {$(root_books)}.gml.gh :
-    @echo "BOOK : $^&"
+    @echo BOOK : $^&
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -340,7 +337,7 @@ $(wikidir):
 ! endif
 
 {$(root_books)}.gml.ps :
-    @echo "BOOK : $^&"
+    @echo BOOK : $^&
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
     @%make run_wgml
@@ -395,7 +392,7 @@ $(wikidir):
 
 {$(root_books)}.gml.htm &
 {$(root_books)}.gml.gh :
-    @echo "BOOK : $^&"
+    @echo BOOK : $^&
 ! ifeq dotarget html
     @for %f in ($($^&_book_bmps)) do $(noecho)copy %f .
 ! endif
@@ -753,6 +750,8 @@ b=clr
 $+$(rulex)$-
 b=clslib
 $+$(rulex)$-
+b=cpguide
+$+$(rulex)$-
 b=cpplib
 $+$(rulex)$-
 b=ctools
@@ -787,7 +786,7 @@ b=fpguide
 $+$(rulex)$-
 b=ftools
 $+$(rulex)$-
-b=fuguide
+b=fguide
 $+$(rulex)$-
 b=guitools
 $+$(rulex)$-
@@ -798,8 +797,6 @@ $+$(rulex)$-
 b=lguide
 $+$(rulex)$-
 b=owstl
-$+$(rulex)$-
-b=pguide
 $+$(rulex)$-
 b=resacc
 $+$(rulex)$-
