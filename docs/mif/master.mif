@@ -151,7 +151,7 @@ files_to_build = $+$(books_list)$-
 e=$(hlpext_$(dotarget))
 files_to_build = $+$(books_list)$-
 ! ifeq dotarget nt
-!  ifeq hc_hh
+!  ifndef hc_hh
 files_to_build =
 !  endif
 ! else ifeq dotarget os2
@@ -164,11 +164,11 @@ e=.hlp
 mx_list=$+$(mx_list)$-
 files_to_build += $+$(mx_list)$-
 ! else ifeq dotarget pdf
-!  ifeq hc_pdf
+!  ifndef hc_pdf
 files_to_build =
 !  endif
 ! else ifeq dotarget chm
-!  ifeq hc_hh
+!  ifndef hc_hh
 !   ifndef %OWCHMCMD
 files_to_build =
 !   endif
