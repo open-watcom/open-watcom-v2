@@ -337,7 +337,7 @@ $(wikidir):
     @echo BOOK : $^&
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=$(.;..\gml\syslib)
+    $(noecho)set GMLLIB=.;..\gml\syslib
     %make prepare_wgml_opts
     @%make run_wgml
     @if exist $@ $(noecho)%erase $@
