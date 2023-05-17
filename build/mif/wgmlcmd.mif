@@ -50,68 +50,13 @@ dosbox_options_osx = -c "config -set cpu core=normal"
 !ifeq bld_os dos
 !else ifeq bld_os os2
 !else ifdef dosbox
-# only DOSBOX use upper cased file name
+# DOSBOX use upper cased file name
 wgml_ucase = 1
-use_dosbox = 1
 !else ifeq bld_os nt
 # NT DOSX use upper cased file name
 wgml_ucase = 1
 !else
 !error !!! Missing DOSBOX configuration or unsupported building platform !!!
-!endif
-
-#-------------------------------------------------------
-# create DOS batch file to run wgml utility
-#-------------------------------------------------------
-prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
-!ifdef use_dosbox
-#-------------------------------------------------------
-# DOSBOX version
-#-------------------------------------------------------
-!ifndef %OWWGMLDEBUG
-    $(noecho)set SDL_VIDEODRIVER=dummy
-    $(noecho)set SDL_AUDIODRIVER=disk
-    $(noecho)set SDL_DISKAUDIOFILE=NUL
-!endif
-    @%create $(dos_wgml_tmp_batch)
-    @%append $(dos_wgml_tmp_batch) c:
-    @%append $(dos_wgml_tmp_batch) cd $(wgml_subdir)
-!ifeq wgml_target ps
-    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB)
-!endif
-    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(dos_wgml_tmp_batch) \docs\gml\dos\wgml.exe $(wgml_cmdl_params) >>dosbox.lst
-!ifndef %OWWGMLDEBUG
-    @%append $(dos_wgml_tmp_batch) exit
-!endif
-!else
-    @%null
-!endif
-
-#-------------------------------------------------------
-# create DOS batch file to run gendev utility
-#-------------------------------------------------------
-prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
-!ifdef use_dosbox
-#-------------------------------------------------------
-# DOSBOX version
-#-------------------------------------------------------
-!ifndef %OWWGMLDEBUG
-    $(noecho)set SDL_VIDEODRIVER=dummy
-    $(noecho)set SDL_AUDIODRIVER=disk
-    $(noecho)set SDL_DISKAUDIOFILE=NUL
-!endif
-    @%create $(dos_gendev_tmp_batch)
-    @%append $(dos_gendev_tmp_batch) mount d ../../docs
-    @%append $(dos_gendev_tmp_batch) c:
-    @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
-    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\) >>dosbox.lst
-!ifndef %OWWGMLDEBUG
-    @%append $(dos_gendev_tmp_batch) exit
-!endif
-!else
-    @%null
 !endif
 
 #-------------------------------------------------------
@@ -121,15 +66,32 @@ run_wgml : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo wgml $@
 !endif
-!ifeq bld_os dos
-    -$(noecho)..\gml\dos\wgml $(wgml_cmdl_params)
-!else ifeq bld_os os2
-    -$(noecho)..\gml\os2\wgml $(wgml_cmdl_params)
-!else ifdef dosbox
+!ifdef dosbox
     @rm -f dosbox.lst
+    #-------------------------------------------------------
+    # create DOS batch file to run wgml utility
+    #-------------------------------------------------------
+! ifndef %OWWGMLDEBUG
+    $(noecho)set SDL_VIDEODRIVER=dummy
+    $(noecho)set SDL_AUDIODRIVER=disk
+    $(noecho)set SDL_DISKAUDIOFILE=NUL
+! endif
+    @%create $(dos_wgml_tmp_batch)
+    @%append $(dos_wgml_tmp_batch) c:
+    @%append $(dos_wgml_tmp_batch) cd $(wgml_subdir)
+    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%GMLINC:/=\)
+    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB:/=\)
+    @%append $(dos_wgml_tmp_batch) \docs\gml\dos\wgml.exe $(wgml_cmdl_params) >>dosbox.lst
+! ifndef %OWWGMLDEBUG
+    @%append $(dos_wgml_tmp_batch) exit
+! endif
     -$(noecho)$(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c \"$(%OWROOT)\"" -c "c:$(wgml_subdir)\$(dos_wgml_tmp_batch)"
     @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
+!else ifeq bld_os dos
+    -$(noecho)..\gml\dos\wgml $(wgml_cmdl_params)
+!else ifeq bld_os os2
+    -$(noecho)..\gml\os2\wgml $(wgml_cmdl_params)
 !else ifeq bld_os nt
     -$(noecho)..\gml\dos\wgml $(wgml_cmdl_params)
 !endif
@@ -141,15 +103,33 @@ run_gendev : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo gendev $@
 !endif
-!ifeq bld_os dos
-    $(noecho)..\gml\dos\gendev $(gendev_cmdl_params)
-!else ifeq bld_os os2
-    $(noecho)..\gml\os2\gendev $(gendev_cmdl_params)
-!else ifdef dosbox
+!ifdef dosbox
     @rm -f dosbox.lst
+! ifndef %OWWGMLDEBUG
+    $(noecho)set SDL_VIDEODRIVER=dummy
+    $(noecho)set SDL_AUDIODRIVER=disk
+    $(noecho)set SDL_DISKAUDIOFILE=NUL
+! endif
+    #-------------------------------------------------------
+    # create DOS batch file to run gendev utility
+    #-------------------------------------------------------
+    @%create $(dos_gendev_tmp_batch)
+    @%append $(dos_gendev_tmp_batch) mount d ../../docs
+    @%append $(dos_gendev_tmp_batch) c:
+    @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
+    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC:/=\)
+    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB:/=\)
+    @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\) >>dosbox.lst
+! ifndef %OWWGMLDEBUG
+    @%append $(dos_gendev_tmp_batch) exit
+! endif
     $(noecho)$(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:$(gendev_subdir)\$(dos_gendev_tmp_batch)"
     @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
+!else ifeq bld_os dos
+    $(noecho)..\gml\dos\gendev $(gendev_cmdl_params)
+!else ifeq bld_os os2
+    $(noecho)..\gml\os2\gendev $(gendev_cmdl_params)
 !else ifeq bld_os nt
     $(noecho)..\gml\dos\gendev $(gendev_cmdl_params)
 !endif

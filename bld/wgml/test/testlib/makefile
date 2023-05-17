@@ -203,9 +203,8 @@ genall : genall.pcd .symbolic
         @%make gencop
 
 gencop : .procedure
-        @set GMLLIB=..\testlib
         @set GMLINC=..\testsrc
-        %make prepare_gendev_tmp_batch
+        @set GMLLIB=..\testlib
         @%make run_gendev
 
 clean   : .SYMBOLIC

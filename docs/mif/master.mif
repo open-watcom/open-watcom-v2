@@ -96,9 +96,6 @@ company=Open Watcom
 
 wgml_optfile=wgmlopts.tmp
 whpcvt_optfile=whpcopts.tmp
-!ifeq wgml_target ps
-gml_lib=.;../gml/syslib
-!endif
 wine_hc_batch=winehc.bat
 
 #
@@ -339,6 +336,8 @@ $(wikidir):
 {$(root_books)}.gml.ps :
     @echo BOOK : $^&
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(.;..\gml\syslib)
     %make prepare_wgml_opts
     @%make run_wgml
     @if exist $@ $(noecho)%erase $@
@@ -443,7 +442,7 @@ whelpdrv.cop : ../gml/syslib/whelpdrv.pcd
 
 gencop : .procedure .explicit
     @set GMLINC=.
-    %make prepare_gendev_tmp_batch
+    @set GMLLIB=
     @%make run_gendev
 
 ####################################################
@@ -512,15 +511,6 @@ wgml_optfile_2_vi       = 3
 wgml_optfile_2_wgmlref  = 3
 
 prepare_wgml_opts : .PROCEDURE
-#-------------------------------------------------------
-# set up environment variables used by wgml utility
-#-------------------------------------------------------
-!ifeq wgml_target ps
-    $(noecho)set GMLLIB=$(gml_lib:/=\)
-!endif
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    @%make prepare_wgml_tmp_batch
-
 #--------------------------------------
 # common settings for any processing
 #--------------------------------------
@@ -615,6 +605,8 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
     $(noecho)set OWGMLINC=.;$(root_books);$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=
     @%make prepare_wgml_opts
     @%make run_wgml
     @if exist $*.$(wgml1_ext) $(noecho)%erase $*.$(wgml1_ext)
