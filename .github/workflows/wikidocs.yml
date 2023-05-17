@@ -29,6 +29,10 @@ on:
       - 'bld/wv/doc/**'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   start-start:
     if: github.repository == 'open-watcom/open-watcom-v2'
