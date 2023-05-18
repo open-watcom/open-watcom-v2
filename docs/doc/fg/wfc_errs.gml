@@ -23,7 +23,6 @@
 .do end
 .*
 :INCLUDE file='FERRMSG'.
-:INCLUDE file='MSGMACS'.
 :INCLUDE file='WFCMSGS'.
 .*
 .cntents end_of_book

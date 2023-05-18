@@ -19,7 +19,6 @@
 :include file='&book..kw'
 .do end
 .*
-:INCLUDE file='MSGMACS'.
 :INCLUDE file='WJCMSGS'.
 .*
 .cntents end_of_book

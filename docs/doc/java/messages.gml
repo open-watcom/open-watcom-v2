@@ -48,6 +48,8 @@
 :cmt    Translators can search for empty tags in order to find messages
 :cmt    that need translation.
 
+:INCLUDE file='msgmacs'.
+
 :cmt -------------------------------------------------------------------
 :MSGGRP. GN
 :MSGGRPTXT. General Messages

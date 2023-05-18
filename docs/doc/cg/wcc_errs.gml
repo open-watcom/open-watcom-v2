@@ -22,7 +22,6 @@
 :include file='&book..kw'
 .do end
 .*
-:INCLUDE file='MSGMACS'.
 :INCLUDE file='CMSGS'.
 .*
 .cntents end_of_book

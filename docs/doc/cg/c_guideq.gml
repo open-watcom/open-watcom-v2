@@ -106,7 +106,6 @@
 :APPENDIX.
 :INCLUDE file='ENVIRON'.
 .if &e'&dohelp eq 0 .do begin
-:INCLUDE file='MSGMACS'.
 :INCLUDE file='CMSGS'.
 :INCLUDE file='CPPMSGS'.
 .do end
