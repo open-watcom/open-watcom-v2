@@ -25,7 +25,7 @@ This Discord Server is moderated by the Open Watcom 2.0 Github group to remove s
 
 Other general Discord server for "Open Watcom" exists [invite link](https://discord.gg/5WexPNn). It is mainly for older versions of Open Watcom.
 
-[`Oficial OpenWatcom site`](http://openwatcom.org) only WEB site is up, all other services (bugzilla, Wiki, News server, Perforce) is down for long time, it looks like it is dead.
+[`Official OpenWatcom site`](http://openwatcom.org) only WEB site is up, all other services (bugzilla, Wiki, News server, Perforce) is down for long time, it looks like it is dead.
 
 Source Tree Layout
 ------------------
