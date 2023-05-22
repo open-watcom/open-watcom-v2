@@ -741,7 +741,9 @@ static  int  ParseArgs( int argc, char **argv )
             wcc_option = false;
             break;
         case 'm':
-            if( ( strncmp( "cmodel=", Word, 7 ) == 0 ) && ( Word[8] == '\0' ) ) {
+            /* accept short mcmodel names (ow style) and long names (gcc style) */
+            /* examples: -mcmodel=h and -mcmodel=huge */
+            if( ( strncmp( "cmodel=", Word, 7 ) == 0 ) && ( Word[7] != '\0' ) ) {
                 if( Word[7] == 't' ) {      /* tiny model */
                     Word[0] = 's';          /* change to small */
                     Flags.tiny_model = true;
