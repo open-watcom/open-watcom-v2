@@ -1277,9 +1277,9 @@ are stored in memory.
 The forms of the "pack" pragma are as follows.
 .mbox begin
 :prgbeg. pack ( :id.n:eid. ) :prgend.
-:prgbeg. pack ( push, :id.n:eid. ) :prgend.
-:prgbeg. pack ( push ) :prgend.
-:prgbeg. pack ( pop ) :prgend.
+:prgbeg. pack ( __push, :id.n:eid. ) :prgend.
+:prgbeg. pack ( __push ) :prgend.
+:prgbeg. pack ( __pop ) :prgend.
 .mbox end
 .np
 The following form of the "pack" pragma can be used to change the
@@ -1290,7 +1290,7 @@ alignment of structures and their fields in memory.
 The following form of the "pack" pragma saves the current alignment amount
 on an internal stack before alignment amount change.
 .millust begin
-&pragma pack ( push, n )&epragma
+&pragma pack ( __push, n )&epragma
 .millust end
 .np
 .synote
@@ -1348,13 +1348,13 @@ compiler command line option.
 The following form of the "pack" pragma can be used to save the current
 alignment amount on an internal stack.
 .millust begin
-&pragma pack ( push )&epragma
+&pragma pack ( __push )&epragma
 .millust end
 .np
 The following form of the "pack" pragma can be used to restore the
 previous alignment amount from an internal stack.
 .millust begin
-&pragma pack ( pop )&epragma
+&pragma pack ( __pop )&epragma
 .millust end
 .*
 .section The READ_ONLY_FILE Pragma

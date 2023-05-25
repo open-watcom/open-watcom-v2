@@ -1239,9 +1239,9 @@ Its value is 64 currently.
 &product predefines the
 .kwm _PUSHPOP_SUPPORTED
 macro to indicate that
-.mono #pragma pack(push)
+.mono #pragma pack(__push)
 and
-.mono #pragma pack(pop)
+.mono #pragma pack(__pop)
 are supported.
 .*
 .note _STDCALL_SUPPORTED
