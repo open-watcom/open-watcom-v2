@@ -124,8 +124,8 @@ is defined.
 The DEFINE compiler option can also be used to define a macro.
 .ix 'options' 'DEFine=<macro>'
 .exam begin
-&prompt.&ccmd16 /define=debug test
-&prompt.&ccmd32 /define=debug test
+&prompt.&ccmd16 -define=debug test
+&prompt.&ccmd32 -define=debug test
 .exam end
 .*
 .section The UNDEFINE Compiler Directive
@@ -275,8 +275,8 @@ macro can be defined by using the DEFINE compiler directive or the
 In the following example, the "define" option is used to force compilation
 of debugging statements.
 .exam begin
-&prompt.&ccmd16 /def=__debug__ test
-&prompt.&ccmd32 /def=__debug__ test
+&prompt.&ccmd16 -def=__debug__ test
+&prompt.&ccmd32 -def=__debug__ test
 .exam end
 .*
 .section General Notes About Compiler Directives

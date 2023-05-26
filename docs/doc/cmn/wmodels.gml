@@ -316,18 +316,18 @@ libraries depending on the use of the "fpi" (include emulation) or
 Library         Memory           Floating-point
                 model            model
 -------         ------           --------------
-flibm.lib       /mm              /fpc
-flibl.lib       /ml, /mh         /fpc
-flib7m.lib      /mm              /fpi, /fpi87
-flib7l.lib      /ml, /mh         /fpi, /fpi87
-clibm.lib       /mm              /fpc, /fpi, /fpi87
-clibl.lib       /ml, /mh         /fpc, /fpi, /fpi87
-mathm.lib       /mm,             /fpc
-mathl.lib       /ml, /mh         /fpc
-math87m.lib     /mm,             /fpi, /fpi87
-math87l.lib     /ml, /mh         /fpi, /fpi87
-emu87.lib       /mm, /ml, /mh    /fpi
-noemu87.lib     /mm, /ml, /mh    /fpi87
+flibm.lib       -mm              -fpc
+flibl.lib       -ml, -mh         -fpc
+flib7m.lib      -mm              -fpi, -fpi87
+flib7l.lib      -ml, -mh         -fpi, -fpi87
+clibm.lib       -mm              -fpc, -fpi, -fpi87
+clibl.lib       -ml, -mh         -fpc, -fpi, -fpi87
+mathm.lib       -mm,             -fpc
+mathl.lib       -ml, -mh         -fpc
+math87m.lib     -mm,             -fpi, -fpi87
+math87l.lib     -ml, -mh         -fpi, -fpi87
+emu87.lib       -mm, -ml, -mh    -fpi
+noemu87.lib     -mm, -ml, -mh    -fpi87
 .code end
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
@@ -387,7 +387,7 @@ It must be the first object file specified when linking the program.
 The following sequence will create the executable file
 "MYPROG.COM" from the file "MYPROG.C":
 .exam begin
-C>wcc myprog /ms
+C>wcc myprog -ms
 C>wlink system com file myprog
 .exam end
 .pc

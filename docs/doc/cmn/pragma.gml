@@ -9,131 +9,198 @@
 .gt prgend delete
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
-:set symbol="pragma" value="*$pragma".
-:set symbol="epragma" value="".
-:set symbol="function" value="subprogram".
-:set symbol="functions" value="subprograms".
-:set symbol="ufunction" value="Subprogram".
-:set symbol="ufunctions" value="Subprograms".
-:set symbol="short_int" value="INTEGER*2".
-:set symbol="long_int" value="INTEGER*4".
-:set symbol="int" value="INTEGER".
-:set symbol="char" value="INTEGER*1".
-:set symbol="ushort_int" value="INTEGER*2".
-:set symbol="ulong_int" value="INTEGER*4".
-:set symbol="uint" value="INTEGER".
-:set symbol="uchar" value="INTEGER*1".
-:set symbol="double" value="DOUBLE PRECISION".
-:set symbol="single" value="REAL".
-:set symbol="alias_name" value="WC".
-:set symbol="other_cmp" value="&company C".
-.if '&machine' eq '8086' .do begin
-:set symbol="winopt" value="windows".
-.do end
-:set symbol="pragcont" value="c".
-.do end
-.*
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-:set symbol="pragma" value="#pragma".
-:set symbol="epragma" value="".
-:set symbol="function" value="function".
-:set symbol="functions" value="functions".
-:set symbol="ufunction" value="Function".
-:set symbol="ufunctions" value="Functions".
-:set symbol="short_int" value="short int".
-:set symbol="long_int" value="long int".
-:set symbol="int" value="int".
-:set symbol="char" value="char".
-:set symbol="ushort_int" value="unsigned short int".
-:set symbol="ulong_int" value="unsigned long int".
-:set symbol="uint" value="unsigned int".
-:set symbol="uchar" value="unsigned char".
-:set symbol="double" value="double".
-:set symbol="single" value="float".
-.if '&machine' eq '8086' .do begin
-:set symbol="alias_name" value="MS_C".
-:set symbol="other_cmp" value="Microsoft C".
-:set symbol="winopt" value="zW".
-.do end
-.if '&machine' eq '80386' .do begin
-:set symbol="alias_name" value="HIGH_C".
-:set symbol="other_cmp" value="MetaWare High C".
-.do end
-:set symbol="pragcont" value="".
+.   :set symbol="pragma" value="*$pragma".
+.   :set symbol="epragma" value="".
+.   :set symbol="function" value="subprogram".
+.   :set symbol="functions" value="subprograms".
+.   :set symbol="ufunction" value="Subprogram".
+.   :set symbol="ufunctions" value="Subprograms".
+.   :set symbol="short_int" value="INTEGER*2".
+.   :set symbol="long_int" value="INTEGER*4".
+.   :set symbol="int" value="INTEGER".
+.   :set symbol="char" value="INTEGER*1".
+.   :set symbol="ushort_int" value="INTEGER*2".
+.   :set symbol="ulong_int" value="INTEGER*4".
+.   :set symbol="uint" value="INTEGER".
+.   :set symbol="uchar" value="INTEGER*1".
+.   :set symbol="double" value="DOUBLE PRECISION".
+.   :set symbol="single" value="REAL".
+.   :set symbol="alias_name" value="WC".
+.   :set symbol="other_cmp" value="&company C".
+.   .if '&machine' eq '8086' .do begin
+.   .   :set symbol="winopt" value="windows".
+.   .do end
+.   :set symbol="pragcont" value="c".
+.   :set symbol="pragpref" value="".
 .do end
 .*
-.if '&machine' eq '80386' .do begin
-:set symbol="ax" value="eax".
-:set symbol="bx" value="ebx".
-:set symbol="cx" value="ecx".
-:set symbol="dx" value="edx".
-:set symbol="di" value="edi".
-:set symbol="si" value="esi".
-:set symbol="sp" value="esp".
-:set symbol="bp" value="ebp".
-:set symbol="axup" value="EAX".
-:set symbol="bxup" value="EBX".
-:set symbol="cxup" value="ECX".
-:set symbol="dxup" value="EDX".
-:set symbol="diup" value="EDI".
-:set symbol="siup" value="ESI".
-:set symbol="spup" value="ESP".
-:set symbol="bpup" value="EBP".
-:set symbol="reg32" value="EAX".
-:set symbol="intsize" value="4".
-:set symbol="machint" value="int".
-.if '&lang' eq 'FORTRAN 77' .do begin
-:set symbol="machint" value="INTEGER".
-:set symbol="arg_2_regs" value="DOUBLE PRECISION".
-.do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-:set symbol="machint" value="int".
-:set symbol="arg_2_regs" value="double".
+.   :set symbol="pragma" value="#pragma".
+.   :set symbol="epragma" value="".
+.   :set symbol="function" value="function".
+.   :set symbol="functions" value="functions".
+.   :set symbol="ufunction" value="Function".
+.   :set symbol="ufunctions" value="Functions".
+.   :set symbol="short_int" value="short int".
+.   :set symbol="long_int" value="long int".
+.   :set symbol="int" value="int".
+.   :set symbol="char" value="char".
+.   :set symbol="ushort_int" value="unsigned short int".
+.   :set symbol="ulong_int" value="unsigned long int".
+.   :set symbol="uint" value="unsigned int".
+.   :set symbol="uchar" value="unsigned char".
+.   :set symbol="double" value="double".
+.   :set symbol="single" value="float".
+.   .if '&machine' eq '8086' .do begin
+.   .   :set symbol="alias_name" value="MS_C".
+.   .   :set symbol="other_cmp" value="Microsoft C".
+.   .   :set symbol="winopt" value="zW".
+.   .do end
+.   .el .do begin
+.   .   :set symbol="alias_name" value="HIGH_C".
+.   .   :set symbol="other_cmp" value="MetaWare High C".
+.   .do end
+.   :set symbol="pragcont" value="".
+.   :set symbol="pragpref" value="__".
 .do end
-.do end
+.*
+:set symbol="pkwparm" value="&pragpref.parm".
+:set symbol="pkwcaller" value="&pragpref.caller".
+:set symbol="pkwroutine" value="&pragpref.routine".
+:set symbol="pkwvalue" value="&pragpref.value".
+:set symbol="pkwmodify" value="&pragpref.modify".
+:set symbol="pkwno8087" value="&pragpref.no8087".
+:set symbol="pkwstruct" value="&pragpref.struct".
+:set symbol="pkwfloat" value="&pragpref.float".
+:set symbol="pkwreverse" value="&pragpref.reverse".
+:set symbol="pkwloadds" value="&pragpref.loadds".
+:set symbol="pkwnomemor" value="&pragpref.nomemory".
+:set symbol="pkwexact" value="&pragpref.exact".
+:set symbol="pkwfar" value="&pragpref.far".
+:set symbol="pkwnear" value="&pragpref.near".
+:set symbol="pkwfar16" value="&pragpref.far16".
+:set symbol="pkwexport" value="&pragpref.export".
+:set symbol="pkwframe" value="&pragpref.frame".
+:set symbol="pkwaborts" value="&pragpref.aborts".
+.*
+:set symbol="pinstfloat" value="&pragpref.float".
+:set symbol="pinstseg" value="&pragpref.seg".
+:set symbol="pinstoffse" value="&pragpref.offset".
+:set symbol="pinstrelof" value="&pragpref.reloff".
+.*
+:set symbol="regal" value="AL".
+:set symbol="regah" value="AH".
+:set symbol="regbl" value="BL".
+:set symbol="regbh" value="BH".
+:set symbol="regcl" value="CL".
+:set symbol="regch" value="CH".
+:set symbol="regdl" value="DL".
+:set symbol="regdh" value="DH".
+.*
+:set symbol="pregal" value="&pragpref.al".
+:set symbol="pregah" value="&pragpref.ah".
+:set symbol="pregbl" value="&pragpref.bl".
+:set symbol="pregbh" value="&pragpref.bh".
+:set symbol="pregcl" value="&pragpref.cl".
+:set symbol="pregch" value="&pragpref.ch".
+:set symbol="pregdl" value="&pragpref.dl".
+:set symbol="pregdh" value="&pragpref.dh".
+.*
+:set symbol="preg8087" value="&pragpref.8087".
+.*
+:set symbol="regds" value="DS".
+:set symbol="reges" value="ES".
+:set symbol="regss" value="SS".
+:set symbol="regfs" value="FS".
+:set symbol="reggs" value="GS".
+.*
+:set symbol="pregds" value="&pragpref.ds".
+:set symbol="preges" value="&pragpref.es".
+:set symbol="pregss" value="&pragpref.ss".
+:set symbol="pregfs" value="&pragpref.fs".
+:set symbol="preggs" value="&pragpref.gs".
+.*
+:set symbol="regax" value="AX".
+:set symbol="regbx" value="BX".
+:set symbol="regcx" value="CX".
+:set symbol="regdx" value="DX".
+:set symbol="regdi" value="DI".
+:set symbol="regsi" value="SI".
+:set symbol="regsp" value="SP".
+:set symbol="regbp" value="BP".
+.*
 .if '&machine' eq '8086' .do begin
-:set symbol="ax" value="ax".
-:set symbol="bx" value="bx".
-:set symbol="cx" value="cx".
-:set symbol="dx" value="dx".
-:set symbol="di" value="di".
-:set symbol="si" value="si".
-:set symbol="sp" value="sp".
-:set symbol="bp" value="bp".
-:set symbol="axup" value="AX".
-:set symbol="bxup" value="BX".
-:set symbol="cxup" value="CX".
-:set symbol="dxup" value="DX".
-:set symbol="diup" value="DI".
-:set symbol="siup" value="SI".
-:set symbol="spup" value="SP".
-:set symbol="bpup" value="BP".
-:set symbol="reg32" value="pair DX:AX".
-:set symbol="intsize" value="2".
-.if '&lang' eq 'FORTRAN 77' .do begin
-:set symbol="machint" value="INTEGER*2".
-:set symbol="arg_2_regs" value="INTEGER".
-.do end
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-:set symbol="machint" value="int".
-:set symbol="arg_2_regs" value="long int".
-.do end
-.do end
-.if '&machine' eq '8086' .do begin
-:set symbol="pragref" value="prg86".
-:set symbol="praglib" value="prgl86".
-:set symbol="pragttl" value="16-bit Pragmas".
-:set symbol="pragx87" value="prg87".
-:set symbol="pragenbl" value="prgen16".
-:set symbol="pragdsbl" value="prgds16".
+.   :set symbol="regxax" value="AX".
+.   :set symbol="regxbx" value="BX".
+.   :set symbol="regxcx" value="CX".
+.   :set symbol="regxdx" value="DX".
+.   :set symbol="regxdi" value="DI".
+.   :set symbol="regxsi" value="SI".
+.   :set symbol="regxsp" value="SP".
+.   :set symbol="regxbp" value="BP".
+.*
+.   :set symbol="pregxax" value="&pragpref.ax".
+.   :set symbol="pregxbx" value="&pragpref.bx".
+.   :set symbol="pregxcx" value="&pragpref.cx".
+.   :set symbol="pregxdx" value="&pragpref.dx".
+.   :set symbol="pregxdi" value="&pragpref.di".
+.   :set symbol="pregxsi" value="&pragpref.si".
+.   :set symbol="pregxsp" value="&pragpref.sp".
+.   :set symbol="pregxbp" value="&pragpref.bp".
+.*
+.   :set symbol="reg32" value="pair DX:AX".
+.   :set symbol="intsize" value="2".
+.   .if '&lang' eq 'FORTRAN 77' .do begin
+.   .   :set symbol="machint" value="INTEGER*2".
+.   .   :set symbol="arg_2_regs" value="INTEGER".
+.   .do end
+.   .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.   .   :set symbol="machint" value="int".
+.   .   :set symbol="arg_2_regs" value="long int".
+.   .do end
+.   :set symbol="pragref" value="prg86".
+.   :set symbol="praglib" value="prgl86".
+.   :set symbol="pragttl" value="16-bit Pragmas".
+.   :set symbol="pragx87" value="prg87".
+.   :set symbol="pragenbl" value="prgen16".
+.   :set symbol="pragdsbl" value="prgds16".
 .do end
 .el .do begin
-:set symbol="pragref" value="prg386".
-:set symbol="praglib" value="prgl386".
-:set symbol="pragttl" value="32-bit Pragmas".
-:set symbol="pragx87" value="prg387".
-:set symbol="pragenbl" value="prgen32".
-:set symbol="pragdsbl" value="prgds32".
+.   :set symbol="regxax" value="EAX".
+.   :set symbol="regxbx" value="EBX".
+.   :set symbol="regxcx" value="ECX".
+.   :set symbol="regxdx" value="EDX".
+.   :set symbol="regxdi" value="EDI".
+.   :set symbol="regxsi" value="ESI".
+.   :set symbol="regxsp" value="ESP".
+.   :set symbol="regxbp" value="EBP".
+.*
+.   :set symbol="pregxax" value="&pragpref.eax".
+.   :set symbol="pregxbx" value="&pragpref.ebx".
+.   :set symbol="pregxcx" value="&pragpref.ecx".
+.   :set symbol="pregxdx" value="&pragpref.edx".
+.   :set symbol="pregxdi" value="&pragpref.edi".
+.   :set symbol="pregxsi" value="&pragpref.esi".
+.   :set symbol="pregxsp" value="&pragpref.esp".
+.   :set symbol="pregxbp" value="&pragpref.ebp".
+.*
+.   :set symbol="reg32" value="EAX".
+.   :set symbol="intsize" value="4".
+.   :set symbol="machint" value="int".
+.   .if '&lang' eq 'FORTRAN 77' .do begin
+.   .   :set symbol="machint" value="INTEGER".
+.   .   :set symbol="arg_2_regs" value="DOUBLE PRECISION".
+.   .do end
+.   .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.   .   :set symbol="machint" value="int".
+.   .   :set symbol="arg_2_regs" value="double".
+.   .do end
+.   :set symbol="pragref" value="prg386".
+.   :set symbol="praglib" value="prgl386".
+.   :set symbol="pragttl" value="32-bit Pragmas".
+.   :set symbol="pragx87" value="prg387".
+.   :set symbol="pragenbl" value="prgen32".
+.   :set symbol="pragdsbl" value="prgds32".
 .do end
 .*
 .dm @id begin
@@ -1590,7 +1657,7 @@ The simple form of the auxiliary pragma used to specify an alias is as
 follows.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' and '&machine' eq '80386' .do begin
 .mbox begin
-:prgbeg. aux ( :id.sym:eid., :op.far16:eop. :id.alias:eid. ) :prgend.
+:prgbeg. aux ( :id.sym:eid., :op.&pkwfar16.:eop. :id.alias:eid. ) :prgend.
 .mbox end
 .do end
 .el .do begin
@@ -1611,13 +1678,13 @@ is the alias name and is any valid &lang identifier.
 Consider the following example.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-&pragma aux push_args parm [] &epragma
+&pragma aux push_args &pkwparm. [] &epragma
 &pragma aux ( rtn, push_args ) &epragma
 .millust end
 .do end
 .el .do begin
 .millust begin
-&pragma aux value_args parm (value) &epragma
+&pragma aux value_args &pkwparm. (value) &epragma
 &pragma aux ( rtn, value_args ) &epragma
 .millust end
 .do end
@@ -1635,7 +1702,7 @@ Let us look at an example in which the symbol is a type definition.
 .millust begin
 typedef void (func_type)(int);
 
-&pragma aux push_args parm []&epragma
+&pragma aux push_args &pkwparm. []&epragma
 &pragma aux ( func_type, push_args )&epragma
 
 extern func_type rtn1;
@@ -1684,9 +1751,9 @@ Consider the following example.
 .ix 'calling convention' 'Microsoft C'
 .millust begin
 &pragma aux MS_C "_*"                                  \
-                 parm caller []                        \
-                 value struct float struct routine [ax]\
-                 modify [ax bx cx dx es]&epragma
+                 &pkwparm. &pkwcaller. []                        \
+                 &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwroutine. [&pregxax.]\
+                 &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx. &preges.]&epragma.
 &pragma aux (MS_C) rtn1&epragma
 &pragma aux (MS_C) rtn2&epragma
 &pragma aux (MS_C) rtn3&epragma
@@ -1697,9 +1764,9 @@ Consider the following example.
 .ix 'calling convention' 'MetaWare High C'
 .millust begin
 &pragma aux HIGH_C "*"                                 \
-                   parm caller []                      \
-                   value no8087                        \
-                   modify [eax ecx edx fs gs]&epragma
+                   &pkwparm. &pkwcaller. []                      \
+                   &pkwvalue. &pkwno8087.                        \
+                   &pkwmodify. [&pregxax. &pregxcx. &pregxdx. &pregfs. &preggs.]&epragma.
 &pragma aux (HIGH_C) rtn1&epragma
 &pragma aux (HIGH_C) rtn2&epragma
 &pragma aux (HIGH_C) rtn3&epragma
@@ -1708,7 +1775,7 @@ Consider the following example.
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux WC "*_" parm (value)&epragma
+&pragma aux WC "*_" &pkwparm. (value)&epragma
 &pragma aux (WC) rtn1&epragma
 &pragma aux (WC) rtn2&epragma
 &pragma aux (WC) rtn3&epragma
@@ -1726,7 +1793,7 @@ alias name
 .id &alias_name
 which defines the calling convention used by the &other_cmp compiler.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' and '&machine' eq '80386' .do begin
-Note that register ES must also be specified in the "modify" register
+Note that register &reges. must also be specified in the "&pkwmodify." register
 set when using a memory model that is not a small data model.
 .do end
 Whenever calls are made to
@@ -1884,13 +1951,13 @@ The following describes the attributes of the above alias names.
 .*
 .millust begin
 &pragma aux __cdecl "_*" \
-&pragcont           parm caller [] \
-&pragcont           value struct float struct routine [&ax] \
+&pragcont           &pkwparm. &pkwcaller. [] \
+&pragcont           &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwroutine. [&pregxax.] \
 .if '&machine' eq '80386' .do begin
-&pragcont           modify [eax ecx edx]&epragma
+&pragcont           &pkwmodify. [&pregxax. &pregxcx. &pregxdx.]&epragma.
 .do end
 .if '&machine' eq '8086' .do begin
-&pragcont           modify [ax bx cx dx es]&epragma
+&pragcont           &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx. &preges.]&epragma.
 .do end
 .millust end
 .autonote Notes:
@@ -1904,15 +1971,15 @@ The calling routine will remove the arguments from the stack.
 Floating-point values are returned in the same way as structures.
 When a structure is returned, the called routine allocates space
 for the return value and returns a pointer to the return value in register
-&axup..
+&regxax..
 .if '&machine' eq '8086' .do begin
 .note
-Registers AX, BX, CX and DX, and segment register ES are not saved and
+Registers &regxax., &regxbx., &regxcx. and &regxdx., and segment register &reges. are not saved and
 restored when a call is made.
 .do end
 .if '&machine' eq '80386' .do begin
 .note
-Registers EAX, ECX and EDX are not saved and restored when a call is
+Registers &regxax., &regxcx. and &regxdx. are not saved and restored when a call is
 made.
 .do end
 .endnote
@@ -1921,13 +1988,13 @@ made.
 .*
 .millust begin
 &pragma aux __pascal "^" \
-&pragcont           parm reverse routine [] \
-&pragcont           value struct float struct caller [] \
+&pragcont           &pkwparm. &pkwreverse. &pkwroutine. [] \
+&pragcont           &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwcaller. [] \
 .if '&machine' eq '8086' .do begin
-&pragcont           modify [ax bx cx dx es]&epragma
+&pragcont           &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx. &preges.]&epragma.
 .do end
 .if '&machine' eq '80386' .do begin
-&pragcont           modify [eax ebx ecx edx]&epragma
+&pragcont           &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx.]&epragma.
 .do end
 .millust end
 .autonote Notes:
@@ -1943,16 +2010,16 @@ Floating-point values are returned in the same way as structures.
 When a structure is returned, the caller allocates space on the stack.
 The address of the allocated space will be pushed on the stack
 immediately before the call instruction.
-Upon returning from the call, register &axup will contain address of
+Upon returning from the call, register &regxax. will contain address of
 the space allocated for the return value.
 .if '&machine' eq '80386' .do begin
 .note
-Registers EAX, EBX, ECX and EDX are not saved and restored when a call
+Registers &regxax., &regxbx., &regxcx. and &regxdx. are not saved and restored when a call
 is made.
 .do end
 .el .do begin
 .note
-Registers AX, BX, CX and DX, and segment register ES are not saved and
+Registers &regxax., &regxbx., &regxcx. and &regxdx., and segment register &reges. are not saved and
 restored when a call is made.
 .do end
 .endnote
@@ -1963,9 +2030,9 @@ restored when a call is made.
 .*
 .millust begin
 &pragma aux __stdcall "_*@nnn" \
-&pragcont           parm routine [] \
-&pragcont           value struct struct caller [] \
-&pragcont           modify [eax ecx edx]&epragma
+&pragcont           &pkwparm. &pkwroutine. [] \
+&pragcont           &pkwvalue. &pkwstruct. &pkwstruct. &pkwcaller. [] \
+&pragcont           &pkwmodify. [&pregxax. &pregxcx. &pregxdx.]&epragma.
 .millust end
 .autonote Notes:
 .note
@@ -1983,11 +2050,11 @@ The called routine will remove the arguments from the stack.
 When a structure is returned, the caller allocates space on the stack.
 The address of the allocated space will be pushed on the stack
 immediately before the call instruction.
-Upon returning from the call, register EAX will contain address of
+Upon returning from the call, register &regxax. will contain address of
 the space allocated for the return value.
 Floating-point values are returned in 80x87 register ST(0).
 .note
-Registers EAX, ECX and EDX are not saved and restored when a call is
+Registers &regxax., &regxcx. and &regxdx. are not saved and restored when a call is
 made.
 .endnote
 .*
@@ -1995,9 +2062,9 @@ made.
 .*
 .millust begin
 &pragma aux __syscall "*" \
-&pragcont           parm caller [] \
-&pragcont           value struct struct caller [] \
-&pragcont           modify [eax ecx edx]&epragma
+&pragcont           &pkwparm. &pkwcaller. [] \
+&pragcont           &pkwvalue. &pkwstruct. &pkwstruct. &pkwcaller. [] \
+&pragcont           &pkwmodify. [&pregxax. &pregxcx. &pregxdx.]&epragma.
 .millust end
 .autonote Notes:
 .note
@@ -2011,11 +2078,11 @@ The calling routine will remove the arguments from the stack.
 When a structure is returned, the caller allocates space on the stack.
 The address of the allocated space will be pushed on the stack
 immediately before the call instruction.
-Upon returning from the call, register EAX will contain address of
+Upon returning from the call, register &regxax. will contain address of
 the space allocated for the return value.
 Floating-point values are returned in 80x87 register ST(0).
 .note
-Registers EAX, ECX and EDX are not saved and restored when a call is
+Registers &regxax., &regxcx. and &regxdx. are not saved and restored when a call is
 made.
 .endnote
 .*
@@ -2035,12 +2102,12 @@ made.
 .millust begin
 &pragma aux __watcall "*_" \
 .if '&machine' eq '80386' .do begin
-&pragcont           parm routine [eax ebx ecx edx] \
+&pragcont           &pkwparm. &pkwroutine. [&pregxax. &pregxbx. &pregxcx. &pregxdx.] \
 .do end
 .if '&machine' eq '8086' .do begin
-&pragcont           parm routine [ax bx cx dx] \
+&pragcont           &pkwparm. &pkwroutine. [&pregxax. &pregxbx. &pregxcx. &pregxdx.] \
 .do end
-&pragcont           value struct caller&epragma
+&pragcont           &pkwvalue. &pkwstruct. &pkwcaller.&epragma
 .millust end
 .autonote Notes:
 .note
@@ -2054,9 +2121,9 @@ right to left. The calling routine will remove the arguments if any
 were pushed on the stack.
 .note
 When a structure is returned, the caller allocates space on the stack.
-The address of the allocated space is put into &siup register.
+The address of the allocated space is put into &regxsi. register.
 The called routine then places the return value there.
-Upon returning from the call, register &axup will contain address of
+Upon returning from the call, register &regxax. will contain address of
 the space allocated for the return value.
 .note
 Floating-point values are returned using 80x86 registers ("fpc" option)
@@ -2071,9 +2138,9 @@ All registers must be preserved by the called routine.
 .*
 .millust begin
 &pragma aux __watcall "*" \
-&pragcont           parm caller [] \
-&pragcont           value no8087 struct caller \
-&pragcont           modify [eax ecx edx 8087]&epragma
+&pragcont           &pkwparm. &pkwcaller. [] \
+&pragcont           &pkwvalue. &pkwno8087. &pkwstruct. &pkwcaller. \
+&pragcont           &pkwmodify. [&pregxax. &pregxcx. &pregxdx. &preg8087.]&epragma.
 .millust end
 .autonote Notes:
 .note
@@ -2086,12 +2153,12 @@ The calling routine will remove the arguments from the stack.
 When a structure is returned, the caller allocates space on the stack.
 The address of the allocated space will be pushed on the stack
 immediately before the call instruction.
-Upon returning from the call, register &axup will contain address of
+Upon returning from the call, register &regxax. will contain address of
 the space allocated for the return value.
 .note
 Floating-point values are returned only using 80x86 registers.
 .note
-Registers EAX, ECX and EDX are not preserved by the called routine.
+Registers &regxax., &regxcx. and &regxdx. are not preserved by the called routine.
 .note
 Any local variables that are located in the 80x87 cache are not
 preserved by the called routine.
@@ -2234,44 +2301,44 @@ and suffixed by an underscore character ('_').
 The following form of the auxiliary pragma can be used to describe the
 way a &function is to be called.
 .ix 'pragmas' 'calling information'
-.ix 'pragmas' 'far'
+.ix 'pragmas' '&pkwfar.'
 .if '&lang' eq 'FORTRAN 77' and '&machine' eq '80386' .do begin
-.ix 'pragmas' 'far16'
+.ix 'pragmas' '&pkwfar16.'
 .do end
-.ix 'pragmas' 'near'
+.ix 'pragmas' '&pkwnear.'
 .ix 'pragmas' '= const'
 .ix 'pragmas' 'in-line assembly'
 .ix 'calling information (pragma)'
-.ix 'far (pragma)'
+.ix '&pkwfar. (pragma)'
 .if '&lang' eq 'FORTRAN 77' and '&machine' eq '80386' .do begin
-.ix 'far16 (pragma)'
+.ix '&pkwfar16. (pragma)'
 .do end
-.ix 'near (pragma)'
+.ix '&pkwnear. (pragma)'
 .ix 'in-line assembly' 'in pragmas'
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .* ---------------------------------------
 .if '&machine' eq '8086' .do begin
 .mbox begin
-:prgbeg. aux :id.sym:eid. far :prgend.
+:prgbeg. aux :id.sym:eid. &pkwfar. :prgend.
     or
-:prgbeg. aux :id.sym:eid. near :prgend.
+:prgbeg. aux :id.sym:eid. &pkwnear. :prgend.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id) | (:eid.float:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.&pinstseg.:id. id) | (:eid.&pinstoffse.:id. id) | (:eid.&pinstrelof.:id. id) | (:eid.&pinstfloat.:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
 .if '&machine' eq '80386' .do begin
 .mbox begin
-:prgbeg. aux :id.sym:eid. far :prgend.
+:prgbeg. aux :id.sym:eid. &pkwfar. :prgend.
     or
-:prgbeg. aux :id.sym:eid. near :prgend.
+:prgbeg. aux :id.sym:eid. &pkwnear. :prgend.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id) | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.&pinstseg.:id. id) | (:eid.&pinstoffse.:id. id) | (:eid.&pinstrelof.:id. id) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -2281,23 +2348,23 @@ way a &function is to be called.
 .* ---------------------------------------
 .if '&machine' eq '8086' .do begin
 .mbox begin
-:prgbeg. aux :id.sym:eid. far
+:prgbeg. aux :id.sym:eid. &pkwfar.
     or
-:prgbeg. aux :id.sym:eid. near
+:prgbeg. aux :id.sym:eid. &pkwnear.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid.
 
-:id.in_line ::= { const | :eid.":id.asm:eid.":id. | (:eid.float:id. fpinst) }:eid.
+:id.in_line ::= { const | :eid.":id.asm:eid.":id. | (:eid.&pinstfloat.:id. fpinst) }:eid.
 .mbox end
 .do end
 .* ---------------------------------------
 .if '&machine' eq '80386' .do begin
 .mbox begin
-:prgbeg. aux :id.sym:eid. far
+:prgbeg. aux :id.sym:eid. &pkwfar.
     or
-:prgbeg. aux :id.sym:eid. far16
+:prgbeg. aux :id.sym:eid. &pkwfar16.
     or
-:prgbeg. aux :id.sym:eid. near
+:prgbeg. aux :id.sym:eid. &pkwnear.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid.
 
@@ -2323,21 +2390,21 @@ is a valid &lang hexadecimal constant.
 .note fpinst
 is a sequence of bytes that forms a valid 80x87 instruction.
 The keyword
-.kw float
+.kw &pinstfloat.
 must precede
 .id fpinst
 so that special fixups are applied to the 80x87 instruction.
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.note seg
+.note &pinstseg.
 specifies the segment of the symbol
 .id id
 .period
-.note offset
+.note &pinstoffse.
 specifies the offset of the symbol
 .id id
 .period
-.note reloff
+.note &pinstrelof.
 specifies the relative offset of the symbol
 .id id
 for near control transfers.
@@ -2351,7 +2418,7 @@ In the following example, &cmpname will generate a far call to the
 .id myrtn
 .period
 .millust begin
-&pragma aux myrtn far&epragma
+&pragma aux myrtn &pkwfar.&epragma
 .millust end
 .pc
 Note that this overrides the calling sequence that would normally be
@@ -2364,7 +2431,7 @@ In the following example, &cmpname will generate a near call to the
 .id myrtn
 .period
 .millust begin
-&pragma aux myrtn near&epragma
+&pragma aux myrtn &pkwnear.&epragma
 .millust end
 .pc
 Note that this overrides the calling sequence that would normally be
@@ -2387,7 +2454,7 @@ void mode4(void);
     0xb4 0x00       /* mov AH,0 */ \
     0xb0 0x04       /* mov AL,4 */ \
     0xcd 0x10       /* int 10H  */ \
-    modify [ AH AL ]&epragma
+    &pkwmodify. [ &pregah. &pregal. ]&epragma.
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -2396,7 +2463,7 @@ void mode4(void);
 *    zb4 z00            \ mov AH,0
 *    zb0 z04            \ mov AL,4
 *    zcd z10            \ int 10h
-*    modify [ AH AL ]&epragma
+*    &pkwmodify. [ &pregah. &pregal. ]&epragma.
 .millust end
 .do end
 .pc
@@ -2429,7 +2496,7 @@ void mode4(void);
     "mov AH,0",         \
     "mov AL,4",         \
     "int 10H"           \
-    modify [ AH AL ]&epragma
+    &pkwmodify. [ &pregah. &pregal. ]&epragma.
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -2438,7 +2505,7 @@ void mode4(void);
 *    "mov AH,0"         \
 *    "mov AL,4"         \
 *    "int 10H"          \
-*    modify [ AH AL ]&epragma
+*    &pkwmodify. [ &pregah. &pregal. ]&epragma.
 .millust end
 .do end
 .if '&machine' eq '8086' .do begin
@@ -2446,7 +2513,7 @@ void mode4(void);
 .ix 'in-line 80x87 floating-point instructions'
 If a sequence of in-line assembly language instructions contains 80x87
 floating-point instructions, each floating-point instruction must be
-preceded by "float".
+preceded by "&pinstfloat.".
 Note that this is only required if you have specified the "fpi"
 compiler option; otherwise it will be ignored.
 .np
@@ -2454,14 +2521,14 @@ The following example generates the 80x87 "square root" instruction.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 double mysqrt(double);
-&pragma aux mysqrt parm [8087] = \
-    float 0xd9 0xfa /* fsqrt */&epragma
+&pragma aux mysqrt &pkwparm. [&preg8087.] = \
+    &pinstfloat. 0xd9 0xfa /* fsqrt */&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux mysqrt parm( value ) [8087] = \
-*            float zd9fa&epragma
+&pragma aux mysqrt &pkwparm.( value ) [&preg8087.] = \
+*            &pinstfloat. zd9fa&epragma
 .millust end
 .do end
 .do end
@@ -2479,7 +2546,7 @@ is called.
 extern void myalias(void);
 void myrtn(void);
 &pragma aux myrtn =                     \
-    0xe8 reloff myalias /* near call */&epragma
+    0xe8 &pinstrelof. myalias /* near call */&epragma
 .millust end
 .pc
 In the following example, a far call to the function
@@ -2491,7 +2558,7 @@ is called.
 extern void myalias(void);
 void myrtn(void);
 &pragma aux myrtn =                                \
-    0x9a offset myalias seg myalias /* far call */&epragma
+    0x9a &pinstoffse. myalias &pinstseg. myalias /* far call */&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' and '&machine' eq '80386' .do begin
@@ -2500,7 +2567,7 @@ void myrtn(void);
 The file :FNAME.bsesub.fap:eFNAME. in the
 :FNAME.&pathnam.&pc.src&pc.fortran&pc.os2:eFNAME. directory contains examples
 of pragmas that use the
-.kwm far16
+.kwm &pkwfar16.
 attribute to describe the 16-bit VIO, KBD and MOU subsystems available in
 32-bit OS/2.
 .do end
@@ -2510,37 +2577,37 @@ attribute to describe the 16-bit VIO, KBD and MOU subsystems available in
 .section Loading Data Segment Register
 .*
 .np
-.ix 'loading DS before calling a &function'
-An application may have been compiled so that the segment register DS
+.ix 'loading &regds. before calling a &function'
+An application may have been compiled so that the segment register &regds.
 does not contain the segment address of the default data segment
 (group "DGROUP").
 This is usually the case if you are using a large data memory model.
 Suppose you wish to call a &function that assumes that the segment
-register DS contains the segment address of the default data segment.
+register &regds. contains the segment address of the default data segment.
 It would be very cumbersome if you were forced to compile your
-application so that the segment register DS contained the default data
+application so that the segment register &regds. contained the default data
 segment (a small data memory model).
 .np
 The following form of the auxiliary pragma will cause the segment
-register DS to be loaded with the segment address of the default data
+register &regds. to be loaded with the segment address of the default data
 segment before calling the specified &function..
-.ix 'pragmas' 'loadds'
-.ix 'loadds (pragma)'
+.ix 'pragmas' '&pkwloadds.'
+.ix '&pkwloadds. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm loadds :prgend.
+:prgbeg. aux :id.sym:eid. &pkwparm. &pkwloadds. :prgend.
 .mbox end
 .synote
 .note sym
 is a &function name.
 .esynote
 .np
-.ix 'loading DS in prologue sequence of a &function'
+.ix 'loading &regds. in prologue sequence of a &function'
 Alternatively, the following form of the auxiliary pragma will cause
-the segment register DS to be loaded with the segment address of the
+the segment register &regds. to be loaded with the segment address of the
 default data segment as part of the prologue sequence for the
 specified &function..
 .mbox begin
-:prgbeg. aux :id.sym:eid. loadds :prgend.
+:prgbeg. aux :id.sym:eid. &pkwloadds. :prgend.
 .mbox end
 .synote
 .note sym
@@ -2558,10 +2625,10 @@ Normally, symbols in dynamic link libraries are exported using the
 &lnkname "EXPORT" directive.
 An alternative method is to use the following form of the auxiliary
 pragma.
-.ix 'pragmas' 'export'
-.ix 'export (pragma)'
+.ix 'pragmas' '&pkwexport.'
+.ix '&pkwexport. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. export :prgend.
+:prgbeg. aux :id.sym:eid. &pkwexport. :prgend.
 .mbox end
 .synote
 .note sym
@@ -2583,10 +2650,10 @@ specified.
 The following form of the auxiliary pragma will cause a callback
 prologue/epilogue sequence to be generated for a callback function
 when compiled using the "&winopt" option.
-.ix 'pragmas' 'export'
-.ix 'export (pragma)'
+.ix 'pragmas' '&pkwexport.'
+.ix '&pkwexport. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. export :prgend.
+:prgbeg. aux :id.sym:eid. &pkwexport. :prgend.
 .mbox end
 .synote
 .note sym
@@ -2614,11 +2681,11 @@ the stack or an automatic variable is allocated on the stack.
 No stack frame will be generated if the above conditions are not satisfied.
 The following form of the auxiliary pragma will force a stack frame to
 be generated under any circumstance.
-.ix 'pragmas' 'frame'
-.ix 'frame (pragma)'
+.ix 'pragmas' '&pkwframe.'
+.ix '&pkwframe. (pragma)'
 .ix 'stack frame (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. frame :prgend.
+:prgbeg. aux :id.sym:eid. &pkwframe. :prgend.
 .mbox end
 .synote
 .note sym
@@ -2643,21 +2710,19 @@ The general form of an auxiliary pragma that describes argument
 passing is the following.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm :id.:rp. pop_info :or. :eid.reverse:id. :or. :rp.reg_set:erp. :erp.:eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwparm. :id.:rp. pop_info :or. :eid.&pkwreverse.:id. :or. :rp.reg_set:erp. :erp.:eid. :prgend.
 
-:id.pop_info ::=:eid. caller :or. routine
+:id.pop_info ::=:eid. &pkwcaller. :or. &pkwroutine.
 .mbox end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .cp 19
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm :id.:rp. arg_info :or. pop_info :or. :eid.reverse:id. :rp.reg_set:erp. :erp.:eid.
+:prgbeg. aux :id.sym:eid. &pkwparm. :id.:rp. arg_info :or. pop_info :or. :eid.&pkwreverse.:id. :rp.reg_set:erp. :erp.:eid.
 
 :id.arg_info ::=:eid. ( :id.arg_attr:eid. :rp., :id.arg_attr:eid.:erp. )
 
-:id.arg_attr ::=:eid. value :op.:id.v_attr:eid.:eop.
-                :or. reference :op.:id.r_attr:eid.:eop.
-                :or. data_reference :op.:id.d_attr:eid.:eop.
+:id.arg_attr ::=:eid. value :op.:id.v_attr:eid.:eop. :or. reference :op.:id.r_attr:eid.:eop. :or. data_reference :op.:id.d_attr:eid.:eop.
 
 :id.v_attr ::=:eid. far :or. near :or. *1 :or. *2 :or. *4 :or. *8
 
@@ -2665,7 +2730,7 @@ passing is the following.
 
 :id.d_attr ::=:eid. :op.far :or. near:eop.
 
-:id.pop_info ::=:eid. caller :or. routine
+:id.pop_info ::=:eid. &pkwcaller. :or. &pkwroutine.
 .mbox end
 .do end
 .synote
@@ -2698,11 +2763,9 @@ The following form of the auxiliary pragma can be used to alter the
 default calling mechanism used for passing arguments.
 .cp 15
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm ( :id.arg_attr:eid. :rp., :id.arg_attr:eid.:erp. )
+:prgbeg. aux :id.sym:eid. &pkwparm. ( :id.arg_attr:eid. :rp., :id.arg_attr:eid.:erp. )
 
-:id.arg_attr ::=:eid. value :op.:id.v_attr:eid.:eop.
-                :or. reference :op.:id.r_attr:eid.:eop.
-                :or. data_reference :op.:id.d_attr:eid.:eop.
+:id.arg_attr ::=:eid. value :op.:id.v_attr:eid.:eop. :or. reference :op.:id.r_attr:eid.:eop. :or. data_reference :op.:id.d_attr:eid.:eop.
 
 :id.v_attr ::=:eid. far :or. near :or. *1 :or. *2 :or. *4 :or. *8
 
@@ -2832,7 +2895,7 @@ remaining arguments.
 .np
 Consider the following example.
 .millust begin
-&pragma aux printf "*_" parm (value) caller []&epragma
+&pragma aux printf "*_" &pkwparm. (value) &pkwcaller. []&epragma
       character cr/z0d/, nullchar/z00/
       call printf( 'values: %ld, %ld'//cr//nullchar,
      1             77, 31410 )
@@ -2857,10 +2920,10 @@ stack.
 The following form of the auxiliary pragma can be used to specify the
 registers that are to be used to pass arguments to a particular
 &function..
-.ix 'pragmas' 'parm'
-.ix 'parm (pragma)'
+.ix 'pragmas' '&pkwparm.'
+.ix '&pkwparm. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm :rp.:id.reg_set:eid.:erp. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwparm. :rp.:id.reg_set:eid.:erp. :prgend.
 .mbox end
 .synote
 .note sym
@@ -2899,13 +2962,14 @@ Arguments of type
 .do end
 can only be passed in
 .if '&machine' eq '8086' .do begin
-the following register combination: AX:BX:CX:DX.
+the following register combination: &regxax.:&regxbx.:&regxcx.:&regxdx..
 .do end
 .if '&machine' eq '80386' .do begin
 one of the following register pairs:
-EDX:EAX, ECX:EBX, ECX:EAX, ECX:ESI, EDX:EBX, EDI:EAX, ECX:EDI,
-EDX:ESI, EDI:EBX, ESI:EAX, ECX:EDX, EDX:EDI, EDI:ESI, ESI:EBX or
-EBX:EAX.
+&regxdx.:&regxax., &regxcx.:&regxbx., &regxcx.:&regxax., &regxcx.:&regxsi.,
+&regxdx.:&regxbx., &regxdi.:&regxax., &regxcx.:&regxdi., &regxdx.:&regxsi.,
+&regxdi.:&regxbx., &regxsi.:&regxax., &regxcx.:&regxdx., &regxdx.:&regxdi.,
+&regxdi.:&regxsi., &regxsi.:&regxbx. or &regxbx.:&regxax..
 .do end
 For example, if the following register set was specified for a routine
 having an argument of type
@@ -2913,12 +2977,12 @@ having an argument of type
 .ct ,
 .if '&machine' eq '8086' .do begin
 .millust begin
-[AX BX SI DI]
+[&pregxax. &pregxbx. &pregxsi. &pregxdi.]
 .millust end
 .do end
 .if '&machine' eq '80386' .do begin
 .millust begin
-[EBP EBX]
+[&pregxbp. &pregxbx.]
 .millust end
 .do end
 .pc
@@ -2941,19 +3005,19 @@ are passed by value.
 .note far pointer
 A far pointer can only be passed in one of the following register
 pairs:
-DX:&axup, CX:&bxup, CX:&axup, CX:&siup, DX:&bxup, DI:&axup, CX:&diup,
-DX:&siup, DI:&bxup, SI:&axup, CX:&dxup, DX:&diup, DI:&siup, SI:&bxup,
-BX:&axup,
+&regdx.:&regxax., &regcx.:&regxbx., &regcx.:&regxax., &regcx.:&regxsi., &regdx.:&regxbx.,
+&regdi.:&regxax., &regcx.:&regxdi., &regdx.:&regxsi., &regdi.:&regxbx., &regsi.:&regxax.,
+&regcx.:&regxdx., &regdx.:&regxdi., &regdi.:&regxsi., &regsi.:&regxbx., &regbx.:&regxax.,
 .if '&machine' eq '80386' .do begin
-FS:ECX, FS:EDX, FS:EDI, FS:ESI, FS:EBX, FS:EAX,
-GS:ECX, GS:EDX, GS:EDI, GS:ESI, GS:EBX, GS:EAX,
+&regfs.:&regxcx., &regfs.:&regxdx., &regfs.:&regxdi., &regfs.:&regxsi., &regfs.:&regxbx., &regfs.:&regxax.,
+&reggs.:&regxcx., &reggs.:&regxdx., &reggs.:&regxdi., &reggs.:&regxsi., &reggs.:&regxbx., &reggs.:&regxax.,
 .do end
-DS:&cxup, DS:&dxup, DS:&diup, DS:&siup, DS:&bxup, DS:&axup,
-ES:&cxup, ES:&dxup, ES:&diup, ES:&siup, ES:&bxup or ES:&axup..
+&regds.:&regxcx., &regds.:&regxdx., &regds.:&regxdi., &regds.:&regxsi., &regds.:&regxbx., &regds.:&regxax.,
+&reges.:&regxcx., &reges.:&regxdx., &reges.:&regxdi., &reges.:&regxsi., &reges.:&regxbx. or &reges.:&regxax..
 For example, if a far pointer is passed to a function with the
 following register set,
 .millust begin
-[ES &bpup]
+[&preges. &pregxbp.]
 .millust end
 .pc
 the argument would be pushed on the stack since a valid register
@@ -2973,14 +3037,16 @@ when passed by value
 .do end
 .ct )
 are:
-DX:AX, CX:BX, CX:AX, CX:SI, DX:BX, DI:AX, CX:DI, DX:SI, DI:BX, SI:AX,
-CX:DX, DX:DI, DI:SI, SI:BX and BX:AX.
+&regxdx.:&regxax., &regxcx.:&regxbx., &regxcx.:&regxax., &regxcx.:&regxsi.,
+&regxdx.:&regxbx., &regxdi.:&regxax., &regxcx.:&regxdi., &regxdx.:&regxsi.,
+&regxdi.:&regxbx., &regxsi.:&regxax., &regxcx.:&regxdx., &regxdx.:&regxdi.,
+&regxdi.:&regxsi., &regxsi.:&regxbx. and &regxbx.:&regxax..
 For example, if the following register set was specified for a routine
 with one argument of type
 .bd &long_int
 .ct ,
 .millust begin
-[ES DI]
+[&preges. &pregxdi.]
 .millust end
 .pc
 the argument would be pushed on the stack since a valid register
@@ -3002,13 +3068,13 @@ memory model
 .do end
 .ct )
 are:
-&axup, &bxup, &cxup, &dxup, &siup and &diup..
+&regxax., &regxbx., &regxcx., &regxdx., &regxsi. and &regxdi..
 For example, if the following register set was specified for a routine
 with one argument of type
 .bd &machint
 .ct ,
 .millust begin
-[&bpup]
+[&pregxbp.]
 .millust end
 .pc
 the argument would be pushed on the stack since a valid register
@@ -3054,42 +3120,42 @@ all register sets have not yet been exhausted.
 .endnote
 .autonote Notes:
 .note
-The default register set is [&axup &bxup &cxup &dxup].
+The default register set is [&pregxax. &pregxbx. &pregxcx. &pregxdx.].
 .note
-Specifying registers AH and AL is equivalent to specifying register AX.
-Specifying registers DH and DL is equivalent to specifying register DX.
-Specifying registers CH and CL is equivalent to specifying register CX.
-Specifying registers BH and BL is equivalent to specifying register BX.
+Specifying registers &regah. and &regal. is equivalent to specifying register &regax..
+Specifying registers &regdh. and &regdl. is equivalent to specifying register &regdx..
+Specifying registers &regch. and &regcl. is equivalent to specifying register &regcx..
+Specifying registers &regbh. and &regbl. is equivalent to specifying register &regbx..
 .if '&machine' eq '80386' .do begin
-Specifying register EAX implies that register AX has been specified.
-Specifying register EBX implies that register BX has been specified.
-Specifying register ECX implies that register CX has been specified.
-Specifying register EDX implies that register DX has been specified.
-Specifying register EDI implies that register DI has been specified.
-Specifying register ESI implies that register SI has been specified.
-Specifying register EBP implies that register BP has been specified.
-Specifying register ESP implies that register SP has been specified.
+Specifying register &regxax. implies that register &regax. has been specified.
+Specifying register &regxbx. implies that register &regbx. has been specified.
+Specifying register &regxcx. implies that register &regcx. has been specified.
+Specifying register &regxdx. implies that register &regdx. has been specified.
+Specifying register &regxdi. implies that register &regdi. has been specified.
+Specifying register &regxsi. implies that register &regsi. has been specified.
+Specifying register &regxbp. implies that register &regbp. has been specified.
+Specifying register &regxsp. implies that register &regsp. has been specified.
 .do end
 .note
 If you are compiling for a memory model with a small data model,
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 or the "zdp" compiler option is specified,
 .do end
-any register combination containing register DS becomes illegal.
-In a small data model, segment register DS must remain unchanged as it
+any register combination containing register &regds. becomes illegal.
+In a small data model, segment register &regds. must remain unchanged as it
 points to the program's data segment.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 Note that the "zdf" compiler option can be used to specify that
-register DS does not contain that segment address of the program's
+register &regds. does not contain that segment address of the program's
 data segment.
-In this case, register combinations containing register DS are legal.
+In this case, register combinations containing register &regds. are legal.
 .do end
 .if '&machine' eq '80386' .do begin
 .note
 If you are compiling for the flat memory model, any register
-combination containing DS or ES becomes illegal.
+combination containing &regds. or &reges. becomes illegal.
 In a flat memory model, code and data reside in the same segment.
-Segment registers DS and ES point to this segment and must remain
+Segment registers &regds. and &reges. point to this segment and must remain
 unchanged.
 .do end
 .endnote
@@ -3097,13 +3163,13 @@ unchanged.
 Consider the following example.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux myrtn parm (value) \
-*                       [&ax &bx &cx &dx] [&bp &si]&epragma
+&pragma aux myrtn &pkwparm. (value) \
+*                       [&pregxax. &pregxbx. &pregxcx. &pregxdx.] [&pregxbp. &pregxsi.]&epragma.
 .millust end
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-&pragma aux myrtn parm [&ax &bx &cx &dx] [&bp &si]&epragma
+&pragma aux myrtn &pkwparm. [&pregxax. &pregxbx. &pregxcx. &pregxdx.] [&pregxbp. &pregxsi.]&epragma.
 .millust end
 .do end
 .pc
@@ -3117,11 +3183,11 @@ Note that the arguments are passed by value.
 .do end
 .autopoint
 .point
-The first argument will be passed in the register pair &dxup:&axup..
+The first argument will be passed in the register pair &regxdx.:&regxax..
 .point
-The second argument will be passed in the register pair &cxup:&bxup..
+The second argument will be passed in the register pair &regxcx.:&regxbx..
 .point
-The third argument will be pushed on the stack since &bpup:&siup is
+The third argument will be pushed on the stack since &regxbp.:&regxsi. is
 not a valid register pair for arguments of type
 .bd &arg_2_regs
 .period
@@ -3132,13 +3198,13 @@ before registers from the first register set are used.
 Consider the following example.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux myrtn parm (value) \
-*                       [&ax &bx &cx &dx] [&si &di]&epragma
+&pragma aux myrtn &pkwparm. (value) \
+*                       [&pregxax. &pregxbx. &pregxcx. &pregxdx.] [&pregxsi. &pregxdi.]&epragma.
 .millust end
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-&pragma aux myrtn parm [&ax &bx &cx &dx] [&si &di]&epragma
+&pragma aux myrtn &pkwparm. [&pregxax. &pregxbx. &pregxcx. &pregxdx.] [&pregxsi. &pregxdi.]&epragma.
 .millust end
 .do end
 .pc
@@ -3155,11 +3221,11 @@ Note that all arguments are passed by value.
 .do end
 .autopoint
 .point
-The first argument will be passed in the register &axup..
+The first argument will be passed in the register &regxax..
 .point
-The second argument will be passed in the register pair &cxup:&bxup..
+The second argument will be passed in the register pair &regxcx.:&regxbx..
 .point
-The third argument will be passed in the register set &diup:&siup..
+The third argument will be passed in the register set &regxdi.:&regxsi..
 .endpoint
 .pc
 Note that registers are no longer selected from a register set after
@@ -3176,8 +3242,8 @@ ignored; all remaining arguments are pushed on the stack.
 If a single empty register set is specified, all arguments are passed
 on the stack.
 .note
-If no register set is specified, the default register set [&axup &bxup
-&cxup &dxup] is used.
+If no register set is specified, the default register set
+[&pregxax. &pregxbx. &pregxcx. &pregxdx.] is used.
 .endnote
 .*
 .section Forcing Arguments into Specific Registers
@@ -3187,20 +3253,20 @@ It is possible to force arguments into specific registers.
 Suppose you have a &function, say "mycopy", that copies data.
 The first argument is the source, the second argument is the
 destination, and the third argument is the length to copy.
-If we want the first argument to be passed in the register &siup, the
-second argument to be passed in register &diup and the third argument
-to be passed in register &cxup, the following auxiliary pragma can be
+If we want the first argument to be passed in the register &regxsi., the
+second argument to be passed in register &regxdi. and the third argument
+to be passed in register &regxcx., the following auxiliary pragma can be
 used.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void mycopy( char near *, char *, int );
-&pragma aux mycopy parm [&siup] [&diup] [&cxup]&epragma
+&pragma aux mycopy &pkwparm. [&pregxsi.] [&pregxdi.] [&pregxcx.]&epragma.
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux mycopy parm (value) \
-*                        [&siup] [&diup] [&cxup]&epragma
+&pragma aux mycopy &pkwparm. (value) \
+*                        [&pregxsi.] [&pregxdi.] [&pregxcx.]&epragma.
       character*10  dst
       call mycopy( dst, '0123456789', 10 )
       ...
@@ -3232,8 +3298,8 @@ void scrollactivepgup(char,char,char,char,char,char);
 &pragma aux scrollactivepgup = \
     "mov AH,6"   \
     "int 10h"    \
-    parm [ch] [cl] [dh] [dl] [al] [bh] \
-    modify [ah]&epragma
+    &pkwparm. [&pregch.] [&pregcl.] [&pregdh.] [&pregdl.] [&pregal.] [&pregbh.] \
+    &pkwmodify. [&pregah.]&epragma.
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -3241,9 +3307,9 @@ void scrollactivepgup(char,char,char,char,char,char);
 &pragma aux scrollactivepgup =        \
 *   "mov AH,6"                         \
 *   "int 10h"                          \
-*   parm (value)                       \
-*        [ch] [cl] [dh] [dl] [al] [bh] \
-*   modify [ah]&epragma
+*   &pkwparm. (value)                     \
+*        [&pregch.] [&pregcl.] [&pregdh.] [&pregdl.] [&pregal.] [&pregbh.] \
+*   &pkwmodify. [&pregah.]&epragma.
 .millust end
 .do end
 .np
@@ -3253,15 +3319,15 @@ following arguments.
 .autonote
 .note
 The row and column of the upper left corner of the scroll window is
-passed in registers CH and CL respectively.
+passed in registers &regch. and &regcl. respectively.
 .note
 The row and column of the lower right corner of the scroll window is
-passed in registers DH and DL respectively.
+passed in registers &regdh. and &regdl. respectively.
 .note
 The number of lines blanked at the bottom of the window is passed in
-register AL.
+register &regal..
 .note
-The attribute to be used on the blank lines is passed in register BH.
+The attribute to be used on the blank lines is passed in register &regbh..
 .endnote
 .pc
 When passing arguments, &cmpname will convert the argument so that
@@ -3273,9 +3339,9 @@ was called with an argument whose type was
 .bd &int
 .ct , it would first be converted to
 .bd &char
-before assigning it to register CH.
+before assigning it to register &regch..
 Similarly, if an in-line &function required its argument in register
-&reg32 and the argument was of type
+&reg32. and the argument was of type
 .bd &short_int
 .ct , the argument would be converted to
 .bd &long_int
@@ -3332,12 +3398,12 @@ zeros.
 .np
 The following form of the auxiliary pragma specifies who removes
 from the stack arguments that were pushed on the stack.
-.ix 'pragmas' 'parm caller'
-.ix 'pragmas' 'parm routine'
-.ix 'parm caller (pragma)'
-.ix 'parm routine (pragma)'
+.ix 'pragmas' '&pkwparm. &pkwcaller.'
+.ix 'pragmas' '&pkwparm. &pkwroutine.'
+.ix '&pkwparm. &pkwcaller. (pragma)'
+.ix '&pkwparm. &pkwroutine. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm :id.(:eid.caller :or. routine:id.):eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwparm. :id.(:eid.&pkwcaller. :or. &pkwroutine.:id.):eid. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3345,10 +3411,10 @@ is a &function name.
 .esynote
 .pc
 .ix 'arguments' 'removing from the stack'
-"caller" specifies that the caller will pop the arguments
-from the stack; "routine" specifies that the called routine
+"&pkwcaller." specifies that the caller will pop the arguments
+from the stack; "&pkwroutine." specifies that the called routine
 will pop the arguments from the stack.
-If "caller" or "routine" is omitted, "routine" is assumed unless the
+If "&pkwcaller." or "&pkwroutine." is omitted, "&pkwroutine." is assumed unless the
 default has been changed in a previous auxiliary pragma, in which case
 the new default is assumed.
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -3356,7 +3422,7 @@ the new default is assumed.
 Consider the following example.
 It describes the pragma required to call the C "printf" function.
 .millust begin
-&pragma aux printf "*_" parm (value) caller []&epragma
+&pragma aux printf "*_" &pkwparm. (value) &pkwcaller. []&epragma
       character cr/z0d/, nullchar/z00/
       call printf( 'value is %ld'//cr//nullchar,
      1             7143 )
@@ -3384,10 +3450,10 @@ specified).
 .np
 The following form of the auxiliary pragma specifies that arguments
 are passed in the reverse order.
-.ix 'pragmas' 'parm reverse'
-.ix 'parm reverse (pragma)'
+.ix 'pragmas' '&pkwparm. &pkwreverse.'
+.ix '&pkwparm. &pkwreverse. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm reverse :prgend.
+:prgbeg. aux :id.sym:eid. &pkwparm. &pkwreverse. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3410,7 +3476,7 @@ arguments to be passed on the stack in an order opposite from the
 default.
 The following auxiliary pragma demonstrates such a &function..
 .millust begin
-&pragma aux rtn parm reverse []&epragma
+&pragma aux rtn &pkwparm. &pkwreverse. []&epragma
 .millust end
 .*
 .endlevel
@@ -3428,20 +3494,20 @@ programming languages.
 .np
 The general form of an auxiliary pragma that describes the way a
 function returns its value is the following.
-.ix 'pragmas' 'value'
-.ix 'pragmas' 'no8087'
-.ix 'pragmas' 'struct float'
-.ix 'pragmas' 'struct routine'
-.ix 'pragmas' 'struct caller'
-.ix 'value (pragma)'
-.ix 'no8087 (pragma)'
-.ix 'struct float (pragma)'
-.ix 'struct routine (pragma)'
-.ix 'struct caller (pragma)'
+.ix 'pragmas' '&pkwvalue.'
+.ix 'pragmas' '&pkwno8087.'
+.ix 'pragmas' '&pkwstruct. &pkwfloat.'
+.ix 'pragmas' '&pkwstruct. &pkwroutine.'
+.ix 'pragmas' '&pkwstruct. &pkwcaller.'
+.ix '&pkwvalue. (pragma)'
+.ix '&pkwno8087. (pragma)'
+.ix '&pkwstruct. &pkwfloat. (pragma)'
+.ix '&pkwstruct. &pkwroutine. (pragma)'
+.ix '&pkwstruct. &pkwcaller. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value :rp.no8087 :or. :id.reg_set:eid. :or. :id.struct_info:eid.:erp. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. :rp.&pkwno8087. :or. :id.reg_set:eid. :or. :id.struct_info:eid.:erp. :prgend.
 
-:id.struct_info ::=:eid. struct :rp.float :or. struct :or. :id.(:eid.routine :or. caller:id.):eid. :or. :id.reg_set:eid.:erp.
+:id.struct_info ::=:eid. &pkwstruct. :rp.&pkwfloat. :or. &pkwstruct. :or. :id.(:eid.&pkwroutine. :or. &pkwcaller.:id.):eid. :or. :id.reg_set:eid.:erp.
 .mbox end
 .synote
 .note sym
@@ -3461,10 +3527,10 @@ in square brackets.
 .np
 The following form of the auxiliary pragma can be used to specify the
 registers that are to be used to return a function's value.
-.ix 'pragmas' 'value'
-.ix 'value (pragma)'
+.ix 'pragmas' '&pkwvalue.'
+.ix '&pkwvalue. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3485,24 +3551,26 @@ allowed in
 .begnote $break
 .note 1-byte
 For 1-byte return values, only the following registers are allowed:
-AL, AH, DL, DH, BL, BH, CL or CH.
-If no register set is specified, register AL will be used.
+&regal., &regah., &regdl., &regdh., &regbl., &regbh., &regcl. or &regch..
+If no register set is specified, register &regal. will be used.
 .note 2-byte
 For 2-byte return values, only the following registers are allowed:
-AX, DX, BX, CX, SI or DI.
-If no register set is specified, register AX will be used.
+&regax., &regdx., &regbx., &regcx., &regsi. or &regdi..
+If no register set is specified, register &regax. will be used.
 .note 4-byte
 For 4-byte return values
 .if '&machine' eq '8086' .do begin
 (except far pointers), only the following register pairs are allowed:
-DX:AX, CX:BX, CX:AX, CX:SI, DX:BX, DI:AX, CX:DI, DX:SI, DI:BX, SI:AX,
-CX:DX, DX:DI, DI:SI, SI:BX or BX:AX.
-If no register set is specified, registers DX:AX will be used.
+&regxdx.:&regxax., &regxcx.:&regxbx., &regxcx.:&regxax., &regxcx.:&regxsi.,
+&regxdx.:&regxbx., &regxdi.:&regxax., &regxcx.:&regxdi., &regxdx.:&regxsi.,
+&regxdi.:&regxbx., &regxsi.:&regxax., &regxcx.:&regxdx., &regxdx.:&regxdi.,
+&regxdi.:&regxsi., &regxsi.:&regxbx. or &regxbx.:&regxax..
+If no register set is specified, registers &regxdx.:&regxax. will be used.
 .do end
 .if '&machine' eq '80386' .do begin
 (including near pointers), only the following register are allowed:
-EAX, EDX, EBX, ECX, ESI or EDI.
-If no register set is specified, register EAX will be used.
+&regxax., &regxdx., &regxbx., &regxcx., &regxsi. or &regxdi..
+If no register set is specified, register &regxax. will be used.
 .do end
 This form of the auxiliary pragma is legal for functions of type
 .bd &single
@@ -3510,32 +3578,34 @@ when using the "fpc" option only.
 .note far pointer
 For functions that return far pointers, the following register
 pairs are allowed:
-DX:&axup, CX:&bxup, CX:&axup, CX:&siup, DX:&bxup, DI:&axup, CX:&diup,
-DX:&siup, DI:&bxup, SI:&axup, CX:&dxup, DX:&diup, DI:&siup, SI:&bxup,
-BX:&axup,
+&regdx.:&regxax., &regcx.:&regxbx., &regcx.:&regxax., &regcx.:&regxsi., &regdx.:&regxbx.,
+&regdi.:&regxax., &regcx.:&regxdi., &regdx.:&regxsi., &regdi.:&regxbx., &regsi.:&regxax.,
+&regcx.:&regxdx., &regdx.:&regxdi., &regdi.:&regxsi., &regsi.:&regxbx., &regbx.:&regxax.,
 .if '&machine' eq '80386' .do begin
-FS:ECX, FS:EDX, FS:EDI, FS:ESI, FS:EBX, FS:EAX,
-GS:ECX, GS:EDX, GS:EDI, GS:ESI, GS:EBX, GS:EAX,
+&regfs.:&regxcx., &regfs.:&regxdx., &regfs.:&regxdi., &regfs.:&regxsi., &regfs.:&regxbx.,
+&regfs.:&regxax., &reggs.:&regxcx., &reggs.:&regxdx., &reggs.:&regxdi., &reggs.:&regxsi.,
+&reggs.:&regxbx., &reggs.:&regxax.,
 .do end
-DS:&cxup, DS:&dxup, DS:&diup, DS:&siup, DS:&bxup, DS:&axup,
-ES:&cxup, ES:&dxup, ES:&diup, ES:&siup, ES:&bxup or ES:&axup..
-If no register set is specified, the registers DX:&axup will be used.
+&regds.:&regxcx., &regds.:&regxdx., &regds.:&regxdi., &regds.:&regxsi., &regds.:&regxbx.,
+&regds.:&regxax., &reges.:&regxcx., &reges.:&regxdx., &reges.:&regxdi., &reges.:&regxsi.,
+&reges.:&regxbx. or &reges.:&regxax..
+If no register set is specified, the registers &regdx.:&regxax. will be used.
 .note 8-byte
 For 8-byte return values (including functions of type
 .bd &double
 .ct ),
 only the following register
 .if '&machine' eq '8086' .do begin
-combination is allowed: AX:BX:CX:DX.
-If no register set is specified, the registers AX:BX:CX:DX will be
+combination is allowed: &regxax.:&regxbx.:&regxcx.:&regxdx..
+If no register set is specified, the registers &regxax.:&regxbx.:&regxcx.:&regxdx. will be
 used.
 .do end
 .if '&machine' eq '80386' .do begin
 pairs are allowed:
-EDX:EAX, ECX:EBX, ECX:EAX, ECX:ESI, EDX:EBX, EDI:EAX, ECX:EDI,
-EDX:ESI, EDI:EBX, ESI:EAX, ECX:EDX, EDX:EDI, EDI:ESI, ESI:EBX or
-EBX:EAX.
-If no register set is specified, the registers EDX:EAX will be used.
+&regxdx.:&regxax., &regxcx.:&regxbx., &regxcx.:&regxax., &regxcx.:&regxsi., &regxdx.:&regxbx.,
+&regxdi.:&regxax., &regxcx.:&regxdi., &regxdx.:&regxsi., &regxdi.:&regxbx., &regxsi.:&regxax.,
+&regxcx.:&regxdx., &regxdx.:&regxdi., &regxdi.:&regxsi., &regxsi.:&regxbx. or &regxbx.:&regxax..
+If no register set is specified, the registers &regxdx.:&regxax. will be used.
 .do end
 This form of the auxiliary pragma is legal for functions of type
 .bd &double
@@ -3546,16 +3616,16 @@ when using the "fpc" option only.
 An empty register set is not allowed.
 .note
 If you are compiling for a memory model which has a small data model,
-any of the above register combinations containing register DS becomes
+any of the above register combinations containing register &regds. becomes
 illegal.
-In a small data model, segment register DS must remain unchanged as
+In a small data model, segment register &regds. must remain unchanged as
 it points to the program's data segment.
 .if '&machine' eq '80386' .do begin
 .note
 If you are compiling for the flat memory model, any
-register combination containing DS or ES becomes illegal.
+register combination containing &regds. or &reges. becomes illegal.
 In a flat memory model, code and data reside in the same segment.
-Segment registers DS and ES point to this segment and must remain
+Segment registers &regds. and &reges. point to this segment and must remain
 unchanged.
 .do end
 .endnote
@@ -3581,9 +3651,9 @@ structures
 .do end
 are not returned in registers.
 Instead, the caller allocates space on the stack for the
-return value and sets register &siup to point to it.
+return value and sets register &regxsi. to point to it.
 The called routine then places the return value at the location
-pointed to by register &siup..
+pointed to by register &regxsi..
 .if '&lang' eq 'FORTRAN 77' .do begin
 .np
 Complex numbers are not scalars but rather an ordered pair of real
@@ -3595,14 +3665,14 @@ containing two real numbers.
 .np
 The following form of the auxiliary pragma can be used to specify the
 register that is to be used to point to the return value.
-.ix 'pragmas' 'value'
-.ix 'pragmas' 'struct caller'
-.ix 'pragmas' 'struct routine'
-.ix 'value (pragma)'
-.ix 'struct caller (pragma)'
-.ix 'struct routine (pragma)'
+.ix 'pragmas' '&pkwvalue.'
+.ix 'pragmas' '&pkwstruct. &pkwcaller.'
+.ix 'pragmas' '&pkwstruct. &pkwroutine.'
+.ix '&pkwvalue. (pragma)'
+.ix '&pkwstruct. &pkwcaller. (pragma)'
+.ix '&pkwstruct. &pkwroutine. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value struct :id.(:eid.caller :or. routine:id.):eid. :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. &pkwstruct. :id.(:eid.&pkwcaller. :or. &pkwroutine.:id.):eid. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3611,29 +3681,29 @@ is a &function name.
 is a register set.
 .esynote
 .np
-"caller" specifies that the caller will allocate memory for
+"&pkwcaller." specifies that the caller will allocate memory for
 the return value.
 The address of the memory allocated for the return value is placed in
 the register specified in the register set by the caller before
 the function is called.
 If an empty register set is specified, the address of the memory allocated
 for the return value will be pushed on the stack immediately before the
-call and will be returned in register &axup by the called routine.
+call and will be returned in register &regxax. by the called routine.
 .if '&machine' eq '8086' .do begin
 It is assumed that the memory for the return value is allocated from the
-stack segment (the stack segment is contained in segment register SS).
+stack segment (the stack segment is contained in segment register &regss.).
 .do end
 .np
-"routine" specifies that the called routine will allocate
+"&pkwroutine." specifies that the called routine will allocate
 memory for the return value.
 Upon returning to the caller, the register specified in the register
 set will contain the address of the return value.
 An empty register set is not allowed.
 .np
 Only the following registers are allowed in the register set:
-&axup, &dxup, &bxup, &cxup, &siup or &diup..
+&regxax., &regxdx., &regxbx., &regxcx., &regxsi. or &regxdi..
 Note that in a big data model, the address in the return register is
-assumed to be in the segment specified by the value in the SS segment
+assumed to be in the segment specified by the value in the &regss. segment
 register.
 .np
 If the size of the structure being returned is 1, 2 or 4 bytes,
@@ -3643,22 +3713,24 @@ following way.
 .autonote
 .note
 A 1-byte structure will be returned in one of the following registers:
-AL, AH, DL, DH, BL, BH, CL or CH.
-If no register set is specified, register AL will be used.
+&regal., &regah., &regdl., &regdh., &regbl., &regbh., &regcl. or &regch..
+If no register set is specified, register &regal. will be used.
 .note
 A 2-byte structure will be returned in one of the following registers:
-AX, DX, BX, CX, SI or DI.
-If no register set is specified, register AX will be used.
+&regax., &regdx., &regbx., &regcx., &regsi. or &regdi..
+If no register set is specified, register &regax. will be used.
 .note
 A 4-byte structure will be returned in one of the following
 .if '&machine' eq '8086' .do begin
-register pairs: DX:AX, CX:BX, CX:AX, CX:SI, DX:BX, DI:AX, CX:DI,
-DX:SI, DI:BX, SI:AX, CX:DX, DX:DI, DI:SI, SI:BX or BX:AX.
-If no register set is specified, register pair DX:AX will be used.
+register pairs: &regxdx.:&regxax., &regxcx.:&regxbx., &regxcx.:&regxax.,
+&regxcx.:&regxsi., &regxdx.:&regxbx., &regxdi.:&regxax., &regxcx.:&regxdi.,
+&regxdx.:&regxsi., &regxdi.:&regxbx., &regxsi.:&regxax., &regxcx.:&regxdx.,
+&regxdx.:&regxdi., &regxdi.:&regxsi., &regxsi.:&regxbx. or &regxbx.:&regxax..
+If no register set is specified, register pair &regxdx.:&regxax. will be used.
 .do end
 .if '&machine' eq '80386' .do begin
-registers: EAX, EDX, EBX, ECX, ESI or EDI.
-If no register set is specified, register EAX will be used.
+registers: &regxax., &regxdx., &regxbx., &regxcx., &regxsi. or &regxdi..
+If no register set is specified, register &regxax. will be used.
 .do end
 .endnote
 .np
@@ -3666,9 +3738,9 @@ The following form of the auxiliary pragma can be used to specify that
 structures whose size is 1, 2 or 4 bytes are not to be returned in
 registers.
 Instead, the caller will allocate space on the stack for the structure
-return value and point register &siup to it.
+return value and point register &regxsi. to it.
 .mbox begin
-:prgbeg. aux :id.sym:eid. value struct struct :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. &pkwstruct. &pkwstruct. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3692,13 +3764,13 @@ or
 .bd &double
 are not to be returned in registers.
 Instead, the caller will allocate space on the stack for the
-return value and point register &siup to it.
-.ix 'pragmas' 'value'
-.ix 'pragmas' 'struct float'
-.ix 'value (pragma)'
-.ix 'struct float (pragma)'
+return value and point register &regxsi. to it.
+.ix 'pragmas' '&pkwvalue.'
+.ix 'pragmas' '&pkwstruct. &pkwfloat.'
+.ix '&pkwvalue. (pragma)'
+.ix '&pkwstruct. &pkwfloat. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value struct float :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. &pkwstruct. &pkwfloat. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3728,25 +3800,25 @@ Function return values whose type is
 .bd &single
 will be returned in
 .if '&machine' eq '8086' .do begin
-registers DX:AX.
+registers &regxdx.:&regxax..
 .do end
 .if '&machine' eq '80386' .do begin
-register EAX.
+register &regxax..
 .do end
 Function return values whose type is
 .bd &double
 will be returned in registers
 .if '&machine' eq '8086' .do begin
-AX:BX:CX:DX.
+&regxax.:&regxbx.:&regxcx.:&regxdx..
 .do end
 .if '&machine' eq '80386' .do begin
-EDX:EAX.
+&regxdx.:&regxax..
 .do end
 This is the default method for the "fpc" option.
-.ix 'pragmas' 'value no8087'
-.ix 'value no8087 (pragma)'
+.ix 'pragmas' '&pkwvalue. &pkwno8087.'
+.ix '&pkwvalue. &pkwno8087. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value no8087 :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. &pkwno8087. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3761,10 +3833,10 @@ or
 are to be returned in ST(0) when compiling with the
 "fpi" or "fpi87" option.
 This form of the auxiliary pragma is not legal for the "fpc" option.
-.ix 'pragmas' 'value [8087]'
-.ix 'value [8087] (pragma)'
+.ix 'pragmas' '&pkwvalue. [&preg8087.]'
+.ix '&pkwvalue. [&preg8087.] (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value [8087] :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. [&preg8087.] :prgend.
 .mbox end
 .synote
 .note sym
@@ -3778,10 +3850,10 @@ is a function name.
 .np
 The following form of the auxiliary pragma can be used to describe a
 &function that does not return to the caller.
-.ix 'pragmas' 'aborts'
-.ix 'aborts (pragma)'
+.ix 'pragmas' '&pkwaborts.'
+.ix '&pkwaborts. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. aborts :prgend.
+:prgbeg. aux :id.sym:eid. &pkwaborts. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3792,7 +3864,7 @@ is a &function name.
 Consider the following example.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux exitrtn aborts&epragma
+&pragma aux exitrtn &pkwaborts.&epragma
       ...
       call exitrtn()
       end
@@ -3800,7 +3872,7 @@ Consider the following example.
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-&pragma aux exitrtn aborts&epragma
+&pragma aux exitrtn &pkwaborts.&epragma
 extern void exitrtn(void);
 
 void rtn()
@@ -3842,10 +3914,10 @@ variable that appears in a common block defined by the caller.
 memory (i.e., global or static variables) that is used directly or
 indirectly by the caller.
 .do end
-.ix 'pragmas' 'modify nomemory'
-.ix 'modify nomemory (pragma)'
+.ix 'pragmas' '&pkwmodify. &pkwnomemor.'
+.ix '&pkwmodify. &pkwnomemor. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. modify nomemory :prgend.
+:prgbeg. aux :id.sym:eid. &pkwmodify. &pkwnomemor. :prgend.
 .mbox end
 .synote
 .note sym
@@ -4184,7 +4256,7 @@ No disassembly errors
 .pc
 Let us add the following auxiliary pragma to the source file.
 .millust begin
-&pragma aux myrtn modify nomemory&epragma
+&pragma aux myrtn &pkwmodify. &pkwnomemor.&epragma
 .millust end
 .pc
 If we compile the source file with the above pragma and disassemble
@@ -4198,7 +4270,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE USE32  00000030 bytes
 
-&pragma aux myrtn modify nomemory&epragma
+&pragma aux myrtn &pkwmodify. &pkwnomemor.&epragma
         integer i
         common /blk/ i
  0000  52                FMAIN           push    edx
@@ -4268,7 +4340,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE  00000024 bytes
 
-&pragma aux myrtn modify nomemory&epragma
+&pragma aux myrtn &pkwmodify. &pkwnomemor.&epragma
         integer*2 i
         common /blk/ i
  0000  52                FMAIN           push    dx
@@ -4341,7 +4413,7 @@ Group: 'DGROUP' CONST,_DATA
 Segment: '_TEXT' BYTE USE32  00000030 bytes
 
 &pragma off (check_stack)&epragma
-&pragma aux myrtn modify nomemory&epragma
+&pragma aux myrtn &pkwmodify. &pkwnomemor.&epragma
 
 .code break
 extern void myrtn(void);
@@ -4399,7 +4471,7 @@ Segment: '_TEXT' BYTE  0022 bytes
 &pragma off (check_stack)&epragma
 
 extern void MyRtn( void );
-&pragma aux MyRtn modify nomemory&epragma
+&pragma aux MyRtn &pkwmodify. &pkwnomemor.&epragma
 
 int i = { 1033 };
 
@@ -4448,7 +4520,7 @@ No disassembly errors
 .pc
 Notice that the value of
 .id i
-is in register &dxup after completion of the "while" loop.
+is in register &regxdx. after completion of the "while" loop.
 After the call to
 .id myrtn
 .ct , the value of
@@ -4466,7 +4538,7 @@ memory (i.e., global or static variables) that is used directly or
 indirectly by
 .do end
 .id Rtn
-and hence register &dxup contains the correct value of
+and hence register &regxdx. contains the correct value of
 .id i
 .period
 .np
@@ -4493,12 +4565,12 @@ variable that appears in a common block defined by the caller.
 memory (i.e., global or static variables) that is used directly or
 indirectly by the caller.
 .do end
-.ix 'pragmas' 'parm nomemory'
-.ix 'pragmas' 'modify nomemory'
-.ix 'parm nomemory (pragma)'
-.ix 'modify nomemory (pragma)'
+.ix 'pragmas' '&pkwparm. &pkwnomemor.'
+.ix 'pragmas' '&pkwmodify. &pkwnomemor.'
+.ix '&pkwparm. &pkwnomemor. (pragma)'
+.ix '&pkwmodify. &pkwnomemor. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm nomemory modify nomemory :prgend.
+:prgbeg. aux :id.sym:eid. &pkwparm. &pkwnomemor. &pkwmodify. &pkwnomemor. :prgend.
 .mbox end
 .synote
 .note sym
@@ -4506,13 +4578,13 @@ is a &function name.
 .esynote
 .autonote Notes:
 .note
-You must specify both "parm nomemory" and "modify nomemory".
+You must specify both "&pkwparm. &pkwnomemor." and "&pkwmodify. &pkwnomemor.".
 .endnote
 .np
 Let us replace the auxiliary pragma in the above example with the
 following auxiliary pragma.
 .millust begin
-&pragma aux myrtn parm nomemory modify nomemory&epragma
+&pragma aux myrtn &pkwparm. &pkwnomemor. &pkwmodify. &pkwnomemor.&epragma
 .millust end
 .pc
 If you now compile our source file and disassemble the object file
@@ -4527,7 +4599,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE USE32  0000002a bytes
 
-&pragma aux myrtn parm nomemory modify nomemory&epragma
+&pragma aux myrtn &pkwparm. &pkwnomemor. &pkwmodify. &pkwnomemor.&epragma
         integer i
         common /blk/ i
  0000  52                FMAIN           push    edx
@@ -4596,7 +4668,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE  00000020 bytes
 
-&pragma aux myrtn parm nomemory modify nomemory&epragma
+&pragma aux myrtn &pkwparm. &pkwnomemor. &pkwmodify. &pkwnomemor.&epragma
         integer*2 i
         common /blk/ i
  0000  52                FMAIN           push    dx
@@ -4668,7 +4740,7 @@ Group: 'DGROUP' CONST,_DATA
 Segment: '_TEXT' BYTE USE32  0000002a bytes
 
 &pragma off (check_stack)&epragma
-&pragma aux myrtn parm nomemory modify nomemory&epragma
+&pragma aux myrtn &pkwparm. &pkwnomemor. &pkwmodify. &pkwnomemor.&epragma
 
 .code break
 extern void myrtn(void);
@@ -4725,7 +4797,7 @@ Segment: '_TEXT' BYTE  001e bytes
 &pragma off (check_stack)&epragma
 
 extern void MyRtn( void );
-&pragma aux MyRtn parm nomemory modify nomemory&epragma
+&pragma aux MyRtn &pkwparm. &pkwnomemor. &pkwmodify. &pkwnomemor.&epragma
 
 int i = { 1033 };
 
@@ -4774,7 +4846,7 @@ No disassembly errors
 Notice that after completion of the "while" loop we did not have to
 update
 .id i
-with the value in register &dxup before calling
+with the value in register &regxdx. before calling
 .id myrtn
 .period
 The auxiliary pragma informs the compiler that
@@ -4800,10 +4872,10 @@ was not necessary before calling
 .np
 The following form of the auxiliary pragma can be used to describe
 the registers that a &function will use without saving.
-.ix 'pragmas' 'modify exact'
-.ix 'modify exact (pragma)'
+.ix 'pragmas' '&pkwmodify. &pkwexact.'
+.ix '&pkwmodify. &pkwexact. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. modify :op.exact:eop. :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwmodify. :op.&pkwexact.:eop. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
@@ -4820,7 +4892,7 @@ different from its value after execution of the &function..
 Registers that are used to pass arguments are assumed to be modified
 and hence do not have to be saved and restored by the called
 &function..
-Also, since the &axup register is frequently used to return a value,
+Also, since the &regxax. register is frequently used to return a value,
 it is always assumed to be modified.
 If necessary, the caller will contain code to save and restore the
 contents of registers used to pass arguments.
@@ -4829,10 +4901,10 @@ be necessary if the called &function does not modify them.
 The following form of the auxiliary pragma can be used to describe
 exactly those registers that will be modified by the called
 &function..
-.ix 'pragmas' 'modify exact'
-.ix 'modify exact (pragma)'
+.ix 'pragmas' '&pkwmodify. &pkwexact.'
+.ix '&pkwmodify. &pkwexact. (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. modify exact :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwmodify. &pkwexact. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
@@ -4850,10 +4922,10 @@ This will prevent generation of the code which unnecessarily saves
 and restores the contents of the registers used to pass arguments.
 .np
 Also, any registers that are specified in the
-.mono value
+.mono &pkwvalue.
 register set are assumed to be unmodified unless explicitly listed in
 the
-.mono exact
+.mono &pkwexact.
 register set.
 In the following example, the code generator will not generate code to
 save and restore the value of the stack pointer register since we have
@@ -4862,18 +4934,18 @@ told it that "GetSP" does not modify any register whatsoever.
 .exam begin
 unsigned GetSP(void);
 #if defined(__386__)
-&pragma aux GetSP = value [esp] modify exact []&epragma
+&pragma aux GetSP = &pkwvalue. [&pragpref.esp] &pkwmodify. &pkwexact. []&epragma
 #else
-&pragma aux GetSP = value [sp] modify exact []&epragma
+&pragma aux GetSP = &pkwvalue. [&pragpref.sp] &pkwmodify. &pkwexact. []&epragma
 #endif
 .exam end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exam begin
 *$ifdef __386__
-&pragma aux GetSP = value [esp] modify exact []&epragma
+&pragma aux GetSP = &pkwvalue. [&pragpref.esp] &pkwmodify. &pkwexact. []&epragma
 *$else
-&pragma aux GetSP = value [sp] modify exact []&epragma
+&pragma aux GetSP = &pkwvalue. [&pragpref.sp] &pkwmodify. &pkwexact. []&epragma
 *$endif
 
       program main
@@ -4896,34 +4968,34 @@ calling convention for functions compiled by MetaWare's High C
 compiler.
 .millust begin
 &pragma aux HIGH_C "*"                                 \
-                   parm caller []                      \
-                   value no8087                        \
-                   modify [eax ecx edx fs gs]&epragma
+                   &pkwparm. &pkwcaller. []                      \
+                   &pkwvalue. &pkwno8087.                        \
+                   &pkwmodify. [&pregxax. &pregxcx. &pregxdx. &pregfs. &preggs.]&epragma.
 .millust end
 .pc
-Note that register ES must also be specified in the "modify" register
+Note that register &reges. must also be specified in the "&pkwmodify." register
 set when using a memory model with a non-small data model.
 Let us discuss this pragma in detail.
 .begnote
 .note "*"
 specifies that all function and variable names appear in object form
 as they do in source form.
-.note parm caller []
+.note &pkwparm. &pkwcaller. []
 specifies that all arguments are to be passed on the stack
 (an empty register set was specified) and the caller will remove
 the arguments from the stack.
-.note value no8087
+.note &pkwvalue. &pkwno8087.
 specifies that floating-point values are to be returned using 80x86
 registers and not 80x87 floating-point registers.
-.note modify [eax ecx edx fs gs]
-specifies that registers EAX, ECX, EDX, FS and GS are not preserved by
+.note &pkwmodify. [&pregxax. &pregxcx. &pregxdx. &pregfs. &preggs.]
+specifies that registers &regxax., &regxcx., &regxdx., &regfs. and &reggs. are not preserved by
 the called routine.
 .endnote
 .pc
 Note that the default method of returning integer values is used;
-1-byte characters are returned in register AL, 2-byte integers are
-returned in register AX, and 4-byte integers are returned in
-register EAX.
+1-byte characters are returned in register &regal., 2-byte integers are
+returned in register &regax., and 4-byte integers are returned in
+register &regxax..
 .do end
 .if '&machine' eq '8086' .do begin
 .*
@@ -4936,9 +5008,9 @@ calling convention for functions compiled by Microsoft C.
 .ix 'calling convention' 'Microsoft C'
 .millust begin
 &pragma aux MS_C "_*"                                  \
-                 parm caller []                        \
-                 value struct float struct routine [ax]\
-                 modify [ax bx cx dx es]&epragma
+                 &pkwparm. &pkwcaller. []                        \
+                 &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwroutine. [&pregxax.]\
+                 &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx. &preges.]&epragma.
 .millust end
 .np
 Let us discuss this pragma in detail.
@@ -4947,37 +5019,37 @@ Let us discuss this pragma in detail.
 specifies that all function and variable names are preceded by the
 underscore character (_) when translated from source form to object
 form.
-.note parm caller []
+.note &pkwparm. &pkwcaller. []
 specifies that all arguments are to be passed on the stack
 (an empty register set was specified) and the caller will remove
 the arguments from the stack.
-.note value struct
+.note &pkwvalue. &pkwstruct.
 marks the section describing how the called routine returns structure
 information.
 .begnote
-.note float
+.note &pkwfloat.
 specifies that floating-point arguments are returned in the same way
 as structures are returned.
-.note struct
+.note &pkwstruct.
 specifies that 1, 2 and 4-byte structures are not to be returned in
 registers.
-.note routine
+.note &pkwroutine.
 specifies that the called routine allocates storage for the return
 structure and returns with a register pointing at it.
-.note [ax]
-specifies that register AX is used to point to the structure return
+.note [&pregxax.]
+specifies that register &regxax. is used to point to the structure return
 value.
 .endnote
-.note modify [ax bx cx dx es]
+.note &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx. &preges.]
 .sp
-specifies that registers AX, BX, CX, DX and ES are not preserved by
+specifies that registers &regxax., &regxbx., &regxcx., &regxdx. and &reges. are not preserved by
 the called routine.
 .endnote
 .pc
 Note that the default method of returning integer values is used;
-1-byte characters are returned in register AL, 2-byte integers are
-returned in register AX, and 4-byte integers are returned in the
-register pair DX:AX.
+1-byte characters are returned in register &regal., 2-byte integers are
+returned in register &regxax., and 4-byte integers are returned in the
+register pair &regxdx.:&regxax..
 .do end
 .do end
 .*
@@ -5012,17 +5084,17 @@ floating-point such as arguments of type "int".
 .np
 The following form of the auxiliary pragma can be used to describe the
 registers that are to be used to pass arguments to &functions..
-.ix 'pragmas' 'parm reg_set'
-.ix 'parm reg_set (pragma)'
+.ix 'pragmas' '&pkwparm. reg_set'
+.ix '&pkwparm. reg_set (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. parm :rp.:id.reg_set:eid.:erp. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwparm. :rp.:id.reg_set:eid.:erp. :prgend.
 .mbox end
 .synote
 .note sym
 is a &function name.
 .note reg_set
 is a register set.
-The register set can contain 80x86 registers and/or the string "8087".
+The register set can contain 80x86 registers and/or the string "&preg8087.".
 .esynote
 .autonote Notes:
 .note
@@ -5031,7 +5103,7 @@ floating-point arguments, will be passed on the 80x86 stack.
 .endnote
 .pc
 .ix 'passing arguments' 'in 80x87 registers'
-When the string "8087" appears in a register set, it simply means that
+When the string "&preg8087." appears in a register set, it simply means that
 floating-point arguments can be passed in 80x87 floating-point
 registers if the source file is compiled with the "fpi" or "fpi87"
 option.
@@ -5128,7 +5200,7 @@ the floating-point argument is also assigned a position on the
 80x86 stack.
 Otherwise proceed to the next step.
 .note
-If the string "8087" appears in a register set in the pragma, and
+If the string "&preg8087." appears in a register set in the pragma, and
 if the 80x87 stack is not full, the floating-point argument
 is assigned floating-point register ST(0) (the top element of the
 80x87 stack).
@@ -5143,7 +5215,7 @@ Consider the following example.
 .cp 16
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux myrtn parm (value) [8087]&epragma
+&pragma aux myrtn &pkwparm. (value) [&preg8087.]&epragma
 
       real x
       double precision y
@@ -5164,7 +5236,7 @@ Consider the following example.
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-&pragma aux myrtn parm [8087]&epragma
+&pragma aux myrtn &pkwparm. [&preg8087.]&epragma
 
 void main()
 {
@@ -5199,7 +5271,7 @@ These arguments will be passed to
 in the following way.
 .autonote
 .note
-Since "8087" was specified in the register set, the first argument,
+Since "&preg8087." was specified in the register set, the first argument,
 being of type
 .bd &single
 .ct , will be passed in an 80x87 floating-point register.
@@ -5219,7 +5291,7 @@ The fourth argument will also be passed on the stack.
 .pc
 Let us change the auxiliary pragma in the above example as follows.
 .millust begin
-&pragma aux myrtn parm [&ax 8087]&epragma
+&pragma aux myrtn &pkwparm. [&pregxax. &preg8087.]&epragma.
 .millust end
 .pc
 The arguments will now be passed to
@@ -5227,13 +5299,13 @@ The arguments will now be passed to
 in the following way.
 .autonote
 .note
-Since "8087" was specified in the register set, the first argument,
+Since "&preg8087." was specified in the register set, the first argument,
 being of type
 .bd &single
 will be passed in an 80x87 floating-point
 register.
 .note
-The second argument will be passed in register &axup, exhausting the
+The second argument will be passed in register &regxax., exhausting the
 set of available 80x86 registers for argument passing.
 .note
 The third argument, being of type
@@ -5251,16 +5323,16 @@ registers remain in the register set.
 .np
 The following form of the auxiliary pragma can be used to describe
 a &function that returns a floating-point value in ST(0).
-.ix 'pragmas' 'value reg_set'
-.ix 'value reg_set (pragma)'
+.ix 'pragmas' '&pkwvalue. reg_set'
+.ix '&pkwvalue. reg_set (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwvalue. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
 is a &function name.
 .note reg_set
-is a register set containing the string "8087", i.e. [8087].
+is a register set containing the string "&preg8087.", i.e. [&preg8087.].
 .esynote
 .*
 .section Preserving 80x87 Floating-Point Registers Across Calls
@@ -5283,16 +5355,16 @@ registers are available for use within a &function unless the
 The following form of the auxiliary pragma specifies that the
 floating-point registers in the 80x87 cache may be modified by the
 specified &function..
-.ix 'pragmas' 'modify reg_set'
-.ix 'modify reg_set (pragma)'
+.ix 'pragmas' '&pkwmodify. reg_set'
+.ix '&pkwmodify. reg_set (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. modify :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. &pkwmodify. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
 is a &function name.
 .note reg_set
-is a register set containing the string "8087", i.e. [8087].
+is a register set containing the string "&preg8087.", i.e. [&preg8087.].
 .esynote
 .pc
 This instructs &cmpname to save any local variables that are located

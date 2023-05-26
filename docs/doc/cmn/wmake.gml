@@ -1180,10 +1180,10 @@ rule.
 
 test&exe : a.obj b.obj c.obj test.res
         &lnkcmd FILE a.obj, b.obj, c.obj
-        &wrccmd /q /bt=windows test.res test&exe
+        &wrccmd -q -bt=windows test.res test&exe
 
 test.res : test.rc test.ico .AUTODEPEND
-        &wrccmd /ad /q /bt=windows /r $[@ $^@
+        &wrccmd -ad -q -bt=windows -r $[@ $^@
 .millust end
 .np
 In the above example, &maksname will use the contents of the object

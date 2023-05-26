@@ -1288,21 +1288,21 @@ following command(s):
 .begnote $break $setptnt 10
 .note 16-bit Windows
 .monoon
-C>&wclcmd16 [fn1] [fn2] ... /bw /windows /l=windows
+C>&wclcmd16 [fn1] [fn2] ... -bw -windows -l=windows
 .monooff
 .note 32-bit Windows
 .monoon
-C>&wclcmd32 [fn1] [fn2] ... /bw /l=win386
+C>&wclcmd32 [fn1] [fn2] ... -bw -l=win386
 .br
 C>wbind -n [fn1]
 .monooff
 .note 32-bit Windows NT or Windows 95
 .monoon
-C>&wclcmd32 [fn1] [fn2] ... /bw /l=nt_win
+C>&wclcmd32 [fn1] [fn2] ... -bw -l=nt_win
 .monooff
 .note 32-bit OS/2 Presentation Manager
 .monoon
-C>&wclcmd32 [fn1] [fn2] ... /bw /l=os2v2_pm
+C>&wclcmd32 [fn1] [fn2] ... -bw -l=os2v2_pm
 .monooff
 .endnote
 .begnote

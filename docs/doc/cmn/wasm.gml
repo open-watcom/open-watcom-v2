@@ -543,7 +543,7 @@ except case when vararg parameter is used.
 .errnote 562 Cannot Set to Start of Source File -
 .errnote 563 Command Line Contains More Than 1 File To Assemble
 .errnote 564 include path %s.
-.errnote 565 Unknown option %s. Use /? for list of options.
+.errnote 565 Unknown option %s. Use -? for list of options.
 .errnote 566 read more command line from %s.
 .errnote 567 Internal error in %s(%u)
 .errnote 568 OBJECT WRITE ERROR !!
@@ -551,7 +551,7 @@ except case when vararg parameter is used.
 .errnote 570 Parameter Required
 .errnote 571 Expecting closing square bracket
 .errnote 572 Expecting file name
-.errnote 573 Floating point instruction not allowed with /fpc
+.errnote 573 Floating point instruction not allowed with -fpc
 .errnote 574 Too many errors
 .errnote 575 Build target not recognised
 .errnote 576 Public constants should be numeric

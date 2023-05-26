@@ -272,18 +272,18 @@ the calling convention of the library (register-based or stack-based).
 Library         Memory      Floating-point        Calling
                 model       model                 convention
 -------         ------      --------------        ----------
-flib.lib        /mf, /ms    /fpc
-flibs.lib       /mf, /ms    /fpc                  /sc
-flib7.lib       /mf, /ms    /fpi, /fpi87
-flib7s.lib      /mf, /ms    /fpi, /fpi87          /sc
-clib3r.lib      /mf, /ms    /fpc, /fpi, /fpi87
-clib3r.lib      /mf, /ms    /fpc, /fpi, /fpi87    /sc
-math387r.lib    /mf, /ms    /fpi, /fpi87
-math387s.lib    /mf, /ms    /fpi, /fpi87          /sc
-math3r.lib      /mf, /ms    /fpc
-math3s.lib      /mf, /ms    /fpc                  /sc
-emu387.lib      /mf, /ms    /fpi
-noemu387.lib    /mf, /ms    /fpi87
+flib.lib        -mf, -ms    -fpc
+flibs.lib       -mf, -ms    -fpc                  -sc
+flib7.lib       -mf, -ms    -fpi, -fpi87
+flib7s.lib      -mf, -ms    -fpi, -fpi87          -sc
+clib3r.lib      -mf, -ms    -fpc, -fpi, -fpi87
+clib3r.lib      -mf, -ms    -fpc, -fpi, -fpi87    -sc
+math387r.lib    -mf, -ms    -fpi, -fpi87
+math387s.lib    -mf, -ms    -fpi, -fpi87          -sc
+math3r.lib      -mf, -ms    -fpc
+math3s.lib      -mf, -ms    -fpc                  -sc
+emu387.lib      -mf, -ms    -fpi
+noemu387.lib    -mf, -ms    -fpi87
 .code end
 .do end
 .if &e'&dohelp ne 0 .do begin
