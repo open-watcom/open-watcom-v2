@@ -74,6 +74,7 @@
 :set symbol="pkwfloat" value="&pragpref.float".
 :set symbol="pkwreverse" value="&pragpref.reverse".
 :set symbol="pkwloadds" value="&pragpref.loadds".
+:set symbol="pkwrdosdev" value="&pragpref.rdosdev".
 :set symbol="pkwnomemor" value="&pragpref.nomemory".
 :set symbol="pkwexact" value="&pragpref.exact".
 :set symbol="pkwfar" value="&pragpref.far".
@@ -82,11 +83,23 @@
 :set symbol="pkwexport" value="&pragpref.export".
 :set symbol="pkwframe" value="&pragpref.frame".
 :set symbol="pkwaborts" value="&pragpref.aborts".
+:set symbol="pkwon" value="&pragpref.on".
+:set symbol="pkwoff" value="&pragpref.off".
+:set symbol="pkwafter" value="&pragpref.after".
+:set symbol="pkwbefore" value="&pragpref.before".
+:set symbol="pkwlibrary" value="&pragpref.library".
+:set symbol="pkwprogram" value="&pragpref.program".
+:set symbol="pkwint" value="&pragpref.int".
+:set symbol="pkwminimum" value="&pragpref.minimum".
+:set symbol="pkworigina" value="&pragpref.original".
+:set symbol="pkwpush" value="&pragpref.push".
+:set symbol="pkwpop" value="&pragpref.pop".
+:set symbol="pkwlib" value="&pragpref.lib".
 .*
-:set symbol="pinstfloat" value="&pragpref.float".
-:set symbol="pinstseg" value="&pragpref.seg".
-:set symbol="pinstoffse" value="&pragpref.offset".
-:set symbol="pinstrelof" value="&pragpref.reloff".
+:set symbol="pfixfloat" value="&pragpref.float".
+:set symbol="pfixseg" value="&pragpref.seg".
+:set symbol="pfixoffset" value="&pragpref.offset".
+:set symbol="pfixreloff" value="&pragpref.reloff".
 .*
 :set symbol="regal" value="AL".
 :set symbol="regah" value="AH".
@@ -620,7 +633,7 @@ The following describes the form of the "comment" pragma.
 specifies the type of comment record.
 The allowable comment types are:
 .begnote
-.note lib
+.note &pkwlib.
 Default libraries are specified in special object module records.
 Library names are extracted from these special records by the
 &lnkname..
@@ -629,7 +642,7 @@ specified in linker "FILE" directives, these default libraries are
 searched after all libraries specified in linker "LIBRARY" directives
 have been searched.
 .np
-The "lib" form of this pragma offers the same features as the
+The "&pkwlib." form of this pragma offers the same features as the
 "library" pragma.
 See the section entitled :HDREF refid='&praglib'. for more information.
 .endnote
@@ -640,7 +653,7 @@ for some comment types.
 .np
 Consider the following example.
 .millust begin
-&pragma comment ( lib, "mylib" )&epragma
+&pragma comment ( &pkwlib., "mylib" )&epragma
 .millust end
 .*
 .section The DATA_SEG Pragma
@@ -802,23 +815,23 @@ subsequent
 declarations.
 The forms of the "enum" pragma are as follows.
 .mbox begin
-:prgbeg. enum :id.int:eid. :prgend.
-:prgbeg. enum :id.minimum:eid. :prgend.
-:prgbeg. enum :id.original:eid. :prgend.
-:prgbeg. enum :id.pop:eid. :prgend.
+:prgbeg. enum :id.&pkwint.:eid. :prgend.
+:prgbeg. enum :id.&pkwminimum.:eid. :prgend.
+:prgbeg. enum :id.&pkworigina.:eid. :prgend.
+:prgbeg. enum :id.&pkwpop.:eid. :prgend.
 .mbox end
 .synote
-.note int
+.note &pkwint.
 Make
-.us int
+.us &pkwint.
 the underlying storage definition (same as the "ei" compiler option).
-.note minimum
+.note &pkwminimum.
 Minimize the underlying storage definition (same as not specifying
 the "ei" compiler option).
-.note original
+.note &pkworigina.
 Reset back to the original compiler option setting (i.e., what was or
 was not specified on the command line).
-.note pop
+.note &pkwpop.
 Restore the previous setting.
 .esynote
 .np
@@ -1001,19 +1014,19 @@ be used.
 .np
 The general form of the "initialize" pragma is as follows.
 .mbox begin
-:prgbeg. initialize :op.before :or. after:eop. :id.n:eid. :prgend.
-:prgbeg. initialize :op.before :or. after:eop. :id.library:eid. :prgend.
-:prgbeg. initialize :op.before :or. after:eop. :id.program:eid. :prgend.
+:prgbeg. initialize :op.&pkwbefore. :or. &pkwafter.:eop. :id.n:eid. :prgend.
+:prgbeg. initialize :op.&pkwbefore. :or. &pkwafter.:eop. :id.&pkwlibrary.:eid. :prgend.
+:prgbeg. initialize :op.&pkwbefore. :or. &pkwafter.:eop. :id.&pkwprogram.:eid. :prgend.
 .mbox end
 Priority is a number and must be in the range 0-255. The larger the priority,
 the later the point at which initialization will occur.
 .synote
 .note n
 is a number in the range 0-255
-.note library
+.note &pkwlibrary.
 the keyword represents a priority of 32 and can be used for class
 libraries that require initialization before the program is initialized.
-.note program
+.note &pkwprogram.
 the keyword represents a priority of 64 and is the default priority
 for any compiled code.
 .esynote
@@ -1021,42 +1034,42 @@ for any compiled code.
 Priorities in the range 0-20 are reserved for the C++ compiler.
 This is to ensure that proper initialization of the C++ run-time system
 takes place before the execution of your program.
-Specifying "before" adjusts the priority by subtracting one.
-Specifying "after" adjusts the priority by adding one.
+Specifying "&pkwbefore." adjusts the priority by subtracting one.
+Specifying "&pkwafter." adjusts the priority by adding one.
 .np
 A source file containing the following "initialize" pragma specifies that the
 initialization of static data in the file will take place before
 initialization of all other static data in the program since a priority of
 63 will be assigned.
 .exam begin
-&pragma initialize before program&epragma
+&pragma initialize &pkwbefore. &pkwprogram.&epragma
 .exam end
 .pc
-If we specify "after" instead of "before", the initialization of the
+If we specify "&pkwafter." instead of "&pkwbefore.", the initialization of the
 static data in the file will occur after initialization of all other static
 data in the program since a priority of 65 will be assigned.
 .np
-Note that the following is equivalent to the "before" example
+Note that the following is equivalent to the "&pkwbefore." example
 .exam begin
 &pragma initialize 63&epragma
 .exam end
 .pc
-and the following is equivalent to the "after" example.
+and the following is equivalent to the "&pkwafter." example.
 .exam begin
 &pragma initialize 65&epragma
 .exam end
 .pc
-The use of the "before", "after", and "program" keywords are more
+The use of the "&pkwbefore.", "&pkwafter.", and "&pkwprogram." keywords are more
 descriptive in the intent of the pragmas.
 .np
-It is recommended that a priority of 32 (the priority used when the "library"
+It is recommended that a priority of 32 (the priority used when the "&pkwlibrary."
 keyword is specified) be used when developing class libraries.
 This will ensure that initialization of static data defined by the class
 library will take place before initialization of static data defined by the
 program.
 The following "initialize" pragma can be used to achieve this.
 .exam begin
-&pragma initialize library&epragma
+&pragma initialize &pkwlibrary.&epragma
 .exam end
 .*
 .section The INLINE_DEPTH Pragma (C++ Only)
@@ -1108,14 +1121,14 @@ The "inline_recursion" pragma controls the recursive expansion of
 inline functions.
 The form of the "inline_recursion" pragma is as follows.
 .mbox begin
-:prgbeg. inline_recursion on :or. off :prgend.
-:prgbeg. inline_recursion ( on :or. off ) :prgend.
+:prgbeg. inline_recursion &pkwon. :or. &pkwoff. :prgend.
+:prgbeg. inline_recursion ( &pkwon. :or. &pkwoff. ) :prgend.
 .mbox end
 .np
-Specifying "on" will enable expansion of recursive inline functions.
+Specifying "&pkwon." will enable expansion of recursive inline functions.
 The depth of expansion is specified by the "inline_depth" pragma.
 The default depth is 3.
-Specifying "off" suppresses expansion of recursive inline functions.
+Specifying "&pkwoff." suppresses expansion of recursive inline functions.
 This is the default.
 .*
 .section The INTRINSIC Pragma
@@ -1344,9 +1357,9 @@ are stored in memory.
 The forms of the "pack" pragma are as follows.
 .mbox begin
 :prgbeg. pack ( :id.n:eid. ) :prgend.
-:prgbeg. pack ( __push, :id.n:eid. ) :prgend.
-:prgbeg. pack ( __push ) :prgend.
-:prgbeg. pack ( __pop ) :prgend.
+:prgbeg. pack ( &pkwpush., :id.n:eid. ) :prgend.
+:prgbeg. pack ( &pkwpush. ) :prgend.
+:prgbeg. pack ( &pkwpop. ) :prgend.
 .mbox end
 .np
 The following form of the "pack" pragma can be used to change the
@@ -1357,7 +1370,7 @@ alignment of structures and their fields in memory.
 The following form of the "pack" pragma saves the current alignment amount
 on an internal stack before alignment amount change.
 .millust begin
-&pragma pack ( __push, n )&epragma
+&pragma pack ( &pkwpush., n )&epragma
 .millust end
 .np
 .synote
@@ -1415,13 +1428,13 @@ compiler command line option.
 The following form of the "pack" pragma can be used to save the current
 alignment amount on an internal stack.
 .millust begin
-&pragma pack ( __push )&epragma
+&pragma pack ( &pkwpush. )&epragma
 .millust end
 .np
 The following form of the "pack" pragma can be used to restore the
 previous alignment amount from an internal stack.
 .millust begin
-&pragma pack ( __pop )&epragma
+&pragma pack ( &pkwpop. )&epragma
 .millust end
 .*
 .section The READ_ONLY_FILE Pragma
@@ -1750,9 +1763,9 @@ Consider the following example.
 .ix 'Microsoft' 'C calling convention'
 .ix 'calling convention' 'Microsoft C'
 .millust begin
-&pragma aux MS_C "_*"                                  \
-                 &pkwparm. &pkwcaller. []                        \
-                 &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwroutine. [&pregxax.]\
+&pragma aux MS_C "_*" \
+                 &pkwparm. &pkwcaller. [] \
+                 &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwroutine. [&pregxax.] \
                  &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx. &preges.]&epragma.
 &pragma aux (MS_C) rtn1&epragma
 &pragma aux (MS_C) rtn2&epragma
@@ -1763,9 +1776,9 @@ Consider the following example.
 .ix 'MetaWare' 'High C calling convention'
 .ix 'calling convention' 'MetaWare High C'
 .millust begin
-&pragma aux HIGH_C "*"                                 \
-                   &pkwparm. &pkwcaller. []                      \
-                   &pkwvalue. &pkwno8087.                        \
+&pragma aux HIGH_C "*" \
+                   &pkwparm. &pkwcaller. [] \
+                   &pkwvalue. &pkwno8087. \
                    &pkwmodify. [&pregxax. &pregxcx. &pregxdx. &pregfs. &preggs.]&epragma.
 &pragma aux (HIGH_C) rtn1&epragma
 &pragma aux (HIGH_C) rtn2&epragma
@@ -2326,7 +2339,7 @@ way a &function is to be called.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.&pinstseg.:id. id) | (:eid.&pinstoffse.:id. id) | (:eid.&pinstrelof.:id. id) | (:eid.&pinstfloat.:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.&pfixseg.:id. id) | (:eid.&pfixoffset.:id. id) | (:eid.&pfixreloff.:id. id) | (:eid.&pfixfloat.:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -2338,7 +2351,7 @@ way a &function is to be called.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.&pinstseg.:id. id) | (:eid.&pinstoffse.:id. id) | (:eid.&pinstrelof.:id. id) | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.&pfixseg.:id. id) | (:eid.&pfixoffset.:id. id) | (:eid.&pfixreloff.:id. id) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -2354,7 +2367,7 @@ way a &function is to be called.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid.
 
-:id.in_line ::= { const | :eid.":id.asm:eid.":id. | (:eid.&pinstfloat.:id. fpinst) }:eid.
+:id.in_line ::= { const | :eid.":id.asm:eid.":id. | (:eid.&pfixfloat.:id. fpinst) }:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -2390,21 +2403,21 @@ is a valid &lang hexadecimal constant.
 .note fpinst
 is a sequence of bytes that forms a valid 80x87 instruction.
 The keyword
-.kw &pinstfloat.
+.kw &pfixfloat.
 must precede
 .id fpinst
 so that special fixups are applied to the 80x87 instruction.
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.note &pinstseg.
+.note &pfixseg.
 specifies the segment of the symbol
 .id id
 .period
-.note &pinstoffse.
+.note &pfixoffset.
 specifies the offset of the symbol
 .id id
 .period
-.note &pinstrelof.
+.note &pfixreloff.
 specifies the relative offset of the symbol
 .id id
 for near control transfers.
@@ -2450,7 +2463,7 @@ is called an in-line &function..
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void mode4(void);
-&pragma aux mode4 =                \
+&pragma aux mode4 =               \
     0xb4 0x00       /* mov AH,0 */ \
     0xb0 0x04       /* mov AL,4 */ \
     0xcd 0x10       /* int 10H  */ \
@@ -2492,7 +2505,7 @@ the binary encoding of the assembly language instructions.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void mode4(void);
-&pragma aux mode4 =     \
+&pragma aux mode4 =    \
     "mov AH,0",         \
     "mov AL,4",         \
     "int 10H"           \
@@ -2513,7 +2526,7 @@ void mode4(void);
 .ix 'in-line 80x87 floating-point instructions'
 If a sequence of in-line assembly language instructions contains 80x87
 floating-point instructions, each floating-point instruction must be
-preceded by "&pinstfloat.".
+preceded by "&pfixfloat.".
 Note that this is only required if you have specified the "fpi"
 compiler option; otherwise it will be ignored.
 .np
@@ -2522,13 +2535,13 @@ The following example generates the 80x87 "square root" instruction.
 .millust begin
 double mysqrt(double);
 &pragma aux mysqrt &pkwparm. [&preg8087.] = \
-    &pinstfloat. 0xd9 0xfa /* fsqrt */&epragma
+    &pfixfloat. 0xd9 0xfa /* fsqrt */&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
 &pragma aux mysqrt &pkwparm.( value ) [&preg8087.] = \
-*            &pinstfloat. zd9fa&epragma
+*            &pfixfloat. zd9fa&epragma
 .millust end
 .do end
 .do end
@@ -2545,8 +2558,8 @@ is called.
 .millust begin
 extern void myalias(void);
 void myrtn(void);
-&pragma aux myrtn =                     \
-    0xe8 &pinstrelof. myalias /* near call */&epragma
+&pragma aux myrtn = \
+    0xe8 &pfixreloff. myalias /* near call */&epragma
 .millust end
 .pc
 In the following example, a far call to the function
@@ -2557,8 +2570,8 @@ is called.
 .millust begin
 extern void myalias(void);
 void myrtn(void);
-&pragma aux myrtn =                                \
-    0x9a &pinstoffse. myalias &pinstseg. myalias /* far call */&epragma
+&pragma aux myrtn = \
+    0x9a &pfixoffset. myalias &pfixseg. myalias /* far call */&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' and '&machine' eq '80386' .do begin
@@ -3296,18 +3309,18 @@ Consider the following DOS example of an in-line &function called
 .millust begin
 void scrollactivepgup(char,char,char,char,char,char);
 &pragma aux scrollactivepgup = \
-    "mov AH,6"   \
-    "int 10h"    \
+    "mov AH,6" \
+    "int 10h" \
     &pkwparm. [&pregch.] [&pregcl.] [&pregdh.] [&pregdl.] [&pregal.] [&pregbh.] \
     &pkwmodify. [&pregah.]&epragma.
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-&pragma aux scrollactivepgup =        \
-*   "mov AH,6"                         \
-*   "int 10h"                          \
-*   &pkwparm. (value)                     \
+&pragma aux scrollactivepgup = \
+*   "mov AH,6" \
+*   "int 10h" \
+*   &pkwparm. (value) \
 *        [&pregch.] [&pregcl.] [&pregdh.] [&pregdl.] [&pregal.] [&pregbh.] \
 *   &pkwmodify. [&pregah.]&epragma.
 .millust end
@@ -4967,9 +4980,9 @@ As mentioned in an earlier section, the following pragma defines the
 calling convention for functions compiled by MetaWare's High C
 compiler.
 .millust begin
-&pragma aux HIGH_C "*"                                 \
-                   &pkwparm. &pkwcaller. []                      \
-                   &pkwvalue. &pkwno8087.                        \
+&pragma aux HIGH_C "*" \
+                   &pkwparm. &pkwcaller. [] \
+                   &pkwvalue. &pkwno8087. \
                    &pkwmodify. [&pregxax. &pregxcx. &pregxdx. &pregfs. &preggs.]&epragma.
 .millust end
 .pc
@@ -5007,9 +5020,9 @@ calling convention for functions compiled by Microsoft C.
 .ix 'Microsoft' 'C calling convention'
 .ix 'calling convention' 'Microsoft C'
 .millust begin
-&pragma aux MS_C "_*"                                  \
-                 &pkwparm. &pkwcaller. []                        \
-                 &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwroutine. [&pregxax.]\
+&pragma aux MS_C "_*" \
+                 &pkwparm. &pkwcaller. [] \
+                 &pkwvalue. &pkwstruct. &pkwfloat. &pkwstruct. &pkwroutine. [&pregxax.] \
                  &pkwmodify. [&pregxax. &pregxbx. &pregxcx. &pregxdx. &preges.]&epragma.
 .millust end
 .np
