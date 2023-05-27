@@ -867,7 +867,7 @@ The following is an example.
 #elseif defined(__86__)
     ...
 #else
-&pragma error ( "neither __386__ or __86__ defined" )&epragma
+&pragma error "neither __386__ or __86__ defined"&epragma
 #endif
 .millust end
 .*
