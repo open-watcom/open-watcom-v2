@@ -39,8 +39,7 @@
 ..sr target='PC'
 .* ..sr target='PC 370'
 .* ..sr target='370'
-.* ..sr targetQNX=1
-..sr targetQNX=0
+.* ..sr target='QNX'
 :SET symbol='userguide' value="User's Guide".
 :SET symbol='pragma'    value="User's Guide".
 :SET symbol='libref'    value="&company C Library Reference manual".
@@ -74,7 +73,7 @@
 .           :INCLUDE file='preface'.
 .           :INCLUDE file='thanks'.
 .           :INCLUDE file='trademrk'.
-.           ..if &targetQNX = 0 ..th ..do begin
+.           ..if '&target.' ne 'QNX' ..th ..do begin
 .           .  :INCLUDE file='newslett'.
 .           ..do end
 .   .pa odd
