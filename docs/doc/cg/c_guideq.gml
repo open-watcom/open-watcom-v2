@@ -58,16 +58,20 @@
 .sepsect 16-bit Topics
 .*
 :set symbol="machine"    value="8086".
+.helppref 16-bit:
 :INCLUDE file='WMODELS'.
 :INCLUDE file='CCALL'.
 :INCLUDE file='PRAGMA'.
+.helppref
 .*
 .sepsect 32-bit Topics
 .*
 :set symbol="machine"    value="80386".
+.helppref 32-bit:
 :INCLUDE file='WMODL386'.
 :INCLUDE file='CCALL'.
 :INCLUDE file='PRAGMA'.
+.helppref
 .*
 .sepsect In-line Assembly Language
 .*

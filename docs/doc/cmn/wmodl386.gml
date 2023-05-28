@@ -286,10 +286,4 @@ emu387.lib      -mf, -ms    -fpi
 noemu387.lib    -mf, -ms    -fpi87
 .code end
 .do end
-.if &e'&dohelp ne 0 .do begin
-.   .helppref 32-bit
-.do end
 .im wmemlay
-.if &e'&dohelp ne 0 .do begin
-.   .helppref
-.do end

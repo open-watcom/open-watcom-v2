@@ -272,15 +272,6 @@
 .*
 .im pragstx
 .*
-.if &e'&dohelp ne 0 .do begin
-.   .if '&machine' eq '8086' .do begin
-.   .   .helppref 16-bit:
-.   .do end
-.   .el .do begin
-.   .   .helppref 32-bit:
-.   .do end
-.do end
-.*
 .pc
 The following classes of pragmas are supported.
 .begbull
@@ -5386,12 +5377,3 @@ in the 80x87 cache before calling the specified routine.
 .endlevel
 .*
 .endlevel
-.*
-.if &e'&dohelp ne 0 .do begin
-.   .if '&machine' eq '8086' .do begin
-.   .   .helppref
-.   .do end
-.   .el .do begin
-.   .   .helppref
-.   .do end
-.do end

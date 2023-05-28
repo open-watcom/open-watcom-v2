@@ -14,14 +14,6 @@
 .section Introduction
 .*
 .do end
-.el .do begin
-.   .if '&machine' eq '8086' .do begin
-.   .   .helppref 16-bit:
-.   .do end
-.   .el .do begin
-.   .   .helppref 32-bit:
-.   .do end
-.do end
 .np
 This chapter will deal with the following topics.
 .autonote
