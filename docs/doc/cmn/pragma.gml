@@ -31,7 +31,7 @@
 .   .   :set symbol="winopt" value="windows".
 .   .do end
 .   :set symbol="pragcont" value="c".
-.   :set symbol="pragpref" value="".
+.   :set symbol="pkwpref" value="".
 .do end
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
@@ -61,45 +61,45 @@
 .   .   :set symbol="other_cmp" value="MetaWare High C".
 .   .do end
 .   :set symbol="pragcont" value="".
-.   :set symbol="pragpref" value="__".
+.   :set symbol="pkwpref" value="__".
 .do end
 .*
-:set symbol="pkwparm" value="&pragpref.parm".
-:set symbol="pkwcaller" value="&pragpref.caller".
-:set symbol="pkwroutine" value="&pragpref.routine".
-:set symbol="pkwvalue" value="&pragpref.value".
-:set symbol="pkwmodify" value="&pragpref.modify".
-:set symbol="pkwno8087" value="&pragpref.no8087".
-:set symbol="pkwstruct" value="&pragpref.struct".
-:set symbol="pkwfloat" value="&pragpref.float".
-:set symbol="pkwreverse" value="&pragpref.reverse".
-:set symbol="pkwloadds" value="&pragpref.loadds".
-:set symbol="pkwrdosdev" value="&pragpref.rdosdev".
-:set symbol="pkwnomemor" value="&pragpref.nomemory".
-:set symbol="pkwexact" value="&pragpref.exact".
-:set symbol="pkwfar" value="&pragpref.far".
-:set symbol="pkwnear" value="&pragpref.near".
-:set symbol="pkwfar16" value="&pragpref.far16".
-:set symbol="pkwexport" value="&pragpref.export".
-:set symbol="pkwframe" value="&pragpref.frame".
-:set symbol="pkwaborts" value="&pragpref.aborts".
-:set symbol="pkwon" value="&pragpref.on".
-:set symbol="pkwoff" value="&pragpref.off".
-:set symbol="pkwafter" value="&pragpref.after".
-:set symbol="pkwbefore" value="&pragpref.before".
-:set symbol="pkwlibrary" value="&pragpref.library".
-:set symbol="pkwprogram" value="&pragpref.program".
-:set symbol="pkwint" value="&pragpref.int".
-:set symbol="pkwminimum" value="&pragpref.minimum".
-:set symbol="pkworigina" value="&pragpref.original".
-:set symbol="pkwpush" value="&pragpref.push".
-:set symbol="pkwpop" value="&pragpref.pop".
-:set symbol="pkwlib" value="&pragpref.lib".
+:set symbol="pkwparm" value="&pkwpref.parm".
+:set symbol="pkwcaller" value="&pkwpref.caller".
+:set symbol="pkwroutine" value="&pkwpref.routine".
+:set symbol="pkwvalue" value="&pkwpref.value".
+:set symbol="pkwmodify" value="&pkwpref.modify".
+:set symbol="pkwno8087" value="&pkwpref.no8087".
+:set symbol="pkwstruct" value="&pkwpref.struct".
+:set symbol="pkwfloat" value="&pkwpref.float".
+:set symbol="pkwreverse" value="&pkwpref.reverse".
+:set symbol="pkwloadds" value="&pkwpref.loadds".
+:set symbol="pkwrdosdev" value="&pkwpref.rdosdev".
+:set symbol="pkwnomemor" value="&pkwpref.nomemory".
+:set symbol="pkwexact" value="&pkwpref.exact".
+:set symbol="pkwfar" value="&pkwpref.far".
+:set symbol="pkwnear" value="&pkwpref.near".
+:set symbol="pkwfar16" value="&pkwpref.far16".
+:set symbol="pkwexport" value="&pkwpref.export".
+:set symbol="pkwframe" value="&pkwpref.frame".
+:set symbol="pkwaborts" value="&pkwpref.aborts".
+:set symbol="pkwon" value="&pkwpref.on".
+:set symbol="pkwoff" value="&pkwpref.off".
+:set symbol="pkwafter" value="&pkwpref.after".
+:set symbol="pkwbefore" value="&pkwpref.before".
+:set symbol="pkwlibrary" value="&pkwpref.library".
+:set symbol="pkwprogram" value="&pkwpref.program".
+:set symbol="pkwint" value="&pkwpref.int".
+:set symbol="pkwminimum" value="&pkwpref.minimum".
+:set symbol="pkworigina" value="&pkwpref.original".
+:set symbol="pkwpush" value="&pkwpref.push".
+:set symbol="pkwpop" value="&pkwpref.pop".
+:set symbol="pkwlib" value="&pkwpref.lib".
 .*
-:set symbol="pfixfloat" value="&pragpref.float".
-:set symbol="pfixseg" value="&pragpref.seg".
-:set symbol="pfixoffset" value="&pragpref.offset".
-:set symbol="pfixreloff" value="&pragpref.reloff".
+:set symbol="pfixfloat" value="&pkwpref.float".
+:set symbol="pfixseg" value="&pkwpref.seg".
+:set symbol="pfixoffset" value="&pkwpref.offset".
+:set symbol="pfixreloff" value="&pkwpref.reloff".
 .*
 :set symbol="regal" value="AL".
 :set symbol="regah" value="AH".
@@ -110,16 +110,16 @@
 :set symbol="regdl" value="DL".
 :set symbol="regdh" value="DH".
 .*
-:set symbol="pregal" value="&pragpref.al".
-:set symbol="pregah" value="&pragpref.ah".
-:set symbol="pregbl" value="&pragpref.bl".
-:set symbol="pregbh" value="&pragpref.bh".
-:set symbol="pregcl" value="&pragpref.cl".
-:set symbol="pregch" value="&pragpref.ch".
-:set symbol="pregdl" value="&pragpref.dl".
-:set symbol="pregdh" value="&pragpref.dh".
+:set symbol="pregal" value="&pkwpref.al".
+:set symbol="pregah" value="&pkwpref.ah".
+:set symbol="pregbl" value="&pkwpref.bl".
+:set symbol="pregbh" value="&pkwpref.bh".
+:set symbol="pregcl" value="&pkwpref.cl".
+:set symbol="pregch" value="&pkwpref.ch".
+:set symbol="pregdl" value="&pkwpref.dl".
+:set symbol="pregdh" value="&pkwpref.dh".
 .*
-:set symbol="preg8087" value="&pragpref.8087".
+:set symbol="preg8087" value="&pkwpref.8087".
 .*
 :set symbol="regds" value="DS".
 :set symbol="reges" value="ES".
@@ -127,11 +127,11 @@
 :set symbol="regfs" value="FS".
 :set symbol="reggs" value="GS".
 .*
-:set symbol="pregds" value="&pragpref.ds".
-:set symbol="preges" value="&pragpref.es".
-:set symbol="pregss" value="&pragpref.ss".
-:set symbol="pregfs" value="&pragpref.fs".
-:set symbol="preggs" value="&pragpref.gs".
+:set symbol="pregds" value="&pkwpref.ds".
+:set symbol="preges" value="&pkwpref.es".
+:set symbol="pregss" value="&pkwpref.ss".
+:set symbol="pregfs" value="&pkwpref.fs".
+:set symbol="preggs" value="&pkwpref.gs".
 .*
 :set symbol="regax" value="AX".
 :set symbol="regbx" value="BX".
@@ -152,14 +152,14 @@
 .   :set symbol="regxsp" value="SP".
 .   :set symbol="regxbp" value="BP".
 .*
-.   :set symbol="pregxax" value="&pragpref.ax".
-.   :set symbol="pregxbx" value="&pragpref.bx".
-.   :set symbol="pregxcx" value="&pragpref.cx".
-.   :set symbol="pregxdx" value="&pragpref.dx".
-.   :set symbol="pregxdi" value="&pragpref.di".
-.   :set symbol="pregxsi" value="&pragpref.si".
-.   :set symbol="pregxsp" value="&pragpref.sp".
-.   :set symbol="pregxbp" value="&pragpref.bp".
+.   :set symbol="pregxax" value="&pkwpref.ax".
+.   :set symbol="pregxbx" value="&pkwpref.bx".
+.   :set symbol="pregxcx" value="&pkwpref.cx".
+.   :set symbol="pregxdx" value="&pkwpref.dx".
+.   :set symbol="pregxdi" value="&pkwpref.di".
+.   :set symbol="pregxsi" value="&pkwpref.si".
+.   :set symbol="pregxsp" value="&pkwpref.sp".
+.   :set symbol="pregxbp" value="&pkwpref.bp".
 .*
 .   :set symbol="reg32" value="pair DX:AX".
 .   :set symbol="intsize" value="2".
@@ -188,14 +188,14 @@
 .   :set symbol="regxsp" value="ESP".
 .   :set symbol="regxbp" value="EBP".
 .*
-.   :set symbol="pregxax" value="&pragpref.eax".
-.   :set symbol="pregxbx" value="&pragpref.ebx".
-.   :set symbol="pregxcx" value="&pragpref.ecx".
-.   :set symbol="pregxdx" value="&pragpref.edx".
-.   :set symbol="pregxdi" value="&pragpref.edi".
-.   :set symbol="pregxsi" value="&pragpref.esi".
-.   :set symbol="pregxsp" value="&pragpref.esp".
-.   :set symbol="pregxbp" value="&pragpref.ebp".
+.   :set symbol="pregxax" value="&pkwpref.eax".
+.   :set symbol="pregxbx" value="&pkwpref.ebx".
+.   :set symbol="pregxcx" value="&pkwpref.ecx".
+.   :set symbol="pregxdx" value="&pkwpref.edx".
+.   :set symbol="pregxdi" value="&pkwpref.edi".
+.   :set symbol="pregxsi" value="&pkwpref.esi".
+.   :set symbol="pregxsp" value="&pkwpref.esp".
+.   :set symbol="pregxbp" value="&pkwpref.ebp".
 .*
 .   :set symbol="reg32" value="EAX".
 .   :set symbol="intsize" value="4".
@@ -4947,18 +4947,18 @@ told it that "GetSP" does not modify any register whatsoever.
 .exam begin
 unsigned GetSP(void);
 #if defined(__386__)
-&pragma aux GetSP = &pkwvalue. [&pragpref.esp] &pkwmodify. &pkwexact. []&epragma
+&pragma aux GetSP = &pkwvalue. [&pkwpref.esp] &pkwmodify. &pkwexact. []&epragma
 #else
-&pragma aux GetSP = &pkwvalue. [&pragpref.sp] &pkwmodify. &pkwexact. []&epragma
+&pragma aux GetSP = &pkwvalue. [&pkwpref.sp] &pkwmodify. &pkwexact. []&epragma
 #endif
 .exam end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exam begin
 *$ifdef __386__
-&pragma aux GetSP = &pkwvalue. [&pragpref.esp] &pkwmodify. &pkwexact. []&epragma
+&pragma aux GetSP = &pkwvalue. [&pkwpref.esp] &pkwmodify. &pkwexact. []&epragma
 *$else
-&pragma aux GetSP = &pkwvalue. [&pragpref.sp] &pkwmodify. &pkwexact. []&epragma
+&pragma aux GetSP = &pkwvalue. [&pkwpref.sp] &pkwmodify. &pkwexact. []&epragma
 *$endif
 
       program main
