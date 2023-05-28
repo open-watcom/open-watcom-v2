@@ -387,8 +387,6 @@ or nonnormal number.
 .endnote
 .endlevel
 .*
-.im wmemlay
-.*
 .section Calling Conventions for Non-80x87 Applications
 .*
 .np

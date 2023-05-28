@@ -487,8 +487,6 @@ the size of the storage.
 .*
 .endlevel
 .*
-.im WMEMLAY
-.*
 .section Writing Assembly Language Subprograms
 .*
 .np
