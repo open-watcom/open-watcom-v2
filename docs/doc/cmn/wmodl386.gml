@@ -7,7 +7,7 @@
 :set symbol="functions" value="subprograms".
 .do end
 .*
-.chap *refid=mdl386 32-bit Memory Models
+.chap *refid=mdl386 Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
 .*
@@ -22,7 +22,7 @@ Each memory model is distinguished by two properties; the code model
 used to implement &function calls and the data model used to reference
 data.
 .*
-.section 32-bit Code Models
+.section Code Models
 .*
 .np
 There are two code models;
@@ -60,7 +60,7 @@ This will result in smaller and faster code since near calls are
 smaller instructions and are processed faster by the CPU.
 .eremark
 .*
-.section 32-bit Data Models
+.section Data Models
 .*
 .np
 There are two data models;
@@ -104,7 +104,7 @@ This will result in smaller and faster code since references using
 near pointers produce fewer instructions.
 .eremark
 .*
-.section Summary of 32-bit Memory Models
+.section Summary of Memory Models
 .*
 .np
 As previously mentioned, a memory model is a combination of a code
@@ -151,7 +151,7 @@ That is, a given offset in one segment refers to the same memory
 location as that offset in another segment.
 Essentially, a flat model operates as if there were no segments.
 .*
-.section Mixed 32-bit Memory Model
+.section Mixed Memory Model
 .*
 .np
 .ix 'mixed memory model'
@@ -192,7 +192,7 @@ Data objects outside of the DGROUP segment are described with the
 keyword.
 .do end
 .*
-.section Linking Applications for the Various 32-bit Memory Models
+.section Linking Applications for the Various Memory Models
 .*
 .np
 .ix 'memory models' 'libraries'

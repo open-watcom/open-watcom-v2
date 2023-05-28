@@ -1,3 +1,18 @@
+.if '&machine' eq '8086' .do begin
+:set symbol="mdlref" value="mdl86".
+:set symbol="mdlbits" value="16-bit".
+:set symbol="mdlsize" value="16".
+:set symbol="mdlptrsize" value="32".
+:set symbol="mdlmaxsize" value="64kB".
+.do end
+.el .do begin
+:set symbol="mdlref" value="mdl386".
+:set symbol="mdlbits" value="32-bit".
+:set symbol="mdlsize" value="32".
+:set symbol="mdlptrsize" value="48".
+:set symbol="mdlmaxsize" value="4GB".
+.do end
+.*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 :set symbol="function"  value="function".
 :set symbol="functions" value="functions".
@@ -7,22 +22,20 @@
 :set symbol="functions" value="subprograms".
 .do end
 .*
-.chap *refid=mdl86 16-bit Memory Models
+.chap *refid=&mdlref. Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
-.*
 .section Introduction
-.*
 .do end
 .np
-.ix 'memory models' '16-bit'
-This chapter describes the various 16-bit memory models supported by
+.ix 'memory models' '&mdlbits.'
+This chapter describes the various memory models supported by
 &cmpname..
 Each memory model is distinguished by two properties; the code model
 used to implement &function calls and the data model used to reference
 data.
 .*
-.section 16-bit Code Models
+.section Code Models
 .*
 .np
 There are two code models;
@@ -39,10 +52,10 @@ the big code model.
 A small code model is one in which all calls to &functions are made
 with
 .us near calls.
-In a near call, the destination address is 16 bits and is relative to
+In a near call, the destination address is &mdlsize. bits and is relative to
 the segment value in segment register CS.
 Hence, in a small code model, all code comprising your program,
-including library &functions, must be less than 64K.
+including library &functions, must be less than &mdlmaxsize..
 .if '&lang' eq 'FORTRAN 77' .do begin
 &cmpname does not support the small code model.
 .do end
@@ -52,20 +65,20 @@ including library &functions, must be less than 64K.
 .ix 'far call'
 A big code model is one in which all calls to &functions are made with
 .us far calls.
-In a far call, the destination address is 32 bits (a segment value and
+In a far call, the destination address is &mdlptrsize. bits (a segment value and
 an offset relative to the segment value).
 This model allows the size of the code comprising your program to
-exceed 64K.
+exceed &mdlmaxsize..
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .remark
-If your program contains less than 64K of code, you should use a memory
+If your program contains less than &mdlmaxsize. of code, you should use a memory
 model that employs the small code model.
 This will result in smaller and faster code since near calls are
 smaller instructions and are processed faster by the CPU.
 .eremark
 .do end
 .*
-.section 16-bit Data Models
+.section Data Models
 .*
 .np
 There are three data models;
@@ -83,27 +96,27 @@ the huge data model.
 A small data model is one in which all references to data are made
 with
 .us near pointers.
-Near pointers are 16 bits; all data references are made relative to
+Near pointers are &mdlsize. bits; all data references are made relative to
 the segment value in segment register DS.
 Hence, in a small data model, all data comprising your program must be
-less than 64K.
+less than &mdlmaxsize..
 .np
 .ix 'big data model'
 .ix 'data models' 'big'
 A big data model is one in which all references to data are made with
 .us far pointers.
-Far pointers are 32 bits (a segment value and an offset relative to
+Far pointers are &mdlptrsize. bits (a segment value and an offset relative to
 the segment value).
-This removes the 64K limitation on data size imposed by the small data
+This removes the &mdlmaxsize. limitation on data size imposed by the small data
 model.
 However, when a far pointer is incremented, only the offset is
 adjusted.
 &cmpname assumes that the offset portion of a far pointer will not be
-incremented beyond 64K.
+incremented beyond &mdlmaxsize..
 The compiler will assign an object to a new segment if the grouping of
 data in a segment will cause the object to cross a segment boundary.
 Implicit in this is the requirement that no individual object exceed
-64K bytes.
+&mdlmaxsize..
 For example, an array containing 40,000 integers does not fit into
 the big data model.
 An object such as this should be described as
@@ -124,12 +137,12 @@ imposed by the big data model is removed in the huge data model.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .note
 The huge data model has the same characteristics as the big data
-model, but formal array arguments are assumed to exceed 64K bytes.
+model, but formal array arguments are assumed to exceed &mdlmaxsize..
 You should use the huge data model whenever any arrays in your
-application exceed 64K bytes in size.
+application exceed &mdlmaxsize. in size.
 .do end
 .note
-If your program contains less than 64K of data, you should use the
+If your program contains less than &mdlmaxsize. of data, you should use the
 small data model.
 This will result in smaller and faster code since references using
 near pointers produce fewer instructions.
@@ -141,7 +154,7 @@ This increases the size of the code significantly and increases
 execution time.
 .endnote
 .*
-.section Summary of 16-bit Memory Models
+.section Summary of Memory Models
 .*
 .np
 As previously mentioned, a memory model is a combination of a code
@@ -195,7 +208,7 @@ huge        big         huge        far         huge
 .np
 .ix 'memory models' 'tiny'
 In the tiny memory model, the application's code and data must total
-less than 64K bytes in size.
+less than &mdlmaxsize. in size.
 All code and data are placed in the same segment.
 Use of the tiny memory model allows the creation of a COM file for
 the executable program instead of an EXE file.
@@ -204,7 +217,7 @@ For more information, see the section entitled
 .do end
 .do end
 .*
-.section Mixed 16-bit Memory Model
+.section Mixed Memory Model
 .*
 .np
 .ix 'mixed memory model'
@@ -223,7 +236,7 @@ keywords when describing some of its &functions or data objects.
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 A mixed memory model application might be characterized as one that
-includes arrays which are larger than 64K bytes.
+includes arrays which are larger than &mdlmaxsize..
 .do end
 .np
 For example, a medium memory model application that uses some
@@ -231,10 +244,10 @@ For example, a medium memory model application that uses some
 far pointers to data
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
-arrays which exceed 64K bytes in total size
+arrays which exceed &mdlmaxsize. in total size
 .do end
 can be described as a mixed memory model.
-In an application such as this, most of the data is in a 64K segment
+In an application such as this, most of the data is in a &mdlmaxsize. segment
 (DGROUP) and hence can be referenced with near pointers relative to
 the segment value in segment register DS.
 This results in more efficient code being generated and better
@@ -245,7 +258,7 @@ Data objects outside of the DGROUP segment are described with the
 keyword.
 .do end
 .*
-.section Linking Applications for the Various 16-bit Memory Models
+.section Linking Applications for the Various Memory Models
 .*
 .np
 .ix 'memory models' 'libraries'
@@ -422,7 +435,7 @@ This message may be ignored.
 :cmt.exe2. The specified file %s could not be opened.
 :cmt.exe2. Check that the file exists.
 :cmt.exe2. .note EXE file too large
-:cmt.exe2. The executable (EXE) file contains more than 64K of code and data.
+:cmt.exe2. The executable (EXE) file contains more than &mdlmaxsize. of code and data.
 :cmt.exe2. .note STACK segment ignored
 :cmt.exe2. The "STACK" segment in an EXE file is not included in the COM file.
 :cmt.exe2. .note Invalid start address

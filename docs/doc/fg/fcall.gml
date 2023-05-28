@@ -1,13 +1,11 @@
 .if '&machine' eq '8086' .do begin
 :set symbol="calref" value="cal86".
-:set symbol="calttl" value="16-bit Assembly Language Considerations".
 .do end
 .el .do begin
 :set symbol="calref" value="cal386".
-:set symbol="calttl" value="32-bit Assembly Language Considerations".
 .do end
 .*
-.chap *refid=&calref. &calttl.
+.chap *refid=&calref. Assembly Language Considerations
 .*
 .if &e'&dohelp eq 0 .do begin
 .*

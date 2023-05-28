@@ -173,7 +173,6 @@
 .   .do end
 .   :set symbol="pragref" value="prg86".
 .   :set symbol="praglib" value="prgl86".
-.   :set symbol="pragttl" value="16-bit Pragmas".
 .   :set symbol="pragx87" value="prg87".
 .   :set symbol="pragenbl" value="prgen16".
 .   :set symbol="pragdsbl" value="prgds16".
@@ -210,7 +209,6 @@
 .   .do end
 .   :set symbol="pragref" value="prg386".
 .   :set symbol="praglib" value="prgl386".
-.   :set symbol="pragttl" value="32-bit Pragmas".
 .   :set symbol="pragx87" value="prg387".
 .   :set symbol="pragenbl" value="prgen32".
 .   :set symbol="pragdsbl" value="prgds32".
@@ -268,7 +266,7 @@
 .gt prgend add @prgend cont texterror tagnext
 .do end
 .*
-.chap *refid=&pragref. &pragttl.
+.chap *refid=&pragref. Pragmas
 .*
 .im pragstx
 .*

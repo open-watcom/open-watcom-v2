@@ -1,6 +1,5 @@
 .if '&machine' eq '8086' .do begin
 :set symbol="calref" value="cal86".
-:set symbol="calttl" value="16-bit Assembly Language Considerations".
 :set symbol="machint" value="short int".
 :set symbol="intsize" value="2".
 :set symbol="maxint" value="32767".
@@ -36,7 +35,6 @@
 .do end
 .el .do begin
 :set symbol="calref" value="cal386".
-:set symbol="calttl" value="32-bit Assembly Language Considerations".
 :set symbol="machint" value="long int".
 :set symbol="intsize" value="4".
 :set symbol="maxint" value="2147483647".
@@ -71,7 +69,7 @@
 :set symbol="fargsz" value="8".
 .do end
 .*
-.chap *refid=&calref. &calttl.
+.chap *refid=&calref. Assembly Language Considerations
 .*
 .ix 'calling conventions'
 .*
