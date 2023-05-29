@@ -56,7 +56,7 @@ In a near call, the destination address is &mdlsize. bits and is relative to
 the segment value in segment register CS.
 Hence, in a small code model, all code comprising your program,
 including library &functions, must be less than &mdlmaxsize..
-.if '&lang' eq 'FORTRAN 77' .do begin
+.if '&machine' eq '8086' and '&lang' eq 'FORTRAN 77' .do begin
 &cmpname does not support the small code model.
 .do end
 .np
@@ -69,7 +69,7 @@ In a far call, the destination address is &mdlptrsize. bits
 (a 16-bit segment value and a &mdlbits. offset relative to the segment value).
 This model allows the size of the code comprising your program to
 exceed &mdlmaxsize..
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.if '&machine' eq '80386' or '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .remark
 If your program contains less than &mdlmaxsize. of code, you should use a memory
 model that employs the small code model.
@@ -171,21 +171,20 @@ As previously mentioned, a memory model is a combination of a code
 model and a data model.
 The following table describes the memory models supported by
 &cmpname..
+.if '&machine' eq '8086' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .ix 'tiny memory model'
 .ix 'memory models' 'tiny'
 .ix 'small memory model'
 .ix 'memory models' 'small'
-.ix 'compact memory model'
-.ix 'memory models' 'compact'
-.do end
 .ix 'medium memory model'
 .ix 'memory models' 'medium'
+.ix 'compact memory model'
+.ix 'memory models' 'compact'
 .ix 'large memory model'
 .ix 'memory models' 'large'
 .ix 'huge memory model'
 .ix 'memory models' 'huge'
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 Memory      Code        Data        Default     Default
 Model       Model       Model       Code        Data
@@ -200,6 +199,12 @@ huge        big         huge        far         huge
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
+.ix 'medium memory model'
+.ix 'memory models' 'medium'
+.ix 'large memory model'
+.ix 'memory models' 'large'
+.ix 'huge memory model'
+.ix 'memory models' 'huge'
 .millust begin
 Memory      Code        Data        Default     Default
 Model       Model       Model       Code        Data
@@ -210,8 +215,33 @@ large       big         big         far         far
 huge        big         huge        far         huge
 .millust end
 .do end
+.do end
+.el .do begin
+.ix 'flat memory model'
+.ix 'memory models' 'flat'
+.ix 'small memory model'
+.ix 'memory models' 'small'
+.ix 'medium memory model'
+.ix 'memory models' 'medium'
+.ix 'compact memory model'
+.ix 'memory models' 'compact'
+.ix 'large memory model'
+.ix 'memory models' 'large'
+.millust begin
+Memory      Code        Data        Default     Default
+Model       Model       Model       Code        Data
+                                    Pointer     Pointer
+--------    --------    --------    --------    --------
+flat        small       small       near        near
+small       small       small       near        near
+medium      big         small       far         near
+compact     small       big         near        far
+large       big         big         far         far
+.millust end
+.do end
+.*
+.if '&machine' eq '8086' and '&target' ne 'QNX' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.if '&target' ne 'QNX' .do begin
 .*
 .section Tiny Memory Model
 .*
@@ -227,6 +257,22 @@ For more information, see the section entitled
 .do end
 .do end
 .*
+.if '&machine' eq '80386' .do begin
+.*
+.section Flat Memory Model
+.*
+.np
+.ix 'memory models' 'flat'
+In the flat memory model, the application's code and data must total
+less than &mdlmaxsize. in size.
+Segment registers CS, DS, SS and ES point to the same linear address
+space (this does not imply that the segment registers contain the same
+value).
+That is, a given offset in one segment refers to the same memory
+location as that offset in another segment.
+Essentially, a flat model operates as if there were no segments.
+.do end
+.*
 .section Mixed Memory Model
 .*
 .np
@@ -237,11 +283,18 @@ code and data models.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 A mixed memory model application might be characterized as one that
 uses the
+.if '&machine' eq '8086' .do begin
 .kw near
 .ct ,
 .kw far
 .ct , or
 .kw huge
+.do end
+.if '&machine' eq '80386' .do begin
+.kw near
+.ct , or
+.kw far
+.do end
 keywords when describing some of its &functions or data objects.
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -353,8 +406,8 @@ emu87.lib       -mm, -ml, -mh    -fpi
 noemu87.lib     -mm, -ml, -mh    -fpi87
 .code end
 .do end
+.if '&machine' eq '8086' and '&target' ne 'QNX' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.if '&target' ne 'QNX' .do begin
 .*
 .section Creating a Tiny Memory Model Application
 .*
