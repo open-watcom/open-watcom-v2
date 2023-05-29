@@ -117,6 +117,7 @@ The compiler will assign an object to a new segment if the grouping of
 data in a segment will cause the object to cross a segment boundary.
 Implicit in this is the requirement that no individual object exceed
 &mdlmaxsize..
+.if '&machine' eq '8086' .do begin
 For example, an array containing 40,000 integers does not fit into
 the big data model.
 An object such as this should be described as
@@ -142,17 +143,26 @@ You should use the huge data model whenever any arrays in your
 application exceed &mdlmaxsize. in size.
 .do end
 .note
-If your program contains less than &mdlmaxsize. of data, you should use the
-small data model.
-This will result in smaller and faster code since references using
-near pointers produce fewer instructions.
-.note
 The huge data model should be used only if needed.
 The code generated in the huge data model is not very efficient since
 a run-time routine is called in order to increment far pointers.
 This increases the size of the code significantly and increases
 execution time.
+.note
+.do end
+.el .do begin
+.remark
+.do end
+If your program contains less than &mdlmaxsize. of data, you should use the
+small data model.
+This will result in smaller and faster code since references using
+near pointers produce fewer instructions.
+.if '&machine' eq '8086' .do begin
 .endnote
+.do end
+.el .do begin
+.eremark
+.do end
 .*
 .section Summary of Memory Models
 .*
