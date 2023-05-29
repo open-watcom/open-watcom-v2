@@ -1,3 +1,18 @@
+.if '&machine' eq '8086' .do begin
+:set symbol="mdlref" value="mdl86".
+:set symbol="mdlbits" value="16-bit".
+:set symbol="mdlsize" value="16".
+:set symbol="mdlptrsize" value="32".
+:set symbol="mdlmaxsize" value="64kB".
+.do end
+.el .do begin
+:set symbol="mdlref" value="mdl386".
+:set symbol="mdlbits" value="32-bit".
+:set symbol="mdlsize" value="32".
+:set symbol="mdlptrsize" value="48".
+:set symbol="mdlmaxsize" value="4GB".
+.do end
+.*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 :set symbol="function"  value="function".
 :set symbol="functions" value="functions".
@@ -10,13 +25,11 @@
 .chap *refid=mdl386 Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
-.*
 .section Introduction
-.*
 .do end
 .np
-.ix 'memory models' '32-bit'
-This chapter describes the various 32-bit memory models supported by
+.ix 'memory models' '&mdlbits.'
+This chapter describes the various memory models supported by
 &cmpname..
 Each memory model is distinguished by two properties; the code model
 used to implement &function calls and the data model used to reference
@@ -39,22 +52,22 @@ the big code model.
 A small code model is one in which all calls to &functions are made
 with
 .us near calls.
-In a near call, the destination address is 32 bits and is relative to
+In a near call, the destination address is &mdlsize. bits and is relative to
 the segment value in segment register CS.
 Hence, in a small code model, all code comprising your program,
-including library &functions, must be less than 4GB.
+including library &functions, must be less than &mdlmaxsize..
 .np
 .ix 'big code model'
 .ix 'code models' 'big'
 .ix 'far call'
 A big code model is one in which all calls to &functions are made with
 .us far calls.
-In a far call, the destination address is 48 bits (a 16-bit segment
-value and a 32-bit offset relative to the segment value).
+In a far call, the destination address is &mdlptrsize. bits (a 16-bit segment
+value and a &mdlbits. offset relative to the segment value).
 This model allows the size of the code comprising your program to
-exceed 4GB.
+exceed &mdlmaxsize..
 .remark
-If your program contains less than 4GB of code, you should use a
+If your program contains less than &mdlmaxsize. of code, you should use a
 memory model that employs the small code model.
 This will result in smaller and faster code since near calls are
 smaller instructions and are processed faster by the CPU.
@@ -76,29 +89,29 @@ the big data model.
 A small data model is one in which all references to data are made
 with
 .us near pointers.
-Near pointers are 32 bits; all data references are made relative to
+Near pointers are &mdlsize. bits; all data references are made relative to
 the segment value in segment register DS.
 Hence, in a small data model, all data comprising your program must be
-less than 4GB.
+less than &mdlmaxsize..
 .np
 .ix 'big data model'
 .ix 'data models' 'big'
 A big data model is one in which all references to data are made with
 .us far pointers.
-Far pointers are 48 bits (a 16-bit segment value and a 32-bit offset
+Far pointers are &mdlptrsize. bits (a 16-bit segment value and a &mdlbits. offset
 relative to the segment value).
-This removes the 4GB limitation on data size imposed by the small data
+This removes the &mdlmaxsize. limitation on data size imposed by the small data
 model.
 However, when a far pointer is incremented, only the offset is
 adjusted.
 &cmpname assumes that the offset portion of a far pointer will not be
-incremented beyond 4GB.
+incremented beyond &mdlmaxsize..
 The compiler will assign an object to a new segment if the grouping of
 data in a segment will cause the object to cross a segment boundary.
 Implicit in this is the requirement that no individual object exceed
-4GB.
+&mdlmaxsize..
 .remark
-If your program contains less than 4GB of data, you should use the
+If your program contains less than &mdlmaxsize. of data, you should use the
 small data model.
 This will result in smaller and faster code since references using
 near pointers produce fewer instructions.
@@ -143,7 +156,7 @@ large       big         big         far         far
 .np
 .ix 'memory models' 'flat'
 In the flat memory model, the application's code and data must total
-less than 4GB in size.
+less than &mdlmaxsize. in size.
 Segment registers CS, DS, SS and ES point to the same linear address
 space (this does not imply that the segment registers contain the same
 value).
@@ -170,7 +183,7 @@ keywords when describing some of its &functions or data objects.
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 A mixed memory model application might be characterized as one that
-includes arrays which are larger than 4GB.
+includes arrays which are larger than &mdlmaxsize..
 .do end
 .np
 For example, a medium memory model application that uses some
@@ -178,10 +191,10 @@ For example, a medium memory model application that uses some
 far pointers to data
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
-arrays which exceed 4GB in total size
+arrays which exceed &mdlmaxsize. in total size
 .do end
 can be described as a mixed memory model.
-In an application such as this, most of the data is in a 4GB segment
+In an application such as this, most of the data is in a &mdlmaxsize. segment
 (DGROUP) and hence can be referenced with near pointers relative to
 the segment value in segment register DS.
 This results in more efficient code being generated and better
@@ -239,11 +252,11 @@ library have been compiled.
 .ix 'C libraries' 'small'
 .ix 'small model' 'libraries'
 .note &letr.
-denotes a version of the &product 32-bit libraries which have been
+denotes a version of the &product &mdlbits. libraries which have been
 compiled for the "flat/small" memory models using the "3r", "4r" or
 "5r" option.
 .note &lets.
-denotes a version of the &product 32-bit libraries which have been
+denotes a version of the &product &mdlbits. libraries which have been
 compiled for the "flat/small" memory models using the "3s", "4s" or
 "5s" option.
 .endnote
