@@ -62,8 +62,8 @@ including library &functions, must be less than &mdlmaxsize..
 .ix 'far call'
 A big code model is one in which all calls to &functions are made with
 .us far calls.
-In a far call, the destination address is &mdlptrsize. bits (a 16-bit segment
-value and a &mdlbits. offset relative to the segment value).
+In a far call, the destination address is &mdlptrsize. bits
+(a 16-bit segment value and a &mdlbits. offset relative to the segment value).
 This model allows the size of the code comprising your program to
 exceed &mdlmaxsize..
 .remark
@@ -98,8 +98,8 @@ less than &mdlmaxsize..
 .ix 'data models' 'big'
 A big data model is one in which all references to data are made with
 .us far pointers.
-Far pointers are &mdlptrsize. bits (a 16-bit segment value and a &mdlbits. offset
-relative to the segment value).
+Far pointers are &mdlptrsize. bits
+(a 16-bit segment value and a &mdlbits. offset relative to the segment value).
 This removes the &mdlmaxsize. limitation on data size imposed by the small data
 model.
 However, when a far pointer is incremented, only the offset is
