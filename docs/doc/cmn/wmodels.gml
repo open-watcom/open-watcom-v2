@@ -38,12 +38,12 @@ data.
 .section Code Models
 .*
 .np
-There are two code models;
+There are two code models:
 .autopoint
 .point
-the small code model and
+the small code model
 .point
-the big code model.
+the big code model
 .endpoint
 .pc
 .ix 'small code model'
@@ -56,9 +56,6 @@ In a near call, the destination address is &mdlsize. bits and is relative to
 the segment value in segment register CS.
 Hence, in a small code model, all code comprising your program,
 including library &functions, must be less than &mdlmaxsize..
-.if '&machine' eq '8086' and '&lang' eq 'FORTRAN 77' .do begin
-&cmpname does not support the small code model.
-.do end
 .np
 .ix 'big code model'
 .ix 'code models' 'big'
@@ -69,6 +66,11 @@ In a far call, the destination address is &mdlptrsize. bits
 (a 16-bit segment value and a &mdlbits. offset relative to the segment value).
 This model allows the size of the code comprising your program to
 exceed &mdlmaxsize..
+.if '&machine' eq '8086' and '&lang' eq 'FORTRAN 77' .do begin
+.remark
+&cmpname does not support the small code model.
+.eremark
+.do end
 .if '&machine' eq '80386' or '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .remark
 If your program contains less than &mdlmaxsize. of code, you should use a memory
@@ -81,14 +83,14 @@ smaller instructions and are processed faster by the CPU.
 .section Data Models
 .*
 .np
-There are three data models;
+There are three data models:
 .autopoint
 .point
-the small data model,
+the small data model
 .point
-the big data model and
+the big data model
 .point
-the huge data model.
+the huge data model
 .endpoint
 .pc
 .ix 'small data model'
@@ -387,6 +389,7 @@ will be used with the 80x87 math
 libraries depending on the use of the "fpi" (include emulation) or
 "fpi87" (do not include emulation) options.
 .do end
+.if '&machine' eq '8086' .do begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 .code begin
 Library         Memory           Floating-point
@@ -405,6 +408,7 @@ math87l.lib     -ml, -mh         -fpi, -fpi87
 emu87.lib       -mm, -ml, -mh    -fpi
 noemu87.lib     -mm, -ml, -mh    -fpi87
 .code end
+.do end
 .do end
 .if '&machine' eq '8086' and '&target' ne 'QNX' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin

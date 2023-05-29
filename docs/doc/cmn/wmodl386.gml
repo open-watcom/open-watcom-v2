@@ -38,12 +38,12 @@ data.
 .section Code Models
 .*
 .np
-There are two code models;
+There are two code models:
 .autopoint
 .point
-the small code model and
+the small code model
 .point
-the big code model.
+the big code model
 .endpoint
 .pc
 .ix 'small code model'
@@ -76,12 +76,12 @@ smaller instructions and are processed faster by the CPU.
 .section Data Models
 .*
 .np
-There are two data models;
+There are two data models:
 .autopoint
 .point
-the small data model and
+the small data model
 .point
-the big data model.
+the big data model
 .endpoint
 .pc
 .ix 'small data model'
@@ -139,15 +139,10 @@ Memory      Code        Data        Default     Default
 Model       Model       Model       Code        Data
                                     Pointer     Pointer
 --------    --------    --------    --------    --------
-.sk 1
 flat        small       small       near        near
-.sk 1
 small       small       small       near        near
-.sk 1
 medium      big         small       far         near
-.sk 1
 compact     small       big         near        far
-.sk 1
 large       big         big         far         far
 .millust end
 .*
