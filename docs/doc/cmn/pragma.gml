@@ -256,6 +256,7 @@
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
 .dm @prgend begin
+:HP2.:eHP2.
 .dm @prgend end
 .gt prgend add @prgend cont texterror tagnext
 .do end
@@ -838,7 +839,7 @@ The "error" pragma can be used to issue an error message with the
 specified text.
 The following describes the form of the "error" pragma.
 .mbox begin
-:prgbeg. error :id."error text":eid. :rp. :id."error text":eid.:erp.:prgend.
+:prgbeg. error :id."error text":eid. :rp. :id."error text":eid. :erp.:prgend.
 .mbox end
 .synote
 .note "error text"
@@ -2350,11 +2351,11 @@ way a &function is to be called.
 .* ---------------------------------------
 .if '&machine' eq '8086' .do begin
 .mbox begin
-:prgbeg. aux :id.sym:eid. &pkwfar.
+:prgbeg. aux :id.sym:eid. &pkwfar. :prgend.
     or
-:prgbeg. aux :id.sym:eid. &pkwnear.
+:prgbeg. aux :id.sym:eid. &pkwnear. :prgend.
     or
-:prgbeg. aux :id.sym:eid. = :id.in_line:eid.
+:prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
 :id.in_line ::= { const | :eid.":id.asm:eid.":id. | (:eid.&pfixfloat.:id. fpinst) }:eid.
 .mbox end
@@ -2362,13 +2363,13 @@ way a &function is to be called.
 .* ---------------------------------------
 .if '&machine' eq '80386' .do begin
 .mbox begin
-:prgbeg. aux :id.sym:eid. &pkwfar.
+:prgbeg. aux :id.sym:eid. &pkwfar. :prgend.
     or
-:prgbeg. aux :id.sym:eid. &pkwfar16.
+:prgbeg. aux :id.sym:eid. &pkwfar16. :prgend.
     or
-:prgbeg. aux :id.sym:eid. &pkwnear.
+:prgbeg. aux :id.sym:eid. &pkwnear. :prgend.
     or
-:prgbeg. aux :id.sym:eid. = :id.in_line:eid.
+:prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
 :id.in_line ::= { const | :eid.":id.asm:eid.":id. }:eid.
 .mbox end

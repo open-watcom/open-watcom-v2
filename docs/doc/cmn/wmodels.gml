@@ -180,9 +180,11 @@ As previously mentioned, a memory model is a combination of a code
 model and a data model.
 The following table describes the memory models supported by
 &cmpname..
+.*
+.* 16-bit C/C++
+.*
 .if '&machine' eq '8086' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.* 16-bit C/C++
 .ix 'tiny memory model'
 .ix 'memory models' 'tiny'
 .ix 'small memory model'
@@ -208,8 +210,10 @@ large       big         big         far         far
 huge        big         huge        far         huge
 .millust end
 .do end
+.*
+.* 16-bit FORTRAN
+.*
 .if '&lang' eq 'FORTRAN 77' .do begin
-.* 16-bit FORTRAN 77
 .ix 'medium memory model'
 .ix 'memory models' 'medium'
 .ix 'large memory model'
@@ -227,8 +231,10 @@ huge        big         huge        far         huge
 .millust end
 .do end
 .do end
+.*
+.* 32-bit C/C++ and FORTRAN
+.*
 .if '&machine' eq '80386' .do begin
-.* 32-bit C/C++ and FORTRAN 77
 .ix 'flat memory model'
 .ix 'memory models' 'flat'
 .ix 'small memory model'
@@ -343,10 +349,16 @@ Each library assumes a particular memory model and should be linked
 only with modules that have been compiled with the same memory model.
 The following table lists the libraries that are to be used to link an
 application that has been compiled for a particular memory model.
+.*
+.*****************************
+.* C/C++ section
+.*****************************
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
+.* 16-bit C/C++ QNX
+.*
 .if '&machine' eq '8086' .do begin
 .if '&target' eq 'QNX' .do begin
-.* 16-bit C/C++ QNX
 .millust begin
 Memory  Run-time      Floating-Point  Floating-Point
 Model   Library       Calls Library   Library (80x87)
@@ -368,8 +380,10 @@ huge    clibh.lib     mathh.lib       math87h.lib
                                       +(no)emu87.lib*
 .millust end
 .do end
-.el .do begin
+.*
 .* 16-bit C/C++ !QNX
+.*
+.el .do begin
 .millust begin
 Memory  Run-time      Floating-Point  Floating-Point
 Model   Library       Calls Library   Library (80x87)
@@ -393,7 +407,9 @@ huge    CLIBH.LIB     MATHH.LIB       MATH87H.LIB
                                       +(NO)EMU87.LIB*
 .millust end
 .do end
+.*
 .* 16-bit C/C++
+.*
 .np
 * One of
 .fi emu87.lib
@@ -403,38 +419,48 @@ will be used with the 80x87 math
 libraries depending on the use of the "fpi" (include emulation) or
 "fpi87" (do not include emulation) options.
 .do end
-.if '&machine' eq '80386' .do begin
+.*
 .* 32-bit C/C++
+.*
+.if '&machine' eq '80386' .do begin
 .remark
 Currently, only libraries for the flat/small memory model are provided.
 .eremark
-.if '&target' eq 'QNX' .do begin
+.*
 .* 32-bit C/C++ QNX
+.*
+.if '&target' eq 'QNX' .do begin
 .sr letr='r'
 .sr lets='s'
 .millust begin
 Memory      Run-time    Floating-Point   Floating-Point
-Model       Library     Library (80x87)  Library (f-p calls)
-----------  ----------  ---------------  -------------------
+Model       Library     Library (80x87)  Library (calls)
+----------  ----------  ---------------  ---------------
 flat/small  clib3r.lib  math387r.lib     math3r.lib
             clib3s.lib  math387s.lib     math3s.lib
             plib3r.lib  cplx73r.lib      cplx3r.lib
             plib3s.lib  cplx73s.lib      cplx3s.lib
 .millust end
 .do end
+.*
+.* 32-bit C/C++ !QNX
+.*
 .el .do begin
 .sr letr='R'
 .sr lets='S'
 .millust begin
 Memory      Run-time    Floating-Point   Floating-Point
-Model       Library     Library (80x87)  Library (f-p calls)
-----------  ----------  ---------------  -------------------
+Model       Library     Library (80x87)  Library (calls)
+----------  ----------  ---------------  ---------------
 flat/small  CLIB3R.LIB  MATH387R.LIB     MATH3R.LIB
             CLIB3S.LIB  MATH387S.LIB     MATH3S.LIB
             PLIB3R.LIB  CPLX73R.LIB      CPLX3R.LIB
             PLIB3S.LIB  CPLX73S.LIB      CPLX3S.LIB
 .millust end
 .do end
+.*
+.* 32-bit C/C++
+.*
 .pc
 The letter "&letr." or "&lets." which is affixed to the file name
 indicates the particular strategy with which the modules in the
@@ -455,6 +481,11 @@ compiled for the "flat/small" memory models using the "3s", "4s" or
 .endnote
 .do end
 .do end
+.*
+.*****************************
+.* FORTRAN section
+.*****************************
+.*
 .if '&lang' eq 'FORTRAN 77' .do begin
 .if '&machine' eq '80386' .do begin
 .remark
@@ -478,11 +509,14 @@ The "Calling convention" column indicates the compiler option that specifies
 the calling convention of the library (register-based or stack-based).
 .do end
 .endpoint
+.*
+.* 16-bit FORTRAN
+.*
 .if '&machine' eq '8086' .do begin
 .millust begin
 Library         Memory           Floating-point
                 model            model
--------         ------           ------------------
+-----------     -------------    ------------------
 flibm.lib       -mm              -fpc
 flibl.lib       -ml, -mh         -fpc
 flib7m.lib      -mm              -fpi, -fpi87
@@ -497,6 +531,9 @@ emu87.lib       -mm, -ml, -mh    -fpi
 noemu87.lib     -mm, -ml, -mh    -fpi87
 .millust end
 .do end
+.*
+.* 32-bit FORTRAN
+.*
 .if '&machine' eq '80386' .do begin
 .ix 'FORTRAN libraries' 'flat'
 .ix 'flat model' 'libraries'
@@ -505,7 +542,7 @@ noemu87.lib     -mm, -ml, -mh    -fpi87
 .millust begin
 Library         Memory      Floating-point        Calling
                 model       model                 convention
--------         ------      ------------------    ----------
+------------    --------    ------------------    ----------
 flib.lib        -mf, -ms    -fpc
 flibs.lib       -mf, -ms    -fpc                  -sc
 flib7.lib       -mf, -ms    -fpi, -fpi87
@@ -521,6 +558,9 @@ noemu387.lib    -mf, -ms    -fpi87
 .millust end
 .do end
 .do end
+.*****************************
+.* FORTRAN, C/C++ section end
+.*****************************
 .*
 .if '&machine' eq '8086' and '&target' ne 'QNX' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
