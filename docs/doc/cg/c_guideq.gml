@@ -68,7 +68,7 @@
 .*
 :set symbol="machine"    value="80386".
 .helppref 32-bit:
-:INCLUDE file='WMODL386'.
+:INCLUDE file='WMODELS'.
 :INCLUDE file='CCALL'.
 :INCLUDE file='PRAGMA'.
 .helppref

@@ -344,7 +344,6 @@ $(root_cmn)/wmake.gml &
 $(root_cmn)/wmakemsg.gml &
 $(root_cmn)/wmemlay.gml &
 $(root_cmn)/wmodels.gml &
-$(root_cmn)/wmodl386.gml &
 $(root_cmn)/womp.gml &
 $(root_cmn)/wompexam.gml &
 $(root_cmn)/wtouch.gml
@@ -2797,7 +2796,6 @@ gml_objs = &
 ../doc/gml/wblslay.gml   &
 ../doc/gml/wbps.opt      &
 ../doc/gml/wbpslay.gml   &
-../doc/gml/wmodels.gml   &
 ../doc/gml/wtrdmrk.gml   &
 ../doc/gml/xdefs.gml
 
