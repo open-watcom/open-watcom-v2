@@ -507,7 +507,7 @@ int main( int argc, char *argv[] )
     }
     o_file_format = ORLFileIdentify( o_handle, fp );
     if( o_file_format == ORL_UNRECOGNIZED_FORMAT ) {
-        printf( "The object file is not in either ELF, COFF or OMF format." );
+        printf( "The object file is not in either ELF, COFF or OMF format.\n" );
         return( 1 );
     }
     switch( o_file_format ) {

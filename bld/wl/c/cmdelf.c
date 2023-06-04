@@ -278,7 +278,7 @@ static bool ProcELFRSolrs( void )
 /*******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_SOLARIS;
-    ParseABIVersion( "FREEBSD" );
+    ParseABIVersion( "SOLARIS" );
     return( true );
 }
 
@@ -286,7 +286,7 @@ static bool ProcELFRFBSD( void )
 /******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_FREEBSD;
-    ParseABIVersion( "SOLARIS" );
+    ParseABIVersion( "FREEBSD" );
     return( true );
 }
 
