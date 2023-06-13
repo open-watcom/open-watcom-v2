@@ -26,7 +26,7 @@ env:
 jobs:
   start-start:
     if: github.repository == 'open-watcom/open-watcom-v2'
-    name: Start
+    name: Check if to run
     runs-on: ubuntu-latest
     steps:
     - name: checkout

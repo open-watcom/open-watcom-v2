@@ -11,7 +11,7 @@ env:
 jobs:
   check_run:
     if: github.repository == 'open-watcom/open-watcom-v2'
-    name: Start
+    name: Check if to run
     runs-on: ubuntu-latest
     outputs:
       runit: ${{ steps.check_tag.outputs.old }}
