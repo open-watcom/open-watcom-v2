@@ -401,7 +401,7 @@
 :option. std
 :usage. disable/enable extensions
 :group. 3
-:id. . {c89,c99,wc}
+:id. . {c89,c99,ow}
 :target. any
 
 :option. Wall
