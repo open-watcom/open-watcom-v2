@@ -54,39 +54,40 @@ static char             GTable[12] = {
 
 
 static void GraphicsMode( void )
-/*========================
-
-    Switch into Hercules graphics mode. */
+/*==============================
+ *
+ * Switch into Hercules graphics mode.
+ */
 {
     short           i;
 
-    _BIOS_data( EQUIP_FLAGS, char ) |= 0x30; // turn on monochrome bits
-    outp( CRT_CONFIG, HERC_HALF );                  // enable half support
-    outp( CRT_CNTRL, 2 );                           // set graphics mode (with screen off)
-    for( i = 0; i < 12; i++ ) {                     // load CRT registers
+    _BIOS_data( EQUIP_FLAGS, char ) |= 0x30;    // turn on monochrome bits
+    outp( CRT_CONFIG, HERC_HALF );              // enable half support
+    outp( CRT_CNTRL, 2 );                       // set graphics mode (with screen off)
+    for( i = 0; i < 12; i++ ) {                 // load CRT registers
         outpw( CRT_INDEX, ( GTable[i] << 8 ) + i );
     }
-    _fmemset( _MK_FP( _MonoSeg, _MonoOff ), 0, 0x8000 );   // clear screen
-    outp( CRT_CNTRL, 0x0A );                        // turn screen back on
+    _fmemset( _MK_FP( _MonoSeg, _MonoOff ), 0, 0x8000 );    // clear screen
+    outp( CRT_CNTRL, 0x0A );                                // turn screen back on
 
-    _BIOS_data( CRT_MODE, char ) = _HERCMONO;// set mode
-    _BIOS_data( CRT_COLS, char ) = 90;       // set # of columns to 90
-    _BIOS_data( ROWS, char ) = 25 - 1;       // set # of rows to 25
-    _BIOS_data( CURSOR_POSN, short ) = 0;    // set cursor to (0,0)
+    _BIOS_data( CRT_MODE, char ) = _HERCMONO;   // set mode
+    _BIOS_data( CRT_COLS, char ) = 90;          // set # of columns to 90
+    _BIOS_data( ROWS, char ) = 25 - 1;          // set # of rows to 25
+    _BIOS_data( CURSOR_POSN, short ) = 0;       // set cursor to (0,0)
 }
 
 
 static short _HercInit( short mode )
 /*==================================
-
-    Initialize the Hercules graphics video mode. */
-
+ *
+ * Initialize the Hercules graphics video mode.
+ */
 {
     unsigned short      sys_monitor;
     short               monitor;
     short               alternate;
 
-    mode = mode;
+    (void)mode;
     sys_monitor = _SysMonType();
     alternate = sys_monitor >> 8;   // separate active/alternate adapters
     monitor = sys_monitor & 0xff;
@@ -104,19 +105,19 @@ static short _HercInit( short mode )
 
 static void _NoOp( void )
 /*=======================
-
-    Dummy function that does nothing.   */
-
+ *
+ * Dummy function that does nothing.
+ */
 {
 }
 
 
 static void _HercSetup( short x, short y, grcolor colour )
-/*======================================================
-
-    Calculate screen memory address and associated masks for the
-    position (x,y).    */
-
+/*========================================================
+ *
+ * Calculate screen memory address and associated masks for the
+ * position (x,y).
+ */
 {
     unsigned short      pixel_offset;
     char                rotate;

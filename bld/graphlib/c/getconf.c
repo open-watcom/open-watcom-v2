@@ -205,12 +205,13 @@ void _InitState( void )
    relevant to the BIOS text routines.  */
 
 {
+#if !defined( _DEFAULT_WINDOWS )
     unsigned short      pos;
+#endif
 
     if( _StartUp ) {        // if first time through
         _StartUp = 0;
 #if defined( _DEFAULT_WINDOWS )
-        pos = pos;
         _CurrState->vc.mode = 0;
 #else
         _InitSegments();
@@ -222,7 +223,7 @@ void _InitState( void )
 #else
         _DefMode = _CurrState->vc.mode;
         _DefTextRows = _CurrState->vc.numtextrows;
-        pos = _BIOS_data( CURSOR_POSN, short );
+        pos = _BIOS_data( CURSOR_POSN, unsigned short );
         _TextPos.row = pos >> 8;        /* default cursor position  */
         _TextPos.col = pos & 0xFF;
 #endif
