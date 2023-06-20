@@ -84,15 +84,15 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
             can_display = TRUE;
         } else if( can_display ) {
             if( ch_len == 1 ) {
-                _PutChar( _TextPos.row, _TextPos.col, text[0] );
+                _PutChar( _TextPos.row, _TextPos.col, (unsigned char)text[0] );
                 ++_TextPos.col;
             } else {        // double-byte character
                 if( text[1] == 0 ) {      // special 1-byte char
-                    _PutChar( _TextPos.row, _TextPos.col, text[0] );
+                    _PutChar( _TextPos.row, _TextPos.col, (unsigned char)text[0] );
                     ++_TextPos.col;
                 } else if( _TextPos.col <= _Tx_Col_Max - 1 ) { // room for both halves
-                    _PutChar( _TextPos.row, _TextPos.col, text[0] );
-                    _PutChar( _TextPos.row, _TextPos.col+1, text[1] );
+                    _PutChar( _TextPos.row, _TextPos.col, (unsigned char)text[0] );
+                    _PutChar( _TextPos.row, _TextPos.col+1, (unsigned char)text[1] );
                     _TextPos.col += 2;
                 } else {         // these three lines control double byte
                     text -= 2;   // characters at the end of the text window
