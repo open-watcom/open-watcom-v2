@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 /* BIOS Variable Locations */
-#pragma pack(__push, 1);
 
 #define _BIOS_data( p, t ) *(t __far *)_MK_FP( _BiosSeg, _BiosOff + p )
 
@@ -45,7 +44,6 @@
 #define POINTS          0x0085      /* height of character */
 #define INFO            0x0087      /* miscellaneous info */
 #define INFO_3          0x0088      /* more miscellaneous info */
-
 
 /* BIOS Functions */
 
@@ -66,7 +64,7 @@
 
 /* Video Interrupt Routines */
 
-extern short VideoInt( short, short, short, short );
+extern unsigned short VideoInt( short, short, short, short );
 #pragma aux VideoInt = \
         "push bp"   \
         "int 10h"   \
@@ -74,7 +72,7 @@ extern short VideoInt( short, short, short, short );
     __parm __caller [__ax] [__bx] [__cx] [__dx] \
     __value         [__ax]
 
-extern short VideoInt_bx( short, short, short, short );
+extern unsigned short VideoInt_bx( short, short, short, short );
 #pragma aux VideoInt_bx = \
         "push bp"   \
         "int 10h"   \
@@ -82,7 +80,7 @@ extern short VideoInt_bx( short, short, short, short );
     __parm __caller [__ax] [__bx] [__cx] [__dx] \
     __value         [__bx]
 
-extern short VideoInt_cx( short, short, short, short );
+extern unsigned short VideoInt_cx( short, short, short, short );
 #pragma aux VideoInt_cx = \
         "push bp"   \
         "int 10h"   \
@@ -91,6 +89,5 @@ extern short VideoInt_cx( short, short, short, short );
     __value         [__cx]
 
 #define GetVideoMode()  ( VideoInt( _BIOS_GET_MODE, 0, 0, 0 ) & 0x7f )
-#define EGA_Memory()    ( VideoInt_bx( 0x1200, 0x0010, 0, 0 ) )
-
-#pragma pack (__pop);
+#define EGA_Info()      ( VideoInt_bx( 0x1200, 0x0010, 0, 0 ) )
+#define EGA_Memory()    ( VideoInt_bx( 0x1200, 0x0010, 0, 0 ) & 0xff )

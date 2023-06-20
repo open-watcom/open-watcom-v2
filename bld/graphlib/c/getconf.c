@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,7 +186,7 @@ void _GetState( void )
     _CurrState->vc.monitor = _MonTab[display];
     _CurrState->vc.memory = _MemoryTab[_CurrState->vc.adapter];
     if( _CurrState->vc.memory == -1 ) {     // EGA adapter
-        _CurrState->vc.memory = 64 * ( 1 + ( EGA_Memory() & 0x00ff ) );
+        _CurrState->vc.memory = 64 * ( 1 + EGA_Memory() );
     }
     if( _GrMode || _CurrState->vc.adapter < _MCGA ) {
         _CurrState->vc.numvideopages = 8;

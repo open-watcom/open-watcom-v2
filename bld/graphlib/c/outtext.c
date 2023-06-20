@@ -122,8 +122,7 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
     _RefreshWindow();
     // update cursor position
 #if !defined( _DEFAULT_WINDOWS )
-    VideoInt( _BIOS_CURSOR_POSN, _CurrActivePage << 8, 0,
-                            ( _TextPos.row << 8 ) + _TextPos.col );
+    VideoInt( _BIOS_CURSOR_POSN, _CurrActivePage << 8, 0, ( _TextPos.row << 8 ) + _TextPos.col );
 #endif
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,6 +143,7 @@ static short DCCEmulate( void )
     Otherwise assume a CGA. Check for alternate type.   */
 
 {
+    unsigned short  ega_info;
     short           ega_color;
     short           ega_memory;
     char            info;
@@ -151,9 +152,9 @@ static short DCCEmulate( void )
     char            video_mode;
 
     if( ( VideoInt_cx( _BIOS_ALT_SELECT, EGA_INF, 0, 0 ) & 0x00ff ) < 0x0C ) {
-        ega_memory = EGA_Memory();
-        ega_color = ega_memory >> 8;                        /* low byte     */
-        ega_memory &= 0x00FF;                               /* high byte    */
+        ega_info = EGA_Info();
+        ega_color = ega_info >> 8;                          /* low byte     */
+        ega_memory = ega_info & 0x00FF;                     /* high byte    */
         if( ega_color > 0x01 || ega_memory > 0x03 ) {
             active_type = CheckCGA();                   /* assume IBM CGA   */
             alternate_type = CheckMONO();
