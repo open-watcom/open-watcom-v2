@@ -89,10 +89,10 @@ short                   _NoClear = 0;       // allow user to control whether
                                             // SetMode clears the screen
 
 static short _ValidMode( short mode )
-/*============================
-
-    Check if desired mode is valid  */
-
+/*===================================
+ *
+ * Check if desired mode is valid
+ */
 {
     unsigned short      sys_monitor;
     short               monitor;
@@ -101,7 +101,7 @@ static short _ValidMode( short mode )
 
     mode &= 0x7F;                   // wipe regen bits
     sys_monitor = _SysMonType();
-    alternate = sys_monitor >> 8;       // separate active/alternate adapters
+    alternate = sys_monitor >> 8;   // separate active/alternate adapters
     monitor = sys_monitor & 0xff;
     mode_test = 1L << mode;
     if( ModeTable[monitor] & mode_test ||       // check active
@@ -115,9 +115,9 @@ static short _ValidMode( short mode )
 
 short _SetMode( short mode )
 /*==========================
-
-    This function sets the video mode on IBM PC family. */
-
+ *
+ * This function sets the video mode on IBM PC family.
+ */
 {
     if( _ValidMode( mode ) ) {
         if( mode == 7 || mode == 15 ) {

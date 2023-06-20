@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,7 @@
 #endif
 
 short _CharLen( char c )
-//======================
-
+/*====================*/
 {
     dbcs_pair           *p;
 
@@ -59,19 +58,18 @@ short _CharLen( char c )
 
 
 static void OutputString( char _WCI86FAR *text, short length, short newline )
-//======================================================================
-
+/*=========================================================================*/
 {
     short               can_display;
     short               ch_len;
 
     can_display = TRUE;
     while( length > 0 ) {
-        ch_len = _CharLen( *text );
+        ch_len = _CharLen( text[0] );
         if( ch_len == 2 && length == 1 ) {  // don't go past end of string
             ch_len = 1;
         }
-        if( *text == '\n' && newline ) {
+        if( text[0] == '\n' && newline ) {
             _RefreshWindow();
             _TextPos.col = _Tx_Col_Min;     // move to start of next line
             if( _TextPos.row == _Tx_Row_Max ) {
@@ -80,17 +78,17 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
                ++_TextPos.row;
             }
             can_display = TRUE;
-        } else if( *text == '\r' && newline ) {
+        } else if( text[0] == '\r' && newline ) {
             _RefreshWindow();
             _TextPos.col = _Tx_Col_Min;     // move to start of current line
             can_display = TRUE;
         } else if( can_display ) {
             if( ch_len == 1 ) {
-                _PutChar( _TextPos.row, _TextPos.col, *text );
+                _PutChar( _TextPos.row, _TextPos.col, text[0] );
                 ++_TextPos.col;
             } else {        // double-byte character
                 if( text[1] == 0 ) {      // special 1-byte char
-                    _PutChar( _TextPos.row, _TextPos.col, *text );
+                    _PutChar( _TextPos.row, _TextPos.col, text[0] );
                     ++_TextPos.col;
                 } else if( _TextPos.col <= _Tx_Col_Max - 1 ) { // room for both halves
                     _PutChar( _TextPos.row, _TextPos.col, text[0] );
@@ -128,11 +126,11 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _outtext( char _WCI86FAR *text )
-/*===========================================
-
-   This routine displays the string of text pointed to by the parameter.
-   The only formatting done is with regards to the current text window. */
-
+/*===============================================================
+ *
+ * This routine displays the string of text pointed to by the parameter.
+ * The only formatting done is with regards to the current text window.
+ */
 {
     _InitState();
     _CursorOff();
@@ -143,12 +141,12 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outtext( char _WCI86FAR *text )
 Entry1( _OUTTEXT, _outtext ) // alternate entry-point
 
 
-_WCRTLINK void _WCI86FAR _CGRAPH _outmem( unsigned char _WCI86FAR * text, short length )
-/*==================================================================
-
-   This routine writes "length" characters from the buffer pointed to by
-   "text" to the active text window and updates the current text position.  */
-
+_WCRTLINK void _WCI86FAR _CGRAPH _outmem( unsigned char _WCI86FAR *text, short length )
+/*=====================================================================================
+ *
+ * This routine writes "length" characters from the buffer pointed to by
+ * "text" to the active text window and updates the current text position.
+ */
 {
     _InitState();
     _CursorOff();
@@ -160,10 +158,10 @@ Entry1( _OUTMEM, _outmem ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _scrolltextwindow( short rows )
-/*===============================================
-
-   This routine scrolls the text window up or down by "rows" lines. */
-
+/*==============================================================
+ *
+ * This routine scrolls the text window up or down by "rows" lines.
+ */
 {
     short           dir;
 
@@ -190,10 +188,10 @@ Entry1( _SCROLLTEXTWINDOW, _scrolltextwindow ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _gettextcursor( void )
-/*=======================================
-
-   This function returns the shape of the active text cursor.   */
-
+/*======================================================
+ *
+ * This function returns the shape of the active text cursor.
+ */
 {
     _InitState();
     return( _CursorShape );
@@ -203,19 +201,19 @@ Entry1( _GETTEXTCURSOR, _gettextcursor ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _settextcursor( short shape )
-/*==============================================
-
-   This function sets the shape of the text cursor and returns the shape
-   of the previous text cursor. This function works only in text modes.
-   The new cursor shape is displayed if the cursor was previously visible.
-   Note: high byte of shape = starting scan line for the cursor (bits 4-0)
-         low byte of shape  = ending scan line for the cursor (bits 4-0)
-         ... where 0 <= scan line < 32.
-   Warning : If _setrows is used to go into a 43 rows mode on an EGA, then
-             the emulation bit will be on, as it should be.
-
-   Note for windows: This function does no do anything in Windows. */
-
+/*=============================================================
+ *
+ * This function sets the shape of the text cursor and returns the shape
+ * of the previous text cursor. This function works only in text modes.
+ * The new cursor shape is displayed if the cursor was previously visible.
+ * Note: high byte of shape = starting scan line for the cursor (bits 4-0)
+ *       low byte of shape  = ending scan line for the cursor (bits 4-0)
+ *       ... where 0 <= scan line < 32.
+ * Warning : If _setrows is used to go into a 43 rows mode on an EGA, then
+ *           the emulation bit will be on, as it should be.
+ *
+ * Note for windows: This function does no do anything in Windows.
+ */
 {
 #if defined( _DEFAULT_WINDOWS )
     shape = shape;
