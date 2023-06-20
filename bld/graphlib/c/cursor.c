@@ -109,11 +109,12 @@ void _CursorOff( void )
 //=====================
 
 {
+#if !defined( _DEFAULT_WINDOWS )
     unsigned short      cursor;
+#endif
 
     if( _GrCursor != 0 ) {      // if the cursor is on
 #if defined( _DEFAULT_WINDOWS )
-        cursor = cursor;
         GraphCursor();
 #else
         if( IsTextMode ) {

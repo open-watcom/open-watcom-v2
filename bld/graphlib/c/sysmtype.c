@@ -100,11 +100,11 @@ static short CheckMONO( void )
         /*  Poll port many times to check for Hercules. Bit 7 of the
             vertical sync will be updated for an HGC.                       */
         for( i = 0; i < 32768; i++ ) {
-            if( ( inp( PORT_STATUS ) & 0x0080 ) != vert_sync ) {    /* HGC  */
+            if( (inp( PORT_STATUS ) & 0x0080) != vert_sync ) {    /* HGC  */
                 vert_sync = inp( PORT_STATUS ) & 0x70;          /* detected */
                 if( vert_sync == 0 ) {
                     return( MT_HERC );
-                } else if( ( vert_sync & 0x10 ) == 0 ) {
+                } else if( (vert_sync & 0x10) == 0 ) {
                     return( MT_HERCPLUS );
                 } else {
                     return( MT_HERCINCL );
@@ -148,7 +148,7 @@ static unsigned short DCCEmulate( void )
     short           alternate_type;
     char            video_mode;
 
-    if( ( VideoInt_cx( _BIOS_ALT_SELECT, EGA_INF, 0, 0 ) & 0x00ff ) < 0x0C ) {
+    if( (VideoInt_cx( _BIOS_ALT_SELECT, EGA_INF, 0, 0 ) & 0x00ff) < 0x0C ) {
         ega_info = EGA_Info();
         ega_color = ega_info >> 8;                          /* low byte     */
         ega_memory = ega_info & 0x00FF;                     /* high byte    */
@@ -193,7 +193,7 @@ unsigned short _SysMonType( void )
  */
 {
     short           dcc;
-    short           monitor_type;
+    unsigned short  monitor_type;
     char            info;
     short           active_type;
     short           alternate_type;
