@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -789,9 +789,9 @@ void _PaletteInit( void )
     i = j = 0;
     while( ( i < 16 ) && ( j < 16 ) ) {
 #if defined( __WINDOWS__ )
-        rgb = _wpi_getrgb( Color[j] & 0x000000ff,
-                         ( Color[j] & 0x0000ff00 ) >> 8,
-                         ( Color[j] & 0x00ff0000 ) >> 16 );
+        rgb = _wpi_getrgb( COLOR_RED( Color[j] ),
+                         COLOR_GREEN( Color[j] ),
+                         COLOR_BLUE( Color[j] ) );
 
         rgb = _wpi_palettergb( _Mem_dc, _wpi_getrvalue( rgb ),
                                         _wpi_getgvalue( rgb ),
@@ -801,9 +801,9 @@ void _PaletteInit( void )
         _Set_RGB_COLOR( i, rgb );
         _wpi_setpixel( _Mem_dc, 0, 0, rgb );
 #else
-        _Set_RGB_COLOR( i, _wpi_getrgb( Color[j] & 0x000000ff,
-                                      ( Color[j] & 0x0000ff00 ) >> 8,
-                                      ( Color[j] & 0x00ff0000 ) >> 16 ) );
+        _Set_RGB_COLOR( i, _wpi_getrgb( COLOR_RED( Color[j] ),
+                                      COLOR_GREEN( Color[j] ),
+                                      COLOR_BLUE( Color[j] ) ) );
 #endif
         ++i;
         ++j;
@@ -812,11 +812,11 @@ void _PaletteInit( void )
     _wpi_setrop2( _Mem_dc, R2_COPYPEN );
 #endif
     while( ( i < _CurrState->vc.numcolors ) && ( j < 240) ) {
-        r = Color[j] & 0x000000ff;
+        r = COLOR_RED( Color[j] );
         r = r * 4.0625f;
-        g = ( Color[j] & 0x0000ff00 ) >> 8;
+        g = COLOR_GREEN( Color[j] );
         g = g * 4.0625f;
-        b = ( Color[j] & 0x00ff0000 ) >> 16 ;
+        b = COLOR_BLUE( Color[j] );
         b = b * 4.0625f;
         _Set_RGB_COLOR( i, _wpi_getrgb( r, g, b ) );
         ++i;
