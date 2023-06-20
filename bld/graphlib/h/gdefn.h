@@ -329,7 +329,8 @@ extern void             _ScrollWindow( short, short );
 extern short            _SetMode( short );
 extern short            _SetRows( short );
 extern short            _SwapBits( short );
-extern short            _SysMonType( void );
+extern unsigned short   _SysMonType( void );
+#define _SysMonitor()   (_SysMonType() & 0xff)
 extern short            _SuperVGAType( void );
 extern void             _SetSVGAType( short vga_type );
 

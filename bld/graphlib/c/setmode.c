@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,14 +94,15 @@ static short _ValidMode( short mode )
     Check if desired mode is valid  */
 
 {
+    unsigned short      sys_monitor;
     short               monitor;
     short               alternate;
     long                mode_test;
 
     mode &= 0x7F;                   // wipe regen bits
-    monitor = _SysMonType();
-    alternate = monitor >> 8;       // separate active/alternate adapters
-    monitor &= 0xff;
+    sys_monitor = _SysMonType();
+    alternate = sys_monitor >> 8;       // separate active/alternate adapters
+    monitor = sys_monitor & 0xff;
     mode_test = 1L << mode;
     if( ModeTable[monitor] & mode_test ||       // check active
         ModeTable[alternate] & mode_test ) {    // check alternate

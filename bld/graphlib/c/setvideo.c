@@ -336,7 +336,7 @@ static short SelectMode( short req_mode )
     short               monitor;
 
     if( req_mode == _MAXRESMODE ) {
-        monitor = _SysMonType() & 0xff;     // only look at active monitor
+        monitor = _SysMonitor();            // only look at active monitor
         switch( monitor ) {
         case MT_CGA_COLOUR:
             mode = _HRESBW;
@@ -370,7 +370,7 @@ static short SelectMode( short req_mode )
             mode = _DEFAULTMODE;
         }
     } else if( req_mode == _MAXCOLORMODE ) {
-        monitor = _SysMonType() & 0xff;     // only look at active monitor
+        monitor = _SysMonitor();            // only look at active monitor
         switch( monitor ) {
         case MT_CGA_COLOUR:
             mode = _MRES4COLOR;

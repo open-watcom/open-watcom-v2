@@ -181,7 +181,7 @@ void _GetState( void )
     _CurrState->vc.numtextcols = _BIOS_data( CRT_COLS, short );
     _CurrState->vc.numcolors = 32;
     _CurrState->vc.mode = GetVideoMode();
-    display = _SysMonType() & 0x00FF;
+    display = _SysMonitor();
     _CurrState->vc.adapter = _AdapTab[display];
     _CurrState->vc.monitor = _MonTab[display];
     _CurrState->vc.memory = _MemoryTab[_CurrState->vc.adapter];
