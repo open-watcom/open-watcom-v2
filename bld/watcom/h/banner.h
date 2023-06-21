@@ -65,7 +65,7 @@
 #define banner2a(year)      banner21a(year) " All Rights Reserved."
 
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
-#define banner3a            "See http://www.openwatcom.org/ for details."
+#define banner3a            "See https://open-watcom.github.io/ for details."
 
 #define banner1ps(p,v)      "Powersoft " p " " banner1v(v)
 #define banner2ps           banner21a( 1984 )
