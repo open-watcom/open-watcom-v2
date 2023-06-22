@@ -65,53 +65,53 @@ typedef short   grcolor;
 :endsegment
 
 struct xycoord {                /* structure for pixel position */
-        short   xcoord;
-        short   ycoord;
+    short   xcoord;
+    short   ycoord;
 };
 
 struct _wxycoord {              /* structure for window position*/
-        double  wx;
-        double  wy;
+    double  wx;
+    double  wy;
 };
 
 struct rccoord {                /* structure for text position  */
-        short   row;
-        short   col;
+    short   row;
+    short   col;
 };
 
 struct videoconfig {            /* structure for _getvideoconfig */
-        short   numxpixels;
-        short   numypixels;
-        short   numtextcols;
-        short   numtextrows;
-        grcolor numcolors;
-        short   bitsperpixel;
-        short   numvideopages;
-        short   mode;
-        short   adapter;
-        short   monitor;
-        short   memory;
+    short   numxpixels;
+    short   numypixels;
+    short   numtextcols;
+    short   numtextrows;
+    grcolor numcolors;
+    short   bitsperpixel;
+    short   numvideopages;
+    short   mode;
+    short   adapter;
+    short   monitor;
+    short   memory;
 };
 
 struct textsettings {           /* structure for _gettextsettings */
-        short   basevectorx;
-        short   basevectory;
-        short   txpath;
-        short   height;
-        short   width;
-        short   spacing;
-        short   horizalign;
-        short   vertalign;
+    short   basevectorx;
+    short   basevectory;
+    short   txpath;
+    short   height;
+    short   width;
+    short   spacing;
+    short   horizalign;
+    short   vertalign;
 };
 
 struct _fontinfo {              /* structure for _getfontinfo */
-        short   type;
-        short   ascent;
-        short   pixwidth;
-        short   pixheight;
-        short   avgwidth;
-        char    filename[ 81 ];
-        char    facename[ 32 ];
+    short   type;
+    short   ascent;
+    short   pixwidth;
+    short   pixheight;
+    short   avgwidth;
+    char    filename[ 81 ];
+    char    facename[ 32 ];
 };
 
 /* Calling conventions for -fpi(87) are different than for -fpc */
@@ -630,11 +630,11 @@ _WCRTLINK extern short
 #define _GFILLINTERIOR  3
 
 enum {                          /* cursor display */
-        _GCURSOROFF, _GCURSORON
+    _GCURSOROFF, _GCURSORON
 };
 
 enum {                          /* text wrapping */
-        _GWRAPOFF, _GWRAPON
+    _GWRAPOFF, _GWRAPON
 };
 
 /* Graphics Text Manipulation Functions and Constants */
@@ -697,15 +697,15 @@ _WCRTLINK extern short
     _WCI86FAR _grtext_w( double, double, char _WCI86FAR * );
 
 enum {                          /* horizontal alignment */
-        _NORMAL, _LEFT, _CENTER, _RIGHT
+    _NORMAL, _LEFT, _CENTER, _RIGHT
 };
 
 enum {                          /* vertical alignment */
-        _TOP=1, _CAP, _HALF, _BASE, _BOTTOM
+    _TOP=1, _CAP, _HALF, _BASE, _BOTTOM
 };
 
 enum {                          /* text path */
-        _PATH_RIGHT, _PATH_LEFT, _PATH_UP, _PATH_DOWN
+    _PATH_RIGHT, _PATH_LEFT, _PATH_UP, _PATH_DOWN
 };
 
 /* Text Manipulation Functions */
