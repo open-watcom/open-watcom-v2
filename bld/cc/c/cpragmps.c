@@ -164,15 +164,14 @@ static bool GetByteSeq( aux_info *info )
 void PragmaInit( void )
 /*********************/
 {
-    AsmInit();
+
 }
 
 
 void PragmaFini( void )
 /*********************/
 {
-    AsmFiniRelocs();
-    AsmFini();
+
 }
 
 static void InitAuxInfo( void )
