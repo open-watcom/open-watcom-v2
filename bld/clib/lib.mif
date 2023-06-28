@@ -42,4 +42,10 @@ clib_linkage_flags_286_static=-z
 clib_linkage_flags_286_dynamic=-z=export.tmp
 clib_linkage_flags_386_static=-z
 clib_linkage_flags_386_dynamic=-z=export.tmp
+clib_linkage_flags_axp_static=-z
+clib_linkage_flags_axp_dynamic=-z=export.tmp
+clib_linkage_flags_ppc_static=-z
+clib_linkage_flags_ppc_dynamic=-z=export.tmp
+clib_linkage_flags_mps_static=-z
+clib_linkage_flags_mps_dynamic=-z=export.tmp
 clib_linkage_flags=$(clib_linkage_flags_$(processor)_$(linkage))
