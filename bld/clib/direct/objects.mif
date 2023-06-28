@@ -1,47 +1,47 @@
-#                       d16 d32 dpm nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===================================================================================================
-!inject chdir.obj       d16 d32                                         w16 w32
-!inject chdiros2.obj                                    o16 o32
-!inject chdirwnt.obj                nt  nta ntp
-!inject chdirrdu.obj                                                                        rdu rdk
-!inject chdrive.obj     d16 d32     nt  nta ntp         o16 o32         w16 w32             rdu rdk
-!inject dir.obj         d16 d32                                         w16 w32
-!inject diros2.obj                                      o16 o32
-!inject dirwnt.obj                  nt  nta ntp
-!inject dirrdu.obj                                                                          rdu rdk
-!inject diskfree.obj    d16 d32     nt  nta ntp         o16 o32         w16 w32             rdu rdk
-!inject getdrive.obj    d16 d32     nt  nta ntp         o16 o32         w16 w32             rdu rdk
-!inject gtcwd.obj       d16 d32                                         w16 w32
-!inject gtcwdos2.obj                                    o16 o32
-!inject gtcwdwnt.obj                nt  nta ntp
-!inject gtcwdlnx.obj                                                            l32 lpc lmp
-!inject gtcwdrdu.obj                                                                        rdu rdk
-!inject _getdcwd.obj    d16 d32                                         w16 w32
-!inject getdcwd.obj     d16 d32     nt  nta ntp         o16 o32         w16 w32             rdu rdk
-!inject mkdir.obj       d16 d32                                         w16 w32
-!inject mkdiros2.obj                                    o16 o32
-!inject mkdirwnt.obj                nt  nta ntp
-!inject mkdirrdu.obj                                                                        rdu rdk
-!inject rmdir.obj       d16 d32                                         w16 w32
-!inject rmdiros2.obj                                    o16 o32
-!inject rmdirwnt.obj                nt  nta ntp
-!inject rmdirrdu.obj                                                                        rdu rdk
-!inject tmpdir.obj                                              q16 q32         l32 lpc lmp
-!inject uchdrwnt.obj                nt  nta ntp
-!inject uchdros2.obj                                    o16 o32
-!inject uchdr.obj       d16 d32                                         w16 w32
-!inject udirwnt.obj                 nt  nta ntp
-!inject udiros2.obj                                     o16 o32
-!inject udir.obj        d16 d32                                         w16 w32
-!inject ugetdcwd.obj    d16 d32     nt  nta ntp         o16 o32         w16 w32
-!inject ugtcd.obj       d16 d32                                         w16 w32
-!inject ugtcdos2.obj                                    o16 o32
-!inject ugtcdwnt.obj                nt  nta ntp
-!inject umkdrwnt.obj                nt  nta ntp
-!inject umkdros2.obj                                    o16 o32
-!inject umkdr.obj       d16 d32                                         w16 w32
-!inject urmdrwnt.obj                nt  nta ntp
-!inject urmdros2.obj                                    o16 o32
-!inject urmdr.obj       d16 d32                                         w16 w32
+#                       d16 d32 dpm nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#=======================================================================================================
+!inject chdir.obj       d16 d32                                             w16 w32
+!inject chdiros2.obj                                        o16 o32
+!inject chdirwnt.obj                nt  nta ntp ntm
+!inject chdirrdu.obj                                                                            rdu rdk
+!inject chdrive.obj     d16 d32     nt  nta ntp ntm         o16 o32         w16 w32             rdu rdk
+!inject dir.obj         d16 d32                                             w16 w32
+!inject diros2.obj                                          o16 o32
+!inject dirwnt.obj                  nt  nta ntp ntm
+!inject dirrdu.obj                                                                              rdu rdk
+!inject diskfree.obj    d16 d32     nt  nta ntp ntm         o16 o32         w16 w32             rdu rdk
+!inject getdrive.obj    d16 d32     nt  nta ntp ntm         o16 o32         w16 w32             rdu rdk
+!inject gtcwd.obj       d16 d32                                             w16 w32
+!inject gtcwdos2.obj                                        o16 o32
+!inject gtcwdwnt.obj                nt  nta ntp ntm
+!inject gtcwdlnx.obj                                                                l32 lpc lmp
+!inject gtcwdrdu.obj                                                                            rdu rdk
+!inject _getdcwd.obj    d16 d32                                             w16 w32
+!inject getdcwd.obj     d16 d32     nt  nta ntp ntm         o16 o32         w16 w32             rdu rdk
+!inject mkdir.obj       d16 d32                                             w16 w32
+!inject mkdiros2.obj                                        o16 o32
+!inject mkdirwnt.obj                nt  nta ntp ntm
+!inject mkdirrdu.obj                                                                            rdu rdk
+!inject rmdir.obj       d16 d32                                             w16 w32
+!inject rmdiros2.obj                                        o16 o32
+!inject rmdirwnt.obj                nt  nta ntp ntm
+!inject rmdirrdu.obj                                                                            rdu rdk
+!inject tmpdir.obj                                                  q16 q32         l32 lpc lmp
+!inject uchdrwnt.obj                nt  nta ntp ntm
+!inject uchdros2.obj                                        o16 o32
+!inject uchdr.obj       d16 d32                                             w16 w32
+!inject udirwnt.obj                 nt  nta ntp ntm
+!inject udiros2.obj                                         o16 o32
+!inject udir.obj        d16 d32                                             w16 w32
+!inject ugetdcwd.obj    d16 d32     nt  nta ntp ntm         o16 o32         w16 w32
+!inject ugtcd.obj       d16 d32                                             w16 w32
+!inject ugtcdos2.obj                                        o16 o32
+!inject ugtcdwnt.obj                nt  nta ntp ntm
+!inject umkdrwnt.obj                nt  nta ntp ntm
+!inject umkdros2.obj                                        o16 o32
+!inject umkdr.obj       d16 d32                                             w16 w32
+!inject urmdrwnt.obj                nt  nta ntp ntm
+!inject urmdros2.obj                                        o16 o32
+!inject urmdr.obj       d16 d32                                             w16 w32
 
 !include ../../../../objlist.mif

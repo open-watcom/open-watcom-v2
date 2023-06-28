@@ -1,77 +1,77 @@
-#                       d16 d32 dpm nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===================================================================================================
-!inject allocos2.obj                                    o16 o32
-!inject allocwnt.obj                nt  nta ntp
-!inject bdos.obj        d16 d32 dpm                                     w16 w32
-!inject break.obj       d16 d32                                         w16 w32
-!inject creatdos.obj    d16 d32 dpm                                     w16 w32
-!inject creatos2.obj                                    o16 o32
-!inject creatwnt.obj                nt  nta ntp
-!inject crtnwos2.obj                                    o16 o32
-!inject crtnwwnt.obj                nt  nta ntp
-!inject d_getvec.obj    d16 d32 dpm                                     w16
+#                       d16 d32 dpm nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#=======================================================================================================
+!inject allocos2.obj                                        o16 o32
+!inject allocwnt.obj                nt  nta ntp ntm
+!inject bdos.obj        d16 d32 dpm                                         w16 w32
+!inject break.obj       d16 d32                                             w16 w32
+!inject creatdos.obj    d16 d32 dpm                                         w16 w32
+!inject creatos2.obj                                        o16 o32
+!inject creatwnt.obj                nt  nta ntp ntm
+!inject crtnwos2.obj                                        o16 o32
+!inject crtnwwnt.obj                nt  nta ntp ntm
+!inject d_getvec.obj    d16 d32 dpm                                         w16
 !inject d_keep.obj      d16 d32
-!inject d_setvec.obj    d16 d32 dpm                                     w16
-!inject ddisk086.obj    d16     dpm                                     w16
-!inject ddisk386.obj        d32                                             w32
-!inject dosexter.obj    d16 d32 dpm                                     w16 w32
-!inject dosgdf.obj                  nt  nta ntp         o16 o32
-!inject dosret.obj      d16 d32     nt  nta ntp         o16 o32         w16 w32
-!inject drive086.obj    d16     dpm                                     w16
-!inject drive386.obj        d32                                             w32
-!inject error086.obj    d16     dpm                                     w16
-!inject error386.obj        d32                                             w32
-!inject filedos.obj     d16 d32 dpm                                     w16 w32
-!inject fileos2.obj                                     o16 o32
-!inject filewnt.obj                 nt  nta ntp
-!inject finddos.obj     d16 d32 dpm                                     w16 w32
-!inject findos2.obj                                     o16 o32
-!inject findwnt.obj                 nt  nta ntp
-!inject ftime086.obj    d16     dpm                                     w16
-!inject ftime386.obj        d32                                             w32
-!inject gdateos2.obj                                    o16 o32
-!inject gdatewnt.obj                nt  nta ntp
-!inject gdrveos2.obj                                    o16 o32
-!inject gdrvewnt.obj                nt  nta ntp
-!inject gfattdos.obj    d16 d32 dpm                                     w16 w32
-!inject gfatto16.obj                                    o16
-!inject gfatto32.obj                                        o32
-!inject gfattwnt.obj                nt  nta ntp
-!inject gftimos2.obj                                    o16 o32
-!inject gftimwnt.obj                nt  nta ntp
-!inject gtime086.obj    d16     dpm                                     w16
-!inject gtime386.obj        d32                                             w32
+!inject d_setvec.obj    d16 d32 dpm                                         w16
+!inject ddisk086.obj    d16     dpm                                         w16
+!inject ddisk386.obj        d32                                                 w32
+!inject dosexter.obj    d16 d32 dpm                                         w16 w32
+!inject dosgdf.obj                  nt  nta ntp ntm         o16 o32
+!inject dosret.obj      d16 d32     nt  nta ntp ntm         o16 o32         w16 w32
+!inject drive086.obj    d16     dpm                                         w16
+!inject drive386.obj        d32                                                 w32
+!inject error086.obj    d16     dpm                                         w16
+!inject error386.obj        d32                                                 w32
+!inject filedos.obj     d16 d32 dpm                                         w16 w32
+!inject fileos2.obj                                         o16 o32
+!inject filewnt.obj                 nt  nta ntp ntm
+!inject finddos.obj     d16 d32 dpm                                         w16 w32
+!inject findos2.obj                                         o16 o32
+!inject findwnt.obj                 nt  nta ntp ntm
+!inject ftime086.obj    d16     dpm                                         w16
+!inject ftime386.obj        d32                                                 w32
+!inject gdateos2.obj                                        o16 o32
+!inject gdatewnt.obj                nt  nta ntp ntm
+!inject gdrveos2.obj                                        o16 o32
+!inject gdrvewnt.obj                nt  nta ntp ntm
+!inject gfattdos.obj    d16 d32 dpm                                         w16 w32
+!inject gfatto16.obj                                        o16
+!inject gfatto32.obj                                            o32
+!inject gfattwnt.obj                nt  nta ntp ntm
+!inject gftimos2.obj                                        o16 o32
+!inject gftimwnt.obj                nt  nta ntp ntm
+!inject gtime086.obj    d16     dpm                                         w16
+!inject gtime386.obj        d32                                                 w32
 !inject gtimeos2.obj                                    o16 o32
-!inject gtimewnt.obj                nt  nta ntp
+!inject gtimewnt.obj                nt  nta ntp ntm
 !inject hrder086.obj    d16
 !inject hrder386.obj        d32
-!inject intd086.obj     d16     dpm                                     w16
-!inject intd386.obj         d32                                             w32
-!inject intdx086.obj    d16     dpm                                     w16
-!inject intdx386.obj        d32                                             w32
-!inject io086.obj       d16     dpm                                     w16
+!inject intd086.obj     d16     dpm                                         w16
+!inject intd386.obj         d32                                                 w32
+!inject intdx086.obj    d16     dpm                                         w16
+!inject intdx386.obj        d32                                                 w32
+!inject io086.obj       d16     dpm                                         w16
 !inject io386.obj           d32
-!inject iow32.obj                                                           w32
+!inject iow32.obj                                                               w32
 !inject mem086.obj      d16     dpm
 !inject mem386.obj          d32
-!inject opendos.obj     d16 d32 dpm                                     w16 w32
-!inject reados2.obj                                     o16 o32
-!inject readwnt.obj                 nt  nta ntp
-!inject sdateos2.obj                                    o16 o32
-!inject sdatewnt.obj                nt  nta ntp
-!inject sdrveos2.obj                                    o16 o32
-!inject sdrvewnt.obj                nt  nta ntp
-!inject sfattdos.obj    d16 d32 dpm                                     w16 w32
-!inject sfattos2.obj                                    o16 o32
-!inject sfattwnt.obj                nt  nta ntp
-!inject sftimos2.obj                                    o16 o32
-!inject sftimwnt.obj                nt  nta ntp
-!inject stime086.obj    d16     dpm                                     w16
-!inject stime386.obj        d32                                             w32
-!inject stimeos2.obj                                    o16 o32
-!inject stimewnt.obj                nt  nta ntp
-!inject ufind.obj       d16 d32     nt  nta ntp         o16 o32         w16 w32
-!inject writeos2.obj                                    o16 o32
-!inject writewnt.obj                nt  nta ntp
+!inject opendos.obj     d16 d32 dpm                                         w16 w32
+!inject reados2.obj                                         o16 o32
+!inject readwnt.obj                 nt  nta ntp ntm
+!inject sdateos2.obj                                        o16 o32
+!inject sdatewnt.obj                nt  nta ntp ntm
+!inject sdrveos2.obj                                        o16 o32
+!inject sdrvewnt.obj                nt  nta ntp ntm
+!inject sfattdos.obj    d16 d32 dpm                                         w16 w32
+!inject sfattos2.obj                                        o16 o32
+!inject sfattwnt.obj                nt  nta ntp ntm
+!inject sftimos2.obj                                        o16 o32
+!inject sftimwnt.obj                nt  nta ntp ntm
+!inject stime086.obj    d16     dpm                                         w16
+!inject stime386.obj        d32                                                 w32
+!inject stimeos2.obj                                        o16 o32
+!inject stimewnt.obj                nt  nta ntp ntm
+!inject ufind.obj       d16 d32     nt  nta ntp ntm         o16 o32         w16 w32
+!inject writeos2.obj                                        o16 o32
+!inject writewnt.obj                nt  nta ntp ntm
 
 !include ../../../../objlist.mif

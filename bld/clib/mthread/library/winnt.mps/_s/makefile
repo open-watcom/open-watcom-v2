@@ -1,4 +1,4 @@
-#pmake: nobuild winnt threading dll mthread mips dynamic os_nt cpu_mps
+#pmake: nobuild winnt threading dll mthread mps dynamic os_nt cpu_mps
 processor=mps
 system=winnt
 linkage=dynamic

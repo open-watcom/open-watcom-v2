@@ -1,13 +1,13 @@
 !ifdef %OW_QNX_QLIB
 
-#                       d16 d32 dpm nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===========================================================================================================
-!inject close.obj                                                       q16 q32
-!inject qnx_exit.obj                                                    q16 q32
-!inject qfddeta.obj                                                     q16 q32
-!inject kernel.obj                                                      q16 q32
-!inject kill.obj                                                        q16 q32
-!inject write.obj                                                       q16 q32
+#                       d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#===============================================================================================================
+!inject close.obj                                                           q16 q32
+!inject qnx_exit.obj                                                        q16 q32
+!inject qfddeta.obj                                                         q16 q32
+!inject kernel.obj                                                          q16 q32
+!inject kill.obj                                                            q16 q32
+!inject write.obj                                                           q16 q32
 
 !include ../../../../objlist.mif
 

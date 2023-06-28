@@ -1,5 +1,5 @@
-#                       d16 d32 dpm nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===================================================================================================
+#                       d16 d32 dpm nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#=======================================================================================================
 !inject creatdir.obj                nt
 !inject creatfil.obj                nt
 !inject crtproc.obj                 nt
@@ -7,16 +7,16 @@
 !inject fffrstfi.obj                nt
 !inject ffnextfi.obj                nt
 !inject ffrstfil.obj                nt
-!inject fgtattr.obj                 nt  nta ntp
-!inject fnextatt.obj                nt  nta ntp
+!inject fgtattr.obj                 nt  nta ntp ntm
+!inject fnextatt.obj                nt  nta ntp ntm
 !inject fnextfil.obj                nt
-!inject gdirinfo.obj                nt  nta ntp
+!inject gdirinfo.obj                nt  nta ntp ntm
 !inject getcdir.obj                 nt
 !inject getdtype.obj                nt
 !inject getfattr.obj                nt
 !inject getmodfn.obj                nt
 !inject getfulpn.obj                nt
-!inject gfindinf.obj                nt  nta ntp
+!inject gfindinf.obj                nt  nta ntp ntm
 !inject movefile.obj                nt
 !inject removdir.obj                nt
 !inject setcdir.obj                 nt
@@ -24,9 +24,9 @@
 !inject setfattr.obj                nt
 !inject ufffrstf.obj                nt
 !inject uffnextf.obj                nt
-!inject ufgtattr.obj                nt  nta ntp
-!inject ufnextat.obj                nt  nta ntp
-!inject ugdirinf.obj                nt  nta ntp
-!inject ugfindin.obj                nt  nta ntp
+!inject ufgtattr.obj                nt  nta ntp ntm
+!inject ufnextat.obj                nt  nta ntp ntm
+!inject ugdirinf.obj                nt  nta ntp ntm
+!inject ugfindin.obj                nt  nta ntp ntm
 
 !include ../../../../objlist.mif
