@@ -1,30 +1,30 @@
-#                       d16 d32 dpm nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===========================================================================================================
-!inject declthrd.obj                    nta ntp
+#                       d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#===============================================================================================================
+!inject declthrd.obj                    nta ntp ntm
 !inject declwnt.obj                 nt
-!inject declrdu.obj                                                                                 rdu
-!inject maxthrds.obj                            nvc ncl         o16 o32     q32         l32 lpc lmp
-!inject mthread.obj                 nt  nta ntp nvc ncl nvl nll o16 o32     q32         l32 lpc lmp rdu rdk
-!inject mthrdini.obj                nt  nta ntp nvc ncl nvl nll     o32     q32         l32 lpc lmp rdu rdk
-!inject regdata.obj                 nt  nta ntp nvc ncl nvl nll     o32     q32         l32 lpc lmp rdu rdk
-!inject register.obj                nt  nta ntp nvc ncl nvl nll     o32     q32         l32 lpc lmp rdu rdk
-!inject registrx.obj                nt  nta ntp
-!inject semapsx.obj                                                         q32         l32 lpc lmp
-!inject snglthrd.obj                nt  nta ntp nvc ncl nvl nll o16 o32     q32         l32 lpc lmp rdu rdk
-!inject tdhdlwnt.obj                nt  nta ntp
-!inject thrdmax.obj                             nvc ncl         o16 o32     q32         l32 lpc lmp
-!inject thrednov.obj                            nvc ncl
-!inject thnwlibc.obj                                    nvl nll
-!inject thredo16.obj                                            o16
-!inject thredo32.obj                                                o32
-!inject thredqnx.obj                                                        q32
-!inject thredlnx.obj                                                                    l32 lpc lmp
-!inject thredwnt.obj                nt  nta ntp
-!inject thrdxwnt.obj                nt  nta ntp
-!inject thredrdu.obj                                                                                rdu
-!inject thredrdk.obj                                                                                    rdk
-!inject trdalloc.obj                nt  nta ntp nvc ncl nvl nll o16 o32                 l32 lpc lmp rdu rdk
-!inject trdlist.obj                 nt  nta ntp         nvl nll     o32                 l32 lpc lmp rdu
+!inject declrdu.obj                                                                                     rdu
+!inject maxthrds.obj                                nvc ncl         o16 o32     q32         l32 lpc lmp
+!inject mthread.obj                 nt  nta ntp ntm nvc ncl nvl nll o16 o32     q32         l32 lpc lmp rdu rdk
+!inject mthrdini.obj                nt  nta ntp ntm nvc ncl nvl nll     o32     q32         l32 lpc lmp rdu rdk
+!inject regdata.obj                 nt  nta ntp ntm nvc ncl nvl nll     o32     q32         l32 lpc lmp rdu rdk
+!inject register.obj                nt  nta ntp ntm nvc ncl nvl nll     o32     q32         l32 lpc lmp rdu rdk
+!inject registrx.obj                nt  nta ntp ntm
+!inject semapsx.obj                                                             q32         l32 lpc lmp
+!inject snglthrd.obj                nt  nta ntp ntm nvc ncl nvl nll o16 o32     q32         l32 lpc lmp rdu rdk
+!inject tdhdlwnt.obj                nt  nta ntp ntm
+!inject thrdmax.obj                                 nvc ncl         o16 o32     q32         l32 lpc lmp
+!inject thrednov.obj                                nvc ncl
+!inject thnwlibc.obj                                        nvl nll
+!inject thredo16.obj                                                o16
+!inject thredo32.obj                                                    o32
+!inject thredqnx.obj                                                            q32
+!inject thredlnx.obj                                                                        l32 lpc lmp
+!inject thredwnt.obj                nt  nta ntp ntm
+!inject thrdxwnt.obj                nt  nta ntp ntm
+!inject thredrdu.obj                                                                                    rdu
+!inject thredrdk.obj                                                                                        rdk
+!inject trdalloc.obj                nt  nta ntp ntm nvc ncl nvl nll o16 o32                 l32 lpc lmp rdu rdk
+!inject trdlist.obj                 nt  nta ntp ntm         nvl nll     o32                 l32 lpc lmp rdu
 
 !include ../../../../objlist.mif
 

@@ -117,6 +117,11 @@ type="l"    usr="clib.lib"
 type="s"    usr="binmode.obj"
 type="s"    usr="commode.obj"
 
+[ DEFAULT dir="libmps/nt" cond="mipstarg" where="ac" ]
+type="l"    usr="clib.lib"
+type="s"    usr="binmode.obj"
+type="s"    usr="commode.obj"
+
 [ DEFAULT dir="lib386/linux" cond="lnxtarg" where="c f77 jc jf77" ]
 type="l"    usr="clib3r.lib"    conda="3r"
 type="l"    usr="clib3s.lib"    conda="3s"

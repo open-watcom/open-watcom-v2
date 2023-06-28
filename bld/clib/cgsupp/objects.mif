@@ -69,9 +69,9 @@
 !inject shrd.obj        d16                                 o16     q16     w16
 !inject stkaxp.obj                      nta
 !inject stkppc.obj                              ntp
-!inject stksmps.obj                                                                         lmp
-!inject stkcmps.obj                                                                         lmp
-!inject stkwmps.obj                                                                         lmp
+!inject stksmps.obj                         ntm                                             lmp
+!inject stkcmps.obj                         ntm                                             lmp
+!inject stkwmps.obj                         ntm                                             lmp
 
 !include ../../../../objlist.mif
 

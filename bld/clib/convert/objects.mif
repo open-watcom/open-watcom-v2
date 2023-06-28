@@ -1,31 +1,31 @@
-#                       d16 d32 dpm nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===========================================================================================================
-!inject alphabet.obj    d16 d32     nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject atoi.obj        d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject atol.obj        d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject atoll.obj       d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc     rdu rdk
-!inject atouni.obj      d16 d32     nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject fdmd086.obj     d16                                     o16     q16     w16
-!inject fdmd386.obj         d32     nt          nvc     nvl         o32     q32     w32 l32         rdu rdk
-!inject fsms086.obj     d16                                     o16     q16     w16
-!inject fsms386.obj         d32     nt          nvc     nvl         o32     q32     w32 l32         rdu rdk
-!inject itoa.obj        d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject lltoa.obj       d16 d32     nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject ltoa.obj        d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject mdfd086.obj     d16                                     o16     q16     w16
-!inject mdfd386.obj         d32     nt          nvc     nvl         o32     q32     w32 l32         rdu rdk
-!inject msfs086.obj     d16                                     o16     q16     w16
-!inject msfs386.obj         d32     nt          nvc     nvl         o32     q32     w32 l32         rdu rdk
-!inject strtol.obj      d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-!inject strtoll.obj     d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc     rdu rdk
-!inject uatoi.obj       d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject uatol.obj       d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject uatoll.obj      d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc
-!inject uitoa.obj       d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject ulltoa.obj      d16 d32     nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject ultoa.obj       d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject ustrtol.obj     d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject ustrtoll.obj    d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc
+#                       d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#===============================================================================================================
+!inject alphabet.obj    d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject atoi.obj        d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject atol.obj        d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject atoll.obj       d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject atouni.obj      d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject fdmd086.obj     d16                                         o16     q16     w16
+!inject fdmd386.obj         d32     nt              nvc     nvl         o32     q32     w32 l32         rdu rdk
+!inject fsms086.obj     d16                                         o16     q16     w16
+!inject fsms386.obj         d32     nt              nvc     nvl         o32     q32     w32 l32         rdu rdk
+!inject itoa.obj        d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject lltoa.obj       d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject ltoa.obj        d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject mdfd086.obj     d16                                         o16     q16     w16
+!inject mdfd386.obj         d32     nt              nvc     nvl         o32     q32     w32 l32         rdu rdk
+!inject msfs086.obj     d16                                         o16     q16     w16
+!inject msfs386.obj         d32     nt              nvc     nvl         o32     q32     w32 l32         rdu rdk
+!inject strtol.obj      d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject strtoll.obj     d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject uatoi.obj       d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject uatol.obj       d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject uatoll.obj      d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject uitoa.obj       d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject ulltoa.obj      d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject ultoa.obj       d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject ustrtol.obj     d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject ustrtoll.obj    d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
 
 
 !include ../../../../objlist.mif

@@ -176,6 +176,9 @@ set PROJDIR=<CWD>
     <CCCMD> startup/library/winnt.axp/_s/commode.obj        "<OWRELROOT>/libaxp/nt/commode.obj"
 
     <CCCMD> library/linux.mps/_s/clib.lib                   "<OWRELROOT>/libmps/linux/clib.lib"
+    <CCCMD> library/winnt.mps/_s/clib.lib                   "<OWRELROOT>/libmps/nt/clib.lib"
+    <CCCMD> handleio/library/winnt.mps/_s/binmode.obj       "<OWRELROOT>/libmps/nt/binmode.obj"
+    <CCCMD> startup/library/winnt.mps/_s/commode.obj        "<OWRELROOT>/libmps/nt/commode.obj"
 
 [ BLOCK <1> clibqa ]
 #===================
