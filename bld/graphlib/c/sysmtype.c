@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,9 +67,11 @@ extern void Idle( void );
 
 static short ChkCursorReg( short port )
 /*=====================================
-
-    Test the presence of a monochrome or color display  */
-
+ * Test the presence of a monochrome or color display
+ *
+ * Note: If the cursor remains the same, then the "port" indicates
+ *       what it claims it indicates.
+ */
 {
     short           cursor_pos;
     short           old_cursor_pos;
@@ -82,17 +84,13 @@ static short ChkCursorReg( short port )
     cursor_pos = inp( port );                       /* read cursor again    */
     outp( port, ( char ) old_cursor_pos );          /* reset old cursor     */
     return( cursor_pos == 0x5A );                   /* is cursor the same?  */
-
-    /* Note: If the cursor remains the same, then the "port" indicates
-             what it claims it indicates.   */
 }
 
 
 static short CheckMONO( void )
-/*==========================
-
-    Determine if monochrome adapter is a MDPA or HGC    */
-
+/*============================
+ * Determine if monochrome adapter is a MDPA or HGC
+ */
 {
     unsigned short      i;
     short               vert_sync;
@@ -102,11 +100,11 @@ static short CheckMONO( void )
         /*  Poll port many times to check for Hercules. Bit 7 of the
             vertical sync will be updated for an HGC.                       */
         for( i = 0; i < 32768; i++ ) {
-            if( ( inp( PORT_STATUS ) & 0x0080 ) != vert_sync ) {    /* HGC  */
+            if( (inp( PORT_STATUS ) & 0x0080) != vert_sync ) {    /* HGC  */
                 vert_sync = inp( PORT_STATUS ) & 0x70;          /* detected */
                 if( vert_sync == 0 ) {
                     return( MT_HERC );
-                } else if( ( vert_sync & 0x10 ) == 0 ) {
+                } else if( (vert_sync & 0x10) == 0 ) {
                     return( MT_HERCPLUS );
                 } else {
                     return( MT_HERCINCL );
@@ -115,45 +113,45 @@ static short CheckMONO( void )
         }                                               /* not a Hercules   */
         return( MT_MDPA );
     } else {
-        return( FALSE );                                /* not a monochrome */
+        return( MT_NONE );                              /* not a monochrome */
     }
 }
 
 
 static short CheckCGA( void )
 /*===========================
-
-    Check for the presence of an IBM CGA.   */
-
+ * Check for the presence of an IBM CGA.
+ */
 {
     if( ChkCursorReg( PORT_COLOUR ) ) {             /* CGA color detected   */
         return( MT_CGA_COLOUR );
     } else {
-        return( FALSE );
+        return( MT_NONE );                          /* not a monochrome */
     }
 }
 
-static short DCCEmulate( void )
-/*=============================
-
-    First test the reserved switch settings for an EGA. If an EGA
-    detected, get EGA information; otherwise assume a CGA. Valid
-    EGA info is:    color range : 0-1 (colour,mono)
-                    memory range : 0-3 (64K,128K,192K,256K).
-    Otherwise assume a CGA. Check for alternate type.   */
-
+static unsigned short DCCEmulate( void )
+/*======================================
+ *
+ * First test the reserved switch settings for an EGA. If an EGA
+ * detected, get EGA information; otherwise assume a CGA. Valid
+ * EGA info is:    color range : 0-1 (colour,mono)
+ *                 memory range : 0-3 (64K,128K,192K,256K).
+ * Otherwise assume a CGA. Check for alternate type.
+ */
 {
+    unsigned short  ega_info;
     short           ega_color;
     short           ega_memory;
     char            info;
-    char            active_type;
-    char            alternate_type;
+    short           active_type;
+    short           alternate_type;
     char            video_mode;
 
-    if( ( VideoInt_cx( _BIOS_ALT_SELECT, EGA_INF, 0, 0 ) & 0x00ff ) < 0x0C ) {
-        ega_memory = EGA_Memory();
-        ega_color = ega_memory >> 8;                        /* low byte     */
-        ega_memory &= 0x00FF;                               /* high byte    */
+    if( (VideoInt_cx( _BIOS_ALT_SELECT, EGA_INF, 0, 0 ) & 0x00ff) < 0x0C ) {
+        ega_info = EGA_Info();
+        ega_color = ega_info >> 8;                          /* low byte     */
+        ega_memory = ega_info & 0x00FF;                     /* high byte    */
         if( ega_color > 0x01 || ega_memory > 0x03 ) {
             active_type = CheckCGA();                   /* assume IBM CGA   */
             alternate_type = CheckMONO();
@@ -175,7 +173,9 @@ static short DCCEmulate( void )
         active_type = CheckCGA();
         alternate_type = CheckMONO();
     }
-    /*  Swap active/alternate types for monochrome displays (modes 7,11,15) */
+    /*
+     * Swap active/alternate types for monochrome displays (modes 7,11,15)
+     */
     video_mode = GetVideoMode();
     if( video_mode == 7 || video_mode == 11 || video_mode == 15 ) {
         return( ( active_type << 8 ) + alternate_type );
@@ -185,18 +185,18 @@ static short DCCEmulate( void )
 }
 
 
-short _SysMonType( void )
-/*=======================
-
-    This routine returns the active monitor type plus an alternate
-    type if it exists. */
-
+unsigned short _SysMonType( void )
+/*================================
+ *
+ * This routine returns the active monitor type plus an alternate
+ * type if it exists.
+ */
 {
     short           dcc;
-    short           monitor_type;
+    unsigned short  monitor_type;
     char            info;
-    char            active_type;
-    char            alternate_type;
+    short           active_type;
+    short           alternate_type;
 //    char __far *    p;
 
     dcc = VideoInt( _BIOS_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;

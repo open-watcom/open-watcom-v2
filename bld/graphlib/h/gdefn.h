@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,10 @@
 #include "graph.gh"
 #endif
 
+
+#define COLOR_RED(c)    (((c) >> 0) & 0xFF)
+#define COLOR_GREEN(c)  (((c) >> 8) & 0xFF)
+#define COLOR_BLUE(c)   (((c) >> 16) & 0xFF)
 
 #if defined( VERSION2 )
 
@@ -325,7 +329,8 @@ extern void             _ScrollWindow( short, short );
 extern short            _SetMode( short );
 extern short            _SetRows( short );
 extern short            _SwapBits( short );
-extern short            _SysMonType( void );
+extern unsigned short   _SysMonType( void );
+#define _SysMonitor()   (_SysMonType() & 0xff)
 extern short            _SuperVGAType( void );
 extern void             _SetSVGAType( short vga_type );
 

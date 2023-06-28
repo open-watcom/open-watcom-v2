@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ static short _EGAInit( short mode )
         } else {    // mode is 16
             _GrInit( 640, 350,  80,  16,   4,   2, _EgaSeg, _EgaOff, 0x800, PLANAR );
         }
-        if( ( EGA_Memory() & 0x00ff ) == 0 ) {      // only 64K memory
+        if( EGA_Memory() == 0 ) {                   // only 64K memory
             _CurrState->vc.numvideopages = max( 1, _CurrState->vc.numvideopages / 4 );
             if( mode == 15 || mode == 16 ) {
                 _CurrState->deviceptr = &_GrEGA_EO;
