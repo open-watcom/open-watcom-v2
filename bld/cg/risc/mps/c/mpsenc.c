@@ -558,18 +558,19 @@ static  void doCall( instruction *ins )
 
     op = ins->operands[CALL_OP_ADDR];
     sym = op->v.symbol;
-    cclass = (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
     lbl = symLabel( op );
     code = NULL;
     if( !AskIfRTLabel( lbl ) ) {
         code = FindAuxInfoSym( sym, FEINF_CALL_BYTES );
     }
     if( code != NULL ) {
+        cclass = (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
         ObjEmitSeq( code );
         if( cclass & FECALL_GEN_ABORTS ) {
             GenNoReturn();
         }
     } else {
+        cclass = FECALL_GEN_NONE; //!
         GenCallLabel( lbl );
     }
     if( cclass & FECALL_GEN_NORETURN ) {
