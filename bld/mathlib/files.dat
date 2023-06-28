@@ -27,7 +27,7 @@ dir="lib386"    usr="math3r.lib"    cond="3r"   wherea="ac"
 dir="lib386"    usr="math3s.lib"    cond="3s"   wherea="ac"
 dir="lib386"    usr="math387r.lib"  cond="3r"   wherea="ac"
 dir="lib386"    usr="math387s.lib"  cond="3s"   wherea="ac"
-
+dir="libmps"    usr="math.lib"                  where="ac"
 dir="libaxp"    usr="math.lib"                  where="ac"
 
 [ DEFAULT where="c jc f77 jf77" desc="Math Library 32-bit DLL Import Libraries" ]
