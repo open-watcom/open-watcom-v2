@@ -35,6 +35,8 @@
   #define   __TGT_SYS   __TGT_SYS_PPC_NT
 #elif defined(__AXP__)
   #define   __TGT_SYS   __TGT_SYS_AXP_NT
+#elif defined(__MIPS__)
+  #define   __TGT_SYS   __TGT_SYS_MIPS
 #else
   #define   __TGT_SYS   __TGT_SYS_X86
 #endif
