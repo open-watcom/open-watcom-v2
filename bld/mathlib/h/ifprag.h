@@ -39,6 +39,8 @@
 // do nothing
 #elif defined(__PPC__)
 // do nothing
+#elif defined(__MIPS__)
+// do nothing
 #elif defined(__386__)
     #pragma aux if_rtn __parm [__eax __ebx __ecx __edx __8087];
     #if defined(__SW_3S)
