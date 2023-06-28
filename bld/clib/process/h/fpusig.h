@@ -63,6 +63,7 @@
     #define FPCR_SUMMARY_BIT    0x80000000
 #elif defined(__PPC__)
     // Undefined
+#elif defined(__MIPS__)
 #else
     #error *** Processor Type Not Supported ***
 #endif

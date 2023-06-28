@@ -174,6 +174,8 @@ LONG WINAPI __ReportException( EXCEPTION_POINTERS *rec )
         // no alpha specific floating point exceptions
 #elif defined( __PPC__ )
         // no ppc specific floating point exceptions
+#elif defined(__MIPS__)
+        // TODO: is this ok?
 #endif
     case STATUS_FLOAT_DENORMAL_OPERAND:
         fmt_hex( buff, "The instruction at 0x00000000 caused a denormal "
@@ -362,6 +364,8 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
         // no alpha specific floating point exceptions
 #elif defined( __PPC__ )
         // no ppc specific floating point exceptions
+#elif defined(__MIPS__)
+        // TODO:3
 #else
 #error *** Platform Not Supported ***
 #endif
@@ -436,6 +440,8 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
                     ~(FPCR_SUMMARY_BIT | FPCR_XCPT_FLAGS);
 #elif defined( __PPC__ )
                 // Can we do something here?
+#elif defined(__MIPS__)
+                // TODO...
 #else
 #error *** Platform Not Supported ***
 #endif
