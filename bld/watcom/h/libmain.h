@@ -41,7 +41,7 @@ extern int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
 #pragma aux _LibMain "_*"
 extern int APIENTRY LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
 
-#if defined( _M_ALPHA ) || defined( _M_PPC )
+#if defined( _M_ALPHA ) || defined( _M_PPC ) || defined( _M_MRX000 )
 extern int DllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved );
 extern int _DllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved );
 extern int wDllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved );
