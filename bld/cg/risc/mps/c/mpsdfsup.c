@@ -77,10 +77,25 @@ static dw_regs  DFRegMapN( name *reg )
 void    DFOutReg( dw_loc_id locid, name *reg )
 /********************************************/
 {
-    dw_regs     regnum;
+    hw_reg_set  hw_reg;
+    hw_reg_set  hw_low;
+    dw_regs     dw_reg;
 
-    regnum = DFRegMapN( reg );
-    DWLocReg( Client, locid, regnum );
+    hw_reg = reg->r.reg;
+
+    hw_low = Low64Reg( hw_reg );
+    if( HW_CEqual( hw_low, HW_EMPTY ) ) {
+        dw_reg = DFRegMap( hw_reg );
+        DWLocReg( Client, locid, dw_reg );
+   } else {
+        dw_reg =  DFRegMap( hw_low );
+        DWLocReg( Client, locid, dw_reg );
+        DWLocPiece( Client, locid, WD );
+        HW_TurnOff( hw_reg, hw_low );
+        dw_reg = DFRegMap( hw_reg );
+        DWLocReg( Client, locid, dw_reg );
+        DWLocPiece( Client, locid, WD );
+    }
 }
 
 
