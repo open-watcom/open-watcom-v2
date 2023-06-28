@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -61,7 +61,7 @@
     #pragma aux __wNTMain "*"
   #endif
 
-  #if defined( __AXP__ ) || defined( __PPC__ )
+  #if defined( __AXP__ ) || defined( __PPC__ ) || defined(__MIPS__)
     extern void mainCRTStartup( void );
     extern void wmainCRTStartup( void );
   #endif
