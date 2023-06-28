@@ -44,7 +44,11 @@
 #define __DOS_EXT__
 #endif
 
+#if defined( _M_I86 ) || defined( _M_IX86 )
 #define FAR2NEAR(t,f)   ((t __near *)(long)(f))
+#else
+#define FAR2NEAR(t,f) ((t*)(f))
+#endif
 
 #define BLK2CSTG(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CSTG2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
@@ -120,7 +124,9 @@ typedef freelist        _WCNEAR *freelist_nptr;
 typedef freelist        _WCFAR *freelist_fptr;
 
 typedef union heapptr {
+#if defined( _M_I86 ) || defined( _M_IX86 )
     __segment           segm;
+#endif
     heapblk_nptr        nptr;
 } heapptr;
 
