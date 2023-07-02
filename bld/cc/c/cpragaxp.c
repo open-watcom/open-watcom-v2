@@ -368,12 +368,8 @@ hw_reg_set PragReg( void )
     size_t          len;
     const char      *p;
 
-    p = SkipUnderscorePrefix( Buffer );
-    if( p == NULL ) {
-        /* error, missing underscores prefix */
-        PragRegNameErr( Buffer );
-        p = Buffer;
-    } else if( *p == '\0' ) {
+    p = Buffer;
+    if( *p == '\0' ) {
         NextToken();
         p = Buffer;
     }
