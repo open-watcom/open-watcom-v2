@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #define BDATA_CURR_VIDEO_MODE   0x49    /* byte */
 #define BDATA_REGEN_LEN         0x4c
 #define BDATA_SCREEN_OFFSET     0x4e    /* word */
-#define BDATA_CURPOS            0x50
+#define BDATA_CURSOR_POS        0x50
 #define BDATA_ACT_VPAGE         0x62
 #define BDATA_MODE_CTRL         0x65
 #define BDATA_SYSTEM_CLOCK      0x6c    /* dword */

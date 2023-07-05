@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1157,7 +1157,7 @@ void UIHOOK uiinitcursor( void )
 
 void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
 {
-    uint_16     bios_cur_pos;
+    uint_16     bios_cursor_pos;
 
     if( FlipMech != FLIP_TWO ) {
         _uisetcursor( crow, ccol, ctype, cattr );
@@ -1168,12 +1168,12 @@ void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATT
         OldTyp = ctype;
         OldRow = crow;
         OldCol = ccol;
-        bios_cur_pos = BDATA_CURPOS;
+        bios_cursor_pos = BDATA_CURSOR_POS;
         if( FlipMech == FLIP_PAGE ) {
-            bios_cur_pos += 2;
+            bios_cursor_pos += 2;
         }
-        BIOSData( bios_cur_pos + 0, unsigned char ) = OldCol;
-        BIOSData( bios_cur_pos + 1, unsigned char ) = OldRow;
+        BIOSData( bios_cursor_pos + 0, unsigned char ) = OldCol;
+        BIOSData( bios_cursor_pos + 1, unsigned char ) = OldRow;
         VIDSetPos( VIDPort, CurOffst + crow * UIData->width + ccol );
         VIDSetCurTyp( VIDPort, ( ctype == C_INSERT ) ? InsCur : RegCur );
     }
