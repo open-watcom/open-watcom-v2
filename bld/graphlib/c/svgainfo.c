@@ -112,7 +112,7 @@ short _SuperVGAType( void )
         return _SVGAType;
     }
 
-    dcc = VideoInt( _BIOS_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
+    dcc = VideoInt( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
     if( dcc != 0x1a ) {
         return( _SV_NONE );
     }

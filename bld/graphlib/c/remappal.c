@@ -138,7 +138,7 @@ static void PutPalette( short pixval, long colour )
     case _MCGA :
     case _VGA :
     case _SVGA :
-        VideoInt( _BIOS_SET_PALETTE + 0x10, pixval, ( green << 8 ) + blue, red << 8 );
+        VideoInt( VIDEOINT_SET_PALETTE + 0x10, pixval, ( green << 8 ) + blue, red << 8 );
         break;
     case _EGA :
         mode = _CurrState->vc.mode;
@@ -154,7 +154,7 @@ static void PutPalette( short pixval, long colour )
             cnvcol = EGA_Intensity[blue] + ( EGA_Intensity[green] << 1 )
                                            + ( EGA_Intensity[red] << 2 );
         }
-        VideoInt( _BIOS_SET_PALETTE, ( cnvcol << 8 ) + pixval, 0, 0 );
+        VideoInt( VIDEOINT_SET_PALETTE, ( cnvcol << 8 ) + pixval, 0, 0 );
     }
 }
 
@@ -169,7 +169,7 @@ static long GetPalette( short pixval )
     case _MCGA :
     case _VGA :
     case _SVGA :
-        prev = GetVGAPalette( _BIOS_SET_PALETTE + 0x15, pixval );
+        prev = GetVGAPalette( VIDEOINT_SET_PALETTE + 0x15, pixval );
         break;
     case _EGA :
         prev = 0;

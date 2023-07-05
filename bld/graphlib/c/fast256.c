@@ -87,7 +87,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
         rgb[i].red = COLOR_RED( colour );
         ++colours;
     }
-    VideoIntDAC( _BIOS_SET_PALETTE + 0x12, 0, num, rgb );
+    VideoIntDAC( VIDEOINT_SET_PALETTE + 0x12, 0, num, rgb );
     return( TRUE );
 }
 
@@ -117,7 +117,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
             rgb[i].red = COLOR_RED( colour );
             ++colours;
         }
-        _RMInterrupt( 0x10, _BIOS_SET_PALETTE + 0x12, 0, num, 0, mem.rm_seg, 0 );
+        _RMInterrupt( 0x10, VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, mem.rm_seg, 0 );
         _RMFree( &mem );
         return( TRUE );
     } else {

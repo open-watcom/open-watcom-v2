@@ -34,7 +34,7 @@
 #include "gdefn.h"
 #include "rotate.h"
 #include "montypes.h"
-#include "gbios.h"
+#include "realmod.h"
 
 
 #define CRT_INDEX       0x03B4      /* 6845 Index register  */
@@ -61,7 +61,7 @@ static void GraphicsMode( void )
 {
     short           i;
 
-    _BIOS_data( EQUIP_FLAGS, char ) |= 0x30;    // turn on monochrome bits
+    BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x30;    // turn on monochrome bits
     outp( CRT_CONFIG, HERC_HALF );              // enable half support
     outp( CRT_CNTRL, 2 );                       // set graphics mode (with screen off)
     for( i = 0; i < 12; i++ ) {                 // load CRT registers
@@ -70,10 +70,10 @@ static void GraphicsMode( void )
     _fmemset( _MK_FP( _MonoSeg, _MonoOff ), 0, 0x8000 );    // clear screen
     outp( CRT_CNTRL, 0x0A );                                // turn screen back on
 
-    _BIOS_data( CRT_MODE, char ) = _HERCMONO;   // set mode
-    _BIOS_data( CRT_COLS, char ) = 90;          // set # of columns to 90
-    _BIOS_data( ROWS, char ) = 25 - 1;          // set # of rows to 25
-    _BIOS_data( CURSOR_POSN, short ) = 0;       // set cursor to (0,0)
+    BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char ) = _HERCMONO; // set mode
+    BIOSData( BDATA_VIDEO_COLUMNS, unsigned char ) = 90;    // set # of columns to 90
+    BIOSData( BDATA_VIDEO_ROWS, unsigned char ) = 25 - 1;   // set # of rows to 25
+    BIOSData( BDATA_CURSOR_POS, unsigned short ) = 0;       // set cursor to (0,0)
 }
 
 

@@ -32,6 +32,7 @@
 
 #include <conio.h>
 #include "gdefn.h"
+#include "realmod.h"
 #include "gbios.h"
 
 
@@ -95,7 +96,7 @@ void _CalcNumPages( void )
         pg_size += 512;
     }
     /* Multiply by 2 to get closest K-byte boundary.*/
-    _BIOS_data( CRT_LEN, short ) = pg_size << 1;
+    BIOSData( BDATA_REGEN_LEN, unsigned short ) = pg_size << 1;
     /* Adjust # of video pages for the given memory.*/
     if( _CurrState->vc.memory == 64 ) {
         buf_size = 16;                      /* in K bytes   */
@@ -175,10 +176,11 @@ void _GetState( void )
     _CurrState->vc.numcolors = NumColors;
     _CurrState->vc.numvideopages = 1;
 #else
-    rows = _BIOS_data( ROWS, char ) + 1;     // 0 for Hercules
-    if( rows == 1 ) rows = 25;
+    rows = BIOSData( BDATA_VIDEO_ROWS, unsigned char ) + 1;     // 0 for Hercules
+    if( rows == 1 )
+        rows = 25;
     _CurrState->vc.numtextrows = rows;
-    _CurrState->vc.numtextcols = _BIOS_data( CRT_COLS, short );
+    _CurrState->vc.numtextcols = BIOSData( BDATA_VIDEO_COLUMNS, unsigned short );
     _CurrState->vc.numcolors = 32;
     _CurrState->vc.mode = GetVideoMode();
     display = _SysMonitor();
@@ -193,7 +195,7 @@ void _GetState( void )
     } else {
         _CalcNumPages();
     }
-    _CursorShape = _BIOS_data( CURSOR_MODE, short );
+    _CursorShape = BIOSData( BDATA_CURSOR_MODE, unsigned short );
 #endif
 }
 
@@ -223,7 +225,7 @@ void _InitState( void )
 #else
         _DefMode = _CurrState->vc.mode;
         _DefTextRows = _CurrState->vc.numtextrows;
-        pos = _BIOS_data( CURSOR_POSN, unsigned short );
+        pos = BIOSData( BDATA_CURSOR_POS, unsigned short );
         _TextPos.row = pos >> 8;        /* default cursor position  */
         _TextPos.col = pos & 0xFF;
 #endif

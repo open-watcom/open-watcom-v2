@@ -31,7 +31,7 @@
 
 
 #include "gdefn.h"
-#include "gbios.h"
+#include "realmod.h"
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _getactivepage( void )
@@ -72,7 +72,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
         _CurrState->screen_seg = _CurrState->screen_seg_base;
         _CurrState->screen_off = _CurrState->screen_off_base + ( ( _CurrState->page_size * pagenum ) << 4 );
 //    #endif
-    pos = _BIOS_data( CURSOR_POSN + 2 * pagenum, unsigned short );
+    pos = BIOSData( BDATA_CURSOR_POS + pagenum * sizeof( unsigned short ), unsigned short );
     _TextPos.row = pos >> 8;                        /* cursor position  */
     _TextPos.col = pos & 0xFF;                      /* on new page      */
     prev = _CurrActivePage;

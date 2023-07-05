@@ -32,6 +32,7 @@
 
 #include "gdefn.h"
 #if !defined( _DEFAULT_WINDOWS )
+#include "realmod.h"
 #include "gbios.h"
 #endif
 
@@ -47,7 +48,7 @@ static void TextCursor( short turning_on )
     if( !turning_on ) {
         cursor |= 0x2000;       // set blank cursor bit
     }
-    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );
+    VideoInt( VIDEOINT_CURSOR_SIZE, 0, cursor, 0 );
 }
 #endif
 
@@ -121,7 +122,7 @@ void _CursorOff( void )
             TextCursor( 0 );
         } else {
             // if cursor is not where we think it is (printf), assume it is off
-            cursor = _BIOS_data( CURSOR_POSN + 2 * _CurrActivePage, unsigned short );
+            cursor = BIOSData( BDATA_CURSOR_POS + _CurrActivePage * sizeof( unsigned short ), unsigned short );
             if( cursor == ( ( _TextPos.row << 8 ) + _TextPos.col ) ) {
                 GraphCursor();
             }

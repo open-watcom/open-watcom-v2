@@ -281,7 +281,7 @@ void Ring( void )
 /***************/
 {
 #if defined( __DOS__ )
-    _BIOSVideoRingBell( BIOSData( BDATA_ACT_VPAGE, unsigned char ) );
+    _BIOSVideoRingBell( BIOSData( BDATA_ACTIVE_VIDEO_PAGE, unsigned char ) );
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     MessageBeep( 0 );
 #elif defined( __QNX__ ) || defined( __LINUX__ )

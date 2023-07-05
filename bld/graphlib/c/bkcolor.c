@@ -66,7 +66,7 @@ _WCRTLINK long _WCI86FAR _CGRAPH _setbkcolor( long pixval )
 #else
     if( _GrMode ) {     // in graphics modes, remap colour 0
         if( _CurrState->vc.adapter == _CGA && _CurrState->vc.mode != _HRESBW ) {
-            VideoInt( _BIOS_SET_OVERSCAN, _CnvColour( pixval ), 0, 0 );
+            VideoInt( VIDEOINT_SET_OVERSCAN, _CnvColour( pixval ), 0, 0 );
         } else {
             _remappalette( 0, pixval );
         }

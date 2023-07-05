@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,9 +73,12 @@ extern void (__interrupt _FAR *DosGetVect( char ))( void );
 extern void DosSetVect( char, void (__interrupt *)( void ) );
 #ifdef _M_I86
 #pragma aux DosSetVect = \
+        "push   ds"     \
+        "mov    ds,cx"  \
         "mov    ah,25h" \
         "int 21h"       \
-    __parm      [__al] [__ds __dx] \
+        "pop    ds"     \
+    __parm      [__al] [__cx __dx] \
     __value     \
     __modify    [__ah]
 #else
@@ -116,7 +119,7 @@ extern int DoSpawn( void *, void * );
     __modify    []
 
 
-extern int GetFcb( void *, void * );
+extern int GetFcb( char __far *, void __far * );
 #pragma aux GetFcb = \
         "push   ds"     \
         "push   es"     \

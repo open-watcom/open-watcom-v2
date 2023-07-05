@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,8 +116,8 @@ evil_goto:
     exeparm.cmdline = &cmds;
     exeparm.fcb1 = fcb1;
     exeparm.fcb2 = fcb2;
-    GetFcb( &cmds.cmd, &fcb1 );
-    GetFcb( &cmds.cmd, &fcb2 );
+    GetFcb( cmds.cmd, fcb1 );
+    GetFcb( cmds.cmd, fcb2 );
 
     /*
      * spawn the command

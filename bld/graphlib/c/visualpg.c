@@ -63,7 +63,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvisualpage( short pagenum )
         }
     }
     pagenum %= _CurrState->vc.numvideopages;
-    VideoInt( _BIOS_VIDEO_PAGE + pagenum, 0, 0, 0 );
+    VideoInt( VIDEOINT_VIDEO_PAGE + pagenum, 0, 0, 0 );
     prev = _CurrVisualPage;
     _CurrVisualPage = pagenum;
     return( prev );

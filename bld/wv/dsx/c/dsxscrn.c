@@ -222,7 +222,7 @@ static void _DoRingBell( unsigned char page )
 
 void Ring_Bell( void )
 {
-    _DoRingBell( BIOSData( BDATA_ACT_VPAGE, unsigned char ) );
+    _DoRingBell( BIOSData( BDATA_ACTIVE_VIDEO_PAGE, unsigned char ) );
 }
 
 static void VIDSetPos( uint_16 vidport, uint_16 cursorpos )
@@ -648,7 +648,7 @@ static bool SetMode( unsigned char mode )
 
 static void SetRegenClear( void )
 {
-    BIOSData( BDATA_VID_CTRL1, unsigned char ) = (BIOSData( BDATA_VID_CTRL1, unsigned char ) & 0x7f) | (SaveScrn.mode & 0x80);
+    BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) = (BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) & 0x7f) | (SaveScrn.mode & 0x80);
 }
 
 static uint_16 RegenSize( void )

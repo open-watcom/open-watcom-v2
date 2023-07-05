@@ -32,6 +32,7 @@
 
 
 #include "gdefn.h"
+#include "realmod.h"
 #include "gbios.h"
 
 
@@ -121,15 +122,15 @@ short _SetMode( short mode )
 {
     if( _ValidMode( mode ) ) {
         if( mode == 7 || mode == 15 ) {
-            _BIOS_data( EQUIP_FLAGS, char ) |= 0x30;        // monochrome
+            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x30;        // monochrome
         } else {
-            _BIOS_data( EQUIP_FLAGS, char ) &= ~0x30;       // remove previous settings
-            _BIOS_data( EQUIP_FLAGS, char ) |= 0x20;        // colour
+            BIOSData( BDATA_EQUIP_LIST, unsigned char ) &= ~0x30;       // remove previous settings
+            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x20;        // colour
         }
         if( _NoClear ) {
             mode |= 0x80;           // set high bit, screen won't be cleared
         }
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
     }
     return( GetVideoMode() );
 }

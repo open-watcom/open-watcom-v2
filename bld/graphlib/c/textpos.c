@@ -78,7 +78,7 @@ _WCRTLINK struct rccoord _WCI86FAR _CGRAPH _settextposition( short row, short co
     _TextPos.row = row;
     _TextPos.col = col;
 #if !defined( _DEFAULT_WINDOWS )
-    VideoInt( _BIOS_CURSOR_POSN, _CurrActivePage << 8, 0, ( row << 8 ) + col );
+    VideoInt( VIDEOINT_CURSOR_POSN, _CurrActivePage << 8, 0, ( row << 8 ) + col );
 #endif
     _GrEpilog();
     return( prev );
