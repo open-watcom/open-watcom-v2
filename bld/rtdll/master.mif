@@ -102,6 +102,7 @@ dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_res_version_nt_axp = version.res
 dlltarg_res_version_nt_mps = version.res
+dlltarg_res_version_nt_ppc = version.res
 dlltarg_export        = $(dll_def)
 !ifeq component wlib
 !ifeq convention register
