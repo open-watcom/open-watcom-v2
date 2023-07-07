@@ -1,0 +1,28 @@
+__cifx__ =$(system).$(processor)/$(libsubdir)
+
+!ifdef profile
+dll_libs = $+ &
+    $(clib_dir)/library/$(system).$(processor)/$(model)_rp/clib.lib &
+    $-
+!else
+dll_libs = $+ &
+    $(clib_dir)/library/$(__cifx__)/clib.lib &
+    $-
+!endif
+
+dll_def = $+ &
+    $-
+
+!ifdef profile
+dll_objs = $+ &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
+    $-
+!else
+dll_objs = $+ &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
+    $-
+!endif
+
+!include ../../static.mif
+
+__cifx__ =
