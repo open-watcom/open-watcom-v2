@@ -47,12 +47,12 @@ static_objs = $+ &
 !  endif
 !  ifeq processor mps
     $(clib_dir)/mthread/library/$(__cifx__)/declthrd.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/cstrtwnm.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/cstrwwnm.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/cstrtwna.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/cstrwwna.obj &
     $(clib_dir)/startup/library/$(__cifx__)/dstrtmps.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/dstrtwnm.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/wstrtwnm.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/wstrwwnm.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dstrtwna.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/wstrtwna.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/wstrwwna.obj &
 !  endif
     $(clib_dir)/startup/library/$(__cifx__)/dllnmwnt.obj &
     $(clib_dir)/startup/library/$(__cifx__)/dmndwnt.obj &
