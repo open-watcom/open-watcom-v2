@@ -394,6 +394,7 @@ end
 system begin ntaxp
     option osname='Windows NT character-mode (AXP)'
     libpath '%OWROOT%/bld/clib/library/winnt.axp/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.axp/_s'
     libpath '%OWROOT%/bld/mathlib/library/winnt.axp/_s'
     libpath '%OWROOT%/bld/cpplib/library/winnt.axp/_s'
     libpath '%OWROOT%/bld/w32api/ntaxp/lib'
@@ -405,6 +406,7 @@ end
 system begin ntaxp_win
     option osname='Windows NT(AXP) windowed'
     libpath '%OWROOT%/bld/clib/library/winnt.axp/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.axp/_s'
     libpath '%OWROOT%/bld/mathlib/library/winnt.axp/_s'
     libpath '%OWROOT%/bld/cpplib/library/winnt.axp/_s'
     libpath '%OWROOT%/bld/w32api/ntaxp/lib'
@@ -416,6 +418,7 @@ end
 system begin ntmips
     option osname='Windows NT character-mode (MIPS)'
     libpath '%OWROOT%/bld/clib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.mps/_s'
     libpath '%OWROOT%/bld/mathlib/library/winnt.mps/_s'
     libpath '%OWROOT%/bld/cpplib/library/winnt.mps/_s'
     libpath '%OWROOT%/bld/w32api/ntmps/lib'
@@ -427,9 +430,34 @@ end
 system begin ntmips_win
     option osname='Windows NT(MIPS) windowed'
     libpath '%OWROOT%/bld/clib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.mps/_s'
     libpath '%OWROOT%/bld/mathlib/library/winnt.mps/_s'
     libpath '%OWROOT%/bld/cpplib/library/winnt.mps/_s'
     libpath '%OWROOT%/bld/w32api/ntmps/lib'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+
+system begin ntppc
+    option osname='Windows NT character-mode (PPC)'
+    libpath '%OWROOT%/bld/clib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/mathlib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/cpplib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/w32api/ntppc/lib'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+end
+
+system begin ntppc_win
+    option osname='Windows NT(PPC) windowed'
+    libpath '%OWROOT%/bld/clib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/mathlib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/cpplib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/w32api/ntppc/lib'
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -512,12 +540,37 @@ end
 system begin ntaxp_dll
     option osname='Windows NT DLL (AXP)'
     libpath '%OWROOT%/bld/clib/library/winnt.axp/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.axp/_s'
     libpath '%OWROOT%/bld/mathlib/library/winnt.axp/_s'
     libpath '%OWROOT%/bld/cpplib/library/winnt.axp/_s'
     libpath '%OWROOT%/bld/w32api/ntaxp/lib'
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt dll ^
     runtime console=4.0
+end
+
+system begin ntmips_dll
+    option osname='Windows NT DLL (MIPS)'
+    libpath '%OWROOT%/bld/clib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.mps/_s'
+    libpath '%OWROOT%/bld/mathlib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/cpplib/library/winnt.mps/_s'
+    libpath '%OWROOT%/bld/w32api/ntmps/lib'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt dll ^
+    runtime windows=4.0
+end
+
+system begin ntppc_dll
+    option osname='Windows NT DLL (PPC)'
+    libpath '%OWROOT%/bld/clib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/clib/rtdll/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/mathlib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/cpplib/library/winnt.ppc/_s'
+    libpath '%OWROOT%/bld/w32api/ntppc/lib'
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt dll ^
+    runtime windows=4.0
 end
 
 system begin linux
