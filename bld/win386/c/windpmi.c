@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -242,24 +242,25 @@ void _DPMIFreeHugeAlias( DWORD desc, DWORD size )
 }
 
 /*
- * __DPMI fns are the ones called by the 32-bit application
+ * WINDPMIFN( .. ) functions are the ones called by the 32-bit application
  */
-unsigned short __pascal __far __DPMIGetAlias( unsigned long offset, unsigned long __far *res )
+
+unsigned short WINDPMIFN( DPMIGetAlias )( unsigned long offset, unsigned long __far *res )
 {
     return( _DPMIGetAlias( offset, res ) );
 }
 
-void __pascal __far __DPMIFreeAlias( unsigned long desc )
+void WINDPMIFN( DPMIFreeAlias )( unsigned long desc )
 {
     _DPMIFreeAlias( desc );
 }
 
-unsigned short __pascal __far __DPMIGetHugeAlias( unsigned long offset, unsigned long __far *res, unsigned long size )
+unsigned short WINDPMIFN( DPMIGetHugeAlias )( unsigned long offset, unsigned long __far *res, unsigned long size )
 {
     return( _DPMIGetHugeAlias( offset, res, size ) );
 }
 
-void __pascal __far __DPMIFreeHugeAlias( unsigned long desc, unsigned long size )
+void WINDPMIFN( DPMIFreeHugeAlias )( unsigned long desc, unsigned long size )
 {
     _DPMIFreeHugeAlias( desc, size );
 }
@@ -377,9 +378,10 @@ void _DPMIFree32( DWORD handle )
 } /* _DPMIFree32 */
 
 /*
- * __DPMIAlloc - allocate a new block of memory
+ * WINDPMIFN( DPMIAlloc ) function - allocate a new block of memory
+ * called by the 32-bit application
  */
-unsigned long __pascal __far __DPMIAlloc( unsigned long size )
+unsigned long WINDPMIFN( DPMIAlloc )( unsigned long size )
 {
     dpmi_mem_block  adata;
     memblk          *p;
@@ -426,9 +428,10 @@ unsigned long __pascal __far __DPMIAlloc( unsigned long size )
 }
 
 /*
- * __DPMIFree - free a block of memory allocated by __DPMIAlloc
+ * WINDPMIFN( DPMIFree ) function - free a block of memory allocated by WINDPMIFN( DPMIAlloc )
+ * called by the 32-bit application
  */
-unsigned short __pascal __far __DPMIFree( unsigned long addr )
+unsigned short WINDPMIFN( DPMIFree )( unsigned long addr )
 {
     memblk      *p;
     memblk      *prev;
