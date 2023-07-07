@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,8 +107,8 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
     name                *temp;
     hw_reg_set          reg;
 
-    type_class = AddCallBlock( sym, tipe );
     SaveTargetModel = TargetModel;
+    type_class = AddCallBlock( sym, tipe );
     if( tipe != TypeNone ) {
         if( type_class == XX ) {
             reg = HW_D16;
