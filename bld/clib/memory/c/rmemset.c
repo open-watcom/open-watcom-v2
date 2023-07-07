@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 void *memset( void *buf, int c, size_t n )
 /****************************************/
 {
-#if USE_INT64
+#if RISCSTR_USE_INT64
     RISC_DATA_LOCALREF;
 #endif
     char *              bufStart = buf;

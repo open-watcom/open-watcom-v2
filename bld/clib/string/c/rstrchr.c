@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
 /**********************************************************************/
 {
-#if USE_INT64
+#if RISCSTR_USE_INT64
     RISC_DATA_LOCALREF;
 #endif
     UINT                *dw = ROUND(s); /* round down to dword */
@@ -49,7 +50,7 @@ CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
     UINT                cShl16;
 #else
     INT                 cShl8, cShl16, cShl24;
-#if USE_INT64
+#if RISCSTR_USE_INT64
     INT                 cShl32, cShl40, cShl48, cShl56;
 #endif
 #endif
@@ -68,7 +69,7 @@ CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
     cShl8 = c << 8;
     cShl16 = c << 16;
     cShl24 = c << 24;
-  #if USE_INT64
+  #if RISCSTR_USE_INT64
     cShl32 = (UINT)c << 32;
     cShl40 = (UINT)c << 40;
     cShl48 = (UINT)c << 48;
@@ -110,7 +111,7 @@ CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
             }
             len++;
             /* fall through */
-        #if USE_INT64
+        #if RISCSTR_USE_INT64
           case 3:
             tmpdword = CHR4(dword);
             if( tmpdword == cShl24 ) {
@@ -184,7 +185,7 @@ CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
             if( !CHR2(tmpdword) )  return( (char*)s + len + 1 );
             if( !CHR3(tmpdword) )  return( (char*)s + len + 2 );
             if( !CHR4(tmpdword) )  return( (char*)s + len + 3 );
-    #if USE_INT64
+    #if RISCSTR_USE_INT64
             if( !CHR5(tmpdword) )  return( (char*)s + len + 4 );
             if( !CHR6(tmpdword) )  return( (char*)s + len + 5 );
             if( !CHR7(tmpdword) )  return( (char*)s + len + 6 );
@@ -232,7 +233,7 @@ CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
         return( NULL );
     }
 
-  #if USE_INT64
+  #if RISCSTR_USE_INT64
     tmpdword = CHR5(dword);
     if( tmpdword == cShl32 ) {
         return( (CHAR_TYPE*)s + len + 4 );

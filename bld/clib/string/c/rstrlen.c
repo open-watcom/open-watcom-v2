@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ size_t __F_NAME(strlen,wcslen)( const CHAR_TYPE *s )
     /*** Scan until s is aligned ***/
     dword = *dw++;
     if( OFFSET_GOT_NIL(dword,offset) ) {
-#if USE_INT64
+#if RISCSTR_USE_INT64
         switch( offset ) {
           case 0:
             if( !CHR1(dword) )  break;
@@ -132,7 +133,7 @@ size_t __F_NAME(strlen,wcslen)( const CHAR_TYPE *s )
 
     /*** Locate the null char within the offending word ***/
     len = (CHAR_TYPE*)dw - s;
-#if USE_INT64
+#if RISCSTR_USE_INT64
     if( !CHR1(dword) ) {
         len -= 8;
     } else if( !CHR2(dword) ) {

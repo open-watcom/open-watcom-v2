@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,22 +52,22 @@
  * Choose between 32- and 64-bit words.
  */
 
-#define USE_INT64               0       /* no 64-bit stuff for now */
+#define RISCSTR_USE_INT64           0       /* no 64-bit stuff for now */
 
-#ifndef USE_INT64
+#ifndef RISCSTR_USE_INT64
     #ifdef __AXP__
-        #define USE_INT64       1
+        #define RISCSTR_USE_INT64   1
     #else
-        #define USE_INT64       0
+        #define RISCSTR_USE_INT64   0
     #endif
 #endif
 
-#if USE_INT64
-    #define INT                 __int64
-    #define UINT                unsigned __int64
+#if RISCSTR_USE_INT64
+    #define INT                     __int64
+    #define UINT                    unsigned __int64
 #else
-    #define INT                 int
-    #define UINT                uint_32
+    #define INT                     int
+    #define UINT                    uint_32
 #endif
 
 #define BYTES_PER_WORD          ( sizeof( UINT ) )
@@ -81,7 +82,7 @@
  * Macros to mask off a single character.
  */
 
-#if USE_INT64
+#if RISCSTR_USE_INT64
     #define BYTE1               ( _riscdata->byteMasks[0].val )
     #define BYTE2               ( _riscdata->byteMasks[1].val )
     #define BYTE3               ( _riscdata->byteMasks[2].val )
@@ -116,12 +117,12 @@
     #define CHR2(__w)           ( (__w) & BYTE2 )
     #define CHR3(__w)           ( (__w) & BYTE3 )
     #define CHR4(__w)           ( (__w) & BYTE4 )
-    #if USE_INT64
-        #define CHR5(__w)       ( (__w) & BYTE5 )
-        #define CHR6(__w)       ( (__w) & BYTE6 )
-        #define CHR7(__w)       ( (__w) & BYTE7 )
-        #define CHR8(__w)       ( (__w) & BYTE8 )
-    #endif
+  #if RISCSTR_USE_INT64
+    #define CHR5(__w)           ( (__w) & BYTE5 )
+    #define CHR6(__w)           ( (__w) & BYTE6 )
+    #define CHR7(__w)           ( (__w) & BYTE7 )
+    #define CHR8(__w)           ( (__w) & BYTE8 )
+  #endif
 #endif
 
 
@@ -130,7 +131,7 @@
  * Macros for extracting the first characters in a word.
  */
 
-#if USE_INT64
+#if RISCSTR_USE_INT64
     #define FRONT_BYTES(__n)    ( _riscdata->frontCharsMasks[(__n)].val )
     #define FRONT_CHRS(__w,__o) ( (__w) & FRONT_BYTES_riscdata[(__o)].val )
 #else
@@ -146,7 +147,7 @@
  * Macros for ignoring the first characters in a word.
  */
 
-#if USE_INT64
+#if RISCSTR_USE_INT64
     #define SKIP_CHRS_MASKS(__n)    ( _riscdata->skipCharsMasks[(__n)].val )
     #define SKIP_CHRS(__w,__o)      ( (__w) & SKIP_CHRS_MASKS(__o) )
 #else
@@ -162,18 +163,18 @@
  * Macros for checking if a word contains a null byte.
  */
 
-#if USE_INT64
+#if RISCSTR_USE_INT64
     #define SUB_M               ( _riscdata->_01Mask.val )
     #define NIL_M               ( _riscdata->_80Mask.val )
     #define SUB_MASK(__n)       ( _riscdata->subMasks[(__n)].val )
 #else
-    #ifdef __WIDECHAR__
-        #define SUB_M           ( 0x00010001 )
-        #define NIL_M           ( 0x80008000 )
-    #else
-        #define SUB_M           ( 0x01010101 )
-        #define NIL_M           ( 0x80808080 )
-    #endif
+  #ifdef __WIDECHAR__
+    #define SUB_M               ( 0x00010001 )
+    #define NIL_M               ( 0x80008000 )
+  #else
+    #define SUB_M               ( 0x01010101 )
+    #define NIL_M               ( 0x80808080 )
+  #endif
 //    extern UINT __SubMask[];
 //    #define SUB_MASK          __SubMask
     #define SUB_MASK(__n)       ( _riscdata->subMasks[(__n)] )
@@ -299,7 +300,7 @@
  */
 
 struct __F_NAME(__RISC_StrData,__wRISC_StrData) {
-#if USE_INT64
+#if RISCSTR_USE_INT64
     unsigned_64         byteMasks[8];
     unsigned_64         frontCharsMasks[8];
     unsigned_64         skipCharsMasks[8];
@@ -307,15 +308,15 @@ struct __F_NAME(__RISC_StrData,__wRISC_StrData) {
     unsigned_64         _80Mask;
     unsigned_64         subMasks[8];
 #else
-    #ifdef __WIDECHAR__
-        uint_32         frontCharsMasks[2];
-        uint_32         skipCharsMasks[2];
-        uint_32         subMasks[2];
-    #else
-        uint_32         frontCharsMasks[4];
-        uint_32         skipCharsMasks[4];
-        uint_32         subMasks[4];
-    #endif
+  #ifdef __WIDECHAR__
+    uint_32             frontCharsMasks[2];
+    uint_32             skipCharsMasks[2];
+    uint_32             subMasks[2];
+  #else
+    uint_32             frontCharsMasks[4];
+    uint_32             skipCharsMasks[4];
+    uint_32             subMasks[4];
+  #endif
 #endif
 };
 
