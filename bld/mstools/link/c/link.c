@@ -55,6 +55,9 @@
 #elif defined(__TARGET_PPC__)
     #define LINKER              "wlink"
     #define RESCOMPILER         "wrc"
+#elif defined(__TARGET_MPS__)
+    #define LINKER              "wlink"
+    #define RESCOMPILER         "wrc"
 #else
     #error Unrecognized CPU type
 #endif
