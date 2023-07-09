@@ -165,7 +165,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
     /*
      * seek to beginning of object before return
      */
-    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)4, SEEK_CUR ) ) {
+    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( 4 ), SEEK_CUR ) ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
     if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
@@ -217,7 +217,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
                 /*
                  * seek to beginning of object before return
                  */
-                if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -(long)4, SEEK_CUR ) ) {
+                if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( 4 ), SEEK_CUR ) ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
                 }
             }
@@ -240,7 +240,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
             /*
              * seek to beginning of object before return
              */
-            ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, -pos, SEEK_CUR );
+            ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( pos ), SEEK_CUR );
         }
         if( ok ) {
             return( ORL_COFF );

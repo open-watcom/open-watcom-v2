@@ -449,7 +449,7 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     coff_sec_size       *string_sec_size;
 
     exe_hdr = _ClientRead( coff_file_hnd, 2 );
-    _ClientSeek( coff_file_hnd, -2, SEEK_CUR );
+    _ClientSeek( coff_file_hnd, SEEK_POSBACK( 2 ), SEEK_CUR );
     if( exe_hdr->MZ[0] == 'M' && exe_hdr->MZ[1] == 'Z' ) {
         exe_hdr = _ClientRead( coff_file_hnd, sizeof( exe_header ) );
         _ClientSeek( coff_file_hnd, exe_hdr->ne_header_off - sizeof( exe_header ), SEEK_CUR );
