@@ -69,6 +69,12 @@
     #define SYS_NT_DLL          "ntppc_dll"
     #define LIBDIR_SUFFIX       "\\libppc"
     #define NT_LIBDIR_SUFFIX    "\\libppc\\nt"
+#elif defined(__TARGET_MPS__)
+    #define SYS_NT_CHARMODE     "ntmps"
+    #define SYS_NT_WINDOWED     "ntmps_win"
+    #define SYS_NT_DLL          "ntmps_dll"
+    #define LIBDIR_SUFFIX       "\\libmps"
+    #define NT_LIBDIR_SUFFIX    "\\libmps\\nt"
 #else
     #error Unrecognized CPU type
 #endif

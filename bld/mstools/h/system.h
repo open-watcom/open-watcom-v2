@@ -42,6 +42,8 @@
     #define CPU_NAME            "AXP"
 #elif defined(__TARGET_PPC__)
     #define CPU_NAME            "PPC"
+#elif defined(__TARGET_MPS__)
+    #define CPU_NAME            "MPS"
 #elif defined(_M_IX86)
     #define CPU_NAME            "386"
 #elif defined(__AXP__)
@@ -50,6 +52,8 @@
     #define CPU_NAME            "PPC"
 #elif defined(_M_X64)
     #define CPU_NAME            "X64"
+#elif defined(_M_MRX000)
+    #define CPU_NAME            "MPS"
 #else
     #error Unrecognized CPU type (system.h)
 #endif

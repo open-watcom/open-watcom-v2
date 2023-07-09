@@ -50,6 +50,8 @@
     #define ASM         "wasaxp"
 #elif defined(__TARGET_PPC__)
     #define ASM         "wasaxp"
+#elif defined(__TARGET_MPS__)
+    #define ASM         "wasaxp"
 #else
     #error Unrecognized CPU type
 #endif

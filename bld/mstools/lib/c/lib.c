@@ -51,6 +51,8 @@
     #define LIBRARIAN           "wlib"
 #elif defined(__TARGET_PPC__)
     #define LIBRARIAN           "wlib"
+#elif defined(__TARGET_MPS__)
+    #define LIBRARIAN           "wlib"
 #else
     #error Unrecognized CPU type (lib.c)
 #endif

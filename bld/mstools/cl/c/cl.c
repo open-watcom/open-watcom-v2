@@ -63,6 +63,10 @@
     #define C_COMPILER          "wccppc"
     #define CPP_COMPILER        "wppppc"
     #define LINKER              "linkppc"
+#elif defined(__TARGET_MPS__)
+    #define C_COMPILER          "wccmps"
+    #define CPP_COMPILER        "wppmps"
+    #define LINKER              "linkmps"
 #else
     #error Unrecognized CPU type
 #endif
