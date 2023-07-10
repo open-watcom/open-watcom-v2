@@ -32,8 +32,10 @@
 
 
 #ifndef __SCANNER_H__
+#define __SCANNER_H__
 
 #include <vector>
+#include "watcom.h"
 #include "scancm.h"
 
 typedef struct TokenStruct {
@@ -87,6 +89,5 @@ private:
     static  const char * const          _SpecialCharacters;
 };
 
-#define __SCANNER_H__
 #endif
 
