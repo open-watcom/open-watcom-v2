@@ -39,6 +39,7 @@
 #endif
 
 #include <vector>
+#include "watcom.h"
 
 #define YYPARSER BindingParser
 #include "yydriver.h"
