@@ -32,8 +32,10 @@
 
 
 #ifndef __STYLES_H__
+#define __STYLES_H__
+
+#include "watcom.h"
 
 extern uint_32 getWindowsStyle( const char * stl );
 
-#define __STYLES_H__
 #endif
