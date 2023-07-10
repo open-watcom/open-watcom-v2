@@ -31,7 +31,7 @@
 
 
 #include <wcvector.h>
-#include "wstd.h"
+#include "watcom.h"
 #include "dwarf.h"
 
 #include "mroffset.h"

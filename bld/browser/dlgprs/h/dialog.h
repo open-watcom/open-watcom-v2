@@ -38,7 +38,6 @@
 #pragma disable_message( 665 )
 #endif
 
-#include <wstd.h>
 #include <vector>
 
 #define YYPARSER DialogParser

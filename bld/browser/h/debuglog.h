@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,8 @@
 #ifndef __DEBUG_LOG__
 #define __DEBUG_LOG__
 
-#include <wstd.h>
 #include <stdio.h>
+#include "watcom.h"
 
 template <class Type> class              WCValSList;
 template <class Type, class FType> class WCStack;

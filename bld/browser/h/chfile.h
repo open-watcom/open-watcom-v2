@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include <string.hpp>
 #include <sys/types.h>
 #include <time.h>
-#include <wstd.h>
+#include "watcom.h"
 #include "wio.h"
 
 // FileExcept -- indicate that an exceptional file condition has occured

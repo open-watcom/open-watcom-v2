@@ -36,7 +36,7 @@
 #include <errno.h>
 #include <io.h>
 
-#include "wstd.h"
+#include "watcom.h"
 #include "dwarf.h"
 #include "util.h"
 #include "mrfile.h"
