@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,13 +122,13 @@ void WEXPORT WStatDialog::getCtrlText( WControlId id, char *buff, size_t len ) {
 
     text = GUIGetText( handle(), id );
     if( text == NULL ) {
-        *buff = NULLCHAR;
+        *buff = '\0';
     } else {
         text_len = strlen( text );
         if( text_len > len - 1 )
             text_len = len - 1;
         memcpy( buff, text, text_len );
-        buff[text_len] = NULLCHAR;
+        buff[text_len] = '\0';
         GUIMemFree( text );
     }
 }
