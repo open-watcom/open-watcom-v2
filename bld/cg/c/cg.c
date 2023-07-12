@@ -483,7 +483,7 @@ extern  sh      *CGSelInit() {
     Action( " -> %d%n", SelId );
     return(s);
 }
-extern  void    CGSelCase( sh *s, l *lb, signed_32 v ) {
+extern  void    CGSelCase( sh *s, l *lb, signed_64 v ) {
 /******************************************************/
 
     Action( "CGSelCase" );
@@ -491,7 +491,7 @@ extern  void    CGSelCase( sh *s, l *lb, signed_32 v ) {
     CRefLabel( lb );
     SelRange(s,v,v,lb);
 }
-extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
+extern  void    CGSelRange( sh *s, signed_64 lo, signed_64 hi, l *lb ) {
 /**********************************************************************/
 
     Action( "CGSelRange" );
@@ -500,7 +500,7 @@ extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
     SelRange(s,lo,hi,lb);
 }
 
-extern  void    SelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
+extern  void    SelRange( sh *s, signed_64 lo, signed_64 hi, l *lb ) {
 /********************************************************************/
 
     rh  **or;
