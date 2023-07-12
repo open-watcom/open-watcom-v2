@@ -106,8 +106,8 @@ extern void CGControl(cg_op _1,cg_name _2,label_handle _4) {}
 extern void CGBigLabel(back_handle _4) {}
 extern void CGBigGoto(label_handle _1,int _4) {}
 extern sel_handle CGSelInit(){return(0);}
-extern void CGSelCase(sel_handle _1,label_handle _2,signed_32 _4) {}
-extern void CGSelRange(sel_handle _1,signed_32 _2,signed_32 _3,label_handle _4) {}
+extern void CGSelCase(sel_handle _1,label_handle _2,signed_64 _4) {}
+extern void CGSelRange(sel_handle _1,signed_64 _2,signed_64 _3,label_handle _4) {}
 extern void CGSelOther(sel_handle _1,label_handle _4) {}
 extern void CGSelectRestricted(sel_handle _1,cg_name _4,cg_switch_type _2 );
 extern void CGSelect(sel_handle _1,cg_name _4) {}
