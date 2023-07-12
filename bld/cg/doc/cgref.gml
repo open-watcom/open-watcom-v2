@@ -1661,7 +1661,7 @@ Create a sel_handle.
 A sel_handle to be passed to the following routines.
 .endnote
 .*
-.section void CGSelCase( sel_handle sel, label_handle lbl, signed_32 val )
+.section void CGSelCase( sel_handle s, label_handle lbl, signed_32 val )
 .*
 .ix CGSelCase
 .ix 'control flow'
@@ -1670,7 +1670,7 @@ Add a single value case to a select or switch.
 .begnote
 .notehd1 Parameter
 .notehd2 Definition
-.note sel
+.note s
 A sel_handle obtained from CGSelInit().
 .note lbl
 The label to be associated with the case value.
