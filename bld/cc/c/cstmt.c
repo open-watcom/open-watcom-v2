@@ -1002,6 +1002,10 @@ static void SwitchStmt( void )
         sw->case_format = "%lu";
 //        switch_type = TYP_ULONG;
         break;
+    case TYP_ULONG64:
+        sw->case_format = "%llu";
+//        switch_type = TYP_ULONG64;
+        break;
     case TYP_LONG:
 //        switch_type = TYP_LONG;
         break;
