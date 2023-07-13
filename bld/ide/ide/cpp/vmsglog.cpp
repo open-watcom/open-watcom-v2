@@ -295,7 +295,7 @@ bool VMsgLog::saveLogAs()
     }
     fn.setExt( "txt" );
     WFileDialog fd( this, sFilter );
-    fn = fd.getOpenFileName( fn, "Save Log as", WFSaveDefault );
+    fn = fd.getSaveFileName( fn, "Save Log as", WFSaveDefault );
     if( fn.legal() ) {
 //        fn.toLower();
         WFile f;
