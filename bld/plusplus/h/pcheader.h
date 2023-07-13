@@ -90,6 +90,8 @@ enum {
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_286
 #elif _CPU == _AXP
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_AXP
+#elif _CPU == _PPC
+#define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_PPC
 #else
 #error missing _CPU check
 #endif
@@ -115,6 +117,8 @@ enum {
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM
 #elif defined( _M_ARM64 )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM64
+#elif defined( __PPC__ )
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_PPC
 #else
 #error missing host architecture check
 #endif
