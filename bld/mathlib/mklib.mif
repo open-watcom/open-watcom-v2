@@ -2,11 +2,11 @@ tree_depth = 6
 
 !include $(mathlib_dir)/master.mif
 
-!include $(mathlib_dir)/objects.mif
+!include ../../../objects.mif
 
-.c   : $(mathlib_dir)/c
-.asm : $(mathlib_dir)/a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
-.gas : $(mathlib_dir)/a
+.c   : ../../../c
+.asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
+.gas : ../../../a
 
 all : $(objfiles) $(libname).lib .symbolic
     @%null
@@ -15,6 +15,6 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(mlib_lib_flags) $@ $(objs) $(libs)
 
-!include $(mathlib_dir)/deps.mif
+!include ../../../deps.mif
 
 !include $(mathlib_dir)/clean.mif
