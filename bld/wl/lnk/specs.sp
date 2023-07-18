@@ -394,6 +394,19 @@ system begin linuxmips
     op norelocs
 :endsegment
 end
+system begin linuxppc
+:segment Pspecs
+    ARCH ppc -bt=linux
+:elsesegment Pwlsystem
+    option osname='Linux PowerPC'
+    libpath '%WATCOM%/libppc'
+    libpath '%WATCOM%/libppc/linux'
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+:endsegment
+end
 system begin nt
 :segment Pspecs
     ARCH i386 -bt=nt
