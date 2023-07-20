@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -298,14 +298,14 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             break;
         case MENU_BREAK:
 #if defined( _M_I86 )
-            Output( "Press CTRL-ALT-F to interrupt the program" );
+            OutputLine( "Press CTRL-ALT-F to interrupt the program" );
 #else
             {
                 DWORD   osver;
 
                 osver = GetVersion();
                 if( osver >= 0x80000000 && LOBYTE( LOWORD( osver ) ) < 4 ) {
-                    Output( "You must press CTRL-ALT-F11 to interrupt a program under Win32s" );
+                    OutputLine( "You must press CTRL-ALT-F11 to interrupt a program under Win32s" );
                 }
             }
 #endif
@@ -352,7 +352,7 @@ int WantUsage( const char *ptr )
     return( *ptr == '?' );
 }
 
-void Output( const char *str )
+void OutputLine( const char *str )
 {
     MessageBox( NULL, str, TRP_The_WATCOM_Debugger, MB_APPLMODAL+MB_OK );
 }

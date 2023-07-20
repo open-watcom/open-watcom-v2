@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,8 +152,7 @@ void ProcAppl( HWND windhandle, unsigned message, WORD worddata, LONG longdata )
     case SELECT_1:
         i = GetWindowTextLength( EditChild );
         if( i == 0 ) {
-            Output( TRP_ERR_null_name );
-            Output( "\r\n" );
+            OutputLine( TRP_ERR_null_name );
         } else {
             *name = '\0';
             GetWindowText( EditChild, name, sizeof( name ) );
@@ -165,8 +164,7 @@ void ProcAppl( HWND windhandle, unsigned message, WORD worddata, LONG longdata )
                 RemoteLinkObtained = FALSE;
             } else {
                 sprintf( buff, TRP_WIN_setting_name, name );
-                Output( buff );
-                Output( "\r\n" );
+                OutputLine( buff );
                 RemoteLinkObtained = TRUE;
             } /* if */
         } /* if */

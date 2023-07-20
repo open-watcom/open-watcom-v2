@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,14 @@
 #include <os2.h>
 #include "servio.h"
 
-void Output( const char *str )
+void OutputLine( const char *str )
 {
     while( *str ) {
         putch( *str );
         ++str;
     }
+    putch( '\r' );
+    putch( '\n' );
 }
 
 void SayGNiteGracey( int return_code )
@@ -51,8 +54,7 @@ void SayGNiteGracey( int return_code )
 
 void StartupErr( const char *err )
 {
-    Output( err );
-    Output( "\r\n" );
+    OutputLine( err );
     SayGNiteGracey( 1 );
     // never return
 }

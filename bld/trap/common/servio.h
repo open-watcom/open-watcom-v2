@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ extern void     ServError( const char *msg );
 extern void     StartupErr( const char *err );
 extern void     ServMessage( const char *msg );
 extern int      WantUsage( const char *ptr );
-extern void     Output( const char *str );
+extern void     OutputLine( const char *str );
 extern void     SayGNiteGracey( int return_code );
 extern int      KeyPress( void );
 extern int      KeyGet( void );

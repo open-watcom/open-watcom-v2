@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,9 +57,9 @@ int main( int argc, char **argv )
     return( testmain( argc, argv ) );
 }
 
-void Output( char *str )
+void OutputLine( char *str )
 {
-    printf( str );
+    printf( "%s\n", str );
     fflush( stdout );
 }
 

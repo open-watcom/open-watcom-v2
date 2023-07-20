@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,7 @@ static bool             OneShot;
 
 void ServError( const char *msg )
 {
-    Output( msg );
-    Output( "\r\n" );
+    OutputLine( msg );
 }
 
 void ServMessage( const char *msg )
@@ -92,15 +91,15 @@ static void Initialize( void )
 static void OpeningStatement( void )
 {
 #if defined( VERSION_ON_EXTRA_LINE )
-    Output( banner1w1( SERVNAME ) "\r\n" );
-    Output( banner1w2( _XXXSERV_VERSION_ ) "\r\n" );
+    OutputLine( banner1w1( SERVNAME ) );
+    OutputLine( banner1w2( _XXXSERV_VERSION_ ) );
 #else
-    Output( banner1w( SERVNAME, _XXXSERV_VERSION_ ) "\r\n" );
+    OutputLine( banner1w( SERVNAME, _XXXSERV_VERSION_ ) );
 #endif
-    Output( banner2 "\r\n" );
-    Output( banner2a( 1988 ) "\r\n" );
-    Output( banner3 "\r\n" );
-    Output( banner3a "\r\n" );
+    OutputLine( banner2 );
+    OutputLine( banner2a( 1988 ) );
+    OutputLine( banner3 );
+    OutputLine( banner3a );
 }
 
 int main( int argc, char **argv )
@@ -117,8 +116,7 @@ int main( int argc, char **argv )
     Initialize();
     OpeningStatement();
     for( ;; ) {
-        Output( TRP_MSG_press_q );
-        Output( "\r\n" );
+        OutputLine( TRP_MSG_press_q );
         for( ;; ) {
             if( RemoteConnect() )
                 break;
@@ -132,17 +130,18 @@ int main( int argc, char **argv )
                 }
             }
         }
-        Output( TRP_MSG_session_started );
-        Output( "\r\n\r\n" );
+        OutputLine( TRP_MSG_session_started );
+        OutputLine( "" );
         Session();
 #ifndef NETWARE
         /* flush keyboard input */
         while( KeyPress() )
             KeyGet();
 #endif
-        Output( "\r\n\r\n" );
-        Output( TRP_MSG_session_ended );
-        Output( "\r\n\r\n" );
+        OutputLine( "" );
+        OutputLine( "" );
+        OutputLine( TRP_MSG_session_ended );
+        OutputLine( "" );
         RemoteDisco();
         if( OneShot ) {
             KillTrap();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,15 +63,14 @@ void TrapFini( void )
 HANDLE  Instance;
 #endif
 
-void Output( const char *p )
+void OutputLine( const char *p )
 {
-    printf( "%s", p );
+    printf( "%s\n", p );
 }
 
 void ServMessage( const char *msg )
 {
-    Output( msg );
-    Output( "\n" );
+    OutputLine( msg );
 }
 
 static void RunTime( void )

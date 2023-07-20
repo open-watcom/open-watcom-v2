@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +37,15 @@
 #include "tinyio.h"
 #include "servio.h"
 
-void Output( const char *str )
+void OutputLine( const char *str )
 {
     TinyWrite( TINY_ERR, str, strlen( str ) );
+    TinyWrite( TINY_ERR, "\r\n", 2 );
 }
 
 void StartupErr( const char *err )
 {
-    Output( err );
-    Output( "\r\n" );
+    OutputLine( err );
     exit( 1 );
     // never return
 }
