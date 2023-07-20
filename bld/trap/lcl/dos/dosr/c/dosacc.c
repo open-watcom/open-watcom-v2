@@ -204,10 +204,17 @@ int out( char *str )
     while( *p != '\0' )
         ++p;
     TinyFarWrite( 1, str, p - str );
-    return 0;
+    return( 0 );
 }
 
-#define out0 out
+int outline( const char *str )
+{
+    out( str );
+    TinyFarWrite( 1, "\r\n", 2 );
+    return( 0 );
+}
+
+#define out0 outline
 
 static char hexbuff[80];
 
@@ -226,10 +233,10 @@ char *hex( unsigned long num )
         num >>= 4;
     }
     return( p );
-
 }
 #else
     #define out( s )
+    #define outline( s )
     #define out0( s ) 0
     #define hex( n )
 #endif
@@ -707,20 +714,20 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
-out( "in AccKillProg\r\n" );
+outline( "in AccKillProg" );
     RedirectFini();
     if( DOSTaskPSP() != NULL ) {
-out( "enduser\r\n" );
+outline( "enduser" );
         EndUser();
-out( "done enduser\r\n" );
+outline( "done enduser" );
     }
-out( "null87emu\r\n" );
+outline( "null87emu" );
     Null87Emu();
     NullOvlHdlr();
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
     ret->err = 0;
-out( "done AccKillProg\r\n" );
+outline( "done AccKillProg" );
     return( sizeof( *ret ) );
 }
 
@@ -828,7 +835,7 @@ static int ClearDebugRegs( int trap )
     if( Flags & F_DRsOn ) {
         out( "tr=" ); out( hex( trap ) );
         out( " dr6=" ); out( hex( GetDR6() ) );
-        out( "\r\n" );
+        outline( "" );
         if( trap == TRAP_WATCH_POINT ) { /* could be a 386 break point */
             dr6 = GetDR6();
             if( ( ( dr6 & DR6_B0 ) && IsBreak[0] )
@@ -896,34 +903,34 @@ static trap_conditions MapReturn( int trap )
     out( "cond=" );
     switch( trap ) {
     case TRAP_TRACE_POINT:
-        out( "trace point" );
+        outline( "trace point" );
         return( COND_TRACE );
     case TRAP_BREAK_POINT:
-        out( "break point" );
+        outline( "break point" );
         return( COND_BREAK );
     case TRAP_WATCH_POINT:
-        out( "watch point" );
+        outline( "watch point" );
         return( COND_WATCH );
     case TRAP_USER:
-        out( "user" );
+        outline( "user" );
         return( COND_USER );
     case TRAP_TERMINATE:
-        out( "terminate" );
+        outline( "terminate" );
         return( COND_TERMINATE );
     case TRAP_MACH_EXCEPTION:
-        out( "exception" );
+        outline( "exception" );
         ExceptNum = 0;
         return( COND_EXCEPTION );
     case TRAP_OVL_CHANGE_LOAD:
-        out( "overlay load" );
+        outline( "overlay load" );
         return( COND_SECTIONS );
     case TRAP_OVL_CHANGE_RET:
-        out( "overlay ret" );
+        outline( "overlay ret" );
         return( COND_SECTIONS );
     default:
         break;
     }
-    out( "none" );
+    outline( "none" );
     return( 0 );
 }
 
@@ -951,15 +958,15 @@ static trap_elen ProgRun( bool step )
             TaskRegs.EFL |= INTR_TF;
         }
     }
-    out( "in CS:EIP=" ); out( hex( TaskRegs.CS ) ); out(":" ); out( hex( TaskRegs.EIP ) );
-    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out(":" ); out( hex( TaskRegs.ESP ) );
-    out( "\r\n" );
+    out( "in CS:EIP=" ); out( hex( TaskRegs.CS ) ); out( ":" ); out( hex( TaskRegs.EIP ) );
+    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out( ":" ); out( hex( TaskRegs.ESP ) );
+    outline( "" );
     ret->conditions = MapReturn( ClearDebugRegs( RunProg( &TaskRegs, &TaskRegs ) ) );
     ret->conditions |= COND_CONFIG;
 //    out( "cond=" ); out( hex( ret->conditions ) );
-    out( " CS:EIP=" ); out( hex( TaskRegs.CS ) ); out(":" ); out( hex( TaskRegs.EIP ) );
-    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out(":" ); out( hex( TaskRegs.ESP ) );
-    out( "\r\n" );
+    out( " CS:EIP=" ); out( hex( TaskRegs.CS ) ); out( ":" ); out( hex( TaskRegs.EIP ) );
+    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out( ":" ); out( hex( TaskRegs.ESP ) );
+    outline( "" );
     ret->stack_pointer.segment = TaskRegs.SS;
     ret->stack_pointer.offset  = TaskRegs.ESP;
     ret->program_counter.segment = TaskRegs.CS;
@@ -1051,18 +1058,18 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     /* unused parameters */ (void)remote;
 
-out( "in TrapInit\r\n" );
-out( "    checking environment:\r\n" );
+outline( "in TrapInit" );
+outline( "    checking environment:" );
     Flags = 0;
     CPUType = X86CPUType();
     if( CPUType >= X86_386 )
         Flags |= F_Is386;
     if( *parms == 'D' || *parms == 'd' ) {
         ++parms;
-    } else if( out0( "    CPU type\r\n" ) || ( CPUType < X86_386 ) ) {
-    } else if( out0( "    WinEnh\r\n" ) || ( EnhancedWinCheck() & 0x7f ) ) {
+    } else if( out0( "    CPU type" ) || ( CPUType < X86_386 ) ) {
+    } else if( out0( "    WinEnh" ) || ( EnhancedWinCheck() & 0x7f ) ) {
         /* Enhanced Windows 3.0 VM kernel messes up handling of debug regs */
-    } else if( out0( "    DOSEMU\r\n" ) || DOSEMUCheck() ) {
+    } else if( out0( "    DOSEMU" ) || DOSEMUCheck() ) {
         /* no fiddling with debug regs in Linux DOSEMU either */
     } else {
         Flags |= F_DRsOn;
@@ -1070,7 +1077,7 @@ out( "    checking environment:\r\n" );
     if( *parms == 'O' || *parms == 'o' ) {
         Flags |= F_NoOvlMgr;
     }
-out( "    done checking environment\r\n" );
+outline( "    done checking environment" );
     err[0] = '\0'; /* all ok */
 
     if( CPUType & X86_MMX )
@@ -1098,13 +1105,13 @@ out( "    done checking environment\r\n" );
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = false;
-out( "done TrapInit\r\n" );
+outline( "done TrapInit" );
     return( ver );
 }
 
 void TRAPENTRY TrapFini( void )
 {
-out( "in TrapFini\r\n" );
+outline( "in TrapFini" );
     FiniVectors();
-out( "done TrapFini\r\n" );
+outline( "done TrapFini" );
 }

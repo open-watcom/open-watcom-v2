@@ -247,11 +247,15 @@ void dos_printf( const char *format, ... )
 {
     static char     dbg_buf[256];
     va_list         args;
+    size_t          len;
 
     va_start( args, format );
     vsnprintf( dbg_buf, sizeof( dbg_buf ), format, args );
     // Convert to DOS string
-    dbg_buf[strlen( dbg_buf )] = '\$';
+    len = strlen( dbg_buf );
+    dbg_buf[len++] = '\r';
+    dbg_buf[len++] = '\n';
+    dbg_buf[len] = '\$';
     dos_print( dbg_buf );
     va_end( args );
 }
@@ -307,10 +311,10 @@ static bool SetDebugRegs( void )
         size = wp->size;
         if( size == 8 )
             size = 4;
-        _DBG( "Setting Watch On 0x%X\r\n", linear );
+        _DBG( "Setting Watch On 0x%X", linear );
         for( j = 0; j < wp->dregs; j++ ) {
             rc = DPMISetWatch( linear, size, DPMI_WATCH_WRITE );
-            _DBG( "OK %d = %d\r\n", j, ( rc >= 0 ) );
+            _DBG( "OK %d = %d", j, ( rc >= 0 ) );
             if( rc < 0 ) {
                 ClearDebugRegs();
                 return( false );
@@ -354,28 +358,28 @@ static trap_conditions MapStateToCond( unsigned state )
     trap_conditions rc;
 
     if( state & ST_TERMINATE ) {
-        _DBG( "Condition: TERMINATE\r\n" );
+        _DBG( "Condition: TERMINATE" );
         rc = COND_TERMINATE;
     } else if( state & ST_KEYBREAK ) {
-        _DBG( "Condition: USER\r\n" );
+        _DBG( "Condition: USER" );
         rc = COND_USER;
     } else if( state & ST_LOAD_MODULE ) {
-        _DBG( "Condition: LIBRARIES\r\n" );
+        _DBG( "Condition: LIBRARIES" );
         rc = COND_LIBRARIES;
     } else if( state & ST_UNLOAD_MODULE ) {
-        _DBG( "Condition: LIBRARIES\r\n" );
+        _DBG( "Condition: LIBRARIES" );
         rc = COND_LIBRARIES;
     } else if( state & ST_WATCH ) {
-        _DBG( "Condition: WATCH\r\n" );
+        _DBG( "Condition: WATCH" );
         rc = COND_WATCH;
     } else if( state & ST_BREAK ) {
-        _DBG( "Condition: BREAK\r\n" );
+        _DBG( "Condition: BREAK" );
         rc = COND_BREAK;
     } else if( state & ST_TRACE ) {
-        _DBG( "Condition: TRACE\r\n" );
+        _DBG( "Condition: TRACE" );
         rc = COND_TRACE;
     } else {
-        _DBG( "Condition: EXCEPTION\r\n" );
+        _DBG( "Condition: EXCEPTION" );
         rc = COND_EXCEPTION;
     }
     return( rc );
@@ -498,7 +502,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-    _DBG( "AccGetConfig\r\n" );
+    _DBG( "AccGetConfig" );
     ret = GetOutPtr( 0 );
     ret->os = DIG_OS_RATIONAL;      // Pretend we're DOS/4G
     ret->osmajor = _osmajor;
@@ -507,7 +511,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     ret->huge_shift = 12;
     ret->fpu = NPXType();       //RealNPXType;
     ret->arch = DIG_ARCH_X86;
-    _DBG( "os = %d, cpu=%d, fpu=%d, osmajor=%d, osminor=%d\r\n",
+    _DBG( "os = %d, cpu=%d, fpu=%d, osmajor=%d, osminor=%d",
         ret->os, ret->cpu, ret->fpu, ret->osmajor, ret->osminor );
     return( sizeof( *ret ) );
 }
@@ -523,7 +527,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     mod_t           *mod;
     int             i;
 
-    _DBG1( "AccMapAddr\r\n" );
+    _DBG1( "AccMapAddr" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->out_addr.offset = 0;
@@ -558,7 +562,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         // convert offset
         ret->out_addr.offset = off + mod->ObjInfo[seg].new_base + mod->epsp->MemBase;
-        _DBG( "Map_addr: module=%d %X:%X -> %X:%X\n", acc->mod_handle, acc->in_addr.segment, acc->in_addr.offset, ret->out_addr.segment, ret->out_addr.offset );
+        _DBG( "Map_addr: module=%d %X:%X -> %X:%X", acc->mod_handle, acc->in_addr.segment, acc->in_addr.offset, ret->out_addr.segment, ret->out_addr.offset );
     }
     return( sizeof( *ret ) );
 }
@@ -587,7 +591,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_ret    *ret;
     unsigned char       buffer[256];
 
-    _DBG1(( "AccChkSum\n" ));
+    _DBG1(( "AccChkSum" ));
 
     acc = GetInPtr( 0 );
     want = sizeof( buffer );
@@ -706,7 +710,7 @@ static unsigned ProgRun( bool step )
     unsigned    status;
     epsp_t      *epsp;
 
-    _DBG1( "AccRunProg %X:%X\n", ProcRegs.CS, ProcRegs.EIP );
+    _DBG1( "AccRunProg %X:%X", ProcRegs.CS, ProcRegs.EIP );
     ret = GetOutPtr( 0 );
     if( step ) {
         ProcRegs.EFL |= INTR_TF;
@@ -817,7 +821,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     int             rc;
     char            cmdl[128];
 
-    _DBG1( "AccLoadProg\r\n" );
+    _DBG1( "AccLoadProg" );
     ret = GetOutPtr( 0 );
     ret->err = 0;
     src = name = GetInPtr( sizeof( prog_load_req ) );
@@ -828,7 +832,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         len = 126;
     *cmdl = MergeArgvArray( src, cmdl + 1, len );
     rc = DebugLoad( name, cmdl );
-    _DBG1( "back from debugload - %d\r\n", rc );
+    _DBG1( "back from debugload - %d", rc );
     ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
     ret->mod_handle = 0;
     if( rc == 0 ) {
@@ -846,7 +850,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             ret->err = rc;
         }
     }
-    _DBG1( "done AccLoadProg\r\n" );
+    _DBG1( "done AccLoadProg" );
     return( sizeof( *ret ) );
 }
 
@@ -856,7 +860,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_req       *acc;
     prog_kill_ret       *ret;
 
-    _DBG( "AccKillProg\r\n" );
+    _DBG( "AccKillProg" );
     acc = GetInPtr( 0 );
     RedirectFini();
     FreeModsInfo();
@@ -934,7 +938,7 @@ trap_retval TRAP_CORE( Set_break )( void )
     set_break_req   *acc;
     set_break_ret   *ret;
 
-    _DBG( "AccSetBreak\r\n" );
+    _DBG( "AccSetBreak" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->old = place_breakpoint( &acc->break_addr );
@@ -946,7 +950,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req *acc;
 
-    _DBG( "AccClearBreak\r\n" );
+    _DBG( "AccClearBreak" );
     acc = GetInPtr( 0 );
     remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
@@ -1003,17 +1007,17 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     get_err_text_req    *acc;
     char                *err_txt;
 
-    _DBG( "AccErrText\r\n" );
+    _DBG( "AccErrText" );
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
         strcpy( err_txt, DosErrMsgs[acc->err] );
-        _DBG( "After strcpy\r\n" );
+        _DBG( "After strcpy" );
     } else {
         _DBG( "After acc->error_code > MAX_ERR_CODE" );
         strcpy( err_txt, TRP_ERR_unknown_system_error );
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
-        _DBG( "After utoa()\r\n" );
+        _DBG( "After utoa()" );
     }
     return( strlen( err_txt ) + 1 );
 }
@@ -1069,7 +1073,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
     machine_data_ret    *ret;
     machine_data_spec   *data;
 
-    _DBG( "AccMachineData\r\n" );
+    _DBG( "AccMachineData" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->cache_start = 0;
@@ -1077,10 +1081,10 @@ trap_retval TRAP_CORE( Machine_data )( void )
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
         data = GetOutPtr( sizeof( *ret ) );
         data->x86_addr_flags = ( IsSel32bit( acc->addr.segment ) ) ? X86AC_BIG : 0;
-        _DBG( "address %x:%x is %s\r\n", acc->addr.segment, acc->addr.offset, data->x86_addr_flags ? "32-bit" : "16-bit" );
+        _DBG( "address %x:%x is %s", acc->addr.segment, acc->addr.offset, data->x86_addr_flags ? "32-bit" : "16-bit" );
         return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    _DBG( "address %x:%x\r\n", acc->addr.segment, acc->addr.offset );
+    _DBG( "address %x:%x", acc->addr.segment, acc->addr.offset );
     return( sizeof( *ret ) );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1010,9 +1010,9 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
 void ACADInit( void )
 {
-    _DBG0( ( "Calling ads_init()\r\n" ) );
+    _DBG0( ( "Calling ads_init()" ) );
     ads_init( _argc, _argv );
-    _DBG0( ( "After ads_init()\r\n" ) );
+    _DBG0( ( "After ads_init()" ) );
 }
 
 void LetACADDie( void )
