@@ -56,7 +56,6 @@ void OutputLine( const char *str )
     SetInputToOutputCursorPosition( screenID );
 }
 
-
 void SayGNiteGracey( int return_code )
 {
     return_code = return_code;
@@ -87,7 +86,7 @@ int KeyGet( void )
    BYTE value, scanCode, type;
 
    SetInputToOutputCursorPosition( screenID );
-   GetKey( screenID, &type, &value, NULL, &scanCode, 0); /* RELINQUISH ? */
+   GetKey( screenID, &type, &value, NULL, &scanCode, 0 ); /* RELINQUISH ? */
    return( value );
 }
 

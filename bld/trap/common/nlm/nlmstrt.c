@@ -543,6 +543,7 @@ void ConsolePrintf( char *format, ... )
     if( DebugMode ) {
         ActivateScreen( debugScreen );
         OutputToScreenWithPointer( debugScreen, format, (BYTE *)&format + sizeof( char * ) );
+        OutputToScreen( debugScreen, "\r\n" );
         SetInputToOutputCursorPosition( screenID );
 
 #if !defined( __NETWARE_LIBC__ )

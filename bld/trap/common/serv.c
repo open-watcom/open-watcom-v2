@@ -90,12 +90,8 @@ static void Initialize( void )
 
 static void OpeningStatement( void )
 {
-#if defined( VERSION_ON_EXTRA_LINE )
     OutputLine( banner1w1( SERVNAME ) );
     OutputLine( banner1w2( _XXXSERV_VERSION_ ) );
-#else
-    OutputLine( banner1w( SERVNAME, _XXXSERV_VERSION_ ) );
-#endif
     OutputLine( banner2 );
     OutputLine( banner2a( 1988 ) );
     OutputLine( banner3 );

@@ -237,7 +237,7 @@ static void NewNLMListEntry( struct LoadDefinitionStructure *ld )
     new->ld = *ld;
     new->is_load = TRUE;
     NLMList = new;
-//  _DBG_EVENT(( "NewNLMListEntry: %8x %s\r\n", ld, &(ld->LDFileName[1]) ));
+//  _DBG_EVENT(( "NewNLMListEntry: %8x %s", ld, &(ld->LDFileName[1]) ));
 }
 
 static void DeadNLMListEntry( struct LoadDefinitionStructure *ld )
@@ -250,7 +250,7 @@ static void DeadNLMListEntry( struct LoadDefinitionStructure *ld )
         if( curr->ld.LDCodeImageOffset != ld->LDCodeImageOffset )
             continue;
         curr->is_load = FALSE;
-//      _DBG_EVENT(( "DeadNLMListEntry: %8x %s\r\n", ld, &(ld->LDFileName[1]) ));
+//      _DBG_EVENT(( "DeadNLMListEntry: %8x %s", ld, &(ld->LDFileName[1]) ));
         break;
     }
 }
@@ -269,10 +269,10 @@ static msb *LocateThread( T_ProcessID *pid )
     msb         *m;
 
     m = MSBHead;
-    _DBG_THREAD(( "Looking for  MSB for thread=%8x -- \r\n", pid ));
+    _DBG_THREAD(( "Looking for  MSB for thread=%8x --", pid ));
     while( m != NULL ) {
         if( m->os_id == pid ) {
-            _DBG_THREAD(( "Found MSB=%8x TID=%d\r\n", m, m->dbg_id ));
+            _DBG_THREAD(( "Found MSB=%8x TID=%d", m, m->dbg_id ));
             return( m );
         }
         m = m->next;
@@ -280,7 +280,7 @@ static msb *LocateThread( T_ProcessID *pid )
     m = Alloc( sizeof( msb ), AllocTag );
 
     if( NULL == m ) {
-        _DBG_ERROR(( "LocateThread: Failed to allocate msb block\r\n" ));
+        _DBG_ERROR(( "LocateThread: Failed to allocate msb block" ));
         return NULL;
     }
 
@@ -300,7 +300,7 @@ static msb *LocateThread( T_ProcessID *pid )
     m->sem = 0;
 #endif
     m->next = MSBHead;
-    //_DBG_THREAD(( "Allocating MSB=%8x TID=%d\r\n", m, m->dbg_id ));
+    //_DBG_THREAD(( "Allocating MSB=%8x TID=%d", m, m->dbg_id ));
     MSBHead = m;
     return( m );
 }
@@ -310,7 +310,7 @@ static void FreeThread( msb *m )
     msb **owner;
     msb *curr;
 
-    _DBG_THREAD(( "Trying to free thread MSB=%8x -- \r\n", m ));
+    _DBG_THREAD(( "Trying to free thread MSB=%8x --", m ));
     owner = &MSBHead;
     for( ;; ) {
         curr = *owner;
@@ -318,7 +318,7 @@ static void FreeThread( msb *m )
             return;
         if( curr == m ) {
             *owner = curr->next;
-            _DBG_THREAD(( "Freed it\r\n" ));
+            _DBG_THREAD(( "Freed it" ));
 #if defined( _USE_NEW_KERNEL )
             if( m->ksem ) {
                 kSemaphoreFree( m->ksem );
@@ -329,7 +329,7 @@ static void FreeThread( msb *m )
                 CDeAllocateSemaphore( m->sem );
 #endif
             Free( m );
-            _DBG_THREAD(( "\r\n" ));
+            _DBG_THREAD(( "" ));
             return;
         }
         owner = &(curr->next);
@@ -492,10 +492,10 @@ static byte NPX( void )
 static void DumpRegs( msb *m, char *str )
 {
     if( DebugClasses & (D_THREAD|D_ERROR) ) {
-        ConsolePrintf( "EAX:%8.8x EBX:%8.8x ECX:%8.8x EDX:%8.8x ESI:%8.8x ESI:%8.8x\r\n",
+        ConsolePrintf( "EAX:%8.8x EBX:%8.8x ECX:%8.8x EDX:%8.8x ESI:%8.8x ESI:%8.8x",
                    m->cpu.EAX, m->cpu.EBX, m->cpu.ECX, m->cpu.EDX,
                    m->cpu.ESI, m->cpu.EDI );
-        ConsolePrintf( "ESP:%8.8x EBP:%8.8x EIP:%8.8x EFL:%8.8x %s=%8.8x\r\n",
+        ConsolePrintf( "ESP:%8.8x EBP:%8.8x EIP:%8.8x EFL:%8.8x %s=%8.8x",
                    m->cpu.ESP, m->cpu.EBP, m->cpu.EIP, m->cpu.EFL, str, m );
     }
 }
@@ -517,10 +517,10 @@ static LONG DebugEntry( StackFrame *frame )
     exception_number = FieldExceptionNumber( frame );
     description = FieldExceptionDescription( frame );
     error_code = FieldErrorCode( frame );
-    _DBG_EVENT(( "*DebugEntry: Event %d (%s): RunningProcess=%8.8x\r\n",
+    _DBG_EVENT(( "*DebugEntry: Event %d (%s): RunningProcess=%8.8x",
                 exception_number, description, _RunningProcess ));
     if( !ExpectingEvent ) {
-        _DBG_EVENT(( "  Not expecting event\r\n" ));
+        _DBG_EVENT(( "  Not expecting event" ));
         return( RETURN_TO_NEXT_DEBUGGER );
     }
     if( DebuggerRunning &&
@@ -549,14 +549,14 @@ static LONG DebugEntry( StackFrame *frame )
     switch( exception_number ) {
     case START_NLM_EVENT:
         /* The NLM is being loaded. We are on the loader thread here */
-        _DBG_EVENT(( "  START_NLM_EVENT: LDS=%x (%s) D_LDS=%x NLMState=%x\r\n",
+        _DBG_EVENT(( "  START_NLM_EVENT: LDS=%x (%s) D_LDS=%x NLMState=%x",
                         load, &(load->LDFileName[1]),
                         DebuggerLoadedNLM, NLMState ));
         if( NLMState == NLM_LOADED ) {
             m = LocateThread( _RunningProcess );
             m->load = load;
             NewNLMListEntry( load );
-            _DBG_EVENT(( "MSB=%x NLMState = NLM_LOADED\r\n", m ));
+            _DBG_EVENT(( "MSB=%x NLMState = NLM_LOADED", m ));
             break;
         } else if( NLMState == NLM_PRELOADING
                 && !DebuggerLoadedNLM
@@ -569,13 +569,13 @@ static LONG DebugEntry( StackFrame *frame )
             saved_opcode = *(opcode_type *)(m->load->LDInitializationProcedure);
             *(opcode_type *)(m->load->LDInitializationProcedure) = BRKPOINT;
             NLMState = NLM_LOADING;
-            _DBG_EVENT(( "MSB=%x NLMState = NLM_LOADING\r\n", m ));
+            _DBG_EVENT(( "MSB=%x NLMState = NLM_LOADING", m ));
         } else {
-            _DBG_EVENT(( "NLMState = unknown state\r\n" ));
+            _DBG_EVENT(( "NLMState = unknown state" ));
         }
         return( RETURN_TO_PROGRAM );
     case TERMINATE_NLM_EVENT:
-        _DBG_EVENT(( "  TERMINATE_NLM_EVENT: LDS=%x (%s) D_LDS=%x\r\n",
+        _DBG_EVENT(( "  TERMINATE_NLM_EVENT: LDS=%x (%s) D_LDS=%x",
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
         if( load == DebuggerLoadedNLM ) {
             DebuggerLoadedNLM = NULL;
@@ -591,26 +591,26 @@ static LONG DebugEntry( StackFrame *frame )
         return( RETURN_TO_PROGRAM );
     case START_THREAD_EVENT:
         load = GetNLMFromPID( _RunningProcess );
-        _DBG_EVENT(( "  START_THREAD_EVENT: LDS=%x (%s) D_LDS=%x\r\n",
+        _DBG_EVENT(( "  START_THREAD_EVENT: LDS=%x (%s) D_LDS=%x",
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
         m = LocateThread( _RunningProcess );
         m->load = load;
         if( load == DebuggerLoadedNLM ) {
             m->clib_created = TRUE;
         }
-        _DBG_EVENT(( "MSB=%x\r\n", m ));
+        _DBG_EVENT(( "MSB=%x", m ));
         return( RETURN_TO_PROGRAM );
     case TERMINATE_THREAD_EVENT:
         /* The thread is terminating. Free it's control block and let it die */
         load = GetNLMFromPID( _RunningProcess ); // returns NULL
-        _DBG_EVENT(( "  TERMINATE_THREAD_EVENT: LDS=%x (%s) D_LDS=%x,\r\n",
+        _DBG_EVENT(( "  TERMINATE_THREAD_EVENT: LDS=%x (%s) D_LDS=%x,",
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
         m = LocateThread( _RunningProcess );
-        _DBG_EVENT(( "MSB=%x, NLM=%x\r\n", m, m->load ));
+        _DBG_EVENT(( "MSB=%x, NLM=%x", m, m->load ));
         FreeThread( m );
         return( RETURN_TO_PROGRAM );
     case THREAD_BOOBY_TRAP_EVENT:
-        _DBG_EVENT(( "  THREAD_BOOBY_TRAPEVENT:\r\n" ));
+        _DBG_EVENT(( "  THREAD_BOOBY_TRAPEVENT:" ));
 #ifdef __NW40__
         if( GetFileServerMinorVersionNumber() < 10 ) {
 //          FieldESP( frame ) += 4; // SignalDebuggerEvent points to return address
@@ -624,7 +624,7 @@ static LONG DebugEntry( StackFrame *frame )
         m = LocateThread( _RunningProcess );
         break;
     case NLM_FAILED_INIT_EVENT:
-        _DBG_EVENT(( "  NLM_FAILED_INIT_EVENT:\r\n" ));
+        _DBG_EVENT(( "  NLM_FAILED_INIT_EVENT:" ));
         if( NLMState != NLM_FORCED_INIT_FAILURE ) {
             m = LocateThread( _RunningProcess );
             DebuggerLoadedNLM = NULL;
@@ -637,14 +637,14 @@ static LONG DebugEntry( StackFrame *frame )
     case 3:
         m = LocateThread( _RunningProcess );
         if( NLMState == NLM_LOADING && m->in_start_proc ) {
-            _DBG_EVENT(( "  3: Helper thread hits initial break\r\n" ));
+            _DBG_EVENT(( "  3: Helper thread hits initial break" ));
             /* the helper thread hits a break point we set at start procedure */
             SaveRegs( HelperThreadRegs );
             DebuggerLoadedNLM = m->load;
             --(FieldEIP( frame ));
             *(opcode_type *)(FieldEIP( frame )) = saved_opcode;
             NLMState = NLM_IN_START_PROC;
-            _DBG_EVENT(( "  3: NLMState = NLM_IN_START_PROC\r\n" ));
+            _DBG_EVENT(( "  3: NLMState = NLM_IN_START_PROC" ));
         } else {
             --(FieldEIP( frame ));
 #if 0
@@ -681,7 +681,7 @@ static LONG DebugEntry( StackFrame *frame )
  * returning to the following routine and "becoming" the debugger.
  *
  */
-    _DBG_EVENT(( "DebugEntry: Leaving MSB=%8x xnum=%d PID=%8x\r\n", m, m->xnum, m->os_id ));
+    _DBG_EVENT(( "DebugEntry: Leaving MSB=%8x xnum=%d PID=%8x", m, m->xnum, m->os_id ));
     FieldESI( frame ) = (LONG)m;
     FieldEIP( frame ) = (LONG)&BigKludge;
     return( RETURN_TO_PROGRAM );
@@ -710,13 +710,13 @@ static void JumpTo( msb *m )
 
 void BigKludge( msb *m )
 {
-    _DBG_EVENT(( "*BigKludge: MSB=%8x xnum=%d PID=%8x\r\n", m, m->xnum, m->os_id ));
+    _DBG_EVENT(( "*BigKludge: MSB=%8x xnum=%d PID=%8x", m, m->xnum, m->os_id ));
     m->asleep = TRUE;
 #if defined( _USE_NEW_KERNEL )
     if( NULL == m->ksem ) {
         m->ksem = kSemaphoreAlloc( NULL, 0 );
         if( NULL == m->ksem ) {
-            _DBG_ERROR(( "*BigKludge: Failed to allocate semaphore\r\n" ));
+            _DBG_ERROR(( "*BigKludge: Failed to allocate semaphore" ));
         }
     }
 #else
@@ -725,7 +725,7 @@ void BigKludge( msb *m )
     }
 #endif
     if( m->xnum != THREAD_BOOBY_TRAP_EVENT ) {
-        _DBG_EVENT(( "  Waking up the debugger for debug event\r\n" ));
+        _DBG_EVENT(( "  Waking up the debugger for debug event" ));
         BoobyTrapPID( m->os_id ); /* catch all other threads in NLM */
         if( !DebuggerRunning ) {
             MSB = m;
@@ -733,14 +733,14 @@ void BigKludge( msb *m )
         WakeDebugger();
     }
 #if defined( _USE_NEW_KERNEL )
-    _DBG_THREAD(( "Putting to sleep MSB=%8x on sem=%8x\r\n", m, m->ksem ));
+    _DBG_THREAD(( "Putting to sleep MSB=%8x on sem=%8x", m, m->ksem ));
     kSemaphoreWait( m->ksem );
 #else
-    _DBG_THREAD(( "Putting to sleep MSB=%8x on sem=%8x\r\n", m, m->sem ));
+    _DBG_THREAD(( "Putting to sleep MSB=%8x on sem=%8x", m, m->sem ));
     CPSemaphore( m->sem );
 #endif
     m->asleep = FALSE;
-    _DBG_EVENT(( "  Waking up as MSB=%8x\r\n", m ));
+    _DBG_EVENT(( "  Waking up as MSB=%8x", m ));
     if( NPX() != X86_NOFPU ) {
         Write387( &m->fpu );
     }
@@ -750,11 +750,11 @@ void BigKludge( msb *m )
     }
     ActivateDebugRegs();
     UnBoobyTrapPID( m->os_id );
-    //_DBG_THREAD(( "Rolling. EIP=%8x, ESP=%8x, Process=%8x\r\n", m->cpu.EIP, m->cpu.ESP, _RunningProcess ));
+    //_DBG_THREAD(( "Rolling. EIP=%8x, ESP=%8x, Process=%8x", m->cpu.EIP, m->cpu.ESP, _RunningProcess ));
     if( m->to_be_killed ) {
         if( m->in_start_proc ) {
             int         newESP;
-            //_DBG_THREAD(( "     Attempting to kill myself!!!\r\n" ));
+            //_DBG_THREAD(( "     Attempting to kill myself!!!" ));
             newESP = m->cpu.ESP;
             FreeThread( m );
             if( newESP <= HelperThreadRegs.ESP ) {
@@ -764,28 +764,28 @@ void BigKludge( msb *m )
                 m->cpu.EIP = (dword)Return;
                 m->cpu.EAX = -1;
                 NLMState = NLM_FORCED_INIT_FAILURE;
-                _DBG_EVENT(( "  NLMState = NLM_FORCED_INIT_FAILURE\r\n" ));
+                _DBG_EVENT(( "  NLMState = NLM_FORCED_INIT_FAILURE" ));
             }
         } else if( m->clib_created ) {
 #if defined( __NETWARE_LIBC__ )
             int type = get_app_type();
 
             if( type & LIBRARY_CLIB ) {
-                _DBG_THREAD(( "     Warping off to _exit!!!\r\n" ));
+                _DBG_THREAD(( "     Warping off to _exit!!!" ));
                 m->cpu.EIP = (dword)_exit;
             } else if( type & LIBRARY_LIBC) {
-                _DBG_THREAD(( "     Warping off to NXVMExit!!!\r\n" ));
+                _DBG_THREAD(( "     Warping off to NXVMExit!!!" ));
                 m->cpu.EIP = (dword)NXVmExit;
             } else {
-                _DBG_THREAD(( "     Warping off to suicide!!!\r\n" ));
+                _DBG_THREAD(( "     Warping off to suicide!!!" ));
                 m->cpu.EIP = (dword)Suicide;
             }
 #else
-            _DBG_THREAD(( "     Warping off to _exit!!!\r\n" ));
+            _DBG_THREAD(( "     Warping off to _exit!!!" ));
             m->cpu.EIP = (dword)_exit;
 #endif
         } else {
-            _DBG_THREAD(( "     Suicide!!!\r\n" ));
+            _DBG_THREAD(( "     Suicide!!!" ));
             m->cpu.EIP = (dword)Suicide;
         }
     }
@@ -844,9 +844,9 @@ trap_retval TRAP_CORE( Map_addr )( void )
     ret->out_addr.offset = acc->in_addr.offset;
     ret->lo_bound = 0;
     ret->hi_bound = 0;
-    _DBG_MISC(( "AccMapAddr\r\n" ));
+    _DBG_MISC(( "AccMapAddr" ));
     if( acc->mod_handle == 0 ) { // main NLM
-        _DBG_MISC(( "Main NLM\r\n" ));
+        _DBG_MISC(( "Main NLM" ));
         if( MSB == NULL )
             return( sizeof( *ret ) );
         if( MSB->load == NULL )
@@ -856,7 +856,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         ld = &(MH2NLMENTRY( acc->mod_handle )->ld);
     }
     ret->hi_bound = ~(addr48_off)0;
-    _DBG_MISC(( "Mapping %4x:%8x\r\n", acc->in_addr.segment, acc->in_addr.offset ));
+    _DBG_MISC(( "Mapping %4x:%8x", acc->in_addr.segment, acc->in_addr.offset ));
     switch( acc->in_addr.segment ) {
     case MAP_FLAT_CODE_SELECTOR:
     case MAP_FLAT_DATA_SELECTOR:
@@ -883,7 +883,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         ret->out_addr.segment = GetDS();
         break;
     }
-    _DBG_MISC(( "------  %4x:%8x\r\n", ret->out_addr.segment, ret->out_addr.offset ));
+    _DBG_MISC(( "------  %4x:%8x", ret->out_addr.segment, ret->out_addr.offset ));
     return( sizeof( *ret ) );
 }
 
@@ -1108,7 +1108,7 @@ static void LoadHelper( void )
     MergeArgvArray( LoadName, CmdLine, LoadLen );
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
-    _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));
+    _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING" ));
     ExpectingEvent = true;
 
     if( nlm_name[0] == '\0'
@@ -1118,23 +1118,23 @@ static void LoadHelper( void )
      || IORead( handle, NLMName, 14 ) != 14
      || IOClose( handle ) != 0 ) {
         NLMState = NLM_NONE;
-        _DBG_EVENT(( "  NLMState = NLM_NONE\r\n" ));
+        _DBG_EVENT(( "  NLMState = NLM_NONE" ));
         DebuggerLoadedNLM = NULL;
         if( LoadRet != NULL )
             LoadRet->err = 2;
-        _DBG_EVENT(( "  Waking up the debugger for noopen event\r\n" ));
+        _DBG_EVENT(( "  Waking up the debugger for noopen event" ));
         WakeDebugger();
     } else {
-        _DBG_EVENT(( "  Name is '%S'\r\n", NLMName ));
+        _DBG_EVENT(( "  Name is '%S'", NLMName ));
         err = LoadModule( systemConsoleScreen, (BYTE *)CmdLine, LO_DEBUG );
-        _DBG_EVENT(( "  Load ret code %d\r\n", err ));
+        _DBG_EVENT(( "  Load ret code %d", err ));
         if( err != 0 ) {
             NLMState = NLM_NONE;
-            _DBG_EVENT(( "    NLMState = NLM_NONE\r\n" ));
+            _DBG_EVENT(( "    NLMState = NLM_NONE" ));
             DebuggerLoadedNLM = NULL;
             if( LoadRet != NULL )
                 LoadRet->err = err;
-            _DBG_EVENT(( "    Waking up the debugger for noload event\r\n" ));
+            _DBG_EVENT(( "    Waking up the debugger for noload event" ));
             WakeDebugger();
         }
     }
@@ -1142,21 +1142,21 @@ static void LoadHelper( void )
 
     if( NLMState != NLM_NONE) {
         NLMState = NLM_LOADED;
-        _DBG_EVENT(( "LoadHelper: NLMState = NLM_LOADED\r\n" ));
+        _DBG_EVENT(( "LoadHelper: NLMState = NLM_LOADED" ));
 #if defined( _USE_NEW_KERNEL )
         kSemaphoreWait( kHelperSem );
 #else
         CPSemaphore( HelperSem );
 #endif
-        _DBG_EVENT(( "LoadHelper: Helper awake -- calling KillMe NLM=%8x!\r\n", DebuggerLoadedNLM ));
+        _DBG_EVENT(( "LoadHelper: Helper awake -- calling KillMe NLM=%8x!", DebuggerLoadedNLM ));
         NLMState = NLM_NONE;
-        _DBG_EVENT(( "LoadHelper: NLMState = NLM_NONE\r\n" ));
+        _DBG_EVENT(( "LoadHelper: NLMState = NLM_NONE" ));
         if( DebuggerLoadedNLM ) {
             KillMe( DebuggerLoadedNLM );
         }
     }
     DebuggerLoadedNLM = NULL;
-    _DBG_EVENT(( "LoadHelper: Helper killing itself\r\n" ));
+    _DBG_EVENT(( "LoadHelper: Helper killing itself" ));
     Suicide();
 }
 
@@ -1175,7 +1175,7 @@ static void LoadHelper( void )
     MergeArgvArray( LoadName, CmdLine, LoadLen );
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
-    _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));
+    _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING" ));
     ExpectingEvent = true;
     if( nlm_name[0] == '\0'
      || ( handle = IOOpen( nlm_name, O_RDONLY ) ) == -1
@@ -1184,37 +1184,37 @@ static void LoadHelper( void )
      || IORead( handle, NLMName, 14 ) != 14
      || IOClose( handle ) != 0 ) {
         NLMState = NLM_NONE;
-        _DBG_EVENT(( "  NLMState = NLM_NONE\r\n" ));
+        _DBG_EVENT(( "  NLMState = NLM_NONE" ));
         DebuggerLoadedNLM = NULL;
         if( LoadRet != NULL )
             LoadRet->err = 2;
-        _DBG_EVENT(( "  Waking up the debugger for noopen event\r\n" ));
+        _DBG_EVENT(( "  Waking up the debugger for noopen event" ));
         WakeDebugger();
     } else {
-        _DBG_EVENT(( "  Name is '%S'\r\n", NLMName ));
+        _DBG_EVENT(( "  Name is '%S'", NLMName ));
         err = LoadModule( systemConsoleScreen, CmdLine, LO_DEBUG );
-        _DBG_EVENT(( "  Load ret code %d\r\n", err ));
+        _DBG_EVENT(( "  Load ret code %d", err ));
         if( err != 0 ) {
             NLMState = NLM_NONE;
-            _DBG_EVENT(( "    NLMState = NLM_NONE\r\n" ));
+            _DBG_EVENT(( "    NLMState = NLM_NONE" ));
             DebuggerLoadedNLM = NULL;
             if( LoadRet != NULL )
                 LoadRet->err = err;
-            _DBG_EVENT(( "    Waking up the debugger for noload event\r\n" ));
+            _DBG_EVENT(( "    Waking up the debugger for noload event" ));
             WakeDebugger();
         }
     }
     FreeThread( LocateThread( _RunningProcess ) );
     NLMState = NLM_LOADED;
-    _DBG_EVENT(( "LoadHelper: NLMState = NLM_LOADED\r\n" ));
+    _DBG_EVENT(( "LoadHelper: NLMState = NLM_LOADED" ));
     CPSemaphore( HelperSem );
-    _DBG_EVENT(( "LoadHelper: Helper awake -- calling KillMe NLM=%8x!\r\n", DebuggerLoadedNLM ));
+    _DBG_EVENT(( "LoadHelper: Helper awake -- calling KillMe NLM=%8x!", DebuggerLoadedNLM ));
     NLMState = NLM_NONE;
-    _DBG_EVENT(( "LoadHelper: NLMState = NLM_NONE\r\n" ));
+    _DBG_EVENT(( "LoadHelper: NLMState = NLM_NONE" ));
     if( DebuggerLoadedNLM )
         KillMe( DebuggerLoadedNLM );
     DebuggerLoadedNLM = NULL;
-    _DBG_EVENT(( "LoadHelper: Helper killing itself\r\n" ));
+    _DBG_EVENT(( "LoadHelper: Helper killing itself" ));
     Suicide();
 }
 #endif
@@ -1234,9 +1234,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
     // scheduling priority, code address, stack top, stack len, process name, resource tag
     CMakeProcess( 50, &LoadHelper, &helper_stack[sizeof( helper_stack )],
                     sizeof( helper_stack ), TRP_The_WATCOM_Debugger, ProcessTag );
-    _DBG_EVENT(( "*ReqProg_load: Putting debugger to sleep for load of %s\r\n", LoadName ));
+    _DBG_EVENT(( "*ReqProg_load: Putting debugger to sleep for load of %s", LoadName ));
     SleepDebugger();
-    _DBG_EVENT(( "ReqProg_load: Debugger awake after load\r\n" ));
+    _DBG_EVENT(( "ReqProg_load: Debugger awake after load" ));
 
     ret->task_id = 1;
     ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT;
@@ -1257,7 +1257,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             NewNLMListEntry( ld );
         }
     }
-    _DBG_THREAD(("ReqProg_load: MSB after load=%8x\r\n", MSB));
+    _DBG_THREAD(("ReqProg_load: MSB after load=%8x", MSB));
     return( sizeof( *ret ) );
 }
 
@@ -1276,11 +1276,11 @@ trap_retval TRAP_CORE( Prog_kill )( void )
                 SetupPIDForACleanExit( m->os_id );
             }
 #if defined( _USE_NEW_KERNEL )
-            _DBG_THREAD(( "----- Releasing semaphore for MSB=%8x, sem=%8x\r\n", m, m->ksem ));
+            _DBG_THREAD(( "----- Releasing semaphore for MSB=%8x, sem=%8x", m, m->ksem ));
             msb_KernelSemaphoreReleaseAll( m );
             m->ksem = NULL;
 #else
-            _DBG_THREAD(( "----- Releasing semaphore for MSB=%8x, sem=%8x\r\n", m, m->sem ));
+            _DBG_THREAD(( "----- Releasing semaphore for MSB=%8x, sem=%8x", m, m->sem ));
             CSemaphoreReleaseAll( m->sem ); /* will be freed when thread awakes */
             m->sem = 0;
 #endif
@@ -1307,23 +1307,23 @@ static trap_conditions Execute( msb *which )
     msb         *m;
 
     for( m = MSBHead; m != NULL; m = m->next ) {
-        _DBG_THREAD(( "check thread msb=%8x: frozen=%d, asleep=%d\r\n", m, m->frozen, m->asleep ));
+        _DBG_THREAD(( "check thread msb=%8x: frozen=%d, asleep=%d", m, m->frozen, m->asleep ));
         if( !m->frozen && m->asleep ) {
             if( which == NULL || which == m ) {
 #if defined( _USE_NEW_KERNEL )
-                _DBG_THREAD(( "Letting a thread execute, MSB=%8x, sem=%8x\r\n", m, m->ksem ));
+                _DBG_THREAD(( "Letting a thread execute, MSB=%8x, sem=%8x", m, m->ksem ));
                 kSemaphoreSignal( m->ksem );
 #else
-                _DBG_THREAD(( "Letting a thread execute, MSB=%8x, sem=%8x\r\n", m, m->sem ));
+                _DBG_THREAD(( "Letting a thread execute, MSB=%8x, sem=%8x", m, m->sem ));
                 CVSemaphore( m->sem );
 #endif
             }
         }
     }
     /* freeze all threads!!! */
-    _DBG_EVENT(( "*Execute: Putting debugger to sleep for execution\r\n" ));
+    _DBG_EVENT(( "*Execute: Putting debugger to sleep for execution" ));
     SleepDebugger();
-    _DBG_EVENT(( "Execute: Debugger awake after execution\r\n" ));
+    _DBG_EVENT(( "Execute: Debugger awake after execution" ));
     if( MSB == NULL )
         return( COND_TERMINATE );
     switch( MSB->xnum ) {
@@ -1487,7 +1487,7 @@ static void ClearDebugRegs( void )
     for( i = 0; i < NUM_DREG; ++i ) {
         if( DR[i].type != NO_DREG ) {
             DR[i].type = NO_DREG;
-            _DBG_DR(( "unreserve %d\r\n", i ));
+            _DBG_DR(( "unreserve %d", i ));
             UnReserveABreakpoint( i );
         }
     }
@@ -1499,7 +1499,7 @@ static void ActivateDebugRegs( void )
 
     for( i = 0; i < NUM_DREG; ++i ) {
         if( DR[i].type != NO_DREG ) {
-            _DBG_DR(( "set %d, addr=%8x, typ=%d, siz=%d\r\n", i, DR[i].linear, DR[i].type, DR[i].size ));
+            _DBG_DR(( "set %d, addr=%8x, typ=%d, siz=%d", i, DR[i].linear, DR[i].type, DR[i].size ));
             CSetABreakpoint( i, DR[i].linear, DR[i].type, DR[i].size );
         }
     }
@@ -1510,7 +1510,7 @@ static bool SetDR( dword linear, word size )
     int     i;
 
     i = DoReserveBreakpoint();
-    _DBG_DR(( "reserved %d addr=%8x\r\n", i, linear ));
+    _DBG_DR(( "reserved %d addr=%8x", i, linear ));
     if( i < 0 ) {
         return( false );
     }
@@ -1530,7 +1530,7 @@ static bool SetDebugRegs( void )
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         linear = wp->addr.offset;
-        _DBG_DR(( "offset = %8x, addr=%8x\r\n", wp->addr.offset, linear ));
+        _DBG_DR(( "offset = %8x, addr=%8x", wp->addr.offset, linear ));
         size = wp->size;
         if( size == 8 )
             size = 4;
@@ -1694,7 +1694,7 @@ trap_retval TRAP_THREAD( set )( void )
     if( acc->thread != 0 ) {
         m = LocateTid( acc->thread );
         if( m != NULL && m->asleep ) {
-            _DBG_THREAD(( "AccSetThread to=%d (MSB=%8x) -- \r\n", m->dbg_id, m ));
+            _DBG_THREAD(( "AccSetThread to=%d (MSB=%8x) --", m->dbg_id, m ));
             MSB = m;
         } else {
             ret->err = 1;
@@ -1716,7 +1716,7 @@ trap_retval TRAP_THREAD( freeze )( void )
     ret->err = 1;       // Failed
     if( m != NULL ) {
         ret->err = 0;   // OK
-        _DBG_THREAD(( "freezing %8x\r\n", m ));
+        _DBG_THREAD(( "freezing %8x", m ));
         m->frozen = TRUE;
     }
     return( sizeof( *ret ) );
@@ -1734,7 +1734,7 @@ trap_retval TRAP_THREAD( thaw )( void )
     ret->err = 1;       // Failed
     if( m != NULL ) {
         ret->err = 0;   // OK
-        _DBG_THREAD(( "thawing %8x\r\n", m ));
+        _DBG_THREAD(( "thawing %8x", m ));
         m->frozen = FALSE;
     }
     return( sizeof( *ret ) );
@@ -1838,10 +1838,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     memcpy( name, &curr->ld.LDFileName[1], len );
     name[len] = '\0';
     if( curr->is_load ) {
-        _DBG_MISC(("Loaded an NLM %s\r\n", name));
+        _DBG_MISC(("Loaded an NLM %s", name));
         return( sizeof( *ret ) + len + 1 );
     } else {
-        _DBG_MISC(("UnLoaded NLM %s\r\n", name));
+        _DBG_MISC(("UnLoaded NLM %s", name));
         *name = '\0';
         return( sizeof( *ret ) + 1 );
     }

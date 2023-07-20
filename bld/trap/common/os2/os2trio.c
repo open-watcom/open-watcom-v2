@@ -36,6 +36,7 @@
 #include "os2.h"
 #include "servio.h"
 
+
 void OutputLine( const char *str )
 {
     while( *str ) {

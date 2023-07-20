@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include "servio.h"
 
+
 void OutputLine( const char *str )
 {
     printf( "%s\n", str );

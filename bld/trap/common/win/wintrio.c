@@ -77,7 +77,7 @@ void OutputLine( const char *str )
     }
     tmpOff = 0;
 
-} /* Output */
+} /* OutputLine */
 
 void SayGNiteGracey( int return_code )
 {
@@ -102,7 +102,8 @@ int KeyGet( void )
     return( 0 );
 }
 
-int  WantUsage( const char *foo ) {
+int  WantUsage( const char *foo )
+{
     foo = foo;
     return( FALSE );
 }

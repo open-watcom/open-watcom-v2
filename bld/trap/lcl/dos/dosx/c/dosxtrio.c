@@ -37,6 +37,7 @@
 #include "tinyio.h"
 #include "servio.h"
 
+
 void OutputLine( const char *str )
 {
     TinyWrite( TINY_ERR, str, strlen( str ) );
