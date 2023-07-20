@@ -2041,7 +2041,7 @@ static TREEPTR GenAllocaNode( TREEPTR size_parm )
 #if _CPU == _PPC
 static TREEPTR GenVaArgNode( TREEPTR last_parm )
 {
-    // there should be 2 parms __builtin_varg( list, type_arg )
+    // there should be 2 parms __builtin_va_arg( list, type_arg )
     // - first parm should be name of va_list
     // - last_parm should be an integer 0 or 1 (0=>varargs, 1=>stdarg)
 
@@ -2191,7 +2191,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                     return( GenAllocaNode( last_parm ) );
                 }
     #if  _CPU == _PPC
-                if( strcmp( sym_name, "__builtin_varg" ) == 0 ) {
+                if( strcmp( sym_name, "__builtin_va_arg" ) == 0 ) {
                     return( GenVaArgNode( last_parm ) );
                 }
     #endif

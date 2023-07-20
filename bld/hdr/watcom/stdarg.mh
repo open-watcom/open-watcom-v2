@@ -66,9 +66,9 @@ using std::va_list;
   #define va_end(__ap)          (__ap = (__va_list)0)
  #else
 :endsegment
-  extern void *__builtin_va_start( __va_list * );
+  extern void *__builtin_va_start( __va_list *, ...);
   #pragma intrinsic(__builtin_va_start)
-  #define va_start(__ap,__pn)   (__builtin_va_start(&__ap,__pn))
+  #define va_start(__ap,__pn)   (__builtin_va_start(&__ap,__pn,1))
   #define va_arg(__ap,__type)   (__builtin_va_arg(&__ap,__type))
 :segment DOS
  #endif
