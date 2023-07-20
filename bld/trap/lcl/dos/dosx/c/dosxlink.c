@@ -359,14 +359,14 @@ static char *FindExtender( char *fullpath, char **endname )
               && LOW( ext[1] ) == 'e'
               && LOW( ext[2] ) == 'x'
               && LOW( ext[3] ) == 'e' ) {
-                _DBG_Writeln( "is exe\r\n" );
+                _DBG_Writeln( "is exe" );
                 *endname = StrCopyDst( d4gname, fullpath );
                 return( fullpath );
             }
         }
         name = CheckPath( d4gname, fullpath, endname );
         if( name != NULL ) {
-            _DBG_Writeln( "found in path\r\n" );
+            _DBG_Writeln( "found in path" );
             return( name );
         }
     }

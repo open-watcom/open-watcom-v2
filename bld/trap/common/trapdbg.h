@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +51,11 @@
 #define DBG_LF                          "\n"
 #define DBG_BLANK                       0x20
 #define DBG_BELL                        0x07
+#ifdef __LINUX__
+    #define DBG_EOL                     DBG_LF
+#else
+    #define DBG_EOL                     DBG_CR DBG_LF
+#endif
 
 
 #ifdef __LINUX__
@@ -214,7 +219,7 @@ extern void _DBG_DumpStr( const char __far *str, uint_16 len, uint_16 fhandle );
                                   _DBG_NewLine();                       \
                                 }
 #define _DBG_Tab( n )           _DBG_DumpMultChars( DBG_BLANK, n, DBG_STDOUT_H );
-#define _DBG_NewLine()          { _DBG_WriteConstStr( DBG_CR DBG_LF );  \
+#define _DBG_NewLine()          { _DBG_WriteConstStr( DBG_EOL );  \
                                     ++DBG_Lines; }
 #define _DBG_ChkNewLn()         { _DBG_NewLine();                       \
                                   if( DBG_Lines >= DBG_PAGESIZE ) {     \
