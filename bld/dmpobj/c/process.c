@@ -946,7 +946,7 @@ void ProcLinNums( void )
         DoLinNumsHLL();
         break;
     default:
-        Output( INDENT "Unknown debugging style - not interpreting LINNUM records\n");
+        Output( INDENT "Unknown debugging style - not interpreting LINNUM records\n" );
     }
 }
 
@@ -1420,7 +1420,6 @@ void ProcGrpDef( void )
                 Output( BAILOUT "Unknown group type(%b)\n", grptype );
                 longjmp( BailOutJmp, 1 );
                 /* never return */
-//                break;
         }
         OutputNL();
     }
@@ -1439,8 +1438,7 @@ void ProcLibHeader( void )
     flags = GetByte();
     Output( INDENT "Dictionary Offset: %X\n", libDictOffs );
     Output( INDENT "Dictionary Size  : %x\n", libDictSize );
-    Output( INDENT "Case-Sensitive   : %s\n",
-        ( flags & 1 ) ? "Yes" : "No" );
+    Output( INDENT "Case-Sensitive   : %s\n", ( flags & 1 ) ? "Yes" : "No" );
     OutputData( 0, 0 );
 }
 

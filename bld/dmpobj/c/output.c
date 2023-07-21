@@ -186,7 +186,7 @@ static char *to5Dec16( char *dest, unsigned_16 num )
     Output makes the assumption that % is not followed by the null-
     terminator.
 */
-static size_t  FmtOutput( const char *fmt, va_list args )
+static size_t FmtOutput( const char *fmt, va_list args )
 {
     char        *p;
     const char  *probe;

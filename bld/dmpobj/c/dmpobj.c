@@ -70,11 +70,11 @@ void leave( int rc )
 static void ShowProductInfo( void )
 {
     if( !quiet ) {
-        Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) "\n" );
-        Output( banner2 "\n" );
-        Output( banner2a( 1984 ) "\n" );
-        Output( banner3 "\n" );
-        Output( banner3a "\n" );
+        Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) "\n"
+                banner2 "\n"
+                banner2a( 1984 ) "\n"
+                banner3 "\n"
+                banner3a "\n" );
     }
 }
 
@@ -82,17 +82,18 @@ static void usage( void )
 {
     ShowProductInfo();
 
-    Output( "Usage: dmpobj [options] objfile[." OBJSUFFIX "]...\n" );
-    Output( "Options:\n" );
-    Output( "-l[=file]\tProduce listing file\n" );
-    Output( "-d\t\tPrint descriptive titles for some output\n" );
-    Output( "-t\t\tPrint names for some index values and list at end\n" );
-    Output( "-c\t\tDump COMENT records without interpretation\n" );
-    Output( "-i\t\tOriginal Intel OMF-86 format\n" );
-    Output( "-q\t\tQuiet, don't show product info\n" );
-    Output( "-r\t\tProvide raw dump of records as well\n" );
-    Output( "-rec=xxx\tProvide dump of selected record type\n" );
-    Output( "\t\t  (by number or by symbolic name)\n" );
+    Output( "Usage:\n"
+            "  dmpobj [options] objfile[." OBJSUFFIX "]...\n"
+            "Options:\n"
+            "  -l[=file]\tProduce listing file\n"
+            "  -d\t\tPrint descriptive titles for some output\n"
+            "  -t\t\tPrint names for some index values and list at end\n"
+            "  -c\t\tDump COMENT records without interpretation\n"
+            "  -i\t\tOriginal Intel OMF-86 format\n"
+            "  -q\t\tQuiet, don't show product info\n"
+            "  -r\t\tProvide raw dump of records as well\n"
+            "  -rec=xxx\tProvide dump of selected record type\n"
+            "\t\t  (by number or by symbolic name)\n" );
 }
 
 int main( int argc, char **argv )
