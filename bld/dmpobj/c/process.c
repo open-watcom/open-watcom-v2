@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,9 +178,7 @@ static void doWeakLazyExtern( void )
     byte default_resolution;
     byte extern_idx;
 
-    for(;;) {
-        if( EndRec() )
-            break;
+    while( !EndRec() ) {
         extern_idx = GetIndex();
         default_resolution = GetIndex();
         Output( INDENT INDENT "EI(%u) default: EI(%u)\n", extern_idx, default_resolution );

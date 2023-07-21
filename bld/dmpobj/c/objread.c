@@ -471,18 +471,14 @@ char *GetLname( unsigned_16 idx ) {
     return( name );
 }
 
-static void FreeLnames( void ) {
-/*******************************/
+static void FreeLnames( void )
+/****************************/
+{
     Lnamelist   *entry;
 
-    entry = Lnames;
-    for( ;; ) {
-        if( entry == NULL ) {
-           break;
-        }
+    for( entry = Lnames; entry != NULL; entry = Lnames ) {
         Lnames = entry->next;
         free( entry );
-        entry = Lnames;
     }
     Lnames = NULL;
 
@@ -497,17 +493,12 @@ static void PrintNames( void ) {
     if( Lnames != NULL ) {
         k = 0;
         col = Output( CRLF INDENT INDENT "List of Lnames:" CRLF );
-        entry = Lnames;
-        for( ;; ) {
-           if( entry == NULL ) {
-               break;
-           }
+        for( entry = Lnames; entry != NULL; entry = entry->next ) {
            if( ( col > 40 ) || (entry->LnameLen > 40 ) ) {
                col = Output( CRLF );
            }
            k++;
            col = Output( "%u - '%s' %<", k, &(entry->Lname), 39u );
-           entry = entry->next;
        }
        Output( CRLF );
     }
@@ -515,17 +506,12 @@ static void PrintNames( void ) {
     if( Xnames != NULL ) {
         k = 0;
         col = Output( CRLF INDENT INDENT "List of Xnames:" CRLF );
-        entry = Xnames;
-        for( ;; ) {
-           if( entry == NULL ) {
-               break;
-           }
+        for( entry = Xnames; entry != NULL; entry = entry->next ) {
            if( ( col > 40 ) || (entry->LnameLen > 40 ) ) {
                col = Output( CRLF );
            }
            k++;
            col = Output( "%u - '%s' %<", k, &(entry->Lname), 39u );
-           entry = entry->next;
        }
        Output( CRLF );
     }
@@ -573,18 +559,14 @@ char *GetXname( unsigned_16 idx ) {
     return( name );
 }
 
-static void FreeXnames( void ) {
-/*******************************/
+static void FreeXnames( void )
+/****************************/
+{
     Lnamelist   *entry;
 
-    entry = Xnames;
-    for( ;; ) {
-        if( entry == NULL ) {
-           break;
-        }
+    for( entry = Xnames; entry != NULL; entry = Xnames ) {
         Xnames = entry->next;
         free( entry );
-        entry = Xnames;
     }
     Xnames = NULL;
 
@@ -635,18 +617,14 @@ Segdeflist  *GetSegdef( unsigned_16 idx ) {
     return( entry );
 }
 
-static void FreeSegdefs( void ) {
-/*******************************/
+static void FreeSegdefs( void )
+/*****************************/
+{
     Segdeflist   *entry;
 
-    entry = Segdefs;
-    for( ;; ) {
-        if( entry == NULL ) {
-           break;
-        }
+    for( entry = Segdefs; entry != NULL; entry = Segdefs ) {
         Segdefs = entry->next;
         free( entry );
-        entry = Segdefs;
     }
     Segdefs = NULL;
 }
@@ -741,18 +719,14 @@ unsigned_16 GetGrpseg( unsigned_16 idx ) {
     }
 }
 
-static void FreeGrpdefs( void ) {
-/*******************************/
+static void FreeGrpdefs( void )
+/*****************************/
+{
     Grpdeflist   *entry;
 
-    entry = Grpdefs;
-    for( ;; ) {
-        if( entry == NULL ) {
-           break;
-        }
+    for( entry = Grpdefs; entry != NULL; entry = Grpdefs ) {
         Grpdefs = entry->next;
         free( entry );
-        entry = Grpdefs;
     }
     Grpdefs = NULL;
 }
@@ -787,7 +761,8 @@ void ProcFile( FILE *fp, bool is_intel )
     for(;;) {
         raw_dump = DumpRaw;
         offset = ftell( fp );
-        if( fread( hdr, 1, 3, fp ) != 3 ) break;
+        if( fread( hdr, 1, 3, fp ) != 3 )
+            break;
         cksum  = hdr[ 0 ];
         cksum += hdr[ 1 ];
         cksum += hdr[ 2 ];
@@ -943,13 +918,9 @@ void ProcFile( FILE *fp, bool is_intel )
         }
         if( raw_dump ) {
             RecPtr = RecBuff;
-            Output(
-"====================RAW DUMP==============================================="
-                CRLF );
+            Output( "====================RAW DUMP===============================================" CRLF );
             OutputData( 0L, 0L );
-            Output(
-"====================RAW DUMP==============================================="
-                CRLF );
+            Output( "====================RAW DUMP===============================================" CRLF );
         }
     }
     if( total_padding > 0 ) {

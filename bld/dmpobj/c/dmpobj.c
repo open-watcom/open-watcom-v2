@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,7 +190,7 @@ int main( int argc, char **argv )
             if( *list_file == '\0' ) {
                 _makepath( file, pg.drive, pg.dir, pg.fname, LSTSUFFIX );
             }
-            fh = fopen( list_file, "w" );
+            fh = fopen( list_file, "wt" );
             if( fh == NULL ) {
                 Output( "Cannot open '%s' for writing" CRLF, list_file );
                 leave( 20 );
