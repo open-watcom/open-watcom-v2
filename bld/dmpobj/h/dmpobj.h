@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,14 +37,12 @@
 #include "bool.h"
 #include "wnoret.h"
 
-typedef unsigned_8          byte;
-
-#define CRLF            "\n"
 
 #define INDENT          "    "
 #define INDWIDTH        (sizeof( INDENT ) - 1)
-#define BAILOUT         CRLF INDENT "!! "
+#define BAILOUT         "\n" INDENT "!! "
 
+typedef unsigned_8          byte;
 
 /*
     Output routines (output.c)
@@ -52,6 +51,7 @@ extern  void            OutputInit( void );
 extern  void            OutputFini( void );
 extern  void            OutputSetFH( FILE * );
 extern  size_t          Output( const char *fmt, ... );
+extern  size_t          OutputNL( void );
 extern  void            OutputData( unsigned_32 off, unsigned_32 len );
 
 extern  bool            no_disp;
@@ -69,14 +69,14 @@ typedef struct Lnamelist {
 
 typedef struct Segdeflist {
    struct Segdeflist    *next;
-   unsigned_16          segind;        /* into lnames                      */
+   unsigned             segidx;        /* into lnames                      */
 } Segdeflist;
 
 #define MAXGRPSEGS      64
 typedef struct Grpdeflist {
    struct Grpdeflist    *next;
-   unsigned_16          grpind;        /* into Lnames  for grpname         */
-   unsigned_16          segidx[ MAXGRPSEGS ];  /* into segdefs for members */
+   unsigned             grpidx;        /* into Lnames  for grpname         */
+   unsigned             segidx[ MAXGRPSEGS ];  /* into segdefs for members */
 } Grpdeflist;
 
 extern  data_ptr        NamePtr;
@@ -85,11 +85,11 @@ extern  unsigned_16     RecLen;
 extern  data_ptr        RecBuff;
 extern  data_ptr        RecPtr;
 extern  unsigned_16     RecMaxLen;
-extern  unsigned_16     Grpindex;
-extern  unsigned_16     Segindex;
-extern  unsigned_16     Nameindex;
-extern  unsigned_16     Importindex;
-extern  unsigned_16     Libindex;
+extern  unsigned        Grpindex;
+extern  unsigned        Segindex;
+extern  unsigned        Nameindex;
+extern  unsigned        Importindex;
+extern  unsigned        Libindex;
 extern  bool            IsPharLap;
 extern  bool            IsMS386;
 extern  bool            IsIntel;
@@ -109,7 +109,7 @@ extern  unsigned_16     GetUInt( void );
 extern  unsigned_32     GetLInt( void );
 extern  unsigned_32     GetEither( void );
 extern  byte            GetName( void );       /* length prefixed name     */
-extern  unsigned_16     GetIndex( void );
+extern  unsigned        GetIndex( void );
 extern  unsigned_32     GetVariable( void );
 extern  void            ResizeBuff( unsigned_16 reqd_len );
 extern  void            ProcFile( FILE *fp, bool );
@@ -117,14 +117,14 @@ extern  byte            RecNameToNumber( char *name );
 extern  const char      *RecNumberToName( byte code );
 
 extern  void            AddLname( void );
-extern  char            *GetLname( unsigned_16 idx );
-extern  void            AddSegdef( unsigned_16 idx );
-extern  Segdeflist      *GetSegdef( unsigned_16 idx );
-extern  void            AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx );
-extern  Grpdeflist      *GetGrpdef( unsigned_16 idx );
-extern  unsigned_16     GetGrpseg( unsigned_16 idx );
+extern  char            *GetLname( unsigned idx );
+extern  void            AddSegdef( unsigned idx );
+extern  Segdeflist      *GetSegdef( unsigned idx );
+extern  void            AddGrpdef( unsigned grpidx, unsigned segidx );
+extern  Grpdeflist      *GetGrpdef( unsigned idx );
+extern  unsigned        GetGrpseg( unsigned idx );
 extern  void            AddXname( void );
-extern  char            *GetXname( unsigned_16 idx );
+extern  char            *GetXname( unsigned idx );
 /*
     Record processing routines
 */
@@ -133,8 +133,8 @@ extern  void            ProcTHeadr( int );
 extern  void            ProcLHeadr( void );
 extern  void            ProcRHeadr( void );
 extern  void            ProcComent( void );
-extern  void            ProcNames( unsigned_16 * );
-extern  void            ProcLNames( unsigned_16 * );
+extern  void            ProcNames( unsigned * );
+extern  void            ProcLNames( unsigned * );
 extern  void            ProcExtNames( void );
 extern  void            ProcModEnd( void );
 extern  void            ProcSegDefs( void );

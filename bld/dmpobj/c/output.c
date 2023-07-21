@@ -130,7 +130,7 @@ static char *toDec16( char *dest, unsigned_16 num )
     do {
         ++dest;
         res = div( res.quot, 10 );
-        *--str = '0' + res.rem;
+        *--str = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest >= orig ) {
@@ -156,7 +156,7 @@ static char *to5Dec16( char *dest, unsigned_16 num )
     dest += 5;
     do {
         res = div( res.quot, 10 );
-        *--dest = '0' + res.rem;
+        *--dest = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest > orig ) {
@@ -203,7 +203,7 @@ static size_t  FmtOutput( const char *fmt, va_list args )
         fmt = probe + 1;
         switch( *fmt ) {
         case 'c':
-            *p++ = va_arg( args, int );
+            *p++ = (char)va_arg( args, int );
             break;
         case 's':
             str = va_arg( args, const char * );
@@ -226,14 +226,14 @@ static size_t  FmtOutput( const char *fmt, va_list args )
             *p++ = '\'';
             break;
         case 'b':
-            p = toHex2( p, va_arg( args, unsigned ) );
+            p = toHex2( p, (byte)va_arg( args, unsigned ) );
             *p++ = 'h';
             break;
         case '2':
-            p = toHex2( p, va_arg( args, unsigned ) );
+            p = toHex2( p, (byte)va_arg( args, unsigned ) );
             break;
         case 'x':
-            p = toHex4( p, va_arg( args, unsigned ) );
+            p = toHex4( p, (unsigned short)va_arg( args, unsigned ) );
             *p++ = 'h';
             break;
         case 'X':
@@ -244,10 +244,10 @@ static size_t  FmtOutput( const char *fmt, va_list args )
             p = toHex8( p, va_arg( args, unsigned_32 ) );
             break;
         case 'u':
-            p = toDec16( p, va_arg( args, unsigned ) );
+            p = toDec16( p, (unsigned short)va_arg( args, unsigned ) );
             break;
         case '5':
-            p = to5Dec16( p, va_arg( args, unsigned ) );
+            p = to5Dec16( p, (unsigned short)va_arg( args, unsigned ) );
             break;
         case '<':
             len = va_arg( args, unsigned );
@@ -302,6 +302,22 @@ size_t Output( const char *fmt, ... )
     return( col );
 }
 
+size_t OutputNL( void )
+/*********************/
+{
+    size_t      len;
+
+    if( no_disp )
+        return( 0 );
+    *outBuffPtr++ = '\n';
+    *outBuffPtr = '\0';
+    col = 0;
+    len = outBuffPtr - outBuff;
+    if( len > OUT_BUFF_WRITE )
+        flush();
+    return( col );
+}
+
 void OutputInit( void )
 /*********************/
 {
@@ -346,7 +362,7 @@ void OutputData( unsigned_32 offset, unsigned_32 len )
     while( len-- > 0 ) {
         if( i > 0xf ) {
             *j = 0;
-            Output( " <%s>" CRLF INDENT "%8", ascbuf, offset );
+            Output( " <%s>\n" INDENT "%8", ascbuf, offset );
             offset += 16;
             i = 0;
             j = ascbuf;
@@ -357,5 +373,5 @@ void OutputData( unsigned_32 offset, unsigned_32 len )
         i++;
     }
     *j = 0;
-    Output( "%> <%s>" CRLF, 3 * ( 0x10 - i ), ascbuf );
+    Output( "%> <%s>\n", 3 * ( 0x10 - i ), ascbuf );
 }

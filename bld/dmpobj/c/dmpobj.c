@@ -70,11 +70,11 @@ void leave( int rc )
 static void ShowProductInfo( void )
 {
     if( !quiet ) {
-        Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) CRLF );
-        Output( banner2 CRLF );
-        Output( banner2a( 1984 ) CRLF );
-        Output( banner3 CRLF );
-        Output( banner3a CRLF );
+        Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) "\n" );
+        Output( banner2 "\n" );
+        Output( banner2a( 1984 ) "\n" );
+        Output( banner3 "\n" );
+        Output( banner3a "\n" );
     }
 }
 
@@ -82,17 +82,17 @@ static void usage( void )
 {
     ShowProductInfo();
 
-    Output( "Usage: dmpobj [options] objfile[." OBJSUFFIX "]..." CRLF );
-    Output( "Options:" CRLF );
-    Output( "-l[=file]\tProduce listing file" CRLF );
-    Output( "-d\t\tPrint descriptive titles for some output" CRLF );
-    Output( "-t\t\tPrint names for some index values and list at end" CRLF );
-    Output( "-c\t\tDump COMENT records without interpretation" CRLF );
-    Output( "-i\t\tOriginal Intel OMF-86 format" CRLF );
-    Output( "-q\t\tQuiet, don't show product info" CRLF );
-    Output( "-r\t\tProvide raw dump of records as well" CRLF );
-    Output( "-rec=xxx\tProvide dump of selected record type" CRLF );
-    Output( "\t\t  (by number or by symbolic name)" CRLF );
+    Output( "Usage: dmpobj [options] objfile[." OBJSUFFIX "]...\n" );
+    Output( "Options:\n" );
+    Output( "-l[=file]\tProduce listing file\n" );
+    Output( "-d\t\tPrint descriptive titles for some output\n" );
+    Output( "-t\t\tPrint names for some index values and list at end\n" );
+    Output( "-c\t\tDump COMENT records without interpretation\n" );
+    Output( "-i\t\tOriginal Intel OMF-86 format\n" );
+    Output( "-q\t\tQuiet, don't show product info\n" );
+    Output( "-r\t\tProvide raw dump of records as well\n" );
+    Output( "-rec=xxx\tProvide dump of selected record type\n" );
+    Output( "\t\t  (by number or by symbolic name)\n" );
 }
 
 int main( int argc, char **argv )
@@ -140,7 +140,7 @@ int main( int argc, char **argv )
                             rec_type[rec_count++] = RecNameToNumber( argv[i] + 5 );
                         }
                     } else {
-                        Output( "Maximum 10 record type allowed." CRLF );
+                        Output( "Maximum 10 record type allowed.\n" );
                         OutputFini();
                     }
                 } else {
@@ -182,7 +182,7 @@ int main( int argc, char **argv )
         }
         fp = fopen( fn, "rb" );
         if( fp == NULL ) {
-            Output( "Cannot open '%s' for reading" CRLF, fn );
+            Output( "Cannot open '%s' for reading\n", fn );
             leave( 20 );
             // never return
         }
@@ -192,7 +192,7 @@ int main( int argc, char **argv )
             }
             fh = fopen( list_file, "wt" );
             if( fh == NULL ) {
-                Output( "Cannot open '%s' for writing" CRLF, list_file );
+                Output( "Cannot open '%s' for writing\n", list_file );
                 leave( 20 );
                 // never return
             }

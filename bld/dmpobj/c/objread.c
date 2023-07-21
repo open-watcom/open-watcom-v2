@@ -44,11 +44,11 @@ data_ptr    RecBuff;
 data_ptr    RecPtr;
 unsigned_16 RecMaxLen;
 unsigned    RecNum;
-unsigned_16 Grpindex;
-unsigned_16 Segindex;
-unsigned_16 Nameindex;
-unsigned_16 Importindex;
-unsigned_16 Libindex;
+unsigned    Grpindex;
+unsigned    Segindex;
+unsigned    Nameindex;
+unsigned    Importindex;
+unsigned    Libindex;
 bool        IsPharLap;
 bool        IsMS386;
 bool        IsIntel;
@@ -329,14 +329,14 @@ byte GetName( void )
     return( NameLen );
 }
 
-unsigned_16 GetIndex( void )
-/**************************/
+unsigned GetIndex( void )
+/***********************/
 {
-    unsigned_16 index;
+    unsigned    index;
 
     index = GetByte();
     if( index & 0x80 ) {
-      index = ( (index & 0x7f) << 8 ) + GetByte();
+        index = ( (index & 0x7f) << 8 ) + GetByte();
     }
     return( index );
 }
@@ -359,8 +359,9 @@ unsigned_32 GetVariable( void )
     } else if( index == COMDEF_LEAF_4 ) {
         size = GetLInt();
     } else {
-        Output( BAILOUT "Unknown COMDEF LEAF size (%b)" CRLF, index );
+        Output( BAILOUT "Unknown COMDEF LEAF size (%b)\n", index );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
     return( size );
 }
@@ -423,7 +424,7 @@ void ResizeBuff( unsigned_16 reqd_len ) {
         RecBuff = malloc( RecMaxLen );
         if( RecBuff == NULL ) {
             OutputSetFH( stdout );
-            Output( CRLF "**FATAL** Out of memory!" CRLF );
+            Output( "\n**FATAL** Out of memory!\n" );
             leave( 20 );    // never return
         }
     }
@@ -436,7 +437,7 @@ void AddLname( void ) {
     entry = malloc( sizeof(Lnamelist) + NameLen );
     if( entry == NULL ) {
         OutputSetFH( stdout );
-        Output( CRLF "**FATAL** Out of memory!" CRLF );
+        Output( "\n**FATAL** Out of memory!\n" );
         leave( 21 );    // never return
     }
     if( Lnames == NULL ) {
@@ -451,11 +452,12 @@ void AddLname( void ) {
     lastLname = entry;
 }
 
-char *GetLname( unsigned_16 idx ) {
-/*********************************/
+char *GetLname( unsigned idx )
+/****************************/
+{
     Lnamelist   *entry;
     char        *name;
-    int         k;
+    unsigned    k;
 
     if( (Lnames == NULL) || (idx == 0) ) {
         return( "" );
@@ -492,28 +494,28 @@ static void PrintNames( void ) {
 
     if( Lnames != NULL ) {
         k = 0;
-        col = Output( CRLF INDENT INDENT "List of Lnames:" CRLF );
+        col = Output( "\n" INDENT INDENT "List of Lnames:\n" );
         for( entry = Lnames; entry != NULL; entry = entry->next ) {
            if( ( col > 40 ) || (entry->LnameLen > 40 ) ) {
-               col = Output( CRLF );
+               col = OutputNL();
            }
            k++;
            col = Output( "%u - '%s' %<", k, &(entry->Lname), 39u );
        }
-       Output( CRLF );
+       OutputNL();
     }
 
     if( Xnames != NULL ) {
         k = 0;
-        col = Output( CRLF INDENT INDENT "List of Xnames:" CRLF );
+        col = Output( "\n" INDENT INDENT "List of Xnames:\n" );
         for( entry = Xnames; entry != NULL; entry = entry->next ) {
            if( ( col > 40 ) || (entry->LnameLen > 40 ) ) {
-               col = Output( CRLF );
+               col = OutputNL();
            }
            k++;
            col = Output( "%u - '%s' %<", k, &(entry->Lname), 39u );
        }
-       Output( CRLF );
+       OutputNL();
     }
 }
 
@@ -524,7 +526,7 @@ void AddXname( void ) {
     entry = malloc( sizeof(Lnamelist) + NameLen );
     if( entry == NULL ) {
         OutputSetFH( stdout );
-        Output( CRLF "**FATAL** Out of memory!" CRLF );
+        Output( "\n**FATAL** Out of memory!\n" );
         leave( 21 );    // never return
     }
     if( Xnames == NULL ) {
@@ -539,11 +541,12 @@ void AddXname( void ) {
     lastXname = entry;
 }
 
-char *GetXname( unsigned_16 idx ) {
-/*********************************/
+char *GetXname( unsigned idx )
+/****************************/
+{
     Lnamelist   *entry;
     char        *name;
-    int         k;
+    unsigned    k;
 
     if( (Xnames == NULL) || (idx == 0) ) {
         return( "" );
@@ -572,15 +575,16 @@ static void FreeXnames( void )
 
 }
 
-void AddSegdef( unsigned_16 idx ) {
-/*********************************/
+void AddSegdef( unsigned idx )
+/****************************/
+{
     Segdeflist  *entry;
     Segdeflist  *wkentry;
 
     entry = malloc( sizeof(Segdeflist) );
     if( entry == NULL ) {
         OutputSetFH( stdout );
-        Output( CRLF "**FATAL** Out of memory!" CRLF );
+        Output( "\n**FATAL** Out of memory!\n" );
         leave( 21 );    // never return
     }
     if( Segdefs == NULL ) {
@@ -596,13 +600,14 @@ void AddSegdef( unsigned_16 idx ) {
         wkentry->next = entry;
     }
     entry->next = NULL;
-    entry->segind = idx;
+    entry->segidx = idx;
 }
 
-Segdeflist  *GetSegdef( unsigned_16 idx ) {
-/*****************************************/
+Segdeflist  *GetSegdef( unsigned idx )
+/************************************/
+{
     Segdeflist  *entry;
-    int         k;
+    unsigned    k;
 
     if( (Segdefs == NULL) || (idx == 0) ) {
         return( NULL );
@@ -630,8 +635,9 @@ static void FreeSegdefs( void )
 }
 
 
-void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
-/********************************************************/
+void AddGrpdef( unsigned grpidx, unsigned segidx )
+/************************************************/
+{
     Grpdeflist  *entry;
     Grpdeflist  *wkentry;
     int         k;
@@ -640,11 +646,11 @@ void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
         entry = malloc( sizeof(Grpdeflist) );
         if( entry == NULL ) {
             OutputSetFH( stdout );
-            Output( CRLF "**FATAL** Out of memory!" CRLF );
+            Output( "\n**FATAL** Out of memory!\n" );
             leave( 21 );    // never return
         }
         entry->next = NULL;
-        entry->grpind = grpidx;
+        entry->grpidx = grpidx;
         for( k = 0; k < MAXGRPSEGS; ++k ) {
             entry->segidx[ k ] = 0; /* no members yet */
         }
@@ -663,7 +669,7 @@ void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
     } else {               /* add member to grp*/
         if( Grpdefs == NULL ) {
             OutputSetFH( stdout );
-            Output( CRLF "**FATAL** No grpdef entry!" CRLF );
+            Output( "\n**FATAL** No grpdef entry!\n" );
             leave( 21 );    // never return
         } else {
             wkentry = Grpdefs;
@@ -686,10 +692,11 @@ void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
     }
 }
 
-Grpdeflist *GetGrpdef( unsigned_16 idx ) {
-/****************************************/
+Grpdeflist *GetGrpdef( unsigned idx )
+/***********************************/
+{
     Grpdeflist  *entry;
-    int         k;
+    unsigned    k;
 
     if( (Grpdefs == NULL) || (idx == 0) ) {
         return( NULL );
@@ -704,8 +711,9 @@ Grpdeflist *GetGrpdef( unsigned_16 idx ) {
     return( entry );
 }
 
-unsigned_16 GetGrpseg( unsigned_16 idx ) {
-/****************************************/
+unsigned GetGrpseg( unsigned idx )
+/********************************/
+{
     Segdeflist  *entry;
 
     if( (Grpdefs == NULL) || (idx == 0) ) {
@@ -715,7 +723,7 @@ unsigned_16 GetGrpseg( unsigned_16 idx ) {
     if( entry == NULL ) {
         return( 0 );
     } else {
-       return( entry->segind );
+       return( entry->segidx );
     }
 }
 
@@ -786,7 +794,7 @@ void ProcFile( FILE *fp, bool is_intel )
         }
         recname = RecNumberToName( hdr[ 0 ] );
         cksum = -( cksum - RecBuff[ RecLen - 1 ] );
-        Output( CRLF "%s%s(%2) recnum:%u, offset:%X, len:%x, chksum:%b(%2)" CRLF,
+        Output( "\n%s%s(%2) recnum:%u, offset:%X, len:%x, chksum:%b(%2)\n",
             recname, IsMS386 ? "386" : "", hdr[ 0 ], ++RecNum, offset,
             RecLen, RecBuff[ RecLen - 1 ], cksum );
         RecLen--;
@@ -908,23 +916,23 @@ void ProcFile( FILE *fp, bool is_intel )
         } else {
             /* something bailed out... */
             if( raw_dump ) {
-                Output( INDENT "Error at offset %x" CRLF, (unsigned_32)(pointer_uint)RecOffset );
+                Output( INDENT "Error at offset %x\n", (unsigned_32)(pointer_uint)RecOffset );
             } else if( !EndRec() ) {
-                Output( INDENT "Remainder of record follows:" CRLF );
+                Output( INDENT "Remainder of record follows:\n" );
                 OutputData( (unsigned_32)RecOffset(), 0L );
             } else {
-                Output( INDENT "End of record" CRLF );
+                Output( INDENT "End of record\n" );
             }
         }
         if( raw_dump ) {
             RecPtr = RecBuff;
-            Output( "====================RAW DUMP===============================================" CRLF );
+            Output( "====================RAW DUMP===============================================\n" );
             OutputData( 0L, 0L );
-            Output( "====================RAW DUMP===============================================" CRLF );
+            Output( "====================RAW DUMP===============================================\n" );
         }
     }
     if( total_padding > 0 ) {
-        Output( CRLF "total padding=%X" CRLF, total_padding );
+        Output( "\ntotal padding=%X\n", total_padding );
     }
     if( TranslateIndex) {
         PrintNames();
