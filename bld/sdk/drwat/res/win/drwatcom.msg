@@ -1,5 +1,8 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Dr. Watcom" )
+#define PRODUCT_NAME1   banner1t( "DIP" )
+
 pick( STR_LOG_BIG_ERASE,
     "Log file is now %ld bytes, erase it?",
     "Log file is now %ld bytes, erase it?" )
@@ -37,14 +40,14 @@ pick( STR_ERASE_LOG,
     "Erase Log File: %s",
     "Erase Log File: %s" )
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows" STR_BITNESS,
-    "Dr. Watcom for Windows" STR_BITNESS )
+    PRODUCT_NAME " for Windows",
+    PRODUCT_NAME " for Windows" )
 pick( STR_ABOUT_VERSION,
     banner1v( _DRWATCOM_VERSION_ ),
     banner1v( _DRWATCOM_VERSION_ ) )
 pick( STR_ABOUT_TITLE,
-    "About Dr. Watcom",
-    "About Dr. Watcom" )
+    "About " PRODUCT_NAME,
+    "About " PRODUCT_NAME )
 pick( STR_CANT_CLOSE_DURING_FAULT,
     "Cannot close while fault being handled",
     "Cannot close while fault being handled" )
@@ -313,8 +316,8 @@ pick( STR_WILL_USE_WDEBUG_386,
     "Will Use WDEBUG.386",
     "Will Use WDEBUG.386" )
 pick( STR_CANT_INIT_DIP,
-    "Unable to initialize the debugging information processor",
-    "Unable to initialize the debugging information processor" )
+    "Unable to initialize the " PRODUCT_NAME1,
+    "Unable to initialize the " PRODUCT_NAME1 )
 pick( STR_DIP_NOT_FOUND,
     "not loaded - File not found.",
     "not loaded - File not found." )
@@ -334,11 +337,11 @@ pick( STR_DIP_LOADED,
     "loaded",
     "loaded" )
 pick( STR_NO_DIPS_LOADED,
-    "No debugging information processors were found.",
-    "No debugging information processors were found." )
+    "No " PRODUCT_NAME1 " were found.",
+    "No " PRODUCT_NAME1 " were found." )
 pick( STR_APP_NAME,
-    "Dr. Watcom",
-    "Dr. Watcom" )
+    PRODUCT_NAME,
+    PRODUCT_NAME )
 pick( STR_ALL_FILE_FILTER,
     "All Files",
     "All Files" )

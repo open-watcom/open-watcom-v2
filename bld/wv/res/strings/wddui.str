@@ -1,3 +1,4 @@
+#define PRODUCT_NAME    banner1t( "Debugger" ) STR_BITNESS
 
 pick( First_UI_Message,
        "",
@@ -47,8 +48,8 @@ pick( PowerBuilder_Debugger_Already_Running,
        "jThe PowerBuilder DLL debugger is already running.  Run your application to load the DLL and activate the debugger" )
 
 pick( The_WATCOM_Debugger_for_PowerBuilder,
-       "The Watcom Debugger for PowerBuilder",
-       "jThe Watcom Debugger for PowerBuilder" )//ntinit
+       "The " PRODUCT_NAME " for PowerBuilder",
+       "jThe " PRODUCT_NAME " for PowerBuilder" )//ntinit
 
 // accelerator window
 // - these comprise the title line (in the client area)
@@ -161,12 +162,12 @@ pick( DLL_Name,
        "jBreak on Image Load" )//dbgexec
 
 pick( The_WATCOM_Debugger,
-       "Open Watcom Debugger" STR_BITNESS,
-       "jOpen Watcom Debugger" STR_BITNESS )//dbgmain
+       PRODUCT_NAME,
+       "j" PRODUCT_NAME )//dbgmain
 
 pick( About_The_WATCOM_Debugger,
-       "About Open Watcom Debugger",
-       "jAbout Open Watcom Debugger" )//dlgabout
+       "About " PRODUCT_NAME,
+       "jAbout " PRODUCT_NAME )//dlgabout
 
 pick( GoWhere,
        "Execute to address",

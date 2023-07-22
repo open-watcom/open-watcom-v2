@@ -66,8 +66,8 @@ pick(   STR_1_NAMED_WIN_TITLE,
         "%s - hWnd 0x%s (%s)",
         "%s - hWnd 0x%s (%s)" )
 pick(   STR_ABOUT_NAME,
-        PRODUCT_NAME " for Windows" STR_BITNESS,
-        PRODUCT_NAME " for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " for Windows" )
 pick(   STR_ABOUT_VERSION,
         banner1v( _SPY_VERSION_ ),
         banner1v( _SPY_VERSION_ ) )

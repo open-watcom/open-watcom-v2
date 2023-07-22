@@ -560,8 +560,8 @@ pick(   WIE_NEIMAGENOTCREATED,
         "New image not created",
         "New image not created" )
 pick(   WIE_ABOUTTEXT,
-        PRODUCT_NAME " for Windows" STR_BITNESS,
-        PRODUCT_NAME " for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " for Windows" )
 pick(   WIE_ABOUTVERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )

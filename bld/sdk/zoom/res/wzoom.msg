@@ -20,8 +20,8 @@ pick(   STR_INTERV_NOT_NUMERIC,
         "The Interval field must contain a numeric value",
         "間隔は数値で指定しなければなりません" )
 pick(   STR_ABOUT_NAME,
-        PRODUCT_NAME " for Windows" STR_BITNESS,
-        PRODUCT_NAME " for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " for Windows" )
 pick(   STR_ABOUT_VERSION,
         banner1v( _ZOOM_VERSION_ ),
         banner1v( _ZOOM_VERSION_ ) )

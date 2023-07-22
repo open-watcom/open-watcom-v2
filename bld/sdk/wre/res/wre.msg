@@ -319,8 +319,8 @@ pick(   WRE_TOTALTEXT,
 
 // WREMAIN.C
 pick(   WRE_APPNAME,
-        "Open Watcom Resource Editor",
-        "Open Watcom Resource Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   WRE_INITFAILED,
         "Initialization Failed!",
         "Initialization Failed!" )
@@ -358,14 +358,14 @@ pick(   WRE_INVALIDINPUTFILE,
         "Invalid input file.",
         "Invalid input file." )
 pick(   WRE_ABOUT_NAME,
-        "Open Watcom Resource Editor for Windows" STR_BITNESS,
-        "Open Watcom Resource Editor for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " for Windows" )
 pick(   WRE_ABOUT_VERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )
 pick(   WRE_ABOUT_TITLE,
-        "About Open Watcom Resource Editor",
-        "About Open Watcom Resource Editor" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 
 // WRERES.C
 pick(   WRE_UNTITLED,

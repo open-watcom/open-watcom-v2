@@ -459,8 +459,8 @@ pick(   WDE_INPUTFILENOTFOUND,
         "Input file not found.",
         "Input file not found." )
 pick(   WDE_ABOUT_NAME,
-        PRODUCT_NAME " for Windows" STR_BITNESS,
-        PRODUCT_NAME " for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " for Windows" )
 pick(   WDE_ABOUT_VERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )

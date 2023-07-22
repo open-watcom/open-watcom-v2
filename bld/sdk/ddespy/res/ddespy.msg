@@ -214,8 +214,8 @@ pick(   STR_APP_NAME,
         PRODUCT_NAME,
         PRODUCT_NAME )
 pick(   STR_ABOUT_NAME,
-        PRODUCT_NAME " for Windows" STR_BITNESS,
-        PRODUCT_NAME " Windows版" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " Windows版" )
 pick(   STR_ABOUT_VERSION,
         banner1v( _DDESPY_VERSION_ ),
         banner1v( _DDESPY_VERSION_ ) )
