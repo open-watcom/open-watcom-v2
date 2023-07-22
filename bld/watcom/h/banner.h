@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +51,13 @@
 #define _BANEXTRA           __DATE__
 #endif
 
+#define banner1t(p)         "Open Watcom " p
 #define banner1v(v)         "Version " v " " _BANEXTRA
-#define banner1(p,v)        p " " banner1v(v)
-#define banner1w(p,v)       "Open Watcom " p " " banner1v(v)
 
-#define banner1w1(p)        "Open Watcom " p
+#define banner1(p,v)        p " " banner1v(v)
+#define banner1w(p,v)       banner1t(p) " " banner1v(v)
+
+#define banner1w1(p)        banner1t(p)
 #define banner1w2(v)        banner1v(v)
 
 #define banner21            "Copyright (c) 2002-" _MACROSTR( _CYEAR ) " The Open Watcom Contributors."
@@ -65,7 +67,7 @@
 #define banner2a(year)      banner21a(year) " All Rights Reserved."
 
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
-#define banner3a            "See http://www.openwatcom.org/ for details."
+#define banner3a            "See https://www.openwatcom.org for details."
 
 #define banner1ps(p,v)      "Powersoft " p " " banner1v(v)
 #define banner2ps           banner21a( 1984 )
