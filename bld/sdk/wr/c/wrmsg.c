@@ -68,7 +68,7 @@ int WRCopyRCString( msg_id id, char *buf, int bufsize )
 
 void WRInitDisplayError( HINSTANCE inst )
 {
-    SetInstance( inst );
+    SetRCInstance( inst );
 }
 
 void WRDisplayErrorMsg( msg_id msg )

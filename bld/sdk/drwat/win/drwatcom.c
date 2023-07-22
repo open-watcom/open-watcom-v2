@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
      */
     GlobalPageLock( (HGLOBAL)_FP_SEG( IntHandler ) );
     _STACKLOW = 0;
-    SetInstance( currinst );
+    SetRCInstance( currinst );
     if( previnst ) {
         Death( STR_ONLY_ONE_INST_ALLOWED );
     }

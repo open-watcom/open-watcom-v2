@@ -93,7 +93,7 @@ int WdeCopyRCString( msg_id id, char *buf, int bufsize )
 
 void WdeInitDisplayError( HINSTANCE inst )
 {
-    SetInstance( inst );
+    SetRCInstance( inst );
 }
 
 void WdeDisplayErrorMsg( msg_id msg )

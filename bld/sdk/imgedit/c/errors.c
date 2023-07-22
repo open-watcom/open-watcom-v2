@@ -193,7 +193,7 @@ int IECopyRCString( msg_id id, char *buf, int bufsize )
  */
 void IEInitDisplayError( HINSTANCE inst )
 {
-    SetInstance( inst );
+    SetRCInstance( inst );
 
 } /* IEInitDisplayError */
 

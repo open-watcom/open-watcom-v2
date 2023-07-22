@@ -175,7 +175,7 @@ void WRESEAPI WStringInit( void )
     }
     if( ref_count == 0 ) {
         WRInit();
-        SetInstance( inst );
+        SetRCInstance( inst );
         WInit( inst );
     }
     ref_count++;

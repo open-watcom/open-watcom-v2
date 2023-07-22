@@ -61,7 +61,7 @@ static bool initApplication( void )
     // RegisterContainerWindow( InstanceHandle );
 
     // Init ldstr.c
-    SetInstance( InstanceHandle );
+    SetRCInstance( InstanceHandle );
     return( true );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     if( !InitStringTable() ) {
         return( FALSE );
     }
-    SetInstance( Instance );
+    SetRCInstance( Instance );
     CvrCtl3DInit( Instance );
     CvrCtl3dRegister( Instance );
     CvrCtl3dAutoSubclass( Instance );

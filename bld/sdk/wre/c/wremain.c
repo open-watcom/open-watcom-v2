@@ -235,7 +235,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     WAccelInit();
     WMenuInit();
     WStringInit();
-    SetInstance( hinstCurrent );
+    SetRCInstance( hinstCurrent );
 
     /* store the handle to this instance of WRE in a static variable */
     WREInst = hinstCurrent;

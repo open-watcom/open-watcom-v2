@@ -194,7 +194,7 @@ void WRESEAPI WMenuInit( void )
     }
     if( ref_count == 0 ) {
         WRInit();
-        SetInstance( inst );
+        SetRCInstance( inst );
         WInit( inst );
         WInitDummyMenuEntry();
     }
