@@ -84,3 +84,6 @@ OpenWatcom Installation
 OpenWatcom Building
 -------------------
 [Building instruction](https://github.com/open-watcom/open-watcom-v2/wiki/Build) in OW Wiki.
+
+[Open Watcom Licence](https://github.com/open-watcom/open-watcom-v2/blob/master/license.txt)
+---------------------
