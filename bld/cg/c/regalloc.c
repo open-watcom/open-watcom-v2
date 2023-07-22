@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1123,7 +1123,7 @@ conflict_node   *InMemory( conflict_node *conf )
 
     for( conf_list = conf->name->v.conflict; conf_list != NULL; conf_list = next ) {
         next = conf_list->next_for_name;
-        if( conf != conf_list ){
+        if( conf != conf_list ) {
             PutInMemory( conf_list );
             next = conf_list->next_for_name;
             FreeAConflict( conf_list );

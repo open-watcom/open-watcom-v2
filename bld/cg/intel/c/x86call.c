@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,7 +324,8 @@ name    *StReturn( an retval, type_def *tipe, instruction **pins )
         AddIns( MakeUnary( OP_LA, retp, AllocRegName( CurrProc->state.return_reg ), WD ) );
         *pins = NULL;
     } else {
-        if( _IsTargetModel( CGSW_X86_FLOATING_SS | CGSW_X86_FLOATING_DS ) ) {
+        if( _IsTargetModel( CGSW_X86_FLOATING_SS )
+          || _IsTargetModel( CGSW_X86_FLOATING_DS ) ) {
             ptr = AllocTemp( CP );
             off = OffsetPart( ptr );
             seg = SegmentPart( ptr );

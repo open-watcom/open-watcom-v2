@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -675,7 +675,7 @@ dbg_struct _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
     st->is_class = false;
     st->is_nested = Nested;
     st->is_cnested = false;
-    if( _IsModel( CGSW_GEN_DBG_DF ) ){
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFBegStruct( st );
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
 //       CVBegStruct( st );

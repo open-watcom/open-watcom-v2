@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,14 +90,14 @@ static  uint    SignedSizeClass( signed_32 num ) {
     return( class );
 }
 
-static  uint    SignedSizeClass64( signed_64 val ) {
+static  uint    SignedSizeClass64( signed_64 val )
 /************************************************/
-
+{
     uint        class;
 
-    if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ){
+    if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ) {
         class = SignedSizeClass( val.u._32[I64LO32] );
-    }else{
+    } else {
         class = 3;
     }
     return( class );
@@ -389,9 +389,9 @@ dbg_type    WVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
     return( DbgPtr( ptr_type, base, 0, loc_segment ) );
 }
 
-static  void    AddField( field_any **owner, field_any *field  ){
-/*** Sort according to WV(brian)***********************************/
-
+static  void    AddField( field_any **owner, field_any *field )
+/*** Sort according to WV(brian)******************************/
+{
     field_any     *curr;
     unsigned      strt;
     offset        off;
@@ -427,9 +427,9 @@ static  void    SortFields( dbg_struct st )
     while( curr != NULL ) {
         next = curr->entry.next;
         curr->entry.next = NULL;
-        if( curr->entry.field_type == FIELD_OFFSET ){
+        if( curr->entry.field_type == FIELD_OFFSET ) {
             AddField(  &head, curr );
-        }else{
+        } else {
             curr->entry.next = head;
             head = curr;
         }
@@ -532,10 +532,10 @@ dbg_type        WVEndEnum( dbg_enum en )
         val = cons->val;
         class = SignedSizeClass64( val );
         BuffStart( &temp, WT_ENUMERATED + ENUM_BYTE + class );
-        if( class == 3 ){
+        if( class == 3 ) {
             BuffValue( val.u._32[I64LO32], 2 );
             BuffValue( val.u._32[I64HI32], 2 );
-        }else{
+        } else {
             BuffValue( val.u._32[I64LO32], class );
         }
         BuffString( cons->len, cons->name );
@@ -600,14 +600,15 @@ static  void    EndType( bool check_too_big ) {
     }
 }
 
-static void DmpFileInfo( void ){
-/*******************************/
+static void DmpFileInfo( void )
+/*****************************/
+{
     fname_lst *lst;
     unsigned_16 index;
 
     DataShort( DBFiles.count );
     index = 0;
-    for( lst = DBFiles.lst; lst != NULL; lst = lst->next ){
+    for( lst = DBFiles.lst; lst != NULL; lst = lst->next ) {
         DataShort( index );
         index += lst->len;
     }
@@ -638,21 +639,21 @@ void WVDmpCueInfo( long_offset where )
     ctl = &LineInfo;
     blk = ctl->head;
     DataShort( ctl->count );  // number of entries
-    if( ctl->count > 0 ){
+    if( ctl->count > 0 ) {
         curr = &ctl->start[0];
         DataShort( curr->cue );
         DataShort( curr->fno );
         DataShort( curr->line );
         DataShort( curr->col );
     }
-    while( blk != NULL ){
+    while( blk != NULL ) {
         curr = &blk->info[0];
-        if( blk->next == NULL ){
+        if( blk->next == NULL ) {
             end = ctl->next;
-        }else{
+        } else {
             end = &blk->info[CUES_PER_BLK];
         }
-        while( curr != end ){
+        while( curr != end ) {
             DataShort( curr->cue );
             DataShort( curr->fno );
             DataShort( curr->line );

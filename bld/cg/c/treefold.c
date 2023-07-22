@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1050,7 +1050,9 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
                         BurnTree( rite );
                     }
                 }
-            } else if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && _IsntModel( CGSW_GEN_DBG_LOCALS ) && TGCanDuplicate( left ) ) {
+            } else if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+              && _IsntModel( CGSW_GEN_DBG_LOCALS )
+              && TGCanDuplicate( left ) ) {
                 /* signed int a; optimize a % rv like IBM does:
                    int b = a >> 31;
                    t1 = (a ^ b) - b;
@@ -1449,7 +1451,9 @@ tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
                     left = TGTrash( left );
                     return( TGBinary( O_COMMA, left, IntToType( result, TypeInteger ), TypeInteger ) );
                 }
-                if( _IsntModel( CGSW_GEN_NULL_DEREF_OK ) && IsObjectAddr( left ) && ( CFTest( rite->u.name->c.value ) == 0 ) ) {
+                if( _IsntModel( CGSW_GEN_NULL_DEREF_OK )
+                  && IsObjectAddr( left )
+                  && ( CFTest( rite->u.name->c.value ) == 0 ) ) {
                     /* Addresses of globals or local variables are guaranteed not to be null
                      * unless CGSW_GEN_NULL_DEREF_OK is in effect
                      */

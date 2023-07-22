@@ -167,7 +167,7 @@ name    *AllocConst( float_handle cf_value )
     new_c = AllocName( N_CONSTANT, XX, 0 );
     new_c->c.value = cf_value;
     new_c->c.lo.int_value = int_value;
-    if( test < 0 ){
+    if( test < 0 ) {
         new_c->c.hi.int_value = -1; //sign extend
     } else {
         new_c->c.hi.int_value = 0;
@@ -278,7 +278,7 @@ name    *AllocS64Const( unsigned_32 low, unsigned_32 high )
     float_handle    cf_value = CFCnvI64F( low, high );
 
     new_c = findConst64( low, high, cf_value );
-    if( new_c == NULL ){
+    if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
         new_c->c.lo.uint_value = low;
@@ -298,7 +298,7 @@ name    *AllocU64Const( unsigned_32 low, unsigned_32 high )
     float_handle    cf_value = CFCnvU64F( low, high );
 
     new_c = findConst64( low, high, cf_value );
-    if( new_c == NULL ){
+    if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
         new_c->c.lo.uint_value = low;

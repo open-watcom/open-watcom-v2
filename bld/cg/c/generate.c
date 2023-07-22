@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -377,7 +377,8 @@ static  void    BlockToCode( bool partly_done )
     if( !partly_done ) {
         FixMemRefs();
         HaveLiveInfo = false;
-        if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION | CGSW_GEN_FORTRAN_ALIASING ) ) {
+        if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+          && _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
             FindReferences();
             CommonSex(false);
             PushPostOps();
@@ -469,7 +470,8 @@ static  void    FlushBlocks( bool partly_done )
     block       *curr;
     block_class classes;
 
-    if( !BlockByBlock && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
+    if( !BlockByBlock
+      && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         ProcMessage( MSG_REGALLOC_DIED );
     }
     if( !partly_done ) {
@@ -620,7 +622,8 @@ void    ProcMessage( msg_class msg )
 {
     static proc_def *lastproc = NULL;
 
-    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && lastproc != CurrProc ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+      && lastproc != CurrProc ) {
         FEMessage( msg, AskForLblSym( CurrProc->label ) );
         lastproc = CurrProc;
     }

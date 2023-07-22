@@ -804,7 +804,8 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
         DoSegment( new, NULL, NULL, use_16 ); /* don't allow DGROUP after BEStart */
         SegDefs = NULL;
     }
-    if( first_code_segid != BACKSEGS && _IsModel( CGSW_GEN_DBG_DF ) ) {
+    if( first_code_segid != BACKSEGS
+      && _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFBegCCU( first_code_segid, NULL );
     }
 }
@@ -999,7 +1000,8 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     }
     SegDefs = NULL;
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-        if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS )
+          || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             DFDefSegs();
         }
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
@@ -1047,7 +1049,8 @@ void    ObjInit( void )
     PutObjOMFRec( CMD_THEADR, names->array, names->used );
     names->used = 0;
 #if _TARGET & _TARG_80386
-    if( _IsTargetModel( CGSW_X86_EZ_OMF | CGSW_X86_FLAT_MODEL ) ) {
+    if( _IsTargetModel( CGSW_X86_EZ_OMF )
+      || _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
         OutShort( PHARLAP_OMF_COMMENT, names );
         if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
             OutString( "OS220", names );
@@ -1073,11 +1076,13 @@ void    ObjInit( void )
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
         names->used = 0;
     }
-    if( _IsntModel( CGSW_GEN_DBG_DF | CGSW_GEN_DBG_CV ) ) {
+    if( _IsntModel( CGSW_GEN_DBG_DF )
+      && _IsntModel( CGSW_GEN_DBG_CV ) ) {
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_SOURCE_LANGUAGE, names );
         OutByte( DEBUG_MAJOR_VERSION, names );
-        if( _IsModel( CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_TYPES )
+          || _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             OutByte( DEBUG_MINOR_VERSION, names );
         } else {
             OutByte( 0, names );
@@ -1129,7 +1134,8 @@ void    ObjInit( void )
     GenStaticImports = false;
     AbsPatches = NULL;
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-        if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS )
+          || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             DFObjInitDbgInfo();
 #if 0 // save for JimR and linker
         } else if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
@@ -2018,7 +2024,8 @@ void    ObjFini( void )
     char        *alias;
 
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-        if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS )
+          || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             offset  codesize;
 
             codesize = 0;
@@ -2750,10 +2757,12 @@ static  void    AddLineInfo( object *obj, cg_linenum line, offset offs )
 {
     cue_state           info;
 
-    if( _IsModel( CGSW_GEN_DBG_DF ) || _IsModel( CGSW_GEN_DBG_CV ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF )
+      || _IsModel( CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
         if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-            if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+            if( _IsModel( CGSW_GEN_DBG_LOCALS )
+              || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
                  DFLineNum( &info, offs );
             }
         } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {

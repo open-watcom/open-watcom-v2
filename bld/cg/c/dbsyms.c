@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -623,7 +623,8 @@ void    _CGAPI DBLocalType( cg_sym_handle sym, bool kind )
     EchoAPI( "DBLocalType( %s, %i)\n", sym, kind );
 #endif
     if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
-        if( _IsModel( CGSW_GEN_DBG_CV | CGSW_GEN_DBG_DF ) ) {
+        if( _IsModel( CGSW_GEN_DBG_CV )
+          || _IsModel( CGSW_GEN_DBG_DF ) ) {
             lcl = CGAlloc( sizeof( dbg_local ) );
             lcl->sym = sym;
             lcl->loc = NULL;

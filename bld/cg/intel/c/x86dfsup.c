@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +129,8 @@ static struct reg_map    HWRegValues[] = {
 void    DFDefSegs( void )
 /***********************/
 {
-    if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS )
+      || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         dw_sectnum  i;
 
         for( i = 0; i < DW_DEBUG_MAX; ++i ) {

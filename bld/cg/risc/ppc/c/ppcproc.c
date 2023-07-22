@@ -501,7 +501,7 @@ void    GenEpilog( void )
     offset              lc;
 
     old_segid = SetOP( AskCodeSeg() );
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         lc = AskLocation();
         DbgEpiBeg( CurrProc->targ.debug, lc );
     }
@@ -510,7 +510,7 @@ void    GenEpilog( void )
     GenReturn();
     CurrProc->prolog_state |= GENERATED_EPILOG;
     lc = AskLocation();
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         DbgRtnEnd( CurrProc->targ.debug, lc );
     }
     if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {

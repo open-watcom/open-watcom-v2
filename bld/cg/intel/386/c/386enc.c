@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,8 @@
 static void OpndSizeIf( bool if_32 )
 /**********************************/
 {
-    if( ( if_32 && _IsTargetModel( CGSW_X86_USE_32 ) ) || _IsntTargetModel( CGSW_X86_USE_32 ) ) {
+    if( ( if_32 && _IsTargetModel( CGSW_X86_USE_32 ) )
+      || _IsntTargetModel( CGSW_X86_USE_32 ) ) {
         AddToTemp( M_OPND_SIZE );
     }
 }
@@ -106,7 +107,8 @@ void    DoRepOp( instruction *ins )
                 OpndSizeIf( false );
                 first = false;
             } else {
-                if( _IsntTargetModel( CGSW_X86_USE_32 ) ) AddByte( M_OPND_SIZE );
+                if( _IsntTargetModel( CGSW_X86_USE_32 ) )
+                    AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
             }
         }
@@ -115,7 +117,8 @@ void    DoRepOp( instruction *ins )
         LayOpbyte( M_REPE );
         if( ins->head.opcode == OP_MOV ) {
             if( ( size & ( 4 - 1 ) ) == 0 || OptForSize <= 50 ) {
-                if( _IsntTargetModel( CGSW_X86_USE_32 ) ) AddByte( M_OPND_SIZE );
+                if( _IsntTargetModel( CGSW_X86_USE_32 ) )
+                    AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
                 TakeUpSlack( size & ( 4 - 1 ) );
             } else {
@@ -126,7 +129,9 @@ void    DoRepOp( instruction *ins )
                 AddByte( M_CMPSB );
             } else {
                 AddByte( M_CMPSW );
-                if( _IsntTargetModel( CGSW_X86_USE_32 ) ) AddByte( M_OPND_SIZE );
+                if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
+                    AddByte( M_OPND_SIZE );
+                }
             }
         }
     }

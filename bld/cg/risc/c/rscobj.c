@@ -151,7 +151,8 @@ void    ObjInit( void )
     OpenObj();
     CurrFNo = 0;
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-        if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS )
+          || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             DFDefSegs();
             DFObjInitDbgInfo();
 #if 0 //save for jimr
@@ -183,7 +184,7 @@ static  void    DefaultLibs( void )
         name =  (char *)FEAuxInfo( lib, FEINF_LIBRARY_NAME );
         if( name == NULL || *name == '\0' )
             continue;
-        if( comments == NULL ){
+        if( comments == NULL ) {
             comments = OWLSectionInit( owlFile, ".drectve", OWL_SECTION_INFO, 1 );
             if( comments == NULL ) {
                 break;
@@ -307,7 +308,7 @@ static void DoDFSegRange( void )
     for( bucket = 0; bucket < N_SECTIONS; bucket++ ) {
         for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = ptr->next ) {
             tipe = OWLTellSectionType( ptr->owl_handle );
-            switch( tipe ){
+            switch( tipe ) {
             case OWL_SECTION_INFO:
             case OWL_SECTION_DEBUG:
             case OWL_SECTION_PDATA:
@@ -341,7 +342,8 @@ void    ObjFini( void )
     code_size = OWLTellSize( curr->owl_handle  );
 
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-        if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS )
+          || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             DoDFSegRange();
             DFObjFiniDbgInfo( code_size );
 #if 0 // save for jimr
@@ -527,10 +529,11 @@ void    OutFileStart( int line )
     cue_state           info;
     const char          *fname;
 
-    if( _IsModel( CGSW_GEN_DBG_DF | CGSW_GEN_DBG_CV ) ){
+    if( _IsModel( CGSW_GEN_DBG_DF )
+      || _IsModel( CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
         line = info.line;
-        if( info.fno != CurrFNo ){
+        if( info.fno != CurrFNo ) {
             fname = SrcFNoFind( info.fno );
             CurrFNo = info.fno;
             OWLFileSymbol( owlFile, fname );
@@ -543,11 +546,13 @@ void    OutFuncStart( label_handle label, offset start, cg_linenum line )
 {
     cue_state            info;
 
-    if( _IsModel( CGSW_GEN_DBG_DF | CGSW_GEN_DBG_CV ) ){
+    if( _IsModel( CGSW_GEN_DBG_DF )
+      || _IsModel( CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
         line = info.line;
-        if( _IsModel( CGSW_GEN_DBG_DF ) ){
-            if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ){
+        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+            if( _IsModel( CGSW_GEN_DBG_LOCALS )
+              || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
                 DFLineNum( &info, start );
             }
         }
@@ -574,10 +579,12 @@ void    OutLineNum( cg_linenum line, bool label_line )
     /* unused parameters */ (void)label_line;
 
     lc = OWLTellOffset( currSection->owl_handle );
-    if( _IsModel( CGSW_GEN_DBG_DF | CGSW_GEN_DBG_CV ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF )
+      || _IsModel( CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
         if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-            if( _IsModel( CGSW_GEN_DBG_LOCALS | CGSW_GEN_DBG_TYPES ) ) {
+            if( _IsModel( CGSW_GEN_DBG_LOCALS )
+              || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
                 DFLineNum( &info, lc );
             }
         } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
@@ -859,7 +866,7 @@ static void DumpImportResolve( label_handle label )
     if( AskIfRTLabel( label ) )
         return;
     sym = AskForLblSym( label );
-    if( sym != NULL ){
+    if( sym != NULL ) {
         def_resolve = FEAuxInfo( sym, FEINF_DEFAULT_IMPORT_RESOLVE );
         if( def_resolve != NULL && def_resolve != sym ) {
             bck =  FEBack( def_resolve);

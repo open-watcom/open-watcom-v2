@@ -76,7 +76,7 @@ void    DataAlign( unsigned_32 align )
 void    DataBytes( unsigned len, const void *src )
 /************************************************/
 {
-    if( len != 0 ){
+    if( len != 0 ) {
         TellOptimizerByPassed();
         SetUpObj( true );
         OutDBytes( len, src );

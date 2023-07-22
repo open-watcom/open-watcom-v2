@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,24 +64,26 @@
 
 #define WORDS_COUNT(size)   (((size) + WORD_SIZE - 1) / WORD_SIZE)
 
-#define WINDOWS_CHEAP  ( ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE ) &&         \
-               ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
-            || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS )                    \
+#define WINDOWS_CHEAP  ( ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE ) \
+                           && ( CurrProc->state.attr & ROUTINE_LOADS_DS ) ) \
+          || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS ) \
                && (CurrProc->prolog_state & (GENERATE_EXPORT | GENERATE_FAT_PROLOG)) == 0 ) )
 
-#define DO_WINDOWS_CRAP ( _IsTargetModel( CGSW_X86_WINDOWS )                 \
+#define DO_WINDOWS_CRAP ( _IsTargetModel( CGSW_X86_WINDOWS ) \
                && ( !WINDOWS_CHEAP || CurrProc->contains_call ) )
 
-#define DO_BP_CHAIN ( ( (_IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) || _IsModel( CGSW_GEN_DBG_CV ) ) \
-               && CurrProc->contains_call )                                         \
-             || (CurrProc->prolog_state & GENERATE_FAT_PROLOG) )
+#define DO_BP_CHAIN ( ( ( _IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) \
+                          || _IsModel( CGSW_GEN_DBG_CV ) ) \
+                        && CurrProc->contains_call ) \
+                      || (CurrProc->prolog_state & GENERATE_FAT_PROLOG) )
 
 #define CHAIN_FRAME ( DO_WINDOWS_CRAP || DO_BP_CHAIN )
 
-#define CHEAP_FRAME ( _IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) || \
-              _IsntTargetModel( CGSW_X86_WINDOWS ) || WINDOWS_CHEAP )
+#define CHEAP_FRAME ( _IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) \
+                      || _IsntTargetModel( CGSW_X86_WINDOWS ) \
+                      || WINDOWS_CHEAP )
 
-#define FAR_RET_ON_STACK ( (_RoutineIsLong( CurrProc->state.attr ) ) \
+#define FAR_RET_ON_STACK ( _RoutineIsLong( CurrProc->state.attr ) \
              && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 )
 
 
@@ -111,7 +113,7 @@ static  bool    ScanInstructions( void )
 /**************************************/
 {
     block       *blk;
-    instruction     *ins;
+    instruction *ins;
     name        *addr;
     bool        sp_constant;
 
@@ -786,13 +788,14 @@ static  void    DoEpilog( void )
         }
     }
 
-    is_long = _RoutineIsLong( CurrProc->state.attr ) ||
-        _RoutineIsFar16( CurrProc->state.attr );
+    is_long = ( _RoutineIsLong( CurrProc->state.attr )
+                || _RoutineIsFar16( CurrProc->state.attr ) );
 #if _TARGET & _TARG_80386
     if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
         QuickSave( HW_xSP, OP_POP );
     }
-    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING | CGSW_X86_P5_PROFILING ) ) {
+    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING )
+      || _IsTargetModel( CGSW_X86_P5_PROFILING ) ) {
         GenP5ProfilingEpilog( CurrProc->label );
     }
 #endif
@@ -823,7 +826,8 @@ void    AddCacheRegs( void )
         return;
     if( OptForSize > 50 )
         return;
-    if( _IsTargetModel( CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_SS ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS )
+      || _IsTargetModel( CGSW_X86_FLOATING_SS ) )
         return;
     if( !ScanInstructions() )
         return;
@@ -903,7 +907,7 @@ void    GenProlog( void )
         CodeLineNumber( HeadBlock->ins.hd.line_num, false );
     }
 
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         EmitRtnBeg();
     }
     if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) {
@@ -933,7 +937,8 @@ void    GenProlog( void )
 
 #if _TARGET & _TARG_80386
     if( (attr & FE_NAKED) == 0 ) {
-        if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING | CGSW_X86_P5_PROFILING ) ) {
+        if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING )
+          || _IsTargetModel( CGSW_X86_P5_PROFILING ) ) {
             GenP5ProfilingProlog( label );
         }
         if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
@@ -1008,7 +1013,8 @@ void    GenProlog( void )
             }
             Enter();
             AdjustPushLocals();
-            if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) || CurrProc->targ.sp_frame ) {
+            if( _IsModel( CGSW_GEN_NO_OPTIMIZATION )
+              || CurrProc->targ.sp_frame ) {
                 CurrProc->targ.base_adjust = 0;
             } else {
                 CurrProc->targ.base_adjust = AdjustBase();
@@ -1022,7 +1028,7 @@ void    GenProlog( void )
     }
     CurrProc->prolog_state |= GENERATED_PROLOG;
 
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
         EmitProEnd();
     }
@@ -1144,7 +1150,7 @@ void    GenEpilog( void )
          - CurrProc->targ.push_local_size;
     PatchBigLabels( stack );
 
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         EmitEpiBeg();
     }
 

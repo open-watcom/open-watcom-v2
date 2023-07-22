@@ -88,7 +88,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
     AddCallIns( call_ins, call );
     if( use_return ) {
 #if 1
-        if( call_ins->type_class != XX ){
+        if( call_ins->type_class != XX ) {
             conv_ins = MakeConvert( call_ins->result, result, result->n.type_class,
                                     call_ins->result->n.type_class );
             AddIns( conv_ins );

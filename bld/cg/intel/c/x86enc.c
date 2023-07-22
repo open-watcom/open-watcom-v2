@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -934,7 +934,8 @@ void    GenSeg( hw_reg_set regs )
         if( HW_CEqual( segreg, HW_SS ) )
             return;
         if( HW_CEqual( segreg, HW_DS )
-          && _IsntTargetModel( CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_SS ) ) {
+          && _IsntTargetModel( CGSW_X86_FLOATING_DS )
+          && _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) {
             return;
         }
     } else {

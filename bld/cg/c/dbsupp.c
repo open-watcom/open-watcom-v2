@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,10 +75,10 @@ dbg_loc         LocReg( dbg_loc loc, name *reg )
 dbg_loc          LocParm( dbg_loc loc, name *tmp )
 /************************************************/
 {
-    if( tmp->n.class == N_REGISTER  ){
+    if( tmp->n.class == N_REGISTER ) {
         loc = LocCreate( loc, LOC_REG );
         loc->u.be_sym = tmp;
-    }else{
+    } else {
         loc = LocCreate( loc, LOC_CONST_4 );
         loc->u.val = tmp->t.location;
         loc->u.val += ParmsAtPrologue();

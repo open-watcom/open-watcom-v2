@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,8 +181,8 @@ static int SetLang( void )
 
     ret = LANG_C;
     name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
-    for( index = 0; index < MAX_LANG; ++index ){
-        if( strcmp( name, LangNames[index].name ) == 0 ){
+    for( index = 0; index < MAX_LANG; ++index ) {
+        if( strcmp( name, LangNames[index].name ) == 0 ) {
             ret = LangNames[index].lang;
             break;
         }
@@ -242,7 +242,7 @@ void    CVObjInitDbgInfo( void )
         cptr->flags.f.Mode32 = true;
         cptr->flags.f.FloatPrecision = 1;
     #endif
-        switch( GetMemModel() ){
+        switch( GetMemModel() ) {
             case 'h':
                 cptr->flags.f.AmbientData = AMBIENT_HUGE;
                 cptr->flags.f.AmbientCode = AMBIENT_FAR;
@@ -411,7 +411,7 @@ void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
     ptr->offset = 0;
     ptr->segment = 0;
     ptr->type = tipe;
-    if( mem ){
+    if( mem ) {
         name = FEAuxInfo( sym, FEINF_CLASS_APPENDED_NAME );
     } else {
         name = FEName( sym );
@@ -516,7 +516,7 @@ static  name    *LocSymBP( dbg_loc loc )
 {
     if( loc == NULL )
         return( NULL );
-    if( (loc->class & 0xf0) != LOC_BP_OFFSET ){
+    if( (loc->class & 0xf0) != LOC_BP_OFFSET ) {
         return( NULL );
     }
     return( loc->u.be_sym );
@@ -530,7 +530,7 @@ static  dbg_local *UnLinkLoc( dbg_local **owner, cg_sym_handle sym )
     dbg_local           *curr;
 
     for( ; (curr = *owner) != NULL; owner = &(*owner)->link ) {
-        if( curr->sym == sym ){
+        if( curr->sym == sym ) {
             *owner = curr->link;
             break;
         }
@@ -547,20 +547,20 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
     for( ; parm != NULL; parm = next ) {    /* find and unlink from locals */
         next = parm->link;
         alt = UnLinkLoc( locals, parm->sym );
-        if( alt != NULL ){
+        if( alt != NULL ) {
             dbg_type    tipe;
             type_length offset;
             name       *t;
 
-            if( alt->kind == DBG_SYM_VAR ){
+            if( alt->kind == DBG_SYM_VAR ) {
                 tipe = FEDbgType( alt->sym );
                 t = LocSymBP( alt->loc );
-                if( t != NULL ){
+                if( t != NULL ) {
                     offset = NewBase( t );
                     NewBuff( out, CVSyms );
                     FrameVar( out, FEName( alt->sym ), tipe, offset );
                     buffEnd( out );
-                }else{
+                } else {
                     CVGenStatic( alt->sym, alt->loc, false );
                 }
             }
@@ -631,9 +631,9 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
 
     sym = AskForLblSym( CurrProc->label );
     attr = FEAttr( sym );
-    if( attr & FE_GLOBAL ){
+    if( attr & FE_GLOBAL ) {
         kind = SG_GPROC;
-    }else{
+    } else {
         kind = SG_LPROC;
     }
     NewBuff( out, CVSyms );
@@ -668,7 +668,7 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     buffEnd( out );
     DBLocFini( rtn->reeturn );
     DBLocFini( rtn->obj_loc );
-    if( rtn->parms != NULL ){
+    if( rtn->parms != NULL ) {
         DumpParms( rtn->parms, &rtn->rtn_blk->locals );
     }
     DumpLocals( rtn->rtn_blk->locals );

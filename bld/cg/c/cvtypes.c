@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -290,7 +290,7 @@ void CVPutINum( cv_out *out, signed_32 num )
 {
     byte       *ptr;
 #define LC( what, to )   *((to *)&what)
-    if( num >= 0 && num < 0x00008000 ){
+    if( num >= 0 && num < 0x00008000 ) {
         *((u2*)out->ptr) = num;  /* out num as is */
         out->ptr += sizeof( u2 );
         return;
@@ -300,11 +300,11 @@ void CVPutINum( cv_out *out, signed_32 num )
         LC( ptr[0],u2 ) = LF_CHAR;
         LC( ptr[2],u1 ) = num;
         ptr += sizeof(u2) + sizeof( u1 );
-    }else if( num >= -32768 && num <= 32767 ) {
+    } else if( num >= -32768 && num <= 32767 ) {
         LC( ptr[0],u2 ) = LF_SHORT;
         LC( ptr[2],u2 ) = num;
         ptr += sizeof(u2) + sizeof( u2 );
-    }else if( num > 0 && num <= 0x0000ffff ){
+    } else if( num > 0 && num <= 0x0000ffff ) {
         LC( ptr[0],u2 ) = LF_USHORT;
         LC( ptr[2],u2 ) = num;
         ptr += sizeof(u2) + sizeof( u2 );
@@ -403,9 +403,9 @@ dbg_type    CVFtnType( const char *name, dbg_ftn_type tipe )
     index.f.mode = CV_DIRECT;
     index.f.type = CV_COMPLEX;
     size = (tipe & 0x0f)+1;
-    if( size == 4 ){
+    if( size == 4 ) {
         index.f.size = CV_RC32;
-    }else if( size == 8 ){
+    } else if( size == 8 ) {
         index.f.size = CV_RC32;
     }
     return( index.s );
@@ -431,9 +431,9 @@ dbg_type    CVScalar( const char *name, cg_type tipe )
     int                count;
 
     index.s = 0;  /* set bits to 0 */
-    if( strcmp( name, "__segment" ) == 0 ){
+    if( strcmp( name, "__segment" ) == 0 ) {
         index.s = LF_TSEGMENT;
-    }else if( strcmp( name, "void" ) == 0 ){
+    } else if( strcmp( name, "void" ) == 0 ) {
         index.s = LF_TVOID;
     } else {
         tipe_addr = TypeAddress( tipe );
@@ -706,7 +706,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
         return;
     }
     stk = what->stk;
-    if( stk <= what->ops ){
+    if( stk <= what->ops ) {
         what->error = true;
         return;
     }
@@ -737,7 +737,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
                 what->error = true;
                 return;
             }
-            if( stk[1].state & EXPR_VAR  ){
+            if( stk[1].state & EXPR_VAR ) {
                 stk[0].v = stk[1].v;
                 stk[0].state |= stk[1].state;
             }
@@ -908,7 +908,7 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
         next = dim->entry.next;
         switch( dim->entry.kind ) {
         case DIM_VAR:
-            if( tipe_addr == NULL ){
+            if( tipe_addr == NULL ) {
                 tipe_addr = TypeAddress( dim->var.lo_bound_tipe );
                 itipe = LFIntType( tipe_addr->length );
             }
@@ -1102,7 +1102,7 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
     cvptr->attr.s = 0;
     cvptr->attr.f.mode = CV_PTR;
     cvptr->type = base;
-    switch( kind ){
+    switch( kind ) {
     case BASED_SELF:
         cvptr->attr.f.type = CV_BASESELF;
         CVEndType( out );
@@ -1196,7 +1196,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
                 stk[0].kind = SYM_SYM;
             } else {
                 disp = loc->u.val;
-                if( disp == 0 ){
+                if( disp == 0 ) {
                     stk[0].kind = SYM_ZERO;
                 } else {
                     what->state = IS_ERROR;
@@ -1248,13 +1248,13 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
                break;
             case SYM_IND:
                 what->sym= stk[0].s;
-                if( what->count == 2 ){
-                    if( stk[1].kind == SYM_SYM ){
+                if( what->count == 2 ) {
+                    if( stk[1].kind == SYM_SYM ) {
                         what->state = IS_VALUE;
                     } else {
                         what->state = IS_ERROR;
                     }
-                }else if( what->count != 1 ){
+                } else if( what->count != 1 ) {
                    what->state = IS_ERROR;
                 }
                break;
@@ -1264,7 +1264,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
             }
             break;
         case LOP_XCHG:
-            if( what->count >= 2 ){
+            if( what->count >= 2 ) {
                 tmp = stk[0];
                 stk[0] = stk[1];
                 stk[1] = tmp;
@@ -1291,7 +1291,7 @@ dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
     expr.sym = NULL;;
     DoLocBase( loc_segment, &expr );
     based_kind = 0;
-    switch( expr.state ){
+    switch( expr.state ) {
     case IS_ERROR:
         expr.sym = NULL;
         /* fall through */
@@ -1340,7 +1340,7 @@ static cv_access WVCVAccess( uint attr )
 {
     cv_access ret = 0;
 
-    switch( attr ){
+    switch( attr ) {
     case FIELD_PUBLIC:
         ret = CV_PUBLIC;
         break;
@@ -1358,7 +1358,7 @@ static cv_mprop WVCVMProp( uint kind )
 {
     cv_mprop ret = 0;
 
-    switch( kind ){
+    switch( kind ) {
     case METHOD_VANILLA:
         ret = CV_VANILLA;
         break;
@@ -1388,7 +1388,7 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type )
         break;
     case TY_LONG_POINTER:
     case TY_LONG_CODE_PTR:
-        if( tipe_addr->length == 6 ){
+        if( tipe_addr->length == 6 ) {
             ret = CV_VTFAR32;
         } else {
             ret = CV_VTFAR;
@@ -1396,7 +1396,7 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type )
         break;
     case TY_NEAR_POINTER:
     case TY_NEAR_CODE_PTR:
-        if( tipe_addr->length == 4 ){
+        if( tipe_addr->length == 4 ) {
             ret = CV_VTNEAR32;
         } else {
             ret = CV_VTNEAR;
@@ -1421,7 +1421,7 @@ static lf_values MkVTShape( cv_out *out, field_vfunc *vf )
     shape = CVVTShape( vf->vft_cgtype );
     val = 0;
     for( count = 0; count < vf->vft_size; ++count ) {
-        if( (count & 1) == 0 ){
+        if( (count & 1) == 0 ) {
             val = shape << 4;
         } else {
             val |= shape;
@@ -1474,7 +1474,7 @@ static int  MkFlist( dbg_struct st )
                     break;
                 case INHERIT_VBASE:
                 case INHERIT_IVBASE:
-                    if( field->bclass.kind == INHERIT_VBASE ){
+                    if( field->bclass.kind == INHERIT_VBASE ) {
                         fld.a_vbclass = StartType( out, LFG_VBCLASS );
                     } else {
                         fld.a_vbclass = StartType( out, LFG_IVBCLASS );
@@ -1518,22 +1518,21 @@ static int  MkFlist( dbg_struct st )
             len += EndSub( out );  /* write out subfield accum length */
             break;
         case FIELD_VFUNC:
-            if( field->vfunc.vfptr_off == 0 ){
+            if( field->vfunc.vfptr_off == 0 ) {
                 fld.a_vfunctab = StartType( out, LFG_VFUNCTAB );
                 fld.a_vfunctab->type = field->vfunc.base;
-            }
 #if 0   // till cvpack is fixed
-            else{
+            } else {
                 fld.a_vfuncoff = StartType( out, LFG_VFUNCOFF );
                 fld.a_vfuncoff->type = field->vfunc.base;
                 fld.a_vfuncoff->offset = field->vfunc.vfptr_off;
-            }
 #endif
+            }
             len += EndSub( out );  /* write out subfield accum length */
             break;
         case FIELD_LOC:
             disp = LocSimpField( field->member.u.loc );
-            if( disp != NO_OFFSET ){
+            if( disp != NO_OFFSET ) {
                 ++count;
                 fld.a_member = StartType( out, LFG_MEMBER );
                 fld.a_member->type = field->member.base;
@@ -1614,8 +1613,8 @@ static  field_any  *UnLinkMethod( field_any **owner, const char *name )
     field_any    *curr;
 
     for( ; (curr = *owner) != NULL; owner = &(*owner)->entry.next ) {
-        if( curr->entry.field_type == FIELD_METHOD ){
-            if( strcmp( curr->method.name, name ) == 0 ){
+        if( curr->entry.field_type == FIELD_METHOD ) {
+            if( strcmp( curr->method.name, name ) == 0 ) {
                 *owner = curr->entry.next;
                 break;
             }
@@ -1636,7 +1635,7 @@ static  int   SortMethods( dbg_struct st )
     for( curr = st->list; curr != NULL; curr = curr->entry.next ) {
         if( curr->entry.field_type == FIELD_METHOD ) {
             add = UnLinkMethod( &curr->entry.next, curr->method.name );
-            if( add != NULL ){
+            if( add != NULL ) {
                 overops = 1;
                 next = curr->entry.next;
                 curr->entry.next = add;
@@ -1665,12 +1664,12 @@ static int  FlistCount( field_any *field )
             break;
         case FIELD_LOC:
             disp = LocSimpField( field->member.u.loc );
-            if( disp != NO_OFFSET ){
+            if( disp != NO_OFFSET ) {
                 ++count;
             }
             break;
         case FIELD_VFUNC:
-            if( field->vfunc.vfptr_off == 0 ){
+            if( field->vfunc.vfptr_off == 0 ) {
                 ++count;
             }
             break;
@@ -1692,7 +1691,7 @@ dbg_type    CVEndStruct( dbg_struct st )
     int             count;
     cv_out          out[1];
 
-    if( st->vtbl_type != DBG_NIL_TYPE ){
+    if( st->vtbl_type != DBG_NIL_TYPE ) {
         lf_values   vtbl_type;
 
         vtbl_type  = CVArraySize( 0, 0, st->vtbl_type ); /* fake p@[0] vtbl */
@@ -1790,7 +1789,7 @@ dbg_type    CVEndEnum( dbg_enum en )
     head->property.s = 0;
     CVPutNullStr( out );
     EndTypeString( out );
-    if( en->is_nested ){
+    if( en->is_nested ) {
         for( cons = en->list; cons != NULL; cons = cons->next ) {
             CVSymIConst64( cons->name, cons->val, headi );
         }
@@ -1839,8 +1838,8 @@ dbg_type    CVEndProc( dbg_proc pr )
 #else
     call = CV_GENERIC;
 #endif
-    if( pr->cls != DBG_NIL_TYPE ){
-        if( pr->this == DBG_NIL_TYPE ){
+    if( pr->cls != DBG_NIL_TYPE ) {
+        if( pr->this == DBG_NIL_TYPE ) {
             pr->this = LF_TVOID;
         }
         NewTypeString( out );

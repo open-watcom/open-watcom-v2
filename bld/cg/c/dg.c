@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -460,8 +460,9 @@ extern  void _CGAPI             DBLocFini( dbg_loc loc ) {
 
 static fname_lst  *SrcFiles;
 
-static  void    SrcFileNoInit( void ){
-/*****************************/
+static  void    SrcFileNoInit( void )
+/***********************************/
+{
     SrcFiles = NULL;
 }
 
@@ -470,7 +471,7 @@ static  void    DBSrcFileFini( void )
 {
     fname_lst   *curr;
 
-    while( (curr = SrcFiles) != NULL ){
+    while( (curr = SrcFiles) != NULL ) {
         SrcFiles = curr->next;
         CGFree( curr );
     }
@@ -484,8 +485,8 @@ extern  uint    DBSrcFile( cchar_ptr fname )
     fname_lst   *curr, **lnk;
 
     index = 0;
-    for( lnk = &SrcFiles; (curr = *lnk) != NULL; lnk = &curr->next ){
-        if( strcmp( fname, curr->fname ) == 0 ){
+    for( lnk = &SrcFiles; (curr = *lnk) != NULL; lnk = &curr->next ) {
+        if( strcmp( fname, curr->fname ) == 0 ) {
             return( index );
         }
         ++index;
@@ -556,8 +557,9 @@ extern  void    DBTypeDef( cchar_ptr nm, dbg_type  tipe )
     Action( "DBTypeDef( %s, %l ) ==>", nm, tipe );
 }
 
-void            DBLocalType(pointer sym, bool kind ){
-/***************************************************/
+void            DBLocalType(pointer sym, bool kind )
+/**************************************************/
+{
     Action( "DBLocalType( %s, %d ) ==>", FEName((pointer)sym), kind );
 }
 
@@ -728,17 +730,18 @@ extern  dbg_type        DBIntArray( unsigned_32 hi, dbg_type base ) {
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  dbg_type        DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base ) {
-/*******************************************************************/
-
+extern  dbg_type        DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
+/*********************************************************************************/
+{
     Action( "DBIntArrayCg( %s, %l, %d )", Tipe(tipe), hi, base );
     TypDbg( "(%d) Int Array hi==%l, base==%d%n", ++TypeIdx, hi, base );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
 
-extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major ){
-/******************************************************************************/
+extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
+/********************************************************************************/
+{
     array_list *ar;
     type_def   *tipe_addr;
 
@@ -755,9 +758,9 @@ extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major
     return( ar );
 }
 
-static  void    AddDim( array_list *ar, dim_any *dim ){
-/******************************************************/
-
+static  void    AddDim( array_list *ar, dim_any *dim )
+/****************************************************/
+{
     dim_entry *curr;
     dim_entry **owner;
 
@@ -773,8 +776,9 @@ static  void    AddDim( array_list *ar, dim_any *dim ){
     ar->num++;
 }
 
-extern  void DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi ){
-/***************************************************/
+extern  void DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi )
+/*******************************************************************************/
+{
     dim_con *dim;
 
     Action( "DBDimCon( %p %d, %l, %l, %d)%n", ar, idx, lo, hi );
@@ -789,8 +793,9 @@ extern  void DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi 
 extern  void  DBDimVar( array_list *ar,
                         b      *dims, int off,
                         cg_type lo_bound_tipe,
-                        cg_type num_elts_tipe ){
-/*************************************************/
+                        cg_type num_elts_tipe )
+/*********************************************/
+{
     dim_var *dim;
 
     Action( "DBDimVar" );
@@ -886,9 +891,9 @@ static  field_member     *CreateMember( const char *nm, byte strt,
     return( field );
 }
 
-static  void    AddField( struct_list *st, field_any *field ){
-/***************************************************************/
-
+static  void    AddField( struct_list *st, field_any *field )
+/***********************************************************/
+{
     field_entry *curr;
     field_entry **owner;
 
@@ -1031,8 +1036,9 @@ void    DBAddBaseInfo( struct_list  *st, unsigned_32 vb_off,  unsigned_32 esize,
 
 extern  void    DBAddVFuncInfo( struct_list  *st, unsigned_32 vfptr_off,
                                                   int size,
-                                                  cg_type vft_cgtype ){
+                                                  cg_type vft_cgtype )
 //======================================================================
+{
      Action( "DBAddVFuncInfo( %p, %d, %d,%s )%n", st, vfptr_off,
                              size,Tipe( vft_cgtype) );
 }
@@ -1133,9 +1139,10 @@ void    DBAddConst( enum_list *en, cchar_ptr nm, signed_32 val )
     cons->name = ACopyOf( nm );
     cons->val  = val;
 }
-extern  dbg_type        DBEndEnum( enum_list *en ) {
-//==================================================
 
+extern  dbg_type        DBEndEnum( enum_list *en )
+//================================================
+{
     const_entry *cons;
     int tval;
 
@@ -1157,9 +1164,10 @@ extern  dbg_type        DBEndEnum( enum_list *en ) {
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  proc_list       *DBBegProc( cg_type call_type, dbg_type ret ) {
-//=====================================================================
 
+extern  proc_list       *DBBegProc( cg_type call_type, dbg_type ret )
+//===================================================================
+{
     proc_list   *pr;
 
     Action( "DBBegProc" );
@@ -1172,15 +1180,17 @@ extern  proc_list       *DBBegProc( cg_type call_type, dbg_type ret ) {
     Action( " -> %p%n", pr );
     return( pr );
 }
-extern  void  DBAddMethParms(  proc_list *pr,  dbg_type  cls, dbg_type this   ) {
-/************************************************************************/
 
+extern  void  DBAddMethParms(  proc_list *pr,  dbg_type  cls, dbg_type this )
+/***************************************************************************/
+{
     Action( "DBAddMethParms" );
     Action( "(%d %d, %d )%n", pr, cls, this );
 }
-extern  void    DBAddParm( proc_list *pr, dbg_type tipe ) {
-//=========================================================
 
+extern  void    DBAddParm( proc_list *pr, dbg_type tipe )
+//=======================================================
+{
     parm_entry  *parm;
     parm_entry  **owner;
 
@@ -1195,9 +1205,10 @@ extern  void    DBAddParm( proc_list *pr, dbg_type tipe ) {
     parm->tipe = tipe;
     parm->next = NULL;
 }
-extern  dbg_type        DBEndProc( proc_list *pr ) {
-//==================================================
 
+extern  dbg_type        DBEndProc( proc_list *pr )
+//================================================
+{
     parm_entry  *parm;
 
     Action( "DBEndProc( %p )", pr );
@@ -1217,16 +1228,16 @@ extern  dbg_type        DBEndProc( proc_list *pr ) {
     return( TypeIdx );
 }
 
-extern  void            DBGenStMem(cg_sym_handle sym,dbg_loc loc) {
-//=================================================================
-
+extern  void            DBGenStMem(cg_sym_handle sym,dbg_loc loc)
+//===============================================================
+{
     Action( "DBGenStMem" );
     Action( "( %s, %s )%n", FEName((pointer)sym), Location( loc ) );
 }
 
-extern  void            DBGenSym(cg_sym_handle sym,dbg_loc loc,int scope) {
-//=========================================================================
-
+extern  void            DBGenSym(cg_sym_handle sym,dbg_loc loc,int scope)
+//=======================================================================
+{
     Action( "DBGenSym" );
     Action( "( %s )%n", FEName((pointer)sym) );
     if( (FEAttr((pointer)sym) & FE_IMPORT) == 0 ) {
@@ -1236,9 +1247,10 @@ extern  void            DBGenSym(cg_sym_handle sym,dbg_loc loc,int scope) {
                 Location( loc ) );
     }
 }
-extern  dbg_type        DBBasedPtr(cg_type ptr_tipe ,dbg_type base,dbg_loc loc) {
-//===============================================================================
 
+extern  dbg_type        DBBasedPtr(cg_type ptr_tipe ,dbg_type base,dbg_loc loc)
+//=============================================================================
+{
     Action( "DBBasedPtr" );
     Action( "( %s, %d )", Tipe( ptr_tipe ), base );
     TypDbg( "(%d) BPointer <%s>, base==%d%n seg_loc=%s", ++TypeIdx, Tipe(ptr_tipe),
@@ -1247,10 +1259,9 @@ extern  dbg_type        DBBasedPtr(cg_type ptr_tipe ,dbg_type base,dbg_loc loc) 
     return( TypeIdx );
 }
 
-extern  dbg_type        DBBasedPtrK(cg_type ptr_tipe ,dbg_type base,
-                                  cg_sym_handle sym,  int kind ){
-//==================================================================
-
+extern dbg_type DBBasedPtrK(cg_type ptr_tipe, dbg_type base, cg_sym_handle sym, int kind )
+//========================================================================================
+{
     Action( "DBBasedPtrK" );
     Action( "( %s, %d %s %d)", Tipe( ptr_tipe ), base,
                           kind, FEName((pointer)sym) );

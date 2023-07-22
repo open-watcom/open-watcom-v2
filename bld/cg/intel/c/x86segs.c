@@ -160,7 +160,8 @@ bool    SegIsSS( name *op ) {
     if( HW_CEqual( segreg, HW_SS ) )
         return( true );
     if( HW_CEqual( segreg, HW_DS )
-      &&_IsntTargetModel( CGSW_X86_FLOATING_DS | CGSW_X86_FLOATING_SS ) )
+      && _IsntTargetModel( CGSW_X86_FLOATING_DS )
+      && _IsntTargetModel( CGSW_X86_FLOATING_SS ) )
         return( true );
     return( false );
 }
@@ -270,7 +271,8 @@ cg_type NamePtrType( name *op ) {
             return( TY_POINTER );
         }
     } else if( op->n.class == N_TEMP ) {
-        if( _IsTargetModel( CGSW_X86_FLOATING_SS | CGSW_X86_FLOATING_DS ) ) {
+        if( _IsTargetModel( CGSW_X86_FLOATING_SS )
+          || _IsTargetModel( CGSW_X86_FLOATING_DS ) ) {
             // can't have a stack > 64K - BBB 06/02/94
             return( TY_LONG_POINTER );
         } else {

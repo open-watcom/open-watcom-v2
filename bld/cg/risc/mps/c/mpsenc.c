@@ -534,11 +534,11 @@ void GenCallLabel( pointer label )
 }
 
 
-static  void    GenNoReturn( void ) {
-/************************************
-    Generate a noreturn instruction (pseudo instruction)
-*/
-
+static  void    GenNoReturn( void )
+/**********************************
+ *   Generate a noreturn instruction (pseudo instruction)
+ */
+{
     any_oc      oc;
 
     oc.oc_entry.hdr.class = OC_NORET;

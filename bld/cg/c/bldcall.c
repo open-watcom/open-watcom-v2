@@ -333,7 +333,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
         }
 #endif
     }
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         if( sym != NULL ) {
             DbgParmLoc( parm_name, sym );
         }
@@ -652,7 +652,7 @@ void    BGReturn( an retval, type_def *tipe ) {
         tipe_type_class = TypeClass( tipe );
         type_class = ReturnTypeClass( tipe, CurrProc->state.attr );
         UpdateReturn( &CurrProc->state, tipe, type_class, FEAuxInfo( AskForLblSym(CurrProc->label), FEINF_AUX_LOOKUP ) );
-        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ){  // d1+ or d2
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
             DbgRetLoc();
         }
         if( type_class == XX ) {
