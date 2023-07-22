@@ -183,7 +183,7 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         if( ConfigData.continue_exception ) {
             CheckMenuItem( hmenu, MENU_EXCEPTION_CONTINUE, MF_BYCOMMAND | MF_CHECKED );
         }
-        LBPrintf( MainLBox, STR_DRNT_STARTED, AppName );
+        LBPrintf( MainLBox, STR_STARTED, AppName );
         break;
     case WM_SIZE:
         MoveListBox( MainLBox, 0, 0, LOWORD( lparam ), HIWORD( lparam ) );
