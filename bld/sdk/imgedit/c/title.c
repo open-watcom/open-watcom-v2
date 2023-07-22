@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@ WINEXPORT WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM 
 
 #define TITLE_TIMER       666
 
-static HINSTANCE        wMainInst = NULL;
 static char             *appName;
 
 #ifdef __NT__
@@ -90,11 +89,11 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
         hInstUser = GetModuleHandle( "USER32.DLL" );
         pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
         if( pfnLoadImage != NULL ) {
-            logo_hbitmap = pfnLoadImage( wMainInst, "APPLBITMAP", IMAGE_BITMAP, 0, 0,
+            logo_hbitmap = pfnLoadImage( Instance, "APPLBITMAP", IMAGE_BITMAP, 0, 0,
                                  LR_LOADMAP3DCOLORS );
         } else {
 #endif
-            logo_hbitmap = LoadBitmap( wMainInst, "APPLBITMAP" );
+            logo_hbitmap = LoadBitmap( Instance, "APPLBITMAP" );
 #ifdef __NT__
         }
 #endif
@@ -186,8 +185,7 @@ void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name
     appName = MemAlloc( len + 1 );
     strcpy( appName, app_name );
 
-    wMainInst = inst;
-    dlgproc = MakeProcInstance_DLG( wTitleDlgProc, inst );
+    dlgproc = MakeProcInstance_DLG( wTitleDlgProc, Instance );
     JDialogBoxParam( inst, "WTitleScreen", parent, dlgproc, (LPARAM)&msecs );
     FreeProcInstance_DLG( dlgproc );
     MemFree( appName );
