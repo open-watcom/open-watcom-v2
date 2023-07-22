@@ -1405,14 +1405,14 @@ when the host operating system is DOS,
 .note OS2
 when the host operating system is OS/2,
 .note NT
-when the host operating system is Windows NT (including Windows 95),
+when the host operating system is Windows NT/Windows 95,
 .note QNX
 when the host operating system is QNX, or
 .note LINUX
 when the host operating system is Linux.
 .endnote
 .np
-It also prevents the compiler from defining the default target macro.
+It also prevents the compiler from defining the default "build" target macro.
 Instead the compiler defines a macro consisting of the string "<os>"
 converted to uppercase and prefixed and suffixed with two underscores.
 The default target macros are described in the
@@ -1429,24 +1429,32 @@ __FOO__
 .millust end
 .pc
 and prevent it from defining
+.pc
 .kwm MSDOS
 .ct ,
 .kwm _DOS
 and
 .kwm __DOS__
-if the compiler was being run under DOS,
+if using the DOS hosted compiler,
+.pc
 .kwm __OS2__
 if using the OS/2 hosted compiler,
+.pc
 .kwm __NT__
-if using the Windows NT or Windows 95 hosted compiler,
+and
+.kwm _WIN32
+if using the Windows NT/Windows 95 hosted compiler,
+.pc
 .kwm __QNX__
 and
 .kwm __UNIX__
 if using the QNX hosted version, or
+.pc
 .kwm __LINUX__
 and
 .kwm __UNIX__
 if using the Linux hosted version.
+.pc
 Any string consisting of letters, digits, and the underscore character
 may be used for the target name.
 .np
@@ -1491,6 +1499,10 @@ and
 Causes the compiler to use stack-based calling conventions.
 Also defines the macro
 .kwm __NETWARE_386__
+.period
+.note NT
+Defines the macro
+.kwm _WIN32
 .period
 .note QNX
 Defines the macro
