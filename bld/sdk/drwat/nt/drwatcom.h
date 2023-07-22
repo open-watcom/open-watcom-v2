@@ -175,7 +175,7 @@ extern HWND             StatHdl;
 extern system_config    SysConfig;
 extern HANDLE           ProcessHdl;
 
-/* drproc.c */
+/* winproc.c */
 extern LONG         CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 extern void         ClearAlert( void );
 extern void         Alert( void );

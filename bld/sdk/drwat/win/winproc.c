@@ -105,9 +105,9 @@ static char *SaveLine( bool listview, HWND list, int line )
 }
 
 /*
- * WindowProc - main window message handler
+ * MainWindowProc - main window message handler
  */
-LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LONG __export FAR PASCAL MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC         hdc;
     TEXTMETRIC  tm;
@@ -252,4 +252,4 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     }
     return( 0L );
 
-} /* WindowProc */
+} /* MainWindowProc */

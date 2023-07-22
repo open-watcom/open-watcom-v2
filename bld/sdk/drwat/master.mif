@@ -75,7 +75,7 @@ extra_l_flags_win = lib commdlg.lib
 #
 exetarg_prebuild_objs = rcstr.grh $(dis_prereq)
 exetarg_objs_nt       = global.obj param.obj procctl.obj memory.obj &
-    drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
+    winproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
     pefile.obj autoget.obj lddips.obj memwndcd.obj &
     madrtn.obj madsys1.obj regstr.obj reglist.obj bitman.obj &
     strcnv.obj regcrt.obj $(mad_objs) i64.obj
