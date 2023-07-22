@@ -1,16 +1,18 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Zoom" )
+
 // NB the maximum allowable string length is 128 bytes
 
 pick(   STR_APP_NAME,
-        "Open Watcom Zoom",
-        "Open Watcom ズーム" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   STR_ABOUT_VER,
         "",     //NOT USED
         "" )
 pick(   STR_ABOUT_TITLE,
-        "About Open Watcom Zoom",
-        "Open Watcom ズームのバージョン情報" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 pick(   STR_UNABLE_TO_AUTOREFRESH,
         "Unable to do autorefresh.  No system timer available",
         "自動更新が行えません.  使用可能なシステム タイマーがありません" )
@@ -18,8 +20,8 @@ pick(   STR_INTERV_NOT_NUMERIC,
         "The Interval field must contain a numeric value",
         "間隔は数値で指定しなければなりません" )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom Zoom for Windows" STR_BITNESS,
-        "Open Watcom ズームのWindows版" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " for Windows" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
         banner1v( _ZOOM_VERSION_ ),
         banner1v( _ZOOM_VERSION_ ) )

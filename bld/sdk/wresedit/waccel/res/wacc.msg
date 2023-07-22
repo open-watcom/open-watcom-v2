@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Accelerator Editor" )
+
 // the following is the font used in the status bar of the window
 pick(   W_STATUSFONT,
         "Helv.8",
@@ -69,8 +71,8 @@ pick(   W_ACC_ABOUT,
         "Display program information.",
         "Display program information." )
 pick(   W_ACC_HELP,
-        "List Open Watcom Accelerator Editor help topics.",
-        "List Open Watcom Accelerator Editor help topics." )
+        "List " PRODUCT_NAME " help topics.",
+        "List " PRODUCT_NAME " help topics." )
 pick(   W_ACC_HELP_SEARCH,
         "Search for help on a specific topic.",
         "Search for help on a specific topic." )
@@ -158,8 +160,8 @@ pick(   W_ACCELISEMPTY,
 
 // WMAIN.C
 pick(   W_ACCELAPPTITLE,
-        "Open Watcom Accelerator Editor",
-        "Open Watcom Accelerator Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   W_GETTINGKEYS,
         "Getting Keys",
         "Getting Keys" )
@@ -185,14 +187,14 @@ pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
 pick(   W_ABOUT_NAME,
-        "Open Watcom Accelerator Editor for Windows" STR_BITNESS,
-        "Open Watcom Accelerator Editor for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " for Windows" STR_BITNESS )
 pick(   W_ABOUT_VERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )
 pick(   W_ABOUT_TITLE,
-        "About Open Watcom Accelerator Editor",
-        "About Open Watcom Accelerator Editor" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 
 // WRIBBON.C
 pick(   W_TIP_NEW,

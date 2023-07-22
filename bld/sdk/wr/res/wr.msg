@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Resource Compiler" )
+
 // wrsvexe.c
 pick(   WR_NOCONV1632,
         "Conversion between 16 and 32 bit resources are not supported.",
@@ -18,8 +20,8 @@ pick(   WR_ERRMSG,
 
 // rcerrprt.c
 pick(   WR_WRCMSG,
-        "Open Watcom Resource Compiler Message",
-        "Open Watcom Resource Compiler Message" )
+        PRODUCT_NAME " Message",
+        PRODUCT_NAME " Message" )
 
 // wrdata.c
 pick(   WR_RESTOOLARGE,

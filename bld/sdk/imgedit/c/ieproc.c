@@ -36,9 +36,8 @@
 #include "ieprofil.h"
 #include "aboutdlg.h"
 #include "iedde.h"
-#include "banner.h"
-
 #include "wwinhelp.h"
+
 
 extern bool FusionCalled;
 

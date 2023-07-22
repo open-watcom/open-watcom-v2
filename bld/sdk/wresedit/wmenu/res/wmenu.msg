@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Menu Editor" )
+
 // the following is the font used in the status bar of the window
 pick(   W_STATUSFONT,
         "Helv.8",
@@ -84,8 +86,8 @@ pick(   W_MENU_ABOUT,
         "Display program information.",
         "Display program information." )
 pick(   W_MENU_HELP,
-        "List Open Watcom Menu Editor help topics.",
-        "List Open Watcom Menu Editor help topics." )
+        "List " PRODUCT_NAME " help topics.",
+        "List " PRODUCT_NAME " help topics." )
 pick(   W_MENU_HELP_SEARCH,
         "Search for help on a specific topic.",
         "Search for help on a specific topic." )
@@ -160,8 +162,8 @@ pick(   W_CHANGEMODIFIEDMENUITEM,
 
 // WMAIN.C
 pick(   W_MENUAPPTITLE,
-        "Open Watcom Menu Editor",
-        "Open Watcom Menu Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   W_CHANGEMENUMEMFLAGS,
         "Changing Memory Flags",
         "Changing Memory Flags" )
@@ -184,14 +186,14 @@ pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
 pick(   W_ABOUT_NAME,
-        "Open Watcom Menu Editor for Windows" STR_BITNESS,
-        "Open Watcom Menu Editor for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " for Windows" STR_BITNESS )
 pick(   W_ABOUT_VERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )
 pick(   W_ABOUT_TITLE,
-        "About Open Watcom Menu Editor",
-        "About Open Watcom Menu Editor" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 
 // WPREV.C
 pick(   W_PREVIEWMENU,

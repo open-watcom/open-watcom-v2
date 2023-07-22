@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Heap Walker" )
+
 // Resource Display Window headings
 
 pick(   STR_BITMAP,
@@ -210,19 +212,19 @@ pick(   STR_HAS_NO_LCL_HEAP,
         "This item has no local heap",
         "This item has no local heap" )
 pick(   STR_UNABLE_2_STARTUP,
-        "Unable to start up heapwalker\n(probable cause: lack of memory)",
-        "Unable to start up heapwalker\n(probable cause: lack of memory)" )
+        "Unable to start up " PRODUCT_NAME "\n(probable cause: lack of memory)",
+        "Unable to start up " PRODUCT_NAME "\n(probable cause: lack of memory)" )
 
 // about box information
 pick(   STR_ABOUT_NAME,
-        "Open Watcom Heapwalker for Windows (16-bit)",
-        "Open Watcom Heapwalker for Windows (16-bit)" )
+        PRODUCT_NAME " for Windows (16-bit)",
+        PRODUCT_NAME " for Windows (16-bit)" )
 pick(   STR_ABOUT_VERSION,
         banner1v( _HEAPWALKER_VERSION_ ),
         banner1v( _HEAPWALKER_VERSION_ ) )
 pick(   STR_ABOUT_TITLE,
-        "About Open Watcom Heapwalker",
-        "About Open Watcom Heapwalker" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 pick(   STR_UNABLE_TO_ADD,
         "Unable to do add\n(probable cause: lack of memory)",
         "Unable to do add\n(probable cause: lack of memory)" )
@@ -372,8 +374,8 @@ pick(   STR_LCL_MONITOR_TITLE,
         "%s Local Heap Monitor",
         "%s Local Heap Monitor" )
 pick(   STR_APP_NAME,
-        "Open Watcom Heap Walker",
-        "Open Watcom Heap Walker" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 
 pick(   STR_GBL_HEADINGS,
         "Handle  Address     Size  Owner    Flags Lock  Heap Type ",

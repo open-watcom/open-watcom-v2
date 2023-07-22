@@ -1,6 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
 #include <windows.h>
+#include "banner.h"
 #include "wr.rh"
 #include "selft.rh"
 #include "selimage.rh"

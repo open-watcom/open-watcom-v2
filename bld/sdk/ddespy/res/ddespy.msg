@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "DDE Spy" )
+
 pick(   STR_ACK,
         "ack",
         "通知" )
@@ -187,18 +189,18 @@ pick(   STR_REG_SERVERS,
         "登録サ－バ－" )
 
 pick(   STR_LOG_HEADER,
-        "Open Watcom DDE SPY LOG started at: %s",
-        "Open Watcom DDE SPY LOG ログ開始: %s" )
+        PRODUCT_NAME " LOG started at: %s",
+        PRODUCT_NAME " LOG ログ開始: %s" )
 pick(   STR_EVENT_LIST_LINE,
         "--------------------------------------------------------------------------------\n\n",
         "--------------------------------------------------------------------------------\n\n" )
 pick(   STR_EVENT_LIST_HEADER,
-        "Open Watcom DDE SPY event listing made: %s\n\n",
-        "Open Watcom DDE SPY イベントリスト作成: %s\n\n" )
+        PRODUCT_NAME " event listing made: %s\n\n",
+        PRODUCT_NAME " イベントリスト作成: %s\n\n" )
 
 pick(   STR_ABOUT_TITLE,
-        "About Open Watcom DDE Spy",
-        "Open Watcom DDE Spyバ－ジョン情報" )
+        "About " PRODUCT_NAME,
+        PRODUCT_NAME "バ－ジョン情報" )
 pick(   STR_ADD_HWND_ALIAS,
         "Add HWND Alias",
         "HWND別名の追加" )
@@ -209,11 +211,11 @@ pick(   STR_ADD_CONV_ALIAS,
         "Add Conversation Alias",
         "対話別名の追加" )
 pick(   STR_APP_NAME,
-        "Open Watcom DDE Spy",
-        "Open Watcom DDE Spy" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom DDE Spy for Windows" STR_BITNESS,
-        "Open Watcom DDE Spy Windows版" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " Windows版" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
         banner1v( _DDESPY_VERSION_ ),
         banner1v( _DDESPY_VERSION_ ) )
@@ -350,8 +352,8 @@ pick(   STR_HINT_HINTBAR,
         "ヒントバ－の表示/非表示" )
 
 pick(   STR_HINT_HELP_CONTENTS,
-        "List Open Watcom DDE Spy help topics.",
-        "ヘルプの表示" )
+        "List " PRODUCT_NAME " help topics.",
+        PRODUCT_NAME " のヘルプ トピックの一覧表示" )
 
 pick(   STR_HINT_HELP_SRCH,
         "Search for help on a specific topic.",

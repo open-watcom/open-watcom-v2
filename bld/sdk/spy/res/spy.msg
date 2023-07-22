@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Spy" )
+
 pick(   STR_ONLY_1_SPY_ALLOWED,
         "Only one spy allowed",
         "Only one spy allowed" )
@@ -19,8 +21,8 @@ pick(   STR_SPY_OFF,
         "Stop Spying &Temporarily",
         "Stop Spying &Temporarily" )
 pick(   STR_APP_NAME,
-        "Open Watcom Spy",
-        "Open Watcom Spy" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   STR_HEADINGS_WIN,
             "Message Name                  hWnd MsgID wParam lParam",
             "Message Name                  hWnd MsgID wParam lParam" )
@@ -64,14 +66,14 @@ pick(   STR_1_NAMED_WIN_TITLE,
         "%s - hWnd 0x%s (%s)",
         "%s - hWnd 0x%s (%s)" )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom Spy for Windows" STR_BITNESS,
-        "Open Watcom Spy for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " for Windows" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
         banner1v( _SPY_VERSION_ ),
         banner1v( _SPY_VERSION_ ) )
 pick(   STR_ABOUT_TITLE,
-        "About Open Watcom Spy",
-        "About Open Watcom Spy" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 pick(   STR_ALL_WIN_TITLE,
         "%s - All Windows",
         "%s - All Windows" )
@@ -228,8 +230,8 @@ pick(   STR_MESSAGE,
         "Message: %s" )
 
 pick(   STR_HINT_HELP_CONTENTS,
-        "List Open Watcom Spy help topics.",
-        "List Open Watcom Spy help topics." )
+        "List " PRODUCT_NAME " help topics.",
+        "List " PRODUCT_NAME " help topics." )
 
 pick(   STR_HINT_HELP_SRCH,
         "Search for help on a specific topic.",

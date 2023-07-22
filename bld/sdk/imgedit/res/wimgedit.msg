@@ -1,5 +1,8 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Image Editor" )
+#define PRODUCT_NAME1   banner1t( "Resource Editor" )
+
 // NB the maximum allowable string length is 128 bytes
 
 // iefonts.c
@@ -41,8 +44,8 @@ pick(   WIE_ICONIMAGETEXT,
 
 // errors.c
 pick(   WIE_ERRORMSGTITLE,
-        "Open Watcom Image Editor",
-        "Open Watcom Image Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   WIE_ERR_BITMAPNOTOPENED,
         "Bitmap: '%s' not opened.",
         "Bitmap: '%s' not opened." )
@@ -173,14 +176,14 @@ pick(   WIE_HINT_IMGED_SAVE_AS,
         "Save the current image with a new name.",
         "Save the current image with a new name." )
 pick(   WIE_HINT_IMGED_EXIT,
-        "Exit the Open Watcom Image Editor.",
-        "Exit the Open Watcom Image Editor." )
+        "Exit the " PRODUCT_NAME ".",
+        "Exit the " PRODUCT_NAME "." )
 pick(   WIE_HINT_IMGED_ABOUT,
         "Display program information.",
         "Display program information." )
 pick(   WIE_HINT_IMGED_HELP,
-        "List Open Watcom Image Editor help topics.",
-        "List Open Watcom Image Editor help topics." )
+        "List " PRODUCT_NAME " help topics.",
+        "List " PRODUCT_NAME " help topics." )
 pick(   WIE_HINT_IMGED_HELP_SEARCH,
         "Search for help on a specific topic.",
         "Search for help on a specific topic." )
@@ -363,8 +366,8 @@ pick(   WIE_HINT_ROTATEMENU,
         "Rotate image 90 degrees.",
         "Rotate image 90 degrees." )
 pick(   WIE_HINT_SETTINGSMENU,
-        "Setting for image editor session.",
-        "Setting for image editor session." )
+        "Setting for " PRODUCT_NAME " session.",
+        "Setting for " PRODUCT_NAME " session." )
 pick(   WIE_HINT_BRUSHSIZEMENU,
         "Set the size for the paint brush.",
         "Set the size for the paint brush." )
@@ -381,8 +384,8 @@ pick(   WIE_HINT_RECTANGLEMENU,
         "Rectangle drawing tool.",
         "Rectangle drawing tool." )
 pick(   WIE_HINT_HELPMENU,
-        "Provides help for Open Watcom Image Editor.",
-        "Provides help for Open Watcom Image Editor." )
+        "Provides help for " PRODUCT_NAME ".",
+        "Provides help for " PRODUCT_NAME "." )
     
 // SNAP.C
 pick(   WIE_BMPSNAPPEDFROMDSKTOP,
@@ -440,8 +443,8 @@ pick(   WIE_DDEINITTITLE,
         "DDE Initialization",
         "DDE Initialization" )
 pick(   WIE_DDETERMINATIONMSG,
-        "The Image Editor is being terminated and \nwas unable to inform the Resource Editor.\nThis may cause the Resource Editor to reject\nany more attempts to edit any resources.\n",
-        "The Image Editor is being terminated and \nwas unable to inform the Resource Editor.\nThis may cause the Resource Editor to reject\nany more attempts to edit any resources.\n" )
+        "The " PRODUCT_NAME " is being terminated and \nwas unable to inform the " PRODUCT_NAME1 ".\nThis may cause the " PRODUCT_NAME1 " to reject\nany more attempts to edit any resources.\n",
+        "The " PRODUCT_NAME " is being terminated and \nwas unable to inform the " PRODUCT_NAME1 ".\nThis may cause the " PRODUCT_NAME1 " to reject\nany more attempts to edit any resources.\n" )
 
 // CLIP.C
 pick(   WIE_ENTIREIMAGECOPIED,
@@ -471,8 +474,8 @@ pick(   WIE_PASTECANCELLED,
 
 // IEGLOB.C
 pick(   WIE_APPNAME,
-        "Open Watcom Image Editor",
-        "Open Watcom Image Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   WIE_IMAGEFILTER,
         "Bitmap (*.bmp)\t*.bmp\tIcon (*.ico)\t*.ico\t"
         "Cursor (*.cur)\t*.cur\tResource (*.res)\t*.res\t"
@@ -557,14 +560,14 @@ pick(   WIE_NEIMAGENOTCREATED,
         "New image not created",
         "New image not created" )
 pick(   WIE_ABOUTTEXT,
-        "Open Watcom Image Editor for Windows" STR_BITNESS,
-        "Open Watcom Image Editor for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " for Windows" STR_BITNESS )
 pick(   WIE_ABOUTVERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )
 pick(   WIE_ABOUTTITLE,
-        "About Open Watcom Image Editor",
-        "About Open Watcom Image Editor" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 
 // WINCREAT.C
 pick(   WIE_COLORPALETTETITLE,

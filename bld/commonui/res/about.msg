@@ -1,8 +1,5 @@
 /* UTF-8 encoding, ¥ */
 
-pick( ABT_COPYRIGHT,
-        "Portions Copyright (c) %s Sybase, Inc.",
-        "Portions Copyright (c) %s Sybase, Inc." )
 pick( ABT_386_ENH,
         "386 Enhanced Mode",
         "386 エンハンスドモード" )

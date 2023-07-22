@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "Dialog Editor" )
+
 // the following is the font used in the status bar of the window
 pick(   WDE_STATUSFONT,
         "Helv.8",
@@ -17,8 +19,8 @@ pick(   WDE_BASEOBJECTFONT,
 
 // WDEMSGBX.C
 pick(   WDE_MSGBOXTITLE,
-        "Open Watcom Dialog Editor",
-        "Open Watcom Dialog Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 
 // WRESTAT.C
 pick(   WDE_NOCREATESTATUS,
@@ -66,8 +68,8 @@ pick(   WDE_HINT_WRITE_SYMBOLS,
         "Write symbols to a file.",
         "Write symbols to a file." )
 pick(   WDE_HINT_EXIT,
-        "Exit the Open Watcom Dialog Editor.",
-        "Exit the Open Watcom Dialog Editor." )
+        "Exit the " PRODUCT_NAME ".",
+        "Exit the " PRODUCT_NAME "." )
 pick(   WDE_HINT_SAME_WIDTH,
         "Change the width of selected objects.",
         "Change the width of selected objects." )
@@ -240,8 +242,8 @@ pick(   WDE_HINT_ABOUT,
         "Display program information.",
         "Display program information." )
 pick(   WDE_HINT_HELP,
-        "List Open Watcom Dialog Editor help topics.",
-        "List Open Watcom Dialog Editor help topics." )
+        "List " PRODUCT_NAME " help topics.",
+        "List " PRODUCT_NAME " help topics." )
 pick(   WDE_HINT_HELP_SEARCH,
         "Search for help on a specific topic.",
         "Search for help on a specific topic." )
@@ -391,11 +393,11 @@ pick(   WDE_DDEDEATHMSG,
 
 // WDEMAIN.C
 pick(   WDE_APPTITLE,
-        "Open Watcom Dialog Editor",
-        "Open Watcom Dialog Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   WDE_NOMULTIPLEINSTANCES,
-        "Cannot run multiple instances of the Open Watcom Dialog Editor.",
-        "Cannot run multiple instances of the Open Watcom Dialog Editor." )
+        "Cannot run multiple instances of the " PRODUCT_NAME ".",
+        "Cannot run multiple instances of the " PRODUCT_NAME "." )
 pick(   WDE_INITFAILED,
         "Initialization Failed!",
         "Initialization Failed!" )
@@ -457,14 +459,14 @@ pick(   WDE_INPUTFILENOTFOUND,
         "Input file not found.",
         "Input file not found." )
 pick(   WDE_ABOUT_NAME,
-        "Open Watcom Dialog Editor for Windows" STR_BITNESS,
-        "Open Watcom Dialog Editor for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " for Windows" STR_BITNESS )
 pick(   WDE_ABOUT_VERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )
 pick(   WDE_ABOUT_TITLE,
-        "About Open Watcom Dialog Editor",
-        "About Open Watcom Dialog Editor" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 
 // WDEFUTIL.C
 pick(   WDE_DEFININGCONTROL,

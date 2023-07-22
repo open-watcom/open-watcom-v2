@@ -1,5 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
+#define PRODUCT_NAME    banner1t( "String Editor" )
+
 // the following is the font used in the status bar of the window
 pick(   W_STATUSFONT,
         "Helv.8",
@@ -68,8 +70,8 @@ pick(   W_STR_ABOUT,
         "Display program information.",
         "Display program information." )
 pick(   W_STR_HELP,
-        "List Open Watcom String Editor help topics.",
-        "List Open Watcom String Editor help topics." )
+        "List " PRODUCT_NAME " help topics.",
+        "List " PRODUCT_NAME " help topics." )
 pick(   W_STR_HELP_SEARCH,
         "Search for help on a specific topic.",
         "Search for help on a specific topic." )
@@ -166,8 +168,8 @@ pick(   W_STRINGTABLEISEMPTY,
 
 // WMAIN.C
 pick(   W_STRINGAPPTITLE,
-        "Open Watcom String Editor",
-        "Open Watcom String Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   W_CHANGESTRINGMEMFLAGS,
         "Changing Memory Flags",
         "Changing Memory Flags" )
@@ -190,14 +192,14 @@ pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
 pick(   W_ABOUT_NAME,
-        "Open Watcom String Editor for Windows" STR_BITNESS,
-        "Open Watcom String Editor for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows" STR_BITNESS,
+        PRODUCT_NAME " for Windows" STR_BITNESS )
 pick(   W_ABOUT_VERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )
 pick(   W_ABOUT_TITLE,
-        "About Open Watcom String Editor",
-        "About Open Watcom String Editor" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 
 // WNEWITEM.C
 pick(   W_QUERYREPLACESTRING,
