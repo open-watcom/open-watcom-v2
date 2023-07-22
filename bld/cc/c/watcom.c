@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,10 @@ void CBanner( void )
         CompFlags.banner_printed = true;
         if( !CompFlags.quiet_mode ) {
 #if defined( _BETAVER )
-            BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler" ) );
-            BannerMsg( banner1w2( _WCC_VERSION_ ) );
+            BannerMsg( banner1t( "C " _TARGET_ " Optimizing Compiler" ) );
+            BannerMsg( banner1v( _WCC_VERSION_ ) );
 #else
-            BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler", _WCC_VERSION_ ) );
+            BannerMsg( banner1w( "C " _TARGET_ " Optimizing Compiler", _WCC_VERSION_ ) );
 #endif
             BannerMsg( banner2 );
             BannerMsg( banner2a( 1984 ) );

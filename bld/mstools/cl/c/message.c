@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,10 +57,10 @@ void BannerMessage( void )
     static bool         alreadyPrinted = false;
     static char *       helpMsg = {
 #if defined( _BETAVER )
-        banner1w1( "C/C++ CL Clone for " CPU_NAME ) "\n"
-        banner1w2( _CL_CLONE_VERSION_ ) "\n"
+        banner1t( "C/C++ CL Clone for " CPU_NAME ) "\n"
+        banner1v( _CL_CLONE_VERSION_ ) "\n"
 #else
-        banner1w( "C/C++ CL Clone for " CPU_NAME " ", _CL_CLONE_VERSION_ ) "\n"
+        banner1w( "C/C++ CL Clone for " CPU_NAME, _CL_CLONE_VERSION_ ) "\n"
 #endif
         banner2 "\n"
         banner2a( 1995 ) "\n"

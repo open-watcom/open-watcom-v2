@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,7 @@ static  unsigned        MsgShift;
 #endif
 
 static const char *FingerMsg[] = {
-    banner1w( "Assembler", _WASM_VERSION_ ),
+    banner1w( "x86 Assembler", _WASM_VERSION_ ),
     banner2,
     banner2a( 1992 ),
     banner3,

@@ -166,8 +166,8 @@ static  char        *cpp_linewrap;          /* line length for cpp output       
 
 static const char *UsageText[] = {
 #if defined( _BETAVER )
-    banner1w1( "C/C++ " _TARGET_ " Compiler Driver Program" ),
-    banner1w2( _WCL_VERSION_ ),
+    banner1t( "C/C++ " _TARGET_ " Compiler Driver Program" ),
+    banner1v( _WCL_VERSION_ ),
 #else
     banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ),
 #endif

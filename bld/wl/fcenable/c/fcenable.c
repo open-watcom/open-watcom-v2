@@ -553,8 +553,8 @@ int main(int argc, char **argv )
 
     MemInit();
 #if defined( _BETAVER )
-    printf( banner1w1( "Far Call Optimization Enabling Utility" ) );
-    printf( banner1w2( _FCENABLE_VERSION_ ) );
+    printf( banner1t( "Far Call Optimization Enabling Utility" ) );
+    printf( banner1v( _FCENABLE_VERSION_ ) );
 #else
     printf( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
 #endif

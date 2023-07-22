@@ -269,8 +269,8 @@ static void PrtBanner( void )
 /***************************/
 {
 #if defined( _BETAVER )
-    puts( banner1w1( "F77 " _TARGET_ " Compile and Link Utility" ) );
-    puts( banner1w2( _WFL_VERSION_ ) );
+    puts( banner1t( "F77 " _TARGET_ " Compile and Link Utility" ) );
+    puts( banner1v( _WFL_VERSION_ ) );
 #else
     puts( banner1w( "F77 " _TARGET_ " Compile and Link Utility", _WFL_VERSION_ ) );
 #endif

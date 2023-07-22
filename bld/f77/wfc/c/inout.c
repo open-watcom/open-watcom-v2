@@ -601,8 +601,8 @@ void    TOutBanner( void ) {
 //==========================
 
 #if defined( _BETAVER )
-    TOutNL( banner1w1( _Banner ) );
-    TOutNL( banner1w2( _WFC_VERSION_ ) );
+    TOutNL( banner1t( _Banner ) );
+    TOutNL( banner1v( _WFC_VERSION_ ) );
 #else
     TOutNL( banner1w( _Banner, _WFC_VERSION_ ) );
 #endif
@@ -622,9 +622,8 @@ void    PrtBanner( void ) {
     struct tm   *t;
 
 #if defined( _BETAVER )
-    strcpy( banner, banner1w1( _Banner ) );
-    PrtLstNL( banner );
-    strcpy( banner, banner1w2( _WFC_VERSION_ ) );
+    PrtLstNL( banner1t( _Banner ) );
+    strcpy( banner, banner1v( _WFC_VERSION_ ) );
 #else
     strcpy( banner, banner1w( _Banner, _WFC_VERSION_ ) );
 #endif

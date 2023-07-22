@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ void BannerMessage( void )
 {
     static bool         alreadyPrinted = false;
     static char *       helpMsg = {
-        banner1w( "C/C++ LIB Clone for " CPU_NAME " ", _LIB_CLONE_VERSION_ ) "\n"
+        banner1w( "C/C++ LIB Clone for " CPU_NAME, _LIB_CLONE_VERSION_ ) "\n"
         banner2 "\n"
         banner2a( 1995 ) "\n"
         banner3 "\n"

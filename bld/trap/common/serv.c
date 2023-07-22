@@ -90,8 +90,8 @@ static void Initialize( void )
 
 static void OpeningStatement( void )
 {
-    OutputLine( banner1w1( SERVNAME ) );
-    OutputLine( banner1w2( _XXXSERV_VERSION_ ) );
+    OutputLine( banner1t( SERVNAME ) );
+    OutputLine( banner1v( _XXXSERV_VERSION_ ) );
     OutputLine( banner2 );
     OutputLine( banner2a( 1988 ) );
     OutputLine( banner3 );

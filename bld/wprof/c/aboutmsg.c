@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,8 @@
 
 static char *AboutMessage[] = {
     "",
-    banner1w1( "Execution Profiler" STR_BITNESS ),
-    banner1w2( _WPROF_VERSION_ ),
+    banner1t( "Execution Profiler" ),
+    banner1v( _WPROF_VERSION_ ),
     banner2,
     banner2a( 1987 ),
     "",

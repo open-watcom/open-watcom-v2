@@ -303,8 +303,8 @@ static void print_banner( void )
         printed = true;
         if( !Flags.be_quiet ) {
 #if defined( _BETAVER )
-            puts( banner1w1( "C/C++ " _TARGET_ " Compile and Link Utility" ) );
-            puts( banner1w2( _WCL_VERSION_ ) );
+            puts( banner1t( "C/C++ " _TARGET_ " Compile and Link Utility" ) );
+            puts( banner1v( _WCL_VERSION_ ) );
 #else
             puts( banner1w( "C/C++ " _TARGET_ " Compile and Link Utility", _WCL_VERSION_ ) );
 #endif

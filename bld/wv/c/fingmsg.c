@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 #define WHOLE_SIZE      ArraySize( AboutMessage )
 
 static const char * const AboutMessage[] = {
-    "Open Watcom Debugger" STR_BITNESS,
+    banner1t( "Debugger" ),
     banner1v( _WD_VERSION_ ) ".",
     banner2,
     banner2a( 1987 ),
