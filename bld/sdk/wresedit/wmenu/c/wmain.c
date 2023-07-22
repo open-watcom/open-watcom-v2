@@ -988,10 +988,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             ai.name = AllocRCString( W_ABOUT_NAME );
             ai.version = AllocRCString( W_ABOUT_VERSION );
             ai.title = AllocRCString( W_ABOUT_TITLE );
-            DoAbout( &ai );
-            FreeRCString( ai.name );
-            FreeRCString( ai.version );
-            FreeRCString( ai.title );
+            DoAbout( &ai, FreeRCString );
             pass_to_def = false;
             break;
         }

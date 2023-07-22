@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,12 +165,17 @@ INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 /*
  * DoAbout - show the startup dialog
  */
-void DoAbout( LPABOUTINFO ai )
+void DoAbout( LPABOUTINFO ai, void(*free_fn)(char *) )
 {
     DLGPROC     dlgproc;
 
     dlgproc = MakeProcInstance_DLG( AboutDlgProc, ai->inst );
     DialogBoxParam( ai->inst, "About", ai->owner, dlgproc, (LPARAM)ai );
     FreeProcInstance_DLG( dlgproc );
+    if( free_fn != NULL ) {
+        free_fn( (char *)ai->title );
+        free_fn( (char *)ai->name );
+        free_fn( (char *)ai->version );
+    }
 
 } /* DoAbout */

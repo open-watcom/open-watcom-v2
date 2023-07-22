@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -348,10 +348,7 @@ LRESULT FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             ai.name = HWAllocRCString( STR_ABOUT_NAME );
             ai.version = HWAllocRCString( STR_ABOUT_VERSION );
             ai.title = HWAllocRCString( STR_ABOUT_TITLE );
-            DoAbout( &ai );
-            HWFreeRCString( ai.title );
-            HWFreeRCString( ai.version );
-            HWFreeRCString( ai.name );
+            DoAbout( &ai, HWFreeRCString );
             break;
         case HEAPMENU_HELP_CONTENTS:
             WWinHelp( hwnd, "heapwalk.hlp", HELP_CONTENTS, 0 );

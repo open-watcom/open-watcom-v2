@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -255,10 +255,7 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             ai.name = AllocRCString( STR_ABOUT_NAME );
             ai.version = AllocRCString( STR_ABOUT_VERSION );
             ai.title = AllocRCString( STR_ABOUT_TITLE );
-            DoAbout( &ai );
-            FreeRCString( ai.name );
-            FreeRCString( ai.version );
-            FreeRCString( ai.title );
+            DoAbout( &ai, FreeRCString );
             break;
         case MENU_HELP_CONTENTS:
             if( !WHtmlHelp( hwnd, DR_CHM_FILE, HELP_CONTENTS, 0 ) ) {

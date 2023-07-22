@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -421,10 +421,7 @@ static void displayAbout( HWND hwnd ) {
     ai.name = AllocRCString( STR_ABOUT_NAME );
     ai.version = AllocRCString( STR_ABOUT_VERSION );
     ai.title = AllocRCString( STR_ABOUT_TITLE );
-    DoAbout( &ai );
-    FreeRCString( (char *)ai.name );
-    FreeRCString( (char *)ai.version );
-    FreeRCString( (char *)ai.title );
+    DoAbout( &ai, FreeRCString );
 }
 
 LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )

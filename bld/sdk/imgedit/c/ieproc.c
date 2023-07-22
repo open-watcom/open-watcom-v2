@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -419,16 +419,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             ai.name = IEAllocRCString( WIE_ABOUTTEXT );
             ai.version = IEAllocRCString( WIE_ABOUTVERSION );
             ai.title = IEAllocRCString( WIE_ABOUTTITLE );
-            DoAbout( &ai );
-            if( ai.name != NULL ) {
-                IEFreeRCString( ai.name );
-            }
-            if( ai.version != NULL ) {
-                IEFreeRCString( ai.version );
-            }
-            if( ai.title != NULL ) {
-                IEFreeRCString( ai.title );
-            }
+            DoAbout( &ai, IEFreeRCString );
 #endif
             break;
 

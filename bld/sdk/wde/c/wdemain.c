@@ -963,10 +963,7 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             ai.name = AllocRCString( WDE_ABOUT_NAME );
             ai.version = AllocRCString( WDE_ABOUT_VERSION );
             ai.title = AllocRCString( WDE_ABOUT_TITLE );
-            DoAbout( &ai );
-            FreeRCString( ai.name );
-            FreeRCString( ai.version );
-            FreeRCString( ai.title );
+            DoAbout( &ai, FreeRCString );
             pass_to_def = false;
             break;
         }
