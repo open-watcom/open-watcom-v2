@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,23 @@
 ****************************************************************************/
 
 
+#define MakeReg( c, i ) ( ( (i) & 0xff ) | ( (int)(c) << 8 ) )
+#define RegClass( r )   ( ( (r) >> 8 ) & 0xff )
+#define RegIndex( r )   ( (r) & 0xff )
+
+#define NULL_REG_IDX    0
+#define NULL_REG        MakeReg( RC_NOTHING, NULL_REG_IDX )
+
+#define FP_REG_IDX      15  // Contains the Frame pointer (if needed)
+#define RA_REG_IDX      26  // Contains the Return address
+#define AT_REG_IDX      28  // Reserved for the assembler temporary
+#define GP_REG_IDX      29  // Contains the Global pointer
+#define SP_REG_IDX      30  // Contains the Stack pointer
+#define ZERO_REG_IDX    31  // Contains 0
+
+#define ZERO_REG        MakeReg( RC_GPR, ZERO_REG_IDX )
+#define AT_REG          MakeReg( RC_GPR, AT_REG_IDX )
+
 typedef uint_16 reg;
 
 typedef enum {
@@ -38,14 +56,5 @@ typedef enum {
     #undef PICK
     RC_LAST
 } reg_class;
-
-#define MakeReg( c, i ) ( ( (i) & 0xff ) | ( (int)(c) << 8 ) )
-#define RegClass( r )   ( ( (r) >> 8 ) & 0xff )
-#define RegIndex( r )   ( (r) & 0xff )
-
-#define NULL_REG        ( MakeReg( RC_NOTHING, 0 ) )
-
-// $28 is the assembler temp reg in Alpha
-#define AT_REG          ( MakeReg( RC_GPR, 28 ) )
 
 extern char *AsRegName( reg );
