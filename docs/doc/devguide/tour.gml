@@ -370,8 +370,8 @@ The most uptodate version of the Open Watcom source code lives on the
 Open Watcom Perforce server. It is possible to go straight to the
 Perforce repository but most people will find it much easier to
 get a source archive first. The source archives can be found
-at the Open Watcom web site,
-.id http://www.openwatcom.org/
+at the "Open Watcom Web site",
+.id &owurl.
 along with latest information on Perforce setup. You will generally
 need a working installation of the previous release of Open Watcom
 C/C++ and some free disk space to burn (one gigabyte should do).

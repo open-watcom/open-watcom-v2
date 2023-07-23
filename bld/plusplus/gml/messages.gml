@@ -85,7 +85,7 @@
 :MSGTXT. internal compiler error
 :MSGJTXT. 内部のコンパイラ・エラー
 If this message appears, please report the problem directly to the
-Open Watcom development team. See http://www.openwatcom.org/.
+Open Watcom development team. See &owurl1. .
 
 :MSGSYM. WARN_ASSIGN_CONST_IN_BOOL_EXPR
 :MSGTXT. assignment of constant found in boolean expression
@@ -1390,7 +1390,7 @@ A bug has been encountered in the compiler.
 Please report the specified internal compiler error number and any other
 helpful details about the program being compiled to the Open Watcom
 development team so that we
-can fix the problem. See http://www.openwatcom.org/.
+can fix the problem. See &owurl1. .
 
 :MSGSYM. ERR_BAD_PARM_REGISTER
 :MSGTXT. argument number %d - invalid register in #pragma
@@ -1637,7 +1637,7 @@ it is difficult for a compiler to correct the error itself.
 :MSGJTXT. 構文解析プログラムのスタックが壊れています
 The C++ parser has detected an internal problem that usually indicates
 a compiler problem.  Please report this directly to the Open Watcom
-development team. See http://www.openwatcom.org/.
+development team. See &owurl1. .
 
 :MSGSYM. ERR_NO_NESTED_TEMPLATES
 :MSGTXT. template declarations cannot be nested within each other
@@ -4645,7 +4645,7 @@ private:
 :MSGTXT. *** FATAL *** internal error in front end
 :MSGJTXT. *** 致命的 *** フロントエンドの中で内部エラー
 If this message appears, please report the problem directly to the
-Open Watcom development team. See http://www.openwatcom.org/.
+Open Watcom development team. See &owurl1. .
 
 :MSGSYM. ERR_PARM_IMPOSSIBLE
 :MSGTXT. cannot convert argument to type specified in function prototype
@@ -7654,7 +7654,7 @@ analysing source code.  See the ARM p.93 for more details.
 This warning is intended to inform the programmer that an ambiguous
 construct could not be resolved by the compiler.
 Please report this to the Open Watcom developement team so that the
-problem can be analysed. See http://www.openwatcom.org/.
+problem can be analysed. See &owurl1. .
 
 :MSGSYM. WARN_AMBIGUOUS_CONSTRUCT_AGAIN
 :MSGTXT. encountered another ambiguous construct during disambiguation

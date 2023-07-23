@@ -30,7 +30,8 @@
 ****************************************************************************/
 
 
-#define _BETAVER    1
+#define _BETAVER            1
+#define _OWURL              "https://github.com/open-watcom/open-watcom-v2#readme"
 
 #define _DOSTR( p )         #p
 #define _MACROSTR( p )      _DOSTR( p )
@@ -67,7 +68,7 @@
 #define banner2a(year)      banner21a(year) " All Rights Reserved."
 
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
-#define banner3a            "See https://www.openwatcom.org for details."
+#define banner3a            "See " _OWURL " for details."
 
 #define banner1ps(p,v)      "Powersoft " p " " banner1v(v)
 #define banner2ps           banner21a( 1984 )

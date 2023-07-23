@@ -231,7 +231,7 @@ Portions Copyright (c) &*.-2002 Sybase, Inc. All Rights Reserved.
 .*
 .dm trdmrk begin
 Source code is available under the Sybase Open Watcom Public License.
-See http://www.openwatcom.org/ for details.
+See &owurl. for details.
 .dm trdmrk end
 .*
 .dm tmarkunix begin

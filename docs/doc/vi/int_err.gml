@@ -36,6 +36,6 @@
 &edvi has encountered an internal error.  Please note the
 circumstances of this error and, if possible, construct a small
 test case that demonstrates the problem. You can then either file
-a bug report using OpenWatcom's Bugzilla (http://bugzilla.openwatcom.org),
-or you can discuss the problem on one of the OpenWatcom newsgroups
-(news://news.openwatcom.org).
+a bug report using "GitHub issues" at &owurl1. ,
+or you can discuss the problem on "Open Watcom Discord Channel"
+at &owurl2. .
