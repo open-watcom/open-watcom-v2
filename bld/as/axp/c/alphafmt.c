@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
 
 typedef struct reloc_entry      *reloc_list;
 
+typedef op_type         ot_array[MAX_OPERANDS];
+
 struct reloc_entry {
     reloc_list          next;
     op_reloc_target     target;
@@ -54,16 +56,13 @@ typedef void (*fmt_func)( ins_table *, instruction *, uint_32 *, asm_reloc * );
 
 typedef struct {
     fmt_func    func;
-    op_type     ops[ MAX_OPERANDS ];
+    op_type     ops[MAX_OPERANDS];
 } alpha_format;
 
 typedef enum {
     DOMOV_ORIGINAL,
     DOMOV_ABS,
 } domov_option;
-
-#define MAX_VARIETIES   3
-typedef op_type ot_array[MAX_VARIETIES][3];
 
 #define _FiveBits( x )          ( (x) & 0x001f )
 #define _SixBits( x )           ( (x) & 0x003f )
@@ -194,8 +193,10 @@ static owl_reloc_type relocType( asm_reloc_type type, owl_reloc_type default_typ
 static void doReloc( asm_reloc *reloc, ins_operand *op, owl_reloc_type rtype, uint_32 *offset ) {
 //***********************************************************************************************
 
-    if( op == NULL ) return;
-    if( !( OP_HAS_RELOC( op ) ) ) return;
+    if( op == NULL )
+        return;
+    if( !( OP_HAS_RELOC( op ) ) )
+        return;
     addReloc( reloc, op->reloc.target, relocType( op->reloc.type, rtype ),
               (unsigned)( (char *)offset - (char *)result ), ( op->flags & RELOC ) );
 }
@@ -584,61 +585,58 @@ static void opError( instruction *ins, op_type actual, op_type wanted, int i ) {
     }
 }
 
-static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, int num_var )
-//*******************************************************************************************
+static bool opValidate( ot_array *verify, instruction *ins, int num_op, int num_var )
+//***********************************************************************************
 {
-    int             ctr, var;
-    int             lasterr;
-    op_type         actual = 0;
+    int             ctr;
+    int             var;
+    int             lasterr = 0;
     op_type         wanted = 0;
 
-    lasterr = -1;
     for( var = 0; var < num_var; var++ ) {
-        lasterr = -1;
         for( ctr = 0; ctr < num_op; ctr++ ) {
-            if( ins->operands[ctr]->type != (*verify)[var][ctr] ) {
+            if( ins->operands[ctr]->type != (*verify)[ctr] ) {
                 lasterr = ctr;
-                actual = ins->operands[ctr]->type;
-                wanted = (*verify)[var][ctr];
+                wanted = (*verify)[ctr];
                 break;
             }
         }
-        if( lasterr == -1 ) {   // passed
-            break;
+        if( ctr == num_op ) {   // passed
+            return( true );
         }
+        verify++;
     }
-    if( lasterr != -1 ) {
-        opError( ins, actual, wanted, lasterr );
-        return( false );
-    }
-    return( true );
+    // not passed, error
+    opError( ins, ins->operands[lasterr]->type, wanted, lasterr );
+    return( false );
 }
 
-static bool jmpOperandsValidate( instruction *ins, ins_opcount num_op ) {
-//***********************************************************************
+static bool jmpOperandsValidate( instruction *ins, int num_op )
+//*************************************************************
 // Used by jmp, jsr
-
-    static op_type  verify1[][3] = { { OP_REG_INDIRECT, OP_NOTHING, OP_NOTHING },
-                                     { OP_IMMED, OP_NOTHING, OP_NOTHING } };
-    static op_type  verify2[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_NOTHING },
-                                     { OP_GPR, OP_IMMED, OP_NOTHING },
-                                     { OP_REG_INDIRECT, OP_IMMED, OP_NOTHING }};
-    static op_type  verify3[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
+{
+    static ot_array verify1[] = { { OP_REG_INDIRECT, OP_NOTHING, OP_NOTHING },
+                                  { OP_IMMED, OP_NOTHING, OP_NOTHING } };
+    static ot_array verify2[] = { { OP_GPR, OP_REG_INDIRECT, OP_NOTHING },
+                                  { OP_GPR, OP_IMMED, OP_NOTHING },
+                                  { OP_REG_INDIRECT, OP_IMMED, OP_NOTHING } };
+    static ot_array verify3[] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
     ot_array        *verify;
-    ot_array        *verify_table[3] = { (ot_array *)verify1, (ot_array *)verify2, (ot_array *)verify3 };
     int             num_var;
 
-    if( num_op == 0 ) return( true );
+    if( num_op == 0 )
+        return( true );
     assert( num_op <= 3 );
-    verify = verify_table[ num_op - 1 ];
     if( num_op == 1 ) {
-        num_var = sizeof( verify1 ) / sizeof( **verify1 ) / 3;
+        verify = verify1;
+        num_var = sizeof( verify1 ) / sizeof( verify1[0] );
     } else if( num_op == 2 ) {
-        num_var = sizeof( verify2 ) / sizeof( **verify2 ) / 3;
+        verify = verify2;
+        num_var = sizeof( verify2 ) / sizeof( verify2[0] );
     } else {
-        num_var = sizeof( verify3 ) / sizeof( **verify3 ) / 3;
+        verify = verify3;
+        num_var = sizeof( verify3 ) / sizeof( verify3[0] );
     }
-    assert( num_var <= MAX_VARIETIES );
     return( opValidate( verify, ins, num_op, num_var ) );
 }
 
@@ -661,13 +659,14 @@ static void ITMemJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_
 //**********************************************************************************************
 
     ins_operand *op0, *op1;
-    ins_opcount num_op;
+    int         num_op;
     int         inc;
     uint_8      d_reg_idx;      // default d_reg if not specified
 
     num_op = ins->num_operands;
     // First check if the operands are of the right types
-    if( !jmpOperandsValidate( ins, num_op ) ) return;
+    if( !jmpOperandsValidate( ins, num_op ) )
+        return;
     if( num_op == 3 ) {
         stdMemJump( table, ins, buffer, reloc );
         return;
@@ -720,35 +719,34 @@ static void ITMemJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     doMemJump( buffer + inc, table, d_reg_idx, AT_REG_IDX,
                NULL, 0, reloc );
     numExtendedIns += inc;  // total # of instructions = inc + 1
-    return;
-
 }
 
-static bool retOperandsValidate( instruction *ins, ins_opcount num_op ) {
-//***********************************************************************
+static bool retOperandsValidate( instruction *ins, int num_op )
+//*************************************************************
 // Can be used by ret, jsr_coroutine
-
-    static op_type  verify1[][3] = { { OP_GPR, OP_NOTHING, OP_NOTHING },
-                                     { OP_IMMED, OP_NOTHING, OP_NOTHING } };
-    static op_type  verify2[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_NOTHING },
-                                     { OP_GPR, OP_IMMED, OP_NOTHING },
-                                     { OP_REG_INDIRECT, OP_IMMED, OP_NOTHING }};
-    static op_type  verify3[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
+{
+    static ot_array verify1[] = { { OP_GPR, OP_NOTHING, OP_NOTHING },
+                                  { OP_IMMED, OP_NOTHING, OP_NOTHING } };
+    static ot_array verify2[] = { { OP_GPR, OP_REG_INDIRECT, OP_NOTHING },
+                                  { OP_GPR, OP_IMMED, OP_NOTHING },
+                                  { OP_REG_INDIRECT, OP_IMMED, OP_NOTHING } };
+    static ot_array verify3[] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
     ot_array        *verify;
-    ot_array        *verify_table[3] = { (ot_array *)verify1, (ot_array *)verify2, (ot_array *)verify3 };
     int             num_var;
 
-    if( num_op == 0 ) return( true );
+    if( num_op == 0 )
+        return( true );
     assert( num_op <= 3 );
-    verify = verify_table[ num_op - 1 ];
     if( num_op == 1 ) {
-        num_var = sizeof( verify1 ) / sizeof( **verify1 ) / 3;
+        verify = verify1;
+        num_var = sizeof( verify1 ) / sizeof( verify1[0] );
     } else if( num_op == 2 ) {
-        num_var = sizeof( verify2 ) / sizeof( **verify2 ) / 3;
+        verify = verify2;
+        num_var = sizeof( verify2 ) / sizeof( verify2[0] );
     } else {
-        num_var = sizeof( verify3 ) / sizeof( **verify3 ) / 3;
+        verify = verify3;
+        num_var = sizeof( verify3 ) / sizeof( verify3[0] );
     }
-    assert( num_var <= MAX_VARIETIES );
     return( opValidate( verify, ins, num_op, num_var ) );
 }
 
@@ -757,12 +755,13 @@ static void ITRet( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
 // Both ret and jsr coroutine use this
 
     ins_operand     *op0, *op1;
-    ins_opcount     num_op;
+    int             num_op;
     uint_8          d_reg_idx;  // default d_reg if not specified
 
     num_op = ins->num_operands;
     // First check if the operands are of the right types
-    if( !retOperandsValidate( ins, num_op ) ) return;
+    if( !retOperandsValidate( ins, num_op ) )
+        return;
     if( num_op == 3 ) {
         stdMemJump( table, ins, buffer, reloc );
         return;
