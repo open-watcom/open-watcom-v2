@@ -1,14 +1,15 @@
 /* UTF-8 encoding, ¥ */
 
-WRESplashScreen DIALOG 50, 50, 239, 135
+WRESplashScreen DIALOG 50, 50, 239, 145
 STYLE WS_POPUP | WS_DLGFRAME
 FONT 8, "Helv"
 BEGIN
         CONTROL "APPLICON", 0, "STATIC", SS_ICON | WS_CHILD | WS_VISIBLE, 6, 8, 18, 20
-        CONTROL [ banner1t( "Resource Editor" ) " for Windows" STR_BITNESS ], -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 5, 171, 8
-        CONTROL [ "Version " _RESEDIT_VERSION_ ] , -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 15, 171, 8
-        CONTROL "Portions Copyright (c) 1984-2002 Sybase, Inc.", -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 26, 171, 8
+        CONTROL [ banner1t( "Resource Editor" ) " for Windows" ], -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 5, 171, 8
+        CONTROL [ banner1v( _RESEDIT_VERSION_ ) ] , -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 15, 171, 8
+        CONTROL [ banner2 ] , -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 25, 171, 8
+        CONTROL [ banner2a( 1984 ) ] , -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 35, 171, 8
         CONTROL "APPLICON", 0, "STATIC", SS_ICON | WS_CHILD | WS_VISIBLE, 214, 8, 18, 20
-        CONTROL "", 666, "static", SS_BLACKRECT | WS_CHILD | WS_VISIBLE, 2, 36, 235, 1
+        CONTROL "", 666, "static", SS_BLACKRECT | WS_CHILD | WS_VISIBLE, 2, 46, 235, 1
 END
 

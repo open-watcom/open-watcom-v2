@@ -423,7 +423,7 @@ bool WREInitInst( HINSTANCE app_inst )
         }
         UpdateWindow( WREMainWin );
 
-        WREDisplaySplashScreen( WREInst, WREMainWin, 1250 );
+        WREDisplaySplashScreen( WREInst, WREMainWin, 2000 );
     }
 
     return( true );

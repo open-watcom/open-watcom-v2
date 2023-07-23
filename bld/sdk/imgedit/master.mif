@@ -57,7 +57,7 @@ extra_l_flags_os2 = option stack=12k, heapsize=2k
 # EXE
 #
 exetarg_prebuild_objs = rcstr.grh
-exetarg_objs_extras_win = wincreat.obj title.obj winutils.obj
+exetarg_objs_extras_win = wincreat.obj splash.obj winutils.obj
 exetarg_objs_os2      = pmcreate.obj pmutils.obj pmicon.obj wbitmap.obj
 exetarg_objs_win      = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iectl3d.obj $(exetarg_objs_extras_win)
 exetarg_objs = &

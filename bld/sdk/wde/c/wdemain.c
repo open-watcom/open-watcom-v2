@@ -441,7 +441,7 @@ bool WdeInitInst( HINSTANCE app_inst )
     WdeSetFontList( hWinWdeMain );
 
     if( !IsDDE ) {
-        WdeDisplaySplashScreen( hInstWde, hWinWdeMain, 1125 );
+        WdeDisplaySplashScreen( hInstWde, hWinWdeMain, 2000 );
     }
 
     if( IsDDE ) {

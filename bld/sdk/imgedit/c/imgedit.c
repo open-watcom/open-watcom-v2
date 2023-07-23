@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include <shellapi.h>
 #include <io.h>
 #include <stdarg.h>
-#include "title.h"
+#include "splash.h"
 #include "iedde.h"
 #include "wreddeop.h"
 
@@ -322,7 +322,7 @@ static bool imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     UpdateWindow( HMainWindow );
 
     if( !ImgedIsDDE && !NoTitleScreen ) {
-        DisplayTitleScreen( Instance, HMainWindow, 2000, IEAppTitle );
+        ImgDisplaySplashScreen( Instance, HMainWindow, 2000 );
     }
 
     CreateColorPal();

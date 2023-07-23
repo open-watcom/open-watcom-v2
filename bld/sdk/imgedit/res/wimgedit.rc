@@ -125,4 +125,4 @@ END
 #include "selcolor.dlg"
 #include "settings.dlg"
 #include "about.dlg"
-#include "title.dlg"
+#include "splash.dlg"

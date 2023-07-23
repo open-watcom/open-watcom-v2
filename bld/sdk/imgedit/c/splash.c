@@ -33,7 +33,7 @@
 
 #include "imgedit.h"
 #include <io.h>
-#include "title.h"
+#include "splash.h"
 #include "jdlg.h"
 #include "wclbproc.h"
 
@@ -42,8 +42,6 @@
 WINEXPORT WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 
 #define TITLE_TIMER       666
-
-static char             *appName;
 
 #ifdef __NT__
 typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
@@ -76,7 +74,6 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
 
     switch ( message ) {
     case WM_INITDIALOG:
-        SetWindowText( hwnd, appName );
         msecs = *((UINT *)lparam);
         if( msecs != 0 ) {
             timer = SetTimer( hwnd, TITLE_TIMER, msecs, NULL );
@@ -174,20 +171,14 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
 } /* wTitleDlgProc */
 
 /*
- * DisplayTitleScreen - display the title screen on startup
+ * ImgDisplaySplashScreen - display the title screen on startup
  */
-void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name )
+void ImgDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
     DLGPROC     dlgproc;
-    int         len;
-
-    len = strlen( app_name );
-    appName = MemAlloc( len + 1 );
-    strcpy( appName, app_name );
 
     dlgproc = MakeProcInstance_DLG( wTitleDlgProc, Instance );
-    JDialogBoxParam( inst, "WTitleScreen", parent, dlgproc, (LPARAM)&msecs );
+    JDialogBoxParam( inst, "ImgSplashScreen", parent, dlgproc, (LPARAM)&msecs );
     FreeProcInstance_DLG( dlgproc );
-    MemFree( appName );
 
-} /* DisplayTitleScreen */
+} /* ImgDisplaySplashScreen */
