@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ PICK( IT_REG_JUMP,      ITRegJump,      OP_GPR, (OP_GPR | OP_NOTHING), OP_NOTHIN
 PICK( IT_JUMP,          ITJump,         (OP_GPR | OP_IMMED), (OP_GPR | OP_NOTHING), OP_NOTHING )        /* j       */
 PICK( IT_BRANCH,        ITBranch,       (OP_GPR | OP_IMMED), (OP_IMMED | OP_NOTHING), OP_NOTHING )      /* bsr     */
 PICK( IT_BRANCH_TWO,    ITBranchTwo,    OP_GPR, OP_GPR, OP_IMMED )                                      /* beq     */
-PICK( IT_BRANCH_ZERO,   ITBranchZero,   OP_GPR, OP_IMMED, OP_NOTHING )                                     /* blez    */
+PICK( IT_BRANCH_ZERO,   ITBranchZero,   OP_GPR, OP_IMMED, OP_NOTHING )                                  /* blez    */
 PICK( IT_BRANCH_COP,    ITBranchCop,    OP_IMMED, OP_NOTHING, OP_NOTHING )                              /* bc0f    */
 PICK( IT_FP_BRANCH,     ITBranch,       OP_FPR, OP_IMMED, OP_NOTHING )                                  /* fbeq    */
 PICK( IT_MF_SPECIAL,    ITMovFromSpc,   OP_GPR, OP_NOTHING, OP_NOTHING )                                /* mflo    */
