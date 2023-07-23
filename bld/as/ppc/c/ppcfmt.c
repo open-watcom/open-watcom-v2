@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,27 +32,6 @@
 
 #include "as.h"
 
-typedef enum {
-    UNNAMED,            // unnamed reloc
-    SYMBOLIC            // symbolic reloc
-} asm_reloc_flag;
-
-typedef struct asm_reloc {
-    owl_reloc_type      type;
-    union {
-        int_32          label_num;
-        sym_handle      sym;
-    }                   target;
-    boolbit             valid       : 1;
-    boolbit             is_unnamed  : 1;
-} asm_reloc;
-
-typedef void (*fmt_func)( ins_table *, instruction *, uint_32 *, asm_reloc * );
-
-typedef struct {
-    fmt_func    func;
-    op_type     ops[ MAX_OPERANDS ];
-} ppc_format;
 
 #define _SixBits( x )           ( (x) & 0x003f )
 #define _TenBits( x )           ( (x) & 0x03ff )
@@ -92,6 +72,28 @@ typedef struct {
 #define _Longword_offset( x )   ( (x) >> 2 )
 
 #define _IsAbsolute( x )        ( ( (x) & IF_SETS_ABSOLUTE ) ? 1 : 0 )
+
+typedef enum {
+    UNNAMED,            // unnamed reloc
+    SYMBOLIC            // symbolic reloc
+} asm_reloc_flag;
+
+typedef struct asm_reloc {
+    owl_reloc_type      type;
+    union {
+        int_32          label_num;
+        sym_handle      sym;
+    }                   target;
+    boolbit             valid       : 1;
+    boolbit             is_unnamed  : 1;
+} asm_reloc;
+
+typedef void (*fmt_func)( ins_table *, instruction *, uint_32 *, asm_reloc * );
+
+typedef struct {
+    fmt_func    func;
+    op_type     ops[ MAX_OPERANDS ];
+} ppc_format;
 
 static owl_reloc_type reloc_translate[] = {
     OWL_RELOC_ABSOLUTE,     // Corresponds to ASM_RELOC_UNSPECIFIED

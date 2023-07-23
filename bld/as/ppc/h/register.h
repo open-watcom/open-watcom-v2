@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,18 @@
 ****************************************************************************/
 
 
+#define MakeReg( c, i ) ( ( (i) & 0xff ) | ( (int)(c) << 8 ) )
+#define RegClass( r )   ( ( (r) >> 8 ) & 0xff )
+#define RegIndex( r )   ( (r) & 0xff )
+
+#define NULL_REG_IDX    0
+#define NULL_REG        MakeReg( RC_NOTHING, NULL_REG_IDX )
+
+#define SP_REG_IDX      1
+#define RTOC_REG_IDX    2
+
+#define AT_REG          NULL_REG
+
 typedef uint_16 reg;
 
 typedef enum {
@@ -38,16 +51,6 @@ typedef enum {
     #undef PICK
     RC_LAST
 } reg_class;
-
-#define MakeReg( c, i ) ( ( (i) & 0xff ) | ( (int)(c) << 8 ) )
-#define RegClass( r )   ( ( (r) >> 8 ) & 0xff )
-#define RegIndex( r )   ( (r) & 0xff )
-
-#define NULL_REG        ( MakeReg( RC_NOTHING, 0 ) )
-
-// $?? is the assembler temp reg in PPC
-//#define AT_REG                ( MakeReg( RC_GPR, ?? ) )
-#define AT_REG          NULL_REG
 
 extern char *AsRegName( reg );
 extern uint RegCrfToBI( reg r );
