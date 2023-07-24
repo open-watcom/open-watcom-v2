@@ -53,11 +53,12 @@
 #include "miscx87.h"
 #include "dosredir.h"
 #include "doscomm.h"
-#include "clibint.h"
 #include "trperr.h"
 #include "doserr.h"
 #include "plsintr.h"
 #include "segmcpu.h"
+
+#include "clibint.h"
 
 
 #define MAX_OBJECTS     128

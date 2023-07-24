@@ -51,8 +51,8 @@
 #include "trmem.h"
 #endif
 
-#include "clibext.h"
 #include "clibint.h"
+#include "clibext.h"
 
 
 #if defined( __OS2__ )

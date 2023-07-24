@@ -37,10 +37,8 @@
 #endif
 #include "wio.h"
 
-#include "clibext.h"
-#ifndef IDE_PGM
 #include "clibint.h"
-#endif
+#include "clibext.h"
 
 
 #define AR_MODE_ENV     "WLIB_AR"

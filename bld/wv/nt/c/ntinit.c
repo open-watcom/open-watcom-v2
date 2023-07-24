@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,9 +53,7 @@
 #include "dbginit.h"
 #include "dbgcmdln.h"
 
-#ifdef __WATCOMC__
 #include "clibint.h"
-#endif
 #include "clibext.h"
 
 

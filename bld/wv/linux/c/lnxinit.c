@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,18 +49,13 @@
 #include "aui.h"
 #endif
 
-#ifdef __WATCOMC__
 #include "clibint.h"
-#endif
 
 
-#ifdef __WATCOMC__
+#ifdef _M_IX86
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 #endif
-
-extern char     **_argv;
-extern int      _argc;
 
 #ifndef __WATCOMC__
 extern char     **environ;
