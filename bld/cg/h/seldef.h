@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ typedef struct select_list {
 
 typedef struct select_node {
 #ifndef NDEBUG
-        use_info        useinfo;
+        use_info                useinfo;
 #endif
         struct select_list      *list;
         label_handle            other_wise;

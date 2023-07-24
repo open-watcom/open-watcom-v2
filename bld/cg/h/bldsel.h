@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@ extern sel_handle   BGSelInit( void );
 extern void         BGSelCase( sel_handle s_node, label_handle label, signed_32 value );
 extern void         BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );
 extern void         BGSelOther( sel_handle s_node, label_handle other );
+extern void         BGSelect( sel_handle s_node, an node, cg_switch_type allowed );
 extern int          SelCompare( signed_32 lo1, signed_32 lo2 );
 extern cg_type      SelType( unsigned_32 value_range );
 extern signed_32    NumValues( select_list *list, signed_32 hi );
 extern void         FreeTable( tbl_control *table );
-extern void         BGSelect( sel_handle s_node, an node, cg_switch_type allowed );
