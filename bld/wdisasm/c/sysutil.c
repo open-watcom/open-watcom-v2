@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,10 +42,10 @@ void  SysHelp()
 {
     DirectPuts( MSG_BANNER, stdout );
     fputs(
-        banner1( "", _WDISASM_VERSION_ ) "\n"
-        banner2 "\n",
+        banner1v( _WDISASM_VERSION_ ) "\n"
+        banner2 "\n"
         banner2a( 1988 ) "\n"
-        banner3 "\n",
+        banner3 "\n"
         banner3a "\n",
         stdout
     );

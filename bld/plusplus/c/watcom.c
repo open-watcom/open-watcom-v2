@@ -53,18 +53,14 @@ void CBanner( void )
     if( !CompFlags.banner_printed ) {
         CompFlags.banner_printed = true;
         if( !CompFlags.quiet_mode ) {
-#if defined( _BETAVER )
             ConsoleMessage( banner1t( "C++ " _TARGET_ " Optimizing Compiler" ) );
             ConsoleMessage( banner1v( _WPP_VERSION_ ) );
-#else
-            ConsoleMessage( banner1w( "C++ " _TARGET_ " Optimizing Compiler", _WPP_VERSION_ ) );
-#endif
             ConsoleMessage( banner2 );
             ConsoleMessage( banner2a( 1989 ) );
             ConsoleMessage( banner3 );
             ConsoleMessage( banner3a );
             if( Token[0] != '$' ) {             /* if finger print present */
-                ConsoleMessage( Token );                /* - print it */
+                ConsoleMessage( Token );        /* - print it */
             }
         }
     }

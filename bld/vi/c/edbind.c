@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,14 +64,16 @@ char        *bindfile = _bf;
 
 static void Banner( void )
 {
-    if( qflag ) {
-        return;
+    if( !qflag ) {
+        puts(
+            banner1t( "Editor Bind Utility" ) "\n"
+            banner1v( _EDBIND_VERSION_ ) "\n"
+            banner2 "\n"
+            banner2a( 1984 ) "\n"
+            banner3 "\n"
+            banner3a "\n"
+        );
     }
-    printf( banner1w( "Editor Bind Utility", _EDBIND_VERSION_ ) "\n" );
-    printf( banner2 "\n" );
-    printf( banner2a( 1984 ) "\n" );
-    printf( banner3 "\n" );
-    printf( banner3a "\n" );
 }
 
 /*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,11 +139,14 @@ static void displayBanner( void )
     if( quietFlag ) {
         return;
     }
-    printf( banner1w( "CTAGS Utility", "1.0" ) "\n" );
-    printf( banner2 "\n" );
-    printf( banner2a( 1984 ) "\n" );
-    printf( banner3 "\n" );
-    printf( banner3a "\n" );
+    puts(
+        banner1t( "CTAGS Utility" ) "\n"
+        banner1v( "1.0" ) "\n"
+        banner2 "\n"
+        banner2a( 1984 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
 
 } /* displayBanner */
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -3158,10 +3159,11 @@ static void emulate_wgml( void )
 
 extern void print_banner( void )
 {
-    puts( banner1w( "Document Output Test Program", _RESEARCH_VERSION_ ) );
-    puts( banner2 );
-    puts( banner3 );
-    puts( banner3a );
+    puts( banner1t( "Document Output Test Program" ) "\n"
+          banner1v( _RESEARCH_VERSION_ ) "\n"
+          banner2 "\n"
+          banner3 "\n"
+          banner3a );
 }
 
 /* Function print_usage().

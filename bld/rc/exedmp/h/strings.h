@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,34 +69,6 @@
 #define LBL_HEXINDENTSPACES             "       Number of indent spaces for hex dump   "
 #define LBL_YES                         "yes"
 #define LBL_NO                          "no"
-
-#define MSG_BANNER \
-        banner1w( "PE ExeDmp Utility", "1.0" ) "\n" \
-        banner2          "\n" \
-        banner2a( 1997 ) "\n" \
-        banner3          "\n" \
-        banner3a         "\n\n"
-
-#define MSG_HELP \
-        " Usage:\n" \
-        "       exedmp [options] <filename> [options]\n" \
-        "\n" \
-        " Toggle Options:\n" \
-        " -o    dump offset of each dir header, dir entry, and data entry\n" \
-        " -h    dump hex header of each dir header, dir entry, and data entry\n" \
-        " -d    dump hex contents of each data entry\n" \
-        " -i    print interpretation of each dir header, dir entry, and data entry\n" \
-        " -x    dump Exe headers\n" \
-        " -r    dump information about resource object\n" \
-        " -l    print ruler\n" \
-        "\n" \
-        " Other Options:\n" \
-        " -tX   dump only resource of type X (e.g. -tgroupicon)\n" \
-        " -sX   indent each level of dir by X spaces\n" \
-        " -nX   indent hex contents of data entries by X spaces\n" \
-        "       (use -1 to align hex contents with their data entries)\n" \
-        "\n" \
-        " Available Resource Types:\n"
 
 #define MSG_DOS_HEADER                  "Dos Exe Header:\n"
 #define MSG_DOS_SIGNATURE               "Signature:                                    0x%8.4X\n"

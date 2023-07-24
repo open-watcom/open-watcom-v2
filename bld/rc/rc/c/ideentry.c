@@ -159,19 +159,6 @@ const char *RcGetEnv( const char *name )
     return( NULL );
 }
 
-static const char * BannerText =
-#if defined( _BETAVER )
-    banner1t( "Windows and OS/2 Resource Compiler" ) "\n"
-    banner1v( _WRC_VERSION_ ) "\n"
-#else
-    banner1w( "Windows and OS/2 Resource Compiler", _WRC_VERSION_ ) "\n"
-#endif
-    banner2 "\n"
-    banner2a( 1993 ) "\n"
-    banner3 "\n"
-    banner3a "\n"
-;
-
 static void ConsoleMessage( const char *str, ... )
 {
     OutPutInfo          errinfo;
@@ -190,7 +177,15 @@ static void RcIoPrintBanner( void )
 /*********************************/
 {
     if( !CmdLineParms.Quiet ) {
-        ConsoleMessage( BannerText );
+        ConsoleMessage(
+            banner1t( "Windows and OS/2 Resource Compiler" ) "\n"
+            banner1v( _WRC_VERSION_ ) "\n"
+            banner2 "\n"
+            banner2a( 1993 ) "\n"
+            banner3 "\n"
+            banner3a
+        );
+
     }
 }
 

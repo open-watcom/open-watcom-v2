@@ -375,19 +375,24 @@ int main( int argc, char *argv[] )
 
     result = parse_cmdline( &arg, argc, argv );
     if( !arg.opt.be_quiet ) {
-        puts( banner1w( "EXE to Binary Converter", _EXE2BIN_VERSION_ ) );
-        puts( banner2 );
-        puts( banner2a( 2001 ) );
-        puts( banner3 );
-        puts( banner3a );
+        puts(
+            banner1t( "EXE to Binary Converter" ) "\n"
+            banner1v( _EXE2BIN_VERSION_ ) "\n"
+            banner2 "\n"
+            banner2a( 2001 ) "\n"
+            banner3 "\n"
+            banner3a "\n"
+        );
     }
     if( result ) {
-        puts( "Usage:   exe2bin [options] exe_file[.exe] [bin_file]\n"
-               "Options: -q        suppress informational messages\n"
-               "         -h        display exe-header\n"
-               "         -r        display relocations\n"
-               "         -l=<seg>  relocate exe_file to segment <seg>\n"
-               "         -x        extended behaviour, e.g. files > 64KB" );
+        puts(
+            "Usage:   exe2bin [options] exe_file[.exe] [bin_file]\n"
+            "Options: -q        suppress informational messages\n"
+            "         -h        display exe-header\n"
+            "         -r        display relocations\n"
+            "         -l=<seg>  relocate exe_file to segment <seg>\n"
+            "         -x        extended behaviour, e.g. files > 64KB\n"
+        );
         return( EXIT_FAILURE );
     }
 

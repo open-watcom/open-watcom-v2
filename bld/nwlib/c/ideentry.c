@@ -137,14 +137,19 @@ char *WlibGetEnv( const char *name )
 
 }
 
-void FatalResError( char *msg )
+static void IdeOutput( const char *msg, int how )
 {
     IDEMsgInfo          msg_info;
 
     if( IdeCbs != NULL ) {
-        IdeMsgInit( &msg_info, IDEMSGSEV_ERROR, msg );
+        IdeMsgInit( &msg_info, how, msg );
         IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
     }
+}
+
+void FatalResError( const char *msg )
+{
+    IdeOutput( msg, IDEMSGSEV_ERROR );
     longjmp( Env, 1 );
 }
 
@@ -153,16 +158,12 @@ void FatalError( int str, ... )
     va_list             arglist;
     char                buff[MAX_ERROR_SIZE];
     char                msg[512];
-    IDEMsgInfo          msg_info;
 
-    va_start( arglist, str );
     MsgGet( str, buff );
+    va_start( arglist, str );
     vsnprintf( msg, 512, buff, arglist );
-    if( IdeCbs != NULL ) {
-        IdeMsgInit( &msg_info, IDEMSGSEV_ERROR, msg );
-        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
-    }
     va_end( arglist );
+    IdeOutput( msg, IDEMSGSEV_ERROR );
     longjmp( Env, 1 );
 }
 
@@ -171,50 +172,46 @@ void Warning( int str, ... )
     va_list             arglist;
     char                buff[MAX_ERROR_SIZE];
     char                msg[512];
-    IDEMsgInfo          msg_info;
 
     if( Options.quiet )
         return;
     MsgGet( str, buff );
     va_start( arglist, str );
     vsnprintf( msg, 512, buff, arglist );
-    if( IdeCbs != NULL ) {
-        IdeMsgInit( &msg_info, IDEMSGSEV_WARNING, msg );
-        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
-    }
     va_end( arglist );
+    IdeOutput( msg, IDEMSGSEV_WARNING );
 }
 
-void Message( char *buff, ... )
+void Message( const char *buff, ... )
+/***********************************/
 {
     va_list             arglist;
     char                msg[512];
-    IDEMsgInfo          msg_info;
 
     if( Options.quiet )
         return;
     va_start( arglist, buff );
     vsnprintf( msg, 512, buff, arglist );
-    if( IdeCbs != NULL ) {
-        IdeMsgInit( &msg_info, IDEMSGSEV_NOTE_MSG, msg );
-        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
-    }
     va_end( arglist );
+    IdeOutput( msg, IDEMSGSEV_NOTE_MSG );
 }
 
-static void ConsoleMessage( const char *msgfmt, ... )
+static void ConsolePuts( const char *str )
+/****************************************/
+{
+    IdeOutput( str, IDEMSGSEV_BANNER );
+}
+
+static void ConsolePrintf( const char *msgfmt, ... )
+/**************************************************/
 {
     va_list             arglist;
     char                msg[512];
-    IDEMsgInfo          msg_info;
 
     va_start( arglist, msgfmt );
     vsnprintf( msg, 512, msgfmt, arglist );
-    if( IdeCbs != NULL ) {
-        IdeMsgInit( &msg_info, IDEMSGSEV_BANNER, msg );
-        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
-    }
     va_end( arglist );
+    IdeOutput( msg, IDEMSGSEV_BANNER );
 }
 
 void Usage( void )
@@ -229,13 +226,13 @@ void Usage( void )
     if( IdeCbs != NULL ) {
         console_tty = ( ideInfo != NULL && ideInfo->ver > 2 && ideInfo->console_output );
         if( console_tty && !Options.quiet && !Options.terse_listing ) {
-            ConsoleMessage( "" );
+            ConsolePuts( "" );
         }
         if( Options.ar ) {
             str = MSG_USAGE_AR_BASE;
             str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
             MsgGet( str++, buff );
-            ConsoleMessage( buff, Options.ar_name );
+            ConsolePrintf( buff, Options.ar_name );
             str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
         } else {
             str = MSG_USAGE_WLIB_BASE;
@@ -243,7 +240,7 @@ void Usage( void )
         }
         for( ; str < str_last; ++str ) {
             MsgGet( str, buff );
-            ConsoleMessage( buff );
+            ConsolePuts( buff );
         }
     }
     longjmp( Env, 1 );
@@ -256,15 +253,18 @@ void Banner( void )
     if( !alreadyDone ) {
         alreadyDone = true;
         if( !Options.quiet && !Options.terse_listing && IdeCbs != NULL ) {
+            ConsolePuts(
+                banner1t( "Library Manager" )
 #ifndef NDEBUG
-            ConsoleMessage( banner1w( "Library Manager", _WLIB_VERSION_ ) " [Internal Development]" );
-#else
-            ConsoleMessage( banner1w( "Library Manager", _WLIB_VERSION_ ) );
+                " [Internal Development]"
 #endif
-            ConsoleMessage( banner2 );
-            ConsoleMessage( banner2a( 1984 ) );
-            ConsoleMessage( banner3 );
-            ConsoleMessage( banner3a );
+                "\n"
+                banner1v( _WLIB_VERSION_ ) "\n"
+                banner2 "\n"
+                banner2a( 1984 ) "\n"
+                banner3 "\n"
+                banner3a
+            );
         }
     }
 }

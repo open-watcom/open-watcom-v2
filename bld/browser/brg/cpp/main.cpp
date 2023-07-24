@@ -90,25 +90,29 @@ int main()
 static void printHeader()
 //-----------------------
 {
-    puts( banner1w( "Browsing Information Merger", _WBRG_VERSION_ ) );
-    puts( banner2 );
-    puts( banner2a( 1994 ) );
-    puts( banner3 );
-    puts( banner3a );
-    puts( "" );
+    puts(
+        banner1t( "Browsing Information Merger" ) "\n"
+        banner1v( _WBRG_VERSION_ ) "\n"
+        banner2 "\n"
+        banner2a( 1994 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
 }
 
 static void printUsage()
 //----------------------
 {
-    puts( "" );
-    puts( "Usage:    wbrg <merger_cmd> ... <merger_cmd>" );
-    puts( "" );
-    puts( "          <merger_cmd> ::= database <dbr_file>" );
-    puts( "                         | file <mbr_file>, <mbr_file>, ..." );
-    puts( "                         | file { <mbr_file> ... <mbr_file> }" );
-    puts( "                         | @ <cbr_file>" );
-    puts( "          <dbr_file> is the file name of the browser database file" );
-    puts( "          <mbr_file> is the file name of a browser module file" );
-    puts( "          <cbr_file> is the file name of a browser command file" );
+    puts(
+        "\n"
+        "Usage:    wbrg <merger_cmd> ... <merger_cmd>" "\n"
+        "\n"
+        "    <merger_cmd> ::= database <dbr_file>" "\n"
+        "                   | file <mbr_file>, <mbr_file>, ..." "\n"
+        "                   | file { <mbr_file> ... <mbr_file> }" "\n"
+        "                   | @ <cbr_file>" "\n"
+        "    <dbr_file> is the file name of the browser database file" "\n"
+        "    <mbr_file> is the file name of a browser module file" "\n"
+        "    <cbr_file> is the file name of a browser command file"
+    );
 }

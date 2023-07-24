@@ -600,12 +600,8 @@ bool    WasStmtListed( void ) {
 void    TOutBanner( void ) {
 //==========================
 
-#if defined( _BETAVER )
     TOutNL( banner1t( _Banner ) );
     TOutNL( banner1v( _WFC_VERSION_ ) );
-#else
-    TOutNL( banner1w( _Banner, _WFC_VERSION_ ) );
-#endif
     TOutNL( banner2 );
     TOutNL( banner2a( 1984 ) );
     TOutNL( banner3 );
@@ -621,12 +617,8 @@ void    PrtBanner( void ) {
     time_t      time_of_day;
     struct tm   *t;
 
-#if defined( _BETAVER )
     PrtLstNL( banner1t( _Banner ) );
     strcpy( banner, banner1v( _WFC_VERSION_ ) );
-#else
-    strcpy( banner, banner1w( _Banner, _WFC_VERSION_ ) );
-#endif
     time_of_day = time( NULL );
     t = localtime( &time_of_day );
     MsgFormat( "  %4d1/%2d2/%2d3 %2d4:%2d5:%2d6", banner + strlen( banner ),

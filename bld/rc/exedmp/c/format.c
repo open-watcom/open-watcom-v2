@@ -220,7 +220,14 @@ void printDefaultParameters( void )
 void printBanner( void )
 /***********************/
 {
-    printf( MSG_BANNER );
+    puts(
+        banner1t( "PE ExeDmp Utility" ) "\n"
+        banner1v( "1.0" ) "\n"
+        banner2 "\n"
+        banner2a( 1997 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
 }
 
 void printHelp( void )
@@ -228,10 +235,30 @@ void printHelp( void )
 {
     int i;
 
-    printf( MSG_HELP );
-    for( i = 0; resTypes[ i ] != NULL; i++ ) {
-        if( *resTypes[ i ] != '\0' ) {
-            printf( "       %s\n", resTypes[ i ] );
+    puts(
+        " Usage:\n"
+        "       exedmp [options] <filename> [options]\n"
+        "\n"
+        " Toggle Options:\n"
+        " -o    dump offset of each dir header, dir entry, and data entry\n"
+        " -h    dump hex header of each dir header, dir entry, and data entry\n"
+        " -d    dump hex contents of each data entry\n"
+        " -i    print interpretation of each dir header, dir entry, and data entry\n"
+        " -x    dump Exe headers\n"
+        " -r    dump information about resource object\n"
+        " -l    print ruler\n"
+        "\n"
+        " Other Options:\n"
+        " -tX   dump only resource of type X (e.g. -tgroupicon)\n"
+        " -sX   indent each level of dir by X spaces\n"
+        " -nX   indent hex contents of data entries by X spaces\n"
+        "       (use -1 to align hex contents with their data entries)\n"
+        "\n"
+        " Available Resource Types:\n"
+    );
+    for( i = 0; resTypes[i] != NULL; i++ ) {
+        if( *resTypes[i] != '\0' ) {
+            printf( "       %s\n", resTypes[i] );
         }
     }
     printf( "\n" );

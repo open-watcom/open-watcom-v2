@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,15 +60,6 @@
 
 #define LIST_FILE_EXTENSION     "lst"
 
-static const char * const banner[] = {
-    banner1w( "Multi-processor Disassembler", _WDISASM_VERSION_ ),
-    banner2,
-    banner2a( 1995 ),
-    banner3,
-    banner3a,
-    NULL
-};
-
 enum {
     MSG_USAGE_COUNT = 0
     #define pick(n,e,j)     + 1
@@ -79,25 +70,23 @@ enum {
 static void printUsage( int msg )
 {
     int                 id;
-    const char * const  *text;
     char                buff[MAX_RESOURCE_SIZE];
 
-    ChangePrintDest( stderr );
     if( msg != 0 ) {
-        BufferMsg( msg );
-        BufferConcatNL();
-        BufferConcatNL();
-        BufferPrint();
+        MsgGet( msg, buff );
+        fputs( buff, stderr );
     }
-    for( text = banner; *text != NULL; ++text ) {
-        Print( *text );
-        Print( "\n" );
-    }
+    puts(
+        banner1t( "Multi-processor Disassembler" ) "\n"
+        banner1v( _WDISASM_VERSION_ ) "\n"
+        banner2 "\n"
+        banner2a( 1995 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
     for( id = MSG_USAGE_BASE; id < MSG_USAGE_BASE + MSG_USAGE_COUNT; id++ ) {
         MsgGet( id, buff );
-        BufferConcat( buff );
-        BufferConcatNL();
-        BufferPrint();
+        puts( buff );
     }
 }
 

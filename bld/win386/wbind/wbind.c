@@ -175,14 +175,18 @@ static void doError( const char *str, ... )
 
 static void doBanner( void )
 {
-    myPrintf( banner1w( "Win386 Bind Utility",_WBIND_VERSION_ ) "\n" );
-    myPrintf( banner2 "\n" );
-    myPrintf( banner2a( 1991 ) "\n" );
-    myPrintf( banner3 "\n" );
-    myPrintf( banner3a "\n" );
-    myPrintf("\n");
+    if( !quietFlag ) {
+        puts(
+            banner1t( "Win386 Bind Utility" ) "\n"
+            banner1v( _WBIND_VERSION_ ) "\n"
+            banner2 "\n"
+            banner2a( 1991 ) "\n"
+            banner3 "\n"
+            banner3a "\n"
+            "\n"
+        );
+    }
 }
-
 
 static void doUsage( const char *str )
 {
@@ -192,18 +196,20 @@ static void doUsage( const char *str )
         printf( "Error - %s\n\n", str );
     }
 
-    printf("Usage:  wbind [file] [-udnq] [-D \"<desc>\"] [-s <supervisor>] [-R <rc options>]\n" );
-    printf("        [file] is the name of the 32-bit windows executable to bind\n" );
-    printf("        -u              : unbind a bound executable\n" );
-    printf("        -d              : build a 32-bit dll\n" );
-    printf("        -n              : no resource compile required\n" );
-    printf("        -q              : quiet mode\n" );
-    printf("        -D \"<desc>\"     : specify the description field\n" );
-    printf("        -s <supervisor> : specifies the path/name of the windows supervisor\n" );
-    printf("        -R <rc options> : all options after -R are passed to the resource\n" );
-    printf("                          compiler. Note that ONLY the options after -R are\n" );
-    printf("                          given to the resource compiler.\n" );
-    exit( 0 );
+    puts(
+        "Usage:  wbind [file] [-udnq] [-D \"<desc>\"] [-s <supervisor>] [-R <rc options>]\n"
+        "\n"
+        "    [file] is the name of the 32-bit windows executable to bind\n"
+        "    -u              : unbind a bound executable\n"
+        "    -d              : build a 32-bit dll\n"
+        "    -n              : no resource compile required\n"
+        "    -q              : quiet mode\n"
+        "    -D \"<desc>\"     : specify the description field\n"
+        "    -s <supervisor> : specifies the path/name of the windows supervisor\n"
+        "    -R <rc options> : all options after -R are passed to the resource\n"
+        "                      compiler. Note that ONLY the options after -R are\n"
+        "                      given to the resource compiler.\n"
+    );
 
 } /* doUsage */
 
@@ -360,6 +366,7 @@ int main( int argc, char *argv[] )
      */
     if( argc < 2 ) {
         doUsage( NULL );
+        return( 0 );
     }
     wrc_parm = 0;
     for( currarg = 1; currarg < argc; currarg++ ) {
@@ -374,7 +381,9 @@ int main( int argc, char *argv[] )
             len = strlen( argv[currarg] );
             for( i = 1; i < len; i++ ) {
                 switch( argv[currarg][i] ) {
-                case '?': doUsage( NULL );
+                case '?':
+                    doUsage( NULL );
+                    return( 0 );
                 case 'D':
                     currarg++;
                     desc = argv[currarg];
@@ -399,7 +408,8 @@ int main( int argc, char *argv[] )
                     Rflag = true;
                     wrc_parm = currarg + 1;
                     if( wrc_parm == argc ) {
-                        doUsage("must specify resource compiler command line" );
+                        doUsage( "must specify resource compiler command line" );
+                        return( 0 );
                     }
                     break;
                 }
@@ -410,12 +420,14 @@ int main( int argc, char *argv[] )
         } else {
             if( path != NULL ) {
                 doUsage( "Only one executable may be specified" );
+                return( 0 );
             }
             path = argv[currarg];
         }
     }
     if( path == NULL ) {
         doUsage( "No executable to bind" );
+        return( 0 );
     }
     doBanner();
 
@@ -529,7 +541,7 @@ int main( int argc, char *argv[] )
         if( rc != 0 ) {
             remove( exe_name );
             errPrintf( "Resource compiler failed, return code = %d\n", rc );
-            exit( rc );
+            return( rc );
         }
     }
 

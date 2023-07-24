@@ -49,7 +49,7 @@
 #ifdef _BETAVER
 #define _BANEXTRA           __DATE__ " " __TIME__ STR_BITNESS
 #else
-#define _BANEXTRA           __DATE__
+#define _BANEXTRA           __DATE__ STR_BITNESS
 #endif
 
 #define banner1t(p)         "Open Watcom " p
@@ -182,6 +182,8 @@
 #define _WIC_VERSION_           BAN_VER_STR
 #define _WGML_VERSION_          BAN_VER_STR
 #define _WIPFC_VERSION_         BAN_VER_STR
+
+#define _DEFWIN_VERSION_        "1.0" _BETA_
 
 /*
  * Java Tools

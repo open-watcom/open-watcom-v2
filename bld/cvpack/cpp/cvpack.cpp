@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,12 +50,6 @@
 
 #include "banner.h"
 
-static const char* CVpackHeader =
-    banner1w( "CV4 Symbolic Debugging Information Compactor", BAN_VER_STR ) "\n" \
-    banner2 "\n" \
-    banner2a( 1995 ) "\n" \
-    banner3 "\n" \
-    banner3a "\n";
 
 static const char* CVpackUsage = "usage : cvpack [/nologo] <exefile>\n";
 
@@ -104,8 +99,10 @@ void ConvertFName( char* f )
         strcat(fName,".exe");
     }
 }
-void outOfMemory() {
-/******************/
+
+void outOfMemory()
+/****************/
+{
     throw OutOfMemory();
 }
 
@@ -393,7 +390,12 @@ int main(int argc, char* argv[])
             }
         }
         if( !quiet ) {
-            cout << CVpackHeader << endl;
+            cout << banner1t( "CV4 Symbolic Debugging Information Compactor" ) << endl
+                 << banner1v( BAN_VER_STR ) << endl
+                 << banner2 << endl
+                 << banner2a( 1995 ) << endl
+                 << banner3 << endl
+                 << banner3a << endl;
         }
         ::ConvertFName(argv[1]);
         ifstream  fd(fName, ios::in | ios::binary);
