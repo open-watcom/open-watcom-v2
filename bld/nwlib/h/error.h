@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,9 @@ extern jmp_buf Env;
 extern void InitMsg( void );
 extern void FiniMsg( void );
 extern void FatalError( int str, ... );
-extern void FatalResError( char *msg );
+extern void FatalResError( const char *msg );
 extern void DisplayError( int str, ... );
 extern void Warning( int str, ... );
-extern void Message( char *msg, ... );
+extern void Message( const char *msg, ... );
 extern void MsgGet( int resourceid, char *buffer );
 extern void Usage( void );
