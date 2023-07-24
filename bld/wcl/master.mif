@@ -10,7 +10,11 @@ tree_depth = 4
 #
 .c: $(wcl_dir)/c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
+!ifdef target_cpu
 inc_dirs = -I. -I"$(wcl_dir)/h"
+!else
+inc_dirs = -I. -I"$(wcl_dir)/h" -I"$(posix_dir)/h"
+!endif
 
 extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
@@ -24,11 +28,6 @@ extra_cpp_flags_dos_386 = -DDOS4G
 extra_cpp_flags_dos_386 = -DDOS4G
 !endif
 
-extra_c_flags_owcc     = -I"$(posix_dir)/h"
-extra_c_flags_getopt   = -I"$(posix_dir)/h"
-extra_c_flags_argvenv  = -I"$(posix_dir)/h"
-extra_c_flags_argvstr  = -I"$(posix_dir)/h"
-extra_c_flags_quit     = -I"$(posix_dir)/h"
 extra_c_flags_clcommon = $(trmem_cover_cflags)
 
 #
@@ -52,7 +51,7 @@ exetarg_prebuild_objs = usage.gh
 exetarg_objs          = clcommon.obj $(trmem_objs) wcl.obj
 !else
 exetarg_prebuild_objs = usage.gh $(owcc_specs)
-exetarg_objs          = clcommon.obj $(trmem_objs) owcc.obj getopt.obj argvenv.obj argvstr.obj quit.obj
+exetarg_objs          = clcommon.obj $(trmem_objs) owcc.obj getopt.obj argvenv.obj argvstr.obj
 !endif
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res

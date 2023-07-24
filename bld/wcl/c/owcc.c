@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include <ctype.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -55,6 +56,7 @@
 #include "diskos.h"
 #include "clcommon.h"
 #include "banner.h"
+#include "misc.h"
 
 #include "clibint.h"
 #include "clibext.h"
@@ -149,7 +151,7 @@ static  char        *SystemName;            /* system to link for               
 static  list        *Files_List;            /* list of filenames from Cmd         */
 static  char        *CC_Opts[MAX_CC_OPTS];  /* list of compiler options from Cmd  */
 static  char        *Link_Name;             /* Temp_Link copy if /fd specified    */
-static  char        CPU_Class;              /* [0..6]86, 'm'ips or 'a'xp          */
+static  signed char CPU_Class;              /* [0..6]86, 'm'ips or 'a'xp          */
 static  owcc_target_arch CPU_Arch;          /* CPU architecture TARGET_ARCH_...   */
 static  char        Conventions[2];         /* 'r' for -3r or 's' for -3s         */
 static  char        *O_Name;                /* name of -o option                  */
@@ -165,17 +167,6 @@ static  char        *cpp_linewrap;          /* line length for cpp output       
  */
 
 static const char *UsageText[] = {
-#if defined( _BETAVER )
-    banner1t( "C/C++ " _TARGET_ " Compiler Driver Program" ),
-    banner1v( _WCL_VERSION_ ),
-#else
-    banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ),
-#endif
-    banner2,
-    banner2a( 1988 ),
-    banner3,
-    banner3a,
-    "",
     #include "usage.gh"
     NULL
 };
@@ -333,20 +324,36 @@ static void print_banner( void )
     if( !printed ) {
         printed = true;
         if( !Flags.be_quiet ) {
-            int     i = 0;
-#if defined( _BETAVER )
-            puts( UsageText[i++] );
-            puts( UsageText[i++] );
-#else
-            puts( UsageText[i++] );
-#endif
-            puts( UsageText[i++] );
-            puts( UsageText[i++] );
-            puts( UsageText[i++] );
-            puts( UsageText[i++] );
-            puts( UsageText[i++] );
+            puts(
+                banner1t( _TARGET_ " Compilers Driver Program" ) "\n"
+                banner1v( _WCL_VERSION_ ) "\n"
+                banner2 "\n"
+                banner2a( 1988 ) "\n"
+                banner3 "\n"
+                banner3a
+           );
         }
     }
+}
+
+void Quit( const char *usage_msg[], const char *str, ... )
+{
+    va_list     args;
+
+    Flags.be_quiet = false;
+    print_banner();
+    puts( "" );
+    if( str != NULL ) {
+        va_start( args, str );
+        vfprintf( stderr, str, args );
+        va_end( args );
+    }
+    if( usage_msg != NULL ) {
+        while( *usage_msg != NULL ) {
+            puts( *usage_msg++ );
+        }
+    }
+    exit( EXIT_FAILURE );
 }
 
 static char *xlate_fname( char *name )
@@ -1405,13 +1412,13 @@ static  int  CompLink( void )
     char        *file;
     char        *path;
     list        *itm;
-    char        errors_found;
+    bool        errors_found;
     tool_type   utl;
     int         i;
     char        *Word;
 
     Word = MemAlloc( MAX_CMD );
-    errors_found = 0;
+    errors_found = false;
     for( itm = Files_List; itm != NULL; itm = itm->next ) {
         char    buffer[_MAX_PATH];
 
@@ -1428,7 +1435,7 @@ static  int  CompLink( void )
 
                 rc = tool_exec( utl, DoQuoted( fname, Word, '"' ), (const char **)CC_Opts );
                 if( rc != 0 ) {
-                    errors_found = 1;
+                    errors_found = true;
                 }
                 strcpy( Word, RemoveExt( file ) );
             }
@@ -1576,10 +1583,7 @@ int main( int argc, char **argv )
 
     if( argc <= 1 ) {
         /* no arguments: just tell the user who I am */
-        Flags.be_quiet = false;
-        print_banner();
-        puts( "Usage: owcc [-?] [options] file ..." );
-        exit( EXIT_SUCCESS );
+        Quit( UsageText, NULL );
     }
 
     MemInit();
