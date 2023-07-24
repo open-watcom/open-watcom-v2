@@ -41,20 +41,21 @@
 #include "printf.h"
 
 
-/*
- * mem_putc -- append a character to a string in memory
- */
 #ifdef __WIDECHAR__
-
 typedef struct vswprtf_buf {
     CHAR_TYPE   *bufptr;
     int         chars_output;
     int         max_chars;
 } vswprtf_buf;
+#endif
 
+/*
+ * mem_putc -- append a character to a string in memory
+ */
 static prtf_callback_t mem_putc; // setup calling convention
 static void PRTF_CALLBACK mem_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
+#ifdef __WIDECHAR__
     vswprtf_buf     *info;
 
     info = GET_SPECS_DEST( vswprtf_buf, specs );
@@ -63,19 +64,11 @@ static void PRTF_CALLBACK mem_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char
         specs->_output_count++;
         info->chars_output++;
     }
-}
-
 #else
-
-static prtf_callback_t mem_putc; // setup calling convention
-static void PRTF_CALLBACK mem_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
-{
     *( specs->_dest++ ) = op_char;
     specs->_output_count++;
-}
-
 #endif
-
+}
 
 #ifdef __WIDECHAR__
 _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list args )
@@ -95,13 +88,9 @@ _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_
 
 _WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, va_list args )
 {
-#ifndef __WIDECHAR__
-    register int    len;
-#else
-    vswprtf_buf     info;
-#endif
-
 #ifdef __WIDECHAR__
+    vswprtf_buf     info;
+
     info.bufptr = dest;
     info.chars_output = 0;
     info.max_chars = INT_MAX;
@@ -109,6 +98,8 @@ _WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *
     dest[info.chars_output] = NULLCHAR;
     return( info.chars_output );
 #else
+    int     len;
+
     len = __prtf( dest, format, args, mem_putc );
     dest[len] = NULLCHAR;
     return( len );
