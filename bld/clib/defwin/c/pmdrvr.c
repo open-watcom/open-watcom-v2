@@ -41,11 +41,11 @@
 #include "banner.h"
 
 
-static char  DefaultAboutTitle[] = "About Open Watcom Default Windowing System";
+static char  DefaultAboutTitle[] = "About " banner1t( "Default Windowing System" );
 
 static char  DefaultAboutMsg[] = {
     banner1t( "Default Windowing System" ) "\n\n"
-    "            Version 1.0\n\n"
+    "            Version " _DEFWIN_VERSION_ "\n\n"
     banner21 "\n"
     banner21a( 1991 )
 };

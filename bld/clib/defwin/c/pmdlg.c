@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,7 +106,7 @@ static itemdata _getint[] = {
 
 #define MAX_INT_ITEMS sizeof( _getint ) / sizeof( itemdata )
 
-static char *titleName = "Open Watcom Default Windowing System";
+static char *titleName = banner1t( "Default Windowing System" );
 static char *helpMsg = "Enter the number of lines of text you would like to keep in the window at any time";
 
 static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )

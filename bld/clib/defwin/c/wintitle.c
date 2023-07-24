@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +31,14 @@
 
 
 #include "wintitle.h"
+#include "banner.h"
 
 
 char __WinTitleBar[] =
 #ifdef __NT__
-        "Open Watcom NT Application";
+        banner1t( "NT Application" );
 #elif defined(__WINDOWS_386__)
-        "Open Watcom 386 Windows Application";
+        banner1t( "386 Windows Application" );
 #else
-        "Open Watcom Windows Application";
+        banner1t( "Windows Application" );
 #endif
