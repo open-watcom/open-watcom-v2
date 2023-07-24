@@ -8,10 +8,14 @@
  typedef unsigned short mode_t; /* Used for some file attributes    */
 :elsesegment ARCHMIPS
  typedef unsigned long  mode_t; /* Used for some file attributes    */
+:elsesegment ARCHPPC
+ typedef unsigned long  mode_t; /* Used for some file attributes    */
 :elsesegment
  #ifdef __386__
   typedef unsigned short mode_t; /* Used for some file attributes    */
  #elif defined(__MIPS__)
+  typedef unsigned long  mode_t; /* Used for some file attributes    */
+ #elif defined(__PPC__)
   typedef unsigned long  mode_t; /* Used for some file attributes    */
  #endif
 :endsegment

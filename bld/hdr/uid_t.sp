@@ -8,10 +8,14 @@
  typedef unsigned short uid_t;  /* Used for user IDs                */
 :elsesegment ARCHMIPS
  typedef long           uid_t;  /* Used for user IDs                */
+:elsesegment ARCHPPC
+ typedef long           uid_t;  /* Used for user IDs                */
 :elsesegment
  #ifdef __386__
   typedef unsigned short uid_t; /* Used for user IDs                */
  #elif defined(__MIPS__)
+  typedef long           uid_t; /* Used for user IDs                */
+ #elif defined(__PPC__)
   typedef long           uid_t; /* Used for user IDs                */
  #endif
 :endsegment

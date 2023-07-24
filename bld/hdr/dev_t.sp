@@ -8,10 +8,14 @@
  typedef unsigned long  dev_t;  /* Combination of node and device   */
 :elsesegment ARCHMIPS
  typedef unsigned long  dev_t;  /* Combination of node and device   */
+:elsesegment ARCHPPC
+ typedef unsigned long  dev_t;  /* Combination of node and device   */
 :elsesegment
  #ifdef __386__
   typedef unsigned long  dev_t;  /* Combination of node and device   */
  #elif defined(__MIPS__)
+  typedef unsigned long  dev_t;  /* Combination of node and device   */
+ #elif defined(__PPC__)
   typedef unsigned long  dev_t;  /* Combination of node and device   */
  #endif
 :endsegment

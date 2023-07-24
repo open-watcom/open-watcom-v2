@@ -8,10 +8,14 @@
  typedef unsigned short gid_t;  /* Used for group IDs               */
 :elsesegment ARCHMIPS
  typedef long           gid_t;  /* Used for group IDs               */
+:elsesegment ARCHPPC
+ typedef long           gid_t;  /* Used for group IDs               */
 :elsesegment
  #ifdef __386__
   typedef unsigned short gid_t; /* Used for group IDs               */
  #elif defined(__MIPS__)
+  typedef long           gid_t; /* Used for group IDs               */
+ #elif defined(__PPC__)
   typedef long           gid_t; /* Used for group IDs               */
  #endif
 :endsegment
