@@ -82,9 +82,9 @@ void GUImain( void )
 #if defined( _M_IX86 )
     _8087 = 0;
 #endif
-    len = _bgetcmd( NULL, 0 );
-    _AllocA( buff, len + 1 );
-    getcmd( buff );
+    len = _bgetcmd( NULL, 0 ) + 1;
+    _AllocA( buff, len );
+    _bgetcmd( buff, len );
     CmdData = buff;
 
     DebugMain();

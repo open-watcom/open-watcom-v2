@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -349,7 +349,7 @@ int main( int argc, char **argv )
     /* unused parameters */ (void)argc; (void)argv;
 
     MemInit();
-    getcmd( buff );
+    _bgetcmd( buff, sizeof( buff ) );
     CmdData = buff;
     DebugMain();
     _SwitchOff( SW_ERROR_STARTUP );

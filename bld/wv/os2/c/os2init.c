@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,8 +78,8 @@ void GUImain( void )
     USHORT              prev_act;
 
     DosSetMaxFH( 40 );
+    _bgetcmd( buff, sizeof( buff ) );
     CmdData = buff;
-    getcmd( CmdData );
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
 }
@@ -94,10 +94,10 @@ void GUImain( void )
     // fix up env vars if necessary
     watcom_setup_env();
 
-    len = _bgetcmd( NULL, INT_MAX ) + 1;
+    len = _bgetcmd( NULL, 0 ) + 1;
     buff = malloc( len );
+    _bgetcmd( buff, len );
     CmdData = buff;
-    getcmd( CmdData );
     //TODO: replace with exception handler
 //    DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
