@@ -1714,7 +1714,8 @@ int closedir( DIR *dirp )
 /***********************/
 {
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
-        return( errno = ERANGE );
+        errno = ERANGE;
+        return( -1 );
     }
     if( !FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) ) {
         return( -1 );
