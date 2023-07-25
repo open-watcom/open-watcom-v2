@@ -987,7 +987,7 @@ char *_cmdname( char *name )
 
 /****************************************************************************
 *
-* Description:  Implementation of getcmd() and _bgetcmd().
+* Description:  Implementation of _bgetcmd().
 *
 ****************************************************************************/
 
@@ -1036,13 +1036,6 @@ int _bgetcmd( char *buffer, int len )
     *buffer = '\0';
 
     return( cmdlen );
-}
-
-
-char *getcmd( char *buffer )
-{
-    _bgetcmd( buffer, INT_MAX );
-    return( buffer );
 }
 
 #else
@@ -1103,12 +1096,6 @@ int (_bgetcmd)( char *buffer, int len )
     }
 
     return( total );
-}
-
-char *(getcmd)( char *buffer )
-{
-    _bgetcmd( buffer, INT_MAX );
-    return( buffer );
 }
 
 #endif

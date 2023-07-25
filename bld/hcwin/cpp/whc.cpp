@@ -73,7 +73,7 @@ int main( int argc, char *argv[] )
     char    *pfilename, *temp;
     bool    quiet = false;
 
-    getcmd( cmdline );
+    _bgetcmd( cmdline, sizeof( cmdline ) );
     temp = cmdline;
     pfilename = NULL;
     while( *temp != '\0' && isspace( *temp ) ) {

@@ -200,8 +200,9 @@ static void initialize_Flags( void )
 
 
 static int handle_environment_variable( const char *env )
-/*******************************************************/
-// This is an adaptation of code in sdk/rc/rc/c/param.c
+/********************************************************
+ * This is an adaptation of code in sdk/rc/rc/c/param.c
+ */
 {
     typedef struct EnvVarInfo {
         struct EnvVarInfo       *next;
@@ -1117,6 +1118,7 @@ int  main( int argc, char **argv )
     const char  *wcl_env;
     const char  *p;
     char        *cmd;           /* command line parameters  */
+    size_t      len;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -1130,29 +1132,40 @@ int  main( int argc, char **argv )
 #endif
     MemInit();
     ProcMemInit();
-    cmd = MemAlloc( MAX_CMD * 2 );  /* enough for cmd line & wcl variable */
-
-    /* add wcl environment variable to cmd             */
-    /* unless /y is specified in either cmd or wcl */
-
+    /*
+     * add wcl environment variable to cmd
+     * unless /y is specified in either cmd or wcl
+     */
+    len = _bgetcmd( NULL, 0 ) + 1;  /* check cmd line len */
     wcl_env = getenv( WCLENV );
     if( wcl_env != NULL ) {
+        size_t  envlen;
+        envlen = strlen( wcl_env );
+        /*
+         * allocate space enough for wcl variable and cmd line
+         */
+        cmd = MemAlloc( envlen + 1 + len );
         strcpy( cmd, wcl_env );
-        strcat( cmd, " " );
-        p = getcmd( cmd + strlen( cmd ) );
+        cmd[envlen++] = ' ';
+        _bgetcmd( cmd + envlen, len );
         if( check_y_opt( cmd ) ) {
-            p = getcmd( cmd );
+            _bgetcmd( cmd, len );
         }
     } else {
-        p = getcmd( cmd );
+        /*
+         * allocate space enough for cmd line
+         */
+        cmd = MemAlloc( len );
+        _bgetcmd( cmd, len );
     }
+    p = cmd;
     SKIP_SPACES( p );
-    if( *p == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' ) || IS_OPT( p[0] ) && p[1] == '?' ) {
+    if( p[0] == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' ) || IS_OPT( p[0] ) && p[1] == '?' ) {
         Usage();
         rc = 1;
     } else {
         initialize_Flags();
-        rc = Parse( cmd );
+        rc = Parse( p );
         if( rc == 0 ) {
             print_banner();
             rc = CompLink();

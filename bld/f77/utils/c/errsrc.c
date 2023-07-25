@@ -891,7 +891,8 @@ int     main( int argc, char **argv )
     /* unused parameters */ (void)argc; (void)argv;
 #endif
 
-    ProcArgs( getcmd( cmd ) );
+    _bgetcmd( cmd, sizeof( cmd ) );
+    ProcArgs( cmd );
     if( Initialize() != 0 ) {
         return( 1 );
     }

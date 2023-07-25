@@ -460,7 +460,7 @@ int main( void )
     int rc;
 #endif
 
-    getcmd( CmdBuff );
+    _bgetcmd( CmdBuff, sizeof( CmdBuff ) );
     CmdLine = CmdBuff;
     Options.levels = INT_MAX;
     while( *CmdLine == ' ' )

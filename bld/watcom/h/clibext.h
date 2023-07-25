@@ -44,14 +44,8 @@
 #else
 #include <sys/types.h>      /* for off_t */
 #endif
-#if defined(__QNX__) || defined(__SVR4)
-    #define _XPG4_2         /* Required on Solaris... */
-    #include <strings.h>    /* for str*case* functions */
-    #undef _XPG4_2          /* ...but causes trouble */
-#elif defined(__UNIX__)
-    #include <strings.h>    /* for str*case* functions */
-#endif
 #ifdef __UNIX__
+    #include <strings.h>    /* for str*case* functions */
     #include <sys/wait.h>
 #endif
 
@@ -195,7 +189,6 @@ extern int      mkstemp( char *__template );
 
 extern void     _splitpath2( const char *inp, char *outp, char **drive, char **dir, char **fn, char **ext );
 extern int      _bgetcmd( char *buffer, int len );
-extern char     *getcmd( char *buffer );
 extern char     *_cmdname( char *name );
 extern char     *get_dllname( char *buf, int len );
 
