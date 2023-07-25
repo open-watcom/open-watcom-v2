@@ -74,7 +74,7 @@ enum {
     #undef pick
 };
 
-static char     CmdBuff[2*128];
+static char     *CmdBuff = NULL;
 
 #if defined( _M_IX86 )
     unsigned char   _8087   = 0;
@@ -111,14 +111,14 @@ static void FFini( void )
     FMemFini();
 }
 
-int     main( int argc, char *argv[] ) {
+int     main( int argc, char *argv[] ) 
 //======================================
-
 // FORTRAN compiler main line.
-
+{
     int         ret_code;
     char        *opts[MAX_OPTIONS+1];
-    char        *p;
+    char        *wfc_env;
+    size_t      len;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -131,16 +131,19 @@ int     main( int argc, char *argv[] ) {
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
-    p = getenv( WFC_ENV );
-    if( p != NULL && *p != NULLCHAR ) {
-        strcpy( CmdBuff, p );
-        p = &CmdBuff[ strlen( p ) ];
-        *p = ' ';
-        ++p;
+    len = _bgetcmd( NULL, 0 ) + 1;
+    wfc_env = getenv( WFC_ENV );
+    if( wfc_env != NULL ) {
+        size_t  len1;
+        len1 = strlen( wfc_env );
+        CmdBuff = FMemAlloc( len1 + 1 + len );
+        strcpy( CmdBuff, wfc_env );
+        CmdBuff[len1++] = ' ';
+        _bgetcmd( CmdBuff + len1, len );
     } else {
-        p = CmdBuff;
+        CmdBuff = FMemAlloc( len );
+        _bgetcmd( CmdBuff, len );
     }
-    getcmd( p );
     ret_code = 0;
     InitCompMain();
     if( MainCmdLine( &SrcName, &CmdPtr, opts, CmdBuff ) ) {
@@ -152,6 +155,7 @@ int     main( int argc, char *argv[] ) {
         ShowUsage();
     }
     FiniCompMain();
+    FMemFree( CmdBuff );
     FFini();
     return( ret_code );
 }

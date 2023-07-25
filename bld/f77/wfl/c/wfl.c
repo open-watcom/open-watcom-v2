@@ -691,16 +691,17 @@ static int UnquoteDirective( char *dst, size_t maxlen, const char *src )
     return( un_quoted );
 }
 
-static  int     Parse( int argc, char **argv )
-/********************************************/
+static  int     Parse( char *cmd )
+/********************************/
 {
     char        opt;
-    //char        *end;
-    char        *cmd;
+    char        c;
+    char        *end;
+//    char        *cmd;
     size_t      len;
     bool        cmp_option;
-    int         opt_index;
     int         cmp_opt_index;
+    bool        in_quotes;
 
     Flags.no_link      = false;
     Flags.link_for_sys = false;
@@ -718,21 +719,33 @@ static  int     Parse( int argc, char **argv )
     DebugFlag = 0;
     Directive_List = NULL;
 
-    // Skip the first entry - it's the current program's name
-    opt_index = 1;
     cmp_opt_index = 0;
-
-    while( opt_index < argc ) {
-        cmd = argv[opt_index];
+    while( *cmd != '\0' ) {
         opt = *cmd;
-
-        if( ( opt == '-' ) || ( opt == SwitchChars[1] ) ) {
+        if( ( opt == SwitchChars[0] ) || ( opt == SwitchChars[1] ) ) {
             cmd++;
         } else {
             opt = ' ';
         }
+        in_quotes = false;
+        for( end = cmd; (c = *end) != '\0'; end++ ) {
+            if( c == '"' ) {
+                if( in_quotes ) 
+                    break;
+                in_quotes = true;
+            }
+            if( !in_quotes ) {
+                if( c == ' '  ) 
+                    break;
+                if( c == SwitchChars[0] )
+                    break;
+                if( c == SwitchChars[1] ) {
+                    break;
+                }
+            }
+        }
+        len = end - cmd;
 
-        len = strlen( cmd );
         if( len != 0 ) {
             if( opt == ' ' ) {  // if filename, add to list
                 strncpy( Word, cmd, len );
@@ -925,8 +938,11 @@ static  int     Parse( int argc, char **argv )
                     CmpOpts[++cmp_opt_index] = NULL;
                 }
             }
+            cmd = end;
         }
-        opt_index++;
+        while( *cmd == ' ' ) {
+            cmd++;
+        }
     }
     return( 0 );
 }
@@ -1117,14 +1133,25 @@ static  int     CompLink( void )
     return( rc );
 }
 
+static bool check_y_opt( const char *cmdl )
+{
+    while( (cmdl = strpbrk( cmdl, SwitchChars )) != NULL ) {
+        ++cmdl;
+        if( tolower( *cmdl ) == 'y' ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 int     main( int argc, char *argv[] )
 /************************************/
 {
     int         rc;
     char        *wfl_env;
     char        *p;
-    char        *q;
     char        *cmd;
+    size_t      len;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -1142,35 +1169,40 @@ int     main( int argc, char *argv[] )
     SwitchChars[2] = '\0';
 
     Word = MemAlloc( MAX_CMD );
-    cmd = MemAlloc( 2 * MAX_CMD ); // for "WFL" environment variable and command line
-
-    // add "WFL" environment variable to "cmd" unless "/y" is specified
-    // in "cmd" or the "WFL" environment string
-
+    /*
+     * add "WFL" environment variable to "cmd" unless "/y" is specified
+     * in "cmd" or the "WFL" environment string
+     */
+    len = _bgetcmd( NULL, 0 ) + 1;  /* check cmd line len */
     wfl_env = getenv( WFL_ENV );
     if( wfl_env != NULL ) {
+        size_t  envlen;
+        envlen = strlen( wfl_env );
+        /*
+         * allocate space enough for wfl variable and cmd line
+         */
+        cmd = MemAlloc( envlen + 1 + len );
         strcpy( cmd, wfl_env );
-        strcat( cmd, " " );
-        p = cmd + strlen( cmd );
-        getcmd( p );
-        for( q = cmd; (q = strpbrk( q, SwitchChars )) != NULL; ) {
-            if( tolower( *(++q) ) == 'y' ) {
-                getcmd( cmd );
-                p = cmd;
-                break;
-            }
+        cmd[envlen++] = ' ';
+        _bgetcmd( cmd + envlen, len );
+        if( check_y_opt( cmd ) ) {
+            _bgetcmd( cmd, len );
         }
     } else {
-        getcmd( cmd );
-        p = cmd;
+        /*
+         * allocate space enough for cmd line
+         */
+        cmd = MemAlloc( len );
+        _bgetcmd( cmd, len );
     }
+    p = cmd;
     while( *p == ' ' )
         p++;
     if( ( *p == '\0' ) || ( strncmp( p, "? ", 2 ) == 0 ) ) {
         Usage();
         rc = 1;
     } else {
-        rc = Parse( argc, argv );
+        rc = Parse( cmd );
         if( rc == 0 ) {
             if( !Flags.quiet ) {
                 PrtBanner();

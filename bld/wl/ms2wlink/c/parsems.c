@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ bool InitParsing( void )
     CmdFile->where = MIDST;
     CmdFile->name = NULL;
     CmdFile->fp = NULL;
-    getcmd( CmdFile->buffer );
+    _bgetcmd( CmdFile->buffer, MAX_LINE );
     CmdFile->current = CmdFile->buffer;
     EatWhite();
     return( true );
