@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,6 +112,24 @@ char *getcmd( char *buff )
         return( Command );
     strcpy( buff, Command );
     return( buff );
+}
+
+int _bgetcmd( char *buff, int len )
+{
+    int     cmd_len;
+    int     i;
+
+    cmd_len = strlen( Command );
+    if( buff != NULL && len > 0 ) {
+        len--;
+        if( len > cmd_len )
+            len = cmd_len;
+        for( i = 0; i < len; i++ ) {
+             buff[i] = Command[i];
+        }
+        buff[len] = '\0';
+    }
+    return( cmd_len );
 }
 
 char upper( char ch )

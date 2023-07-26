@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@ typedef LONG     prelude_func(
     );
 
 extern char     *getcmd( char *buff );
+extern int      _bgetcmd( char *buff, int len );
 extern char     upper( char ch );
 extern char     lower( char ch );
 extern int      isalpha( char ch );
@@ -71,10 +72,10 @@ extern void     __Null_Argv(void);
 extern void     __Init_Argv(void);
 #endif
 #if defined( __NETWARE_LIBC__ )
-extern prelude_func	_LibCPrelude;
-extern prelude_func	_PreludeHook;
+extern prelude_func     _LibCPrelude;
+extern prelude_func     _PreludeHook;
 #else
-extern prelude_func	_Prelude;
+extern prelude_func     _Prelude;
 #endif
 extern void     __WATCOM_Prelude(void);
 #ifdef DEBUG_ME
