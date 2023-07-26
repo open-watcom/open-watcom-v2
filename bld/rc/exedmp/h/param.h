@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #define PARAM_H
 
 #include "common.h"
-#include "strings.h"
 
 
 /* default parameters */
@@ -47,11 +47,11 @@
 #define DEF_DUMPRESOBJECTINFO   true
 #define DEF_PRINTRULER          true
 #define DEF_SPECIFICTYPE        false
-#define DEF_SPECIFICTYPEID      RT_NONE
+#define DEF_SPECIFICTYPEID      0
 #define DEF_INDENTSPACES        4
 #define DEF_HEXINDENTSPACES     0
 
-/* fix MSG_HELP in strings.h when you fix these */
+/* fix MSG_HELP in stringsd.h when you fix these */
 
 #define OPT_DUMPOFFSETS         'o'
 #define OPT_DUMPHEXHEADERS      'h'

@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef STRINGS_H
-#define STRINGS_H
+#ifndef STRINGSD_H
+#define STRINGSD_H
 
 #define ERR_PARAM_INDENTSPACES          "Error! Missing number of indent spaces after -n\n"
 #define ERR_PARAM_HEXINDENTSPACES       "Error! Missing number of hex indent spaces after -x\n"

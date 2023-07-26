@@ -37,13 +37,11 @@
 #include "exepe.h"
 #include "exedos.h"
 #include "bool.h"
+#include "stringsd.h"
 
 
 #ifndef COMMON_H
 #define COMMON_H
-
-#define RT_NONE                 0
-#define RT_COUNT                15
 
 typedef enum {
     TABLE,
