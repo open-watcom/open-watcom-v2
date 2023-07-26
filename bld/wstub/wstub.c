@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,9 +82,10 @@ void main( int argc, char *argv[] )
 
     (void)argc;
 
+    _bgetcmd( cmdline, sizeof( cmdline ) )
     av[0] = dos4g_path();           /* Locate the DOS/4GW loader */
     av[1] = argv[0];                /* name of executable to run */
-    av[2] = getcmd( cmdline );      /* command line */
+    av[2] = cmdline;                /* command line */
     av[3] = NULL;                   /* end of list */
 #ifdef QUIET
     putenv( "DOS4G=QUIET" );        /* disables DOS/4GW Copyright banner */

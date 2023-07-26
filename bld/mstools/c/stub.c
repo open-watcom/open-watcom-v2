@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +121,7 @@ void SpawnProgStub( const char *progname )
     argv[0] = (char*)progname;
     len = _bgetcmd( NULL, 0 ) + 1;
     argv[1] = AllocMem( len );
-    getcmd( argv[1] );
+    _bgetcmd( argv[1], len );
     argv[2] = NULL;
 
     /*** Try to execute the program ***/

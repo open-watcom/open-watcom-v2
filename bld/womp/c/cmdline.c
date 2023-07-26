@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -610,11 +610,10 @@ cmdline_t *CmdLineParse( void ) {
     if( env_var != NULL ) {
         parseString( env_var );
     }
-    cmd_line = MemAlloc( 10240 );   /* FIXME - arbitrarily large constant! */
-    getcmd( cmd_line );
-    cmd_len = strlen( cmd_line );
-    if( cmd_len > 0 ) {
-        cmd_line = MemRealloc( cmd_line, cmd_len + 1 );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = MemAlloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    if( *cmd_line != '\0' ) {
         parseString( cmd_line );
     }
     MemFree( cmd_line );

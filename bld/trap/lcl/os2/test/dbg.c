@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,8 @@ InitIt( char *trp, void __far *hab, void __far *hwnd )
 int LoadIt()
 {
     unsigned long handle;
-    return( DoLoad( getcmd( TxtBuff ), &handle ) == 0 );
+    _bgetcmd( TxtBuff, 512 );
+    return( DoLoad( TxtBuff, &handle ) == 0 );
 }
 
 int RunIt()

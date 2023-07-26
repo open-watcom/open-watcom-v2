@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ int main( void )
     USHORT      written;
     static char buff[LINE_WIDTH];
 
-    getcmd( buff );
+    _bgetcmd( buff, sizeof( buff ) );
     InitRetrieve( buff );
     for( ;; ) {
         VioGetCurPos( &row, &col, 0 );

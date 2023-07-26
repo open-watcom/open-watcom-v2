@@ -255,7 +255,7 @@ int main( void )
 
     rc = EXIT_FAILURE;
     MOpen();
-    getcmd( CmdBuff );
+    _bgetcmd( CmdBuff, sizeof( CmdBuff ) );
     if( PMakeBuild( &pmake, CmdBuff ) != NULL ) {
         if( pmake.want_help ) {
             PrintHelp();

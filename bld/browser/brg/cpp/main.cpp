@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <direct.h>
 #include <wclist.h>
-#include <process.h>    // getcmd
+#include <process.h>
 #include <string.hpp>
 
 #include "banner.h"
@@ -63,7 +63,7 @@ int main()
 
     printHeader();
 
-    getcmd( cmdLine );
+    _bgetcmd( cmdLine, sizeof( cmdLine ) );
 
     try {
         CommandParser prs( cmdLine, false );

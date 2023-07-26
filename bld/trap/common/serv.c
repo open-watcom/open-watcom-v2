@@ -74,7 +74,7 @@ static void Initialize( void )
 
 #define servparms RWBuff
 
-    getcmd( cmdline );
+    _bgetcmd( cmdline, sizeof( cmdline ) );
     ParseCommandLine( cmdline, trapparms, servparms, &OneShot );
     err = RemoteLink( servparms, true );
 

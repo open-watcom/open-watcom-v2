@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,13 +69,16 @@ int  main()
 {
     char                *cmd;
     void               (*parse_object)( void );
+    size_t             len;
 
 #if defined( _M_I86SM ) || defined( _M_I86MM )
     _heapgrow();    /* grow the near heap */
 #endif
-    if( !MsgInit() ) return( EXIT_FAILURE );
-    cmd = AllocMem( CMD_LINE_SIZE );
-    getcmd( cmd );
+    if( !MsgInit() )
+        return( EXIT_FAILURE );
+    len = _bgetcmd( NULL, 0 ) + 1;
+    cmd = AllocMem( len );
+    _bgetcmd( cmd, len );
     InitOutput();
     initOptions();
     parseOptions( cmd );
@@ -106,7 +110,9 @@ int  main()
         }
         SrcName = NULL;         /* if another module, get name from obj file */
     }
-    if( UseORL ) FiniORL();
+    if( UseORL )
+        FiniORL();
+    FreeMem( cmd );
     CloseBin( ObjFile );
     CloseTxt( Output );
     MsgFini();

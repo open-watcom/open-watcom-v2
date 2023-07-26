@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +93,7 @@ bool OpenCmdLineContext( void )
     /*** Make a copy of the command line ***/
     len = _bgetcmd( NULL, 0 ) + 1;
     curContext.dataStart = AllocMem( len );
-    getcmd( curContext.dataStart );
+    _bgetcmd( curContext.dataStart, len );
 
     curContext.data = curContext.dataStart;
     curContext.dataLen = strlen( curContext.dataStart );
@@ -228,7 +229,7 @@ char GetCharContext( void )
             if( (c = fgetc( curContext.fp )) != EOF ) {
                 ch = (char)c;
             }
-        } 
+        }
         break;
     default:
         Zoinks();
