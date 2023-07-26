@@ -65,23 +65,22 @@ static  void            openFiles( void );
 
 int  main()
 /*********/
-
 {
-    char                *cmd;
-    void               (*parse_object)( void );
-    size_t             len;
+    int         cmd_len;
+    char        *cmd_line;
+    void        (*parse_object)( void );
 
 #if defined( _M_I86SM ) || defined( _M_I86MM )
     _heapgrow();    /* grow the near heap */
 #endif
     if( !MsgInit() )
         return( EXIT_FAILURE );
-    len = _bgetcmd( NULL, 0 ) + 1;
-    cmd = AllocMem( len );
-    _bgetcmd( cmd, len );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = AllocMem( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
     InitOutput();
     initOptions();
-    parseOptions( cmd );
+    parseOptions( cmd_line );
     openFiles();
     InitObj();
     parse_object = InitORL() ? ParseObjectORL : ParseObjectOMF;
@@ -112,7 +111,7 @@ int  main()
     }
     if( UseORL )
         FiniORL();
-    FreeMem( cmd );
+    FreeMem( cmd_line );
     CloseBin( ObjFile );
     CloseTxt( Output );
     MsgFini();

@@ -239,37 +239,34 @@ return_val HandleArgs( void )
 {
     const char  *ptr;
     bool        list_file = false;
+    int         cmd_len;
+    char        *cmd_line;
     char        *cmd;
-    char        *p;
-    int         len;
     return_val  error;
 
     DFormat |= DFF_PSEUDO | DFF_SYMBOLIC_REG;
 
-    len = _bgetcmd( NULL, 0 );
-    p = cmd = malloc( len + 1 );
-    if( cmd == NULL ) {
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
-    error = RC_OKAY;
-    if( len > 0 ) {
-        _bgetcmd( p, len + 1 );
-    } else {
-        *p = '\0';
-    }
-    p = skipBlanks( p );
-    if( *p == '\0' || *p == '?' ) {
+    _bgetcmd( cmd_line, cmd_len );
+    cmd = cmd_line;
+    cmd = skipBlanks( cmd );
+    if( *cmd == '\0' || *cmd == '?' ) {
         printUsage( 0 );
         error = RC_ERROR;
     } else {
-        while( *p != '\0' ) {
-            if( IS_OPT_DELIM( *p ) ) {
-                p++;
-                switch( tolower( *p ) ) {
+        error = RC_OKAY;
+        while( *cmd != '\0' ) {
+            if( IS_OPT_DELIM( *cmd ) ) {
+                cmd++;
+                switch( tolower( *cmd ) ) {
                 case 'a':
                     DFormat |= DFF_ASM;
-                    if( p[1] == 'u' ) {
-                        ++p;
+                    if( cmd[1] == 'u' ) {
+                        ++cmd;
                         DFormat |= DFF_UNIX;
                     }
                     break;
@@ -277,11 +274,11 @@ return_val HandleArgs( void )
                     Options |= PRINT_EXTERNS;
                     break;
                 case 'i':
-                    p++;
-                    if( *p == '=' ) {
-                        p++;
-                        if( !isspace( *p ) ) {
-                            LabelChar = (char)toupper( *(unsigned char *)p );
+                    cmd++;
+                    if( *cmd == '=' ) {
+                        cmd++;
+                        if( !isspace( *cmd ) ) {
+                            LabelChar = (char)toupper( *(unsigned char *)cmd );
                             break;
                         }
                     }
@@ -295,41 +292,41 @@ return_val HandleArgs( void )
                         break;
                     }
                     list_file = true;
-                    p++;
-                    if( *p == '=' ) {
-                        p++;
-                        ptr = p;
-                        p = findNextWS( p );
-                        ListFileName = getFileName( ptr, p );
+                    cmd++;
+                    if( *cmd == '=' ) {
+                        cmd++;
+                        ptr = cmd;
+                        cmd = findNextWS( cmd );
+                        ListFileName = getFileName( ptr, cmd );
                     }
                     break;
                 case 'f':
-                    switch( p[1] ) {
+                    switch( cmd[1] ) {
                     case 'p':
                         DFormat ^= DFF_PSEUDO;
-                        ++p;
+                        ++cmd;
                         break;
                     case 'r':
                         DFormat ^= DFF_SYMBOLIC_REG;
-                        ++p;
+                        ++cmd;
                         break;
                     case 'f':
                         Options |= PRINT_FPU_EMU_FIXUP;
                         break;
                     case 'i':
                         DFormat ^= DFF_ALT_INDEXING;
-                        ++p;
+                        ++cmd;
                         break;
                     case 'u':
-                        ++p;
-                        switch( p[1] ) {
+                        ++cmd;
+                        switch( cmd[1] ) {
                         case 'r':
                             DFormat ^= DFF_REG_UP;
-                            ++p;
+                            ++cmd;
                             break;
                         case 'i':
                             DFormat ^= DFF_INS_UP;
-                            ++p;
+                            ++cmd;
                             break;
                         default:
                             DFormat ^= DFF_INS_UP | DFF_REG_UP;
@@ -338,9 +335,9 @@ return_val HandleArgs( void )
                     }
                     break;
                 case 'm':
-                    if( p[1] == 'w' ) {
+                    if( cmd[1] == 'w' ) {
                         Options |= METAWARE_COMPATIBLE;
-                        ++p;
+                        ++cmd;
                         break;
                     }
                     Options |= NODEMANGLE_NAMES;
@@ -355,18 +352,18 @@ return_val HandleArgs( void )
                         break;
                     }
                     source_mix = true;
-                    p++;
-                    if( *p == '=' ) {
-                        p++;
-                        ptr = p;
-                        p = findNextWS( p );
-                        SourceFileName = getFileName( ptr, p );
+                    cmd++;
+                    if( *cmd == '=' ) {
+                        cmd++;
+                        ptr = cmd;
+                        cmd = findNextWS( cmd );
+                        SourceFileName = getFileName( ptr, cmd );
                     }
                     break;
                 default:
                     BufferMsg( INVALID_OPTION );
                     BufferConcat( "  -" );
-                    BufferConcatChar( *p );
+                    BufferConcatChar( *cmd );
                     BufferConcatNL();
                     BufferConcatNL();
                     BufferPrint();
@@ -383,11 +380,11 @@ return_val HandleArgs( void )
                     error = RC_ERROR;
                     break;
                 }
-                ptr = p;
-                p = findNextWS( p );
-                ObjFileName = getFileName( ptr, p );
+                ptr = cmd;
+                cmd = findNextWS( cmd );
+                ObjFileName = getFileName( ptr, cmd );
             }
-            p = findNextArg( p );
+            cmd = findNextArg( cmd );
         }
     }
     if( error == RC_OKAY ) {
@@ -401,6 +398,6 @@ return_val HandleArgs( void )
             }
         }
     }
-    free( cmd );
+    free( cmd_line );
     return( error );
 }

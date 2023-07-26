@@ -730,12 +730,12 @@ static  int     Parse( char *cmd )
         in_quotes = false;
         for( end = cmd; (c = *end) != '\0'; end++ ) {
             if( c == '"' ) {
-                if( in_quotes ) 
+                if( in_quotes )
                     break;
                 in_quotes = true;
             }
             if( !in_quotes ) {
-                if( c == ' '  ) 
+                if( c == ' '  )
                     break;
                 if( c == SwitchChars[0] )
                     break;
@@ -1149,9 +1149,9 @@ int     main( int argc, char *argv[] )
 {
     int         rc;
     char        *wfl_env;
-    char        *p;
+    int         cmd_len;
+    char        *cmd_line;
     char        *cmd;
-    size_t      len;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -1173,7 +1173,7 @@ int     main( int argc, char *argv[] )
      * add "WFL" environment variable to "cmd" unless "/y" is specified
      * in "cmd" or the "WFL" environment string
      */
-    len = _bgetcmd( NULL, 0 ) + 1;  /* check cmd line len */
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;  /* check cmd line len */
     wfl_env = getenv( WFL_ENV );
     if( wfl_env != NULL ) {
         size_t  envlen;
@@ -1181,24 +1181,24 @@ int     main( int argc, char *argv[] )
         /*
          * allocate space enough for wfl variable and cmd line
          */
-        cmd = MemAlloc( envlen + 1 + len );
-        strcpy( cmd, wfl_env );
-        cmd[envlen++] = ' ';
-        _bgetcmd( cmd + envlen, len );
-        if( check_y_opt( cmd ) ) {
-            _bgetcmd( cmd, len );
+        cmd_line = MemAlloc( envlen + 1 + cmd_len );
+        strcpy( cmd_line, wfl_env );
+        cmd_line[envlen++] = ' ';
+        _bgetcmd( cmd_line + envlen, cmd_len );
+        if( check_y_opt( cmd_line ) ) {
+            _bgetcmd( cmd_line, cmd_len );
         }
     } else {
         /*
          * allocate space enough for cmd line
          */
-        cmd = MemAlloc( len );
-        _bgetcmd( cmd, len );
+        cmd_line = MemAlloc( cmd_len );
+        _bgetcmd( cmd_line, cmd_len );
     }
-    p = cmd;
-    while( *p == ' ' )
-        p++;
-    if( ( *p == '\0' ) || ( strncmp( p, "? ", 2 ) == 0 ) ) {
+    cmd = cmd_line;
+    while( *cmd == ' ' )
+        cmd++;
+    if( ( *cmd == '\0' ) || ( strncmp( cmd, "? ", 2 ) == 0 ) ) {
         Usage();
         rc = 1;
     } else {
@@ -1211,7 +1211,7 @@ int     main( int argc, char *argv[] )
         }
     }
     MemFree( Word );
-    MemFree( cmd );
+    MemFree( cmd_line );
     ErrorFini();
     return( rc );
 }

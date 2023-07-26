@@ -36,14 +36,14 @@
 #include "clibext.h"
 
 
-WEXPORT WCommandArgs::WCommandArgs() 
+WEXPORT WCommandArgs::WCommandArgs()
 /**********************************/
 {
-    size_t  len;
+    int     cmd_len;
 
-    len = _bgetcmd( NULL, 0 ) + 1;
-    _args = new char [len];
-    _bgetcmd( _args, len );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    _args = new char[cmd_len];
+    _bgetcmd( _args, cmd_len );
 }
 
 

@@ -83,8 +83,6 @@ const char  *Help[] = {
 };
 
 char    Buff[1024];
-char    CmdBuff[1024];
-char    *CmdLine;
 char    SaveDir[_MAX_PATH];
 
 struct {
@@ -243,15 +241,16 @@ static void Compare( char *buff )
 }
 
 
-static int SubstituteAndRun( char *fname )
+static int SubstituteAndRun( char *fname, const char *cmd )
 {
-    char        *src, *dst, *start;
+    const char  *src;
+    char        *dst, *start;
     pgroup2     pg;
     int         rc;
 
     _splitpath2( fname, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
     dst = Buff;
-    for( src = CmdLine; *src != '\0';++src ) {
+    for( src = cmd; *src != '\0';++src ) {
         if( *src != '%' ) {
             *dst++ = *src;
             continue;
@@ -321,7 +320,7 @@ static int SubstituteAndRun( char *fname )
 }
 
 
-static int ExecuteCommands( void )
+static int ExecuteCommands( const char *cmd )
 {
     DIR                 *dirp;
     struct dirent       *dire;
@@ -330,7 +329,7 @@ static int ExecuteCommands( void )
     if( Options.verbose )
         printf( "\n>>> SWEEP >>> %s\n", CurrPath() );
     if( !Options.allfiles ) {
-        rc = SubstituteAndRun( "" );
+        rc = SubstituteAndRun( "", cmd );
     } else {
         rc = 0;
         dirp = opendir( "." );
@@ -349,7 +348,7 @@ static int ExecuteCommands( void )
                 if( dire->d_attr & _A_SUBDIR )
                     continue;
 #endif
-                rc = SubstituteAndRun( dire->d_name );
+                rc = SubstituteAndRun( dire->d_name, cmd );
             }
             closedir( dirp );
         }
@@ -358,7 +357,7 @@ static int ExecuteCommands( void )
 }
 
 
-static int ProcessCurrentDirectory( void )
+static int ProcessCurrentDirectory( const char *cmd )
 {
     DIR                 *dirp;
     struct dirent       *dire;
@@ -367,7 +366,7 @@ static int ProcessCurrentDirectory( void )
 
     rc = 0;
     if( !Options.depthfirst ) {
-        rc = ExecuteCommands();
+        rc = ExecuteCommands( cmd );
     }
     if( Options.levels != 0 ) {
         dirp = opendir( "." );
@@ -398,7 +397,7 @@ static int ProcessCurrentDirectory( void )
                 stack->prev = Stack;
                 Stack = stack;
                 if( chdir( stack->name ) == 0 ) {
-                    rc = ProcessCurrentDirectory();
+                    rc = ProcessCurrentDirectory( cmd );
                     if( chdir( ".." ) ) {
                         DoneFlag = 1;
                     }
@@ -414,7 +413,7 @@ static int ProcessCurrentDirectory( void )
         }
     }
     if( Options.depthfirst ) {
-        rc = ExecuteCommands();
+        rc = ExecuteCommands( cmd );
     }
     return( rc );
 }
@@ -430,48 +429,35 @@ static void PrintHelp( void )
 }
 
 
-static int GetNumber( int default_num )
-{
-    int number;
-
-    if( !isdigit( CmdLine[1] ) )
-        return( default_num );
-    number = 0;
-    for( ;; ) {
-        if( !isdigit( CmdLine[1] ) )
-            return( number );
-        number *= 10;
-        number += CmdLine[1] - '0';
-        ++CmdLine;
-    }
-}
-
-
 #ifndef __WATCOMC__
 int main( int argc, char **argv )
-{
-    int rc;
-
-    _argv = argv;
-    _argc = argc;
 #else
 int main( void )
-{
-    int rc;
 #endif
+{
+    int         rc;
+    int         cmd_len;
+    char        *cmd_line;
+    const char  *cmd;
 
-    _bgetcmd( CmdBuff, sizeof( CmdBuff ) );
-    CmdLine = CmdBuff;
+#ifndef __WATCOMC__
+    _argv = argv;
+    _argc = argc;
+#endif
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = SafeMalloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    cmd = cmd_line;
     Options.levels = INT_MAX;
-    while( *CmdLine == ' ' )
-        ++CmdLine;
-    if( *CmdLine == '\0' || *CmdLine == '?' )
+    while( *cmd == ' ' )
+        cmd++;
+    if( *cmd == '\0' || *cmd == '?' )
         PrintHelp();
     for( ;; ) {
-        if( *CmdLine != '-' && *CmdLine != '/' )
+        if( *cmd != '-' && *cmd != '/' )
             break;
-        ++CmdLine;
-        switch( *CmdLine ) {
+        ++cmd;
+        switch( *cmd ) {
         case 'a':
             Options.allfiles = 1;
             break;
@@ -488,31 +474,35 @@ int main( void )
             Options.depthfirst = 1;
             break;
         case 'l':
-            Options.levels = GetNumber( 1 );
+            if( isdigit( cmd[1] ) ) {
+                Options.levels = strtol( cmd + 1, (char **)&cmd, 10 );
+                cmd--;
+            } else {
+                Options.levels = 1;
+            }
             break;
         case '?':
         default:
             PrintHelp();
         }
-        ++CmdLine;
-        while( *CmdLine == ' ' ) {
-            ++CmdLine;
+        ++cmd;
+        while( *cmd == ' ' ) {
+            ++cmd;
         }
     }
     Stack = SafeMalloc( sizeof( *Stack ) );
     Stack->name_len = 1;
     Stack->prev = NULL;
     StringCopy( Stack->name, "." );
+    rc = EXIT_FAILURE;
     if( getcwd( SaveDir, _MAX_PATH ) != NULL ) {
         signal( SIGINT, SetDoneFlag );
-        rc = ProcessCurrentDirectory();
-        free( Stack );
-        Stack = NULL;
-        if( chdir( SaveDir ) == 0 ) {
-            if( rc == 0 ) {
-                return( EXIT_SUCCESS );
-            }
-        }
+        if( ProcessCurrentDirectory( cmd ) == 0 )
+            rc = EXIT_SUCCESS;
+        chdir( SaveDir );
     }
-    return( EXIT_FAILURE );
+    free( Stack );
+    Stack = NULL;
+    free( cmd_line );
+    return( rc );
 }

@@ -145,11 +145,15 @@ static WWindow * topLevelWindow;
 mainline::mainline()
 //------------------
 {
-    char buf[512];
+    int cmd_len;
+    char *cmd_line;
     try {
         WBRInit();
-        _bgetcmd( buf, sizeof( buf ) );
-        topLevelWindow = new Browse( buf );
+        cmd_len = _bgetcmd( NULL, 0 ) + 1;
+        cmd_line = new char[cmd_len];
+        _bgetcmd( cmd_line, cmd_len );
+        topLevelWindow = new Browse( cmd_line );
+        delete[] cmd_line;
     } catch( CauseOfDeath cause ) {
         IdentifyAssassin( cause );
     }

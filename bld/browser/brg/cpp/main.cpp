@@ -45,28 +45,31 @@
 #include "mrfile.h"
 #include "util.h"
 
+
+#define ERROR_RETURN_VAL 7
+
 const char * ExeName = "wbrg";
 const char * ModuleExt = ".mbr";
 const char * MergedExt = ".dbr";
 
-#define ERROR_RETURN_VAL 7
-
 static void printHeader();
 static void printUsage();
-
-#define COMMANDBUF (512)    /* size of buffer to hold command line */
 
 int main()
 //--------
 {
-    char cmdLine[ COMMANDBUF ];
+    int     cmd_len;
+    char    *cmd_line;
 
     printHeader();
 
-    _bgetcmd( cmdLine, sizeof( cmdLine ) );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = new char[cmd_len];
+    _bgetcmd( cmd_line, cmd_len );
 
     try {
-        CommandParser prs( cmdLine, false );
+        CommandParser prs( cmd_line, false );
+        delete[] cmd_line;
 
         if( prs.database() == NULL || prs.files()->entries() == 0 ) {
             printUsage();

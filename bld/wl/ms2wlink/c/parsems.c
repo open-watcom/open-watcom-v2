@@ -60,15 +60,18 @@ bool InitParsing( void )
 // initialize the parsing stuff, and see if there is anything on the command
 // line.
 {
+    int     cmd_len;
+
     CmdFile = MemAlloc( sizeof( cmdfilelist ) );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    CmdFile->buffer = MemAlloc( cmd_len );
+    _bgetcmd( CmdFile->buffer, cmd_len );
     CmdFile->next = NULL;
-    CmdFile->buffer = MemAlloc( MAX_LINE );   // maximum size of a command line.
     CmdFile->how = COMMANDLINE;
     CmdFile->oldhow = COMMANDLINE;
     CmdFile->where = MIDST;
     CmdFile->name = NULL;
     CmdFile->fp = NULL;
-    _bgetcmd( CmdFile->buffer, MAX_LINE );
     CmdFile->current = CmdFile->buffer;
     EatWhite();
     return( true );

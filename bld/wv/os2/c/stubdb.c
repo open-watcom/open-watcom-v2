@@ -342,15 +342,15 @@ void DlgCmd( void )
 
 int main( int argc, char **argv )
 {
-    char        buff[256];
+    char        cmd_line[256];
     TID         tid;
     APIRET      rc;
 
     /* unused parameters */ (void)argc; (void)argv;
 
     MemInit();
-    _bgetcmd( buff, sizeof( buff ) );
-    CmdData = buff;
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DebugMain();
     _SwitchOff( SW_ERROR_STARTUP );
     DoInput();

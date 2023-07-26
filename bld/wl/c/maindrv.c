@@ -55,8 +55,8 @@ int main( int argc, char *argv[] )
     int         retcode;
     IDEDRV      info;
 #ifndef __UNIX__
-    int         cmdlen;
-    char        *cmdline;
+    int         cmd_len;
+    char        *cmd_line;
 #endif
 
 #if !defined( __WATCOMC__ )
@@ -70,12 +70,12 @@ int main( int argc, char *argv[] )
 #ifdef __UNIX__
     retcode = IdeDrvExecDLLArgv( &info, argc, argv );
 #else
-    cmdlen = _bgetcmd( NULL, 0 ) + 1;
-    cmdline = malloc( cmdlen );
-    if( cmdline != NULL )
-        _bgetcmd( cmdline, cmdlen );
-    retcode = IdeDrvExecDLL( &info, cmdline );
-    free( cmdline );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line != NULL )
+        _bgetcmd( cmd_line, cmd_len );
+    retcode = IdeDrvExecDLL( &info, cmd_line );
+    free( cmd_line );
 #endif
     switch( retcode ) {
     case IDEDRV_SUCCESS:

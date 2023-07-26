@@ -600,8 +600,8 @@ cmdline_t *CmdLineParse( void ) {
 /*****************************/
 
     const char  *env_var;
+    int         cmd_len;
     char        *cmd_line;
-    size_t      cmd_len;
     act_grp_t   *cur;
     act_grp_t   *next;
 
@@ -620,8 +620,7 @@ cmdline_t *CmdLineParse( void ) {
 
     /* reverse the stack of actions */
     cmdLine.action = NULL;  /* no actions by default */
-    cur = curAct;
-    while( cur != NULL ) {
+    for( cur = curAct; cur != NULL; cur = next ) {
         next = cur->next;
         if( cur->num_files == 0 ) { /* trim out the needless actions */
             MemFree( cur );
@@ -629,7 +628,6 @@ cmdline_t *CmdLineParse( void ) {
             cur->next = cmdLine.action; /* stack it up */
             cmdLine.action = cur;
         }
-        cur = next;
     }
     if( cmdLine.action == NULL ) {
         usage();

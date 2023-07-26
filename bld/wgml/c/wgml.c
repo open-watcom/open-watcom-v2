@@ -761,8 +761,8 @@ static  void    init_pass( void )
 
 int main( int argc, char * argv[] )
 {
-    char    *   cmdline;
-    int         cmdlen;
+    int         cmd_len;
+    char    *   cmd_line;
     jmp_buf     env;
     int         tok_count;
     int         passcount;
@@ -790,14 +790,14 @@ int main( int argc, char * argv[] )
 
     ff_setup();                         // init findfile
 
-    cmdlen = _bgetcmd( NULL, 0 ) + 1;
-    cmdline = mem_alloc( cmdlen );
-    _bgetcmd( cmdline, cmdlen );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = mem_alloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
 
-    g_info_lm( INF_CMDLINE, cmdline );
+    g_info_lm( INF_CMDLINE, cmd_line );
 
-    tok_count = proc_options( cmdline );
-    init_sysparm( cmdline, banner1w( "Script/GML", _WGML_VERSION_ ) );
+    tok_count = proc_options( cmd_line );
+    init_sysparm( cmd_line, banner1w( "Script/GML", _WGML_VERSION_ ) );
     /* don't mem_free cmdline now as it is used for sysparm variable */
     g_banner();
     if( tok_count < 4 ) {               // file ( device xyz   is minimum
@@ -911,7 +911,7 @@ int main( int argc, char * argv[] )
     ff_teardown();                      // free memory allocated in findfunc
     cop_teardown();                     // free memory allocated in copfiles
 
-    mem_free( cmdline );
+    mem_free( cmd_line );
     free_some_mem();
     free_filenames();
 

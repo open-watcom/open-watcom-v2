@@ -44,11 +44,11 @@ typedef struct {
 void main( void )
 {
 //    LENGTH l;
-    static char     buff[LINE_WIDTH];
+    static char     cmd_line[LINE_WIDTH];
 //    int row,col;
 //    int written;
 
     KbdRegister( "OS2EDIT", "OS2EDIT_", KR_KBDSTRINGIN );
-    _bgetcmd( buff, sizeof( buff ) );
-    system( buff );
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    system( cmd_line );
 }

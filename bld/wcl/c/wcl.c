@@ -1116,9 +1116,9 @@ int  main( int argc, char **argv )
 {
     int         rc;
     const char  *wcl_env;
-    const char  *p;
-    char        *cmd;           /* command line parameters  */
-    size_t      len;
+    int         cmd_len;
+    char        *cmd_line;
+    const char  *cmd;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -1136,7 +1136,7 @@ int  main( int argc, char **argv )
      * add wcl environment variable to cmd
      * unless /y is specified in either cmd or wcl
      */
-    len = _bgetcmd( NULL, 0 ) + 1;  /* check cmd line len */
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;  /* check cmd line len */
     wcl_env = getenv( WCLENV );
     if( wcl_env != NULL ) {
         size_t  envlen;
@@ -1144,34 +1144,34 @@ int  main( int argc, char **argv )
         /*
          * allocate space enough for wcl variable and cmd line
          */
-        cmd = MemAlloc( envlen + 1 + len );
-        strcpy( cmd, wcl_env );
-        cmd[envlen++] = ' ';
-        _bgetcmd( cmd + envlen, len );
-        if( check_y_opt( cmd ) ) {
-            _bgetcmd( cmd, len );
+        cmd_line = MemAlloc( envlen + 1 + cmd_len );
+        strcpy( cmd_line, wcl_env );
+        cmd_line[envlen++] = ' ';
+        _bgetcmd( cmd_line + envlen, cmd_len );
+        if( check_y_opt( cmd_line ) ) {
+            _bgetcmd( cmd_line, cmd_len );
         }
     } else {
         /*
          * allocate space enough for cmd line
          */
-        cmd = MemAlloc( len );
-        _bgetcmd( cmd, len );
+        cmd_line = MemAlloc( cmd_len );
+        _bgetcmd( cmd_line, cmd_len );
     }
-    p = cmd;
-    SKIP_SPACES( p );
-    if( p[0] == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' ) || IS_OPT( p[0] ) && p[1] == '?' ) {
+    cmd = cmd_line;
+    SKIP_SPACES( cmd );
+    if( cmd[0] == '\0' || cmd[0] == '?' && ( cmd[1] == '\0' || cmd[1] == ' ' ) || IS_OPT( cmd[0] ) && cmd[1] == '?' ) {
         Usage();
         rc = 1;
     } else {
         initialize_Flags();
-        rc = Parse( p );
+        rc = Parse( cmd );
         if( rc == 0 ) {
             print_banner();
             rc = CompLink();
         }
     }
-    MemFree( cmd );
+    MemFree( cmd_line );
     ProcMemFini();
     MemFini();
     return( ( rc != 0 ) );

@@ -113,20 +113,21 @@ void SpawnProgStub( const char *progname )
     pgroup2         pg1;
     pgroup2         pg2;
     char            fullPath[_MAX_PATH];
-    size_t          len;
+    int             cmd_len;
     char *          argv[3];
     int             rc;
 
     /*** Make a copy of the command line ***/
-    argv[0] = (char*)progname;
-    len = _bgetcmd( NULL, 0 ) + 1;
-    argv[1] = AllocMem( len );
-    _bgetcmd( argv[1], len );
+    argv[0] = (char *)progname;
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    argv[1] = AllocMem( cmd_len );
+    _bgetcmd( argv[1], cmd_len );
     argv[2] = NULL;
 
     /*** Try to execute the program ***/
     rc = (int)spawnvp( P_WAIT, progname, (const char **)argv );
     if( rc != -1 ) {
+        FreeMem( argv[1] );
         exit( rc );
     }
 
@@ -136,6 +137,7 @@ void SpawnProgStub( const char *progname )
     _splitpath2( progname, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
     _makepath( fullPath, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
     rc = (int)spawnvp( P_WAIT, fullPath, (const char **)argv );
+    FreeMem( argv[1] );
     if( rc != -1 ) {
         exit( rc );
     }

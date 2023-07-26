@@ -1322,8 +1322,8 @@ int main( void )
 /**************/
 {
     char       *argv[2];
-    int        len;
-    char       *buff;
+    int        cmd_len;
+    char       *cmd_line;
 
 #endif
 
@@ -1332,17 +1332,16 @@ int main( void )
 #ifdef __UNIX__
     do_init_stuff( &argv[1] );
 #else
-    len = _bgetcmd( NULL, INT_MAX ) + 1;
-    buff = malloc( len );
-    if( buff != NULL ) {
-        argv[0] = buff;
-        argv[1] = NULL;
-        _bgetcmd( buff, len );
-    } else {
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line == NULL ) {
         return( -1 );
     }
+    _bgetcmd( cmd_line, cmd_len );
+    argv[0] = cmd_line;
+    argv[1] = NULL;
     do_init_stuff( argv );
-    free( buff );
+    free( cmd_line );
 #endif
     WriteObjModule();           // main body: parse the source file
     do_fini_stuff();

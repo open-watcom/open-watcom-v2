@@ -70,12 +70,12 @@ static void Initialize( void )
 
     const char  *err;
     char        trapparms[PARMS_MAXLEN];
-    char        cmdline[PARMS_MAXLEN];
+    char        cmd_line[PARMS_MAXLEN];
 
 #define servparms RWBuff
 
-    _bgetcmd( cmdline, sizeof( cmdline ) );
-    ParseCommandLine( cmdline, trapparms, servparms, &OneShot );
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    ParseCommandLine( cmd_line, trapparms, servparms, &OneShot );
     err = RemoteLink( servparms, true );
 
 #undef servparms

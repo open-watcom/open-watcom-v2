@@ -79,7 +79,7 @@ void TellWinHandle( void )
 
 void GUImain( void )
 {
-    char buff[256];
+    char cmd_line[256];
 
     // fix up env vars if necessary
     watcom_setup_env();
@@ -87,8 +87,8 @@ void GUImain( void )
     SetErrorMode( SEM_FAILCRITICALERRORS );
     SetHandleCount( 60 );
     _8087 = 0;
-    _bgetcmd( buff, sizeof( buff ) );
-    CmdData=buff;
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DebugMain();
     InitHookFunc();
 }

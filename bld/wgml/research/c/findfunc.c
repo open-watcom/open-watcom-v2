@@ -417,34 +417,30 @@ int main()
 {
     /* Declare automatic variables. */
 
-    size_t  cmdlen  = 0;
-    char *  cmdline = NULL;
+    int     cmd_len;
+    char *  cmd_line;
     int     retval;
 
     /* Display the banner. */
 
     print_banner();
 
+    /* Get the command line. */
+
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line == NULL ) {
+        return( EXIT_FAILURE );
+    }
+    _bgetcmd( cmd_line, cmd_len );
+
     /* Display the usage information if the command line is empty. */
 
-    cmdlen = _bgetcmd( NULL, 0 );
-    if( cmdlen == 0 ) {
+    if( *cmd_line == '\0' ) {
+        free( cmd_line );
         print_usage();
         return( EXIT_FAILURE );
     }
-
-    /* Include space for the terminating null character. */
-
-    cmdlen++;
-
-    /* Get the command line. */
-
-    cmdline = malloc( cmdlen );
-    if( cmdline == NULL ) {
-        return( EXIT_FAILURE );
-    }
-
-    cmdlen = _bgetcmd( cmdline, cmdlen );
 
     /* Initialize the globals. */
 
@@ -463,16 +459,16 @@ int main()
 
     /* Parse the command line: allocates and sets tgt_path. */
 
-    retval = parse_cmdline( cmdline );
-    if( retval == FAILURE ) {
-        free( cmdline );
-        return( EXIT_FAILURE );
-    }
+    retval = parse_cmdline( cmd_line );
 
     /* Free the memory held by cmdline and reset it. */
 
-    free( cmdline );
-    cmdline = NULL;
+    free( cmd_line );
+    cmd_line = NULL;
+
+    if( retval == FAILURE ) {
+        return( EXIT_FAILURE );
+    }
 
     /* Check all files in current directory. */
 

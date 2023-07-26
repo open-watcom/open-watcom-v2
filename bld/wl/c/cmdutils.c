@@ -959,15 +959,15 @@ bool GetToken( sep_type req, tokcontrol ctrl )
 static char *getCmdLine( void )
 /*****************************/
 {
-    int     len;
-    char    *cmdline;
+    int     cmd_len;
+    char    *cmd_line;
 
-    len = _bgetcmd( NULL, 0 ) + 1;
-    _ChkAlloc( cmdline, len );
-    if( cmdline != NULL ) {
-        _bgetcmd( cmdline, len );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    _ChkAlloc( cmd_line, cmd_len );
+    if( cmd_line != NULL ) {
+        _bgetcmd( cmd_line, cmd_len );
     }
-    return( cmdline );
+    return( cmd_line );
 }
 
 void NewCommandSource( const char *name, const char *buff, method how )

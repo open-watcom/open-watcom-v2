@@ -74,8 +74,6 @@ enum {
     #undef pick
 };
 
-static char     *CmdBuff = NULL;
-
 #if defined( _M_IX86 )
     unsigned char   _8087   = 0;
     unsigned char   _real87 = 0;
@@ -111,14 +109,15 @@ static void FFini( void )
     FMemFini();
 }
 
-int     main( int argc, char *argv[] ) 
+int     main( int argc, char *argv[] )
 //======================================
 // FORTRAN compiler main line.
 {
     int         ret_code;
     char        *opts[MAX_OPTIONS+1];
     char        *wfc_env;
-    size_t      len;
+    int         cmd_len;
+    char        *cmd_line;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -131,22 +130,22 @@ int     main( int argc, char *argv[] )
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
-    len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
     wfc_env = getenv( WFC_ENV );
     if( wfc_env != NULL ) {
         size_t  len1;
         len1 = strlen( wfc_env );
-        CmdBuff = FMemAlloc( len1 + 1 + len );
-        strcpy( CmdBuff, wfc_env );
-        CmdBuff[len1++] = ' ';
-        _bgetcmd( CmdBuff + len1, len );
+        cmd_line = FMemAlloc( len1 + 1 + cmd_len );
+        strcpy( cmd_line, wfc_env );
+        cmd_line[len1++] = ' ';
+        _bgetcmd( cmd_line + len1, cmd_len );
     } else {
-        CmdBuff = FMemAlloc( len );
-        _bgetcmd( CmdBuff, len );
+        cmd_line = FMemAlloc( cmd_len );
+        _bgetcmd( cmd_line, cmd_len );
     }
     ret_code = 0;
     InitCompMain();
-    if( MainCmdLine( &SrcName, &CmdPtr, opts, CmdBuff ) ) {
+    if( MainCmdLine( &SrcName, &CmdPtr, opts, cmd_line ) ) {
         SrcExtn = SDSplitSrcExtn( SrcName );    // parse the file name in case we get
         ProcOpts( opts );                       // an error in ProcOpts() so error
         InitPredefinedMacros();                 // file can be created
@@ -155,7 +154,7 @@ int     main( int argc, char *argv[] )
         ShowUsage();
     }
     FiniCompMain();
-    FMemFree( CmdBuff );
+    FMemFree( cmd_line );
     FFini();
     return( ret_code );
 }

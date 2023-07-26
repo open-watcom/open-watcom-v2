@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,20 +76,20 @@ char __far *InitAlias( char __far * inname )
 #ifdef __OS2__
     static char     AliasArea[2048]; /* The DLL seems to need static memory */
 #endif
+    char            c;
 
+    bp = b;
     endname = inname;
-    while( *endname == ' ' )
-        ++endname;
-    for( ; *endname != '\0'; endname++ ) {
-        if( *endname == ' ' ) {
-            *endname++ = '\0';
+    while(  (c = *endname) != '\0' ) {
+        endname++;
+        if( c == ' ' ) {
+            if( bp == b )
+                continue;
             break;
         }
+        *bp++ = c;
     }
-    for( bp = b; (*bp = *inname) != '\0'; bp++ ) {
-        ++inname;
-    }
-    action=action;
+    *bp = '\0';
     if( DosOpen( b, &hdl, &action, 0,
             FILE_NORMAL,
             OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,

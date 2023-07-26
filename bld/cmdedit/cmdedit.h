@@ -287,7 +287,7 @@ enum {
 #define VioGetCurType( c , z ) DVioGetCurType( c )
 #define VioReadCellStr( b, l, r, c, z ) DVioReadCellStr( b, l, r, c );
 #define VioWrtCellStr( b, l, r, c, z ) DVioWrtCellStr( b, l, r, c );
-#define DosOpen( n, h, ac, s, at, fl, md, z ) DDosOpen( n, h )
+#define DosOpen( n, h, ac, s, at, fl, md, z ) (void)(ac),DDosOpen( n, h )
 #define DosFindFirst( s, h, a, b, l, c, z ) DDosFindFirst( s, a, b )
 #define DosFindNext( h, b, l, c ) DDosFindNext( b )
 #define DosQCurDisk( n, m ) DDosQCurDisk( n )

@@ -138,19 +138,23 @@ static size_t   WProfDipSize = 0;
 void WPInit( void )
 /*****************/
 {
-    char        *rover;
+    char        *wp_env;
     bool        do_report;
-    char        buff[256];
+    int         cmd_len;
+    char        *cmd_line;
 
     WPMemOpen();
     SamplePath[0] = 0;
     InitPaths();
-    rover = getenv( "WPROF" );
-    if( rover != NULL ) {
-        procCmd( rover );
+    wp_env = getenv( "WPROF" );
+    if( wp_env != NULL ) {
+        procCmd( wp_env );
     }
-    _bgetcmd( buff, sizeof( buff ) );
-    do_report = procCmd( buff );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = ProfAlloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    do_report = procCmd( cmd_line );
+    ProfFree( cmd_line );
     WndInit( "Open Watcom Profiler" );
     WPWndInitDone = true;
     InitMADInfo();

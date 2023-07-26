@@ -455,13 +455,17 @@ char CommandParser::getNextChar()
 
 void main()
 {
-    char                    buf[ 512 ];
+    int                     cmd_len;
+    char                    *cmd_line;
     CommandParser           prs;
     int                     i;
     WCValSListIter<String>  iter;
 
-    _bgetcmd( buf, sizeof( buf ) );
-    prs( buf, true );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = new char[cmd_len];
+    _bgetcmd( cmd_line, cmd_len );
+    prs( cmd_line, true );
+    delete[] cmd_line;
     iter( *prs.files() );
     printf( "    database = \"%s\"\n", prs.database() ? prs.database() : "<NULL>" );
     printf( "    options  = \"%s\"\n", prs.options()  ? prs.options()  : "<NULL>" );

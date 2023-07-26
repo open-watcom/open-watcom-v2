@@ -73,13 +73,13 @@ static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
 
 void GUImain( void )
 {
-    char                buff[256];
+    char                cmd_line[256];
     PFNSIGHANDLER       prev_hdl;
     USHORT              prev_act;
 
     DosSetMaxFH( 40 );
-    _bgetcmd( buff, sizeof( buff ) );
-    CmdData = buff;
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
 }
@@ -88,20 +88,20 @@ void GUImain( void )
 
 void GUImain( void )
 {
-    char    *buff;
-    int     len;
+    int     cmd_len;
+    char    *cmd_line;
 
     // fix up env vars if necessary
     watcom_setup_env();
 
-    len = _bgetcmd( NULL, 0 ) + 1;
-    buff = malloc( len );
-    _bgetcmd( buff, len );
-    CmdData = buff;
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    CmdData = cmd_line;
     //TODO: replace with exception handler
 //    DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
-    free( buff );
+    free( cmd_line );
 }
 
 #endif

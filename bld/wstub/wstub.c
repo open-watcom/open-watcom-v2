@@ -78,14 +78,14 @@ static char *dos4g_path( void )
 void main( int argc, char *argv[] )
 {
     char        *av[4];
-    char        cmdline[128];
+    char        cmd_line[128];
 
     (void)argc;
 
-    _bgetcmd( cmdline, sizeof( cmdline ) )
+    _bgetcmd( cmd_line, sizeof( cmd_line ) )
     av[0] = dos4g_path();           /* Locate the DOS/4GW loader */
     av[1] = argv[0];                /* name of executable to run */
-    av[2] = cmdline;                /* command line */
+    av[2] = cmd_line;               /* command line */
     av[3] = NULL;                   /* end of list */
 #ifdef QUIET
     putenv( "DOS4G=QUIET" );        /* disables DOS/4GW Copyright banner */

@@ -217,7 +217,7 @@ static void RunRequest( int req )
 
 int main( int argc, char **argv )
 {
-    char        buff[256];
+    char        cmd_line[256];
     DWORD       tid;
     HANDLE      hThread;
 
@@ -225,8 +225,8 @@ int main( int argc, char **argv )
 
     MemInit();
     SetErrorMode( SEM_FAILCRITICALERRORS );
-    _bgetcmd( buff, sizeof( buff ) );
-    CmdData = buff;
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DebugMain();
     _SwitchOff( SW_ERROR_STARTUP );
     DoInput();
