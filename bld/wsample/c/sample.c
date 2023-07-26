@@ -69,7 +69,11 @@ static samp_block_prefix    Last = {
 static int              stackSize = 0;
 
 
-void DOSI86NEAR WriteMark( const char FAR_PTR *str, FAR_ADDRESS where )
+#if defined( __DOS__ ) && !defined( __PHARLAP__ ) && !defined( __DOS4G__ )
+void __near WriteMark( const char FAR_PTR *str, far_address where )
+#else
+void WriteMark( const char FAR_PTR *str, far_address where )
+#endif
 {
     struct {
         struct samp_block_prefix    pref;
@@ -99,7 +103,7 @@ void DOSI86NEAR WriteMark( const char FAR_PTR *str, FAR_ADDRESS where )
     SamplerOff--;
 }
 
-void WriteCodeLoad( FAR_ADDRESS ovl_tbl, const char *name, samp_block_kinds kind )
+void WriteCodeLoad( far_address ovl_tbl, const char *name, samp_block_kinds kind )
 {
     struct {
         struct samp_block_prefix    pref;
@@ -131,7 +135,7 @@ void WriteCodeLoad( FAR_ADDRESS ovl_tbl, const char *name, samp_block_kinds kind
 }
 
 
-void WriteAddrMap( addr_seg map_start, FAR_ADDRESS *load_ptr )
+void WriteAddrMap( seg map_start,  seg load_start, off load_offset )
 {
     struct {
         struct samp_block_prefix    pref;
@@ -143,15 +147,15 @@ void WriteAddrMap( addr_seg map_start, FAR_ADDRESS *load_ptr )
     addr.pref.kind = SAMP_ADDR_MAP;
     addr.d.data[0].map.segment = map_start;
     addr.d.data[0].map.offset = 0;
-    addr.d.data[0].actual.segment = load_ptr->segment;
-    addr.d.data[0].actual.offset = load_ptr->offset;
+    addr.d.data[0].actual.segment = load_start;
+    addr.d.data[0].actual.offset = load_offset;
     Info.d.count[SAMP_ADDR_MAP].size += sizeof( addr );
     Info.d.count[SAMP_ADDR_MAP].number += 1;
     SampWrite( &addr, sizeof( addr ) );
 }
 
 
-void DOSI86NEAR StopAndSave( void )
+void StopAndSave( void )
 /*
  * called from int08_handler, int21_handler, and int28_handler
  */
@@ -285,8 +289,8 @@ void RecordCGraph( void )
      * then we write the cs:ip of the last known routine
      */
     if( Comm.push_no ) {
-        Samples->d.sample.sample[SampleIndex].offset  = Comm.top.offset;
-        Samples->d.sample.sample[SampleIndex].segment = Comm.top.segment;
+        Samples->d.sample.sample[SampleIndex].offset  = (off)Comm.top_ip;
+        Samples->d.sample.sample[SampleIndex].segment = (seg)Comm.top_cs;
         SampleIndex++;
     }
     /*
@@ -294,8 +298,8 @@ void RecordCGraph( void )
      */
     for( i = 0; i < (int)Comm.push_no - 1; i++ ) {
         GetNextAddr();
-        Samples->d.sample.sample[SampleIndex].offset = CGraphPtr.offset;
-        Samples->d.sample.sample[SampleIndex].segment = CGraphPtr.segment;
+        Samples->d.sample.sample[SampleIndex].offset = CGraphOff;
+        Samples->d.sample.sample[SampleIndex].segment = CGraphSeg;
         SampleIndex++;
     }
     /*
@@ -424,9 +428,8 @@ static const char *skip_command( const char *str )
         / sizeof( samp_address ))
 
 
-static const char *Parse( const char *line, char arg[], const char **eoc )
+static const char *Parse( const char *cmd, char arg[], const char **eoc )
 {
-    const char  *cmd;
     char        *p;
     const char  *ptr;
     int         c, len;
@@ -434,7 +437,6 @@ static const char *Parse( const char *line, char arg[], const char **eoc )
     InitTimerRate();
     SysDefaultOptions();
     Ceiling = CNV_CEIL( DEF_CEIL );
-    cmd = line;
     SampName[0] = '\0';
     for( ;; ) {
         cmd = skip( cmd );
@@ -606,9 +608,9 @@ int sample_main( char *cmd_line )
 #if !defined( __WINDOWS__ )
 int main( int argc, char **argv )
 {
+    int         cmd_len;
     char        *cmd_line;
     int         rc;
-    size_t      len;
 
 #if !defined( __WATCOMC__ )
     _argv = argv;
@@ -621,21 +623,13 @@ int main( int argc, char **argv )
     if( !MsgInit() )
         fatal();
 
-    /*
-     * Command line may be several KB large on most OSes
-     */
-    len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = malloc( len );
-    if( cmd_line != NULL ) {
-        _bgetcmd( cmd_line, len );
-    }
-
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line == NULL )
+        fatal();
+    _bgetcmd( cmd_line, cmd_len );
     rc = sample_main( cmd_line );
-
-    if( cmd_line != NULL ) {
-        free( cmd_line );
-    }
-
+    free( cmd_line );
     MsgFini();
     return( rc );
 }
