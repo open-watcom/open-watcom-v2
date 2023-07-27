@@ -387,7 +387,8 @@ int main( int argc, char *argv[] )
     int                 add_file;
     struct stat         statx;
     struct utimbuf      uptime;
-    time_t              mtime;
+    time_t              old_mtime;
+    mode_t              old_mode;
     const char          *in_ext;
     int                 backup_file;
 
@@ -454,23 +455,25 @@ int main( int argc, char *argv[] )
     }
     _splitpath2( argv[1], pg->buffer, &pg->drive, &pg->dir, &pg->fname, &pg->ext );
     in_ext = pg->ext;
-    mtime = 0;
+    old_mtime = 0;
     if( in_ext[0] == '\0' ) {
         for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
             in_ext = ExtLst[i];
             _makepath( fin.name, pg->drive, pg->dir, pg->fname, in_ext );
             if( stat( fin.name, &statx ) == 0 ) {
-                mtime = statx.st_mtime;
+                old_mtime = statx.st_mtime;
+                old_mode = statx.st_mode;
                 break;
             }
         }
     } else {
         _makepath( fin.name, pg->drive, pg->dir, pg->fname, in_ext );
         if( stat( fin.name, &statx ) == 0 ) {
-            mtime = statx.st_mtime;
+            old_mtime = statx.st_mtime;
+            old_mode = statx.st_mode;
         }
     }
-    if( mtime == 0 ) {
+    if( old_mtime == 0 ) {
         free( pg );
         Fatal( MSG_CANT_FIND, argv[1] );
     }
@@ -512,16 +515,16 @@ int main( int argc, char *argv[] )
         StripInfo();
     }
     if( backup_file ) {
-    	if( access( fbak.name, F_OK ) == 0 && remove( fbak.name ) != 0 ) {
-        	Fatal( MSG_CANT_ERASE, fbak.name );
-    	}
-    	if( access( fout.name, F_OK ) == 0 && rename( fout.name, fbak.name ) != 0 ) {
-        	Fatal( MSG_CANT_RENAME, fout.name );
-    	}
+        if( access( fbak.name, F_OK ) == 0 && remove( fbak.name ) != 0 ) {
+            Fatal( MSG_CANT_ERASE, fbak.name );
+        }
+        if( access( fout.name, F_OK ) == 0 && rename( fout.name, fbak.name ) != 0 ) {
+            Fatal( MSG_CANT_RENAME, fout.name );
+        }
     } else {
-    	if( access( fout.name, F_OK ) == 0 && remove( fout.name ) != 0 ) {
-        	Fatal( MSG_CANT_ERASE, fout.name );
-    	}
+        if( access( fout.name, F_OK ) == 0 && remove( fout.name ) != 0 ) {
+            Fatal( MSG_CANT_ERASE, fout.name );
+        }
     }
     /* initialize output file, overwrite if exists */
     fout.fp = fopen( fout.name, "wb" );
@@ -535,8 +538,9 @@ int main( int argc, char *argv[] )
     fclose( ftmp.fp );
 
     uptime.actime = time( NULL );
-    uptime.modtime = mtime;
+    uptime.modtime = old_mtime;
     utime( fout.name, &uptime );
+    chmod( fout.name, old_mode );
 
     Msg_Fini();
     return( EXIT_SUCCESS );
