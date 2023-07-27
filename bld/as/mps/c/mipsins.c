@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,16 +73,16 @@ ins_table MIPSTable[] = {
     INS( "ldc1",    0x35,   0x00,   IT_FP_MEMORY_ALL,   ENUM_NONE,  MIPS_ISA2 ),
     INS( "swc1",    0x39,   0x00,   IT_FP_MEMORY_ALL,   ENUM_NONE,  MIPS_ISA1 ),
     INS( "sdc1",    0x3d,   0x00,   IT_FP_MEMORY_ALL,   ENUM_NONE,  MIPS_ISA2 ),
- // Memory Format Instructions with a function code
-    INS( "fetch",   0x18,   0x80,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "fetch_m", 0x18,   0xA0,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "mb",      0x18,   0x40,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
-    INS( "wmb",     0x18,   0x44,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
-    INS( "rc",      0x18,   0xE0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "rpcc",    0x18,   0xC0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "rs",      0x18,   0xF0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "trapb",   0x18,   0x00,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
-    INS( "excb",    0x18,   0x04,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
+ // Memory Format Instructions with a function code ???? not exists for MIPS, probably from ALPHA
+    INS( "fetch",   0x18,   0x80,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "fetch_m", 0x18,   0xA0,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "mb",      0x18,   0x40,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "wmb",     0x18,   0x44,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "rc",      0x18,   0xE0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "rpcc",    0x18,   0xC0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "rs",      0x18,   0xF0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "trapb",   0x18,   0x00,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "excb",    0x18,   0x04,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
  // Jump Instructions
     INS( "j",       0x02,   0x00,   IT_JUMP,            ENUM_NONE,  MIPS_ISA1 ),
     INS( "jal",     0x03,   0x00,   IT_JUMP,            ENUM_NONE,  MIPS_ISA1 ),

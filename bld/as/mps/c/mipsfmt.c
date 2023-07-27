@@ -79,7 +79,7 @@
 #define OPCODE_LDA      0x8
 #define OPCODE_LDAH     0x9
 
-#define OP_HAS_RELOC( op )      ((op)->flags & (RELOC | UNNAMED_RELOC))
+#define OP_HAS_RELOC( op )      (((op)->flags & (RELOC | UNNAMED_RELOC)) != 0)
 #define OP_RELOC_NAMED( op )    ((op)->flags & RELOC)
 
 typedef struct reloc_entry      *reloc_list;
@@ -206,7 +206,7 @@ static void doReloc( asm_reloc *reloc, ins_operand *op, owl_reloc_type rtype, ui
 {
     if( op == NULL )
         return;
-    if( !( OP_HAS_RELOC( op ) ) )
+    if( !OP_HAS_RELOC( op ) )
         return;
     addReloc( reloc, op->reloc.target, relocType( op->reloc.type, rtype ),
               (unsigned)( (char *)offset - (char *)result ), ( op->flags & RELOC ) );
