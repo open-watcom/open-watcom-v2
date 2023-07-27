@@ -1158,8 +1158,8 @@ outfilelist *NewOutFile( char *filename )
     return( fnode );
 }
 
-char *GetFileName( char **membname, bool setname )
-/************************************************/
+char *GetFileName( char **membname )
+/**********************************/
 {
     char        *ptr;
     size_t      namelen;
@@ -1175,9 +1175,6 @@ char *GetFileName( char **membname, bool setname )
         ptr = FileName( objname, namelen, E_LIBRARY, false );
     } else {
         *membname = NULL;
-        if( setname && Name == NULL ) {
-            Name = ChkToString( objname, namelen );
-        }
         ptr = FileName( objname, namelen, E_OBJECT, false );
     }
     return( ptr );

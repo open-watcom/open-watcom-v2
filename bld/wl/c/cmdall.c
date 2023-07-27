@@ -325,7 +325,7 @@ static bool AddLibFile( void )
     file_list   *entry;
 
     CmdFlags &= ~CF_MEMBER_ADDED;
-    ptr = GetFileName( &membname, false );
+    ptr = GetFileName( &membname );
     if( membname != NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_NO_MEMB_IN_LIBFILE, NULL );
         _LnkFree( membname );
@@ -365,7 +365,7 @@ static bool AddModFile( void )
     char        *ptr;
     char        *membname;
 
-    ptr = GetFileName( &membname, false );
+    ptr = GetFileName( &membname );
     AddHTableElem( Root->modFilesHashed, ptr );
     LinkFlags |= LF_GOT_CHGD_FILES;
     if( membname != NULL ) {
@@ -391,7 +391,10 @@ static bool AddFile( void )
         }
     }
 #endif
-    ptr = GetFileName( &membname, true );
+    ptr = GetFileName( &membname );
+    if( membname == NULL && Name == NULL ) {
+        Name = ChkToString( Token.this, Token.len );
+    }
     temp = CurrFList;
     if( *CurrFList != NULL ) {
         CurrFList = &(*CurrFList)->next_file;
@@ -1087,7 +1090,7 @@ static bool AddModTrace( void )
     char            *membname;
     char            *fname;
 
-    fname = GetFileName( &membname, false );
+    fname = GetFileName( &membname );
     AddTraceListMod( fname, membname );
     return( true );
 }

@@ -174,5 +174,5 @@ extern void             RestoreCmdLine( void );
 extern bool             IsSystemBlock( void );
 extern void             BurnUtils( void );
 extern outfilelist      *NewOutFile( char * );
-extern char             *GetFileName( char **, bool );
+extern char             *GetFileName( char ** );
 extern version_state    GetGenVersion( version_block *vb, version_state enq, bool novell_revision );
