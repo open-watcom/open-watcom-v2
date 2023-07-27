@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ void FPPatchTypeRef( void )
             Temp.data[i] = Temp.data[i - 3];
         }
         Temp.data[0] = ESC;
-        Temp.data[1] = FUN;
+        Temp.data[1] = ESC_FUN;
         Temp.data[2] = FPPatchType;
         Temp.hdr.reclen += 3;
         FPPatchType = FPP_NONE;

@@ -1594,11 +1594,11 @@ static int  MkFlist( dbg_struct st )
                 if( strcmp( curr->method.name, field->method.name ) != 0 )
                     break;
                 field = curr;
-                curr = curr->entry.next;
+//                curr = curr->entry.next; // it looks like useless code
                 a_mlist = BuffInc( out, sizeof( *a_mlist ) );
             }
             EndTypeString( out );
-         }
+        }
     }
     for( ; old != NULL; old = field ) {
         field = old->entry.next;

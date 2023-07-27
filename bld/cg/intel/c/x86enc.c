@@ -739,7 +739,7 @@ static  void    DoP5Divide( instruction *ins ) {
     LayOpword( 0x05f6 );        /* test byte ptr L1,1 */
 #endif
     ILen += WORD_SIZE;
-    DoLblRef( RTLabel( RT_BUGLIST ), AskBackSeg(), 0, OFST );
+    DoLblRef( RTLabel( RT_BUGLIST ), AskBackSeg(), 0, ESCA_OFST );
     AddWData( 1, U1 );
     _Emit;
     if( used_ds ) {
@@ -2080,9 +2080,9 @@ void    GenObjCode( instruction *ins ) {
 
                 segid = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
                 _Code;
-                LayOpword( 0xc4f7 );                /* test [e]sp, offset L1  */
-                ILen += WORD_SIZE;                  /* ..                     */
-                DoLblRef( lbl, segid, 0, OFST );    /* ..                     */
+                LayOpword( 0xc4f7 );                    /* test [e]sp, offset L1  */
+                ILen += WORD_SIZE;                      /* ..                     */
+                DoLblRef( lbl, segid, 0, ESCA_OFST );   /* ..                     */
                 _Emit;
             }
             return;
@@ -2105,9 +2105,9 @@ void    GenObjCode( instruction *ins ) {
                 c[1] = 0;
                 GenProfileData( c, &junk, &CurrProc->targ.routine_profile_data );
                 _Code;
-                LayOpword( 0xc5f7 );                /* test [e]bp, offset L1  */
-                ILen += WORD_SIZE;                  /* ..                     */
-                DoLblRef( lbl, segid, 0, OFST );    /* ..                     */
+                LayOpword( 0xc5f7 );                    /* test [e]bp, offset L1  */
+                ILen += WORD_SIZE;                      /* ..                     */
+                DoLblRef( lbl, segid, 0, ESCA_OFST );   /* ..                     */
                 _Emit;
             }
             return;

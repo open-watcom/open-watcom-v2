@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,26 +58,9 @@
 #include "feprotos.h"
 
 
-static void     DoRelocRef( cg_sym_handle sym, cg_class class, segment_id segid, offset val, escape_class kind );
+static void     DoRelocRef( cg_sym_handle sym, cg_class class, segment_id segid, offset val, escape_class esc_attr );
 static void     OutShortDisp( label_handle lbl );
 static void     OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
-
-/* Grammar of Escapes :*/
-/**/
-/* Sequence                                                 Meaning*/
-/* ========                                                 ========*/
-/**/
-/* ESC, ESC                                                 actual ESC byte */
-/* ESC, IMP <LDOF|OFST|BASE|SELF>, cg_sym_handle <,offset>  import reference */
-/* ESC, REL <LDOF|BASE|OFST>, segid                         relocate, with seg-id */
-/* ESC, SYM <LDOF|OFST|SELF>, cg_sym_handle <,offset>       unknown sym ref */
-/* ESC, LBL <LDOF|OFST|SELF>, segid, lbl_handle, <,offset>  ptr reference */
-/* ESC, ABS objhandle, len, offset                          object patch */
-/* ESC, FUN byte                                            for 87 instructions*/
-/**/
-/*       OFST bit on means offset follows*/
-/*       LDOF means loader resolved offset*/
-/*       BASE means use F_BASE relocation*/
 
 bool    CodeHasAbsPatch( oc_entry *code )
 /***************************************/
@@ -89,7 +72,7 @@ bool    CodeHasAbsPatch( oc_entry *code )
     final = curr + code->hdr.reclen - offsetof( oc_entry, data );
     while( curr < final ) {
         if( *curr++ == ESC ) {
-            if( *curr++ == ABS ) {
+            if( *curr++ == ESC_ABS ) {
                 return( true );
             }
         }
@@ -102,7 +85,7 @@ void    DoAbsPatch( abspatch_handle *handle, int len )
 /****************************************************/
 {
     EmitByte( ESC );
-    EmitByte( ABS );
+    EmitByte( ESC_ABS );
     if( len == 1 ) {
         EmitByte( BYTE_PATCH );
     } else if( len == 2 ) {
@@ -119,44 +102,44 @@ void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types 
 /******************************************************************************************/
 {
     fe_attr             attr;
-    escape_class        kind;
+    escape_class        esc_attr;
 
-    kind = 0;
+    esc_attr = 0;
     switch( fixup_type ) {
     case FE_FIX_BASE:
         val = 0;
-        kind |= BASE; /* base segment relocation */
+        esc_attr |= ESCA_BASE;  /* base segment relocation */
         break;
     case FE_FIX_SELF:
-        kind |= SELF; /* self relative offset relocation */
+        esc_attr |= ESCA_SELF;  /* self relative offset relocation */
         break;
     }
     if( val != 0 ) {
-        kind |= OFST;           /* offset follows*/
+        esc_attr |= ESCA_OFST;  /* offset follows*/
     }
     if( class == CG_FE ) {
         attr = FEAttr( sym );
-        if( ((kind & BASE) == 0)
+        if( ((esc_attr & ESCA_BASE) == 0)
           && _IsTargetModel( CGSW_X86_WINDOWS )
           && (attr & FE_PROC)
           && ((call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) ) {
-            kind |= LDOF;
+            esc_attr |= ESCA_LDOF;
         }
         if( UseImportForm( attr ) ) {
             EmitByte( ESC );
-            EmitByte( IMP | kind );
+            EmitByte( ESC_IMP | esc_attr );
             EmitPtr( sym );
-            if( kind & OFST ) {
+            if( esc_attr & ESCA_OFST ) {
                 EmitOffset( val );
             }
         } else if( attr & FE_GLOBAL ) {
-            DoRelocRef( sym, CG_FE, AskSegID( sym, CG_FE ), val, kind );
+            DoRelocRef( sym, CG_FE, AskSegID( sym, CG_FE ), val, esc_attr );
         } else {
             // handle mismatch Fix it!
-            DoRelocRef( (cg_sym_handle)AskForSymLabel( sym, CG_FE ), CG_LBL, AskSegID( sym, CG_FE ), val, kind );
+            DoRelocRef( (cg_sym_handle)AskForSymLabel( sym, CG_FE ), CG_LBL, AskSegID( sym, CG_FE ), val, esc_attr );
         }
     } else {                                /* CG_TBL, CG_LBL or CG_BCK*/
-        DoRelocRef( sym, class, AskSegID( sym, class ), val, kind );
+        DoRelocRef( sym, class, AskSegID( sym, class ), val, esc_attr );
     }
 }
 
@@ -172,21 +155,21 @@ void    DoSegRef( segment_id segid )
 /**********************************/
 {
     EmitByte( ESC );
-    EmitByte( REL | BASE | OFST );
+    EmitByte( ESC_REL | ESCA_BASE | ESCA_OFST );
     EmitSegId( segid );
     EmitOffset( 0 );
 }
 
 static void     DoRelocRef( cg_sym_handle sym, cg_class class,
-                    segment_id segid, offset val, escape_class kind )
-/*******************************************************************/
+                    segment_id segid, offset val, escape_class esc_attr )
+/***********************************************************************/
 {
     offset              addr;
     label_handle        lbl;
 
-    if( kind & BASE ) {                       /* don't need offset*/
+    if( esc_attr & ESCA_BASE ) {                /* don't need offset*/
         EmitByte( ESC );
-        EmitByte( REL | kind | OFST );
+        EmitByte( ESC_REL | esc_attr | ESCA_OFST );
         EmitSegId( segid );
         EmitOffset( 0 );
     } else {
@@ -194,32 +177,32 @@ static void     DoRelocRef( cg_sym_handle sym, cg_class class,
         addr = AskAddress( lbl );
         if( (addr != ADDR_UNKNOWN) && !AskIfCommonLabel( lbl ) ) {
             EmitByte( ESC );
-            EmitByte( REL | kind | OFST );
+            EmitByte( ESC_REL | esc_attr | ESCA_OFST );
             EmitSegId( segid );
             val += addr;
             EmitOffset( val );
         } else if( class == CG_FE ) {
             EmitByte( ESC );
-            EmitByte( SYM | kind );         /* patch may be needed*/
+            EmitByte( ESC_SYM | esc_attr );     /* patch may be needed*/
             EmitPtr( sym );
-            if( kind & OFST ) {
+            if( esc_attr & ESCA_OFST ) {
                 EmitOffset( val );
             }
         } else {
-            DoLblRef( lbl, segid, val, kind );
+            DoLblRef( lbl, segid, val, esc_attr );
         }
     }
 }
 
 void    DoLblRef( label_handle lbl, segment_id segid,
-                    offset val, escape_class kind )
-/***************************************************/
+                    offset val, escape_class esc_attr )
+/*****************************************************/
 {
     EmitByte( ESC );
-    EmitByte( LBL | kind );
+    EmitByte( ESC_LBL | esc_attr );
     EmitSegId( segid );
     EmitPtr( lbl );
-    if( kind & OFST ) {
+    if( esc_attr & ESCA_OFST ) {
         EmitOffset( val );
     }
 }
@@ -394,11 +377,11 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 }
 
 
-static  label_handle ExpandObj( byte *cur, int explen ) {
-/**********************************************************/
-
+static  label_handle ExpandObj( byte *cur, int explen )
+/*****************************************************/
+{
     byte                *fini;
-    escape_class        key;
+    escape_class        esc_class;
     label_handle        lbl;
     cg_sym_handle       sym;
     offset              val = 0;
@@ -425,31 +408,31 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
             }
         }
         cur++;
-        key = *cur++;
-        if( key == ESC ) {
+        esc_class = *cur++;
+        if( esc_class == ESC ) {
             OutDataByte( ESC );
             continue;
         }
-        if( key & BASE ) {
+        if( esc_class & ESCA_BASE ) {
             class = F_BASE;
-        } else if( key & LDOF ) {
+        } else if( esc_class & ESCA_LDOF ) {
             class = F_LDR_OFFSET;
         } else {
             class = F_OFFSET;
         }
-        if( key & SELF ) {
+        if( esc_class & ESCA_SELF ) {
             rel = true;
         } else {
             rel = false;
         }
-        switch( key & ~MASK ) {
-        case REL:
+        switch( esc_class & ~ESCA_MASK ) {
+        case ESC_REL:
             segid = *(segment_id *)cur;
             cur += sizeof( segment_id );
             OutReloc( segid, class, rel );
             val = 0;
             break;
-        case SYM:          /* never BASE*/
+        case ESC_SYM:       /* never BASE*/
             sym = *(pointer *)cur;
             cur += sizeof( pointer );
             lbl = AskForSymLabel( sym, CG_FE );
@@ -464,7 +447,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
             }
             OutReloc( AskSegID( sym, CG_FE ), class, rel );
             break;
-        case LBL:          /* never BASE*/
+        case ESC_LBL:       /* never BASE*/
             segid = *(segment_id *)cur;
             cur += sizeof( segment_id );
             lbl = *(pointer *)cur;
@@ -489,18 +472,18 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
                 }
             }
             break;
-        case IMP:
+        case ESC_IMP:
             OutImport( *(pointer *)cur, class, rel );
             cur += sizeof( pointer );
             val = 0;
             break;
-        case ABS:
+        case ESC_ABS:
             val = *cur;
             cur++;
             OutAbsPatch( *(pointer *)cur, val );
             cur += sizeof( pointer );
             continue;
-        case FUN:
+        case ESC_FUN:
             OutFPPatch( *cur );
             cur++;
             continue;
@@ -508,7 +491,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
             _Zoiks( ZOIKS_038 );
             break;
         }
-        if( key & OFST ) {
+        if( esc_class & ESCA_OFST ) {
             val += *(offset *)cur;
             cur += sizeof( offset );
         }

@@ -603,7 +603,7 @@ static void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
     _Code;
     LayOpbyte( 0x68 );
     ILen += 4;
-    DoLblRef( *data, (segment_id)(pointer_uint)FEAuxInfo( NULL, FEINF_P5_PROF_SEG ), 0, OFST );
+    DoLblRef( *data, (segment_id)(pointer_uint)FEAuxInfo( NULL, FEINF_P5_PROF_SEG ), 0, ESCA_OFST );
     _Emit;
     DoRTCall( prolog ? RT_PROFILE_ON : RT_PROFILE_OFF, true );
 }
@@ -629,12 +629,12 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         if( prolog ) {
             LayOpword( 0x05ff );                        /* inc L1+count */
             ILen += 4;
-            DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, count ), OFST);
+            DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, count ), ESCA_OFST );
             _Next;
         }
         LayOpword( prolog ? 0x05ff : 0x0dff );          /* inc/dec L1+semaphore */
         ILen += 4;
-        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, semaphore ), OFST );
+        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, semaphore ), ESCA_OFST );
         _Next;
         if( _IsTargetModel( CGSW_X86_P5_PROFILING_CTR0 ) ) {
             LayOpword( prolog ? 0x1675 : 0x167d );      /* jne/jge skip */
@@ -662,13 +662,13 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         }
         LayOpword( prolog ? 0x0529 : 0x0501 );          /* sub/add L1+lo_cycle,eax */
         ILen += 4;
-        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, lo_cycle ), OFST );
+        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, lo_cycle ), ESCA_OFST );
         _Next;
         LayOpbyte( 0x58 );                              /* pop eax */
         _Next;
         LayOpword( prolog ? 0x1519 : 0x1511 );          /* sbb/adc L1+hi_cycle,edx */
         ILen += 4;
-        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, hi_cycle ), OFST );
+        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, hi_cycle ), ESCA_OFST );
         _Next;
         LayOpbyte( 0x5a );                              /* pop edx */
         _Next;
@@ -911,12 +911,12 @@ void StartBlockProfiling( block *blk )
     _Code;
     LayOpword( 0x0583 );                /* add L1+lo_count,1 */
     ILen += 4;
-    DoLblRef( data, data_segid, offsetof( block_count_info, lo_count ), OFST );
+    DoLblRef( data, data_segid, offsetof( block_count_info, lo_count ), ESCA_OFST );
     AddByte( 1 );
     _Next;
     LayOpword( 0x1583 );                /* adc L1+hi_count,0 */
     ILen += 4;
-    DoLblRef( data, data_segid, offsetof( block_count_info, hi_count ), OFST );
+    DoLblRef( data, data_segid, offsetof( block_count_info, hi_count ), ESCA_OFST );
     AddByte( 0 );
     _Emit;
 }
