@@ -205,7 +205,7 @@ char *MakeTmpName( char *buffer )
     _splitpath2( Options.input_name, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
 
     /*
-     * For whatever it's worth, we'll only check 9999 files before
+     * For whatever it's worth, we'll only check 999 files before
      * quitting ;-)
      */
     initial = time( NULL ) % 1000;
