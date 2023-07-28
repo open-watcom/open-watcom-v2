@@ -781,7 +781,7 @@ static RcStatus updateDebugDirectory( void )
     tmp = &Pass2Info.TmpFile;
     old = &Pass2Info.OldFile;
     tmp_pehdr = tmp->u.PEInfo.WinHead;
-    old_pehdr = tmp->u.PEInfo.WinHead;
+    old_pehdr = old->u.PEInfo.WinHead;
     tmp_rva = PE_DIRECTORY( *tmp_pehdr, PE_TBL_DEBUG ).rva;
     debug_size = PE_DIRECTORY( *old_pehdr, PE_TBL_DEBUG ).size;
     old_rva = PE_DIRECTORY( *old_pehdr, PE_TBL_DEBUG ).rva;
