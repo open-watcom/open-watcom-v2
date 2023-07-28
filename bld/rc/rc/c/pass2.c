@@ -68,19 +68,19 @@ static RcStatus seekPastResTable( int *err_code )
     long            winheadoffset;
     long            seekamount;
     ExeFileInfo     *tmpexe;
-    uint_16         res_tbl_size;
+    uint_16         restab_size;
 
     tmpexe = &(Pass2Info.TmpFile);
 
     if( Pass2Info.OldFile.u.NEInfo.WinHead.target == TARGET_OS2 ) {
-        res_tbl_size = tmpexe->u.NEInfo.OS2Res.table_size;
+        restab_size = tmpexe->u.NEInfo.OS2Res.table_size;
     } else {
-        res_tbl_size = tmpexe->u.NEInfo.Res.Dir.TableSize;
+        restab_size = tmpexe->u.NEInfo.Res.Dir.TableSize;
     }
 
     seekamount = sizeof( os2_exe_header ) +
                     tmpexe->u.NEInfo.Seg.NumSegs * sizeof( segment_record ) +
-                    res_tbl_size +
+                    restab_size +
                     tmpexe->u.NEInfo.Res.Str.StringBlockSize;
     if( RESSEEK( tmpexe->fp, seekamount, SEEK_CUR ) ) {
         *err_code = errno;

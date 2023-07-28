@@ -49,8 +49,8 @@
 /* Build OS/2 NE style resource table. Each resource gets one entry, and
  * resources > 64K will get an additional entry for each 64K chunk.
  */
-static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
-/***************************************************************/
+static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
+/**************************************************************/
 {
     WResDirWindow   wind;
     WResLangInfo    *lang;
@@ -61,7 +61,7 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
     uint_16         name_id;
     int_32          length;
 
-    entry = res_tbl->resources;
+    entry = restab->resources;
 
     /* Walk through the WRes directory */
     for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
@@ -123,30 +123,30 @@ static int compareOS2ResTypeId( const void * _entry1, const void * _entry2 )
 RcStatus InitOS2ResTable( int *err_code )
 /***************************************/
 {
-    OS2ResTable         *res;
+    OS2ResTable         *restab;
     WResDir             dir;
 
-    res = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
+    restab = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
     dir = Pass2Info.ResFile->Dir;
 
     if( CmdLineParms.NoResFile ) {
-        res->resources    = NULL;
-        res->num_res_segs = 0;
-        res->table_size   = 0;
+        restab->resources    = NULL;
+        restab->num_res_segs = 0;
+        restab->table_size   = 0;
     } else {
-        res->num_res_segs = ComputeOS2ResSegCount( dir );
+        restab->num_res_segs = ComputeOS2ResSegCount( dir );
         /* One resource type/id record per resource segment, 16-bits each */
-        res->table_size   = res->num_res_segs * 2 * sizeof( uint_16 );
+        restab->table_size   = restab->num_res_segs * 2 * sizeof( uint_16 );
 
-        res->resources = RESALLOC( res->num_res_segs * sizeof( res->resources[0] ) );
-        if( res->resources == NULL ) {
+        restab->resources = RESALLOC( restab->num_res_segs * sizeof( restab->resources[0] ) );
+        if( restab->resources == NULL ) {
             *err_code = errno;
             return( RS_NO_MEM );
         }
-        buildOS2ResTable( res, dir );
+        buildOS2ResTable( restab, dir );
 
         /* OS/2 requires resources to be sorted */
-        qsort( res->resources, res->num_res_segs, sizeof( res->resources[0] ), compareOS2ResTypeId );
+        qsort( restab->resources, restab->num_res_segs, sizeof( restab->resources[0] ), compareOS2ResTypeId );
     }
     return( RS_OK );
 } /* InitOS2ResTable */
