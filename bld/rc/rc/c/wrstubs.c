@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +37,9 @@
 #include "iortns.h"
 
 
-bool RcBuildLXResourceObjects( void )
+bool RcBuildLXResourceObjects( ResFileInfo *res )
 {
+    /* unused parameters */ (void)res;
     return( true );
 }
 
@@ -47,19 +48,21 @@ bool CopyLXExeObjects( void )
     return( true );
 }
 
-RcStatus RcWriteLXResourceObjects( void )
+RcStatus RcWriteLXResourceObjects( ResFileInfo *res )
 {
+    /* unused parameters */ (void)res;
     return( RS_WRITE_ERROR );
 }
 
-RcStatus CopyOS2Resources( void )
+RcStatus CopyOS2Resources( ResFileInfo *res )
 {
+    /* unused parameters */ (void)res;
     return( RS_READ_ERROR );
 }
 
-RcStatus InitOS2ResTable( int *err_code )
+RcStatus InitOS2ResTable( ResFileInfo *res, int *err_code )
 {
-    /* unused parameters */ (void)err_code;
+    /* unused parameters */ (void)res; (void)err_code;
 
     return( RS_READ_ERROR );
 }
