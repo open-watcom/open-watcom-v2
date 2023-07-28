@@ -789,7 +789,7 @@ static void reportDuplicateResources( WResMergeError *errs )
     }
 }
 
-bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
+bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *res,
                                 pe_object *res_obj, unsigned_32 rva,
                                 unsigned_32 offset, bool writebyfile )
 /**************************************************************************/
@@ -803,13 +803,13 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
 
     dir = &exe->u.PEInfo.Res;
 
-    MergeDirectory( resinfo, &errs );
+    MergeDirectory( res, &errs );
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );
         return( true );
     }
-    if( PEResDirBuild( dir, resinfo->Dir ) ) {
+    if( PEResDirBuild( dir, res->Dir ) ) {
         RcError( ERR_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
         return( true );
     }
@@ -818,14 +818,14 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
     exe->u.PEInfo.Res.ResRVA = rva;
     curr_rva = rva + exe->u.PEInfo.Res.DirSize + exe->u.PEInfo.Res.String.StringBlockSize;
     curr_rva = ALIGN_VALUE( curr_rva, sizeof( uint_32 ) );
-    setDataOffsets( dir, &curr_rva, resinfo, writebyfile );
+    setDataOffsets( dir, &curr_rva, res, writebyfile );
     ret = writeDirectory( dir, exe->fp );
     if( ret != RS_OK ) {
         RcError( ERR_WRITTING_FILE, exe->name, strerror( errno ) );
         return( true );
     }
 
-    ret = copyPEResources( exe, resinfo, exe->fp, writebyfile, &errres );
+    ret = copyPEResources( exe, res, exe->fp, writebyfile, &errres );
     // warning - the file names output in these messages could be
     //          incorrect if the -fr switch is in use
     if( ret != RS_OK  ) {
@@ -868,8 +868,8 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
 
 
 #if !defined( INSIDE_WLINK )
-bool RcBuildPEResourceObject( void )
-/**********************************/
+bool RcBuildPEResourceObject( ResFileInfo *res )
+/**********************************************/
 {
     pe_object           *res_obj;
     unsigned_32         rva;
@@ -888,7 +888,7 @@ bool RcBuildPEResourceObject( void )
         res_obj = exe->u.PEInfo.Objects + pehdr->fheader.num_objects - 1;
         rva = GetNextObjRVA( &exe->u.PEInfo );
         offset = GetNextObjPhysOffset( &exe->u.PEInfo );
-        error = BuildPEResourceObject( exe, Pass2Info.ResFile, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );
+        error = BuildPEResourceObject( exe, res, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );
 // use of CmdLineParms.WritableRes has been commented out in param.c
 // removed here too as it wasn't initialised anymore (Ernest ter Kuile 31 aug 2003)
 //        if( CmdLineParms.WritableRes ) {

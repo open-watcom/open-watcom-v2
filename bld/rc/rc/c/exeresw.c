@@ -43,23 +43,23 @@
 #include "clibext.h"
 
 
-void InitWINResTable( void )
-/**************************/
+void InitWINResTable( ResFileInfo *res )
+/**************************************/
 {
-    ExeResDir           *res;
+    ExeResDir           *resdir;
     StringsBlock        *str;
     WResDir             dir;
 
-    res = &(Pass2Info.TmpFile.u.NEInfo.Res.Dir);
+    resdir = &(Pass2Info.TmpFile.u.NEInfo.Res.Dir);
     str = &(Pass2Info.TmpFile.u.NEInfo.Res.Str);
-    dir = Pass2Info.ResFile->Dir;
+    dir = res->Dir;
 
     if( CmdLineParms.NoResFile ) {
-        res->NumTypes = 0;
+        resdir->NumTypes = 0;
         /* the 2 uint_16 are the resource shift count and the type 0 record */
-        res->TableSize = 2 * sizeof( uint_16 );
-        res->Head = NULL;
-        res->Tail = NULL;
+        resdir->TableSize = 2 * sizeof( uint_16 );
+        resdir->Head = NULL;
+        resdir->Tail = NULL;
 
         str->StringBlockSize = 0;
         str->StringBlock = NULL;
@@ -67,14 +67,14 @@ void InitWINResTable( void )
         str->StringList = NULL;
 
     } else {
-        res->NumTypes = WResGetNumTypes( dir );
-        res->NumResources = WResGetNumResources( dir );
+        resdir->NumTypes = WResGetNumTypes( dir );
+        resdir->NumResources = WResGetNumResources( dir );
         /* the 2 uint_16 are the resource shift count and the type 0 record */
-        res->TableSize = res->NumTypes * sizeof( resource_type_record ) +
-                            res->NumResources * sizeof( resource_record ) +
+        resdir->TableSize = resdir->NumTypes * sizeof( resource_type_record ) +
+                            resdir->NumResources * sizeof( resource_record ) +
                             2 * sizeof( uint_16 );
-        res->Head = NULL;
-        res->Tail = NULL;
+        resdir->Head = NULL;
+        resdir->Tail = NULL;
 
         StringBlockBuild( str, dir, false );
     }
@@ -241,29 +241,30 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     return( ret );
 } /* copyOneResource */
 
-RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
-/***************************************************************************/
-/* Note: sect2 must be either 1 (do section 2) or 0 (do section 1) */
-/* CopyWINResources should be called twice, once with sect2 false, and once with */
-/* it true. The values of sect2mask and sect2bits should be the same for both */
-/* calls. The resource table for the temporary file will not be properly */
-/* filled in until after the second call */
+RcStatus CopyWINResources( ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
+/**********************************************************************************************
+ * Note: sect2 must be either 1 (do section 2) or 0 (do section 1)
+ * CopyWINResources should be called twice, once with sect2 false, and once with
+ * it true. The values of sect2mask and sect2bits should be the same for both
+ * calls. The resource table for the temporary file will not be properly
+ * filled in until after the second call
+ */
 {
     WResDir             dir;
     WResDirWindow       wind;
     ResTable            *restab;
     FullTypeRecord      *exe_type;
-    WResResInfo         *res;
+    WResResInfo         *wres;
     WResLangInfo        *lang;
     FILE                *tmp_fp;
     FILE                *res_fp;
     RcStatus            ret;
     int                 err_code;
 
-    dir = Pass2Info.ResFile->Dir;
+    dir = res->Dir;
     restab = &(Pass2Info.TmpFile.u.NEInfo.Res);
     tmp_fp = Pass2Info.TmpFile.fp;
-    res_fp = Pass2Info.ResFile->fp;
+    res_fp = res->fp;
     ret = RS_OK;
     err_code = 0;
 
@@ -274,7 +275,7 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
             exe_type = findExeTypeRecord( restab, WResGetTypeInfo( wind ) );
         }
 
-        res = WResGetResInfo( wind );
+        wres = WResGetResInfo( wind );
         lang = WResGetLangInfo( wind );
 
         /* if the bits are unequal and this is section 1 --> copy segment */
@@ -282,7 +283,7 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
         /* otherwise                                     --> do nothing */
 
         if( ARE_BITS_EQUAL( sect2mask, sect2bits, lang->MemoryFlags ) == sect2 ) {
-            ret = copyOneResource( restab, exe_type, lang, res, res_fp,
+            ret = copyOneResource( restab, exe_type, lang, wres, res_fp,
                                     tmp_fp, restab->Dir.ResShiftCount, &err_code );
         }
 
@@ -313,10 +314,10 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
  * writeTypeRecord-
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeTypeRecord( FILE *fp, resource_type_record *res )
-/********************************************************************/
+static RcStatus writeTypeRecord( FILE *fp, resource_type_record *restyperec )
+/***************************************************************************/
 {
-    if( RESWRITE( fp, res, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
+    if( RESWRITE( fp, restyperec, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );
@@ -328,10 +329,10 @@ static RcStatus writeTypeRecord( FILE *fp, resource_type_record *res )
  * writeResRecord-
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeResRecord( FILE *fp, resource_record *type )
-/***************************************************************/
+static RcStatus writeResRecord( FILE *fp, resource_record *resrec )
+/*****************************************************************/
 {
-    if( RESWRITE( fp, type, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
+    if( RESWRITE( fp, resrec, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );

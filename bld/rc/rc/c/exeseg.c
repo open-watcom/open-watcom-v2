@@ -114,8 +114,8 @@ RcStatus AllocAndReadWINSegTables( int *err_code )
 } /* AllocAndReadWINSegTables */
 
 
-RcStatus AllocAndReadOS2SegTables( int *err_code )
-/************************************************/
+RcStatus AllocAndReadOS2SegTables( ResFileInfo *res, int *err_code )
+/******************************************************************/
 {
     RcStatus            ret;
     FILE                *old_fp;
@@ -130,7 +130,7 @@ RcStatus AllocAndReadOS2SegTables( int *err_code )
     oldseg = &(Pass2Info.OldFile.u.NEInfo.Seg);
     old_fp = Pass2Info.OldFile.fp;
     tmpseg = &(Pass2Info.TmpFile.u.NEInfo.Seg);
-    newres = ComputeOS2ResSegCount( Pass2Info.ResFile->Dir );
+    newres = ComputeOS2ResSegCount( res->Dir );
 
     head = &(Pass2Info.OldFile.u.NEInfo.WinHead);
     head_offset = Pass2Info.OldFile.WinHeadOffset;

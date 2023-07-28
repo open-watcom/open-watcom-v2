@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,11 +56,11 @@ typedef struct LXResTable {
 struct ResFileInfo;     // ANSI/gcc
 struct ExeFileInfo;
 
-extern bool BuildLXResourceObjects( struct ExeFileInfo *exeinfo, struct ResFileInfo *resinfo,
+extern bool BuildLXResourceObjects( struct ExeFileInfo *exeinfo, struct ResFileInfo *res,
                             object_record *res_obj, unsigned_32 rva, unsigned_32 offset, bool writebyfile );
-extern bool RcBuildLXResourceObjects( void );
+extern bool RcBuildLXResourceObjects( struct ResFileInfo *res );
 
-extern RcStatus WriteLXResourceObjects( struct ExeFileInfo *exe, struct ResFileInfo *info );
-extern RcStatus RcWriteLXResourceObjects( void );
+extern RcStatus WriteLXResourceObjects( struct ExeFileInfo *exe, struct ResFileInfo *res );
+extern RcStatus RcWriteLXResourceObjects( struct ResFileInfo *res );
 
 #endif

@@ -150,16 +150,16 @@ static bool Pass2( void )
     if( noerror ) {
         switch( Pass2Info.OldFile.Type ) {
         case EXE_TYPE_NE_WIN:
-            noerror = MergeResExeWINNE();
+            noerror = MergeResExeWINNE( Pass2Info.ResFile );
             break;
         case EXE_TYPE_NE_OS2:
-            noerror = MergeResExeOS2NE();
+            noerror = MergeResExeOS2NE( Pass2Info.ResFile );
             break;
         case EXE_TYPE_PE:
-            noerror = MergeResExePE();
+            noerror = MergeResExePE( Pass2Info.ResFile );
             break;
         case EXE_TYPE_LX:
-            noerror = MergeResExeLX();
+            noerror = MergeResExeLX( Pass2Info.ResFile );
             break;
         default: //EXE_TYPE_UNKNOWN
             RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );

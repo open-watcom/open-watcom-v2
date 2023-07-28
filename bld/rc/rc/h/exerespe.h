@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,9 +72,9 @@ struct ResFileInfo;     // ANSI/gcc
 struct ExeFileInfo;
 
 extern bool BuildPEResourceObject( struct ExeFileInfo *exeinfo,
-                         struct ResFileInfo *resinfo,
+                         struct ResFileInfo *res,
                          pe_object *res_obj, unsigned_32 rva,
                          unsigned_32 offset, bool writebyfile );
-extern bool RcBuildPEResourceObject( void );
+extern bool RcBuildPEResourceObject( struct ResFileInfo *res );
 
 #endif

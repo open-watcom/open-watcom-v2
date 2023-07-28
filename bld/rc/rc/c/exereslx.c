@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ static void reportDuplicateResources( WResMergeError *errs )
 }
 
 
-RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
+RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
 /********************************************************************/
 {
     RcStatus        ret;
@@ -214,10 +214,10 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
             return( RS_WRITE_ERROR );
 
         res_info = WResGetLangInfo( entry->wind );
-        if( RESSEEK( info->fp, res_info->Offset, SEEK_SET ) )
+        if( RESSEEK( res->fp, res_info->Offset, SEEK_SET ) )
             return( RS_READ_ERROR );
 
-        ret = CopyExeData( info->fp, exe->fp, res_info->Length );
+        ret = CopyExeData( res->fp, exe->fp, res_info->Length );
         if( ret != RS_OK ) {
             return( ret );
         }
@@ -253,7 +253,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 }
 
 
-bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
+bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
                                    object_record *res_obj, unsigned_32 rva,
                                    unsigned_32 offset, bool writebyfile )
 /**************************************************************************/
@@ -270,13 +270,13 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
 
     dir = &exeinfo->u.LXInfo.Res;
 
-    MergeDirectory( resinfo, &errs );
+    MergeDirectory( res, &errs );
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );
         return( true );
     }
-    if( LXResTableBuild( dir, resinfo->Dir ) ) {
+    if( LXResTableBuild( dir, res->Dir ) ) {
         RcError( ERR_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
         return( true );
     }
@@ -329,8 +329,8 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
 
 
 #if !defined( INSIDE_WLINK )
-bool RcBuildLXResourceObjects( void )
-/***************************************/
+bool RcBuildLXResourceObjects( ResFileInfo *res )
+/***********************************************/
 {
     object_record       *res_objects;
     bool                ret;
@@ -342,7 +342,7 @@ bool RcBuildLXResourceObjects( void )
         ret = false;
     } else {
         res_objects = exeinfo->u.LXInfo.Objects;
-        ret = BuildLXResourceObjects( exeinfo, Pass2Info.ResFile,
+        ret = BuildLXResourceObjects( exeinfo, res,
                                         res_objects, 0, 0, //rva, offset,
                                         !Pass2Info.AllResFilesOpen );
     }
@@ -352,8 +352,8 @@ bool RcBuildLXResourceObjects( void )
     return( ret );
 }
 
-RcStatus RcWriteLXResourceObjects( void )
-/***************************************/
+RcStatus RcWriteLXResourceObjects( ResFileInfo *res )
+/***************************************************/
 {
     RcStatus            ret;
     ExeFileInfo         *exeinfo;
@@ -363,7 +363,7 @@ RcStatus RcWriteLXResourceObjects( void )
         // Nothing to do
         ret = RS_OK;
     } else {
-        ret = WriteLXResourceObjects( exeinfo, Pass2Info.ResFile );
+        ret = WriteLXResourceObjects( exeinfo, res );
     }
     return( ret );
 }

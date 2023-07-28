@@ -118,7 +118,7 @@ static RcStatus copyOtherTables( int *err_code )
     return( ret );
 } /* copyOtherTables */
 
-static int computeShiftCount( void )
+static int computeShiftCount( ResFileInfo *res )
 {
     NEExeInfo * old;
     NEExeInfo * tmp;
@@ -135,12 +135,12 @@ static int computeShiftCount( void )
             tmp->Res.Str.StringBlockSize;
     filelen += ComputeSegmentSize( Pass2Info.OldFile.fp, &(tmp->Seg), old->WinHead.align );
     if( ! CmdLineParms.NoResFile ) {
-        filelen += ComputeWINResourceSize( Pass2Info.ResFile->Dir );
+        filelen += ComputeWINResourceSize( res->Dir );
     }
 
     num_segs = old->WinHead.segments;
     if( ! CmdLineParms.NoResFile ) {
-        num_segs += WResGetNumResources( Pass2Info.ResFile->Dir );
+        num_segs += WResGetNumResources( res->Dir );
     }
 
     shift_count = FindShiftCount( filelen, num_segs );
@@ -156,14 +156,14 @@ static int computeShiftCount( void )
 
 } /* computeShiftCount */
 
-static void checkShiftCount( void )
+static void checkShiftCount( ResFileInfo *res )
 {
-    Pass2Info.TmpFile.u.NEInfo.WinHead.align = computeShiftCount();
+    Pass2Info.TmpFile.u.NEInfo.WinHead.align = computeShiftCount( res );
     Pass2Info.TmpFile.u.NEInfo.Res.Dir.ResShiftCount =
                                 Pass2Info.TmpFile.u.NEInfo.WinHead.align;
 } /* checkShiftCount */
 
-static bool copyWINBody( void )
+static bool copyWINBody( ResFileInfo *res )
 {
     NEExeInfo *         tmp;
     uint_16             sect2mask = 0;
@@ -182,13 +182,13 @@ static bool copyWINBody( void )
         sect2bits = 0;
         use_gangload = false;
         Pass2Info.TmpFile.u.NEInfo.WinHead.align = Pass2Info.OldFile.u.NEInfo.WinHead.align;
-        tmp->Res.Dir.ResShiftCount = computeShiftCount();
+        tmp->Res.Dir.ResShiftCount = computeShiftCount( res );
         break;
     case SEG_SORT_PRELOAD_ONLY:  /* all load on call segments in section 2 */
         sect2mask = SEG_PRELOAD;
         sect2bits = 0;
         use_gangload = true;
-        checkShiftCount();
+        checkShiftCount( res );
         break;
     case SEG_SORT_MANY:     /* only load on call, discardable, code segments in section 2 */
         sect2mask = SEG_DATA | SEG_PRELOAD | SEG_DISCARD;
@@ -204,7 +204,7 @@ static bool copyWINBody( void )
         }
 
         use_gangload = true;
-        checkShiftCount();
+        checkShiftCount( res );
         break;
     default:
         break;
@@ -228,7 +228,7 @@ static bool copyWINBody( void )
         break;
     }
     if( ! CmdLineParms.NoResFile ) {
-        if( CopyWINResources( sect2mask, sect2bits, false ) != RS_OK ) {
+        if( CopyWINResources( res, sect2mask, sect2bits, false ) != RS_OK ) {
             return( true );
         }
     }
@@ -240,7 +240,7 @@ static bool copyWINBody( void )
         return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        if( CopyWINResources( sect2mask, sect2bits, true ) != RS_OK ) {
+        if( CopyWINResources( res, sect2mask, sect2bits, true ) != RS_OK ) {
             return( true );
         }
     }
@@ -260,7 +260,7 @@ static bool copyWINBody( void )
 
 } /* copyBody */
 
-static bool copyOS2Body( void )
+static bool copyOS2Body( ResFileInfo *res )
 {
     NEExeInfo           *tmp;
     CpSegRc             copy_segs_ret;
@@ -278,7 +278,7 @@ static bool copyOS2Body( void )
         return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        if( CopyOS2Resources() != RS_OK ) {
+        if( CopyOS2Resources( res ) != RS_OK ) {
             return( true );
         }
     }
@@ -586,7 +586,7 @@ static RcStatus writePEHeadAndObjTable( void )
  * segment(s). The OS/2 resource table is completely different as well and
  * only contains resource types/IDs.
  */
-bool MergeResExeWINNE( void )
+bool MergeResExeWINNE( ResFileInfo *res )
 {
     RcStatus        ret;
     bool            error;
@@ -604,7 +604,7 @@ bool MergeResExeWINNE( void )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    InitWINResTable();
+    InitWINResTable( res );
 
     ret = seekPastResTable( &err_code );
     if( ret != RS_OK )
@@ -624,7 +624,7 @@ bool MergeResExeWINNE( void )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = copyWINBody();
+    error = copyWINBody( res );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -674,7 +674,7 @@ STOP_ERROR:
 } /* MergeResExeWINNE */
 
 
-bool MergeResExeOS2NE( void )
+bool MergeResExeOS2NE( ResFileInfo *res )
 {
     RcStatus        ret;
     bool            error;
@@ -686,13 +686,13 @@ bool MergeResExeOS2NE( void )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = InitOS2ResTable( &err_code );
+    ret = InitOS2ResTable( res, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = AllocAndReadOS2SegTables( &err_code );
+    ret = AllocAndReadOS2SegTables( res, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked )
@@ -710,7 +710,7 @@ bool MergeResExeOS2NE( void )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = copyOS2Body();
+    error = copyOS2Body( res );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -819,7 +819,7 @@ static RcStatus updateDebugDirectory( void )
 } /* updateDebugDirectory */
 
 
-bool MergeResExePE( void )
+bool MergeResExePE( ResFileInfo *res )
 {
     RcStatus    ret;
     bool        error;
@@ -837,7 +837,7 @@ bool MergeResExePE( void )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = RcBuildPEResourceObject();
+    error = RcBuildPEResourceObject( res );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -1022,7 +1022,7 @@ static RcStatus copyLXDebugInfo( void )
 } /* copyLXDebugInfo */
 
 
-bool MergeResExeLX( void )
+bool MergeResExeLX( ResFileInfo *res )
 {
     RcStatus    ret;
     bool        error;
@@ -1034,7 +1034,7 @@ bool MergeResExeLX( void )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = RcBuildLXResourceObjects();
+    error = RcBuildLXResourceObjects( res );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -1046,7 +1046,7 @@ bool MergeResExeLX( void )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = RcWriteLXResourceObjects();
+    ret = RcWriteLXResourceObjects( res );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;

@@ -120,14 +120,14 @@ static int compareOS2ResTypeId( const void * _entry1, const void * _entry2 )
 } /* compareOS2ResTypeId */
 
 
-RcStatus InitOS2ResTable( int *err_code )
-/***************************************/
+RcStatus InitOS2ResTable( ResFileInfo *res, int *err_code )
+/*********************************************************/
 {
     OS2ResTable         *restab;
     WResDir             dir;
 
     restab = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
-    dir = Pass2Info.ResFile->Dir;
+    dir = res->Dir;
 
     if( CmdLineParms.NoResFile ) {
         restab->resources    = NULL;
@@ -230,7 +230,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, FILE *res_fp,
 } /* copyOneResource */
 
 
-RcStatus CopyOS2Resources( void )
+RcStatus CopyOS2Resources( ResFileInfo *res )
 {
     OS2ResEntry         *entry;
     WResDirWindow       wind;
@@ -249,7 +249,7 @@ RcStatus CopyOS2Resources( void )
 
     restab    = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
     tmp_fp    = Pass2Info.TmpFile.fp;
-    res_fp    = Pass2Info.ResFile->fp;
+    res_fp    = res->fp;
     tmpseg    = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
     currseg   = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs
                 - Pass2Info.OldFile.u.NEInfo.Seg.NumOS2ResSegs;

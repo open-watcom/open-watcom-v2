@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,13 +80,13 @@ typedef struct OS2ResTable {
     uint_16         num_res_segs;   /* number of resource segments/'resources' entries */
 } OS2ResTable;
 
-extern void     InitWINResTable( void );
+extern void     InitWINResTable( struct ResFileInfo *res );
 extern uint_32  ComputeWINResourceSize( WResDir dir );
-extern RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
+extern RcStatus CopyWINResources( struct ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
 extern RcStatus WriteWINResTable( FILE *fp, ResTable *restab, int *err_code );
-extern RcStatus InitOS2ResTable( int *err_code );
+extern RcStatus InitOS2ResTable( struct ResFileInfo *res, int *err_code );
 extern uint_32  ComputeOS2ResSegCount( WResDir dir );
-extern RcStatus CopyOS2Resources( void );
+extern RcStatus CopyOS2Resources( struct ResFileInfo *res );
 extern RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code );
 
 #endif
