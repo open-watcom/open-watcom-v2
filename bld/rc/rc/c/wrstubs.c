@@ -35,6 +35,8 @@
 #include "rccore_2.h"
 #include "exelxobj.h"
 #include "iortns.h"
+#include "exereslx.h"
+#include "exeres.h"
 
 
 bool RcBuildLXResourceObjects( ResFileInfo *res )

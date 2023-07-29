@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +47,8 @@ typedef struct read_file {
     long        size;
 } read_file;
 
-extern  int     GetFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata );
-extern  int     PeekFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata );
-extern  int     GetNextChar( struct read_file *fdata );
-extern  int     PeekNextChar( struct read_file *fdata );
+extern  int     GetFirstChar( char *buff, long size, FILE *fp, read_file *fdata );
+extern  int     PeekFirstChar( char *buff, long size, FILE *fp, read_file *fdata );
+extern  int     GetNextChar( read_file *fdata );
+extern  int     PeekNextChar( read_file *fdata );
 

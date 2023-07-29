@@ -37,6 +37,7 @@
 #include "rccore_2.h"
 #include "exeutil.h"
 #include "exeseg.h"
+#include "exeres.h"
 
 #include "clibext.h"
 

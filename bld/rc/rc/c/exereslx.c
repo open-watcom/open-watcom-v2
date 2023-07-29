@@ -151,7 +151,7 @@ static void reportDuplicateResources( WResMergeError *errs )
 
 
 RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
-/********************************************************************/
+/*******************************************************************/
 {
     RcStatus        ret;
     WResLangInfo    *res_info;
@@ -256,7 +256,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
 bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
                                    object_record *res_obj, unsigned_32 rva,
                                    unsigned_32 offset, bool writebyfile )
-/**************************************************************************/
+/*************************************************************************/
 {
     LXResTable      *dir;
     WResMergeError  *errs;

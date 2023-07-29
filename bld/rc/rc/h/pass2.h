@@ -45,9 +45,9 @@ typedef struct RcPass2Info {
 
 extern bool     StopInvoked;
 
-extern bool     MergeResExePE( struct ResFileInfo *res );
-extern bool     MergeResExeLX( struct ResFileInfo *res );
-extern bool     MergeResExeWINNE( struct ResFileInfo *res );
-extern bool     MergeResExeOS2NE( struct ResFileInfo *res );
+extern bool     MergeResExePE( ResFileInfo *res );
+extern bool     MergeResExeLX( ResFileInfo *res );
+extern bool     MergeResExeWINNE( ResFileInfo *res );
+extern bool     MergeResExeOS2NE( ResFileInfo *res );
 
 #endif

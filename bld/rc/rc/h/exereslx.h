@@ -30,37 +30,17 @@
 ****************************************************************************/
 
 
-#ifndef EXERESLX_H_INCLUDED
-#define EXERESLX_H_INCLUDED
+#ifndef EXERESLX_INCLUDED
+#define EXERESLX_INCLUDED
 
 #include "rctypes.h"
-#include "exeflat.h"
-#include "wresall.h"
-#include "rcstrblk.h"
 
-typedef struct LXResEntry {
-    flat_res_table  resource;
-    WResDirWindow   wind;       /* window into the current WResDir */
-    uint_16         mem_flags;
-    uint_16         assigned;
-} LXResEntry;
 
-typedef struct LXResTable {
-    LXResEntry      *resources;
-    uint_32         res_count;
-    uint_32         table_size;
-    uint_32         num_objects;
-    uint_32         num_pages;
-} LXResTable;
-
-struct ResFileInfo;     // ANSI/gcc
-struct ExeFileInfo;
-
-extern bool BuildLXResourceObjects( struct ExeFileInfo *exeinfo, struct ResFileInfo *res,
+extern bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
                             object_record *res_obj, unsigned_32 rva, unsigned_32 offset, bool writebyfile );
-extern bool RcBuildLXResourceObjects( struct ResFileInfo *res );
+extern bool RcBuildLXResourceObjects( ResFileInfo *res );
 
-extern RcStatus WriteLXResourceObjects( struct ExeFileInfo *exe, struct ResFileInfo *res );
-extern RcStatus RcWriteLXResourceObjects( struct ResFileInfo *res );
+extern RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res );
+extern RcStatus RcWriteLXResourceObjects( ResFileInfo *res );
 
 #endif

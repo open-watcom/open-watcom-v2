@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,15 +35,6 @@
 
 #include "rctypes.h"
 
-/* NB: NumOS2ResSegs is a subset of total segments (must be <= NumSegs) but
- * is not always equal to number of resources, because resources > 64K will
- * be split into multiple segments! Only applicable to OS/2 NE, not Windows.
- */
-typedef struct SegTable {
-    uint_16             NumSegs;        /* Total number of segments */
-    uint_16             NumOS2ResSegs;  /* Number of resource segments */
-    segment_record      *Segments;      /* array of size NumSegs */
-} SegTable;
 
 typedef enum {
     CPSEG_OK = 0,
@@ -52,7 +43,7 @@ typedef enum {
 } CpSegRc;
 
 extern RcStatus AllocAndReadWINSegTables( int *err_code );
-extern RcStatus AllocAndReadOS2SegTables( struct ResFileInfo *res, int *err_code );
+extern RcStatus AllocAndReadOS2SegTables( ResFileInfo *res, int *err_code );
 extern uint_32 ComputeSegmentSize( FILE *fp, SegTable *, int shift_count );
 extern CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
 extern CpSegRc CopyOS2Segments( void );
