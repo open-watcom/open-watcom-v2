@@ -83,16 +83,16 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
     int             obj_num;
     int             old_num_objects;
     int             new_num_objects;
-    pe_va           old_res_rva;
+    pe_va           old_resource_rva;
     pe_exe_header   *old_pehdr;
     pe_exe_header   *new_pehdr;
 
     /* check for a resource object in the old exe */
     old_pehdr = old->u.PEInfo.WinHead;
-    old_res_rva = PE_DIRECTORY( *old_pehdr, PE_TBL_RESOURCE ).rva;
+    old_resource_rva = PE_DIRECTORY( *old_pehdr, PE_TBL_RESOURCE ).rva;
     new_num_objects = old_num_objects = old_pehdr->fheader.num_objects;
     for( obj_num = 0; obj_num < old_num_objects; obj_num++ ) {
-        if( old_res_rva != 0 && old->u.PEInfo.Objects[obj_num].rva == old_res_rva ) {
+        if( old_resource_rva != 0 && old->u.PEInfo.Objects[obj_num].rva == old_resource_rva ) {
             /* there already was a resource object */
             if( obj_num + 1 == old_num_objects ) {
                 /* it is the last object so just ignore it */

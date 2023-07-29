@@ -262,7 +262,7 @@ bool loadDirEntry( ResDirEntry *dir, ExeFile *exeFile )
 
     dir->entryType = tableOrData( dir );
     if( dir->entryType == TABLE ) {
-        dir->table = (ResTableEntry *) malloc( (size_t) sizeof( ResTableEntry ) );
+        dir->table = (ResTableEntry *)malloc( sizeof( ResTableEntry ) );
         if( dir->table == NULL ) {
             printf( ERR_READ_OUT_OF_MEMORY );
             return( false );

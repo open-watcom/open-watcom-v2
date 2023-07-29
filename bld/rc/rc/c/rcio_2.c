@@ -178,7 +178,6 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     default:
         RcError( ERR_NOT_VALID_EXE, filename );
         return( false );
-        break;
     }
 
     return( !RESSEEK( info->fp, 0, SEEK_SET ) );
