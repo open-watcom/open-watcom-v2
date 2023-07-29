@@ -60,35 +60,35 @@
 
 #define BUFFER_SIZE         1024
 
-bool CopyTmpToOutFile( FILE *tmpfile, const char *out_name )
+bool CopyFileToOutFile( FILE *inp_fp, const char *out_name )
 /**********************************************************/
 {
     RcStatus    status;      /* error while deleting or renaming */
-    FILE        *outfile;
+    FILE        *out_fp;
     size_t      numread;
     char        *buffer;
 
     buffer = RESALLOC( BUFFER_SIZE );
 
     status = RS_OK;
-    RESSEEK( tmpfile, 0, SEEK_SET );
-    outfile = ResOpenFileRW( out_name );
-    while( (numread = RESREAD( tmpfile, buffer, BUFFER_SIZE )) != 0 ) {
-        if( numread != BUFFER_SIZE && RESIOERR( tmpfile, numread ) ) {
+    RESSEEK( inp_fp, 0, SEEK_SET );
+    out_fp = ResOpenFileRW( out_name );
+    while( (numread = RESREAD( inp_fp, buffer, BUFFER_SIZE )) != 0 ) {
+        if( numread != BUFFER_SIZE && RESIOERR( inp_fp, numread ) ) {
             status = RS_READ_ERROR;
             break;
         }
-        if( RESWRITE( outfile, buffer, numread ) != numread ) {
+        if( RESWRITE( out_fp, buffer, numread ) != numread ) {
             status = RS_WRITE_ERROR;
             break;
         }
     }
-    ResCloseFile( outfile );
+    ResCloseFile( out_fp );
 
     RESFREE( buffer );
     return( status == RS_OK );
 
-} /* CopyTmpToOutFile */
+} /* CopyFileToOutFile */
 
 static bool OpenResFileInfo( ExeType type )
 /*****************************************/
@@ -276,7 +276,6 @@ bool RcPass2IoInit( void )
 /************************/
 {
     bool    noerror;
-    bool    tmpexe_exists;
 
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
@@ -290,8 +289,6 @@ bool RcPass2IoInit( void )
             noerror = false;
         }
     }
-    tmpexe_exists = noerror;
-
     if( noerror ) {
         Pass2Info.TmpFile.Type = Pass2Info.OldFile.Type;
         Pass2Info.TmpFile.WinHeadOffset = Pass2Info.OldFile.WinHeadOffset;
@@ -307,17 +304,6 @@ bool RcPass2IoInit( void )
             noerror = OpenResFileInfo( Pass2Info.OldFile.Type );
         }
     }
-
-    if( !noerror ) {
-        RESFREE( Pass2Info.IoBuffer );
-        Pass2Info.IoBuffer = NULL;
-        ClosePass2FilesAndFreeMem();
-        if( tmpexe_exists ) {
-            ResCloseFile( Pass2Info.TmpFile.fp );
-            Pass2Info.TmpFile.fp = NULL;
-        }
-    }
-
     return( noerror );
 } /* RcPass2IoInit */
 
@@ -325,12 +311,8 @@ void RcPass2IoShutdown( bool noerror )
 /************************************/
 {
     ClosePass2FilesAndFreeMem();
-    if( Pass2Info.IoBuffer != NULL ) {
-        RESFREE( Pass2Info.IoBuffer );
-        Pass2Info.IoBuffer = NULL;
-    }
     if( noerror ) {
-        CopyTmpToOutFile( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
+        CopyFileToOutFile( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
 #ifdef __UNIX__
         {
             struct stat     exe_stat;
@@ -342,7 +324,13 @@ void RcPass2IoShutdown( bool noerror )
         }
 #endif
     }
-    ResCloseFile( Pass2Info.TmpFile.fp );
-    Pass2Info.TmpFile.fp = NULL;
+    if( Pass2Info.TmpFile.fp != NULL ) {
+        ResCloseFile( Pass2Info.TmpFile.fp );
+        Pass2Info.TmpFile.fp = NULL;
+    }
+    if( Pass2Info.IoBuffer != NULL ) {
+        RESFREE( Pass2Info.IoBuffer );
+        Pass2Info.IoBuffer = NULL;
+    }
 
 } /* RcPass2IoShutdown */

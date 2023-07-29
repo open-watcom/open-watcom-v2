@@ -166,8 +166,8 @@ static bool Pass2( void )
             noerror = false;
             break;
         }
-        RcPass2IoShutdown( noerror );
     }
+    RcPass2IoShutdown( noerror );
     return( noerror );
 }
 

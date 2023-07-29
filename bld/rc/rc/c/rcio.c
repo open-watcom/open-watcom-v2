@@ -690,7 +690,7 @@ static void Pass1ResFileShutdown( void )
                 }
             }
             if( !error ) {
-                CopyTmpToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
+                CopyFileToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
             }
         }
         if( CurrResFile.dir != NULL ) {
