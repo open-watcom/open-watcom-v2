@@ -340,12 +340,13 @@ static int mkdir_nested( const char *path )
 /*****************************************/
 {
     struct stat sb;
-    char        pathname[ FILENAME_MAX ];
+    char        pathname[FILENAME_MAX + 1];
     char        *p;
     char        *end;
 
     p = pathname;
     strncpy( pathname, path, FILENAME_MAX );
+    pathname[FILENAME_MAX] = '\0';
     end = pathname + strlen( pathname );
 
 #ifndef __UNIX__
