@@ -496,10 +496,16 @@ int main( void )
     StringCopy( Stack->name, "." );
     rc = EXIT_FAILURE;
     if( getcwd( SaveDir, _MAX_PATH ) != NULL ) {
-        signal( SIGINT, SetDoneFlag );
+        void    (*old_sig)( int ); ;
+
+        DoneFlag = 0;
+        old_sig = signal( SIGINT, SetDoneFlag );
         if( ProcessCurrentDirectory( cmd ) == 0 )
             rc = EXIT_SUCCESS;
-        chdir( SaveDir );
+        signal( SIGINT, old_sig );
+        if( chdir( SaveDir ) || DoneFlag ) {
+            rc = EXIT_FAILURE;
+        }
     }
     free( Stack );
     Stack = NULL;
