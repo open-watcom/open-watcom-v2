@@ -530,8 +530,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
                 resfiles->fp = ResOpenFileRO( resfiles->name );
                 if( resfiles->fp != NULL ) {
                     ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
-                    ResCloseFile( resfiles->fp );
-                    resfiles->fp = NULL;
+                    RCCloseFile( &(resfiles->fp) );
                 }
             }
             if( ret != RS_OK ) {

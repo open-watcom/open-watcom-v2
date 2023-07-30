@@ -54,18 +54,17 @@ typedef struct {
 
 static ErrFrame         errFromWres;
 
-static void closeAResFile( ResFileInfo *res )
-/*******************************************/
+int RCCloseFile( FILE **fp )
+/**************************/
 {
-    if( res->fp ) {
-        ResCloseFile( res->fp );
-        res->fp = NULL;
+    int rc;
+
+    rc = 0;
+    if( *fp != NULL ) {
+        rc = ResCloseFile( *fp );
+        *fp = NULL;
     }
-    if( res->Dir != NULL ) {
-        WResFreeDir( res->Dir );
-        res->Dir = NULL;
-    }
-    RESFREE( res );
+    return( rc );
 }
 
 bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
@@ -110,8 +109,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
             goto HANDLE_ERROR;
         }
         if( rescnt >= MAX_OPEN_RESFILES ) {
-            ResCloseFile( resfile->fp );
-            resfile->fp = NULL;
+            RCCloseFile( &(resfile->fp) );
             *allopen = false;
         }
 
@@ -171,7 +169,9 @@ void CloseResFiles( ResFileInfo *resfiles )
 
     while( (res = resfiles) != NULL ) {
         resfiles = res->next;
-        closeAResFile( res );
+        WResFreeDir( res->Dir );
+        RCCloseFile( &(res->fp) );
+        RESFREE( res );
     }
 }
 

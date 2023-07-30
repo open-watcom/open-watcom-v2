@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,10 +192,7 @@ void RcFatalError( unsigned int errornum, ... )
     va_end( args );
 
 #if !defined( INSIDE_WLINK ) && !defined( INSIDE_WR )
-    if( CurrResFile.fp != NULL ) {
-        ResCloseFile( CurrResFile.fp );
-        CurrResFile.fp = NULL;
-    }
+    RCCloseFile( &(CurrResFile.fp) );
     CloseAllFiles();
     PP_FileFini();
     PP_Fini();

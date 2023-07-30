@@ -297,7 +297,7 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
         return;
     }
 
-    fp = RcIoOpenInput( filename, false );
+    fp = RcIoOpenInputBin( filename );
     if( fp == NULL)
         goto FILE_OPEN_ERROR;
 
@@ -329,7 +329,7 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
     RESFREE( devicename );
     RESFREE( facename );
 
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
 
     return;
 
@@ -344,13 +344,13 @@ READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     RESFREE( name );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 COPY_FONT_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 }
 

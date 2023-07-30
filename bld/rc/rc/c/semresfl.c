@@ -78,7 +78,7 @@ static bool copyResourcesFromRes( const char *full_filename )
 
     buffer = NULL;
     dir = WResInitDir();
-    fp = RcIoOpenInput( full_filename, false );
+    fp = RcIoOpenInputBin( full_filename );
     if( fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         error = true;
@@ -110,7 +110,7 @@ static bool copyResourcesFromRes( const char *full_filename )
                 RESFREE( buffer );
             }
         }
-        RcIoCloseInput( fp, false );
+        RcIoCloseInputBin( fp );
     }
     WResFreeDir( dir );
     if( error ) {

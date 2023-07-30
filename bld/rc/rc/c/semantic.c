@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ SemOffset SemStartResource( void )
     if( !CurrResFile.IsWatcomRes ) {
         tmpResFile = ResOpenFileTmp( NULL );
         if( tmpResFile == NULL ) {
-            ResCloseFile( CurrResFile.fp );
+            RCCloseFile( &(CurrResFile.fp) );
             RcFatalError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
             /* save current values */
@@ -212,8 +212,7 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
             copyMSFormatRes( name, type, flags, loc, lang );
         }
         /* erase the temporary RES file */
-        ResCloseFile( tmpResFile );
-        tmpResFile = NULL;
+        RCCloseFile( &tmpResFile );
     }
 }
 

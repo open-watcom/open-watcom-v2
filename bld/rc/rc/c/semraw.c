@@ -132,7 +132,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
         }
     }
     if( !error ) {
-        fp = RcIoOpenInput( filename, false );
+        fp = RcIoOpenInputBin( filename );
         if( fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
             error = true;
@@ -162,7 +162,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
     } else {
         loc.len = SemEndResource( loc.start );
     }
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     RESFREE( buffer );
     return( loc );
 }

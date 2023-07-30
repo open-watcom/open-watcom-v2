@@ -183,7 +183,7 @@ static bool openCurrentFile( void )
 /*********************************/
 {
     if( InStack.Current->fp == NULL ) {
-        InStack.Current->fp = RcIoOpenInput( InStack.Current->Filename, true );
+        InStack.Current->fp = RcIoOpenInputText( InStack.Current->Filename );
         if( InStack.Current->fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
@@ -244,7 +244,7 @@ static bool readCurrentFileBuffer( void )
 static bool RcIoPopTextInputFile( void )
 /**************************************/
 {
-    RcIoCloseInput( InStack.Current->fp, true );
+    RcIoCloseInputText( InStack.Current->fp );
     InStack.Current->fp = NULL;
     freeCurrentFileName();
     InStack.Current--;
@@ -436,7 +436,7 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
     /* don't close the current file because Offset isn't set */
     for( currfile = InStack.Stack + 1; no_handles_available && currfile < InStack.Current; ++currfile ) {
         if( currfile->fp != NULL ) {
-            RcIoCloseInput( currfile->fp, true );
+            RcIoCloseInputText( currfile->fp );
             currfile->fp = NULL;
             if( text_mode ) {
                 fp = fopen( filename, "rt" );
@@ -449,18 +449,6 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
     return( fp );
 
 } /* RcIoOpenInput */
-
-void RcIoCloseInput( FILE *fp, bool text_mode )
-/*********************************************/
-{
-    if( fp != NULL ) {
-        if( text_mode ) {
-            fclose( fp );
-        } else {
-            ResCloseFile( fp );
-        }
-    }
-} /* RcIoCloseInput */
 
 /*
  * Pass 1 related functions
@@ -486,8 +474,7 @@ static bool Pass1InitRes( void )
     CurrResFile.dir = WResInitDir();
     if( CurrResFile.dir == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ResCloseFile( CurrResFile.fp );
-        CurrResFile.fp = NULL;
+        RCCloseFile( &(CurrResFile.fp) );
         return( true );
     }
 
@@ -696,14 +683,11 @@ static void Pass1ResFileShutdown( void )
                 CopyFileToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
             }
         }
-        if( CurrResFile.dir != NULL ) {
-            WResFreeDir( CurrResFile.dir );
-            CurrResFile.dir = NULL;
-        }
-        if( ResCloseFile( CurrResFile.fp ) ) {
+        WResFreeDir( CurrResFile.dir );
+        CurrResFile.dir = NULL;
+        if( RCCloseFile( &(CurrResFile.fp) ) ) {
             RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
         }
-        CurrResFile.fp = NULL;
     }
 } /* Pass1ResFileShutdown */
 

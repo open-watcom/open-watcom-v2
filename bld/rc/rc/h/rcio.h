@@ -64,6 +64,11 @@ typedef struct RcResFileID {
     FullFontDir             *FontDir;
 } RcResFileID;
 
+#define RcIoOpenInputText(f)    RcIoOpenInput((f),true)
+#define RcIoOpenInputBin(f)     RcIoOpenInput((f),false)
+#define RcIoCloseInputText(fp)  if( fp != NULL ) fclose( fp )
+#define RcIoCloseInputBin(fp)   if( fp != NULL ) ResCloseFile( fp )
+
 extern bool         RcPass1IoInit( void );
 extern void         RcPass1IoShutdown( void );
 extern int          RcIoGetChar( void );
@@ -72,7 +77,6 @@ extern const char   *RcIoGetCurrentFileName( void );
 extern unsigned     RcIoGetCurrentFileLineNo( void );
 extern void         RcIoSetCurrentFileInfo( unsigned lineno, const char *filename );
 extern FILE         *RcIoOpenInput( const char *filename, bool text_mode );
-extern void         RcIoCloseInput( FILE *fp, bool text_mode );
 extern int          RcFindSourceFile( const char *name, char *fullpath );
 extern const char   *RcGetEnv( const char *name );
 extern void         RcIoInitStatics( void );

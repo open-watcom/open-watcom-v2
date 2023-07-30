@@ -363,7 +363,7 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
     FullIconDir     dir;
     int             err_code;
 
-    fp = RcIoOpenInput( filename, false );
+    fp = RcIoOpenInputBin( filename );
     if( fp == NULL)
         goto FILE_OPEN_ERROR;
 
@@ -383,7 +383,7 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
         goto WRITE_DIR_ERROR;
 
     FreeIconDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
 
     return;
 
@@ -403,14 +403,14 @@ READ_DIR_ERROR:
     ErrorHasOccured = true;
     RESFREE( name );
     FreeIconDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 WRITE_DIR_ERROR:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = true;
     FreeIconDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 COPY_ICONS_ERROR:
@@ -418,7 +418,7 @@ COPY_ICONS_ERROR:
     ErrorHasOccured = true;
     RESFREE( name );
     FreeIconDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 } /* AddIconResource */
 
@@ -604,7 +604,7 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
     FullCurDir      dir;
     int             err_code;
 
-    fp = RcIoOpenInput( filename, false );
+    fp = RcIoOpenInputBin( filename );
     if( fp == NULL)
         goto FILE_OPEN_ERROR;
 
@@ -624,7 +624,7 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
         goto WRITE_DIR_ERROR;
 
     FreeCurDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
 
     return;
 
@@ -644,14 +644,14 @@ READ_DIR_ERROR:
     ErrorHasOccured = true;
     RESFREE( name );
     FreeCurDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 WRITE_DIR_ERROR:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
     FreeCurDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 COPY_CURSORS_ERROR:
@@ -659,7 +659,7 @@ COPY_CURSORS_ERROR:
     ErrorHasOccured = true;
     RESFREE( name );
     FreeCurDir( &dir );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 } /* AddCursorResource */
 
@@ -717,7 +717,7 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
     RcStatus            ret;
     int                 err_code;
 
-    fp = RcIoOpenInput( filename, false );
+    fp = RcIoOpenInputBin( filename );
     if( fp == NULL)
         goto FILE_OPEN_ERROR;
 
@@ -732,7 +732,7 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
     if( ret != RS_OK )
         goto COPY_BITMAP_ERROR;
 
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
 
     return;
 
@@ -747,20 +747,20 @@ READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_BITMAP, filename, err_code );
     ErrorHasOccured = true;
     RESFREE( name );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 NOT_BITMAP_ERROR:
     RcError( ERR_NOT_BITMAP_FILE, filename );
     ErrorHasOccured = true;
     RESFREE( name );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 COPY_BITMAP_ERROR:
     ReportCopyError( ret, ERR_READING_BITMAP, filename, err_code );
     ErrorHasOccured = true;
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 }
 
@@ -919,7 +919,7 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
         return;
     }
 
-    fp = RcIoOpenInput( filename, false );
+    fp = RcIoOpenInputBin( filename );
     if( fp == NULL)
         goto FILE_OPEN_ERROR;
 
@@ -951,7 +951,7 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
     RESFREE( devicename );
     RESFREE( facename );
 
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
 
     return;
 
@@ -966,13 +966,13 @@ READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     RESFREE( name );
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 
 COPY_FONT_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
-    RcIoCloseInput( fp, false );
+    RcIoCloseInputBin( fp );
     return;
 }
 

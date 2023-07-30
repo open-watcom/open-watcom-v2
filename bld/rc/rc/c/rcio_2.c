@@ -233,10 +233,7 @@ static void ClosePass2FilesAndFreeMem( void )
     dst = &(Pass2Info.TmpFile);
     src = &(Pass2Info.OldFile);
 
-    if( src->fp != NULL ) {
-        ResCloseFile( src->fp );
-        src->fp = NULL;
-    }
+    RCCloseFile( &(src->fp) );
     switch( src->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
@@ -322,10 +319,7 @@ void RcPass2IoShutdown( bool noerror )
         }
 #endif
     }
-    if( Pass2Info.TmpFile.fp != NULL ) {
-        ResCloseFile( Pass2Info.TmpFile.fp );
-        Pass2Info.TmpFile.fp = NULL;
-    }
+    RCCloseFile( &(Pass2Info.TmpFile.fp) );
     if( Pass2Info.IoBuffer != NULL ) {
         RESFREE( Pass2Info.IoBuffer );
         Pass2Info.IoBuffer = NULL;
