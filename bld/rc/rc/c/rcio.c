@@ -180,15 +180,6 @@ static void saveCurrentFileOffset( void )
     }
 } /* saveCurrentFileOffset */
 
-static void closeFile( FileStackEntry *file )
-/*******************************************/
-{
-    if( file->IsOpen ) {
-        fclose( file->fp );
-        file->IsOpen = false;
-    }
-} /* closeFile */
-
 static bool openCurrentFile( void )
 /*********************************/
 {
@@ -255,7 +246,8 @@ static bool readCurrentFileBuffer( void )
 static bool RcIoPopTextInputFile( void )
 /**************************************/
 {
-    closeFile( InStack.Current );
+    RcIoCloseInput( InStack.Current->fp, true );
+    InStack.Current->fp = NULL;
     freeCurrentFileName();
     InStack.Current--;
     if( IsEmptyFileStack( InStack ) ) {
@@ -446,7 +438,8 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
     /* don't close the current file because Offset isn't set */
     for( currfile = InStack.Stack + 1; no_handles_available && currfile < InStack.Current; ++currfile ) {
         if( currfile->IsOpen ) {
-            closeFile( currfile );
+            RcIoCloseInput( currfile->fp, true );
+            currfile->fp = NULL;
             if( text_mode ) {
                 fp = fopen( filename, "rt" );
             } else {
@@ -458,6 +451,19 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
     return( fp );
 
 } /* RcIoOpenInput */
+
+void RcIoCloseInput( FILE *fp, bool text_mode )
+/*********************************************/
+{
+    if( fp != NULL ) {
+        if( text_mode ) {
+            fclose( fp );
+        } else {
+            ResCloseFile( fp );
+        }
+        fp = NULL;
+    }
+} /* RcIoCloseInput */
 
 /*
  * Pass 1 related functions

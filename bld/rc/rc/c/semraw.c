@@ -162,9 +162,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
     } else {
         loc.len = SemEndResource( loc.start );
     }
-    if( fp != NULL ) {
-        RESCLOSE( fp );
-    }
+    RcIoCloseInput( fp, false );
     RESFREE( buffer );
     return( loc );
 }

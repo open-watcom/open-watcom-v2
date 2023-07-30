@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ static bool copyResourcesFromRes( const char *full_filename )
                 RESFREE( buffer );
             }
         }
-        RESCLOSE( fp );
+        RcIoCloseInput( fp, false );
     }
     WResFreeDir( dir );
     if( error ) {

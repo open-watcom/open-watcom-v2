@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -329,7 +329,7 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
     RESFREE( devicename );
     RESFREE( facename );
 
-    RESCLOSE( fp );
+    RcIoCloseInput( fp, false );
 
     return;
 
@@ -344,13 +344,13 @@ READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     RESFREE( name );
-    RESCLOSE( fp );
+    RcIoCloseInput( fp, false );
     return;
 
 COPY_FONT_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
-    RESCLOSE( fp );
+    RcIoCloseInput( fp, false );
     return;
 }
 

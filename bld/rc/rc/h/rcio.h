@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,6 +73,7 @@ extern const char   *RcIoGetCurrentFileName( void );
 extern unsigned     RcIoGetCurrentFileLineNo( void );
 extern void         RcIoSetCurrentFileInfo( unsigned lineno, const char *filename );
 extern FILE         *RcIoOpenInput( const char *filename, bool text_mode );
+extern void         RcIoCloseInput( FILE *fp, bool text_mode );
 extern int          RcFindSourceFile( const char *name, char *fullpath );
 extern const char   *RcGetEnv( const char *name );
 extern void         RcIoInitStatics( void );
