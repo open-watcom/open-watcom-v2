@@ -73,7 +73,6 @@ typedef struct file_loc {
 
 typedef struct FileStackEntry {
     char                *Filename;
-    bool                IsOpen;
     FILE                *fp;
     unsigned long       Offset;     /* offset in file to read from next time if this */
                                     /* is not the current file */
@@ -183,13 +182,12 @@ static void saveCurrentFileOffset( void )
 static bool openCurrentFile( void )
 /*********************************/
 {
-    if( !InStack.Current->IsOpen ) {
+    if( InStack.Current->fp == NULL ) {
         InStack.Current->fp = RcIoOpenInput( InStack.Current->Filename, true );
         if( InStack.Current->fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
         }
-        InStack.Current->IsOpen = true;
         if( fseek( InStack.Current->fp, InStack.Current->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
@@ -202,9 +200,9 @@ static bool openCurrentFile( void )
 static bool openNewFile( const char *filename )
 /*********************************************/
 {
+    InStack.Current->fp = NULL;
     InStack.Current->Filename = RESALLOC( strlen( filename ) + 1 );
     strcpy( InStack.Current->Filename, filename );
-    InStack.Current->IsOpen = false;
     InStack.Current->Offset = 0;
 
     /* set up the logical file info */
@@ -220,7 +218,7 @@ static bool readCurrentFileBuffer( void )
     bool            error;
     int             inchar;
 
-    if( !InStack.Current->IsOpen ) {
+    if( InStack.Current->fp == NULL ) {
         error = openCurrentFile();
         if( error ) {
             return( true );
@@ -461,7 +459,6 @@ void RcIoCloseInput( FILE *fp, bool text_mode )
         } else {
             ResCloseFile( fp );
         }
-        fp = NULL;
     }
 } /* RcIoCloseInput */
 

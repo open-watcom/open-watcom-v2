@@ -227,41 +227,41 @@ static void FreeLXFileInfoPtrs( LXExeInfo *info )
 static void ClosePass2FilesAndFreeMem( void )
 /*******************************************/
 {
-    ExeFileInfo         *tmp;
-    ExeFileInfo         *old;
+    ExeFileInfo         *src;
+    ExeFileInfo         *dst;
 
-    tmp = &(Pass2Info.TmpFile);
-    old = &(Pass2Info.OldFile);
+    dst = &(Pass2Info.TmpFile);
+    src = &(Pass2Info.OldFile);
 
-    if( old->fp != NULL ) {
-        ResCloseFile( old->fp );
-        old->fp = NULL;
+    if( src->fp != NULL ) {
+        ResCloseFile( src->fp );
+        src->fp = NULL;
     }
-    switch( old->Type ) {
+    switch( src->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
-        FreeNEFileInfoPtrs( &old->u.NEInfo );
+        FreeNEFileInfoPtrs( &src->u.NEInfo );
         break;
     case EXE_TYPE_PE:
-        FreePEFileInfoPtrs( &old->u.PEInfo );
+        FreePEFileInfoPtrs( &src->u.PEInfo );
         break;
     case EXE_TYPE_LX:
-        FreeLXFileInfoPtrs( &old->u.LXInfo );
+        FreeLXFileInfoPtrs( &src->u.LXInfo );
         break;
     default: //EXE_TYPE_UNKNOWN
         break;
     }
 
-    switch( tmp->Type ) {
+    switch( dst->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
-        FreeNEFileInfoPtrs( &tmp->u.NEInfo );
+        FreeNEFileInfoPtrs( &dst->u.NEInfo );
         break;
     case EXE_TYPE_PE:
-        FreePEFileInfoPtrs( &tmp->u.PEInfo );
+        FreePEFileInfoPtrs( &dst->u.PEInfo );
         break;
     case EXE_TYPE_LX:
-        FreeLXFileInfoPtrs( &tmp->u.LXInfo );
+        FreeLXFileInfoPtrs( &dst->u.LXInfo );
         break;
     default: //EXE_TYPE_UNKNOWN
         break;

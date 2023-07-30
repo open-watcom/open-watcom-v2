@@ -813,7 +813,6 @@ static unsigned_32 WritePEResources( pe_exe_header *pehdr, pe_object *object, un
     status = OpenResFiles( (ExtraRes *)FmtData.u.pe.resources, &rinfo, &allopen, EXE_TYPE_PE, Root->outfile->fname );
     if( !status )               // we had a problem opening
         return( 0 );
-    einfo.IsOpen = true;
     einfo.fp = POSIX2FP( Root->outfile->handle );
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = pehdr;
