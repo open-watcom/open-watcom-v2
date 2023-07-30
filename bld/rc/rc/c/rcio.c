@@ -435,7 +435,7 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
     /* close open files except the current input file until able to open */
     /* don't close the current file because Offset isn't set */
     for( currfile = InStack.Stack + 1; no_handles_available && currfile < InStack.Current; ++currfile ) {
-        if( currfile->IsOpen ) {
+        if( currfile->fp != NULL ) {
             RcIoCloseInput( currfile->fp, true );
             currfile->fp = NULL;
             if( text_mode ) {
