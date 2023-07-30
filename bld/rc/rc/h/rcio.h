@@ -57,8 +57,7 @@ typedef struct RcResFileID {
     char                    *filename;
     FullStringTable         *StringTable;
     FullStringTable         *ErrorTable;
-    boolbit                 IsWatcomRes     : 1;
-    boolbit                 IsOpen          : 1;
+    bool                    IsWatcomRes;
     uint_16                 NextCurOrIcon;
     WResDir                 dir;                    /* don't write this if !IsWatcomRes */
     FILE                    *fp;                    /* file I/O handle */

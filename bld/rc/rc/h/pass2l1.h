@@ -170,7 +170,6 @@ typedef struct LXExeInfo {
 } LXExeInfo;
 
 typedef struct ExeFileInfo {
-    bool                IsOpen;
     FILE                *fp;
     const char          *name;
     uint_32             WinHeadOffset;      /* wlink doesn't initialize this */

@@ -143,7 +143,6 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
     }
-    info->IsOpen = true;
     info->Type = FindNEPELXHeader( info->fp, &info->WinHeadOffset );
     info->name = filename;
     switch( info->Type ) {
@@ -234,9 +233,9 @@ static void ClosePass2FilesAndFreeMem( void )
     tmp = &(Pass2Info.TmpFile);
     old = &(Pass2Info.OldFile);
 
-    if( old->IsOpen ) {
-        RESCLOSE( old->fp );
-        old->IsOpen = false;
+    if( old->fp != NULL ) {
+        ResCloseFile( old->fp );
+        old->fp = NULL;
     }
     switch( old->Type ) {
     case EXE_TYPE_NE_WIN:
