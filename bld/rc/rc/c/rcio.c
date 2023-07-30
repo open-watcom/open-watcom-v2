@@ -168,17 +168,6 @@ static file_loc *removeLocation( file_loc *loc )
     return( prev );
 }
 
-static void saveCurrentFileOffset( void )
-/***************************************/
-{
-    size_t          charsinbuff;
-
-    if( !IsEmptyFileStack( InStack ) ) {
-        charsinbuff = InStack.BufferSize - ( InStack.NextChar - InStack.Buffer );
-        InStack.Current->Offset = (unsigned long)( ftell( InStack.Current->fp ) - charsinbuff );
-    }
-} /* saveCurrentFileOffset */
-
 static bool openCurrentFile( void )
 /*********************************/
 {
@@ -188,6 +177,9 @@ static bool openCurrentFile( void )
             RcError( ERR_CANT_OPEN_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
         }
+        /*
+         * seek to last saved input file position
+         */
         if( fseek( InStack.Current->fp, InStack.Current->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
@@ -289,15 +281,18 @@ static bool RcIoTextInputShutdown( void )
 static bool RcIoPushTextInputFile( const char *filename )
 /*******************************************************/
 {
-    bool                error;
+    bool        error;
 
     if( InStack.Current == InStack.Stack + MAX_INCLUDE_DEPTH - 1 ) {
         RcError( ERR_RCINCLUDE_TOO_DEEP, MAX_INCLUDE_DEPTH );
         return( true );
     }
-
-    saveCurrentFileOffset();
-
+    /*
+     * save current input file position
+     * it is used for switching/reopenning input file
+     */
+    InStack.Current->Offset = ftell( InStack.Current->fp ) - InStack.BufferSize
+                                         + ( InStack.NextChar - InStack.Buffer );
     InStack.Current++;
 
     /* open file and set up the file info */

@@ -84,7 +84,6 @@ bool CopyFileToOutFile( FILE *inp_fp, const char *out_name )
         }
     }
     ResCloseFile( out_fp );
-
     RESFREE( buffer );
     return( status == RS_OK );
 
