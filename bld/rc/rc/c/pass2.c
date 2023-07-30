@@ -67,27 +67,27 @@ static RcStatus seekPastResTable( int *err_code )
 {
     long            winheadoffset;
     long            seekamount;
-    ExeFileInfo     *tmpexe;
+    ExeFileInfo     *dst;
     uint_16         restab_size;
 
-    tmpexe = &(Pass2Info.TmpFile);
+    dst = &(Pass2Info.TmpFile);
 
     if( Pass2Info.OldFile.u.NEInfo.WinHead.target == TARGET_OS2 ) {
-        restab_size = tmpexe->u.NEInfo.OS2Res.table_size;
+        restab_size = dst->u.NEInfo.OS2Res.table_size;
     } else {
-        restab_size = tmpexe->u.NEInfo.Res.Dir.TableSize;
+        restab_size = dst->u.NEInfo.Res.Dir.TableSize;
     }
 
     seekamount = sizeof( os2_exe_header ) +
-                    tmpexe->u.NEInfo.Seg.NumSegs * sizeof( segment_record ) +
+                    dst->u.NEInfo.Seg.NumSegs * sizeof( segment_record ) +
                     restab_size +
-                    tmpexe->u.NEInfo.Res.Str.StringBlockSize;
-    if( RESSEEK( tmpexe->fp, seekamount, SEEK_CUR ) ) {
+                    dst->u.NEInfo.Res.Str.StringBlockSize;
+    if( RESSEEK( dst->fp, seekamount, SEEK_CUR ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
-    winheadoffset = RESTELL( tmpexe->fp );
-    tmpexe->WinHeadOffset = winheadoffset;
+    winheadoffset = RESTELL( dst->fp );
+    dst->WinHeadOffset = winheadoffset;
     return( RS_OK );
 
 } /* seekPastResTable */
@@ -95,20 +95,18 @@ static RcStatus seekPastResTable( int *err_code )
 static RcStatus copyOtherTables( int *err_code )
 {
     uint_32         tablelen;
-    os2_exe_header  *oldhead;
-    uint_32         oldoffset;
-    FILE            *old_fp;
+    os2_exe_header  *src_head;
+    uint_32         src_offset;
     RcStatus        ret;
 
-    oldhead = &(Pass2Info.OldFile.u.NEInfo.WinHead);
-    oldoffset = Pass2Info.OldFile.WinHeadOffset;
-    old_fp = Pass2Info.OldFile.fp;
+    src_head = &(Pass2Info.OldFile.u.NEInfo.WinHead);
+    src_offset = Pass2Info.OldFile.WinHeadOffset;
 
     /* the other tables start at the resident names table and end at the end */
     /* of the non-resident names table */
-    tablelen = (oldhead->nonres_off + oldhead->nonres_size) - ( oldhead->resident_off + oldoffset );
+    tablelen = (src_head->nonres_off + src_head->nonres_size) - ( src_head->resident_off + src_offset );
 
-    if( RESSEEK( old_fp, oldhead->resident_off + oldoffset, SEEK_SET ) ) {
+    if( RESSEEK( Pass2Info.OldFile.fp, src_head->resident_off + src_offset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
@@ -120,25 +118,25 @@ static RcStatus copyOtherTables( int *err_code )
 
 static int computeShiftCount( ResFileInfo *res )
 {
-    NEExeInfo * old;
-    NEExeInfo * tmp;
+    NEExeInfo * src_ne;
+    NEExeInfo * dst_ne;
     uint_32     filelen;
     int         num_segs;
     int         shift_count;
 
-    old = &Pass2Info.OldFile.u.NEInfo;
-    tmp = &Pass2Info.TmpFile.u.NEInfo;
+    src_ne = &Pass2Info.OldFile.u.NEInfo;
+    dst_ne = &Pass2Info.TmpFile.u.NEInfo;
 
-    filelen = old->WinHead.nonres_off +
-            old->WinHead.nonres_size +
-            tmp->Res.Dir.TableSize +
-            tmp->Res.Str.StringBlockSize;
-    filelen += ComputeSegmentSize( Pass2Info.OldFile.fp, &(tmp->Seg), old->WinHead.align );
+    filelen = src_ne->WinHead.nonres_off +
+            src_ne->WinHead.nonres_size +
+            dst_ne->Res.Dir.TableSize +
+            dst_ne->Res.Str.StringBlockSize;
+    filelen += ComputeSegmentSize( Pass2Info.OldFile.fp, &(dst_ne->Seg), src_ne->WinHead.align );
     if( ! CmdLineParms.NoResFile ) {
         filelen += ComputeWINResourceSize( res->Dir );
     }
 
-    num_segs = old->WinHead.segments;
+    num_segs = src_ne->WinHead.segments;
     if( ! CmdLineParms.NoResFile ) {
         num_segs += WResGetNumResources( res->Dir );
     }
@@ -148,10 +146,10 @@ static int computeShiftCount( ResFileInfo *res )
         shift_count = 1;        /* MS thinks 0 == 9 for shift count */
     }
 
-    if( shift_count > old->WinHead.align ) {
+    if( shift_count > src_ne->WinHead.align ) {
         return( shift_count );
     } else {
-        return( old->WinHead.align );
+        return( src_ne->WinHead.align );
     }
 
 } /* computeShiftCount */
@@ -165,7 +163,7 @@ static void checkShiftCount( ResFileInfo *res )
 
 static bool copyWINBody( ResFileInfo *res )
 {
-    NEExeInfo *         tmp;
+    NEExeInfo *         dst_ne;
     uint_16             sect2mask = 0;
     uint_16             sect2bits = 0;
     uint_16             shift_count;
@@ -174,7 +172,7 @@ static bool copyWINBody( ResFileInfo *res )
     CpSegRc             copy_segs_ret;
     bool                use_gangload = false;
 
-    tmp = &Pass2Info.TmpFile.u.NEInfo;
+    dst_ne = &Pass2Info.TmpFile.u.NEInfo;
 
     switch( CmdLineParms.SegmentSorting ) {
     case SEG_SORT_NONE:     /* all segments in section 2 */
@@ -182,7 +180,7 @@ static bool copyWINBody( ResFileInfo *res )
         sect2bits = 0;
         use_gangload = false;
         Pass2Info.TmpFile.u.NEInfo.WinHead.align = Pass2Info.OldFile.u.NEInfo.WinHead.align;
-        tmp->Res.Dir.ResShiftCount = computeShiftCount( res );
+        dst_ne->Res.Dir.ResShiftCount = computeShiftCount( res );
         break;
     case SEG_SORT_PRELOAD_ONLY:  /* all load on call segments in section 2 */
         sect2mask = SEG_PRELOAD;
@@ -212,7 +210,7 @@ static bool copyWINBody( ResFileInfo *res )
 
     /* third arg to Copy???? is false --> copy section one */
     gangloadstart = RESTELL( Pass2Info.TmpFile.fp );
-    gangloadstart += AlignAmount( gangloadstart, tmp->Res.Dir.ResShiftCount );
+    gangloadstart += AlignAmount( gangloadstart, dst_ne->Res.Dir.ResShiftCount );
     copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, false );
     switch( copy_segs_ret ) {
     case CPSEG_SEG_TOO_BIG:
@@ -246,14 +244,14 @@ static bool copyWINBody( ResFileInfo *res )
     }
 
     if( use_gangload ) {
-        shift_count = tmp->WinHead.align;
-        tmp->WinHead.gangstart = gangloadstart >> shift_count;
-        tmp->WinHead.ganglength = gangloadlen >> shift_count;
-        tmp->WinHead.otherflags |= WIN_GANGLOAD_PRESENT;
+        shift_count = dst_ne->WinHead.align;
+        dst_ne->WinHead.gangstart = gangloadstart >> shift_count;
+        dst_ne->WinHead.ganglength = gangloadlen >> shift_count;
+        dst_ne->WinHead.otherflags |= WIN_GANGLOAD_PRESENT;
     } else {
-        tmp->WinHead.gangstart = 0;
-        tmp->WinHead.ganglength = 0;
-        tmp->WinHead.otherflags &= ~WIN_GANGLOAD_PRESENT;
+        dst_ne->WinHead.gangstart = 0;
+        dst_ne->WinHead.ganglength = 0;
+        dst_ne->WinHead.otherflags &= ~WIN_GANGLOAD_PRESENT;
     }
 
     return( false );
@@ -262,16 +260,16 @@ static bool copyWINBody( ResFileInfo *res )
 
 static bool copyOS2Body( ResFileInfo *res )
 {
-    NEExeInfo           *tmp;
+    NEExeInfo           *dst_ne;
     CpSegRc             copy_segs_ret;
     unsigned_16         align;
 
-    tmp = &Pass2Info.TmpFile.u.NEInfo;
+    dst_ne = &Pass2Info.TmpFile.u.NEInfo;
 
     /* OS/2 does not use separate alignment for resources */
     align = Pass2Info.OldFile.u.NEInfo.WinHead.align;
     Pass2Info.TmpFile.u.NEInfo.WinHead.align = align;
-    tmp->Res.Dir.ResShiftCount = align;
+    dst_ne->Res.Dir.ResShiftCount = align;
 
     copy_segs_ret = CopyOS2Segments();
     if( copy_segs_ret == CPSEG_ERROR ) {
@@ -292,38 +290,38 @@ static bool copyOS2Body( ResFileInfo *res )
  */
 static RcStatus copyDebugInfo( void )
 {
-    ExeFileInfo *old;
-    ExeFileInfo *tmp;
+    ExeFileInfo *src;
+    ExeFileInfo *dst;
 
-    old = &(Pass2Info.OldFile);
-    tmp = &(Pass2Info.TmpFile);
+    src = &(Pass2Info.OldFile);
+    dst = &(Pass2Info.TmpFile);
 
-    if( RESSEEK( old->fp, old->DebugOffset, SEEK_SET ) )
+    if( RESSEEK( src->fp, src->DebugOffset, SEEK_SET ) )
         return( RS_READ_ERROR );
-    if( RESSEEK( tmp->fp, tmp->DebugOffset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst->DebugOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
-    return( CopyExeDataTilEOF( old->fp, tmp->fp ) );
+    return( CopyExeDataTilEOF( src->fp, dst->fp ) );
 
 } /* copyDebugInfo */
 
 static RcStatus writeHeadAndTables( int *err_code )
 {
-    ExeFileInfo *   oldfile;
-    ExeFileInfo *   tmpfile;
-    NEExeInfo *     oldne;
-    NEExeInfo *     tmpne;
+    ExeFileInfo *   src;
+    ExeFileInfo *   dst;
+    NEExeInfo *     src_ne;
+    NEExeInfo *     dst_ne;
     uint_16         tableshift;     /* amount the tables are shifted in the tmp file */
     uint_16         info;           /* os2_exe_header.info */
     RcStatus        ret;
 
-    oldfile = &(Pass2Info.OldFile);
-    oldne = &oldfile->u.NEInfo;
-    tmpfile = &(Pass2Info.TmpFile);
-    tmpne = &tmpfile->u.NEInfo;
+    src = &(Pass2Info.OldFile);
+    src_ne = &src->u.NEInfo;
+    dst = &(Pass2Info.TmpFile);
+    dst_ne = &dst->u.NEInfo;
 
-    /* set the info flag for the new executable from the one flag and */
+    /* set the info flag for the dst executable from the one flag and */
     /* the command line options given */
-    info = oldne->WinHead.info;
+    info = src_ne->WinHead.info;
     if( CmdLineParms.PrivateDLL ) {
         info |= WIN_PRIVATE_DLL;
     }
@@ -341,59 +339,59 @@ static RcStatus writeHeadAndTables( int *err_code )
     }
 
     /* copy the fields in the os2_exe_header then change some of them */
-    tmpfile->WinHeadOffset = oldfile->WinHeadOffset;
+    dst->WinHeadOffset = src->WinHeadOffset;
     /* copy the WinHead fields up to, but excluding, the segment_off field */
-    memcpy( &(tmpne->WinHead), &(oldne->WinHead),
+    memcpy( &(dst_ne->WinHead), &(src_ne->WinHead),
             offsetof(os2_exe_header, segment_off) );
-    tmpne->WinHead.info = info;
-    tableshift = tmpne->Res.Dir.TableSize +
-                tmpne->Res.Str.StringBlockSize -
-                (oldne->WinHead.resident_off - oldne->WinHead.resource_off );
-    tmpne->WinHead.entry_off = oldne->WinHead.entry_off + tableshift;
-    tmpne->WinHead.resident_off = oldne->WinHead.resident_off + tableshift;
-    tmpne->WinHead.module_off = oldne->WinHead.module_off + tableshift;
-    tmpne->WinHead.import_off = oldne->WinHead.import_off + tableshift;
-    tmpne->WinHead.nonres_off = oldne->WinHead.nonres_off + tableshift;
-    tmpne->WinHead.segment_off = sizeof( os2_exe_header );
-    tmpne->WinHead.resource_off = tmpne->WinHead.segment_off +
-                                tmpne->Seg.NumSegs * sizeof( segment_record );
-    tmpne->WinHead.movable = oldne->WinHead.movable;
-    tmpne->WinHead.resource = tmpne->Res.Dir.NumResources;
-    tmpne->WinHead.target = oldne->WinHead.target;
+    dst_ne->WinHead.info = info;
+    tableshift = dst_ne->Res.Dir.TableSize +
+                dst_ne->Res.Str.StringBlockSize -
+                (src_ne->WinHead.resident_off - src_ne->WinHead.resource_off );
+    dst_ne->WinHead.entry_off = src_ne->WinHead.entry_off + tableshift;
+    dst_ne->WinHead.resident_off = src_ne->WinHead.resident_off + tableshift;
+    dst_ne->WinHead.module_off = src_ne->WinHead.module_off + tableshift;
+    dst_ne->WinHead.import_off = src_ne->WinHead.import_off + tableshift;
+    dst_ne->WinHead.nonres_off = src_ne->WinHead.nonres_off + tableshift;
+    dst_ne->WinHead.segment_off = sizeof( os2_exe_header );
+    dst_ne->WinHead.resource_off = dst_ne->WinHead.segment_off +
+                                dst_ne->Seg.NumSegs * sizeof( segment_record );
+    dst_ne->WinHead.movable = src_ne->WinHead.movable;
+    dst_ne->WinHead.resource = dst_ne->Res.Dir.NumResources;
+    dst_ne->WinHead.target = src_ne->WinHead.target;
     /* |= the next one since the WIN_GANGLOAD_PRESENT flag may be set */
-    tmpne->WinHead.otherflags |= oldne->WinHead.otherflags;
-    tmpne->WinHead.swaparea =   0;      /* What is this field for? */
+    dst_ne->WinHead.otherflags |= src_ne->WinHead.otherflags;
+    dst_ne->WinHead.swaparea =   0;      /* What is this field for? */
     if( CmdLineParms.VersionStamp30 ) {
-        tmpne->WinHead.expver = VERSION_30_STAMP;
+        dst_ne->WinHead.expver = VERSION_30_STAMP;
     } else {
-        tmpne->WinHead.expver = VERSION_31_STAMP;
+        dst_ne->WinHead.expver = VERSION_31_STAMP;
     }
 
-    /* seek to the start of the os2_exe_header in tmpfile */
-    if( RESSEEK( tmpfile->fp, tmpfile->WinHeadOffset, SEEK_SET ) ) {
+    /* seek to the start of the os2_exe_header in dst */
+    if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
 
     /* write the header */
-    if( RESWRITE( tmpfile->fp, &(tmpne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
+    if( RESWRITE( dst->fp, &(dst_ne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
 
     /* write the segment table */
-    if( tmpne->Seg.NumSegs > 0 ) {
+    if( dst_ne->Seg.NumSegs > 0 ) {
         size_t  numwrite;
 
-        numwrite = tmpne->Seg.NumSegs * sizeof( segment_record );
-        if( RESWRITE( tmpfile->fp, tmpne->Seg.Segments, numwrite ) != numwrite ) {
+        numwrite = dst_ne->Seg.NumSegs * sizeof( segment_record );
+        if( RESWRITE( dst->fp, dst_ne->Seg.Segments, numwrite ) != numwrite ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
     }
 
     /* write the resource table */
-    ret = WriteWINResTable( tmpfile->fp, &(tmpne->Res), err_code );
+    ret = WriteWINResTable( dst->fp, &(dst_ne->Res), err_code );
     return( ret );
 
 } /* writeHeadAndTables */
@@ -405,66 +403,66 @@ static RcStatus writeHeadAndTables( int *err_code )
  */
 static RcStatus writeOS2HeadAndTables( int *err_code )
 {
-    ExeFileInfo *   oldfile;
-    ExeFileInfo *   tmpfile;
-    NEExeInfo *     oldne;
-    NEExeInfo *     tmpne;
+    ExeFileInfo *   src;
+    ExeFileInfo *   dst;
+    NEExeInfo *     src_ne;
+    NEExeInfo *     dst_ne;
     uint_16         tableshift;     /* amount the tables are shifted in the tmp file */
     RcStatus        ret;
 
-    oldfile = &(Pass2Info.OldFile);
-    oldne = &oldfile->u.NEInfo;
-    tmpfile = &(Pass2Info.TmpFile);
-    tmpne = &tmpfile->u.NEInfo;
+    src = &(Pass2Info.OldFile);
+    src_ne = &src->u.NEInfo;
+    dst = &(Pass2Info.TmpFile);
+    dst_ne = &dst->u.NEInfo;
 
     /* copy the fields in the os2_exe_header then change some of them */
-    tmpfile->WinHeadOffset = oldfile->WinHeadOffset;
+    dst->WinHeadOffset = src->WinHeadOffset;
     /* copy the WinHead fields up to, but excluding, the segment_off field */
-    memcpy( &(tmpne->WinHead), &(oldne->WinHead),
+    memcpy( &(dst_ne->WinHead), &(src_ne->WinHead),
             offsetof(os2_exe_header, segment_off) );
-    tmpne->WinHead.info = oldne->WinHead.info;
-    tmpne->WinHead.segment_off = sizeof( os2_exe_header );
-    tmpne->WinHead.resource_off = tmpne->WinHead.segment_off +
-                                tmpne->Seg.NumSegs * sizeof( segment_record );
-    tableshift = tmpne->OS2Res.table_size -
-                (oldne->WinHead.resident_off - oldne->WinHead.resource_off) +
-                (tmpne->WinHead.resource_off - oldne->WinHead.resource_off);
-    tmpne->WinHead.entry_off = oldne->WinHead.entry_off + tableshift;
-    tmpne->WinHead.resident_off = oldne->WinHead.resident_off + tableshift;
-    tmpne->WinHead.module_off = oldne->WinHead.module_off + tableshift;
-    tmpne->WinHead.import_off = oldne->WinHead.import_off + tableshift;
-    tmpne->WinHead.nonres_off = oldne->WinHead.nonres_off + tableshift;
-    tmpne->WinHead.movable    = oldne->WinHead.movable;
-    tmpne->WinHead.resource   = tmpne->OS2Res.num_res_segs;
-    tmpne->WinHead.target     = oldne->WinHead.target;
-    tmpne->WinHead.otherflags = oldne->WinHead.otherflags;
-    tmpne->WinHead.segments   = tmpne->Seg.NumSegs;
+    dst_ne->WinHead.info = src_ne->WinHead.info;
+    dst_ne->WinHead.segment_off = sizeof( os2_exe_header );
+    dst_ne->WinHead.resource_off = dst_ne->WinHead.segment_off +
+                                dst_ne->Seg.NumSegs * sizeof( segment_record );
+    tableshift = dst_ne->OS2Res.table_size -
+                (src_ne->WinHead.resident_off - src_ne->WinHead.resource_off) +
+                (dst_ne->WinHead.resource_off - src_ne->WinHead.resource_off);
+    dst_ne->WinHead.entry_off = src_ne->WinHead.entry_off + tableshift;
+    dst_ne->WinHead.resident_off = src_ne->WinHead.resident_off + tableshift;
+    dst_ne->WinHead.module_off = src_ne->WinHead.module_off + tableshift;
+    dst_ne->WinHead.import_off = src_ne->WinHead.import_off + tableshift;
+    dst_ne->WinHead.nonres_off = src_ne->WinHead.nonres_off + tableshift;
+    dst_ne->WinHead.movable    = src_ne->WinHead.movable;
+    dst_ne->WinHead.resource   = dst_ne->OS2Res.num_res_segs;
+    dst_ne->WinHead.target     = src_ne->WinHead.target;
+    dst_ne->WinHead.otherflags = src_ne->WinHead.otherflags;
+    dst_ne->WinHead.segments   = dst_ne->Seg.NumSegs;
 
-    /* seek to the start of the os2_exe_header in tmpfile */
-    if( RESSEEK( tmpfile->fp, tmpfile->WinHeadOffset, SEEK_SET ) ) {
+    /* seek to the start of the os2_exe_header in dst */
+    if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
 
     /* write the header */
-    if( RESWRITE( tmpfile->fp, &(tmpne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
+    if( RESWRITE( dst->fp, &(dst_ne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
 
     /* write the segment table */
-    if( tmpne->Seg.NumSegs > 0 ) {
+    if( dst_ne->Seg.NumSegs > 0 ) {
         size_t  numwrite;
 
-        numwrite = tmpne->Seg.NumSegs * sizeof( segment_record );
-        if( RESWRITE( tmpfile->fp, tmpne->Seg.Segments, numwrite ) != numwrite ) {
+        numwrite = dst_ne->Seg.NumSegs * sizeof( segment_record );
+        if( RESWRITE( dst->fp, dst_ne->Seg.Segments, numwrite ) != numwrite ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
     }
 
     /* write the resource table */
-    ret = WriteOS2ResTable( tmpfile->fp, &(tmpne->OS2Res), err_code );
+    ret = WriteOS2ResTable( dst->fp, &(dst_ne->OS2Res), err_code );
     return( ret );
 
 } /* writeOS2HeadAndTables */
@@ -474,12 +472,12 @@ static RcStatus findEndOfResources( int *err_code )
    copy them with debug information.  Otherwise the file will grow whenever
    a resource file is added */
 {
-    NEExeInfo                   *oldneinfo;
-    uint_32                     *debugoffset;
-    FILE                        *old_fp;
+    NEExeInfo                   *src_ne;
+    uint_32                     *src_debugoffset;
+    FILE                        *src_fp;
     size_t                      numread;
     unsigned                    i;
-    long                        oldoffset;
+    long                        src_offset;
     uint_16                     alignshift;
     uint_32                     end;
     uint_32                     tmp;
@@ -487,53 +485,53 @@ static RcStatus findEndOfResources( int *err_code )
     resource_record             nameinfo;
 
     end = 0;
-    oldoffset = Pass2Info.OldFile.WinHeadOffset;
-    oldneinfo = &Pass2Info.OldFile.u.NEInfo;
-    old_fp = Pass2Info.OldFile.fp;
-    debugoffset = &Pass2Info.OldFile.DebugOffset;
+    src_offset = Pass2Info.OldFile.WinHeadOffset;
+    src_ne = &Pass2Info.OldFile.u.NEInfo;
+    src_fp = Pass2Info.OldFile.fp;
+    src_debugoffset = &Pass2Info.OldFile.DebugOffset;
 
-    if( oldneinfo->WinHead.resource_off == oldneinfo->WinHead.resident_off ) {
+    if( src_ne->WinHead.resource_off == src_ne->WinHead.resident_off ) {
         return( RS_OK );
     }
 
-    if( RESSEEK( old_fp, oldneinfo->WinHead.resource_off + oldoffset, SEEK_SET ) ) {
+    if( RESSEEK( src_fp, src_ne->WinHead.resource_off + src_offset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    numread = RESREAD( old_fp, &alignshift, sizeof( alignshift ) );
+    numread = RESREAD( src_fp, &alignshift, sizeof( alignshift ) );
     if( numread != sizeof( alignshift ) ) {
         *err_code = errno;
-        return( RESIOERR( old_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     alignshift = 1 << alignshift;
 
-    numread = RESREAD( old_fp, &typeinfo, sizeof( typeinfo ) );
+    numread = RESREAD( src_fp, &typeinfo, sizeof( typeinfo ) );
     if( numread != sizeof( typeinfo ) )  {
         *err_code = errno;
-        return( RESIOERR( old_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     while( typeinfo.type != 0 ) {
         for( i = typeinfo.num_resources; i > 0 ; --i ) {
-            numread = RESREAD( old_fp, &nameinfo, sizeof( nameinfo ) );
+            numread = RESREAD( src_fp, &nameinfo, sizeof( nameinfo ) );
             if( numread != sizeof( nameinfo ) ) {
                 *err_code = errno;
-                return( RESIOERR( old_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+                return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
             }
             tmp = nameinfo.offset + nameinfo.length;
             if( tmp > end ) {
                 end = tmp;
             }
         }
-        numread = RESREAD( old_fp, &typeinfo, sizeof( typeinfo ) );
+        numread = RESREAD( src_fp, &typeinfo, sizeof( typeinfo ) );
         if( numread != sizeof( typeinfo ) ) {
             *err_code = errno;
-            return( RESIOERR( old_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
     }
     end *= alignshift;
-    if( end > *debugoffset ) {
-        *debugoffset = end;
+    if( end > *src_debugoffset ) {
+        *src_debugoffset = end;
     }
     return( RS_OK );
 }
@@ -544,7 +542,7 @@ static RcStatus findEndOfResources( int *err_code )
  */
 static RcStatus writePEHeadAndObjTable( void )
 {
-    ExeFileInfo     *tmp;
+    ExeFileInfo     *dst;
     pe_object       *last_object;
     int             i;
     uint_32         image_size;
@@ -552,26 +550,26 @@ static RcStatus writePEHeadAndObjTable( void )
     unsigned_32     object_align;
     pe_exe_header   *pehdr;
 
-    tmp = &Pass2Info.TmpFile;
+    dst = &Pass2Info.TmpFile;
 
     /* adjust the image size in the header */
-    pehdr = tmp->u.PEInfo.WinHead;
+    pehdr = dst->u.PEInfo.WinHead;
     num_objects = pehdr->fheader.num_objects;
     object_align = PE( *pehdr, object_align );
-    last_object = &tmp->u.PEInfo.Objects[num_objects - 1];
+    last_object = &dst->u.PEInfo.Objects[num_objects - 1];
     image_size = last_object->rva + last_object->physical_size;
     image_size = ALIGN_VALUE( image_size, object_align );
     PE( *pehdr, image_size ) = image_size;
 
-    if( RESSEEK( tmp->fp, tmp->WinHeadOffset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
-    if( RESWRITE( tmp->fp, pehdr, PE_SIZE( *pehdr ) ) != PE_SIZE( *pehdr ) ) {
+    if( RESWRITE( dst->fp, pehdr, PE_SIZE( *pehdr ) ) != PE_SIZE( *pehdr ) ) {
         return( RS_WRITE_ERROR );
     }
 
     for( i = 0; i < num_objects; i++ ) {
-        if( RESWRITE( tmp->fp, tmp->u.PEInfo.Objects + i, sizeof( pe_object ) ) != sizeof( pe_object ) ) {
+        if( RESWRITE( dst->fp, dst->u.PEInfo.Objects + i, sizeof( pe_object ) ) != sizeof( pe_object ) ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -762,56 +760,56 @@ STOP_ERROR:
 
 static RcStatus updateDebugDirectory( void )
 {
-    ExeFileInfo         *tmp;
-    ExeFileInfo         *old;
-    pe_va               old_rva;
-    pe_va               tmp_rva;
+    ExeFileInfo         *dst;
+    ExeFileInfo         *src;
+    pe_va               src_rva;
+    pe_va               dst_rva;
     unsigned_32         debug_size;
-    long                old_offset;
-    long                tmp_offset;
+    long                src_offset;
+    long                dst_offset;
     size_t              numread;
     unsigned            debug_cnt;
     unsigned            read_cnt;
     size_t              read_size;
     unsigned            i;
     debug_directory     *entry;
-    pe_exe_header       *tmp_pehdr;
-    pe_exe_header       *old_pehdr;
+    pe_exe_header       *dst_pehdr;
+    pe_exe_header       *src_pehdr;
 
-    tmp = &Pass2Info.TmpFile;
-    old = &Pass2Info.OldFile;
-    tmp_pehdr = tmp->u.PEInfo.WinHead;
-    old_pehdr = old->u.PEInfo.WinHead;
-    tmp_rva = PE_DIRECTORY( *tmp_pehdr, PE_TBL_DEBUG ).rva;
-    debug_size = PE_DIRECTORY( *old_pehdr, PE_TBL_DEBUG ).size;
-    old_rva = PE_DIRECTORY( *old_pehdr, PE_TBL_DEBUG ).rva;
+    dst = &Pass2Info.TmpFile;
+    src = &Pass2Info.OldFile;
+    dst_pehdr = dst->u.PEInfo.WinHead;
+    src_pehdr = src->u.PEInfo.WinHead;
+    dst_rva = PE_DIRECTORY( *dst_pehdr, PE_TBL_DEBUG ).rva;
+    debug_size = PE_DIRECTORY( *src_pehdr, PE_TBL_DEBUG ).size;
+    src_rva = PE_DIRECTORY( *src_pehdr, PE_TBL_DEBUG ).rva;
 
-    if( old_rva == 0 )
+    if( src_rva == 0 )
         return( RS_OK );
-    old_offset = OffsetFromRVA( old, old_rva );
-    tmp_offset = OffsetFromRVA( tmp, tmp_rva );
-    if( old_offset == 0xFFFFFFFF || tmp_offset == 0xFFFFFFFF ) {
+    src_offset = OffsetFromRVA( src, src_rva );
+    dst_offset = OffsetFromRVA( dst, dst_rva );
+    if( src_offset == 0xFFFFFFFF || dst_offset == 0xFFFFFFFF ) {
         return( RS_BAD_FILE_FMT );
     }
-    if( RESSEEK( tmp->fp, tmp_offset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst_offset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
-    if( RESSEEK( old->fp, old_offset, SEEK_SET ) )
+    if( RESSEEK( src->fp, src_offset, SEEK_SET ) )
         return( RS_READ_ERROR );
     for( debug_cnt = debug_size / sizeof( debug_directory ); debug_cnt > 0; debug_cnt -= read_cnt ) {
         read_cnt = IO_BUFFER_SIZE / sizeof( debug_directory);
         if( read_cnt > debug_cnt )
             read_cnt = debug_cnt;
         read_size = read_cnt * sizeof( debug_directory );
-        numread = RESREAD( old->fp, Pass2Info.IoBuffer, read_size );
+        numread = RESREAD( src->fp, Pass2Info.IoBuffer, read_size );
         if( numread != read_size )
-            return( RESIOERR( old->fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( src->fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         entry = Pass2Info.IoBuffer;
         for( i = 0; i < read_cnt; i++ ) {
-            if( entry[i].data_seek >= old->DebugOffset ) {
-                entry[i].data_seek += tmp->DebugOffset - old->DebugOffset;
+            if( entry[i].data_seek >= src->DebugOffset ) {
+                entry[i].data_seek += dst->DebugOffset - src->DebugOffset;
             }
         }
-        if( RESWRITE( tmp->fp, Pass2Info.IoBuffer, read_size ) != read_size ) {
+        if( RESWRITE( dst->fp, Pass2Info.IoBuffer, read_size ) != read_size ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -906,43 +904,43 @@ STOP_ERROR:
  */
 static RcStatus writeLXHeadAndTables( void )
 {
-    ExeFileInfo     *tmp;
-    LXExeInfo       *lx_info;
+    ExeFileInfo     *dst;
+    LXExeInfo       *dst_lx;
     size_t          length;
     long            offset;
     unsigned        i;
 
-    tmp = &Pass2Info.TmpFile;
-    lx_info = &tmp->u.LXInfo;
+    dst = &Pass2Info.TmpFile;
+    dst_lx = &dst->u.LXInfo;
 
     offset = sizeof( os2_flat_header );
-    if( RESSEEK( tmp->fp, tmp->WinHeadOffset + offset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst->WinHeadOffset + offset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
     // write object table
-    length = lx_info->OS2Head.num_objects * sizeof( object_record );
-    if( RESWRITE( tmp->fp, lx_info->Objects, length ) != length )
+    length = dst_lx->OS2Head.num_objects * sizeof( object_record );
+    if( RESWRITE( dst->fp, dst_lx->Objects, length ) != length )
         return( RS_WRITE_ERROR );
 
     // write page table
     offset += length;
-    length = lx_info->OS2Head.num_pages * sizeof( lx_map_entry );
-    if( RESWRITE( tmp->fp, lx_info->Pages, length ) != length )
+    length = dst_lx->OS2Head.num_pages * sizeof( lx_map_entry );
+    if( RESWRITE( dst->fp, dst_lx->Pages, length ) != length )
         return( RS_WRITE_ERROR );
 
     // write resource table
     offset += length;
-    for( i = 0; i < lx_info->OS2Head.num_rsrcs; ++i ) {
-        if( RESWRITE( tmp->fp, &lx_info->Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
+    for( i = 0; i < dst_lx->OS2Head.num_rsrcs; ++i ) {
+        if( RESWRITE( dst->fp, &dst_lx->Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
             return( RS_WRITE_ERROR );
         }
     }
 
     // finally write LX header
-    if( RESSEEK( tmp->fp, tmp->WinHeadOffset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
-    if( RESWRITE( tmp->fp, &lx_info->OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
+    if( RESWRITE( dst->fp, &dst_lx->OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
         return( RS_WRITE_ERROR );
 
     return( RS_OK );
@@ -955,37 +953,37 @@ static RcStatus writeLXHeadAndTables( void )
  */
 static RcStatus copyLXNonresData( void )
 {
-    ExeFileInfo         *old;
-    ExeFileInfo         *tmp;
-    os2_flat_header     *old_head;
-    os2_flat_header     *new_head;
+    ExeFileInfo         *src;
+    ExeFileInfo         *dst;
+    os2_flat_header     *src_head;
+    os2_flat_header     *dst_head;
     RcStatus            ret;
 
-    old = &(Pass2Info.OldFile);
-    tmp = &(Pass2Info.TmpFile);
-    old_head = &old->u.LXInfo.OS2Head;
-    new_head = &tmp->u.LXInfo.OS2Head;
+    src = &(Pass2Info.OldFile);
+    dst = &(Pass2Info.TmpFile);
+    src_head = &src->u.LXInfo.OS2Head;
+    dst_head = &dst->u.LXInfo.OS2Head;
 
-    new_head->nonres_size = old_head->nonres_size;
-    new_head->nonres_cksum = old_head->nonres_cksum;
+    dst_head->nonres_size = src_head->nonres_size;
+    dst_head->nonres_cksum = src_head->nonres_cksum;
 
-    if( old_head->nonres_size == 0 ) {
-        new_head->nonres_off = 0;
+    if( src_head->nonres_size == 0 ) {
+        dst_head->nonres_off = 0;
         return( RS_OK );
     }
 
     // DebugOffset is pointing to the current EOF
-    new_head->nonres_off = tmp->DebugOffset;
+    dst_head->nonres_off = dst->DebugOffset;
 
-    if( RESSEEK( old->fp, old_head->nonres_off, SEEK_SET ) )
+    if( RESSEEK( src->fp, src_head->nonres_off, SEEK_SET ) )
         return( RS_READ_ERROR );
-    if( RESSEEK( tmp->fp, tmp->DebugOffset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst->DebugOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
-    ret = CopyExeData( Pass2Info.OldFile.fp, Pass2Info.TmpFile.fp, old_head->nonres_size );
+    ret = CopyExeData( Pass2Info.OldFile.fp, Pass2Info.TmpFile.fp, src_head->nonres_size );
 
-    // Make DebugOffset point to new EOF
-    CheckDebugOffset( tmp );
+    // Make DebugOffset point to dst EOF
+    CheckDebugOffset( dst );
     return( ret );
 } /* copyLXNonresData */
 
@@ -996,29 +994,29 @@ static RcStatus copyLXNonresData( void )
  */
 static RcStatus copyLXDebugInfo( void )
 {
-    ExeFileInfo         *old;
-    ExeFileInfo         *tmp;
-    os2_flat_header     *old_head;
-    os2_flat_header     *new_head;
+    ExeFileInfo         *src;
+    ExeFileInfo         *dst;
+    os2_flat_header     *src_head;
+    os2_flat_header     *dst_head;
 
-    old = &(Pass2Info.OldFile);
-    tmp = &(Pass2Info.TmpFile);
-    old_head = &old->u.LXInfo.OS2Head;
-    new_head = &tmp->u.LXInfo.OS2Head;
+    src = &(Pass2Info.OldFile);
+    dst = &(Pass2Info.TmpFile);
+    src_head = &src->u.LXInfo.OS2Head;
+    dst_head = &dst->u.LXInfo.OS2Head;
 
-    if( old_head->debug_len == 0 ) {
-        new_head->debug_off = 0;
-        new_head->debug_len = 0;
+    if( src_head->debug_len == 0 ) {
+        dst_head->debug_off = 0;
+        dst_head->debug_len = 0;
         return( RS_OK );
     }
-    new_head->debug_off = tmp->DebugOffset;
-    new_head->debug_len = old_head->debug_len;
+    dst_head->debug_off = dst->DebugOffset;
+    dst_head->debug_len = src_head->debug_len;
 
-    if( RESSEEK( old->fp, old_head->debug_off, SEEK_SET ) )
+    if( RESSEEK( src->fp, src_head->debug_off, SEEK_SET ) )
         return( RS_READ_ERROR );
-    if( RESSEEK( tmp->fp, tmp->DebugOffset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst->DebugOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
-    return( CopyExeDataTilEOF( old->fp, tmp->fp ) );
+    return( CopyExeDataTilEOF( src->fp, dst->fp ) );
 } /* copyLXDebugInfo */
 
 
@@ -1040,7 +1038,7 @@ bool MergeResExeLX( ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = CopyLXExeObjects();
+    error = CopyLXExeObjects( &Pass2Info.OldFile, &Pass2Info.TmpFile );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )

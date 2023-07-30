@@ -45,8 +45,9 @@ bool RcBuildLXResourceObjects( ResFileInfo *res )
     return( true );
 }
 
-bool CopyLXExeObjects( void )
+bool CopyLXExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
 {
+    /* unused parameters */ (void)src; (void)dst;
     return( true );
 }
 

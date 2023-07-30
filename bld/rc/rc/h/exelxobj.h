@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,6 @@
 #ifndef EXELXOBJ_H_INCLUDED
 #define EXELXOBJ_H_INCLUDED
 
-extern bool CopyLXExeObjects( void );
+extern bool CopyLXExeObjects( ExeFileInfo *src, ExeFileInfo *dst );
 
 #endif
