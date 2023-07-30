@@ -291,8 +291,10 @@ static bool RcIoPushTextInputFile( const char *filename )
      * save current input file position
      * it is used for switching/reopenning input file
      */
-    InStack.Current->Offset = ftell( InStack.Current->fp ) - InStack.BufferSize
+    if( InStack.Current != InStack.Stack ) {
+        InStack.Current->Offset = ftell( InStack.Current->fp ) - InStack.BufferSize
                                          + ( InStack.NextChar - InStack.Buffer );
+    }
     InStack.Current++;
 
     /* open file and set up the file info */
