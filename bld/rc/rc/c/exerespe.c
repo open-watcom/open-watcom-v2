@@ -504,7 +504,6 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
 //    pe_va           start_rva;
     uint_32         start_off;
     RcStatus        ret;
-    bool            tmpopened;
 
 //    start_rva = tmp->u.PEInfo.Res.ResRVA + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
     start_off = tmp->u.PEInfo.Res.ResOffset + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
@@ -524,23 +523,16 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
         ret = RS_OK;
         for( ; resfiles != NULL; resfiles = resfiles->next ) {
             copy_info.curres = resfiles;
-            if( resfiles->IsOpen ) {
-                tmpopened = false;
+            if( resfiles->fp != NULL ) {
+                ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
             } else {
+                ret = RS_OPEN_ERROR;
                 resfiles->fp = ResOpenFileRO( resfiles->name );
-                if( resfiles->fp == NULL ) {
-                    ret = RS_OPEN_ERROR;
-                    *errres = resfiles;
-                    break;
+                if( resfiles->fp != NULL ) {
+                    ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
+                    ResCloseFile( resfiles->fp );
+                    resfiles->fp = NULL;
                 }
-                resfiles->IsOpen = true;
-                tmpopened = true;
-            }
-            ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
-            if( tmpopened ) {
-                ResCloseFile( resfiles->fp );
-                resfiles->fp = NULL;
-                resfiles->IsOpen = false;
             }
             if( ret != RS_OK ) {
                 *errres = resfiles;

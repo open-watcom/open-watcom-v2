@@ -57,9 +57,9 @@ static ErrFrame         errFromWres;
 static void closeAResFile( ResFileInfo *res )
 /*******************************************/
 {
-    if( res->IsOpen ) {
+    if( res->fp ) {
         ResCloseFile( res->fp );
-        res->IsOpen = false;
+        res->fp = NULL;
     }
     if( res->Dir != NULL ) {
         WResFreeDir( res->Dir );
@@ -92,10 +92,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         resfile->fp = ResOpenFileRO( resfile->name );
         if( resfile->fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
-            resfile->IsOpen = false;
             goto HANDLE_ERROR;
-        } else {
-            resfile->IsOpen = true;
         }
         error = WResReadDir2( resfile->fp, resfile->Dir, &dup_discarded, resfile );
         if( error ) {
@@ -113,7 +110,6 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
             goto HANDLE_ERROR;
         }
         if( rescnt >= MAX_OPEN_RESFILES ) {
-            resfile->IsOpen = false;
             ResCloseFile( resfile->fp );
             resfile->fp = NULL;
             *allopen = false;

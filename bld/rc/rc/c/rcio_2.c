@@ -108,7 +108,6 @@ static bool OpenResFileInfo( ExeType type )
         Pass2Info.ResFile = RESALLOC( sizeof( ResFileInfo ) );
         Pass2Info.ResFile->next = NULL;
         Pass2Info.ResFile->name = NULL;
-        Pass2Info.ResFile->IsOpen = false;
         Pass2Info.ResFile->fp = NULL;
         Pass2Info.ResFile->Dir = NULL;
         return( true );
