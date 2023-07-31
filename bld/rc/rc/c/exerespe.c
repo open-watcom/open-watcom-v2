@@ -221,10 +221,10 @@ static bool PEResDirAddData( PEResDirEntry *entry, WResID *name,
     return( false );
 }
 
-static bool AddType( PEResDir *res, WResTypeInfo *type )
-/******************************************************/
+static bool AddType( PEResDir *res, WResTypeInfo *typeinfo )
+/**********************************************************/
 {
-    return( PEResDirAddDir( &res->Root, &type->TypeName, type->NumResources, &res->String ) );
+    return( PEResDirAddDir( &res->Root, &typeinfo->TypeName, typeinfo->NumResources, &res->String ) );
 }
 
 static bool AddLang( PEResDir *res, WResDirWindow wind )
@@ -459,7 +459,7 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
 /******************************************************************/
 {
     CopyResInfo         *copy_info = _copy_info;
-    WResLangInfo        *res_info;
+    WResLangInfo        *langinfo;
     uint_32             diff;
     RcStatus            ret;
     ResFileInfo         *info;
@@ -469,18 +469,18 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
     if( !entry->IsDirEntry ) {
         info = WResGetFileInfo( entry->u.Data.Wind );
         if( copy_info->curres == NULL || copy_info->curres == info ) {
-            res_info = WResGetLangInfo( entry->u.Data.Wind );
-            if( RESSEEK( info->fp, res_info->Offset, SEEK_SET ) )
+            langinfo = WResGetLangInfo( entry->u.Data.Wind );
+            if( RESSEEK( info->fp, langinfo->Offset, SEEK_SET ) )
                 return( RS_READ_ERROR );
-            ret = CopyExeData( info->fp, copy_info->to_fp, res_info->Length );
+            ret = CopyExeData( info->fp, copy_info->to_fp, langinfo->Length );
             if( ret != RS_OK ) {
                 copy_info->errres = info;
                 return( ret );
             }
-            diff = ALIGN_VALUE( res_info->Length, sizeof( uint_32 ) );
-            if( diff > res_info->Length ) {
+            diff = ALIGN_VALUE( langinfo->Length, sizeof( uint_32 ) );
+            if( diff > langinfo->Length ) {
                 /* add the padding */
-                if( RcPadFile( copy_info->to_fp, (size_t)( diff - res_info->Length ) ) ) {
+                if( RcPadFile( copy_info->to_fp, (size_t)( diff - langinfo->Length ) ) ) {
                     return( RS_WRITE_ERROR );
                 }
             }

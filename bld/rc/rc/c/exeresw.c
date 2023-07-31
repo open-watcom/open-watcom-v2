@@ -86,12 +86,12 @@ uint_32 ComputeWINResourceSize( WResDir dir )
 {
     uint_32         length;
     WResDirWindow   wind;
-    WResLangInfo    *res;
+    WResLangInfo    *langinfo;
 
     length = 0;
     for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
-        res = WResGetLangInfo( wind );
-        length += res->Length;
+        langinfo = WResGetLangInfo( wind );
+        length += langinfo->Length;
     }
     return( length );
 } /* ComputeWINResourceSize */
@@ -117,7 +117,7 @@ static uint_16 findResOrTypeName( ResTable *restab, WResID *name )
 } /* findResOrTypeName */
 
 static FullTypeRecord *addExeTypeRecord( ResTable *restab,
-                            WResTypeInfo *type )
+                            WResTypeInfo *typeinfo )
 /********************************************************/
 {
     FullTypeRecord      *exe_type;
@@ -125,8 +125,8 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
     exe_type = RESALLOC( sizeof( FullTypeRecord ) );
 
     exe_type->Info.reserved = 0;
-    exe_type->Info.num_resources = type->NumResources;
-    exe_type->Info.type = findResOrTypeName( restab, &(type->TypeName) );
+    exe_type->Info.num_resources = typeinfo->NumResources;
+    exe_type->Info.type = findResOrTypeName( restab, &(typeinfo->TypeName) );
     exe_type->Head = NULL;
     exe_type->Tail = NULL;
     exe_type->Next = NULL;
@@ -139,24 +139,24 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 } /* addExeTypeRecord */
 
 static FullTypeRecord *findExeTypeRecord( ResTable *restab,
-                            WResTypeInfo *type )
+                            WResTypeInfo *typeinfo )
 /*********************************************************/
 {
     FullTypeRecord      *exe_type;
     StringItem16        *exe_type_name;
 
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
-        if( type->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
+        if( typeinfo->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
             /* if they are both names */
             exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock
                                + (exe_type->Info.type - restab->Dir.TableSize));
-            if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
-              && strnicmp( exe_type_name->Name, type->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {
+            if( exe_type_name->NumChars == typeinfo->TypeName.ID.Name.NumChars
+              && strnicmp( exe_type_name->Name, typeinfo->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {
                 break;
             }
-        } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
+        } else if( !(typeinfo->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
             /* if they are both numbers */
-            if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
+            if( typeinfo->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
                 break;
             }
         }
@@ -164,7 +164,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
 
     if( exe_type == NULL ) {
         /* this is a new type */
-        exe_type = addExeTypeRecord( restab, type );
+        exe_type = addExeTypeRecord( restab, typeinfo );
     }
 
     return( exe_type );
@@ -192,7 +192,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 } /* addExeResRecord */
 
 static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
-            WResLangInfo *lang, WResResInfo *res, FILE *res_fp,
+            WResLangInfo *langinfo, WResResInfo *resinfo, FILE *res_fp,
             FILE *out_fp, int shift_count, int *err_code )
 /**********************************************************************/
 {
@@ -218,13 +218,13 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
 
     if( ret == RS_OK ) {
-        if( RESSEEK( res_fp, lang->Offset, SEEK_SET ) ) {
+        if( RESSEEK( res_fp, langinfo->Offset, SEEK_SET ) ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
     }
     if( ret == RS_OK ) {
-        ret = CopyExeData( res_fp, out_fp, lang->Length );
+        ret = CopyExeData( res_fp, out_fp, langinfo->Length );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
@@ -234,8 +234,8 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
 
     if( ret == RS_OK ) {
-        addExeResRecord( restab, type, &(res->ResName), lang->MemoryFlags,
-                out_offset >> shift_count, (lang->Length + align_amount) >> shift_count );
+        addExeResRecord( restab, type, &(resinfo->ResName), langinfo->MemoryFlags,
+                out_offset >> shift_count, (langinfo->Length + align_amount) >> shift_count );
     }
 
     return( ret );
@@ -254,8 +254,8 @@ RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask
     WResDirWindow       wind;
     ResTable            *restab;
     FullTypeRecord      *exe_type;
-    WResResInfo         *wres;
-    WResLangInfo        *lang;
+    WResResInfo         *resinfo;
+    WResLangInfo        *langinfo;
     FILE                *tmp_fp;
     FILE                *res_fp;
     RcStatus            ret;
@@ -275,15 +275,15 @@ RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask
             exe_type = findExeTypeRecord( restab, WResGetTypeInfo( wind ) );
         }
 
-        wres = WResGetResInfo( wind );
-        lang = WResGetLangInfo( wind );
+        resinfo = WResGetResInfo( wind );
+        langinfo = WResGetLangInfo( wind );
 
         /* if the bits are unequal and this is section 1 --> copy segment */
         /* if the bits are equal and this is section 2   --> copy segment */
         /* otherwise                                     --> do nothing */
 
-        if( ARE_BITS_EQUAL( sect2mask, sect2bits, lang->MemoryFlags ) == sect2 ) {
-            ret = copyOneResource( restab, exe_type, lang, wres, res_fp,
+        if( ARE_BITS_EQUAL( sect2mask, sect2bits, langinfo->MemoryFlags ) == sect2 ) {
+            ret = copyOneResource( restab, exe_type, langinfo, resinfo, res_fp,
                                     tmp_fp, restab->Dir.ResShiftCount, &err_code );
         }
 

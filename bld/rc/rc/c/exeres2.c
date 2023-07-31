@@ -53,9 +53,9 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
 /**************************************************************/
 {
     WResDirWindow   wind;
-    WResLangInfo    *lang;
+    WResLangInfo    *langinfo;
     OS2ResEntry     *entry;
-    WResTypeInfo    *res_type;
+    WResTypeInfo    *typeinfo;
     WResResInfo     *resinfo;
     uint_16         type_id;
     uint_16         name_id;
@@ -65,19 +65,19 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
 
     /* Walk through the WRes directory */
     for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
-        lang = WResGetLangInfo( wind );
-        res_type = WResGetTypeInfo( wind );
+        langinfo = WResGetLangInfo( wind );
+        typeinfo = WResGetTypeInfo( wind );
         resinfo  = WResGetResInfo( wind );
 
         // RT_DEFAULTICON is not written into the executable, ignore
-        if( res_type->TypeName.ID.Num == OS2_RT_DEFAULTICON ) {
+        if( typeinfo->TypeName.ID.Num == OS2_RT_DEFAULTICON ) {
             wind = WResNextResource( wind, dir );
             continue;
         }
 
         type_id = 0;
-        if( !res_type->TypeName.IsName )
-            type_id = res_type->TypeName.ID.Num;
+        if( !typeinfo->TypeName.IsName )
+            type_id = typeinfo->TypeName.ID.Num;
 
         name_id = 0;
         if( !resinfo->ResName.IsName )
@@ -87,20 +87,20 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
         entry->res_type   = type_id;
         entry->res_id     = name_id;
         entry->wind       = wind;
-        entry->mem_flags  = lang->MemoryFlags;
+        entry->mem_flags  = langinfo->MemoryFlags;
         entry->seg_length = 0;  /* Zero means 64K */
         entry->first_part = true;
 
-        for( length = lang->Length; length > 0x10000; length -= 0x10000 ) {
+        for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
             entry->res_type   = type_id;
             entry->res_id     = name_id;
             entry->wind       = wind;
-            entry->mem_flags  = lang->MemoryFlags;
+            entry->mem_flags  = langinfo->MemoryFlags;
             entry->seg_length = 0;
             entry->first_part = false;
         }
-        entry->seg_length = lang->Length % 0x10000;
+        entry->seg_length = langinfo->Length % 0x10000;
         entry++;
     }
 }
@@ -161,19 +161,19 @@ uint_32 ComputeOS2ResSegCount( WResDir dir )
 {
     uint_32         length;
     WResDirWindow   wind;
-    WResTypeInfo    *res_type;
-    WResLangInfo    *res;
+    WResTypeInfo    *typeinfo;
+    WResLangInfo    *langinfo;
     uint_32         num_res_segs;
 
     num_res_segs = 0;
     for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
-        res = WResGetLangInfo( wind );
-        res_type = WResGetTypeInfo( wind );
+        langinfo = WResGetLangInfo( wind );
+        typeinfo = WResGetTypeInfo( wind );
 
         // RT_DEFAULTICON is not written into the executable, ignore
-        if( res_type->TypeName.ID.Num != OS2_RT_DEFAULTICON ) {
+        if( typeinfo->TypeName.ID.Num != OS2_RT_DEFAULTICON ) {
             ++num_res_segs;
-            for( length = res->Length; length > 0x10000; length -= 0x10000 ) {
+            for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
                 ++num_res_segs;
             }
         }
@@ -186,7 +186,7 @@ uint_32 ComputeOS2ResSegCount( WResDir dir )
  * This is fine because all segments but the last one are 64K big, and
  * hence will be nicely aligned.
  */
-static RcStatus copyOneResource( WResLangInfo *lang, FILE *res_fp,
+static RcStatus copyOneResource( WResLangInfo *langinfo, FILE *res_fp,
             FILE *out_fp, int shift_count, int *err_code )
 /*****************************************************************/
 {
@@ -211,13 +211,13 @@ static RcStatus copyOneResource( WResLangInfo *lang, FILE *res_fp,
     }
 
     if( ret == RS_OK ) {
-        if( RESSEEK( res_fp, lang->Offset, SEEK_SET ) ) {
+        if( RESSEEK( res_fp, langinfo->Offset, SEEK_SET ) ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
     }
     if( ret == RS_OK ) {
-        ret = CopyExeData( res_fp, out_fp, lang->Length );
+        ret = CopyExeData( res_fp, out_fp, langinfo->Length );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
@@ -235,7 +235,7 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
     OS2ResEntry         *entry;
     WResDirWindow       wind;
     OS2ResTable         *restab;
-    WResLangInfo        *lang;
+    WResLangInfo        *langinfo;
     FILE                *tmp_fp;
     FILE                *res_fp;
     RcStatus            ret;
@@ -270,7 +270,7 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
     /* Walk through the resource entries */
     for( i = 0; i < restab->num_res_segs; i++, entry++, tmpseg++ ) {
         wind = entry->wind;
-        lang = WResGetLangInfo( wind );
+        langinfo = WResGetLangInfo( wind );
 
         if( entry->first_part ) {
             seg_offset = RESTELL( tmp_fp );
@@ -297,7 +297,7 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
             continue;
 
         /* Copy resource data */
-        ret = copyOneResource( lang, res_fp, tmp_fp, shift_count, &err_code );
+        ret = copyOneResource( langinfo, res_fp, tmp_fp, shift_count, &err_code );
         if( ret != RS_OK )
             break;
 

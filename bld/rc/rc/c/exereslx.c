@@ -62,13 +62,13 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
 {
     LXResEntry      *new_entry;
     WResResInfo     *resinfo;
-    WResLangInfo    *res_lang;
-    WResTypeInfo    *res_type;
+    WResLangInfo    *langinfo;
+    WResTypeInfo    *typeinfo;
 
-    res_type = WResGetTypeInfo( wind );
+    typeinfo = WResGetTypeInfo( wind );
 
     // RT_DEFAULTICON is not written into the executable, ignore
-    if( res_type->TypeName.ID.Num == OS2_RT_DEFAULTICON )
+    if( typeinfo->TypeName.ID.Num == OS2_RT_DEFAULTICON )
         return( false );
 
     /* realloc resource table if necessary (with 32 entries per increment
@@ -87,23 +87,23 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
     }
 
     resinfo  = WResGetResInfo( wind );
-    res_lang = WResGetLangInfo( wind );
+    langinfo = WResGetLangInfo( wind );
 
     /* add new resource entry into table */
     new_entry = &res->resources[res->res_count - 1];
 
     new_entry->wind = wind;
-    new_entry->mem_flags = res_lang->MemoryFlags;
+    new_entry->mem_flags = langinfo->MemoryFlags;
     new_entry->assigned = false;
-    new_entry->resource.res_size = res_lang->Length;
+    new_entry->resource.res_size = langinfo->Length;
 
     assert( !resinfo->ResName.IsName );
-    assert( !res_type->TypeName.IsName );
+    assert( !typeinfo->TypeName.IsName );
 
-    new_entry->resource.type_id = res_type->TypeName.ID.Num;
+    new_entry->resource.type_id = typeinfo->TypeName.ID.Num;
     new_entry->resource.name_id = resinfo->ResName.ID.Num;
     new_entry->resource.object = 0;
-    new_entry->resource.offset = res_lang->Offset;
+    new_entry->resource.offset = langinfo->Offset;
 
     return( false );
 }
@@ -154,7 +154,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
 /*******************************************************************/
 {
     RcStatus        ret;
-    WResLangInfo    *res_info;
+    WResLangInfo    *langinfo;
     LXResTable      *dir;
     LXResEntry      *entry;
     lx_map_entry    *map;
@@ -213,11 +213,11 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
         if( RESSEEK( exe->fp, file_offset, SEEK_SET ) )
             return( RS_WRITE_ERROR );
 
-        res_info = WResGetLangInfo( entry->wind );
-        if( RESSEEK( res->fp, res_info->Offset, SEEK_SET ) )
+        langinfo = WResGetLangInfo( entry->wind );
+        if( RESSEEK( res->fp, langinfo->Offset, SEEK_SET ) )
             return( RS_READ_ERROR );
 
-        ret = CopyExeData( res->fp, exe->fp, res_info->Length );
+        ret = CopyExeData( res->fp, exe->fp, langinfo->Length );
         if( ret != RS_OK ) {
             return( ret );
         }

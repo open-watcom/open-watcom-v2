@@ -172,8 +172,8 @@ static RcStatus copyOneObject( FILE *src_fp, pe_object *src_obj,
     return( CopyExeData( src_fp, dst_fp, src_obj->physical_size ) );
 }
 
-bool CopyExeObjects( ExeFileInfo *src, ExeFileInfo *dst  )
-/********************************************************/
+bool CopyExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
+/*******************************************************/
 {
     pe_object *     src_obj;
     pe_object *     dst_obj;

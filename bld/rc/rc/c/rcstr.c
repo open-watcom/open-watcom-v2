@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,8 +77,8 @@ static size_t InitStringList( WResDir dir, void **list, size_t len )
 /* The list will be a list of pointers to WResIDName's */
 {
     WResDirWindow   wind;
-    WResTypeInfo    *type;
-    WResResInfo     *res;
+    WResTypeInfo    *typeinfo;
+    WResResInfo     *resinfo;
     void            **element;
 
     wind = WResFirstResource( dir );
@@ -86,21 +86,21 @@ static size_t InitStringList( WResDir dir, void **list, size_t len )
 
     while( !WResIsEmptyWindow( wind ) ) {
         if( WResIsFirstResOfType( wind ) ) {
-            type = WResGetTypeInfo( wind );
-            if( type->TypeName.IsName ) {
+            typeinfo = WResGetTypeInfo( wind );
+            if( typeinfo->TypeName.IsName ) {
                 if( len == 0 )
                     return( 0 );      /* should never occur */
-                *element = &(type->TypeName.ID.Name);
+                *element = &(typeinfo->TypeName.ID.Name);
                 element++;
                 len--;
             }
         }
         if( WResIsFirstLangOfRes( wind ) ) {
-            res = WResGetResInfo( wind );
-            if( res->ResName.IsName ) {
+            resinfo = WResGetResInfo( wind );
+            if( resinfo->ResName.IsName ) {
                 if( len == 0 )
                     return( 0 );      /* should never occur */
-                *element = &(res->ResName.ID.Name);
+                *element = &(resinfo->ResName.ID.Name);
                 element++;
                 len--;
             }
