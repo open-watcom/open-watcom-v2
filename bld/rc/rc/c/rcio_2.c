@@ -227,32 +227,37 @@ bool RcPass2IoInit( void )
 /************************/
 {
     bool    noerror;
+    ExeFileInfo         *src;
+    ExeFileInfo         *dst;
+
+    dst = &(Pass2Info.TmpFile);
+    src = &(Pass2Info.OldFile);
 
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
 
-    noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
+    noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, src );
     if( noerror ) {
-        Pass2Info.TmpFile.name = TMPFILE2;
-        Pass2Info.TmpFile.fp = ResOpenFileTmp( NULL );
-        if( Pass2Info.TmpFile.fp == NULL ) {
-            RcError( ERR_OPENING_TMP, Pass2Info.TmpFile.name, strerror( errno ) );
+        dst->name = TMPFILE2;
+        dst->fp = ResOpenFileTmp( NULL );
+        if( dst->fp == NULL ) {
+            RcError( ERR_OPENING_TMP, dst->name, strerror( errno ) );
             noerror = false;
         }
     }
     if( noerror ) {
-        Pass2Info.TmpFile.Type = Pass2Info.OldFile.Type;
-        Pass2Info.TmpFile.WinHeadOffset = Pass2Info.OldFile.WinHeadOffset;
-        if( Pass2Info.OldFile.Type == EXE_TYPE_PE ) {
-            Pass2Info.TmpFile.u.PEInfo.WinHead = &Pass2Info.TmpFile.u.PEInfo.WinHeadData;
-            *Pass2Info.TmpFile.u.PEInfo.WinHead = *Pass2Info.OldFile.u.PEInfo.WinHead;
+        dst->Type = src->Type;
+        dst->WinHeadOffset = src->WinHeadOffset;
+        if( src->Type == EXE_TYPE_PE ) {
+            dst->u.PEInfo.WinHead = &dst->u.PEInfo.WinHeadData;
+            *dst->u.PEInfo.WinHead = *src->u.PEInfo.WinHead;
         }
-        if( ( Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2 )
+        if( ( src->Type == EXE_TYPE_NE_WIN || src->Type == EXE_TYPE_NE_OS2 )
           && CmdLineParms.ExtraResFiles != NULL ) {
             RcError( ERR_FR_NOT_VALID_FOR_WIN );
             noerror = false;
         } else {
-            noerror = OpenResFileInfo( Pass2Info.OldFile.Type );
+            noerror = OpenResFileInfo( src->Type );
         }
     }
     return( noerror );

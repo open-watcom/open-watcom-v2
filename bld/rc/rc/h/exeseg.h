@@ -42,10 +42,10 @@ typedef enum {
     CPSEG_ERROR
 } CpSegRc;
 
-extern RcStatus AllocAndReadWINSegTables( int *err_code );
-extern RcStatus AllocAndReadOS2SegTables( ResFileInfo *res, int *err_code );
+extern RcStatus AllocAndReadWINSegTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_code );
+extern RcStatus AllocAndReadOS2SegTables( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res, int *err_code );
 extern uint_32 ComputeSegmentSize( FILE *fp, SegTable *, int shift_count );
-extern CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
-extern CpSegRc CopyOS2Segments( void );
+extern CpSegRc CopyWINSegments( ExeFileInfo *src, ExeFileInfo *dst, uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
+extern CpSegRc CopyOS2Segments( ExeFileInfo *src, ExeFileInfo *dst );
 
 #endif

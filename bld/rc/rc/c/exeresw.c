@@ -43,15 +43,15 @@
 #include "clibext.h"
 
 
-void InitWINResTable( ResFileInfo *res )
-/**************************************/
+void InitWINResTable( ExeFileInfo *dst, ResFileInfo *res )
+/********************************************************/
 {
     ExeResDir           *resdir;
     StringsBlock        *str;
     WResDir             dir;
 
-    resdir = &(Pass2Info.TmpFile.u.NEInfo.Res.Dir);
-    str = &(Pass2Info.TmpFile.u.NEInfo.Res.Str);
+    resdir = &(dst->u.NEInfo.Res.Dir);
+    str = &(dst->u.NEInfo.Res.Str);
     dir = res->Dir;
 
     if( CmdLineParms.NoResFile ) {
@@ -241,8 +241,8 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     return( ret );
 } /* copyOneResource */
 
-RcStatus CopyWINResources( ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
-/**********************************************************************************************
+RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
+/****************************************************************************************************************
  * Note: sect2 must be either 1 (do section 2) or 0 (do section 1)
  * CopyWINResources should be called twice, once with sect2 false, and once with
  * it true. The values of sect2mask and sect2bits should be the same for both
@@ -262,8 +262,8 @@ RcStatus CopyWINResources( ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bit
     int                 err_code;
 
     dir = res->Dir;
-    restab = &(Pass2Info.TmpFile.u.NEInfo.Res);
-    tmp_fp = Pass2Info.TmpFile.fp;
+    restab = &(dst->u.NEInfo.Res);
+    tmp_fp = dst->fp;
     res_fp = res->fp;
     ret = RS_OK;
     err_code = 0;
@@ -290,12 +290,12 @@ RcStatus CopyWINResources( ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bit
         if( ret != RS_OK )
             break;
 
-        CheckDebugOffset( &(Pass2Info.TmpFile) );
+        CheckDebugOffset( dst );
     }
 
     switch( ret ) {
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_FILE, Pass2Info.TmpFile.name, strerror( err_code ) );
+        RcError( ERR_WRITTING_FILE, dst->name, strerror( err_code ) );
         break;
     case RS_READ_ERROR:
         RcError( ERR_READING_RES, CmdLineParms.OutResFileName, strerror( err_code ) );

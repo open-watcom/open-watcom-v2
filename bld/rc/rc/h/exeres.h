@@ -33,13 +33,13 @@
 #ifndef EXERES_INCLUDED
 #define EXERES_INCLUDED
 
-extern void     InitWINResTable( ResFileInfo *res );
+extern void     InitWINResTable( ExeFileInfo *dst, ResFileInfo *res );
 extern uint_32  ComputeWINResourceSize( WResDir dir );
-extern RcStatus CopyWINResources( ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
+extern RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
 extern RcStatus WriteWINResTable( FILE *fp, ResTable *restab, int *err_code );
-extern RcStatus InitOS2ResTable( ResFileInfo *res, int *err_code );
+extern RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code );
 extern uint_32  ComputeOS2ResSegCount( WResDir dir );
-extern RcStatus CopyOS2Resources( ResFileInfo *res );
+extern RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res );
 extern RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code );
 
 #endif

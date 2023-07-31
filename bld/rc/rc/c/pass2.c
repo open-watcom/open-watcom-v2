@@ -207,7 +207,7 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     /* third arg to Copy???? is false --> copy section one */
     gangloadstart = RESTELL( dst->fp );
     gangloadstart += AlignAmount( gangloadstart, dst_ne->Res.Dir.ResShiftCount );
-    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, false );
+    copy_segs_ret = CopyWINSegments( src, dst, sect2mask, sect2bits, false );
     switch( copy_segs_ret ) {
     case CPSEG_SEG_TOO_BIG:
         if( use_gangload ) {
@@ -222,19 +222,19 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         break;
     }
     if( ! CmdLineParms.NoResFile ) {
-        if( CopyWINResources( res, sect2mask, sect2bits, false ) != RS_OK ) {
+        if( CopyWINResources( dst, res, sect2mask, sect2bits, false ) != RS_OK ) {
             return( true );
         }
     }
     gangloadlen = RESTELL( dst->fp ) - gangloadstart;
 
     /* third arg to Copy???? is true  --> copy section two */
-    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, true );
+    copy_segs_ret = CopyWINSegments( src, dst, sect2mask, sect2bits, true );
     if( copy_segs_ret == CPSEG_ERROR ) {
         return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        if( CopyWINResources( res, sect2mask, sect2bits, true ) != RS_OK ) {
+        if( CopyWINResources( dst, res, sect2mask, sect2bits, true ) != RS_OK ) {
             return( true );
         }
     }
@@ -267,12 +267,12 @@ static bool copyOS2Body( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     dst->u.NEInfo.WinHead.align = align;
     dst_ne->Res.Dir.ResShiftCount = align;
 
-    copy_segs_ret = CopyOS2Segments();
+    copy_segs_ret = CopyOS2Segments( src, dst );
     if( copy_segs_ret == CPSEG_ERROR ) {
         return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        if( CopyOS2Resources( res ) != RS_OK ) {
+        if( CopyOS2Resources( dst, res ) != RS_OK ) {
             return( true );
         }
     }
@@ -575,13 +575,13 @@ bool MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = AllocAndReadWINSegTables( &err_code );
+    ret = AllocAndReadWINSegTables( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked )
         goto STOP_ERROR;
 
-    InitWINResTable( res );
+    InitWINResTable( dst, res );
 
     ret = seekPastResTable( src, dst, &err_code );
     if( ret != RS_OK )
@@ -663,13 +663,13 @@ bool MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = InitOS2ResTable( res, &err_code );
+    ret = InitOS2ResTable( dst, res, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = AllocAndReadOS2SegTables( res, &err_code );
+    ret = AllocAndReadOS2SegTables( src, dst, res, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked )

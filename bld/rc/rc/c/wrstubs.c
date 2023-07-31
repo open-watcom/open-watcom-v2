@@ -57,15 +57,15 @@ RcStatus RcWriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
     return( RS_WRITE_ERROR );
 }
 
-RcStatus CopyOS2Resources( ResFileInfo *res )
+RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
 {
-    /* unused parameters */ (void)res;
+    /* unused parameters */ (void)dst; (void)res;
     return( RS_READ_ERROR );
 }
 
-RcStatus InitOS2ResTable( ResFileInfo *res, int *err_code )
+RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
 {
-    /* unused parameters */ (void)res; (void)err_code;
+    /* unused parameters */ (void)dst; (void)res; (void)err_code;
 
     return( RS_READ_ERROR );
 }

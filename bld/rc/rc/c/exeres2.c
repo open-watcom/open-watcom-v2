@@ -120,13 +120,13 @@ static int compareOS2ResTypeId( const void * _entry1, const void * _entry2 )
 } /* compareOS2ResTypeId */
 
 
-RcStatus InitOS2ResTable( ResFileInfo *res, int *err_code )
-/*********************************************************/
+RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
+/***************************************************************************/
 {
     OS2ResTable         *restab;
     WResDir             dir;
 
-    restab = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
+    restab = &(dst->u.NEInfo.OS2Res);
     dir = res->Dir;
 
     if( CmdLineParms.NoResFile ) {
@@ -230,7 +230,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, FILE *res_fp,
 } /* copyOneResource */
 
 
-RcStatus CopyOS2Resources( ResFileInfo *res )
+RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
 {
     OS2ResEntry         *entry;
     WResDirWindow       wind;
@@ -247,18 +247,17 @@ RcStatus CopyOS2Resources( ResFileInfo *res )
     long                align_amount;
     int                 i;
 
-    restab    = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
-    tmp_fp    = Pass2Info.TmpFile.fp;
+    restab    = &(dst->u.NEInfo.OS2Res);
+    tmp_fp    = dst->fp;
     res_fp    = res->fp;
-    tmpseg    = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
-    currseg   = Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs
-                - Pass2Info.TmpFile.u.NEInfo.Seg.NumOS2ResSegs;
+    tmpseg    = dst->u.NEInfo.Seg.Segments;
+    currseg   = dst->u.NEInfo.Seg.NumSegs - dst->u.NEInfo.Seg.NumOS2ResSegs;
     entry     = restab->resources;
     ret       = RS_OK;
     err_code  = 0;
 
     tmpseg += currseg;
-    shift_count = Pass2Info.TmpFile.u.NEInfo.WinHead.align;
+    shift_count = dst->u.NEInfo.WinHead.align;
     seg_offset = 0;     // shut up gcc
 
     /* We may need to add padding before the first resource segment */
@@ -302,12 +301,12 @@ RcStatus CopyOS2Resources( ResFileInfo *res )
         if( ret != RS_OK )
             break;
 
-        CheckDebugOffset( &(Pass2Info.TmpFile) );
+        CheckDebugOffset( dst );
     }
 
     switch( ret ) {
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_FILE, Pass2Info.TmpFile.name, strerror( err_code ) );
+        RcError( ERR_WRITTING_FILE, dst->name, strerror( err_code ) );
         break;
     case RS_READ_ERROR:
         RcError( ERR_READING_RES, CmdLineParms.OutResFileName, strerror( err_code ) );
