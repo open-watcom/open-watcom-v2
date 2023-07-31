@@ -71,7 +71,6 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
 
         // RT_DEFAULTICON is not written into the executable, ignore
         if( typeinfo->TypeName.ID.Num == OS2_RT_DEFAULTICON ) {
-            wind = WResNextResource( wind, dir );
             continue;
         }
 
