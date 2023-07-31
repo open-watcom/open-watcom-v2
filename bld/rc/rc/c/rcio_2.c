@@ -223,8 +223,43 @@ static void FreeLXFileInfoPtrs( LXExeInfo *info )
     }
 }
 
-static void ClosePass2FilesAndFreeMem( void )
-/*******************************************/
+bool RcPass2IoInit( void )
+/************************/
+{
+    bool    noerror;
+
+    memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
+    Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
+
+    noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
+    if( noerror ) {
+        Pass2Info.TmpFile.name = TMPFILE2;
+        Pass2Info.TmpFile.fp = ResOpenFileTmp( NULL );
+        if( Pass2Info.TmpFile.fp == NULL ) {
+            RcError( ERR_OPENING_TMP, Pass2Info.TmpFile.name, strerror( errno ) );
+            noerror = false;
+        }
+    }
+    if( noerror ) {
+        Pass2Info.TmpFile.Type = Pass2Info.OldFile.Type;
+        Pass2Info.TmpFile.WinHeadOffset = Pass2Info.OldFile.WinHeadOffset;
+        if( Pass2Info.OldFile.Type == EXE_TYPE_PE ) {
+            Pass2Info.TmpFile.u.PEInfo.WinHead = &Pass2Info.TmpFile.u.PEInfo.WinHeadData;
+            *Pass2Info.TmpFile.u.PEInfo.WinHead = *Pass2Info.OldFile.u.PEInfo.WinHead;
+        }
+        if( ( Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2 )
+          && CmdLineParms.ExtraResFiles != NULL ) {
+            RcError( ERR_FR_NOT_VALID_FOR_WIN );
+            noerror = false;
+        } else {
+            noerror = OpenResFileInfo( Pass2Info.OldFile.Type );
+        }
+    }
+    return( noerror );
+} /* RcPass2IoInit */
+
+void RcPass2IoShutdown( bool noerror )
+/************************************/
 {
     ExeFileInfo         *src;
     ExeFileInfo         *dst;
@@ -264,49 +299,8 @@ static void ClosePass2FilesAndFreeMem( void )
     }
     CloseResFiles( Pass2Info.ResFile );
 
-} /* ClosePass2FilesAndFreeMem */
-
-bool RcPass2IoInit( void )
-/************************/
-{
-    bool    noerror;
-
-    memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
-    Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
-
-    noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
-        Pass2Info.TmpFile.name = TMPFILE2;
-        Pass2Info.TmpFile.fp = ResOpenFileTmp( NULL );
-        if( Pass2Info.TmpFile.fp == NULL ) {
-            RcError( ERR_OPENING_TMP, Pass2Info.TmpFile.name, strerror( errno ) );
-            noerror = false;
-        }
-    }
-    if( noerror ) {
-        Pass2Info.TmpFile.Type = Pass2Info.OldFile.Type;
-        Pass2Info.TmpFile.WinHeadOffset = Pass2Info.OldFile.WinHeadOffset;
-        if( Pass2Info.OldFile.Type == EXE_TYPE_PE ) {
-            Pass2Info.TmpFile.u.PEInfo.WinHead = &Pass2Info.TmpFile.u.PEInfo.WinHeadData;
-            *Pass2Info.TmpFile.u.PEInfo.WinHead = *Pass2Info.OldFile.u.PEInfo.WinHead;
-        }
-        if( ( Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2 )
-          && CmdLineParms.ExtraResFiles != NULL ) {
-            RcError( ERR_FR_NOT_VALID_FOR_WIN );
-            noerror = false;
-        } else {
-            noerror = OpenResFileInfo( Pass2Info.OldFile.Type );
-        }
-    }
-    return( noerror );
-} /* RcPass2IoInit */
-
-void RcPass2IoShutdown( bool noerror )
-/************************************/
-{
-    ClosePass2FilesAndFreeMem();
-    if( noerror ) {
-        CopyFileToOutFile( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
+        CopyFileToOutFile( dst->fp, CmdLineParms.OutExeFileName );
 #ifdef __UNIX__
         {
             struct stat     exe_stat;
@@ -318,7 +312,7 @@ void RcPass2IoShutdown( bool noerror )
         }
 #endif
     }
-    RCCloseFile( &(Pass2Info.TmpFile.fp) );
+    RCCloseFile( &(dst->fp) );
     if( Pass2Info.IoBuffer != NULL ) {
         RESFREE( Pass2Info.IoBuffer );
         Pass2Info.IoBuffer = NULL;
