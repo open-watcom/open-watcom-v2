@@ -79,10 +79,10 @@ static void WRPass2( void )
     if( rc ) {
         switch( Pass2Info.OldFile.Type ) {
         case EXE_TYPE_NE_WIN:
-            rc = MergeResExeWINNE( Pass2Info.ResFile );
+            rc = MergeResExeWINNE( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         case EXE_TYPE_PE:
-            rc = MergeResExePE( Pass2Info.ResFile );
+            rc = MergeResExePE( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         }
 

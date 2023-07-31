@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef EXEFMT_INCLUDED
-#define EXEFMT_INCLUDED
+#ifndef PASS2_INCLUDED
+#define PASS2_INCLUDED
 
 #include "pass2l1.h"
 
@@ -45,9 +45,9 @@ typedef struct RcPass2Info {
 
 extern bool     StopInvoked;
 
-extern bool     MergeResExePE( ResFileInfo *res );
-extern bool     MergeResExeLX( ResFileInfo *res );
-extern bool     MergeResExeWINNE( ResFileInfo *res );
-extern bool     MergeResExeOS2NE( ResFileInfo *res );
+extern bool     MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res );
+extern bool     MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res );
+extern bool     MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res );
+extern bool     MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res );
 
 #endif

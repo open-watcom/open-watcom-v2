@@ -68,38 +68,38 @@ static RcStatus readObjectTable( ExeFileInfo *exe )
     return( ret );
 }
 
-static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
+static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
 /***************************************************************/
-/* Copies the object table from old to new adding one more entry to new */
+/* Copies the object table from src to dst adding one more entry to dst */
 {
-    uint_32         old_offset;     /* start of the image pages */
-    uint_32         new_offset;
+    uint_32         src_offset;     /* start of the image pages */
+    uint_32         dst_offset;
     uint_32         delta_offset;
     uint_32         res_offset;
-    pe_va           old_rva;
-    pe_va           new_rva;
-    int             old_obj_size;
-    int             new_obj_size;
+    pe_va           src_rva;
+    pe_va           dst_rva;
+    int             src_obj_size;
+    int             dst_obj_size;
     int             obj_num;
-    int             old_num_objects;
-    int             new_num_objects;
-    pe_va           old_resource_rva;
-    pe_exe_header   *old_pehdr;
-    pe_exe_header   *new_pehdr;
+    int             src_num_objects;
+    int             dst_num_objects;
+    pe_va           src_resource_rva;
+    pe_exe_header   *src_pehdr;
+    pe_exe_header   *dst_pehdr;
 
-    /* check for a resource object in the old exe */
-    old_pehdr = old->u.PEInfo.WinHead;
-    old_resource_rva = PE_DIRECTORY( *old_pehdr, PE_TBL_RESOURCE ).rva;
-    new_num_objects = old_num_objects = old_pehdr->fheader.num_objects;
-    for( obj_num = 0; obj_num < old_num_objects; obj_num++ ) {
-        if( old_resource_rva != 0 && old->u.PEInfo.Objects[obj_num].rva == old_resource_rva ) {
+    /* check for a resource object in the src exe */
+    src_pehdr = src->u.PEInfo.WinHead;
+    src_resource_rva = PE_DIRECTORY( *src_pehdr, PE_TBL_RESOURCE ).rva;
+    dst_num_objects = src_num_objects = src_pehdr->fheader.num_objects;
+    for( obj_num = 0; obj_num < src_num_objects; obj_num++ ) {
+        if( src_resource_rva != 0 && src->u.PEInfo.Objects[obj_num].rva == src_resource_rva ) {
             /* there already was a resource object */
-            if( obj_num + 1 == old_num_objects ) {
+            if( obj_num + 1 == src_num_objects ) {
                 /* it is the last object so just ignore it */
-                new_num_objects--;
-                res_offset = old->u.PEInfo.Objects[obj_num].physical_offset + old->u.PEInfo.Objects[obj_num].physical_size;
-                if( res_offset > old->DebugOffset ) {
-                    old->DebugOffset = res_offset;
+                dst_num_objects--;
+                res_offset = src->u.PEInfo.Objects[obj_num].physical_offset + src->u.PEInfo.Objects[obj_num].physical_size;
+                if( res_offset > src->DebugOffset ) {
+                    src->DebugOffset = res_offset;
                 }
                 continue;
             } else {
@@ -110,25 +110,25 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
         }
     }
     if( !CmdLineParms.NoResFile ) {
-        ++new_num_objects;
+        ++dst_num_objects;
     }
-    new_pehdr = new->u.PEInfo.WinHead;
-    new_pehdr->fheader.num_objects = new_num_objects;
-    new_obj_size = new_num_objects * sizeof( pe_object );
-    old_obj_size = old_num_objects * sizeof( pe_object );
+    dst_pehdr = dst->u.PEInfo.WinHead;
+    dst_pehdr->fheader.num_objects = dst_num_objects;
+    dst_obj_size = dst_num_objects * sizeof( pe_object );
+    src_obj_size = src_num_objects * sizeof( pe_object );
     if( !CmdLineParms.NoResFile ) {
-        --new_num_objects;
+        --dst_num_objects;
     }
-    old_offset = old->WinHeadOffset + PE_SIZE( *old_pehdr ) + old_obj_size;
-    old_rva = ALIGN_VALUE( old_offset, PE( *old_pehdr, object_align ) );
-    old_offset = ALIGN_VALUE( old_offset, PE( *old_pehdr, file_align ) );
-    new_offset = new->WinHeadOffset + PE_SIZE( *new_pehdr ) + new_obj_size;
-    new_rva = ALIGN_VALUE( new_offset, PE( *new_pehdr, object_align ) );
-    new_offset = ALIGN_VALUE( new_offset, PE( *new_pehdr, file_align ) );
+    src_offset = src->WinHeadOffset + PE_SIZE( *src_pehdr ) + src_obj_size;
+    src_rva = ALIGN_VALUE( src_offset, PE( *src_pehdr, object_align ) );
+    src_offset = ALIGN_VALUE( src_offset, PE( *src_pehdr, file_align ) );
+    dst_offset = dst->WinHeadOffset + PE_SIZE( *dst_pehdr ) + dst_obj_size;
+    dst_rva = ALIGN_VALUE( dst_offset, PE( *dst_pehdr, object_align ) );
+    dst_offset = ALIGN_VALUE( dst_offset, PE( *dst_pehdr, file_align ) );
 
-    delta_offset = new_offset - old_offset;
+    delta_offset = dst_offset - src_offset;
 
-    if( new_rva != old_rva ) {
+    if( dst_rva != src_rva ) {
         /* This means that all the rva's in all image pages are now wrong. */
         /* Since this case is rare and the user can relink with a higher */
         /* object_align we just print an error messages and quit */
@@ -136,82 +136,77 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
         return( -1 );
     }
 
-    new->u.PEInfo.Objects = RESALLOC( new_obj_size );
+    dst->u.PEInfo.Objects = RESALLOC( dst_obj_size );
 
-    for( obj_num = 0; obj_num < new_num_objects; obj_num++ ) {
-        new->u.PEInfo.Objects[obj_num] = old->u.PEInfo.Objects[obj_num];
-        new->u.PEInfo.Objects[obj_num].physical_offset += delta_offset;
+    for( obj_num = 0; obj_num < dst_num_objects; obj_num++ ) {
+        dst->u.PEInfo.Objects[obj_num] = src->u.PEInfo.Objects[obj_num];
+        dst->u.PEInfo.Objects[obj_num].physical_offset += delta_offset;
     }
 
-    if( new_num_objects == -1 ) {
+    if( dst_num_objects == -1 ) {
         RcError( ERR_INTERNAL, INTERR_EXE_HAS_MINUS_1_SEGS );
     }
-    return( new_num_objects );
+    return( dst_num_objects );
 }
 
 /*
  * copyOneObject
  * if an error occurs this function MUST return without altering errno
  */
-static RcStatus copyOneObject( FILE *old_fp, pe_object * old_obj,
-                        FILE *new_fp, pe_object * new_obj )
+static RcStatus copyOneObject( FILE *src_fp, pe_object *src_obj,
+                        FILE *dst_fp, pe_object *dst_obj )
 /***************************************************************/
 {
     /*
      * if this an uninitialized object (one for which there is not
      * data in the file) then don't copy it
      */
-    if( (old_obj->flags & PE_OBJ_UNINIT_DATA) && ( old_obj->physical_offset == 0 ) ) {
+    if( (src_obj->flags & PE_OBJ_UNINIT_DATA) && ( src_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
-    if( RESSEEK( old_fp, old_obj->physical_offset, SEEK_SET ) )
+    if( RESSEEK( src_fp, src_obj->physical_offset, SEEK_SET ) )
         return( RS_READ_ERROR );
-    if( RESSEEK( new_fp, new_obj->physical_offset, SEEK_SET ) )
+    if( RESSEEK( dst_fp, dst_obj->physical_offset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
-    return( CopyExeData( old_fp, new_fp, old_obj->physical_size ) );
+    return( CopyExeData( src_fp, dst_fp, src_obj->physical_size ) );
 }
 
-bool CopyExeObjects( void )
-/*************************/
+bool CopyExeObjects( ExeFileInfo *src, ExeFileInfo *dst  )
+/********************************************************/
 {
-    ExeFileInfo *   old;
-    ExeFileInfo *   tmp;
-    pe_object *     old_obj;
-    pe_object *     tmp_obj;
+    pe_object *     src_obj;
+    pe_object *     dst_obj;
     int             num_objs;
     RcStatus        ret;
 
-    old = &Pass2Info.OldFile;
-    tmp = &Pass2Info.TmpFile;
-
-    if( readObjectTable( old ) != RS_OK ) {
+    if( readObjectTable( src ) != RS_OK ) {
         return( true );
     }
-    num_objs = copyObjectTable( old, tmp );
+    num_objs = copyObjectTable( src, dst );
     if( num_objs == -1 ) {
         return( true );
     }
 
-    old_obj = old->u.PEInfo.Objects;
-    tmp_obj = tmp->u.PEInfo.Objects;
-    for( ; num_objs > 0; num_objs--, old_obj++, tmp_obj++ ) {
-        ret = copyOneObject( old->fp, old_obj, tmp->fp, tmp_obj );
+    src_obj = src->u.PEInfo.Objects;
+    dst_obj = dst->u.PEInfo.Objects;
+    for( ; num_objs > 0; num_objs--, src_obj++, dst_obj++ ) {
+        ret = copyOneObject( src->fp, src_obj, dst->fp, dst_obj );
         switch( ret ) {
         case RS_WRITE_ERROR:
-            RcError( ERR_WRITTING_FILE, tmp->name, strerror( errno ) );
+            RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
             return( true );
         case RS_READ_ERROR:
-            RcError( ERR_READING_EXE, old->name, strerror( errno ) );
+            RcError( ERR_READING_EXE, src->name, strerror( errno ) );
             return( true );
         case RS_READ_INCMPLT:
-            RcError( ERR_UNEXPECTED_EOF, old->name );
+            RcError( ERR_UNEXPECTED_EOF, src->name );
             return( true );
         default:
             break;
         }
-        CheckDebugOffset( old );
-        CheckDebugOffset( tmp );
+        CheckDebugOffset( src );
+        CheckDebugOffset( dst );
     }
 
     return( false );

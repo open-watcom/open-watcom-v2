@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef EXEOBJ_H_INCLUDED
 #define EXEOBJ_H_INCLUDED
 
-extern bool     CopyExeObjects( void );
+extern bool     CopyExeObjects( ExeFileInfo *src, ExeFileInfo *dst );
 extern uint_32  GetNextObjPhysOffset( PEExeInfo * info );
 extern pe_va    GetNextObjRVA( PEExeInfo * info );
 

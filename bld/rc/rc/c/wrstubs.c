@@ -41,7 +41,7 @@
 
 bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
 {
-    /* unused parameters */ (void)res;
+    /* unused parameters */ (void)dst; (void)res;
     return( true );
 }
 
@@ -53,7 +53,7 @@ bool CopyLXExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
 
 RcStatus RcWriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
 {
-    /* unused parameters */ (void)res;
+    /* unused parameters */ (void)dst; (void)res;
     return( RS_WRITE_ERROR );
 }
 
