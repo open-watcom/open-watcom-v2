@@ -251,8 +251,8 @@ RcStatus CopyOS2Resources( ResFileInfo *res )
     tmp_fp    = Pass2Info.TmpFile.fp;
     res_fp    = res->fp;
     tmpseg    = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
-    currseg   = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs
-                - Pass2Info.OldFile.u.NEInfo.Seg.NumOS2ResSegs;
+    currseg   = Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs
+                - Pass2Info.TmpFile.u.NEInfo.Seg.NumOS2ResSegs;
     entry     = restab->resources;
     ret       = RS_OK;
     err_code  = 0;
