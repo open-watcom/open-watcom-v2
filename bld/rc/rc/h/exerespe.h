@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023 2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,6 @@
 extern bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *res,
                          pe_object *res_obj, unsigned_32 rva,
                          unsigned_32 offset, bool writebyfile );
-extern bool RcBuildPEResourceObject( ResFileInfo *res );
+extern bool RcBuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *res );
 
 #endif

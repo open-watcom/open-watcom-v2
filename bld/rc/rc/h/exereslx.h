@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +36,11 @@
 #include "rctypes.h"
 
 
-extern bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
+extern bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
                             object_record *res_obj, unsigned_32 rva, unsigned_32 offset, bool writebyfile );
-extern bool RcBuildLXResourceObjects( ResFileInfo *res );
+extern bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res );
 
-extern RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res );
-extern RcStatus RcWriteLXResourceObjects( ResFileInfo *res );
+extern RcStatus WriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res );
+extern RcStatus RcWriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res );
 
 #endif

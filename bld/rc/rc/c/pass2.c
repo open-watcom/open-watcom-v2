@@ -835,7 +835,7 @@ bool MergeResExePE( ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = RcBuildPEResourceObject( res );
+    error = RcBuildPEResourceObject( &Pass2Info.TmpFile, res );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -1032,7 +1032,7 @@ bool MergeResExeLX( ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = RcBuildLXResourceObjects( res );
+    error = RcBuildLXResourceObjects( &Pass2Info.TmpFile, res );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -1044,7 +1044,7 @@ bool MergeResExeLX( ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = RcWriteLXResourceObjects( res );
+    ret = RcWriteLXResourceObjects( &Pass2Info.TmpFile, res );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;

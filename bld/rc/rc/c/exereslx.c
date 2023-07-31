@@ -253,7 +253,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
 }
 
 
-bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
+bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
                                    object_record *res_obj, unsigned_32 rva,
                                    unsigned_32 offset, bool writebyfile )
 /*************************************************************************/
@@ -268,7 +268,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
 
     /* unused parameters */ (void)res_obj; (void)rva; (void)offset; (void)writebyfile;
 
-    dir = &exeinfo->u.LXInfo.Res;
+    dir = &dst->u.LXInfo.Res;
 
     MergeDirectory( res, &errs );
     if( errs != NULL ) {
@@ -290,7 +290,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
      */
     curr_total = curr_offset = 0;
     dir->num_objects++;
-    exeinfo->u.LXInfo.OS2Head.num_rsrcs = dir->res_count;
+    dst->u.LXInfo.OS2Head.num_rsrcs = dir->res_count;
     for( i = 0; i < dir->res_count; ++i ) {
         unsigned_32     res_size;
 
@@ -329,20 +329,18 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *res,
 
 
 #if !defined( INSIDE_WLINK )
-bool RcBuildLXResourceObjects( ResFileInfo *res )
-/***********************************************/
+bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
+/*****************************************************************/
 {
     object_record       *res_objects;
     bool                ret;
-    ExeFileInfo         *exeinfo;
 
-    exeinfo = &Pass2Info.TmpFile;
     if( CmdLineParms.NoResFile ) {
-        exeinfo->u.LXInfo.OS2Head.num_rsrcs = 0;
+        dst->u.LXInfo.OS2Head.num_rsrcs = 0;
         ret = false;
     } else {
-        res_objects = exeinfo->u.LXInfo.Objects;
-        ret = BuildLXResourceObjects( exeinfo, res,
+        res_objects = dst->u.LXInfo.Objects;
+        ret = BuildLXResourceObjects( dst, res,
                                         res_objects, 0, 0, //rva, offset,
                                         !Pass2Info.AllResFilesOpen );
     }
@@ -352,18 +350,16 @@ bool RcBuildLXResourceObjects( ResFileInfo *res )
     return( ret );
 }
 
-RcStatus RcWriteLXResourceObjects( ResFileInfo *res )
-/***************************************************/
+RcStatus RcWriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
+/*********************************************************************/
 {
     RcStatus            ret;
-    ExeFileInfo         *exeinfo;
 
-    exeinfo = &Pass2Info.TmpFile;
     if( CmdLineParms.NoResFile ) {
         // Nothing to do
         ret = RS_OK;
     } else {
-        ret = WriteLXResourceObjects( exeinfo, res );
+        ret = WriteLXResourceObjects( dst, res );
     }
     return( ret );
 }

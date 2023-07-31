@@ -39,7 +39,7 @@
 #include "exeres.h"
 
 
-bool RcBuildLXResourceObjects( ResFileInfo *res )
+bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
 {
     /* unused parameters */ (void)res;
     return( true );
@@ -51,7 +51,7 @@ bool CopyLXExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
     return( true );
 }
 
-RcStatus RcWriteLXResourceObjects( ResFileInfo *res )
+RcStatus RcWriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
 {
     /* unused parameters */ (void)res;
     return( RS_WRITE_ERROR );
