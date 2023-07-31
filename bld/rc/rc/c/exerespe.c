@@ -408,8 +408,8 @@ static int ComparePEResIdName( const void *e1, const void *e2 )
 #undef PEE
 } /* ComparePEResIdName */
 
-static RcStatus SortDirEntry( PEResEntry * entry, void * dummy )
-/*********************************************************/
+static RcStatus SortDirEntry( PEResEntry *entry, void *dummy )
+/************************************************************/
 {
     int     num_entries;
 
@@ -422,8 +422,8 @@ static RcStatus SortDirEntry( PEResEntry * entry, void * dummy )
     return( RS_OK );
 } /* SortDirEntry */
 
-static void CompleteTree( PEResDir * dir )
-/****************************************/
+static void CompleteTree( PEResDir *dir )
+/***************************************/
 {
     uint_32     curr_offset;
     int         num_entries;
@@ -495,7 +495,7 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
  * copyPEResources
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
+static RcStatus copyPEResources( ExeFileInfo *dst, ResFileInfo *resfiles,
                                 FILE *to_fp, bool writebyfile,
                                 ResFileInfo **errres )
 /****************************************************************/
@@ -505,31 +505,31 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
     uint_32         start_off;
     RcStatus        ret;
 
-//    start_rva = tmp->u.PEInfo.Res.ResRVA + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
-    start_off = tmp->u.PEInfo.Res.ResOffset + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
+//    start_rva = dst->u.PEInfo.Res.ResRVA + dst->u.PEInfo.Res.DirSize + dst->u.PEInfo.Res.String.StringBlockSize;
+    start_off = dst->u.PEInfo.Res.ResOffset + dst->u.PEInfo.Res.DirSize + dst->u.PEInfo.Res.String.StringBlockSize;
 
     copy_info.to_fp = to_fp;
     copy_info.errres = NULL;
-    copy_info.file = tmp;       /* for tracking debugging info offset */
+    copy_info.file = dst;       /* for tracking debugging info offset */
     start_off = ALIGN_VALUE( start_off, sizeof( uint_32 ) );
 
     if( RESSEEK( to_fp, start_off, SEEK_SET ) )
         return( RS_WRITE_ERROR );
     if( !writebyfile ) {
         copy_info.curres = NULL;
-        ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
+        ret = traverseTree( &dst->u.PEInfo.Res, &copy_info, copyDataEntry );
         *errres = copy_info.errres;
     } else {
         ret = RS_OK;
         for( ; resfiles != NULL; resfiles = resfiles->next ) {
             copy_info.curres = resfiles;
             if( resfiles->fp != NULL ) {
-                ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
+                ret = traverseTree( &dst->u.PEInfo.Res, &copy_info, copyDataEntry );
             } else {
                 ret = RS_OPEN_ERROR;
                 resfiles->fp = ResOpenFileRO( resfiles->name );
                 if( resfiles->fp != NULL ) {
-                    ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
+                    ret = traverseTree( &dst->u.PEInfo.Res, &copy_info, copyDataEntry );
                     RCCloseFile( &(resfiles->fp) );
                 }
             }
@@ -699,30 +699,30 @@ bool RcPadFile( FILE *fp, size_t pad )
  * padObject
  * NB when an error occurs this function MUST return without altering errno
  */
-static bool padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
+static bool padObject( PEResDir *dir, ExeFileInfo *dst, long size )
 {
     long        pos;
     long        pad;
 
-    pos = RESTELL( tmp->fp );
+    pos = RESTELL( dst->fp );
     if( pos == -1 )
         return( true );
     pad = dir->ResOffset + size - pos;
     if( pad > 0 ) {
-        RcPadFile( tmp->fp, (size_t)pad );
+        RcPadFile( dst->fp, (size_t)pad );
     }
-    CheckDebugOffset( tmp );
+    CheckDebugOffset( dst );
     return( false );
 #if( 0)
     char        zero=0;
 
-    if( RESSEEK( tmp->fp, dir->ResOffset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dir->ResOffset, SEEK_SET ) )
         return( true );
-    if( RESSEEK( tmp->fp, size - 1, SEEK_CUR ) )
+    if( RESSEEK( dst->fp, size - 1, SEEK_CUR ) )
         return( true );
-    if( RESWRITE( tmp->fp, &zero, 1 ) != 1 )
+    if( RESWRITE( dst->fp, &zero, 1 ) != 1 )
         return( true );
-    CheckDebugOffset( tmp );
+    CheckDebugOffset( dst );
     return( false );
 #endif
 }

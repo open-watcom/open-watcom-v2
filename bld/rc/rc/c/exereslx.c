@@ -150,7 +150,7 @@ static void reportDuplicateResources( WResMergeError *errs )
 }
 
 
-RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
+RcStatus WriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
 /*******************************************************************/
 {
     RcStatus        ret;
@@ -168,22 +168,22 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
     int             page_shift;
     unsigned        i;
 
-    dir = &exe->u.LXInfo.Res;
+    dir = &dst->u.LXInfo.Res;
 
     obj_index  = (uint_32)-1;
-    page_index = exe->u.LXInfo.FirstResPage;
-    page_shift = exe->u.LXInfo.OS2Head.l.page_shift;
+    page_index = dst->u.LXInfo.FirstResPage;
+    page_shift = dst->u.LXInfo.OS2Head.l.page_shift;
 
     // Determine starting offset - expects that DebugOffset is pointing where
     // resources should be (current end of executable)
-    file_offset = exe->DebugOffset;
+    file_offset = dst->DebugOffset;
 
     page_offset = 0;
     padded_size = 0;
     object      = NULL;
     map         = NULL;
 
-    for( i = 0; i < exe->u.LXInfo.OS2Head.num_rsrcs; ++i ) {
+    for( i = 0; i < dst->u.LXInfo.OS2Head.num_rsrcs; ++i ) {
         entry = &dir->resources[i];
 
         // Fill in new object
@@ -193,7 +193,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
                 file_offset = ((file_offset >> page_shift) + 1) << page_shift;
             }
             obj_index = entry->resource.object;
-            object = &exe->u.LXInfo.Objects[exe->u.LXInfo.FirstResObj + obj_index];
+            object = &dst->u.LXInfo.Objects[dst->u.LXInfo.FirstResObj + obj_index];
             object->size     = 0;
             object->addr     = 0;
             object->flags    = OBJ_READABLE | OBJ_RESOURCE | OBJ_DISCARDABLE
@@ -203,21 +203,21 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
             object->reserved = 0;
 
             // Point to associated page table entry
-            map = &exe->u.LXInfo.Pages[page_index];
+            map = &dst->u.LXInfo.Pages[page_index];
             padded_size = 0;
             page_offset = file_offset;
         }
-        entry->resource.object += exe->u.LXInfo.FirstResObj + 1;
+        entry->resource.object += dst->u.LXInfo.FirstResObj + 1;
 
         // Copy resource data
-        if( RESSEEK( exe->fp, file_offset, SEEK_SET ) )
+        if( RESSEEK( dst->fp, file_offset, SEEK_SET ) )
             return( RS_WRITE_ERROR );
 
         langinfo = WResGetLangInfo( entry->wind );
         if( RESSEEK( res->fp, langinfo->Offset, SEEK_SET ) )
             return( RS_READ_ERROR );
 
-        ret = CopyExeData( res->fp, exe->fp, langinfo->Length );
+        ret = CopyExeData( res->fp, dst->fp, langinfo->Length );
         if( ret != RS_OK ) {
             return( ret );
         }
@@ -229,26 +229,26 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *res )
 
         // Write padding if necessary (this is critical)
         if( padded_res_size > entry->resource.res_size ) {
-            RcPadFile( exe->fp, padded_res_size - entry->resource.res_size );
+            RcPadFile( dst->fp, padded_res_size - entry->resource.res_size );
         }
 
         // Update page table
-        map->page_offset = (page_offset - exe->u.LXInfo.OS2Head.page_off) >> page_shift;
+        map->page_offset = (page_offset - dst->u.LXInfo.OS2Head.page_off) >> page_shift;
         map->flags       = 0;
         while( padded_size > OSF_DEF_PAGE_SIZE ) {
-            map->page_offset = (page_offset - exe->u.LXInfo.OS2Head.page_off) >> page_shift;
+            map->page_offset = (page_offset - dst->u.LXInfo.OS2Head.page_off) >> page_shift;
             map->data_size   = OSF_DEF_PAGE_SIZE;
 
             padded_size -= OSF_DEF_PAGE_SIZE;
             page_offset += OSF_DEF_PAGE_SIZE;
             ++map;
             object->mapsize++;
-            map->page_offset = (page_offset - exe->u.LXInfo.OS2Head.page_off) >> page_shift;
+            map->page_offset = (page_offset - dst->u.LXInfo.OS2Head.page_off) >> page_shift;
             map->flags       = 0;
         }
         map->data_size = padded_size;
     }
-    CheckDebugOffset( exe );
+    CheckDebugOffset( dst );
     return( RS_OK );
 }
 

@@ -40,31 +40,31 @@
 #include "exeobj.h"
 
 
-static RcStatus readObjectTable( ExeFileInfo *exe )
+static RcStatus readObjectTable( ExeFileInfo *src )
 /*************************************************/
 {
     RcStatus        ret;
     unsigned        objects_size;
     pe_exe_header   *pehdr;
 
-    pehdr = exe->u.PEInfo.WinHead;
+    pehdr = src->u.PEInfo.WinHead;
     objects_size = pehdr->fheader.num_objects * sizeof( pe_object );
-    exe->u.PEInfo.Objects = RESALLOC( objects_size );
-    ret = SeekRead( exe->fp, exe->WinHeadOffset + PE_SIZE( *pehdr ), exe->u.PEInfo.Objects, objects_size );
+    src->u.PEInfo.Objects = RESALLOC( objects_size );
+    ret = SeekRead( src->fp, src->WinHeadOffset + PE_SIZE( *pehdr ), src->u.PEInfo.Objects, objects_size );
     switch( ret ) {
     case RS_OK:
         break;
     case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, exe->name, strerror( errno ) );
+        RcError( ERR_READING_EXE, src->name, strerror( errno ) );
         break;
     case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, exe->name );
+        RcError( ERR_UNEXPECTED_EOF, src->name );
         break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
         break;
     }
-    CheckDebugOffset( exe );
+    CheckDebugOffset( src );
     return( ret );
 }
 

@@ -186,27 +186,27 @@ uint_32 ComputeOS2ResSegCount( WResDir dir )
  * hence will be nicely aligned.
  */
 static RcStatus copyOneResource( WResLangInfo *langinfo, FILE *res_fp,
-            FILE *out_fp, int shift_count, int *err_code )
+            FILE *dst_fp, int shift_count, int *err_code )
 /*****************************************************************/
 {
     RcStatus            ret;
-    long                out_offset;
+    long                dst_offset;
     long                align_amount;
 
     /* align the output file to a boundary for shift_count */
     ret = RS_OK;
-    out_offset = RESTELL( out_fp );
-    if( out_offset == -1 ) {
+    dst_offset = RESTELL( dst_fp );
+    if( dst_offset == -1 ) {
         ret = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( out_offset, shift_count );
-        if( RESSEEK( out_fp, align_amount, SEEK_CUR ) ) {
+        align_amount = AlignAmount( dst_offset, shift_count );
+        if( RESSEEK( dst_fp, align_amount, SEEK_CUR ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
-        out_offset += align_amount;
+        dst_offset += align_amount;
     }
 
     if( ret == RS_OK ) {
@@ -216,12 +216,12 @@ static RcStatus copyOneResource( WResLangInfo *langinfo, FILE *res_fp,
         }
     }
     if( ret == RS_OK ) {
-        ret = CopyExeData( res_fp, out_fp, langinfo->Length );
+        ret = CopyExeData( res_fp, dst_fp, langinfo->Length );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( RESTELL( out_fp ), shift_count );
-        ret = PadExeData( out_fp, align_amount );
+        align_amount = AlignAmount( RESTELL( dst_fp ), shift_count );
+        ret = PadExeData( dst_fp, align_amount );
         *err_code = errno;
     }
 
@@ -235,8 +235,6 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
     WResDirWindow       wind;
     OS2ResTable         *restab;
     WResLangInfo        *langinfo;
-    FILE                *tmp_fp;
-    FILE                *res_fp;
     RcStatus            ret;
     int                 err_code;
     int                 shift_count;
@@ -247,8 +245,6 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
     int                 i;
 
     restab    = &(dst->u.NEInfo.OS2Res);
-    tmp_fp    = dst->fp;
-    res_fp    = res->fp;
     tmpseg    = dst->u.NEInfo.Seg.Segments;
     currseg   = dst->u.NEInfo.Seg.NumSegs - dst->u.NEInfo.Seg.NumOS2ResSegs;
     entry     = restab->resources;
@@ -260,9 +256,9 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
     seg_offset = 0;     // shut up gcc
 
     /* We may need to add padding before the first resource segment */
-    align_amount = AlignAmount( RESTELL( tmp_fp ), shift_count );
+    align_amount = AlignAmount( RESTELL( dst->fp ), shift_count );
     if( align_amount ) {
-        ret = PadExeData( tmp_fp, align_amount );
+        ret = PadExeData( dst->fp, align_amount );
         err_code = errno;
     }
 
@@ -272,7 +268,7 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
         langinfo = WResGetLangInfo( wind );
 
         if( entry->first_part ) {
-            seg_offset = RESTELL( tmp_fp );
+            seg_offset = RESTELL( dst->fp );
         } else {
             seg_offset += 0x10000;
         }
@@ -296,7 +292,7 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
             continue;
 
         /* Copy resource data */
-        ret = copyOneResource( langinfo, res_fp, tmp_fp, shift_count, &err_code );
+        ret = copyOneResource( langinfo, res->fp, dst->fp, shift_count, &err_code );
         if( ret != RS_OK )
             break;
 

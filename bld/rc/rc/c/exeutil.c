@@ -43,7 +43,7 @@
  * CopyExeData
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus CopyExeData( FILE *in_fp, FILE *out_fp, uint_32 length )
+RcStatus CopyExeData( FILE *src_fp, FILE *dst_fp, uint_32 length )
 /***************************************************************/
 {
     size_t          numread;
@@ -55,11 +55,11 @@ RcStatus CopyExeData( FILE *in_fp, FILE *out_fp, uint_32 length )
     for( bufflen = IO_BUFFER_SIZE; length > 0; length -= bufflen ) {
         if( bufflen > length )
             bufflen = length;
-        numread = RESREAD( in_fp, Pass2Info.IoBuffer, bufflen );
+        numread = RESREAD( src_fp, Pass2Info.IoBuffer, bufflen );
         if( numread != bufflen ) {
-            return( RESIOERR( in_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
-        if( RESWRITE( out_fp, Pass2Info.IoBuffer, numread ) != numread ) {
+        if( RESWRITE( dst_fp, Pass2Info.IoBuffer, numread ) != numread ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -70,16 +70,16 @@ RcStatus CopyExeData( FILE *in_fp, FILE *out_fp, uint_32 length )
  * CopyExeDataTilEOF
  * NB when an error occurs this function MUST return without altering errno
  */
-RcStatus CopyExeDataTilEOF( FILE *in_fp, FILE *out_fp )
-/*****************************************************/
+RcStatus CopyExeDataTilEOF( FILE *src_fp, FILE *dst_fp )
+/******************************************************/
 {
     size_t      numread;
 
-    while( (numread = RESREAD( in_fp, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
-        if( numread != IO_BUFFER_SIZE && RESIOERR( in_fp, numread ) ) {
+    while( (numread = RESREAD( src_fp, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
+        if( numread != IO_BUFFER_SIZE && RESIOERR( src_fp, numread ) ) {
             return( RS_READ_ERROR );
         }
-        if( RESWRITE( out_fp, Pass2Info.IoBuffer, numread ) != numread ) {
+        if( RESWRITE( dst_fp, Pass2Info.IoBuffer, numread ) != numread ) {
             return( RS_WRITE_ERROR );
         }
     }
