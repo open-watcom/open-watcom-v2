@@ -69,8 +69,9 @@ static RcStatus readObjectTable( ExeFileInfo *src )
 }
 
 static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
-/***************************************************************/
-/* Copies the object table from src to dst adding one more entry to dst */
+/***************************************************************
+ * Copies the object table from src to dst adding one more entry to dst
+ */
 {
     uint_32         src_offset;     /* start of the image pages */
     uint_32         dst_offset;
@@ -87,15 +88,21 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
     pe_exe_header   *src_pehdr;
     pe_exe_header   *dst_pehdr;
 
-    /* check for a resource object in the src exe */
+    /*
+     * check for a resource object in the src exe
+     */
     src_pehdr = src->u.PEInfo.WinHead;
     src_resource_rva = PE_DIRECTORY( *src_pehdr, PE_TBL_RESOURCE ).rva;
     dst_num_objects = src_num_objects = src_pehdr->fheader.num_objects;
     for( obj_num = 0; obj_num < src_num_objects; obj_num++ ) {
         if( src_resource_rva != 0 && src->u.PEInfo.Objects[obj_num].rva == src_resource_rva ) {
-            /* there already was a resource object */
+            /*
+             * there already was a resource object
+             */
             if( obj_num + 1 == src_num_objects ) {
-                /* it is the last object so just ignore it */
+                /*
+                 * it is the last object so just ignore it
+                 */
                 dst_num_objects--;
                 res_offset = src->u.PEInfo.Objects[obj_num].physical_offset + src->u.PEInfo.Objects[obj_num].physical_size;
                 if( res_offset > src->DebugOffset ) {
@@ -103,8 +110,9 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
                 }
                 continue;
             } else {
-                /* can't ignore it otherwise the rva's in the file will
-                   be off*/
+                /*
+                 * can't ignore it otherwise the rva's in the file will be off
+                 */
                 RcWarning( ERR_OLD_RESOURCE_OBJECT );
             }
         }
@@ -129,9 +137,11 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
     delta_offset = dst_offset - src_offset;
 
     if( dst_rva != src_rva ) {
-        /* This means that all the rva's in all image pages are now wrong. */
-        /* Since this case is rare and the user can relink with a higher */
-        /* object_align we just print an error messages and quit */
+        /*
+         * This means that all the rva's in all image pages are now wrong.
+         * Since this case is rare and the user can relink with a higher
+         * object_align we just print an error messages and quit
+         */
         RcError( ERR_PE_HEADER_SIZE_CHANGE );
         return( -1 );
     }
@@ -149,18 +159,17 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
     return( dst_num_objects );
 }
 
-/*
- * copyOneObject
- * if an error occurs this function MUST return without altering errno
- */
 static RcStatus copyOneObject( FILE *src_fp, pe_object *src_obj,
                         FILE *dst_fp, pe_object *dst_obj )
-/***************************************************************/
+/***************************************************************
+ *
+ * copyOneObject
+ * if an error occurs this function MUST return without altering errno
+ *
+ * if this an uninitialized object (one for which there is not data in the file)
+ * then don't copy it
+ */
 {
-    /*
-     * if this an uninitialized object (one for which there is not
-     * data in the file) then don't copy it
-     */
     if( (src_obj->flags & PE_OBJ_UNINIT_DATA) && ( src_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
@@ -213,9 +222,10 @@ bool CopyExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
 } /* CopyExeObjects */
 
 uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )
-/***********************************************/
-/* This routine assumes the num_objects in the header include one for the */
-/* resource object */
+/************************************************
+ * This routine assumes the num_objects in the header include one for the
+ * resource object
+ */
 {
     uint_32         next_off;
     pe_object       *last_obj;
@@ -228,9 +238,10 @@ uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )
 } /* GetNextObjPhysOffset */
 
 pe_va GetNextObjRVA( PEExeInfo *peinfo )
-/**************************************/
-/* This routine assumes the num_objects in the header include one for the */
-/* resource object */
+/***************************************
+ * This routine assumes the num_objects in the header include one for the
+ * resource object
+ */
 {
     uint_32         next_rva;
     pe_object       *last_obj;
@@ -238,8 +249,10 @@ pe_va GetNextObjRVA( PEExeInfo *peinfo )
 
     pehdr = peinfo->WinHead;
     last_obj = peinfo->Objects + pehdr->fheader.num_objects - 2;
-/* This next line should work if the nt loader followed the PE spec but it */
-/* doesn't so we can't use it */
+/*
+ * This next line should work if the nt loader followed the PE spec but it
+ * doesn't so we can't use it
+ */
 //    next_rva = last_obj->rva + last_obj->virtual_size;
     next_rva = last_obj->rva + last_obj->physical_size;
     return( ALIGN_VALUE( next_rva, PE( *pehdr, object_align ) ) );

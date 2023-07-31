@@ -38,7 +38,7 @@ typedef struct ExtraRes {
 
 extern int      RCCloseFile( FILE **fp );
 extern void     ReportDupResource( WResID *nameid, WResID *typeid, const char *file1, const char *file2, bool warn );
-extern bool     OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen, ExeType type, const char *exename );
+extern bool     OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen, ExeType type, const char *exename );
 extern void     CloseResFiles( ResFileInfo *resfiles );
 extern void     SharedIOInitStatics( void );
 extern char     *LastWresErrStr( void );

@@ -44,6 +44,7 @@
 
 
 #if !defined( INSIDE_WLINK ) || defined( _OS2 )
+
 #define MAX_OPEN_RESFILES       6
 
 typedef struct {
@@ -67,7 +68,7 @@ int RCCloseFile( FILE **fp )
     return( rc );
 }
 
-bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
+bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
                   ExeType type, const char *exename )
 /**************************************************************************/
 {
@@ -80,12 +81,12 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
     WResTargetOS    res_os;
 
     *allopen = true;
-    *resinfo = NULL;
+    *presfiles = NULL;
     rescnt = 0;
     for( ; resnames != NULL; resnames = resnames->next ) {
         resfile = RESALLOC( sizeof( ResFileInfo ) );
-        resfile->next = *resinfo;
-        *resinfo = resfile;
+        resfile->next = *presfiles;
+        *presfiles = resfile;
         resfile->Dir = WResInitDir();
         resfile->name = resnames->name;
         resfile->fp = ResOpenFileRO( resfile->name );
@@ -112,8 +113,9 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
             RCCloseFile( &(resfile->fp) );
             *allopen = false;
         }
-
-        // remove the autodepend resource
+        /*
+         * remove the autodepend resource
+         */
         res_name = WResIDFromStr( DEP_LIST_NAME );
         res_type = WResIDFromNum( DEP_LIST_TYPE );
         WResDelResource( resfile->Dir, res_type, res_name );
@@ -129,8 +131,10 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
             }
             break;
         case EXE_TYPE_NE_OS2:
-            // No way to tell MS and IBM resource files apart, and I can't find
-            // a good way to figure out if this is a Watcom .res file
+            /*
+             * No way to tell MS and IBM resource files apart, and I can't find
+             * a good way to figure out if this is a Watcom .res file
+             */
             if( res_os != WRES_OS_WIN16 && res_os != WRES_OS_OS2 ) {
                 RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
@@ -143,13 +147,15 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
             }
             break;
         case EXE_TYPE_LX:
-            // Same problem as with EXE_TYPE_NE_OS2
+            /*
+             * Same problem as with EXE_TYPE_NE_OS2
+             */
             if( res_os != WRES_OS_OS2 && res_os != WRES_OS_WIN16 ) {
                 RcError( ERR_NONOS2_RES_TO_OS2_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
-        default: // EXE_TYPE_UNKNOWN
+        default: /* EXE_TYPE_UNKNOWN */
             break;
         }
         rescnt++;
@@ -157,8 +163,8 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
     return( true );
 
 HANDLE_ERROR:
-    CloseResFiles( *resinfo );
-    *resinfo = NULL;
+    CloseResFiles( *presfiles );
+    *presfiles = NULL;
     return( false );
 }
 
@@ -325,4 +331,5 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         RESFREE( type );
     }
 }
+
 #endif
