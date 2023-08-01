@@ -229,7 +229,12 @@ typedef struct fixed_record {
 
 #define OS2_DEF_SEGMENT_SHIFT  9
 
-/* The resource table is an unsigned_16 resource shift count followed by: */
+/* The resource table entries type */
+typedef struct resource_table_record {
+    unsigned_16         type;           /* resource type */
+    unsigned_16         id;             /* resource id */
+} resource_table_record;
+
 /* repeated for each type */
 typedef struct resource_type_record {
     unsigned_16         type;           /* see below */
