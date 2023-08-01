@@ -348,8 +348,8 @@ common_cppflags_osx_arm     = -D__OSX_ARM__
 common_cppflags_osx_a64     = -D__OSX_ARM64__
 
 # common release/debug options
-common_flags_rel = -O -g
-common_flags_dbg = -g
+common_flags_rel = -O -g1 -gz -gdwarf-2
+common_flags_dbg = -g -gz -gdwarf
 !ifeq release 1
 common_flags = $(common_flags_rel)
 !else

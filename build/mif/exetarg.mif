@@ -50,6 +50,12 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !else
     $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
 !endif
+!if defined("__CLANG_TOOLS__") || defined("__GCC_TOOLS__")
+    objcopy --only-keep-debug $@ $^&.sym
+    chmod -x $^&.sym
+    objcopy --strip-debug $@
+    objcopy --add-gnu-debuglink=$^&.sym $@
+!endif
 !else
     $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
