@@ -39,6 +39,11 @@ exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
 !undef exetarg_qnx_res_obj
 !undef exetarg_qnx_res_opt
 !endif
+!ifeq host_os osx
+objcopy = gobjcopy
+!else
+objcopy = objcopy
+!endif
 $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
         $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) &
         $(exetarg_$(host_os)_manif_$(host_cpu)) $+$(exetarg_res_wresui) $(exetarg_res)$- &
@@ -50,17 +55,11 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !else
     $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
 !endif
-!ifdef __GCC_TOOLS__
-    objcopy --only-keep-debug $@ $^&.sym
+!if defined("__CLANG_TOOLS__") || defined("__GCC_TOOLS__")
+    $(objcopy) --only-keep-debug $@ $^&.sym
     chmod -x $^&.sym
-    objcopy --strip-debug $@
-    objcopy --add-gnu-debuglink=$^&.sym $@
-!endif
-!ifdef __CLANG_TOOLS__
-    llvm-objcopy --only-keep-debug $@ $^&.sym
-    chmod -x $^&.sym
-    llvm-objcopy --strip-debug $@
-    llvm-objcopy --add-gnu-debuglink=$^&.sym $@
+    $(objcopy) --strip-debug $@
+    $(objcopy) --add-gnu-debuglink=$^&.sym $@
 !endif
 !else
     $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
