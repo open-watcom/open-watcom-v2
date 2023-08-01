@@ -50,11 +50,11 @@
 
 bool    StopInvoked = false;
 
-/*
+static RcStatus copyStubFile( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
+/********************************************************************************
  * copyStubFile - copy from the begining of the file to the start of
  *                the win exe header
  */
-static RcStatus copyStubFile( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
 {
     RcStatus    ret;
 
@@ -98,9 +98,10 @@ static RcStatus copyOtherTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_co
 
     src_head = &(src->u.NEInfo.WinHead);
     src_offset = src->WinHeadOffset;
-
-    /* the other tables start at the resident names table and end at the end */
-    /* of the non-resident names table */
+    /*
+     * the other tables start at the resident names table and end at the end
+     * of the non-resident names table
+     */
     tablelen = (src_head->nonres_off + src_head->nonres_size) - ( src_head->resident_off + src_offset );
 
     if( RESSEEK( src->fp, src_head->resident_off + src_offset, SEEK_SET ) ) {
@@ -171,24 +172,34 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     dst_ne = &dst->u.NEInfo;
 
     switch( CmdLineParms.SegmentSorting ) {
-    case SEG_SORT_NONE:     /* all segments in section 2 */
+    case SEG_SORT_NONE:
+        /*
+         * all segments in section 2
+         */
         sect2mask = 0;
         sect2bits = 0;
         use_gangload = false;
         dst->u.NEInfo.WinHead.align = src->u.NEInfo.WinHead.align;
         dst_ne->Res.Dir.ResShiftCount = computeShiftCount( src, dst, res );
         break;
-    case SEG_SORT_PRELOAD_ONLY:  /* all load on call segments in section 2 */
+    case SEG_SORT_PRELOAD_ONLY:
+        /*
+         * all load on call segments in section 2
+         */
         sect2mask = SEG_PRELOAD;
         sect2bits = 0;
         use_gangload = true;
         checkShiftCount( src, dst, res );
         break;
-    case SEG_SORT_MANY:     /* only load on call, discardable, code segments in section 2 */
+    case SEG_SORT_MANY:
+        /*
+         * only load on call, discardable, code segments in section 2
+         */
         sect2mask = SEG_DATA | SEG_PRELOAD | SEG_DISCARD;
         sect2bits = SEG_DISCARD;
-
-        /* set the entry segment to be preload */
+        /*
+         * set the entry segment to be preload
+         */
         {
             segment_record *    seg;        /* these two are here because a */
             uint_16             entry_seg;  /* 71 character field reference is hard to read */
@@ -203,8 +214,9 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     default:
         break;
     }
-
-    /* third arg to Copy???? is false --> copy section one */
+    /*
+     * third arg to Copy???? is false --> copy section one
+     */
     gangloadstart = RESTELL( dst->fp );
     gangloadstart += AlignAmount( gangloadstart, dst_ne->Res.Dir.ResShiftCount );
     copy_segs_ret = CopyWINSegments( src, dst, sect2mask, sect2bits, false );
@@ -227,8 +239,9 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         }
     }
     gangloadlen = RESTELL( dst->fp ) - gangloadstart;
-
-    /* third arg to Copy???? is true  --> copy section two */
+    /*
+     * third arg to Copy???? is true  --> copy section two
+     */
     copy_segs_ret = CopyWINSegments( src, dst, sect2mask, sect2bits, true );
     if( copy_segs_ret == CPSEG_ERROR ) {
         return( true );
@@ -261,8 +274,9 @@ static bool copyOS2Body( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     unsigned_16         align;
 
     dst_ne = &dst->u.NEInfo;
-
-    /* OS/2 does not use separate alignment for resources */
+    /*
+     * OS/2 does not use separate alignment for resources
+     */
     align = src->u.NEInfo.WinHead.align;
     dst->u.NEInfo.WinHead.align = align;
     dst_ne->Res.Dir.ResShiftCount = align;
@@ -280,11 +294,11 @@ static bool copyOS2Body( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     return( false );
 } /* copyOS2Body */
 
-/*
+static RcStatus copyDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
+/******************************************************************
  * copyDebugInfo
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus copyDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
 {
     if( RESSEEK( src->fp, src->DebugOffset, SEEK_SET ) )
         return( RS_READ_ERROR );
@@ -304,9 +318,10 @@ static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err
 
     src_ne = &src->u.NEInfo;
     dst_ne = &dst->u.NEInfo;
-
-    /* set the info flag for the dst executable from the one flag and */
-    /* the command line options given */
+    /*
+     * set the info flag for the dst executable from the one flag and
+     * the command line options given
+     */
     info = src_ne->WinHead.info;
     if( CmdLineParms.PrivateDLL ) {
         info |= WIN_PRIVATE_DLL;
@@ -323,10 +338,13 @@ static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err
     if( CmdLineParms.ProtModeOnly ) {
         info |= OS2_PROT_MODE_ONLY;
     }
-
-    /* copy the fields in the os2_exe_header then change some of them */
+    /*
+     * copy the fields in the os2_exe_header then change some of them
+     */
     dst->WinHeadOffset = src->WinHeadOffset;
-    /* copy the WinHead fields up to, but excluding, the segment_off field */
+    /*
+     * copy the WinHead fields up to, but excluding, the segment_off field
+     */
     memcpy( &(dst_ne->WinHead), &(src_ne->WinHead),
             offsetof(os2_exe_header, segment_off) );
     dst_ne->WinHead.info = info;
@@ -352,20 +370,23 @@ static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err
     } else {
         dst_ne->WinHead.expver = VERSION_31_STAMP;
     }
-
-    /* seek to the start of the os2_exe_header in dst */
+    /*
+     * seek to the start of the os2_exe_header in dst
+     */
     if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
-
-    /* write the header */
+    /*
+     * write the header
+     */
     if( RESWRITE( dst->fp, &(dst_ne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
-
-    /* write the segment table */
+    /*
+     * write the segment table
+     */
     if( dst_ne->Seg.NumSegs > 0 ) {
         size_t  numwrite;
 
@@ -375,19 +396,20 @@ static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err
             return( RS_WRITE_ERROR );
         }
     }
-
-    /* write the resource table */
+    /*
+     * write the resource table
+     */
     ret = WriteWINResTable( dst->fp, &(dst_ne->Res), err_code );
     return( ret );
 
 } /* writeHeadAndTables */
 
-/*
+static RcStatus writeOS2HeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
+/*****************************************************************************************
  * Processing OS/2 NE modules is very very similar to Windows NE processing
  * but there are enough differences in detail to warrant separate
  * implementation to keep the two cleaner.
  */
-static RcStatus writeOS2HeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
 {
     NEExeInfo *     src_ne;
     NEExeInfo *     dst_ne;
@@ -396,12 +418,14 @@ static RcStatus writeOS2HeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *
 
     src_ne = &src->u.NEInfo;
     dst_ne = &dst->u.NEInfo;
-
-    /* copy the fields in the os2_exe_header then change some of them */
+    /*
+     * copy the fields in the os2_exe_header then change some of them
+     */
     dst->WinHeadOffset = src->WinHeadOffset;
-    /* copy the WinHead fields up to, but excluding, the segment_off field */
-    memcpy( &(dst_ne->WinHead), &(src_ne->WinHead),
-            offsetof(os2_exe_header, segment_off) );
+    /*
+     * copy the WinHead fields up to, but excluding, the segment_off field
+     */
+    memcpy( &(dst_ne->WinHead), &(src_ne->WinHead), offsetof(os2_exe_header, segment_off) );
     dst_ne->WinHead.info = src_ne->WinHead.info;
     dst_ne->WinHead.segment_off = sizeof( os2_exe_header );
     dst_ne->WinHead.resource_off = dst_ne->WinHead.segment_off +
@@ -419,20 +443,23 @@ static RcStatus writeOS2HeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *
     dst_ne->WinHead.target     = src_ne->WinHead.target;
     dst_ne->WinHead.otherflags = src_ne->WinHead.otherflags;
     dst_ne->WinHead.segments   = dst_ne->Seg.NumSegs;
-
-    /* seek to the start of the os2_exe_header in dst */
+    /*
+     * seek to the start of the os2_exe_header in dst
+     */
     if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
-
-    /* write the header */
+    /*
+     * write the header
+     */
     if( RESWRITE( dst->fp, &(dst_ne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
-
-    /* write the segment table */
+    /*
+     * write the segment table
+     */
     if( dst_ne->Seg.NumSegs > 0 ) {
         size_t  numwrite;
 
@@ -442,17 +469,20 @@ static RcStatus writeOS2HeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *
             return( RS_WRITE_ERROR );
         }
     }
-
-    /* write the resource table */
+    /*
+     * write the resource table
+     */
     ret = WriteOS2ResTable( dst->fp, &(dst_ne->OS2Res), err_code );
     return( ret );
 
 } /* writeOS2HeadAndTables */
 
 static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
-/* if this exe already contains resources find the end of them so we don't
-   copy them with debug information.  Otherwise the file will grow whenever
-   a resource file is added */
+/********************************************************************
+ * if this exe already contains resources find the end of them so we don't
+ * copy them with debug information.  Otherwise the file will grow whenever
+ * a resource file is added
+ */
 {
     NEExeInfo                   *src_ne;
     uint_32                     *src_debugoffset;
@@ -518,11 +548,11 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
     return( RS_OK );
 }
 
-/*
+static RcStatus writePEHeadAndObjTable( ExeFileInfo *dst )
+/*********************************************************
  * writePEHeadAndObjTable
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writePEHeadAndObjTable( ExeFileInfo *dst )
 {
     pe_object       *last_object;
     int             i;
@@ -531,7 +561,9 @@ static RcStatus writePEHeadAndObjTable( ExeFileInfo *dst )
     unsigned_32     object_align;
     pe_exe_header   *pehdr;
 
-    /* adjust the image size in the header */
+    /*
+     * adjust the image size in the header
+     */
     pehdr = dst->u.PEInfo.WinHead;
     num_objects = pehdr->fheader.num_objects;
     object_align = PE( *pehdr, object_align );
@@ -557,13 +589,13 @@ static RcStatus writePEHeadAndObjTable( ExeFileInfo *dst )
 
 } /* writePEHeadAndObjTable */
 
-/*
+bool MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
+/****************************************************************************
  * Windows NE files store resources in a special data structure. OS/2 NE
  * modules are quite different and store each resource in its own data
  * segment(s). The OS/2 resource table is completely different as well and
  * only contains resource types/IDs.
  */
-bool MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
 {
     RcStatus        ret;
     bool            error;
@@ -873,11 +905,11 @@ STOP_ERROR:
 } /* MergeResExePE */
 
 
-/*
+static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
+/*******************************************************
  * writeLXHeadAndTables
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
 {
     LXExeInfo       *dst_lx;
     size_t          length;
@@ -889,27 +921,31 @@ static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
     offset = sizeof( os2_flat_header );
     if( RESSEEK( dst->fp, dst->WinHeadOffset + offset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
-
-    // write object table
+    /*
+     * write object table
+     */
     length = dst_lx->OS2Head.num_objects * sizeof( object_record );
     if( RESWRITE( dst->fp, dst_lx->Objects, length ) != length )
         return( RS_WRITE_ERROR );
-
-    // write page table
+    /*
+     * write page table
+     */
     offset += length;
     length = dst_lx->OS2Head.num_pages * sizeof( lx_map_entry );
     if( RESWRITE( dst->fp, dst_lx->Pages, length ) != length )
         return( RS_WRITE_ERROR );
-
-    // write resource table
+    /*
+     * write resource table
+     */
     offset += length;
     for( i = 0; i < dst_lx->OS2Head.num_rsrcs; ++i ) {
         if( RESWRITE( dst->fp, &dst_lx->Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
             return( RS_WRITE_ERROR );
         }
     }
-
-    // finally write LX header
+    /*
+     * finally write LX header
+     */
     if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
@@ -920,11 +956,11 @@ static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
 } /* writeLXHeadAndTables */
 
 
-/*
+static RcStatus copyLXNonresData( ExeFileInfo *src, ExeFileInfo *dst )
+/*********************************************************************
  * copyLXNonresData
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus copyLXNonresData( ExeFileInfo *src, ExeFileInfo *dst )
 {
     os2_flat_header     *src_head;
     os2_flat_header     *dst_head;
@@ -940,8 +976,9 @@ static RcStatus copyLXNonresData( ExeFileInfo *src, ExeFileInfo *dst )
         dst_head->nonres_off = 0;
         return( RS_OK );
     }
-
-    // DebugOffset is pointing to the current EOF
+    /*
+     * DebugOffset is pointing to the current EOF
+     */
     dst_head->nonres_off = dst->DebugOffset;
 
     if( RESSEEK( src->fp, src_head->nonres_off, SEEK_SET ) )
@@ -950,18 +987,19 @@ static RcStatus copyLXNonresData( ExeFileInfo *src, ExeFileInfo *dst )
         return( RS_WRITE_ERROR );
 
     ret = CopyExeData( src->fp, dst->fp, src_head->nonres_size );
-
-    // Make DebugOffset point to dst EOF
+    /*
+     * Make DebugOffset point to dst EOF
+     */
     CheckDebugOffset( dst );
     return( ret );
 } /* copyLXNonresData */
 
 
-/*
+static RcStatus copyLXDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
+/********************************************************************
  * copyLXDebugInfo
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus copyLXDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
 {
     os2_flat_header     *src_head;
     os2_flat_header     *dst_head;

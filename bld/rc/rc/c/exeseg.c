@@ -56,11 +56,11 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
     }
 } /* allocSegTable */
 
-/*
+static RcStatus readSegTable( FILE *fp, uint_32 offset, SegTable *seg )
+/**********************************************************************
  * readSegTable
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus readSegTable( FILE *fp, uint_32 offset, SegTable *seg )
 {
     size_t          tablesize;
     size_t          numread;
@@ -112,7 +112,6 @@ RcStatus AllocAndReadWINSegTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_
 
 } /* AllocAndReadWINSegTables */
 
-
 RcStatus AllocAndReadOS2SegTables( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res, int *err_code )
 /******************************************************************************************************/
 {
@@ -159,10 +158,11 @@ RcStatus AllocAndReadOS2SegTables( ExeFileInfo *src, ExeFileInfo *dst, ResFileIn
 } /* AllocAndReadOS2SegTables */
 
 
-/********* WARNING *********/
-/* Hard coded constant. The value of sizeof( os2_reloc_item ) is to hard */
-/* to get from  wl  because of the other files that would have to be included */
-/* in order to get that structure */
+/********* WARNING *********
+ * Hard coded constant. The value of sizeof( os2_reloc_item ) is to hard
+ * to get from  wl  because of the other files that would have to be included
+ * in order to get that structure
+ */
 #define OS_RELOC_ITEM_SIZE      8
 
 uint_32 ComputeSegmentSize( FILE *fp, SegTable *segs, int shift_count )
@@ -228,10 +228,13 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
     zero = 0;
     error = false;
     ret = CPSEG_OK;
-
-    /* check if this is a segment that has no image in the exe file */
+    /*
+     * check if this is a segment that has no image in the exe file
+     */
     if( src_seg->address != 0 ) {
-        /* align in the dst file so that shift_count will be valid */
+        /*
+         * align in the dst file so that shift_count will be valid
+         */
         dst_offset = RESTELL( dst->fp );
         if( dst_offset == -1 ) {
             error = true;
@@ -245,10 +248,13 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
             }
             dst_offset += align_amount;
         }
-
-        /* move in the in file to the start of the segment */
+        /*
+         * move in the in file to the start of the segment
+         */
         if( !error ) {
-            /* convert the address to a long before shifting it */
+            /*
+             * convert the address to a long before shifting it
+             */
             if( RESSEEK( src->fp, (long)src_seg->address << src_shift_count, SEEK_SET ) ) {
                 error = true;
                 RcError( ERR_READING_EXE, src->name, strerror( errno ) );
@@ -265,7 +271,9 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
         }
 
         if( (src_seg->info & SEG_RELOC) && !error ) {
-            /* read the number of relocation items */
+            /*
+             * read the number of relocation items
+             */
             numread = RESREAD( src->fp, &numrelocs, sizeof( numrelocs ) );
             if( numread != sizeof( numrelocs ) ) {
                 error = true;
@@ -280,7 +288,9 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
                     RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
                 }
             }
-            /* copy the relocation information */
+            /*
+             * copy the relocation information
+             */
             if( !error ) {
                 error = myCopyExeData( src, dst, numrelocs * OS_RELOC_ITEM_SIZE );
             }
@@ -291,7 +301,9 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
 
         if( pad_end && ret != CPSEG_SEG_TOO_BIG && !error ) {
             align_amount = AlignAmount( RESTELL( dst->fp ), dst_shift_count );
-            /* make sure there is room for the memory arena header */
+            /*
+             * make sure there is room for the memory arena header
+             */
             if( align_amount < 16 ) {
                 align_amount += 16;
             }
@@ -299,9 +311,11 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
                 error = true;
                 RcError( ERR_WRITTING_FILE, dst->name );
             } else {
-                /* write something out so if we have just seeked past the
+                /*
+                 * write something out so if we have just seeked past the
                  * end of the file the file's size will be adjusted
-                 * appropriately */
+                 * appropriately
+                 */
                 if( RESWRITE( dst->fp, &zero, 1 ) != 1 ) {
                     error = true;
                     RcError( ERR_WRITTING_FILE, dst->name );
@@ -311,8 +325,9 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
     } else {
         dst_offset = 0;
     }
-
-    /* copy the segment record to dst_seg */
+    /*
+     * copy the segment record to dst_seg
+     */
     if( !error ) {
         dst_seg->size = src_seg->size;
         dst_seg->info = src_seg->info;
@@ -358,9 +373,11 @@ CpSegRc CopyWINSegments( ExeFileInfo *src, ExeFileInfo *dst, uint_16 sect2mask, 
     padend = !sect2;
 
     for( currseg = 0; currseg < num_segs; ++currseg ) {
-        /* if the bits are unequal and this is section 1 --> copy segment */
-        /* if the bits are equal and this is section 2   --> copy segment */
-        /* otherwise                                     --> do nothing */
+        /*
+         * if the bits are unequal and this is section 1 --> copy segment
+         * if the bits are equal and this is section 2   --> copy segment
+         * otherwise                                     --> do nothing
+         */
         if( ARE_BITS_EQUAL( sect2mask, sect2bits, src_seg->info ) == sect2 ) {
             cponeret = copyOneSegment( src_seg, dst_seg, src,
                                         dst, src_shift_count,
@@ -374,7 +391,9 @@ CpSegRc CopyWINSegments( ExeFileInfo *src, ExeFileInfo *dst, uint_16 sect2mask, 
         }
         if( cponeret == CPSEG_ERROR )
             break;
-        /* mark section 1 segments as preload */
+        /*
+         * mark section 1 segments as preload
+         */
         if( !sect2 ) {
             dst_seg->info |= SEG_PRELOAD;
         }
@@ -442,7 +461,9 @@ CpSegRc CopyOS2Segments( ExeFileInfo *src, ExeFileInfo *dst )
     } else if( src_seg_tbl->NumOS2ResSegs ) {
         uint_32     end_offset;
 
-        /* Must seek past the last segment in src file */
+        /*
+         * Must seek past the last segment in src file
+         */
         src_seg += src_seg_tbl->NumOS2ResSegs - 1;
         end_offset = (uint_32)src_seg->address << src_shift_count;
         if( src_seg->size == 0 ) {
