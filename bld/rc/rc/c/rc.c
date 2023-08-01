@@ -137,12 +137,12 @@ static bool Pass1( void )
     return( noerror );
 }
 
-/* Please note that this function is vital to the resource editors. Thusly
+static bool Pass2( void )
+/************************
+ * Please note that this function is vital to the resource editors. Thusly
  * any changes made to Pass2 should cause the notification of the
  * resource editor dude.
  */
-static bool Pass2( void )
-/**********************/
 {
     bool     noerror;
 
