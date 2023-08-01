@@ -81,10 +81,8 @@ static size_t InitStringList( WResDir dir, void **list, size_t len )
     WResResInfo     *resinfo;
     void            **element;
 
-    wind = WResFirstResource( dir );
     element = list;
-
-    while( !WResIsEmptyWindow( wind ) ) {
+    for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
         if( WResIsFirstResOfType( wind ) ) {
             typeinfo = WResGetTypeInfo( wind );
             if( typeinfo->TypeName.IsName ) {
@@ -105,7 +103,6 @@ static size_t InitStringList( WResDir dir, void **list, size_t len )
                 len--;
             }
         }
-        wind = WResNextResource( wind, dir );
     }
 
     return( element - list );

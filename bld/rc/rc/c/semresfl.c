@@ -102,10 +102,8 @@ static bool copyResourcesFromRes( const char *full_filename )
                 error = true;
             } else {
                 buffer = RESALLOC( BUFFER_SIZE );
-                wind = WResFirstResource( dir );
-                while( !WResIsEmptyWindow( wind ) ) {
+                for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
                     copyAResource( fp, &wind, buffer, full_filename );
-                    wind = WResNextResource( wind, dir );
                 }
                 RESFREE( buffer );
             }
