@@ -232,7 +232,7 @@ typedef struct fixed_record {
 /* The resource table entries type */
 typedef struct resource_table_record {
     unsigned_16         type;           /* resource type */
-    unsigned_16         id;             /* resource id */
+    unsigned_16         name;           /* resource name */
 } resource_table_record;
 
 /* repeated for each type */

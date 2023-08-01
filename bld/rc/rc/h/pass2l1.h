@@ -77,7 +77,7 @@ typedef struct ResTable {
 
 typedef struct OS2ResEntry {
     uint_16         res_type;   /* resource type */
-    uint_16         res_id;     /* resource id */
+    uint_16         res_name;   /* resource name */
     WResDirWindow   wind;       /* window into the current WResDir */
     bool            first_part; /* true unless non-first bit of > 64K resource */
     uint_16         seg_length; /* length of resource segment */

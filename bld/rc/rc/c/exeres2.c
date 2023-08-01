@@ -84,7 +84,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
 
         /* Fill in resource entries */
         entry->res_type   = type_id;
-        entry->res_id     = name_id;
+        entry->res_name   = name_id;
         entry->wind       = wind;
         entry->mem_flags  = langinfo->MemoryFlags;
         entry->seg_length = 0;  /* Zero means 64K */
@@ -93,7 +93,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
         for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
             entry->res_type   = type_id;
-            entry->res_id     = name_id;
+            entry->res_name   = name_id;
             entry->wind       = wind;
             entry->mem_flags  = langinfo->MemoryFlags;
             entry->seg_length = 0;
@@ -134,8 +134,8 @@ RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
         restab->table_size   = 0;
     } else {
         restab->num_res_segs = ComputeOS2ResSegCount( dir );
-        /* One resource type/id record per resource segment, 16-bits each */
-        restab->table_size   = restab->num_res_segs * 2 * sizeof( uint_16 );
+        /* One resource type/id record per resource segment */
+        restab->table_size   = restab->num_res_segs * sizeof( resource_table_record );
 
         restab->resources = RESALLOC( restab->num_res_segs * sizeof( restab->resources[0] ) );
         if( restab->resources == NULL ) {
@@ -323,21 +323,16 @@ RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
  * NB when an error occurs this function must return without altering errno
  */
 {
-    RcStatus                    ret;
-    uint_16                     res_type;
-    uint_16                     res_id;
-    int                         i;
+    RcStatus                ret;
+    resource_table_record   res_tab;
+    int                     i;
 
     ret = RS_OK;
     for( i = 0; i < restab->num_res_segs && ret == RS_OK; i++ ) {
-        res_type = restab->resources[i].res_type;
-        res_id   = restab->resources[i].res_id;
-        if( RESWRITE( fp, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        res_tab.type = restab->resources[i].res_type;
+        res_tab.name = restab->resources[i].res_name;
+        if( RESWRITE( fp, &res_tab, sizeof( res_tab ) ) != sizeof( res_tab ) ) {
             ret = RS_WRITE_ERROR;
-        } else {
-            if( RESWRITE( fp, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
-                ret = RS_WRITE_ERROR;
-            }
         }
     }
 

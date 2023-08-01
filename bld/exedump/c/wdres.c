@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,6 @@
 #include "wdglb.h"
 #include "wdfunc.h"
 
-
-typedef struct os2_res_entry {
-    unsigned_16         type_id;
-    unsigned_16         name_id;
-} os2_res_entry;
 
 static  const_string_table resource_type[] = {
     "Unkown resource type\n",
@@ -258,28 +253,28 @@ static void dmp_resrc_tab_win( void )
 static void dmp_resrc_tab_os2( void )
 /***********************************/
 {
-    unsigned_16     i;
-    unsigned_16     id;
-    os2_res_entry   res_tab;
+    unsigned_16             i;
+    unsigned_16             type;
+    resource_table_record   res_tab;
 
-    id = 30;                /* if id > 22 a name won't be printed out */
+    type = 30;              /* if type > 22 a name won't be printed out */
     Wdputslc( "    seg#   type id   name id\n" );
     Wdputslc( "    ====   =======   =======\n" );
     for( i = 0; i < Os2_head.resource; i++ ) {
-        Wread( &res_tab, sizeof( os2_res_entry ) );
-        if( res_tab.type_id != id ) {
-            id = res_tab.type_id;
-            if( id < 23 ) {
+        Wread( &res_tab, sizeof( res_tab ) );
+        if( res_tab.type != type ) {
+            type = res_tab.type;
+            if( type < 23 ) {
                 Wdputs( "type:  " );
-                Wdputslc( resource_type_os2[ res_tab.type_id ] );
+                Wdputslc( resource_type_os2[type] );
             }
         }
         Wdputs( "    " );
         Puthex( (unsigned_16)( i + Os2_head.segments - Os2_head.resource + 1 ), 4 );
         Wdputs( "   " );
-        Puthex( res_tab.type_id, 4 );
+        Puthex( res_tab.type, 4 );
         Wdputs( "      " );
-        Puthex( res_tab.name_id, 4 );
+        Puthex( res_tab.name, 4 );
         Wdputs( "      " );
         Wdputslc( "\n" );
     }
