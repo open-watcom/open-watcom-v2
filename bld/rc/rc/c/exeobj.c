@@ -105,7 +105,7 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
                  */
                 dst_num_objects--;
                 res_offset = src->u.PEInfo.Objects[obj_num].physical_offset + src->u.PEInfo.Objects[obj_num].physical_size;
-                if( res_offset > src->DebugOffset ) {
+                if( src->DebugOffset < res_offset ) {
                     src->DebugOffset = res_offset;
                 }
                 continue;
