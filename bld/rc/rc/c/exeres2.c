@@ -60,11 +60,10 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
     uint_16         name_id;
     int_32          length;
 
-    entry = restab->resources;
-
     /*
      * Walk through the WRes directory
      */
+    entry = restab->resources;
     for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
         langinfo = WResGetLangInfo( wind );
         typeinfo = WResGetTypeInfo( wind );
@@ -108,17 +107,16 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
 }
 
 
-static int compareOS2ResTypeId( const void * _entry1, const void * _entry2 )
-/*************************************************************************/
+static int compareOS2ResTypeId( const void *e1, const void *e2 )
+/**************************************************************/
 {
-    const LXResEntry *entry1 = _entry1;
-    const LXResEntry *entry2 = _entry2;
-
-    if( entry1->resource.type_id == entry2->resource.type_id ) {
-        return( entry1->resource.name_id - entry2->resource.name_id );
+#define LXRE(e)	((LXResEntry *)(e))
+    if( LXRE(e1)->resource.type_id == LXRE(e2)->resource.type_id ) {
+        return( LXRE(e1)->resource.name_id - LXRE(e2)->resource.name_id );
     } else {
-        return( entry1->resource.type_id - entry2->resource.type_id );
+        return( LXRE(e1)->resource.type_id - LXRE(e2)->resource.type_id );
     }
+#undef LXRE
 } /* compareOS2ResTypeId */
 
 
@@ -215,7 +213,7 @@ static RcStatus copyOneResource( WResLangInfo *langinfo, FILE *res_fp,
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
-        dst_offset += align_amount;
+//        dst_offset += align_amount;
     }
 
     if( ret == RS_OK ) {
@@ -242,27 +240,18 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
 {
     OS2ResEntry         *entry;
     WResDirWindow       wind;
-    OS2ResTable         *restab;
     WResLangInfo        *langinfo;
     RcStatus            ret;
     int                 err_code;
     int                 shift_count;
-    int                 currseg;
-    segment_record      *tmpseg;
+    segment_record      *dst_seg;
     uint_32             seg_offset;
     long                align_amount;
     int                 i;
 
-    restab    = &(dst->u.NEInfo.OS2Res);
-    tmpseg    = dst->u.NEInfo.Seg.Segments;
-    currseg   = dst->u.NEInfo.Seg.NumSegs - dst->u.NEInfo.Seg.NumOS2ResSegs;
-    entry     = restab->resources;
     ret       = RS_OK;
     err_code  = 0;
-
-    tmpseg += currseg;
     shift_count = dst->u.NEInfo.WinHead.align;
-    seg_offset = 0;     // shut up gcc
     /*
      * We may need to add padding before the first resource segment
      */
@@ -274,7 +263,10 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
     /*
      * Walk through the resource entries
      */
-    for( i = 0; i < restab->num_res_segs; i++, entry++, tmpseg++ ) {
+    seg_offset = 0;
+    entry = dst->u.NEInfo.OS2Res.resources;
+    dst_seg = dst->u.NEInfo.Seg.Segments + ( dst->u.NEInfo.Seg.NumSegs - dst->u.NEInfo.Seg.NumOS2ResSegs );
+    for( i = 0; i < dst->u.NEInfo.OS2Res.num_res_segs; i++, entry++, dst_seg++ ) {
         wind = entry->wind;
         langinfo = WResGetLangInfo( wind );
 
@@ -286,18 +278,18 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
         /*
          * Fill in segment structure
          */
-        tmpseg->address = seg_offset >> shift_count;
-        tmpseg->size    = entry->seg_length;
-        tmpseg->min     = entry->seg_length;
-        tmpseg->info    = SEG_DATA | SEG_READ_ONLY | SEG_LEVEL_3;
+        dst_seg->address = seg_offset >> shift_count;
+        dst_seg->size    = entry->seg_length;
+        dst_seg->min     = entry->seg_length;
+        dst_seg->info    = SEG_DATA | SEG_READ_ONLY | SEG_LEVEL_3;
         if( entry->mem_flags & MEMFLAG_MOVEABLE )
-            tmpseg->info |= SEG_MOVABLE;
+            dst_seg->info |= SEG_MOVABLE;
         if( entry->mem_flags & MEMFLAG_PURE )
-            tmpseg->info |= SEG_PURE;
+            dst_seg->info |= SEG_PURE;
         if( entry->mem_flags & MEMFLAG_PRELOAD )
-            tmpseg->info |= SEG_PRELOAD;
+            dst_seg->info |= SEG_PRELOAD;
         if( entry->mem_flags & MEMFLAG_DISCARDABLE )
-            tmpseg->info |= SEG_DISCARD;
+            dst_seg->info |= SEG_DISCARD;
         /*
          * For non-last segment of a resource, there's nothing to copy
          */
@@ -307,11 +299,11 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
          * Copy resource data
          */
         ret = copyOneResource( langinfo, res->fp, dst->fp, shift_count, &err_code );
-        if( ret != RS_OK )
+        if( ret != RS_OK ) {
             break;
-
-        CheckDebugOffset( dst );
+        }
     }
+    CheckDebugOffset( dst );
 
     switch( ret ) {
     case RS_WRITE_ERROR:

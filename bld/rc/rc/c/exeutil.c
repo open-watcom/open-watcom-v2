@@ -133,7 +133,7 @@ uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
     shift_old = 16;
     shift = (uint_16)( FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15 );
     /* It is possible for the algorithm to blow up so don't check for != use <*/
-    while( shift < shift_old ) {
+    while( shift_old > shift ) {
         shift_old = shift;
         shift = (uint_16)( FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15 );
     }
@@ -170,7 +170,7 @@ void CheckDebugOffset( ExeFileInfo * exe )
     uint_32     curroffset;
 
     curroffset = RESTELL( exe->fp );
-    if( curroffset > exe->DebugOffset ) {
+    if( exe->DebugOffset < curroffset ) {
         exe->DebugOffset = curroffset;
     }
 } /* CheckDebugOffset */

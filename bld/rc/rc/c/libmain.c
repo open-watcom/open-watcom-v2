@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +39,9 @@
 BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
 /**************************************************************/
 {
-    inst = inst;
-    reason = reason;
-    ptr = ptr;
+    (void)inst;
+    (void)reason;
+    (void)ptr;
     return( TRUE );
 }
 
@@ -51,18 +52,17 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
 int WINAPI LibMain( HANDLE inst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
 /*********************************************************************************/
 {
-    wDataSeg = wDataSeg;
-    wHeapSize = wHeapSize;
-    lpszCmdLine = lpszCmdLine;
-    inst = inst;
+    (void)wDataSeg;
+    (void)wHeapSize;
+    (void)lpszCmdLine;
+    (void)inst;
     return( 1 );
 }
 
 int WINAPI WEP( int res )
 /***********************/
 {
-    res = res;
-
+    (void)res;
     return( 1 );
 }
 

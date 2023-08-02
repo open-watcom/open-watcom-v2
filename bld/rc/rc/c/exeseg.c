@@ -421,7 +421,7 @@ CpSegRc CopyOS2Segments( ExeFileInfo *src, ExeFileInfo *dst )
 {
     segment_record      *src_seg;
     segment_record      *dst_seg;
-    int                 num_segs;
+    int                 num_exesegs;
     int                 src_shift_count;
     int                 dst_shift_count;
     int                 currseg;
@@ -430,14 +430,14 @@ CpSegRc CopyOS2Segments( ExeFileInfo *src, ExeFileInfo *dst )
 
     src_seg = src->u.NEInfo.Seg.Segments;
     dst_seg = dst->u.NEInfo.Seg.Segments;
-    num_segs = src->u.NEInfo.Seg.NumSegs - src->u.NEInfo.Seg.NumOS2ResSegs;
+    num_exesegs = src->u.NEInfo.Seg.NumSegs - src->u.NEInfo.Seg.NumOS2ResSegs;
     src_shift_count = src->u.NEInfo.WinHead.align;
     dst_shift_count = dst->u.NEInfo.WinHead.align;
 
     ret = CPSEG_OK;
     cponeret = CPSEG_OK;
 
-    for( currseg = 0; currseg < num_segs; ++currseg ) {
+    for( currseg = 0; currseg < num_exesegs; ++currseg ) {
         cponeret = copyOneSegment( src_seg, dst_seg, src, dst,
                                 src_shift_count, dst_shift_count, false );
         if( cponeret == CPSEG_SEG_TOO_BIG ) {

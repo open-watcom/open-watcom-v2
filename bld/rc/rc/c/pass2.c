@@ -464,7 +464,6 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
  * a resource file is added
  */
 {
-    uint_32                     *src_debugoffset;
     FILE                        *src_fp;
     size_t                      numread;
     unsigned                    i;
@@ -475,10 +474,8 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
     resource_type_record        typeinfo;
     resource_record             nameinfo;
 
-    end = 0;
     src_offset = src->WinHeadOffset;
     src_fp = src->fp;
-    src_debugoffset = &src->DebugOffset;
 
     if( src->u.NEInfo.WinHead.resource_off == src->u.NEInfo.WinHead.resident_off ) {
         return( RS_OK );
@@ -501,6 +498,7 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
         *err_code = errno;
         return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
+    end = 0;
     while( typeinfo.type != 0 ) {
         for( i = typeinfo.num_resources; i > 0 ; --i ) {
             numread = RESREAD( src_fp, &nameinfo, sizeof( nameinfo ) );
@@ -509,7 +507,7 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
                 return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
             }
             tmp = nameinfo.offset + nameinfo.length;
-            if( tmp > end ) {
+            if( end < tmp ) {
                 end = tmp;
             }
         }
@@ -520,8 +518,8 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
         }
     }
     end *= alignshift;
-    if( end > *src_debugoffset ) {
-        *src_debugoffset = end;
+    if( src->DebugOffset < end ) {
+        src->DebugOffset = end;
     }
     return( RS_OK );
 }
