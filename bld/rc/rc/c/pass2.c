@@ -298,7 +298,7 @@ static RcStatus copyDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
 
 static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
 {
-    uint_16         tableshift;     /* amount the tables are shifted in the tmp file */
+    uint_16         tableshift;     /* amount the tables are shifted in the dst file */
     uint_16         info;           /* os2_exe_header.info */
     RcStatus        ret;
 
@@ -395,7 +395,7 @@ static RcStatus writeOS2HeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *
  * implementation to keep the two cleaner.
  */
 {
-    uint_16         tableshift;     /* amount the tables are shifted in the tmp file */
+    uint_16         tableshift;     /* amount the tables are shifted in the dst file */
     RcStatus        ret;
 
     /*
@@ -733,7 +733,7 @@ REPORT_ERROR:
     case RS_NO_MEM:
         break;
     default:
-       RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
     /* fall through */
 HANDLE_ERROR:
@@ -889,12 +889,9 @@ static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
  * NB when an error occurs this function must return without altering errno
  */
 {
-    LXExeInfo       *dst_lx;
     size_t          length;
     long            offset;
     unsigned        i;
-
-    dst_lx = &dst->u.LXInfo;
 
     offset = sizeof( os2_flat_header );
     if( RESSEEK( dst->fp, dst->WinHeadOffset + offset, SEEK_SET ) )
@@ -902,22 +899,22 @@ static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
     /*
      * write object table
      */
-    length = dst_lx->OS2Head.num_objects * sizeof( object_record );
-    if( RESWRITE( dst->fp, dst_lx->Objects, length ) != length )
+    length = dst->u.LXInfo.OS2Head.num_objects * sizeof( object_record );
+    if( RESWRITE( dst->fp, dst->u.LXInfo.Objects, length ) != length )
         return( RS_WRITE_ERROR );
     /*
      * write page table
      */
     offset += length;
-    length = dst_lx->OS2Head.num_pages * sizeof( lx_map_entry );
-    if( RESWRITE( dst->fp, dst_lx->Pages, length ) != length )
+    length = dst->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
+    if( RESWRITE( dst->fp, dst->u.LXInfo.Pages, length ) != length )
         return( RS_WRITE_ERROR );
     /*
      * write resource table
      */
     offset += length;
-    for( i = 0; i < dst_lx->OS2Head.num_rsrcs; ++i ) {
-        if( RESWRITE( dst->fp, &dst_lx->Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
+    for( i = 0; i < dst->u.LXInfo.OS2Head.num_rsrcs; ++i ) {
+        if( RESWRITE( dst->fp, &dst->u.LXInfo.Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -927,7 +924,7 @@ static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
     if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
-    if( RESWRITE( dst->fp, &dst_lx->OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
+    if( RESWRITE( dst->fp, &dst->u.LXInfo.OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
         return( RS_WRITE_ERROR );
 
     return( RS_OK );
@@ -1066,7 +1063,7 @@ REPORT_ERROR:
     case RS_NO_MEM:
         break;
     default:
-       RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
     /* fall through */
 HANDLE_ERROR:
