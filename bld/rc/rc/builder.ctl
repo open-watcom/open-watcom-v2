@@ -62,14 +62,17 @@ set PROJDIR=<CWD>
     <CCCMD> rdos386/*.uni           "<OWRELROOT>/rdos/"
 
     <CCCMD> linuxx64/wrc.exe        "<OWRELROOT>/binl64/wrc"
+    <CCCMD> linuxx64/wrc.sym        "<OWRELROOT>/binl64/"
     <CCCMD> linuxx64/*.uni          "<OWRELROOT>/binl64/"
     <CCCMD> ntx64.dll/wrc.exe       "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wrcd.dll      "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/*.uni         "<OWRELROOT>/binnt64/"
 
     <CCCMD> linuxarm/wrc.exe        "<OWRELROOT>/arml/wrc"
+    <CCCMD> linuxarm/wrc.sym        "<OWRELROOT>/arml/"
     <CCCMD> linuxarm/*.uni          "<OWRELROOT>/arml/"
     <CCCMD> linuxa64/wrc.exe        "<OWRELROOT>/arml64/wrc"
+    <CCCMD> linuxa64/wrc.sym        "<OWRELROOT>/arml64/"
     <CCCMD> linuxa64/*.uni          "<OWRELROOT>/arml64/"
     <CCCMD> osxx64/wrc.exe          "<OWRELROOT>/bino64/wrc"
     <CCCMD> osxx64/*.uni            "<OWRELROOT>/bino64/"

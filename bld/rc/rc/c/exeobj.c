@@ -214,9 +214,9 @@ bool CopyExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
         default:
             break;
         }
-        CheckDebugOffset( src );
-        CheckDebugOffset( dst );
     }
+    CheckDebugOffset( src );
+    CheckDebugOffset( dst );
 
     return( false );
 } /* CopyExeObjects */
