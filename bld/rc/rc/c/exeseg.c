@@ -43,6 +43,7 @@
 
 
 static RcStatus allocSegTable( SegTable *seg, int *err_code )
+/***********************************************************/
 {
     int     tablesize;
 
@@ -56,21 +57,19 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
     }
 } /* allocSegTable */
 
-static RcStatus readSegTable( FILE *fp, uint_32 offset, SegTable *seg )
-/**********************************************************************
+static RcStatus readSegTable( FILE *fp, uint_32 offset, segment_record *segments, size_t size )
+/**********************************************************************************************
  * readSegTable
  * NB when an error occurs this function must return without altering errno
  */
 {
-    size_t          tablesize;
     size_t          numread;
-
-    tablesize = seg->NumSegs * sizeof( segment_record );
 
     if( RESSEEK( fp, offset, SEEK_SET ) )
         return( RS_READ_ERROR );
-    numread = RESREAD( fp, seg->Segments, tablesize );
-    if( numread != tablesize ) {
+    size *= sizeof( *segments );
+    numread = RESREAD( fp, segments, size );
+    if( numread != size ) {
         return( RESIOERR( fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
@@ -81,19 +80,19 @@ RcStatus AllocAndReadWINSegTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_
 /************************************************************************************/
 {
     RcStatus            ret;
-    uint_32             head_offset;
+    uint_32             segments_off;
     SegTable            *src_seg;
     SegTable            *dst_seg;
-    os2_exe_header      *head;
+    size_t              num_segs;
 
     src_seg = &(src->u.NEInfo.Seg);
     dst_seg = &(dst->u.NEInfo.Seg);
 
-    head = &(src->u.NEInfo.WinHead);
-    head_offset = src->WinHeadOffset;
+    segments_off = src->WinHeadOffset + src->u.NEInfo.WinHead.segment_off;
 
-    src_seg->NumSegs = head->segments;
-    dst_seg->NumSegs = head->segments;
+    num_segs = src->u.NEInfo.WinHead.segments;
+    src_seg->NumSegs = num_segs;
+    dst_seg->NumSegs = num_segs;
     ret = allocSegTable( src_seg, err_code );
     if( ret != RS_OK )
         return( ret );
@@ -101,12 +100,12 @@ RcStatus AllocAndReadWINSegTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_
     if( ret != RS_OK )
         return( ret );
 
-    ret = readSegTable( src->fp, head_offset + head->segment_off, src_seg );
+    ret = readSegTable( src->fp, segments_off, src_seg->Segments, num_segs );
     if( ret != RS_OK ) {
         *err_code = errno;
         return( ret );
     }
-    ret = readSegTable( src->fp, head_offset + head->segment_off, dst_seg );
+    ret = readSegTable( src->fp, segments_off, dst_seg->Segments, num_segs );
     *err_code = errno;
     return( ret );
 
@@ -118,24 +117,24 @@ RcStatus AllocAndReadOS2SegTables( ExeFileInfo *src, ExeFileInfo *dst, ResFileIn
     RcStatus            ret;
     int                 src_res;
     int                 dst_res;
-    uint_32             head_offset;
+    uint_32             segments_off;
     SegTable            *src_seg;
     SegTable            *dst_seg;
-    os2_exe_header      *head;
+    size_t              num_segs;
 
     src_res = src->u.NEInfo.WinHead.resource;
     src_seg = &(src->u.NEInfo.Seg);
     dst_seg = &(dst->u.NEInfo.Seg);
     dst_res = ComputeOS2ResSegCount( res->Dir );
 
-    head = &(src->u.NEInfo.WinHead);
-    head_offset = src->WinHeadOffset;
+    segments_off = src->WinHeadOffset + src->u.NEInfo.WinHead.segment_off;
 
-    if( (int_32)head->segments - src_res < 0 )
+    num_segs = src->u.NEInfo.WinHead.segments;
+    if( num_segs < src_res )
         return( RS_BAD_FILE_FMT );
 
-    src_seg->NumSegs = head->segments;
-    dst_seg->NumSegs = src_seg->NumSegs - src_res + dst_res;
+    src_seg->NumSegs = num_segs;
+    dst_seg->NumSegs = num_segs - src_res + dst_res;
     src_seg->NumOS2ResSegs = src_res;
     dst_seg->NumOS2ResSegs = dst_res;
 
@@ -147,12 +146,14 @@ RcStatus AllocAndReadOS2SegTables( ExeFileInfo *src, ExeFileInfo *dst, ResFileIn
     if( ret != RS_OK )
         return( ret );
 
-    ret = readSegTable( src->fp, head_offset + head->segment_off, src_seg );
+    ret = readSegTable( src->fp, segments_off, src_seg->Segments, num_segs );
     if( ret != RS_OK ) {
         *err_code = errno;
         return( ret );
     }
-    ret = readSegTable( src->fp, head_offset + head->segment_off, dst_seg );
+    if( num_segs > dst_seg->NumSegs )
+        num_segs = dst_seg->NumSegs;
+    ret = readSegTable( src->fp, segments_off, dst_seg->Segments, num_segs );
     *err_code = errno;
     return( ret );
 } /* AllocAndReadOS2SegTables */
