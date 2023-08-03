@@ -34,7 +34,7 @@
 #ifndef RCIO_2_INCLUDED
 #define RCIO_2_INCLUDED
 
-extern bool         CopyFileToOutFile( FILE *inp_fp, const char *out_name );
+extern bool         CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe );
 extern bool         RcPass2IoInit( void );
 extern void         RcPass2IoShutdown( bool noerror );
 

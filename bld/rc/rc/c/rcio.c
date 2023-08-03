@@ -677,7 +677,7 @@ static void Pass1ResFileShutdown( void )
                 }
             }
             if( !error ) {
-                CopyFileToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
+                CopyFileToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName, false );
             }
         }
         WResFreeDir( CurrResFile.dir );

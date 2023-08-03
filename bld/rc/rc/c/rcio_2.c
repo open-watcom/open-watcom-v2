@@ -40,6 +40,7 @@
 #else
     #include <process.h>
 #endif
+#include "wio.h"
 #include "global.h"
 #include "rcerrors.h"
 #include "reserr.h"
@@ -60,30 +61,47 @@
 
 #define BUFFER_SIZE         1024
 
-bool CopyFileToOutFile( FILE *inp_fp, const char *out_name )
-/**********************************************************/
+bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
+/**********************************************************************/
 {
     RcStatus    status;      /* error while deleting or renaming */
     FILE        *out_fp;
     size_t      numread;
     char        *buffer;
 
+    status = RS_OK;
+    /*
+     * first delete output file if exists
+     */
+    if( access( out_name, F_OK ) == 0 ) {
+        remove( out_name );
+    }
+
     buffer = RESALLOC( BUFFER_SIZE );
 
-    status = RS_OK;
     RESSEEK( inp_fp, 0, SEEK_SET );
+    /*
+     * create output file and copy content to it
+     */
     out_fp = ResOpenFileRW( out_name );
-    while( (numread = RESREAD( inp_fp, buffer, BUFFER_SIZE )) != 0 ) {
-        if( numread != BUFFER_SIZE && RESIOERR( inp_fp, numread ) ) {
-            status = RS_READ_ERROR;
-            break;
+    if( out_fp == NULL ) {
+        RcError( ERR_CANT_OPEN_FILE, out_name, "unknown error" );
+    } else {
+        while( (numread = RESREAD( inp_fp, buffer, BUFFER_SIZE )) != 0 ) {
+            if( numread != BUFFER_SIZE && RESIOERR( inp_fp, numread ) ) {
+                status = RS_READ_ERROR;
+                break;
+            }
+            if( RESWRITE( out_fp, buffer, numread ) != numread ) {
+                status = RS_WRITE_ERROR;
+                break;
+            }
         }
-        if( RESWRITE( out_fp, buffer, numread ) != numread ) {
-            status = RS_WRITE_ERROR;
-            break;
+        ResCloseFile( out_fp );
+        if( isexe ) {
+            chmod( out_name, PMODE_RWX );
         }
     }
-    ResCloseFile( out_fp );
     RESFREE( buffer );
     return( status == RS_OK );
 
@@ -305,7 +323,7 @@ void RcPass2IoShutdown( bool noerror )
     CloseResFiles( Pass2Info.ResFile );
 
     if( noerror ) {
-        CopyFileToOutFile( dst->fp, CmdLineParms.OutExeFileName );
+        CopyFileToOutFile( dst->fp, CmdLineParms.OutExeFileName, true );
 #ifdef __UNIX__
         {
             struct stat     exe_stat;
