@@ -1,6 +1,10 @@
 proj_name = vi
 
-name = vix
+!ifeq sys_windowed 1
+name = viw
+!else
+name = vi
+!endif
 
 !ifndef vi_autodepends
 vi_autodepends = .AUTODEPEND
@@ -15,6 +19,7 @@ vi_dos_extender = causeway
 error_dat = ../dat/error.dat
 
 additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
+additional_clean_subdirs = $(bin_subdir)
 
 !include cproj.mif
 !include defrule.mif
@@ -34,18 +39,25 @@ additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
 !include ../mif/link.mif
 !include ../mif/bind.mif
 
+!ifeq host_os win
+!ifeq host_cpu 386
+name = viw32
+!endif
+!endif
+
+$(bin_subdir) : .EXPLICIT
+    mkdir $@
+
 .dat : $(vi_dir)/dat
 
 #
 # bind vi scripts to final vi executable
 #
-vi.exe: $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
+$(bin_subdir)/$(name).exe: $(bin_subdir) $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
     @%make edbind_data
-    copy $(name).exe vi.exe
-!ifdef __WATCOM_TOOLS__
-    copy $(name).sym vi.sym
-!endif
+    copy $(name).exe $@
+    copy $(name).sym $^*.sym
 
 #
 # compile vi scripts to bind to final vi executable
