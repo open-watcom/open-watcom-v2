@@ -32,6 +32,8 @@ set PROJDIR=<CWD>
     <CCCMD> linux/h/arch/i386/sys/*   "<OWRELROOT>/lh/arch/i386/sys/"
     <CCCMD> linux/h/arch/mips/*       "<OWRELROOT>/lh/arch/mips/"
     <CCCMD> linux/h/arch/mips/sys/*   "<OWRELROOT>/lh/arch/mips/sys/"
+    <CCCMD> linux/h/arch/ppc/*        "<OWRELROOT>/lh/arch/ppc/"
+    <CCCMD> linux/h/arch/ppc/sys/*    "<OWRELROOT>/lh/arch/ppc/sys/"
 
     <CCCMD> qnx/h/*                   "<OWRELROOT>/qh/"
     <CCCMD> qnx/h/sys/*               "<OWRELROOT>/qh/sys/"

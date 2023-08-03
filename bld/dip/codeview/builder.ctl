@@ -52,6 +52,7 @@ set PROJDIR=<CWD>
     <CCCMD> rdos386/<PROJNAME>.sym     "<OWRELROOT>/rdos/"
 
     <CCCMD> linuxx64/<PROJNAME>.so      "<OWRELROOT>/binl64/"
+    <CCCMD> linuxx64/<PROJNAME>.sym     "<OWRELROOT>/binl64/"
     <CCCMD> ntx64/<PROJNAME>.dll        "<OWRELROOT>/binnt64/"
 
 [ BLOCK . . ]

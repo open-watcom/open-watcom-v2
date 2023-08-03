@@ -60,6 +60,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccd386.dll    "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/<OWOBJDIR>/wcc38601.int   "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/<OWOBJDIR>/wcc386.exe      "<OWRELROOT>/binl64/wcc386"
+    <CCCMD> linuxx64/<OWOBJDIR>/wcc386.sym      "<OWRELROOT>/binl64/"
     <CCCMD> linuxx64/<OWOBJDIR>/wcc38601.int    "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/<OWOBJDIR>/wcc386.exe      "<OWRELROOT>/arml/wcc386"
     <CCCMD> linuxarm/<OWOBJDIR>/wcc38601.int    "<OWRELROOT>/arml/"

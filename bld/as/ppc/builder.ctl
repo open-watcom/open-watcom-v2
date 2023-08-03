@@ -40,6 +40,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> ntx64/wasppc.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wasppc.exe   "<OWRELROOT>/binl64/wasppc"
+    <CCCMD> linuxx64/wasppc.sym   "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/wasppc.exe   "<OWRELROOT>/arml/wasppc"
     <CCCMD> linuxa64/wasppc.exe   "<OWRELROOT>/arml64/wasppc"
     <CCCMD> osxx64/wasppc.exe     "<OWRELROOT>/bino64/wasppc"

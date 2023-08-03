@@ -40,6 +40,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> ntx64/ide2make.exe    "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/ide2make.exe "<OWRELROOT>/binl64/ide2make"
+    <CCCMD> linuxx64/ide2make.sym "<OWRELROOT>/binl64/"
 
 [ BLOCK . . ]
 

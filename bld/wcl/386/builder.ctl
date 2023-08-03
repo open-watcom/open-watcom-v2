@@ -40,6 +40,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> ntx64/wcl386.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wcl386.exe   "<OWRELROOT>/binl64/wcl386"
+    <CCCMD> linuxx64/wcl386.sym   "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/wcl386.exe   "<OWRELROOT>/arml/wcl386"
     <CCCMD> linuxa64/wcl386.exe   "<OWRELROOT>/arml64/wcl386"
     <CCCMD> osxx64/wcl386.exe     "<OWRELROOT>/bino64/wcl386"

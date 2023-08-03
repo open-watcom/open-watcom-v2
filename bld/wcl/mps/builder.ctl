@@ -36,6 +36,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> ntx64/wclmps.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wclmps.exe   "<OWRELROOT>/binl64/wclmps"
+    <CCCMD> linuxx64/wclmps.sym   "<OWRELROOT>/binl64/"
 
 [ BLOCK . . ]
 

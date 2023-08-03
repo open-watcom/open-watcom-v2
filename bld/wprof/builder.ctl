@@ -34,6 +34,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wprof.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64c/wprof.exe     "<OWRELROOT>/binnt64/wprofc.exe"
     <CCCMD> linuxx64/wprof.exe   "<OWRELROOT>/binl64/wprof"
+    <CCCMD> linuxx64/wprof.sym   "<OWRELROOT>/binl64/"
 
 [ BLOCK . . ]
 

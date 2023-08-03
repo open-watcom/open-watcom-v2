@@ -40,6 +40,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> ntx64/wclaxp.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wclaxp.exe   "<OWRELROOT>/binl64/wclaxp"
+    <CCCMD> linuxx64/wclaxp.sym   "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/wclaxp.exe   "<OWRELROOT>/arml/wclaxp"
     <CCCMD> linuxa64/wclaxp.exe   "<OWRELROOT>/arml64/wclaxp"
     <CCCMD> osxx64/wclaxp.exe     "<OWRELROOT>/bino64/wclaxp"

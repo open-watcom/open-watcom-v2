@@ -44,6 +44,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> ntx64/wdis.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wdis.exe   "<OWRELROOT>/binl64/wdis"
+    <CCCMD> linuxx64/wdis.sym   "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/wdis.exe   "<OWRELROOT>/arml/wdis"
     <CCCMD> linuxa64/wdis.exe   "<OWRELROOT>/arml64/wdis"
     <CCCMD> osxx64/wdis.exe     "<OWRELROOT>/bino64/wdis"

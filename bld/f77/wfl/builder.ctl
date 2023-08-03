@@ -45,7 +45,9 @@ set PROJDIR=<CWD>
     <CCCMD> axp/ntx64/wflaxp.exe        "<OWRELROOT>/binnt64/"
 
     <CCCMD> i86/linuxx64/wfl.exe        "<OWRELROOT>/binl64/wfl"
+    <CCCMD> i86/linuxx64/wfl.sym        "<OWRELROOT>/binl64/"
     <CCCMD> 386/linuxx64/wfl386.exe     "<OWRELROOT>/binl64/wfl386"
+    <CCCMD> 386/linuxx64/wfl386.sym     "<OWRELROOT>/binl64/"
 
 [ BLOCK . . ]
 

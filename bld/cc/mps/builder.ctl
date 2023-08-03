@@ -58,6 +58,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccdmps.dll    "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccmps01.int   "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/<OWOBJDIR>/wccmps.exe      "<OWRELROOT>/binl64/wccmps"
+    <CCCMD> linuxx64/<OWOBJDIR>/wccmps.sym      "<OWRELROOT>/binl64/"
     <CCCMD> linuxx64/<OWOBJDIR>/wccmps01.int    "<OWRELROOT>/binl64/"
     <CCCMD> linuxarm/<OWOBJDIR>/wccmps.exe      "<OWRELROOT>/arml/wccmps"
     <CCCMD> linuxarm/<OWOBJDIR>/wccmps01.int    "<OWRELROOT>/arml/"

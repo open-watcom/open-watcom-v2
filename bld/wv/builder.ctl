@@ -65,6 +65,7 @@ set PROJDIR=<CWD>
     <CCCMD> nt/ntx64/wv.exe         "<OWRELROOT>/binnt64/wd.exe"
     <CCCMD> nt/ntx64.gui/wv.exe     "<OWRELROOT>/binnt64/wdw.exe"
     <CCCMD> linux/linuxx64/wv.exe   "<OWRELROOT>/binl64/wd"
+    <CCCMD> linux/linuxx64/wv.sym   "<OWRELROOT>/binl64/wd.sym"
 
     <CCCMD> rfx/dosi86/rfx.exe      "<OWRELROOT>/binw/"
     <CCCMD> rfx/dosi86/rfx.sym      "<OWRELROOT>/binw/"
