@@ -5,7 +5,21 @@
 tree_depth = 4
 
 proj_name = wv
-name = $(proj_name)
+
+!ifeq sys_windowed 1
+name_os2i86    = wdw16
+!else
+name_os2i86    = wd16
+name_wini86    = wdc
+!endif
+
+!ifdef name_$(host_os)$(host_cpu)
+name = $(name_$(host_os)$(host_cpu))
+!else ifeq sys_windowed 1
+name = wdw
+!else
+name = wd
+!endif
 
 !ifndef wv_autodepends
 wv_autodepends = .AUTODEPEND
@@ -153,6 +167,8 @@ exetarg_res_wresui    = wresui.res
 exetarg_nt_manif_386  = ntmanif.res
 exetarg_nt_manif_x64  = ntmanif.res
 exetarg_qnx_res       = usage.u
+exetarg_name          = $(name)
+exetarg_ext           = .exe
 !include exetarg.mif
 !endif
 
