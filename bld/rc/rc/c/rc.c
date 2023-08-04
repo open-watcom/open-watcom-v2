@@ -161,7 +161,7 @@ static bool Pass2( void )
         case EXE_TYPE_LX:
             noerror = MergeResExeLX( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
-        default: //EXE_TYPE_UNKNOWN
+        default: /* EXE_TYPE_UNKNOWN */
             RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
             noerror = false;
             break;

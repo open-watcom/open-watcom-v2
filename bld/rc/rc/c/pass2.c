@@ -52,8 +52,7 @@ bool    StopInvoked = false;
 
 static RcStatus copyStubFile( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
 /********************************************************************************
- * copyStubFile - copy from the begining of the file to the start of
- *                the win exe header
+ * copy from the begining of the file to the start of the win exe header
  */
 {
     RcStatus    ret;
@@ -284,7 +283,6 @@ static bool copyOS2Body( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
 
 static RcStatus copyDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
 /******************************************************************
- * copyDebugInfo
  * NB when an error occurs this function must return without altering errno
  */
 {
@@ -464,57 +462,52 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
  * a resource file is added
  */
 {
-    FILE                        *src_fp;
     size_t                      numread;
     unsigned                    i;
-    long                        src_offset;
     uint_16                     alignshift;
     uint_32                     end;
     uint_32                     tmp;
     resource_type_record        typeinfo;
     resource_record             nameinfo;
 
-    src_offset = src->WinHeadOffset;
-    src_fp = src->fp;
-
     if( src->u.NEInfo.WinHead.resource_off == src->u.NEInfo.WinHead.resident_off ) {
         return( RS_OK );
     }
 
-    if( RESSEEK( src_fp, src->u.NEInfo.WinHead.resource_off + src_offset, SEEK_SET ) ) {
+    if( RESSEEK( src->fp, src->WinHeadOffset + src->u.NEInfo.WinHead.resource_off, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    numread = RESREAD( src_fp, &alignshift, sizeof( alignshift ) );
+    numread = RESREAD( src->fp, &alignshift, sizeof( alignshift ) );
     if( numread != sizeof( alignshift ) ) {
         *err_code = errno;
-        return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( src->fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     alignshift = 1 << alignshift;
 
-    numread = RESREAD( src_fp, &typeinfo, sizeof( typeinfo ) );
+    numread = RESREAD( src->fp, &typeinfo, sizeof( typeinfo ) );
     if( numread != sizeof( typeinfo ) )  {
         *err_code = errno;
-        return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( src->fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     end = 0;
     while( typeinfo.type != 0 ) {
         for( i = typeinfo.num_resources; i > 0 ; --i ) {
-            numread = RESREAD( src_fp, &nameinfo, sizeof( nameinfo ) );
+            numread = RESREAD( src->fp, &nameinfo, sizeof( nameinfo ) );
             if( numread != sizeof( nameinfo ) ) {
                 *err_code = errno;
-                return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+                return( RESIOERR( src->fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
             }
             tmp = nameinfo.offset + nameinfo.length;
             if( end < tmp ) {
                 end = tmp;
             }
         }
-        numread = RESREAD( src_fp, &typeinfo, sizeof( typeinfo ) );
+        numread = RESREAD( src->fp, &typeinfo, sizeof( typeinfo ) );
         if( numread != sizeof( typeinfo ) ) {
             *err_code = errno;
-            return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( src->fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
     }
     end *= alignshift;
@@ -526,7 +519,6 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
 
 static RcStatus writePEHeadAndObjTable( ExeFileInfo *dst )
 /*********************************************************
- * writePEHeadAndObjTable
  * NB when an error occurs this function must return without altering errno
  */
 {
@@ -883,16 +875,18 @@ STOP_ERROR:
 
 static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
 /*******************************************************
- * writeLXHeadAndTables
  * NB when an error occurs this function must return without altering errno
  */
 {
     size_t          length;
-    long            offset;
     unsigned        i;
 
-    offset = sizeof( os2_flat_header );
-    if( RESSEEK( dst->fp, dst->WinHeadOffset + offset, SEEK_SET ) )
+    if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) )
+        return( RS_WRITE_ERROR );
+    /*
+     * write LX header
+     */
+    if( RESWRITE( dst->fp, &dst->u.LXInfo.OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
         return( RS_WRITE_ERROR );
     /*
      * write object table
@@ -903,27 +897,17 @@ static RcStatus writeLXHeadAndTables( ExeFileInfo *dst )
     /*
      * write page table
      */
-    offset += length;
     length = dst->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
     if( RESWRITE( dst->fp, dst->u.LXInfo.Pages, length ) != length )
         return( RS_WRITE_ERROR );
     /*
      * write resource table
      */
-    offset += length;
     for( i = 0; i < dst->u.LXInfo.OS2Head.num_rsrcs; ++i ) {
         if( RESWRITE( dst->fp, &dst->u.LXInfo.Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
             return( RS_WRITE_ERROR );
         }
     }
-    /*
-     * finally write LX header
-     */
-    if( RESSEEK( dst->fp, dst->WinHeadOffset, SEEK_SET ) )
-        return( RS_WRITE_ERROR );
-
-    if( RESWRITE( dst->fp, &dst->u.LXInfo.OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
-        return( RS_WRITE_ERROR );
 
     return( RS_OK );
 } /* writeLXHeadAndTables */

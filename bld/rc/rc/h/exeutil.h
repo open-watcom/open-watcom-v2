@@ -33,26 +33,30 @@
 #ifndef EXEUTIL_INCLUDED
 #define EXEUTIL_INCLUDED
 
-/* align should be a power of 2 */
-/* without the casts the macro reads: (value + (align-1)) & ~(align-1) */
+/*
+ * align should be a power of 2
+ * without the casts the macro reads: (value + (align-1)) & ~(align-1)
+ */
 #define ALIGN_VALUE( value, align ) ( (uint_32)( \
         ( (uint_32)(value) + ( (uint_32)(align) - 1 ) ) \
         & ~( (uint_32)(align) - 1 ) ) )
 
+/*
+ * returns 1 (true) if the bits identified by mask are equal in v1 and v2
+ * otherwise returns 0 (false)
+ * note: if mask is 0 it always returns 1 (true)
+ */
 #define ARE_BITS_EQUAL( mask, v1, v2 ) (!((mask) & ((v1)^(v2))))
-/* returns 1 (true) if the bits identified by mask are equal in v1 and v2 */
-/* otherwise returns 0 (false) */
-/* note: if mask is 0 it always returns 1 (true) */
 
-extern RcStatus     CopyExeData( FILE *in_fp, FILE *out_fp, uint_32 length );
+extern RcStatus     CopyExeData( FILE *src_fp, FILE *dst_fp, uint_32 length );
 extern long         AlignAmount( long offset, uint_16 shift_count );
 extern uint_16      FindShiftCount( uint_32 filelen, uint_16 numobjs );
-extern RcStatus     CopyExeDataTilEOF( FILE *in_fp, FILE *out_fp );
-extern RcStatus     PadExeData( FILE *fp, long length );
-extern void         CheckDebugOffset( ExeFileInfo * info );
+extern RcStatus     CopyExeDataTilEOF( FILE *src_fp, FILE *dst_fp );
+extern RcStatus     PadExeData( FILE *dst_fp, long length );
+extern void         CheckDebugOffset( ExeFileInfo *exe );
 extern RcStatus     SeekRead( FILE *fp, long newpos, void *buff, size_t size );
 extern ExeType      FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off );
-extern unsigned_32  OffsetFromRVA( ExeFileInfo *info, pe_va rva );
+extern unsigned_32  OffsetFromRVA( ExeFileInfo *exe, pe_va rva );
 extern bool         RcPadFile( FILE *fp, size_t pad );
 
 #endif
