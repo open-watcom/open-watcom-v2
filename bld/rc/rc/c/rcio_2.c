@@ -202,8 +202,8 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
  * Pass 2 related functions
  */
 
-static void FreeNEFileInfoPtrs( NEExeInfo * info )
-/*************************************************/
+static void FreeNEFileInfoPtrs( NEExeInfo *info )
+/***********************************************/
 {
     if( info->Seg.Segments != NULL ) {
         RESFREE( info->Seg.Segments );
@@ -219,8 +219,8 @@ static void FreeNEFileInfoPtrs( NEExeInfo * info )
     }
 } /* FreeNEFileInfoPtrs */
 
-static void FreePEFileInfoPtrs( PEExeInfo * info )
-/************************************************/
+static void FreePEFileInfoPtrs( PEExeInfo *info )
+/***********************************************/
 {
     if( info->Objects != NULL ) {
         RESFREE( info->Objects );
@@ -328,7 +328,9 @@ void RcPass2IoShutdown( bool noerror )
         {
             struct stat     exe_stat;
 
-            /* copy attributes from input to output executable */
+            /*
+             * copy attributes from input to output executable
+             */
             if( stat( CmdLineParms.InExeFileName, &exe_stat ) == 0 ) {
                 chmod( CmdLineParms.OutExeFileName, exe_stat.st_mode );
             }

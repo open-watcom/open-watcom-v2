@@ -44,8 +44,8 @@
 #include "clibext.h"
 
 
-/**** forward references ****/
-static void AddFontResources( WResID * name, ResMemFlags, const char * filename );
+/***** forward references *****/
+static void AddFontResources( WResID *name, ResMemFlags, const char *filename );
 
 
 void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
@@ -69,12 +69,14 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                 flagsMP  = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
                 switch( type ) {
                 case Y_DEFAULTICON:
-                    /* DEFAULTICON doesn't have a name, let's make our own */
+                    /*
+                     * DEFAULTICON doesn't have a name, let's make our own
+                     */
                     name = RESALLOC( sizeof( WResID ) );
                     name->IsName = false;
                     name->ID.Num = 999;
                     firstIcon    = true;    /* Trigger a warning if we have one already */
-                    /* Note the fallthrough! */
+                    /* fall through */
                 case Y_POINTER:
                 case Y_ICON:
                     if( fullflags != NULL ) {
@@ -83,10 +85,10 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                     } else {
                         flags = flagsMDP;
                     }
-
-                    /* Duplicate the first icon encountered as the default icon IFF it
-                       has resource ID equal to 1
-                    */
+                    /*
+                     * Duplicate the first icon encountered as the default icon IFF it
+                     * has resource ID equal to 1
+                     */
                     if( firstIcon && !name->IsName && (name->ID.Num == 999 || name->ID.Num == 1) ) {
                         WResID      *id;
 
@@ -161,7 +163,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
 /*********************************************************************/
 {
     RcStatus            ret;
-    char *              buffer;
+    char                *buffer;
     ResLocation         loc;
     long                pos;
 
@@ -183,7 +185,9 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     }
 
     loc.len = SemEndResource( loc.start );
-    /* add the font to the RES file directory */
+    /*
+     * add the font to the RES file directory
+     */
     SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
 
     RESFREE( buffer );
@@ -196,8 +200,8 @@ typedef struct {
     int         err_code;
 }ReadStrErrInfo;
 
-static void * readString( FILE *fp, long offset, ReadStrErrInfo *err )
-/********************************************************************/
+static void *readString( FILE *fp, long offset, ReadStrErrInfo *err )
+/*******************************************************************/
 {
     char    *retstr;
 
@@ -222,8 +226,8 @@ static void * readString( FILE *fp, long offset, ReadStrErrInfo *err )
     }
 }
 
-static FullFontDir * NewFontDir( void )
-/*************************************/
+static FullFontDir *NewFontDir( void )
+/************************************/
 {
     FullFontDir     *newdir;
 
@@ -247,18 +251,24 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
     facelen = strlen( facename ) + 1;
     structextra = devicelen + facelen;
 
-    /* -1 for the 1 char in the struct already */
+    /*
+     * -1 for the 1 char in the struct already
+     */
     entry = RESALLOC( sizeof( FullFontDirEntry ) + structextra - 1 );
     entry->Next = NULL;
     entry->Prev = NULL;
-    /* -1 for the 1 char in the struct already */
+    /*
+     * -1 for the 1 char in the struct already
+     */
     entry->Entry.StructSize = sizeof( FontDirEntry ) + structextra - 1;
     entry->Entry.FontID = fontid->ID.Num;
     entry->Entry.Info = *info;
     memcpy( &(entry->Entry.DevAndFaceName[0]), devicename, devicelen );
     memcpy( &(entry->Entry.DevAndFaceName[devicelen]), facename, facelen );
-    /* set dfDevice and dfFace to be the offset of the strings from the start */
-    /* of the FontInfo structure (entry->Entry.Info) */
+    /*
+     * set dfDevice and dfFace to be the offset of the strings from the start
+     * of the FontInfo structure (entry->Entry.Info)
+     */
     entry->Entry.Info.dfDevice = sizeof( FontInfo );
     entry->Entry.Info.dfFace = sizeof( FontInfo ) + devicelen;
 
@@ -368,14 +378,16 @@ static void FreeFontDir( FullFontDir *olddir )
     RESFREE( olddir );
 }
 
-/* name and memory flags of the font directory resource */
+/*
+ * name and memory flags of the font directory resource
+ */
 #define FONT_DIR_NAME   "FONTDIR"
 #define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE|MEMFLAG_PRELOAD   /* not PURE */
 
 void SemOS2WriteFontDir( void )
 /*****************************/
 {
-    FullFontDirEntry *  currentry;
+    FullFontDirEntry    *currentry;
     ResLocation         loc;
     bool                error;
 

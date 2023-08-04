@@ -39,12 +39,10 @@
 #include "clibext.h"
 
 
-/*
- * CopyExeData
+RcStatus CopyExeData( FILE *src_fp, FILE *dst_fp, uint_32 length )
+/*****************************************************************
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus CopyExeData( FILE *src_fp, FILE *dst_fp, uint_32 length )
-/***************************************************************/
 {
     size_t          numread;
     size_t          bufflen;
@@ -66,12 +64,10 @@ RcStatus CopyExeData( FILE *src_fp, FILE *dst_fp, uint_32 length )
     return( RS_OK );
 } /* CopyExeData */
 
-/*
- * CopyExeDataTilEOF
+RcStatus CopyExeDataTilEOF( FILE *src_fp, FILE *dst_fp )
+/*******************************************************
  * NB when an error occurs this function MUST return without altering errno
  */
-RcStatus CopyExeDataTilEOF( FILE *src_fp, FILE *dst_fp )
-/******************************************************/
 {
     size_t      numread;
 
@@ -101,9 +97,10 @@ long AlignAmount( long offset, uint_16 shift_count )
 } /* AlignAmount */
 
 static uint_32 FloorLog2( uint_32 value )
-/***************************************/
-/* This calculates the floor of the log base 2 of value. */
-/* modified from binary_log function in wlink */
+/****************************************
+ * This calculates the floor of the log base 2 of value.
+ * modified from binary_log function in wlink
+ */
 {
     uint_32 log;
 
@@ -119,9 +116,10 @@ static uint_32 FloorLog2( uint_32 value )
 } /* FloorLog2 */
 
 uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
-/********************************************************/
-/* filelen is the length of the file without any padding, numobjs is the */
-/* number of objects that must appear on an alignment boundary */
+/*********************************************************
+ * filelen is the length of the file without any padding, numobjs is the
+ * number of objects that must appear on an alignment boundary
+ */
 {
     uint_16     shift_old;
     uint_16     shift;
@@ -132,24 +130,25 @@ uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
 
     shift_old = 16;
     shift = (uint_16)( FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15 );
-    /* It is possible for the algorithm to blow up so don't check for != use <*/
+    /*
+     * It is possible for the algorithm to blow up so don't check for != use <
+     */
     while( shift_old > shift ) {
         shift_old = shift;
         shift = (uint_16)( FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15 );
     }
-
-    /* In event of the rare case that the algorithm blew up take the min */
+    /*
+     * In event of the rare case that the algorithm blew up take the min
+     */
     if( shift > shift_old )
         shift = shift_old;
     return( shift );
 } /* FindShiftCount */
 
-/*
- *PadExeData
+RcStatus PadExeData( FILE *fp, long length )
+/*******************************************
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus PadExeData( FILE *fp, long length )
-/******************************************/
 {
     size_t  numwrite;
 
@@ -164,8 +163,8 @@ RcStatus PadExeData( FILE *fp, long length )
     return( RS_OK );
 } /* PadExeData */
 
-void CheckDebugOffset( ExeFileInfo * exe )
-/****************************************/
+void CheckDebugOffset( ExeFileInfo *exe )
+/***************************************/
 {
     uint_32     curroffset;
 
@@ -202,13 +201,12 @@ unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
     return( objects[i].physical_offset + rva - objects[i].rva );
 }
 
-/*
- * SeekRead
- * NB When an error occurs the function MUST return without altering errno
- */
 RcStatus SeekRead( FILE *fp, long newpos, void *buff, size_t size )
-/*****************************************************************/
-/* seek to a specified spot in the file, and read some data */
+/******************************************************************
+ * NB When an error occurs the function MUST return without altering errno
+ *
+ * seek to a specified spot in the file, and read some data
+ */
 {
     size_t      numread;
 
@@ -222,9 +220,11 @@ RcStatus SeekRead( FILE *fp, long newpos, void *buff, size_t size )
 
 } /* SeekRead */
 
-/* If the value at DOS_RELOC_OFFSET < NE_HEADER_OFFSET then the DOS reloction */
-/* information starts before the end of the address of the os2_exe_header */
-/* so this is not a valid windows EXE file. */
+/*
+ * If the value at DOS_RELOC_OFFSET < NE_HEADER_OFFSET then the DOS reloction
+ * information starts before the end of the address of the os2_exe_header
+ * so this is not a valid windows EXE file.
+ */
 
 ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *ne_header_off )
 /***************************************************************

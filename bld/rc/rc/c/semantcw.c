@@ -138,7 +138,7 @@ FullMemFlags SemWINAddMemOption( FullMemFlags currflags, YYTOKENTYPE token )
     return( currflags );
 }
 
-void SemWINCheckMemFlags( FullMemFlags * currflags, ResMemFlags loadopts,
+void SemWINCheckMemFlags( FullMemFlags *currflags, ResMemFlags loadopts,
             ResMemFlags memopts, ResMemFlags pureopts )
 /********************************************************************/
 {
@@ -151,11 +151,12 @@ void SemWINCheckMemFlags( FullMemFlags * currflags, ResMemFlags loadopts,
     if( !currflags->purityOptGiven ) {
         currflags->flags |= pureopts;
     }
-
-    /* If the user set the resource to be IMPURE but doesn't give a mem option*/
-    /* set the resource to be non-discardable. */
-    /* This seems to be what Microsoft is doing (test this with the sample */
-    /* program clock). */
+    /*
+     * If the user set the resource to be IMPURE but doesn't give a mem option
+     * set the resource to be non-discardable.
+     * This seems to be what Microsoft is doing (test this with the sample
+     * program clock).
+     */
     if( currflags->purityOptGiven && !currflags->memOptGiven ) {
         if( !(currflags->flags & MEMFLAG_PURE) ) {
             currflags->flags &= ~MEMFLAG_DISCARDABLE;

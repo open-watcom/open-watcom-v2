@@ -74,8 +74,9 @@ static bool readObjectAndPageTable( ExeFileInfo *src )
 }
 
 static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
-/*********************************************************************/
-/* Copies the object/page table from src to dst sans resource objects */
+/**********************************************************************
+ * Copies the object/page table from src to dst sans resource objects
+ */
 {
     uint_32         src_obj_size;
     uint_32         dst_obj_size;
@@ -97,9 +98,13 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
     src_obj  = src->u.LXInfo.Objects;
     src_page = src->u.LXInfo.Pages;
     src_num_objects = src_num_pages = 0;
-    /* Figure out number of src objects/pages */
+    /*
+     * Figure out number of src objects/pages
+     */
     for( obj_index = 0; obj_index < src->u.LXInfo.OS2Head.num_objects; obj_index++ ) {
-        /* Simply skip any existing resource objects */
+        /*
+         * Simply skip any existing resource objects
+         */
         if( (src_obj[obj_index].flags & OBJ_RESOURCE) == 0 ) {
             ++src_num_objects;
             src_num_pages += src_obj[obj_index].mapsize;
@@ -118,8 +123,9 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
     src_obj_size = src->u.LXInfo.OS2Head.num_objects * sizeof( object_record );
     dst_page_size = dst->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
     src_page_size = src->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
-
-    /* Calculate dst offset of data pages */
+    /*
+     * Calculate dst offset of data pages
+     */
     dst_off = dst_obj_size + dst_page_size - src_obj_size - src_page_size
             + dst->u.LXInfo.OS2Head.num_rsrcs * sizeof( flat_res_table )
             - src->u.LXInfo.OS2Head.num_rsrcs * sizeof( flat_res_table )
@@ -130,16 +136,18 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
     align = 1 << src->u.LXInfo.OS2Head.l.page_shift;
     dst_off = (dst_off + align - 1) & ~(align - 1);
     dst->u.LXInfo.OS2Head.page_off = dst_off;
-
-    /* Allocate dst object/page table */
+    /*
+     * Allocate dst object/page table
+     */
     dst_obj  = RESALLOC( dst_obj_size );
     dst_page = RESALLOC( dst_page_size );
     dst->u.LXInfo.Objects = dst_obj;
     dst->u.LXInfo.Pages   = dst_page;
 
     src_obj_index = page_index = 0;
-
-    /* Copy object and page records from src executable to dst */
+    /*
+     * Copy object and page records from src executable to dst
+     */
     for( obj_index = 0; obj_index < src->u.LXInfo.OS2Head.num_objects; obj_index++ ) {
         if( (src_obj[obj_index].flags & OBJ_RESOURCE) == 0 ) {
             dst_obj[obj_index] = src_obj[src_obj_index];
@@ -151,8 +159,9 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
             ++src_obj_index;
         }
     }
-
-    /* Mark the start of resource objects/pages */
+    /*
+     * Mark the start of resource objects/pages
+     */
     dst->u.LXInfo.FirstResObj  = src_obj_index;
     dst->u.LXInfo.FirstResPage = page_index;
 
@@ -160,13 +169,11 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
 }
 
 
-/*
- * copyOneObject
- * if an error occurs this function MUST return without altering errno
- */
 static RcStatus copyOneObject( ExeFileInfo *src, object_record *src_obj,
                                ExeFileInfo *dst, object_record *dst_obj )
-/***********************************************************************/
+/************************************************************************
+ * if an error occurs this function MUST return without altering errno
+ */
 {
     RcStatus        ret;
     lx_map_entry    *src_map;
@@ -198,13 +205,11 @@ static RcStatus copyOneObject( ExeFileInfo *src, object_record *src_obj,
 }
 
 
-/*
- * copyHeaderSections
+static RcStatus copyHeaderSections( ExeFileInfo *src, ExeFileInfo *dst )
+/***********************************************************************
+ * Copies parts of header and loader/fixup sections that won't be changing
  * if an error occurs this function MUST return without altering errno
  */
-static RcStatus copyHeaderSections( ExeFileInfo *src, ExeFileInfo *dst )
-/**********************************************************************/
-/* Copies parts of header and loader/fixup sections that won't be changing */
 {
     RcStatus            ret;
     uint_32             src_pages;
@@ -218,8 +223,8 @@ static RcStatus copyHeaderSections( ExeFileInfo *src, ExeFileInfo *dst )
     lx_off = dst->WinHeadOffset;
     src_head = &src->u.LXInfo.OS2Head;
     dst_head = &dst->u.LXInfo.OS2Head;
-
-    /* Leave room for object table, object page table and resource
+    /*
+     * Leave room for object table, object page table and resource
      * table to be written later
      */
     offset = sizeof( os2_flat_header )
@@ -383,8 +388,8 @@ bool CopyLXExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
     if( num_objs == -1 ) {
         return( true );
     }
-
-    /* At this point we finally know how big all the tables in executable
+    /*
+     * At this point we finally know how big all the tables in executable
      * header will be and can start copying data to the dst executable;
      * resources will be written and the headers finalized later.
      */

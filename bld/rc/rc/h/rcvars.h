@@ -34,9 +34,10 @@
 #ifndef RCVARS_INCLUDED
 #define RCVARS_INCLUDED
 
-/****** initialized global data ******/
-/* This variable is set to true if any error occurs. No further file I/O will */
-/* then take place. */
+/****** initialized global data ******
+ * This variable is set to true if any error occurs. No further file I/O will
+ * then take place.
+ */
 #ifndef RCEXTERN
 extern bool                 ErrorHasOccured;
 #else

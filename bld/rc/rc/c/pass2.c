@@ -190,7 +190,7 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
          * set the entry segment to be preload
          */
         {
-            segment_record *    seg;        /* these two are here because a */
+            segment_record      *seg;       /* these two are here because a */
             uint_16             entry_seg;  /* 71 character field reference is hard to read */
             seg = src->u.NEInfo.Seg.Segments;
             entry_seg = src->u.NEInfo.WinHead.entrynum;

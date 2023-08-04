@@ -70,8 +70,8 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
     // RT_DEFAULTICON is not written into the executable, ignore
     if( typeinfo->TypeName.ID.Num == OS2_RT_DEFAULTICON )
         return( false );
-
-    /* realloc resource table if necessary (with 32 entries per increment
+    /*
+     * realloc resource table if necessary (with 32 entries per increment
      * we won't need to realloc too often)
      */
     res->res_count++;
@@ -88,8 +88,9 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
 
     resinfo  = WResGetResInfo( wind );
     langinfo = WResGetLangInfo( wind );
-
-    /* add new resource entry into table */
+    /*
+     * add new resource entry into table
+     */
     new_entry = &res->resources[res->res_count - 1];
 
     new_entry->wind = wind;
@@ -280,11 +281,12 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
         RcError( ERR_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
         return( true );
     }
-
-    /* OS/2 2.x requires resources to be sorted */
+    /*
+     * OS/2 2.x requires resources to be sorted
+     */
     qsort( dir->resources, dir->res_count, sizeof( LXResEntry ), CompareLXResIdName );
-
-    /* Assign resources to objects/pages and figure out exactly
+    /*
+     * Assign resources to objects/pages and figure out exactly
      * how many we'll need, in order to determine the exact size
      * of executable's header section.
      */
@@ -308,9 +310,10 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
         printf( "    %d.%d (%d bytes)\n", entry->resource.name_id,
             entry->resource.type_id, entry->resource.res_size );
 #endif
-
-        /* FIXME? - we cheat and stuff everything in a single resource object */
-        /* Maybe that's not a problem though. */
+        /*
+         * FIXME? - we cheat and stuff everything in a single resource object
+         * Maybe that's not a problem though.
+         */
         entry->resource.object = 0;
         entry->resource.offset = curr_offset;
         entry->assigned = true;
@@ -344,9 +347,9 @@ bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
                                         res_objects, 0, 0, //rva, offset,
                                         !Pass2Info.AllResFilesOpen );
     }
-    if( CmdLineParms.WritableRes ) {
-        // Not sure if setting the resource objects writable would work?
-    }
+//    if( CmdLineParms.WritableRes ) {
+//        /* Not sure if setting the resource objects writable would work? */
+//    }
     return( ret );
 }
 

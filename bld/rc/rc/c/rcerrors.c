@@ -132,18 +132,24 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     case ERR_INVALID_RES:
     case ERR_INTERNAL:
     case ERR_DELETING_FILE:
-        /* don't print the filename & line number before these errors */
+        /*
+         * don't print the filename & line number before these errors
+         */
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, args );
         sprintf( errBuffer, "%s", rcStrBuf );
         break;
     case ERR_RCSTR_NOT_FOUND:
-        /* this message means the error strings cannot be obtained from
-         * the exe so its text is hard coded */
+        /*
+         * this message means the error strings cannot be obtained from
+         * the exe so its text is hard coded
+         */
         sprintf( errBuffer, "Resource strings not found" );
         break;
     case ERR_NO_MSG:
-        /* dont print anything */
+        /*
+         * dont print anything
+         */
         return;
     default:
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );

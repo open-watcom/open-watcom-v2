@@ -42,19 +42,19 @@ typedef struct IcoFileDirEntry {
 #include "poppck.h"
 
 typedef struct FullIconDirEntry {
-    struct FullIconDirEntry *   Next;
-    struct FullIconDirEntry *   Prev;
-    bool                        IsIcoFileEntry;
+    struct FullIconDirEntry *Next;
+    struct FullIconDirEntry *Prev;
+    bool                    IsIcoFileEntry;
     union {
-        IcoFileDirEntry         Ico;
-        IconDirEntry            Res;
+        IcoFileDirEntry     Ico;
+        IconDirEntry        Res;
     } Entry;
 } FullIconDirEntry;
 
 typedef struct FullIconDir {
-    FullIconDirEntry *  Head;
-    FullIconDirEntry *  Tail;
-    IconCurDirHeader    Header;
+    FullIconDirEntry        *Head;
+    FullIconDirEntry        *Tail;
+    IconCurDirHeader        Header;
 } FullIconDir;
 
 #include "pushpck1.h"
@@ -71,18 +71,18 @@ typedef struct CurFileDirEntry {
 #include "poppck.h"
 
 typedef struct FullCurDirEntry {
-    struct FullCurDirEntry *    Next;
-    struct FullCurDirEntry *    Prev;
-    bool                        IsCurFileEntry;
+    struct FullCurDirEntry  *Next;
+    struct FullCurDirEntry  *Prev;
+    bool                    IsCurFileEntry;
     union {
-        CurFileDirEntry         Cur;        /* cursor file */
-        CurDirEntry             Res;        /* resource file (and .EXE) */
+        CurFileDirEntry     Cur;        /* cursor file */
+        CurDirEntry         Res;        /* resource file (and .EXE) */
     } Entry;
 } FullCurDirEntry;
 
 typedef struct FullCurDir {
-    FullCurDirEntry *   Head;
-    FullCurDirEntry *   Tail;
+    FullCurDirEntry     *Head;
+    FullCurDirEntry     *Tail;
     IconCurDirHeader    Header;
 } FullCurDir;
 

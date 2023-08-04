@@ -89,22 +89,26 @@ typedef struct FileStack {
     file_loc            *Location;
 } FileStack;
 
-/* EofChar points to the memory location after the last character currently */
-/* in the buffer. If the physical EOF has been reached it will point to */
-/* within Buffer, otherwise it will point AFTER Buffer. If NextChar == */
-/* EofChar then either EOF has been reached or it's time to read in more */
-/* of the file */
-/* NB: Characters in the buffer must be unsigned for proper MBCS support! */
+/*
+ * EofChar points to the memory location after the last character currently
+ * in the buffer. If the physical EOF has been reached it will point to
+ * within Buffer, otherwise it will point AFTER Buffer.
+ * If NextChar == EofChar then either EOF has been reached or it's time
+ * to read in more of the file
+ *
+ * NB: Characters in the buffer must be unsigned for proper MBCS support!
+ */
 
 #define IsEmptyFileStack( stack ) ((stack).Current == (stack).Stack)
 
 static FileStack    InStack;
 
-/****** Text file input routines ******/
-/* These routines maintain a stack of input files. Pushing a file onto the */
-/* stack opens the file and sets up the buffer. Poping a file closes the file */
-/* All other routines (except TextInputInit and TextInputShutdown) operate */
-/* on the current file which is the one at the top of the stack */
+/****** Text file input routines *******
+ * These routines maintain a stack of input files. Pushing a file onto the
+ * stack opens the file and sets up the buffer. Poping a file closes the file
+ * All other routines (except TextInputInit and TextInputShutdown) operate
+ * on the current file which is the one at the top of the stack
+ */
 
 static void freeCurrentFileName( void )
 /*************************************/
@@ -121,7 +125,9 @@ static bool checkCurrentFileType( const char *filename )
 
     isCOrH = false;
     _splitpath2( filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    /* if this is a c or h file ext will be '.', '[ch]', '\0' */
+    /*
+     * if this is a c or h file ext will be '.', '[ch]', '\0'
+     */
     if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
         switch( pg.ext[1] ) {
         case 'c':
@@ -196,8 +202,9 @@ static bool openNewFile( const char *filename )
     InStack.Current->Filename = RESALLOC( strlen( filename ) + 1 );
     strcpy( InStack.Current->Filename, filename );
     InStack.Current->Offset = 0;
-
-    /* set up the logical file info */
+    /*
+     * set up the logical file info
+     */
     RcIoSetCurrentFileInfo( 1, filename );
 
     return( openCurrentFile() );
@@ -296,8 +303,9 @@ static bool RcIoPushTextInputFile( const char *filename )
                                          + ( InStack.NextChar - InStack.Buffer );
     }
     InStack.Current++;
-
-    /* open file and set up the file info */
+    /*
+     * open file and set up the file info
+     */
     error = openNewFile( filename );
     if( error ) {
         freeCurrentFileName();
@@ -345,8 +353,9 @@ void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
 } /* RcIoSetCurrentFileInfo */
 
 bool RcIoIsCOrHFile( void )
-/*************************/
-/* returns true if the current file is a .c or .h file, false otherwise */
+/**************************
+ * returns true if the current file is a .c or .h file, false otherwise
+ */
 {
     if( InStack.Location == NULL ) {
         return( false );
@@ -381,29 +390,43 @@ int RcIoGetChar( void )
     }
 
     if( InStack.NextChar >= InStack.EofChar ) {
-        /* we have reached the end of the buffer */
+        /*
+         * we have reached the end of the buffer
+         */
         if( InStack.NextChar >= InStack.Buffer + InStack.BufferSize ) {
-            /* try to read next buffer */
+            /*
+             * try to read next buffer
+             */
             error = readCurrentFileBuffer();
             if( error ) {
-                /* this error is reported in readCurrentFileBuffer so just terminate */
+                /*
+                 * this error is reported in readCurrentFileBuffer so just terminate
+                 */
                 RcFatalError( ERR_NO_MSG );
             }
         }
         if( InStack.NextChar >= InStack.EofChar ) {
-            /* this is a real EOF */
-            /* unstack one file */
+            /*
+             * this is a real EOF
+             * unstack one file
+             */
             isempty = RcIoPopTextInputFile();
             if( isempty )
                 return( EOF );
-            /* if we are still at the EOF char, there has been an error */
+            /*
+             * if we are still at the EOF char, there has been an error
+             */
             if( InStack.NextChar >= InStack.EofChar ) {
-                /* this error is reported in readCurrentFileBuffer so just terminate */
+                /*
+                 * this error is reported in readCurrentFileBuffer so just terminate
+                 */
                 RcFatalError( ERR_NO_MSG );
             } else {
-                /* return \n which will end the current token properly */
-                /* if it it is not a string and end it with a runaway */
-                /* string error for strings */
+                /*
+                 * return \n which will end the current token properly
+                 * if it it is not a string and end it with a runaway
+                 * string error for strings
+                 */
                 return( '\n' );
             }
         }
@@ -411,12 +434,10 @@ int RcIoGetChar( void )
     return( GetLogChar() );
 } /* RcIoGetChar */
 
-/*
- * RcIoOpenInput
+FILE *RcIoOpenInput( const char *filename, bool text_mode )
+/**********************************************************
  * NB when an error occurs this function MUST return without altering errno
  */
-FILE *RcIoOpenInput( const char *filename, bool text_mode )
-/*********************************************************/
 {
     FILE                *fp;
     FileStackEntry      *currfile;
@@ -428,9 +449,11 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
         fp = ResOpenFileRO( filename );
     }
     no_handles_available = ( fp == NULL && errno == EMFILE );
-    /* set currfile to be the first (not before first) entry */
-    /* close open files except the current input file until able to open */
-    /* don't close the current file because Offset isn't set */
+    /*
+     * set currfile to be the first (not before first) entry
+     * close open files except the current input file until able to open
+     * don't close the current file because Offset isn't set
+     */
     for( currfile = InStack.Stack + 1; no_handles_available && currfile < InStack.Current; ++currfile ) {
         if( currfile->fp != NULL ) {
             RcIoCloseInputText( currfile->fp );
@@ -458,16 +481,18 @@ static bool Pass1InitRes( void )
     ResLocation   null_loc;
 
     memset( &CurrResFile, 0, sizeof( CurrResFile ) );
-
-    /* open the temporary file */
+    /*
+     * open the temporary file
+     */
     CurrResFile.filename = TMPFILE0;
     CurrResFile.fp = ResOpenFileTmp( NULL );
     if( CurrResFile.fp == NULL ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         return( true );
     }
-
-    /* initialize the directory */
+    /*
+     * initialize the directory
+     */
     CurrResFile.dir = WResInitDir();
     if( CurrResFile.dir == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -485,7 +510,9 @@ static bool Pass1InitRes( void )
 
     if( CmdLineParms.MSResFormat ) {
         CurrResFile.IsWatcomRes = false;
-        /* write null header here if it is win32 */
+        /*
+         * write null header here if it is win32
+         */
         if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             null_loc.start = SemStartResource();
             null_loc.len = SemEndResource( null_loc.start );
@@ -579,10 +606,11 @@ static bool PreprocessInputFile( void )
 }
 
 bool RcPass1IoInit( void )
-/************************/
-/* Open the two files for input and output. The input stream starts at the */
-/* top   infilename   and continues as the directives in the file indicate */
-/* Returns false if there is a problem opening one of the files. */
+/*************************
+ * Open the two files for input and output. The input stream starts at the
+ * top   infilename   and continues as the directives in the file indicate
+ * Returns false if there is a problem opening one of the files.
+ */
 {
     bool        error;
     const char  *includepath = NULL;

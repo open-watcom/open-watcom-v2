@@ -184,8 +184,8 @@ static RcStatus copyOneObject( FILE *src_fp, pe_object *src_obj,
 bool CopyExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
 /*******************************************************/
 {
-    pe_object *     src_obj;
-    pe_object *     dst_obj;
+    pe_object       *src_obj;
+    pe_object       *dst_obj;
     int             num_objs;
     RcStatus        ret;
 

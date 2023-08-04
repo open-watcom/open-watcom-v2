@@ -34,17 +34,18 @@
 #ifndef RCMEMORY_INCLUDED
 #define RCMEMORY_INCLUDED
 
-void RcMemInit( void );
-void RcMemShutdown( void );
-void * RcMemMalloc( size_t size );
-void * RcMemRealloc( void * old_ptr, size_t newsize );
-void RcMemFree( void * ptr );
-
-/* these function are only use for debuging and are only available if */
-/* the memory tracker was compiled into memory.c */
-void RcPrintMemUsage( void );
-void RcPrintMemList( void );
-int RcMemValidate( void * ptr );
-int RcMemChkRange( void * start, size_t len );
+extern void     RcMemInit( void );
+extern void     RcMemShutdown( void );
+extern void     *RcMemMalloc( size_t size );
+extern void     *RcMemRealloc( void *old_ptr, size_t newsize );
+extern void     RcMemFree( void *ptr );
+/*
+ * these function are only use for debuging and are only available if
+ * the memory tracker was compiled into memory.c
+ */
+extern void     RcPrintMemUsage( void );
+extern void     RcPrintMemList( void );
+extern int      RcMemValidate( void *ptr );
+extern int      RcMemChkRange( void *start, size_t len );
 
 #endif

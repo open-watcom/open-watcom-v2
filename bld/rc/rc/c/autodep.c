@@ -96,7 +96,9 @@ static void writeOneNode( ResDepInfo *cur )
     item.TmpStr    = false;
     item.WriteNull = false;
 
-    /* write out time */
+    /*
+     * write out time
+     */
 #ifdef __BIG_ENDIAN__
     item.Item.Num = cur->time >> 16;
     SemWriteRawDataItem( item );
@@ -108,15 +110,16 @@ static void writeOneNode( ResDepInfo *cur )
     item.Item.Num = cur->time >> 16;
     SemWriteRawDataItem( item );
 #endif
-
-    /* write out file name including termination */
-    /* length already includes termination */
-
-    /* write out length */
+    /*
+     * write out file name including termination
+     * length already includes termination
+     * write out length
+     */
     item.Item.Num = cur->len;
     SemWriteRawDataItem( item );
-
-    /* write out file name including termination */
+    /*
+     * write out file name including termination
+     */
     item.IsString = true;
     item.Item.String = cur->name;
     item.StrLen = cur->len;

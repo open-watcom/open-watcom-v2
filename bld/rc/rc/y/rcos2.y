@@ -282,14 +282,18 @@ normal-resource
 
 name-id
     : Y_NAME
-        /* OS/2 accepts quoted strings and numbers only, not bare names */
+        /*
+         * OS/2 accepts quoted strings and numbers only, not bare names 
+         */
         {
             $$ = WResIDFromNum( 0 );
             RcError( ERR_SYMBOL_NOT_DEFINED, $1.string );
             ErrorHasOccured = true;
         }
     | string-constant
-        /* OS/2 accepts quoted strings and numbers only, not bare names */
+        /*
+         * OS/2 accepts quoted strings and numbers only, not bare names 
+         */
         {
             $$ = WResIDFromNum( 0 );
             RcError( ERR_SYNTAX_STR, $1.string );
@@ -1138,11 +1142,12 @@ ctl-class-name
         { $$ = ResStrToNameOrOrdinal( "LISTBOX" ); }
     | constant-expression
         { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value | 0x80 ); }
-    /* A little hack - OS/2 standard window classes are defined like this:
-       #define WC_BUTTON ((PSZ)0xffff0003L)
-       Since PSZ doesn't mean anything to wrc, it won't recognize the
-       constant. So we add a special case to get rid of the PSZ. Not very
-       clean but does the job.
+    /*
+     * A little hack - OS/2 standard window classes are defined like this:
+     * #define WC_BUTTON ((PSZ)0xffff0003L)
+     * Since PSZ doesn't mean anything to wrc, it won't recognize the
+     * constant. So we add a special case to get rid of the PSZ. Not very
+     * clean but does the job.
      */
     | Y_LPAREN Y_LPAREN Y_PSZ Y_RPAREN constant-expression Y_RPAREN
         { $$ = ResNumToNameOrOrdinal( (uint_16)$5.Value | 0x80 ); }
@@ -1375,7 +1380,9 @@ control-name
         { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
     ;
 
-/* OS/2 accepts only numbers or strings for control statement text field */
+/*
+ * OS/2 accepts only numbers or strings for control statement text field 
+ */
 control-stmt
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt size-info comma-opt
                 ctl-class-name presparam-list

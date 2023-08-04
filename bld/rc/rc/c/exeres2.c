@@ -40,7 +40,8 @@
 #include "exeres.h"
 
 
-/* Note: IBM's OS/2 RC accepts string resource IDs/types but quietly
+/*
+ * Note: IBM's OS/2 RC accepts string resource IDs/types but quietly
  * replaces all strings with zeros when writing out the resources to
  * NE modules. Strange thing to do, but we'll do the same.
  */
@@ -110,7 +111,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
 static int compareOS2ResTypeId( const void *e1, const void *e2 )
 /**************************************************************/
 {
-#define LXRE(e)	((LXResEntry *)(e))
+#define LXRE(e) ((LXResEntry *)(e))
     if( LXRE(e1)->resource.type_id == LXRE(e2)->resource.type_id ) {
         return( LXRE(e1)->resource.name_id - LXRE(e2)->resource.name_id );
     } else {
@@ -156,8 +157,8 @@ RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
 
 
 uint_32 ComputeOS2ResSegCount( WResDir dir )
-/******************************************/
-/* Compute the number of resource segments in an OS/2 NE module. Each
+/*******************************************
+ * Compute the number of resource segments in an OS/2 NE module. Each
  * resource gets its own segment and resources > 64K will be split into
  * as many segments as necessary.
  */
@@ -323,9 +324,7 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
 
 
 RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
-/***********************************************************************/
-/*
- * WriteOS2ResTable
+/************************************************************************
  * NB when an error occurs this function must return without altering errno
  */
 {

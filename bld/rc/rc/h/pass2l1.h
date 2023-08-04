@@ -110,7 +110,7 @@ typedef struct NEExeInfo {
 typedef struct PEResDirEntry {
     resource_dir_header Head;
     int                 NumUnused;
-    struct PEResEntry * Children;
+    struct PEResEntry   *Children;
 } PEResDirEntry;
 
 typedef struct PEResDataEntry {
@@ -120,7 +120,7 @@ typedef struct PEResDataEntry {
 
 typedef struct PEResEntry {
     resource_dir_entry  Entry;
-    void *              Name;
+    void                *Name;
     bool                IsDirEntry;
     union {
         PEResDataEntry  Data;

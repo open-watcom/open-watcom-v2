@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,8 +62,9 @@ static void PutScanString( const char *string )
 
 #endif
 
-/*** Macros to implement the parts of a finite state machine ***/
-/* change_state changes states without reading a character */
+/*** Macros to implement the parts of a finite state machine ***
+ * change_state changes states without reading a character
+ */
 
 static int      _next;
 static int      LookAhead;
@@ -113,11 +114,12 @@ static void AddDigitToInt( long *value, int base, int newchar )
 } /* AddDigitToInt */
 
 static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
-/*****************************************************/
-/* This function takes the correct action for the #line directive and returns */
-/* the token following the preprocessor stuff. It uses Scan to do it's */
-/* scanning. DON'T call this function from within Scan or the functions it */
-/* calls unless you are very careful about recurtion. */
+/******************************************************
+ * This function takes the correct action for the #line directive and returns
+ * the token following the preprocessor stuff. It uses Scan to do it's
+ * scanning. DON'T call this function from within Scan or the functions it
+ * calls unless you are very careful about recurtion.
+ */
 {
     YYTOKENTYPE token;
     unsigned    lineno;
@@ -125,7 +127,9 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
     }
-    /* get the "line" or "pragma" directive */
+    /*
+     * get the "line" or "pragma" directive
+     */
     token = ScanDFA( value );
     if( token != Y_NAME ) {
         RcFatalError( ERR_INVALID_CPP );
@@ -133,8 +137,9 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
 
     if( stricmp( value->string.string, "line" ) == 0 ) {
         RESFREE( value->string.string );
-
-        /* get the line number */
+        /*
+         * get the line number
+         */
         token = ScanDFA( value );
         if( token != Y_INTEGER ) {
             RcFatalError( ERR_INVALID_CPP_LINE );
@@ -142,8 +147,9 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
         RESFREE( value->intinfo.str );
         value->intinfo.str = NULL;
         lineno = value->intinfo.val;
-
-        /* get the filename if there is one */
+        /*
+         * get the filename if there is one
+         */
         token = ScanDFA( value );
         if( token == Y_STRING ) {
             RcIoSetCurrentFileInfo( lineno, value->string.string );
@@ -183,8 +189,8 @@ void ScanInitWIN( void )
     enter_start_state();
 }
 
-static YYTOKENTYPE ScanDFA( ScanValue * value )
-/*********************************************/
+static YYTOKENTYPE ScanDFA( ScanValue *value )
+/********************************************/
 {
     long                newint;     /* these are used to accumulate parts of */
     VarString           *newstring; /* a new value */
@@ -432,7 +438,9 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         return( Y_OR );
 
     state( S_STRING ):
-        /* handle multi-byte characters */
+        /*
+         * handle multi-byte characters
+         */
         i = CharSetLen[LookAhead];
         if( i ) {
             VarStringAddChar( newstring, LookAhead );
@@ -442,14 +450,17 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             }
             do_transition( S_STRING );
         }
-
-        // if newline in string was detected, remove all whitespace from
-        // begining of the next line
+        /*
+         * if newline in string was detected, remove all whitespace from
+         * begining of the next line
+         */
         if( newLineInString ) {
             if( isspace( LookAhead ) ) {
                 do_transition( S_STRING );
             } else {
-                // non whitespace was detected, reset newline flag, so whitespaces are treated normally
+                /*
+                 * non whitespace was detected, reset newline flag, so whitespaces are treated normally
+                 */
                 newLineInString = 0;
             }
         }
@@ -486,7 +497,9 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_HEX_ESCAPE_1 );
             break;
         case 'a':
-            /* this is what Microsoft's RC adds for a \a */
+            /*
+             * this is what Microsoft's RC adds for a \a
+             */
             VarStringAddChar( newstring, '\x8' );
             do_transition( S_STRING );
             break;
@@ -568,16 +581,20 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             stringFromFile = VarStringEnd( newstring, &(value->string.length) );
             value->string.string = stringFromFile;
 #if 0
-            //DRW - this code truncates trailing null chars in resources
-            //          like user data.  It is commented until I fix it.
+            /*
+             * DRW - this code truncates trailing null chars in resources
+             *          like user data.  It is commented until I fix it.
+             */
             if( CmdLineParms.FindAndReplace ) {
                 char            *temp;
                 temp = FindAndReplace( stringFromFile,
                                        CmdLineParms.FindReplaceStrings );
-                // PrependToString prepends a string if that option
-                // is specified. As a string from the rc file is only scanned
-                // once and the string might have been changed by find and
-                // replace, this is needed here
+                /*
+                 * PrependToString prepends a string if that option
+                 * is specified. As a string from the rc file is only scanned
+                 * once and the string might have been changed by find and
+                 * replace, this is needed here
+                 */
                 prependToString( value, temp );
             } else if( CmdLineParms.Prepend ) {
                 prependToString( value, stringFromFile );
@@ -734,12 +751,16 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             DEBUGPUTS( value->string.string );
             token = LookupKeywordWIN( value->string );
             if( token != Y_NAME ) {
-                /* release the string if it is a keyword */
+                /*
+                 * release the string if it is a keyword
+                 */
                 RESFREE( value->string.string );
             }
             if( token == Y_RCINCLUDE ) {
-                /* when inline preprocessing is in place take steps here */
-                /* to make  rcinclude's  look line  #include's  */
+                /*
+                 * when inline preprocessing is in place take steps here
+                 * to make  rcinclude's  look line  #include's
+                 */
                 RcFatalError( ERR_NO_RCINCLUDES );
             }
             return( token );

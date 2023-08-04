@@ -66,12 +66,12 @@ FullOptFlagsOS2 SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value )
     return( SemOS2AddResOption( newflags, token, value ) );
 }
 
-/* IBM's RC has a tendency to add PURE flag when other memory flags
+FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YYTOKENTYPE token, uint_32 value )
+/************************************************************************************************
+ * IBM's RC has a tendency to add PURE flag when other memory flags
  * are specified. The flag will be ignored by OS but we do the same
  * for compatibility.
  */
-FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YYTOKENTYPE token, uint_32 value )
-/***********************************************************************************************/
 {
     switch( token ) {
     case Y_PRELOAD:
@@ -129,9 +129,10 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
     if( !currflags->purityOptGiven ) {
         currflags->flags |= pureopts;
     }
-
-    /* If the user set the resource to be IMPURE but doesn't give a mem option */
-    /* set the resource to be non-discardable. */
+    /*
+     * If the user set the resource to be IMPURE but doesn't give a mem option
+     * set the resource to be non-discardable.
+     */
     if( currflags->purityOptGiven && !currflags->memOptGiven ) {
         if( !(currflags->flags & MEMFLAG_PURE) ) {
             currflags->flags &= ~MEMFLAG_DISCARDABLE;

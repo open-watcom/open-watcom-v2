@@ -1094,16 +1094,18 @@ menu-result
         { $$ = (uint_16)$1.Value; }
     ;
 
-/* Note: The way we accept menu options differs from what is specified */
-/* in the Windows Programmer's Reference. There they say that the Y_HELP */
-/* keyword is used only with menu entry statements but then proceed to ignore */
-/* it. The bit that is designated MF_HELP in windows.h only produces */
-/* meaningful results if it is set for top level menu items. Every where else */
-/* we issue a warnning but set the bit anyways. This is similar to what the */
-/* Whitewater Resource Toolkit does. */
-/* Note: the Y_BITMAP and Y_OWNERDRAW keywords may not be meaning full in this*/
-/* context but we accept them anyways and set the appropriate bits assuming */
-/* that the user knows what he or she is doing when they use these keyword */
+/*
+ * Note: The way we accept menu options differs from what is specified
+ * in the Windows Programmer's Reference. There they say that the Y_HELP
+ * keyword is used only with menu entry statements but then proceed to ignore
+ * it. The bit that is designated MF_HELP in windows.h only produces
+ * meaningful results if it is set for top level menu items. Every where else
+ * we issue a warnning but set the bit anyways. This is similar to what the
+ * Whitewater Resource Toolkit does.
+ * Note: the Y_BITMAP and Y_OWNERDRAW keywords may not be meaning full in this
+ * context but we accept them anyways and set the appropriate bits assuming
+ * that the user knows what he or she is doing when they use these keyword 
+ */
 
 menu-item-options
     : menu-item-option
@@ -1441,7 +1443,9 @@ fontweight
 fontitalic
     : constant-expression
       {
-          /* the value stored is boolean and must be 1 or 0 */
+          /*
+           * the value stored is boolean and must be 1 or 0 
+           */
           $$ = (uint_8)( $1.Value != 0 );
       }
     ;

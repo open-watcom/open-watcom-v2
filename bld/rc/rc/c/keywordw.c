@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,9 @@
 #include "clibext.h"
 
 
-/* This array is intended to be accessed by ASCII values of a char */
+/*
+ * This array is intended to be accessed by ASCII values of a char
+ */
 static const unsigned char Weights[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 0x00 to 0x0f */
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 0x10 to 0x1f */
@@ -126,8 +128,9 @@ typedef struct HashEntry {
 
 #define TC_UNKNOWN  ((YYTOKENTYPE)-1)
 
-/* create the hash table by using the a pick macro and the keywords?.gh files */
-
+/*
+ * create the hash table by using the a pick macro and the keywords?.gh files
+ */
 static const HashEntry HashTable[] = {
     #define pick( a, b, c ) {b, c},
     #include "keywordw.gh"

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,9 @@
 #ifndef __OS2RES_H__
 #define __OS2RES_H__
 
-/* OS/2 resource types */
+/*
+ * OS/2 resource types
+ */
 #define OS2_RT_POINTER      1
 #define OS2_RT_BITMAP       2
 #define OS2_RT_MENU         3
@@ -57,7 +60,9 @@
 #define OS2_RT_MAX          22
 #define OS2_RT_RESNAMES     255
 
-/* Select OS/2 window classes (encoded Windows style) */
+/*
+ * Select OS/2 window classes (encoded Windows style)
+ */
 #define OS2_WC_FRAME           0x81
 #define OS2_WC_COMBOBOX        0x82
 #define OS2_WC_BUTTON          0x83
@@ -74,7 +79,9 @@
 #define OS2_WC_VALUESET        0xA7
 #define OS2_WC_NOTEBOOK        0xA8
 
-/* OS/2 window styles */
+/*
+ * OS/2 window styles
+ */
 #define OS2_WS_VISIBLE         0x80000000
 #define OS2_WS_DISABLED        0x40000000
 #define OS2_WS_CLIPCHILDREN    0x20000000
@@ -89,7 +96,9 @@
 #define OS2_WS_TABSTOP         0x00020000
 #define OS2_WS_MULTISELECT     0x00040000
 
-/* OS/2 frame window styles */
+/*
+ * OS/2 frame window styles
+ */
 #define OS2_FS_ICON            0x00000001
 #define OS2_FS_ACCELTABLE      0x00000002
 #define OS2_FS_SHELLPOSITION   0x00000004
@@ -105,7 +114,9 @@
 #define OS2_FS_AUTOICON        0x00001000
 #define OS2_FS_DBE_APPSTAT     0x00008000
 
-/* OS/2 frame creation flags */
+/*
+ * OS/2 frame creation flags
+ */
 #define OS2_FCF_TITLEBAR        0x00000001
 #define OS2_FCF_SYSMENU         0x00000002
 #define OS2_FCF_MENU            0x00000004
@@ -132,7 +143,9 @@
 #define OS2_FCF_AUTOICON        0x40000000
 #define OS2_FCF_DBE_APPSTAT     0x80000000
 
-/* OS/2 static control styles */
+/*
+ * OS/2 static control styles
+ */
 #define OS2_SS_TEXT          0x0001
 #define OS2_SS_GROUPBOX      0x0002
 #define OS2_SS_ICON          0x0003
@@ -146,7 +159,9 @@
 #define OS2_SS_SYSICON       0x000B
 #define OS2_SS_AUTOSIZE      0x0040
 
-/* OS/2 button control styles */
+/*
+ * OS/2 button control styles
+ */
 #define OS2_BS_PUSHBUTTON          0
 #define OS2_BS_CHECKBOX            1
 #define OS2_BS_AUTOCHECKBOX        2
@@ -158,49 +173,65 @@
 #define OS2_BS_NOTEBOOKBUTTON      8
 #define OS2_BS_DEFAULT        0x0400
 
-/* OS/2 combobox control styles */
+/*
+ * OS/2 combobox control styles
+ */
 #define OS2_CBS_SIMPLE             1
 #define OS2_CBS_DROPDOWN           2
 #define OS2_CBS_DROPDOWNLIST       4
 
-/* OS/2 container control styles */
+/*
+ * OS/2 container control styles
+ */
 #define OS2_CCS_EXTENDSEL          1
 #define OS2_CCS_MULTIPLESEL        2
 #define OS2_CCS_SINGLESEL          4
 #define OS2_CCS_AUTOPOSITION       8
 
-/* OS/2 entryfield control styles */
+/*
+ * OS/2 entryfield control styles
+ */
 #define OS2_ES_LEFT                0
 #define OS2_ES_CENTER              1
 #define OS2_ES_RIGHT               2
 #define OS2_ES_AUTOSCROLL          4
 
-/* OS/2 MLE control styles */
+/*
+ * OS/2 MLE control styles
+ */
 #define OS2_MLS_WORDWRAP           1
 #define OS2_MLS_BORDER             2
 #define OS2_MLS_VSCROLL            4
 #define OS2_MLS_HSCROLL            8
 
-/* OS/2 text centering flags */
+/*
+ * OS/2 text centering flags
+ */
 #define OS2_DT_LEFT            0x00000000
 #define OS2_DT_CENTER          0x00000100
 #define OS2_DT_RIGHT           0x00000200
 
-/* OS/2 menu styles */
+/*
+ * OS/2 menu styles
+ */
 #define OS2_MIS_TEXT        1
 #define OS2_MIS_BITMAP      2
 #define OS2_MIS_SEPARATOR   4
 #define OS2_MIS_OWNERDRAW   8
 #define OS2_MIS_SUBMENU     16
 
-/* OS/2 menu attributes */
+/*
+ * OS/2 menu attributes
+ */
 #define OS2_MIA_NODISMISS 0x0020
 #define OS2_MIA_FRAMED    0x1000
 #define OS2_MIA_CHECKED   0x2000
 #define OS2_MIA_DISABLED  0x4000
 #define OS2_MIA_HILITED   0x8000
 
-/* OS/2 accelerator flags */
+/*
+ * OS/2 accelerator flags
+ */
 #define OS2_ACCEL_NONE        0x0000
 #define OS2_ACCEL_CHAR        0x0001
 #define OS2_ACCEL_VIRTUALKEY  0x0002

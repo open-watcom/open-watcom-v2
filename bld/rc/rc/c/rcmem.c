@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ void RcMemShutdown( void )
 void *RcMemMalloc( size_t size )
 /******************************/
 {
-    void *  ptr;
+    void    *ptr;
 
 #ifdef RC_USE_TRMEM
     ptr = _trmem_alloc( size, _trmem_guess_who(), RcMemHandle );
@@ -97,8 +97,8 @@ void *RcMemMalloc( size_t size )
     return( ptr );
 }
 
-void RcMemFree( void * ptr )
-/**************************/
+void RcMemFree( void *ptr )
+/*************************/
 {
 #ifdef RC_USE_TRMEM
     _trmem_free( ptr, _trmem_guess_who(), RcMemHandle );
@@ -107,10 +107,10 @@ void RcMemFree( void * ptr )
 #endif
 }
 
-void * RcMemRealloc( void * old_ptr, size_t newsize )
-/***************************************************/
+void *RcMemRealloc( void *old_ptr, size_t newsize )
+/*************************************************/
 {
-    void *  ptr;
+    void    *ptr;
 
 #ifdef RC_USE_TRMEM
     ptr = _trmem_realloc( old_ptr, newsize, _trmem_guess_who(), RcMemHandle );
@@ -142,8 +142,8 @@ void RcPrintMemList( void )
     }
 }
 
-int RcMemValidate( void * ptr )
-/*****************************/
+int RcMemValidate( void *ptr )
+/****************************/
 {
     if( RcMemHandle != NULL ) {
         return( _trmem_validate( ptr, _trmem_guess_who(), RcMemHandle ) );
@@ -152,8 +152,8 @@ int RcMemValidate( void * ptr )
     }
 }
 
-int RcMemChkRange( void * start, size_t len )
-/*******************************************/
+int RcMemChkRange( void *start, size_t len )
+/******************************************/
 {
     if( RcMemHandle != NULL ) {
         return( _trmem_chk_range( start, len, _trmem_guess_who(), RcMemHandle ) );

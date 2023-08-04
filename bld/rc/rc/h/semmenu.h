@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,23 +51,23 @@ typedef enum MenuItemType {
 } MenuItemType;
 
 typedef struct MenuItemNormalData {
-    MenuItemType        type;
-    MenuItemNormal      menuData;
-    MenuExItemNormal    menuExData;
+    MenuItemType            type;
+    MenuItemNormal          menuData;
+    MenuExItemNormal        menuExData;
 } MenuItemNormalData;
 
 typedef struct MenuItemPopupData {
-    MenuItemType        type;
-    MenuItemPopup       menuData;
-    MenuExItemPopup     menuExData;
+    MenuItemType            type;
+    MenuItemPopup           menuData;
+    MenuExItemPopup         menuExData;
 } MenuItemPopupData;
 
 typedef struct FullMenu {
-    struct FullMenuItem *       head;
-    struct FullMenuItem *       tail;
+    struct FullMenuItem     *head;
+    struct FullMenuItem     *tail;
 } FullMenu;
 
-typedef FullMenu * FullMenuPtr;
+typedef FullMenu    *FullMenuPtr;
 
 typedef struct FullMenuItemPopup {
     MenuItemPopupData       item;
@@ -74,29 +75,29 @@ typedef struct FullMenuItemPopup {
 } FullMenuItemPopup;
 
 typedef struct FullMenuItem {
-    struct FullMenuItem *       next;
-    struct FullMenuItem *       prev;
-    bool                        UseUnicode;
-    bool                        IsPopup;
+    struct FullMenuItem     *next;
+    struct FullMenuItem     *prev;
+    bool                    UseUnicode;
+    bool                    IsPopup;
     union {
-        FullMenuItemPopup       popup;
-        MenuItemNormalData      normal;
+        FullMenuItemPopup   popup;
+        MenuItemNormalData  normal;
     } item;
 } FullMenuItem;
 
 typedef struct FullMenuOS2 {
-    struct FullMenuItemOS2 *       head;
-    struct FullMenuItemOS2 *       tail;
+    struct FullMenuItemOS2  *head;
+    struct FullMenuItemOS2  *tail;
 } FullMenuOS2;
 
-typedef FullMenuOS2 * FullMenuPtrOS2;
+typedef FullMenuOS2     *FullMenuPtrOS2;
 
 typedef struct FullMenuItemOS2 {
-    struct FullMenuItemOS2 *    next;
-    struct FullMenuItemOS2 *    prev;
-    MenuItemType                type;
-    MenuItemOS2                 item;
-    FullMenuPtrOS2              submenu;
+    struct FullMenuItemOS2  *next;
+    struct FullMenuItemOS2  *prev;
+    MenuItemType            type;
+    MenuItemOS2             item;
+    FullMenuPtrOS2          submenu;
 } FullMenuItemOS2;
 
 #endif

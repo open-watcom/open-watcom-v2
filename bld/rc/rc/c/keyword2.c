@@ -38,7 +38,9 @@
 #include "clibext.h"
 
 
-/* This array is intended to be accessed by ASCII values of a char */
+/*
+ * This array is intended to be accessed by ASCII values of a char
+ */
 static const unsigned char Weights[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 0x00 to 0x0f */
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 0x10 to 0x1f */
@@ -125,8 +127,9 @@ typedef struct HashEntry {
 
 #define TC_UNKNOWN  ((YYTOKENTYPE)-1)
 
-/* create the hash table by using the a pick macro and the keywords?.gh files */
-
+/*
+ * create the hash table by using the a pick macro and the keywords?.gh files
+ */
 static const HashEntry HashTable[] = {
     #define pick( a, b, c ) {b, c},
     #include "keyword2.gh"

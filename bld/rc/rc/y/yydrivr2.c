@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,9 @@ typedef enum {
     P_ERROR
 } p_action;
 
-/* definitions and tables here */
+/*
+ * definitions and tables here
+ */
 
 
 typedef struct IntOpt {
@@ -112,8 +114,9 @@ typedef union {
 } yystype;
 #define YYSTYPE         yystype
 
-/* define value and state stacks for both expressions and declarations */
-
+/*
+ * define value and state stacks for both expressions and declarations
+ */
 typedef struct {
     YYSTYPE             *vsp;
     YYSTYPE             *vstack;
@@ -298,13 +301,17 @@ static void initParseStack( parse_stack *stack )
 {
     stack->vsp = stack->vstack;
     stack->ssp = stack->sstack;
-    /* initialize */
+    /*
+     * initialize
+     */
     *(stack->ssp) = YYSTART;
 }
 
 static void newParseStack( parse_stack *stack )
 {
-    /* get new stack */
+    /*
+     * get new stack
+     */
     stack->vstack = RcMemMalloc( STACK_MAX * sizeof( YYSTYPE ) );
     stack->sstack = RcMemMalloc( STACK_MAX * sizeof( YYACTTYPE ) );
     initParseStack( stack );

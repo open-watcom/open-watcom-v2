@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@ typedef struct RCParams {
     boolbit     EMSDirect       : 1;
     boolbit     ProtModeOnly    : 1;
     boolbit     PreprocessOnly  : 1;
-    boolbit     WritableRes     : 1;
+//    boolbit     WritableRes     : 1;
     boolbit     VersionStamp30  : 1;
     boolbit     NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
     boolbit     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
@@ -110,8 +110,8 @@ enum RCTargetOS {
     RC_TARGET_OS_OS2,
 };
 
-extern bool ScanParams( int argc, char * argv[] );
-extern void RcAddCPPArg( char * newarg );
+extern bool ScanParams( int argc, char *argv[] );
+extern void RcAddCPPArg( char *newarg );
 extern void ScanParamInit( void );
 extern void ScanParamShutdown( void );
 extern int  ParseEnvVar( const char *env, char **argv, char *buf );

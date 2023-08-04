@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,12 @@ typedef struct FullDialogOptions {
             char            *FontName;
             uint_16         FontWeight;
             uint_8          FontItalic;
-            uint_8          FontExtra;  /* don't know what this is but
-                                         * MS rc accepts it and it appears in
-                                         * some samples */
+            /*
+             * don't know what this is but
+             * MS rc accepts it and it appears in
+             * some samples
+             */
+            uint_8          FontExtra;
             bool            FontWeightDefined;
             bool            FontItalicDefined;
         } Font;

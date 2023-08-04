@@ -57,11 +57,13 @@ static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, FILE *fp )
 
 const FullAccelFlagsOS2 DefaultAccelFlagsOS2 = { 0, false };
 
-int SemOS2StrToAccelEvent( char * string )
-/*************************************/
+int SemOS2StrToAccelEvent( char *string )
+/***************************************/
 {
     if( *string == '^' ) {
-        /* control character requested */
+        /*
+         * control character requested
+         */
         string++;
         if( isalpha( *string ) ) {
             return( *string | CTRL_EVENT );
@@ -69,19 +71,23 @@ int SemOS2StrToAccelEvent( char * string )
             return( 0 );
         }
     } else if( isprint( *string ) ) {
-        /* only accept printable characters in this position */
+        /*
+         * only accept printable characters in this position
+         */
         return( *string );
     } else {
         return( 0 );
     }
 }
 
-static void CheckAccelFlags( uint_16 * flags, unsigned long idval )
-/********************************************************************/
+static void CheckAccelFlags( uint_16 *flags, unsigned long idval )
+/****************************************************************/
 {
     /* unused parameters */ (void)idval;
 
-    /* CHAR is the default */
+    /*
+     * CHAR is the default
+     */
     if( !( *flags & OS2_ACCEL_VIRTUALKEY ) && !( *flags & OS2_ACCEL_CHAR ) )
         *flags |= OS2_ACCEL_CHAR;
 #if 0
@@ -150,8 +156,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     return( newtable );
 }
 
-FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTableOS2 * currtable )
-/**************************************************************************************************/
+FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTableOS2 *currtable )
+/*************************************************************************************************/
 {
     FullAccelEntryOS2     *newentry;
 
@@ -170,8 +176,8 @@ FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTa
     return( currtable );
 }
 
-static void SemOS2FreeAccelTable( FullAccelTableOS2 * acctable )
-/**************************************************************/
+static void SemOS2FreeAccelTable( FullAccelTableOS2 *acctable )
+/*************************************************************/
 {
     FullAccelEntryOS2   *currentry;
     FullAccelEntryOS2   *nextentry;

@@ -45,18 +45,22 @@
 #include "clibext.h"
 
 
-/* forward declaration */
+/*
+ * forward declaration
+ */
 static bool scanEnvVar( const char *varname, int *nofilenames );
 
-void RcAddCPPArg( char * newarg )
-/*******************************/
+void RcAddCPPArg( char *newarg )
+/******************************/
 {
     size_t  numargs;    /* number of args in list at end of this function */
     char    **arg;
     char    **cppargs;
 
     if( CmdLineParms.CPPArgs == NULL ) {
-        /* 2 is 1 for newarg, 1 for NULL */
+        /*
+         * 2 is 1 for newarg, 1 for NULL
+         */
         numargs = 2;
         cppargs = RcMemMalloc( numargs * sizeof( char * ) );
     } else {
@@ -64,7 +68,9 @@ void RcAddCPPArg( char * newarg )
         while( *arg != NULL ) {
             arg++;
         }
-        /* + 2 for the NULL arg and the new arg */
+        /*
+         * + 2 for the NULL arg and the new arg
+         */
         numargs = ( arg - CmdLineParms.CPPArgs ) + 2;
         cppargs = RcMemRealloc( cppargs, numargs * sizeof( char * ) );
     }
@@ -76,12 +82,12 @@ void RcAddCPPArg( char * newarg )
 } /* RcAddCPPArg */
 
 
-/*
- * SetMBRange - set the CharSetLen array up to recognize multi-byte character
- *              sequences
+void SetMBRange( unsigned from, unsigned to, char data )
+/*******************************************************
+ * set the CharSetLen array up to recognize multi-byte character
+ * sequences
  */
-void SetMBRange( unsigned from, unsigned to, char data ) {
-/********************************************************/
+{
     unsigned    i;
 
     for( i = from; i <= to; i++ ) {
@@ -89,8 +95,9 @@ void SetMBRange( unsigned from, unsigned to, char data ) {
     }
 }
 
-static void SetMBChars( const char *bytes ) {
-/*******************************************/
+static void SetMBChars( const char *bytes )
+/*****************************************/
+{
     unsigned    i;
 
     for( i = 0; i < 256; i++ ) {
@@ -143,8 +150,8 @@ static char *scanString( char *buf, const char *str, unsigned len )
     return( start );
 }
 
-static bool ScanMultiOptArg( const char * arg )
-/*********************************************/
+static bool ScanMultiOptArg( const char *arg )
+/********************************************/
 {
     bool    contok;
 
@@ -294,9 +301,11 @@ static bool ScanOptionsArg( const char *arg )
         RcMemFree( p );
         break;
     case 'd':
-        /* temporary until preprocessing done inline */
-        /* -1 to get the '-' or '/' as well */
-        /* the cast is so the argument won't be const */
+        /*
+         * temporary until preprocessing done inline
+         * -1 to get the '-' or '/' as well
+         * the cast is so the argument won't be const
+         */
         RcAddCPPArg( (char *)arg - 1 );
         break;
     case 'f':
@@ -401,9 +410,9 @@ static bool ScanOptionsArg( const char *arg )
         break;
     case 'w':
         arg++;
-        if( *arg == 'r' ) {
-//          CmdLineParms.WritableRes = true;
-        }
+//        if( *arg == 'r' ) {
+//            CmdLineParms.WritableRes = true;
+//        }
         break;
 #if defined( YYDEBUG ) || defined( SCANDEBUG )
     case 'v':
@@ -485,7 +494,7 @@ static bool ScanOptionsArg( const char *arg )
                     CmdLineParms.MBCharSupport = MB_UTF8_KANJI;
                     break;
                 }
-                // fall down
+                /* fall down */
             default:
                 RcError( ERR_UNKNOWN_MULT_OPTION, arg - 2 );
                 contok = false;
@@ -539,8 +548,10 @@ static void CheckExtension( char **filename, const char *defext )
     }
 } /* CheckExtension */
 
-/* extensions for Windows executables */
-/* The strings are in the format of the _splitpath function */
+/*
+ * extensions for Windows executables
+ * The strings are in the format of the _splitpath function
+ */
 static const char *ExeExt[] =   {
     "exe",
     "dll",
@@ -559,8 +570,10 @@ static void CheckPass2Only( void )
     if( pg.ext[0] == '.' && stricmp( pg.ext + 1, "res" ) == 0 ) {
         CmdLineParms.Pass2Only = true;
     } else {
-        /* if the extension is in the ExeExt list then we want pass2 only */
-        /* and there is no resource file to merge */
+        /*
+         * if the extension is in the ExeExt list then we want pass2 only
+         * and there is no resource file to merge
+         */
         for( check_ext = (char **)ExeExt; *check_ext != NULL; check_ext++ ) {
             if( pg.ext[0] == '.' && stricmp( pg.ext + 1, *check_ext ) == 0 ) {
                 CmdLineParms.Pass2Only = true;
@@ -578,8 +591,9 @@ static void CheckParms( void )
 
     CheckExtension( &CmdLineParms.InFileName, "rc" );
     CheckPass2Only();
-
-    /* was an EXE file name given */
+    /*
+     * was an EXE file name given
+     */
     if( CmdLineParms.InExeFileName == NULL ) {
         if( CmdLineParms.NoResFile ) {
             CmdLineParms.InExeFileName = MakeFileName( CmdLineParms.InFileName, NULL );
@@ -589,8 +603,9 @@ static void CheckParms( void )
     } else {
         CheckExtension( &CmdLineParms.InExeFileName, "exe" );
     }
-
-    /* was an output RES file name given */
+    /*
+     * was an output RES file name given
+     */
     if( CmdLineParms.PreprocessOnly ) {
         defext = "lst";
     } else {
@@ -601,15 +616,17 @@ static void CheckParms( void )
     } else {
         CheckExtension( &CmdLineParms.OutResFileName, defext );
     }
-
-    /* was an output EXE file name given */
+    /*
+     * was an output EXE file name given
+     */
     if( CmdLineParms.OutExeFileName == NULL ) {
         CmdLineParms.OutExeFileName = MakeFileName( CmdLineParms.InExeFileName, NULL );
     } else {
         CheckExtension( &CmdLineParms.OutExeFileName, "exe" );
     }
-
-    /* check for the existance of the input files */
+    /*
+     * check for the existance of the input files
+     */
     if( !( CmdLineParms.Pass2Only && CmdLineParms.NoResFile ) ) {
         if( access( CmdLineParms.InFileName, F_OK ) != 0 ) {
             RcFatalError( ERR_CANT_FIND_FILE, CmdLineParms.InFileName );
@@ -689,36 +706,36 @@ static void initMBCodePage( void )
     char                path[_MAX_PATH];
 
     /*
-        Lead-byte and trail-byte ranges for code pages used in Far East
-        editions of Windows 95.
-
-                    Character           Code    Lead-Byte   Trail-Byte
-    Language        Set Name            Page    Ranges      Ranges
-
-    Chinese
-    (Simplified)    GB 2312-80          CP 936  0xA1-0xFE   0xA1-0xFE
-
-    Chinese
-    (Traditional)   Big-5               CP 950  0x81-0xFE   0x40-0x7E
-                                                            0xA1-0xFE
-
-    Japanese        Shift-JIS (Japan
-                    Industry Standard)  CP 932  0x81-0x9F   0x40-0xFC
-                                                0xE0-0xFC   (except 0x7F)
-
-    Korean
-    (Wansung)       KS C-5601-1987      CP 949  0x81-0xFE   0x41-0x5A
-                                                            0x61-0x7A
-                                                            0x81-0xFE
-
-    Korean
-    (Johab)         KS C-5601-1992      CP 1361 0x84-0xD3   0x41-0x7E
-                                                0xD8        0x81-0xFE
-                                                0xD9-0xDE   (Government
-                                                0xE0-0xF9   standard:
-                                                            0x31-0x7E
-                                                            0x41-0xFE)
-    */
+     * Lead-byte and trail-byte ranges for code pages used in Far East
+     * editions of Windows 95.
+     *
+     *                 Character           Code    Lead-Byte   Trail-Byte
+     * Language        Set Name            Page    Ranges      Ranges
+     *
+     * Chinese
+     * (Simplified)    GB 2312-80          CP 936  0xA1-0xFE   0xA1-0xFE
+     *
+     * Chinese
+     * (Traditional)   Big-5               CP 950  0x81-0xFE   0x40-0x7E
+     *                                                         0xA1-0xFE
+     *
+     * Japanese        Shift-JIS (Japan
+     *                 Industry Standard)  CP 932  0x81-0x9F   0x40-0xFC
+     *                                             0xE0-0xFC   (except 0x7F)
+     *
+     * Korean
+     * (Wansung)       KS C-5601-1987      CP 949  0x81-0xFE   0x41-0x5A
+     *                                                         0x61-0x7A
+     *                                                         0x81-0xFE
+     *
+     * Korean
+     * (Johab)         KS C-5601-1992      CP 1361 0x84-0xD3   0x41-0x7E
+     *                                             0xD8        0x81-0xFE
+     *                                             0xD9-0xDE   (Government
+     *                                             0xE0-0xF9   standard:
+     *                                                         0x31-0x7E
+     *                                                         0x41-0xFE)
+     */
     switch( CmdLineParms.MBCharSupport ) {
     case DB_TRADITIONAL_CHINESE:
         SetMBRange( 0x81, 0xfe, 1 );
@@ -839,16 +856,14 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
 }
 
 int ParseEnvVar( const char *env, char **argv, char *buf )
-/********************************************************/
+/*********************************************************
+ * Returns a count of the "command line" parameters in *env.
+ * Unless argv is NULL, both argv and buf are completed.
+ *
+ * This function ought to be fairly similar to clib(initargv@_SplitParms).
+ * Parameterisation does the same as _SplitParms with historical = 0.
+ */
 {
-    /*
-     * Returns a count of the "command line" parameters in *env.
-     * Unless argv is NULL, both argv and buf are completed.
-     *
-     * This function ought to be fairly similar to clib(initargv@_SplitParms).
-     * Parameterisation does the same as _SplitParms with historical = 0.
-     */
-
     const char  *start;
     int         switchchar;
     int         argc;
@@ -900,18 +915,17 @@ int ParseEnvVar( const char *env, char **argv, char *buf )
 }
 
 static bool scanEnvVar( const char *varname, int *nofilenames )
-/*************************************************************/
+/**************************************************************
+ * Pass nofilenames and analysis of getenv(varname) into argc and argv
+ * to doScanParams. Return view on usability of data. (true is usable.)
+ *
+ * Recursion is supported but circularity is rejected.
+ *
+ * The analysis is fairly similar to that done in clib(initargv@_getargv).
+ * It is possible to use that function but it is not generally exported and
+ * ParseEnvVar() above is called from other places.
+ */
 {
-    /*
-     * Pass nofilenames and analysis of getenv(varname) into argc and argv
-     * to doScanParams. Return view on usability of data. (true is usable.)
-     *
-     * Recursion is supported but circularity is rejected.
-     *
-     * The analysis is fairly similar to that done in clib(initargv@_getargv).
-     * It is possible to use that function but it is not generally exported and
-     * ParseEnvVar() above is called from other places.
-     */
     typedef struct EnvVarInfo {
         struct EnvVarInfo       *next;
         char                    *varname;
@@ -921,19 +935,21 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
 
     int                 argc;
     EnvVarInfo          *info;
-    static EnvVarInfo   *stack = 0; // Needed to detect recursion.
+    static EnvVarInfo   *stack = 0; /* Needed to detect recursion. */
     size_t              argvsize;
     size_t              argbufsize;
     const char          *env;
-    size_t              varlen;     // size to hold varname copy.
-    bool                result;     // doScanParams Result.
+    size_t              varlen;     /* size to hold varname copy. */
+    bool                result;     /* doScanParams Result. */
 
     env = RcGetEnv( varname );
     if( env == NULL ) {
         RcWarning( ERR_ENV_VAR_NOT_FOUND, varname );
         return( true );
     }
-    // This used to cause stack overflow: set foo=@foo && wrc @foo.
+    /*
+     * This used to cause stack overflow: set foo=@foo && wrc @foo.
+     */
     for( info = stack; info != NULL; info = info->next ) {
 #if !defined( __UNIX__ )
         if( stricmp( varname, info->varname ) == 0 ) {  // Case-insensitive
@@ -962,8 +978,8 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
     return( result );
 }
 
-bool ScanParams( int argc, char * argv[] )
-/*****************************************/
+bool ScanParams( int argc, char *argv[] )
+/***************************************/
 {
     int     nofilenames;    /* number of filename parms read so far */
     bool    contok;         /* continue with main execution */
@@ -971,7 +987,7 @@ bool ScanParams( int argc, char * argv[] )
     nofilenames = 0;
     ScanParamInit();
     contok = doScanParams( argc, argv, &nofilenames );
-    if( argc < 2 ) {                                    /* 26-mar-94 */
+    if( argc < 2 ) {
         CmdLineParms.PrintHelp = true;
         contok = false;
     }
@@ -1063,7 +1079,9 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
         lenOfStringFromFile = strlen( stringFromFile );
         diffInLen = lenOfReplaceString - lenOfFindString; //used for reallocation
         if( strstr( stringFromFile, frStrings->findString ) != NULL ) {
-            //checking if a replacement is to be done, then allocating memory
+            /*
+             * checking if a replacement is to be done, then allocating memory
+             */
             replacedString = RcMemMalloc( lenOfStringFromFile+1 );
             for( k = 0; k < lenOfStringFromFile; k++ ) {
                 replacedString[k] = '\0';
@@ -1075,14 +1093,18 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
                     break;
                 }
                 while( foundString != &stringFromFile[i] ) {
-                    //while the ptr is not where the replacment string is, copy.
+                    /*
+                     * while the ptr is not where the replacment string is, copy.
+                     */
                     replacedString[j] = stringFromFile[i];
                     i++;
                     j++;
                 }
                 if( diffInLen > 0 ) {
-                    //allocating more memory if the string to replace is
-                    //bigger than the string to find
+                    /*
+                     * allocating more memory if the string to replace is
+                     * bigger than the string to find
+                     */
                     newMemSize = lenOfStringFromFile + 1 + diffInLen * ( noOfInstances + 1 );
                     replacedString = RcMemRealloc( replacedString, newMemSize );
                 }

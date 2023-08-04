@@ -51,15 +51,17 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
 static void AddBitmapResource( WResID *name, ResMemFlags, const char *filename );
 static void AddFontResources( WResID *name, ResMemFlags, const char *filename );
 
-/* MS changed the default purity for ICON and CURSOR resources from rc */
-/* version 30 to 31. Note: the ICON_GROUP and CURSOR_GROUP resources */
-/* still have the same purity */
+/*
+ * MS changed the default purity for ICON and CURSOR resources from rc
+ * version 30 to 31. Note: the ICON_GROUP and CURSOR_GROUP resources
+ * still have the same purity
+ */
 #define CUR_ICON_PURITY_30      MEMFLAG_PURE
 #define CUR_ICON_PURITY_31      0           /* impure */
 
-void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
-/****************************************************************/
-
+void SemWINAddMessageTable( WResID *name, ScanString *filename )
+/**************************************************************/
+{
     ResLocation         start;
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
@@ -170,12 +172,10 @@ HANDLE_ERROR:
     RESFREE( filename );
 } /* SemWINAddSingleLineResource */
 
-/*
- * ReadBitmapInfoHeader-
+static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader *head, FILE *fp )
+/***********************************************************************
  * NB when an error occurs this func must return without altering errno
  */
-static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader *head, FILE *fp )
-/**********************************************************************/
 {
     size_t      numread;
 
@@ -212,15 +212,18 @@ static RcStatus readIcoFileDirEntry( IcoFileDirEntry *entry, FILE *fp, int *err_
 } /* readIcoFileDirEntry */
 
 static RcStatus readIcoFileDir( FILE *fp, FullIconDir *dir, int *err_code )
-/*************************************************************************/
-/* this funtion returns one of the above enum constants */
+/**************************************************************************
+ * this funtion returns one of the above enum constants
+ */
 {
     RcStatus            ret;
     int                 currentry;
     FullIconDirEntry    *entry;
 
     ret = readIcoCurFileDirHeader( &(dir->Header), fp, err_code );
-    /* type 1 is a icon file */
+    /*
+     * type 1 is a icon file
+     */
     if( ret == RS_OK && dir->Header.Type != 1 ) {
         return( RS_INVALID_RESOURCE );
     }
@@ -245,8 +248,9 @@ static RcStatus readIcoFileDir( FILE *fp, FullIconDir *dir, int *err_code )
 static RcStatus copyOneIcon( const IcoFileDirEntry *entry, FILE *fp,
                 void *buffer, unsigned buffer_size, BitmapInfoHeader *dibhead,
                 int *err_code )
-/**************************************************************************/
-/* NOTE: this routine fills in dibhead as it copies the data */
+/*****************************************************************************
+ * NOTE: this routine fills in dibhead as it copies the data
+ */
 {
     RcStatus            ret;
     long                curpos;
@@ -283,7 +287,7 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, FILE *fp,
 #define BUFFER_SIZE     1024
 
 static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *err_code )
-/*********************************************************************************************/
+/***************************************************************************************/
 {
     RcStatus            ret;
     char                *buffer;
@@ -295,19 +299,26 @@ static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *e
     buffer = RESALLOC( BUFFER_SIZE );
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
-        /* copy the icon */
+        /*
+         * copy the icon
+         */
         loc.start = SemStartResource();
-
-        /* NOTE: the dibhead structure is filled in as a result of this call */
+        /*
+         * NOTE: the dibhead structure is filled in as a result of this call
+         */
         ret = copyOneIcon( &(entry->Entry.Ico), fp, buffer, BUFFER_SIZE, &(dibhead), err_code );
         if( ret != RS_OK )
             break;
 
         loc.len = SemEndResource( loc.start );
-        /* add the icon to the RES file directory */
+        /*
+         * add the icon to the RES file directory
+         */
         SemAddResourceFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
                 WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
-        /* change the reference in the ICON directory */
+        /*
+         * change the reference in the ICON directory
+         */
         entry->IsIcoFileEntry = false;
         entry->Entry.Res.IconID = CurrResFile.NextCurOrIcon;
         entry->Entry.Res.Info.Planes = dibhead.Planes;
@@ -448,8 +459,9 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
 static RcStatus copyOneCursor( const CurFileDirEntry *entry, FILE *fp,
                 void *buffer, unsigned buffer_size, BitmapInfoHeader *dibhead,
                 int *err_code )
-/*****************************************************************************/
-/* NOTE: this routine fills in dibhead as it copies the data */
+/*****************************************************************************
+ * NOTE: this routine fills in dibhead as it copies the data
+ */
 {
     RcStatus        ret;
     long            curpos;
@@ -486,8 +498,9 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, FILE *fp,
 
 
 static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *err_code )
-/**********************************************************************************************/
-/* This function uses the same size of buffers to copy info as for icons */
+/*****************************************************************************************
+ * This function uses the same size of buffers to copy info as for icons
+ */
 {
     RcStatus            ret = RS_OK; // should this be RS_PARAM_ERROR ??
     char                *buffer;
@@ -500,7 +513,9 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *
     buffer = RESALLOC( BUFFER_SIZE );
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
-        /* copy the cursor */
+        /*
+         * copy the cursor
+         */
         loc.start = SemStartResource();
 
         hotspot.X = entry->Entry.Cur.XHotspot;
@@ -510,25 +525,32 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *
             *err_code = LastWresErr();
             break;
         }
-
-        /* NOTE: the dibhead structure is filled in as a result of this call */
+        /*
+         * NOTE: the dibhead structure is filled in as a result of this call
+         */
         ret = copyOneCursor( &(entry->Entry.Cur), fp, buffer,
                         BUFFER_SIZE, &(dibhead), err_code );
         if( ret != RS_OK )
             break;
 
         loc.len = SemEndResource( loc.start );
-        /* add the cursor to the RES file directory */
+        /*
+         * add the cursor to the RES file directory
+         */
         SemAddResourceFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
                 WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
-        /* change the reference in the cursor directory */
+        /*
+         * change the reference in the cursor directory
+         */
         fileentry = entry->Entry.Cur;
         entry->IsCurFileEntry = false;
         entry->Entry.Res.Width = dibhead.Width;
         entry->Entry.Res.Height = dibhead.Height;
         entry->Entry.Res.Planes = dibhead.Planes;
         entry->Entry.Res.BitCount = dibhead.BitCount;
-        /* the hotspot data is now part of the components */
+        /*
+         * the hotspot data is now part of the components
+         */
         entry->Entry.Res.Length = fileentry.Length + sizeof( CurHotspot );
         entry->Entry.Res.CurID = CurrResFile.NextCurOrIcon;
         CurrResFile.NextCurOrIcon += 1;
@@ -553,15 +575,18 @@ static RcStatus readCurFileDirEntry( CurFileDirEntry *entry, FILE *fp, int *err_
 } /* readCurFileDirEntry */
 
 static RcStatus readCurFileDir( FILE *fp, FullCurDir *dir, int *err_code )
-/************************************************************************/
-/* this funtion returns one of the above enum constants */
+/*************************************************************************
+ * this funtion returns one of the above enum constants
+ */
 {
     RcStatus            ret;
     int                 currentry;
     FullCurDirEntry     *entry;
 
     ret = readIcoCurFileDirHeader( &(dir->Header), fp, err_code );
-    /* type 2 is a cursor file */
+    /*
+     * type 2 is a cursor file
+     */
     if( ret == RS_OK && dir->Header.Type != 2 ) {
         return( RS_INVALID_RESOURCE );
     }
@@ -701,7 +726,9 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     }
 
     loc.len = SemEndResource( loc.start );
-    /* add the bitmap to the RES file directory */
+    /*
+     * add the bitmap to the RES file directory
+     */
     SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
 
     RESFREE( buffer );
@@ -806,7 +833,9 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     }
 
     loc.len = SemEndResource( loc.start );
-    /* add the font to the RES file directory */
+    /*
+     * add the font to the RES file directory
+     */
     SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
 
     RESFREE( buffer );
@@ -869,18 +898,24 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
     facelen = strlen( facename ) + 1;
     structextra = devicelen + facelen;
 
-    /* -1 for the 1 char in the struct already */
+    /*
+     * -1 for the 1 char in the struct already
+     */
     entry = RESALLOC( sizeof( FullFontDirEntry ) - 1 + structextra );
     entry->Next = NULL;
     entry->Prev = NULL;
-    /* -1 for the 1 char in the struct already */
+    /*
+     * -1 for the 1 char in the struct already
+     */
     entry->Entry.StructSize = (uint_16)( sizeof( FontDirEntry ) - 1 + structextra );
     entry->Entry.FontID = fontid->ID.Num;
     entry->Entry.Info = *info;
     memcpy( &(entry->Entry.DevAndFaceName[0]), devicename, devicelen );
     memcpy( &(entry->Entry.DevAndFaceName[devicelen]), facename, facelen );
-    /* set dfDevice and dfFace to be the offset of the strings from the start */
-    /* of the FontInfo structure (entry->Entry.Info) */
+    /*
+     * set dfDevice and dfFace to be the offset of the strings from the start
+     * of the FontInfo structure (entry->Entry.Info)
+     */
     entry->Entry.Info.dfDevice = sizeof( FontInfo );
     entry->Entry.Info.dfFace = (uint_32)( sizeof( FontInfo ) + devicelen );
 
@@ -989,7 +1024,9 @@ static void FreeFontDir( FullFontDir *olddir )
     RESFREE( olddir );
 }
 
-/* name and memory flags of the font directory resource */
+/*
+ * name and memory flags of the font directory resource
+ */
 #define FONT_DIR_NAME   "FONTDIR"
 #define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE|MEMFLAG_PRELOAD   /* not PURE */
 

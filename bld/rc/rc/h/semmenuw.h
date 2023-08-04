@@ -35,7 +35,7 @@
 extern MenuFlags    SemWINAddFirstMenuOption( YYTOKENTYPE token );
 extern MenuFlags    SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token );
 extern FullMenu     *SemWINNewMenu( FullMenuItem firstitem );
-extern FullMenu     *SemWINAddMenuItem( FullMenu * currmenu, FullMenuItem curritem );
-extern void         SemWINWriteMenu( WResID * name, ResMemFlags flags, FullMenu * menu, YYTOKENTYPE );
+extern FullMenu     *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem );
+extern void         SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu, YYTOKENTYPE );
 
 #endif
