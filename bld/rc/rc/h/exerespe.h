@@ -34,9 +34,9 @@
 #ifndef EXERESPE_INCLUDED
 #define EXERESPE_INCLUDED
 
-extern bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *res,
+extern bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
                          pe_object *res_obj, unsigned_32 rva,
                          unsigned_32 offset, bool writebyfile );
-extern bool RcBuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *res );
+extern bool RcBuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles );
 
 #endif

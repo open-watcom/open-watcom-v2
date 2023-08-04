@@ -39,9 +39,9 @@
 #include "exeres.h"
 
 
-bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
+bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles )
 {
-    /* unused parameters */ (void)dst; (void)res;
+    /* unused parameters */ (void)dst; (void)resfiles;
     return( true );
 }
 

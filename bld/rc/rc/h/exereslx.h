@@ -36,9 +36,9 @@
 #include "rctypes.h"
 
 
-extern bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
+extern bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles,
                             object_record *res_obj, unsigned_32 rva, unsigned_32 offset, bool writebyfile );
-extern bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res );
+extern bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles );
 
 extern RcStatus WriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res );
 extern RcStatus RcWriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res );

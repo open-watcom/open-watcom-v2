@@ -254,7 +254,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
 }
 
 
-bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
+bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles,
                                    object_record *res_obj, unsigned_32 rva,
                                    unsigned_32 offset, bool writebyfile )
 /*************************************************************************/
@@ -271,13 +271,13 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
 
     dir = &dst->u.LXInfo.Res;
 
-    MergeDirectory( res, &errs );
+    MergeDirectory( resfiles, &errs );
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );
         return( true );
     }
-    if( LXResTableBuild( dir, res->Dir ) ) {
+    if( LXResTableBuild( dir, resfiles->Dir ) ) {
         RcError( ERR_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
         return( true );
     }
@@ -332,8 +332,8 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res,
 
 
 #if !defined( INSIDE_WLINK )
-bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
-/*****************************************************************/
+bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles )
+/**********************************************************************/
 {
     object_record       *res_objects;
     bool                ret;
@@ -343,7 +343,7 @@ bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
         ret = false;
     } else {
         res_objects = dst->u.LXInfo.Objects;
-        ret = BuildLXResourceObjects( dst, res,
+        ret = BuildLXResourceObjects( dst, resfiles,
                                         res_objects, 0, 0, //rva, offset,
                                         !Pass2Info.AllResFilesOpen );
     }

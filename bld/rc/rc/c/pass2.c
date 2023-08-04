@@ -792,7 +792,7 @@ static RcStatus updateDebugDirectory( ExeFileInfo *src, ExeFileInfo *dst )
 } /* updateDebugDirectory */
 
 
-bool MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
+bool MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
 {
     RcStatus    ret;
     bool        error;
@@ -810,7 +810,7 @@ bool MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = RcBuildPEResourceObject( dst, res );
+    error = RcBuildPEResourceObject( dst, resfiles );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -972,7 +972,7 @@ static RcStatus copyLXDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
 } /* copyLXDebugInfo */
 
 
-bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
+bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
 {
     RcStatus    ret;
     bool        error;
@@ -984,7 +984,7 @@ bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    error = RcBuildLXResourceObjects( dst, res );
+    error = RcBuildLXResourceObjects( dst, resfiles );
     if( error )
         goto HANDLE_ERROR;
     if( StopInvoked )
@@ -996,7 +996,7 @@ bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     if( StopInvoked )
         goto STOP_ERROR;
 
-    ret = RcWriteLXResourceObjects( dst, res );
+    ret = RcWriteLXResourceObjects( dst, resfiles );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
