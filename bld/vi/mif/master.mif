@@ -55,7 +55,6 @@ $(bin_subdir) : .EXPLICIT
 $(bin_subdir)/$(name).exe: $(bin_subdir) $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
     @%make edbind_data
-    @if exist $(name).sym copy $(name).sym $^*.sym
 
 #
 # compile vi scripts to bind to final vi executable
