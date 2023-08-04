@@ -5,6 +5,11 @@ name = viw
 !else
 name = vi
 !endif
+!ifeq host_os win
+!ifeq host_cpu 386
+name = viw32
+!endif
+!endif
 
 !ifndef vi_autodepends
 vi_autodepends = .AUTODEPEND
@@ -39,12 +44,6 @@ additional_clean_subdirs = $(bin_subdir)
 !include ../mif/link.mif
 !include ../mif/bind.mif
 
-!ifeq host_os win
-!ifeq host_cpu 386
-name = viw32
-!endif
-!endif
-
 $(bin_subdir) : .EXPLICIT
     mkdir $@
 
@@ -56,8 +55,7 @@ $(bin_subdir) : .EXPLICIT
 $(bin_subdir)/$(name).exe: $(bin_subdir) $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
     @%make edbind_data
-    copy $(name).exe $@
-    copy $(name).sym $^*.sym
+    @if exist $(name).sym copy $(name).sym $^*.sym
 
 #
 # compile vi scripts to bind to final vi executable
@@ -127,6 +125,6 @@ edbind_data : .PROCEDURE .EXPLICIT
     $(noecho)%create edbind.tmp
     @for %i in ($(bind_files:./=)) do @%append edbind.tmp %i
 !ifeq verbose 0
-    @echo edbind edbind.tmp $(name).exe
+    @echo edbind edbind.tmp $(name).exe $@
 !endif
-    $(edbind) -dedbind.tmp -q $(name).exe
+    $(edbind) -dedbind.tmp -q $(name).exe $@
