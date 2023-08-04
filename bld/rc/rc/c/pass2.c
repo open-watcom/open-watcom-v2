@@ -91,17 +91,15 @@ static RcStatus seekPastResTable( ExeFileInfo *src, ExeFileInfo *dst, int *err_c
 static RcStatus copyOtherTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
 {
     uint_32         tablelen;
-    uint_32         src_offset;
     RcStatus        ret;
 
-    src_offset = src->WinHeadOffset;
     /*
      * the other tables start at the resident names table and end at the end
      * of the non-resident names table
      */
-    tablelen = (src->u.NEInfo.WinHead.nonres_off + src->u.NEInfo.WinHead.nonres_size) - ( src->u.NEInfo.WinHead.resident_off + src_offset );
+    tablelen = (src->u.NEInfo.WinHead.nonres_off + src->u.NEInfo.WinHead.nonres_size) - ( src->WinHeadOffset + src->u.NEInfo.WinHead.resident_off );
 
-    if( RESSEEK( src->fp, src->u.NEInfo.WinHead.resident_off + src_offset, SEEK_SET ) ) {
+    if( RESSEEK( src->fp, src->WinHeadOffset + src->u.NEInfo.WinHead.resident_off, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
@@ -652,6 +650,7 @@ STOP_ERROR:
 
 
 bool MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
+/***************************************************************************/
 {
     RcStatus        ret;
     bool            error;
@@ -793,6 +792,7 @@ static RcStatus updateDebugDirectory( ExeFileInfo *src, ExeFileInfo *dst )
 
 
 bool MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
+/*****************************************************************************/
 {
     RcStatus    ret;
     bool        error;
@@ -973,6 +973,7 @@ static RcStatus copyLXDebugInfo( ExeFileInfo *src, ExeFileInfo *dst )
 
 
 bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
+/*****************************************************************************/
 {
     RcStatus    ret;
     bool        error;
