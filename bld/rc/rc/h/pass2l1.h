@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#ifndef PASS2L1_INCLUDED
+#define PASS2L1_INCLUDED
+
 #include "wres.h"
 #include "exeos2.h"
 #include "exepe.h"
@@ -188,3 +191,5 @@ typedef struct ResFileInfo {
     FILE                *fp;
     WResDir             Dir;
 } ResFileInfo;
+
+#endif

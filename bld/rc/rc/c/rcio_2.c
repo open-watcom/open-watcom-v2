@@ -149,53 +149,53 @@ static bool OpenResFileInfo( ExeType type )
 } /* OpenResFileInfo */
 
 
-static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
-/**********************************************************************/
+static bool openExeFileInfoRO( const char *filename, ExeFileInfo *exe )
+/*********************************************************************/
 {
     RcStatus        status;
     pe_exe_header   *pehdr;
 
-    info->fp = ResOpenFileRO( filename );
-    if( info->fp == NULL ) {
+    exe->fp = ResOpenFileRO( filename );
+    if( exe->fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
     }
-    info->Type = FindNEPELXHeader( info->fp, &info->WinHeadOffset );
-    info->name = filename;
-    switch( info->Type ) {
+    exe->Type = FindNEPELXHeader( exe->fp, &exe->WinHeadOffset );
+    exe->name = filename;
+    switch( exe->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
-        status = SeekRead( info->fp, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
+        status = SeekRead( exe->fp, exe->WinHeadOffset, &exe->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
-        info->DebugOffset = info->WinHeadOffset + sizeof( os2_exe_header );
+        exe->DebugOffset = exe->WinHeadOffset + sizeof( os2_exe_header );
         break;
     case EXE_TYPE_PE:
-        pehdr = &info->u.PEInfo.WinHeadData;
-        info->u.PEInfo.WinHead = pehdr;
-        if( SeekRead( info->fp, info->WinHeadOffset, pehdr, PE_HDR_SIZE ) != RS_OK
-          || RESREAD( info->fp, (char *)pehdr + PE_HDR_SIZE, PE_OPT_SIZE( *pehdr ) ) != PE_OPT_SIZE( *pehdr ) ) {
+        pehdr = &exe->u.PEInfo.WinHeadData;
+        exe->u.PEInfo.WinHead = pehdr;
+        if( SeekRead( exe->fp, exe->WinHeadOffset, pehdr, PE_HDR_SIZE ) != RS_OK
+          || RESREAD( exe->fp, (char *)pehdr + PE_HDR_SIZE, PE_OPT_SIZE( *pehdr ) ) != PE_OPT_SIZE( *pehdr ) ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
-        info->DebugOffset = info->WinHeadOffset + PE_SIZE( *pehdr );
+        exe->DebugOffset = exe->WinHeadOffset + PE_SIZE( *pehdr );
         break;
     case EXE_TYPE_LX:
-        status = SeekRead( info->fp, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
+        status = SeekRead( exe->fp, exe->WinHeadOffset, &exe->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
-        info->DebugOffset = info->WinHeadOffset + sizeof( os2_flat_header );
+        exe->DebugOffset = exe->WinHeadOffset + sizeof( os2_flat_header );
         break;
     default:
         RcError( ERR_NOT_VALID_EXE, filename );
         return( false );
     }
 
-    return( !RESSEEK( info->fp, 0, SEEK_SET ) );
+    return( !RESSEEK( exe->fp, 0, SEEK_SET ) );
 } /* openExeFileInfoRO */
 
 /*
@@ -286,9 +286,11 @@ void RcPass2IoShutdown( bool noerror )
 {
     ExeFileInfo         *src;
     ExeFileInfo         *dst;
+    ResFileInfo         *resfiles;
 
     dst = &(Pass2Info.TmpFile);
     src = &(Pass2Info.OldFile);
+    resfiles = Pass2Info.ResFile;
 
     RCCloseFile( &(src->fp) );
     switch( src->Type ) {
@@ -320,7 +322,7 @@ void RcPass2IoShutdown( bool noerror )
     default: //EXE_TYPE_UNKNOWN
         break;
     }
-    CloseResFiles( Pass2Info.ResFile );
+    CloseResFiles( resfiles );
 
     if( noerror ) {
         CopyFileToOutFile( dst->fp, CmdLineParms.OutExeFileName, true );

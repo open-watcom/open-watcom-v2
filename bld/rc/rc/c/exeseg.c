@@ -59,7 +59,6 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
 
 static RcStatus readSegTable( FILE *fp, uint_32 offset, segment_record *segments, size_t size )
 /**********************************************************************************************
- * readSegTable
  * NB when an error occurs this function must return without altering errno
  */
 {
@@ -159,7 +158,7 @@ RcStatus AllocAndReadOS2SegTables( ExeFileInfo *src, ExeFileInfo *dst, ResFileIn
 } /* AllocAndReadOS2SegTables */
 
 
-/********* WARNING *********
+/********* WARNING *********************
  * Hard coded constant. The value of sizeof( os2_reloc_item ) is to hard
  * to get from  wl  because of the other files that would have to be included
  * in order to get that structure

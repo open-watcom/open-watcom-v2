@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#ifndef SHAREDIO_INCLUDED
+#define SHAREDIO_INCLUDED
+
 typedef struct ExtraRes {
     struct ExtraRes     *next;
     char                name[1];
@@ -44,3 +47,5 @@ extern void     SharedIOInitStatics( void );
 extern char     *LastWresErrStr( void );
 extern int      LastWresStatus( void );
 extern int      LastWresErr( void );
+
+#endif
