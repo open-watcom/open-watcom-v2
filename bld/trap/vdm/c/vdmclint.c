@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ const char *RemoteLink( const char *parms, bool server )
         return( "this should never be seen" );
     strcpy( buf, NT_MACH_NAME PREFIX );
     if( *parms == '\0' ) {
-        strcpy( buf + NT_PREF_LEN, DEFAULT_NAME );
+        strcpy( buf + NT_PREF_LEN, DEFAULT_LINK_NAME );
     } else if( ValidName( parms ) ) {
         strcpy( buf + NT_PREF_LEN, parms );
     } else {

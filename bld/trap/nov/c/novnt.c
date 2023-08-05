@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
+#include "nov.h"
 
 
 #ifdef SERVER
@@ -355,7 +356,7 @@ const char *RemoteLink( const char *parms, bool server )
     server = server;
 
     if( *parms == '\0' )
-        parms = "NovLink";
+        parms = DEFAULT_LINK_NAME;
     for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
             ServerName[i++] = (char)toupper( *(byte *)parms );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,12 @@
 #include "packet.h"
 #include "osidle.h"
 
+
+#define LINKNAME_SIZE   80
+
+#define DEFAULT_LINK_NAME   "WinLink"
+
+char        LinkName[LINKNAME_SIZE + 1];
 
 static _dword _id;
 #ifdef DEBUG_ME
@@ -155,9 +162,6 @@ void RemoteDisco( void )
 #endif
 }
 
-char    LinkName[80];
-char    DefLinkName[] = "WinLink";
-
 const char *RemoteLink( const char *parms, bool server )
 {
     int     i;
@@ -165,14 +169,11 @@ const char *RemoteLink( const char *parms, bool server )
 
     server = server;
     if( *parms == '\0' )
-        parms = DefLinkName;
-    i = 0;
-    for( ;; ) {
-        if( i >= sizeof( LinkName ) )
-            break;
+        parms = DEFAULT_LINK_NAME;
+    for( i = 0; i < LINKNAME_SIZE; i++ ) {
         if( *parms == '\0' )
             break;
-        LinkName[i++] = *parms++;
+        LinkName[i] = *parms++;
     }
     LinkName[i] = '\0';
 #ifdef SERVER

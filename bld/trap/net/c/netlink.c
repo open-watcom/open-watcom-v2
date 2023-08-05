@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,38 +55,40 @@
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
+#if defined( __NT__ )
+    #include <nb30.h>
+#else
+    #include "wnetbios.h"
+#endif
+
+#define DEFAULT_LINK_NAME   "NetLink"
 
 #if defined( __OS2__ )
-    #include "wnetbios.h"
-  #if defined( __386__ )
-    unsigned short _System (*NetBiosSubmit)( unsigned short, unsigned short, NCB * );
-  #else
-    int __pascal (_FAR *NetBiosSubmit)( int, int, NCB _FAR * );
-  #endif
     #define NetBIOS( x ) (NetBiosSubmit)( 0, 0, (x) )
+#elif defined( __NT__ )
+    #define NET_INVALID_CMD 0x7F
+    #define NetBIOS( x )    Netbios( (x) )
+#elif defined( __WINDOWS__ )
+    #define NetBIOS( x ) NetBIOSCall( x )
+#else
+    #define NET_BIOS_INT    0x5c
+#endif
+
+#if defined( __OS2__ )
 
     extern byte __pascal _FAR NetBiosOpen( char _FAR *, char _FAR *, unsigned, int _FAR *);
 
 #elif defined( __NT__ )
-    #include <nb30.h>
 
-    #define NET_INVALID_CMD 0x7F
-
-    UCHAR APIENTRY Netbios( NCB * );
-    #define NetBIOS( x )    Netbios( (x) )
+    extern UCHAR APIENTRY Netbios( NCB * );
 
 #elif defined( __WINDOWS__ )
-    #include "wnetbios.h"
-
-    #define NetBIOS( x ) NetBIOSCall( x )
 
     extern byte _FAR NetBIOSCall( NCB __far * );
     #pragma aux NetBIOSCall "^" __parm [__es __bx] __value [__al]
 
 #else
-    #include "wnetbios.h"
 
-    #define NET_BIOS_INT    0x5c
     extern byte NetBIOS( NCB __far * );
     #pragma aux NetBIOS = 0xcd NET_BIOS_INT __parm [__es __bx] __value [__al]
 
@@ -102,6 +105,14 @@
 NCB             NetCtlBlk;
 byte            LanaNum;
 int             SkipEnum;
+
+#if defined( __OS2__ )
+  #if defined( __386__ )
+static unsigned short _System (*NetBiosSubmit)( unsigned short, unsigned short, NCB * );
+  #else
+static int __pascal (_FAR *NetBiosSubmit)( int, int, NCB _FAR * );
+  #endif
+#endif
 
 /* On traditional NetBIOS 3.0 implementations, only lana numbers 0 and 1 are
  * valid, and lana 0 is almost guaranteed to be the one we want. On Windows NT,
@@ -181,7 +192,6 @@ void RemoteDisco( void )
 #endif
 }
 
-char            DefLinkName[] = "NetLink";
 static char     NotThere[] = TRP_ERR_NetBIOS_is_not_running ;
 
 const char *RemoteLink( const char *parms, bool server )
@@ -190,7 +200,7 @@ const char *RemoteLink( const char *parms, bool server )
 
     server = server;
     if( *parms == '\0' )
-        parms = DefLinkName;
+        parms = DEFAULT_LINK_NAME;
 #if defined(__OS2__)
   #if defined(__386__)
     {

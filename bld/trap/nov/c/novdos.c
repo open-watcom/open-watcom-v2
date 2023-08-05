@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
+#include "nov.h"
 
 #include "ipxstuff.h"
 
@@ -528,8 +529,6 @@ putstring( "got one\r\n" );
     return( 1 );
 }
 
-char    DefLinkName[] = "NovLink";
-
 const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
@@ -584,7 +583,7 @@ const char *RemoteLink( const char *parms, bool server )
 #endif
     server = server;
     if( *parms == '\0' )
-        parms = DefLinkName;
+        parms = DEFAULT_LINK_NAME;
     for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
             SAPHead.name[i++] = toupper( *parms );

@@ -650,7 +650,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret->mod_handle = 0;
     InitialSS = Mach.msb_ss;
     InitialCS = Mach.msb_cs;
-    Mach.msb_event = -1;
+    Mach.msb_event = (USHORT)-1;
     return( sizeof( *ret ) );
 }
 
@@ -679,7 +679,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     SetMSW( SaveMSW );
     dbg_kill();
     HavePSP = false;
-    Mach.msb_event = -1;
+    Mach.msb_event = (USHORT)-1;
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -1044,7 +1044,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
         } else {
             strcpy( err_txt, TRP_EXC_unknown );
         }
-        Mach.msb_event = -1;
+        Mach.msb_event = (USHORT)-1;
     }
     ret->flags = MSG_NEWLINE | MSG_ERROR;
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
@@ -1092,7 +1092,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         strcpy( err, DBG_ERROR );
         strcpy( err + sizeof( DBG_ERROR )-1, DBErrors[-error_num] );
     }
-    Mach.msb_event = -1;
+    Mach.msb_event = (USHORT)-1;
     _DBG(( "outof TrapInit\r\n" ));
     return( ver );
 }

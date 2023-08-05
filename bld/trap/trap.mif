@@ -16,27 +16,21 @@ sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 sys_axp_nt    = sys ntaxp
 
-trap_ext_os2_i86 = cli1.exe
-trap_ext_qnx_i86 = cli.qnx
-trap_ext_qnx_386 = cli.qnx
-trap_ext_win_i86 = cliw.exe
+trap_suf_os2_i86 = cli1
+trap_suf_win_i86 = cliw
 
-!ifdef trap_ext_$(host_os)_$(host_cpu)
-trap_basename = $(xname)
+!ifdef trap_suf_$(host_os)_$(host_cpu)
+trap_basename = $(xname)$(trap_suf_$(host_os)_$(host_cpu))
 !else
 trap_basename = $(xname)cli
 !endif
 
-!ifdef trap_ext_$(host_os)_$(host_cpu)
-target = $(trap_basename)$(trap_ext_$(host_os)_$(host_cpu))
-!else
 target = $(trap_basename).exe
-!endif
 
 TRAP_common_objs = testcli.obj
 TRAP_remote_objs =
 
-!else
+!else   ## ifdef test
 
 !include dllbase.mif
 
@@ -145,7 +139,7 @@ target = $(trap_basename)$(ext_lib_shared)
 TRAP_common_objs = $(os_prefix)strt.obj
 TRAP_remote_objs = remote.obj
 
-!endif
+!endif  ## ifndef test
 
 !ifeq srv par
 TRAP_common_objs += $(os_prefix)noth.obj

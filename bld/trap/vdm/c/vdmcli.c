@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ const char *RemoteLink( const char *parms, bool server )
         return( "this should never be seen" );
     strcpy( buf, PREFIX );
     if( *parms == '\0' ) {
-        strcpy( buf + PREFIX_LEN, DEFAULT_NAME );
+        strcpy( buf + PREFIX_LEN, DEFAULT_LINK_NAME );
     } else if( ValidName( parms ) ) {
         strcpy( buf + PREFIX_LEN, parms );
     } else {
@@ -71,7 +71,7 @@ const char *RemoteLink( const char *parms, bool server )
         MAX_TRANS, MAX_TRANS, 0 );
     if( rc != 0 ) {
         /* the bseerr in watcom\h doesn't have ERROR_PIPE_BUSY in it */
-        if( rc == 231 ) 
+        if( rc == 231 )
             return( TRP_ERR_server_name_already_in_use );
         return( TRP_ERR_unable_to_access_server );
     }

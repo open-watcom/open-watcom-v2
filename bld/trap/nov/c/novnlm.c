@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +38,14 @@
 #include "bindery.h"
 #include "miniproc.h"
 #include "ecb.h"
-
+#include "nov.h"
 #include "ipxstuff.h"
-
 #include "debugme.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
 #include "nothing.h"
+
 
 extern struct ResourceTagStructure              *SocketTag;
 extern struct ResourceTagStructure              *TimerTag;
@@ -403,7 +403,7 @@ const char *RemoteLink( const char *parms, bool server )
 _DBG_IPX(("RemoteLink\r\n"));
     server = server;
     if( *parms == '\0' )
-        parms = "NovLink";
+        parms = DEFAULT_LINK_NAME;
     for( i = 0; i < 48 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
             SAPStruct.ASServerIDpacket.serverName[i++] = toupper( *parms );

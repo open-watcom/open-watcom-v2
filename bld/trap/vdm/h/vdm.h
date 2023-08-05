@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,8 @@
 #define MACH_NAME_LEN   (sizeof( NT_MACH_NAME ) - 1)
 #define MAX_NAME        13
 #define MAX_TRANS       1024
-#define DEFAULT_NAME    "VDMLink"
+
+#define DEFAULT_LINK_NAME   "VDMLink"
 
 extern  int     ValidName( const char *name );
 

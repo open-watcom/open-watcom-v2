@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #define SHARED_MEM_NAME         MunchName( "WJVMSharedMem" )
 #define SHARED_MEM_NAME_2       MunchName( "WJVMTerminated" )
 
-#define REMOTE_LINK_MEM_NAME    "WJVMRemoteLink"
+#define DEFAULT_LINK_NAME    "WJVMLink"
 
 #define MAX_TRANS       1024
 
@@ -114,7 +114,7 @@ void RemoteDisco( void )
 const char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
-    MemHdlLink = OpenFileMapping( FILE_MAP_WRITE, FALSE, REMOTE_LINK_MEM_NAME );
+    MemHdlLink = OpenFileMapping( FILE_MAP_WRITE, FALSE, DEFAULT_LINK_NAME );
     if( MemHdlLink == NULL ) {
         return( "can not connect to debugger" );
     }
@@ -180,7 +180,7 @@ const char *RemoteLink( const char *parms, bool server )
         return( "unable to start " JAVA_NAME );
     }
 
-    MemHdlLink = CreateFileMapping( (HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof( HANDLE ), REMOTE_LINK_MEM_NAME );
+    MemHdlLink = CreateFileMapping( (HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof( HANDLE ), DEFAULT_LINK_NAME );
     if( MemHdlLink == NULL ) {
         return( "can not communicate with class sun.tools.debug.jvmhelp" );
     }

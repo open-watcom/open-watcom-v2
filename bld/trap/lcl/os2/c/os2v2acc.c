@@ -842,7 +842,7 @@ static USHORT GetEXEFlags( const char *name )
     long        open_rc;
 
     exeflags = 0;
-    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
+    open_rc = OpenFile( (char *)name, 0, OPEN_PRIVATE );
     if( open_rc >= 0 ) {
         hdl = open_rc;
         if( FindNewHeader( hdl, &ne_header_off, &type ) ) {
@@ -888,7 +888,7 @@ static bool FindLinearStartAddress( ULONG *pLin, const char *name )
     long        open_rc;
 
     rc = false;
-    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
+    open_rc = OpenFile( (char *)name, 0, OPEN_PRIVATE );
     if( open_rc >= 0 ) {
         hdl = open_rc;
         if( FindNewHeader( hdl, &ne_header_off, &type ) ) {

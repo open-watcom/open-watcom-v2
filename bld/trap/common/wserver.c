@@ -249,7 +249,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
                 Linked = TRUE;
                 while( !Disconnect ) {
                     MSG         peek;
-                    if( PeekMessage( &peek, (HWND)0, 0, -1, PM_NOREMOVE ) ) {
+                    if( PeekMessage( &peek, (HWND)0, 0, (UINT)-1, PM_NOREMOVE ) ) {
                         if( !GetMessage( (LPVOID)&peek, (HWND)0, 0, 0 ) ) {
                             Disconnect = TRUE;
                             Exit = TRUE;

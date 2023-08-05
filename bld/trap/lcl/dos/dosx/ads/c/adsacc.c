@@ -72,9 +72,6 @@ typedef struct watch_point {
     word        dregs;
 } watch_point;
 
-extern void StackCheck( void );
-#pragma aux StackCheck "__STK";
-
 static dword    SegLimit( dword sel );
 #pragma aux SegLimit = \
         "lsl eax,eax" \
@@ -544,12 +541,6 @@ trap_retval TRAP_CORE( Write_regs )( void )
     *(struct x86_cpu *)&Regs = mr->x86.cpu;
     Write387( &mr->x86.u.fpu );
     return( 0 );
-}
-
-#pragma aux StackCheck "__STK";
-
-void StackCheck( void )
-{
 }
 
 static void ADSLoop( void )
@@ -1037,3 +1028,7 @@ void GotInt3( void )
     _DBG0(( "Got Int 3!!!" ));
 }
 #endif
+
+extern void StackCheck( void );
+#pragma aux StackCheck "__STK";
+void StackCheck( void ) {}

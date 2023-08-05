@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -279,5 +279,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
     return FALSE;
 }
 /**********************  End of window procedure  ***********************/
-void __STK(){}
-#pragma aux __STK "*";
+
+extern void StackCheck( void );
+#pragma aux StackCheck "__STK";
+void StackCheck( void ) {}

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +44,11 @@
 #include "trperr.h"
 #include "packet.h"
 
+
 typedef unsigned short  USHORT;
 
 int     pipeHdl = -1;
 char    pipeName[MACH_NAME_LEN + PREFIX_LEN + MAX_NAME];
-
-char    DefLinkName[] = DEFAULT_NAME;
 
 const char *RemoteLink( const char *parms, bool server )
 {
@@ -69,7 +68,7 @@ const char *RemoteLink( const char *parms, bool server )
     strcpy( p, PREFIX );
     p += PREFIX_LEN;
     if( *parms == '\0' ) {
-        strcpy( p, DefLinkName );
+        strcpy( p, DEFAULT_LINK_NAME );
     } else if( ValidName( parms ) ) {
         strcpy( p, parms );
     } else {
