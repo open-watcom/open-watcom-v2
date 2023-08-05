@@ -59,7 +59,7 @@ set PROJDIR=<CWD>
     <CCCMD> qnxi86/<OWOBJDIR>/vi.exe     "<OWRELROOT>/qnx/binq/vi"
 
     <CCCMD> ntx64/<OWOBJDIR>/vi.exe      "<OWRELROOT>/binnt64/"
-    <CCCMD> ntx64.win/<OWOBJDIR>/vi.exe  "<OWRELROOT>/binnt64/"
+    <CCCMD> ntx64.win/<OWOBJDIR>/viw.exe "<OWRELROOT>/binnt64/"
     <CCCMD> ctags/ntx64/ctags.exe        "<OWRELROOT>/binnt64/"
     <CCCMD> bind/ntx64/edbind.exe        "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/<OWOBJDIR>/vi.exe   "<OWRELROOT>/binl64/vi"
