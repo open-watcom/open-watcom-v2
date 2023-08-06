@@ -92,7 +92,9 @@ ins_table MIPSTable[] = {
     INS( "ret",     0x1A,   0x02,   IT_RET,             ENUM_NONE,  MIPS_ISA1 ),
  // Branch Format Instructions
     INS( "beq",     0x04,   0x00,   IT_BRANCH_TWO,      ENUM_NONE,  MIPS_ISA1 ),
+    INS( "beqz",    0x04,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "bne",     0x05,   0x00,   IT_BRANCH_TWO,      ENUM_NONE,  MIPS_ISA1 ),
+    INS( "bnez",    0x05,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "blez",    0x06,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "bgtz",    0x07,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "bltz",    0x01,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
