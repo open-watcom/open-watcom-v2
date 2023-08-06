@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -637,8 +637,8 @@ tiny_ret_t              _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sec
 tiny_ret_t  tiny_call   _nTinyWrite( tiny_handle_t, const void __near *, uint );
 tiny_ret_t              _fTinyRead( tiny_handle_t, void __far *, uint );
 tiny_ret_t  tiny_call   _nTinyRead( tiny_handle_t, void __near *, uint );
-tiny_ret_t  tiny_call   _TinySeek( tiny_handle_t, uint_32, uint_16 __ax );
-tiny_ret_t  tiny_call   _TinyLSeek( tiny_handle_t, uint_32, uint_16 __ax, u32_stk_ptr );
+tiny_ret_t  tiny_call   _TinySeek( tiny_handle_t, uint_32, int_8 __where );
+tiny_ret_t  tiny_call   _TinyLSeek( tiny_handle_t, uint_32, int_8 __where, u32_stk_ptr );
 tiny_ret_t              _fTinyDelete( const char __far * );
 tiny_ret_t  tiny_call   _nTinyDelete( const char __near * );
 tiny_ret_t              _fTinyRename( const char __far *__o, const char __far *__n );
@@ -663,7 +663,7 @@ tiny_ret_t  tiny_call   _TinyGetDeviceInfo( tiny_handle_t __dev );
 tiny_ret_t  tiny_call   _TinySetDeviceInfo( tiny_handle_t __dev, uint_8 __info);
 uint_8      tiny_call   _TinyGetCtrlBreak( void );
 void        tiny_call   _TinySetCtrlBreak( uint_8 __new_setting );
-void        tiny_call   _TinyTerminateProcess( uint_16 __ax );
+void        tiny_call   _TinyTerminateProcess( int_8 );
 tiny_date_t tiny_call   _TinyGetDate( void );
 tiny_time_t tiny_call   _TinyGetTime( void );
 uint_8      tiny_call   _TinyGetCurrDrive( void );

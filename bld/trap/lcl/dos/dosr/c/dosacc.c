@@ -532,16 +532,16 @@ static opcode_type place_breakpoint_file( tiny_handle_t handle, dword pos )
 {
     opcode_type old_opcode;
 
-    TinySeek( handle, pos, TIO_SEEK_START );
+    TinySeek( handle, pos, TIO_SEEK_SET );
     TinyFarRead( handle, &old_opcode, sizeof( old_opcode ) );
-    TinySeek( handle, pos, TIO_SEEK_START );
+    TinySeek( handle, pos, TIO_SEEK_SET );
     TinyFarWrite( handle, &BreakOpcode, sizeof( BreakOpcode ) );
     return( old_opcode );
 }
 
 static void remove_breakpoint_file( tiny_handle_t handle, dword pos, opcode_type old_opcode )
 {
-    TinySeek( handle, pos, TIO_SEEK_START );
+    TinySeek( handle, pos, TIO_SEEK_SET );
     TinyFarWrite( handle, &old_opcode, sizeof( old_opcode ) );
 }
 
@@ -629,9 +629,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
         exe_time.rc = TinyGetFileStamp( handle );
         exe_type = CheckEXEType( handle );
         if( exe_type == EXE_TYPE_OS2 ) {
-            if( TINY_OK( TinySeek( handle, NE_HEADER_OFFSET, TIO_SEEK_START ) )
+            if( TINY_OK( TinySeek( handle, NE_HEADER_OFFSET, TIO_SEEK_SET ) )
               && TINY_OK( TinyFarRead( handle, &ne_header_off, sizeof( ne_header_off ) ) )
-              && TINY_OK( TinySeek( handle, ne_header_off, TIO_SEEK_START ) )
+              && TINY_OK( TinySeek( handle, ne_header_off, TIO_SEEK_SET ) )
               && TINY_OK( TinyFarRead( handle, &os2_head, sizeof( os2_head ) ) ) ) {
                 if( os2_head.signature == EXESIGN_LE ) {
                     exe_type = EXE_TYPE_RATIONAL_386;
@@ -640,7 +640,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
                     SegTable = ne_header_off + os2_head.segment_off;
                     if( os2_head.align == 0 )
                         os2_head.align = 9;
-                    TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_START );
+                    TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_SET );
                     TinyFarRead( handle, &value, sizeof( value ) );
                     StartPos = ( (dword)value << os2_head.align ) + os2_head.IP;
                     old_opcode = place_breakpoint_file( handle, StartPos );

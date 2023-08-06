@@ -96,7 +96,7 @@
   #else
     #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
   #endif
-  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_START )
+  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_SET )
 #endif
 
 #if !defined( _DEFAULT_WINDOWS )
