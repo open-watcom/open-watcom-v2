@@ -25,3 +25,7 @@ runs:
     name: Install DOSBOX
     run: brew install dosbox
     shell: bash
+  - if: inputs.arch == 'osx'
+    name: Install DOSBOX-X
+    run: port install dosbox-x
+    shell: bash
