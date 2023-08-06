@@ -38,7 +38,9 @@
 #include "mipsenc.h"
 
 
-// TODO: kill off all these once the axp residue is gone
+/*
+ * TODO: kill off all these once the axp residue is gone
+ */
 #define _EightBits( x )         ( (x) & 0x00ff )
 #define _ElevenBits( x )        ( (x) & 0x07ff )
 #define _FourteenBits( x )      ( (x) & 0x3fff )
@@ -54,7 +56,9 @@
 #define _FP_Op_Func( x )        ( _ElevenBits( x )    << 5  )
 #define _LIT( x )               ( _LIT_unshifted( x ) << 12 )
 
-// This is real MIPS stuff
+/*
+ * This is real MIPS stuff
+ */
 #define _TenBits( x )           ( (x) & 0x03ff )
 #define _Code( x )              ( _TwentyBits( x )    << 6  )
 #define _TrapCode( x )          ( _TenBits( x )       << 6  )
@@ -73,7 +77,9 @@
 #define FNCCODE_JR      0x08
 #define FNCCODE_JALR    0x09
 
-// TODO: kill off these macros
+/*
+ * TODO: kill off these macros
+ */
 #define OPCODE_BIS      0x11
 #define FUNCCODE_BIS    0x0020
 #define OPCODE_LDA      0x8
@@ -185,7 +191,9 @@ static owl_reloc_type relocType( asm_reloc_type type, owl_reloc_type default_typ
         }
         break;
     case OWL_RELOC_JUMP_REL:    // jump hint
-        // we accept j^ to be specified for jump hint for now.
+        /*
+         * we accept j^ to be specified for jump hint for now.
+         */
         if( (ret = reloc_translate[type]) != OWL_RELOC_JUMP_REL &&
             ret != OWL_RELOC_BRANCH_REL ) {
             Error( INVALID_RELOC_MODIFIER );
@@ -193,7 +201,7 @@ static owl_reloc_type relocType( asm_reloc_type type, owl_reloc_type default_typ
         ret = OWL_RELOC_JUMP_REL;
         break;
     default:
-        //Error( "internal - unexpected default type" );
+//        Error( "internal - unexpected default type" );
         assert( false );
         ret = OWL_RELOC_ABSOLUTE;
     }
@@ -280,9 +288,10 @@ static void doOpcodeRType( uint_32 *buffer, uint_8 opcode, uint_8 fc, uint_8 rd,
 
 
 static void doOpcodeCopOp( uint_32 *buffer, uint_8 opcode, uint_8 fc, uint_32 extra )
-//***********************************************************************************
-// This procedure doesn't fill in all the bits (missing bits 6-24).
-// But we can fill it in using extra.
+/************************************************************************************
+ * This procedure doesn't fill in all the bits (missing bits 6-24).
+ * But we can fill it in using extra.
+ */
 {
 
     *buffer = _Opcode( opcode ) | (1 << 25) | extra | _Function( fc );
@@ -302,7 +311,9 @@ static void doOpcodeFloatRType( type_class_def type, uint_8 fnc, uint_8 fd, uint
     mips_ins            ins;
     int                 fmt;
 
-    // Select operand format
+    /*
+     * Select operand format
+     */
     if( type == FS ) {
         fmt = 0x10;
     } else if( type == FD || type == FL ) {
@@ -310,8 +321,9 @@ static void doOpcodeFloatRType( type_class_def type, uint_8 fnc, uint_8 fd, uint
     } else {
         assert( 0 );
     }
-
-    // Opcode is always COP1
+    /*
+     * Opcode is always COP1
+     */
     ins = _Opcode( 0x11 ) | _FPFormat( fmt ) | _Ft( ft ) | _Fs( fs ) | _Fd( fd ) | _Function( fnc );
     EmitIns( ins );
 }
@@ -325,9 +337,10 @@ static void doOpcodeRsRt( uint_32 *buffer, ins_opcode opcode, uint_8 rs, uint_8 
 
 
 static void doOpcodeFcRsRt( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, uint_8 ra, uint_8 rc, uint_32 extra )
-//********************************************************************************************************************
-// This procedure doesn't fill in all the bits (missing bits 20-12).
-// But we can fill it in using extra.
+/*********************************************************************************************************************
+ * This procedure doesn't fill in all the bits (missing bits 20-12).
+ * But we can fill it in using extra.
+ */
 {
     *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Rs( ra ) | _Rt( rc ) | extra;
 }
@@ -375,12 +388,13 @@ static void doAutoVar( asm_reloc *reloc, op_reloc_target targ, uint_32 *buffer, 
 
 
 static unsigned loadConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_operand *op, op_const c, asm_reloc *reloc, bool force_pair )
-//****************************************************************************************************************************************
-// load sequence for 32-bit constants
-// Given: la $d_reg, foobar+c($s_reg)
-//        info for foobar is stored in op
-//        c should be passed in also
-// Returns # of ins generated
+/*****************************************************************************************************************************************
+ * load sequence for 32-bit constants
+ * Given: la $d_reg, foobar+c($s_reg)
+ *        info for foobar is stored in op
+ *        c should be passed in also
+ * Returns # of ins generated
+ */
 {
     unsigned            ret = 1;
     int_16              low, high;
@@ -398,24 +412,33 @@ static unsigned loadConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_op
     high = (c & 0xffff0000) >> 16;
 
     if( !force_pair && (c < 32768) && ((int_32)c > -32769) ) {
-        // Only need sign extended low 16 bits - 'addiu rt,$zero,value'
+        /*
+         * Only need sign extended low 16 bits - 'addiu rt,$zero,value'
+         */
         doOpcodeIType( buffer, OPCODE_ADDIU, d_reg, ZERO_REG_IDX, low );
         doReloc( reloc, op, OWL_RELOC_HALF_LO, buffer );
     } else if( !force_pair && !high ) {
-        // Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
+        /*
+         * Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
+         */
         doOpcodeIType( buffer, OPCODE_LUI, d_reg, ZERO_REG_IDX, high );
         doReloc( reloc, op, OWL_RELOC_HALF_HI, buffer );
     } else {
-        // Need two instructions: 'lui rt,$zero,(value >> 16)'
+        /*
+         * Need two instructions: 'lui rt,$zero,(value >> 16)'
+         */
         doOpcodeIType( buffer, OPCODE_LUI, d_reg, ZERO_REG_IDX, high );
         doReloc( reloc, op, OWL_RELOC_HALF_HI, buffer );
         ++buffer;
-        // followed by 'ori rt,rt,(value & 0xffff)'
-        // or 'addiu' for the 'la' pseudo-ins
-        if( force_pair )
+        /*
+         * followed by 'ori rt,rt,(value & 0xffff)'
+         * or 'addiu' for the 'la' pseudo-ins
+         */
+        if( force_pair ) {
             doOpcodeIType( buffer, OPCODE_ADDIU, d_reg, d_reg, low );
-        else
+        } else {
             doOpcodeIType( buffer, OPCODE_ORI, d_reg, d_reg, low );
+        }
         doReloc( reloc, op, OWL_RELOC_HALF_LO, buffer );
         ++ret;
     }
@@ -456,11 +479,15 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
         doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, ZERO_REG_IDX, RegIndex( op1->reg ), extra );
     } else if( ( -op0->constant & 0xff ) == -op0->constant && m_opt == DOMOV_ABS ) { // -255..0
         extra = _LIT( -op0->constant ); // this lit is between 0..255
-        // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
+        /*
+         * ensureOpAbsolute( op0, 0 );  should be done before calling doMov
+         */
         doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, ZERO_REG_IDX, RegIndex( op1->reg ), extra );
     } else {
-        // Otherwise it's OP_IMMED with a greater than 8-bit literal.
-        // We'll then use multiple LDA, LDAH instructions to load the literal.
+        /*
+         * Otherwise it's OP_IMMED with a greater than 8-bit literal.
+         * We'll then use multiple LDA, LDAH instructions to load the literal.
+         */
         if( ensureOpAbsolute( op0, 0 ) ) {
             numExtendedIns += load32BitLiteral( buffer, op0, op1, m_opt ) - 1;
         }
@@ -469,8 +496,9 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
 
 
 static void doLoadImm( uint_32 *buffer, ins_operand *operands[] )
-//***************************************************************
-// 'li' pseudo-ins
+/****************************************************************
+ * 'li' pseudo-ins
+ */
 {
     ins_operand     *op0, *op1;
     int_32          value;
@@ -483,18 +511,26 @@ static void doLoadImm( uint_32 *buffer, ins_operand *operands[] )
     value = op1->constant;
 
     if( (value < 32768) && (value > -32769) ) {
-        // Only need sign extended low 16 bits - 'addiu rt,$zero,value'
+        /*
+         * Only need sign extended low 16 bits - 'addiu rt,$zero,value'
+         */
         doOpcodeIType( buffer, OPCODE_ADDIU, reg, ZERO_REG_IDX,
             (unsigned_16)value );
     } else if( (value & 0xffff) == 0 ) {
-        // Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
+        /*
+         * Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
+         */
         doOpcodeIType( buffer, OPCODE_LUI, reg, ZERO_REG_IDX,
             (unsigned_16)(value >> 16) );
     } else {
-        // Need two instructions: 'lui rt,$zero,(value >> 16)'
+        /*
+         * Need two instructions: 'lui rt,$zero,(value >> 16)'
+         */
         doOpcodeIType( buffer, OPCODE_LUI, reg, ZERO_REG_IDX,
             (unsigned_16)(value >> 16) );
-        // followed by 'ori rt,$zero,(value & 0xffff)'
+        /*
+         * followed by 'ori rt,$zero,(value & 0xffff)'
+         */
         ++buffer;
         doOpcodeIType( buffer, OPCODE_ORI, reg, ZERO_REG_IDX,
             (unsigned_16)value );
@@ -584,7 +620,9 @@ static void ITMemAll( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
 
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
-    // If op is IMMED foo, it's actually REG_INDIRECT that we want: foo($zero)
+    /*
+     * If op is IMMED foo, it's actually REG_INDIRECT that we want: foo($zero)
+     */
     if( op->type == OP_IMMED ) {
         op->type = OP_REG_INDIRECT;
         op->reg = ZERO_REG;
@@ -631,7 +669,9 @@ static void ITMemB( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 static void doMemJump( uint_32 *buffer, ins_table *table, uint_8 ra, uint_8 rb, ins_operand *addr_op, int_32 hint, asm_reloc *reloc )
 //***********************************************************************************************************************************
 {
-    // Note that addr_op maybe NULL. If not, addr_op->constant == hint.
+    /*
+     * Note that addr_op maybe NULL. If not, addr_op->constant == hint.
+     */
     assert( addr_op == NULL || addr_op->constant == hint );
     assert( addr_op == NULL || addr_op->type == OP_IMMED );
     doOpcodeRsRt( buffer, table->opcode, ra, rb, (table->funccode << 14) | _FourteenBits(hint) );
@@ -663,8 +703,9 @@ static void doAbsJump( uint_32 *buffer, ins_table *table, ins_operand *addr_op, 
 
 
 static void opError( instruction *ins, op_type actual, op_type wanted, int i )
-//****************************************************************************
-// Stuff out an error message.
+/*****************************************************************************
+ * Stuff out an error message.
+ */
 {
     /* unused parameters */ (void)ins; (void)actual;
 
@@ -697,15 +738,18 @@ static bool opValidate( ot_array *verify, instruction *ins, int num_op, int num_
         }
         verify++;
     }
-    // not passed, error
+    /*
+     * not passed, error
+     */
     opError( ins, ins->operands[lasterr]->type, wanted, lasterr );
     return( false );
 }
 
 
 static bool jmpOperandsValidate( instruction *ins, int num_op, bool link )
-//************************************************************************
-// Used by j, jal
+/*************************************************************************
+ * Used by j, jal
+ */
 {
     static ot_array verify1[] = { { OP_REG_INDIRECT, OP_NOTHING, OP_NOTHING },
                                   { OP_GPR, OP_NOTHING, OP_NOTHING },
@@ -781,12 +825,16 @@ static void ITJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     int         num_op;
     bool        link;
 
-    // 'j' and 'jal' may both be used with the jump target given as either
-    // an expression or a GPR; this means the instructions will end up being
-    // encoded as j/jal or jr/jalr depending on operands.
+    /*
+     * 'j' and 'jal' may both be used with the jump target given as either
+     * an expression or a GPR; this means the instructions will end up being
+     * encoded as j/jal or jr/jalr depending on operands.
+     */
     num_op = ins->num_operands;
     link   = table->opcode & 1;
-    // First check if the operands are of the right types
+    /*
+     * First check if the operands are of the right types
+     */
     if( !jmpOperandsValidate( ins, num_op, link ) )
         return;
 
@@ -796,7 +844,9 @@ static void ITJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     } else if( num_op == 1 ) {
         if( link ) {    // jalr $ra,rs
             if( op0->reg == RA_REG_IDX ) {
-                // TODO: warn - non-restartable instruction
+                /*
+                 * TODO: warn - non-restartable instruction
+                 */
             }
             doOpcodeRType( buffer, 0, FNCCODE_JALR, RA_REG_IDX,
                 RegIndex( op0->reg ), 0 );
@@ -806,7 +856,9 @@ static void ITJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     } else {    // jalr rd,rs
         op1 = ins->operands[1];
         if( op0->reg == op1->reg ) {
-            // TODO: warn - non-restartable instruction
+            /*
+             * TODO: warn - non-restartable instruction
+             */
         }
         doOpcodeRType( buffer, 0, FNCCODE_JALR, RegIndex( op1->reg ),
             RegIndex( op0->reg ), 0 );
@@ -816,8 +868,9 @@ static void ITJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 
 
 static bool retOperandsValidate( instruction *ins, int num_op )
-//*************************************************************
-// Can be used by ret, jsr_coroutine
+/**************************************************************
+ * Can be used by ret, jsr_coroutine
+ */
 {
     static ot_array verify1[] = { { OP_GPR, OP_NOTHING, OP_NOTHING },
                                   { OP_IMMED, OP_NOTHING, OP_NOTHING } };
@@ -846,15 +899,18 @@ static bool retOperandsValidate( instruction *ins, int num_op )
 
 
 static void ITRet( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc )
-//****************************************************************************************
-// Both ret and jsr coroutine use this
+/*****************************************************************************************
+ * Both ret and jsr coroutine use this
+ */
 {
     ins_operand     *op0, *op1;
     int             num_op;
     uint_8          d_reg_idx;  // default d_reg if not specified
 
     num_op = ins->num_operands;
-    // First check if the operands are of the right types
+    /*
+     * First check if the operands are of the right types
+     */
     if( !retOperandsValidate( ins, num_op ) )
         return;
     if( num_op == 3 ) {
@@ -862,7 +918,9 @@ static void ITRet( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
         return;
     }
     if( table->funccode == 0x0003 ) { // jsr_coroutine
-        // This is according to the MS asaxp documentation.
+        /*
+         * This is according to the MS asaxp documentation.
+         */
         d_reg_idx = RA_REG_IDX;
     } else {
         assert( table->funccode == 0x0002 ); // ret
@@ -1120,7 +1178,9 @@ static void ITBr( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc
         doReloc( reloc, op0, OWL_RELOC_BRANCH_REL, buffer );
         return;
     }
-    // num_operands == 2
+    /*
+     * num_operands == 2
+     */
     op1 = ins->operands[1];
     if( op0->type != OP_GPR ) {
         Error( IMPROPER_OPERAND, 0 );
@@ -1195,7 +1255,9 @@ static void ITPseudoLAddr( ins_table *table, instruction *ins, uint_32 *buffer, 
 
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
-    // If op is IMMED foo, it's actually REG_INDIRECT that we want: foo($zero)
+    /*
+     * If op is IMMED foo, it's actually REG_INDIRECT that we want: foo($zero)
+     */
     if( op->type == OP_IMMED ) {
         op->type = OP_REG_INDIRECT;
         op->reg = ZERO_REG;
@@ -1204,7 +1266,9 @@ static void ITPseudoLAddr( ins_table *table, instruction *ins, uint_32 *buffer, 
 //    val = op->constant;
     s_reg = RegIndex( op->reg );
     if( !OP_HAS_RELOC( op ) && s_reg == ZERO_REG_IDX ) {
-        // doMov() can only be called when op->reg is ZERO_REG and no reloc
+        /*
+         * doMov() can only be called when op->reg is ZERO_REG and no reloc
+         */
         ops[0] = op;
         ops[1] = ins->operands[0];
         doMov( buffer, ops, DOMOV_ORIGINAL );
@@ -1223,7 +1287,9 @@ static void ITPseudoLAddr( ins_table *table, instruction *ins, uint_32 *buffer, 
         }
 #endif
         if( op->reloc.type == ASM_RELOC_UNSPECIFIED ) {
-            // We should emit lui/addiu pair.
+            /*
+             * We should emit lui/addiu pair.
+             */
             inc = loadConst32( buffer, RegIndex( ins->operands[0]->reg ),
                                s_reg, op, op->constant, reloc, true );
             numExtendedIns += inc - 1;
@@ -1325,8 +1391,10 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
     assert( ins->num_operands == 2 );
     src_op = ins->operands[0];
     if( src_op->type == OP_IMMED ) {
-        // Then just evaluate it and do a mov instead.
-        // mov  abs(src_op->constant), d_reg
+        /*
+         * Then just evaluate it and do a mov instead.
+         * mov  abs(src_op->constant), d_reg
+         */
         if( ensureOpAbsolute( src_op, 0 ) ) {
             doMov( buffer, ins->operands, DOMOV_ABS );
         }
@@ -1334,17 +1402,19 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
     }
     assert( src_op->type == OP_GPR );
     /* Emit an instruction sequence like:
-       1. subq/v  $zero, $s_reg, $at    // if( $s_reg == $d_reg )
-       2. cmovlt  $s_reg, $at, $s_reg
-       ---or---
-       1. subq/v  $zero, $s_reg, $d_reg // if( $s_reg != $d_reg )
-       2. cmovgt  $s_reg, $s_reg, $d_reg
-    */
+     * 1. subq/v  $zero, $s_reg, $at    // if( $s_reg == $d_reg )
+     * 2. cmovlt  $s_reg, $at, $s_reg
+     * ---or---
+     * 1. subq/v  $zero, $s_reg, $d_reg // if( $s_reg != $d_reg )
+     * 2. cmovgt  $s_reg, $s_reg, $d_reg
+     */
     s_reg_idx = RegIndex( src_op->reg );
     d_reg_idx = RegIndex( ins->operands[1]->reg );
     same_reg = ( s_reg_idx == d_reg_idx );
     if( same_reg ) {
-        // Then $at reg will be needed.
+        /*
+         * Then $at reg will be needed.
+         */
         if( !_DirIsSet( AT ) ) {
             Warning( INS_USES_AT_REG );
         }
@@ -1353,7 +1423,9 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
         rc_reg_idx = d_reg_idx;
     }
     doOpcodeFcRsRt( buffer, table->opcode, table->funccode, ZERO_REG_IDX, rc_reg_idx, _Rt( s_reg_idx ) );
-    // So buffer gets ins #1. Now do ins #2.
+    /*
+     * So buffer gets ins #1. Now do ins #2.
+     */
     ++buffer;
 #define OPCODE_CMOVGT           0x11
 #define OPCODE_CMOVLT           0x11
@@ -1380,10 +1452,11 @@ mips_format MIPSFormatTable[] = {
 
 
 bool MIPSValidate( instruction *ins )
-//***********************************
-// Make sure that all operands of the given instruction
-// are of the type we are expecting. If not, we print
-// out an error message.
+/************************************
+ * Make sure that all operands of the given instruction
+ * are of the type we are expecting. If not, we print
+ * out an error message.
+ */
 {
     int                 i;
     mips_format         *fmt;
@@ -1402,8 +1475,10 @@ bool MIPSValidate( instruction *ins )
             Error( NOT_ENOUGH_INSOP );
             return( false );
         }
-    }   // NOTE: It might not catch all improper operand combinations
-        // because we're using flags here
+    }   /*
+         * NOTE: It might not catch all improper operand combinations
+         * because we're using flags here
+         */
     return( true );
 }
 
@@ -1425,14 +1500,14 @@ static void emitIns( char *inscode, int size )
 
 #ifdef _STANDALONE_
 void MIPSEmit( owl_section_handle hdl, instruction *ins )
-//*******************************************************
 #else
 void MIPSEmit( instruction *ins )
-//*******************************
 #endif
-// Encode the given instruction (including emitting any
-// relocs to the appropriate places), and emit the code
-// to the given section.
+/********************************************************
+ * Encode the given instruction (including emitting any
+ * relocs to the appropriate places), and emit the code
+ * to the given section.
+ */
 {
     unsigned        ctr;
     ins_table       *table;
