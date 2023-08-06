@@ -73,9 +73,7 @@ typedef enum {
 } open_attr;
 
 typedef enum {
-    TIO_SEEK_START              = 0,
     TIO_SEEK_SET                = 0,
-    TIO_SEEK_CURR               = 1,
     TIO_SEEK_CUR                = 1,
     TIO_SEEK_END                = 2,
 } seek_info;
