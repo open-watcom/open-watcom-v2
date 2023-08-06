@@ -276,7 +276,7 @@ static void Usage( char *msg )
     printf( "Usage: edbind [-?sq] [-d<datfile>] <exename> [<output exename>]\n" );
     if( msg == NULL ) {
         printf( "\t<exename>\t     executable to add editor data to\n" );
-        printf( "\t<output exename>     optional output file (defult is <exename>)\n" );
+        printf( "\t<output exename>     optional output file (default is <exename>)\n" );
         printf( "\tOptions -?:\t     display this message\n" );
         printf( "\t\t-s:\t     strip info from executable\n" );
         printf( "\t\t-q:\t     run quietly\n" );
