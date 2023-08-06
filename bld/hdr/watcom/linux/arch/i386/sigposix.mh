@@ -23,19 +23,3 @@ struct sigaction {
 };
 # define sa_handler     _u.sa_handler
 # define sa_sigaction   _u.sa_sigaction
-
-struct sigevent {
-    int          sigev_signo;
-    union sigval sigev_value;
-    int          sigev_notify;
-};
-
-struct msigevent {
-    long         sigev_signo;
-    union sigval sigev_value;
-    int          sigev_notify;
-};
-
-#define SIGEV_SIGNAL    0
-#define SIGEV_NONE      1
-#define SIGEV_THREAD    2

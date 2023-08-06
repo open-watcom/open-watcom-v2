@@ -26,7 +26,7 @@ maxpath_sp  = ../maxpath.sp $(extension)
 
 assert_deps   = $(mh_dir)/assert.mh $(owhdr) $(cplus) $(extension)
 ctype_deps    = $(mh_dir)/ctype.mh $(owhdr) $(cplus) $(extension) $(c99ext) $(ns_std)
-errno_deps    = $(mh_dir)/errno.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp
+errno_deps    = $(mh_dir)/errno.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp ../errsbase.sp
 float_deps    = $(mh_dir)/float.mh $(owhdr) $(cplus) ../null.sp $(extension)
 inttypes_deps = $(mh_dir)/inttypes.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(packll) $(cplus) ../wchar_t.sp $(ns_std)
 iso646_deps   = $(mh_dir)/iso646.mh $(owhdr)
@@ -34,7 +34,7 @@ limits_deps   = $(mh_dir)/limits.mh $(crwatqnx_sp) $(owhdrcnt) ../mblenmax.sp $(
 locale_deps   = $(mh_dir)/locale.mh $(crwatqnx_sp) $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp $(ns_std) ../nyi.sp
 math_deps     = $(mh_dir)/math.mh $(owhdr) $(extension) $(c99ext) $(cplus) $(packll) $(ns_std)
 setjmp_deps   = $(mh_dir)/setjmp.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
-signal_deps   = $(mh_dir)/signal.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(ns_std) ../size_t.sp ../uid_t.sp ../timespec.sp ../systypes.sp ../pthread1.sp ../incdir.sp $(posixext) $(unixext)
+signal_deps   = $(mh_dir)/signal.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(ns_std) ../size_t.sp ../uid_t.sp ../timespec.sp ../systypes.sp ../pthread1.sp ../sigevent.sp ../incdir.sp $(posixext) $(unixext)
 stdarg_deps   = $(mh_dir)/stdarg.mh $(owhdr) $(cplus) ../_valist.sp ../valist.sp $(extension) $(ns_std)
 stdbool_deps  = $(mh_dir)/stdbool.mh $(owhdr)
 stddef_deps   = $(mh_dir)/stddef.mh $(owhdr) $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../ptrdifft.sp $(saferc) $(extension) ../thrdhndl.sp

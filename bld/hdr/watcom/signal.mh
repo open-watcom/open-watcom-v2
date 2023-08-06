@@ -98,6 +98,8 @@ typedef void _WCCALLBACK __sigfpe_func( int, int );
 typedef struct siginfo siginfo_t;
 #include _ARCH_INCLUDE(sigposix.h)
 
+:include sigevent.sp
+
 :include extepi.sp
 
 :elsesegment QNX
@@ -156,15 +158,7 @@ extern int sigaltstack(const stack_t *__ss, stack_t *__oss);
 #endif
 
 #ifndef __NEUTRINO__
-struct sigevent {
-    int          sigev_signo;
-    union sigval sigev_value;
-    int          sigev_notify;
-};
-struct msigevent {
-    long         sigev_signo;
-    union sigval sigev_value;
-};
+:include sigevent.sp
 #endif
 
 ::
