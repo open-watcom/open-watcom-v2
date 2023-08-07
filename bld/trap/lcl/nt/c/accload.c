@@ -45,10 +45,10 @@
 #include "clibext.h"
 
 
-/*
- * executeUntilStart - run program until start address hit
- */
 static bool executeUntilStart( bool was_running )
+/************************************************
+ * run program until start address hit
+ */
 {
     HANDLE      ph;
     opcode_type old_opcode;
@@ -65,7 +65,9 @@ static bool executeUntilStart( bool was_running )
         base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
         old_opcode = place_breakpoint_lin( ph, base );
     } else {
-        // a trick to make app execute long enough to hit a breakpoint
+        /*
+         * a trick to make app execute long enough to hit a breakpoint
+         */
         PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
     }
 
@@ -113,10 +115,10 @@ static bool executeUntilStart( bool was_running )
 
 #if MADARCH & MADARCH_X86
 #ifdef WOW
-/*
- * addKERNEL - add the KERNEL module to the library load (WOW)
- */
 static void addKERNEL( void )
+/****************************
+ * add the KERNEL module to the library load (WOW)
+ */
 {
 #if 0
     /*
@@ -158,12 +160,12 @@ static void addKERNEL( void )
 
 }
 
-/*
- * addAllWOWModules - add all modules as libraries.  This is invoked if
- *                    WOW was already running, since we will get no
- *                    lib load notifications if it was.
- */
 static void addAllWOWModules( void )
+/***********************************
+ * add all modules as libraries.  This is invoked if
+ * WOW was already running, since we will get no
+ * lib load notifications if it was.
+ */
 {
     MODULEENTRY         me;
     thread_info         *ti;
@@ -184,10 +186,10 @@ static void addAllWOWModules( void )
 
 }
 
-/*
- * executeUntilVDMStart - go until we hit our first VDM exception
- */
 static bool executeUntilVDMStart( void )
+/***************************************
+ * go until we hit our first VDM exception
+ */
 {
     myconditions    rc;
 
@@ -201,10 +203,10 @@ static bool executeUntilVDMStart( void )
 
 }
 
-/*
+static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
+/******************************************************************************
  * EnumWOWProcessFunc - callback for each WOW process in the system
  */
-static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 {
     if( attrib & WOW_SYSTEM ) {
         *(DWORD *)lparam = pid;
@@ -241,10 +243,10 @@ static size_t MergeArgvArray( const char *src, char *dst, size_t len )
     return( dst - start );
 }
 
-/*
- * AccLoadProg - create a new process for debugging
- */
 trap_retval TRAP_CORE( Prog_load )( void )
+/*****************************************
+ * create a new process for debugging
+ */
 {
     char            *parm;
     char            *src;
@@ -273,7 +275,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     parm = GetInPtr( sizeof( *acc ) );
-
     /*
      * reset status variables
      */
@@ -286,17 +287,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
     DebugeePid = 0;
     DebugeeTid = 0;
     SupportingExactBreakpoints = false;
-
     /*
      * check if pid is specified
      */
     ParseServiceStuff( parm, &dll_name, &service_name, &dll_destination, &service_parm );
     pid = 0;
     src = parm;
-
     /*
-    //  Just to be really safe!
-    */
+     *  Just to be really safe!
+     */
     nBuffRequired = GetTotalSizeIn() + PATH_MAX + 16;
     buff = LocalAlloc( LMEM_FIXED, nBuffRequired );
     if( buff == NULL ) {
@@ -319,7 +318,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
             pid = atoi( parm );
         }
     }
-
     /*
      * get program to debug.  If the user has specified a pid, then
      * skip directly to doing a DebugActiveProcess
@@ -334,7 +332,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( ret->err != 0 ) {
             goto error_exit;
         }
-
         /*
          * Get type of application
          */
@@ -343,7 +340,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
             goto error_exit;
         }
         GetFullPathName( exe_name, MAX_PATH, CurrEXEName, NULL );
-
         /*
          * get the parm list
          */
@@ -413,7 +409,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
         CloseHandle( handle );
         handle = INVALID_HANDLE_VALUE;
     }
-
     /*
      * start the debugee
      */
@@ -492,7 +487,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
         con.Esp = stack;
         MySetThreadContext( ti, &con );
     } else if( IsDOS ) {
-        // TODO! Clean up this code
+        /*
+         * TODO! Clean up this code
+         */
         ret->flags = 0; //LD_FLAG_IS_PROT;
         ret->err = 0;
         ret->task_id = DebugeePid;
@@ -549,7 +546,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
              * if the app does not load our DLL at the same address the
              * debugger loaded it at!!!
              */
-
             ti = FindThread( DebugeeTid );
             MyGetThreadContext( ti, &con );
             old = (LPVOID)AdjustIP( &con, 0 );
