@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,11 +67,11 @@ TRPGLOBAL subsystems    DebugeeSubsystem;
 TRPGLOBAL msg_list      *DebugString;
 TRPGLOBAL DEBUG_EVENT   DebugEvent;
 TRPGLOBAL bool          IsWOW;
+TRPGLOBAL bool          IsWinNT;
 #if !( MADARCH & MADARCH_X64 )
 TRPGLOBAL bool          IsDOS;
 TRPGLOBAL bool          IsWin32s;
 TRPGLOBAL bool          IsWin95;
-TRPGLOBAL bool          IsWinNT;
 TRPGLOBAL bool          UseVDMStuff;
 #endif
 TRPGLOBAL char          CurrEXEName[MAX_PATH];
@@ -92,7 +92,6 @@ TRPGLOBAL wow_info      WOWAppInfo;
   #endif
 #endif
 
-#if !( MADARCH & MADARCH_X64 )
 TRPGLOBAL HANDLE
 (WINAPI*pOpenThread)(
     DWORD
@@ -131,6 +130,7 @@ TRPGLOBAL BOOL
     LPMODULEENTRY32 lpme
 );
 
+#if !( MADARCH & MADARCH_X64 )
 TRPGLOBAL BOOL
 (WINAPI*pVDMModuleFirst)(
     HANDLE          hProcess,

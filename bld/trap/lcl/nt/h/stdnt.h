@@ -47,6 +47,11 @@
 #endif
 
 
+#undef GetThreadContext
+#define GetThreadContext Dont_call_GetThreadContext_directly__Call_MyGetThreadContext_instead
+#undef SetThreadContext
+#define SetThreadContext Dont_call_SetThreadContext_directly__Call_MySetThreadContext_instead
+
 #if MADARCH & MADARCH_X64
     #define MYCONTEXT           WOW64_CONTEXT
     // position in Windows CONTEXT,
@@ -55,22 +60,23 @@
     #define MYCONTEXT_XMM       (10 * 16)
 
     #define MYCONTEXT_CONTROL   WOW64_CONTEXT_CONTROL;
-    #define MYCONTEXT_TO_USE    (WOW64_CONTEXT_FULL | WOW64_CONTEXT_FLOATING_POINT | \
-                        WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
 #else
     #define MYCONTEXT           CONTEXT
     // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
+#endif
 
     #define MYCONTEXT_CONTROL   CONTEXT_CONTROL;
-  #if MADARCH & MADARCH_X86
+
+#if MADARCH & MADARCH_X86
     #define MYCONTEXT_TO_USE    (CONTEXT_FULL | CONTEXT_FLOATING_POINT | \
                         CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
-  #else
+#elif MADARCH & MADARCH_X64
+    #define MYCONTEXT_TO_USE    (CONTEXT_FULL | CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS)
+#else
     #define MYCONTEXT_TO_USE    CONTEXT_FULL
-  #endif
 #endif
 
 #if MADARCH & MADARCH_X64
@@ -102,6 +108,16 @@
     (1 + (ULONG_PTR)(d).LimitLow + ((ULONG_PTR)(d).HighWord.Bits.LimitHi << 16L)))
 #endif
 
+#define COND_VDM_START                  0x80000000
+
+#define STATE_NONE                      0x00000000
+#define STATE_WATCH                     0x00000001
+#define STATE_WATCH_386                 0x00000002
+#define STATE_EXPECTING_FAULT           0x00000004
+#define STATE_IGNORE_DEAD_THREAD        0x00000008
+#define STATE_WAIT_FOR_VDM_START        0x00000010
+#define STATE_IGNORE_DEBUG_OUT          0x00000020
+
 typedef struct {
     WORD                signature;
     union {
@@ -113,23 +129,13 @@ typedef struct {
 
 #if ( MADARCH & MADARCH_X86 ) && defined( WOW )
 typedef struct {
-    addr48_ptr  addr;
-    DWORD       tid;
-    WORD        htask;
-    DWORD       hmodule;
-    char        modname[MAX_MODULE_NAME+1];
+    addr48_ptr          addr;
+    DWORD               tid;
+    WORD                htask;
+    DWORD               hmodule;
+    char                modname[MAX_MODULE_NAME+1];
 } wow_info;
 #endif
-
-#define COND_VDM_START                  0x80000000
-
-#define STATE_NONE                      0x00000000
-#define STATE_WATCH                     0x00000001
-#define STATE_WATCH_386                 0x00000002
-#define STATE_EXPECTING_FAULT           0x00000004
-#define STATE_IGNORE_DEAD_THREAD        0x00000008
-#define STATE_WAIT_FOR_VDM_START        0x00000010
-#define STATE_IGNORE_DEBUG_OUT          0x00000020
 
 typedef struct thread_info {
     struct thread_info  *next;
@@ -163,8 +169,8 @@ typedef enum {
 } subsystems;
 
 typedef struct msg_list {
-    struct msg_list *next;
-    char            msg[1]; /* variable size */
+    struct msg_list     *next;
+    char                msg[1]; /* variable size */
 } msg_list;
 
 typedef unsigned        myconditions;
@@ -215,9 +221,7 @@ extern bool             Terminate( void );
 
 /* misc.c */
 extern bool             MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
-#define GetThreadContext Dont_call_GetThreadContext_directly__Call_MyGetThreadContext_instead
 extern bool             MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
-#define SetThreadContext Dont_call_SetThreadContext_directly__Call_MySetThreadContext_instead
 
 /* peread.c */
 extern bool             SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size );

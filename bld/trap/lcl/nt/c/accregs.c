@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +203,13 @@ trap_retval TRAP_CORE( Read_regs )( void )
     if( DebugeePid ) {
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+#if MADARCH & MADARCH_X86
+        ReadCPU( &mr->x86.cpu, &con );
+        memcpy( &mr->x86.u.fpu, &con.FloatSave, sizeof( mr->x86.u.fpu ) );
+        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[MYCONTEXT_XMM],
+            sizeof( mr->x86.xmm.xmm ) );
+        mr->x86.xmm.mxcsr = con.ExtendedRegisters[MYCONTEXT_MXCSR];
+#elif MADARCH & MADARCH_X64
         ReadCPU( &mr->x86.cpu, &con );
         memcpy( &mr->x86.u.fpu, &con.FloatSave, sizeof( mr->x86.u.fpu ) );
         memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[MYCONTEXT_XMM],
@@ -288,7 +294,12 @@ trap_retval TRAP_CORE( Write_regs )( void )
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+#if MADARCH & MADARCH_X86
+    WriteCPU( &mr->x86.cpu, &con );
+    memcpy( &con.FloatSave, &mr->x86.u.fpu, sizeof( mr->x86.u.fpu ) );
+    memcpy( &con.ExtendedRegisters[MYCONTEXT_XMM], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
+    con.ExtendedRegisters[MYCONTEXT_MXCSR] = mr->x86.xmm.mxcsr;
+#elif MADARCH & MADARCH_X64
     WriteCPU( &mr->x86.cpu, &con );
     memcpy( &con.FloatSave, &mr->x86.u.fpu, sizeof( mr->x86.u.fpu ) );
     memcpy( &con.ExtendedRegisters[MYCONTEXT_XMM], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
@@ -349,7 +360,10 @@ trap_retval TRAP_CORE( Write_regs )( void )
 
 LPVOID AdjustIP( MYCONTEXT *con, int adjust )
 {
-#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+#if MADARCH & MADARCH_X86
+    con->Eip += adjust;
+    return( (LPVOID)con->Eip );
+#elif MADARCH & MADARCH_X64
     con->Eip += adjust;
     return( (LPVOID)con->Eip );
 #elif MADARCH & MADARCH_AXP
@@ -366,7 +380,9 @@ LPVOID AdjustIP( MYCONTEXT *con, int adjust )
 
 void SetIP( MYCONTEXT *con, LPVOID new )
 {
-#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+#if MADARCH & MADARCH_X86
+    con->Eip = (DWORD)new;
+#elif MADARCH & MADARCH_X64
     con->Eip = (DWORD)new;
 #elif MADARCH & MADARCH_AXP
     //NYI: 64 bit

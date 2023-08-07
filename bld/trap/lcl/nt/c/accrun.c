@@ -78,7 +78,15 @@ static void setATBit( thread_info *ti, set_t set )
 
     con.ContextFlags = MYCONTEXT_CONTROL;
     MyGetThreadContext( ti, &con );
-#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+#if MADARCH & MADARCH_X86
+    if( set != T_OFF ) {
+        con.EFlags |= INTR_TF;
+    } else {
+        con.EFlags &= ~INTR_TF;
+    }
+    con.ContextFlags = MYCONTEXT_CONTROL;
+    MySetThreadContext( ti, &con );
+#elif MADARCH & MADARCH_X64
     if( set != T_OFF ) {
         con.EFlags |= INTR_TF;
     } else {
@@ -203,60 +211,61 @@ static DWORD    BreakFixed;
 
 static trap_conditions handleInt3( DWORD state )
 {
+    trap_conditions cond_ret;
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
-    thread_info *ti;
-    MYCONTEXT   con;
+    thread_info     *ti;
+    MYCONTEXT       con;
 
-    state=state; // Unused
+    (void)state; // Unused
+
     ti = FindThread( DebugeeTid );
     if( ti == NULL ) {
-        HANDLE  th;
+        if( pOpenThread != NULL ) {
+            HANDLE  th;
 
-        if( pOpenThread == NULL ) {
-            return( 0 );
+            th = pOpenThread( DebugeeTid );
+            AddThread( DebugeeTid, th, NULL );
+            ti = FindThread( DebugeeTid );
+            ti->is_foreign = true;
         }
-        th = pOpenThread( DebugeeTid );
-        AddThread( DebugeeTid, th, NULL );
-        ti = FindThread( DebugeeTid );
-        ti->is_foreign = true;
     }
-    if( ti->is_foreign ) {
-        HANDLE      proc;
-        opcode_type old_opcode;
+    cond_ret = COND_NONE;
+    if( ti != NULL ) {
+        cond_ret = COND_BREAK;
+        MyGetThreadContext( ti, &con );
+        con.Eip--;
+        if( ti->is_foreign ) {
+            HANDLE      proc;
+            opcode_type old_opcode;
 
-        MyGetThreadContext( ti, &con );
-        con.Eip--;
-        if( !FindBreak( (WORD)con.SegCs, (DWORD)con.Eip, &old_opcode ) ) {
-            MySetThreadContext( ti, &con );
-            return( COND_BREAK );
+            if( FindBreak( (WORD)con.SegCs, (DWORD)con.Eip, &old_opcode ) ) {
+                BreakFixed = con.Eip;
+                proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
+                remove_breakpoint_lin( proc, (LPVOID)con.Eip, old_opcode );
+                con.EFlags |= INTR_TF;
+                CloseHandle( proc );
+                cond_ret = COND_NONE;
+            }
         }
-        BreakFixed = con.Eip;
-        proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        remove_breakpoint_lin( proc, (LPVOID)con.Eip, old_opcode );
-        con.EFlags |= INTR_TF;
-        MySetThreadContext( ti, &con );
-        CloseHandle( proc );
-        return( 0 );
-    } else {
-        MyGetThreadContext( ti, &con );
-        con.Eip--;
         MySetThreadContext( ti, &con );
     }
 #elif MADARCH & MADARCH_AXP
     thread_info *ti;
     MYCONTEXT   con;
 
+    cond_ret = COND_BREAK;
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
     if( ti->brk_addr != 0 && AdjustIP( &con, 0 ) == ti->brk_addr ) {
-        return( handleInt1( state ) );
+        cond_ret = handleInt1( state );
     }
 #elif MADARCH & MADARCH_PPC
     /* nothing special to do */
+    cond_ret = COND_BREAK;
 #else
     #error handleInt3 not configured
 #endif
-    return( COND_BREAK );
+    return( cond_ret );
 }
 
 /*
@@ -287,26 +296,24 @@ static trap_conditions handleInt1( DWORD state )
         }
     } else {
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
-        HANDLE      proc;
         thread_info *ti;
 
-        if( BreakFixed == 0 ) {
-            return( COND_TRACE );
+        if( BreakFixed != 0 ) {
+            ti = FindThread( DebugeeTid );
+            if( ti == NULL || ti->is_foreign ) {
+                HANDLE  proc;
+
+                proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
+                place_breakpoint_lin( proc, (LPVOID)BreakFixed );
+                CloseHandle( proc );
+                BreakFixed = 0;
+                return( COND_NONE );
+            }
         }
-        ti = FindThread( DebugeeTid );
-        if( ti != NULL && !ti->is_foreign ) {
-            return( COND_TRACE );
-        }
-        proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        place_breakpoint_lin( proc, (LPVOID)BreakFixed );
-        CloseHandle( proc );
-        BreakFixed = 0;
-        return( 0 );
-#else
-        return( COND_TRACE );
 #endif
+        return( COND_TRACE );
     }
-    return( 0 );
+    return( COND_NONE );
 }
 
 #ifdef WOW
@@ -712,7 +719,12 @@ static trap_elen runProg( bool single_step )
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+#if MADARCH & MADARCH_X86
+    ret->program_counter.offset = con.Eip;
+    ret->stack_pointer.offset = con.Esp;
+    ret->program_counter.segment = con.SegCs;
+    ret->stack_pointer.segment = con.SegSs;
+#elif MADARCH & MADARCH_X64
     ret->program_counter.offset = con.Eip;
     ret->stack_pointer.offset = con.Esp;
     ret->program_counter.segment = con.SegCs;

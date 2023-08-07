@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -394,7 +394,7 @@ bool CheckWatchPoints( void )
     return( false );
 }
 
-#if MADARCH & MADARCH_X86
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
 static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
 {
     word        dregs;
@@ -483,7 +483,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->value = 0;
         ReadMemory( &wp->addr, &wp->value, wp->size );
 
-#if MADARCH & MADARCH_X86
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
         wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
         if( wp->dregs == 0 )
             /* Error */
