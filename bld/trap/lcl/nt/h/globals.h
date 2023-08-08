@@ -54,12 +54,14 @@ TRPGLOBAL DEBUG_EVENT   DebugEvent;
 #if MADARCH & MADARCH_X64
 TRPGLOBAL bool          IsWOW64;
 #else
+  #if defined( WOW )
 TRPGLOBAL bool          IsWOW;
-TRPGLOBAL bool          IsWinNT;
 TRPGLOBAL bool          IsDOS;
+TRPGLOBAL bool          UseVDMStuff;
+  #endif
+TRPGLOBAL bool          IsWinNT;
 TRPGLOBAL bool          IsWin32s;
 TRPGLOBAL bool          IsWin95;
-TRPGLOBAL bool          UseVDMStuff;
 #endif
 TRPGLOBAL char          CurrEXEName[MAX_PATH];
 TRPGLOBAL bool          DidWaitForDebugEvent;

@@ -316,7 +316,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     handle = INVALID_HANDLE_VALUE;
 #if MADARCH & MADARCH_X64
     IsWOW64 = false;
-#else
+#elif defined( WOW )
     IsWOW = false;
     IsDOS = false;
 #endif

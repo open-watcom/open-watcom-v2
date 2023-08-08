@@ -601,8 +601,10 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             AddLib();
 #if MADARCH & MADARCH_X64
             if( !IsWOW64 && stop_on_module_load ) {
-#else
+#elif defined( WOW )
             if( !IsWOW && stop_on_module_load ) {
+#else
+            if( stop_on_module_load ) {
 #endif
                 returnCode = COND_LIBRARIES;
                 goto done;
@@ -612,8 +614,10 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             DelLib();
 #if MADARCH & MADARCH_X64
             if( !IsWOW64 && stop_on_module_load ) {
-#else
+#elif defined( WOW )
             if( !IsWOW && stop_on_module_load ) {
+#else
+            if( stop_on_module_load ) {
 #endif
                 returnCode = COND_LIBRARIES;
                 goto done;

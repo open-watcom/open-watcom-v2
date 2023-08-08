@@ -138,7 +138,11 @@ trap_retval TRAP_CORE( Machine_data )( void )
     ret->cache_end = ~(addr_off)0;
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
         data = GetOutPtr( sizeof( *ret ) );
+  #ifdef WOW
         data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : (( IsDOS ) ? X86AC_REAL : 0);
+  #else
+        data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : 0;
+  #endif
         return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
 #elif MADARCH & MADARCH_X64
@@ -191,9 +195,11 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 #if MADARCH & MADARCH_X86
     ret->cpu = X86CPUType();
     ret->fpu = ret->cpu & X86_CPU_MASK;
+  #ifdef WOW
     if( IsWOW ) {
         ret->os = DIG_OS_WINDOWS;
     }
+  #endif
     ret->arch = DIG_ARCH_X86;
 #elif MADARCH & MADARCH_X64
     ret->cpu = X86_P4 | X86_MMX | X86_XMM;

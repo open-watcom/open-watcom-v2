@@ -42,8 +42,10 @@
 #include "exepe.h"
 #include "exeos2.h"
 #include "exedos.h"
-#if ( MADARCH & MADARCH_X86 ) && defined( WOW )
+#ifdef WOW
+#if MADARCH & MADARCH_X86
 #include "vdmdbg.h"
+#endif
 #endif
 
 
@@ -125,8 +127,10 @@ typedef struct _MYCONTEXT {
     union {
 #if MADARCH & MADARCH_X64
         WOW64_CONTEXT   wow64;
-#elif ( MADARCH & MADARCH_X86 ) && defined( WOW )
+#elif defined( WOW )
+  #if MADARCH & MADARCH_X86
         VDMCONTEXT      vdm;
+  #endif
 #endif
         CONTEXT         std;
     } u;
@@ -141,7 +145,8 @@ typedef struct {
     char                modname[16];
 } header_info;
 
-#if ( MADARCH & MADARCH_X86 ) && defined( WOW )
+#if defined( WOW )
+#if MADARCH & MADARCH_X86
 typedef struct {
     addr48_ptr          addr;
     DWORD               tid;
@@ -149,6 +154,7 @@ typedef struct {
     DWORD               hmodule;
     char                modname[MAX_MODULE_NAME+1];
 } wow_info;
+#endif
 #endif
 
 typedef struct thread_info {

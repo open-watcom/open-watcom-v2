@@ -112,7 +112,13 @@ static bool DoContinueDebugEvent( DWORD continue_how )
 
 static void StopDebuggee( void )
 {
+#if MADARCH & MADARCH_X64
+    if( DebugeePid && ( IsWOW64 || !DebugeeEnded ) ) {
+#elif defined( WOW )
     if( DebugeePid && ( IsWOW || !DebugeeEnded ) ) {
+#else
+    if( DebugeePid && !DebugeeEnded ) {
+#endif
         /*
          * we must process debug events until the process is actually
          * terminated
@@ -601,7 +607,7 @@ static bool StartDebuggee( void )
     if( Shared.pid != 0 && Shared.pid != -1 ) {
         rc = MyDebugActiveProcess( Shared.pid );
 #if MADARCH & MADARCH_X64
-#else
+#elif defined( WOW )
         if( IsWOW ) {
             /*
              * WOW was already running, so we start up wowdeb (this
@@ -677,7 +683,7 @@ static bool DoWaitForDebugEvent( void )
     done = false;
 
 #if MADARCH & MADARCH_X64
-#else
+#elif defined( WOW )
     UseVDMStuff = false;
 #endif
     while( !done ) {
