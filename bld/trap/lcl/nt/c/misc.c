@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,26 +37,19 @@
 #undef GetThreadContext
 #undef SetThreadContext
 
+
 #if MADARCH & MADARCH_X86
 #define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
                     VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
                     VDMCONTEXT_FLOATING_POINT | VDMCONTEXT_EXTENDED_REGISTERS)
-#elif MADARCH & MADARCH_X64
-#define VDMCONTEXT_TO_USE
 #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
 #define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
                     VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
                     VDMCONTEXT_FLOATING_POINT)
+#elif MADARCH & MADARCH_X64
+#define VDMCONTEXT_TO_USE
 #else
     #error VDMCONTEXT_TO_USE not configured
-#endif
-
-#if MADARCH & MADARCH_X64
-#define WOWCONTEXT_TO_USE
-#elif MADARCH & (MADARCH_X86 | MADARCH_AXP | MADARCH_PPC)
-#define WOWCONTEXT_TO_USE
-#else
-    #error WOWCONTEXT_TO_USE not configured
 #endif
 
 /*
@@ -68,7 +61,7 @@ bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
     bool    rc;
 
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
-#if MADARCH & MADARCH_X86
+  #if MADARCH & MADARCH_X86
         VDMCONTEXT      vc;
 
         vc.ContextFlags = VDMCONTEXT_TO_USE;
@@ -91,34 +84,25 @@ bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
             pc->Esp = (DWORD)(WORD)pc->Esp;
             pc->Ebp = (DWORD)(WORD)pc->Ebp;
         }
-#elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
+  #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
         rc = false;
-#else
+  #else
         #error MyGetThreadContext not configured
-#endif
+  #endif
         return( rc );
     } else {
         pc->ContextFlags = MYCONTEXT_TO_USE;
         return( GetThreadContext( ti->thread_handle, pc ) != 0 );
     }
 #else
-#if 1
-    pc->ContextFlags = MYCONTEXT_TO_USE;
-#if MADARCH & MADARCH_X64
-    return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
-#else
-    return( GetThreadContext( ti->thread_handle, pc ) != 0 );
-#endif
-#else
-#if MADARCH & MADARCH_X64
+  #if MADARCH & MADARCH_X64
     if( ti->is_wow ) {
         pc->ContextFlags = WOW64CONTEXT_TO_USE;
         return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
     }
-#endif
+  #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
     return( GetThreadContext( ti->thread_handle, pc ) != 0 );
-#endif
 #endif
 }
 
@@ -129,7 +113,7 @@ bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
 #ifdef WOW
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
-#if MADARCH & MADARCH_X86
+  #if MADARCH & MADARCH_X86
         VDMCONTEXT      vc;
         /*
          * VDMCONTEXT and CONTEXT are the same on an x86 machine.
@@ -139,32 +123,23 @@ bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
         memcpy( &vc, pc, sizeof( MYCONTEXT ) );
         vc.ContextFlags = VDMCONTEXT_TO_USE;
         return( pVDMSetThreadContext( &DebugEvent, &vc ) != 0 );
-#elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
+  #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
         return( false );
-#else
+  #else
         #error MySetThreadContext not configured
-#endif
+  #endif
     } else {
         pc->ContextFlags = MYCONTEXT_TO_USE;
         return( SetThreadContext( ti->thread_handle, pc ) != 0 );
     }
 #else
-#if 1
-    pc->ContextFlags = MYCONTEXT_TO_USE;
-#if MADARCH & MADARCH_X64
-    return( Wow64SetThreadContext( ti->thread_handle, pc ) != 0 );
-#else
-    return( SetThreadContext( ti->thread_handle, pc ) != 0 );
-#endif
-#else
-#if MADARCH & MADARCH_X64
+  #if MADARCH & MADARCH_X64
     if( ti->is_wow ) {
         pc->ContextFlags = WOW64CONTEXT_TO_USE;
         return( Wow64SetThreadContext( ti->thread_handle, pc ) != 0 );
     }
-#endif
+  #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
     return( SetThreadContext( ti->thread_handle, pc ) != 0 );
-#endif
 #endif
 }
