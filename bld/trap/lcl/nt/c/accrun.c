@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,6 +69,25 @@ int remove_breakpoint_lin( HANDLE process, LPVOID base, opcode_type old_opcode )
     return( bytes != sizeof( old_opcode ) );
 }
 
+#if MADARCH & (MADARCH_X86 | MADARCH_X64 | MADARCH_PPC)
+static void set_tbit( MYCONTEXT *con, bool on )
+{
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+    if( on ) {
+        con->EFlags |= INTR_TF;
+    } else {
+        con->EFlags &= ~INTR_TF;
+    }
+#elif MADARCH & MADARCH_PPC
+    if( on ) {
+        con->Msr |= INTR_TF;
+    } else {
+        con->Msr &= ~INTR_TF;
+    }
+#endif
+}
+#endif
+
 /*
  * setATBit - control if we are tracing
  */
@@ -79,19 +98,11 @@ static void setATBit( thread_info *ti, set_t set )
     con.ContextFlags = MYCONTEXT_CONTROL;
     MyGetThreadContext( ti, &con );
 #if MADARCH & MADARCH_X86
-    if( set != T_OFF ) {
-        con.EFlags |= INTR_TF;
-    } else {
-        con.EFlags &= ~INTR_TF;
-    }
+    set_tbit( &con, set != T_OFF );
     con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #elif MADARCH & MADARCH_X64
-    if( set != T_OFF ) {
-        con.EFlags |= INTR_TF;
-    } else {
-        con.EFlags &= ~INTR_TF;
-    }
+    set_tbit( &con, set != T_OFF );
     con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #elif MADARCH & MADARCH_AXP
@@ -109,11 +120,7 @@ static void setATBit( thread_info *ti, set_t set )
         ti->brk_addr = 0;
     }
 #elif MADARCH & MADARCH_PPC
-    if( set != T_OFF ) {
-        con.Msr |= INTR_TF;
-    } else {
-        con.Msr &= ~INTR_TF;
-    }
+    set_tbit( &con, set != T_OFF );
     con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #else

@@ -52,27 +52,24 @@
 #undef SetThreadContext
 #define SetThreadContext Dont_call_SetThreadContext_directly__Call_MySetThreadContext_instead
 
+    #define MYCONTEXT           CONTEXT
+    #define MYCONTEXT_CONTROL   CONTEXT_CONTROL;
+
 #if MADARCH & MADARCH_X64
-    #define MYCONTEXT           WOW64_CONTEXT
     // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
-
-    #define MYCONTEXT_CONTROL   WOW64_CONTEXT_CONTROL;
 #else
-    #define MYCONTEXT           CONTEXT
     // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
 #endif
 
-    #define MYCONTEXT_CONTROL   CONTEXT_CONTROL;
-
 #if MADARCH & MADARCH_X86
-    #define MYCONTEXT_TO_USE    (CONTEXT_FULL | CONTEXT_FLOATING_POINT | \
-                        CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
+    #define MYCONTEXT_TO_USE    (CONTEXT_FULL | CONTEXT_FLOATING_POINT \
+                                    | CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
 #elif MADARCH & MADARCH_X64
     #define MYCONTEXT_TO_USE    (CONTEXT_FULL | CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS)
 #else
@@ -80,15 +77,14 @@
 #endif
 
 #if MADARCH & MADARCH_X64
-    #define WOW64CONTEXT           WOW64_CONTEXT
     // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define WOW64CONTEXT_MXCSR     24
     #define WOW64CONTEXT_XMM       (10 * 16)
 
     #define WOW64CONTEXT_CONTROL   WOW64_CONTEXT_CONTROL;
-    #define WOW64CONTEXT_TO_USE    (WOW64_CONTEXT_FULL | WOW64_CONTEXT_FLOATING_POINT | \
-                        WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
+    #define WOW64CONTEXT_TO_USE    (WOW64_CONTEXT_FULL | WOW64_CONTEXT_FLOATING_POINT \
+                            | WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
 #endif
 
 #if MADARCH & MADARCH_X64
@@ -117,6 +113,24 @@
 #define STATE_IGNORE_DEAD_THREAD        0x00000008
 #define STATE_WAIT_FOR_VDM_START        0x00000010
 #define STATE_IGNORE_DEBUG_OUT          0x00000020
+
+typedef enum contex_type {
+    CONTEXT_TYPE_STD,
+    CONTEXT_TYPE_VDM,
+    CONTEXT_TYPE_WOW64
+} context_type;
+
+typedef struct _MYCONTEXT {
+    context_type    type;
+    union {
+#if MADARCH & MADARCH_X64
+        WOW64_CONTEXT   wow64;
+#elif ( MADARCH & MADARCH_X86 ) && defined( WOW )
+        VDMCONTEXT      vdm;
+#endif
+        CONTEXT         std;
+    } u;
+} _MYCONTEXT;
 
 typedef struct {
     WORD                signature;

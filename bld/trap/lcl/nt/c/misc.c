@@ -39,13 +39,13 @@
 
 
 #if MADARCH & MADARCH_X86
-#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
-                    VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
-                    VDMCONTEXT_FLOATING_POINT | VDMCONTEXT_EXTENDED_REGISTERS)
+#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER \
+                    | VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS \
+                    | VDMCONTEXT_FLOATING_POINT | VDMCONTEXT_EXTENDED_REGISTERS)
 #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
-#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
-                    VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
-                    VDMCONTEXT_FLOATING_POINT)
+#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER \
+                    | VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS \
+                    | VDMCONTEXT_FLOATING_POINT)
 #elif MADARCH & MADARCH_X64
 #define VDMCONTEXT_TO_USE
 #else
@@ -132,7 +132,7 @@ bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
         pc->ContextFlags = MYCONTEXT_TO_USE;
         return( SetThreadContext( ti->thread_handle, pc ) != 0 );
     }
-#else
+#else   /* !WOW */
   #if MADARCH & MADARCH_X64
     if( ti->is_wow ) {
         pc->ContextFlags = WOW64CONTEXT_TO_USE;
@@ -141,5 +141,5 @@ bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
   #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
     return( SetThreadContext( ti->thread_handle, pc ) != 0 );
-#endif
+#endif  /* !WOW */
 }

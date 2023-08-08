@@ -169,6 +169,7 @@ bool GetModuleName( HANDLE fhdl, char *name )
     if( num_objects == 0 ) {
         return( false );
     }
+    memset( &obj, 0, sizeof( obj ) );
     for( i = 0; i < num_objects; i++ ) {
         if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) || lenread != sizeof( obj ) ) {
             return( false );

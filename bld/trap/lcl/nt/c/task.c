@@ -46,12 +46,12 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     HANDLE          dll;
     DWORD           osver;
 
-    IsWin32s = false;
-    IsWin95 = false;
-    IsWinNT = false;
 #if MADARCH & MADARCH_X64
     IsWinNT = true;
 #else
+    IsWinNT = false;
+    IsWin32s = false;
+    IsWin95 = false;
     osver = GetVersion();
     if( osver < 0x80000000 ) {
         IsWinNT = true;
