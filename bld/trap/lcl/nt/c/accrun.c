@@ -36,10 +36,10 @@
 #include <direct.h>
 #include <windows.h>
 #include <i86.h>
-#include "madconf.h"
+#include "stdnt.h"
+#include "globals.h"
 #include "madregs.h"
 #include "trpld.h"
-#include "stdnt.h"
 
 
 typedef enum {
@@ -48,7 +48,7 @@ typedef enum {
     T_ON_NEXT
 }   set_t;
 
-opcode_type place_breakpoint_lin( HANDLE process, LPVOID base )
+opcode_type place_breakpoint_lin( HANDLE process, FARPROC base )
 {
     opcode_type old_opcode;
     DWORD       bytes;
@@ -61,7 +61,7 @@ opcode_type place_breakpoint_lin( HANDLE process, LPVOID base )
     return( 0 );
 }
 
-int remove_breakpoint_lin( HANDLE process, LPVOID base, opcode_type old_opcode )
+int remove_breakpoint_lin( HANDLE process, FARPROC base, opcode_type old_opcode )
 {
     DWORD       bytes;
 
@@ -576,7 +576,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             if( tsc != NULL ) {
                 *tsc = true;
             }
-            AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, DebugEvent.u.CreateThread.lpStartAddress );
+            AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, (FARPROC)DebugEvent.u.CreateThread.lpStartAddress );
             break;
         case EXIT_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;

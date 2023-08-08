@@ -32,8 +32,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "madconf.h"
 #include "stdnt.h"
+#include "globals.h"
 #undef GetThreadContext
 #undef SetThreadContext
 

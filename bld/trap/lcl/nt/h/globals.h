@@ -30,26 +30,11 @@
 ****************************************************************************/
 
 
-#include "madconf.h"
-
-
 #ifdef TRPGLOBINIT
 #define TRPGLOBAL
 #else
 #define TRPGLOBAL extern
 #define TRPGLOBINIT(x)
-#endif
-
-#if defined( WOW )
-  #if MADARCH & MADARCH_X86
-//typedef void    *LPVDMCONTEXT;
-  #endif
-#else
-typedef void    *LPMODULEENTRY;
-typedef void    *LPVDMCONTEXT;
-typedef void    *LPVDMLDT_ENTRY;
-typedef void    (WINAPI *DEBUGEVENTPROC)();
-typedef BOOL    (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
 #endif
 
 TRPGLOBAL DWORD         DebugeePid;
@@ -94,104 +79,21 @@ TRPGLOBAL wow_info      WOWAppInfo;
   #endif
 #endif
 
-TRPGLOBAL HANDLE
-(WINAPI*pOpenThread)(
-    DWORD
-);
-
-TRPGLOBAL DWORD
-(WINAPI *pQueryDosDevice)(
-    LPCSTR          lpDeviceName,
-    LPSTR           lpTargetPath,
-    DWORD           ucchMax
-);
-
-TRPGLOBAL DWORD
-(WINAPI *pGetMappedFileName)(
-    HANDLE          hProcess,
-    LPVOID          lpv,
-    LPSTR           lpFilename,
-    DWORD           nSize
-);
-
-TRPGLOBAL HANDLE
-(WINAPI *pCreateToolhelp32Snapshot)(
-    DWORD           dwFlags,
-    DWORD           th32ProcessID
-);
-
-TRPGLOBAL BOOL
-(WINAPI *pModule32First)(
-    HANDLE          hSnapshot,
-    LPMODULEENTRY32 lpme
-);
-
-TRPGLOBAL BOOL
-(WINAPI *pModule32Next)(
-    HANDLE          hSnapshot,
-    LPMODULEENTRY32 lpme
-);
-
+TRPGLOBAL fn_OpenThread                 *pOpenThread;
+TRPGLOBAL fn_QueryDosDevice             *pQueryDosDevice;
+TRPGLOBAL fn_GetMappedFileName          *pGetMappedFileName;
+TRPGLOBAL fn_CreateToolhelp32Snapshot   *pCreateToolhelp32Snapshot;
+TRPGLOBAL fn_Module32First              *pModule32First;
+TRPGLOBAL fn_Module32Next               *pModule32Next;
 #ifdef WOW
-TRPGLOBAL BOOL
-(WINAPI*pVDMModuleFirst)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    LPMODULEENTRY   lpModuleEntry,
-    DEBUGEVENTPROC  lpEventProc,
-    LPVOID          lpData
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMModuleNext)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    LPMODULEENTRY   lpModuleEntry,
-    DEBUGEVENTPROC  lpEventProc,
-    LPVOID          lpData
-);
-
-TRPGLOBAL INT
-(WINAPI*pVDMEnumProcessWOW)(
-    PROCESSENUMPROC fp,
-    LPARAM          lparam
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMProcessException)(
-    LPDEBUG_EVENT   lpDebugEvent
-    );
-
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMGetModuleSelector)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    UINT            wSegmentNumber,
-    LPSTR           lpModuleName,
-    LPWORD          lpSelector
-);
-
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMGetThreadContext)(
-    LPDEBUG_EVENT   lpDebugEvent,
-    LPVDMCONTEXT    lpVDMContext
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMSetThreadContext)(
-    LPDEBUG_EVENT   lpDebugEvent,
-    LPVDMCONTEXT    lpVDMContext
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMGetThreadSelectorEntry)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    WORD            wSelector,
-    LPVDMLDT_ENTRY  lpSelectorEntry
-);
+TRPGLOBAL fn_VDMModuleFirst             *pVDMModuleFirst;
+TRPGLOBAL fn_VDMModuleNext              *pVDMModuleNext;
+TRPGLOBAL fn_VDMEnumProcessWOW          *pVDMEnumProcessWOW;
+TRPGLOBAL fn_VDMProcessException        *pVDMProcessException;
+TRPGLOBAL fn_VDMGetModuleSelector       *pVDMGetModuleSelector;
+TRPGLOBAL fn_VDMGetThreadContext        *pVDMGetThreadContext;
+TRPGLOBAL fn_VDMSetThreadContext        *pVDMSetThreadContext;
+TRPGLOBAL fn_VDMGetThreadSelectorEntry  *pVDMGetThreadSelectorEntry;
 #endif
 
 #undef TRPGLOBAL

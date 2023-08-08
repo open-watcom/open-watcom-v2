@@ -155,7 +155,7 @@ typedef struct thread_info {
     struct thread_info  *next;
     DWORD               tid;
     HANDLE              thread_handle;
-    LPVOID              start_addr;
+    FARPROC             start_addr;
     addr_off            brk_addr;
     opcode_type         old_opcode;
     unsigned            alive       :1;
@@ -193,19 +193,26 @@ typedef struct msg_list {
 
 typedef unsigned        myconditions;
 
-#if !defined( WOW ) || ( MADARCH & MADARCH_X64 )
-typedef void            IMAGE_NOTE;
-#endif
-
-/*
- * global variables prototypes
- */
-
-#include "globals.h"
-
 /*
  * function prototypes
  */
+
+typedef HANDLE  WINAPI fn_OpenThread( DWORD );
+typedef DWORD   WINAPI fn_QueryDosDevice( LPCSTR lpDeviceName, LPSTR lpTargetPath, DWORD ucchMax );
+typedef DWORD   WINAPI fn_GetMappedFileName( HANDLE hProcess, LPVOID lpv, LPSTR lpFilename, DWORD nSize );
+typedef HANDLE  WINAPI fn_CreateToolhelp32Snapshot( DWORD dwFlags, DWORD th32ProcessID );
+typedef BOOL    WINAPI fn_Module32First( HANDLE hSnapshot, LPMODULEENTRY32 lpme );
+typedef BOOL    WINAPI fn_Module32Next( HANDLE hSnapshot, LPMODULEENTRY32 lpme );
+#ifdef WOW
+typedef BOOL    WINAPI fn_VDMModuleFirst( HANDLE hProcess, HANDLE hThread, LPMODULEENTRY lpModuleEntry, DEBUGEVENTPROC lpEventProc, LPVOID lpData );
+typedef BOOL    WINAPI fn_VDMModuleNext( HANDLE hProcess, HANDLE hThread, LPMODULEENTRY lpModuleEntry, DEBUGEVENTPROC lpEventProc, LPVOID lpData );
+typedef INT     WINAPI fn_VDMEnumProcessWOW( PROCESSENUMPROC fp, LPARAM lparam );
+typedef BOOL    WINAPI fn_VDMProcessException( LPDEBUG_EVENT lpDebugEvent );
+typedef BOOL    WINAPI fn_VDMGetModuleSelector( HANDLE hProcess, HANDLE hThread, UINT  wSegmentNumber, LPSTR  lpModuleName, LPWORD lpSelector );
+typedef BOOL    WINAPI fn_VDMGetThreadContext( LPDEBUG_EVENT lpDebugEvent, LPVDMCONTEXT lpVDMContext );
+typedef BOOL    WINAPI fn_VDMSetThreadContext( LPDEBUG_EVENT lpDebugEvent, LPVDMCONTEXT lpVDMContext );
+typedef BOOL    WINAPI fn_VDMGetThreadSelectorEntry( HANDLE hProcess, HANDLE hThread, WORD  wSelector, LPVDMLDT_ENTRY lpSelectorEntry );
+#endif
 
 /* accmap.c */
 extern bool             FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
@@ -237,8 +244,8 @@ extern bool             IsBigSel( WORD sel );
 extern void             AddMessagePrefix( char *buff, size_t len );
 
 /* accrun.c */
-extern opcode_type      place_breakpoint_lin( HANDLE process, LPVOID base );
-extern int              remove_breakpoint_lin( HANDLE process, LPVOID base, opcode_type old_opcode );
+extern opcode_type      place_breakpoint_lin( HANDLE process, FARPROC base );
+extern int              remove_breakpoint_lin( HANDLE process, FARPROC base, opcode_type old_opcode );
 extern myconditions     DebugExecute( DWORD state, bool *tsc, bool );
 extern void             InterruptProgram( void );
 extern bool             Terminate( void );
@@ -253,7 +260,7 @@ extern bool             GetEXEHeader( HANDLE handle, header_info *hi, WORD *stac
 extern bool             GetModuleName( HANDLE fhdl, char *name );
 
 /* thread.c */
-extern void             AddThread( DWORD tid, HANDLE th, LPVOID sa );
+extern void             AddThread( DWORD tid, HANDLE th, FARPROC sa );
 extern void             DeadThread( DWORD tid );
 extern thread_info      *FindThread( DWORD tid );
 extern void             RemoveThread( DWORD tid );
@@ -278,7 +285,7 @@ extern void             ParseServiceStuff( char *name,
                             char **pdll_destination, char **pservice_parm );
 
 /* accregs.c */
-extern LPVOID           AdjustIP( MYCONTEXT *, int );
-extern void             SetIP( MYCONTEXT *, LPVOID );
+extern FARPROC          AdjustIP( MYCONTEXT *, int );
+extern void             SetIP( MYCONTEXT *, FARPROC );
 
 extern void             say( char *fmt, ... );

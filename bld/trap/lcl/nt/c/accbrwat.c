@@ -33,8 +33,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <direct.h>
-#include "madconf.h"
 #include "stdnt.h"
+#include "globals.h"
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
   #include "dbg386.h"
 #endif

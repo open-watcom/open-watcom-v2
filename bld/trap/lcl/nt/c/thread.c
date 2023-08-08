@@ -34,11 +34,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include "stdnt.h"
+#include "globals.h"
+
 
 /*
  * Add a new thread to a process
  */
-void AddThread( DWORD tid, HANDLE th, LPVOID sa )
+void AddThread( DWORD tid, HANDLE th, FARPROC sa )
 {
     thread_info *ti;
 

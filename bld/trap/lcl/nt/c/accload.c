@@ -34,8 +34,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "madconf.h"
 #include "stdnt.h"
+#include "globals.h"
 #include "trperr.h"
 #include "srvcdbg.h"
 #include "doserr.h"
@@ -458,7 +458,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     }
 #endif
 #endif
-    AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateProcessInfo.hThread, DebugEvent.u.CreateProcessInfo.lpStartAddress );
+    AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateProcessInfo.hThread, (FARPROC)DebugEvent.u.CreateProcessInfo.lpStartAddress );
     DebugeePid = DebugEvent.dwProcessId;
     DebugeeTid = DebugEvent.dwThreadId;
     LastDebugEventTid = DebugEvent.dwThreadId;

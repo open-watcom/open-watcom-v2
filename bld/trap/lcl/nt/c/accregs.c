@@ -33,9 +33,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "madconf.h"
 #include "stdnt.h"
+#include "globals.h"
 #include "madregs.h"
+
 
 #define LDWORD(x)   (x&0xFFFFFFFFL)
 #define HDWORD(x)   ((x>>32)&0xFFFFFFFFL)
@@ -358,14 +359,14 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-LPVOID AdjustIP( MYCONTEXT *con, int adjust )
+FARPROC AdjustIP( MYCONTEXT *con, int adjust )
 {
 #if MADARCH & MADARCH_X86
     con->Eip += adjust;
-    return( (LPVOID)con->Eip );
+    return( (FARPROC)con->Eip );
 #elif MADARCH & MADARCH_X64
     con->Eip += adjust;
-    return( (LPVOID)con->Eip );
+    return( (FARPROC)con->Eip );
 #elif MADARCH & MADARCH_AXP
     //NYI: 64 bit
     ( ( unsigned_64 * ) & con->Fir )->u._32[0] += adjust;
@@ -378,7 +379,7 @@ LPVOID AdjustIP( MYCONTEXT *con, int adjust )
 #endif
 }
 
-void SetIP( MYCONTEXT *con, LPVOID new )
+void SetIP( MYCONTEXT *con, FARPROC new )
 {
 #if MADARCH & MADARCH_X86
     con->Eip = (DWORD)new;

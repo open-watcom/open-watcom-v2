@@ -34,9 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include "madconf.h"
-#include "srvcdbg.h"
 #include "stdnt.h"
+#include "globals.h"
+#include "srvcdbg.h"
 #include "trperr.h"
 #include "trpimp.h"
 #include "pathgrp2.h"
