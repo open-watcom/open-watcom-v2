@@ -113,14 +113,14 @@ static bool executeUntilStart( bool was_running )
     }
 }
 
-#if MADARCH & MADARCH_X86
 #ifdef WOW
+#if MADARCH & MADARCH_X86
 static void addKERNEL( void )
 /****************************
  * add the KERNEL module to the library load (WOW)
  */
 {
-#if 0
+  #if 0
     /*
      * there are bugs in the way VDMDBG.DLL implements some of this
      * stuff, so this is currently disabled
@@ -144,7 +144,7 @@ static void addKERNEL( void )
         }
         me.dwSize = sizeof( MODULEENTRY );
     }
-#else
+  #else
     IMAGE_NOTE                  im;
 
     /*
@@ -156,7 +156,7 @@ static void addKERNEL( void )
     GetSystemDirectory( im.FileName, sizeof( im.FileName ) );
     strcat( im.FileName, "\\KRNL386.EXE" );
     AddLib16( &im );
-#endif
+  #endif
 }
 
 static void addAllWOWModules( void )
@@ -214,8 +214,8 @@ static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
     return( TRUE );
 
 }
-#endif
-#endif
+#endif  /* MADARCH & MADARCH_X86 */
+#endif  /* WOW */
 
 static size_t MergeArgvArray( const char *src, char *dst, size_t len )
 {
@@ -445,14 +445,26 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ProcessInfo.pid = DebugEvent.dwProcessId;
     ProcessInfo.process_handle = DebugEvent.u.CreateProcessInfo.hProcess;
     ProcessInfo.base_addr = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
-    AddProcess( &hi );
+#ifdef WOW
+#if MADARCH & MADARCH_X86
+    if( IsWOW || IsDOS ) {
+        AddProcess16( &hi );
+    } else {
+#endif
+#endif
+        AddProcess( &hi );
+#ifdef WOW
+#if MADARCH & MADARCH_X86
+    }
+#endif
+#endif
     AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateProcessInfo.hThread, DebugEvent.u.CreateProcessInfo.lpStartAddress );
     DebugeePid = DebugEvent.dwProcessId;
     DebugeeTid = DebugEvent.dwThreadId;
     LastDebugEventTid = DebugEvent.dwThreadId;
 
-#if MADARCH & MADARCH_X86
 #ifdef WOW
+#if MADARCH & MADARCH_X86
     if( IsWOW ) {
         ret->flags = LD_FLAG_IS_PROT;
         ret->err = 0;
@@ -517,11 +529,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         con.Esp = stack;
         MySetThreadContext( ti, &con );
     } else {
-#else
-    {
 #endif
-#else
-    {
 #endif
         LPVOID base;
 
@@ -559,7 +567,11 @@ trap_retval TRAP_CORE( Prog_load )( void )
         FlatDS = con.SegDs;
 #endif
         ret->flags |= LD_FLAG_IS_BIG;
+#ifdef WOW
+#if MADARCH & MADARCH_X86
     }
+#endif
+#endif
     ret->flags |= LD_FLAG_HAVE_RUNTIME_DLLS;
     if( pid != 0 ) {
         ret->flags |= LD_FLAG_IS_STARTED;

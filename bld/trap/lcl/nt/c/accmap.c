@@ -227,10 +227,12 @@ static void FillInExceptInfo( lib_load_info *llo )
     llo->except_size = PE_DIRECTORY( pehdr, PE_TBL_EXCEPTION ).size;
 }
 
+#ifdef WOW
+#if MADARCH & MADARCH_X86
 /*
- * AddProcess - a new process has been created
+ * AddProcess16 - a new 16-bit process has been created
  */
-void AddProcess( header_info *hi )
+void AddProcess16( header_info *hi )
 {
     lib_load_info   *llo;
 
@@ -239,31 +241,41 @@ void AddProcess( header_info *hi )
 
     llo = moduleInfo;
 
-#if MADARCH & MADARCH_X86
-    if( IsWOW || IsDOS ) {
-        llo->is_16 = true;
-        llo->file_handle = 0;
-        llo->base = NULL;
-        llo->has_real_filename = true;
-        strcpy( llo->modname, hi->modname );
-        strcpy( llo->filename, CurrEXEName );
-    } else {
-#else
-    hi=hi;
-    {
+    llo->is_16 = true;
+    llo->file_handle = 0;
+    llo->base = NULL;
+    llo->has_real_filename = true;
+    strcpy( llo->modname, hi->modname );
+    strcpy( llo->filename, CurrEXEName );
+}
 #endif
-        llo->has_real_filename = false;
-        llo->is_16 = false;
-        llo->file_handle = DebugEvent.u.CreateProcessInfo.hFile;
-        // kludge - NT doesn't give us a handle sometimes
-        if( llo->file_handle == INVALID_HANDLE_VALUE ) {
-            llo->file_handle = CreateFile( CurrEXEName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
-        }
-        llo->base = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
-        FillInExceptInfo( llo );
-        llo->modname[0] = 0;
-        llo->filename[0] = 0;
+#endif
+
+/*
+ * AddProcess - a new process has been created
+ */
+void AddProcess( header_info *hi )
+{
+    lib_load_info   *llo;
+
+    /* unused parameters */ (void)hi;
+
+    moduleInfo = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, sizeof( lib_load_info ) );
+    ModuleTop = 1;
+
+    llo = moduleInfo;
+
+    llo->has_real_filename = false;
+    llo->is_16 = false;
+    llo->file_handle = DebugEvent.u.CreateProcessInfo.hFile;
+    // kludge - NT doesn't give us a handle sometimes
+    if( llo->file_handle == INVALID_HANDLE_VALUE ) {
+        llo->file_handle = CreateFile( CurrEXEName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
     }
+    llo->base = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
+    FillInExceptInfo( llo );
+    llo->modname[0] = 0;
+    llo->filename[0] = 0;
 }
 
 /*

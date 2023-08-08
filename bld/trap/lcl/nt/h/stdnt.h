@@ -213,6 +213,9 @@ extern void             FixUpDLLNames( void );
 extern void             RemoveModuleFromLibList( char *module, char *filename );
 extern bool             IsMagicalFileHandle( HANDLE h );
 extern HANDLE           GetMagicalFileHandle( char *name );
+#ifdef WOW
+extern void             AddProcess16( header_info * );
+#endif
 extern void             AddProcess( header_info * );
 extern void             DelProcess( bool );
 extern void             VoidProcess( void );
