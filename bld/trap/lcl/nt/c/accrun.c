@@ -245,7 +245,7 @@ static trap_conditions handleInt3( DWORD state )
             HANDLE      proc;
             opcode_type old_opcode;
 
-            if( FindBreak( (WORD)con.SegCs, (DWORD)con.Eip, &old_opcode ) ) {
+            if( FindBreak( (WORD)con.SegCs, (dword)con.Eip, &old_opcode ) ) {
                 BreakFixed = con.Eip;
                 proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
                 remove_breakpoint_lin( proc, (LPVOID)con.Eip, old_opcode );
@@ -292,7 +292,7 @@ static trap_conditions handleInt1( DWORD state )
 
 #if MADARCH & MADARCH_X86
     if( state & STATE_WATCH_386 ) {
-        if( GetDR6() & 0xf ) {
+        if( CheckBreakPoints() ) {
             return( COND_WATCH );
         }
     }

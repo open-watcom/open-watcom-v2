@@ -111,7 +111,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-bool FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode )
+bool FindBreak( WORD segment, dword offset, opcode_type *old_opcode )
 {
     break_point *brk;
 
@@ -129,62 +129,52 @@ bool FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode )
 }
 
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
+
+static dword get_DRx( MYCONTEXT *con, int i )
+{
+    return( ( (DWORD *)&con->Dr0 )[i] );
+}
+
+static void set_DRx( MYCONTEXT *con, int i, dword *data )
+{
+    ( (DWORD *)&con->Dr0 )[i] = *data;
+}
+
 /*
- * setDR6 - set value of debug register 6
+ * setDRx - set value of debug register
  */
-static void setDR6( DWORD tmp )
+static void setDRx( int i, dword *tmp )
 {
     MYCONTEXT   con;
     thread_info *ti;
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-    con.Dr6 = tmp;
+    set_DRx( &con, i, tmp );
     MySetThreadContext( ti, &con );
 }
 
 /*
- * SetDR7 - set value of debug register 7
+ * getDRx - get value of debug register
  */
-void SetDR7( DWORD tmp )
+static dword getDRx( int i )
 {
     MYCONTEXT   con;
     thread_info *ti;
-    //char buff[256];
 
     ti = FindThread( DebugeeTid );
-    if( ti == NULL ) {
-        return;
-    }
     MyGetThreadContext( ti, &con );
-    con.Dr7 = tmp;
-    //sprintf( buff, "tid=%8.8x, dr7=%8.8x", DebugeeTid, tmp );
-    //MessageBox( NULL, buff, "Dr7", MB_APPLMODAL+MB_OK );
-    MySetThreadContext( ti, &con );
+    return( get_DRx( &con, i ) );
 }
 
-/*
- * GetDR6 - get value of debug register 6
- */
-DWORD GetDR6( void )
+bool CheckBreakPoints( void )
 {
-    MYCONTEXT   con;
-    thread_info *ti;
-
-    ti = FindThread( DebugeeTid );
-    MyGetThreadContext( ti, &con );
-    return( con.Dr6 );
+    return( (getDRx( 6 ) & 0xf) != 0 );
 }
 
-static dword setDRn( int i, dword linear, word type )
+static dword setDRn( int i, dword *linear, word type )
 {
-    MYCONTEXT   con;
-    thread_info *ti;
-
-    ti = FindThread( DebugeeTid );
-    MyGetThreadContext( ti, &con );
-    ( (DWORD *)&con.Dr0 )[i] = linear;
-    MySetThreadContext( ti, &con );
+    setDRx( i, linear );
 
     return( ( (dword)type << DR7_RWLSHIFT( i ) )
 //        | ( DR7_GEMASK << DR7_GLSHIFT(i) )
@@ -199,12 +189,14 @@ void ClearDebugRegs( void )
 {
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
     int i;
+    dword zero;
 
+    zero = 0;
     for( i = 0; i < 4; i++ ) {
-        setDRn( i, 0, 0 );
+        setDRn( i, &zero, 0 );
     }
-    setDR6( 0 );
-    SetDR7( 0 );
+    setDRx( 6, &zero );
+    setDRx( 7, &zero );
 #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
     /* nothing to do */
 #else
@@ -276,7 +268,7 @@ bool SetDebugRegs( void )
                  * If we only need one register, then we are 1 byte anywhere,
                  * 2 bytes on word boundary, or 4 bytes on dword boundary
                  */
-                dr7 |= setDRn( dr+0, linear, DRLen( size ) | DR7_BWR );
+                dr7 |= setDRn( dr+0, &linear, DRLen( size ) | DR7_BWR );
                 dr++;
                 break;
             case 2:
@@ -287,20 +279,23 @@ bool SetDebugRegs( void )
                     /*
                      * For a 2 byte write, this is two 1's at any address
                      */
-                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+1, linear+1, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, &linear, DRLen( 1 ) | DR7_BWR );
+                    linear++;
+                    dr7 |= setDRn( dr+1, &linear, DRLen( 1 ) | DR7_BWR );
                 } else if( size == 4 ) {
                     /*
                      * For a 4 byte write, this must be two 2's at a word boundary
                      */
-                    dr7 |= setDRn( dr+0, linear+0, DRLen( 2 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+1, linear+2, DRLen( 2 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, &linear, DRLen( 2 ) | DR7_BWR );
+                    linear += 2;
+                    dr7 |= setDRn( dr+1, &linear, DRLen( 2 ) | DR7_BWR );
                 } else if( size == 8 ) {
                     /*
                      * For an 8 byte write, this must be two 4's at a dword boundary
                      */
-                    dr7 |= setDRn( dr+0, linear+0, DRLen( 4 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+1, linear+4, DRLen( 4 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, &linear, DRLen( 4 ) | DR7_BWR );
+                    linear += 4;
+                    dr7 |= setDRn( dr+1, &linear, DRLen( 4 ) | DR7_BWR );
                 }
                 dr += 2;
                 break;
@@ -312,16 +307,20 @@ bool SetDebugRegs( void )
                     /*
                      * For a 4 byte write, this must be 1,2,1 at a odd boundary
                      */
-                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+1, linear+1, DRLen( 2 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+2, linear+3, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, &linear, DRLen( 1 ) | DR7_BWR );
+                    linear += 1;
+                    dr7 |= setDRn( dr+1, &linear, DRLen( 2 ) | DR7_BWR );
+                    linear += 2;
+                    dr7 |= setDRn( dr+2, &linear, DRLen( 1 ) | DR7_BWR );
                 } else if( size == 8 ) {
                     /*
                      * For an 8 byte write, this must be 2,4,2 at a word boundary
                      */
-                    dr7 |= setDRn( dr+0, linear+0, DRLen( 2 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+1, linear+2, DRLen( 4 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+2, linear+6, DRLen( 2 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, &linear, DRLen( 2 ) | DR7_BWR );
+                    linear += 2;
+                    dr7 |= setDRn( dr+1, &linear, DRLen( 4 ) | DR7_BWR );
+                    linear += 4;
+                    dr7 |= setDRn( dr+2, &linear, DRLen( 2 ) | DR7_BWR );
                 }
                 dr += 3;
                 break;
@@ -331,16 +330,22 @@ bool SetDebugRegs( void )
                  */
                 if( (linear & 0x3) == 1 ) {
                     /* Need 1, 2, 4, 1 */
-                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+1, linear+1, DRLen( 2 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+2, linear+3, DRLen( 4 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+3, linear+7, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, &linear, DRLen( 1 ) | DR7_BWR );
+                    linear += 1;
+                    dr7 |= setDRn( dr+1, &linear, DRLen( 2 ) | DR7_BWR );
+                    linear += 2;
+                    dr7 |= setDRn( dr+2, &linear, DRLen( 4 ) | DR7_BWR );
+                    linear += 4;
+                    dr7 |= setDRn( dr+3, &linear, DRLen( 1 ) | DR7_BWR );
                 } else { /* (linear & 0x3) == 3 */
                     /* Need 1, 4, 2, 1 */
-                    dr7 |= setDRn( dr+0, linear+0, DRLen( 1 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+1, linear+1, DRLen( 4 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+2, linear+5, DRLen( 2 ) | DR7_BWR );
-                    dr7 |= setDRn( dr+3, linear+7, DRLen( 1 ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, &linear, DRLen( 1 ) | DR7_BWR );
+                    linear += 1;
+                    dr7 |= setDRn( dr+1, &linear, DRLen( 4 ) | DR7_BWR );
+                    linear += 4;
+                    dr7 |= setDRn( dr+2, &linear, DRLen( 2 ) | DR7_BWR );
+                    linear += 2;
+                    dr7 |= setDRn( dr+3, &linear, DRLen( 1 ) | DR7_BWR );
                 }
                 dr += 4;
                 break;
@@ -359,14 +364,14 @@ bool SetDebugRegs( void )
                 size = 4;
             type = DRLen( size ) | DR7_BWR;
             for( j = 0; j < wp->dregs; j++ ) {
-                dr7 |= setDRn( dr, linear, type );
+                dr7 |= setDRn( dr, &linear, type );
                 dr++;
                 linear += size;
             }
         }
     }
 
-    SetDR7( dr7 );
+    setDRx( 7, &dr7 );
     return( true );
 #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
     return( false );
