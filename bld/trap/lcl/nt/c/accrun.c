@@ -324,7 +324,6 @@ static trap_conditions handleInt1( DWORD state )
 }
 
 #ifdef WOW
-#if !( MADARCH & MADARCH_X64 )
 /*
  * getImageNote - get current image note structure (WOW)
  */
@@ -336,7 +335,6 @@ static void getImageNote( IMAGE_NOTE *pin )
     addr.offset = (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord );
     ReadMemory( &addr, pin, sizeof( *pin ) );
 }
-#endif
 #endif
 
 /*
@@ -354,11 +352,9 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
     char            *q;
     bool            rc;
 #ifdef WOW
-#if !( MADARCH & MADARCH_X64 )
     thread_info     *ti;
     DWORD           subcode;
     IMAGE_NOTE      imgnote;
-#endif
 #endif
     myconditions    returnCode;
 
@@ -415,7 +411,8 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
         continue_how = DBG_CONTINUE;
         rc = MyWaitForDebugEvent();
         LastDebugEventTid = DebugEvent.dwThreadId;
-#if !( MADARCH & MADARCH_X64 )
+#if MADARCH & MADARCH_X64
+#else
         if( IsWin32s && !rc ) {
             returnCode = COND_LIBRARIES;
             goto done;
@@ -426,7 +423,6 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
             switch( code ) {
 #ifdef WOW
-#if !( MADARCH & MADARCH_X64 )
             case STATUS_VDM_EVENT:
                 subcode = W1( DebugEvent.u.Exception.ExceptionRecord );
                 switch( subcode ) {
@@ -446,7 +442,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     break;
                 case DBG_DLLSTART:
                     getImageNote( &imgnote );
-                    AddLib( true, &imgnote );
+                    AddLib16( &imgnote );
                     if( !IsWOW && stop_on_module_load ) {
                         returnCode = 0;
                         goto done;
@@ -469,7 +465,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                         returnCode = COND_VDM_START;
                         goto done;
                     } else {
-                        AddLib( true, &imgnote );
+                        AddLib16( &imgnote );
                     }
                     break;
                 case DBG_SINGLESTEP:
@@ -504,8 +500,6 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     goto done;
                 }
                 break;
-#else
-#endif
 #endif
             case DBG_CONTROL_C:
                 /*
@@ -604,15 +598,23 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             returnCode = COND_TERMINATE;
             goto done;
         case LOAD_DLL_DEBUG_EVENT:
-            AddLib( false, NULL );
+            AddLib();
+#if MADARCH & MADARCH_X64
+            if( !IsWOW64 && stop_on_module_load ) {
+#else
             if( !IsWOW && stop_on_module_load ) {
+#endif
                 returnCode = COND_LIBRARIES;
                 goto done;
             }
             break;
         case UNLOAD_DLL_DEBUG_EVENT:
             DelLib();
+#if MADARCH & MADARCH_X64
+            if( !IsWOW64 && stop_on_module_load ) {
+#else
             if( !IsWOW && stop_on_module_load ) {
+#endif
                 returnCode = COND_LIBRARIES;
                 goto done;
             }

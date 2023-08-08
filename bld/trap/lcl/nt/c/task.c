@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,10 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     DWORD           osver;
 
 #if MADARCH & MADARCH_X64
-    IsWinNT = true;
+    dll = LoadLibrary( "PSAPI.DLL" );
+    if( dll != NULL ) {
+        pGetMappedFileName          = (LPVOID)GetProcAddress( dll, "GetMappedFileNameA" );
+    }
 #else
     IsWinNT = false;
     IsWin32s = false;
@@ -61,6 +64,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         IsWin95 = true;
     }
     if( IsWinNT ) {
+  #ifdef WOW
         dll = LoadLibrary( "VDMDBG.DLL" );
         if( dll != NULL ) {
             pVDMSetThreadContext        = (LPVOID)GetProcAddress( dll, "VDMSetThreadContext" );
@@ -72,6 +76,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
             pVDMGetThreadContext        = (LPVOID)GetProcAddress( dll, "VDMGetThreadContext" );
             pVDMGetThreadSelectorEntry  = (LPVOID)GetProcAddress( dll, "VDMGetThreadSelectorEntry" );
         }
+  #endif
         dll = LoadLibrary( "PSAPI.DLL" );
         if( dll != NULL ) {
             pGetMappedFileName          = (LPVOID)GetProcAddress( dll, "GetMappedFileNameA" );

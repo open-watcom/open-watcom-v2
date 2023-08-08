@@ -66,9 +66,11 @@ TRPGLOBAL LPSTR         DLLPath;
 TRPGLOBAL subsystems    DebugeeSubsystem;
 TRPGLOBAL msg_list      *DebugString;
 TRPGLOBAL DEBUG_EVENT   DebugEvent;
+#if MADARCH & MADARCH_X64
+TRPGLOBAL bool          IsWOW64;
+#else
 TRPGLOBAL bool          IsWOW;
 TRPGLOBAL bool          IsWinNT;
-#if !( MADARCH & MADARCH_X64 )
 TRPGLOBAL bool          IsDOS;
 TRPGLOBAL bool          IsWin32s;
 TRPGLOBAL bool          IsWin95;
@@ -130,7 +132,7 @@ TRPGLOBAL BOOL
     LPMODULEENTRY32 lpme
 );
 
-#if !( MADARCH & MADARCH_X64 )
+#ifdef WOW
 TRPGLOBAL BOOL
 (WINAPI*pVDMModuleFirst)(
     HANDLE          hProcess,

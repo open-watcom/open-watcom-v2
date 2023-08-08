@@ -158,11 +158,15 @@ typedef struct thread_info {
     LPVOID              start_addr;
     addr_off            brk_addr;
     opcode_type         old_opcode;
-    char                alive:1;
-    char                suspended:1;
-    char                is_wow:1;
-    char                is_dos:1;
-    char                is_foreign:1;
+    unsigned            alive       :1;
+    unsigned            suspended   :1;
+    unsigned            is_foreign  :1;
+#if MADARCH & MADARCH_X64
+    unsigned            is_wow64    :1;
+#elif defined( WOW )
+    unsigned            is_wow      :1;
+    unsigned            is_dos      :1;
+#endif
 } thread_info;
 
 typedef struct process_info {
@@ -212,7 +216,10 @@ extern HANDLE           GetMagicalFileHandle( char *name );
 extern void             AddProcess( header_info * );
 extern void             DelProcess( bool );
 extern void             VoidProcess( void );
-extern void             AddLib( bool, IMAGE_NOTE *im );
+#ifdef WOW
+extern void             AddLib16( IMAGE_NOTE *im );
+#endif
+extern void             AddLib( void );
 extern void             DelLib( void );
 extern void             FreeLibList( void );
 extern bool             DoListLibs( char *buff, int is_first, int want_16, int want_32, int verbose, int sel );

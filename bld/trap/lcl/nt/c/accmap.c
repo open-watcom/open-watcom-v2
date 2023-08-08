@@ -396,11 +396,11 @@ error_exit:
 }
 
 
-
+#ifdef WOW
 /*
- * AddLib - a new library has loaded
+ * AddLib16 - a new library has loaded
  */
-void AddLib( bool is_16, IMAGE_NOTE *im )
+void AddLib16( IMAGE_NOTE *im )
 {
     lib_load_info   *llo;
 
@@ -411,45 +411,54 @@ void AddLib( bool is_16, IMAGE_NOTE *im )
     moduleInfo = llo;
     llo = &moduleInfo[ModuleTop - 1];
 
-#if !defined( WOW ) || ( MADARCH & MADARCH_X64 )
-    (void)im, (void)is_16; // Unused
-#else
-    if( is_16 ) {
-        llo->is_16 = true;
-        llo->has_real_filename = true;
-        llo->file_handle = 0;
-        llo->base = NULL;
-        llo->newly_loaded = true;
-        llo->newly_unloaded = false;
-        strcpy( llo->filename, im->FileName );
-        strcpy( llo->modname, im->Module );
-    } else
+    llo->is_16 = true;
+    llo->has_real_filename = true;
+    llo->file_handle = 0;
+    llo->base = NULL;
+    llo->newly_loaded = true;
+    llo->newly_unloaded = false;
+    strcpy( llo->filename, im->FileName );
+    strcpy( llo->modname, im->Module );
+}
 #endif
- {
-        llo->is_16 = false;
-        llo->has_real_filename = false;
-        /*
-         * for a 32-bit DLL, we make up a fake name to tell the debugger
-         * when the debugger asks to open this fake name, we return the
-         * saved file handle
-         */
-        llo->file_handle = DebugEvent.u.LoadDll.hFile;
-        llo->base = DebugEvent.u.LoadDll.lpBaseOfDll;
-        llo->modname[0] = 0;
-        if ( NameFromHandle( llo->file_handle, llo->filename) ) {
-            llo->has_real_filename = true;
-        } else if( NameFromProcess( llo, DebugeePid, llo->filename ) ) {
-            llo->has_real_filename = true;
-        } else if( !GetModuleName( llo->file_handle, llo->filename ) ) {
-            lastLib++;
-            strcpy( llo->filename, libPrefix );
-            ultoa( lastLib, &llo->filename[sizeof( libPrefix ) - 1], 16 );
-            strcat( llo->filename, ".dll" );
-        }
-        FillInExceptInfo( llo );
-        llo->newly_loaded = true;
-        llo->newly_unloaded = false;
+
+/*
+ * AddLib - a new library has loaded
+ */
+void AddLib( void )
+{
+    lib_load_info   *llo;
+
+    ModuleTop++;
+    llo = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, ModuleTop * sizeof( lib_load_info ) );
+    memcpy( llo, moduleInfo, ( ModuleTop - 1 ) * sizeof( lib_load_info ) );
+    LocalFree( moduleInfo );
+    moduleInfo = llo;
+    llo = &moduleInfo[ModuleTop - 1];
+
+    llo->is_16 = false;
+    llo->has_real_filename = false;
+    /*
+     * for a 32-bit DLL, we make up a fake name to tell the debugger
+     * when the debugger asks to open this fake name, we return the
+     * saved file handle
+     */
+    llo->file_handle = DebugEvent.u.LoadDll.hFile;
+    llo->base = DebugEvent.u.LoadDll.lpBaseOfDll;
+    llo->modname[0] = 0;
+    if ( NameFromHandle( llo->file_handle, llo->filename) ) {
+        llo->has_real_filename = true;
+    } else if( NameFromProcess( llo, DebugeePid, llo->filename ) ) {
+        llo->has_real_filename = true;
+    } else if( !GetModuleName( llo->file_handle, llo->filename ) ) {
+        lastLib++;
+        strcpy( llo->filename, libPrefix );
+        ultoa( lastLib, &llo->filename[sizeof( libPrefix ) - 1], 16 );
+        strcat( llo->filename, ".dll" );
     }
+    FillInExceptInfo( llo );
+    llo->newly_loaded = true;
+    llo->newly_unloaded = false;
 }
 
 void DelLib( void )
@@ -489,7 +498,6 @@ void DelProcess( bool closeHandles )
  *                      will be loaded into memory.
  */
 #if defined( WOW )
-#if !( MADARCH & MADARCH_X64 )
 
 #define INS_BYTES 7
 
@@ -523,7 +531,6 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
     WriteMemory( &WOWAppInfo.addr, origBytes, INS_BYTES );
 }
 
-#endif  /* !( MADARCH & MADARCH_X64 ) */
 #endif  /* defined( WOW ) */
 
 trap_retval TRAP_CORE( Map_addr )( void )
@@ -556,7 +563,6 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
     llo = &moduleInfo[acc->mod_handle];
 
-#if !( MADARCH & MADARCH_X64 )
 #ifdef WOW
     if( llo->is_16 ) {
         LDT_ENTRY   ldt;
@@ -580,7 +586,6 @@ trap_retval TRAP_CORE( Map_addr )( void )
         ret->out_addr.segment = sel;
         ret->out_addr.offset = 0;
     } else
-#endif
 #endif
     {
         /*

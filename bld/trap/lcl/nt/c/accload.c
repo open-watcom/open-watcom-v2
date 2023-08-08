@@ -139,7 +139,7 @@ static void addKERNEL( void )
         if( strnicmp( me.szModule, "KERNEL", 6 ) == 0 ) {
             memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
             memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-            AddLib( true, &im );
+            AddLib16( &im );
             break;
         }
         me.dwSize = sizeof( MODULEENTRY );
@@ -155,9 +155,8 @@ static void addKERNEL( void )
     strcpy( im.Module, "KERNEL" );
     GetSystemDirectory( im.FileName, sizeof( im.FileName ) );
     strcat( im.FileName, "\\KRNL386.EXE" );
-    AddLib( true, &im );
+    AddLib16( &im );
 #endif
-
 }
 
 static void addAllWOWModules( void )
@@ -180,7 +179,7 @@ static void addAllWOWModules( void )
     {
         memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
         memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-        AddLib( true, &im );
+        AddLib16( &im );
         me.dwSize = sizeof( MODULEENTRY );
     }
 
@@ -214,13 +213,6 @@ static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
     }
     return( TRUE );
 
-}
-#else
-static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
-{
-    (void)pid, (void)attrib; // Unused
-    *(DWORD *)lparam = 0;
-    return( FALSE );
 }
 #endif
 #endif
@@ -260,7 +252,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     prog_load_ret   *ret;
     header_info     hi;
     WORD            stack;
-    WORD            version;
     DWORD           pid;
     DWORD           pid_started;
     DWORD           cr_flags;
@@ -323,8 +314,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * skip directly to doing a DebugActiveProcess
      */
     handle = INVALID_HANDLE_VALUE;
+#if MADARCH & MADARCH_X64
+    IsWOW64 = false;
+#else
     IsWOW = false;
-#if !( MADARCH & MADARCH_X64 )
     IsDOS = false;
 #endif
     if( pid == 0 ) {
@@ -368,13 +361,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
             DebugeeSubsystem = PE( hi.u.pehdr, subsystem );
 #if MADARCH & MADARCH_X64
             if( !IS_PE64( hi.u.pehdr ) ) {
-                IsWOW = true;
+                IsWOW64 = true;
             }
 #endif
             if( DebugeeSubsystem == SS_WINDOWS_CHAR ) {
                 cr_flags |= CREATE_NEW_CONSOLE;
             }
-#if !( MADARCH & MADARCH_X64 )
+#if MADARCH & MADARCH_X64
+#elif defined( WOW )
         } else if( hi.signature == EXESIGN_NE ) {
             IsWOW = true;
             /*
@@ -382,6 +376,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
              */
             pVDMEnumProcessWOW( EnumWOWProcessFunc, (LPARAM)&pid );
             if( pid != 0 ) {
+                WORD    version;
+
                 version = LOWORD( GetVersion() );
                 if( LOBYTE( version ) == 3 && HIBYTE( version ) < 50 ) {
                     int kill = MessageBox( NULL, TRP_NT_wow_warning, TRP_The_WATCOM_Debugger, MB_APPLMODAL + MB_YESNO );

@@ -57,7 +57,12 @@
  */
 bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
-#ifdef WOW
+#if MADARCH & MADARCH_X64
+    if( ti->is_wow ) {
+        pc->ContextFlags = WOW64CONTEXT_TO_USE;
+        return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
+    }
+#elif defined( WOW )
     bool    rc;
 
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
@@ -90,20 +95,10 @@ bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
         #error MyGetThreadContext not configured
   #endif
         return( rc );
-    } else {
-        pc->ContextFlags = MYCONTEXT_TO_USE;
-        return( GetThreadContext( ti->thread_handle, pc ) != 0 );
     }
-#else
-  #if MADARCH & MADARCH_X64
-    if( ti->is_wow ) {
-        pc->ContextFlags = WOW64CONTEXT_TO_USE;
-        return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
-    }
-  #endif
+#endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
     return( GetThreadContext( ti->thread_handle, pc ) != 0 );
-#endif
 }
 
 /*
@@ -111,7 +106,12 @@ bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
  */
 bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
-#ifdef WOW
+#if MADARCH & MADARCH_X64
+    if( ti->is_wow ) {
+        pc->ContextFlags = WOW64CONTEXT_TO_USE;
+        return( Wow64SetThreadContext( ti->thread_handle, pc ) != 0 );
+    }
+#elif defined( WOW )
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
   #if MADARCH & MADARCH_X86
         VDMCONTEXT      vc;
@@ -128,18 +128,8 @@ bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
   #else
         #error MySetThreadContext not configured
   #endif
-    } else {
-        pc->ContextFlags = MYCONTEXT_TO_USE;
-        return( SetThreadContext( ti->thread_handle, pc ) != 0 );
     }
-#else   /* !WOW */
-  #if MADARCH & MADARCH_X64
-    if( ti->is_wow ) {
-        pc->ContextFlags = WOW64CONTEXT_TO_USE;
-        return( Wow64SetThreadContext( ti->thread_handle, pc ) != 0 );
-    }
-  #endif
+#endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
     return( SetThreadContext( ti->thread_handle, pc ) != 0 );
-#endif  /* !WOW */
 }

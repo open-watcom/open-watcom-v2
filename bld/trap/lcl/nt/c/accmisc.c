@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +200,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     ret->fpu = ret->cpu & X86_CPU_MASK;
 //    ret->cpu = X64_CPU1;
 //    ret->fpu = X64_FPU1;
-    if( !IsWOW ) {
+    if( !IsWOW64 ) {
 //        ret->os = DIG_OS_NT64;
     }
 //    ret->arch = DIG_ARCH_X64;

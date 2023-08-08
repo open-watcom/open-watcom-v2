@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +54,12 @@ void AddThread( DWORD tid, HANDLE th, LPVOID sa )
     ti->next = ProcessInfo.thread_list;
     ti->alive = true;
     ti->suspended = false;
+#if MADARCH & MADARCH_X64
+    ti->is_wow64 = false;
+#elif defined( WOW )
     ti->is_wow = false;
     ti->is_dos = false;
+#endif
     ti->is_foreign = false;
     ProcessInfo.thread_list = ti;
 }

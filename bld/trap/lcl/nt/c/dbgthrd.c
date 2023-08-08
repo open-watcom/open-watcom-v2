@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,14 +118,14 @@ static void StopDebuggee( void )
          * terminated
          */
         Slaying = true;
-#if !( MADARCH & MADARCH_X64 )
+#if MADARCH & MADARCH_X64
+        {
+#else
         if( IsWin32s ) {
             DoContinueDebugEvent( DBG_TERMINATE_PROCESS );
             DoWaitForDebugEvent();
             DoContinueDebugEvent( DBG_CONTINUE );
         } else {
-#else
-        {
 #endif
             HANDLE  hp;
 
@@ -600,7 +600,8 @@ static bool StartDebuggee( void )
     }
     if( Shared.pid != 0 && Shared.pid != -1 ) {
         rc = MyDebugActiveProcess( Shared.pid );
-#if !( MADARCH & MADARCH_X64 )
+#if MADARCH & MADARCH_X64
+#else
         if( IsWOW ) {
             /*
              * WOW was already running, so we start up wowdeb (this
@@ -675,7 +676,8 @@ static bool DoWaitForDebugEvent( void )
 
     done = false;
 
-#if !( MADARCH & MADARCH_X64 )
+#if MADARCH & MADARCH_X64
+#else
     UseVDMStuff = false;
 #endif
     while( !done ) {
@@ -687,7 +689,6 @@ static bool DoWaitForDebugEvent( void )
             if( DebugEvent.dwDebugEventCode == EXCEPTION_DEBUG_EVENT ) {
                 code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
 #ifdef WOW
-#if !( MADARCH & MADARCH_X64 )
                 if( code == STATUS_VDM_EVENT ) {
                     if( pVDMProcessException( &DebugEvent ) ) {
                         UseVDMStuff = true;
@@ -701,7 +702,6 @@ static bool DoWaitForDebugEvent( void )
                      * is to ignore it.  When all else fails, punt.
                      */
                 } else
-#endif
 #endif
                 {
                     switch( code ) {
@@ -759,10 +759,10 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
     Shared.flags = cr_flags;
     Shared.name = name;
     Shared.control_thread_running = false;
-#if !( MADARCH & MADARCH_X64 )
-    if( !IsWin32s ) {
-#else
+#if MADARCH & MADARCH_X64
     {
+#else
+    if( !IsWin32s ) {
 #endif
         DWORD       tid;
 
