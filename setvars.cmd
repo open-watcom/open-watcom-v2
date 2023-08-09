@@ -7,10 +7,16 @@ REM       modify it as necessary for your own use!!
 
 REM Change OWROOT to point your Open Watcom source tree.
 REM Note: '=' sign in path is not allowed (build will fail).
+REM
+REM set OWROOT=c:\ow\ow
+REM
 REM If space character is used in the path then you must double quote
 REM this path.
+REM
+REM set OWROOT="c:\ow\o w"
+REM
 
-set OWROOT="c:\ow\ow"
+set OWROOT=c:\ow\ow
 
 REM Set OWTOOLS entry to identify your toolchain used by build process
 REM supported values are WATCOM

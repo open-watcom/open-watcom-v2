@@ -7,6 +7,14 @@
 
 # Change OWROOT to point your Open Watcom source tree
 # Note: '=' sign in path is not allowed (build will fail).
+#
+# export OWROOT=/home/ow/ow
+#
+# If space character is used in the path then you must double quote
+# this path.
+#
+# export OWROOT="/home/ow/o w"
+#
 
 export OWROOT=$(realpath "`pwd`")
 
