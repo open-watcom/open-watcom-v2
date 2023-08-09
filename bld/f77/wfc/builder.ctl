@@ -48,6 +48,7 @@ set PROJDIR=<CWD>
     <CCCMD> i86/linuxx64/wfc.exe        "<OWRELROOT>/binl64/wfc"
     <CCCMD> i86/linuxx64/wfc.sym        "<OWRELROOT>/binl64/"
     <CCCMD> 386/linuxx64/wfc386.exe     "<OWRELROOT>/binl64/wfc386"
+    <CCCMD> 386/linuxx64/wfc386.sym     "<OWRELROOT>/binl64/"
 
 [ BLOCK . . ]
 

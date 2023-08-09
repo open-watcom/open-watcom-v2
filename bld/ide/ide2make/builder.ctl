@@ -34,7 +34,7 @@ set PROJDIR=<CWD>
     <CCCMD> nt386/ide2make.exe    "<OWRELROOT>/binnt/"
     <CCCMD> nt386/ide2make.sym    "<OWRELROOT>/binnt/"
     <CCCMD> linux386/ide2make.exe "<OWRELROOT>/binl/ide2make"
-    <CCCMD> linux386/ide2make.sym "<OWRELROOT>/binl/ide2make"
+    <CCCMD> linux386/ide2make.sym "<OWRELROOT>/binl/"
     <CCCMD> ntaxp/ide2make.exe    "<OWRELROOT>/axpnt/"
     <CCCMD> ntaxp/ide2make.sym    "<OWRELROOT>/axpnt/"
 
