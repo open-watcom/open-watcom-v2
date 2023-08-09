@@ -132,11 +132,23 @@ bool FindBreak( WORD segment, dword offset, opcode_type *old_opcode )
 
 static dword get_DRx( MYCONTEXT *con, int i )
 {
+    if( i > 3 ) {
+        /*
+         * remap DR6/DR7 to index 4/5
+         */
+        i -= 2;
+    }
     return( ( (DWORD *)&con->Dr0 )[i] );
 }
 
 static void set_DRx( MYCONTEXT *con, int i, dword *data )
 {
+    if( i > 3 ) {
+        /*
+         * remap DR6/DR7 to index 4/5
+         */
+        i -= 2;
+    }
     ( (DWORD *)&con->Dr0 )[i] = *data;
 }
 
