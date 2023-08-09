@@ -53,9 +53,9 @@ opcode_type place_breakpoint_lin( HANDLE process, FARPROC base )
     opcode_type old_opcode;
     DWORD       bytes;
 
-    ReadProcessMemory( process, base, &old_opcode, sizeof( old_opcode ), &bytes );
+    ReadProcessMemory( process, (LPVOID)base, (LPVOID)&old_opcode, sizeof( old_opcode ), &bytes );
     if( bytes == sizeof( old_opcode ) && old_opcode != BreakOpcode ) {
-        WriteProcessMemory( process, base, &BreakOpcode, sizeof( BreakOpcode ), &bytes );
+        WriteProcessMemory( process, (LPVOID)base, (LPVOID)&BreakOpcode, sizeof( BreakOpcode ), &bytes );
         return( old_opcode );
     }
     return( 0 );
@@ -65,7 +65,7 @@ int remove_breakpoint_lin( HANDLE process, FARPROC base, opcode_type old_opcode 
 {
     DWORD       bytes;
 
-    WriteProcessMemory( process, base, &old_opcode, sizeof( old_opcode ), &bytes );
+    WriteProcessMemory( process, (LPVOID)base, (LPVOID)&old_opcode, sizeof( old_opcode ), &bytes );
     return( bytes != sizeof( old_opcode ) );
 }
 
@@ -213,7 +213,7 @@ static void setTBit( set_t set )
  * handleInt3 - process an encountered break point
  */
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
-static DWORD    BreakFixed;
+static FARPROC  BreakFixed;
 #endif
 
 static trap_conditions handleInt3( DWORD state )
@@ -246,9 +246,9 @@ static trap_conditions handleInt3( DWORD state )
             opcode_type old_opcode;
 
             if( FindBreak( (WORD)con.SegCs, (dword)con.Eip, &old_opcode ) ) {
-                BreakFixed = con.Eip;
+                BreakFixed = (FARPROC)con.Eip;
                 proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-                remove_breakpoint_lin( proc, (LPVOID)con.Eip, old_opcode );
+                remove_breakpoint_lin( proc, (FARPROC)con.Eip, old_opcode );
                 con.EFlags |= INTR_TF;
                 CloseHandle( proc );
                 cond_ret = COND_NONE;
@@ -311,7 +311,7 @@ static trap_conditions handleInt1( DWORD state )
                 HANDLE  proc;
 
                 proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-                place_breakpoint_lin( proc, (LPVOID)BreakFixed );
+                place_breakpoint_lin( proc, BreakFixed );
                 CloseHandle( proc );
                 BreakFixed = 0;
                 return( COND_NONE );
@@ -397,7 +397,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                 MyGetThreadContext( FindThread( DebugeeTid ), &con );
                 addr = GetIP( &con );
                 ReadProcessMemory( ProcessInfo.process_handle, (LPVOID)addr,
-                    (LPVOID)&opcode, sizeof( opcode ), (LPDWORD)&bytes );
+                    (LPVOID)&opcode, sizeof( opcode ), &bytes );
                 opcode &= 0xfc000000;
                 if( opcode == ( 0x1a << 26 ) || opcode >= ( 0x30 << 26 ) ) {
                     returnCode = COND_WATCH;

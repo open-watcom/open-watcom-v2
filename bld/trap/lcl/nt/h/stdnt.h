@@ -162,7 +162,7 @@ typedef struct thread_info {
     DWORD               tid;
     HANDLE              thread_handle;
     FARPROC             start_addr;
-    addr_off            brk_addr;
+    FARPROC             brk_addr;
     opcode_type         old_opcode;
     unsigned            alive       :1;
     unsigned            suspended   :1;

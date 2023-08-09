@@ -218,8 +218,8 @@ trap_retval TRAP_CORE( Read_regs )( void )
         mr->x86.xmm.mxcsr = con.ExtendedRegisters[MYCONTEXT_MXCSR];
 #elif MADARCH & MADARCH_AXP
         memcpy( &mr->axp.r, &con, sizeof( mr->axp.r ) );
-        mr->axp.pal.nt.fir      = *( unsigned_64 * ) & con.Fir;
-        mr->axp.pal.nt.softfpcr = *( unsigned_64 * ) & con.SoftFpcr;
+        mr->axp.pal.nt.fir      = *(unsigned_64 *)&con.Fir;
+        mr->axp.pal.nt.softfpcr = *(unsigned_64 *)&con.SoftFpcr;
         mr->axp.pal.nt.psr      = con.Psr;
         mr->axp.active_pal      = PAL_nt;
 #elif MADARCH & MADARCH_PPC
@@ -263,7 +263,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
         mr->ppc.msr.u._32[0] = con.Msr;
         mr->ppc.cr = con.Cr;
         mr->ppc.xer = con.Xer;
-        mr->ppc.fpscr = *( unsigned_32 * ) & con.Fpscr; //NYI: is this right?
+        mr->ppc.fpscr = *(unsigned_32 *)&con.Fpscr; //NYI: is this right?
 #else
         #error TRAP_CORE( Read_regs ) not configured
 #endif
@@ -307,9 +307,9 @@ trap_retval TRAP_CORE( Write_regs )( void )
     con.ExtendedRegisters[MYCONTEXT_MXCSR] = mr->x86.xmm.mxcsr;
 #elif MADARCH & MADARCH_AXP
     memcpy( &con, &mr->axp.r, sizeof( mr->axp.r ) );
-    *( unsigned_64 * ) & con.Fir            = mr->axp.pal.nt.fir;
-    *( unsigned_64 * ) & con.SoftFpcr       = mr->axp.pal.nt.softfpcr;
-    con.Psr                             = mr->axp.pal.nt.psr;
+    *(unsigned_64 *)&con.Fir        = mr->axp.pal.nt.fir;
+    *(unsigned_64 *)&con.SoftFpcr   = mr->axp.pal.nt.softfpcr;
+    con.Psr                         = mr->axp.pal.nt.psr;
 #elif MADARCH & MADARCH_PPC
     memcpy( &con.Fpr0, &mr->ppc.f0, sizeof( double )* 32 );
     con.Gpr0 = mr->ppc.r0.u._32[0];
@@ -351,7 +351,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     con.Msr = mr->ppc.msr.u._32[0];
     con.Cr = mr->ppc.cr;
     con.Xer = mr->ppc.xer;
-    *( unsigned_32 * ) & con.Fpscr = mr->ppc.fpscr; //NYI: is this right?
+    *(unsigned_32 *)&con.Fpscr = mr->ppc.fpscr; //NYI: is this right?
 #else
     #error TRAP_CORE( Write_regs ) not configured
 #endif
@@ -369,7 +369,7 @@ FARPROC AdjustIP( MYCONTEXT *con, int adjust )
     return( (FARPROC)con->Eip );
 #elif MADARCH & MADARCH_AXP
     //NYI: 64 bit
-    ( ( unsigned_64 * ) & con->Fir )->u._32[0] += adjust;
+    ( (unsigned_64 *)&con->Fir )->u._32[0] += adjust;
     return( (FARPROC)( (unsigned_64 *)&con->Fir )->u._32[0] );
 #elif MADARCH & MADARCH_PPC
     con->Iar += adjust;
@@ -403,7 +403,7 @@ void SetIP( MYCONTEXT *con, FARPROC new )
     con->Eip = (DWORD)new;
 #elif MADARCH & MADARCH_AXP
     //NYI: 64 bit
-    ( ( unsigned_64 * ) & con->Fir )->u._32[0] = new;
+    ( (unsigned_64 *)&con->Fir )->u._32[0] = new;
 #elif MADARCH & MADARCH_PPC
     con->Iar = new;
 #else

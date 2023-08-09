@@ -52,7 +52,7 @@ static bool executeUntilStart( bool was_running )
 {
     HANDLE      ph;
     opcode_type old_opcode;
-    LPVOID      base;
+    FARPROC     base;
     MYCONTEXT   con;
     thread_info *ti;
 
@@ -62,7 +62,7 @@ static bool executeUntilStart( bool was_running )
          * if we are not debugging an already running app, then we
          * plant a breakpoint at the first instruction of our new app
          */
-        base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
+        base = (FARPROC)DebugEvent.u.CreateProcessInfo.lpStartAddress;
         old_opcode = place_breakpoint_lin( ph, base );
     } else {
         /*
