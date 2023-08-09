@@ -94,7 +94,7 @@ static bool executeUntilStart( bool was_running )
                 MySetThreadContext( ti, &con );
                 return( true );
             }
-            if( ( AdjustIP( &con, 0 ) == base ) ) {
+            if( GetIP( &con ) == base ) {
                 /*
                  * we stopped at the applications starting address,
                  * so we can offically declare that the app has loaded
@@ -531,10 +531,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
     } else {
 #endif
 #endif
-        LPVOID base;
+        FARPROC base;
 
         if( pid == 0 ) {
-            base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
+            base = (FARPROC)DebugEvent.u.CreateProcessInfo.lpStartAddress;
         } else {
             base = 0;
         }
@@ -543,7 +543,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->err = 0;
         ret->task_id = DebugeePid;
         if( executeUntilStart( pid != 0 ) ) {
-            LPVOID old;
+            FARPROC old;
             /*
              * make the application load our DLL, so that we can have it
              * run code out of it.  One small note: this will not work right
@@ -552,7 +552,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
              */
             ti = FindThread( DebugeeTid );
             MyGetThreadContext( ti, &con );
-            old = (LPVOID)AdjustIP( &con, 0 );
+            old = GetIP( &con );
             if( base != 0 ) {
                 SetIP( &con, base );
             }

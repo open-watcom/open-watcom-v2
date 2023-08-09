@@ -370,12 +370,28 @@ FARPROC AdjustIP( MYCONTEXT *con, int adjust )
 #elif MADARCH & MADARCH_AXP
     //NYI: 64 bit
     ( ( unsigned_64 * ) & con->Fir )->u._32[0] += adjust;
-    return( ( ( unsigned_64 * ) & con->Fir )->u._32[0] );
+    return( (FARPROC)( (unsigned_64 *)&con->Fir )->u._32[0] );
 #elif MADARCH & MADARCH_PPC
     con->Iar += adjust;
-    return( con->Iar );
+    return( (FARPROC)con->Iar );
 #else
     #error AdjustIP not configured
+#endif
+}
+
+FARPROC GetIP( MYCONTEXT *con )
+{
+#if MADARCH & MADARCH_X86
+    return( (FARPROC)con->Eip );
+#elif MADARCH & MADARCH_X64
+    return( (FARPROC)con->Eip );
+#elif MADARCH & MADARCH_AXP
+    //NYI: 64 bit
+    return( (FARPROC)( (unsigned_64 *)&con->Fir )->u._32[0] );
+#elif MADARCH & MADARCH_PPC
+    return( (FARPROC)con->Iar );
+#else
+    #error GetIP not configured
 #endif
 }
 
@@ -391,6 +407,6 @@ void SetIP( MYCONTEXT *con, FARPROC new )
 #elif MADARCH & MADARCH_PPC
     con->Iar = new;
 #else
-    #error AdjustIP not configured
+    #error SetIP not configured
 #endif
 }

@@ -107,7 +107,7 @@ static void setATBit( thread_info *ti, set_t set )
     MySetThreadContext( ti, &con );
 #elif MADARCH & MADARCH_AXP
     if( set != T_OFF ) {
-        ti->brk_addr = AdjustIP( &con, 0 );
+        ti->brk_addr = GetIP( &con );
         if( set == T_ON_NEXT ) {
             ti->brk_addr += 4;
         }
@@ -263,7 +263,7 @@ static trap_conditions handleInt3( DWORD state )
     cond_ret = COND_BREAK;
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-    if( ti->brk_addr != 0 && AdjustIP( &con, 0 ) == ti->brk_addr ) {
+    if( ti->brk_addr != 0 && GetIP( &con ) == ti->brk_addr ) {
         cond_ret = handleInt1( state );
     }
 #elif MADARCH & MADARCH_PPC
@@ -395,7 +395,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
 
                 con.ContextFlags = MYCONTEXT_CONTROL;
                 MyGetThreadContext( FindThread( DebugeeTid ), &con );
-                addr = AdjustIP( &con, 0 );
+                addr = GetIP( &con );
                 ReadProcessMemory( ProcessInfo.process_handle, (LPVOID)addr,
                     (LPVOID)&opcode, sizeof( opcode ), (LPDWORD)&bytes );
                 opcode &= 0xfc000000;

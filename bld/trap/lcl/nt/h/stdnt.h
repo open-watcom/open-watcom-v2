@@ -292,6 +292,7 @@ extern void             ParseServiceStuff( char *name,
 
 /* accregs.c */
 extern FARPROC          AdjustIP( MYCONTEXT *, int );
+extern FARPROC          GetIP( MYCONTEXT * );
 extern void             SetIP( MYCONTEXT *, FARPROC );
 
 extern void             say( char *fmt, ... );

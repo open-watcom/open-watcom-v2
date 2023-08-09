@@ -267,7 +267,7 @@ bool SetDebugRegs( void )
     dword       linear;
     word        size;
 
-
+    #define MAX_DRx     4
     /*
      *  Carl. I really don't like this code, but the DR count check is done above
      *  so there's not much harm that can happen. We can't get here needing more than 4
@@ -276,8 +276,7 @@ bool SetDebugRegs( void )
      *  the linear address is adjusted by size so a short across a dword boundary will screw
      *  up I think!
      */
-
-    if( DRegsCount() > 4 ) {
+    if( DRegsCount() > MAX_DRx ) {
         return( false );
     }
 
