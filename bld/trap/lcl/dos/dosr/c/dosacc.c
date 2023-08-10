@@ -931,7 +931,7 @@ static trap_conditions MapReturn( int trap )
         break;
     }
     outline( "none" );
-    return( 0 );
+    return( COND_NONE );
 }
 
 static trap_elen ProgRun( bool step )

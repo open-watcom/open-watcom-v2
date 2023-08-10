@@ -355,7 +355,7 @@ static void getImageNote( IMAGE_NOTE *pin )
 /*
  * DebugExecute - execute program under debug control
  */
-myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
+trap_conditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
 {
     DWORD           continue_how;
     DWORD           code;
@@ -371,7 +371,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
     DWORD           subcode;
     IMAGE_NOTE      imgnote;
 #endif
-    myconditions    returnCode;
+    trap_conditions returnCode;
 
     if( tsc != NULL ) {
         *tsc = false;
@@ -527,20 +527,17 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                 break;
             case STATUS_SINGLE_STEP:
                 DebugeeTid = DebugEvent.dwThreadId;
-                cond = handleSinglestepEvent( state );
-                if( cond != 0 ) {
-                    returnCode = cond;
+                returnCode = handleSinglestepEvent( state );
+                if( returnCode != COND_NONE )
                     goto done;
-                }
                 break;
             case STATUS_BREAKPOINT:
                 DebugeeTid = DebugEvent.dwThreadId;
                 if( state & STATE_WAIT_FOR_VDM_START ) {
                     break;
                 }
-                cond = handleBreakpointEvent( state );
-                if( cond != 0 ) {
-                    returnCode = cond;
+                returnCode = handleBreakpointEvent( state );
+                if( returnCode != COND_NONE )
                     goto done;
                 }
                 break;
@@ -550,7 +547,12 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                  * give the user's exception handlers a chance to run
                  */
                 DebugeeTid = DebugEvent.dwThreadId;
-                if( DebugEvent.u.Exception.dwFirstChance && (state & STATE_EXPECTING_FAULT) == 0 ) {
+                if( DebugEvent.u.Exception.dwFirstChance == 0 || (state & STATE_EXPECTING_FAULT) != 0 ) {
+                    LastExceptionCode = code;
+                    returnCode = COND_EXCEPTION;
+                    goto done;
+                }
+                {
                     char    buff[20];
                     void    *a;
 
@@ -580,10 +582,6 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                      *  the exception handler...
                      */
                     setTBit( T_OFF );
-                } else {
-                    LastExceptionCode = code;
-                    returnCode = COND_EXCEPTION;
-                    goto done;
                 }
                 break;
             }
@@ -690,7 +688,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
     }
 done:
     if( DebugString != NULL ) {
-        returnCode += COND_MESSAGE + ( BreakOnKernelMessage ? COND_STOP : 0 );
+        returnCode = returnCode | COND_MESSAGE | ( BreakOnKernelMessage ? COND_STOP : COND_NONE );
     }
     return( returnCode );
 }

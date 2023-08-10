@@ -197,8 +197,6 @@ typedef struct msg_list {
     char                msg[1]; /* variable size */
 } msg_list;
 
-typedef unsigned        myconditions;
-
 /*
  * function prototypes
  */
@@ -252,7 +250,7 @@ extern void             AddMessagePrefix( char *buff, size_t len );
 /* accrun.c */
 extern opcode_type      place_breakpoint_lin( HANDLE process, FARPROC base );
 extern int              remove_breakpoint_lin( HANDLE process, FARPROC base, opcode_type old_opcode );
-extern myconditions     DebugExecute( DWORD state, bool *tsc, bool );
+extern trap_conditions  DebugExecute( DWORD state, bool *tsc, bool );
 extern void             InterruptProgram( void );
 extern bool             Terminate( void );
 

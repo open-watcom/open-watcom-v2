@@ -41,6 +41,9 @@
 
 
 #define MAX_WATCHES     32
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+#define MAX_DRx         4
+#endif
 
 typedef struct {
     uint_64         value;
@@ -97,15 +100,13 @@ trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req *acc;
     break_point     *brk;
-    break_point     *next;
 
     // we can assume all breaks are cleared at once
 
-    for( brk = Breaks; brk != NULL; brk = next ) {
-        next = brk->next;
+    while( (brk = Breaks) != NULL ) {
+        Breaks = brk->next;
         LocalFree( brk );
     }
-    Breaks = NULL;
     acc = GetInPtr( 0 );
     remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
@@ -120,14 +121,10 @@ bool FindBreak( MYCONTEXT *con, opcode_type *old_opcode )
     segment = (WORD)con->SegCs;
     offset = (DWORD)con->Eip;
     for( brk = Breaks; brk != NULL; brk = brk->next ) {
-        if( brk->addr.segment != segment ) {
-            continue;
+        if( brk->addr.segment == segment && brk->addr.offset == offset ) {
+            *old_opcode = brk->old_opcode;
+            return( true );
         }
-        if( brk->addr.offset != offset ) {
-            continue;
-        }
-        *old_opcode = brk->old_opcode;
-        return( true );
     }
     return( false );
 }
@@ -136,7 +133,7 @@ bool FindBreak( MYCONTEXT *con, opcode_type *old_opcode )
 
 static dword get_DRx( MYCONTEXT *con, int i )
 {
-    if( i > 3 )
+    if( i >= MAX_DRx )
         i -= 2;
 #if MADARCH & MADARCH_X64
     return( ( (unsigned_64 *)&con->Dr0 )[i] );
@@ -147,7 +144,7 @@ static dword get_DRx( MYCONTEXT *con, int i )
 
 static void set_DRx( MYCONTEXT *con, int i, dword *data )
 {
-    if( i > 3 )
+    if( i >= MAX_DRx )
         i -= 2;
 #if MADARCH & MADARCH_X64
     ( (uint_64 *)&con->Dr0 )[i] = *data;
@@ -208,7 +205,7 @@ void ClearDebugRegs( void )
     dword zero;
 
     zero = 0;
-    for( i = 0; i < 4; i++ ) {
+    for( i = 0; i < MAX_DRx; i++ ) {
         setDRn( i, &zero, 0 );
     }
     setDRx( 6, &zero );
@@ -250,7 +247,6 @@ bool SetDebugRegs( void )
     dword       linear;
     word        size;
 
-    #define MAX_DRx     4
     /*
      *  Carl. I really don't like this code, but the DR count check is done above
      *  so there's not much harm that can happen. We can't get here needing more than 4
@@ -510,7 +506,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
             return( sizeof( *ret ) );
 
         WatchCount++;
-        if( DRegsCount() <= 4 ) {
+        if( DRegsCount() <= MAX_DRx ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
 #else

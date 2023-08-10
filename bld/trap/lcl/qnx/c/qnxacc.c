@@ -1122,7 +1122,7 @@ static trap_conditions RunIt( unsigned step )
             }
             return( COND_USER );
         }
-        conditions = 0;
+        conditions = COND_NONE;
         for( i = 0; i < ProcInfo.max_threads; i++ ) {
             /*
                 Don't walk the thread array directly because it might move

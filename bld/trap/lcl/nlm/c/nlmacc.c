@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1354,7 +1354,7 @@ static trap_conditions Execute( msb *which )
         return( COND_LIBRARIES );
     case START_THREAD_EVENT:
     case TERMINATE_THREAD_EVENT:
-        return( 0 );
+        return( COND_NONE );
     case INVALID_INTERRUPT_ABEND:
     case ASSEMBLY_ABEND:
     case BREAKPOINT_FUNCTION_EVENT:

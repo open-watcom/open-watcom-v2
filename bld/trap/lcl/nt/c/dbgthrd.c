@@ -424,7 +424,7 @@ static bool StartDebuggee( void )
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
     bool                rc;
-    DWORD               oldErrorMode = SetErrorMode( 0 );
+    DWORD               oldErrorMode;
     HMODULE             mod;
     SELECTPROCESS       select;
     char                *dll_name;
@@ -438,6 +438,8 @@ static bool StartDebuggee( void )
     char                buff[_MAX_PATH];
     pgroup2             pg;
 
+    oldErrorMode = SetErrorMode( 0 );
+    rc = false;
     ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;
     service_manager = NULL;
@@ -664,20 +666,15 @@ static bool StartDebuggee( void )
                             &pinfo              /* process info */
                             ) != 0 );
     }
-    SetErrorMode( oldErrorMode );
     Shared.pid = pinfo.dwProcessId;
-    return( rc );
-
 failed:
     SetErrorMode( oldErrorMode );
-    Shared.pid = pinfo.dwProcessId;
-    return( false );
+    return( rc );
 }
 
 static bool DoWaitForDebugEvent( void )
 {
     bool    done;
-    DWORD   code;
     bool    rc;
 
 #if MADARCH & MADARCH_X64
@@ -691,11 +688,10 @@ static bool DoWaitForDebugEvent( void )
         if( WaitForDebugEvent( &DebugEvent, INFINITE ) ) {
             rc = true;
             DidWaitForDebugEvent = true;
-
             if( DebugEvent.dwDebugEventCode == EXCEPTION_DEBUG_EVENT ) {
-                code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
+                switch( DebugEvent.u.Exception.ExceptionRecord.ExceptionCode ) {
 #ifdef WOW
-                if( code == STATUS_VDM_EVENT ) {
+                case STATUS_VDM_EVENT:
                     if( pVDMProcessException( &DebugEvent ) ) {
                         UseVDMStuff = true;
                         done = true;
@@ -707,43 +703,39 @@ static bool DoWaitForDebugEvent( void )
                      * sometimes, we seem to get crap back, so the thing to do
                      * is to ignore it.  When all else fails, punt.
                      */
-                } else
+                    break;
 #endif
-                {
-                    switch( code ) {
-                    case STATUS_DATATYPE_MISALIGNMENT:
-                    case STATUS_BREAKPOINT:
-                    case STATUS_SINGLE_STEP:
-                    case STATUS_ACCESS_VIOLATION:
-                    case STATUS_IN_PAGE_ERROR:
-                    case STATUS_NO_MEMORY:
-                    case STATUS_ILLEGAL_INSTRUCTION:
-                    case STATUS_NONCONTINUABLE_EXCEPTION:
-                    case STATUS_INVALID_DISPOSITION:
-                    case STATUS_ARRAY_BOUNDS_EXCEEDED:
-                    case STATUS_FLOAT_DENORMAL_OPERAND:
-                    case STATUS_FLOAT_DIVIDE_BY_ZERO:
-                    case STATUS_FLOAT_INVALID_OPERATION:
-                    case STATUS_FLOAT_OVERFLOW:
-                    case STATUS_FLOAT_STACK_CHECK:
-                    case STATUS_FLOAT_UNDERFLOW:
-                    case STATUS_INTEGER_DIVIDE_BY_ZERO:
-                    case STATUS_INTEGER_OVERFLOW:
-                    case STATUS_PRIVILEGED_INSTRUCTION:
-                    case STATUS_STACK_OVERFLOW:
-                    case STATUS_CONTROL_C_EXIT:
+                case STATUS_DATATYPE_MISALIGNMENT:
+                case STATUS_BREAKPOINT:
+                case STATUS_SINGLE_STEP:
+                case STATUS_ACCESS_VIOLATION:
+                case STATUS_IN_PAGE_ERROR:
+                case STATUS_NO_MEMORY:
+                case STATUS_ILLEGAL_INSTRUCTION:
+                case STATUS_NONCONTINUABLE_EXCEPTION:
+                case STATUS_INVALID_DISPOSITION:
+                case STATUS_ARRAY_BOUNDS_EXCEEDED:
+                case STATUS_FLOAT_DENORMAL_OPERAND:
+                case STATUS_FLOAT_DIVIDE_BY_ZERO:
+                case STATUS_FLOAT_INVALID_OPERATION:
+                case STATUS_FLOAT_OVERFLOW:
+                case STATUS_FLOAT_STACK_CHECK:
+                case STATUS_FLOAT_UNDERFLOW:
+                case STATUS_INTEGER_DIVIDE_BY_ZERO:
+                case STATUS_INTEGER_OVERFLOW:
+                case STATUS_PRIVILEGED_INSTRUCTION:
+                case STATUS_STACK_OVERFLOW:
+                case STATUS_CONTROL_C_EXIT:
+                    done = true;
+                    break;
+                default:
+                    if( ( code & ERROR_SEVERITY_ERROR ) == ERROR_SEVERITY_ERROR ) {
                         done = true;
                         break;
-                    default:
-                        if( ( code & ERROR_SEVERITY_ERROR ) ==
-                                ERROR_SEVERITY_ERROR ) {
-                            done = true;
-                            break;
-                        }
-                        LastDebugEventTid = DebugEvent.dwThreadId;
-                        DoContinueDebugEvent( DBG_EXCEPTION_NOT_HANDLED );
-                        break;
                     }
+                    LastDebugEventTid = DebugEvent.dwThreadId;
+                    DoContinueDebugEvent( DBG_EXCEPTION_NOT_HANDLED );
+                    break;
                 }
             } else {
                 done = true;

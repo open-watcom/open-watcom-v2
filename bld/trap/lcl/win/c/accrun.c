@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,7 @@ static trap_elen runProg( bool single_step )
         watch386 = SetDebugRegs();
     }
 
-    ret->conditions = 0;
+    ret->conditions = COND_NONE;
     appl_act = RESTART_APP;
     while( DebugeeTask != NULL ) {
         if( dowatch && !watch386 ) {

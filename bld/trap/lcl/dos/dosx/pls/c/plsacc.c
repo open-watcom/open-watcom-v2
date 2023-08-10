@@ -722,7 +722,7 @@ static trap_conditions MapReturn( void )
         AtEnd = true;
         return( COND_TERMINATE );
     case 34: /* new linear base address */
-        return( 0 );
+        return( COND_NONE );
     default:
         return( COND_EXCEPTION );
     }

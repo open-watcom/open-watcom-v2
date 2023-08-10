@@ -886,7 +886,7 @@ static trap_conditions RunIt( unsigned step )
     siginfo_t           info;
     procfs_status       status;
 
-    conditions = 0;
+    conditions = COND_NONE;
 
     Resume( step );
 

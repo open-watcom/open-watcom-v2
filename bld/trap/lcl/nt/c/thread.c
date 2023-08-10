@@ -73,14 +73,12 @@ thread_info *FindThread( DWORD tid )
 {
     thread_info *ti;
 
-    ti = ProcessInfo.thread_list;
-    while( ti != NULL ) {
+    for( ti = ProcessInfo.thread_list; ti != NULL; ti = ti->next ) {
         if( ti->tid == tid ) {
-            return( ti );
+            break;
         }
-        ti = ti->next;
     }
-    return( NULL );
+    return( ti );
 }
 
 /*
@@ -104,15 +102,11 @@ void DeadThread( DWORD tid )
 void RemoveAllThreads( void )
 {
     thread_info *ti;
-    thread_info *next;
 
-    ti = ProcessInfo.thread_list;
-    while( ti != NULL ) {
-        next = ti->next;
+    while( (ti = ProcessInfo.thread_list) != NULL ) {
+        ProcessInfo.thread_list = ti->next;
         LocalFree( ti );
-        ti = next;
     }
-    ProcessInfo.thread_list = NULL;
 }
 
 trap_retval TRAP_THREAD( freeze )( void )
@@ -217,14 +211,10 @@ trap_retval TRAP_THREAD( get_next )( void )
     /*
      * find a live one
      */
-    for( ;; ) {
-        if( ti == NULL ) {
-            break;
-        }
+    for( ; ti != NULL; ti = ti->next ) {
         if( ti->alive ) {
             break;
         }
-        ti = ti->next;
     }
 
     if( ti == NULL ) {
