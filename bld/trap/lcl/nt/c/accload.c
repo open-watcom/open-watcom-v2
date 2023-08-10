@@ -444,6 +444,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
 #ifdef WOW
 #if MADARCH & MADARCH_X86
     if( IsWOW ) {
+        bool    vdm_start;
+
         ret->flags = LD_FLAG_IS_PROT;
         ret->err = 0;
         ret->task_id = DebugeePid;
@@ -453,7 +455,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         FlatDS = GetDS();
         FlatCS = GetCS();
-        if( DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, false ) != COND_VDM_START ) {
+        DebugExecute( STATE_WAIT_FOR_VDM_START, &vdm_start, false );
+        if( !vdm_start ) {
             goto error_exit;
         }
         if( pid ) {
@@ -473,6 +476,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         con.Esp = stack;
         MySetThreadContext( ti, &con );
     } else if( IsDOS ) {
+        bool    vdm_start;
         /*
          * TODO! Clean up this code
          */
@@ -485,7 +489,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         FlatDS = GetDS();
         FlatCS = GetCS();
-        if( DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, false ) != COND_VDM_START ) {
+        DebugExecute( STATE_WAIT_FOR_VDM_START, &vdm_start, false );
+        if( !vdm_start ) {
             goto error_exit;
         }
 #if 0

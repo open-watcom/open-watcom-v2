@@ -675,6 +675,7 @@ failed:
 static bool DoWaitForDebugEvent( void )
 {
     bool    done;
+    DWORD   code;
     bool    rc;
 
 #if MADARCH & MADARCH_X64
@@ -689,7 +690,8 @@ static bool DoWaitForDebugEvent( void )
             rc = true;
             DidWaitForDebugEvent = true;
             if( DebugEvent.dwDebugEventCode == EXCEPTION_DEBUG_EVENT ) {
-                switch( DebugEvent.u.Exception.ExceptionRecord.ExceptionCode ) {
+                code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
+                switch( code ) {
 #ifdef WOW
                 case STATUS_VDM_EVENT:
                     if( pVDMProcessException( &DebugEvent ) ) {
@@ -729,7 +731,7 @@ static bool DoWaitForDebugEvent( void )
                     done = true;
                     break;
                 default:
-                    if( ( code & ERROR_SEVERITY_ERROR ) == ERROR_SEVERITY_ERROR ) {
+                    if( (code & ERROR_SEVERITY_ERROR) == ERROR_SEVERITY_ERROR ) {
                         done = true;
                         break;
                     }

@@ -355,14 +355,13 @@ static void getImageNote( IMAGE_NOTE *pin )
 /*
  * DebugExecute - execute program under debug control
  */
-trap_conditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
+trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_load )
 {
     DWORD           continue_how;
     DWORD           code;
     DWORD           len;
     msg_list        **owner;
     msg_list        *new;
-    trap_conditions cond;
     char            *p;
     char            *q;
     bool            rc;
@@ -373,8 +372,8 @@ trap_conditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
 #endif
     trap_conditions returnCode;
 
-    if( tsc != NULL ) {
-        *tsc = false;
+    if( retflag != NULL ) {
+        *retflag = false;
     }
     /*
      * "Slaying" gets set by AccKillProg.  Because a dead WOW app
@@ -476,7 +475,10 @@ trap_conditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                         WOWAppInfo.htask = imgnote.hTask;
                         WOWAppInfo.hmodule = imgnote.hModule;
                         strcpy( WOWAppInfo.modname, imgnote.Module );
-                        returnCode = COND_VDM_START;
+                        if( retflag != NULL ) {
+                            *retflag = true;
+                        }
+                        returnCode = COND_NONE;
                         goto done;
                     } else {
                         AddLib16( &imgnote );
@@ -537,7 +539,7 @@ trap_conditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     break;
                 }
                 returnCode = handleBreakpointEvent( state );
-                if( returnCode != COND_NONE )
+                if( returnCode != COND_NONE ) {
                     goto done;
                 }
                 break;
@@ -588,16 +590,16 @@ trap_conditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             break;
         case CREATE_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
-            if( tsc != NULL ) {
-                *tsc = true;
+            if( retflag != NULL && (state & STATE_WAIT_FOR_VDM_START) == 0 ) {
+                *retflag = true;
             }
             AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, (FARPROC)DebugEvent.u.CreateThread.lpStartAddress );
             break;
         case EXIT_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
             ClearDebugRegs();
-            if( tsc != NULL ) {
-                *tsc = true;
+            if( retflag != NULL && (state & STATE_WAIT_FOR_VDM_START) == 0 ) {
+                *retflag = true;
             }
             DeadThread( DebugEvent.dwThreadId );
             break;

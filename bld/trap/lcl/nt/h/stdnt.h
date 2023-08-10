@@ -106,8 +106,6 @@
     (1 + (ULONG_PTR)(d).LimitLow + ((ULONG_PTR)(d).HighWord.Bits.LimitHi << 16L)))
 #endif
 
-#define COND_VDM_START                  0x80000000
-
 #define STATE_NONE                      0x00000000
 #define STATE_WATCH                     0x00000001
 #define STATE_WATCH_386                 0x00000002
