@@ -136,45 +136,24 @@ bool FindBreak( MYCONTEXT *con, opcode_type *old_opcode )
 
 static dword get_DRx( MYCONTEXT *con, int i )
 {
-    switch( i ) {
-    case 0:
-        return( con->Dr0 );
-    case 1:
-        return( con->Dr1 );
-    case 2:
-        return( con->Dr2 );
-    case 3:
-        return( con->Dr3 );
-    case 6:
-        return( con->Dr6 );
-    case 7:
-        return( con->Dr7 );
-    }
-    return( 0 );
+    if( i > 3 )
+        i -= 2;
+#if MADARCH & MADARCH_X64
+    return( ( (unsigned_64 *)&con->Dr0 )[i] );
+#else
+    return( ( (unsigned_32 *)&con->Dr0 )[i] );
+#endif
 }
 
 static void set_DRx( MYCONTEXT *con, int i, dword *data )
 {
-    switch( i ) {
-    case 0:
-        con->Dr0 = *data;
-        break;
-    case 1:
-        con->Dr1 = *data;
-        break;
-    case 2:
-        con->Dr2 = *data;
-        break;
-    case 3:
-        con->Dr3 = *data;
-        break;
-    case 6:
-        con->Dr6 = *data;
-        break;
-    case 7:
-        con->Dr7 = *data;
-        break;
-    }
+    if( i > 3 )
+        i -= 2;
+#if MADARCH & MADARCH_X64
+    ( (uint_64 *)&con->Dr0 )[i] = *data;
+#else
+    ( (uint_32 *)&con->Dr0 )[i] = *data;
+#endif
 }
 
 /*
