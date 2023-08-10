@@ -314,7 +314,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         return sizeof( *ret );
     dst = StrCopyDst( parm, buff ) + 1;
     src = parm;
-    while( *src++ != 0 )
+    while( *src++ != '\0' )
         {}
     MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
     name = buff;

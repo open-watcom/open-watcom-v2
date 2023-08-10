@@ -196,7 +196,7 @@ char *dbg_strcpy( pid_handle pid, char *s1, const char *s2 )
         }
         *dst++ = c;
         ++s2;
-    } while( c );
+    } while( c != '\0' );
 
     return( s1 );
 }

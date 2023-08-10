@@ -39,7 +39,7 @@
 
 void OutputLine( const char *str )
 {
-    while( *str ) {
+    while( *str != '\0' ) {
         putch( *str );
         ++str;
     }

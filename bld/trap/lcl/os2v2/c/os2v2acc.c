@@ -1075,7 +1075,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
             src++;
         }
-        if( *src == 0 && src != name ) {
+        if( *src == '\0' && src != name ) {
             attach_pid = atoi( name );
         }
     }

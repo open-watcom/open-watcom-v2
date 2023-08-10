@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,13 +89,12 @@ my_file         Files[NUM_FILES];
 
 static int AppendStr( char *dst, char *src )
 {
-    int         len;
-    while( *dst ) {
+    int     len;
+
+    while( *dst != '\0' ) {
         ++dst;
     }
-    len = 0;
-    while( *dst = *src ) {
-        ++len;
+    for( len = 0; (*dst = *src) != '\0'; len++ ) {
         ++dst;
         ++src;
     }

@@ -68,7 +68,7 @@ void putstring( char *str )
 {
     unsigned bytes;
 
-    while( *str ) {
+    while( *str != '\0' ) {
         DosWrite( 1, str, 1, &bytes );
         ++str;
     }

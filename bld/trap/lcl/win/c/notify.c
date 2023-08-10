@@ -157,8 +157,7 @@ static bool doOutStr( DWORD data )
         Out((OUT_ERR,"Debugger was bad! '%s'",OutBuff));
         return( false );
     }
-    src = (LPSTR) data;
-    while( *src ) {
+    for( src = (LPSTR)data; *src != '\0'; src++ ) {
         if( *src == '\r' || OutPos == (MAX_STR-1) ) {
             OutBuff[OutPos++] = '\0';
             Out((OUT_RUN,"Going to debugger for OUT_STR '%s'",OutBuff));
@@ -169,7 +168,6 @@ static bool doOutStr( DWORD data )
         if( *src != '\n' && *src != '\t' ) {
             OutBuff[OutPos++] = *src;
         }
-        src++;
     }
     return( false );
 } /* doOutStr */

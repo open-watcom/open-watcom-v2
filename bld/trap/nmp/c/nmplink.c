@@ -118,11 +118,10 @@ static const char *ValidName( const char *name )
 
     len = 0;
     MachBuff[0] = '\0';
-    while( *name ) {
+    while( *name != '\0' ) {
         if( *name == '@' ) {
             strcpy( MachBuff, name+1 );
             return( name );
-            break;
         }
         if( !isalnum( *name ) )
             return( NULL );

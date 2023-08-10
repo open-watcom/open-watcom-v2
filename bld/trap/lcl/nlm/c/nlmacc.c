@@ -376,7 +376,7 @@ static void Suicide( void )
 #if 0
 void TheBigSleep( void )
 {
-    while( TRUE ) {
+    for( ;; ) {
         CSleepUntilInterrupt();
     }
 }

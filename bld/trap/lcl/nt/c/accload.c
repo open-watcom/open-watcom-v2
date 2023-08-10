@@ -300,7 +300,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         while( isdigit( *src ) ) {
             src++;
         }
-        if( *src == 0 && src != parm ) {
+        if( *src == '\0' && src != parm ) {
             pid = atoi( parm );
         }
     }

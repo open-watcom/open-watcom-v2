@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -358,8 +358,8 @@ static void SetupTrace( struct TDebugThread *obj, struct TDebugBreak *b )
 
 static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *HwBreakList, struct TDebugWatch *WatchList )
 {
-    struct TDebugBreak  *b = HwBreakList;
-    struct TDebugWatch  *w = WatchList;
+    struct TDebugBreak  *b;
+    struct TDebugWatch  *w;
     int                 bnum;
 
     if( obj->FHasTempBp ) {
@@ -367,20 +367,18 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *HwBrea
     } else {
         bnum = 0;
     }
-    while( b ) {
+    for( b = HwBreakList; b != NULL; b = b->Next ) {
         if( bnum < 4 ) {
             RdosSetCodeBreak( obj->ThreadID, bnum, b->Sel, b->Offset );
             bnum++;
         }
-        b = b->Next;
     }
 
-    while( w ) {
+    for( w = WatchList; w != NULL; w = w->Next ) {
         if( bnum < 4 ) {
             RdosSetWriteDataBreak( obj->ThreadID, bnum, w->Sel, w->Offset, w->Size );
             bnum++;
         }
-        w = w->Next;
     }
 }
 
@@ -889,33 +887,26 @@ static void RemoveThread( struct TDebug *obj, int thread )
 
     RdosEnterSection( obj->FSection );
 
-    p = 0;
-    t = obj->ThreadList;
-
-    while( t ) {
+    p = NULL;
+    for( t = obj->ThreadList; t != NULL; t = t->Next ) {
         if( t->ThreadID == thread ) {
-            if( p ) {
+            if( p != NULL ) {
                 p->Next = t->Next;
             } else {
                 obj->ThreadList = t->Next;
             }
+            if( t == obj->CurrentThread ) {
+                obj->CurrentThread = 0;
+                RdosLeaveSection( obj->FSection );
+
+                RdosWaitMilli( 25 );
+
+                RdosEnterSection( obj->FSection );
+            }
+            free( t );
             break;
-        } else {
-            p = t;
-            t = t->Next;
         }
-    }
-
-    if( t ) {
-        if( t == obj->CurrentThread ) {
-            obj->CurrentThread = 0;
-            RdosLeaveSection( obj->FSection );
-
-            RdosWaitMilli( 25 );
-
-            RdosEnterSection( obj->FSection );
-        }
-        free( t );
+        p = t;
     }
 
     RdosLeaveSection( obj->FSection );
@@ -931,18 +922,16 @@ static void RemoveModule( struct TDebug *obj, int module )
     p = NULL;
     for( m = obj->ModuleList; m != NULL; m = m->Next ) {
         if( m->Handle == module ) {
-            if( p ) {
+            if( p != NULL ) {
                 p->Next = m->Next;
             } else {
                 obj->ModuleList = m->Next;
             }
+            free( m );
             break;
         }
         p = m;
     }
-
-    if( m != NULL )
-        free( m );
 
     RdosLeaveSection( obj->FSection );
 }
@@ -1033,6 +1022,7 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size )
                 }
             }
         }
+
         RdosLeaveSection( obj->FSection );
     }
     return( len );
@@ -1088,17 +1078,16 @@ void SetCurrentThread( struct TDebug *obj, int ThreadID )
 
 int GetNextThread( struct TDebug *obj, int ThreadID)
 {
-    int ID = 0xFFFF;
+    int ID;
     struct TDebugThread *t;
 
     RdosEnterSection( obj->FSection );
 
-    t = obj->ThreadList;
-    while( t ) {
-        if( t->ThreadID > ThreadID && t->ThreadID < ID )
+    ID = 0xFFFF;
+    for( t = obj->ThreadList; t != NULL; t = t->Next ) {
+        if( t->ThreadID > ThreadID && t->ThreadID < ID ) {
             ID = t->ThreadID;
-
-        t = t->Next;
+        }
     }
 
     RdosLeaveSection( obj->FSection );
@@ -1148,9 +1137,11 @@ struct TDebugThread *LockThread( struct TDebug *obj, int ThreadID )
 
     RdosEnterSection( obj->FSection );
 
-    t = obj->ThreadList;
-    while( t && t->ThreadID != ThreadID )
-        t = t->Next;
+    for( t = obj->ThreadList; t != NULL; t = t->Next ) {
+        if( t->ThreadID == ThreadID ) {
+            break;
+        }
+    }
 
     return t;
 }
@@ -1184,16 +1175,18 @@ void UnlockModule( struct TDebug *obj )
 int HasModule( struct TDebug *obj, const char *Name )
 {
     struct TDebugModule *m;
-    int found = false;
+    int found;
 
     RdosEnterSection( obj->FSection );
 
-    m = obj->ModuleList;
-    while( m && !found ) {
-        if( !strcmp( Name, m->ModuleName ) )
+    found = false;
+    for( m = obj->ModuleList; m != NULL; m = m->Next ) {
+        if( strcmp( Name, m->ModuleName ) == 0 ) {
             found = true;
-        m = m->Next;
+            break;
+        }
     }
+
     RdosLeaveSection( obj->FSection );
 
     return found;
@@ -1523,17 +1516,12 @@ static int PickNewThread( struct TDebug *obj )
 
     RdosEnterSection( obj->FSection );
 
-    Thread = obj->ThreadList;
-
-    while( Thread ) {
-        if( Thread->FDebug )
+    for( Thread = obj->ThreadList; Thread != NULL; Thread = Thread->Next ) {
+        if( Thread->FDebug ) {
+            obj->CurrentThread = Thread;
+            obj->FThreadChanged = true;
             break;
-        Thread = Thread->Next;
-    }
-
-    if( Thread ) {
-        obj->CurrentThread = Thread;
-        obj->FThreadChanged = true;
+        }
     }
 
     RdosLeaveSection( obj->FSection );
@@ -1694,17 +1682,14 @@ static void HandleException( struct TDebug *obj, struct TExceptionEvent *event, 
 
     RdosEnterSection( obj->FSection );
 
-    Thread = obj->ThreadList;
-
-    while( Thread && Thread->ThreadID != thread )
-        Thread = Thread->Next;
-
-    if( Thread ) {
-        SetException( Thread, event );
-
-        if( obj->FWaitLoad )
-            ClearThreadBreak( Thread );
-        obj->FWaitLoad = false;
+    for( Thread = obj->ThreadList; Thread != NULL; Thread = Thread->Next ) {
+        if( Thread->ThreadID == thread ) {
+            SetException( Thread, event );
+            if( obj->FWaitLoad )
+                ClearThreadBreak( Thread );
+            obj->FWaitLoad = false;
+            break;
+        }
     }
 
     RdosLeaveSection( obj->FSection );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,17 +64,13 @@ static trap_retval DoRequest( void )
             result = GetPacket();
             if( result != REQUEST_FAILED ) {
                 left = result;
-                i = 0;
-                for( ;; ) {
-                    if( i >= Out_Mx_Num )
-                        break;
+                for( i = 0; i < Out_Mx_Num; i++ ) {
                     if( left > Out_Mx_Ptr[i].len ) {
                         piece = Out_Mx_Ptr[i].len;
                     } else {
                         piece = left;
                     }
                     RemovePacket( Out_Mx_Ptr[i].ptr, piece );
-                    i++;
                     left -= piece;
                     if( left == 0 ) {
                         break;

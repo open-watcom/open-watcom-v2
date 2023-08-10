@@ -58,10 +58,7 @@ static const char *SkipSpaces( const char *ptr )
  */
 static const char *GetFilename( const char *ptr, char *buff )
 {
-    ptr = SkipSpaces( ptr );
-    for( ;; ) {
-        if( *ptr == '\0' )
-            break;
+    for( ptr = SkipSpaces( ptr ); *ptr != '\0'; ptr++ ) {
         if( *ptr == ' ' )
             break;
         if( *ptr == '\t' )
@@ -76,7 +73,7 @@ static const char *GetFilename( const char *ptr, char *buff )
             break;
         if( *ptr == '{' )
             break;
-        *buff++ = *ptr++;
+        *buff++ = *ptr;
     }
     *buff = '\0';
     return( ptr );

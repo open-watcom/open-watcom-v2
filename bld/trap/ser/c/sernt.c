@@ -299,7 +299,7 @@ char *ParsePortSpec( const char **spec )
 
             comPortNumber = 0;
             d = comPortName;
-            while( **spec )
+            while( **spec != '\0' )
                 *d++ = *(*spec)++;
             ch = '\0';
         }

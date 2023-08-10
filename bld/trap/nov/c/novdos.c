@@ -55,7 +55,7 @@ static void putstring( char __far *str )
     unsigned bytes;
     extern unsigned _dos_write( int handle, void __far *buffer, unsigned count, unsigned *bytes );
 
-    while( *str ) {
+    while( *str != '\0' ) {
         _dos_write( 1, str, 1, &bytes );
         ++str;
     }
