@@ -203,7 +203,7 @@ typedef unsigned        myconditions;
  * function prototypes
  */
 
-typedef HANDLE  WINAPI fn_OpenThread( DWORD );
+typedef HANDLE  WINAPI fn_OpenThread( DWORD, BOOL, DWORD );
 typedef DWORD   WINAPI fn_QueryDosDevice( LPCSTR lpDeviceName, LPSTR lpTargetPath, DWORD ucchMax );
 typedef DWORD   WINAPI fn_GetMappedFileName( HANDLE hProcess, LPVOID lpv, LPSTR lpFilename, DWORD nSize );
 typedef HANDLE  WINAPI fn_CreateToolhelp32Snapshot( DWORD dwFlags, DWORD th32ProcessID );

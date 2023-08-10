@@ -151,7 +151,9 @@ static void setTBitInAllThreads( set_t set )
 void InterruptProgram( void )
 {
     setTBitInAllThreads( T_ON_CURR );
-    // a trick to make app execute long enough to hit a breakpoint
+    /*
+     * a trick to make app execute long enough to hit a breakpoint
+     */
     PostMessage( HWND_TOPMOST, WM_NULL, 0, 0 );
     PendingProgramInterrupt = true;
 }
@@ -205,9 +207,6 @@ static void setTBit( set_t set )
     setATBit( ti, set );
 }
 
-/*
- * handleInt3 - process an encountered break point
- */
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
 static FARPROC  BreakFixed;
 
@@ -216,14 +215,17 @@ static void decIP( MYCONTEXT *con )
     con->Eip--;
 }
 
-static void change_bp( HANDLE proc, MYCONTEXT *con, opcode_type old_opcode )
+static void remove_bp( HANDLE proc, MYCONTEXT *con, opcode_type old_opcode )
 {
     BreakFixed = (FARPROC)con->Eip;
     remove_breakpoint_lin( proc, BreakFixed, old_opcode );
 }
 #endif
 
-static trap_conditions handleInt3( DWORD state )
+/*
+ * handleBreakpointEvent - process an encountered break point
+ */
+static trap_conditions handleBreakpointEvent( DWORD state )
 {
     trap_conditions cond_ret;
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
@@ -237,7 +239,11 @@ static trap_conditions handleInt3( DWORD state )
         if( pOpenThread != NULL ) {
             HANDLE  th;
 
-            th = pOpenThread( DebugeeTid );
+            #define FOREIGN_THREAD_ACCESS   STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE \
+                                            | THREAD_GET_CONTEXT \
+                                            | THREAD_SET_CONTEXT \
+                                            | THREAD_SUSPEND_RESUME
+            th = pOpenThread( FOREIGN_THREAD_ACCESS, FALSE, DebugeeTid );
             AddThread( DebugeeTid, th, NULL );
             ti = FindThread( DebugeeTid );
             ti->is_foreign = true;
@@ -255,7 +261,7 @@ static trap_conditions handleInt3( DWORD state )
                 HANDLE  proc;
 
                 proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-                change_bp( proc, &con, old_opcode );
+                remove_bp( proc, &con, old_opcode );
                 CloseHandle( proc );
                 set_tbit( &con, true );
                 cond_ret = COND_NONE;
@@ -271,21 +277,23 @@ static trap_conditions handleInt3( DWORD state )
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
     if( ti->brk_addr != 0 && GetIP( &con ) == ti->brk_addr ) {
-        cond_ret = handleInt1( state );
+        cond_ret = handleSinglestepEvent( state );
     }
 #elif MADARCH & MADARCH_PPC
-    /* nothing special to do */
+    /*
+     * nothing special to do
+     */
     cond_ret = COND_BREAK;
 #else
-    #error handleInt3 not configured
+    #error handleBreakpointEvent not configured
 #endif
     return( cond_ret );
 }
 
 /*
- * handleInt1 - process a trace or watch point
+ * handleSinglestepEvent - process a trace or watch point
  */
-static trap_conditions handleInt1( DWORD state )
+static trap_conditions handleSinglestepEvent( DWORD state )
 {
     if( PendingProgramInterrupt ) {
         /*
@@ -388,12 +396,12 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             setTBit( T_OFF ); /* turn off previous T-bit */
 #if MADARCH & MADARCH_AXP
             /*
-               We're doing watch points on an Alpha. If we run into a
-               control transfer instruction, return a spurious watchpoint
-               indication. The debugger will simulate the instruction for
-               us. This keeps the trap file from having to figure out
-               if a conditional branch is going to happen or not.
-            */
+             * We're doing watch points on an Alpha. If we run into a
+             * control transfer instruction, return a spurious watchpoint
+             * indication. The debugger will simulate the instruction for
+             * us. This keeps the trap file from having to figure out
+             * if a conditional branch is going to happen or not.
+             */
             {
                 DWORD       bytes;
                 DWORD       addr;
@@ -476,11 +484,11 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     break;
                 case DBG_SINGLESTEP:
                     DebugeeTid = DebugEvent.dwThreadId;
-                    returnCode = handleInt1( state );
+                    returnCode = handleSinglestepEvent( state );
                     goto done;
                 case DBG_BREAK:
                     DebugeeTid = DebugEvent.dwThreadId;
-                    returnCode = handleInt3( state );
+                    returnCode = handleBreakpointEvent( state );
                     goto done;
                 case DBG_GPFAULT:
                     DebugeeTid = DebugEvent.dwThreadId;
@@ -488,7 +496,8 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     returnCode = COND_EXCEPTION;
                     goto done;
                 case DBG_ATTACH:
-                    /* Sent to let debugger know 16-bit environment is set up.
+                    /*
+                     * Sent to let debugger know 16-bit environment is set up.
                      * Only a notification, provides no further data. Must be
                      * handled so that debugger doesn't get confused.
                      */
@@ -497,7 +506,9 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     ti->is_dos = true;
                     break;
                 case DBG_INIT:
-                    // I have no idea how to handle this!
+                    /*
+                     * I have no idea how to handle this!
+                     */
                     break;
                 default:
                     DebugeeTid = DebugEvent.dwThreadId;
@@ -516,7 +527,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                 break;
             case STATUS_SINGLE_STEP:
                 DebugeeTid = DebugEvent.dwThreadId;
-                cond = handleInt1( state );
+                cond = handleSinglestepEvent( state );
                 if( cond != 0 ) {
                     returnCode = cond;
                     goto done;
@@ -527,7 +538,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                 if( state & STATE_WAIT_FOR_VDM_START ) {
                     break;
                 }
-                cond = handleInt3( state );
+                cond = handleBreakpointEvent( state );
                 if( cond != 0 ) {
                     returnCode = cond;
                     goto done;
@@ -592,7 +603,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
             }
             DeadThread( DebugEvent.dwThreadId );
             break;
-        case CREATE_PROCESS_DEBUG_EVENT:        // shouldn't ever get
+        case CREATE_PROCESS_DEBUG_EVENT:        /* shouldn't ever get */
             DebugeeTid = DebugEvent.dwThreadId;
             break;
         case EXIT_PROCESS_DEBUG_EVENT:
@@ -706,10 +717,10 @@ static trap_elen runProg( bool single_step )
 
     if( single_step ) {
         /*
-           This works on an Alpha (and other machines without a t-bit
-           because the MAD will simulate all control transfer instructions.
-           We only need to deal with straight line code.
-        */
+         * This works on an Alpha (and other machines without a t-bit
+         * because the MAD will simulate all control transfer instructions.
+         * We only need to deal with straight line code.
+         */
         setTBit( T_ON_NEXT );
     } else {
         setTBit( T_OFF );
