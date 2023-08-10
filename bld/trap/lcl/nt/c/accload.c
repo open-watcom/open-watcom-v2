@@ -180,23 +180,6 @@ static void addAllWOWModules( void )
 
 }
 
-static bool executeUntilVDMStart( void )
-/***************************************
- * go until we hit our first VDM exception
- */
-{
-    myconditions    rc;
-
-    for( ;; ) {
-        rc = DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, false );
-        if( rc == COND_VDM_START ) {
-            return( true );
-        }
-        return( false );
-    }
-
-}
-
 static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 /******************************************************************************
  * EnumWOWProcessFunc - callback for each WOW process in the system
@@ -470,7 +453,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         FlatDS = GetDS();
         FlatCS = GetCS();
-        if( !executeUntilVDMStart() ) {
+        if( DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, false ) != COND_VDM_START ) {
             goto error_exit;
         }
         if( pid ) {
@@ -502,7 +485,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         FlatDS = GetDS();
         FlatCS = GetCS();
-        if( !executeUntilVDMStart() ) {
+        if( DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, false ) != COND_VDM_START ) {
             goto error_exit;
         }
 #if 0
