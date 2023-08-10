@@ -111,10 +111,14 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-bool FindBreak( WORD segment, dword offset, opcode_type *old_opcode )
+bool FindBreak( MYCONTEXT *con, opcode_type *old_opcode )
 {
     break_point *brk;
+    WORD        segment;
+    dword       offset;
 
+    segment = (WORD)con->SegCs;
+    offset = (DWORD)con->Eip;
     for( brk = Breaks; brk != NULL; brk = brk->next ) {
         if( brk->addr.segment != segment ) {
             continue;

@@ -54,7 +54,7 @@ TRPGLOBAL DEBUG_EVENT   DebugEvent;
 #if MADARCH & MADARCH_X64
 TRPGLOBAL bool          IsWOW64;
 #else
-  #if defined( WOW )
+  #ifdef WOW
 TRPGLOBAL bool          IsWOW;
 TRPGLOBAL bool          IsDOS;
 TRPGLOBAL bool          UseVDMStuff;
@@ -75,7 +75,7 @@ TRPGLOBAL bool          Supporting8ByteBreakpoints TRPGLOBINIT( false );    /* S
 TRPGLOBAL bool          SupportingExactBreakpoints TRPGLOBINIT( false );    /* Start disabled */
 TRPGLOBAL opcode_type   BreakOpcode;
 
-#if defined( WOW )
+#ifdef WOW
   #if MADARCH & MADARCH_X86
 TRPGLOBAL wow_info      WOWAppInfo;
   #endif

@@ -63,11 +63,10 @@ bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
         return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
     }
 #elif defined( WOW )
-    bool    rc;
-
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
   #if MADARCH & MADARCH_X86
-        VDMCONTEXT      vc;
+        bool        rc;
+        VDMCONTEXT  vc;
 
         vc.ContextFlags = VDMCONTEXT_TO_USE;
         rc = ( pVDMGetThreadContext( &DebugEvent, &vc ) != 0 );
@@ -89,12 +88,12 @@ bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
             pc->Esp = (DWORD)(WORD)pc->Esp;
             pc->Ebp = (DWORD)(WORD)pc->Ebp;
         }
+        return( rc );
   #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
-        rc = false;
+        return( false );
   #else
         #error MyGetThreadContext not configured
   #endif
-        return( rc );
     }
 #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;

@@ -597,9 +597,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         ret->out_addr.segment = sel;
         ret->out_addr.offset = 0;
-    } else
+    } else {
 #endif
-    {
         /*
          * for a 32-bit app, we get the PE header. We can look the up the
          * object in the header and determine if it is code or data, and
@@ -619,6 +618,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         if( num_objects == 0 ) {
             return( 0 );
         }
+        memset( &obj, 0, sizeof( obj ) );
         for( i = 0; i < num_objects; i++ ) {
             ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
             if( i == seg ) {
@@ -634,7 +634,9 @@ trap_retval TRAP_CORE( Map_addr )( void )
             ret->out_addr.segment = FlatDS;
         }
         ret->out_addr.offset = (ULONG_PTR)( llo->base + obj.rva );
+#ifdef WOW
     }
+#endif
     addSegmentToLibList( acc->mod_handle, ret->out_addr.segment, ret->out_addr.offset );
     ret->out_addr.offset += acc->in_addr.offset;
     ret->lo_bound = 0;

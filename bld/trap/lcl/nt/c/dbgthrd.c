@@ -680,12 +680,12 @@ static bool DoWaitForDebugEvent( void )
     DWORD   code;
     bool    rc;
 
-    done = false;
-
 #if MADARCH & MADARCH_X64
 #elif defined( WOW )
     UseVDMStuff = false;
 #endif
+    rc = false;
+    done = false;
     while( !done ) {
         SetLastError( 0 );
         if( WaitForDebugEvent( &DebugEvent, INFINITE ) ) {

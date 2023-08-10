@@ -43,7 +43,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    trapver;
     HANDLE          dll;
-    DWORD           osver;
 
 #if MADARCH & MADARCH_X64
     dll = LoadLibrary( "PSAPI.DLL" );
@@ -54,13 +53,15 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     IsWinNT = false;
     IsWin32s = false;
     IsWin95 = false;
-    osver = GetVersion();
-    if( osver < 0x80000000 ) {
-        IsWinNT = true;
-    } else if( LOBYTE( LOWORD( osver ) ) < 4 ) {
-        IsWin32s = true;
-    } else {
-        IsWin95 = true;
+    {
+        DWORD   osver = GetVersion();
+        if( osver < 0x80000000 ) {
+            IsWinNT = true;
+        } else if( LOBYTE( LOWORD( osver ) ) < 4 ) {
+            IsWin32s = true;
+        } else {
+            IsWin95 = true;
+        }
     }
     if( IsWinNT ) {
   #ifdef WOW

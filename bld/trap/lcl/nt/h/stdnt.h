@@ -145,7 +145,7 @@ typedef struct {
     char                modname[16];
 } header_info;
 
-#if defined( WOW )
+#ifdef WOW
 #if MADARCH & MADARCH_X86
 typedef struct {
     addr48_ptr          addr;
@@ -277,7 +277,7 @@ extern bool             CheckWatchPoints( void );
 extern bool             SetDebugRegs( void );
 extern void             ClearDebugRegs( void );
 extern bool             CheckBreakPoints( void );
-extern bool             FindBreak( WORD segment, dword offset, opcode_type *old_opcode );
+extern bool             FindBreak( MYCONTEXT *con, opcode_type *old_opcode );
 extern bool             IsWatch( void );
 
 /* dbgthrd.c */

@@ -55,6 +55,7 @@ static bool executeUntilStart( bool was_running )
     FARPROC     base;
     MYCONTEXT   con;
     thread_info *ti;
+    bool        done;
 
     ph = DebugEvent.u.CreateProcessInfo.hProcess;
     if( !was_running ) {
@@ -71,46 +72,40 @@ static bool executeUntilStart( bool was_running )
         PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
     }
 
-    for( ;; ) {
+    for( done = false; !done; ) {
         /*
          * if we encounter anything but a break point, then we are in
          * trouble!
          */
-        if( DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD, NULL, false ) & COND_BREAK ) {
-            ti = FindThread( DebugEvent.dwThreadId );
-            MyGetThreadContext( ti, &con );
-            if( was_running ) {
-                AdjustIP( &con, sizeof( opcode_type ) );
-                MySetThreadContext( ti, &con );
-                return( true );
-            }
+        if( (DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD, NULL, false ) & COND_BREAK) == 0 )
+            return( false );
+        ti = FindThread( DebugEvent.dwThreadId );
+        MyGetThreadContext( ti, &con );
+        if( was_running ) {
+            done = true;
+        } else {
+            remove_breakpoint_lin( ph, base, old_opcode );
             if( StopForDLLs ) {
                 /*
                  * the user has asked us to stop before any DLL's run
                  * their startup code (";dll"), so we do.
                  */
-                remove_breakpoint_lin( ph, base, old_opcode );
-                AdjustIP( &con, sizeof( opcode_type ) );
-                MySetThreadContext( ti, &con );
-                return( true );
-            }
-            if( GetIP( &con ) == base ) {
+                done = true;
+            } else if( GetIP( &con ) == base ) {
                 /*
                  * we stopped at the applications starting address,
                  * so we can offically declare that the app has loaded
                  */
-                remove_breakpoint_lin( ph, base, old_opcode );
-                return( true );
+                break;
             }
-            /*
-             * skip this breakpoint and continue
-             */
-            AdjustIP( &con, sizeof( opcode_type ) );
-            MySetThreadContext( ti, &con );
-        } else {
-            return( false );
         }
+        /*
+         * skip this breakpoint and continue
+         */
+        AdjustIP( &con, sizeof( opcode_type ) );
+        MySetThreadContext( ti, &con );
     }
+    return( true );
 }
 
 #ifdef WOW

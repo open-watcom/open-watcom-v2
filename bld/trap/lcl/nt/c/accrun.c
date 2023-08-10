@@ -95,15 +95,12 @@ static void setATBit( thread_info *ti, set_t set )
 {
     MYCONTEXT con;
 
-    con.ContextFlags = MYCONTEXT_CONTROL;
     MyGetThreadContext( ti, &con );
 #if MADARCH & MADARCH_X86
     set_tbit( &con, set != T_OFF );
-    con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #elif MADARCH & MADARCH_X64
     set_tbit( &con, set != T_OFF );
-    con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #elif MADARCH & MADARCH_AXP
     if( set != T_OFF ) {
@@ -121,7 +118,6 @@ static void setATBit( thread_info *ti, set_t set )
     }
 #elif MADARCH & MADARCH_PPC
     set_tbit( &con, set != T_OFF );
-    con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #else
     #error setATBit not configured
@@ -214,6 +210,17 @@ static void setTBit( set_t set )
  */
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
 static FARPROC  BreakFixed;
+
+static void decIP( MYCONTEXT *con )
+{
+    con->Eip--;
+}
+
+static void change_bp( MYCONTEXT *con, HANDLE proc, opcode_type old_opcode )
+{
+    BreakFixed = (FARPROC)con->Eip;
+    remove_breakpoint_lin( proc, BreakFixed, old_opcode );
+}
 #endif
 
 static trap_conditions handleInt3( DWORD state )
@@ -240,17 +247,17 @@ static trap_conditions handleInt3( DWORD state )
     if( ti != NULL ) {
         cond_ret = COND_BREAK;
         MyGetThreadContext( ti, &con );
-        con.Eip--;
+        decIP( &con );
         if( ti->is_foreign ) {
-            HANDLE      proc;
             opcode_type old_opcode;
 
-            if( FindBreak( (WORD)con.SegCs, (dword)con.Eip, &old_opcode ) ) {
-                BreakFixed = (FARPROC)con.Eip;
+            if( FindBreak( &con, &old_opcode ) ) {
+                HANDLE  proc;
+
                 proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-                remove_breakpoint_lin( proc, (FARPROC)con.Eip, old_opcode );
-                con.EFlags |= INTR_TF;
+                change_bp( proc, &con, old_opcode );
                 CloseHandle( proc );
+                set_tbit( &con, true );
                 cond_ret = COND_NONE;
             }
         }
@@ -303,9 +310,9 @@ static trap_conditions handleInt1( DWORD state )
         }
     } else {
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
-        thread_info *ti;
-
         if( BreakFixed != 0 ) {
+            thread_info *ti;
+
             ti = FindThread( DebugeeTid );
             if( ti == NULL || ti->is_foreign ) {
                 HANDLE  proc;
@@ -393,7 +400,6 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                 DWORD       opcode;
                 MYCONTEXT   con;
 
-                con.ContextFlags = MYCONTEXT_CONTROL;
                 MyGetThreadContext( FindThread( DebugeeTid ), &con );
                 addr = GetIP( &con );
                 ReadProcessMemory( ProcessInfo.process_handle, (LPVOID)addr,
@@ -500,7 +506,7 @@ myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
                     goto done;
                 }
                 break;
-#endif
+#endif  /* WOW */
             case DBG_CONTROL_C:
                 /*
                  * this never seems to happen ever never ever never
