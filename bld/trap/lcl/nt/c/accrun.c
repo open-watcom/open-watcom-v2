@@ -216,7 +216,7 @@ static void decIP( MYCONTEXT *con )
     con->Eip--;
 }
 
-static void change_bp( MYCONTEXT *con, HANDLE proc, opcode_type old_opcode )
+static void change_bp( HANDLE proc, MYCONTEXT *con, opcode_type old_opcode )
 {
     BreakFixed = (FARPROC)con->Eip;
     remove_breakpoint_lin( proc, BreakFixed, old_opcode );
