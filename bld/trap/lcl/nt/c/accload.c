@@ -58,21 +58,22 @@ static bool executeUntilStart( bool was_running )
     bool        done;
 
     ph = DebugEvent.u.CreateProcessInfo.hProcess;
-    if( !was_running ) {
+    if( was_running ) {
+        /*
+         * a trick to make app execute long enough to hit a breakpoint
+         */
+        PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
+    } else {
         /*
          * if we are not debugging an already running app, then we
          * plant a breakpoint at the first instruction of our new app
          */
         base = (FARPROC)DebugEvent.u.CreateProcessInfo.lpStartAddress;
         old_opcode = place_breakpoint_lin( ph, base );
-    } else {
-        /*
-         * a trick to make app execute long enough to hit a breakpoint
-         */
-        PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
     }
 
-    for( done = false; !done; ) {
+    done = false;
+    do {
         /*
          * if we encounter anything but a break point, then we are in
          * trouble!
@@ -83,28 +84,27 @@ static bool executeUntilStart( bool was_running )
         MyGetThreadContext( ti, &con );
         if( was_running ) {
             done = true;
-        } else {
+        } else if( StopForDLLs ) {
+            /*
+             * the user has asked us to stop before any DLL's run
+             * their startup code (";dll"), so we do.
+             */
             remove_breakpoint_lin( ph, base, old_opcode );
-            if( StopForDLLs ) {
-                /*
-                 * the user has asked us to stop before any DLL's run
-                 * their startup code (";dll"), so we do.
-                 */
-                done = true;
-            } else if( GetIP( &con ) == base ) {
-                /*
-                 * we stopped at the applications starting address,
-                 * so we can offically declare that the app has loaded
-                 */
-                break;
-            }
+            done = true;
+        } else if( GetIP( &con ) == base ) {
+            /*
+             * we stopped at the applications starting address,
+             * so we can offically declare that the app has loaded
+             */
+            remove_breakpoint_lin( ph, base, old_opcode );
+            break;
         }
         /*
          * skip this breakpoint and continue
          */
         AdjustIP( &con, sizeof( opcode_type ) );
         MySetThreadContext( ti, &con );
-    }
+    } while( !done );
     return( true );
 }
 
