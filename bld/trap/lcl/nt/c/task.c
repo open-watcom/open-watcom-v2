@@ -91,7 +91,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         pModule32First              = (MODULE32FIRSTPROC)GetProcAddress( dll, "Module32First" );
         pModule32Next               = (MODULE32NEXTPROC)GetProcAddress( dll, "Module32Next" );
     }
-    //say( "base address=%8.8x", ((char*)&GetInPtr)-0x2f );
+//    say( "base address=%8.8x", ((char*)&GetInPtr)-0x2f );
     DLLPath = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, strlen( err ) + 1 );
     strcpy( DLLPath, err );
 
@@ -115,10 +115,10 @@ void TRAPENTRY TrapFini( void )
 {
 }
 
-/*
- * InfoFunction - inform trap file of gui debugger being used
- */
 void TRAPENTRY_FUNC( InfoFunction )( HWND hwnd )
+/***********************************************
+ * inform trap file of gui debugger being used
+ */
 {
     DebuggerWindow = hwnd;
 }
@@ -134,12 +134,12 @@ bool TRAPENTRY_FUNC( Terminate )( void )
 }
 
 #if 0
-/*
- * ListLibs - this is called by the debugger to dump out a list
- *                of DLL's and their associated selectors
- */
 int TRAPENTRY_FUNC( ListLibs )( char *buff, int is_first, int want_16,
                          int want_32, int verbose, int sel )
+/*********************************************************************
+ * this is called by the debugger to dump out a list
+ * of DLL's and their associated selectors
+ */
 {
     return( DoListLibs( buff, is_first, want_16, want_32, verbose, sel ) );
 }

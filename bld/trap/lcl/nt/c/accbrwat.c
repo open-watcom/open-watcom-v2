@@ -101,8 +101,9 @@ trap_retval TRAP_CORE( Clear_break )( void )
     clear_break_req *acc;
     break_point     *brk;
 
-    // we can assume all breaks are cleared at once
-
+    /*
+     * we can assume all breaks are cleared at once
+     */
     while( (brk = Breaks) != NULL ) {
         Breaks = brk->next;
         LocalFree( brk );
@@ -153,10 +154,10 @@ static void set_DRx( MYCONTEXT *con, int i, dword *data )
 #endif
 }
 
-/*
- * setDRx - set value of debug register
- */
 static void setDRx( int i, dword *tmp )
+/**************************************
+ * set value of debug register
+ */
 {
     MYCONTEXT   con;
     thread_info *ti;
@@ -167,10 +168,10 @@ static void setDRx( int i, dword *tmp )
     MySetThreadContext( ti, &con );
 }
 
-/*
- * getDRx - get value of debug register
- */
 static dword getDRx( int i )
+/***************************
+ * get value of debug register
+ */
 {
     MYCONTEXT   con;
     thread_info *ti;
@@ -195,10 +196,10 @@ static dword setDRn( int i, dword *linear, word type )
 }
 #endif
 
-/*
- * ClearDebugRegs - set for no watch points
- */
 void ClearDebugRegs( void )
+/**************************
+ * set for no watch points
+ */
 {
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
     int i;
@@ -234,10 +235,10 @@ static int DRegsCount( void )
     return( needed );
 }
 
-/*
- * SetDebugRegs - set debug registers for watch points
- */
 bool SetDebugRegs( void )
+/************************
+ * set debug registers for watch points
+ */
 {
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
     int         i;
@@ -267,9 +268,7 @@ bool SetDebugRegs( void )
          *  With SupportingExactBreakpoints enabled, the linear address will not have been
          *  adjusted, so we may be on an odd boundary. A 4 byte watch of offset 1 will entail
          *  3 registers - 1@1, 2@2 and 1@3
-         *
          */
-
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             size = wp->size;
             linear = wp->linear;
@@ -340,7 +339,9 @@ bool SetDebugRegs( void )
                  * If we need 4 registers, then must be 8 bytes and ...
                  */
                 if( (linear & 0x3) == 1 ) {
-                    /* Need 1, 2, 4, 1 */
+                    /*
+                     * Need 1, 2, 4, 1
+                     */
                     dr7 |= setDRn( dr+0, &linear, DRLen( 1 ) | DR7_BWR );
                     linear += 1;
                     dr7 |= setDRn( dr+1, &linear, DRLen( 2 ) | DR7_BWR );
@@ -349,7 +350,9 @@ bool SetDebugRegs( void )
                     linear += 4;
                     dr7 |= setDRn( dr+3, &linear, DRLen( 1 ) | DR7_BWR );
                 } else { /* (linear & 0x3) == 3 */
-                    /* Need 1, 4, 2, 1 */
+                    /*
+                     * Need 1, 4, 2, 1
+                     */
                     dr7 |= setDRn( dr+0, &linear, DRLen( 1 ) | DR7_BWR );
                     linear += 1;
                     dr7 |= setDRn( dr+1, &linear, DRLen( 4 ) | DR7_BWR );
@@ -391,10 +394,10 @@ bool SetDebugRegs( void )
 #endif
 }
 
-/*
- * CheckWatchPoints - check if a watchpoint was hit
- */
 bool CheckWatchPoints( void )
+/****************************
+ * check if a watchpoint was hit
+ */
 {
     watch_point *wp;
     int         i;
@@ -423,18 +426,21 @@ static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
     }
     dregs = 1;
     if( size == 8 ) {
-        /* QWord always needs 1 more register */
+        /*
+         * QWord always needs 1 more register
+         */
         dregs++;
         size = 4;
     }
-
-    /* Calculate where the breakpoint should be */
-    /* 1 byte breakpoint starts at where it says on the tin -   OK */
-    /* 2 byte breakpoint starts at previous word offset -       OK */
-    /* 4 byte breakpoint starts at previous dword offset -      OK */
-    /* 8 byte breakpoint starts at previous dword offset -      OK */
-
-    /* If we are supporting exact break on write, then don't adjust the linear address */
+    /*
+     * Calculate where the breakpoint should be
+     * 1 byte breakpoint starts at where it says on the tin -   OK
+     * 2 byte breakpoint starts at previous word offset -       OK
+     * 4 byte breakpoint starts at previous dword offset -      OK
+     * 8 byte breakpoint starts at previous dword offset -      OK
+     *
+     * If we are supporting exact break on write, then don't adjust the linear address
+     */
     if( SupportingExactBreakpoints ) {
         if( size == 1 ) {
         } else if ( size == 2 ) {
@@ -444,24 +450,37 @@ static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
         } else if ( size == 4 ) {
             switch( linear & 0x3 ) {
             case 0:
-                                /* 0x00-0x03:   4B@0x00 */
-                                /* 0x00-0x07:   4B@0x00, 4B@0x04 */
+                /*
+                 * 0x00-0x03:   4B@0x00
+                 * 0x00-0x07:   4B@0x00, 4B@0x04
+                 */
                 break;
             case 1:
-                dregs += 2;     /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
-                                /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
+                /*
+                 * 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04
+                 * 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08
+                 */
+                dregs += 2;
                 break;
             case 2:
-                dregs += 1;     /* 0x02-0x05:   2B@0x02, 2B@0x04 */
-                                /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
+                /*
+                 * 0x02-0x05:   2B@0x02, 2B@0x04
+                 * 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08
+                 */
+                dregs += 1;
                 break;
             case 3:
-                dregs += 2;     /* 0x03-0x06:   1B@0x03, 2B@0x04, 1B@0x06 */
-                                /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
+                /*
+                 * 0x03-0x06:   1B@0x03, 2B@0x04, 1B@0x06
+                 * 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A
+                 */
+                dregs += 2;
                 break;
             }
         } else {
-            /* Error */
+            /*
+             * Error
+             */
             return( 0 );
         }
     } else {
@@ -502,7 +521,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
         wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
         if( wp->dregs == 0 )
-            /* Error */
+            /*
+             * Error
+             */
             return( sizeof( *ret ) );
 
         WatchCount++;

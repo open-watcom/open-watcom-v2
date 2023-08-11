@@ -63,7 +63,9 @@ static HWND InvalidHWNDs[MAX_HWNDS];
 static int  NumInvalid = 0;
 
 static struct {
-    // control overhead
+    /*
+     * control overhead
+     */
     ctl_request request;
     HANDLE      requestsem;
     HANDLE      requestdonesem;
@@ -71,16 +73,19 @@ static struct {
     bool        on_control_thread;
     bool        control_thread_running;
     bool        req_done;
-
-    // CTL_*
+    /*
+     * CTL_*
+     */
     bool        rc;
-
-    // CTL_START
+    /*
+     * CTL_START
+     */
     DWORD       pid;
     DWORD       flags;
     char        *name;
-
-    // CTL_CONTINUE
+    /*
+     * CTL_CONTINUE
+     */
     DWORD       how;
     DWORD       err;
 
@@ -98,9 +103,6 @@ static void CantDoIt( void )
     }
 }
 
-/*
- * DoContinueDebugEvent
- */
 static bool DoContinueDebugEvent( DWORD continue_how )
 {
     SetLastError( 0 );
@@ -166,7 +168,9 @@ static void RequestDone( void )
         ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
     } else {
         Shared.req_done = true;
-        // Notify that something has happened, avoid delay
+        /*
+         * Notify that something has happened, avoid delay
+         */
         PostMessage( DebuggerWindow, WM_NULL, 0, 0 );
         WaitForSingleObject( Shared.requestdonesem, INFINITE );
     }
@@ -174,29 +178,31 @@ static void RequestDone( void )
 
 static bool DoOneControlRequest( void )
 {
+    bool    rc;
+
+    rc = true;
     Shared.on_control_thread = true;
     if( Shared.request == CTL_STOP ) {
         StopDebuggee();
-        RequestDone();
-        return( false );
+        rc = false;
     } else if( Shared.request == CTL_START ) {
         Shared.err = 0;
         if( !StartDebuggee() ) {
             Shared.err = GetLastError();
         }
-        RequestDone();
     } else if( Shared.request == CTL_WAIT ) {
         Shared.rc = DoWaitForDebugEvent();
-        RequestDone();
     } else if( Shared.request == CTL_CONTINUE ) {
         DoContinueDebugEvent( Shared.how );
-        RequestDone();
     }
-    return( true );
+    RequestDone();
+    return( rc );
 }
 
-// NB: ProcessQueuedRepains() currently doesn't do anything useful
 void ProcessQueuedRepaints( void )
+/*********************************
+ * NB: currently doesn't do anything useful
+ */
 {
     int     i;
     RECT    r;
@@ -229,7 +235,7 @@ static void ControlReq( ctl_request req )
         WaitForSingleObject( Shared.requestdonesem, INFINITE );
     } else {
         while( !Shared.req_done ) {
-            if ( !GetMessage( &msg, NULL, 0, 0 ) )
+            if( !GetMessage( &msg, NULL, 0, 0 ) )
                 break;    // break on WM_QUIT, when Windows requests this. (If ever)
             hwnd = msg.hwnd;
             is_dbg_wnd = false;
@@ -252,15 +258,20 @@ static void ControlReq( ctl_request req )
                         InterruptProgram();
                     }
                     break;
-                case WM_SYSKEYDOWN: // Do not activate menu on F10 single step in GUI debugger
-                      if( msg.wParam == VK_F10 && strcmp( buff, "GUIClass" ) == 0 ) {
+                case WM_SYSKEYDOWN:
+                    /*
+                     * Do not activate menu on F10 single step in GUI debugger
+                     */
+                    if( msg.wParam == VK_F10 && strcmp( buff, "GUIClass" ) == 0 ) {
                         break;
-                      }
-                      /* Allow someone to press ALT+TAB to get focus! */
-                      if( msg.wParam == VK_MENU ) {
+                    }
+                    /*
+                     * Allow someone to press ALT+TAB to get focus!
+                     */
+                    if( msg.wParam == VK_MENU ) {
                         break;
-                      }
-                      // fall through!
+                    }
+                    /* fall through */
                 case WM_COMMAND:
                     CantDoIt();
                     break;
@@ -272,13 +283,14 @@ static void ControlReq( ctl_request req )
                 case WM_MOUSEMOVE:
                     break;
                 case WM_PAINT:
-                    // WM_PAINT must be sent to the target window in order
-                    // to remove it from the queue
+                    /*
+                     * WM_PAINT must be sent to the target window in order
+                     * to remove it from the queue
+                     */
                     DefWindowProc( msg.hwnd, msg.message, msg.wParam, msg.lParam );
                     break;
                 default:
-                    DefWindowProc( DebuggerWindow, msg.message, msg.wParam,
-                        msg.lParam );
+                    DefWindowProc( DebuggerWindow, msg.message, msg.wParam, msg.lParam );
                 }
             }
         }
@@ -289,7 +301,8 @@ static void ControlReq( ctl_request req )
 
 static DWORD WINAPI ControlFunc( LPVOID parm )
 {
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     for( ;; ) {
         WaitForSingleObject( Shared.requestsem, INFINITE );
         if( !DoOneControlRequest() ) {
@@ -312,37 +325,32 @@ static bool MyDebugActiveProcess( DWORD dwPidToDebug )
 
     f_ok = false;
     pbOldPriv = NULL;
-    //
-    // Make sure we have access to adjust and to get the old token privileges
-    //
+    /*
+     * Make sure we have access to adjust and to get the old token privileges
+     */
     Token = NULL;
     if( OpenProcessToken( GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
 
         cbNeeded = 0;
-
-        //
-        // Initialize the privilege adjustment structure
-        //
-
+        /*
+         * Initialize the privilege adjustment structure
+         */
         LookupPrivilegeValue( NULL, SE_DEBUG_NAME, &LuidPrivilege );
 
         NewPrivileges.PrivilegeCount = 1;
         NewPrivileges.Privileges[0].Luid = LuidPrivilege;
         NewPrivileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-        //
-        // Enable the privilege
-        //
-
+        /*
+         * Enable the privilege
+         */
         pbOldPriv = OldPriv;
         f_ok = ( AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, 1024, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded ) != 0 );
 
         if( !f_ok && GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
-
-            //
-            // If the stack was too small to hold the privileges
-            // then allocate off the heap
-            //
+            /*
+             * If the stack was too small to hold the privileges
+             * then allocate off the heap
+             */
             pbOldPriv = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, cbNeeded );
             if( pbOldPriv != NULL ) {
                 f_ok = ( AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, cbNeeded, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded ) != 0 );
@@ -350,12 +358,16 @@ static bool MyDebugActiveProcess( DWORD dwPidToDebug )
         }
     }
     if( !f_ok && Token != NULL ) {
-        /* failed to set privilege, close privilege token handle */
+        /*
+         * failed to set privilege, close privilege token handle
+         */
         CloseHandle( Token );
     }
     ok = ( DebugActiveProcess( dwPidToDebug ) != 0 );
     if( f_ok ) {
-        /* restore original privileges */
+        /*
+         * restore original privileges
+         */
         AdjustTokenPrivileges( Token, FALSE, (PTOKEN_PRIVILEGES)pbOldPriv, 0, NULL, NULL );
         CloseHandle( Token );
     }
@@ -620,7 +632,9 @@ static bool StartDebuggee( void )
              */
             memset( &sinfo, 0, sizeof( sinfo ) );
             sinfo.cb = sizeof( sinfo );
-            // set ShowWindow default value for nCmdShow parameter
+            /*
+             * set ShowWindow default value for nCmdShow parameter
+             */
             sinfo.dwFlags = STARTF_USESHOWWINDOW;
             sinfo.wShowWindow = SW_SHOWNORMAL;
             rc = ( CreateProcess( NULL,         /* application name */
@@ -651,7 +665,9 @@ static bool StartDebuggee( void )
     } else {
         memset( &sinfo, 0, sizeof( sinfo ) );
         sinfo.cb = sizeof( sinfo );
-        // set ShowWindow default value for nCmdShow parameter
+        /*
+         * set ShowWindow default value for nCmdShow parameter
+         */
         sinfo.dwFlags = STARTF_USESHOWWINDOW;
         sinfo.wShowWindow = SW_SHOWNORMAL;
         rc = ( CreateProcess( NULL,             /* application name */
@@ -750,7 +766,9 @@ static bool DoWaitForDebugEvent( void )
     return( rc );
 }
 
-// end of seperate thread
+/*
+ * end of seperate thread
+ */
 
 DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
 {
@@ -779,11 +797,11 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
     return( Shared.err );
 }
 
-/*
- * MyWaitForDebugEvent - wait for a debug event.  Only return meaningful
- *                       VDM debug events
- */
 bool MyWaitForDebugEvent( void )
+/*******************************
+ * wait for a debug event
+ * Only return meaningful VDM debug events
+ */
 {
     if( Shared.on_control_thread ) {
         return( DoWaitForDebugEvent() );

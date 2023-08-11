@@ -263,7 +263,10 @@ trap_retval TRAP_CORE( Read_regs )( void )
         mr->ppc.msr.u._32[0] = con.Msr;
         mr->ppc.cr = con.Cr;
         mr->ppc.xer = con.Xer;
-        mr->ppc.fpscr = *(unsigned_32 *)&con.Fpscr; //NYI: is this right?
+        /*
+         * NYI: is this right?
+         */
+        mr->ppc.fpscr = *(unsigned_32 *)&con.Fpscr;
 #else
         #error TRAP_CORE( Read_regs ) not configured
 #endif
@@ -351,7 +354,10 @@ trap_retval TRAP_CORE( Write_regs )( void )
     con.Msr = mr->ppc.msr.u._32[0];
     con.Cr = mr->ppc.cr;
     con.Xer = mr->ppc.xer;
-    *(unsigned_32 *)&con.Fpscr = mr->ppc.fpscr; //NYI: is this right?
+    /*
+     * NYI: is this right?
+     */
+    *(unsigned_32 *)&con.Fpscr = mr->ppc.fpscr;
 #else
     #error TRAP_CORE( Write_regs ) not configured
 #endif
@@ -368,7 +374,9 @@ FARPROC AdjustIP( MYCONTEXT *con, int adjust )
     con->Eip += adjust;
     return( (FARPROC)con->Eip );
 #elif MADARCH & MADARCH_AXP
-    //NYI: 64 bit
+    /*
+     * NYI: 64 bit
+     */
     ( (unsigned_64 *)&con->Fir )->u._32[0] += adjust;
     return( (FARPROC)( (unsigned_64 *)&con->Fir )->u._32[0] );
 #elif MADARCH & MADARCH_PPC
@@ -386,7 +394,9 @@ FARPROC GetIP( MYCONTEXT *con )
 #elif MADARCH & MADARCH_X64
     return( (FARPROC)con->Eip );
 #elif MADARCH & MADARCH_AXP
-    //NYI: 64 bit
+    /*
+     * NYI: 64 bit
+     */
     return( (FARPROC)( (unsigned_64 *)&con->Fir )->u._32[0] );
 #elif MADARCH & MADARCH_PPC
     return( (FARPROC)con->Iar );
@@ -402,7 +412,9 @@ void SetIP( MYCONTEXT *con, FARPROC new )
 #elif MADARCH & MADARCH_X64
     con->Eip = (DWORD)new;
 #elif MADARCH & MADARCH_AXP
-    //NYI: 64 bit
+    /*
+     * NYI: 64 bit
+     */
     ( (unsigned_64 *)&con->Fir )->u._32[0] = new;
 #elif MADARCH & MADARCH_PPC
     con->Iar = new;

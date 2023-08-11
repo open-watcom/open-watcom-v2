@@ -88,10 +88,10 @@ static void set_tbit( MYCONTEXT *con, bool on )
 }
 #endif
 
-/*
- * setATBit - control if we are tracing
- */
 static void setATBit( thread_info *ti, set_t set )
+/*************************************************
+ * control if we are tracing
+ */
 {
     MYCONTEXT con;
 
@@ -124,10 +124,10 @@ static void setATBit( thread_info *ti, set_t set )
 #endif
 }
 
-/*
- * setTBitsetTBitInAllThreads - turn the t-bit on or off in all threads.
- */
 static void setTBitInAllThreads( set_t set )
+/*******************************************
+ * turn the t-bit on or off in all threads.
+ */
 {
     thread_info *ti;
 
@@ -172,10 +172,10 @@ bool Terminate( void )
     }
 }
 
-/*
- * consoleHandler - handle console ctrl c
- */
 static BOOL WINAPI consoleHandler( DWORD type )
+/**********************************************
+ * handle console ctrl c
+ */
 {
     if( type == CTRL_C_EVENT || type == CTRL_BREAK_EVENT ) {
         /*
@@ -196,10 +196,10 @@ static BOOL WINAPI consoleHandler( DWORD type )
 }
 
 
-/*
- * setTBit - control if we are tracing
- */
 static void setTBit( set_t set )
+/*******************************
+ * control if we are tracing
+ */
 {
     thread_info *ti;
 
@@ -222,17 +222,17 @@ static void remove_bp( HANDLE proc, MYCONTEXT *con, opcode_type old_opcode )
 }
 #endif
 
-/*
- * handleBreakpointEvent - process an encountered break point
- */
 static trap_conditions handleBreakpointEvent( DWORD state )
+/**********************************************************
+ * process an encountered break point
+ */
 {
     trap_conditions cond_ret;
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
     thread_info     *ti;
     MYCONTEXT       con;
 
-    (void)state; // Unused
+    /* unused parameters */ (void)state;
 
     ti = FindThread( DebugeeTid );
     if( ti == NULL ) {
@@ -280,6 +280,8 @@ static trap_conditions handleBreakpointEvent( DWORD state )
         cond_ret = handleSinglestepEvent( state );
     }
 #elif MADARCH & MADARCH_PPC
+    /* unused parameters */ (void)state;
+
     /*
      * nothing special to do
      */
@@ -290,10 +292,10 @@ static trap_conditions handleBreakpointEvent( DWORD state )
     return( cond_ret );
 }
 
-/*
- * handleSinglestepEvent - process a trace or watch point
- */
 static trap_conditions handleSinglestepEvent( DWORD state )
+/**********************************************************
+ * process a trace or watch point
+ */
 {
     if( PendingProgramInterrupt ) {
         /*
@@ -339,10 +341,10 @@ static trap_conditions handleSinglestepEvent( DWORD state )
 }
 
 #ifdef WOW
-/*
- * getImageNote - get current image note structure (WOW)
- */
 static void getImageNote( IMAGE_NOTE *pin )
+/******************************************
+ * get current image note structure (WOW)
+ */
 {
     addr48_ptr  addr;
 
@@ -352,10 +354,10 @@ static void getImageNote( IMAGE_NOTE *pin )
 }
 #endif
 
-/*
- * DebugExecute - execute program under debug control
- */
 trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_load )
+/***********************************************************************************
+ * execute program under debug control
+ */
 {
     DWORD           continue_how;
     DWORD           code;
@@ -535,9 +537,8 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                 break;
             case STATUS_BREAKPOINT:
                 DebugeeTid = DebugEvent.dwThreadId;
-                if( state & STATE_WAIT_FOR_VDM_START ) {
+                if( state & STATE_WAIT_FOR_VDM_START )
                     break;
-                }
                 returnCode = handleBreakpointEvent( state );
                 if( returnCode != COND_NONE ) {
                     goto done;
@@ -590,18 +591,18 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
             break;
         case CREATE_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
-            if( retflag != NULL && (state & STATE_WAIT_FOR_VDM_START) == 0 ) {
-                *retflag = true;
-            }
             AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, (FARPROC)DebugEvent.u.CreateThread.lpStartAddress );
+            if( retflag == NULL || (state & STATE_WAIT_FOR_VDM_START) )
+                break;
+            *retflag = true;
             break;
         case EXIT_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
             ClearDebugRegs();
-            if( retflag != NULL && (state & STATE_WAIT_FOR_VDM_START) == 0 ) {
-                *retflag = true;
-            }
             DeadThread( DebugEvent.dwThreadId );
+            if( retflag == NULL || (state & STATE_WAIT_FOR_VDM_START) )
+                break;
+            *retflag = true;
             break;
         case CREATE_PROCESS_DEBUG_EVENT:        /* shouldn't ever get */
             DebugeeTid = DebugEvent.dwThreadId;
@@ -695,10 +696,10 @@ done:
     return( returnCode );
 }
 
-/*
- * runProg - run threads
- */
 static trap_elen runProg( bool single_step )
+/*******************************************
+ * run threads
+ */
 {
     DWORD       state;
     MYCONTEXT   con;
@@ -713,7 +714,7 @@ static trap_elen runProg( bool single_step )
         return( sizeof( *ret ) );
     }
 
-    state = 0;
+    state = STATE_NONE;
 
     if( single_step ) {
         /*

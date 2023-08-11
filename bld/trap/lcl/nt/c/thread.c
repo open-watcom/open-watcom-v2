@@ -37,10 +37,10 @@
 #include "globals.h"
 
 
-/*
+void AddThread( DWORD tid, HANDLE th, FARPROC sa )
+/*************************************************
  * Add a new thread to a process
  */
-void AddThread( DWORD tid, HANDLE th, FARPROC sa )
 {
     thread_info *ti;
 
@@ -66,10 +66,10 @@ void AddThread( DWORD tid, HANDLE th, FARPROC sa )
     ProcessInfo.thread_list = ti;
 }
 
-/*
+thread_info *FindThread( DWORD tid )
+/***********************************
  * FindThread - find a thread from a given process_info struct
  */
-thread_info *FindThread( DWORD tid )
 {
     thread_info *ti;
 
@@ -81,10 +81,10 @@ thread_info *FindThread( DWORD tid )
     return( ti );
 }
 
-/*
+void DeadThread( DWORD tid )
+/***************************
  * DeadThread - process a dead thread
  */
-void DeadThread( DWORD tid )
 {
     thread_info *ti;
 
@@ -96,10 +96,10 @@ void DeadThread( DWORD tid )
 }
 
 
-/*
+void RemoveAllThreads( void )
+/****************************
  * RemoveAllThreads - remove all threads associated with debugee process
  */
-void RemoveAllThreads( void )
 {
     thread_info *ti;
 
@@ -198,7 +198,6 @@ trap_retval TRAP_THREAD( get_next )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     /*
      * get next pointer
      */
@@ -207,7 +206,6 @@ trap_retval TRAP_THREAD( get_next )( void )
     } else {
         ti = ti->next;
     }
-
     /*
      * find a live one
      */

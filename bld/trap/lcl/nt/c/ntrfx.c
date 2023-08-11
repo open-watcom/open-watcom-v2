@@ -113,7 +113,9 @@ static int nt_get_drive( void )
 }
 
 trap_retval TRAP_RFX( setdrive )( void )
-/* entry 0=A,1=B,... */
+/***************************************
+ * entry 0=A,1=B,...
+ */
 {
     rfx_setdrive_req    *acc;
     rfx_setdrive_ret    *ret;
@@ -126,7 +128,9 @@ trap_retval TRAP_RFX( setdrive )( void )
 
 
 trap_retval TRAP_RFX( getdrive )( void )
-/* return 0=A,1=B,... */
+/***************************************
+ * return 0=A,1=B,...
+ */
 {
     rfx_getdrive_ret    *ret;
 
@@ -171,8 +175,9 @@ trap_retval TRAP_RFX( setfileattr )( void )
     char                *name;
     rfx_setfileattr_req *acc;
     rfx_setfileattr_ret *ret;
-
-    // Not tested, and not used right now
+    /*
+     * Not tested, and not used right now
+     */
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
@@ -241,7 +246,9 @@ trap_retval TRAP_RFX( getdatetime )( void )
 }
 
 static void nt_getdcwd( int drive, char *buff, size_t max_len )
-/* entry 0=current drive,1=A,2=B,... */
+/**************************************************************
+ * entry 0=current drive,1=A,2=B,...
+ */
 {
     int                 old_drive;
     char                tmp[MAX_PATH];
@@ -387,7 +394,9 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     int                         drive;
     size_t                      max_len;
 
-    // Not tested, and not used right now
+    /*
+     * Not tested, and not used right now
+     */
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );

@@ -81,9 +81,9 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
 //    if( delay == 0 )
 //        delay = 10000;
     Sleep( delay );
-
-    //NYI: get user input
-
+    /*
+     * NYI: get user input
+     */
     ret->key = ' ';
     return( sizeof( *ret ) );
 }
@@ -101,7 +101,6 @@ trap_retval TRAP_FILE( open )( void )
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-
     /*
      * GetMagicalFileHandle checks if a file name is of a special syntax.
      * We generate magical file names for all DLL's when they load,
@@ -185,7 +184,9 @@ trap_retval TRAP_FILE( write_console )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     if( DebugeePid ) {
-        //NYI: write to program screen
+        /*
+         * NYI: write to program screen
+         */
         ret->len = GetTotalSizeIn() - sizeof( *acc );
     } else {
         if( WriteFile( GetStdHandle( STD_ERROR_HANDLE ), GetInPtr( sizeof( *acc ) ),
@@ -223,7 +224,6 @@ trap_retval TRAP_FILE( close )( void )
     h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
     ret->err = 0;
-
     /*
      * we do not close the file handle if it was a magical one that
      * we remembered from a DLL load
@@ -253,7 +253,9 @@ trap_retval TRAP_FILE( run_cmd )( void )
 {
     file_run_cmd_ret    *ret;
 
-    //NYI: to do
+    /*
+     * NYI: to do
+     */
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );

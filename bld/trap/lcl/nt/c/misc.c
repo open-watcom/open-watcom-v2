@@ -52,10 +52,10 @@
     #error VDMCONTEXT_TO_USE not configured
 #endif
 
-/*
- * MyGetThreadContext - get the context for a specific thread
- */
 bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
+/********************************************************
+ * get the context for a specific thread
+ */
 {
 #if MADARCH & MADARCH_X64
     if( ti->is_wow ) {
@@ -100,10 +100,10 @@ bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
     return( GetThreadContext( ti->thread_handle, pc ) != 0 );
 }
 
-/*
- * MySetThreadContext - set the context for a specific thread
- */
 bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
+/********************************************************
+ * set the context for a specific thread
+ */
 {
 #if MADARCH & MADARCH_X64
     if( ti->is_wow ) {

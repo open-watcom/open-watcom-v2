@@ -58,13 +58,17 @@
     #define MYCONTEXT_CONTROL   CONTEXT_CONTROL;
 
 #if MADARCH & MADARCH_X64
-    // position in Windows CONTEXT,
-    // it is offset in FXSAVE/FXRSTOR memory structure
+    /*
+     * position in Windows CONTEXT,
+     * it is offset in FXSAVE/FXRSTOR memory structure
+     */
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
 #else
-    // position in Windows CONTEXT,
-    // it is offset in FXSAVE/FXRSTOR memory structure
+    /*
+     * position in Windows CONTEXT,
+     * it is offset in FXSAVE/FXRSTOR memory structure
+     */
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
 #endif
@@ -79,8 +83,10 @@
 #endif
 
 #if MADARCH & MADARCH_X64
-    // position in Windows CONTEXT,
-    // it is offset in FXSAVE/FXRSTOR memory structure
+    /*
+     * position in Windows CONTEXT,
+     * it is offset in FXSAVE/FXRSTOR memory structure
+     */
     #define WOW64CONTEXT_MXCSR     24
     #define WOW64CONTEXT_XMM       (10 * 16)
 

@@ -273,7 +273,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
         case -1:
             *err_txt = '\0';
             break;
-        case 0xC0000008L: // STATUS_INVALID_HANDLE - new for NT 4.0
+        case STATUS_INVALID_HANDLE: /* new for NT 4.0 */
             strcpy( err_txt, TRP_NT_invalid_handle );
             break;
         case STATUS_WAIT_0:

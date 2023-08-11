@@ -49,7 +49,7 @@ typedef struct lib_load_info {
     bool        newly_unloaded;
     bool        newly_loaded;
     char        filename[MAX_PATH + 1];
-    char        modname[40]; //
+    char        modname[40];
 } lib_load_info;
 
 typedef struct lib_list_info {
@@ -68,10 +68,10 @@ static const char       libPrefix[] = "NoName";
 static lib_list_info    *listInfoHead;
 static lib_list_info    *listInfoTail;
 
-/*
- * freeListItem - free an individual lib list item
- */
 static void freeListItem( lib_list_info *lli )
+/*********************************************
+ * free an individual lib list item
+ */
 {
     LocalFree( lli->filename );
     LocalFree( lli->modname );
@@ -79,10 +79,10 @@ static void freeListItem( lib_list_info *lli )
     LocalFree( lli );
 }
 
-/*
- * FreeLibList - free the lib list info
- */
 void FreeLibList( void )
+/***********************
+ * free the lib list info
+ */
 {
     lib_list_info   *lli;
 
@@ -93,12 +93,12 @@ void FreeLibList( void )
     listInfoTail = NULL;
 }
 
-/*
- * addModuleToLibList - saves away the information about the current
- *                             module.  This is used to dump it out later
- *                             (TrapListLibs calls DoListLibs)
- */
 static void addModuleToLibList( DWORD module )
+/*********************************************
+ * saves away the information about the current
+ * module.  This is used to dump it out later
+ * (TrapListLibs calls DoListLibs)
+ */
 {
     lib_list_info   *lli;
     lib_load_info   *llo;
@@ -139,11 +139,11 @@ static void addModuleToLibList( DWORD module )
     }
 }
 
-/*
- * RemoveModuleFromLibList - removes a module from our list once it is
- *                           unloaded or exits
- */
 void RemoveModuleFromLibList( char *module, char *filename )
+/***********************************************************
+ * removes a module from our list once it is
+ * unloaded or exits
+ */
 {
     lib_list_info   *curr;
     lib_list_info   *prev;
@@ -166,11 +166,11 @@ void RemoveModuleFromLibList( char *module, char *filename )
     }
 }
 
-/*
- * addSegmentToLibList - add a new segment. We keep track of this so that
- *                       we can dump it later.
- */
 static void addSegmentToLibList( DWORD module, WORD seg, DWORD off )
+/*******************************************************************
+ * add a new segment. We keep track of this so that
+ * we can dump it later.
+ */
 {
     addr48_ptr  *new;
 
@@ -201,7 +201,9 @@ bool FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size )
     for( i = 0; i < ModuleTop; ++i ) {
         llo = &moduleInfo[i];
         if( (LPBYTE)off >= llo->base && (LPBYTE)off < llo->base + llo->code_size ) {
-            /* this is the image */
+            /*
+             * this is the image
+             */
             if( llo->except_size == 0 ) {
                 return( false );
             }
@@ -229,10 +231,10 @@ static void FillInExceptInfo( lib_load_info *llo )
 
 #ifdef WOW
 #if MADARCH & MADARCH_X86
-/*
- * AddProcess16 - a new 16-bit process has been created
- */
 void AddProcess16( header_info *hi )
+/***********************************
+ * a new 16-bit process has been created
+ */
 {
     lib_load_info   *llo;
 
@@ -251,10 +253,10 @@ void AddProcess16( header_info *hi )
 #endif
 #endif
 
-/*
- * AddProcess - a new process has been created
- */
 void AddProcess( header_info *hi )
+/*********************************
+ * a new process has been created
+ */
 {
     lib_load_info   *llo;
 
@@ -268,7 +270,9 @@ void AddProcess( header_info *hi )
     llo->has_real_filename = false;
     llo->is_16 = false;
     llo->file_handle = DebugEvent.u.CreateProcessInfo.hFile;
-    // kludge - NT doesn't give us a handle sometimes
+    /*
+     * kludge - NT doesn't give us a handle sometimes
+     */
     if( llo->file_handle == INVALID_HANDLE_VALUE ) {
         llo->file_handle = CreateFile( CurrEXEName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
     }
@@ -278,36 +282,42 @@ void AddProcess( header_info *hi )
     llo->filename[0] = 0;
 }
 
-/*
- * NameFromProcess - get fully qualified filename for last DLL
+static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *name )
+/*************************************************************************
+ * get fully qualified filename for last DLL
  * that was loaded in process. Intended for Win9x.
  */
-static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *name )
 {
     HANDLE          hModuleSnap = INVALID_HANDLE_VALUE;
     MODULEENTRY32   me32;
     bool            bSuccess = false;
 
-    // Check if we have the KERNEL32 entrypoints.
+    /*
+     * Check if we have the KERNEL32 entrypoints.
+     */
     if( !pCreateToolhelp32Snapshot || !pModule32First || !pModule32Next )
         goto error_exit;
-
-    // Take a snapshot of all modules in the specified process.
+    /*
+     * Take a snapshot of all modules in the specified process.
+     */
     hModuleSnap = pCreateToolhelp32Snapshot( TH32CS_SNAPMODULE, dwPID );
     if( hModuleSnap == INVALID_HANDLE_VALUE )
         goto error_exit;
-
-    // Set the size of the structure before using it.
+    /*
+     * Set the size of the structure before using it.
+     */
     me32.dwSize = sizeof( MODULEENTRY32 );
-
-    // Attempt to retrieve information about the first module.
+    /*
+     * Attempt to retrieve information about the first module.
+     */
     if( !pModule32First( hModuleSnap, &me32 ) )
         goto error_exit;
-
-    // Look for freshly loaded module. Not tested on Win9x.
-    // Unfortunately in WinXP not all newly loaded modules are in the list.
-    // This should not be relevant as all NT versions will use the PSAPI method anyway.
-    // The PSAPI method works reliably but is not available on Win9x.
+    /*
+     * Look for freshly loaded module. Not tested on Win9x.
+     * Unfortunately in WinXP not all newly loaded modules are in the list.
+     * This should not be relevant as all NT versions will use the PSAPI method anyway.
+     * The PSAPI method works reliably but is not available on Win9x.
+     */
     do {
         if( me32.modBaseAddr == llo->base ) {
             strcpy( name, me32.szExePath );
@@ -323,11 +333,11 @@ error_exit:
     return( bSuccess );
 }
 
-/*
- * NameFromHandle - get fully qualified filename from file handle.
+static bool NameFromHandle( HANDLE hFile, char *name )
+/*****************************************************
+ * get fully qualified filename from file handle.
  * Intended for Windows NT.
  */
-static bool NameFromHandle( HANDLE hFile, char *name )
 {
 #define BUFSIZE 512
     bool        bSuccess = false;
@@ -339,17 +349,20 @@ static bool NameFromHandle( HANDLE hFile, char *name )
     DWORD       dwFileSizeLo;
 
     name[0] = 0;
-
-    // Check if we have the required entrypoints (results depend on OS version).
+    /*
+     * Check if we have the required entrypoints (results depend on OS version).
+     */
     if( (hFile == INVALID_HANDLE_VALUE) || !pGetMappedFileName || !pQueryDosDevice )
         goto error_exit;
-
-    // Get the file size.
+    /*
+     * Get the file size.
+     */
     dwFileSizeLo = GetFileSize( hFile, &dwFileSizeHi );
     if( dwFileSizeLo == 0 && dwFileSizeHi == 0 )
         goto error_exit;
-
-    // Create a file mapping object and map the file.
+    /*
+     * Create a file mapping object and map the file.
+     */
     hFileMap = CreateFileMapping( hFile, NULL, PAGE_READONLY, 0, 1, NULL );
     if( hFileMap == 0 ) {
         goto error_exit;
@@ -361,8 +374,9 @@ static bool NameFromHandle( HANDLE hFile, char *name )
     if( pGetMappedFileName( GetCurrentProcess(), pMem, pszFilename, MAX_PATH ) == 0 ) {
         goto error_exit;
     }
-
-    // Translate path with device name to drive letters.
+    /*
+     * Translate path with device name to drive letters.
+     */
     szTemp[0] = '\0';
 
     if( GetLogicalDriveStrings( BUFSIZE - 1, szTemp ) ) {
@@ -372,17 +386,23 @@ static bool NameFromHandle( HANDLE hFile, char *name )
         char    *p = szTemp;
 
         do {
-            // Copy the drive letter to the template string
+            /*
+             * Copy the drive letter to the template string
+             */
             *szDrive = *p;
-            // Look up each device name
+            /*
+             * Look up each device name
+             */
             if( pQueryDosDevice( szDrive, szName, BUFSIZE ) ) {
                 size_t  len = strlen( szName );
                 if( len < MAX_PATH ) {
                     bFound = ( strnicmp( pszFilename, szName, len ) == 0
                                && pszFilename[len] == '\\' );
                     if( bFound ) {
-                        // Reconstruct pszFilename using szTemp
-                        // Replace device path with DOS path
+                        /*
+                         * Reconstruct pszFilename using szTemp
+                         * Replace device path with DOS path
+                         */
                         strcpy( name, szDrive );
                         strcat( name, pszFilename + len );
                         bSuccess = true;
@@ -390,8 +410,9 @@ static bool NameFromHandle( HANDLE hFile, char *name )
                     }
                 }
             }
-
-            // Go to the next NULL character.
+            /*
+             * Go to the next NULL character.
+             */
             while( *p++ != '\0' ) {
                 {}
             }
@@ -409,10 +430,10 @@ error_exit:
 
 
 #ifdef WOW
-/*
- * AddLib16 - a new library has loaded
- */
 void AddLib16( IMAGE_NOTE *im )
+/******************************
+ * a new library has loaded
+ */
 {
     lib_load_info   *llo;
 
@@ -434,10 +455,10 @@ void AddLib16( IMAGE_NOTE *im )
 }
 #endif
 
-/*
- * AddLib - a new library has loaded
- */
 void AddLib( void )
+/******************
+ * a new library has loaded
+ */
 {
     lib_load_info   *llo;
 
@@ -505,15 +526,15 @@ void DelProcess( bool closeHandles )
     }
 }
 
-/*
- * force16SegmentLoad - force a wow app to access its segment so that it
- *                      will be loaded into memory.
- */
 #if defined( WOW )
 
 #define INS_BYTES 7
 
 static void force16SegmentLoad( thread_info *ti, WORD sel )
+/**********************************************************
+ * force a wow app to access its segment so that it
+ * will be loaded into memory.
+ */
 {
     static unsigned char    getMemIns[INS_BYTES] = {
         0x8e, 0xc0, 0x26, 0xa1, 0x00, 0x00, 0xcc
@@ -644,10 +665,10 @@ trap_retval TRAP_CORE( Map_addr )( void )
     return( sizeof( *ret ) );
 }
 
-/*
- * AccGetLibName - get lib name of current module
- */
 trap_retval TRAP_CORE( Get_lib_name )( void )
+/********************************************
+ * get lib name of current module
+ */
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -683,10 +704,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     return( sizeof( *ret ) );
 }
 
-/*
- * GetMagicalFileHandle - check if name is already opened by NT
- */
 HANDLE GetMagicalFileHandle( char *name )
+/****************************************
+ * check if name is already opened by NT
+ */
 {
     DWORD i;
 
@@ -702,10 +723,10 @@ HANDLE GetMagicalFileHandle( char *name )
     return( NULL );
 }
 
-/*
- * IsMagicalFileHandle - test if a handle is one given by NT
- */
 bool IsMagicalFileHandle( HANDLE h )
+/***********************************
+ * test if a handle is one given by NT
+ */
 {
     DWORD i;
 
@@ -721,10 +742,10 @@ bool IsMagicalFileHandle( HANDLE h )
 static lib_list_info    *currInfo;
 static int              currSeg;
 
-/*
- * formatSel - format a selector for display
- */
 static void formatSel( char *buff, int verbose )
+/***********************************************
+ * format a selector for display
+ */
 {
     LDT_ENTRY   ldt;
     DWORD       base;
@@ -752,12 +773,12 @@ static void formatSel( char *buff, int verbose )
     }
 }
 
-/*
- * DoListLibs - format up lib list info.  This is called repeatedly by
- *              the debugger to dump all DLL's and their segments
- */
 bool DoListLibs( char *buff, int is_first, int want_16, int want_32,
                                         int verbose, int sel )
+/*******************************************************************
+ * format up lib list info.  This is called repeatedly by
+ * the debugger to dump all DLL's and their segments
+ */
 {
     bool    done;
 

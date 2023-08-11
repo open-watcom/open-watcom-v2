@@ -36,10 +36,10 @@
 #include "globals.h"
 
 
-/*
- * getRealBase - get real base address, based on segment/offset
- */
 static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *pend )
+/****************************************************************
+ * get real base address, based on segment/offset
+ */
 {
 #if MADARCH & (MADARCH_AXP | MADARCH_PPC)
 
@@ -77,10 +77,10 @@ static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *pend )
 #endif
 }
 
-/*
- * ReadMemory - read some memory
- */
 DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
+/************************************************************
+ * read some memory
+ */
 {
     SIZE_T      bytes;
     ULONG_PTR   end;
@@ -133,10 +133,10 @@ DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
     return( bytes );
 }
 
-/*
- * WriteMemory - write some memory
- */
 DWORD WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
+/*************************************************************
+ * write some memory
+ */
 {
     SIZE_T      bytes;
     ULONG_PTR   end;

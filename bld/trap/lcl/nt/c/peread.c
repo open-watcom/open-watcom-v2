@@ -37,10 +37,10 @@
 #include "stdnt.h"
 
 
-/*
- * SeekRead - seek to a specified spot in the file, and read some data
- */
 bool SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
+/******************************************************************
+ * seek to a specified spot in the file, and read some data
+ */
 {
     int     rc;
     DWORD   bytes;
@@ -59,10 +59,10 @@ bool SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 
 }
 
-/*
- * GetEXEHeader - get type of EXE
- */
 bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
+/***************************************************************
+ * get type of EXE
+ */
 {
     WORD    data;
     WORD    signature;
