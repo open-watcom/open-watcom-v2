@@ -5,18 +5,18 @@ tree_depth = 5
 host_os  = nt
 host_cpu = x64
 
-target_cpu = x86
+target_cpu = x64
+
+sys_dll = 1
 
 #
-# Create the NT STD32.DLL
+# Create the NT STD.DLL
 #
-name  = std32
+name  = std
 srv   = lcl
 which = TRAP
 
 extra_objs = x86cpu.obj supphdlr.obj $(nt_trap_objs)
-
-extra_cppflags += -DWOW
 
 !include $(trap_dir)/lcl/nt/nt.mif
 !include $(trap_dir)/lcl/lcl.mif
