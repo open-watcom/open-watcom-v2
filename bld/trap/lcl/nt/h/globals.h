@@ -81,21 +81,21 @@ TRPGLOBAL wow_info      WOWAppInfo;
   #endif
 #endif
 
-TRPGLOBAL fn_OpenThread                 *pOpenThread;
-TRPGLOBAL fn_QueryDosDevice             *pQueryDosDevice;
-TRPGLOBAL fn_GetMappedFileName          *pGetMappedFileName;
-TRPGLOBAL fn_CreateToolhelp32Snapshot   *pCreateToolhelp32Snapshot;
-TRPGLOBAL fn_Module32First              *pModule32First;
-TRPGLOBAL fn_Module32Next               *pModule32Next;
+TRPGLOBAL OPENTHREADPROC                 pOpenThread;
+TRPGLOBAL QUERYDOSDEVICEPROC             pQueryDosDevice;
+TRPGLOBAL GETMAPPEDFILENAMEPROC          pGetMappedFileName;
+TRPGLOBAL CREATETOOLHELP32SNAPSHOTPROC   pCreateToolhelp32Snapshot;
+TRPGLOBAL MODULE32FIRSTPROC              pModule32First;
+TRPGLOBAL MODULE32NEXTPROC               pModule32Next;
 #ifdef WOW
-TRPGLOBAL fn_VDMModuleFirst             *pVDMModuleFirst;
-TRPGLOBAL fn_VDMModuleNext              *pVDMModuleNext;
-TRPGLOBAL fn_VDMEnumProcessWOW          *pVDMEnumProcessWOW;
-TRPGLOBAL fn_VDMProcessException        *pVDMProcessException;
-TRPGLOBAL fn_VDMGetModuleSelector       *pVDMGetModuleSelector;
-TRPGLOBAL fn_VDMGetThreadContext        *pVDMGetThreadContext;
-TRPGLOBAL fn_VDMSetThreadContext        *pVDMSetThreadContext;
-TRPGLOBAL fn_VDMGetThreadSelectorEntry  *pVDMGetThreadSelectorEntry;
+TRPGLOBAL VDMMODULEFIRSTPROC             pVDMModuleFirst;
+TRPGLOBAL VDMMODULENEXTPROC              pVDMModuleNext;
+TRPGLOBAL VDMENUMPROCESSWOWPROC          pVDMEnumProcessWOW;
+TRPGLOBAL VDMPROCESSEXCEPTIONPROC        pVDMProcessException;
+TRPGLOBAL VDMGETMODULESELECTORPROC       pVDMGetModuleSelector;
+TRPGLOBAL VDMGETTHREADCONTEXTPROC        pVDMGetThreadContext;
+TRPGLOBAL VDMSETTHREADCONTEXTPROC        pVDMSetThreadContext;
+TRPGLOBAL VDMGETTHREADSELECTORENTRYPROC  pVDMGetThreadSelectorEntry;
 #endif
 
 #undef TRPGLOBAL

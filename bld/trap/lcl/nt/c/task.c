@@ -47,7 +47,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 #if MADARCH & MADARCH_X64
     dll = LoadLibrary( "PSAPI.DLL" );
     if( dll != NULL ) {
-        pGetMappedFileName          = (fn_GetMappedFileName *)GetProcAddress( dll, "GetMappedFileNameA" );
+        pGetMappedFileName = (GETMAPPEDFILENAMEPROC)GetProcAddress( dll, "GetMappedFileNameA" );
     }
 #else
     IsWinNT = false;
@@ -67,29 +67,29 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
   #ifdef WOW
         dll = LoadLibrary( "VDMDBG.DLL" );
         if( dll != NULL ) {
-            pVDMSetThreadContext        = (fn_VDMSetThreadContext *)GetProcAddress( dll, "VDMSetThreadContext" );
-            pVDMModuleFirst             = (fn_VDMModuleFirst *)GetProcAddress( dll, "VDMModuleFirst" );
-            pVDMModuleNext              = (fn_VDMModuleNext *)GetProcAddress( dll, "VDMModuleNext" );
-            pVDMEnumProcessWOW          = (fn_VDMEnumProcessWOW *)GetProcAddress( dll, "VDMEnumProcessWOW" );
-            pVDMProcessException        = (fn_VDMProcessException *)GetProcAddress( dll, "VDMProcessException" );
-            pVDMGetModuleSelector       = (fn_VDMGetModuleSelector *)GetProcAddress( dll, "VDMGetModuleSelector" );
-            pVDMGetThreadContext        = (fn_VDMGetThreadContext *)GetProcAddress( dll, "VDMGetThreadContext" );
-            pVDMGetThreadSelectorEntry  = (fn_VDMGetThreadSelectorEntry *)GetProcAddress( dll, "VDMGetThreadSelectorEntry" );
+            pVDMModuleFirst             = (VDMMODULEFIRSTPROC)GetProcAddress( dll, "VDMModuleFirst" );
+            pVDMModuleNext              = (VDMMODULENEXTPROC)GetProcAddress( dll, "VDMModuleNext" );
+            pVDMEnumProcessWOW          = (VDMENUMPROCESSWOWPROC)GetProcAddress( dll, "VDMEnumProcessWOW" );
+            pVDMProcessException        = (VDMPROCESSEXCEPTIONPROC)GetProcAddress( dll, "VDMProcessException" );
+            pVDMGetModuleSelector       = (VDMGETMODULESELECTORPROC)GetProcAddress( dll, "VDMGetModuleSelector" );
+            pVDMGetThreadContext        = (VDMGETTHREADCONTEXTPROC)GetProcAddress( dll, "VDMGetThreadContext" );
+            pVDMSetThreadContext        = (VDMSETTHREADCONTEXTPROC)GetProcAddress( dll, "VDMSetThreadContext" );
+            pVDMGetThreadSelectorEntry  = (VDMGETTHREADSELECTORENTRYPROC)GetProcAddress( dll, "VDMGetThreadSelectorEntry" );
         }
   #endif
         dll = LoadLibrary( "PSAPI.DLL" );
         if( dll != NULL ) {
-            pGetMappedFileName          = (fn_GetMappedFileName *)GetProcAddress( dll, "GetMappedFileNameA" );
+            pGetMappedFileName = (GETMAPPEDFILENAMEPROC)GetProcAddress( dll, "GetMappedFileNameA" );
         }
     }
 #endif
     dll = LoadLibrary( "KERNEL32.DLL" );
     if( dll != NULL ) {
-        pOpenThread                 = (fn_OpenThread *)GetProcAddress( dll, "OpenThread" );
-        pQueryDosDevice             = (fn_QueryDosDevice *)GetProcAddress( dll, "QueryDosDeviceA" );
-        pCreateToolhelp32Snapshot   = (fn_CreateToolhelp32Snapshot *)GetProcAddress( dll, "CreateToolhelp32Snapshot" );
-        pModule32First              = (fn_Module32First *)GetProcAddress( dll, "Module32First" );
-        pModule32Next               = (fn_Module32Next *)GetProcAddress( dll, "Module32Next" );
+        pOpenThread                 = (OPENTHREADPROC)GetProcAddress( dll, "OpenThread" );
+        pQueryDosDevice             = (QUERYDOSDEVICEPROC)GetProcAddress( dll, "QueryDosDeviceA" );
+        pCreateToolhelp32Snapshot   = (CREATETOOLHELP32SNAPSHOTPROC)GetProcAddress( dll, "CreateToolhelp32Snapshot" );
+        pModule32First              = (MODULE32FIRSTPROC)GetProcAddress( dll, "Module32First" );
+        pModule32Next               = (MODULE32NEXTPROC)GetProcAddress( dll, "Module32Next" );
     }
     //say( "base address=%8.8x", ((char*)&GetInPtr)-0x2f );
     DLLPath = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, strlen( err ) + 1 );

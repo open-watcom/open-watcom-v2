@@ -199,22 +199,12 @@ typedef struct msg_list {
  * function prototypes
  */
 
-typedef HANDLE  WINAPI fn_OpenThread( DWORD, BOOL, DWORD );
-typedef DWORD   WINAPI fn_QueryDosDevice( LPCSTR lpDeviceName, LPSTR lpTargetPath, DWORD ucchMax );
-typedef DWORD   WINAPI fn_GetMappedFileName( HANDLE hProcess, LPVOID lpv, LPSTR lpFilename, DWORD nSize );
-typedef HANDLE  WINAPI fn_CreateToolhelp32Snapshot( DWORD dwFlags, DWORD th32ProcessID );
-typedef BOOL    WINAPI fn_Module32First( HANDLE hSnapshot, LPMODULEENTRY32 lpme );
-typedef BOOL    WINAPI fn_Module32Next( HANDLE hSnapshot, LPMODULEENTRY32 lpme );
-#ifdef WOW
-typedef BOOL    WINAPI fn_VDMModuleFirst( HANDLE hProcess, HANDLE hThread, LPMODULEENTRY lpModuleEntry, DEBUGEVENTPROC lpEventProc, LPVOID lpData );
-typedef BOOL    WINAPI fn_VDMModuleNext( HANDLE hProcess, HANDLE hThread, LPMODULEENTRY lpModuleEntry, DEBUGEVENTPROC lpEventProc, LPVOID lpData );
-typedef INT     WINAPI fn_VDMEnumProcessWOW( PROCESSENUMPROC fp, LPARAM lparam );
-typedef BOOL    WINAPI fn_VDMProcessException( LPDEBUG_EVENT lpDebugEvent );
-typedef BOOL    WINAPI fn_VDMGetModuleSelector( HANDLE hProcess, HANDLE hThread, UINT  wSegmentNumber, LPSTR  lpModuleName, LPWORD lpSelector );
-typedef BOOL    WINAPI fn_VDMGetThreadContext( LPDEBUG_EVENT lpDebugEvent, LPVDMCONTEXT lpVDMContext );
-typedef BOOL    WINAPI fn_VDMSetThreadContext( LPDEBUG_EVENT lpDebugEvent, LPVDMCONTEXT lpVDMContext );
-typedef BOOL    WINAPI fn_VDMGetThreadSelectorEntry( HANDLE hProcess, HANDLE hThread, WORD  wSelector, LPVDMLDT_ENTRY lpSelectorEntry );
-#endif
+typedef HANDLE  (WINAPI *OPENTHREADPROC)( DWORD, BOOL, DWORD );
+typedef DWORD   (WINAPI *QUERYDOSDEVICEPROC)( LPCSTR lpDeviceName, LPSTR lpTargetPath, DWORD ucchMax );
+typedef DWORD   (WINAPI *GETMAPPEDFILENAMEPROC)( HANDLE hProcess, LPVOID lpv, LPSTR lpFilename, DWORD nSize );
+typedef HANDLE  (WINAPI *CREATETOOLHELP32SNAPSHOTPROC)( DWORD dwFlags, DWORD th32ProcessID );
+typedef BOOL    (WINAPI *MODULE32FIRSTPROC)( HANDLE hSnapshot, LPMODULEENTRY32 lpme );
+typedef BOOL    (WINAPI *MODULE32NEXTPROC)( HANDLE hSnapshot, LPMODULEENTRY32 lpme );
 
 /* accmap.c */
 extern bool             FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
