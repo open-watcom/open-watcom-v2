@@ -1474,6 +1474,15 @@ int unsetenv( const char *name )
 #define OPENMODE_DENY_READ      0x0030
 #define OPENMODE_DENY_NONE      0x0040
 
+void __NT_timet_to_filetime( time_t t, FILETIME *ft )
+{
+    ULARGE_INTEGER  ulint;
+
+    ulint.QuadPart = ( t + SEC_TO_UNIX_EPOCH ) * WINDOWS_TICK;
+    ft->dwLowDateTime = ulint.u.LowPart;
+    ft->dwHighDateTime = ulint.u.HighPart;
+}
+
 time_t __NT_filetime_to_timet( const FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
