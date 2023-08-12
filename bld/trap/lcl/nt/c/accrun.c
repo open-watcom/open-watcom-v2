@@ -222,12 +222,12 @@ static void remove_bp( HANDLE proc, MYCONTEXT *con, opcode_type old_opcode )
 }
 #endif
 
-static trap_conditions handleBreakpointEvent( DWORD state )
-/**********************************************************
+static trap_conditions handleBreakpointEvent( state_type state )
+/***************************************************************
  * process an encountered break point
  */
 {
-    trap_conditions cond_ret;
+    trap_conditions conditions;
 #if MADARCH & (MADARCH_X86 | MADARCH_X64)
     thread_info     *ti;
     MYCONTEXT       con;
@@ -249,9 +249,9 @@ static trap_conditions handleBreakpointEvent( DWORD state )
             ti->is_foreign = true;
         }
     }
-    cond_ret = COND_NONE;
+    conditions = COND_NONE;
     if( ti != NULL ) {
-        cond_ret = COND_BREAK;
+        conditions = COND_BREAK;
         MyGetThreadContext( ti, &con );
         decIP( &con );
         if( ti->is_foreign ) {
@@ -264,7 +264,7 @@ static trap_conditions handleBreakpointEvent( DWORD state )
                 remove_bp( proc, &con, old_opcode );
                 CloseHandle( proc );
                 set_tbit( &con, true );
-                cond_ret = COND_NONE;
+                conditions = COND_NONE;
             }
         }
         MySetThreadContext( ti, &con );
@@ -273,11 +273,11 @@ static trap_conditions handleBreakpointEvent( DWORD state )
     thread_info *ti;
     MYCONTEXT   con;
 
-    cond_ret = COND_BREAK;
+    conditions = COND_BREAK;
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
     if( ti->brk_addr != 0 && GetIP( &con ) == ti->brk_addr ) {
-        cond_ret = handleSinglestepEvent( state );
+        conditions = handleSinglestepEvent( state );
     }
 #elif MADARCH & MADARCH_PPC
     /* unused parameters */ (void)state;
@@ -285,15 +285,15 @@ static trap_conditions handleBreakpointEvent( DWORD state )
     /*
      * nothing special to do
      */
-    cond_ret = COND_BREAK;
+    conditions = COND_BREAK;
 #else
     #error handleBreakpointEvent not configured
 #endif
-    return( cond_ret );
+    return( conditions );
 }
 
-static trap_conditions handleSinglestepEvent( DWORD state )
-/**********************************************************
+static trap_conditions handleSinglestepEvent( state_type state )
+/***************************************************************
  * process a trace or watch point
  */
 {
@@ -354,8 +354,8 @@ static void getImageNote( IMAGE_NOTE *pin )
 }
 #endif
 
-trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_load )
-/***********************************************************************************
+trap_conditions DebugExecute( state_type state, bool *retflag, bool stop_on_module_load )
+/****************************************************************************************
  * execute program under debug control
  */
 {
@@ -372,7 +372,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
     DWORD           subcode;
     IMAGE_NOTE      imgnote;
 #endif
-    trap_conditions returnCode;
+    trap_conditions conditions;
 
     if( retflag != NULL ) {
         *retflag = false;
@@ -384,7 +384,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
      */
     if( !Slaying ) {
         if( DebugeeEnded || DebugeePid == 0 ) {
-            returnCode = COND_TERMINATE;
+            conditions = COND_TERMINATE;
             goto done;
         }
     }
@@ -415,7 +415,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                     (LPVOID)&opcode, sizeof( opcode ), &bytes );
                 opcode &= 0xfc000000;
                 if( opcode == ( 0x1a << 26 ) || opcode >= ( 0x30 << 26 ) ) {
-                    returnCode = COND_WATCH;
+                    conditions = COND_WATCH;
                     goto done;
                 }
             }
@@ -429,7 +429,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
 #if MADARCH & MADARCH_X64
 #else
         if( IsWin32s && !rc ) {
-            returnCode = COND_LIBRARIES;
+            conditions = COND_LIBRARIES;
             goto done;
         }
 #endif
@@ -447,7 +447,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                     RemoveModuleFromLibList( imgnote.Module, imgnote.FileName );
                     if( !stricmp( imgnote.FileName, CurrEXEName ) ) {
                         DebugeeEnded = true;
-                        returnCode = COND_TERMINATE;
+                        conditions = COND_TERMINATE;
                         goto done;
                     }
                     break;
@@ -459,7 +459,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                     getImageNote( &imgnote );
                     AddLib16( &imgnote );
                     if( !IsWOW && stop_on_module_load ) {
-                        returnCode = 0;
+                        conditions = COND_NONE;
                         goto done;
                     }
                     break;
@@ -480,7 +480,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                         if( retflag != NULL ) {
                             *retflag = true;
                         }
-                        returnCode = COND_NONE;
+                        conditions = COND_NONE;
                         goto done;
                     } else {
                         AddLib16( &imgnote );
@@ -488,16 +488,16 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                     break;
                 case DBG_SINGLESTEP:
                     DebugeeTid = DebugEvent.dwThreadId;
-                    returnCode = handleSinglestepEvent( state );
+                    conditions = handleSinglestepEvent( state );
                     goto done;
                 case DBG_BREAK:
                     DebugeeTid = DebugEvent.dwThreadId;
-                    returnCode = handleBreakpointEvent( state );
+                    conditions = handleBreakpointEvent( state );
                     goto done;
                 case DBG_GPFAULT:
                     DebugeeTid = DebugEvent.dwThreadId;
                     LastExceptionCode = STATUS_ACCESS_VIOLATION;
-                    returnCode = COND_EXCEPTION;
+                    conditions = COND_EXCEPTION;
                     goto done;
                 case DBG_ATTACH:
                     /*
@@ -517,7 +517,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                 default:
                     DebugeeTid = DebugEvent.dwThreadId;
                     LastExceptionCode = STATUS_ACCESS_VIOLATION;
-                    returnCode = COND_EXCEPTION;
+                    conditions = COND_EXCEPTION;
                     goto done;
                 }
                 break;
@@ -531,16 +531,16 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                 break;
             case STATUS_SINGLE_STEP:
                 DebugeeTid = DebugEvent.dwThreadId;
-                returnCode = handleSinglestepEvent( state );
-                if( returnCode != COND_NONE )
+                conditions = handleSinglestepEvent( state );
+                if( conditions != COND_NONE )
                     goto done;
                 break;
             case STATUS_BREAKPOINT:
                 DebugeeTid = DebugEvent.dwThreadId;
                 if( state & STATE_WAIT_FOR_VDM_START )
                     break;
-                returnCode = handleBreakpointEvent( state );
-                if( returnCode != COND_NONE ) {
+                conditions = handleBreakpointEvent( state );
+                if( conditions != COND_NONE ) {
                     goto done;
                 }
                 break;
@@ -552,7 +552,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                 DebugeeTid = DebugEvent.dwThreadId;
                 if( DebugEvent.u.Exception.dwFirstChance == 0 || (state & STATE_EXPECTING_FAULT) != 0 ) {
                     LastExceptionCode = code;
-                    returnCode = COND_EXCEPTION;
+                    conditions = COND_EXCEPTION;
                     goto done;
                 }
                 {
@@ -613,7 +613,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
             DebugeeEnded = true;
             DelProcess( false );
             MyContinueDebugEvent( DBG_CONTINUE );
-            returnCode = COND_TERMINATE;
+            conditions = COND_TERMINATE;
             goto done;
         case LOAD_DLL_DEBUG_EVENT:
             AddLib();
@@ -624,7 +624,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
 #else
             if( stop_on_module_load ) {
 #endif
-                returnCode = COND_LIBRARIES;
+                conditions = COND_LIBRARIES;
                 goto done;
             }
             break;
@@ -637,7 +637,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
 #else
             if( stop_on_module_load ) {
 #endif
-                returnCode = COND_LIBRARIES;
+                conditions = COND_LIBRARIES;
                 goto done;
             }
             break;
@@ -683,7 +683,7 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
                 }
             }
             LocalFree( p );
-            returnCode = 0;
+            conditions = COND_NONE;
             goto done;
         default:
             break;
@@ -691,9 +691,9 @@ trap_conditions DebugExecute( DWORD state, bool *retflag, bool stop_on_module_lo
     }
 done:
     if( DebugString != NULL ) {
-        returnCode = returnCode | COND_MESSAGE | ( BreakOnKernelMessage ? COND_STOP : COND_NONE );
+        conditions = conditions | COND_MESSAGE | ( BreakOnKernelMessage ? COND_STOP : COND_NONE );
     }
-    return( returnCode );
+    return( conditions );
 }
 
 static trap_elen runProg( bool single_step )
@@ -701,7 +701,7 @@ static trap_elen runProg( bool single_step )
  * run threads
  */
 {
-    DWORD       state;
+    state_type  state;
     MYCONTEXT   con;
     bool        thread_state_changed;
     thread_info *ti;

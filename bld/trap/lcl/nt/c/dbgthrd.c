@@ -141,7 +141,7 @@ static void StopDebuggee( void )
             if( hp != NULL ) {
                 TerminateProcess( hp, 0 );
                 CloseHandle( hp );
-                while( (DebugExecute( 0, NULL, false ) & COND_TERMINATE) == 0 )
+                while( (DebugExecute( STATE_NONE, NULL, false ) & COND_TERMINATE) == 0 )
                     {}
                 /*
                  * we must continue the final debug event for everything to

@@ -112,13 +112,15 @@
     (1 + (ULONG_PTR)(d).LimitLow + ((ULONG_PTR)(d).HighWord.Bits.LimitHi << 16L)))
 #endif
 
-#define STATE_NONE                      0x00000000
-#define STATE_WATCH                     0x00000001
-#define STATE_WATCH_386                 0x00000002
-#define STATE_EXPECTING_FAULT           0x00000004
-#define STATE_IGNORE_DEAD_THREAD        0x00000008
-#define STATE_WAIT_FOR_VDM_START        0x00000010
-#define STATE_IGNORE_DEBUG_OUT          0x00000020
+typedef enum {
+    STATE_NONE                  = 0x0000,
+    STATE_WATCH                 = 0x0001,
+    STATE_WATCH_386             = 0x0002,
+    STATE_EXPECTING_FAULT       = 0x0004,
+    STATE_IGNORE_DEAD_THREAD    = 0x0008,
+    STATE_WAIT_FOR_VDM_START    = 0x0010,
+    STATE_IGNORE_DEBUG_OUT      = 0x0020,
+} state_type;
 
 typedef enum contex_type {
     CONTEXT_TYPE_STD,
@@ -244,7 +246,7 @@ extern void             AddMessagePrefix( char *buff, size_t len );
 /* accrun.c */
 extern opcode_type      place_breakpoint_lin( HANDLE process, FARPROC base );
 extern int              remove_breakpoint_lin( HANDLE process, FARPROC base, opcode_type old_opcode );
-extern trap_conditions  DebugExecute( DWORD state, bool *tsc, bool );
+extern trap_conditions  DebugExecute( state_type state, bool *tsc, bool );
 extern void             InterruptProgram( void );
 extern bool             Terminate( void );
 
