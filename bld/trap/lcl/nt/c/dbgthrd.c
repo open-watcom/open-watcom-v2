@@ -157,10 +157,6 @@ static void StopDebuggee( void )
 
 static void RequestDone( void )
 {
-    if( !Shared.control_thread_running ) {
-        return;
-    }
-    Shared.on_control_thread = false;
     if( !IsWindow( DebuggerWindow ) ) {
         DebuggerWindow = NULL;
     }
@@ -182,20 +178,28 @@ static bool DoOneControlRequest( void )
 
     rc = true;
     Shared.on_control_thread = true;
-    if( Shared.request == CTL_STOP ) {
+    switch( Shared.request ) {
+    case CTL_STOP:
         StopDebuggee();
         rc = false;
-    } else if( Shared.request == CTL_START ) {
+        break;
+    case CTL_START:
         Shared.err = 0;
         if( !StartDebuggee() ) {
             Shared.err = GetLastError();
         }
-    } else if( Shared.request == CTL_WAIT ) {
+        break;
+    case CTL_WAIT:
         Shared.rc = DoWaitForDebugEvent();
-    } else if( Shared.request == CTL_CONTINUE ) {
+        break;
+    case CTL_CONTINUE:
         DoContinueDebugEvent( Shared.how );
+        break;
     }
-    RequestDone();
+    if( Shared.control_thread_running ) {
+        Shared.on_control_thread = false;
+        RequestDone();
+    }
     return( rc );
 }
 
@@ -394,7 +398,7 @@ void ParseServiceStuff( char *name,
     ( *pservice_name ) = "";
     ( *pdll_destination ) = "";
     ( *pservice_parm ) = "";
-    while( ( p = strrchr( name, LOAD_PROG_CHR_DELIM ) ) != NULL ) {
+    while( (p = strrchr( name, LOAD_PROG_CHR_DELIM )) != NULL ) {
         if( match( p, LOAD_PROG_STR_DLLNAME ) ) {
             *p = '\0';
             ( *pdll_name ) = p + strlen( LOAD_PROG_STR_DLLNAME ) + 1;
@@ -455,7 +459,7 @@ static bool StartDebuggee( void )
     ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;
     service_manager = NULL;
-    if( service_name[0] ) {
+    if( *service_name != '\0' ) {
         service_manager = OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
         if( service_manager == NULL ) {
             AddMessagePrefix( "Unable to open service manager", 0 );
@@ -538,7 +542,7 @@ static bool StartDebuggee( void )
         }
     }
 
-    if( dll_name[0] && dll_destination[0] ) {
+    if( *dll_name != '\0' && *dll_destination != '\0' ) {
         char *end;
         WIN32_FIND_DATA dat;
         strcpy( buff, dll_destination );
@@ -597,16 +601,16 @@ static bool StartDebuggee( void )
         if( mod != NULL ) {
             select = ( SELECTPROCESS )GetProcAddress( mod, "_SelectProcess@4" );
             if( select != NULL ) {
-                if( Shared.name == NULL || Shared.name[0] == '\0' ) {
-                    Shared.pid = ( *select )( "" );
+                if( Shared.name == NULL || *Shared.name == '\0' ) {
+                    Shared.pid = (*select)( "" );
                 } else {
                     i = 0;
                     for( ;; ) {
                         if( i == 10 ) {
-                            Shared.pid = ( *select )( "" );
+                            Shared.pid = (*select)( "" );
                             break;
                         }
-                        Shared.pid = ( *select )( Shared.name );
+                        Shared.pid = (*select)( Shared.name );
                         if( Shared.pid != 0 && Shared.pid != -1 ) {
                             break;
                         }
