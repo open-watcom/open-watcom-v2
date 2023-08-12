@@ -395,8 +395,8 @@ static DWORD DoFmtMsg( char **p, DWORD err, ... )
     return( len );
 }
 
-void AddMessagePrefix( char *buff, size_t len )
-/*********************************************/
+void AddMessagePrefix( const char *buff, size_t len )
+/***************************************************/
 {
     if( len == 0 ) {
         len = strlen( buff ) + 1;
@@ -511,7 +511,7 @@ trap_retval TRAP_CORE( Set_debug_screen )( void )
     return( 0 );
 }
 
-void say( char *fmt, ... )
+void say( const char *fmt, ... )
 {
     va_list args;
     char    buff[512];

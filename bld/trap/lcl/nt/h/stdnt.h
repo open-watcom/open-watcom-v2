@@ -217,9 +217,9 @@ typedef BOOL    (WINAPI *MODULE32NEXTPROC)( HANDLE hSnapshot, LPMODULEENTRY32 lp
 /* accmap.c */
 extern bool             FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
 extern void             FixUpDLLNames( void );
-extern void             RemoveModuleFromLibList( char *module, char *filename );
+extern void             RemoveModuleFromLibList( const char *module, const char *filename );
 extern bool             IsMagicalFileHandle( HANDLE h );
-extern HANDLE           GetMagicalFileHandle( char *name );
+extern HANDLE           GetMagicalFileHandle( const char *name );
 #ifdef WOW
 extern void             AddProcess16( header_info * );
 #endif
@@ -241,12 +241,12 @@ extern DWORD            ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
 /* accmisc.c */
 extern bool             GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt );
 extern bool             IsBigSel( WORD sel );
-extern void             AddMessagePrefix( char *buff, size_t len );
+extern void             AddMessagePrefix( const char *prefix, size_t len );
 
 /* accrun.c */
 extern opcode_type      place_breakpoint_lin( HANDLE process, FARPROC base );
 extern int              remove_breakpoint_lin( HANDLE process, FARPROC base, opcode_type old_opcode );
-extern trap_conditions  DebugExecute( state_type state, bool *tsc, bool );
+extern trap_conditions  DebugExecute( state_type state, bool *retflag, bool );
 extern void             InterruptProgram( void );
 extern bool             Terminate( void );
 
@@ -257,7 +257,7 @@ extern bool             MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
 /* peread.c */
 extern bool             SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size );
 extern bool             GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack );
-extern bool             GetModuleName( HANDLE fhdl, char *name );
+extern bool             GetModuleName( HANDLE fhdl, char *buff, size_t maxlen );
 
 /* thread.c */
 extern void             AddThread( DWORD tid, HANDLE th, FARPROC sa );
@@ -289,4 +289,4 @@ extern FARPROC          AdjustIP( MYCONTEXT *, int );
 extern FARPROC          GetIP( MYCONTEXT * );
 extern void             SetIP( MYCONTEXT *, FARPROC );
 
-extern void             say( char *fmt, ... );
+extern void             say( const char *fmt, ... );

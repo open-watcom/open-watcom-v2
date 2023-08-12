@@ -139,8 +139,8 @@ static void addModuleToLibList( DWORD module )
     }
 }
 
-void RemoveModuleFromLibList( char *module, char *filename )
-/***********************************************************
+void RemoveModuleFromLibList( const char *module, const char *filename )
+/***********************************************************************
  * removes a module from our list once it is
  * unloaded or exits
  */
@@ -278,12 +278,12 @@ void AddProcess( header_info *hi )
     }
     llo->base = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
     FillInExceptInfo( llo );
-    llo->modname[0] = 0;
-    llo->filename[0] = 0;
+    llo->modname[0] = '\0';
+    llo->filename[0] = '\0';
 }
 
-static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *name )
-/*************************************************************************
+static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *buff, size_t maxlen )
+/****************************************************************************************
  * get fully qualified filename for last DLL
  * that was loaded in process. Intended for Win9x.
  */
@@ -291,6 +291,7 @@ static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *name )
     HANDLE          hModuleSnap = INVALID_HANDLE_VALUE;
     MODULEENTRY32   me32;
     bool            bSuccess = false;
+    size_t          len;
 
     /*
      * Check if we have the KERNEL32 entrypoints.
@@ -312,19 +313,26 @@ static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *name )
      */
     if( !pModule32First( hModuleSnap, &me32 ) )
         goto error_exit;
-    /*
-     * Look for freshly loaded module. Not tested on Win9x.
-     * Unfortunately in WinXP not all newly loaded modules are in the list.
-     * This should not be relevant as all NT versions will use the PSAPI method anyway.
-     * The PSAPI method works reliably but is not available on Win9x.
-     */
-    do {
-        if( me32.modBaseAddr == llo->base ) {
-            strcpy( name, me32.szExePath );
-            bSuccess = true;
-            break;
-        }
-    } while( pModule32Next( hModuleSnap, &me32 ) );
+    if( maxlen > 0 ) {
+        maxlen--;
+        /*
+         * Look for freshly loaded module. Not tested on Win9x.
+         * Unfortunately in WinXP not all newly loaded modules are in the list.
+         * This should not be relevant as all NT versions will use the PSAPI method anyway.
+         * The PSAPI method works reliably but is not available on Win9x.
+         */
+        do {
+            if( me32.modBaseAddr == llo->base ) {
+                len = strlen( me32.szExePath );
+                if( maxlen > len )
+                    maxlen = len;
+                strncpy( buff, me32.szExePath, maxlen );
+                buff[maxlen] = '\0';
+                bSuccess = true;
+                break;
+            }
+        } while( pModule32Next( hModuleSnap, &me32 ) );
+    }
 
 error_exit:
     if( hModuleSnap != INVALID_HANDLE_VALUE )
@@ -333,8 +341,8 @@ error_exit:
     return( bSuccess );
 }
 
-static bool NameFromHandle( HANDLE hFile, char *name )
-/*****************************************************
+static bool NameFromHandle( HANDLE hFile, char *buff, size_t maxlen )
+/********************************************************************
  * get fully qualified filename from file handle.
  * Intended for Windows NT.
  */
@@ -348,7 +356,7 @@ static bool NameFromHandle( HANDLE hFile, char *name )
     DWORD       dwFileSizeHi;
     DWORD       dwFileSizeLo;
 
-    name[0] = 0;
+    name[0] = '\0';
     /*
      * Check if we have the required entrypoints (results depend on OS version).
      */
@@ -377,46 +385,51 @@ static bool NameFromHandle( HANDLE hFile, char *name )
     /*
      * Translate path with device name to drive letters.
      */
-    szTemp[0] = '\0';
+    if( maxlen > 3 ) {
+        maxlen -= 3;
 
-    if( GetLogicalDriveStrings( BUFSIZE - 1, szTemp ) ) {
-        char    szName[MAX_PATH];
-        char    szDrive[3] = " :";
-        bool    bFound = false;
-        char    *p = szTemp;
+        szTemp[0] = '\0';
+        if( GetLogicalDriveStrings( BUFSIZE - 1, szTemp ) ) {
+            char    szName[MAX_PATH];
+            char    *p = szTemp;
 
-        do {
-            /*
-             * Copy the drive letter to the template string
-             */
-            *szDrive = *p;
-            /*
-             * Look up each device name
-             */
-            if( pQueryDosDevice( szDrive, szName, BUFSIZE ) ) {
-                size_t  len = strlen( szName );
-                if( len < MAX_PATH ) {
-                    bFound = ( strnicmp( pszFilename, szName, len ) == 0
-                               && pszFilename[len] == '\\' );
-                    if( bFound ) {
-                        /*
-                         * Reconstruct pszFilename using szTemp
-                         * Replace device path with DOS path
-                         */
-                        strcpy( name, szDrive );
-                        strcat( name, pszFilename + len );
-                        bSuccess = true;
-                        break;
+            buff[1] = ':';
+            buff[2] = '\0';
+            do {
+                /*
+                 * Copy the drive letter to the template string
+                 */
+                buff[0] = *p;
+                /*
+                 * Look up each device name
+                 */
+                if( pQueryDosDevice( buff, szName, BUFSIZE ) ) {
+                    size_t  len = strlen( szName );
+                    if( len < MAX_PATH ) {
+                        if( strnicmp( pszFilename, szName, len ) == 0 && pszFilename[len] == '\\' ) {
+                            /*
+                             * Reconstruct pszFilename using szTemp
+                             * Replace device path with DOS path
+                             */
+                            p = pszFilename + len;
+                            len = strlen( p );
+                            if( maxlen > len )
+                                maxlen = len;
+                            strncpy( buff + 2, p, maxlen );
+                            buff[maxlen + 2] = '\0';
+                            bSuccess = true;
+                            break;
+                        }
                     }
                 }
-            }
-            /*
-             * Go to the next NULL character.
-             */
-            while( *p++ != '\0' ) {
-                {}
-            }
-        } while( *p != '\0' ); // end of string
+                /*
+                 * Go to the next NULL character.
+                 */
+                while( *p++ != '\0' ) {
+                    {}
+                }
+            } while( *p != '\0' ); // end of string
+        }
     }
 
 error_exit:
@@ -478,12 +491,12 @@ void AddLib( void )
      */
     llo->file_handle = DebugEvent.u.LoadDll.hFile;
     llo->base = DebugEvent.u.LoadDll.lpBaseOfDll;
-    llo->modname[0] = 0;
-    if ( NameFromHandle( llo->file_handle, llo->filename) ) {
+    llo->modname[0] = '\0';
+    if ( NameFromHandle( llo->file_handle, llo->filename, sizeof( llo->filename ) ) ) {
         llo->has_real_filename = true;
-    } else if( NameFromProcess( llo, DebugeePid, llo->filename ) ) {
+    } else if( NameFromProcess( llo, DebugeePid, llo->filename, sizeof( llo->filename ) ) ) {
         llo->has_real_filename = true;
-    } else if( !GetModuleName( llo->file_handle, llo->filename ) ) {
+    } else if( !GetModuleName( llo->file_handle, llo->filename, sizeof( llo->filename ) ) ) {
         lastLib++;
         strcpy( llo->filename, libPrefix );
         ultoa( lastLib, &llo->filename[sizeof( libPrefix ) - 1], 16 );
@@ -536,10 +549,14 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
  * will be loaded into memory.
  */
 {
-    static unsigned char    getMemIns[INS_BYTES] = {
-        0x8e, 0xc0, 0x26, 0xa1, 0x00, 0x00, 0xcc
+    #define INS_BYTES sizeof( getMemIns )
+
+    static unsigned char    getMemIns[] = {
+        0x8e, 0xc0,                 /* mov es,ax */
+        0x26, 0xa1, 0x00, 0x00,     /* mov ax,es:[0] */
+        0xcc                        /* int3 */
     };
-    static unsigned char    origBytes[INS_BYTES];
+    static unsigned char    origBytes[INS_BYTES] = { 0 };
     static bool             gotOrig;
     MYCONTEXT               con;
     MYCONTEXT               oldcon;
@@ -704,8 +721,8 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     return( sizeof( *ret ) );
 }
 
-HANDLE GetMagicalFileHandle( char *name )
-/****************************************
+HANDLE GetMagicalFileHandle( const char *name )
+/**********************************************
  * check if name is already opened by NT
  */
 {

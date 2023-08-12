@@ -145,7 +145,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 #endif
 }
 
-bool GetModuleName( HANDLE fhdl, char *name )
+bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
 {
     header_info         hi;
     pe_object           obj;
@@ -153,7 +153,6 @@ bool GetModuleName( HANDLE fhdl, char *name )
     DWORD               lenread;
     DWORD               export_rva;
     DWORD               i;
-    char                buf[_MAX_PATH];
     WORD                stack;
     int                 num_objects;
 
@@ -183,17 +182,18 @@ bool GetModuleName( HANDLE fhdl, char *name )
     if( !SeekRead( fhdl, obj.physical_offset + export_rva - obj.rva, &expdir, sizeof( expdir ) ) ) {
         return( false );
     }
-    if( !SeekRead( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, buf, _MAX_PATH ) ) {
+    if( !SeekRead( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, buff, maxlen ) ) {
         return( false );
     }
     if( SetFilePointer( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
         return( false );
     }
-    if( !ReadFile( fhdl, buf, _MAX_PATH, &lenread, NULL ) ) {
+    if( maxlen > 0 )
+        maxlen--;
+    if( !ReadFile( fhdl, buff, maxlen, &lenread, NULL ) ) {
         return( false );
     }
-    memcpy( name, buf, lenread );
-    name[lenread] = '\0';
+    buff[lenread] = '\0';
     return( true );
 }
 
