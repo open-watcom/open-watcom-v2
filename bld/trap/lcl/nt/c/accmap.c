@@ -348,15 +348,20 @@ static bool NameFromHandle( HANDLE hFile, char *buff, size_t maxlen )
  */
 {
 #define BUFSIZE 512
-    bool        bSuccess = false;
+    bool        bSuccess;
     char        pszFilename[MAX_PATH + 1];
-    HANDLE      hFileMap = NULL;
-    void        *pMem = NULL;
+    HANDLE      hFileMap;
+    void        *pMem;
     char        szTemp[BUFSIZE];
     DWORD       dwFileSizeHi;
     DWORD       dwFileSizeLo;
 
-    name[0] = '\0';
+    pMem = NULL;
+    hFileMap = NULL;
+    bSuccess = false;
+    if( maxlen == 0 )
+        goto error_exit;
+    buff[0] = '\0';
     /*
      * Check if we have the required entrypoints (results depend on OS version).
      */
@@ -433,9 +438,9 @@ static bool NameFromHandle( HANDLE hFile, char *buff, size_t maxlen )
     }
 
 error_exit:
-    if( pMem )
+    if( pMem != NULL )
         UnmapViewOfFile( pMem );
-    if( hFileMap )
+    if( hFileMap != NULL )
         CloseHandle( hFileMap );
     return( bSuccess );
 #undef BUFSIZE
@@ -541,8 +546,6 @@ void DelProcess( bool closeHandles )
 
 #if defined( WOW )
 
-#define INS_BYTES 7
-
 static void force16SegmentLoad( thread_info *ti, WORD sel )
 /**********************************************************
  * force a wow app to access its segment so that it
@@ -564,7 +567,6 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
     if( !UseVDMStuff ) {
         return;
     }
-
     if( !gotOrig ) {
         gotOrig = true;
         ReadMemory( &WOWAppInfo.addr, origBytes, INS_BYTES );
@@ -579,6 +581,8 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
     DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD | STATE_EXPECTING_FAULT, NULL, false );
     MySetThreadContext( ti, &oldcon );
     WriteMemory( &WOWAppInfo.addr, origBytes, INS_BYTES );
+
+    #undef INS_BYTES
 }
 
 #endif  /* defined( WOW ) */
