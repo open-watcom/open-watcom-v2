@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,6 +129,9 @@
 
 #define DEFAULT_PORT    0x0DEB  /* 3563 */
 
+#define OW_INADDR_LOOPBACK  0x7F000001UL
+#define OW_INADDR_INVALID   ((unsigned_32)-1)
+
 #if defined( __RDOS__ )
     #define INVALID_SOCKET          0
     #define IS_VALID_SOCKET(x)      (x!=INVALID_SOCKET && !RdosIsTcpConnectionClosed(x))
@@ -167,6 +170,8 @@
     #define trp_socklen             socklen_t
     #define soclose( s )            close( s )
 #endif
+
+
 #if !defined( __NT__ ) && !defined( __WINDOWS__ )
     typedef struct sockaddr         *LPSOCKADDR;
 #endif
@@ -440,7 +445,7 @@ static unsigned_32 get_addr( const char *p )
     unsigned_32 addr;
 
     addr = inet_addr( p );
-    if( addr == INADDR_NONE ) {
+    if( addr == OW_INADDR_INVALID ) {
         struct hostent  *hp;
 
         hp = gethostbyname( p );
@@ -448,7 +453,7 @@ static unsigned_32 get_addr( const char *p )
             addr = 0;
             memcpy( &addr, hp->h_addr, hp->h_length );
         } else {
-            addr = INADDR_NONE;
+            addr = OW_INADDR_INVALID;
         }
     }
     return( addr );
@@ -495,7 +500,7 @@ const char *RemoteLink( const char *parms, bool server )
 
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.s_addr = INADDR_ANY;
+    socket_address.sin_addr.s_addr = htonl( INADDR_ANY );
     socket_address.sin_port = htons( port );
     if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
@@ -545,6 +550,7 @@ const char *RemoteLink( const char *parms, bool server )
   #else
     char        buff[128];
     char        *p;
+    unsigned_32 addr;
 
     #if defined(__NT__) || defined(__WINDOWS__)
     {
@@ -573,10 +579,12 @@ const char *RemoteLink( const char *parms, bool server )
     /* Setup for socket connect using parms specified by command line. */
     socket_address.sin_family = AF_INET;
     /* OS/2's TCP/IP gethostbyname doesn't handle numeric addresses */
-    socket_address.sin_addr.s_addr = get_addr( buff );
-    if( socket_address.sin_addr.s_addr == INADDR_NONE ) {
-        return( TRP_ERR_unknown_host );
+    addr = get_addr( buff );
+    if( addr == OW_INADDR_INVALID ) {
+        addr = OW_INADDR_LOOPBACK;
+//        return( TRP_ERR_unknown_host );
     }
+    socket_address.sin_addr.s_addr = htonl( addr );
     socket_address.sin_port = htons( port );
   #endif
 #endif
