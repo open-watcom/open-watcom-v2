@@ -41,14 +41,14 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
 
     switch( msg ) {
     case WM_INITDIALOG:
-        SetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, ServParms );
-        SendDlgItemMessage( hwnd, IDDI_SOCKET_NUMBER, EM_SETSEL, 0, -1 );
+        SetDlgItemText( hwnd, IDDI_PIPE_NAME, ServParms );
+        SendDlgItemMessage( hwnd, IDDI_PIPE_NAME, EM_SETSEL, 0, -1 );
         return( TRUE );
 
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            GetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, ServParms, PARMS_MAXLEN );
+            GetDlgItemText( hwnd, IDDI_PIPE_NAME, ServParms, PARMS_MAXLEN );
         case IDCANCEL:
             EndDialog( hwnd, TRUE );
             return( TRUE );

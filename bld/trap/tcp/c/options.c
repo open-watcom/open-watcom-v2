@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,14 +42,14 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
 
     switch( msg ) {
     case WM_INITDIALOG:
-        SetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, ServParms );
-        SendDlgItemMessage( hwnd, IDDI_SOCKET_NUMBER, EM_SETSEL, 0, -1 );
+        SetDlgItemText( hwnd, IDDI_PORT_NUMBER, ServParms );
+        SendDlgItemMessage( hwnd, IDDI_PORT_NUMBER, EM_SETSEL, 0, -1 );
         return( true );
 
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            GetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, ServParms, PARMS_MAXLEN );
+            GetDlgItemText( hwnd, IDDI_PORT_NUMBER, ServParms, PARMS_MAXLEN );
         case IDCANCEL:
             EndDialog( hwnd, true );
             return( true );

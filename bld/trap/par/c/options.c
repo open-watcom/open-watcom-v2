@@ -78,7 +78,7 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
             break;
         case 'p':
         case 'P':
-            SendDlgItemMessage( hwnd, IDDI_PORT, BM_SETCHECK, 1, 0 );
+            SendDlgItemMessage( hwnd, IDDI_PORT_ADDR, BM_SETCHECK, 1, 0 );
             SetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1 );
             EnableWindow( edit, TRUE );
         }
@@ -100,7 +100,7 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
                 ServParms[0] = '2';
             } else if( SendDlgItemMessage( hwnd, IDDI_LPT3, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
                 ServParms[0] = '3';
-            } else if( SendDlgItemMessage( hwnd, IDDI_PORT, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
+            } else if( SendDlgItemMessage( hwnd, IDDI_PORT_ADDR, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
                 ServParms[0] = 'p';
                 GetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1, PARMS_MAXLEN - 1 );
             } else {
@@ -121,7 +121,7 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
             SetDlgItemText( hwnd, IDDI_PORT_EDIT, utoa( PrnAddress( 2 ), buff, 16 ) );
             EnableWindow( edit, FALSE );
             break;
-        case IDDI_PORT:
+        case IDDI_PORT_ADDR:
             SetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms[0] == '\0' ? "" : ServParms + 1 );
             EnableWindow( edit, TRUE );
             break;
