@@ -7,9 +7,9 @@
 
 // Use low-color icons for Windows 3.x.
 #ifdef __WINDOWS__
-ServerIcon ICON winsrv30.ico
+ServerIcon ICON servw30.ico
 #else
-ServerIcon ICON winserv.ico
+ServerIcon ICON servw.ico
 #endif
 
 ServerMenu MENU
