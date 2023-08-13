@@ -100,7 +100,8 @@ static void OpeningStatement( void )
 
 int main( int argc, char **argv )
 {
-    char key;
+    char        key;
+    const char  *err;
 
 #ifndef __WATCOMC__
     _argc = argc;
