@@ -138,11 +138,13 @@ static const char *ServInitialize( void )
     TrapVer = TrapInit( "", RWBuff, false );
     if( RWBuff[0] != '\0' ) {
 // NO, NO, NO!  RemoteUnLink();
-        StartupErr( RWBuff );
+        err = RWBuff;
+        return( err );
     }
     _DBG(( "No TrapInit error. Initialize complete" ));
     Out[0].len = sizeof( RWBuff );
     Out[0].ptr = RWBuff;
+    return( err );
 }
 
 

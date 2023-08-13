@@ -334,7 +334,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 void ServError( const char *msg )
 {
     ShowWindow( hwndMain, SW_RESTORE );
-    MessageBox( NULL, msg, TRP_The_WATCOM_Debugger, MB_APPLMODAL+MB_OK );
+    OutputLine( msg );
     SessionError = true;
 }
 
