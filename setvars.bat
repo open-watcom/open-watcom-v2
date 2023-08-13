@@ -62,7 +62,7 @@ REM Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator execut
 REM path must not include spaces
 
 REM For Windows host we use Windows CI copy of appropriate tools
-set OWDOSBOX=%OWROOT%\ci\nt386\dosbox-x.exe
+set OWDOSBOX=%OWROOT%\ci\nt386\dosbox.exe
 :csetup3
 
 REM ###############################
