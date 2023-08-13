@@ -72,8 +72,6 @@ void ServTerminate( int return_code )
 void StartupErr( const char *err )
 {
     OutputToScreen( systemConsoleScreen, "%s\r\n", err );
-    ServTerminate( 1 );
-    // never return
 }
 
 int KeyPress( void )

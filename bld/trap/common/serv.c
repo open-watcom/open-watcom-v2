@@ -65,7 +65,7 @@ void ServMessage( const char *msg )
     ServError( msg );
 }
 
-static void Initialize( void )
+static const char *ServInitialize( void )
 {
 
     const char  *err;
@@ -75,17 +75,17 @@ static void Initialize( void )
 #define servparms RWBuff
 
     _bgetcmd( cmd_line, sizeof( cmd_line ) );
-    ParseCommandLine( cmd_line, trapparms, servparms, &OneShot );
-    err = RemoteLink( servparms, true );
+    err = ParseCommandLine( cmd_line, trapparms, servparms, &OneShot );
+    if( err == NULL ) {
+        err = RemoteLink( servparms, true );
+    }
 
 #undef servparms
 
     if( err == NULL ) {
         err = LoadTrap( trapparms, RWBuff, &TrapVersion );
     }
-    if( err != NULL ) {
-        StartupErr( err );
-    }
+    return( err );
 }
 
 static void OpeningStatement( void )
@@ -109,7 +109,11 @@ int main( int argc, char **argv )
     /* unused parameters */ (void)argc; (void)argv;
 #endif
 
-    Initialize();
+    err = ServInitialize();
+    if( err != NULL ) {
+        StartupErr( err );
+        return( 1 );
+    }
     OpeningStatement();
     for( ;; ) {
         OutputLine( TRP_MSG_press_q );

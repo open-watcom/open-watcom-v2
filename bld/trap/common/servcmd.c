@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,16 +79,18 @@ static const char *GetFilename( const char *ptr, char *buff )
     return( ptr );
 }
 
-static const char *CollectTrapParm( const char *ptr, char *buff )
+static const char *CollectTrapParm( const char *ptr, char *buff, const char **perr )
 {
     unsigned    num;
 
+    *perr = NULL;
     if( *ptr == '{' ) {
         ++ptr;
         num = 1;
         for( ;; ) {
             if( *ptr == '\0' ) {
-                StartupErr( TRP_ERR_expect_brace );
+                *perr = TRP_ERR_expect_brace;
+                break;
             } else if( *ptr == '{' ) {
                 ++num;
             } else if( *ptr == '}' ) {
@@ -112,12 +114,13 @@ static const char *CollectTrapParm( const char *ptr, char *buff )
     #define IS_OPTION( c )      ((c) == '-' || (c) == '/')
 #endif
 
-bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bool *oneshot )
-/*******************************************************************************************/
+const char *ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bool *oneshot )
+/**************************************************************************************************/
 {
     const char  *start;
     const char  *ptr;
     char        *buff;
+    const char  *err;
 
     *oneshot = false;
     *trapparms = '\0';
@@ -128,8 +131,7 @@ bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bo
 #endif
     ptr = SkipSpaces( cmdline );
     if( WantUsage( ptr ) ) {
-        StartupErr( ServUsage );
-        return( false );
+        return( ServUsage );
     }
     while( IS_OPTION( *ptr ) ) {
         ptr = SkipSpaces( ptr + 1 );
@@ -138,30 +140,36 @@ bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bo
         while( isalpha( *ptr ) )
             ++ptr;
         if( ptr == start ) {
-            StartupErr( TRP_ERR_expect_option );
-            return( false );
+            return( TRP_ERR_expect_option );
         } else if( strnicmp( "trap", start, ptr - start ) == 0 ) {
             ptr = SkipSpaces( ptr );
             if( *ptr != '=' && *ptr != '#' ) {
-                StartupErr( TRP_ERR_expect_equal );
-                return( false );
+                return( TRP_ERR_expect_equal );
             }
             ptr = SkipSpaces( GetFilename( ptr + 1, trapparms ) );
             if( *ptr == TRAP_PARM_SEPARATOR ) {
                 buff = trapparms + strlen( trapparms );
                 *buff++ = TRAP_PARM_SEPARATOR;
-                ptr = CollectTrapParm( SkipSpaces( ptr + 1 ), buff );
+                ptr = CollectTrapParm( SkipSpaces( ptr + 1 ), buff, &err );
+                if( err != NULL ) {
+                    return( err );
+                }
             } else if( *ptr == '{'/*}*/ ) {
                 buff = trapparms + strlen( trapparms );
                 *buff++ = TRAP_PARM_SEPARATOR;
-                ptr = CollectTrapParm( ptr, buff );
+                ptr = CollectTrapParm( ptr, buff, &err );
+                if( err != NULL ) {
+                    return( err );
+                }
             }
         } else if( strnicmp( "once", start, ptr - start ) == 0 ) {
             *oneshot = true;
         }
         ptr = SkipSpaces( ptr );
     }
-    CollectTrapParm( ptr, servparms );
-    TrapVersion.remote = true;
-    return( true );
+    CollectTrapParm( ptr, servparms, &err );
+    if( err == NULL ) {
+        TrapVersion.remote = true;
+    }
+    return( err );
 }

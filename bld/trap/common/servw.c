@@ -54,13 +54,13 @@ HANDLE          Instance;
 
 static char     ServerClass[32]="ServerClass";
 static HWND     hwndMain;
-static bool     SessionError;
-static bool     Connected;
-static bool     Linked;
-static bool     OneShot;
+static bool     SessionError = false;
+static bool     Connected = false;
+static bool     Linked = false;
+static bool     OneShot = false;
 
-static BOOL     FirstInstance( HINSTANCE );
-static BOOL     AnyInstance( HINSTANCE, int, LPSTR );
+static bool     FirstInstance( HINSTANCE );
+static bool     AnyInstance( HINSTANCE, int, LPSTR );
 
 #define MENU_ON     (MF_ENABLED+MF_BYCOMMAND)
 #define MENU_OFF    (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
@@ -97,10 +97,9 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
  * FirstInstance - register window class for the application,
  *                 and do any other application initialization
  */
-static BOOL FirstInstance( HINSTANCE this_inst )
+static bool FirstInstance( HINSTANCE this_inst )
 {
     WNDCLASS    wc;
-    BOOL        rc;
 
     /*
      * set up and register window class
@@ -115,12 +114,11 @@ static BOOL FirstInstance( HINSTANCE this_inst )
     wc.hbrBackground = GetStockObject( WHITE_BRUSH );
     wc.lpszMenuName = "ServerMenu";
     wc.lpszClassName = ServerClass;
-    rc = RegisterClass( &wc );
-    return( rc );
+    return( RegisterClass( &wc ) != 0 );
 
 } /* FirstInstance */
 
-static void EnableMenus( HWND hwnd, BOOL connected, BOOL session )
+static void EnableMenus( HWND hwnd, bool connected, bool session )
 /****************************************************************/
 {
     HMENU hMenu;
@@ -140,18 +138,18 @@ static void EnableMenus( HWND hwnd, BOOL connected, BOOL session )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
+static bool AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 {
     const char  *err;
     char        trapparms[PARMS_MAXLEN];
 
-    if( !ParseCommandLine( cmdline, trapparms, ServParms, &OneShot ) ) {
-        return( FALSE );
+    err = ParseCommandLine( cmdline, trapparms, ServParms, &OneShot );
+    if( err == NULL ) {
+        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
     }
-    err = LoadTrap( trapparms, RWBuff, &TrapVersion );
     if( err != NULL ) {
         StartupErr( err );
-        return( FALSE );
+        return( false );
     }
     /*
      * create main window
@@ -171,7 +169,7 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
         );
 
     if( !hwndMain )
-        return( FALSE );
+        return( false );
 
 #ifdef __NT__
     TRAP_EXTFUNC( InfoFunction )( hwndMain );
@@ -184,7 +182,7 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
     UpdateWindow( hwndMain );
     SendMessage( hwndMain, WM_COMMAND, MENU_CONNECT, 0 );
 
-    return( TRUE );
+    return( true );
 
 } /* AnyInstance */
 
@@ -210,8 +208,8 @@ WINEXPORT BOOL CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 } /* AboutDlgProc */
 
-static bool Disconnect = FALSE;
-static bool Exit = FALSE;
+static bool Disconnect = false;
+static bool Exit = false;
 /*
  * WindowProc - handle messages for the main application window
  */
@@ -220,6 +218,8 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     DLGPROC     dlgproc;
     const char  *err;
     HMENU       hMenu;
+
+    #define ServTerminateWin(rc)    PostQuitMessage(rc)
 
     switch( msg ) {
     case WM_COMMAND:
@@ -231,70 +231,71 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             break;
 
         case MENU_DISCONNECT:
-            Disconnect = TRUE;
+            Disconnect = true;
             break;
         case MENU_CONNECT:
-            Disconnect = FALSE;
-            SessionError = FALSE;
+            Disconnect = false;
+            SessionError = false;
             err = NULL;
             if( !Linked ) {
                 HCURSOR cursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
-                err = RemoteLink( ServParms, TRUE );
+                err = RemoteLink( ServParms, true );
                 SetCursor( cursor );
             }
-            EnableMenus( hwnd, TRUE, FALSE );
+            EnableMenus( hwnd, true, false );
             if( err != NULL ) {
                 ServError( err );
+                ServTerminateWin( 1 );
             } else {
-                Linked = TRUE;
+                Linked = true;
                 while( !Disconnect ) {
                     MSG         peek;
                     if( PeekMessage( &peek, (HWND)0, 0, (UINT)-1, PM_NOREMOVE ) ) {
                         if( !GetMessage( (LPVOID)&peek, (HWND)0, 0, 0 ) ) {
-                            Disconnect = TRUE;
-                            Exit = TRUE;
+                            Disconnect = true;
+                            Exit = true;
                             break;
                         }
                         TranslateMessage( &peek );
                         DispatchMessage( &peek );
                     }
                     if( RemoteConnect() ) {
-                        Connected = TRUE;
+                        Connected = true;
                         ShowWindow( hwnd, SW_MINIMIZE );
                         UpdateWindow( hwnd );
                         hMenu = GetMenu( hwnd );
-                        EnableMenus( hwnd, TRUE, TRUE );
+                        EnableMenus( hwnd, true, true );
                         Session();
-                        EnableMenus( hwnd, TRUE, FALSE );
+                        EnableMenus( hwnd, true, false );
                         ShowWindow( hwnd, SW_RESTORE );
                         RemoteDisco();
-                        Connected = FALSE;
+                        Connected = false;
                         if( OneShot )
-                            PostQuitMessage( 0 );
+                            ServTerminateWin( 0 );
                         break;
                     }
                     NothingToDo();
                 }
             }
-            EnableMenus( hwnd, FALSE, FALSE );
+            EnableMenus( hwnd, false, false );
             if( !Disconnect && !SessionError ) {
                 SendMessage( hwndMain, WM_COMMAND, MENU_CONNECT, 0 );
             }
             if( Exit )
-                PostQuitMessage( 0 );
+                ServTerminateWin( 0 );
             break;
         case MENU_OPTIONS:
             dlgproc = MakeProcInstance_DLG( OptionsDlgProc, Instance );
             if( Linked )
                 RemoteUnLink();
-            Linked = FALSE;
+            Linked = false;
             DialogBox( Instance, "Options", hwnd, dlgproc );
             FreeProcInstance_DLG( dlgproc );
             break;
         case MENU_EXIT:
-            Disconnect = TRUE;
-            Exit = TRUE;
-            PostQuitMessage( 0 );
+            Disconnect = true;
+            Exit = true;
+            ServTerminateWin( 0 );
             break;
         case MENU_BREAK:
 #if defined( _M_I86 )
@@ -314,7 +315,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
         break;
 
     case WM_DESTROY:
-        PostQuitMessage( 0 );
+        ServTerminateWin( 0 );
         break;
 
     case WM_CLOSE:
@@ -326,6 +327,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     }
     return( 0L );
 
+    #undef ServTerminateWin
 } /* WindowProc */
 
 
@@ -333,7 +335,7 @@ void ServError( const char *msg )
 {
     ShowWindow( hwndMain, SW_RESTORE );
     MessageBox( NULL, msg, TRP_The_WATCOM_Debugger, MB_APPLMODAL+MB_OK );
-    SessionError = TRUE;
+    SessionError = true;
 }
 
 void StartupErr( const char *err )

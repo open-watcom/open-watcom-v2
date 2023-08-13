@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,7 +116,7 @@ bool Session( void )
 }
 
 
-static void Initialize( void )
+static const char *ServInitialize( void )
 {
     const char  *err;
 
@@ -131,9 +131,8 @@ static void Initialize( void )
         for( ;; ) {
             ads_link( RSERR );
         }
-#else
-        StartupErr( err );
 #endif
+        return( err );
     }
     _DBG(( "No Remote link error. About to TrapInit." ));
     TrapVer = TrapInit( "", RWBuff, false );
@@ -149,11 +148,17 @@ static void Initialize( void )
 
 int main( void )
 {
+    const char  *err;
+
 #ifdef ACAD
     ACADInit();
 #endif
     _DBG(("Calling Initialize\n"));
-    Initialize();
+    err = ServInitialize();
+    if( err != NULL ) {
+        StartupErr( err );
+        return( 1 );
+    }
     _DBG(("Calling RemoteConnect\n"));
     RemoteConnect();
     _DBG(("Calling Session\n"));

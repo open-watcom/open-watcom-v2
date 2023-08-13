@@ -46,6 +46,4 @@ void OutputLine( const char *str )
 void StartupErr( const char *err )
 {
     OutputLine( err );
-    exit( 1 );
-    // never return
 }

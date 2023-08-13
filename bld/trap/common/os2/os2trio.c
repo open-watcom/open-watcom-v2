@@ -56,8 +56,6 @@ void ServTerminate( int return_code )
 void StartupErr( const char *err )
 {
     OutputLine( err );
-    ServTerminate( 1 );
-    // never return
 }
 
 int KeyPress( void )
