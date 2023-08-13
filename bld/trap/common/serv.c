@@ -122,7 +122,7 @@ int main( int argc, char **argv )
                 if( key == 'q' || key == 'Q' ) {
                     KillTrap();
                     RemoteUnLink();
-                    SayGNiteGracey( 0 );
+                    ServTerminate( 0 );
                 }
             }
         }
@@ -142,7 +142,7 @@ int main( int argc, char **argv )
         if( OneShot ) {
             KillTrap();
             RemoteUnLink();
-            SayGNiteGracey( 0 );
+            ServTerminate( 0 );
         }
     }
     return( 0 );

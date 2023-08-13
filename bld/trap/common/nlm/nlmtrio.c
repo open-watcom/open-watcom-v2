@@ -56,7 +56,7 @@ void OutputLine( const char *str )
     SetInputToOutputCursorPosition( screenID );
 }
 
-void SayGNiteGracey( int return_code )
+void ServTerminate( int return_code )
 {
     return_code = return_code;
     KillMe( MyNLMHandle );
@@ -72,7 +72,7 @@ void SayGNiteGracey( int return_code )
 void StartupErr( const char *err )
 {
     OutputToScreen( systemConsoleScreen, "%s\r\n", err );
-    SayGNiteGracey( 1 );
+    ServTerminate( 1 );
     // never return
 }
 

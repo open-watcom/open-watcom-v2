@@ -46,7 +46,7 @@ void OutputLine( const char *str )
     putch( '\n' );
 }
 
-void SayGNiteGracey( int return_code )
+void ServTerminate( int return_code )
 {
     RdosUnloadExe( return_code );
     // never return
@@ -55,7 +55,7 @@ void SayGNiteGracey( int return_code )
 void StartupErr( const char *err )
 {
     OutputLine( err );
-    SayGNiteGracey( 1 );
+    ServTerminate( 1 );
     // never return
 }
 

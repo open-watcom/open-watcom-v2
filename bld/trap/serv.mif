@@ -111,7 +111,7 @@ SERVER_common_objs = $(os_prefix)strt.obj
 SERVER_remote_objs = testserv.obj servname.obj
 !else
 !ifdef gui
-SERVER_remote_objs = wserver.obj options.obj
+SERVER_remote_objs = servw.obj options.obj
 resource_file = $(serv_basename).res
 !else
 SERVER_remote_objs = serv.obj $(os_prefix)trio.obj

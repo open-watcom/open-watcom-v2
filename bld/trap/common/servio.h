@@ -42,7 +42,7 @@ extern void     StartupErr( const char *err );
 extern void     ServMessage( const char *msg );
 extern int      WantUsage( const char *ptr );
 extern void     OutputLine( const char *str );
-extern void     SayGNiteGracey( int return_code );
+extern void     ServTerminate( int return_code );
 extern int      KeyPress( void );
 extern int      KeyGet( void );
 extern bool     ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bool *oneshot );

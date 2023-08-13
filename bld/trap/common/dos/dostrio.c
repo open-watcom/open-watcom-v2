@@ -48,7 +48,7 @@ void OutputLine( const char *str )
     TinyWrite( TINY_ERR, "\r\n", 2 );
 }
 
-void SayGNiteGracey( int return_code )
+void ServTerminate( int return_code )
 {
     TinyTerminateProcess( return_code );
     // never return
@@ -57,7 +57,7 @@ void SayGNiteGracey( int return_code )
 void StartupErr( const char *err )
 {
     OutputLine( err );
-    SayGNiteGracey( 1 );
+    ServTerminate( 1 );
     // never return
 }
 

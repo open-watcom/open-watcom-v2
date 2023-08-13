@@ -319,7 +319,7 @@ libtarg_name = dbgstr
 !include libtarg.mif
 
 !ifdef resource_file
-$(resource_file) : $(trap_dir)/common/wserver.rc
+$(resource_file) : $(trap_dir)/common/servw.rc
     @%make echo_rc
     $(rc) $(rc_ui8_encoding) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif

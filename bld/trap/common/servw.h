@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +31,7 @@
 ****************************************************************************/
 
 
-#define MENU_ABOUT              1
-#define MENU_EXIT               2
-#define MENU_CONNECT            3
-#define MENU_DISCONNECT         4
-#define MENU_OPTIONS            5
-#define MENU_BREAK              6
-#define MENU_STOP               7
+#include "servw.rh"
+
+WINEXPORT extern INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT extern LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );

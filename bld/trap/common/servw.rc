@@ -1,7 +1,7 @@
 /* UTF-8 encoding, ¥ */
 
 #include "windows.h"
-#include "wserver.rh"
+#include "servw.rh"
 #include "servname.rh"
 #include "banner.h"
 

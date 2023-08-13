@@ -33,7 +33,7 @@
 #include <stddef.h>
 #include <process.h>
 #include <wwindows.h>
-#include "wserver.h"
+#include "servw.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "trperr.h"
@@ -344,7 +344,7 @@ void StartupErr( const char *err )
 
 void ServMessage( const char *msg )
 {
-    msg = msg;
+    (void)msg;
 }
 
 int WantUsage( const char *ptr )
