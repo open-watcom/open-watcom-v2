@@ -53,6 +53,12 @@ set OWDISTRBUILD=0
 REM Documentation related variables
 REM ###############################
 
+REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
+REM For Windows host we use Windows CI copy of appropriate tools
+if not '%OS%' == 'Windows_NT' goto csetup1
+set OWGHOSTSCRIPTPATH=%OWROOT%\ci\nt386
+:csetup1
+
 if not '%OS%' == 'Windows_NT' goto csetup3
 REM Build process requires WGML utility which is available only as DOS executable.
 REM On Windows platforms which don't have NTVDM or if WGML doesn't work under NTVDM
