@@ -60,6 +60,7 @@ set OWGHOSTSCRIPTPATH=%OWROOT%\ci\nt386
 :csetup1
 
 if not '%OS%' == 'Windows_NT' goto csetup3
+if not '%PROCESSOR_ARCHITEW6432%' == 'AMD64' if not '%PROCESSOR_ARCHITECTURE%' == 'AMD64' goto csetup3
 REM Build process requires WGML utility which is available only as DOS executable.
 REM On Windows platforms which don't have NTVDM or if WGML doesn't work under NTVDM
 REM then DOSBOX emulator must be installed and OWDOSBOX variable must be set.
