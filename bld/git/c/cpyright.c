@@ -38,10 +38,10 @@
 
 #define PROJECT_TITLE   "Open Watcom Project"
 #define SYBASE_CPYRIGHT "-2002 Sybase, Inc. All Rights Reserved."
-#define CPYRIGHT1   	"* Copyright (c) "
-#define CPYRIGHT2   	"xxxx"
-#define CPYRIGHT3   	"     "
-#define CPYRIGHT4   	" The Open Watcom Contributors. All Rights Reserved."
+#define CPYRIGHT1       "* Copyright (c) "
+#define CPYRIGHT2       "xxxx"
+#define CPYRIGHT3       "     "
+#define CPYRIGHT4       " The Open Watcom Contributors. All Rights Reserved."
 
 #define CPYRIGHT1_LEN   (sizeof( CPYRIGHT1 ) - 1)
 #define CPYRIGHT2_LEN   (sizeof( CPYRIGHT2 ) - 1)
@@ -100,8 +100,10 @@ static void output_buffer( void )
                 } else {
                     start = buffer;
                 }
-                start[CPYRIGHT1_LEN + CPYRIGHT2_LEN] = '-';
-                memcpy( start + CPYRIGHT1_LEN + CPYRIGHT2_LEN + 1, cpyright + CPYRIGHT1_LEN, 4 );
+                if( strncmp( start + CPYRIGHT1_LEN, cpyright + CPYRIGHT1_LEN, 4 ) != 0 ) {
+                    start[CPYRIGHT1_LEN + CPYRIGHT2_LEN] = '-';
+                    memcpy( start + CPYRIGHT1_LEN + CPYRIGHT2_LEN + 1, cpyright + CPYRIGHT1_LEN, 4 );
+                }
                 status = 3;
             }
         }
