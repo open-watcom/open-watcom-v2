@@ -128,6 +128,7 @@ int main( int argc, char **argv )
                     KillTrap();
                     RemoteUnLink();
                     ServTerminate( 0 );
+                    // never return
                 }
             }
         }
@@ -148,6 +149,7 @@ int main( int argc, char **argv )
             KillTrap();
             RemoteUnLink();
             ServTerminate( 0 );
+            // never return
         }
     }
     return( 0 );

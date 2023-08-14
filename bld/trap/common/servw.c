@@ -340,8 +340,7 @@ void ServError( const char *msg )
 
 void StartupErr( const char *err )
 {
-    ShowWindow( hwndMain, SW_RESTORE );
-    ServError( err );
+    OutputLine( err );
 }
 
 void ServMessage( const char *msg )
