@@ -108,7 +108,7 @@
 // TODO: need rework to POSIX if_nameindex in <net/if.h>
 #include "ifi.h"
 #endif
-#if defined( GUISERVER )
+#if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <wwindows.h>
     #include "servio.h"
     #include "options.h"
@@ -492,11 +492,6 @@ const char *RemoteLink( const char *parms, bool server )
     if( !IS_VALID_SOCKET( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
-   #ifdef GUISERVER
-    if( *ServParms == '\0' ) {
-        sprintf( ServParms, "%u", port );
-    }
-   #endif
 
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;

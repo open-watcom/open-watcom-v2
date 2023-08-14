@@ -12,8 +12,6 @@ which = SERVER
 gui = 1
 remote_link = 1
 
-extra_cppflags = -DGUISERVER
-
 extra_linker = lib wsock32.lib
 
 !include $(trap_dir)/master.mif
