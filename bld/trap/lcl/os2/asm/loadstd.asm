@@ -38,15 +38,15 @@ public          StartProc_
 public          LoadThisDLL_
 public          EndLoadThisDLL_
 
-_data segment byte public 'DATA'
+_DATA segment byte public 'DATA'
 extrn           _ThisDLLModHandle : word
-_data ends
+_DATA ends
 
-dgroup group _data
+DGROUP group _DATA
 
-_text segment byte public 'CODE'
+_TEXT segment byte public 'CODE'
 
-assume cs:_text, ds:dgroup
+assume cs:_TEXT, ds:DGROUP
 
 LoadThisDLL_    proc    near
         call    DOSLOADMODULE   ; load STD.DLL
@@ -57,7 +57,7 @@ LoadThisDLL_    endp
 StartProc_      proc    far
                 push    ds
                 push    ax
-                mov     ax,dgroup
+                mov     ax,DGROUP
                 mov     ds,ax
                 pop     ax
                 mov     _ThisDLLModHandle,ax
@@ -67,6 +67,6 @@ StartProc_      proc    far
 StartProc_      endp
 
 
-_text           ENDS
+_TEXT           ENDS
 
                 END     StartProc_

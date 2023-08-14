@@ -122,7 +122,7 @@ DoCall_ proc    near
 
         push    ebx                     ; 32-bit buffer
         push    esi                     ; 32-bit return address
-        assume gs:_data
+        assume gs:_DATA
         jmp     fword ptr gs:p_offset   ; jump to function
 DoReturn_:
         db      083h,0c4h,004h          ; add esp,4

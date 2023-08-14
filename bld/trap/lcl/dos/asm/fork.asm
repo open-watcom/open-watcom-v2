@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -36,8 +36,8 @@
                 EXTRN   DOSEnvFind_             :proc
                 EXTRN   DbgPSP_                 :near
 
-_text segment byte public 'CODE'
-assume cs:_text
+_TEXT segment byte public 'CODE'
+assume cs:_TEXT
 
 
 abort:          mov     dx,-1
@@ -109,7 +109,7 @@ cont:           sub     CX,CX
                 int     21H
                 mov     cs:savestdout,AX
                 mov     AX,3d02H
-                mov     DX,offset _text:ConName
+                mov     DX,offset _TEXT:ConName
                 push    cs
                 pop     ds
                 int     21H
@@ -125,7 +125,7 @@ cont:           sub     CX,CX
                 int     21H
 notopen:
                 mov     BX,SP
-                mov     AX,offset _text:CmdName
+                mov     AX,offset _TEXT:CmdName
                 mov     DX,CS
                 call    DOSEnvFind_
                 push    SS
@@ -172,6 +172,6 @@ savestdout      dw      0
 CmdName         db "COMSPEC",0
 ConName         db "CON",0
 
-_text           ENDS
+_TEXT           ENDS
 
                 END

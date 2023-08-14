@@ -115,7 +115,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-long OpenFile( const char *name, USHORT mode, int flags )
+long OpenFile( char *name, USHORT mode, int flags )
 {
     HFILE       hdl;
     ULONG       action;

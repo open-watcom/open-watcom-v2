@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -35,9 +36,9 @@
 
 extrn           ReturnESP       : dword
 
-assume  cs:_text
+assume  cs:_TEXT
 
-_text segment byte public 'CODE'
+_TEXT segment byte public 'CODE'
 
 public          Return
 Return          proc    near
@@ -72,6 +73,6 @@ DoALongJumpTo   proc    near
                 iretd
 DoALongJumpTo   endp
 
-_text           ends
+_TEXT           ends
 
                 end

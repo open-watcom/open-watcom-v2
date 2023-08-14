@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -41,7 +41,7 @@ include traps.inc
         extrn   ChkInt:near          ; check the interrupt number
         extrn   _Flags:byte          ; CPU flags etc
 
-_text segment byte public 'CODE'
+_TEXT segment byte public 'CODE'
 
 WatchTbl   dw   ?,?             ; watch point table address
 WatchCnt   dw   ?               ; number of watch points
@@ -90,7 +90,7 @@ REG_GROUP       ends
 
 
 
-assume  cs:_text
+assume  cs:_TEXT
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -118,20 +118,20 @@ TrapTypeInit_ endp
 
 public  SetSingle386_
 SetSingle386_   proc near
-        mov     CS:TraceRtn,offset _text:TraceTrap386
+        mov     CS:TraceRtn,offset _TEXT:TraceTrap386
         ret
 SetSingle386_   endp
 
 public  SetSingleStep_
 SetSingleStep_  proc near       ; set interrupt vector 1 at single step routine
-        mov     CS:TraceRtn,offset _text:TraceTrap
+        mov     CS:TraceRtn,offset _TEXT:TraceTrap
         ret                     ; return to caller
 SetSingleStep_  endp
 
 
 public  SetWatchPnt_
 SetWatchPnt_    proc near       ; set interrupt vector 1 at watch point routine
-        mov     CS:TraceRtn,offset _text:WatchTrap
+        mov     CS:TraceRtn,offset _TEXT:WatchTrap
         mov     CS:WatchTbl+0,BX; point at watch point table;
         mov     CS:WatchTbl+2,CX; . . .
         mov     CS:WatchCnt,AX  ; set number of watch points
@@ -142,7 +142,7 @@ SetWatchPnt_    endp
 public  SetWatch386_
 SetWatch386_    proc near       ; set interrupt vector 1 at watch point routine
         call    SetWatchPnt_
-        mov     CS:TraceRtn,offset _text:WatchTrap386
+        mov     CS:TraceRtn,offset _TEXT:WatchTrap386
         ret                     ; return to caller
 SetWatch386_    endp
 
@@ -314,9 +314,9 @@ ExitDebugger:
         test    byte ptr 1[SI].RFL,TRAP_BIT shr 8; are we trace trapping?
         je      not_watch       ; - quit if not
         mov     DI,CS:TraceRtn
-        cmp     DI,offset _text:WatchTrap; - are we watch trapping?
+        cmp     DI,offset _TEXT:WatchTrap; - are we watch trapping?
         je      watching        ; - quit if not
-        cmp     DI,offset _text:WatchTrap386; - are we watch trapping?
+        cmp     DI,offset _TEXT:WatchTrap386; - are we watch trapping?
         je      watching        ; - quit if not
         jmp     short not_watch ;
 watching:
@@ -550,7 +550,7 @@ abort_watch:
         mov     AX,08H[BP]      ; transfer instr pointer
         mov     02H[BP],AX      ; to new stack frame
         mov     0aH[BP],CS      ; set code segment for soft int stack frame
-        mov     AX,offset _text:WatchRestart; set intstruction pointer for
+        mov     AX,offset _TEXT:WatchRestart; set intstruction pointer for
         mov     08H[BP],AX      ; int stack frame
         pop     AX              ; restore AX
         pop     BP              ; restore BP
@@ -562,6 +562,6 @@ brk_point:                      ; next instruction is a break point
         mov     byte ptr CS:TrapType,TRAP_BREAK_POINT ; we have a brk point trap
         jmp     DebugTask       ; enter the debugger
 
-_text           ENDS
+_TEXT           ENDS
 
                 END

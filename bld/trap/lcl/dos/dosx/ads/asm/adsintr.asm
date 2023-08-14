@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -99,21 +100,21 @@ allexceptions   macro   macname
                 &macname gpfault,13
                 endm
 
-_data segment word public 'data'
+_DATA segment word public 'DATA'
 dbgregs         reg_group       <>
                 allexceptions   intvars
 dataseg         dw              0
 FirstTime       db              1
 extrn           IntNum          : dword
 extrn           Regs            : byte
-_data ends
+_DATA ends
 
 
-dgroup group _data
+DGROUP group _DATA
 
-assume  ds:dgroup,cs:_text
+assume  ds:DGROUP,cs:_TEXT
 
-_text segment byte public 'code'
+_TEXT segment byte public 'CODE'
 
 saveregs        macro   regs,retoff,retseg
                 push    ds                      ; ...
@@ -283,6 +284,6 @@ oldvect         macro   name,num
                 ret                             ; return to caller
 ReleVects      endp
 
-_text           ends
+_TEXT           ends
 
                 end
