@@ -387,7 +387,9 @@ bool RemoteConnect( void )
   #endif
 #else
   #ifdef __RDOS__
-    // todo: Add code for connect!
+    /*
+     * TODO: Add code for connect!
+     */
   #else
     int         rc;
 
@@ -495,7 +497,9 @@ const char *RemoteLink( const char *parms, bool server )
     if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
     }
-    /* Find out assigned port number and print it out */
+    /*
+     * Find out assigned port number and print it out
+     */
     length = sizeof( socket_address );
     if( getsockname( control_socket, (LPSOCKADDR)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
@@ -507,15 +511,19 @@ const char *RemoteLink( const char *parms, bool server )
     _DBG_NET(("\r\n"));
 
    #ifdef LIST_INTERFACES
-    // TODO: need rework to POSIX if_nameindex in <net/if.h>
-    /* Find and print TCP/IP interface addresses, ignore aliases */
+    /*
+     * TODO: need rework to POSIX if_nameindex in <net/if.h>
+     * Find and print TCP/IP interface addresses, ignore aliases
+     */
     {
         struct ifi_info     *ifi, *ifihead;
         struct sockaddr     *sa;
 
         ifihead = get_ifi_info( AF_INET, false );
         for( ifi = ifihead; ifi != NULL; ifi = ifi->ifi_next ) {
-            /* Ignore loopback interfaces */
+            /*
+             * Ignore loopback interfaces
+             */
             if( ifi->flags & IFI_LOOP )
                 continue;
             if( (sa = ifi->ifi_addr) != NULL ) {
@@ -530,13 +538,17 @@ const char *RemoteLink( const char *parms, bool server )
   #endif
 
     _DBG_NET(("Start accepting connections\r\n"));
-    /* Start accepting connections */
+    /*
+     * Start accepting connections
+     */
   #ifndef __RDOS__
     listen( control_socket, 5 );
   #endif
 #else
   #ifdef __RDOS__
-    // Todo: handle connect
+    /*
+     * TODO: handle connect
+     */
   #else
     char        buff[128];
     char        *p;
@@ -551,8 +563,9 @@ const char *RemoteLink( const char *parms, bool server )
         }
     }
     #endif
-
-    /* get port number out of name */
+    /*
+     * get port number out of name
+     */
     p = buff;
     while( *parms != '\0' ) {
         if( *parms == ':' ) {
@@ -566,9 +579,13 @@ const char *RemoteLink( const char *parms, bool server )
     if( port == 0 ) {
         return( TRP_ERR_unable_to_parse_port_number );
     }
-    /* Setup for socket connect using parms specified by command line. */
+    /*
+     * Setup for socket connect using parms specified by command line.
+     */
     socket_address.sin_family = AF_INET;
-    /* OS/2's TCP/IP gethostbyname doesn't handle numeric addresses */
+    /*
+     * OS/2's TCP/IP gethostbyname doesn't handle numeric addresses
+     */
     addr = get_addr( buff );
     if( addr == OW_INADDR_INVALID ) {
         addr = OW_INADDR_LOOPBACK;
@@ -611,22 +628,23 @@ void RemoteUnLink( void )
 }
 
 #ifdef LIST_INTERFACES
-// TODO: need rework to POSIX if_nameindex in <net/if.h>
-
+/*
+ * TODO: need rework to POSIX if_nameindex in <net/if.h>
+ */
 #ifndef __RDOS__
 
   #ifdef SERVER
-
-/* Functions to manage IP interface information lists. On multi-homed hosts,
- * determining the IP address the TCP debug link responds on is not entirely
- * straightforward.
- */
-
+    /*
+     * Functions to manage IP interface information lists. On multi-homed hosts,
+     * determining the IP address the TCP debug link responds on is not entirely
+     * straightforward.
+     */
     #if defined( __OS2__ ) || defined( __DOS__ )
-
-/* Actual implementation - feel free to port to further OSes */
-
-/* Sort out implementation differences. */
+    /*
+     * Actual implementation - feel free to port to further OSes
+     *
+     * Sort out implementation differences.
+     */
       #if defined( __DOS__ )
         #define w_ioctl         ioctlsocket
         #define HAVE_SA_LEN     false
@@ -740,7 +758,9 @@ static void free_ifi_info( struct ifi_info *ifihead )
 
     # else
 
-/* Stubbed out */
+/*
+ * Stubbed out
+ */
 static struct ifi_info *get_ifi_info( int family, int doaliases )
 {
     /* unused parameters */ (void)family; (void)doaliases;
@@ -759,5 +779,7 @@ static void free_ifi_info( struct ifi_info *ifihead )
 
 #endif
 
-// TODO: need rework to POSIX if_nameindex in <net/if.h>
+/*
+ * TODO: need rework to POSIX if_nameindex in <net/if.h>
+ */
 #endif
