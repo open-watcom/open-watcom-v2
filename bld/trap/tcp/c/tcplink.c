@@ -104,6 +104,9 @@
 #endif
 #include "trperr.h"
 #include "packet.h"
+#ifdef SERVER
+#include "servio.h"
+#endif
 #ifdef LIST_INTERFACES
 // TODO: need rework to POSIX if_nameindex in <net/if.h>
 #include "ifi.h"
@@ -223,10 +226,6 @@ static int send( int handle, const void *buf, int size, int timeout )
 #endif
 
 static trp_socket           data_socket = INVALID_SOCKET;
-
-#if defined( SERVER )
-extern void     ServMessage( const char * );
-#endif
 
 #if !defined( SERVER )
 static bool terminate_connection( void )
