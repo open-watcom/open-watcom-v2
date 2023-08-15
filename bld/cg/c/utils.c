@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,10 @@
 
 #include "cypfunc.h"
 
-void    *Copy( const void *x, void *y, size_t len )
-/*************************************************/
+void    Copy( const void *x, void *y, size_t len )
+/************************************************/
 {
-    return( CypCopy( x, y, len ) );
+    CypCopy( x, y, len );
 }
 
 void    *Fill( void *start, size_t len, unsigned char filler )
@@ -68,10 +69,10 @@ size_t  Length( const char *string )
 
 #else
 
-void    *Copy( const void *x, void *y, size_t len )
-/*************************************************/
+void    Copy( const void *x, void *y, size_t len )
+/************************************************/
 {
-    return( memcpy( y, x, len ) );
+    memcpy( y, x, len );
 }
 
 void    *Fill( void *start, size_t len, unsigned char filler )

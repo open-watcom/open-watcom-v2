@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern void     *Copy( const void *x, void *y, size_t len );
+extern void     Copy( const void *x, void *y, size_t len );
 extern void     *Fill( void *start, size_t len, unsigned char filler );
 extern bool     Equal( const void *src, const void *dst, size_t length );
 extern char     *CopyStr( const char *src, char *dst );
