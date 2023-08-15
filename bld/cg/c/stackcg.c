@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "walloca.h"
 #include "cgmem.h"
 #include "memout.h"
-#include "cypfunc.h"
+#include "utils.h"
 #include "onexit.h"
 #include "memmgt.h"
 
@@ -72,15 +72,15 @@ void    *SafeRecurseCG( func_sr rtn, void *arg )
             FatalError( "No memory to save stack" );
         }
         SetMemOut( old_action );
-        CypCopy( bp(), savearea, SAVE_SIZE );
-        CypCopy( sp(), sp() + SAVE_SIZE, bp() - sp() );
+        Copy( bp(), savearea, SAVE_SIZE );
+        Copy( sp(), sp() + SAVE_SIZE, bp() - sp() );
         setbp( bp() + SAVE_SIZE );
         setsp( sp() + SAVE_SIZE );
         retval = rtn( arg );
         setsp( sp() - SAVE_SIZE );
-        CypCopy( sp() + SAVE_SIZE, sp(), bp() - sp() - SAVE_SIZE );
+        Copy( sp() + SAVE_SIZE, sp(), bp() - sp() - SAVE_SIZE );
         setbp( bp() - SAVE_SIZE );
-        CypCopy( savearea, bp(), SAVE_SIZE );
+        Copy( savearea, bp(), SAVE_SIZE );
         CGFree( savearea );
         return( retval );
     } else {
