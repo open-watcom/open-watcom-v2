@@ -534,7 +534,7 @@ static  void    FinishIndex( void )
     instruction *next;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = NeedIndex( ins );
             if( next == ins ) {
                 next = ins->head.next;

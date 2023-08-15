@@ -204,7 +204,7 @@ static  void    InitChoices( void )
     if( BlockByBlock ) {
         /* this is WAY faster for BlockByBlock */
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 for( i = ins->num_operands; i-- > 0; ) {
                     InitAChoice( ins->operands[i] );
                 }
@@ -457,7 +457,7 @@ static signed_32     CountRegMoves( conflict_node *conf,
     for( ;; ) {
         if( ins->head.opcode == OP_BLOCK ) {
             blk = blk->next_block;
-            ins = blk->ins.hd.next;
+            ins = blk->ins.head.next;
         } else {
             if( ins->head.opcode != OP_MOV ) {
 #if _TARGET_INTEL || (_TARGET & _TARG_370)
@@ -557,7 +557,7 @@ static signed_32     CountRegMoves( conflict_node *conf,
         if( count != 0 || levels == 0 )
             return( count );
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_MOV ) {
                     other_opnd = NULL;
                     if( ins->result == conf->name ) {
@@ -761,7 +761,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
         }
         if( ins == last )
             break;
-        for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.hd.next ) {
+        for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.head.next ) {
             blk = blk->next_block;
         }
         if( rc != MB_FALSE ) {
@@ -1292,7 +1292,7 @@ void    ReConstFold( void )
     block                       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             FoldIns( ins );
         }

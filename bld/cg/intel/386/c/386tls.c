@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,7 +140,7 @@ static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_de
              * startup sequence. So keep call in first block, but make it
              * before next instruction of last one  (== after last one).
              */
-            DropCall( HeadBlock->ins.hd.prev->head.next, tls );
+            DropCall( HeadBlock->ins.head.prev->head.next, tls );
         }
     }
     if( BlockByBlock ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ static  int     CountSegOvers( void )
 
     overs = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( OpcodeNumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
                || ( G( ins ) != G_MOVAM && G( ins ) != G_MOVMA ) ) ) {
                 for( i = OpcodeNumOperands( ins ); i-- > 0; ) {

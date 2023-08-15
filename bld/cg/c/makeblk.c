@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,12 +62,12 @@ block   *MakeBlock( label_handle label, block_num edges )
     blk->prev_block = NULL;
     blk->label = label;
     blk->class = 0;
-    blk->ins.hd.next = (instruction *)&blk->ins;
-    blk->ins.hd.prev = (instruction *)&blk->ins;
-    blk->ins.hd.opcode = OP_BLOCK;
-    HW_CAsgn( blk->ins.hd.live.regs, HW_EMPTY );
-    _LBitInit( blk->ins.hd.live.within_block, EMPTY );
-    _GBitInit( blk->ins.hd.live.out_of_block, EMPTY );
+    blk->ins.head.next = (instruction *)&blk->ins;
+    blk->ins.head.prev = (instruction *)&blk->ins;
+    blk->ins.head.opcode = OP_BLOCK;
+    HW_CAsgn( blk->ins.head.live.regs, HW_EMPTY );
+    _LBitInit( blk->ins.head.live.within_block, EMPTY );
+    _GBitInit( blk->ins.head.live.out_of_block, EMPTY );
     blk->ins.blk = blk;
     blk->u.interval = NULL;
     blk->inputs = 0;
@@ -117,8 +117,8 @@ void    FreeABlock( block * blk )
 void    FreeBlock( void )
 /***********************/
 {
-    while( CurrBlock->ins.hd.next != (instruction *)&CurrBlock->ins ) {
-        FreeIns( CurrBlock->ins.hd.next );
+    while( CurrBlock->ins.head.next != (instruction *)&CurrBlock->ins ) {
+        FreeIns( CurrBlock->ins.head.next );
     }
     if( CurrBlock->dataflow != NULL ) {
         CGFree( CurrBlock->dataflow );
@@ -133,7 +133,7 @@ void    EnLink( label_handle label, bool label_dies )
     block       *blk;
 
     blk = NewBlock( label, label_dies );
-    blk->ins.hd.line_num = SrcLine;
+    blk->ins.head.line_num = SrcLine;
     CurrBlock = blk;
     SrcLine = 0;
 }
@@ -146,9 +146,9 @@ void    AddIns( instruction *ins )
         HaveCurrBlock = true;
     }
     ins->head.next = (instruction *)&CurrBlock->ins;
-    ins->head.prev = CurrBlock->ins.hd.prev;
-    CurrBlock->ins.hd.prev->head.next = ins;
-    CurrBlock->ins.hd.prev = ins;
+    ins->head.prev = CurrBlock->ins.head.prev;
+    CurrBlock->ins.head.prev->head.next = ins;
+    CurrBlock->ins.head.prev = ins;
     ins->head.line_num = SrcLine;
     _INS_NOT_BLOCK( ins );
     ins->id = ++ InsId;
@@ -186,12 +186,12 @@ void    GenBlock( block_class class, int targets )
     if( targets > 1 ) {
         new = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
         Copy( CurrBlock, new, sizeof( block ) );
-        if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) {
-            new->ins.hd.next = (instruction *)&new->ins;
-            new->ins.hd.prev = (instruction *)&new->ins;
+        if( CurrBlock->ins.head.next == (instruction *)&CurrBlock->ins ) {
+            new->ins.head.next = (instruction *)&new->ins;
+            new->ins.head.prev = (instruction *)&new->ins;
         } else {
-            new->ins.hd.next->head.prev = (instruction *)&new->ins;
-            new->ins.hd.prev->head.next = (instruction *)&new->ins;
+            new->ins.head.next->head.prev = (instruction *)&new->ins;
+            new->ins.head.prev->head.next = (instruction *)&new->ins;
         }
         new->ins.blk = new;
 
@@ -240,12 +240,12 @@ block   *ReGenBlock( block *blk, label_handle lbl )
 
     /*   Move all references to blk*/
 
-    if( blk->ins.hd.next == (instruction *)&blk->ins ) {
-        new->ins.hd.next = (instruction *)&new->ins;
-        new->ins.hd.prev = (instruction *)&new->ins;
+    if( blk->ins.head.next == (instruction *)&blk->ins ) {
+        new->ins.head.next = (instruction *)&new->ins;
+        new->ins.head.prev = (instruction *)&new->ins;
     } else {
-        blk->ins.hd.next->head.prev = (instruction *)&new->ins;
-        blk->ins.hd.prev->head.next = (instruction *)&new->ins;
+        blk->ins.head.next->head.prev = (instruction *)&new->ins;
+        blk->ins.head.prev->head.next = (instruction *)&new->ins;
     }
     while( targets-- > 0 ) {
         new->edge[targets].source = new;
@@ -466,10 +466,10 @@ bool    BlkTooBig( void )
         return( false );
     if( CurrBlock == NULL )
         return( false );
-    if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins )
+    if( CurrBlock->ins.head.next == (instruction *)&CurrBlock->ins )
         return( false );
-    _INS_NOT_BLOCK( CurrBlock->ins.hd.next );
-    if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK )
+    _INS_NOT_BLOCK( CurrBlock->ins.head.next );
+    if( (InsId - CurrBlock->ins.head.next->id) < INS_PER_BLOCK )
         return( false );
     if( CurrBlock->targets != 0 )
         return( false );

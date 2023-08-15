@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ static  void    NoBlocksToSelf( void )
                 /* set up new block to look like it was generated after blk*/
                 _SetBlkAttr( new_blk, BLK_JUMP );
                 new_blk->gen_id = blk->gen_id;
-                new_blk->ins.hd.line_num = blk->ins.hd.line_num;
+                new_blk->ins.head.line_num = blk->ins.head.line_num;
                 new_blk->next_block = blk->next_block;
                 new_blk->prev_block = blk;
                 new_blk->targets++;

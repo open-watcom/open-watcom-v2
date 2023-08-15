@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ static void InitDag( void )
     instruction *ins;
 
     head = NULL;
-    for( ins = SBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = SBlock->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         ins->ins_flags &= ~INS_INDEX_ADJUST;
         switch( ins->head.opcode ) {
         case OP_ADD:
@@ -866,8 +866,8 @@ static void ScheduleIns( void )
     last_seq = 0;
     top = NULL;
     stk_depth = FPStackExit( SBlock );
-    SBlock->ins.hd.next = (instruction *)&SBlock->ins; // so we can dump!
-    SBlock->ins.hd.prev = (instruction *)&SBlock->ins;
+    SBlock->ins.head.next = (instruction *)&SBlock->ins; // so we can dump!
+    SBlock->ins.head.prev = (instruction *)&SBlock->ins;
     while( ready != NULL ) {
         /* find best instruction to schedule */
         best_cost = INT_MAX;
@@ -966,8 +966,8 @@ static void ScheduleIns( void )
             }
         }
     }
-    SBlock->ins.hd.next = top;
-    SBlock->ins.hd.prev = top->head.prev;
+    SBlock->ins.head.next = top;
+    SBlock->ins.head.prev = top->head.prev;
     top->head.prev->head.next = (instruction *)&SBlock->ins;
     top->head.prev = (instruction *)&SBlock->ins;
     /*
@@ -977,7 +977,7 @@ static void ScheduleIns( void )
        adjustment being moved before the use of the index register was
        handled when we scheduled the INS_INDEX_ADJUST instruction.
     */
-    for( top = SBlock->ins.hd.prev; top->head.opcode != OP_BLOCK; top = top->head.prev ) {
+    for( top = SBlock->ins.head.prev; top->head.opcode != OP_BLOCK; top = top->head.prev ) {
         if( top->ins_flags & INS_INDEX_ADJUST ) {
             FixIndexAdjust( top, false );
         }

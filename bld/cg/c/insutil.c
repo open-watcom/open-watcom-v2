@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ static void RenumFrom( instruction *ins )
             blk = _BLOCK( ins )->next_block;
             if( blk == NULL )
                 break;
-            ins = blk->ins.hd.next;
+            ins = blk->ins.head.next;
         }
     }
 }
@@ -222,7 +222,7 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
                     Zoiks( ZOIKS_141 );
                     break;
                 }
-                next = blk->ins.hd.next;
+                next = blk->ins.head.next;
                 if( next->head.opcode != OP_BLOCK ) {
                     break;
                 }
@@ -413,16 +413,16 @@ void    ReplIns( instruction *ins, instruction *new )
                 if( conf->ins_range.first == new ) {
                     if( blk == NULL )
                         blk = InsBlock( ins );
-                    conf->ins_range.first = blk->ins.hd.prev;
+                    conf->ins_range.first = blk->ins.head.prev;
                 }
                 if( conf->ins_range.last == new ) {
                     if( blk == NULL )
                         blk = InsBlock( ins );
-                    conf->ins_range.last = blk->ins.hd.next; /* 89-08-16 */
-                    if( blk->ins.hd.next == ins ) {
+                    conf->ins_range.last = blk->ins.head.next; /* 89-08-16 */
+                    if( blk->ins.head.next == ins ) {
                         // oops - grasping for a straw and caught hold of
                         // ins (which is about to be deleted)
-                        conf->ins_range.last = blk->ins.hd.next->head.next;
+                        conf->ins_range.last = blk->ins.head.next->head.next;
                     }
                 }
             }
@@ -436,7 +436,7 @@ void    ReplIns( instruction *ins, instruction *new )
 /*  if we wrecked a conflicts first or last pointer */
 
     if( blk != NULL ) { /* moved here 89-08-16 */
-        UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+        UpdateLive( blk->ins.head.next, blk->ins.head.prev );
     }
 }
 
@@ -464,7 +464,7 @@ instruction_id  Renumber( void )
     }
     id = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->id = id;
             id += increment;
         }
@@ -481,7 +481,7 @@ void            ClearInsBits( instruction_flags mask )
 
     mask = ~mask;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->ins_flags &= mask;
         }
     }

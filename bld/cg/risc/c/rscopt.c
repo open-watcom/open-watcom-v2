@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,7 +154,7 @@ static void FixConverts( void )
     instruction *ins;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_CONVERT ) {
                 if( ins->type_class == ins->base_type_class ) {
                     ins->head.opcode = OP_MOV;
@@ -179,7 +179,7 @@ static bool ConvertToInt( name *temp )
     temp->n.type_class = SW;
     temp->n.size = 4;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
              type_class = ins->type_class;
              change |= ConvertInsToInt( ins, temp );
              if( ins->result == temp ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@ static  void    ScoreSeed( block *blk, block *son, byte index )
         return;
     if( _IsBlkAttr( blk, BLK_MULTIPLE_EXITS ) )
         return;
-    for( cmp = blk->ins.hd.prev; cmp->head.opcode == OP_NOP; ) {
+    for( cmp = blk->ins.head.prev; cmp->head.opcode == OP_NOP; ) {
         cmp = cmp->head.prev;
     }
     switch( cmp->head.opcode ) {
@@ -161,7 +161,7 @@ static  void *ScoreDescendants( block *blk )
                 ScoreSeed( blk, son, i );
                 if( !DoScore( son ) )
                     break;
-                UpdateLive( son->ins.hd.next, son->ins.hd.prev );
+                UpdateLive( son->ins.head.next, son->ins.head.prev );
             }
             _MarkBlkVisited( son );
             _MarkBlkMarked( son );
@@ -175,12 +175,12 @@ static  void *ScoreDescendants( block *blk )
     for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[i].destination.u.blk;
         if( _IsBlkMarked( son ) ) {
-            HW_TurnOn( regs, son->ins.hd.next->head.live.regs );
+            HW_TurnOn( regs, son->ins.head.next->head.live.regs );
             _MarkBlkUnMarked( son );
         }
     }
-    HW_TurnOn( blk->ins.hd.live.regs, regs );
-    UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+    HW_TurnOn( blk->ins.head.live.regs, regs );
+    UpdateLive( blk->ins.head.next, blk->ins.head.prev );
     return( NULL );
 }
 
@@ -220,7 +220,7 @@ static  void    ScoreRoutine( void )
                     ScInitRegs( blk->u1.scoreboard );
                     if( !DoScore( blk ) )
                         break;
-                    UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                    UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                 }
                 _MarkBlkVisited( blk );
                 ScoreDescendants( blk );

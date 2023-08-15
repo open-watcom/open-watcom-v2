@@ -123,7 +123,7 @@ static  bool    ScanInstructions( void )
     CurrProc->contains_call = false;
     sp_constant = true;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->head.opcode == OP_CALL_INDIRECT ) {
                     CurrProc->contains_call = true;
@@ -184,7 +184,7 @@ static  void    ScanForFDOps( void )
         return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         depth = blk->depth;
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->type_class == FD || ins->type_class == FL ) {
                 for( i = ins->num_operands; i-- > 0; ) {
                     ChkFDOp( ins->operands[i], depth );
@@ -252,7 +252,7 @@ static  void    AdjustPushLocals( void )
 {
     instruction *ins;
 
-    for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = HeadBlock->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( DoesSomething( ins ) )
             break;
         if( ins->head.opcode == OP_MOV && ins->head.state == OPERANDS_NEED_WORK ) {
@@ -647,7 +647,7 @@ static  void    CalcUsedRegs( void )
 
     HW_CAsgn( used, HW_EMPTY );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             result = ins->result;
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
@@ -904,7 +904,7 @@ void    GenProlog( void )
     }
 
     if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
-        CodeLineNumber( HeadBlock->ins.hd.line_num, false );
+        CodeLineNumber( HeadBlock->ins.head.line_num, false );
     }
 
     if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2

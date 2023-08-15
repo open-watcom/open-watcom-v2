@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -359,7 +360,7 @@ static  void    CheckOp( name **offsets, instruction *ins, name **pop ) {
                                             CONS_OFFSET, WD ),
                         AllocTemp( WD ), WD );
         offsets[ i ] = new_ins->result;
-        PrefixIns( HeadBlock->ins.hd.next, new_ins );
+        PrefixIns( HeadBlock->ins.head.next, new_ins );
     }
     temp = AllocTemp( WD ),
     new_ins = MakeMove( offsets[ i ], temp, WD );
@@ -392,7 +393,7 @@ static  void    FixFarLocalRefs( type_length size ) {
     }
     blk = HeadBlock;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             i = ins->num_operands;
             while( --i >= 0 ) {
@@ -469,7 +470,7 @@ extern  void    EatParmConv( void ) {
 
     blk = HeadBlock;
     if( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             if( ins->head.opcode == OP_CONVERT
              && ins->ins_flags|INS_PARAMETER ){

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,7 @@ static  instruction     *SetToConst( block *blk, signed_32 *pcons )
     instruction *next;
     name        *op;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ) {
+    for( ins = blk->ins.head.next; ins->head.opcode == OP_NOP; ) {
         ins = ins->head.next;
     }
     if( ins->head.opcode != OP_MOV )
@@ -127,7 +127,7 @@ static  bool    FindFlowOut( block *blk )
     type_class_def      type_class;
     opcode_defs         oc;
 
-    ins = blk->ins.hd.prev;
+    ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
         ins = ins->head.prev;
     }

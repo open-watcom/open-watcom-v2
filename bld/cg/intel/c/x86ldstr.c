@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -363,7 +363,7 @@ static  bool    FixMem16Moves( void )
         return( false );
     changed = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;      /* list is shifting underneath us */
             if( ins->head.opcode == OP_MOV && TypeClassSize[ins->type_class] == 2 ) {
                 switch( ins->operands[0]->n.class ) {
@@ -392,7 +392,7 @@ static  void    CompressMem16Moves( void )
     if( !_CPULevel( CPU_586 ) )
         return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             RestoreMem16Move( ins );
         }
     }
@@ -442,10 +442,10 @@ bool    LdStAlloc( void )
 
     changed = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;      /* list is shifting underneath us */
             if( LoadStoreIns( ins ) ) {
-                UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                 changed = true;
             }
         }
@@ -646,7 +646,7 @@ void    LdStCompress( void )
 
     CompressMem16Moves();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             CompressIns( ins );
         }
     }

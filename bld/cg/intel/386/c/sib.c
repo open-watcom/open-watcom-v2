@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,10 +76,10 @@ void    BuildIndex( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         do {
             change = false;
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( InsIsCandidate( ins ) && FoldIntoIndex( ins ) ) {
-                    UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                    UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                     change = true;
                 }
             }

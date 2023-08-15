@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,7 @@ static instruction *FindPreviousIns( instruction *curr )
                 break;
             }
         }
-        prev = edge->source->ins.hd.prev;
+        prev = edge->source->ins.head.prev;
     }
     // note - prev->head.opcode guaranteed not to be OP_BLOCK
     // because of silly OP_NOP appended to every instruction ring
@@ -247,7 +247,7 @@ static block *SafeBlock( block *blk )
         return( NULL );
     _MarkBlkMarked( blk );
     safe = NULL;
-    if( SafePath( blk->ins.hd.next ) ) {
+    if( SafePath( blk->ins.head.next ) ) {
         safe = blk;
         for( i = 0; i < blk->targets; i++ ) {
             dest = blk->edge[i].destination.u.blk;
@@ -290,7 +290,7 @@ static bool ScaryConditions( void )
     opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; i++ ) {
                 if( ScaryOperand( ins->operands[i] ) ) {
                     return( true );
@@ -407,7 +407,7 @@ bool     TailRecursion( void )
     changed = false;
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_CALL ) {
                     if( OkayToTransCall( blk, ins ) ) {
                         DoTrans( blk, ins );
@@ -420,7 +420,7 @@ bool     TailRecursion( void )
     }
     // now reset our links and flags
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             _TR_LINK( ins ) = NULL;
         }
     }

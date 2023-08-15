@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ void    Wait8087( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         last_fpins = NULL;
         past_jump = false;
-        for( ins = blk->ins.hd.next; ; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ; ins = ins->head.next ) {
             for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( _OpIsCall( ins->head.opcode ) )
                     break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -645,7 +645,7 @@ static void    InitTempEntries( block *blk )
     opcnt       i;
 
     TempList = NULL;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->ins_flags & FP_INS_INTRODUCED )
             continue;
         for( i = 0; i < ins->num_operands; ++i ) {
@@ -780,8 +780,8 @@ static  void    CacheTemps( block *blk )
             continue;
         if( temp->op->v.usage & USE_IN_ANOTHER_BLOCK ) {
             if( Entry != NULL ) {
-                temp->first = blk->ins.hd.next;
-                temp->last = blk->ins.hd.prev;
+                temp->first = blk->ins.head.next;
+                temp->last = blk->ins.head.prev;
                 temp->whole_block = true;
             } else {
                 if( temp->defined )
@@ -857,7 +857,7 @@ static  void    InitGlobalTemps( void )
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->whole_block ) {
-            for( ins = Entry->ins.hd.prev; ins->head.opcode == OP_NOP; ins = ins->head.prev ) {
+            for( ins = Entry->ins.head.prev; ins->head.opcode == OP_NOP; ins = ins->head.prev ) {
                 if( ins->flags.nop_flags & NOP_ZAP_INFO ) {
                     break;
                 }
@@ -1000,7 +1000,7 @@ int     FPStackExit( block *blk )
 {
     instruction *curr;
 
-    for( curr = blk->ins.hd.prev; curr->head.opcode != OP_BLOCK; curr = curr->head.prev ) {
+    for( curr = blk->ins.head.prev; curr->head.opcode != OP_BLOCK; curr = curr->head.prev ) {
         if( FPStackIns( curr ) ) {
             return( curr->stk_exit );
         }
@@ -1021,7 +1021,7 @@ void    FPPreSched( block *blk )
     int         depth;
 
     MaxSeq = 0;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->sequence > MaxSeq ) {
             MaxSeq = ins->sequence;
         }
@@ -1038,7 +1038,7 @@ void    FPPreSched( block *blk )
         SeqCurDepth[i] = SEQ_INIT_VALUE;
         SeqMaxDepth[i] = 0;
     }
-    for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
+    for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         if( SeqCurDepth[ins->sequence] == SEQ_INIT_VALUE ) {
             if( FPStackIns( ins ) ) {
                 SeqCurDepth[ins->sequence] = ins->stk_exit;
@@ -1050,7 +1050,7 @@ void    FPPreSched( block *blk )
             SeqCurDepth[i] = 0;
         }
     }
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         /*
          * We do this here in order to not be faked out by inheriting bogus values
          * when we prefix an instruction to another FP instruction. This would screw
@@ -1084,7 +1084,7 @@ void    FPPostSched( block *blk )
     InitTempEntries( blk );
     CacheTemps( blk );
     InitGlobalTemps();
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next->head.next ) {
         next = ins;
         if( (ins->ins_flags & FP_INS_INTRODUCED) == 0 ) {
             attr = FPAttr( ins );

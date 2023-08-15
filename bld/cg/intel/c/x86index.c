@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,7 +284,7 @@ void    FixMemRefs( void ) {
     instruction *ins;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
 #if _TARGET & _TARG_80386
             ExpandThreadDataRef( ins );
 #endif
@@ -304,7 +304,7 @@ void    FixSegments( void ) {
     instruction *ins;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             AddSegment( ins );
             /* Generate an error if segment override is requested and all segment
              * registers are pegged. However we do NOT want to generate an error
@@ -358,7 +358,7 @@ void    MergeIndex( void ) {
     bool        dec;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( OpcodeNumOperands( ins ) < ins->num_operands ) {
                 dec = false;
                 for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
@@ -464,7 +464,7 @@ static  void    PropSegments( void ) {
     for( change = true; change; ) {
         change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
+            for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 if( ins->head.opcode == OP_MOV ) {
                     dst = NameConflict( ins, ins->result );
                     if( dst != NULL && _Is( dst, CST_WAS_SEGMENT ) ) {

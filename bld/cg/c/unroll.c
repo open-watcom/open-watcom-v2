@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,10 +125,10 @@ block   *DupBlock( block *blk )
     copy->id = NO_BLOCK_ID;
     copy->depth = blk->depth;
     copy->gen_id = blk->gen_id;
-    copy->ins.hd.line_num = 0;
+    copy->ins.head.line_num = 0;
     copy->next_block = NULL;
     copy->prev_block = NULL;
-    DupInstrs( (instruction *)&copy->ins, blk->ins.hd.next, blk->ins.hd.prev, NULL, 0 );
+    DupInstrs( (instruction *)&copy->ins, blk->ins.head.next, blk->ins.head.prev, NULL, 0 );
     return( copy );
 }
 
@@ -393,7 +393,7 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
         new_ins = MakeBinary( OP_ADD, var, AllocS32Const( adjust ),
                             temp, temp->n.type_class );
         for( blk = loop; blk != NULL; blk = blk->u.loop ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 ReplaceName( &ins->result, var, temp );
                 for( i = 0; i < ins->num_operands; i++ ) {
                     ReplaceName( &ins->operands[i], var, temp );
@@ -403,7 +403,7 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
         /* have to add this after we run the list replacing vars */
         PrefixIns( ins_list, new_ins );
         new_ins = MakeMove( temp, var, temp->n.type_class );
-        SuffixIns( loop->ins.hd.prev, new_ins );
+        SuffixIns( loop->ins.head.prev, new_ins );
     }
 }
 
@@ -666,7 +666,7 @@ static  block   *MakeNonConditional( block *butt, block_edge *edge )
         _SetBlkAttr( blk, BLK_JUMP | BLK_IN_LOOP );
         blk->id = NO_BLOCK_ID;
         blk->gen_id = butt->gen_id;
-        blk->ins.hd.line_num = 0;
+        blk->ins.head.line_num = 0;
         blk->next_block = butt->next_block;
         if( blk->next_block != NULL ) {
             blk->next_block->prev_block = blk;
@@ -755,14 +755,14 @@ void    HoistCondition( block *head )
     }
 
     for( blk = head; blk != NULL; blk = blk->edge[0].destination.u.blk ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             if( _OpIsCondition( ins->head.opcode ) ) {
                 RemoveIns( ins );
-                SuffixIns( head->ins.hd.prev, ins );
+                SuffixIns( head->ins.head.prev, ins );
                 return;
             }
             for( edge = head->input_edges; edge != NULL; edge = edge->next_source ) {
-                DupIns( edge->source->ins.hd.prev, ins, NULL, 0 );
+                DupIns( edge->source->ins.head.prev, ins, NULL, 0 );
             }
             next = ins->head.next;
             FreeIns( ins );
@@ -799,8 +799,8 @@ void    HoistCondition( block **head, block *prehead )
     if( butt_edge == NULL )
         return( false );
     butt = MakeNonConditional( butt_edge->source, butt_edge );
-    butt_ins = butt->ins.hd.prev;
-    prehead_ins = prehead->ins.hd.prev;
+    butt_ins = butt->ins.head.prev;
+    prehead_ins = prehead->ins.head.prev;
     blk = *head;
     // it should be either a simple jump or our (1 and only) cond. exit
     if( !_IsBlkAttr( blk, BLK_JUMP | BLK_CONDITIONAL ) )
@@ -810,7 +810,7 @@ void    HoistCondition( block **head, block *prehead )
     if( blk->inputs > 2 )
         return( false );
     // transfer all instructions to prehead/butt
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
             return( _IsBlkAttr( blk, BLK_LOOP_EXIT ) );
         }
@@ -950,13 +950,13 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         new->input_edges = NULL;
         new->id = NO_BLOCK_ID;
         new->gen_id = PreHead->gen_id;
-        new->ins.hd.line_num = 0;
+        new->ins.head.line_num = 0;
         temp = AllocTemp( comp_type_class );
         ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type_class );
-        SuffixIns( new->ins.hd.prev, ins );
+        SuffixIns( new->ins.head.prev, ins );
         high_bit = 1 << ( ( 8 * TypeClassSize[comp_type_class] ) - 1 );
         ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type_class );
-        SuffixIns( new->ins.hd.prev, ins );
+        SuffixIns( new->ins.head.prev, ins );
         PointEdge( &new->edge[0], cleanup_copy->head );
         PointEdge( &new->edge[1], loop->loop_head );
         MoveEdge( &PreHead->edge[0], new );
@@ -965,7 +965,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
 
     // now munge Head so that it looks more like we want it to, and make a copy which we can
     // then attach to our butt
-    ins = Head->ins.hd.prev;
+    ins = Head->ins.head.prev;
     ins->head.opcode = cond->opcode;
     ins->operands[0] = cond->induction->name;
     ins->operands[1] = add->result;
@@ -1029,7 +1029,7 @@ bool    Hoisted( block *head, instruction *compare )
     }
 #else
     if( _IsBlkAttr( head, BLK_CONDITIONAL ) ) {
-        if( _OpIsCondition( head->ins.hd.next->head.opcode ) && compare == head->ins.hd.next ) {
+        if( _OpIsCondition( head->ins.head.next->head.opcode ) && compare == head->ins.head.next ) {
             return( true );
         }
     }

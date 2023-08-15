@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +133,7 @@ extern  void    GenProlog() {
 
     old = SetOP( AskCodeSeg() );
     if( _IsModel( DBG_NUMBERS ) ) {
-        CodeLineNum( HeadBlock->ins.hd.line_num );
+        CodeLineNum( HeadBlock->ins.head.line_num );
     }
     if( _IsModel( INTERNAL_DBG_OUTPUT ) ) {
         DumpNL();
@@ -161,7 +162,7 @@ extern  void    CalcUsedRegs() {
     HW_CAsgn( used, HW_EMPTY );
     blk = HeadBlock;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             result = ins->result;
             if( result != NULL && result->n.class == N_REGISTER ) {

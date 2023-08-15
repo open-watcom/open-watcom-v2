@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ void    FreeJunk( block *blk )
     instruction *ins;
     instruction *next;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( !DoesSomething( ins ) && !SideEffect( ins )
          && ins->head.opcode < FIRST_OP_WITH_LABEL
@@ -108,7 +108,7 @@ static  bool    RemDeadCode( block *blk )
     instruction *next;
 
     change = false;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         result = ins->result;
         /* if result is a register and it dies after this instruction*/
@@ -147,7 +147,7 @@ bool    DoScore( block *blk )
     for( ;; ) {
         SCBlip();
         while( RemDeadCode( blk ) ) {
-            UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+            UpdateLive( blk->ins.head.next, blk->ins.head.prev );
             change = true;
         }
         if( !RegThrash( blk ) )
@@ -156,7 +156,7 @@ bool    DoScore( block *blk )
     }
     scoreboard = blk->u1.scoreboard;
     had_condition = false;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         ScoreSegments( scoreboard );
         /* May all intel designers rot in hell forever and ever, amen*/
         if( _OpIsCondition( ins->head.opcode ) && ins->result == NULL ) {
@@ -167,7 +167,7 @@ bool    DoScore( block *blk )
         }
         if( ScoreZero( scoreboard, &ins ) ) {
             change = true;
-            UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+            UpdateLive( blk->ins.head.next, blk->ins.head.prev );
         }
         if( ins->head.opcode == OP_BLOCK )
             break;
@@ -192,12 +192,12 @@ bool    DoScore( block *blk )
             } else {
                 if( FindRegOpnd( scoreboard, ins ) ) {
                     change = true;
-                    UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                    UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                 }
                 if( ins->head.opcode == OP_MOV && !had_condition ) {
                     if( ScoreMove( scoreboard, ins ) ) {
                         change = true;
-                        UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                        UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                     }
                     if( next->head.prev == ins ) {
                         RegKill( scoreboard, ins->zap->reg );
@@ -205,7 +205,7 @@ bool    DoScore( block *blk )
                 } else if( ins->head.opcode == OP_LA && !had_condition ) {
                     if( ScoreLA( scoreboard, ins ) ) {
                         change = true;
-                        UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                        UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                     }
                     if( next->head.prev == ins ) {
                         RegKill( scoreboard, ins->zap->reg );

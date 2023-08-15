@@ -74,7 +74,7 @@ void    FPParms( void )
             Parm8087[i] = NULL;
         }
         i = 0;
-        for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = HeadBlock->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_PARM_DEF ) {
                 if( FPRegNum( ins->result ) == 0 ) {
                     next = ins->head.next;
@@ -243,9 +243,9 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
         if( _BLOCK( next ) == CurrBlock )
             break;
         if( _BLOCK( next )->next_block == NULL ) {
-            next = CurrBlock->ins.hd.next;
+            next = CurrBlock->ins.head.next;
         } else {
-            next = _BLOCK( next )->next_block->ins.hd.next;
+            next = _BLOCK( next )->next_block->ins.head.next;
         }
     }
     return( false );
@@ -781,11 +781,11 @@ static void    Opt8087( void )
 
     for( blk = HeadBlock; blk != NULL; ) {
         i = 0;
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->sequence = ++i;
         }
         again = false;
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( _GenIs8087( G( ins ) ) ) {
                 if( !FSinCos( ins ) ) {
@@ -794,7 +794,7 @@ static void    Opt8087( void )
             }
         }
         if( !again ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( FPResultNotNeeded( ins ) ) {
                     ins->result = ST( 0 );
                     ToRFstp( ins );
@@ -838,7 +838,7 @@ void    FixP5Divs( void )
     if( !_FPULevel( FPU_87 ) )
         return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_DIV )
                 continue;
             if( !_IsFloating( ins->type_class ) )

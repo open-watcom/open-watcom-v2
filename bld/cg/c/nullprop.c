@@ -57,7 +57,7 @@ static  instruction     *CompareIns( block *blk )
     instruction         *last;
 
     if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
-        for( last = blk->ins.hd.prev; last->head.opcode != OP_BLOCK; last = last->head.prev ) {
+        for( last = blk->ins.head.prev; last->head.opcode != OP_BLOCK; last = last->head.prev ) {
             if( _OpIsCompare( last->head.opcode ) ) {
                 return( last );
             }
@@ -193,9 +193,9 @@ static  instruction     *FirstIns( block *blk, bool forward )
     instruction         *first;
 
     if( forward ) {
-        first = blk->ins.hd.next;
+        first = blk->ins.head.next;
     } else {
-        first = blk->ins.hd.prev;
+        first = blk->ins.head.prev;
     }
     return( first );
 }
@@ -373,7 +373,7 @@ static  bool            BlockSideEffect( block *blk )
 {
     instruction         *ins;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( _OpIsCall( ins->head.opcode ) )
             return( true );
         if( SideEffect( ins ) ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +103,7 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
         if( (conf->name->v.usage & USE_IN_ANOTHER_BLOCK) == 0 )
             break;
         if( _GBitOverlap( conf->id.out_of_block, flow->out ) ) {
-            last_ins = blk->ins.hd.prev;
+            last_ins = blk->ins.head.prev;
             if( conf->ins_range.last != NULL ) {
                 _INS_NOT_BLOCK( conf->ins_range.last );
                 _INS_NOT_BLOCK( last_ins );
@@ -114,9 +114,9 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
                     havelive = HaveLiveInfo;
                     HaveLiveInfo = false;
                     SuffixIns( last_ins, new_ins );
-                    new_ins->head.live.regs = blk->ins.hd.live.regs;
-                    new_ins->head.live.within_block = blk->ins.hd.live.within_block;
-                    new_ins->head.live.out_of_block = blk->ins.hd.live.out_of_block;
+                    new_ins->head.live.regs = blk->ins.head.live.regs;
+                    new_ins->head.live.within_block = blk->ins.head.live.within_block;
+                    new_ins->head.live.out_of_block = blk->ins.head.live.out_of_block;
                     HaveLiveInfo = havelive;
                     last_ins = new_ins;
                 }
@@ -128,7 +128,7 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
             }
         }
         if( _GBitOverlap( conf->id.out_of_block, flow->in ) ) {
-            first_ins = blk->ins.hd.next;
+            first_ins = blk->ins.head.next;
             if( conf->ins_range.first != NULL) {
                 _INS_NOT_BLOCK( conf->ins_range.first );
                 _INS_NOT_BLOCK( first_ins );
@@ -139,7 +139,7 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
                     havelive = HaveLiveInfo;
                     HaveLiveInfo = false;
                     PrefixIns( first_ins, new_ins );
-                    new_ins->head.live.regs = blk->ins.hd.live.regs;
+                    new_ins->head.live.regs = blk->ins.head.live.regs;
                     new_ins->head.live.within_block = first_ins->head.live.within_block;
                     new_ins->head.live.out_of_block = first_ins->head.live.out_of_block;
                     HaveLiveInfo = havelive;
@@ -353,7 +353,7 @@ void    MakeLiveInfo( void )
     havelive = HaveLiveInfo;
     HaveLiveInfo = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->ins.hd.prev->head.opcode != OP_NOP ) {
+        if( blk->ins.head.prev->head.opcode != OP_NOP ) {
             PrefixInsRenum( (instruction *)&blk->ins, MakeNop(), false );
         }
     }
@@ -372,7 +372,7 @@ void    LiveInfoUpdate( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->ins.hd.next != (instruction *)&blk->ins ) {
+        if( blk->ins.head.next != (instruction *)&blk->ins ) {
             FlowConflicts( (instruction *)&blk->ins, (instruction *)&blk->ins, blk );
         }
     }

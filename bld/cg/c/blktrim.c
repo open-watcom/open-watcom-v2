@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ static  instruction     *FindOneCond( block *blk )
     instruction *cond;
 
     cond = NULL;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
             if( cond != NULL )
                 return( NULL );
@@ -95,7 +95,7 @@ int     CountIns( block *blk )
     instruction *ins;
 
     num_instrs = 0;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         num_instrs++;
     }
     return( num_instrs );
@@ -137,9 +137,9 @@ void    RemoveBlock( block *blk )
             RemoveInputEdge( &blk->edge[i] );
         }
     }
-    last_line = blk->ins.hd.line_num;
+    last_line = blk->ins.head.line_num;
     for( ;; ) {
-        next_ins = blk->ins.hd.next;
+        next_ins = blk->ins.head.next;
         if( next_ins == (instruction *)&blk->ins )
             break;
         if( next_ins->head.line_num != 0 ) {
@@ -165,8 +165,8 @@ void    RemoveBlock( block *blk )
             }
         }
     }
-    if( next != NULL && next->ins.hd.line_num == 0 ) {
-        next->ins.hd.line_num = last_line;
+    if( next != NULL && next->ins.head.line_num == 0 ) {
+        next->ins.head.line_num = last_line;
     }
     if( HeadBlock == blk ) {
         HeadBlock = blk->next_block;
@@ -286,8 +286,8 @@ static  void    JoinBlocks( block *jump, block *target )
     if( _IsBlkAttr( jump, BLK_BIG_LABEL ) )
         _MarkBlkAttr( target, BLK_BIG_LABEL );
     jump->label = label;
-    line_num = target->ins.hd.line_num;
-    target->ins.hd.line_num = jump->ins.hd.line_num;
+    line_num = target->ins.head.line_num;
+    target->ins.head.line_num = jump->ins.head.line_num;
 
     /*  Move the inputs to 'jump' to be inputs to 'target'*/
 
@@ -300,29 +300,29 @@ static  void    JoinBlocks( block *jump, block *target )
 
     /*  Now join the instruction streams*/
 
-    nop = jump->ins.hd.prev;
+    nop = jump->ins.head.prev;
     if( nop->head.opcode == OP_NOP ) {
         if( nop->flags.nop_flags & NOP_SOURCE_QUEUE ) {
             /* this nop is only here to hold source info so we just
              * attach the source info to the next instruction and
              * nuke this nop so that it can't inhibit optimization */
-            if( target->ins.hd.next->head.line_num == 0 ) {
-                target->ins.hd.next->head.line_num = nop->head.line_num;
+            if( target->ins.head.next->head.line_num == 0 ) {
+                target->ins.head.next->head.line_num = nop->head.line_num;
             }
             FreeIns( nop );
         }
     }
 
-    if( jump->ins.hd.next != (instruction *)&jump->ins ) {
+    if( jump->ins.head.next != (instruction *)&jump->ins ) {
         if( line_num != 0 ) {
-            jump->ins.hd.prev->head.line_num = line_num;
+            jump->ins.head.prev->head.line_num = line_num;
         }
-        jump->ins.hd.prev->head.next = target->ins.hd.next;
-        target->ins.hd.next->head.prev = jump->ins.hd.prev;
-        target->ins.hd.next = jump->ins.hd.next;
-        target->ins.hd.next->head.prev = (instruction *)&target->ins;
-        jump->ins.hd.next = (instruction *)&jump->ins;/* so RemoveBlock won't*/
-        jump->ins.hd.prev = (instruction *)&jump->ins;/* free the instr list*/
+        jump->ins.head.prev->head.next = target->ins.head.next;
+        target->ins.head.next->head.prev = jump->ins.head.prev;
+        target->ins.head.next = jump->ins.head.next;
+        target->ins.head.next->head.prev = (instruction *)&target->ins;
+        jump->ins.head.next = (instruction *)&jump->ins;/* so RemoveBlock won't*/
+        jump->ins.head.prev = (instruction *)&jump->ins;/* free the instr list*/
     }
 
     jump->inputs = 0;
@@ -347,7 +347,7 @@ static  bool    SameTarget( block *blk )
     _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
     _MarkBlkAttr( blk, BLK_JUMP );
     RemoveEdge( &blk->edge[1] );
-    ins = blk->ins.hd.prev;
+    ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
         ins = ins->head.prev;
     }
@@ -385,7 +385,7 @@ static  bool    DoBlockTrim( void )
             } else if( _IsBlkAttr( blk, BLK_JUMP ) ) {
                 target = blk->edge[0].destination.u.blk;
                 if( target != blk && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
-                    for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
+                    for( ins = blk->ins.head.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
                         if( ins->flags.nop_flags & (NOP_DBGINFO | NOP_DBGINFO_START) ) {
                             break;
                         }

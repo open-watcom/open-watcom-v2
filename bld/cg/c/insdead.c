@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,11 +96,11 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
     change = false;
     for( blk = tail; blk != NULL; blk = blk->prev_block ) {
         if( just_the_loop && !_IsBlkAttr( blk, BLK_IN_LOOP ) ) {
-            for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
+            for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 ins->ins_flags &= ~INS_VISITED;
             }
         } else {
-            for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
+            for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
                 prev = ins->head.prev;
                 if( ( ins->ins_flags & INS_VISITED ) == 0 ) {
                     change = true;
@@ -313,7 +313,7 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
     if( just_the_loop ) {
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
             if( !_IsBlkAttr( blk, BLK_IN_LOOP ) ) {
-                for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
+                for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     MarkOpsUseful( ins );
                     if( ins->result != NULL ) {
                         MarkUseful( ins->result );
@@ -326,7 +326,7 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
         change = false;
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
             if( !just_the_loop || _IsBlkAttr( blk, BLK_IN_LOOP ) ) {
-                for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
+                for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     if( !in_regalloc || DoesSomething( ins ) ) {
                         change |= CheckUseful( ins );
                     }

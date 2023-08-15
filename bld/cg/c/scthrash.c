@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -364,7 +364,7 @@ bool    RegThrash( block *blk )
     instruction *ins;
     instruction *next;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( ins->head.opcode == OP_MOV
          && !UnChangeable( ins )
@@ -372,7 +372,7 @@ bool    RegThrash( block *blk )
          && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[0]->r.reg )
          && ins->result->n.class == N_REGISTER ) {
             if( ThrashDown( ins ) || ThrashUp( ins ) ) {
-                UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                 return( true );
             }
         }

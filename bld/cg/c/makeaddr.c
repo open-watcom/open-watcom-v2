@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -252,7 +252,7 @@ an      MakeGets( an dst, an src, type_def *tipe )
     InsToAddr( dst );
     dst_name = Points( dst, tipe );
     ins = src->u.i.ins;
-    if( src->format == NF_INS && CurrBlock->ins.hd.prev == ins ) {
+    if( src->format == NF_INS && CurrBlock->ins.head.prev == ins ) {
         ins->result = dst_name;
         src->format = NF_ADDR;  /* so instruction doesn't get freed! */
     } else {

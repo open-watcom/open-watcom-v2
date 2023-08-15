@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +118,7 @@ static  bool    LoadAddr( void )
 
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             change |= LoadAToMove( ins );
         }
     }
@@ -148,7 +148,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, opcnt i )
         input = edge->source;
         if( !_IsBlkAttr( input, BLK_JUMP ) )
             continue;
-        for( prev = input->ins.hd.prev; prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
+        for( prev = input->ins.head.prev; prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
             if( _IsntReDefinedBy( prev, op ) )
                 continue;
             if( prev->head.opcode != OP_MOV )
@@ -208,9 +208,9 @@ static  bool    StretchABlock( block *blk )
     name                *op;
     opcnt               i;
 
-    if( blk->ins.hd.prev != blk->ins.hd.next )
+    if( blk->ins.head.prev != blk->ins.head.next )
         return( false );
-    ins = blk->ins.hd.next;
+    ins = blk->ins.head.next;
     if( !_OpIsCondition( ins->head.opcode ) )
         return( false );
     op = ins->operands[0];
@@ -273,7 +273,7 @@ bool    PropRegsOne( void )
 
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_MOV )
                 continue;
             reg = ins->operands[0];
@@ -356,7 +356,7 @@ static  void    TreeBits( block *root )
     owner = &root->u.partition;
     for( ;; ) {
         blk = *owner;
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             _INSBITS( ins ) = _BLKBITS( blk );
         }
         if( _BLKBITS( blk ) == EMPTY ) {
@@ -471,7 +471,7 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
         while( _BLKBITS( blk ) != bits1 ) {
             blk = blk->u.partition;
         }
-        for( first = blk->ins.hd.prev; first->head.opcode == OP_NOP; first = first->head.prev ) {
+        for( first = blk->ins.head.prev; first->head.opcode == OP_NOP; first = first->head.prev ) {
             if( first->flags.nop_flags & NOP_ZAP_INFO ) {
                 break;
             }
@@ -546,7 +546,7 @@ static  bool    UnOpsLiveFrom( instruction *first, instruction *last )
 
     for( ins = last->head.prev; ; ins = ins->head.prev ) {
         while( ins->head.opcode == OP_BLOCK ) {
-            ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
+            ins = _BLOCK( ins )->input_edges->source->ins.head.prev;
         }
         if( ins == first )
             break;
@@ -574,7 +574,7 @@ static  who_dies BinOpsLiveFrom( instruction *first,
     if( result == NULL ) {
         for( ins = last->head.prev; ; ins = ins->head.prev ) {
             while( ins->head.opcode == OP_BLOCK ) {
-                ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
+                ins = _BLOCK( ins )->input_edges->source->ins.head.prev;
             }
             if( ins == first )
                 break;
@@ -588,7 +588,7 @@ static  who_dies BinOpsLiveFrom( instruction *first,
         result_dies = false;
         for( ins = last->head.prev; ; ins = ins->head.prev ) {
             while( ins->head.opcode == OP_BLOCK ) { /* 89-09-05 */
-                ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
+                ins = _BLOCK( ins )->input_edges->source->ins.head.prev;
             }
             if( ins == first )
                 break;
@@ -937,7 +937,7 @@ static  void    CleanTableEntries( block *root )
 
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             _INSLINK( ins ) = NULL;
         }
         blk = blk->u.partition;
@@ -969,7 +969,7 @@ static  bool    DoArithOps( block *root )
     }
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next; (opcode = ins->head.opcode) != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; (opcode = ins->head.opcode) != OP_BLOCK; ins = ins->head.next ) {
             i = ( _OpIsBinary( opcode ) ) ? 1 : 0;
             if( _OpIsCSE( opcode )
               && !( LeaveIndVars && Inducable( blk, ins ) )
@@ -1091,7 +1091,7 @@ static  bool    FixStructRet( block *root )
     change = false;
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->result != NULL &&
                    ins->result->n.class == N_TEMP &&
@@ -1226,7 +1226,7 @@ static  void    LinkMoves( block *root )
 
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( LinkableMove( ins ) ) {
                 CreateLink( ins, ins->result );
             }
@@ -1250,7 +1250,7 @@ static  void    LinkMemMoves( block *root )
 
     blk = root;
     for(;;) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( !isMoveIns( ins ) )
                 continue;
             if( !CanLinkMove( ins ) )
@@ -1299,7 +1299,7 @@ static  void    CleanMoves( block *root )
 
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 NullNameLink( ins->operands[i] );
             }
@@ -1445,7 +1445,7 @@ static  bool    PropMoves( block *root, bool backward )
     change = false;
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next; (opcode = ins->head.opcode) != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; (opcode = ins->head.opcode) != OP_BLOCK; ins = ins->head.next ) {
             if( opcode != OP_LA
               && opcode != OP_CAREFUL_LA
               && opcode != OP_EXT_ADD

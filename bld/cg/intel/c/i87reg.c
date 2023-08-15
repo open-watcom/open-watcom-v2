@@ -464,7 +464,7 @@ static  void    FPConvert( void )
     instruction *next;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( ins->head.opcode == OP_CONVERT ) {
                 if( _Is87Ins( ins ) ) {
@@ -502,7 +502,7 @@ static  void    FPAlloc( void )
     stk_level = 0;
     need_live_update = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         if( ins->head.opcode == OP_BLOCK )
             continue;
         ins->stk_entry = stk_level;
@@ -663,7 +663,7 @@ static  void    NoStackAcrossCalls( void )
     opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 CheckForStack( ins->operands[i] );
             }
@@ -707,7 +707,7 @@ static  void    FSinCos( void )
     instruction *ins;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_SIN ) {
                 FindSinCos( ins, OP_COS );
             } else if( ins->head.opcode == OP_COS ) {

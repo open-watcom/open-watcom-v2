@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ static bool BlockUses( block *blk, hw_reg_set reg )
     instruction *ins;
     opcnt       i;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {
             if( OpRefsReg( ins->operands[i], reg ) ) {
                 return( true );
@@ -365,11 +365,11 @@ void FlowSave( hw_reg_set *preg )
 #endif
             ins = MakeUnary( OP_PUSH, AllocRegName( reg_info[curr_reg].reg ), NULL, reg_type_class );
             ResetGenEntry( ins );
-            PrefixIns( save->ins.hd.next, ins );
+            PrefixIns( save->ins.head.next, ins );
             ins = MakeUnary( OP_POP, NULL, AllocRegName( reg_info[curr_reg].reg ), reg_type_class );
             ins->num_operands = 0;
             ResetGenEntry( ins );
-            SuffixIns( restore->ins.hd.prev, ins );
+            SuffixIns( restore->ins.head.prev, ins );
             HW_TurnOff( *preg, reg_info[curr_reg].reg );
             HW_TurnOn( flowedRegs, reg_info[curr_reg].reg );
             FixStackDepth( save, restore );

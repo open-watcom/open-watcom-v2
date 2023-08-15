@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ static  void    calcUsedRegs( void )
         if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             HW_TurnOn( used, ReturnAddrReg() );
         }
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             result = ins->result;
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
@@ -547,14 +547,14 @@ void    GenProlog( void )
     old_segid = SetOP( AskCodeSeg() );
     label = CurrProc->label;
     if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
-        OutFileStart( HeadBlock->ins.hd.line_num );
+        OutFileStart( HeadBlock->ins.head.line_num );
     }
     TellKeepLabel( label );
     TellProcLabel( label );
-    CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.hd.line_num );
+    CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.head.line_num );
     if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
         // DbgRtnBeg( CurrProc->targ.debug, lc );
-        EmitRtnBeg( /*label, HeadBlock->ins.hd.line_num*/ );
+        EmitRtnBeg( /*label, HeadBlock->ins.head.line_num*/ );
     }
     // keep stack aligned
     CurrProc->locals.size = _RoundUp( CurrProc->locals.size, REG_SIZE );

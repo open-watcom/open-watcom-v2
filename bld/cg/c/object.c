@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ void    GenObject( void )
     for( blk = HeadBlock; blk != NULL; blk = next_block ) {
         next_block = blk->next_block;
         if( blk->label != CurrProc->label && blk->label != NULL ) {
-            last_line = DumpLineNum( blk->ins.hd.line_num, last_line, true );
+            last_line = DumpLineNum( blk->ins.head.line_num, last_line, true );
             if( _IsBlkAttr( blk, BLK_ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
                 align = DepthAlign( DEEP_LOOP_ALIGN );
             } else {
@@ -102,7 +102,7 @@ void    GenObject( void )
         }
         StartBlockProfiling( blk );
         InitStackDepth( blk );
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_NOP
               && ( (ins->flags.nop_flags & NOP_SOURCE_QUEUE) || ins->flags.nop_flags == NOP_DBGINFO )) // an end block
             {
@@ -294,7 +294,7 @@ static  instruction     *FindCondition( block *blk ) {
 
     instruction         *cond;
 
-    for( cond = blk->ins.hd.prev; cond->head.opcode != OP_BLOCK; cond = cond->head.prev ) {
+    for( cond = blk->ins.head.prev; cond->head.opcode != OP_BLOCK; cond = cond->head.prev ) {
         if( _OpIsCondition( cond->head.opcode ) ) {
             return( cond );
         }
@@ -405,7 +405,7 @@ static  bool    BlockContainsCall( block *blk ) {
 
     instruction         *ins;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( _OpIsCall( ins->head.opcode ) ) {
             return( true );
         }
@@ -559,7 +559,7 @@ static  bool    GuardApplies( block *blk, block *dst, name *reg ) {
     instruction *ins;
     opcnt       i;
 
-    for( ins = dst->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = dst->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {
             // this could be beefed up to take into account aggragates
             if( ins->operands[i] == reg ) {
@@ -619,7 +619,7 @@ static  bool    StoreApplies( block *blk, block *next ) {
 
     if( PostDominates( next, blk ) )
         return( false );
-    for( ins = next->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = next->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->result == NULL )
             continue;
         switch( ins->result->n.class ) {

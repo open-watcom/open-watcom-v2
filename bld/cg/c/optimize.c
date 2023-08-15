@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,7 @@ static  void    PushInsForward( block *blk ) {
     instruction *next;
 
     /* move backwards through instructions*/
-    for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
+    for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
         prev = ins->head.prev;
 
         next = CanMoveAfter( ins );
@@ -221,7 +221,7 @@ void    DeadTemps( void )
     instruction *next;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( !SideEffect( ins ) && _IsntIns( ins, SIDE_EFFECT )
              && ins->result != NULL
@@ -292,7 +292,7 @@ void    AxeDeadCode( void )
         kill = NULL;
         change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( IsDeadIns( blk, ins, next ) ) {
                     ins->result = NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,7 +193,7 @@ static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
     instruction *ins;
     opcnt       i;
 
-    for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
+    for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         if( ins->result != NULL && ins->result->n.class == N_TEMP
           && DeAlias( ins->result ) == temp ) {
             if( SideEffect( ins ) ) {
@@ -225,7 +225,7 @@ static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
     instruction *ins;
     opcnt       i;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->result != NULL ) {
             if( ins->result->n.class == N_TEMP ) {
                 if( DeAlias( ins->result ) == temp ) {
@@ -309,7 +309,7 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
     *any_references = true;
     onlyins = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 if( In( ins->operands[i], name ) ) {
                     if( onlyins != NULL )
@@ -466,7 +466,7 @@ static  void    CalcNumberOfUses( void )
         }
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 MarkUsage( ins->operands[i] );
             }
@@ -546,7 +546,7 @@ void    ParmPropagate( void )
     opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 PropAParm( ins->operands[i] );
             }
@@ -631,7 +631,7 @@ void    AssgnMoreTemps( block_num curr_id )
     opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 AssgnATemp( ins->operands[i], curr_id );
             }
@@ -661,7 +661,7 @@ void            CountTempRefs( void )
         temp->t.u.ref_count = 0;
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 if( ins->operands[i]->n.class == N_TEMP ) {
                     ins->operands[i]->t.u.ref_count++;

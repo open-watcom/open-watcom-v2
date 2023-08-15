@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ bool    CreateBreak( void )
     exit_blk = NewBlock( NULL, false );
     exit_blk->gen_id = BlockList->gen_id + 1;
     exit_blk->id = BlockList->id + 1;
-    exit_blk->ins.hd.line_num = 0;
+    exit_blk->ins.head.line_num = 0;
     BlockList = exit_blk;
     exit_blk->prev_block = break_blk->prev_block;
     exit_blk->next_block = NULL;
@@ -227,8 +227,8 @@ bool    CreateBreak( void )
     blk->input_edges = NULL;
     blk->inputs = 0;
     blk->label = HeadBlock->label;
-    blk->ins.hd.line_num = HeadBlock->ins.hd.line_num;
-    HeadBlock->ins.hd.line_num = 0;
+    blk->ins.head.line_num = HeadBlock->ins.head.line_num;
+    HeadBlock->ins.head.line_num = 0;
     blk->gen_id = 0;
     blk->id = 0;
     HeadBlock->label = AskForNewLabel();

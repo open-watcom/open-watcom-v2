@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +131,7 @@ typedef struct data_flow_def {
 } data_flow_def;
 
 typedef struct block_ins {
-        struct ins_header       hd;
+        struct ins_header       head;
         struct block            *blk;
 } block_ins;
 

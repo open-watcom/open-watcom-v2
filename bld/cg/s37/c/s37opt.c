@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,7 +165,7 @@ static void FixConverts()
 
     blk = HeadBlock;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             if( ins->head.opcode == OP_CONVERT ) {
                 if( ins->type_class == ins->base_type_class ) {
@@ -193,7 +194,7 @@ static bool ConvertToInt( name *temp )
     temp->n.name_class = SW;
     temp->n.size = WORD_SIZE;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
              class = ins->type_class;
              change |= ConvertInsToInt( ins, temp );
