@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,65 +33,61 @@
 
 #if defined(__WATCOMC__) && defined( _M_IX86 )
 
-#if defined(__FLAT__) || defined(__SMALL__) || defined(__MEDIUM__)
-    #define _SAVES  "push    es"
-    #define _RESES  "pop     es"
-    #define _SETES  "push    ds" \
-                    "pop     es"
-    #define _SREG_ES
-    #define _SREG_DS
+#if defined(__SMALL__)
+    #define _SAVE_ES    "push    es"
+    #define _REST_ES    "pop     es"
+    #define _SET_ES     "push    ds" \
+                        "pop     es"
 #else
-    #define _SAVES
-    #define _RESES
-    #define _SETES
-    #define _SREG_ES    __es
-    #define _SREG_DS    __ds
+    #define _SAVE_ES
+    #define _REST_ES
+    #define _SET_ES
 #endif
 
-extern void     *CypCopy( const void *, void *, size_t );
+extern void     *CypCopy( const void *src, void *dst, size_t len );
 #pragma aux CypCopy = \
-        _SAVES \
-        _SETES \
+        _SAVE_ES \
+        _SET_ES \
         "rep movsb" \
-        _RESES \
-    __parm __routine    [_SREG_DS __esi] [_SREG_ES __edi] [__ecx] \
-    __value             [_SREG_ES __edi]
+        _REST_ES \
+    __parm __routine    [__esi] [__edi] [__ecx] \
+    __value             [__edi]
 
-extern void     *CypFill( void *, size_t, unsigned char );
+extern void     *CypFill( void *start, size_t len, unsigned char byte );
 #pragma aux CypFill = \
-        _SAVES \
-        _SETES \
+        _SAVE_ES \
+        _SET_ES \
         "rep stosb" \
-        _RESES \
-    __parm __routine    [_SREG_ES __edi] [__ecx] [__al] \
-    __value             [_SREG_ES __edi]
+        _REST_ES \
+    __parm __routine    [__edi] [__ecx] [__al] \
+    __value             [__edi]
 
-extern size_t   CypLength( const char *);
+extern size_t   CypLength( const char *string );
 #pragma aux CypLength = \
-        _SAVES \
-        _SETES \
+        _SAVE_ES \
+        _SET_ES \
         "xor    eax,eax" \
         "xor    ecx,ecx" \
         "dec    ecx" \
         "repne scasb" \
         "not    ecx" \
         "dec    ecx" \
-        _RESES \
-    __parm __routine    [_SREG_ES __edi] \
+        _REST_ES \
+    __parm __routine    [__edi] \
     __value             [__ecx] \
     __modify            [__eax]
 
-extern bool     CypEqual( const void *, const void *, size_t );
+extern bool     CypEqual( const void *src1, const void *src2, size_t len );
 #pragma aux CypEqual = \
-        _SAVES \
-        _SETES \
+        _SAVE_ES \
+        _SET_ES \
         "xor    eax,eax" \
         "repe cmpsb" \
         "jne short L1" \
         "inc    eax" \
     "L1:" \
-        _RESES \
-    __parm __routine    [_SREG_DS __esi] [_SREG_ES __edi] [__ecx] \
+        _REST_ES \
+    __parm __routine    [__esi] [__edi] [__ecx] \
     __value             [__al]
 
 #endif

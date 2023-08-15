@@ -37,10 +37,10 @@
 
 #include "cypfunc.h"
 
-void    Copy( const void *x, void *y, size_t len )
-/************************************************/
+void    Copy( const void *src, void *dst, size_t len )
+/****************************************************/
 {
-    CypCopy( x, y, len );
+    CypCopy( src, dst, len );
 }
 
 void    *Fill( void *start, size_t len, unsigned char filler )
@@ -49,10 +49,10 @@ void    *Fill( void *start, size_t len, unsigned char filler )
     return( CypFill( start, len, filler ) );
 }
 
-bool    Equal( const void *src, const void *dst, size_t length )
-/**************************************************************/
+bool    Equal( const void *src1, const void *src2, size_t length )
+/****************************************************************/
 {
-    return( CypEqual( src, dst, length ) );
+    return( CypEqual( src1, src2, length ) );
 }
 
 char    *CopyStr( const char *src, char *dst )
@@ -69,10 +69,10 @@ size_t  Length( const char *string )
 
 #else
 
-void    Copy( const void *x, void *y, size_t len )
-/************************************************/
+void    Copy( const void *src, void *dst, size_t len )
+/****************************************************/
 {
-    memcpy( y, x, len );
+    memcpy( dst, src, len );
 }
 
 void    *Fill( void *start, size_t len, unsigned char filler )
@@ -81,10 +81,10 @@ void    *Fill( void *start, size_t len, unsigned char filler )
     return( memset( start, filler, len ) );
 }
 
-bool    Equal( const void *src, const void *dst, size_t length )
-/**************************************************************/
+bool    Equal( const void *src1, const void *src2, size_t length )
+/****************************************************************/
 {
-    return( memcmp( src, dst, length ) == 0 );
+    return( memcmp( src1, src2, length ) == 0 );
 }
 
 char    *CopyStr( const char *src, char *dst )
