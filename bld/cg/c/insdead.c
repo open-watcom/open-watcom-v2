@@ -44,9 +44,9 @@
 
 static  void    InitVisitedTemps( void )
 /***************************************
-    Mark all N_TEMP and N_MEMORY names as Not visited. If CGSW_GEN_NO_OPTIMIZATION
-    is on, mark them all as visited.
-*/
+ * Mark all N_TEMP and N_MEMORY names as Not visited. If CGSW_GEN_NO_OPTIMIZATION
+ * is on, mark them all as visited.
+ */
 {
     name        *op;
     name        *alias;
@@ -83,10 +83,10 @@ static  void    InitVisitedTemps( void )
 static  bool            FreeUselessIns( block *tail, bool just_the_loop,
                                         bool in_regalloc )
 /***********************************************************************
-    Free any instructions which have not been marked
-    with the INS_VISITED bit. See below for the setting
-    of this bit.
-*/
+ * Free any instructions which have not been marked
+ * with the INS_VISITED bit. See below for the setting
+ * of this bit.
+ */
 {
     block       *blk;
     instruction *ins;
@@ -121,9 +121,9 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
 
 static  void            FreeUnVisitedTemps( void )
 /*************************************************
-    Free any temps which have not been marked VISITED. They are
-    useless. See below for setting of this bit.
-*/
+ * Free any temps which have not been marked VISITED. They are
+ * useless. See below for setting of this bit.
+ */
 {
     name        *op;
     name        **owner;
@@ -146,9 +146,9 @@ static  void            FreeUnVisitedTemps( void )
 
 bool    VolatileIns( instruction *ins )
 /********************************************
-    Does the instruction access/define a volatile variable?
-    This is a utility routine for any module to use.
-*/
+ * Does the instruction access/define a volatile variable?
+ * This is a utility routine for any module to use.
+ */
 {
     opcnt   i;
 
@@ -168,10 +168,10 @@ bool    VolatileIns( instruction *ins )
 
 bool    SideEffect( instruction *ins )
 /***************************************************
-    Is an instruction a side effect instruction, such as one
-    that changes the 8087 stack or a SUB with a following SBB.
-    This is a utility routine for any module to use.
-*/
+ * Is an instruction a side effect instruction, such as one
+ * that changes the 8087 stack or a SUB with a following SBB.
+ * This is a utility routine for any module to use.
+ */
 {
     if( ins->head.opcode == OP_PUSH )
         return( true );
@@ -188,9 +188,9 @@ bool    SideEffect( instruction *ins )
 
 static  bool    MarkUseful( name *op )
 /*************************************
-    Mark an operand as useful. If the operand is an indexed name,
-    its base and index become useful as well.
-*/
+ * Mark an operand as useful. If the operand is an indexed name,
+ * its base and index become useful as well.
+ */
 {
     bool        change;
     name        *alias;
@@ -221,9 +221,9 @@ static  bool    MarkUseful( name *op )
 
 static  bool    MarkOpsUseful( instruction *ins )
 /************************************************
-    We have decided that an instruction is useful, therefore we must
-    mark all of its operands as useful
-*/
+ * We have decided that an instruction is useful, therefore we must
+ * mark all of its operands as useful
+ */
 {
     opcnt       i;
     bool        change;
@@ -239,11 +239,11 @@ static  bool    MarkOpsUseful( instruction *ins )
 
 static  bool    CheckUseful( instruction *ins )
 /**********************************************
-    Mark an instruction INS_VISITED if it is useful. A useful
-    instruction is one that causes a branch, defines memory, a register
-    or a VISITED operand. We return true whenver an instruction gets
-    marked INS_VISITED that wasn't before.
-*/
+ * Mark an instruction INS_VISITED if it is useful. A useful
+ * instruction is one that causes a branch, defines memory, a register
+ * or a VISITED operand. We return true whenver an instruction gets
+ * marked INS_VISITED that wasn't before.
+ */
 {
     name        *res;
     opcode_defs opcode;
@@ -295,16 +295,15 @@ static  bool    CheckUseful( instruction *ins )
 static  void            FindUsefulIns( block * tail, bool just_the_loop,
                                         bool in_regalloc )
 /***********************************************************************
-    This goes around calling CheckUseful until no more instructions
-    are found to be useful. Initially, instructions which affect
-    branches, or define memory/registers are useful.
-    The operands of a useful instruction are marked VISITED.
-    On subsequent passes, instructions which define VISITED names
-    are also marked useful and their operands are marked VISITED.
-    Iterating, we find out every useful instruction in the routine,
-    and anything not marked useful gets killed.
-
-*/
+ * This goes around calling CheckUseful until no more instructions
+ * are found to be useful. Initially, instructions which affect
+ * branches, or define memory/registers are useful.
+ * The operands of a useful instruction are marked VISITED.
+ * On subsequent passes, instructions which define VISITED names
+ * are also marked useful and their operands are marked VISITED.
+ * Iterating, we find out every useful instruction in the routine,
+ * and anything not marked useful gets killed.
+ */
 {
     bool        change;
     block       *blk;
@@ -339,14 +338,14 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
 
 static  bool    RemoveUselessStuff( bool just_the_loop, bool in_regalloc )
 /************************************************************************
-    This routine removes useless instructions from the routine. Note
-    that if BreakExists(), there are some extra blocks hanging off
-    BlockList that we must consider in our analysis. This is for FORTRAN
-    when we are generating partial routines. HeadBlock points to what
-    we really want to generate, BlockList points the the rest. We discover
-    which instruction are useless by marking all useful instructions
-    in the program
-*/
+ * This routine removes useless instructions from the routine. Note
+ * that if BreakExists(), there are some extra blocks hanging off
+ * BlockList that we must consider in our analysis. This is for FORTRAN
+ * when we are generating partial routines. HeadBlock points to what
+ * we really want to generate, BlockList points the the rest. We discover
+ * which instruction are useless by marking all useful instructions
+ * in the program
+ */
 {
     block       *tail;
     bool        change;
@@ -378,16 +377,16 @@ static bool DoInsDead( bool just_the_loop, bool in_regalloc )
 
 bool    InsDead( void )
 /**********************
-    Remove any dead or useless instructions in the program we can find.
-*/
+ * Remove any dead or useless instructions in the program we can find.
+ */
 {
     return( DoInsDead( false, false ) );
 }
 
 bool    RegInsDead( void )
 /*************************
-    Remove any dead or useless instructions in the program we can find.
-*/
+ * Remove any dead or useless instructions in the program we can find.
+ */
 {
     return( DoInsDead( false, true ) );
 }

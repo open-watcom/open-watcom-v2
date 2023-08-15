@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,9 @@
 #include "regalloc.h"
 
 
-/* KLUDGEY crud for segment register */
+/*
+ * KLUDGEY crud for segment register
+ */
 
 void    OptSegs( void )
 /*********************/
@@ -71,8 +73,9 @@ void MergeIndex( void )
 {
 }
 
-/* KLUDGEY crud for the 8087 */
-
+/*
+ * KLUDGEY crud for the 8087
+ */
 
 bool FPInsIntroduced( instruction *ins )
 /**************************************/
@@ -278,7 +281,8 @@ void ZeroMoves( void )
 #endif
 
 #if (_TARGET & _TARG_MIPS) == 0
-/* Functions from 386setcc.c; MIPS has its own mipssetc.c, Alpha could
+/*
+ * Functions from 386setcc.c; MIPS has its own mipssetc.c, Alpha could
  * have own version as well. Not sure about PowerPC.
  */
 bool SetOnCondition( void )

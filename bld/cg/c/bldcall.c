@@ -69,9 +69,9 @@
 
 type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 /*********************************************************************
-    create the initial basic block for routine "sym", and call some
-    other initialization routines.
-*/
+ * create the initial basic block for routine "sym", and call some
+ * other initialization routines.
+ */
 {
     type_class_def      type_class;
 
@@ -90,8 +90,8 @@ type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 
 void    BGFiniCall( cn call )
 /************************************
-    free up a call node
-*/
+ * free up a call node
+ */
 {
     BGDone( call->name );
     CGFree( call->state->parm.table );
@@ -100,13 +100,13 @@ void    BGFiniCall( cn call )
 }
 
 
-cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
+cn      BGInitCall(an node,type_def *tipe,aux_handle aux)
 /******************************************************************
-    initialize a call node for a call to routine "node", with type
-    "tipe" and aux handle "aux". This also allocates the instruction
-    to hold the call and parially initializes it.
-*/
-
+ * initialize a call node for a call to routine "node", with type
+ * "tipe" and aux handle "aux". This also allocates the instruction
+ * to hold the call and parially initializes it.
+ */
+{
     cn                  call;
     type_class_def      type_class;
     name                *mem;
@@ -146,11 +146,11 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
 }
 
 
-void    BGAddParm( cn call, an parm ) {
+void    BGAddParm( cn call, an parm )
 /**********************************************
-    link a parm into the list of parms for a call node
-*/
-
+ * link a parm into the list of parms for a call node
+ */
+{
     pn          new;
 
     new = CGAlloc( sizeof( parm_node ) );
@@ -161,18 +161,18 @@ void    BGAddParm( cn call, an parm ) {
 }
 
 
-void    BGAutoDecl( cg_sym_handle sym, type_def *tipe ) {
+void    BGAutoDecl( cg_sym_handle sym, type_def *tipe )
 /*************************************************************
-    declare an automatic variable with name "sym" and type "tipe". This
-    just creates the appropriate back end symbol table entry. (eg: N_TEMP)
-*/
-
+ * declare an automatic variable with name "sym" and type "tipe". This
+ * just creates the appropriate back end symbol table entry. (eg: N_TEMP)
+ */
+{
     BGDone( MakeAddrName( CG_FE, sym, tipe ) );
 }
 
-static  void    LinkParmIns( instruction *parm_def, instruction *ins ) {
-/**********************************************************************/
-
+static  void    LinkParmIns( instruction *parm_def, instruction *ins )
+/********************************************************************/
+{
     ins->operands[2] = (name *)parm_def; /* link them together*/
     parm_def->operands[2] = (name *)ins;
     ins->ins_flags |= INS_PARAMETER;
@@ -204,24 +204,24 @@ static  instruction *DoParmDef( name *result, type_class_def type_class )
 #define BASE_ALIGNMENT  4
 #endif
 
-static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *tipe, name *t2 ) {
+static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *tipe, name *t2 )
 /*********************************************************************************************
-    N.B.: This was too weird to be incorporated in routine below.
-    If we have a structure being passed by value on the Alpha, we start
-    stuffing 8-byte chunks of data into any available parm registers, and
-    put the remainder on the stack once those run out. In order to make
-    this mess into an actual temp of the correct type, we create something
-    which looks like:
-        PARMDEF     => Ra
-        MOV`     Ra => t2
-        PARMDEF     => Rb
-        MOV      Rb => t2+8
-        ...
-        PARMDEF     => t1
-        MOV XX   t1 => t2+n
-    which give us a real temp in t2, when all is said and done.
-*/
-
+ * N.B.: This was too weird to be incorporated in routine below.
+ * If we have a structure being passed by value on the Alpha, we start
+ * stuffing 8-byte chunks of data into any available parm registers, and
+ * put the remainder on the stack once those run out. In order to make
+ * this mess into an actual temp of the correct type, we create something
+ * which looks like:
+ *     PARMDEF     => Ra
+ *     MOV`     Ra => t2
+ *     PARMDEF     => Rb
+ *     MOV      Rb => t2+8
+ *     ...
+ *     PARMDEF     => t1
+ *     MOV XX   t1 => t2+n
+ * which give us a real temp in t2, when all is said and done.
+ */
+{
     name                *t1;
     name                *reg_name;
     type_length         offset;
@@ -236,7 +236,9 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *t
     t2->n.size = len;
     for( ;; ) {
         if( HW_CEqual( reg, HW_EMPTY ) ) {
-            // put the rest of the structure on the stack
+            /*
+             * put the rest of the structure on the stack
+             */
             t1 = AllocTemp( XX );
             t1->v.usage |= USE_IN_ANOTHER_BLOCK|NEEDS_MEMORY|HAS_MEMORY|USE_MEMORY;
             t1->n.size = len - offset;
@@ -263,21 +265,21 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *t
 }
 #endif
 
-name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
-/******************************************************************************
-    Declare a parameter of type "tipe" for the current routine. This
-    routine determines whether the parameter is coming in in a register
-    or on the stack and generates a temporary to hold the parm (temp) and
-        PARMDEF   => x
-        MOV     x => temp
-    and links these two instructions together. (x may be a register or
-    a temporary that is pre-allocated to a location on the stack)
-    in the current basic block. If the parm is coming in on the stack,
-    it sets the location field of the temp to be the same as the location it
-    arrives in on the stack, so if we do assign the
-    parm to memory, it gets its incoming location on the stack.
-*/
-
+name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg )
+/**************************************************************************
+ * Declare a parameter of type "tipe" for the current routine. This
+ * routine determines whether the parameter is coming in in a register
+ * or on the stack and generates a temporary to hold the parm (temp) and
+ *     PARMDEF   => x
+ *     MOV     x => temp
+ * and links these two instructions together. (x may be a register or
+ * a temporary that is pre-allocated to a location on the stack)
+ * in the current basic block. If the parm is coming in on the stack,
+ * it sets the location field of the temp to be the same as the location it
+ * arrives in on the stack, so if we do assign the
+ * parm to memory, it gets its incoming location on the stack.
+ */
+{
     instruction         *ins;
     instruction         *parm_def;
     name                *temp;
@@ -298,10 +300,12 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
 
     no_temp = ( type_class == XX );
 #if _TARGET_INTEL
-    // The arguments of an interrupt routine coming in on the stack are used
-    // for input and output; routine epilog pops them into registers. Handle
-    // them specially to stop the optimizer from eliminating the writes (don't
-    // create temps normally used with simple types).
+    /*
+     * The arguments of an interrupt routine coming in on the stack are used
+     * for input and output; routine epilog pops them into registers. Handle
+     * them specially to stop the optimizer from eliminating the writes (don't
+     * create temps normally used with simple types).
+     */
     if( _RoutineIsInterrupt( CurrProc->state.attr ) && HW_CEqual( reg, HW_EMPTY ) ) {
         no_temp = true;
         temp->v.usage |= USE_ADDRESS;
@@ -321,14 +325,16 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
             parm_name->t.location = ParmMem( ptipe->length, ParmAlignment( ptipe ), &CurrProc->state );
         }
         parm_name->t.temp_flags |= STACK_PARM;
-     // parm_name->n.size = tipe->length;
+//        parm_name->n.size = tipe->length;
         parm_name->n.size = ptipe->length;
         parm_name->v.usage |= NEEDS_MEMORY | HAS_MEMORY | USE_MEMORY;
     } else {
         parm_name = AllocRegName( ActualParmReg( reg ) );
 #if _TARGET & _TARG_80386
         if( CurrProc->state.attr & ROUTINE_STACK_RESERVE ) {
-            // Just make sure we are taking up some space
+            /*
+             * Just make sure we are taking up some space
+             */
             ParmMem( ptipe->length, ParmAlignment( ptipe ), &CurrProc->state );
         }
 #endif
@@ -348,14 +354,16 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
             temp->t.location = parm_name->t.location;
 #if (_TARGET & _TARG_PPC) || (_TARGET & _TARG_MIPS)
         } else {
-            // for PowerPC varargs routines, ensure that taking the address
-            // of a parm coming in in a register will force that parm into the
-            // correct home location in the caller's frame (yes - it sucks)
-            // For MIPS, ensure that taking the address of a parm passed in
-            // register will always force it to the right home location,
-            // varargs or not. All this is done basically so that crappy code
-            // that doesn't use stdarg.h properly would work - we have some
-            // in our own clib ;-)
+            /*
+             * for PowerPC varargs routines, ensure that taking the address
+             * of a parm coming in in a register will force that parm into the
+             * correct home location in the caller's frame (yes - it sucks)
+             * For MIPS, ensure that taking the address of a parm passed in
+             * register will always force it to the right home location,
+             * varargs or not. All this is done basically so that crappy code
+             * that doesn't use stdarg.h properly would work - we have some
+             * in our own clib ;-)
+             */
             temp->t.location = CurrProc->state.parm.offset - ptipe->length;
 #endif
         }
@@ -365,9 +373,9 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
 }
 
 
-void    BGParmDecl( cg_sym_handle sym, type_def *tipe ) {
-/************************************************************/
-
+void    BGParmDecl( cg_sym_handle sym, type_def *tipe )
+/*****************************************************/
+{
     hw_reg_set          reg;
     type_def            *t;
 
@@ -377,17 +385,20 @@ void    BGParmDecl( cg_sym_handle sym, type_def *tipe ) {
 }
 
 
-static  void    LinkParms( instruction *call_ins, pn *owner ) {
+static  void    LinkParms( instruction *call_ins, pn *owner )
 /**************************************************************
-    call TRAddParm for each parm in order and delete the parm nodes
-*/
+ * call TRAddParm for each parm in order and delete the parm nodes
+ */
+{
     pn          next;
     pn          parm;
 
     for( parm = *owner; parm != NULL; parm = next ) {
         next = parm->next;
-        // because of FPPushParms and delayed stuff
-        // if( parm->ins == NULL ) _Zoiks( ZOIKS_XXX );
+        /*
+         * because of FPPushParms and delayed stuff
+         */
+//        if( parm->ins == NULL ) _Zoiks( ZOIKS_XXX );
         TRAddParm( call_ins, parm->ins );
         CGFree( parm );
     }
@@ -456,11 +467,11 @@ void    AddCallIns( instruction *ins, cn call )
 }
 
 
-void    ReverseParmNodeList( pn *owner ) {
-/*************************************************
-    reverse a linked list of parm_nodes.
-*/
-
+void    ReverseParmNodeList( pn *owner )
+/***************************************
+ * reverse a linked list of parm_nodes.
+ */
+{
     pn  parm;
     pn  next;
 
@@ -474,14 +485,14 @@ void    ReverseParmNodeList( pn *owner ) {
 }
 
 
-void            PushParms( pn parm, call_state *state ) {
-/***************************************************************
-    Run through the list of parameters, generating pushes
-    for the ones that are being passed on the stack. Unhook them
-    from the list, but leave the others (register parms) alone.
-    Add pointers to push instructions to the call instruction.
-*/
-
+void            PushParms( pn parm, call_state *state )
+/**************************************************************
+ * Run through the list of parameters, generating pushes
+ * for the ones that are being passed on the stack. Unhook them
+ * from the list, but leave the others (register parms) alone.
+ * Add pointers to push instructions to the call instruction.
+ */
+{
     instruction         *ins;
     instruction         *push_ins;
     an                  addr;
@@ -497,7 +508,7 @@ void            PushParms( pn parm, call_state *state ) {
                 PushInSameBlock( ins );
                 if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) && (addr->flags & FL_VOLATILE) == 0 ) {
                     push_ins = PushOneParm( ins, ins->operands[0], ins->type_class, parm->offset, state );
-                    // ins->result = ins->operands[0]; -- was this useful? BBB
+//                    ins->result = ins->operands[0]; /* was this useful? */
                     FreeIns( ins );
                 } else {
                     ins->result = BGNewTemp( addr->tipe );
@@ -516,13 +527,13 @@ void            PushParms( pn parm, call_state *state ) {
 }
 
 #if _TARGET & _TARG_80386
-void    ReserveStack( call_state *state, instruction *prev, type_length len ) {
-/**************************************************************************************
-    grab len bytes off the stack - doesn't matter what goes in there
-    as long as the space is allocated.  Guaranteed that len is a multiple
-    of 4 bytes in size.
-*/
-
+void    ReserveStack( call_state *state, instruction *prev, type_length len )
+/****************************************************************************
+ * grab len bytes off the stack - doesn't matter what goes in there
+ * as long as the space is allocated.  Guaranteed that len is a multiple
+ * of 4 bytes in size.
+ */
+{
     name        *reg;
     instruction *ins;
 
@@ -547,13 +558,13 @@ void    ReserveStack( call_state *state, instruction *prev, type_length len ) {
 }
 #endif
 
-void    ParmIns( pn parm, call_state *state ) {
+void    ParmIns( pn parm, call_state *state )
 /******************************************************
-    generate the move instructions for parameters that are passed in registers.
-    This should be all that's left on the list by now. The rest have all
-    been pushed on the stack.
-*/
-
+ * generate the move instructions for parameters that are passed in registers.
+ * This should be all that's left on the list by now. The rest have all
+ * been pushed on the stack.
+ */
+{
     name                *reg;
     name                *curr;
     instruction         *ins;
@@ -594,7 +605,9 @@ void    ParmIns( pn parm, call_state *state ) {
 #endif
 #if _TARGET & _TARG_80386
             if( state->attr & ROUTINE_STACK_RESERVE ) {
-                // this is for the stupid OS/2 _Optlink calling convention
+                /*
+                 * this is for the stupid OS/2 _Optlink calling convention
+                 */
                 ReserveStack( state, ins, addr->tipe->length );
             }
 #else
@@ -608,13 +621,13 @@ void    ParmIns( pn parm, call_state *state ) {
 }
 
 
-void    BGZapBase( name *base, type_def *tipe ) {
+void    BGZapBase( name *base, type_def *tipe )
 /********************************************************
-    for FORTRAN. Generate a NOP with result of base[temp], so that we
-    know that a pass by reference argument can be modified by the
-    call. The NOP instruction right after the call.
-*/
-
+ * for FORTRAN. Generate a NOP with result of base[temp], so that we
+ * know that a pass by reference argument can be modified by the
+ * call. The NOP instruction right after the call.
+ */
+{
     instruction *ins;
 
     if( base == NULL )
@@ -632,13 +645,13 @@ void    BGZapBase( name *base, type_def *tipe ) {
 }
 
 
-void    BGReturn( an retval, type_def *tipe ) {
+void    BGReturn( an retval, type_def *tipe )
 /******************************************************
-    generate the instructions to return the value 'retval', then
-    go off and call generate to optimize the whole routine and
-    spew it out into the object file.
-*/
-
+ * generate the instructions to return the value 'retval', then
+ * go off and call generate to optimize the whole routine and
+ * spew it out into the object file.
+ */
+{
     instruction         *ins;
     instruction         *last_ins;
     instruction         *ret_ins;
@@ -674,10 +687,12 @@ void    BGReturn( an retval, type_def *tipe ) {
                 } else {
                     ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, tipe_type_class );
                 }
-                // BBB - we can get a situation where we are returning
-                // a float in eax (when compiling -3s) and we don't want
-                // to do a convert - ack.
-                // ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, class );
+                /*
+                 * BBB - we can get a situation where we are returning
+                 * a float in eax (when compiling -3s) and we don't want
+                 * to do a convert - ack.
+                 */
+//                ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, class );
 #if _TARGET & _TARG_AXP
             }
 #endif
@@ -720,7 +735,9 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_typ
     last = parm->next;
     parm->name->u.i.ins->result = temp;
     for( offset = len - size; offset >= 0; offset -= size ) {
-        // create a parm node for this part of the struct
+        /*
+         * create a parm node for this part of the struct
+         */
         curr = CGAlloc( sizeof( parm_node ) );
         ins = MakeMove( STempOffset( temp, offset, using_type_class, size ), NULL, using_type_class );
         AddIns( ins );
@@ -730,16 +747,18 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_typ
         curr->alignment = 4;
         last = curr;
     }
-    // only needed for first parm (PPC hack - doubles skip registers)
+    /*
+     * only needed for first parm (PPC hack - doubles skip registers)
+     */
     curr->alignment = parm->alignment;
     return( curr );
 }
 
 static void SplitStructParms( pn *parm_list, call_state *state )
 /***************************************************************
-    Split up any structures being passed as parms into
-    smaller, independant chunks (system dependant).
-*/
+ * Split up any structures being passed as parms into
+ * smaller, independant chunks (system dependant).
+ */
 {
     pn                  parm;
     pn                  *last_parm;
@@ -786,16 +805,15 @@ static void SplitStructParms( pn *parm_list, call_state *state )
 }
 #endif
 
-bool        AssgnParms( cn call, bool in_line ) {
+bool        AssgnParms( cn call, bool in_line )
 /********************************************************
-    Decide what registers the parms should go in.
-    Assign registers to first parm first, etc. Also, assign a congolmeration
-    of all the parameter registers to one of the operands of the call
-    so that the dataflow knows that the registers are live between the
-    move into them and the call.
-*/
-
-
+ * Decide what registers the parms should go in.
+ * Assign registers to first parm first, etc. Also, assign a congolmeration
+ * of all the parameter registers to one of the operands of the call
+ * so that the dataflow knows that the registers are live between the
+ * move into them and the call.
+ */
+{
     pn                  parm;
     call_state          *state;
     bool                push_no_pop;
@@ -857,7 +875,9 @@ bool        AssgnParms( cn call, bool in_line ) {
     ReverseParmNodeList( &call->parms );
     LinkParms( call_ins, &call->parms );
     if( call_ins->head.opcode == OP_CALL ) {
-        /* special case for call so we ignore address in dataflow */
+        /*
+         * special case for call so we ignore address in dataflow
+         */
         call_ins->num_operands = 2;
         call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );
     } else {

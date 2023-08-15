@@ -61,15 +61,16 @@
 #include "feprotos.h"
 
 
-/* block flag usage                                                 */
-/*                                                                  */
-/* BLK_BLOCK_VISITED is used in the sense of partition root         */
-/*                                                                  */
-
+/*
+ * block flag usage
+ *
+ * BLK_BLOCK_VISITED is used in the sense of partition root
+ */
 #define INS_DEFINES_OWN_OPERAND INS_MARKED
 
-/* Borrow a few fields and bits to label trees with bits and link stuff */
-
+/*
+ * Borrow a few fields and bits to label trees with bits and link stuff
+ */
 #define _INSBITS( ins )   _LBitScalar((ins)->head.live.within_block)
 #define _BLKBITS( blk )   _LBitScalar((blk)->available_bit)
 #define _INSLINK( ins )   (*(instruction **)&(ins)->u2.cse_link)
@@ -85,8 +86,7 @@ static instruction      *ExprHeads[LAST_CSE_OP + 1];
 static bool             LeaveIndVars;
 
 static  void    ReCalcAddrTaken( void )
-/**************************************
-*/
+/*************************************/
 {
     name        *temp;
 
@@ -105,12 +105,13 @@ static  void    ReCalcAddrTaken( void )
 
 static  bool    LoadAddr( void )
 /*******************************
-    Propagate load address instructions by replacing them with moves of
-    "relocatable constants". For example:
-       LA  x => t    is replaced by    MOV address(x) => t
-    Then PropagateMoves will move the ADDRESS(x) constants down and the
-    MOV adresss(x) instruction might go away.
-*/
+ * Propagate load address instructions by replacing them with moves of
+ * "relocatable constants".
+ * For example:
+ *    LA  x => t    is replaced by    MOV address(x) => t
+ * Then PropagateMoves will move the ADDRESS(x) constants down and the
+ * MOV adresss(x) instruction might go away.
+ */
 {
     block       *blk;
     instruction *ins;
@@ -201,8 +202,8 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, opcnt i )
 
 static  bool    StretchABlock( block *blk )
 /******************************************
-    see StretchEdges
-*/
+ * see StretchEdges
+ */
 {
     instruction         *ins;
     name                *op;
@@ -229,15 +230,14 @@ static  bool    StretchABlock( block *blk )
 
 static  bool    StretchEdges( void )
 /***********************************
-
-    Try to detect code like:
-        found = 1;
-        goto somewhere;
-
-    somewhere:;
-        if( found ) goto elsewhere;
-
-*/
+ *
+ * Try to detect code like:
+ *      found = 1;
+ *      goto somewhere;
+ *
+ * somewhere:;
+ *      if( found ) goto elsewhere;
+ */
 {
     block       *blk;
     bool        change;
@@ -253,8 +253,7 @@ static  bool    StretchEdges( void )
 
 
 bool    PropRegsOne( void )
-/*************************/
-/*
+/**************************
  * We can't propagate registers very far, but one instruction is safe.
  * This is specially for the case when we have a(b(x)). We'll generate
  * call    B => reg
@@ -316,13 +315,13 @@ bool    PropRegsOne( void )
 
 static  void    TreeBits( block *root )
 /**************************************
-    Label the partition (tree) with bits such that block A is the
-    ancestor of block B IFF _BLKBITS(A) & _BLKBITS(B) == _BLKBITS(A).
-    Simply speaking, we add a new bit for every node in the tree.  A
-    child node gets its parents bit set plus one new one for itself.
-    This allows for simple ancestor, sibling, first common ancestor
-    checking.
-*/
+ * Label the partition (tree) with bits such that block A is the
+ * ancestor of block B IFF _BLKBITS(A) & _BLKBITS(B) == _BLKBITS(A).
+ * Simply speaking, we add a new bit for every node in the tree.
+ * A child node gets its parents bit set plus one new one for itself.
+ * This allows for simple ancestor, sibling, first common ancestor
+ * checking.
+ */
 {
     block       *daddy;
     a_bit_set   next_bit;
@@ -349,10 +348,10 @@ static  void    TreeBits( block *root )
             break;
         }
     } while( change );
-
-    /* rip off any blocks in the partition without bits*/
-    /* and propagate the bits through the instructions*/
-
+    /*
+     * rip off any blocks in the partition without bits
+     * and propagate the bits through the instructions
+     */
     owner = &root->u.partition;
     for( ;; ) {
         blk = *owner;
@@ -373,11 +372,11 @@ static  void    TreeBits( block *root )
 
 static  void    FindPartition( void )
 /************************************
-    Partition the flow graph into trees, with root indicated by
-    BLK_BLOCK_VISITED.  Nodes of the tree (except root) may have only one
-    input edge.  These are the partitions in which dataflow is easy to
-    deal with since there is no merging of information.
-*/
+ * Partition the flow graph into trees, with root indicated by
+ * BLK_BLOCK_VISITED.  Nodes of the tree (except root) may have only one
+ * input edge.  These are the partitions in which dataflow is easy to
+ * deal with since there is no merging of information.
+ */
 {
     block       *blk;
     block       *oth;
@@ -416,8 +415,8 @@ static  void    FindPartition( void )
 
 void    SetCSEBits( instruction *ins, instruction *new_ins )
 /***********************************************************
-    set the ancestor bits of "new_ins" to be the same as "ins".
-*/
+ * set the ancestor bits of "new_ins" to be the same as "ins".
+ */
 {
     a_bit_set   bits;
 
@@ -432,10 +431,10 @@ void    SetCSEBits( instruction *ins, instruction *new_ins )
 
 static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
 /***************************************************************************
-    Return which of instructions "ins1" or "ins2" is always executed
-    first, or a pointer the last instruction in a block which is a
-    common ancestor to "ins1" and "ins2".
-*/
+ * Return which of instructions "ins1" or "ins2" is always executed
+ * first, or a pointer the last instruction in a block which is a
+ * common ancestor to "ins1" and "ins2".
+ */
 {
     instruction *first;
     instruction *ins;
@@ -476,7 +475,9 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
                 break;
             }
         }
-        /* scan back over all the conditional branches at the end of block*/
+        /*
+         * scan back over all the conditional branches at the end of block
+         */
         for( ; ; first = first->head.prev ) {
             if( ( first->head.opcode != OP_SELECT ) && !_OpIsCondition( first->head.opcode ) ) {
                 break;
@@ -489,8 +490,8 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
 
 static  void    CleanPartition( void )
 /*************************************
-    Turn of all the bits we turned on in FindPartition.
-*/
+ * Turn of all the bits we turned on in FindPartition.
+ */
 {
     block       *blk;
 
@@ -503,10 +504,10 @@ static  void    CleanPartition( void )
 
 static bool CanCrossBlocks( instruction *ins1, instruction *ins2, name *op )
 /***************************************************************************
-    If we're generating a partial routine, we cannot cause an
-    existing N_TEMP to cross blocks, due to an assumption
-    in ForceTempsMemory.
-*/
+ * If we're generating a partial routine, we cannot cause an
+ * existing N_TEMP to cross blocks, due to an assumption
+ * in ForceTempsMemory.
+ */
 {
     if( !BlockByBlock )
         return( true );
@@ -522,10 +523,10 @@ static bool CanCrossBlocks( instruction *ins1, instruction *ins2, name *op )
 
 static  void    UseInOther( instruction *ins1, instruction *ins2, name *op )
 /***************************************************************************
-    Indicate that we have caused operand "op" to be used in both "ins1"
-    and "ins2" where it was previously only used in one of those
-    instructions.  This may change it's USE_IN_ANOTHER_BLOCK status.
-*/
+ * Indicate that we have caused operand "op" to be used in both "ins1"
+ * and "ins2" where it was previously only used in one of those
+ * instructions.  This may change it's USE_IN_ANOTHER_BLOCK status.
+ */
 {
     if( _INSBITS( ins1 ) != _INSBITS( ins2 ) ) {
         if( op->n.class == N_MEMORY ) {
@@ -539,8 +540,8 @@ static  void    UseInOther( instruction *ins1, instruction *ins2, name *op )
 
 static  bool    UnOpsLiveFrom( instruction *first, instruction *last )
 /*********************************************************************
-    Do the operand and result of "first" live until instruction "last"?
-*/
+ * Do the operand and result of "first" live until instruction "last"?
+ */
 {
     instruction *ins;
 
@@ -564,9 +565,9 @@ static  who_dies BinOpsLiveFrom( instruction *first,
                                 instruction *last,
                                 name *op1, name *op2, name *result )
 /*******************************************************************
-    Determine which of "op1", "op2", and "result" live from instruction
-    "first" to instruction "last".
-*/
+ * Determine which of "op1", "op2", and "result" live from instruction
+ * "first" to instruction "last".
+ */
 {
     instruction *ins;
     bool        result_dies;
@@ -587,7 +588,7 @@ static  who_dies BinOpsLiveFrom( instruction *first,
     } else {
         result_dies = false;
         for( ins = last->head.prev; ; ins = ins->head.prev ) {
-            while( ins->head.opcode == OP_BLOCK ) { /* 89-09-05 */
+            while( ins->head.opcode == OP_BLOCK ) {
                 ins = _BLOCK( ins )->input_edges->source->ins.head.prev;
             }
             if( ins == first )
@@ -609,11 +610,11 @@ static  who_dies BinOpsLiveFrom( instruction *first,
 
 static  bool            HoistLooksGood( instruction *target, instruction *orig )
 /*******************************************************************************
-    Does it look like a good idea to hoist a busy expression from the original
-    instruction to the hoist point. Currently, this is not a good idea if we
-    are not overly concerned about code size and we would be hoisting the expr
-    out of a switch statement.
-*/
+ * Does it look like a good idea to hoist a busy expression from the original
+ * instruction to the hoist point. Currently, this is not a good idea if we
+ * are not overly concerned about code size and we would be hoisting the expr
+ * out of a switch statement.
+ */
 {
     block               *target_blk;
     block               *blk;
@@ -641,16 +642,16 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
 
 static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool signed_matters )
 /************************************************************************************************
-    Given two instruction "ins1" and "ins2" in the same partition, first
-    find out if they have the same operands, and if they do, determine
-    "WhichIsAncestor", which gives us the common ancestor of "ins1" and
-    "ins2".  If this is one of ins1 or ins2, we have a common
-    subexpressions as long as the operands of the ancestor aren't
-    redefined between the two (BinOpsLiveFrom).  If we have a hoist
-    point, (different common ancestor) we have a very busy expression as
-    long as the operands of ins1 and ins2 aren't redefined between the
-    hoist point and either of ins1 and ins2 (BinOpsLiveFrom).
-*/
+ * Given two instruction "ins1" and "ins2" in the same partition, first
+ * find out if they have the same operands, and if they do, determine
+ * "WhichIsAncestor", which gives us the common ancestor of "ins1" and
+ * "ins2".  If this is one of ins1 or ins2, we have a common
+ * subexpressions as long as the operands of the ancestor aren't
+ * redefined between the two (BinOpsLiveFrom).  If we have a hoist
+ * point, (different common ancestor) we have a very busy expression as
+ * long as the operands of ins1 and ins2 aren't redefined between the
+ * hoist point and either of ins1 and ins2 (BinOpsLiveFrom).
+ */
 {
     instruction         *first;
     instruction         *new_ins;
@@ -743,10 +744,10 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
 
 static  bool    OkToInvert( name *div )
 /**************************************
-   Is it OK to compute the reciprical of 'div'? Either it must
-   be exactly representable (a integer power of two) or the user
-   must have said that it was OK.
-*/
+ * Is it OK to compute the reciprical of 'div'? Either it must
+ * be exactly representable (a integer power of two) or the user
+ * must have said that it was OK.
+ */
 {
     if( _IsModel( CGSW_GEN_FP_UNSTABLE_OPTIMIZATION ) )
         return( true );
@@ -767,13 +768,13 @@ static  bool    OkToInvert( name *div )
 
 static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
 /********************************************************************
-    Given two instruction "ins1" and "ins2" in the same partition, first
-    find out if they have the same divisor, and if they do, determine
-    "WhichIsAncestor", which gives us the common ancestor of "ins1" and
-    "ins2".  If this is one of ins1 or ins2, we have a common
-    subexpressions as long as the divisor of the ancestor aren't
-    redefined between the two (BinOpsLiveFrom).
-*/
+ * Given two instruction "ins1" and "ins2" in the same partition, first
+ * find out if they have the same divisor, and if they do, determine
+ * "WhichIsAncestor", which gives us the common ancestor of "ins1" and
+ * "ins2".  If this is one of ins1 or ins2, we have a common
+ * subexpressions as long as the divisor of the ancestor aren't
+ * redefined between the two (BinOpsLiveFrom).
+ */
 {
     instruction         *first;
     instruction         *new_ins;
@@ -821,7 +822,7 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
 static  void    DeleteFromList( instruction **owner,
                                 instruction *ins, instruction *new )
 /*******************************************************************
-    pull an instruction of a "like" opcode list.
+ * pull an instruction of a "like" opcode list.
 */
 {
     while( *owner != ins ) {
@@ -832,11 +833,11 @@ static  void    DeleteFromList( instruction **owner,
 
 static  bool    DoOneOpcode( opcode_defs opcode )
 /************************************************
-    Here we check all instructions with opcode "opcode" against all
-    others with the same opcode, and if we process a common
-    subexpression, unlink the instructions from the list of like
-    opcodes.
-*/
+ * Here we check all instructions with opcode "opcode" against all
+ * others with the same opcode, and if we process a common
+ * subexpression, unlink the instructions from the list of like
+ * opcodes.
+ */
 {
     bool        change;
     instruction *ins1;
@@ -900,8 +901,7 @@ static  bool    DoOneOpcode( opcode_defs opcode )
 
 
 static  bool    DoDivides( void )
-/********************************
-*/
+/*******************************/
 {
     bool        change;
     instruction *ins1;
@@ -929,8 +929,8 @@ static  bool    DoDivides( void )
 
 static  void    CleanTableEntries( block *root )
 /***********************************************
-    Clean up the _INSLINK and _PARTITION fields in partition "root"
-*/
+ * Clean up the _INSLINK and _PARTITION fields in partition "root"
+ */
 {
     instruction *ins;
     block       *blk;
@@ -950,13 +950,13 @@ static  void    CleanTableEntries( block *root )
 
 static  bool    DoArithOps( block *root )
 /****************************************
-    Given a partition whose root is "root", do common subexpressions and
-    very busy expressions on arithmetic operators. The approach is fairly
-    simple. First, link every instruction in the partition together, if the
-    instruction is an arithmetic instruction and doesn't have volatile
-    operands or something wierd. Then, check every pair of like instructions,
-    for possible common subexpressions. (See DoOneOpcode as well).
-*/
+ * Given a partition whose root is "root", do common subexpressions and
+ * very busy expressions on arithmetic operators. The approach is fairly
+ * simple. First, link every instruction in the partition together, if the
+ * instruction is an arithmetic instruction and doesn't have volatile
+ * operands or something wierd. Then, check every pair of like instructions,
+ * for possible common subexpressions. (See DoOneOpcode as well).
+ */
 {
     block       *blk;
     opcode_defs opcode;
@@ -1010,9 +1010,9 @@ static  bool    DoArithOps( block *root )
 
 static  bool    PropagateExprs( void )
 /*************************************
-    Do common subexpression and very busy expressions, for each
-    "partition".
-*/
+ * Do common subexpression and very busy expressions, for each
+ * "partition".
+ */
 {
     bool        change;
     block       *blk;
@@ -1030,8 +1030,8 @@ static  bool    PropagateExprs( void )
 
 static bool FixOneStructRet( instruction *call )
 /***********************************************
-    Fix one structured return copy.
-*/
+ * Fix one structured return copy.
+ */
 {
     instruction *mova;
     instruction *movr;
@@ -1069,20 +1069,19 @@ static bool FixOneStructRet( instruction *call )
 
 static  bool    FixStructRet( block *root )
 /******************************************
-
-    search for code that looks like
-
-    MOV     XX TMPADDR(t1) => reg
-    CALL    rtn, parms => t1
-    MOV     XX t1 => t2
-
-    and if t2 is not USE_ADDRESS, change it to
-
-    MOV     TMPADDR(t2) => reg
-    CALL    rtn, parms => t2
-
-    and turn off the USE_ADDRESS bit of t1
-*/
+ * search for code that looks like
+ *
+ * MOV     XX TMPADDR(t1) => reg
+ * CALL    rtn, parms => t1
+ * MOV     XX t1 => t2
+ *
+ * and if t2 is not USE_ADDRESS, change it to
+ *
+ * MOV     TMPADDR(t2) => reg
+ * CALL    rtn, parms => t2
+ *
+ * and turn off the USE_ADDRESS bit of t1
+ */
 {
     block       *blk;
     instruction *ins;
@@ -1120,8 +1119,8 @@ static  block   *NextBlock( block *blk, void *parm )
 
 static  bool    isMoveIns( instruction *ins )
 /******************************************
-    Is "ins" a move type instruction?
-*/
+ * Is "ins" a move type instruction?
+ */
 {
     if( ins->head.opcode == OP_MOV )
         return( true );
@@ -1134,12 +1133,14 @@ static  bool    isMoveIns( instruction *ins )
 
 static  bool    CanLinkMove( instruction *ins )
 /**********************************************
-    Is "ins" suitable for copy propagation?
-*/
+ * Is "ins" suitable for copy propagation?
+ */
 {
     if( ins->num_operands != 1 )
         return( false );
-    /* only propagate constants and temps*/
+    /*
+     * only propagate constants and temps
+     */
     if( ins->operands[0]->n.class == N_REGISTER )
         return( false );
     if( ins->operands[0]->n.class == N_TEMP && (ins->operands[0]->t.temp_flags & STACK_PARM) )
@@ -1195,9 +1196,9 @@ static void RemoveLink( instruction *ins, name *link )
 
 static  bool    LinkableMove( instruction *ins )
 /***********************************************
-    Determine if ins is ok to link into the list of
-    moves associated with it's result.
-*/
+ * Determine if ins is ok to link into the list of
+ * moves associated with it's result.
+ */
 {
     if( !isMoveIns( ins ) )
         return( false );
@@ -1217,9 +1218,9 @@ static  bool    LinkableMove( instruction *ins )
 
 static  void    LinkMoves( block *root )
 /***************************************
-    Link together all move instructions in partion defined by "root" using
-    a field in ins->result as the head of the list.
-*/
+ * Link together all move instructions in partion defined by "root" using
+ * a field in ins->result as the head of the list.
+ */
 {
     block       *blk;
     instruction *ins;
@@ -1241,9 +1242,9 @@ static  void    LinkMoves( block *root )
 
 static  void    LinkMemMoves( block *root )
 /***************************************** *
-    Link together all move instructions in partion defined by "root" using
-    a field in ins->operands[0] as the head of the list.
-*/
+ * Link together all move instructions in partion defined by "root" using
+ * a field in ins->operands[0] as the head of the list.
+ */
 {
     block       *blk;
     instruction *ins;
@@ -1269,8 +1270,8 @@ static  void    LinkMemMoves( block *root )
 
 static  void    NullNameLink( name *op )
 /***************************************
-    Set the "definition" list of "op" back to NULL (clean up routine).
-*/
+ * Set the "definition" list of "op" back to NULL (clean up routine).
+ */
 {
     switch( op->n.class ) {
     case N_MEMORY:
@@ -1289,9 +1290,9 @@ static  void    NullNameLink( name *op )
 
 static  void    CleanMoves( block *root )
 /****************************************
-    Clean up all the linking we did to instructions / names in partition
-    "root".
-*/
+ * Clean up all the linking we did to instructions / names in partition
+ * "root".
+ */
 {
     instruction *ins;
     block       *blk;
@@ -1320,10 +1321,10 @@ static  bool    PropOpnd( instruction *ins, name **op,
                           instruction *definition, bool backward,
                           bool is_opnd )
 /****************************************************************
-    See if we can propagate the operand from a move into the spot for
-    operands "*op" in instruction "ins" given definition (move) list
-    "definition".  (See DoPropagateMoves).
-*/
+ * See if we can propagate the operand from a move into the spot for
+ * operands "*op" in instruction "ins" given definition (move) list
+ * "definition".  (See DoPropagateMoves).
+ */
 {
     bool                change;
     name                *opnd;
@@ -1430,10 +1431,10 @@ static  bool    PropOpnd( instruction *ins, name **op,
 
 static  bool    PropMoves( block *root, bool backward )
 /******************************************************
-    For each operand of each instruction in partition "root", see if
-    there is a move preceeding it whose operand could be used instead.
-    (See DoPropagateMoves)
-*/
+ * For each operand of each instruction in partition "root", see if
+ * there is a move preceeding it whose operand could be used instead.
+ * (See DoPropagateMoves)
+ */
 {
     opcnt       i;
     block       *blk;
@@ -1499,16 +1500,16 @@ static  bool    PropMoves( block *root, bool backward )
 
 static  bool    DoPropagateMoves( void )
 /***************************************
-    First link all moves in a partion together with a special field in
-    the symbol table of ins->result being used to store the head of the
-    list, and then try to propagate moves in each partition.  Once moves
-    are linked this way, we can do copy propagation easily, since the
-    operand of any instruction has a list of moves which define that
-    operand hanging from it.  We then check for a definition that is an
-    ancestor of the operation and if the operand and result of the move
-    live (UnOpsLiveFrom) between the move and the use, we just replace
-    the operand of the instruction with the operand of the move.
-*/
+ * First link all moves in a partion together with a special field in
+ * the symbol table of ins->result being used to store the head of the
+ * list, and then try to propagate moves in each partition.  Once moves
+ * are linked this way, we can do copy propagation easily, since the
+ * operand of any instruction has a list of moves which define that
+ * operand hanging from it.  We then check for a definition that is an
+ * ancestor of the operation and if the operand and result of the move
+ * live (UnOpsLiveFrom) between the move and the use, we just replace
+ * the operand of the instruction with the operand of the move.
+ */
 {
     bool        change;
     bool        block_changed;
@@ -1552,8 +1553,8 @@ static  bool    DoPropagateMoves( void )
 
 bool    PropagateMoves( void )
 /*****************************
-    Do copy propagation.
-*/
+ * Do copy propagation.
+ */
 {
     bool        change;
 
@@ -1569,8 +1570,8 @@ bool    PropagateMoves( void )
 
 bool    CommonSex( bool leave_indvars_alone )
 /****************************************************
-    Do COMMON SubEXpression and related optimizations.
-*/
+ * Do COMMON SubEXpression and related optimizations.
+ */
 {
     bool        loops_killed;
     bool        change;

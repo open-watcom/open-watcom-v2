@@ -88,28 +88,31 @@ _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP, 
 
 static  block   *Entry;
 static  block   *Exit;
-
-// global variables
+/*
+ * global variables
+ */
 st_seq          *STLocations;
 int             MaxSeq;
 byte            *SeqMaxDepth;
 byte            *SeqCurDepth;
 temp_entry      *TempList;
 
-#define FP_INS_INTRODUCED       INS_VISITED // this must stick!
-
+/*
+ * this must stick!
+ */
+#define FP_INS_INTRODUCED       INS_VISITED
 
 static  int     InsMaxDepth( instruction *ins )
-/********************************************/
+/*********************************************/
 {
     if( ins->stk_entry > ins->stk_exit )
         return( ins->stk_entry );
     return( ins->stk_exit );
 }
 
-static  fp_attr FPAttr( instruction *ins ) {
-/*******************************************/
-
+static  fp_attr FPAttr( instruction *ins )
+/****************************************/
+{
     if( _OpIsCall( ins->head.opcode ) && ins->result != NULL ) {
         if( ins->result->n.class != N_REGISTER )
             return( POPS_ALL );
@@ -166,9 +169,9 @@ static  fp_attr FPAttr( instruction *ins ) {
 }
 
 
-static const opcode_entry    *RegAction( instruction *ins ) {
-/*****************************************************/
-
+static const opcode_entry    *RegAction( instruction *ins )
+/*********************************************************/
+{
     switch( G( ins ) ) {
     case G_MFLD:
         return( RFLD );
@@ -352,7 +355,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr )
             DoNothing( ins );
             break;
         case G_MCOMP:
-            // if( temp->actual_locn != ACTUAL_1 ) _Zoiks( ZOIKS_076 );
+//            if( temp->actual_locn != ACTUAL_1 ) _Zoiks( ZOIKS_076 );
             ins->operands[0] = ST( ACTUAL_1 );
             ins->operands[1] = ST( ACTUAL_0 );
             if( temp->actual_locn != ACTUAL_1 ) {
@@ -389,7 +392,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr )
             IncrementAll();
             temp->actual_locn = ACTUAL_0;
             if( G( ins ) == G_MFLD ) {
-                // PushStack( ins );
+//                PushStack( ins );
                 ins->operands[0] = ST( ACTUAL_0 );
             } else {
                 GetToTopOfStack( ins, VIRTUAL_0 );
@@ -397,9 +400,9 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr )
             }
         } else {
             ins->operands[0] = ST( temp->actual_locn );
-            // if( attr & PUSHES ) {
-            //     PushStack( ins );
-            // }
+//            if( attr & PUSHES ) {
+//                PushStack( ins );
+//            }
         }
         if( attr & PUSHES ) {
             PushStack( ins );
@@ -908,9 +911,9 @@ static  void    ReOrderForCall( instruction *ins )
 
 bool    FPInsIntroduced( instruction *ins )
 /******************************************
-    Used by the scheduler. We want to make sure that introduced instructions
-    stay put.
-*/
+ * Used by the scheduler. We want to make sure that introduced instructions
+ * stay put.
+ */
 {
     return( ( ins->ins_flags & FP_INS_INTRODUCED ) != 0 );
 }
@@ -918,9 +921,9 @@ bool    FPInsIntroduced( instruction *ins )
 
 bool    FPFreeIns( instruction *ins )
 /**********************************************
-    Return true if "ins" is going to be vaporized by the cacheing
-    algorithm in FPPostSched.
-*/
+ * Return true if "ins" is going to be vaporized by the cacheing
+ * algorithm in FPPostSched.
+ */
 {
     temp_entry  *temp;
 
@@ -941,17 +944,16 @@ bool    FPFreeIns( instruction *ins )
 
 int     FPStkOver( instruction *ins, int stk_depth )
 /***********************************************************
-
-    Return >= 0 if scheduling "ins" could get us into a spot that
-    we cannot get out of with the amount of stack left. What this
-    says is that we can only schedule an instruction in sequence i
-    if there's enough stack left to complete sequence i, plus
-    the maximum stack requirement of all sequences that might
-    need to be scheduled before sequence i can complete. i+1..MaxSeq
-    is a conservative (and cheaply calculated) estimate of the
-    those dependencies. We know that sequences 0..i-1 are ok since they
-    were in front of i in the original ordering.
-*/
+ * Return >= 0 if scheduling "ins" could get us into a spot that
+ * we cannot get out of with the amount of stack left. What this
+ * says is that we can only schedule an instruction in sequence i
+ * if there's enough stack left to complete sequence i, plus
+ * the maximum stack requirement of all sequences that might
+ * need to be scheduled before sequence i can complete. i+1..MaxSeq
+ * is a conservative (and cheaply calculated) estimate of the
+ * those dependencies. We know that sequences 0..i-1 are ok since they
+ * were in front of i in the original ordering.
+ */
 {
     int         i;
     int         depth;
@@ -970,12 +972,11 @@ int     FPStkOver( instruction *ins, int stk_depth )
 
 void    FPCalcStk( instruction *ins, int *pdepth )
 /*********************************************************
-
-    Set pdepth to the stack level before "ins" executes.  Also,
-    recalculate the stk_entry, stk_exit. s.stk_depth
-    now means the maximum depth the stack attains during this
-    instruction.
-*/
+ * Set pdepth to the stack level before "ins" executes.  Also,
+ * recalculate the stk_entry, stk_exit. s.stk_depth
+ * now means the maximum depth the stack attains during this
+ * instruction.
+ */
 {
     int         affect;
 
@@ -993,10 +994,10 @@ void    FPCalcStk( instruction *ins, int *pdepth )
 
 int     FPStackExit( block *blk )
 /******************************************
-    Return the depth of the FPU stack upon exit from this
-    block. This is the stk_exit from the last FPU
-    instruction in the block.
-*/
+ * Return the depth of the FPU stack upon exit from this
+ * block. This is the stk_exit from the last FPU
+ * instruction in the block.
+ */
 {
     instruction *curr;
 
@@ -1008,8 +1009,9 @@ int     FPStackExit( block *blk )
     return( 0 );
 }
 
-// just have to make sure this is not a valid FP-stack depth
-
+/*
+ * just have to make sure this is not a valid FP-stack depth
+ */
 #define SEQ_INIT_VALUE  0xff
 
 void    FPPreSched( block *blk )
@@ -1059,7 +1061,7 @@ void    FPPreSched( block *blk )
          * consider the two sequences "pow a, b -> c" and "pow d, e -> f" before
          * RegAlloc et all and how we would schedule these with -fpr.
          */
-        ins->s.stk_extra = FPStkReq( ins ); // BBB - March 22, 1994
+        ins->s.stk_extra = FPStkReq( ins );
         depth = InsMaxDepth( ins ) + ins->s.stk_extra;
         ins->t.stk_max = SeqMaxDepth[ins->sequence];
         if( depth > SeqMaxDepth[ins->sequence] ) {
@@ -1093,7 +1095,9 @@ void    FPPostSched( block *blk )
                 GetToTopOfStack( ins, VIRTUAL_0 );
             } else if( attr & NEEDS_ST0_ST1 ) {
                 if( attr & POPS2 ) {
-                    // the dreaded FCOMPP
+                    /*
+                     * the dreaded FCOMPP
+                     */
                     next = FComppKluge( ins );
                 } else {
                     next = GetST0andST1( ins );

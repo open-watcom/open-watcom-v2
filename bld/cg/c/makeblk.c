@@ -174,8 +174,10 @@ void    GenBlock( block_class class, int targets )
         CurrBlock->gen_id = BlockList->gen_id + 1;
     }
     if( SrcLine != 0 ) {
-        /* Add an instruction to carry the line number for the block ending
-           opcode (the AddIns code puts in line number automatically). */
+        /*
+         * Add an instruction to carry the line number for the block ending
+         * opcode (the AddIns code puts in line number automatically).
+         */
         ins = MakeNop();
         ins->flags.nop_flags |= NOP_SOURCE_QUEUE;
         AddIns( ins );
@@ -194,9 +196,9 @@ void    GenBlock( block_class class, int targets )
             new->ins.head.prev->head.next = (instruction *)&new->ins;
         }
         new->ins.blk = new;
-
-        /*   Move all references to CurrBlock*/
-
+        /*
+         * Move all references to CurrBlock
+         */
         if( HeadBlock == CurrBlock ) {
             HeadBlock = new;
         }
@@ -237,9 +239,9 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     new->edge[targets - 1].destination.u.lbl = lbl;
     new->edge[targets - 1].flags = 0;
     new->targets = targets;
-
-    /*   Move all references to blk*/
-
+    /*
+     * Move all references to blk
+     */
     if( blk->ins.head.next == (instruction *)&blk->ins ) {
         new->ins.head.next = (instruction *)&new->ins;
         new->ins.head.prev = (instruction *)&new->ins;
@@ -287,8 +289,9 @@ type_class_def  InitCallState( type_def *tipe )
 
 
 void    AddTarget( label_handle dest, bool dest_label_dies )
-/**********************************************************/
-/*   Don't handle expression jumps yet*/
+/***********************************************************
+ * Don't handle expression jumps yet
+ */
 {
     block_edge  *edge;
 
@@ -366,7 +369,9 @@ static void *LinkReturns( void *arg )
     if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
         for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[i].destination.u.lbl == link_to ) {
-                /* kick out ... already linked */
+                /*
+                 * kick out ... already linked
+                 */
                 return( TO_SR_VALUE( true ) );
             }
         }
@@ -396,9 +401,10 @@ static void *LinkReturns( void *arg )
 }
 
 bool        FixReturns( void )
-/****************************/
-/* link all LABEL_RETURN blocks to any CALL_LABEL block they could*/
-/* have been invoked from*/
+/*****************************
+ * link all LABEL_RETURN blocks to any CALL_LABEL block they could
+ * have been invoked from
+ */
 {
     block       *blk;
     block       *other_blk;

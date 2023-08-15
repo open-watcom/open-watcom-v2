@@ -56,12 +56,11 @@ static  bool            PreferSize;
 
 static  name    **Enregister( instruction *ins )
 /***********************************************
-
-    Try to find an operand that's useful to enregister. For MOV's this
-    is a constant whose result is a N_MEMORY, N_INDEXED, or N_TEMP with a
-    base (486 has a 1 cycle stall in those cases). For other instructions,
-    a N_MEMORY, N_INDEXED, or N_TEMP as an operand or result.
-*/
+ * Try to find an operand that's useful to enregister. For MOV's this
+ * is a constant whose result is a N_MEMORY, N_INDEXED, or N_TEMP with a
+ * base (486 has a 1 cycle stall in those cases). For other instructions,
+ * a N_MEMORY, N_INDEXED, or N_TEMP as an operand or result.
+ */
 {
     opcnt       i;
 
@@ -92,7 +91,9 @@ static  name    **Enregister( instruction *ins )
     default:
         break;
     }
-    /* only RISCify CMPs, TESTs, and MOVs when optimizing for size */
+    /*
+     * only RISCify CMPs, TESTs, and MOVs when optimizing for size
+     */
     if( PreferSize && !_OpIsCondition( ins->head.opcode ) )
         return( false );
     for( i = ins->num_operands; i-- > 0; ) {
@@ -124,11 +125,10 @@ static  hw_reg_set      *RoverDouble;
 
 static hw_reg_set       *FindRegister( instruction *ins )
 /********************************************************
-
-    Find a register of the appropriate type for the instruction.
-    Note we use rover pointers for each of the classes so that the
-    scheduler will have a better chance to intermix instructions.
-*/
+ * Find a register of the appropriate type for the instruction.
+ * Note we use rover pointers for each of the classes so that the
+ * scheduler will have a better chance to intermix instructions.
+ */
 {
     hw_reg_set  except;
     hw_reg_set  *regs;
@@ -169,17 +169,18 @@ static hw_reg_set       *FindRegister( instruction *ins )
         *rover_ptr = start;
     }
     /* 2006-04-25 RomanT
-       When optimizing for size, disable rover pointers and
-       reuse registers to decrease number of push'es in function prologue
-    */
+     * When optimizing for size, disable rover pointers and
+     * reuse registers to decrease number of push'es in function prologue
+     */
     if( PreferSize ) {
         regs = start;
     }
     first = regs;
-    /* NOTE: assumes at least one register in the set */
-    /* 2006-04-25 RomanT
-       Code rewriten because first and best reg in list (_AX) was used last
-    */
+    /*
+     * NOTE: assumes at least one register in the set
+     * 2006-04-25 RomanT
+     * Code rewriten because first and best reg in list (_AX) was used last
+     */
     for( ;; ) {
         curregs = regs;
         ++regs;
@@ -192,7 +193,9 @@ static hw_reg_set       *FindRegister( instruction *ins )
         }
         if( regs == first )
             return( NULL );
-        /* only use _AX when optimizing for size */
+        /*
+         * only use _AX when optimizing for size
+         */
         if( PreferSize ) {
             return( NULL );
         }
@@ -203,10 +206,9 @@ static hw_reg_set       *FindRegister( instruction *ins )
 
 static  instruction     *MakeGeneratable( instruction *ins )
 /***********************************************************
-
-    Make sure the instruction is generatable. We might have a couple of
-    optmization reductions to work through.
-*/
+ * Make sure the instruction is generatable. We might have a couple of
+ * optmization reductions to work through.
+ */
 {
     const opcode_entry  *tbl;
     instruction         *next;
@@ -230,9 +232,8 @@ static  instruction     *MakeGeneratable( instruction *ins )
 
 static  bool    LoadStoreIns( instruction *ins )
 /***********************************************
-
-    RISCify one instruction. See LdStAlloc for details.
-*/
+ * RISCify one instruction. See LdStAlloc for details.
+ */
 {
     name        **op_ptr;
     name        *op;
@@ -275,16 +276,18 @@ static  void    CompressMem16Moves( void ) {}
 #else
 static  bool    SplitMem16Move( instruction *ins )
 /*************************************************
-    Return true if we can split the 16-bit move
-    instruction given into two one-byte moves.
-*/
+ * Return true if we can split the 16-bit move
+ * instruction given into two one-byte moves.
+ */
 {
     instruction *new_h;
     instruction *new_l;
     hw_reg_set  reg;
 
     if( ins->result->n.class == N_REGISTER ) {
-        /* make sure we can tear this thing apart */
+        /*
+         * make sure we can tear this thing apart
+         */
         reg = ins->result->r.reg;
         HW_COnlyOn( reg, HW_ABCD );
         if( HW_CEqual( reg, HW_EMPTY ) ) {
@@ -296,12 +299,12 @@ static  bool    SplitMem16Move( instruction *ins )
     }
     new_h = MakeMove( HighPart( ins->operands[0], U1 ), HighPart( ins->result, U1 ), U1 );
     new_l = MakeMove( LowPart( ins->operands[0], U1 ), LowPart( ins->result, U1 ), U1 );
-
-    /* this is cheesy - so that we can recover in case we were unable to
-       schedule, we stuff a pointer to the second instruction in one of the
-       unused operands of the first move instruction, and the original ins
-       in another unused operand.
-    */
+    /*
+     * this is cheesy - so that we can recover in case we were unable to
+     * schedule, we stuff a pointer to the second instruction in one of the
+     * unused operands of the first move instruction, and the original ins
+     * in another unused operand.
+     */
     new_l->operands[1] = (void *)new_h;
     new_l->ins_flags |= INS_SPLIT;
     new_h->ins_flags |= INS_SPLIT;
@@ -316,10 +319,10 @@ static  bool    SplitMem16Move( instruction *ins )
 
 static  void    RestoreMem16Move( instruction *ins )
 /***************************************************
-    Put a 16-bit move back together in case we were
-    unable to schedule the one-byte moves into being
-    faster. See comment about cheesiness above.
-*/
+ * Put a 16-bit move back together in case we were
+ * unable to schedule the one-byte moves into being
+ * faster. See comment about cheesiness above.
+ */
 {
     instruction *other;
     hw_reg_set  full;
@@ -344,13 +347,13 @@ static  void    RestoreMem16Move( instruction *ins )
 }
 
 static  bool    FixMem16Moves( void )
-/******************************
-    Look for 16-bit mem moves and turn them into two 1-byte
-    mem moves, so as to escape the dreaded size override. If
-    we are unable to schedule them, we will crunch them back
-    up in LdStCompress. We want to do this as a separate pass
-    so that we can fix moves generated by LdStAlloc.
-*/
+/************************************
+ * Look for 16-bit mem moves and turn them into two 1-byte
+ * mem moves, so as to escape the dreaded size override. If
+ * we are unable to schedule them, we will crunch them back
+ * up in LdStCompress. We want to do this as a separate pass
+ * so that we can fix moves generated by LdStAlloc.
+ */
 {
     block       *blk;
     instruction *ins;
@@ -383,8 +386,7 @@ static  bool    FixMem16Moves( void )
 }
 
 static  void    CompressMem16Moves( void )
-/***********************************
-*/
+/****************************************/
 {
     block       *blk;
     instruction *ins;
@@ -403,16 +405,15 @@ static  void    CompressMem16Moves( void )
 
 bool    LdStAlloc( void )
 /*******************************
-
-    Look for non-move operations with memory operands and change them
-    into RISC style load/store instructions. This helps on the 486 and
-    up because of instruction scheduling. Return a boolean saying whether
-    anything got twiddled so the register scoreboarder can be run again.
-
-    This routine also required for optimization of assignment
-    of one copy of same constant to multiple memory locations using
-    temporary register.
-*/
+ * Look for non-move operations with memory operands and change them
+ * into RISC style load/store instructions. This helps on the 486 and
+ * up because of instruction scheduling. Return a boolean saying whether
+ * anything got twiddled so the register scoreboarder can be run again.
+ *
+ * This routine also required for optimization of assignment
+ * of one copy of same constant to multiple memory locations using
+ * temporary register.
+ */
 {
     block       *blk;
     instruction *ins;
@@ -422,11 +423,11 @@ bool    LdStAlloc( void )
     RoverByte = NULL;
     RoverWord = NULL;
     RoverDouble = NULL;
-
-    /* 2006-04-25 RomanT:
-       Run RISCifier for all modes, but sometimes (depending on CPU and
-       optimization) prefer shorter non-RISC version of instructions.
-    */
+    /*
+     * 2006-04-25 RomanT:
+     * Run RISCifier for all modes, but sometimes (depending on CPU and
+     * optimization) prefer shorter non-RISC version of instructions.
+     */
     PreferSize = false;
     if( OptForSize > 50 ) {
         PreferSize = true;
@@ -465,8 +466,10 @@ static bool CanCompressOperand( instruction *ins, name **popnd )
     if( HW_Ovlap( reg, ins->head.next->head.live.regs ) ) {
         return( false );
     }
-    // make sure that the REG is not used in any operands besides
-    // the one which we are thinking of replacing BBB - Dec 4, 1993
+    /*
+     * make sure that the REG is not used in any operands besides
+     * the one which we are thinking of replacing BBB - Dec 4, 1993
+     */
     for( i = 0; i < ins->num_operands; i++ ) {
         if( &ins->operands[i] != popnd ) {
             op = ins->operands[i];
@@ -475,7 +478,9 @@ static bool CanCompressOperand( instruction *ins, name **popnd )
             }
         }
     }
-    // make sure that the REG is not used in result
+    /*
+     * make sure that the REG is not used in result
+     */
     op = ins->result;
     if( op != NULL ) {
         switch( op->n.class ) {
@@ -527,10 +532,9 @@ static bool     CanCompressResult( instruction *ins,
 
 static void     CompressIns( instruction *ins )
 /**************************************************
-
-    See if a RISCified instruction 'ins' is still in CISCifyable form and
-    do it to it.
-*/
+ * See if a RISCified instruction 'ins' is still in CISCifyable form and
+ * do it to it.
+ */
 {
     instruction *next;
     instruction *prev;
@@ -547,10 +551,14 @@ static void     CompressIns( instruction *ins )
     switch( ins->head.opcode ) {
     case OP_PUSH:
     case OP_POP:
-        /* If size preferable then push must be compacted */
+        /*
+         * If size preferable then push must be compacted
+         */
         if( PreferSize )
             break;
-        /* It's better to use a register for PUSH/POP on a 486 */
+        /*
+         * It's better to use a register for PUSH/POP on a 486
+         */
         if( _CPULevel( CPU_486 ) ) {
             return;
         }
@@ -564,7 +572,8 @@ static void     CompressIns( instruction *ins )
     prev = ins->head.prev;
     prev_op0 = prev->operands[0];
     if( prev->head.opcode != OP_MOV || prev->result->n.class != N_REGISTER ) {
-        /* 2006-10-14 RomanT
+        /*
+         * 2006-10-14 RomanT
          * Special case: "MOV REG, 0" usually reduced to "XOR REG, REG",
          * changing opcode and confusing deriscifier. XOR is shorter then
          * non-optimized 16- or 32-bit MOV, but worse for 8-bit moves
@@ -595,10 +604,12 @@ static void     CompressIns( instruction *ins )
         presult = &ins->result;
     }
     if( prev != NULL ) {
-        // 2005-04-05 RomanT
-        // Do not use ins->num_operands here, otherwise we'll falsely trigger
-        // compression for segment operand of instruction which we shouldn't.
-        // (bug #442)
+        /*
+         * 2005-04-05 RomanT
+         * Do not use ins->num_operands here, otherwise we'll falsely trigger
+         * compression for segment operand of instruction which we shouldn't.
+         * (bug #442)
+         */
         num_operands = OpcodeNumOperands( ins );
         for( i = 0; i < num_operands; ++i ) {
             if( prev->result == ins->operands[i] ) {
@@ -606,8 +617,10 @@ static void     CompressIns( instruction *ins )
             }
         }
     }
-    // 2006-05-19 RomanT
-    // Even if compression of result failed, we must try to compress operands
+    /*
+     * 2006-05-19 RomanT
+     * Even if compression of result failed, we must try to compress operands
+     */
     if( presult != NULL && CanCompressResult( ins, prev_op0, next, popnd ) ) {
         replacement = next->result;
         preplace = presult;
@@ -634,16 +647,16 @@ static void     CompressIns( instruction *ins )
 
 void    LdStCompress( void )
 /**********************************
-
-    Compress any load/store sequences generated by LdStAlloc back
-    into memory ops if no optimizations made use of them.
-*/
+ * Compress any load/store sequences generated by LdStAlloc back
+ * into memory ops if no optimizations made use of them.
+ */
 {
     block       *blk;
     instruction *ins;
 
-    /* Note: LdStAlloc() must be called first to set PreferSize variable */
-
+    /*
+     * Note: LdStAlloc() must be called first to set PreferSize variable
+     */
     CompressMem16Moves();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

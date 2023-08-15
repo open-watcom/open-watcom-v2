@@ -58,8 +58,8 @@ typedef enum {
 
 static  opcode_attr OpAttrs[LAST_OP - FIRST_OP + 1] = {
 /********************************
-    define the attributes of any given opcode
-*/
+ * define the attributes of any given opcode
+ */
     #define PICK(e,i,d1,d2,ot,pnum,attr)  attr,
     #define ONLY_INTERNAL_CGOPS
     #include "cgops.h"
@@ -72,12 +72,12 @@ static  opcode_attr OpAttrs[LAST_OP - FIRST_OP + 1] = {
 #define _IsntIns( ins, attr )      ((OpAttrs[ins->head.opcode] & attr) == 0)
 
 
-static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
+static  bool    ReDefinesOps( instruction *of, instruction *ins )
 /******************************************************************
-    return true if instruction "ins" redefines any of the operands
-    or the result of instruction "of"
-*/
-
+ * return true if instruction "ins" redefines any of the operands
+ * or the result of instruction "of"
+ */
+{
     opcnt   i;
 
     for( i = of->num_operands; i-- > 0; ) {
@@ -98,11 +98,11 @@ static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
 }
 
 
-static  bool    CanReorder( instruction *try, instruction *after ) {
-/*******************************************************************
-    return try if "try" could be moved past instruction "after"
-*/
-
+static  bool    CanReorder( instruction *try, instruction *after )
+/*****************************************************************
+ * return try if "try" could be moved past instruction "after"
+ */
+{
     if( ReDefinesOps( try, after ) )
         return( false );
     if( ReDefinesOps( after, try ) )
@@ -111,12 +111,12 @@ static  bool    CanReorder( instruction *try, instruction *after ) {
 }
 
 
-static  instruction     *CanMoveAfter( instruction *ins ) {
-/**********************************************************
-    Decide whether we can/should push down instruction "ins". If we can,
-    return a pointer to the instruction we could put it after.
-*/
-
+static  instruction     *CanMoveAfter( instruction *ins )
+/********************************************************
+ * Decide whether we can/should push down instruction "ins". If we can,
+ * return a pointer to the instruction we could put it after.
+ */
+{
     instruction *next;
 
     if( _IsntIns( ins, PUSHABLE ) )
@@ -142,29 +142,31 @@ static  instruction     *CanMoveAfter( instruction *ins ) {
 }
 
 
-static  void    PushInsForward( block *blk ) {
-/*********************************************
-    Try pushing down each instruction in the program.
-*/
-
+static  void    PushInsForward( block *blk )
+/*******************************************
+ * Try pushing down each instruction in the program.
+ */
+{
     instruction *ins;
     instruction *prev;
     instruction *next;
 
-    /* move backwards through instructions*/
+    /*
+     * move backwards through instructions
+     */
     for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
         prev = ins->head.prev;
 
         next = CanMoveAfter( ins );
         if( next != NULL ) {
-
-            /*   Remove 'ins' from its current position*/
-
+            /*
+             * Remove 'ins' from its current position
+             */
             ins->head.next->head.prev = ins->head.prev;
             ins->head.prev->head.next = ins->head.next;
-
-            /*   Link 'ins' before 'next'*/
-
+            /*
+             * Link 'ins' before 'next'
+             */
             ins->head.prev = next->head.prev;
             next->head.prev = ins;
             ins->head.prev->head.next = ins;
@@ -176,12 +178,12 @@ static  void    PushInsForward( block *blk ) {
 
 bool    SameThing( name *x, name *y )
 /********************************************
-    returns true if "x" and "y" are the same thing. IE: N_MEMORY
-    names which are associated with the same front end symbol or
-    N_TEMP names which are aliases of each other. Two temporaries
-    which are "stackable" are considered to be the same thing
-    since they may (probably will) both end up on the 8087 stack.
-*/
+ * returns true if "x" and "y" are the same thing. IE: N_MEMORY
+ * names which are associated with the same front end symbol or
+ * N_TEMP names which are aliases of each other. Two temporaries
+ * which are "stackable" are considered to be the same thing
+ * since they may (probably will) both end up on the 8087 stack.
+ */
 {
     if( x == y )
         return( true );
@@ -206,15 +208,15 @@ bool    SameThing( name *x, name *y )
 
 void    DeadTemps( void )
 /********************************
-    Using the information contained in each N_TEMP, delete any instruction
-    whose result is a temporary that isnt used again. This is only a very
-    crude hack of dead code, since it only gets temporaries which are local
-    to a basic block and are only defined. Its designed to get rid of
-    dummy instructions generated to preserve the value of an assignment
-    operator. For example, *x = *y generates:
-        MOV     [y] => [x]
-        MOV     [x] => temp     <- this usually doesn't get used later
-*/
+ * Using the information contained in each N_TEMP, delete any instruction
+ * whose result is a temporary that isnt used again. This is only a very
+ * crude hack of dead code, since it only gets temporaries which are local
+ * to a basic block and are only defined. Its designed to get rid of
+ * dummy instructions generated to preserve the value of an assignment
+ * operator. For example, *x = *y generates:
+ *     MOV     [y] => [x]
+ *     MOV     [x] => temp     <- this usually doesn't get used later
+ */
 {
     block       *blk;
     instruction *ins;
@@ -236,9 +238,9 @@ void    DeadTemps( void )
 
 static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
 /*****************************************************************************
-    returns true if an instruction is assigning to a name which is not
-    live immediately following instruction "ins".
-*/
+ * returns true if an instruction is assigning to a name which is not
+ * live immediately following instruction "ins".
+ */
 {
     conflict_node       *conf;
     name                *op;
@@ -246,7 +248,7 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
     op = ins->result;
     if( op == NULL )
         return( false );
-//  if( op->n.class != N_TEMP )
+//    if( op->n.class != N_TEMP )
 //        return( false );
     if( op->v.usage & USE_ADDRESS )
         return( false );
@@ -271,13 +273,14 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
 
 void    AxeDeadCode( void )
 /******************************
-    This is like DeadTemps, but it uses the live information in order
-    to discover whether an instruction is assigning to a variable that
-    dies immediately following. If we change anything here, we redo
-    the live information (that's not very expensive).
-
-    delete instructions which assign to temporaries which will not be
-    used again before they are reassigned (ie: are not live after the instruction */
+ * This is like DeadTemps, but it uses the live information in order
+ * to discover whether an instruction is assigning to a variable that
+ * dies immediately following. If we change anything here, we redo
+ * the live information (that's not very expensive).
+ *
+ * delete instructions which assign to temporaries which will not be
+ * used again before they are reassigned (ie: are not live after the instruction
+ */
 {
     block               *blk;
     instruction         *ins;
@@ -285,8 +288,10 @@ void    AxeDeadCode( void )
     instruction         *kill;
     bool                change;
 
-/* Reuse field, it's useless for killed instruction */
-#define _INS_KILL_LINK( ins )  ( ins )->u2.cse_link
+    /*
+     * Reuse field, it's useless for killed instruction
+     */
+    #define _INS_KILL_LINK( ins )  ( ins )->u2.cse_link
 
     for(;;) {
         kill = NULL;
@@ -314,7 +319,9 @@ void    AxeDeadCode( void )
         if( !change )
             break;
         FreeConflicts();
-        /* Now it's safe to free instructions without problems with edges */
+        /*
+         * Now it's safe to free instructions without problems with edges
+         */
         for( ; kill != NULL; kill = next ) {
             next = _INS_KILL_LINK( kill );
             FreeIns( kill );
@@ -329,9 +336,9 @@ void    AxeDeadCode( void )
 
 void    DeadInstructions( void )
 /***********************************
-    This is called after register allocation. It frees up any
-    instructions whose generate table says G_NO (don't generate me).
-*/
+ * This is called after register allocation. It frees up any
+ * instructions whose generate table says G_NO (don't generate me).
+ */
 {
     block       *blk;
 
@@ -343,20 +350,21 @@ void    DeadInstructions( void )
 
 void    PushPostOps( void )
 /**********************************
-    This routine tries to push add and subtract instructions
-    forward in the basic block. The reason for this is that
-    it untangles post increment code allowing for copy propagation
-    and code elimination. Take *x++ = *y++ for example
-
-    Before:                     After:                  With copy propagation:
-
-    MOV x => t1                 MOV x => t1             MOV x => t1 (useless)
-    MOV y => t2                 MOV y => t2             MOV y => t2 (useless)
-    ADD x, 1 => x               MOV [t2] => [t1]        MOV [y] => [x]
-    ADD y, 1 => y               ADD x,1 => x            ADD x,1 => x
-    MOV [t2] => [t1]            ADD y,1 => y            ADD y,1 => y
-
-    Perform instruction optimizations */
+ * This routine tries to push add and subtract instructions
+ * forward in the basic block. The reason for this is that
+ * it untangles post increment code allowing for copy propagation
+ * and code elimination. Take *x++ = *y++ for example
+ *
+ * Before:                     After:                  With copy propagation:
+ *
+ * MOV x => t1                 MOV x => t1             MOV x => t1 (useless)
+ * MOV y => t2                 MOV y => t2             MOV y => t2 (useless)
+ * ADD x, 1 => x               MOV [t2] => [t1]        MOV [y] => [x]
+ * ADD y, 1 => y               ADD x,1 => x            ADD x,1 => x
+ * MOV [t2] => [t1]            ADD y,1 => y            ADD y,1 => y
+ *
+ * Perform instruction optimizations
+ */
 {
     block       *blk;
 

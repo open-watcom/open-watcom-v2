@@ -77,8 +77,8 @@ typedef struct loop_condition {
 
 void    FixBlockIds( void )
 /**************************
-    Fix up the block_id field of temps.
-*/
+ * Fix up the block_id field of temps.
+ */
 {
     block_num   id;
     block       *blk;
@@ -111,11 +111,11 @@ void    FixBlockIds( void )
 
 block   *DupBlock( block *blk )
 /******************************
-    Create a copy of the given block and all the instructions in it.
-    This copy is not linked in anywhere. It has room for as many edges
-    as blk has targets, but the number of targets is set to 0. There
-    are no inputs to this block. The block class is the same as blk.
-*/
+ * Create a copy of the given block and all the instructions in it.
+ * This copy is not linked in anywhere. It has room for as many edges
+ * as blk has targets, but the number of targets is set to 0. There
+ * are no inputs to this block. The block class is the same as blk.
+ */
 {
     block       *copy;
 
@@ -151,12 +151,12 @@ typedef struct  loop_abstract {
 
 static  block   *DupLoop( block *tail, loop_abstract *loop )
 /***********************************************************
-    Make a copy of the given loop and return a pointer to its head.
-    The blocks in the new loop will be linked together via blk->next_block,
-    but they will not be linked into the function blocks. Edges going to
-    blocks not in the loop will go to the same edges, others will go to the
-    corresponding edge in the new loop.
-*/
+ * Make a copy of the given loop and return a pointer to its head.
+ * The blocks in the new loop will be linked together via blk->next_block,
+ * but they will not be linked into the function blocks. Edges going to
+ * blocks not in the loop will go to the same edges, others will go to the
+ * corresponding edge in the new loop.
+ */
 {
     block       *blk;
     block       *copy;
@@ -170,8 +170,9 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
 
     prev = copy = NULL;
     ClearCopyPtrs( tail );
-
-    // make a copy of each of the blocks in the original loop
+    /*
+     * make a copy of each of the blocks in the original loop
+     */
     for( blk = tail; blk != NULL; blk = blk->u.loop ) {
         if( _IsBlkAttr( blk, BLK_IGNORE ) )
             continue;
@@ -191,10 +192,11 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
     if( copy != NULL ) {
         copy->u.loop = NULL; // terminate the list held in blk->u.loop
     }
-
-    // now link the blocks together - for each edge, we point the
-    // edge in the corresponding block to the same block if it is in the
-    // loop, otherwise we use the copy of the block.
+    /*
+     * now link the blocks together - for each edge, we point the
+     * edge in the corresponding block to the same block if it is in the
+     * loop, otherwise we use the copy of the block.
+     */
     old_header = Head;
     for( blk = tail; blk != NULL; blk = blk->u.loop ) {
         if( _IsBlkAttr( blk, BLK_IGNORE ) )
@@ -220,9 +222,9 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
 
 static  void    MarkHeaderEdges( block *loop, block *head )
 /**********************************************************
-    Mark every edge in the loop which points to the given
-    header as DEST_IS_HEADER.
-*/
+ * Mark every edge in the loop which points to the given
+ * header as DEST_IS_HEADER.
+ */
 {
     block       *blk;
     block_num   i;
@@ -240,9 +242,9 @@ static  void    MarkHeaderEdges( block *loop, block *head )
 
 static  void    RedirectHeaderEdges( block *loop, block *new_head )
 /******************************************************************
-    Run through the given loop replacing edges which point to the
-    loop head with edges which point to new_head.
-*/
+ * Run through the given loop replacing edges which point to the
+ * loop head with edges which point to new_head.
+ */
 {
     block       *blk;
     block_num   i;
@@ -280,14 +282,16 @@ static  void    UnMarkHeaderEdges( block *loop )
 
 static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *complete )
 /***********************************************************************************
-    Figure out how many times we want to unroll the given loop.
-*/
+ * Figure out how many times we want to unroll the given loop.
+ */
 {
     signed_32   num_ins;
     signed_32   unroll_count;
     block       *blk;
 
-    // check out this awesome heuristic...
+    /*
+     * check out this awesome heuristic...
+     */
     *complete = false;
     *clean = false;
     unroll_count = Head->unroll_count;
@@ -313,9 +317,13 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
                 *complete = true;
             }
         } else {
-            // don't bother
-            // unroll_count = MAX_CODE_SIZE / num_ins;
-            // if( unroll_count > UNROLL_MAX ) unroll_count = UNROLL_MAX;
+            /*
+             * don't bother
+             */
+//            unroll_count = MAX_CODE_SIZE / num_ins;
+//            if( unroll_count > UNROLL_MAX ) {
+//                unroll_count = UNROLL_MAX;
+//            }
         }
     }
     return( unroll_count );
@@ -324,8 +332,8 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
 #if 0
 static  bool    ReplaceName( name **pop, name *orig, name *new )
 /***************************************************************
-    Replace all occurrences of orig in *pop with new and return the new name.
-*/
+ * Replace all occurrences of orig in *pop with new and return the new name.
+ */
 {
     name        *op;
     type_length offset;
@@ -367,13 +375,13 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
 static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
                                        signed_32 scale )
 /*******************************************************
-    Replace all occurrences of an induction var in the loop with a new
-    temp, and add an instruction to initialize that temp onto the ins_list.
-    By the time we get here, everything should be either dead or a basic
-    induction var. Scale should be the ordinal of the iteration we are on,
-    starting at 1 and incrementing each time this is called on a copy of a
-    loop.
-*/
+ * Replace all occurrences of an induction var in the loop with a new
+ * temp, and add an instruction to initialize that temp onto the ins_list.
+ * By the time we get here, everything should be either dead or a basic
+ * induction var. Scale should be the ordinal of the iteration we are on,
+ * starting at 1 and incrementing each time this is called on a copy of a
+ * loop.
+ */
 {
     induction   *ind;
     name        *temp;
@@ -400,7 +408,9 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
                 }
             }
         }
-        /* have to add this after we run the list replacing vars */
+        /*
+         * have to add this after we run the list replacing vars
+         */
         PrefixIns( ins_list, new_ins );
         new_ins = MakeMove( temp, var, temp->n.type_class );
         SuffixIns( loop->ins.head.prev, new_ins );
@@ -448,9 +458,9 @@ static  void    LinkBlocks( block *first, block *second )
 
 static  void    ChainTwoLoops( loop_abstract *first, loop_abstract *last )
 /*************************************************************************
-    Given two detached copies of a loop, link their blocks
-    together and join them via block->u.loop.
-*/
+ * Given two detached copies of a loop, link their blocks
+ * together and join them via block->u.loop.
+ */
 {
     LinkBlocks( first->tail, last->head );
     last->head->u.loop = first->tail;
@@ -458,13 +468,13 @@ static  void    ChainTwoLoops( loop_abstract *first, loop_abstract *last )
 
 static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
 /**************************************************************************
-    Unroll the given loop (this is the tail block, and loop is connected
-    through blk->u.loop to the head, in which blk->u.loop == NULL) reps
-    times (there will be reps + 1 copies of the loop body) and replace induction
-    vars with new temps if replace_vars == true
-    All of the copies made will be connected through blk->u.loop, and a
-    pointer to the tail of the new super-loop will be returned.
-*/
+ * Unroll the given loop (this is the tail block, and loop is connected
+ * through blk->u.loop to the head, in which blk->u.loop == NULL) reps
+ * times (there will be reps + 1 copies of the loop body) and replace induction
+ * vars with new temps if replace_vars == true
+ * All of the copies made will be connected through blk->u.loop, and a
+ * pointer to the tail of the new super-loop will be returned.
+ */
 {
     loop_abstract       *new_loops;
     loop_abstract       *curr;
@@ -478,38 +488,44 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     /* unused parameters */ (void)replace_vars;
 
     size = sizeof( loop_abstract ) * reps;
-
-    // allocate an array of these abstract loop thingies
+    /*
+     * allocate an array of these abstract loop thingies
+     */
     new_loops = CGAlloc( size );
     first = &new_loops[0];
     last = &new_loops[reps - 1];
-
-    // create the actual copies - they will be independant of each other
+    /*
+     * create the actual copies - they will be independant of each other
+     */
     for( i = 0; i < reps; i++ ) {
         curr = &new_loops[i];
         DupLoop( tail, curr );
     }
-
-    // want last copy to jump to original loop - we do it here because
-    // the last copy is going to get linked (via blk->u.loop) into the
-    // entire loop after the next pass over the array of copies
+    /*
+     * want last copy to jump to original loop - we do it here because
+     * the last copy is going to get linked (via blk->u.loop) into the
+     * entire loop after the next pass over the array of copies
+     */
     RedirectHeaderEdges( last->tail, Head );
-
-    // also, we make the original loop jump to the first of the duplicates
+    /*
+     * also, we make the original loop jump to the first of the duplicates
+     */
     RedirectHeaderEdges( tail, first->head );
-
-    // now we need to make each of the loops chain to the next chap in line
-    // we also take this opportunity to link the various copies together via
-    // blk->next_block and blk->u.loop
+    /*
+     * now we need to make each of the loops chain to the next chap in line
+     * we also take this opportunity to link the various copies together via
+     * blk->next_block and blk->u.loop
+     */
     for( i = 1; i < reps; i++ ) {
         curr = &new_loops[i - 1];
         next = &new_loops[i];
         RedirectHeaderEdges( curr->tail, next->head );
         ChainTwoLoops( curr, next );
     }
-
-    // now we just have to ram the entire thing into the block list
-    // for this function and link them to the original via blk->u.loop
+    /*
+     * now we just have to ram the entire thing into the block list
+     * for this function and link them to the original via blk->u.loop
+     */
     next_block = tail->next_block;
     LinkBlocks( tail, first->head );
     LinkBlocks( last->tail, next_block );
@@ -517,18 +533,19 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
 
     next_block = last->tail;
     CGFree( new_loops );
-
-    // and return the tail of the new super-loop
+    /*
+     * and return the tail of the new super-loop
+     */
     return( next_block );
 }
 
 static  bool    TractableCond( loop_condition *cond )
 /****************************************************
-    To be a nice conditional exit (one we can munge) we need a comparison
-    between an induction variable and a loop-invariant expression. If these
-    conditions are present, we fill in the fields and return true. If we
-    return false, the values of cond are guaranteed to be irrelevant junk.
-*/
+ * To be a nice conditional exit (one we can munge) we need a comparison
+ * between an induction variable and a loop-invariant expression. If these
+ * conditions are present, we fill in the fields and return true. If we
+ * return false, the values of cond are guaranteed to be irrelevant junk.
+ */
 {
     bool        ok;
     induction   *tmp;
@@ -568,7 +585,9 @@ static  bool    TractableCond( loop_condition *cond )
         cond->exit_edge = blk->edge[1].destination.u.blk;
         cond->loop_edge = blk->edge[0].destination.u.blk;
         if( _TrueIndex( ins ) == 1 ) {
-            // want loop to continue executing if condition true
+            /*
+             * want loop to continue executing if condition true
+             */
             FlipCond( ins );
             _SetBlockIndex( ins, 0, 1 );
         }
@@ -576,7 +595,9 @@ static  bool    TractableCond( loop_condition *cond )
         cond->exit_edge = blk->edge[0].destination.u.blk;
         cond->loop_edge = blk->edge[1].destination.u.blk;
         if( _TrueIndex( ins ) == 0 ) {
-            // want loop to continue executing if condition true
+            /*
+             * want loop to continue executing if condition true
+             */
             FlipCond( ins );
             _SetBlockIndex( ins, 1, 0 );
         }
@@ -616,8 +637,8 @@ static  bool    TractableCond( loop_condition *cond )
 
 block   *AddBlocks( block *insertion_point, block *block_list )
 /**************************************************************
-    Insert the list of blocks after the given insertion point.
-*/
+ * Insert the list of blocks after the given insertion point.
+ */
 {
     block       *last;
 
@@ -635,9 +656,9 @@ block   *AddBlocks( block *insertion_point, block *block_list )
 
 void    RemoveIns( instruction *ins )
 /************************************
-    Remove the ins from the instruction ring. Does not take
-    into account live info or anything else like that.
-*/
+ * Remove the ins from the instruction ring. Does not take
+ * into account live info or anything else like that.
+ */
 {
     instruction *next;
     instruction *prev;
@@ -652,12 +673,12 @@ void    RemoveIns( instruction *ins )
 
 static  block   *MakeNonConditional( block *butt, block_edge *edge )
 /*******************************************************************
-    If butt is conditional, create a new block which is
-    in between the conditional block and the head of the
-    current loop. We need a nonconditional block so that
-    we can append instructions to it when hoisting the
-    condition to the top of the loop.
-*/
+ * If butt is conditional, create a new block which is
+ * in between the conditional block and the head of the
+ * current loop. We need a nonconditional block so that
+ * we can append instructions to it when hoisting the
+ * condition to the top of the loop.
+ */
 {
     block       *blk;
 
@@ -685,9 +706,9 @@ static  block   *MakeNonConditional( block *butt, block_edge *edge )
 
 static  int     ExitEdges( block *head )
 /***************************************
-    Return the number of edges in the loop with the given head which
-    exit the loop.
-*/
+ * Return the number of edges in the loop with the given head which
+ * exit the loop.
+ */
 {
     int         count;
     block       *blk;
@@ -705,15 +726,17 @@ static  int     ExitEdges( block *head )
 
 bool    CanHoist( block *head )
 /******************************
-    Figure out if we can hoist the condition of a loop to the top of
-    the loop. Basically, we can do this as long as there are no
-    if's between the head and the comparison instruction.
-*/
+ * Figure out if we can hoist the condition of a loop to the top of
+ * the loop. Basically, we can do this as long as there are no
+ * if's between the head and the comparison instruction.
+ */
 {
     block       *curr;
     block_edge  *edge;
 
-    /* can't handle crap which isn't either a jump block or a conditional going to our head */
+    /*
+     * can't handle crap which isn't either a jump block or a conditional going to our head
+     */
     for( edge = head->input_edges; edge != NULL; edge = edge->next_source ) {
         if( !_IsBlkAttr( edge->source, BLK_JUMP | BLK_CONDITIONAL ) ) {
             return( false );
@@ -735,14 +758,14 @@ bool    CanHoist( block *head )
 
 void    HoistCondition( block *head )
 /************************************
-    We want to knock stuff off the top of a loop until the condition
-    which controls exit from the loop is the first statement in the
-    loop. To do this, we remove each instruction and append it to the
-    prehead, while also appending a copy of the instruction to the
-    loop butts. Note that this could violate the limit on instructions
-    per block, but I'm not checking at the moment. You may only call
-    this routine if the above function returned true.
-*/
+ * We want to knock stuff off the top of a loop until the condition
+ * which controls exit from the loop is the first statement in the
+ * loop. To do this, we remove each instruction and append it to the
+ * prehead, while also appending a copy of the instruction to the
+ * loop butts. Note that this could violate the limit on instructions
+ * per block, but I'm not checking at the moment. You may only call
+ * this routine if the above function returned true.
+ */
 {
     block_edge  *edge;
     block       *blk;
@@ -768,20 +791,22 @@ void    HoistCondition( block *head )
             FreeIns( ins );
         }
     }
-    // should never reach here because we must have a conditional statement
+    /*
+     * should never reach here because we must have a conditional statement
+     */
     Zoiks( ZOIKS_113 );
 }
 
 #if 0
 void    HoistCondition( block **head, block *prehead )
 /*****************************************************
-    Munge the loop and prehead so that the condition is the first statement in
-    the loop. This only works for a loop which has no conditional blocks in it
-    other than the exit condition. To do this, we hoist each instruction from
-    the head and make a copy appended to both the prehead and butt (my quaint
-    notation for the block which jumps to the head and is not the prehead). We
-    return true if we were able to hoist the condition to the top, false otherwise.
-*/
+ * Munge the loop and prehead so that the condition is the first statement in
+ * the loop. This only works for a loop which has no conditional blocks in it
+ * other than the exit condition. To do this, we hoist each instruction from
+ * the head and make a copy appended to both the prehead and butt (my quaint
+ * notation for the block which jumps to the head and is not the prehead). We
+ * return true if we were able to hoist the condition to the top, false otherwise.
+ */
 {
     block       *butt;
     block_edge  *butt_edge;
@@ -802,14 +827,20 @@ void    HoistCondition( block **head, block *prehead )
     butt_ins = butt->ins.head.prev;
     prehead_ins = prehead->ins.head.prev;
     blk = *head;
-    // it should be either a simple jump or our (1 and only) cond. exit
+    /*
+     * it should be either a simple jump or our (1 and only) cond. exit
+     */
     if( !_IsBlkAttr( blk, BLK_JUMP | BLK_CONDITIONAL ) )
         return( false );
-    // the new head should have an input from prehead and one from the butt
-    // any more and we have to bail out
+    /*
+     * the new head should have an input from prehead and one from the butt
+     * any more and we have to bail out
+     */
     if( blk->inputs > 2 )
         return( false );
-    // transfer all instructions to prehead/butt
+    /*
+     * transfer all instructions to prehead/butt
+     */
     for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
             return( _IsBlkAttr( blk, BLK_LOOP_EXIT ) );
@@ -826,8 +857,8 @@ void    HoistCondition( block **head, block *prehead )
 
 static  void    MarkLoopHeader( block *loop, block *header )
 /***********************************************************
-    Mark the entire loop as having header as it's loop_head.
-*/
+ * Mark the entire loop as having header as it's loop_head.
+ */
 {
     for( ; loop != NULL; loop = loop->u.loop ) {
         if( _IsBlkAttr( loop, BLK_LOOP_HEADER ) ) {
@@ -843,88 +874,88 @@ static  void    MarkLoopHeader( block *loop, block *header )
 }
 
 /*
-    Here's my candidate for weeny comment of the year - BBB Jan '94
-
-    To unroll a nice loop which looks like:
-
-        while( i < n ) {
-            LoopBody();
-            i += constant;
-        }
-
-    ( reps - 1 ) times ( so we get reps total repetitions of
-    LoopBody inside our unrolled loop) we produce code which looks
-    like the following:
-
-    +---------------------------+
-    |                           |
-    |         PreHeader         |       Has "add n, -reps -> new_temp"
-    |                           |       instruction added to it
-    +---------------------------+
-                  |
-                 \|/
-    +---------------------------+
-    |                           |       If comparison is unsigned,
-    |         SignCheck         |--+    we check to make sure that n and
-    |                           |  |    ( n - reps ) have the same sign.
-    +---------------------------+  |    ( If not - goto the normal loop below )
-                  |                |
-                 \|/               |
-    +---------------------------+  |
-    |                           |  |    This is something which looks like:
-    |         BigCond           |--+     if ( i COMPARISON new_temp ) then
-    |                           |  |            goto unrolled body
-    +---------------------------+  |     else
-                  |                |            goto littleCond below
-                 \|/               |
-    +---------------------------+  |
-  \ |                           |  |    This is just reps copies of the
- +-+|         Unrolled Body     |  |    loop body with the conditional
- |/ |                           |  |    statement deleted of course.
- |  +---------------------------+  |
- |                |                |
- |               \|/               |
- |  +---------------------------+  |
- |  |                           |  |    A replication of the bigcond above -
- +--|         BigCond           |  |    as long as we are throwing code size
-    |                           |  |    to the wind, might as well have fun
-    +---------------------------+  |
-                  |                |
-                 \|/               |
-    +---------------------------+/ |
-    |                           |--+
-    |         LittleCond        |\      What follows is just a guarded copy
-    |                           |--+    of the original loop, to take care of
-    +---------------------------+  |    any slop left over (n % reps iterations)
-                  |                |
-                 \|/               |
-    +---------------------------+  |
-  \ |                           |  |    The LittleCond blocks look like
- +-+|         LoopBody          |  |
- |/ |                           |  |            if i COMPARISON n then
- |  +---------------------------+  |                    goto LoopBody
- |                |                |            else
- |               \|/               |                    goto exit block
- |  +---------------------------+  |
- |  |                           |  |
- +--|         LittleCond        |  |
-    |                           |  |
-    +---------------------------+  |
-                  |                |
-                 \|/               |
-    +---------------------------+  |
-    |                           |/ |    We only unroll in this fun manner if
-    |         Exit Block        |--+    we only had one conditional exit from the
-    |                           |\      loop, so this guy is well-defined
-    +---------------------------+
-*/
+ * Here's my candidate for weeny comment of the year - BBB Jan '94
+ *
+ * To unroll a nice loop which looks like:
+ *
+ *     while( i < n ) {
+ *         LoopBody();
+ *         i += constant;
+ *     }
+ *
+ * ( reps - 1 ) times ( so we get reps total repetitions of
+ * LoopBody inside our unrolled loop) we produce code which looks
+ * like the following:
+ *
+ *   +---------------------------+
+ *   |                           |
+ *   |         PreHeader         |       Has "add n, -reps -> new_temp"
+ *   |                           |       instruction added to it
+ *   +---------------------------+
+ *                 |
+ *                \|/
+ *   +---------------------------+
+ *   |                           |       If comparison is unsigned,
+ *   |         SignCheck         |--+    we check to make sure that n and
+ *   |                           |  |    ( n - reps ) have the same sign.
+ *   +---------------------------+  |    ( If not - goto the normal loop below )
+ *                 |                |
+ *                \|/               |
+ *   +---------------------------+  |
+ *   |                           |  |    This is something which looks like:
+ *   |         BigCond           |--+     if ( i COMPARISON new_temp ) then
+ *   |                           |  |            goto unrolled body
+ *   +---------------------------+  |     else
+ *                 |                |            goto littleCond below
+ *                \|/               |
+ *   +---------------------------+  |
+ * \ |                           |  |    This is just reps copies of the
+ *+-+|         Unrolled Body     |  |    loop body with the conditional
+ *|/ |                           |  |    statement deleted of course.
+ *|  +---------------------------+  |
+ *|                |                |
+ *|               \|/               |
+ *|  +---------------------------+  |
+ *|  |                           |  |    A replication of the bigcond above -
+ *+--|         BigCond           |  |    as long as we are throwing code size
+ *   |                           |  |    to the wind, might as well have fun
+ *   +---------------------------+  |
+ *                 |                |
+ *                \|/               |
+ *   +---------------------------+/ |
+ *   |                           |--+
+ *   |         LittleCond        |\      What follows is just a guarded copy
+ *   |                           |--+    of the original loop, to take care of
+ *   +---------------------------+  |    any slop left over (n % reps iterations)
+ *                 |                |
+ *                \|/               |
+ *   +---------------------------+  |
+ * \ |                           |  |    The LittleCond blocks look like
+ *+-+|         LoopBody          |  |
+ *|/ |                           |  |            if i COMPARISON n then
+ *|  +---------------------------+  |                    goto LoopBody
+ *|                |                |            else
+ *|               \|/               |                    goto exit block
+ *|  +---------------------------+  |
+ *|  |                           |  |
+ *+--|         LittleCond        |  |
+ *   |                           |  |
+ *   +---------------------------+  |
+ *                 |                |
+ *                \|/               |
+ *   +---------------------------+  |
+ *   |                           |/ |    We only unroll in this fun manner if
+ *   |         Exit Block        |--+    we only had one conditional exit from the
+ *   |                           |\      loop, so this guy is well-defined
+ *   +---------------------------+
+ */
 
 static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loop_condition *cond, signed_32 reps )
 /******************************************************************************************************************
-    This functions lays out the code as given above, creating and linking in condition
-    blocks as needed. It then sorts the blocks into the given order, to make sure that nothing
-    screws up our lovely flow of control.
-*/
+ * This functions lays out the code as given above, creating and linking in condition
+ * blocks as needed. It then sorts the blocks into the given order, to make sure that nothing
+ * screws up our lovely flow of control.
+ */
 {
     name                *temp;
     instruction         *add;
@@ -939,8 +970,9 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     modifier = AllocS32Const( -1 * reps * cond->induction->plus );
     add = MakeBinary( OP_ADD, cond->invariant, modifier, temp, comp_type_class );
     SuffixPreHeader( add );
-
-    // add a piece of code to check and make sure n and ( n - reps ) have the same sign
+    /*
+     * add a piece of code to check and make sure n and ( n - reps ) have the same sign
+     */
     if( !cond->complete && Signed[comp_type_class] != comp_type_class ) {
         new = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new, BLK_CONDITIONAL );
@@ -962,9 +994,10 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         MoveEdge( &PreHead->edge[0], new );
         AddBlocks( PreHead, new );
     }
-
-    // now munge Head so that it looks more like we want it to, and make a copy which we can
-    // then attach to our butt
+    /*
+     * now munge Head so that it looks more like we want it to, and make a copy which we can
+     * then attach to our butt
+     */
     ins = Head->ins.head.prev;
     ins->head.opcode = cond->opcode;
     ins->operands[0] = cond->induction->name;
@@ -973,7 +1006,9 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     if( cond->complete ) {
         block_edge      *edge;
 
-        // we have completely unrolled the loop - so behead it
+        /*
+         * we have completely unrolled the loop - so behead it
+         */
         MarkHeaderEdges( loop, Head );
         RedirectHeaderEdges( loop, cond->exit_edge );
         edge = &Head->edge[0];
@@ -1016,8 +1051,10 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
             }
         }
     }
-    // won't make copy now until I have this all worked out
-    // the cleanup stuff should all be pointing in the right place by now
+    /*
+     * won't make copy now until I have this all worked out
+     * the cleanup stuff should all be pointing in the right place by now
+     */
 }
 
 bool    Hoisted( block *head, instruction *compare )
@@ -1039,8 +1076,8 @@ bool    Hoisted( block *head, instruction *compare )
 
 bool    UnRoll( void )
 /*********************
-    Unroll the given loop n times.
-*/
+ * Unroll the given loop n times.
+ */
 {
     loop_condition      cond;
     block               *last;
@@ -1070,7 +1107,7 @@ bool    UnRoll( void )
         cleanup_copy.head->loop_head = Head->loop_head;
         AddBlocks( last, cleanup_copy.head );
         UnMarkHeaderEdges( last );
-        // MoveDownLoop( cond_blk );
+//        MoveDownLoop( cond_blk );
     } else if( Head->unroll_count > 0 ) {
         last = DoUnroll( Loop, Head->unroll_count, false );
         MarkLoopHeader( last, Head );

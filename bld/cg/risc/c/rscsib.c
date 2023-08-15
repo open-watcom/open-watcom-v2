@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,9 +52,9 @@ typedef struct sib_info {
     instruction         *ins;
 } sib_info;
 
-bool FoldIntoIndex( instruction * ins ) {
-/**********************************************/
-
+bool FoldIntoIndex( instruction * ins )
+/*************************************/
+{
     name        *cons;
     bool        is_base;
     name        *new_x;
@@ -77,9 +77,9 @@ bool FoldIntoIndex( instruction * ins ) {
             return( false );
         if( cons->c.lo.int_value > 3 )
             return( false );
-/*
-        found SHL R1,n => R1
-*/
+        /*
+         * found SHL R1,n => R1
+         */
     } else if( ins->head.opcode == OP_ADD ) {
         cons = ins->operands[1];
         if( cons->n.class != N_REGISTER )
@@ -87,13 +87,13 @@ bool FoldIntoIndex( instruction * ins ) {
         if( cons->n.size != WORD_SIZE )
             return( false );
         base_reg = cons->r.reg;
-/*
-        found ADD R1,R2 => R1
-*/
+        /*
+         * found ADD R1,R2 => R1
+         */
         if( cons == ins->operands[0] ) {
-/*
-        found ADD R1,R1 => R1  <==> SHL R1,1 => R1
-*/
+            /*
+             * found ADD R1,R1 => R1  <==> SHL R1,1 => R1
+             */
             cons = AllocIntConst( 1 );
             HW_CAsgn( base_reg, HW_EMPTY );
         }
@@ -113,15 +113,15 @@ bool FoldIntoIndex( instruction * ins ) {
         if( next == NULL )
             break;
         sib.ins = next;
-        // if( !HW_Equal( base_reg, HW_EMPTY )
-        //   && _IsTargetModel( CGSW_X86_INDEXED_GLOBALS )
-        //   && sib.index->i.base != NULL
-        //   && sib.index->i.base->n.class == N_MEMORY )
-        //     break;
-    /*
-        Hey, we found a good one as long as reg dies immediately after it and we
-        don't need to save the base register slot for INDEXED GLOBALS
-    */
+//        if( !HW_Equal( base_reg, HW_EMPTY )
+//          && _IsTargetModel( CGSW_X86_INDEXED_GLOBALS )
+//          && sib.index->i.base != NULL
+//          && sib.index->i.base->n.class == N_MEMORY )
+//            break;
+        /*
+         * Hey, we found a good one as long as reg dies immediately after it and we
+         * don't need to save the base register slot for INDEXED GLOBALS
+         */
         if( HW_Equal( base_reg, HW_EMPTY ) ) {
             sib.flags = sib.index->i.index_flags;
             if( is_base ) {

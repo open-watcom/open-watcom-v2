@@ -142,8 +142,9 @@ static  int     Factor( unsigned_32 num, int *cost )
             ++num;
         }
     }
-
-    /* Now estimate the cost of the alternate instruction sequence. */
+    /*
+     * Now estimate the cost of the alternate instruction sequence.
+     */
     for( j = i; j < MAXOPS; ++j ) {
         switch( Ops[j].op ) {
         case DO_SHL:
@@ -162,9 +163,9 @@ static  int     Factor( unsigned_32 num, int *cost )
     }
 
     /*
-        Bump up cost estimate to allow for the fact that we're going to have
-        [a lot] more instructions with the shift and add method.
-    */
+     * Bump up cost estimate to allow for the fact that we're going to have
+     * [a lot] more instructions with the shift and add method.
+     */
     num_oprs = MAXOPS - i + 1;
     *cost += num_oprs;
     return( i );

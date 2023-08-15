@@ -210,7 +210,7 @@ static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *st
     for( i = ins->num_operands; i-- > 0; ) {
         if( FPIsStack( ins->operands[i] ) ) {
             parm->ins = PushDelayed( ins, addr, state );
-            // CGFree( parm );
+//            CGFree( parm );
             return( true );
         }
     }
@@ -235,7 +235,7 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
             for( i = ins->num_operands; i-- > 0; ) {
                 if( _IsReDefinedBy( next, ins->operands[i] ) ) {
                     parm->ins = PushDelayed( ins, parm->name, state );
-                    // CGFree( parm );
+//                    CGFree( parm );
                     return( true );
                 }
             }
@@ -298,7 +298,9 @@ static  int     FPPushDelay( pn parm, call_state *state )
                     continue;
                 if( PushDelayedIfRedefinition( ins, parm, state ) )
                     continue;
-                /* we can push it just before the CALL */
+                /*
+                 * we can push it just before the CALL
+                 */
                 if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
                     UseInOther( ins->operands[0] );
                     if( ins->num_operands > 1 ) {
@@ -569,9 +571,9 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again )
         return( ret );
     if( G( ins ) == G_RFLD && FPRegNum( ins->operands[0] ) == 0 ) {
         if( G( next ) == G_MFST ) {
-
-            /* FLD ST, FSTP X ===> FST X */
-
+            /*
+             * FLD ST, FSTP X ===> FST X
+             */
             FreeIns( ins );
             if( FPResultNotNeeded( next ) ) {
                 ret = BackUpAndFree( ins, next, NULL );
@@ -581,9 +583,9 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again )
             }
             *again = true;
         } else if( G( next ) == G_RFST ) {
-
-            /* FLD ST, FSTP ST(i) ===> FST ST(i-1) */
-
+            /*
+             * FLD ST, FSTP ST(i) ===> FST ST(i-1)
+             */
             st_reg = FPRegNum( next->result );
             if( st_reg == 0 ) {
                 ret = BackUpAndFree( ins, ins, next );
@@ -595,9 +597,9 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again )
             }
             *again = true;
         } else if( G( next ) == G_RNFBINP || G( next ) == G_RRFBINP ) {
-
-            /* FLD ST, FopP ST(i),ST ==> Fop ST(i-1),ST */
-
+            /*
+             * FLD ST, FopP ST(i),ST ==> Fop ST(i-1),ST
+             */
             st_reg = FPRegNum( next->operands[0] );
             if( st_reg == 0 ) {
                 ret = BackUpAndFree( ins, ins, next );
@@ -622,9 +624,9 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again )
                 }
             }
             if( FPRegNum( next->operands[0] ) == 1 ) {
-
-                /* FLD X, FxxP ST(1) ==> Fxx X */
-
+                /*
+                 * FLD X, FxxP ST(1) ==> Fxx X
+                 */
                 next->result = ST( 0 );
                 next->operands[0] = ins->operands[0];
                 if( ins->num_operands > OpcodeNumOperands( ins )
