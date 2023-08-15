@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-extern void     Copy( const void *x, void *y, size_t len );
+extern void     Copy( const void *src, void *dst, size_t len );
 extern void     *Fill( void *start, size_t len, unsigned char filler );
-extern bool     Equal( const void *src, const void *dst, size_t length );
+extern bool     Equal( const void *src1, const void *src2, size_t length );
 extern char     *CopyStr( const char *src, char *dst );
 extern size_t   Length( const char *string );
 extern uint_32  CountBits( uint_32 value );
