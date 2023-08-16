@@ -335,8 +335,29 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         return( T_STRING );
     case MACRO_CPLUSPLUS:
         TokenLen = 0;
-        WriteBufferString( "1" );
-        U32ToU64( 1, &Constant64 );
+        if( CompFlags.enable_std0x ) {
+            /*
+             * it should be modified for C++ standard specific value
+             * as soon as standard support will be more complete
+             *
+             * standard value
+             * older:   1L
+             * C++98:   199711L
+             * C++11:   201103L
+             * C++14:   201402L
+             * C++17:   201703L
+             * C++20:   202002L
+             */
+            WriteBufferString( "1" );
+            U32ToU64( 1, &Constant64 );
+        } else {
+            /*
+             * this is original WATCOM C++ implementation
+             * not fully 1998 C++ standard compliant
+             */
+            WriteBufferString( "1" );
+            U32ToU64( 1, &Constant64 );
+        }
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_ALT_AND:
