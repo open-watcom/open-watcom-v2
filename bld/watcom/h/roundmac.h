@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,6 +62,8 @@
 
 #define __ROUND_DOWN_SIZE(__x,__amt)        ((__x)&(~((__amt)-1)))
 #define __ROUND_UP_SIZE(__x,__amt)          (((__x)+((__amt)-1))&(~((__amt)-1)))
+#define __ROUND_DOWN_SIZE_TO(__x,__amt)     ((__x)/(__amt))
+#define __ROUND_UP_SIZE_TO(__x,__amt)       (((__x)+((__amt)-1))/(__amt))
 
 #define __ROUND_DOWN_SIZE_EVEN(__x)         __ROUND_DOWN_SIZE(__x,2)
 #define __ROUND_UP_SIZE_EVEN(__x)           __ROUND_UP_SIZE(__x,2)
@@ -71,8 +73,8 @@
 #define __ROUND_UP_SIZE_4K(__x)             __ROUND_UP_SIZE(__x,_4K)
 #define __ROUND_UP_SIZE_64K(__x)            __ROUND_UP_SIZE(__x,_64K)
 
-#define __ROUND_DOWN_SIZE_TO_PARA(__x)      ((__x)>>4)
-#define __ROUND_UP_SIZE_TO_PARA(__x)        (((__x)+15)>>4)
+#define __ROUND_DOWN_SIZE_TO_PARA(__x)      __ROUND_DOWN_SIZE_TO((__x),16)
+#define __ROUND_UP_SIZE_TO_PARA(__x)        __ROUND_UP_SIZE_TO((__x),16)
 
-#define __ROUND_DOWN_SIZE_TO_4K(__x)        ((__x)/_4K)
-#define __ROUND_UP_SIZE_TO_4K(__x)          (((__x)+_4K-1)/_4K)
+#define __ROUND_DOWN_SIZE_TO_4K(__x)        __ROUND_DOWN_SIZE_TO((__x),_4K)
+#define __ROUND_UP_SIZE_TO_4K(__x)          __ROUND_UP_SIZE_TO((__x),_4K)
