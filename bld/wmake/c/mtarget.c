@@ -127,7 +127,7 @@ TLIST *NewTList( void )
     return( (TLIST *)CallocSafe( sizeof( TLIST ) ) );
 }
 
-STATIC TARGET *RemoveTarget( const char *name )
+STATIC TARGET *removeTarget( const char *name )
 /*********************************************/
 {
     return( (TARGET *)RemHashNode( targTab, name, FILENAMESENSITIVE ) );
@@ -138,7 +138,7 @@ void RenameTarget( const char *oldname, const char *newname )
 {
     TARGET *targ;
 
-    targ = RemoveTarget( oldname );
+    targ = removeTarget( oldname );
     if( targ != NULL ) {
         if( targ->node.name != NULL ) {
             FreeSafe( targ->node.name );
@@ -469,7 +469,7 @@ void KillTarget( const char *name )
 {
     TARGET  *mykill;
 
-    mykill = RemoveTarget( name );
+    mykill = removeTarget( name );
     if( mykill != NULL ) {
         freeTarget( mykill );
     }

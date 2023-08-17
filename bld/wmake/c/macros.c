@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1222,7 +1222,7 @@ STATIC bool NMacroNameEq( const char *name1, const char *name2, size_t len )
 }
 
 
-STATIC char *DeMacroName( const char *text, const char *name )
+STATIC char *deMacroName( const char *text, const char *name )
 /*************************************************************
  * Tries to find if there are occurrences of name in text
  * this is only for ms-option fix because nmake relies on this
@@ -1312,7 +1312,7 @@ void DefMacro( const char *name )
     assert( IsMacroName( name ) );
 
     temp  = PartDeMacro( false );
-    value = DeMacroName( temp, name );
+    value = deMacroName( temp, name );
     FreeSafe( temp );
 
     unused_value = true;
