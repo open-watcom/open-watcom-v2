@@ -47,21 +47,23 @@
 
 
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) && defined( CAUSEWAY )
-    //
-    // DLLs implemented only for:
-    //      DOS (386 Causeway Extender)
-    //      OS/2 (386, PowerPC)
-    //      NT (386, x64, Alpha AXP, PowerPC)
-
-    // you can use link in the dll objects into the stub in other os's
-    //(eg dos--if you consider that an os) by defining STATIC_LINKAGE
-    // and IDE_PGM. note that IDE_PGM needs to be defined anywhere that
-    // IDEAPI is used and/or idedll.h is included
+    /*
+     * DLLs implemented only for:
+     *      DOS (386 Causeway Extender)
+     *      OS/2 (386, PowerPC)
+     *      NT (386, x64, Alpha AXP, PowerPC)
+     *
+     * you can use link in the dll objects into the stub in other os's
+     * (eg dos--if you consider that an os) by defining STATIC_LINKAGE
+     * and IDE_PGM. note that IDE_PGM needs to be defined anywhere that
+     * IDEAPI is used and/or idedll.h is included
+     */
 
     #if defined( __OS2__ )
         #define DLLS_IMPLEMENTED
-
-        // The following are defined in os2.h
+        /*
+         * The following are defined in os2.h
+         */
         #undef  COMMENT
         #define ERR         OS2_ERR
 
@@ -120,9 +122,9 @@ typedef void (*P_FUN)( void );
 #ifndef STATIC_LINKAGE
 
 #ifdef __OS2__
-    //
-    // OS/2 Interface
-    //
+/***************************************
+ * OS/2 Interface
+ ***************************************/
 
 static int sysdepDLLLoad( IDEDRV *inf )
 {
@@ -152,7 +154,9 @@ static int sysdepDLLgetProc( IDEDRV *inf
                                    , (PSZ)fun_name
                                    , (PFN *)fun );
     if( 0 != retcode ) {
-        // DLL could be linked case-insensitive
+        /*
+         * DLL could be linked case-insensitive
+         */
         unsigned    size = strlen( fun_name ) + 1;
         char        *p = alloca( size );
 
@@ -166,12 +170,12 @@ static int sysdepDLLgetProc( IDEDRV *inf
     return( retcode );
 }
 
-#endif // __OS2__
+#endif /* __OS2__ */
 
 #ifdef __NT__
-    //
-    // NT Interface
-    //
+/***************************************
+ * NT Interface
+ ***************************************/
 
 static int sysdepDLLLoad( IDEDRV *inf )
 {
@@ -194,12 +198,12 @@ static int sysdepDLLgetProc( IDEDRV *inf,
     return( 0 == fp );
 }
 
-#endif // __NT__
+#endif /* __NT__ */
 
 #if defined( __DOS__ ) && defined( CAUSEWAY )
-    //
-    // DOS Causeway Extender Interface
-    //
+/***************************************
+ * DOS Causeway Extender Interface
+ ***************************************/
 
 static int sysdepDLLLoad( IDEDRV *inf )
 {
@@ -219,7 +223,9 @@ static int sysdepDLLgetProc( IDEDRV *inf
 {
     *fun = GetProcAddress( inf->dll_handle, (void *)fun_name );
     if( 0 == *fun ) {
-        // DLL could be linked case-insensitive
+        /*
+         * DLL could be linked case-insensitive
+         */
         unsigned    size = strlen( fun_name ) + 1;
         char        *p = alloca( size );
 
@@ -230,9 +236,9 @@ static int sysdepDLLgetProc( IDEDRV *inf
     return( 0 == *fun );
 }
 
-#endif // __DOS__
+#endif /* __DOS__ */
 
-#endif // STATIC_LINKAGE
+#endif /* STATIC_LINKAGE */
 
 
 
@@ -344,13 +350,16 @@ static IDEBool IDEAPI getInfoCB( IDECBHdl hdl, IDEInfoType type, IDEGetInfoWPara
 
 
 static IDECallBacks callbacks = {     // CALL-BACK STRUCTURE
-    // building functions
+    /*
+     * building functions
+     */
     NULL,                       // RunBatch
     printMessage,               // PrintMessage
     printWithCrLf,              // PrintWithCRLF
     printWithInfo,              // PrintWithInfo
-
-    // Query functions
+    /*
+     * Query functions
+     */
     getInfoCB,                  // GetInfo
 
     stubPrintMsgFn,             // ProgressMessage
@@ -369,9 +378,12 @@ static IDECallBacks callbacks = {     // CALL-BACK STRUCTURE
     printProgressIndex,         // ProgressIndex
 };
 static IDECallBacks *CBPtr = &callbacks;
+
 #else
+
 static IDECallBacks *CBPtr = NULL;
-#endif
+
+#endif  /* CHAIN_CALLBACK */
 
 static IDEInitInfo info =           // INFORMATION STRUCTURE
 {   IDE_CUR_INFO_VER                // - ver
@@ -389,8 +401,10 @@ static IDEDRV   *Inf;
 #endif
 
 static void StopRunning( void )
+/************************************
+ * Provide static and dynamic linking
+ */
 {
-// Provide static and dynamic linking
 #ifdef STATIC_LINKAGE
     IDEStopRunning();
 #else
@@ -414,7 +428,7 @@ static void initInterrupt( void )
     signal( SIGINT, intHandler );
 #ifndef __UNIX__
     signal( SIGBREAK, intHandler );
-#endif // __UNIX__
+#endif  /* __UNIX__ */
 }
 
 static void finiInterrupt( void )
@@ -422,7 +436,7 @@ static void finiInterrupt( void )
     signal( SIGINT, SIG_DFL );
 #ifndef __UNIX__
     signal( SIGBREAK, SIG_DFL );
-#endif // __UNIX__
+#endif  /* __UNIX__ */
 }
 
 #ifndef NDEBUG
@@ -548,12 +562,13 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
     ( IDEDRV *inf               // - driver control information
     , char const *cmd_line )    // - command line
 #ifdef STATIC_LINKAGE
-// Execute DLL
-//
-// One mode (with static linkage):
-//
-//  (1) WATCOM IDE interface is used.
-//
+/*
+ * Execute DLL
+ *
+ * One mode (with static linkage):
+ *
+ *  (1) WATCOM IDE interface is used.
+ */
 {
     int runcode;
     int retcode;
@@ -570,14 +585,15 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
     return( retcode );
 }
 #else
-// Execute DLL
-//
-// Two modes (both with dynamic linkage):
-//
-//  (1) when second parameter is NULL, WATCOM IDE interface is used.
-//
-//  (2) otherwise, the dll is called at the entry name
-//
+/*
+ * Execute DLL
+ *
+ * Two modes (both with dynamic linkage):
+ *
+ *  (1) when second parameter is NULL, WATCOM IDE interface is used.
+ *
+ *  (2) otherwise, the dll is called at the entry name
+ */
 {
     int runcode;
     int retcode;
@@ -626,12 +642,13 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
     , int argc                  // - # of arguments
     , char **argv )             // - argument vector
 #ifdef STATIC_LINKAGE
-// Execute DLL
-//
-// One mode (with static linkage):
-//
-//  (1) WATCOM IDE interface is used.
-//
+/*
+ * Execute DLL
+ *
+ * One mode (with static linkage):
+ *
+ *  (1) WATCOM IDE interface is used.
+ */
 {
     int runcode;
     int retcode;
@@ -648,14 +665,15 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
     return( retcode );
 }
 #else
-// Execute DLL
-//
-// Two modes (both with dynamic linkage):
-//
-//  (1) when second parameter is NULL, WATCOM IDE interface is used.
-//
-//  (2) otherwise, the dll is called at the entry name
-//
+/*
+ * Execute DLL
+ *
+ * Two modes (both with dynamic linkage):
+ *
+ *  (1) when second parameter is NULL, WATCOM IDE interface is used.
+ *
+ *  (2) otherwise, the dll is called at the entry name
+ */
 {
     int runcode;
     int retcode;
@@ -703,7 +721,9 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
 int IdeDrvUnloadDLL             // UNLOAD THE DLL
     ( IDEDRV *inf )             // - driver control information
 #ifdef STATIC_LINKAGE
-// Static Linkage: nothing to unload
+/************************************
+ * Static Linkage: nothing to unload
+ */
 {
     if( inf->loaded ) {
         inf->loaded = false;
@@ -712,9 +732,11 @@ int IdeDrvUnloadDLL             // UNLOAD THE DLL
     return( IDEDRV_SUCCESS );
 }
 #else
-// Dynamic Linkage: unload the DLL
+/***********************************
+ * Dynamic Linkage: unload the DLL
+ */
 {
-    int         retcode;                // - return code
+    int         retcode;        // - return code
     FiniDllFn   fini;
 
     if( inf->loaded ) {
@@ -738,7 +760,9 @@ int IdeDrvUnloadDLL             // UNLOAD THE DLL
 int IdeDrvStopRunning           // SIGNAL A BREAK
     ( IDEDRV *inf )             // - driver control information
 #ifdef STATIC_LINKAGE
-// Static Linkage: direct call
+/***********************************
+ * Static Linkage: direct call
+ */
 {
     if( inf->loaded ) {
         inf->loaded = false;
@@ -747,7 +771,9 @@ int IdeDrvStopRunning           // SIGNAL A BREAK
     return( IDEDRV_SUCCESS );
 }
 #else
-// Dynamic Linkage: indirect call
+/***********************************
+ * Dynamic Linkage: indirect call
+ */
 {
     StopRunFn   idestopdll;
 
@@ -831,4 +857,4 @@ void IdeDrvInit                 // INITIALIZE IDEDRV INFORMATION
 
 #else
     #error IDE not implemented for target platform
-#endif // DLLS_IMPLEMENTED
+#endif /* DLLS_IMPLEMENTED */
