@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -206,15 +206,15 @@ private:
     dword writeICmd();
 
     Compiler&                           _compiler;
-    std::auto_ptr< Nls >                _nls;
-    std::auto_ptr< IpfHeader >          _hdr;
-    std::auto_ptr< IpfExtHeader >       _eHdr;
-    std::auto_ptr< StringTable >        _strings;
-    std::auto_ptr< ExternalFiles >      _extfiles;
-    std::auto_ptr< Controls >           _controls;
-    std::auto_ptr< FontCollection >     _fonts;
-    std::auto_ptr< GNames >             _gnames;
-    std::auto_ptr< GlobalDictionary >   _dict;
+    Nls*                                _nls;
+    IpfHeader*                          _hdr;
+    IpfExtHeader*                       _eHdr;
+    StringTable*                        _strings;
+    ExternalFiles*                      _extfiles;
+    Controls*                           _controls;
+    FontCollection*                     _fonts;
+    GNames*                             _gnames;
+    GlobalDictionary*                   _dict;
 
     std::vector< Page* >                _pages;
     typedef std::vector< Page* >::iterator PageIter;

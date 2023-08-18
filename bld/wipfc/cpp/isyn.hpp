@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,7 +43,7 @@ class ISyn : public Element {
 public:
     ISyn( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _syn( new Synonym() ) { };
-    ~ISyn() { };
+    ~ISyn() { delete _syn; };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell ) { (void)cell; };
 private:
@@ -51,7 +51,7 @@ private:
     ISyn& operator=( const ISyn& rhs );     //no assignment
 
     std::wstring                _root;
-    std::auto_ptr< Synonym >    _syn;
+    Synonym*                    _syn;
 };
 
 #endif //ISYN_INCLUDED

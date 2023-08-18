@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -81,7 +81,7 @@ Lexer::Token ISyn::parse( Lexer* lexer )
         }
     }
     try {
-        _document->addSynonym( _root, _syn.get() );
+        _document->addSynonym( _root, _syn );
     }
     catch( Class3Error& e ) {
         _document->printError( e._code );
