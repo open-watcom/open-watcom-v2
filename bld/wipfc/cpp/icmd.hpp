@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -45,7 +45,7 @@ class GlobalDictionaryWord; //forward reference
 class ICmd : public Element {
 public:
     ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c );
-    ~ICmd() { };
+    ~ICmd();
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
@@ -59,7 +59,7 @@ private:
     ICmd( const ICmd& rhs );                //no copy
     ICmd& operator=( const ICmd& rhs );     //no assignment
 
-    std::auto_ptr< IndexItem >  _index;
+    IndexItem*                  _index;
     GlobalDictionaryWord*       _parentId;
     word                        _parentRes;
 };

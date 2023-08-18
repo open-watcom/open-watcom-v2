@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -53,6 +53,12 @@ I1::I1( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned
 {
     _document->addIndex( this );
 }
+
+I1::~I1()
+{
+    delete _primary;
+}
+
 /*****************************************************************************/
 Lexer::Token I1::parse( Lexer* lexer )
 {

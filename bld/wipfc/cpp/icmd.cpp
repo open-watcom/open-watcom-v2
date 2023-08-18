@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -46,6 +46,12 @@ ICmd::ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsi
 {
     d->addCmdIndex( this );
 }
+
+ICmd::~ICmd()
+{
+    delete _index;
+}
+
 /*****************************************************************************/
 Lexer::Token ICmd::parse( Lexer* lexer )
 {

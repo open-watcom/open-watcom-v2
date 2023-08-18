@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -100,7 +100,7 @@ private:
     Compiler( const Compiler &rhs );            //no copy constructor
     Compiler& operator=( const Compiler &rhs ); //no assignment
 
-    std::auto_ptr< Lexer >  _lexer;
+    Lexer*                  _lexer;
     std::vector< IpfData* > _inFiles;            //a stack of files being parsed
     typedef std::vector< IpfData* >::iterator InFilesIter;
     typedef std::vector< IpfData* >::const_iterator ConstInFilesIter;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -64,6 +64,7 @@ Compiler::~Compiler()
     for( FileNameIter iter = _fileNames.begin(); iter != _fileNames.end(); ++iter ) {
         delete *iter;
     }
+    delete _lexer;
 }
 /*****************************************************************************/
 void Compiler::setInputFile( const std::string& sfname )
@@ -89,10 +90,10 @@ int Compiler::compile()
 {
     int retval( EXIT_SUCCESS );
     // init document and set locale for input/output data
-    std::auto_ptr< Document > doc( new Document( *this, _outType, _loc ) );
+    Document* doc( new Document( *this, _outType, _loc ) );
     _inFileNameW = doc->pushFileInput( _inFileName, _inFileNameW );
     doc->setOutFile( _outFileName );
-    doc->parse( _lexer.get() );
+    doc->parse( _lexer );
     doc->build();
     try {
         doc->write();
