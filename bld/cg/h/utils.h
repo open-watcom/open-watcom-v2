@@ -93,23 +93,40 @@ extern char *CopyStr( const char *src, char *dst );
 #pragma aux CopyStr = \
         _SAVE_ES \
         _SET_ES \
+        "push   edi" \
         "xor    eax,eax" \
     "L1: lodsb" \
         "stosb" \
         "or     eax,eax" \
         "jnz short L1" \
         "dec    edi" \
+        "pop    eax" \
         _REST_ES \
     __parm __routine    [__esi] [__edi] \
-    __value             [__edi] \
-    __modify            [__eax]
+    __value             [__eax]
+
+extern char *CopyStrEnd( const char *src, char *dst );
+#pragma aux CopyStrEnd = \
+        _SAVE_ES \
+        _SET_ES \
+        "xor    eax,eax" \
+    "L1: lodsb" \
+        "stosb" \
+        "or     eax,eax" \
+        "jnz short L1" \
+        "dec    edi" \
+        "mov    eax,edi" \
+        _REST_ES \
+    __parm __routine    [__esi] [__edi] \
+    __value             [__eax]
 
 #else
 
 #define Copy(s,d,l)     memcpy((d), (s), (l))
 #define Fill(d,l,c)     memset((d), (c), (l))
 #define Equal(s1,s2,l)  (memcmp((s1), (s2), (l)) == 0)
-#define CopyStr(s,d)    strcpy((d), (s)) + strlen((d))
+#define CopyStr(s,d)    strcpy((d), (s))
+#define CopyStrEnd(s,d) strcpy((d), (s)) + strlen((d))
 #define Length(s)       strlen((s))
 
 #endif

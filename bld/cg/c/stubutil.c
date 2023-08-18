@@ -292,9 +292,9 @@ char    *Name( pointer sym )
     char        hexbuf[20];
     char        *end,*hex;
 
-    end = CopyStr( "[", CopyStr( FEName( sym ), buff ) );
+    end = CopyStrEnd( "[", CopyStrEnd( FEName( sym ), buff ) );
     hex = DoIToHS( hexbuf, 20, (int)sym );
-    end = CopyStr( "]", CopyStr( hex, end ) );
+    end = CopyStrEnd( "]", CopyStrEnd( hex, end ) );
     return( buff );
 }
 

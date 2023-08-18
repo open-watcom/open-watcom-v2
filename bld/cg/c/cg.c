@@ -169,9 +169,9 @@ extern  n       *CGEval( n *nd ) {
 
     Action( "CGEval( %t )", nd );
     VerNode( nd );
-    endptr = CopyStr( "[eval", buff );
-    endptr = CopyStr( LToS( ++EvalNo ), endptr );
-    endptr = CopyStr( "]", endptr );
+    endptr = CopyStrEnd( "[eval", buff );
+    endptr = CopyStrEnd( LToS( ++EvalNo ), endptr );
+    endptr = CopyStrEnd( "]", endptr );
     new = NewNode( LEAF, nd->t );
     new->l = (n *)ACopyOf( buff );
     DumpTree( nd );
@@ -209,14 +209,14 @@ extern  n       **CGDuplicate( n *nd ) {
 
     Action( "CGDuplicate( %t )", nd );
     VerNode( nd );
-    endptr = CopyStr( "[dup", buff );
-    endptr = CopyStr( LToS( ++DupNo ), endptr );
-    endptr = CopyStr( "]", endptr );
+    endptr = CopyStrEnd( "[dup", buff );
+    endptr = CopyStrEnd( LToS( ++DupNo ), endptr );
+    endptr = CopyStrEnd( "]", endptr );
     new1 = NewNode( LEAF, nd->t );
     new1->l = (n *)ACopyOf( buff );
-    endptr = CopyStr( "[dup", buff );
-    endptr = CopyStr( LToS( ++DupNo ), endptr );
-    endptr = CopyStr( "]", endptr );
+    endptr = CopyStrEnd( "[dup", buff );
+    endptr = CopyStrEnd( LToS( ++DupNo ), endptr );
+    endptr = CopyStrEnd( "]", endptr );
     new2 = NewNode( LEAF, nd->t );
     new2->l = (n *)ACopyOf( buff );
     DumpT( nd );

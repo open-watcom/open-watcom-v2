@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,18 +268,18 @@ void    DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter,
     switch( kind ) {
     case SPECIAL:
         pref_len = (sizeof( SPEC_PREFIX ) - 1);
-        dst = CopyStr( SPEC_PREFIX, dst );
+        dst = CopyStrEnd( SPEC_PREFIX, dst );
         break;
     case DLLIMPORT:
         p = FEExtName( sym, EXTN_IMPPREFIX );
         if( p == NULL )
             p = "";
         pref_len = strlen( p );
-        dst = CopyStr( p, buffer );
+        dst = CopyStrEnd( p, buffer );
         break;
     case PIC_RW:
         pref_len = (sizeof( PIC_RW_PREFIX ) - 1);
-        dst = CopyStr( PIC_RW_PREFIX, dst );
+        dst = CopyStrEnd( PIC_RW_PREFIX, dst );
         break;
     default:
         pref_len = 0;
