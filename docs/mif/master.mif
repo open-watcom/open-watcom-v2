@@ -503,6 +503,7 @@ wgml_optfile_1_wgmlref  = wbrfman.opt
 wgml_optfile_2_c_readme = 3
 wgml_optfile_2_cguide   = 3
 wgml_optfile_2_cguideq  = 3
+wgml_optfile_2_f_readme = 3
 wgml_optfile_2_guitools = 3
 wgml_optfile_2_wd       = 3
 wgml_optfile_2_wddoc    = 3

@@ -99,7 +99,6 @@ extern char *CopyStr( const char *src, char *dst );
         "stosb" \
         "or     eax,eax" \
         "jnz short L1" \
-        "dec    edi" \
         "pop    eax" \
         _REST_ES \
     __parm __routine    [__esi] [__edi] \

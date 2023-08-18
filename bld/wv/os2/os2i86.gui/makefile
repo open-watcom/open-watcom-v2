@@ -8,7 +8,4 @@ host_cpu = i86
 
 sys_windowed = 1
 
-#add '16' suffix to avoid conflicts
-tail_gui_os2 = w16
-
 !include ../../master.mif
