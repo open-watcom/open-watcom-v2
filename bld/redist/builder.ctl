@@ -10,7 +10,7 @@ set PROJDIR=<CWD>
 cdsay .
 
 [ BLOCK <BLDRULE> boot ]
-#=================
+#=======================
     <CPCMD> dos4gw/dos4gw.exe "<OWROOT>/build/<OWOBJDIR>/dos4gw.exe"
 
 [ BLOCK <BLDRULE> bootclean ]
