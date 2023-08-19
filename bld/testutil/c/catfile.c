@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -328,7 +328,8 @@ static int processFilePattern   // PROCESS FILE PATTERN
     char            path[ _MAX_PATH ];
     char            pattern[ _MAX_PATH ]; // - file pattern
 
-    data = data;
+    /* unused parameters */ (void)data;
+
     _splitpath2( tp->text, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( path, pg.drive, pg.dir, ".", NULL );
     _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
@@ -377,7 +378,8 @@ static int concFile             // CONCATENATE A FILE
     FILE *fp;                   // - file stuff
     char rec[1024];             // - record
 
-    data = data;
+    /* unused parameters */ (void)data;
+
     fp = fopen( tp->text, "rt" );
     if( fp == NULL ) {
         retn = errMsg( "cannot open:", tp->text, NULL );
@@ -412,7 +414,9 @@ static int countFile            // INCREMENT FILE CTR
     , void *data )              // - data: addr[ ctr ]
 {
     unsigned *a_ctr = data;
-    tp = tp;
+
+    /* unused parameters */ (void)tp;
+
     ++(*a_ctr);
     return 0;
 }
