@@ -4,11 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#if __WATCOMC__ >= 1000
-#pragma pack(push,1);
-#else
-#pragma pack(1);
-#endif
+#pragma pack(__push,1);
 
 /*
  * Look at \WATCOM\H\OS2\DEVHDR.INC for a description
@@ -61,11 +57,7 @@ typedef enum {
     CAP_NULL      = 0x00000000, //
 } CAP_flags;
 
-#if __WATCOMC__ >= 1000
-#pragma pack(pop);
-#else
-#pragma pack();
-#endif
+#pragma pack(__pop);
 #ifdef __cplusplus
 };
 #endif
