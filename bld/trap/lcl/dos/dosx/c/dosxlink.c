@@ -320,17 +320,18 @@ static char *doSearchPath( const char __far *env, const char *file, char *buff, 
         }
         memcpy( endname, save, len + 2 );
     }
-    *pendname = endname;
+    if( pendname != NULL )
+        *pendname = endname;
     return( name );
 }
 
-static char *CheckPath( const char __far *path, char *fullpath, char **endname )
+static char *CheckPath( const char __far *path, char *fullpath, char **pendname )
 {
     const char  *namep;
     char        *name;
 
     for( namep = EXTENDER_NAMES; *namep != '\0'; ) {
-        name = doSearchPath( path, namep, fullpath, endname );
+        name = doSearchPath( path, namep, fullpath, pendname );
         if( *name != '\0' )
             return( name );
         while( *namep++ != '\0' ) {     // skip to next extender name
@@ -340,7 +341,7 @@ static char *CheckPath( const char __far *path, char *fullpath, char **endname )
     return( NULL );
 }
 
-static char *FindExtender( char *fullpath, char **endname )
+static char *FindExtender( char *fullpath, char **pendname )
 {
 #if defined(DOS4G)
     char        *name;
@@ -360,18 +361,18 @@ static char *FindExtender( char *fullpath, char **endname )
               && LOW( ext[2] ) == 'x'
               && LOW( ext[3] ) == 'e' ) {
                 _DBG_Writeln( "is exe" );
-                *endname = StrCopyDst( d4gname, fullpath );
+                *pendname = StrCopyDst( d4gname, fullpath );
                 return( fullpath );
             }
         }
-        name = CheckPath( d4gname, fullpath, endname );
+        name = CheckPath( d4gname, fullpath, pendname );
         if( name != NULL ) {
             _DBG_Writeln( "found in path" );
             return( name );
         }
     }
 #endif
-    return( CheckPath( DOSEnvFind( "PATH" ), fullpath, endname ) );
+    return( CheckPath( DOSEnvFind( "PATH" ), fullpath, pendname ) );
 }
 
 #if defined(PHARLAP)
@@ -524,23 +525,17 @@ const char *RemoteLink( const char *parms, bool server )
         buffp = buff;
         *buffp = '\0';
   #else
-        {
-            static char     *endhelp;
-            const char      *help_name;
-
     #if defined(PHARLAP)
-            exe_name = parms;
-            while( *exe_name++ != '\0' )    // skip to command line
-                {}
-            help_name = GetHelpName( exe_name );
+        exe_name = parms;
+        while( *exe_name++ != '\0' )        // skip to command line
+            {}
+        buffp = doSearchPath( DOSEnvFind( "PATH" ), GetHelpName( exe_name ), buff, NULL );
     #else
-            help_name = HELPNAME;
+        buffp = doSearchPath( DOSEnvFind( "PATH" ), HELPNAME, buff, NULL );
     #endif
-            buffp = doSearchPath( DOSEnvFind( "PATH" ), help_name, buff, &endhelp );
-            if( *buffp == '\0' ) {
-                _DBG_ExitFunc( "RemoteLink(), unable to find extender help file" );
-                return( TRP_ERR_no_extender );
-            }
+        if( *buffp == '\0' ) {
+            _DBG_ExitFunc( "RemoteLink(), unable to find extender help file" );
+            return( TRP_ERR_no_extender );
         }
   #endif
         _DBG_Write( "Extender help name: " );
