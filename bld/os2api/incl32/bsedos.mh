@@ -1019,6 +1019,12 @@ APIRET APIENTRY DosReplaceModule(PCSZ,PCSZ,PCSZ);
 
 #define NPSS_WAIT   0x0001
 
+#define NP_NBLK     0x8000
+#define NP_SERVER   0x4000
+#define NP_WMESG    0x0400
+#define NP_RMESG    0x0100
+#define NP_ICOUNT   0x00FF
+
 typedef LHANDLE HPIPE, *PHPIPE;
 
 typedef struct _AVAILDATA {
