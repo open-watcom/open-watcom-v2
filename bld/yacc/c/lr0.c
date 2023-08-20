@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,8 +87,10 @@ static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *pa
     return( *enter );
 }
 
-/*  Heap Sort.  Reference:  Knuth, Vol. 3, pages 146, 147. */
 static void Sort( void **vec, unsigned n, bool (*lt)( void *, void * ) )
+/***********************************************************************
+ * Heap Sort.  Reference:  Knuth, Vol. 3, pages 146, 147.
+ */
 {
     unsigned    i, j, l, r;
     void        *k;

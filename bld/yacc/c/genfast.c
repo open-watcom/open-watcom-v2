@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,13 +75,17 @@ static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n siz
     s = ( ls - size ) + 1;
     for( i = 0; i < s; ++i ) {
         if( memcmp( &p[i], v, size ) == 0 ) {
-            // bitvector was found inside large vector
+            /*
+             * bitvector was found inside large vector
+             */
             return( i );
         }
     }
     for( i = size; i > 0; --i ) {
         if( memcmp( &p[ls - i], v, i ) == 0 ) {
-            // bitvector has some common bits with the end of the large vector
+            /*
+             * bitvector has some common bits with the end of the large vector
+             */
             *bs += size - i;
             p = REALLOC( p, *bs, byte );
             *bv = p;
@@ -88,7 +93,9 @@ static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n siz
             return( ls - i );
         }
     }
-    // bitvector has no common bits with large vector
+    /*
+     * bitvector has no common bits with large vector
+     */
     *bs += size;
     p = REALLOC( p, *bs, byte );
     *bv = p;
@@ -110,7 +117,9 @@ static int actcmp( action_n *actions, compressed_action *ca, index_n num_actions
         if( a1 == ACTION_NULL ) {
             continue;
         }
-        // NB Know a2 != ACTION_NULL
+        /*
+         * NB Know a2 != ACTION_NULL
+         */
         a2 = ca->action;
         if( a1 != a2 ) {
             return( ca_token + 1 );
@@ -171,41 +180,55 @@ static index_n insertIntoActionVector( action_n **bv, index_n *bs,
     action_n *p;
 
     if( num_actions == 0 ) {
-        // no action items!
+        /*
+         * no action items!
+         */
         return( 0 );
     }
     ls = *bs;
     p = *bv;
     if( ls >= ntoken ) {
-        // try action vector has common actions inside large vector
+        /*
+         * try action vector has common actions inside large vector
+         */
         s = ( ls - ntoken ) + 1;
         for( i = 0; i < s; ++i ) {
-            // try a quick check with the last element that failed (may fail again!)
-            // we know ca[0].action != ACTION_NULL
+            /*
+             * try a quick check with the last element that failed (may fail again!)
+             * we know ca[0].action != ACTION_NULL
+             */
             action = p[i + ca[0].token];
             if( action == ACTION_NULL || action == ca[0].action ) {
                 if( actcmp( &p[i], ca, num_actions, ntoken ) == 0 ) {
-                    // action vector was found inside large vector
+                    /*
+                     * action vector was found inside large vector
+                     */
                     actcpy( &p[i], ca, num_actions );
                     return( i );
                 }
             }
         }
     }
-    // try action vector has some common actions with the end of the large vector
+    /*
+     * try action vector has some common actions with the end of the large vector
+     */
     i = ntoken;
     if( ls < ntoken ) {
         i = ls;
     }
     for( ; i > 0; --i ) {
         if( actcmp( &p[ls - i], ca, num_actions, i ) == 0 ) {
-            // action vector has some common actions with the end of the large vector
+            /*
+             * action vector has some common actions with the end of the large vector
+             */
             ntoken -= i;
             ls -= i;
             break;
         }
     }
-    // add action vector to the large vector
+    /*
+     * add action vector to the large vector
+     */
     p = actextend( p, bs, ntoken );
     *bv = p;
     actcpy( &p[ls], ca, num_actions );
@@ -378,20 +401,28 @@ void GenFastTables( FILE *fp )
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
         memset( state_vector, 0, vsize );
-        // iterate over all shifts in state
+        /*
+         * iterate over all shifts in state
+         */
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro != NULL ) {
-                // we only want terminals
+                /*
+                 * we only want terminals
+                 */
                 continue;
             }
             if( saction->is_default ) {
-                // we want these to be default actions
+                /*
+                 * we want these to be default actions
+                 */
                 continue;
             }
             tokval = sym->token;
             state_vector[tokval >> 3] |= 1 << ( tokval & 0x07 );
         }
-        // iterate over all reductions in state
+        /*
+         * iterate over all reductions in state
+         */
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( state->default_reduction == raction )
                 continue;
@@ -413,7 +444,9 @@ void GenFastTables( FILE *fp )
         for( j = 0; j < ntoken_term; ++j ) {
             state_actions[j] = ACTION_NULL;
         }
-        // iterate over all shifts in state
+        /*
+         * iterate over all shifts in state
+         */
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro != NULL )
                 continue;
@@ -424,7 +457,9 @@ void GenFastTables( FILE *fp )
             }
             state_actions[sym->token] = state_idx;
         }
-        // iterate over all reductions in state
+        /*
+         * iterate over all reductions in state
+         */
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( state->default_reduction == raction ) {
                 defaction[i] = reduceaction( state, raction );
@@ -455,7 +490,9 @@ void GenFastTables( FILE *fp )
         for( j = 0; j < ntoken_all; ++j ) {
             state_actions[j] = ACTION_NULL;
         }
-        // iterate over all shifts in state
+        /*
+         * iterate over all shifts in state
+         */
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro == NULL )
                 continue;

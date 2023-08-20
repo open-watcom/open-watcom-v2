@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,8 +112,10 @@ static void Nullable( void )
                         }
                     }
                     if( p->p.sym == NULL ) {
-                        /* all of the RHS symbols are nullable */
-                        /* (the vacuous case means the LHS is nullable) */
+                        /*
+                         * all of the RHS symbols are nullable
+                         * (the vacuous case means the LHS is nullable)
+                         */
                         sym->nullable = true;
                         nullable_added = true;
                     }
@@ -265,7 +268,9 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
     for( item = state->items; *item != NULL; ++item ) {
         pro = extract_pro( *item );
         if( pro->SR_conflicts == NULL ) {
-            /* production doesn't contain any conflicts */
+            /*
+             * production doesn't contain any conflicts
+             */
             return;
         }
         for( cx = pro->SR_conflicts; cx != NULL; cx = cx->next ) {
@@ -284,7 +289,9 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
             }
         }
         if( !min_max_set ) {
-            /* production doesn't contain a matching conflict */
+            /*
+             * production doesn't contain a matching conflict
+             */
             return;
         }
     }
@@ -311,7 +318,9 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
             last_conflict = conflict;
         }
         if( all_match ) {
-            /* found the desired S/R conflict */
+            /*
+             * found the desired S/R conflict
+             */
             Ambiguous( state );
             last_conflict->state = state;
             last_conflict->shift = saction->state;
@@ -339,12 +348,16 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
                 proprec = rx->pro->prec;
                 if( prevprec.prec == 0 || proprec.prec == 0 || prevprec.prec == proprec.prec ) {
                     *w++ = *mp;
-                    /* resolve to the earliest production */
+                    /*
+                     * resolve to the earliest production
+                     */
                     if( rx->pro->pidx >= reduce[*mp]->pro->pidx ) {
                         continue;
                     }
                 } else if( prevprec.prec > proprec.prec ) {
-                    /* previous rule had higher precedence so leave it alone */
+                    /*
+                     * previous rule had higher precedence so leave it alone
+                     */
                     continue;
                 }
             }
@@ -376,7 +389,9 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
         if( i >= nterm || reduce[i] == NULL ) {
             *ux++ = *tx;
         } else {
-            /* shift/reduce conflict detected */
+            /*
+             * shift/reduce conflict detected
+             */
             check_for_user_hooks( x, tx, reduce[i]->pro->pidx );
             symprec = tx->sym->prec;
             proprec = reduce[i]->pro->prec;

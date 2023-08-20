@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -354,7 +354,9 @@ int main( int argc, char **argv )
     lr0();
     lalr1();
     SetupStateTable();
-    /* apply state filters */
+    /*
+     * apply state filters
+     */
     FindUnused();
     if( eliminateunitflag ) {
         EliminateUnitReductions();
@@ -391,25 +393,35 @@ int main( int argc, char **argv )
             warn( "Can't find yacc skeleton yydriver.c\n" );
         }
     }
-    /* copy first part of skeleton */
+    /*
+     * copy first part of skeleton
+     */
     if( skeleton != NULL ) {
         copy_part( skeleton, actout );
     }
-    /* copy token defs */
+    /*
+     * copy token defs
+     */
     dump_header( actout );
     free_header_data();
     rewind( temp1 );
-    /* copy defs */
+    /*
+     * copy defs
+     */
     copy_part( temp1, actout );
     fclose( temp1 );
     genobj( actout );
-    /* copy middle part of skeleton */
+    /*
+     * copy middle part of skeleton
+     */
     if( skeleton != NULL )
         copy_part( skeleton, actout );
     rewind( temp2 );
     copy_rest( temp2, actout );
     fclose( temp2 );
-    /* copy last part of skeleton */
+    /*
+     * copy last part of skeleton
+     */
     if( skeleton != NULL ) {
         copy_rest( skeleton, actout );
         fclose( skeleton );

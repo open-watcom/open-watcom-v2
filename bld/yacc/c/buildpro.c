@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,9 @@ void buildpro( void )
     if( startsym == NULL ) {
         msg( "No grammar specified.\n" );
     }
-    /* construct: $start <- <start_symbol> $eof */
+    /*
+     * construct: $start <- <start_symbol> $eof
+     */
     rhs[0] = startsym;
     rhs[1] = eofsym;
     goalsym = addsym( "$start" );

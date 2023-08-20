@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,25 +70,33 @@ static void doState( a_state *state, unsigned *state_freq, bool *all_used, unsig
         return;
     }
     if( state->redun->pro != NULL ) {
-        // has a reduction
+        /*
+         * has a reduction
+         */
         return;
     }
     memset( state_freq, 0, nstate * sizeof( *state_freq ) );
     memset( all_used, 0, range_size * sizeof( bool ) );
-    /* find shift state frequencies */
+    /*
+     * find shift state frequencies
+     */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( ! okToConsider( shift_sym ) )
             continue;
         all_used[shift_sym->token - keyword_id_low] = true;
         ++state_freq[saction->state->sidx];
     }
-    /* verify entire range of tokens shift somewhere */
+    /*
+     * verify entire range of tokens shift somewhere
+     */
     for( i = 0; i < range_size; ++i ) {
         if( !all_used[i] ) {
             return;
         }
     }
-    /* find which state had the highest frequency */
+    /*
+     * find which state had the highest frequency
+     */
     max_sidx = 0;
     max = state_freq[0];
     for( sidx = 1; sidx < nstate; ++sidx ) {
@@ -101,7 +110,9 @@ static void doState( a_state *state, unsigned *state_freq, bool *all_used, unsig
         return;
     }
     ++nStates;
-    /* mark tokens used to shift to highest frequency state */
+    /*
+     * mark tokens used to shift to highest frequency state
+     */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( ! okToConsider( shift_sym ) )
             continue;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,7 +190,9 @@ static bool xlat_char( bool special, int c )
         addbuf( c );
         return( false );
     }
-    /* NYI: add %translate 'c' XXXX in case user doesn't like our name */
+    /*
+     * NYI: add %translate 'c' XXXX in case user doesn't like our name
+     */
     addbuf( '_' );
     for( t = xlat; t->x != NULL; ++t ) {
         if( t->c == c ) {
@@ -289,7 +291,9 @@ static void copybal( void )
         nextc();
         if( lastc() == '/' ) {
             if( ch == '*' ) {
-                /* copy a C style comment */
+                /*
+                 * copy a C style comment
+                 */
                 for( ;; ) {
                     addbuf( ch );
                     nextc();
@@ -302,7 +306,9 @@ static void copybal( void )
                     }
                 }
             } else if( ch == '/' ) {
-                /* copy a C++ style comment */
+                /*
+                 * copy a C++ style comment
+                 */
                 for( ;; ) {
                     addbuf( ch );
                     nextc();
@@ -317,7 +323,9 @@ static void copybal( void )
             }
         }
         if( ch == '"' ) {
-            /* copy a string */
+            /*
+             * copy a string
+             */
             addbuf( ch );
             for( ;; ) {
                 nextc();
@@ -339,7 +347,9 @@ static void copybal( void )
             }
         }
         if( ch == '\'' ) {
-            /* copy a character constant */
+            /*
+             * copy a character constant
+             */
             addbuf( ch );
             for( ;; ) {
                 nextc();
@@ -635,8 +645,10 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
 
     absorbed_something = false;
     for( ; token == T_AMBIG; ) {
-        /* syntax is "%ambig <number> <token>" */
-        /* token has already been scanned by scanprec() */
+        /*
+         * syntax is "%ambig <number> <token>"
+         * token has already been scanned by scanprec()
+         */
         if( scan( used ) != T_NUMBER || value.number < 0 ) {
             srcinfo_msg( "Expecting a non-negative number after %ambig.\n" );
             break;
@@ -828,7 +840,9 @@ static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
         if( strcmp( c->action, action ) == 0 ) {
             ++actionsCombined;
             addRuleToUniqueCase( c, pnum, lhs );
-            /* promote to front */
+            /*
+             * promote to front
+             */
             *p = c->next;
             c->next = caseActions;
             caseActions = c;
@@ -873,7 +887,9 @@ static void copyact( FILE *fp, rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned ba
     char        buff[80];
 
     if( ! lineflag ) {
-        /* we don't need line numbers to correspond to the grammar */
+        /*
+         * we don't need line numbers to correspond to the grammar
+         */
         total_errs = 0;
         total_len = strlen( buf ) + 1;
         for( s = buf; *s != '\0'; ) {
@@ -1224,7 +1240,9 @@ void rules( FILE *fp )
             unit_production = false;
             if( !action_defined ) {
                 if( nrhs > 0 ) {
-                    /* { $$ = $1; } is default action */
+                    /*
+                     * { $$ = $1; } is default action
+                     */
                     if( defaultwarnflag ) {
                         char *type_lhs = type_name( lhs->type );
                         char *type_rhs = type_name( rhs[0]->type );
@@ -1272,7 +1290,9 @@ void rules( FILE *fp )
 
     not_token = false;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
-        /* check for special symbols */
+        /*
+         * check for special symbols
+         */
         if( sym == eofsym )
             continue;
         if( denseflag ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,9 +150,10 @@ static void copyact( a_pro * pro, char * indent )
 }
 
 static a_state * unique_shift( a_pro * reduced )
+/***********************************************
+ * See if there is a unique shift when this state is reduced
+ */
 {
-    // See if there is a unique shift when this state is reduced
-
     a_state *           shift_to;
     a_state *           test;
     a_shift_action *    tx;
@@ -162,9 +164,13 @@ static a_state * unique_shift( a_pro * reduced )
         test = statetab[i];
         for( tx = test->trans; tx->sym != NULL; ++tx ) {
             if( tx->sym == reduced->sym ) {
-                // Found something that uses this lhs
+                /*
+                 * Found something that uses this lhs
+                 */
                 if( shift_to == NULL || shift_to == tx->state ) {
-                    // This is the first one or it matches the first one
+                    /*
+                     * This is the first one or it matches the first one
+                     */
                     shift_to = tx->state;
                 } else {
                     return( NULL );     // Not unique
@@ -194,7 +200,7 @@ static void reduce( FILE *fp, int production, int error )
             fprintf( fp, "\tyysp -= %d;\n", plen );
         }
         copyact( pro, "\t" );
-        // fprintf( fp, "\tactions( %d, yysp );\n", production );
+//        fprintf( fp, "\tactions( %d, yysp );\n", production );
         if( (shift_to = unique_shift( pro )) != NULL ) {
             fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->sidx );
         } else {
@@ -245,10 +251,14 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
                 fprintf( fp, "    case %d: /* %s */\n", token, symtab[symnum]->name );
             }
             if( todo >= nstate ) {
-                // Reduction or error
+                /*
+                 * Reduction or error
+                 */
                 reduce( fp, todo, error );
             } else {
-                // Shift
+                /*
+                 * Shift
+                 */
                 fprintf( fp, "\tyysp[0].state = state%d;\n", todo );
                 fprintf( fp, "\tbreak;\n" );
             }
@@ -259,8 +269,10 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
     }
     todo = actions[parent_token];
     if( todo != error ) {
-        // There is a parent production
-        // For now, try parents only when there is no default action
+        /*
+         * There is a parent production
+         * For now, try parents only when there is no default action
+         */
         fprintf( fp, "\treturn( state%d( yysp, token ) );\n", todo );
     } else if( default_action != 0 ) {
         reduce( default_action, error );
@@ -381,7 +393,9 @@ void genobj( FILE *fp )
         max_savings = 0;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
-            // FOR NOW -- only use parent if no default here or same default
+            /*
+             * FOR NOW -- only use parent if no default here or same default
+             */
             if( other[i] != error && other[i] != other[j] )
                 continue;
             savings = 0;

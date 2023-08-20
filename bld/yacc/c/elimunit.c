@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +148,9 @@ static a_pro *analyseParents( a_state *state, a_pro *pro, a_word *reduce_set )
                 new_pro = NULL;
                 break;
             }
-            /* we have a reduce of a unit rule on similar tokens */
+            /*
+             * we have a reduce of a unit rule on similar tokens
+             */
             Intersection( reduce_set, raction->follow );
             break;
         }
@@ -232,40 +235,54 @@ static a_sym *onlyOneReduction( a_state *state )
     a_sym *shift_sym;
 
     /*
-        We shouldn't kill ambiguous states because a user that has to deal
-        with a crazy language (like C++) might want to keep the state around.
-        This check has the dual benefit of eliminating a lot of checking
-        and solving part of the ambiguous state problem.
-    */
+     * We shouldn't kill ambiguous states because a user that has to deal
+     * with a crazy language (like C++) might want to keep the state around.
+     * This check has the dual benefit of eliminating a lot of checking
+     * and solving part of the ambiguous state problem.
+     */
     if( state->kersize != 1 ) {
         return( NULL );
     }
     if( IsAmbiguous( state ) ) {
-        /* catch all of the ambiguous states */
+        /*
+         * catch all of the ambiguous states
+         */
         return( NULL );
     }
-    /* iterate over all shifts in the state */
+    /*
+     * iterate over all shifts in the state
+     */
     saction = state->trans;
     shift_sym = saction->sym;
     if( shift_sym != NULL ) {
-        /* state contains at least one shift */
+        /*
+         * state contains at least one shift
+         */
         return( NULL );
     }
-    // iterate over all reductions in state
+    /*
+     * iterate over all reductions in state
+     */
     save_pro = NULL;
     for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
         if( save_pro != NULL ) {
-            /* state contains at least two reductions */
+            /*
+             * state contains at least two reductions
+             */
             return( NULL );
         }
         if( ! pro->unit ) {
-            /* state contains at least one reduction by a non-unit production */
+            /*
+             * state contains at least one reduction by a non-unit production
+             */
             return( NULL );
         }
         save_pro = pro;
     }
     if( save_pro == NULL ) {
-        /* should never execute this but just in case... */
+        /*
+         * should never execute this but just in case...
+         */
         return( NULL );
     }
     return( save_pro->sym );
@@ -300,10 +317,10 @@ static a_state *onlyShiftsOnTerminals( a_state *state )
     a_sym *shift_sym;
 
     /*
-        If there are shifts on non-terminals then the unit reduction
-        is important because it moves to the correct state for more
-        reductions.  We cannot remove this unit reduction.
-    */
+     * If there are shifts on non-terminals then the unit reduction
+     * is important because it moves to the correct state for more
+     * reductions.  We cannot remove this unit reduction.
+     */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( shift_sym->pro != NULL ) {
             return( NULL );
@@ -325,15 +342,15 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
     bool change_occurred;
 
     /*
-        requirements:
-        (1) state must have a reduction by a unit production (L1 <- r1) on
-            a set of tokens (s)
-        (2) all parents must shift to a state where a shift on a terminal
-            in s ends up in a new state that is the same for all parents
-
-        action:
-            add shift on terminal to common parent shift state
-    */
+     * requirements:
+     * (1) state must have a reduction by a unit production (L1 <- r1) on
+     *     a set of tokens (s)
+     * (2) all parents must shift to a state where a shift on a terminal
+     *     in s ends up in a new state that is the same for all parents
+     *
+     * action:
+     *     add shift on terminal to common parent shift state
+     */
 //    dumpInternalState( state );
     follow = raction->follow;
     unit_lhs = pro->sym;
@@ -360,7 +377,9 @@ static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro
             check_state = final_state;
         }
         if( check_state != NULL ) {
-            /* all shifts in *terminal ended up in the same state! */
+            /*
+             * all shifts in *terminal ended up in the same state!
+             */
             state->trans = addShiftAction( term_sym, check_state, state->trans );
             ClearBit( follow, *mp );
             change_occurred = true;
@@ -379,20 +398,22 @@ static int multiUnitReduce( a_state *state, a_reduce_action *raction, a_pro *pro
     a_pro *new_pro;
 
     /*
-        requirements:
-        (1) state must have a reduction by a unit production (L1 <- r1) on
-            a set of tokens (s)
-        (2) all parents must reduce by an unit production (L2 <- L1) on
-            a set of tokens (t)
-
-        action:
-            change state to reduce (L2<-r1) instead of (L1<-r1) on t
-            (if s != t, we have to add a new reduce action)
-    */
+     * requirements:
+     * (1) state must have a reduction by a unit production (L1 <- r1) on
+     *     a set of tokens (s)
+     * (2) all parents must reduce by an unit production (L2 <- L1) on
+     *     a set of tokens (t)
+     *
+     * action:
+     *     change state to reduce (L2<-r1) instead of (L1<-r1) on t
+     *     (if s != t, we have to add a new reduce action)
+     */
     Assign( reduce_set, raction->follow );
     new_pro = analyseParents( state, pro, reduce_set );
     if( new_pro != NULL ) {
-        /* parents satisfied all the conditions */
+        /*
+         * parents satisfied all the conditions
+         */
         if( Equal( reduce_set, raction->follow ) ) {
             raction->pro = new_pro;
         } else {
@@ -412,15 +433,15 @@ static bool shiftToSingleReduce( a_state *state, a_shift_action *saction )
     bool made_change;
 
     /*
-        requirements:
-        (1) state (s1) must have a shift on token (t) into a state (s2)
-            that only has one action and it must be a reduction by
-            an unit production
-            (after which state (s1) will shift into state (s3))
-
-        action:
-            change shift action for token (t) to shift into state (s3)
-    */
+     * requirements:
+     * (1) state (s1) must have a shift on token (t) into a state (s2)
+     *     that only has one action and it must be a reduction by
+     *     an unit production
+     *     (after which state (s1) will shift into state (s3))
+     *
+     * action:
+     *     change shift action for token (t) to shift into state (s3)
+     */
     made_change = false;
     for( sub_state = saction->state; (new_lhs = onlyOneReduction( sub_state )) != NULL; sub_state = saction->state ) {
         saction->state = findNewShiftState( state, new_lhs );
@@ -443,16 +464,22 @@ static void tryElimination( a_state *state, a_word *reduce_set )
     if( IsAmbiguous( state ) ) {
         return;
     }
-    // iterate over all reductions in state
+    /*
+     * iterate over all reductions in state
+     */
     for( pro = state->redun->pro; pro != NULL; ) {
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( pro->unit ) {
                 if( multiUnitReduce( state, raction, pro, reduce_set ) ) {
-                    /* state->redun could have changed */
+                    /*
+                     * state->redun could have changed
+                     */
                     break;
                 }
                 if( immediateShift( state, raction, pro ) ) {
-                    /* state->redun could have changed */
+                    /*
+                     * state->redun could have changed
+                     */
                     break;
                 }
             }
@@ -468,7 +495,9 @@ static void tossSingleReduceStates( a_state *state )
     if( IsDead( state ) ) {
         return;
     }
-    /* iterate over all shifts in the state */
+    /*
+     * iterate over all shifts in the state
+     */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( saction->units_checked )
             continue;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,7 +207,9 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
         }
         if( raction->pro == NULL ) {
             if( sym != eofsym ) {
-                /* a syntax error will result */
+                /*
+                 * a syntax error will result
+                 */
                 flushStack( h );
                 break;
             }
@@ -222,7 +225,9 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
                 if( chk_sym != NULL ) {
                     doRunUntilShift( h, chk_sym, ht, count );
                 } else {
-                    /* a syntax error will result */
+                    /*
+                     * a syntax error will result
+                     */
                     flushStack( h );
                     break;
                 }
@@ -333,10 +338,14 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
 
     for( parent = s->parents; parent != NULL; parent = parent->next ) {
         if( to_state != NULL ) {
-            /* S/R conflict */
+            /*
+             * S/R conflict
+             */
             printf( "Sample sentence(s) for shift to state %u:\n", to_state->sidx );
         } else {
-            /* R/R conflict */
+            /*
+             * R/R conflict
+             */
             printf( "Sample sentence(s) for reduce of rule %u:\n", pro->pidx );
         }
         list = getStatePrefix( s, parent->state );
@@ -359,7 +368,9 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
             printAndFreeStack( token_stack );
             putchar( '\n' );
         }
-        // dump all of the contexts if we have verbose state output
+        /*
+         * dump all of the contexts if we have verbose state output
+         */
         if( ! showflag )
             break;
         putchar( '\n' );
@@ -384,7 +395,9 @@ static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 
     for( p = pro->items; p->p.sym != NULL; ++p ) {
         if( p->p.sym == disallow_error ) {
-            // derivations using the error sym are not desirable
+            /*
+             * derivations using the error sym are not desirable
+             */
             return( 0 );
         }
         if( p->p.sym->min == NULL ) {
@@ -485,7 +498,9 @@ static void seedWithSimpleMin( void )
     a_sym       *sym;
     unsigned    i;
 
-    // set terminals to their name and set nullable syms
+    /*
+     * set terminals to their name and set nullable syms
+     */
     for( i = 0; i < nsym; ++i ) {
         sym = symtab[i];
         if( sym->pro != NULL ) {
@@ -517,9 +532,13 @@ void CalcMinSentence( void )
 /**************************/
 {
     seedWithSimpleMin();
-    // disallow 'error' in the expansions
+    /*
+     * disallow 'error' in the expansions
+     */
     propagateMin( errsym );
-    // allow 'error' in the expansions
+    /*
+     * allow 'error' in the expansions
+     */
     propagateMin( NULL );
     verifyAllHaveMin();
 }
