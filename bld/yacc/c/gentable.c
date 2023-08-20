@@ -178,7 +178,7 @@ void genobj( FILE *fp )
     a_sym       *sym;
     a_pro       *pro;
     an_item     *item;
-    a_state     *x;
+    a_state     *state;
     a_shift_action *tx;
     a_reduce_action *rx;
     index_n     i, j;
@@ -231,14 +231,14 @@ void genobj( FILE *fp )
     parent_base = 0;
     for( i = nstate; i > 0; ) {
         --i;
-        x = statetab[i];
+        state = statetab[i];
         q = tokens;
-        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             *q++ = sym->token;
             actions[sym->token] = tx->state->idx;
         }
         max_savings = 0;
-        for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
             if( (savings = (set_size)((mp = Members( rx->follow )) - setmembers)) == 0 )
                 continue;
             redun = pro->pidx + nstate;
@@ -273,17 +273,17 @@ void genobj( FILE *fp )
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
             if( abs( size[j] - size[i] ) < min_len ) {
-                x = statetab[j];
+                state = statetab[j];
                 p = test;
                 q = test + ntoken;
-                for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+                for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
                     if( actions[sym->token] == tx->state->idx ) {
                        *p++ = sym->token;
                     } else {
                        *--q = sym->token;
                     }
                 }
-                for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+                for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
                     redun = pro->pidx + nstate;
                     if( redun == other[j] )
                         redun = error;

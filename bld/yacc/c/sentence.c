@@ -174,16 +174,16 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
     index_n             sym_idx;
     a_sym               *chk_sym;
     a_state             *state;
-    a_state             *top;
+    a_state             *top_state;
     a_reduce_action     *raction;
 
     for( ; *h != NULL; ) {
-        top = (*h)->state;
-        if( top == NULL ) {
+        top_state = (*h)->state;
+        if( top_state == NULL ) {
             flushStack( h );
             break;
         }
-        state = findNewShiftState( top, sym );
+        state = findNewShiftState( top_state, sym );
         if( state != NULL ) {
             pushTrace( h, state, sym );
             pushTrace( ht, NULL, sym );
@@ -191,15 +191,15 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
                 break;
             }
             for( ; *h != NULL; ) {
-                top = (*h)->state;
-                if( top->redun->pro == NULL )
+                top_state = (*h)->state;
+                if( top_state->redun->pro == NULL )
                     break;
-                performReduce( h, top->redun->pro );
+                performReduce( h, top_state->redun->pro );
             }
             break;
         }
         sym_idx = sym->idx;
-        for( raction = top->redun; raction->pro != NULL; ++raction ) {
+        for( raction = top_state->redun; raction->pro != NULL; ++raction ) {
             if( IsBitSet( raction->follow, sym_idx ) ) {
                 performReduce( h, raction->pro );
                 break;
@@ -213,12 +213,12 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
                 flushStack( h );
                 break;
             }
-            if( top->redun->pro != NULL ) {
-                performReduce( h, top->redun->pro );
+            if( top_state->redun->pro != NULL ) {
+                performReduce( h, top_state->redun->pro );
             } else {
                 if( count ) {
                     --count;
-                    chk_sym = findNewShiftSym( top, ht );
+                    chk_sym = findNewShiftSym( top_state, ht );
                 } else {
                     chk_sym = NULL;
                 }

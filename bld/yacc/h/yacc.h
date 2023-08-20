@@ -194,7 +194,7 @@ struct a_state {
     a_reduce_action     *default_reduction;
     a_parent            *parents;
     a_look              *look;
-    a_state             *same_state_sym;
+    a_state             *sym_next;
     unsigned short      kersize;
     action_n            idx;            /* index of state [0..nstates] */
     flags               flag;

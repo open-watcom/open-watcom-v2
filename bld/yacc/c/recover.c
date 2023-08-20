@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,24 @@
 
 #include "yacc.h"
 
+static a_state *AddErrState( a_state **enter, a_state **s, a_state **t )
+{
+    if( t == s ) {
+        return( NULL );
+    } else if( t == s + 1 ) {
+        Unmark( **s );
+        return( *s );
+    } else {
+        return( AddState( enter, s, t ) );
+    }
+}
+
 static AddError()
 {
     a_sym *xsym, *sym;
     a_pro *xpro, *pro;
-    a_state *x, **s, **t, *AddErrState();
+    a_state *state;
+    a_state **s, **t;
     a_shift_action *tx, *ty, *trans;
     a_reduce_action *rx, *ry, *redun;
     int i;
@@ -55,31 +68,31 @@ static AddError()
     s = CALLOC( nstate, a_state * );
     at = CALLOC( nstate, short );
     s = t = CALLOC( nstate + 1, a_state * );
-    for( x = statelist; x != NULL; x = x->next ) {
-         Mark( *x );
-         *t++ = x;
+    for( state = statelist; state != NULL; state = state->next ) {
+         Mark( *state );
+         *t++ = state;
     }
     restart = AddErrState( &errsym->enter, s, t );
-    for( x = restart; x != NULL; x = x->next ) {
+    for( state = restart; state != NULL; state = state->next ) {
         Clear( defined );
         Clear( conflict );
         xpro = NULL;
-        for( i = 0; i < x->kersize; ++i ) {
+        for( i = 0; i < state->kersize; ++i ) {
             at[i] = 0;
-            pro = x->name.state[i]->redun->pro;
+            pro = state->name.state[i]->redun->pro;
             if( pro > xpro ) {
                 xpro = pro;
             }
         }
         redun->pro = errpro;
         rx = redun + 1;
-        if( x != restart )
-            while( xpro ) {
+        if( state != restart )
+            while( xpro != NULL ) {
                 pro = xpro;
                 xpro = NULL;
                 Clear( rx->follow );
-                for( i = 0; i < x->kersize; ++i ) {
-                    ry = &x->name.state[i]->redun[at[i]];
+                for( i = 0; i < state->kersize; ++i ) {
+                    ry = &state->name.state[i]->redun[at[i]];
                     if( ry->pro == pro ) {
                         Union( rx->follow, ry->follow );
                         ++(at[i]);
@@ -95,20 +108,20 @@ static AddError()
                 ++rx;
             }
         xsym = NULL;
-        for( i = 0; i < x->kersize; ++i ) {
+        for( i = 0; i < state->kersize; ++i ) {
             at[i] = 0;
-            sym = x->name.state[i]->trans->sym;
+            sym = state->name.state[i]->trans->sym;
             if( sym > xsym ) {
                 xsym = sym;
             }
         }
         tx = trans;
-        while( xsym ) {
+        while( xsym != NULL ) {
             sym = xsym;
             xsym = NULL;
             t = s;
-            for( i = 0; i < x->kersize; ++i ) {
-                ty = &x->name.state[i]->trans[at[i]];
+            for( i = 0; i < state->kersize; ++i ) {
+                ty = &state->name.state[i]->trans[at[i]];
                 if( ty->sym == sym ) {
                     if( !IsMarked( *ty->state ) ) {
                         Mark( *ty->state );
@@ -138,8 +151,8 @@ static AddError()
             tx->state = AddErrState( &errsym->enter, s, t );
             ++tx;
         }
-        x->trans = CALLOC( tx - trans + 1, a_shift_action );
-        memcpy( x->trans, trans, ((char *) tx) - ((char *) trans) );
+        state->trans = CALLOC( tx - trans + 1, a_shift_action );
+        memcpy( state->trans, trans, (char *)tx - (char *)trans );
         if( Empty( conflict ) ) {
             redun->pro = NULL;
             i = 0;
@@ -154,15 +167,15 @@ static AddError()
                 ++i;
             }
         }
-        x->redun = CALLOC( i + 1, a_reduce_action );
+        state->redun = CALLOC( i + 1, a_reduce_action );
         if( i > 0 ) {
             rset = AllocSet( i );
             rx = redun;
             while( i > 0 ) {
                 if( rx->pro != NULL ) {
                     --i;
-                    x->redun[i].pro = rx->pro;
-                    x->redun[i].follow = rset;
+                    state->redun[i].pro = rx->pro;
+                    state->redun[i].follow = rset;
                     Assign( rset, rx->follow );
                     rset += GetSetSize( 1 );
                 }
@@ -177,15 +190,3 @@ static AddError()
     FREE( at );
 }
 
-static a_state *AddErrState( enter, s, t )
-  a_state **enter, **s, **t;
-{
-    if( t == s ) {
-        return( NULL );
-    } else if( t == s + 1 ) {
-        Unmark( **s );
-        return( *s );
-    } else {
-        return( AddState( enter, s, t ) );
-    }
-}

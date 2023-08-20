@@ -53,7 +53,7 @@ static a_state *addState( a_state **state, an_item **s, an_item **q, a_state *pa
         Mark( *p );
     }
     kersize = (unsigned short)( q - s );
-    for( ; *state != NULL; state = &(*state)->same_state_sym ) {
+    for( ; *state != NULL; state = &(*state)->sym_next ) {
         if( (*state)->kersize == kersize ) {
             p = (*state)->items;
             for( t = p + kersize; p != t; ++p ) {
@@ -137,7 +137,7 @@ static bool itemlt( void *_a, void *_b )
     }
 }
 
-static void Complete( a_state *x, an_item **s )
+static void Complete( a_state *state, an_item **s )
 {
     an_item         **p, **q;
     a_reduce_action *rx;
@@ -146,7 +146,7 @@ static void Complete( a_state *x, an_item **s )
     index_n         n;
 
     q = s;
-    for( p = x->items; *p != NULL; ++p ) {
+    for( p = state->items; *p != NULL; ++p ) {
         Mark( *p );
         *q++ = *p;
     }
@@ -170,12 +170,12 @@ static void Complete( a_state *x, an_item **s )
     n = (index_n)( p - s );
     nredun += n;
     rx = CALLOC( n + 1, a_reduce_action );
-    x->redun = rx;
+    state->redun = rx;
     for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
         (rx++)->pro = (*p)[1].p.pro;
     }
     if( p == q ) {
-        x->trans = CALLOC( 1, a_shift_action );
+        state->trans = CALLOC( 1, a_shift_action );
     } else {
         n = 1;
         s = p;
@@ -185,7 +185,7 @@ static void Complete( a_state *x, an_item **s )
             }
         }
         tx = CALLOC( n + 1, a_shift_action );
-        x->trans = tx;
+        state->trans = tx;
         do {
             tx->sym = (*s)->p.sym;
             if( tx->sym->pro != NULL ) {
@@ -194,7 +194,7 @@ static void Complete( a_state *x, an_item **s )
             for( p = s; p < q && (*p)->p.sym == tx->sym; ++p ) {
                 ++*p;
             }
-            tx->state = addState( &tx->sym->state, s, p, x );
+            tx->state = addState( &tx->sym->state, s, p, state );
             s = p;
             ++tx;
         } while( s < q );
@@ -203,7 +203,7 @@ static void Complete( a_state *x, an_item **s )
 
 void lr0( void )
 {
-    a_state     *x;
+    a_state     *state;
     an_item     **s;
 
     nvtrans = 0;
@@ -212,8 +212,8 @@ void lr0( void )
     statetail = &statelist;
     *s = startsym->pro->items;
     startstate = addState( &startsym->state, s, s + 1, NULL );
-    for( x = statelist; x != NULL; x = x->next ) {
-        Complete( x, s );
+    for( state = statelist; state != NULL; state = state->next ) {
+        Complete( state, s );
     }
     errstate = addState( &errsym->state, s, s, NULL );
     Complete( errstate, s );

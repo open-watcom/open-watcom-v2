@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +130,7 @@ void genobj( FILE *fp )
     short *p;
     set_size *mp;
     a_pro *pro;
-    a_state *x;
+    a_state *state;
     a_reduce_action *rx;
     a_reduce_action *default_reduction;
     a_shift_action *tx;
@@ -157,14 +158,14 @@ void genobj( FILE *fp )
     table = NULL;
     for( i = 0; i < nstate; ++i ) {
         state_base[i] = base;
-        x = statetab[i];
-        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
-            add_table( sym->idx, ACTION_SHIFT | tx->state->sidx );
+        state = statetab[i];
+        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
+            add_table( sym->idx, ACTION_SHIFT | tx->state->idx );
             ++base;
         }
         default_reduction = NULL;
         max_savings = 0;
-        for( rx = x->redun; rx->pro != NULL; ++rx ) {
+        for( rx = state->redun; rx->pro != NULL; ++rx ) {
             if( (savings = Members( rx->follow ) - setmembers) == 0 )
                 continue;
             if( max_savings < savings ) {
@@ -193,7 +194,7 @@ void genobj( FILE *fp )
     printf( "avg: %u max: %u\n", sum / nstate, max );
     dump_define( fp, "YYANYTOKEN", any_token );
     dump_define( fp, "YYEOFTOKEN", eofsym->token );
-    dump_define( fp, "YYSTART", startstate->sidx );
+    dump_define( fp, "YYSTART", startstate->idx );
     begin_table( fp, "YYACTTYPE", "yybasetab" );
     for( i = 0; i < nstate; ++i ) {
         puttab( fp, FITS_A_WORD, state_base[i] );

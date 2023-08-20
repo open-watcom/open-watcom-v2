@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ void genobj( FILE *fp )
     a_sym *sym;
     a_pro *pro;
     an_item *item;
-    a_state *x;
+    a_state *state;
     a_shift_action *tx;
     a_reduce_action *rx;
     int i, j;
@@ -72,28 +72,28 @@ void genobj( FILE *fp )
 
     label = OPTENTRY( nstate - 1 );
 
-    emitins( JMP, TOKENTRY( startstate->sidx ) );
+    emitins( JMP, TOKENTRY( startstate->idx ) );
 
     target = CALLOC( nsym, short );
     for( i = 0; i < nsym; ++i )
         target[i] = DEFAULT;
     symbol = CALLOC( nsym, short );
     for( i = 0; i < nstate; ++i ) {
-        x = statetab[i];
+        state = statetab[i];
         q = symbol;
-        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             if( sym == eofsym ) {
                 action = ACCEPT;
             } else if( sym->idx < nterm ) {
-                action = TOKENTRY(tx->state->sidx);
+                action = TOKENTRY(tx->state->idx);
             } else {
-                action = OPTENTRY(tx->state->sidx);
+                action = OPTENTRY(tx->state->idx);
             }
             *q++ = sym->idx;
             target[sym->idx] = action;
         }
         max_savings = 0;
-        for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
             if( (savings = (mp = Members( rx->follow )) - setmembers) == 0 )
                 continue;
             action = PROENTRY( pro->pidx );
@@ -115,10 +115,10 @@ void genobj( FILE *fp )
             }
         }
 
-        emitins( LBL, TOKENTRY( x->sidx ) );
+        emitins( LBL, TOKENTRY( state->idx ) );
         emitins( SCAN, 0 );
-        emitins( LBL, OPTENTRY( x->sidx ) );
-        emitins( CALL, VBLENTRY( x->sidx ) );
+        emitins( LBL, OPTENTRY( state->idx ) );
+        emitins( CALL, VBLENTRY( state->idx ) );
         q = symbol;
         for( j = nterm; j < nsym; ++j ) {
             if( target[j] != DEFAULT ) {
@@ -131,7 +131,7 @@ void genobj( FILE *fp )
                 target[*p] = DEFAULT;
             }
         }
-        emitins( LBL, VBLENTRY( x->sidx ) );
+        emitins( LBL, VBLENTRY( state->idx ) );
 
         q = symbol;
         for( j = 0; j < nterm; ++j ) {

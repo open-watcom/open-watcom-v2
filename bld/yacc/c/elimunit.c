@@ -288,15 +288,15 @@ static a_sym *onlyOneReduction( a_state *state )
     return( save_pro->sym );
 }
 
-static void removeParent( a_state *child, a_state *parent )
+static void removeParent( a_state *state, a_state *parent )
 {
     a_parent **prev;
     a_parent *curr;
 
-    if( child->parents == NULL ) {
+    if( state->parents == NULL ) {
         return;
     }
-    prev = &(child->parents);
+    prev = &(state->parents);
     for( curr = *prev; curr != NULL; curr = curr->next ) {
         if( curr->state == parent ) {
             *prev = curr->next;
@@ -305,9 +305,9 @@ static void removeParent( a_state *child, a_state *parent )
         }
         prev = &(curr->next);
     }
-    if( child->parents == NULL ) {
+    if( state->parents == NULL ) {
         ++deadStates;
-        Dead( child );
+        Dead( state );
     }
 }
 

@@ -69,11 +69,11 @@ static void preamble( FILE *fp )
 static void prolog( FILE *fp, int i )
 {
     a_name              name;
-    a_state *           x;
+    a_state             *state;
 
     fprintf( fp, "\nint YYNEAR state%d( parse_stack * yysp, unsigned token )\n/*\n", i );
-    x = statetab[i];
-    for( name.item = x->name.item; *name.item != NULL; ++name.item ) {
+    state = statetab[i];
+    for( name.item = state->name.item; *name.item != NULL; ++name.item ) {
         showitem( fp, *name.item, " ." );
     }
     fprintf( fp, "*/\n{\n" );
@@ -154,9 +154,9 @@ static a_state * unique_shift( a_pro * reduced )
  * See if there is a unique shift when this state is reduced
  */
 {
-    a_state *           shift_to;
-    a_state *           test;
-    a_shift_action *    tx;
+    a_state             *shift_to;
+    a_state             *test;
+    a_shift_action      *tx;
     int                 i;
 
     shift_to = NULL;
@@ -202,7 +202,7 @@ static void reduce( FILE *fp, int production, int error )
         copyact( pro, "\t" );
 //        fprintf( fp, "\tactions( %d, yysp );\n", production );
         if( (shift_to = unique_shift( pro )) != NULL ) {
-            fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->sidx );
+            fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->idx );
         } else {
             fprintf( fp, "\t(*yysp[-1].state) ( yysp, %d );\n", pro->sym->token );
         }
@@ -318,7 +318,7 @@ void genobj( FILE *fp )
     set_size *mp;
     a_sym *sym;
     a_pro *pro;
-    a_state *x;
+    a_state *state;
     a_shift_action *tx;
     a_reduce_action *rx;
     int i, j, ntoken, dtoken, ptoken;
@@ -351,15 +351,15 @@ void genobj( FILE *fp )
         for( s = actions + ntoken; --s >= actions; ) {
             *s = error;
         }
-        x = statetab[i];
+        state = statetab[i];
         q = token;
-        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             tokval = sym->token;
             *q++ = tokval;
-            actions[tokval] = tx->state->sidx;
+            actions[tokval] = tx->state->idx;
         }
         max_savings = 0;
-        for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
             if( (savings = (mp = Members( rx->follow )) - setmembers) == 0 )
                 continue;
             redun = pro->pidx + nstate;
@@ -399,11 +399,11 @@ void genobj( FILE *fp )
             if( other[i] != error && other[i] != other[j] )
                 continue;
             savings = 0;
-            x = statetab[j];
+            state = statetab[j];
             p = test;
             q = test + ntoken;
-            for( tx = x->trans; (sym = tx->sym) != NULL; ++tx )
-                if( actions[sym->token] == tx->state->sidx ) {
+            for( tx = state->trans; (sym = tx->sym) != NULL; ++tx )
+                if( actions[sym->token] == tx->state->idx ) {
                     ++savings;
                     *p++ = sym->token;
                 } else {
@@ -411,7 +411,7 @@ void genobj( FILE *fp )
                         --savings;
                     *--q = sym->token;
                 }
-            for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+            for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
                 if( (redun = pro->pidx + nstate) == other[j] )
                     redun = error;
                 redun = pro->pidx + nstate;
@@ -490,8 +490,8 @@ void genobj( FILE *fp )
     putnum( fp, "YYNOACTION", error - nstate + dtoken );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYERR", errstate->sidx );
-    fprintf( fp, "#define YYSTART   state%d\n", startstate->sidx );
-    fprintf( fp, "#define YYSTOP    state%d\n", eofsym->enter->sidx );
+    putnum( fp, "YYERR", errstate->idx );
+    fprintf( fp, "#define YYSTART   state%d\n", startstate->idx );
+    fprintf( fp, "#define YYSTOP    state%d\n", eofsym->state->idx );
     printf( "%u states, %u with defaults, %u with parents\n", nstate, num_default, num_parent );
 }

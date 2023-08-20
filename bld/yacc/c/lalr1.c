@@ -79,11 +79,11 @@ static void Reads( a_look *x )
 
 static void CalcReads( void )
 {
-    a_state     *x;
+    a_state     *state;
     a_look      *p;
 
-    for( x = statelist; x != NULL; x = x->next ) {
-        for( p = x->look; p->trans != NULL; ++p ) {
+    for( state = statelist; state != NULL; state = state->next ) {
+        for( p = state->look; p->trans != NULL; ++p ) {
             if( p->depth == 0 ) {
                 Reads( p );
             }
@@ -155,7 +155,8 @@ static void Includes( a_look *x )
 
 static void CalcIncludes( void )
 {
-    a_state         *x, *y;
+    a_state         *state;
+    a_state         *state1;
     a_shift_action  *tx;
     a_look          *p, *q;
     a_sym           *sym;
@@ -163,8 +164,8 @@ static void CalcIncludes( void )
     an_item         *nullable, *item;
     a_link          *free;
 
-    for( x = statelist; x != NULL; x = x->next ) {
-        for( p = x->look; p->trans != NULL; ++p ) {
+    for( state = statelist; state != NULL; state = state->next ) {
+        for( p = state->look; p->trans != NULL; ++p ) {
             p->depth = 0;
             for( pro = p->trans->sym->pro; pro != NULL; pro = pro->next ) {
                 nullable = pro->items;
@@ -173,15 +174,15 @@ static void CalcIncludes( void )
                         nullable = item;
                     }
                 }
-                y = x;
+                state1 = state;
                 for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
                     if( sym->pro == NULL ) {
-                        for( tx = y->trans; tx->sym != sym; ) {
+                        for( tx = state1->trans; tx->sym != sym; ) {
                             ++tx;
                         }
-                        y = tx->state;
+                        state1 = tx->state;
                     } else {
-                        for( q = y->look; q->trans->sym != sym; ) {
+                        for( q = state1->look; q->trans->sym != sym; ) {
                             ++q;
                         }
                         if( item >= nullable ) {
@@ -190,14 +191,14 @@ static void CalcIncludes( void )
                             free->next = q->include;
                             q->include = free;
                         }
-                        y = q->trans->state;
+                        state1 = q->trans->state;
                     }
                 }
             }
         }
     }
-    for( x = statelist; x != NULL; x = x->next ) {
-        for( p = x->look; p->trans != NULL; ++p ) {
+    for( state = statelist; state != NULL; state = state->next ) {
+        for( p = state->look; p->trans != NULL; ++p ) {
             if( p->depth == 0 ) {
                 Includes( p );
             }
@@ -207,7 +208,8 @@ static void CalcIncludes( void )
 
 static void Lookback( void )
 {
-    a_state         *x, *y;
+    a_state         *state;
+    a_state         *state1;
     a_shift_action  *tx;
     a_look          *p;
     a_reduce_action *rx;
@@ -215,17 +217,17 @@ static void Lookback( void )
     a_pro           *pro;
     an_item         *item;
 
-    for( x = statelist; x != NULL; x = x->next ) {
-        for( p = x->look; p->trans != NULL; ++p ) {
+    for( state = statelist; state != NULL; state = state->next ) {
+        for( p = state->look; p->trans != NULL; ++p ) {
             for( pro = p->trans->sym->pro; pro != NULL; pro = pro->next ) {
-                y = x;
+                state1 = state;
                 for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
-                    for( tx = y->trans; tx->sym != sym; ) {
+                    for( tx = state1->trans; tx->sym != sym; ) {
                         ++tx;
                     }
-                    y = tx->state;
+                    state1 = tx->state;
                 }
-                for( rx = y->redun; rx->pro != NULL && rx->pro != pro; ) {
+                for( rx = state1->redun; rx->pro != NULL && rx->pro != pro; ) {
                     ++rx;
                 }
                 Union( rx->follow, p->follow );
