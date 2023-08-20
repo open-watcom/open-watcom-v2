@@ -79,8 +79,8 @@ static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
          */
         return;
     }
-    ambig_state = ambig->state->sidx;
-    ambig_shift = ambig->shift->sidx;
+    ambig_state = ambig->state->idx;
+    ambig_shift = ambig->shift_state->idx;
     if( base == NULL ) {
         ambig_state_based = ambig_state;
         ambig_shift_based = ambig_shift;

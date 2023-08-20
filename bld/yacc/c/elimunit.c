@@ -42,7 +42,7 @@ static unsigned changeOccurred;
 static unsigned deadStates;
 
 #if 0
-void dumpInternalState( a_state *x )
+void dumpInternalState( a_state *state )
 {
     a_parent        *parent;
     a_shift_action  *tx;
@@ -51,11 +51,11 @@ void dumpInternalState( a_state *x )
     set_size        *mp;
     an_item         **item;
 
-    printf( "state %d: %p (%u)\n", x->sidx, x, x->kersize );
+    printf( "state %d: %p (%u)\n", state->idx, state, state->kersize );
     printf( "  parent states:" );
     col = 4;
-    for( parent = x->parents; parent != NULL; parent = parent->next ) {
-        printf( " %d(%p)", parent->state->sidx, parent->state );
+    for( parent = state->parents; parent != NULL; parent = parent->next ) {
+        printf( " %d(%p)", parent->state->idx, parent->state );
         --col;
         if( col == 0 ) {
             printf( "\n" );
@@ -63,23 +63,23 @@ void dumpInternalState( a_state *x )
         }
     }
     printf( "\n" );
-    for( item = x->items; *item != NULL; ++item ) {
+    for( item = state->items; *item != NULL; ++item ) {
         showitem( *item, " ." );
     }
     printf( "actions:" );
     col = 8;
-    for( tx = x->trans; tx->sym != NULL; ++tx ) {
+    for( tx = state->trans; tx->sym != NULL; ++tx ) {
         new_col = col + 1 + strlen( tx->sym->name ) + 1 + 1 + 3;
         if( new_col > 79 ) {
             putchar('\n');
             new_col -= col;
         }
         col = new_col;
-        printf( " %s:s%03d", tx->sym->name, tx->state->sidx );
+        printf( " %s:s%03d", tx->sym->name, tx->state->idx );
     }
     putchar( '\n' );
     col = 0;
-    for( rx = x->redun; rx->pro != NULL; ++rx ) {
+    for( rx = state->redun; rx->pro != NULL; ++rx ) {
         for( mp = Members( rx->follow ); mp-- != setmembers; ) {
             new_col = col + 1 + strlen( symtab[*mp]->name );
             if( new_col > 79 ) {
@@ -132,7 +132,7 @@ static a_pro *analyseParents( a_state *state, a_pro *pro, a_word *reduce_set )
         parent_state = parent->state;
         new_state = findNewShiftState( parent_state, old_lhs );
         if( new_state == NULL ) {
-            printf( "error! %u %s %u\n", state->sidx, old_lhs->name, parent_state->sidx );
+            printf( "error! %u %s %u\n", state->idx, old_lhs->name, parent_state->idx );
             exit(1);
         }
         for( raction = new_state->redun; (test_pro = raction->pro) != NULL; ++raction ) {

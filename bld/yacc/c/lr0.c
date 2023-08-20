@@ -43,7 +43,7 @@ index_n nredun;
 
 a_state **statetab, *statelist, **statetail, *startstate, *errstate;
 
-static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *parent )
+static a_state *addState( a_state **state, an_item **s, an_item **q, a_state *parent )
 {
     a_parent        *add_parent;
     an_item         **p, **t;
@@ -53,9 +53,9 @@ static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *pa
         Mark( *p );
     }
     kersize = (unsigned short)( q - s );
-    for( ; *enter != NULL; enter = &(*enter)->same_enter_sym ) {
-        if( (*enter)->kersize == kersize ) {
-            p = (*enter)->items;
+    for( ; *state != NULL; state = &(*state)->same_state_sym ) {
+        if( (*state)->kersize == kersize ) {
+            p = (*state)->items;
             for( t = p + kersize; p != t; ++p ) {
                 if( !IsMarked( *p ) ) {
                     break;
@@ -69,22 +69,22 @@ static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *pa
     for( p = s; p != q; ++p ) {
         Unmark( *p );
     }
-    if( *enter == NULL ) {
-        *enter = CALLOC( 1, a_state );
-        *statetail = *enter;
-        statetail = &(*enter)->next;
-        (*enter)->kersize = kersize;
-        (*enter)->items = CALLOC( kersize + 1, an_item * );
-        memcpy( (*enter)->items, s, kersize * sizeof( an_item * ) );
-        (*enter)->sidx = nstate++;
+    if( *state == NULL ) {
+        *state = CALLOC( 1, a_state );
+        *statetail = *state;
+        statetail = &(*state)->next;
+        (*state)->kersize = kersize;
+        (*state)->items = CALLOC( kersize + 1, an_item * );
+        memcpy( (*state)->items, s, kersize * sizeof( an_item * ) );
+        (*state)->idx = nstate++;
     }
     if( parent != NULL ) {
         add_parent = CALLOC( 1, a_parent );
         add_parent->state = parent;
-        add_parent->next = (*enter)->parents;
-        (*enter)->parents = add_parent;
+        add_parent->next = (*state)->parents;
+        (*state)->parents = add_parent;
     }
-    return( *enter );
+    return( *state );
 }
 
 static void Sort( void **vec, unsigned n, bool (*lt)( void *, void * ) )
@@ -194,7 +194,7 @@ static void Complete( a_state *x, an_item **s )
             for( p = s; p < q && (*p)->p.sym == tx->sym; ++p ) {
                 ++*p;
             }
-            tx->state = addState( &tx->sym->enter, s, p, x );
+            tx->state = addState( &tx->sym->state, s, p, x );
             s = p;
             ++tx;
         } while( s < q );
@@ -211,40 +211,40 @@ void lr0( void )
     s = CALLOC( nitem, an_item * );
     statetail = &statelist;
     *s = startsym->pro->items;
-    startstate = addState( &startsym->enter, s, s + 1, NULL );
+    startstate = addState( &startsym->state, s, s + 1, NULL );
     for( x = statelist; x != NULL; x = x->next ) {
         Complete( x, s );
     }
-    errstate = addState( &errsym->enter, s, s, NULL );
+    errstate = addState( &errsym->state, s, s, NULL );
     Complete( errstate, s );
     FREE( s );
 }
 
 void SetupStateTable( void )
 {
-    a_state     *x;
+    a_state     *state;
 
     FREE( statetab );
     statetab = CALLOC( nstate, a_state * );
-    for( x = statelist; x != NULL; x = x->next ) {
-        statetab[x->sidx] = x;
+    for( state = statelist; state != NULL; state = state->next ) {
+        statetab[state->idx] = state;
     }
 }
 
 void RemoveDeadStates( void )
 {
-    index_n     i;
-    index_n     j;
-    a_state     *x;
+    index_n     old_state_idx;
+    index_n     new_state_idx;
+    a_state     *state;
 
-    j = 0;
-    for( i = 0; i < nstate; ++i ) {
-        x = statetab[i];
-        if( ! IsDead( x ) ) {
-            x->sidx = j;
-            statetab[j] = x;
-            ++j;
+    new_state_idx = 0;
+    for( old_state_idx = 0; old_state_idx < nstate; old_state_idx++ ) {
+        state = statetab[old_state_idx];
+        if( ! IsDead( state ) ) {
+            state->idx = new_state_idx;
+            statetab[new_state_idx] = state;
+            new_state_idx++;
         }
     }
-    nstate = j;
+    nstate = new_state_idx;
 }

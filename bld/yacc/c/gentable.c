@@ -235,7 +235,7 @@ void genobj( FILE *fp )
         q = tokens;
         for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
             *q++ = sym->token;
-            actions[sym->token] = tx->state->sidx;
+            actions[sym->token] = tx->state->idx;
         }
         max_savings = 0;
         for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
@@ -277,7 +277,7 @@ void genobj( FILE *fp )
                 p = test;
                 q = test + ntoken;
                 for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
-                    if( actions[sym->token] == tx->state->sidx ) {
+                    if( actions[sym->token] == tx->state->idx ) {
                        *p++ = sym->token;
                     } else {
                        *--q = sym->token;
@@ -365,9 +365,9 @@ void genobj( FILE *fp )
         putnum( fp, "YYPARTOKEN", ptoken );
         putnum( fp, "YYDEFTOKEN", dtoken );
     }
-    putnum( fp, "YYSTART", base[startstate->sidx] );
-    putnum( fp, "YYSTOP", base[eofsym->enter->sidx] );
-    putnum( fp, "YYERR", base[errstate->sidx] );
+    putnum( fp, "YYSTART", base[startstate->idx] );
+    putnum( fp, "YYSTOP", base[eofsym->state->idx] );
+    putnum( fp, "YYERR", base[errstate->idx] );
     putnum( fp, "YYUSED", used );
 
     if( compactflag ) {

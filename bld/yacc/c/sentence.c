@@ -171,7 +171,7 @@ static void flushStack( traceback **h )
 
 static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned count )
 {
-    index_n             sidx;
+    index_n             sym_idx;
     a_sym               *chk_sym;
     a_state             *state;
     a_state             *top;
@@ -198,9 +198,9 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
             }
             break;
         }
-        sidx = sym->idx;
+        sym_idx = sym->idx;
         for( raction = top->redun; raction->pro != NULL; ++raction ) {
-            if( IsBitSet( raction->follow, sidx ) ) {
+            if( IsBitSet( raction->follow, sym_idx ) ) {
                 performReduce( h, raction->pro );
                 break;
             }
@@ -296,59 +296,59 @@ static traceback *makeReversedCopy( traceback *top )
 }
 
 
-static traceback *getStatePrefix( a_state *s, a_state *initial_parent )
+static traceback *getStatePrefix( a_state *state, a_state *initial_parent )
 {
     traceback       *list;
     a_parent        *parent;
-    a_state         *min;
-    a_state         *min_check;
+    a_state         *min_state;
+    a_state         *min_state_check;
     a_shift_action  *t;
 
     list = NULL;
-    for( ; (parent = s->parents) != NULL; s = min ) {
+    for( ; (parent = state->parents) != NULL; state = min_state ) {
         if( initial_parent != NULL ) {
-            min = initial_parent;
+            min_state = initial_parent;
             initial_parent = NULL;
         } else {
-            min = parent->state;
+            min_state = parent->state;
             for( parent = parent->next; parent != NULL; parent = parent->next ) {
-                min_check = parent->state;
-                if( min_check->sidx < min->sidx ) {
-                    min = min_check;
+                min_state_check = parent->state;
+                if( min_state->idx > min_state_check->idx ) {
+                    min_state = min_state_check;
                 }
             }
         }
-        for( t = min->trans; t->sym != NULL; ++t ) {
-            if( t->state == s ) {
-                pushTrace( &list, s, t->sym );
+        for( t = min_state->trans; t->sym != NULL; ++t ) {
+            if( t->state == state ) {
+                pushTrace( &list, state, t->sym );
             }
         }
     }
-    pushTrace( &list, s, NULL );
+    pushTrace( &list, state, NULL );
     return( list );
 }
 
-void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
-/************************************************************************/
+void ShowSentence( a_state *state, a_sym *sym, a_pro *pro, a_state *to_state )
+/****************************************************************************/
 {
     traceback   *list;
     traceback   *parse_stack;
     traceback   *token_stack;
     a_parent    *parent;
 
-    for( parent = s->parents; parent != NULL; parent = parent->next ) {
+    for( parent = state->parents; parent != NULL; parent = parent->next ) {
         if( to_state != NULL ) {
             /*
              * S/R conflict
              */
-            printf( "Sample sentence(s) for shift to state %u:\n", to_state->sidx );
+            printf( "Sample sentence(s) for shift to state %u:\n", to_state->idx );
         } else {
             /*
              * R/R conflict
              */
             printf( "Sample sentence(s) for reduce of rule %u:\n", pro->pidx );
         }
-        list = getStatePrefix( s, parent->state );
+        list = getStatePrefix( state, parent->state );
         parse_stack = makeReversedCopy( list );
         token_stack = NULL;
         if( to_state != NULL ) {

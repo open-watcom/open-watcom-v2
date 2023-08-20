@@ -450,7 +450,7 @@ void GenFastTables( FILE *fp )
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro != NULL )
                 continue;
-            state_idx = saction->state->sidx;
+            state_idx = saction->state->idx;
             if( saction->is_default ) {
                 defaction[i] = state_idx;
                 continue;
@@ -496,7 +496,7 @@ void GenFastTables( FILE *fp )
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro == NULL )
                 continue;
-            state_actions[sym->token] = saction->state->sidx;
+            state_actions[sym->token] = saction->state->idx;
         }
     }
     mapping = orderActionVectors( all_actions, ntoken_all );
@@ -518,9 +518,9 @@ void GenFastTables( FILE *fp )
     putnum( fp, "YYNOACTION", 0 );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYSTART", startstate->sidx );
-    putnum( fp, "YYSTOP", eofsym->enter->sidx );
-    putnum( fp, "YYERR", errstate->sidx );
+    putnum( fp, "YYSTART", startstate->idx );
+    putnum( fp, "YYSTOP", eofsym->state->idx );
+    putnum( fp, "YYERR", errstate->idx );
     putnum( fp, "YYUSED", nstate );
     if( keyword_id_low != 0 && default_shiftflag ) {
         putnum( fp, "YYKEYWORD_ID_LOW", keyword_id_low );

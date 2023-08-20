@@ -581,7 +581,7 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
     ambig->sym = sym;
     ambig->id = id;
     ambig->state = NULL;
-    ambig->shift = NULL;
+    ambig->shift_state = NULL;
     ambig->thread = NULL;
     ambig->reduce = 0;
     ambiguousstates = ambig;
