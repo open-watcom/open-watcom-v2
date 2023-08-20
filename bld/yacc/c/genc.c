@@ -79,13 +79,13 @@ static void prolog( FILE *fp, int i )
     fprintf( fp, "*/\n{\n" );
 }
 
-static void copyact( a_pro * pro, char * indent )
+static void copyact( a_pro *pro, char *indent )
 {
     char        *s;
     char        *type;
     int         i;
-    a_sym *     lhs;
-    an_item *   rhs;
+    a_sym       *lhs;
+    an_item     *rhs;
     unsigned    n;
     int         only_default_type;
 
@@ -149,8 +149,8 @@ static void copyact( a_pro * pro, char * indent )
     fprintf( fp, "\n%s};\n", indent );
 }
 
-static a_state * unique_shift( a_pro * reduced )
-/***********************************************
+static a_state *unique_shift( a_pro *reduced )
+/*********************************************
  * See if there is a unique shift when this state is reduced
  */
 {
@@ -184,9 +184,9 @@ static a_state * unique_shift( a_pro * reduced )
 static void reduce( FILE *fp, int production, int error )
 {
     int                 plen;
-    an_item *           item;
-    a_pro *             pro;
-    a_state *           shift_to;
+    an_item             *item;
+    a_pro               *pro;
+    a_state             *shift_to;
 
     if( production == error ) {
         fprintf( fp, "\treturn( ERROR );\n" );
