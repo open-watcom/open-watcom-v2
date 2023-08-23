@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '0 0 1 * *'
 # Run monthly, at 00:00 on the 1st day of month.
+  workflow_dispatch:
 
 jobs:
   del_runs:
