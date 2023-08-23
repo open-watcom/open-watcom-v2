@@ -16,5 +16,5 @@ jobs:
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
-          retain_days: 60
-          keep_minimum_runs: 60
+          retain_days: 45
+          keep_minimum_runs: 45
