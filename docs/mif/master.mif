@@ -265,7 +265,7 @@ $(wikidir):
 
 .rtf.hlp :
     @%make compile_hpj_win
-    $(whc) $[@
+    $(whc) $*.hpj
 
 {$(root_books)}.gml.rtf &
 {$(root_books)}.gml.gh :
@@ -645,7 +645,7 @@ compile_hpj_win : .PROCEDURE
     @%append $*.hpj CONTENTS=table_of_contents
     @%append $*.hpj Title=$($^&_book_title) Help
     @%append $*.hpj COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved.
-    @%append $*.hpj BMROOT=$($^&_book_bmroot)
+    @%append $*.hpj BMROOT=$($^&_book_bmroot:/=\)
     @%append $*.hpj OLDKEYPHRASE=NO
     @%append $*.hpj ROOT=.
     @%append $*.hpj [Config]
