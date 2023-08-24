@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,19 +133,11 @@ static const unsigned_8 MgrHdlSize[] = {
 };
 
 char DIPDefaults[] = {
-#ifdef USE_FILENAME_VERSION
-    "dwarf"  QUOTED( USE_FILENAME_VERSION ) "\0"
-    "watcom" QUOTED( USE_FILENAME_VERSION ) "\0"
-    "codevi" QUOTED( USE_FILENAME_VERSION ) "\0"
-    "mapsym" QUOTED( USE_FILENAME_VERSION ) "\0"
-    "export" QUOTED( USE_FILENAME_VERSION ) "\0"
-#else
     "dwarf\0"
     "watcom\0"
     "codeview\0"
     "mapsym\0"
     "export\0"
-#endif
     "\0"
 };
 

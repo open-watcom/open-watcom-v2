@@ -106,36 +106,19 @@
     #error Extender and helper names not defined
   #endif
 
-  #ifdef USE_FILENAME_VERSION
-    #if defined(ACAD)
-      #define HELPNAME      ""
-    #elif defined(PHARLAP)
-      #define HELPNAME      "PLSHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
-      #define HELPNAME_DS   "PEDHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
-      #define HELPNAME_NS   "PENHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
-    #elif defined(DOS4G)
-      /* name must be RSIHELP, it is checked by DOS4G extender */
-      #define HELPNAME      "RSIHELP.EXP"
-    #elif defined(CAUSEWAY)
-      #define HELPNAME      "CWHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
-    #elif defined(HX)
-      #define HELPNAME      "HXHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
-    #endif
-  #else
-    #if defined(ACAD)
-      #define HELPNAME      ""
-    #elif defined(PHARLAP)
-      #define HELPNAME      "PLSHELP.EXP"
-      #define HELPNAME_DS   "PEDHELP.EXP"
-      #define HELPNAME_NS   "PENHELP.EXP"   /* not supported yet */
-    #elif defined(DOS4G)
-      /* name must be RSIHELP, it is checked by DOS4G extender */
-      #define HELPNAME      "RSIHELP.EXP"
-    #elif defined(CAUSEWAY)
-      #define HELPNAME      "CWHELP.EXE"
-    #elif defined(HX)
-      #define HELPNAME      "HXHELP.EXE"
-    #endif
+  #if defined(ACAD)
+    #define HELPNAME      ""
+  #elif defined(PHARLAP)
+    #define HELPNAME      "PLSHELP.EXP"
+    #define HELPNAME_DS   "PEDHELP.EXP"
+    #define HELPNAME_NS   "PENHELP.EXP"   /* not supported yet */
+  #elif defined(DOS4G)
+    /* name must be RSIHELP, it is checked by DOS4G extender */
+    #define HELPNAME      "RSIHELP.EXP"
+  #elif defined(CAUSEWAY)
+    #define HELPNAME      "CWHELP.EXE"
+  #elif defined(HX)
+    #define HELPNAME      "HXHELP.EXE"
   #endif
 
     #define MK_LINEAR(p)    ( ( (long)_FP_SEG( (void __far *)(p) ) << 4 ) + _FP_OFF( (void __far *)(p) ) )

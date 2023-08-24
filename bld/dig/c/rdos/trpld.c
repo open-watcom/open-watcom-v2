@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,20 +78,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             have_ext = false;
             break;
         case '.':
-#ifdef USE_FILENAME_VERSION
-            *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-            *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-#endif
             have_ext = true;
             break;
         }
         *p++ = chr;
     }
     if( !have_ext ) {
-#ifdef USE_FILENAME_VERSION
-        *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-        *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-#endif
         *p++ = '.';
         *p++ = 'd';
         *p++ = 'l';

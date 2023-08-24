@@ -137,10 +137,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
     }
 #endif
-#ifdef USE_FILENAME_VERSION
-    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-#endif
     *p = '\0';
 #ifndef _M_I86
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"

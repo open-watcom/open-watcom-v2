@@ -87,8 +87,7 @@ eng_objs = &
     $(_subdir_)dbgupdt.obj &
     $(_subdir_)symcomp.obj &
     $(_subdir_)litwdeng.obj &
-    $(_subdir_)dbgcapt.obj &
-    $(_subdir_)autoenv.obj
+    $(_subdir_)dbgcapt.obj
 
 eng_objs_dos386 = &
     $(_subdir_)dsxfork.obj &

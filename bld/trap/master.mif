@@ -109,11 +109,6 @@ srv_prefix = $(srv)
 ! ifndef name
 name = std
 ! endif
-! ifndef test
-!  ifdef %OWUSE_FILENAME_VERSION
-name = $(name)$(bld_ver)
-!  endif
-! endif
 !else ifdef name
 !else ifeq which SERVER
 ! ifdef remote_link
@@ -124,19 +119,9 @@ name = $(srv_prefix)serv
 !  endif
 ! else
 name = $(srv_prefix)help
-!  ifndef test
-!   ifdef %OWUSE_FILENAME_VERSION
-name = $(srv_prefix)hel$(bld_ver)
-!   endif
-!  endif
 ! endif
 !else
 name = $(srv)
-! ifndef test
-!  ifdef %OWUSE_FILENAME_VERSION
-name = $(srv)$(bld_ver)
-!  endif
-! endif
 !endif
 
 !ifdef test
@@ -162,9 +147,6 @@ dig_arch = $(target_cpu)
 # cflags stuff
 ###############
 extra_cpp_flags = -D$(which) $(dig_arch_cpp_flags) $(extra_cppflags)
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE

@@ -4,17 +4,10 @@ proj_name = wd_ssl
 
 !include cproj.mif
 
-!ifdef %OWUSE_FILENAME_VERSION
-fortran_prs = fortra$(bld_ver).prs
-cpp_prs     = cpp$(bld_ver).prs
-c_prs       = c$(bld_ver).prs
-java_prs    = java$(bld_ver).prs
-!else
 fortran_prs = fortran.prs
 cpp_prs     = cpp.prs
 c_prs       = c.prs
 java_prs    = java.prs
-!endif
 
 prs_list = &
     $(fortran_prs) &

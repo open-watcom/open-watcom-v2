@@ -14,22 +14,7 @@ dip_nofpu = 1
 sys_dll = 1
 !endif
 
-!ifdef %OWUSE_FILENAME_VERSION
-dllname_codeview = codevi$(bld_ver)
-dllname_dwarf    = dwarf$(bld_ver)
-dllname_export   = export$(bld_ver)
-dllname_hllcv    = hllcv$(bld_ver)
-dllname_javavm   = javavm$(bld_ver)
-dllname_mapsym   = mapsym$(bld_ver)
-dllname_watcom   = watcom$(bld_ver)
-##############
-# add new module
-#dllname_skel     = skel$(bld_ver)
-##############
-dllname = $(dllname_$(dip_format))
-!else
 dllname = $(dip_format)
-!endif
 
 !include cproj.mif
 !include defrule.mif
@@ -48,9 +33,6 @@ dllname = $(dip_format)
 inc_dirs = -I"../h" $(dwarfr_inc_dirs) -I"$(lib_misc_dir)/h" $(extra_incs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = -DINSIDE_DIP $(extra_cppflags)
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
 
 extra_c_flags_i86 = -zc -zu
 

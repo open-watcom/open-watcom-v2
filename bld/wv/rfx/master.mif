@@ -25,9 +25,6 @@ dig_arch = $(host_cpu)
 inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h"
 
 extra_cpp_flags = -DBUILD_RFX
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
 
 #
 # aflags

@@ -73,9 +73,6 @@ mkinf_opt =-dIncl64=0
 langdat_keys = -k ntx64 -k lx64
 mkinf_opt =-dIncl64=1
 !endif
-!ifdef %OWUSE_FILENAME_VERSION
-langdat_keys += -k newdbg
-!endif
 
 #mkinf_opt_linux = -utf8
 

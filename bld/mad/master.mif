@@ -32,9 +32,6 @@ sys_dll = 1
 inc_dirs = -I. -I"../h" -I"../../h" -I"$(dig_dir)/h" $(dis_includes) $(extra_incs)
 
 extra_cpp_flags = $(dig_arch_cpp_flags)
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
 
 extra_c_flags_i86 = -zu
 extra_c_flags_win = -zc
@@ -57,11 +54,7 @@ extra_l_flags_dll_nt_axp  = op dosseg
 #
 # names
 #
-!ifdef %OWUSE_FILENAME_VERSION
-dlltarg_name = mad$(dig_arch)$(bld_ver)
-!else
 dlltarg_name = mad$(dig_arch)
-!endif
 
 verrc_dll = $(dlltarg_name)
 !include verrc.mif

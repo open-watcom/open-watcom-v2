@@ -7,10 +7,6 @@ set PROJDIR=<CWD>
 
 [ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ BLOCK .<OWUSE_FILENAME_VERSION>. .1. ]
-#=======================================
-    set PROJNAME=madppc<OWBLDVER>
-
 [ BLOCK .<WATCOMBOOT>. .1. ]
 #===========================
     [ INCLUDE "<OWROOT>/build/deflib.ctl" ]

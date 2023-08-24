@@ -43,7 +43,7 @@
 
 static char *AboutMessage[] = {
     "",
-    banner1t( "Execution Profiler" ),
+    banner1t( "Execution Profiler" STR_BITNESS ),
     banner1v( _WPROF_VERSION_ ),
     banner2,
     banner2a( 1987 ),
