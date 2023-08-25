@@ -149,7 +149,6 @@ char *FindHelpFile( char *fullname, const char *help_name )
     return( fullname );
 }
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
 size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
 /************************************************************************************************************************************/
 {
@@ -185,6 +184,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     return( len );
 }
 
+#if defined( __UNIX__ ) || defined( __DOS__ )
 FILE *DIGLoader( Open )( const char *filename )
 /*********************************************/
 {
