@@ -286,10 +286,10 @@ static void makeDTARFX( rfx_find *info, FINDBUF *findbuf )
     info->size = findbuf->cbFile;
 #if RFX_NAME_MAX < CCHMAXPATHCOMP
     strncpy( info->name, findbuf->achName, RFX_NAME_MAX );
-    info->name[RFX_NAME_MAX] = '\0';
+    info->name[RFX_NAME_MAX] = NULLCHAR;
 #else
     strncpy( info->name, findbuf->achName, CCHMAXPATHCOMP );
-    info->name[CCHMAXPATHCOMP] = '\0';
+    info->name[CCHMAXPATHCOMP] = NULLCHAR;
 #endif
 }
 

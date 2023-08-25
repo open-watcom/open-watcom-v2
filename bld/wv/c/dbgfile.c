@@ -747,7 +747,7 @@ static size_t MakeName( const char *path, const char *name, size_t nlen, char *r
     --rlen;     // save space for terminator
     len = 0;
     if( path != NULL ) {
-        while( len < rlen && *path != '\0' ) {
+        while( len < rlen && *path != NULLCHAR ) {
             *p++ = *path++;
             ++len;
         }
@@ -824,7 +824,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
             result_len = len;
         if( result_len > 0 )
             strncpy( result, p, result_len );
-        result[result_len] = '\0';
+        result[result_len] = NULLCHAR;
     }
     return( len );
 }

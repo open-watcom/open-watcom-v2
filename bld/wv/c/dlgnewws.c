@@ -89,11 +89,11 @@ static bool newSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_INIT_DIALOG:
         GUISetText( gui, CTL_EDIT, dlgnew->buff );
         GUISetFocus( gui, CTL_EDIT );
-        dlgnew->buff[0] = '\0';
+        dlgnew->buff[0] = NULLCHAR;
         return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
-        dlgnew->buff[0] = '\0';
+        dlgnew->buff[0] = NULLCHAR;
         switch( id ) {
         case CTL_OK:
             GUIDlgBuffGetText( gui, CTL_EDIT, dlgnew->buff, dlgnew->buff_len );
