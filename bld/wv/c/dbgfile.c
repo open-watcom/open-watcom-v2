@@ -733,7 +733,6 @@ void PathInit( void )
 #endif
 }
 
-#if defined( __DOS__ ) || defined( __UNIX__ )
 static size_t MakeName( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
 {
     char        *p;
@@ -830,6 +829,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     return( len );
 }
 
+#if defined( __DOS__ ) || defined( __UNIX__ )
 FILE *DIGLoader( Open )( const char *filename )
 {
     return( fopen( filename, "rb" ) );
