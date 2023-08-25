@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,4 +31,64 @@
 ****************************************************************************/
 
 
-// Nothing to do here
+#include <stdlib.h>
+#include <string.h>
+#include "digld.h"
+#include "servio.h"
+
+
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+/************************************************************************************************************************************/
+{
+    bool        has_ext;
+    bool        has_path;
+    char        *p;
+    char        trpfile[256];
+    char        c;
+    size_t      len;
+
+    /* unused parameters */ (void)ftype;
+
+    has_ext = false;
+    has_path = false;
+    p = trpfile;
+    while( name_len-- > 0 ) {
+        c = *name++;
+        *p++ = c;
+        switch( c ) {
+        case '.':
+            has_ext = true;
+            break;
+        case '/':
+        case '\\':
+            has_ext = false;
+                /* fall through */
+        case ':':
+            has_path = true;
+            break;
+        }
+    }
+    if( !has_ext ) {
+        *p++ = '.';
+        while( (*p++ = *defext++) != '\0' ) {
+            /* nothing to do */
+        }
+    }
+    *p = '\0';
+    p = trpfile;
+    if( !has_path ) {
+        _searchenv( trpfile, "PATH", RWBuff );
+        p = RWBuff;
+    }
+    len = strlen( p );
+    if( result_len > 0 ) {
+        result_len--;
+        if( result_len > len )
+            result_len = len;
+        if( result_len > 0 )
+            strncpy( result, p, result_len );
+        result[result_len] = '\0';
+    }
+    return( len );
+}
+
