@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +36,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "madregs.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /*
@@ -206,4 +210,34 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_
         break;
     }
     return( 0 );
+}
+
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+/************************************************************************************************************************************/
+{
+    const char  *ext;
+    char        filename[256];
+    pgroup2     pg;
+    size_t      len;
+
+    /* unused parameters */ (void)ftype;
+
+    len = 0;
+    if( result_len > 0 ) {
+        result_len--;
+        strncpy( filename, name, name_len );
+        filename[name_len] = '\0';
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        ext = pg.ext;
+        if( ext == NULL || *ext == '\0' ) {
+            ext = defext;
+        }
+        _makepath( filename, pg.drive, pg.dir, pg.fname, ext );
+        len = strlen( filename );
+        if( len > result_len )
+            len = result_len;
+        strncpy( result, filename, len );
+        result[len] = '\0';
+    }
+    return( len );
 }
