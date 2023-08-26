@@ -95,8 +95,8 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     trpname = parms;
     len = 0;
 #endif
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
