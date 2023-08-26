@@ -484,22 +484,23 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     FILE                *fp;
     trap_file_header    __far *head;
     char                filename[256];
-    char                *p;
-    char                chr;
+    const char          *trpname;
+    const char          *err;
+    size_t              len;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = filename;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    trpname = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        *p++ = chr;
+        len++;
     }
-    *p = '\0';
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, trpname, len, "trp", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
         return( buff );
     }
     sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
@@ -507,13 +508,11 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( fp == NULL ) {
         return( buff );
     }
-    p = ReadInTrap( fp );
+    buff[0] = '\0';
+    err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( p == NULL ) {
-        if( (p = SetTrapHandler()) != NULL || (p = CopyEnv()) != NULL ) {
-            strcpy( buff, p );
-        } else {
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    if( err == NULL ) {
+        if( (err = SetTrapHandler()) == NULL && (err = CopyEnv()) == NULL ) {
             head = EXTENDER_RM2PM( TrapMem.rm, 0 );
             if( head->sig == TRAP_SIGNATURE ) {
                 PMData->initfunc.s.offset = head->init;
@@ -528,11 +527,13 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                         ReqFunc = DoTrapAccess;
                         return( NULL );
                     }
-                    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
                 }
             }
+            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
+    if( buff[0] == '\0' )
+        strcpy( buff, err );
     KillTrap();
     return( buff );
 }

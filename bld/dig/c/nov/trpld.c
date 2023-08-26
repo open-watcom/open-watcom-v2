@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,15 +44,19 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char    chr;
+    const char  *trpname;
+    size_t      len;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    trpname = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
+        len++;
     }
     *trap_ver = TrapInit( parms, buff, trap_ver->remote );
     if( buff[0] == '\0' ) {

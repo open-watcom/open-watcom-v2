@@ -62,7 +62,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
         case '/':
         case '\\':
             has_ext = false;
-                /* fall through */
+            /* fall through */
         case ':':
             has_path = true;
             break;
@@ -71,7 +71,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     if( !has_ext ) {
         *p++ = '.';
         while( (*p++ = *defext++) != '\0' ) {
-            /* nothing to do */
+            ;   /* nothing to do */
         }
     }
     *p = '\0';

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,14 +105,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     char                *p;
     char                chr;
     trap_init_func      *init_func;
-    char                trpfile[CCHMAXPATH];
-#ifndef _M_I86
+    char                filename[CCHMAXPATH];
     char                trpname[CCHMAXPATH];
-#endif
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = trpfile;
+    p = trpname;
     for( ; (chr = *parms) != '\0'; parms++ ) {
         if( chr == TRAP_PARM_SEPARATOR ) {
             parms++;
@@ -120,41 +118,40 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         *p++ = chr;
     }
+    *p = '\0';
 #ifdef _M_I86
-    if( LOW( trpfile[0] ) == 's' && LOW( trpfile[1] ) == 't'
-      && LOW( trpfile[2] ) == 'd' && trpfile[3] == '\0' ) {
+    if( LOW( trpname[0] ) == 's' && LOW( trpname[1] ) == 't'
+      && LOW( trpname[2] ) == 'd' && trpname[3] == '\0' ) {
         unsigned        version;
         char            os2ver;
 
         DosGetVersion( (PUSHORT)&version );
         os2ver = version >> 8;
         if( os2ver >= 20 ) {
-            *p++ = '3';
-            *p++ = '2';
+            strcpy( trpname, "std32" );
         } else {
-            *p++ = '1';
-            *p++ = '6';
+            strcpy( trpname, "std16" );
         }
     }
 #endif
-    *p = '\0';
-#ifndef _M_I86
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy( trpname, trpfile );
+#ifdef _M_I86
+    strcat( trpname, ".DLL" );
+#else
     strcat( trpname, ".D32" );
-    _searchenv( trpname, "PATH", trpfile );
-    if( *trpfile == '\0' ) {
+#endif
+    _searchenv( trpname, "PATH", filename );
+    if( *filename == '\0' ) {
         sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
         return( buff );
     }
-#endif
-    if( LOAD_MODULE( trpfile, TrapFile ) ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
+    if( LOAD_MODULE( filename, TrapFile ) ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    buff[0] = '\0';
     if( GET_PROC_ADDRESS( TrapFile, 1, init_func )
       && GET_PROC_ADDRESS( TrapFile, 2, FiniFunc )
       && GET_PROC_ADDRESS( TrapFile, 3, ReqFunc ) ) {
@@ -170,9 +167,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( NULL );
             }
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         }
     }
+    if( buff[0] == '\0' )
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     KillTrap();
     return( buff );
 }

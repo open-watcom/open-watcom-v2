@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                trpfile[256];
+    char                filename[256];
     char                *p;
     char                chr;
     bool                have_ext;
@@ -90,7 +90,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
     have_ext = false;
-    p = trpfile;
+    p = filename;
     for( ; (chr = *parms) != '\0'; parms++ ) {
         if( chr == TRAP_PARM_SEPARATOR ) {
             parms++;
@@ -124,13 +124,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         toolhelp = 0;
     }
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    TrapFile = LoadLibrary( trpfile );
+    TrapFile = LoadLibrary( filename );
     SetErrorMode( prev );
     if( (UINT)TrapFile < 32 ) {
         TrapFile = 0;
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
+    buff[0] = '\0';
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)2 );
     FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)3 );
     ReqFunc  = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)4 );
@@ -140,7 +141,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     TRAP_EXTFUNC_PTR( GetHwndFunc ) = (TRAP_EXTFUNC_TYPE( GetHwndFunc ))GetProcAddress( TrapFile, (LPSTR)8 );
     TRAP_EXTFUNC_PTR( SetHardMode ) = (TRAP_EXTFUNC_TYPE( SetHardMode ))GetProcAddress( TrapFile, (LPSTR)12 );
     TRAP_EXTFUNC_PTR( UnLockInput ) = (TRAP_EXTFUNC_TYPE( UnLockInput ))GetProcAddress( TrapFile, (LPSTR)13 );
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
@@ -148,9 +148,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( NULL );
             }
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         }
     }
+    if( buff[0] == '\0' )
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     KillTrap();
     return( buff );
 }

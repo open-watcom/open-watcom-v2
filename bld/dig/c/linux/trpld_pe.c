@@ -80,31 +80,31 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
-    char                chr;
 #if !defined( BUILTIN_TRAP_FILE )
     FILE                *fp;
     char                filename[_MAX_PATH];
-    char                *p;
+    const char          *trpname;
+    size_t              len;
 #endif
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
 #if !defined( BUILTIN_TRAP_FILE )
-    p = filename;
+    trpname = parms;
+    len = 0;
 #endif
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
 #if !defined( BUILTIN_TRAP_FILE )
-        *p++ = chr;
+        len++;
 #endif
     }
 #if !defined( BUILTIN_TRAP_FILE )
-    *p = '\0';
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, trpname, len, "trp", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
         return( buff );
     }
     sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
@@ -117,11 +117,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( TrapFile == NULL ) {
         return( buff );
     }
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    buff[0] = '\0';
     ld_func = (trap_load_func *)PE_getProcAddress( TrapFile, "TrapLoad_" );
     if( ld_func != NULL ) {
 #else
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     ld_func = TrapLoad;
 #endif
         trap_funcs = ld_func( &TrapCallbacks );
@@ -134,12 +133,13 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                     TrapVer = *trap_ver;
                     return( NULL );
                 }
-                strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
             }
         }
 #if !defined( BUILTIN_TRAP_FILE )
     }
 #endif
+    if( buff[0] == '\0' )
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     KillTrap();
     return( buff );
 }

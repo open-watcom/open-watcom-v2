@@ -56,7 +56,7 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                trpfile[256];
+    char                filename[256];
     char                *p;
     char                chr;
     bool                have_ext;
@@ -65,7 +65,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
     have_ext = false;
-    p = trpfile;
+    p = filename;
     for( ; (chr = *parms) != '\0'; parms++ ) {
         if( chr == TRAP_PARM_SEPARATOR ) {
             parms++;
@@ -90,16 +90,16 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         *p++ = 'l';
     }
     *p = '\0';
-    TrapFile = RdosLoadDll( trpfile );
+    TrapFile = RdosLoadDll( filename );
     if( TrapFile == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
+    buff[0] = '\0';
     init_func = RdosGetModuleProc( TrapFile, "TrapInit_" );
     FiniFunc = RdosGetModuleProc( TrapFile, "TrapFini_" );
     ReqFunc  = RdosGetModuleProc( TrapFile, "TrapRequest_" );
 //    LibListFunc = RdosGetModuleProc( TrapFile, "TrapLibList_" );
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL /* && LibListFunc != NULL */ ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
@@ -107,9 +107,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( NULL );
             }
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         }
     }
+    if( buff[0] == '\0' )
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     KillTrap();
     return( buff );
 }

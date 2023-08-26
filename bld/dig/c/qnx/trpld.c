@@ -82,22 +82,22 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
     char                filename[256];
-    char                *p;
-    char                chr;
+    const char          *trpname;
+    size_t              len;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = filename;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    trpname = parms;;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        *p++ = chr;
+        len++;
     }
-    *p = '\0';
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, trpname, len, "trp", filename, sizeof( filename ) ) ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
         return( buff );
     }
     sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
@@ -108,10 +108,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     TrapCode = ReadInImp( fp );
     DIGLoader( Close )( fp );
     if( TrapCode != NULL ) {
+        buff[0] = '\0';
 #ifdef __WATCOMC__
         if( TrapCode->sig == TRAPSIG ) {
 #endif
-            strcpy( buff, TC_ERR_BAD_TRAP_FILE );
             ld_func = (trap_load_func *)TrapCode->init_rtn;
             trap_funcs = ld_func( &TrapCallbacks );
             if( trap_funcs != NULL ) {
@@ -123,12 +123,13 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                         TrapVer = *trap_ver;
                         return( NULL );
                     }
-                    strcpy( buff, TC_ERR_BAD_TRAP_FILE );
                 }
             }
 #ifdef __WATCOMC__
         }
 #endif
+        if( buff[0] == '\0' )
+            strcpy( buff, TC_ERR_BAD_TRAP_FILE );
         KillTrap();
     }
     return( buff );
