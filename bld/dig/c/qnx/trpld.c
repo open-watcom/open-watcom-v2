@@ -82,12 +82,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
     char                filename[256];
-    const char          *trpname;
+    const char          *base_name;
     size_t              len;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    trpname = parms;;
+    base_name = parms;;
     len = 0;
     for( ; *parms != '\0'; parms++ ) {
         if( *parms == TRAP_PARM_SEPARATOR ) {
@@ -96,8 +96,8 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, trpname, len, "trp", filename, sizeof( filename ) ) ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, "trp", filename, sizeof( filename ) ) ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
     sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );

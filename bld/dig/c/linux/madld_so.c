@@ -54,20 +54,16 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_
 {
     mad_sys_handle      shlib;
     mad_init_func       *init_func;
-    char                newpath[_MAX_PATH];
-    char                full_path[_MAX_PATH];
+    char                filename[_MAX_PATH];
     mad_status          status;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".so" );
-    shlib = dlopen( newpath, RTLD_NOW );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), "so", filename, sizeof( filename ) ) == 0 ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
+    }
+    shlib = dlopen( filename, RTLD_NOW );
     if( shlib == NULL ) {
-        _searchenv( newpath, "PATH", full_path );
-        shlib = dlopen( full_path, RTLD_NOW );
-        if( shlib == NULL ) {
-            return( MS_ERR | MS_FOPEN_FAILED );
-        }
+        return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;
     init_func = (mad_init_func *)dlsym( shlib, "MADLOAD" );

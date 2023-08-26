@@ -53,20 +53,16 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
 {
     dip_sys_handle      shlib;
     dip_init_func       *init_func;
-    char                newpath[_MAX_PATH];
-    char                full_path[_MAX_PATH];
+    char                filename[_MAX_PATH];
     dip_status          ds;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".so" );
-    shlib = dlopen( newpath, RTLD_NOW );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), "so", filename, sizeof( filename ) ) == 0 ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
+    shlib = dlopen( filename, RTLD_NOW );
     if( shlib == NULL_SYSHDL ) {
-        _searchenv( newpath, "PATH", full_path );
-        shlib = dlopen( full_path, RTLD_NOW );
-        if( shlib == NULL_SYSHDL ) {
-            return( DS_ERR | DS_FOPEN_FAILED );
-        }
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
     ds = DS_ERR | DS_INVALID_DIP;
     init_func = (dip_init_func *)dlsym( shlib, "DIPLOAD" );

@@ -85,14 +85,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     const trap_requests *trap_funcs;
 #if !defined( BUILTIN_TRAP_FILE )
     char                filename[_MAX_PATH];
-    const char          *trpname;
+    const char          *base_name;
     size_t              len;
 #endif
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
 #if !defined( BUILTIN_TRAP_FILE )
-    trpname = parms;
+    base_name = parms;
     len = 0;
 #endif
     for( ; *parms != '\0'; parms++ ) {
@@ -105,8 +105,8 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #endif
     }
 #if !defined( BUILTIN_TRAP_FILE )
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, trpname, len, "so", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, "so", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
     sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
