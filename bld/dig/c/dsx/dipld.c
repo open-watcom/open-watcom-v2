@@ -33,19 +33,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
 #include "ldimp.h"
 #include "dbgmod.h"
-#include "digld.h"
 
 
 #define DIPSIG  0x00504944UL    // "DIP"
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
-    /* We should unload the symbols here but it's not worth the trouble */
+    /*
+     * We should unload the symbols here but it's not worth the trouble
+     */
     if( *sys_hdl != NULL_SYSHDL ) {
         DIGCli( Free )( *sys_hdl );
         *sys_hdl = NULL_SYSHDL;
@@ -76,7 +78,9 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
         if( dip->sig == DIPSIG ) {
 #endif
 #ifdef WATCOM_DEBUG_SYMBOLS
-            /* Look for symbols in separate .sym files, not the .dip itself */
+            /*
+             * Look for symbols in separate .sym files, not the .dip itself
+             */
             strcpy( filename + strlen( filename ) - 4, ".sym" );
             DebuggerLoadUserModule( filename, GetCS(), (unsigned long)dip );
 #endif

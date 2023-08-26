@@ -76,7 +76,9 @@ int PILLSysLoad( const char *name, const pill_client_routines *cli,
     init_func = (pill_init_func *)pill->init_rtn;
     lh->rtns = init_func( cli, msg );
     if( lh->rtns == NULL ) {
-        /* don't free DLL yet, we need the message processor */
+        /*
+         * don't free DLL yet, we need the message processor
+         */
         msg->source = lh;
         return( 0 );
     }

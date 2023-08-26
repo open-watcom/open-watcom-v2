@@ -34,9 +34,9 @@
 #include <stdio.h>
 #include <signal.h>
 #include <dlfcn.h>
+#include "digld.h"
 #include "trpld.h"
 #include "tcerr.h"
-#include "digld.h"
 
 #include "clibext.h"
 

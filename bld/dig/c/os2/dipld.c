@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
 #include <os2.h>
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
@@ -67,7 +68,8 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     char                dippath[CCHMAXPATH];
 
     *sys_hdl = NULL_SYSHDL;
-    /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
+    /*
+     * To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
     strcpy( dipname, base_name );

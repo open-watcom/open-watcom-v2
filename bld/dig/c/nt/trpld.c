@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
+#include "digld.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "tcerr.h"

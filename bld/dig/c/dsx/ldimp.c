@@ -33,7 +33,8 @@
 ****************************************************************************/
 
 
-/* Usage of the Prarlap executable Loader
+/*
+ * Usage of the Prarlap executable Loader
  *
  *  Host OS     TRAP    MAD     DIP
  *
@@ -104,7 +105,8 @@ imp_header *ReadInImp( FILE *fp )
         hdr.num_relocs -= bunch;
     }
 #ifdef __LINUX__
-    /* On some platforms (such as AMD64 or x86 with NX bit), it is required
+    /*
+     * On some platforms (such as AMD64 or x86 with NX bit), it is required
      * to map the code pages loaded from the BPD as executable, otherwise
      * a segfault will occur when attempting to run any BPD code.
      */

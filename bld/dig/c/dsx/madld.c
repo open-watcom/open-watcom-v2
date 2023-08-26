@@ -34,12 +34,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "digld.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
 #include "madsys.h"
 #include "ldimp.h"
-#include "digld.h"
 
 
 #define MADSIG  0x0044414DUL    // "MAD"

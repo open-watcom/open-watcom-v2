@@ -33,10 +33,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+#include "digld.h"
 #include "trpld.h"
 #include "tcerr.h"
 #include "peloader.h"
-#include "digld.h"
 
 
 #ifndef __WATCOMC__

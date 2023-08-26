@@ -34,6 +34,7 @@
 #include <rdos.h>
 #include <string.h>
 #include <stdlib.h>
+#include "digld.h"
 #include "trpld.h"
 #include "tcerr.h"
 

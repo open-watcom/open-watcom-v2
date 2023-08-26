@@ -36,6 +36,7 @@
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
 #include <wos2.h>
+#include "digld.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "tcerr.h"
@@ -134,7 +135,8 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
     }
 #endif
-    /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
+    /*
+     * To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
 #ifdef _M_I86

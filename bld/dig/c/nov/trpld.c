@@ -32,6 +32,7 @@
 
 
 #include <string.h>
+#include "digld.h"
 #include "trpld.h"
 #include "trpcomm.h"
 #include "tcerr.h"
