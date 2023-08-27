@@ -97,10 +97,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, "trp", filename, sizeof( filename ) ) ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, base_name );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         return( buff );

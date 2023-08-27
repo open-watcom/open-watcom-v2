@@ -129,7 +129,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     SetErrorMode( prev );
     if( (UINT)TrapFile < 32 ) {
         TrapFile = 0;
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';

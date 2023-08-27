@@ -146,11 +146,11 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #endif
     _searchenv( trpname, "PATH", filename );
     if( *filename == '\0' ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpname );
         return( buff );
     }
     if( LOAD_MODULE( filename, TrapFile ) ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';

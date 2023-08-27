@@ -93,7 +93,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p = '\0';
     TrapFile = RdosLoadDll( filename );
     if( TrapFile == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';

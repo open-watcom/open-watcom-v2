@@ -506,18 +506,20 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, "trp", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, base_name );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( err == NULL ) {
+    if( err == TC_ERR_CANT_LOAD_TRAP ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
+    } else if( err == NULL ) {
         if( (err = SetTrapHandler()) == NULL && (err = CopyEnv()) == NULL ) {
             head = EXTENDER_RM2PM( TrapMem.rm, 0 );
             if( head->sig == TRAP_SIGNATURE ) {
