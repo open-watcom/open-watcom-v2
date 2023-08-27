@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "digld.h"
+#include "rdospath.h"
 #include "servio.h"
 
 
@@ -68,7 +69,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
             break;
         }
     }
-    if( !has_ext && *defext != NULLCHAR ) {
+    if( !has_ext && *defext != '\0' ) {
         *p++ = '.';
         p = StrCopyDst( defext, p );
     }
