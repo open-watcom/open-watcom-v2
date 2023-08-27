@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,36 +71,36 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
 {
     const char      *p;
     char            *p2;
-    BOOL            have_ext;
-    BOOL            have_path;
+    bool            has_ext;
+    bool            has_path;
     char            *envbuf;
     DWORD           envlen;
     unsigned long   rc;
     const char      *ext_list;
 
-    have_ext = FALSE;
-    have_path = FALSE;
+    has_ext = false;
+    has_path = false;
     for( p = pgm, p2 = buffer; (*p2 = *p) != 0; ++p, ++p2 ) {
         switch( *p ) {
         case '\\':
         case '/':
         case ':':
-            have_path = TRUE;
-            have_ext = FALSE;
+            has_path = true;
+            has_ext = false;
             break;
         case '.':
-            have_ext = TRUE;
+            has_ext = true;
             break;
         }
     }
     ext_list = "\0";
-    if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
+    if( !has_ext && file_type == DIG_FILETYPE_EXE ) {
         ext_list = ".com\0.exe\0";
     }
     if( !tryPath( buffer, p2, ext_list ) ) {
         return( 0 );
     }
-    if( have_path ) {
+    if( has_path ) {
         return( ERROR_FILE_NOT_FOUND );
     }
     envlen = GetEnvironmentVariable( "PATH", NULL, 0 );

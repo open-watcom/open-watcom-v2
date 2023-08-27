@@ -476,15 +476,15 @@ file_handle LclStringToFullName( const char *name, size_t len, char *full )
 /*
  *
  */
-static file_handle FullPathOpenInternal( const char *name, size_t name_len, const char *ext,
+static file_handle FullPathOpenInternal( const char *name, size_t name_len, const char *defext,
                                     char *result, size_t result_len, bool force_local )
 {
     char                    buffer[TXT_LEN];
     char                    *p;
     const char              *p1;
     obj_attrs               oattrs;
-    bool                    have_ext;
-    bool                    have_path;
+    bool                    has_ext;
+    bool                    has_path;
     const file_components   *file;
     file_handle             fh;
     char                    c;
@@ -493,8 +493,8 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     p1 = FileLoc( name, &oattrs );
     name_len -= p1 - name;
     name = p1;
-    have_ext = false;
-    have_path = false;
+    has_ext = false;
+    has_path = false;
     if( force_local ) {
         oattrs &= ~OP_REMOTE;
         oattrs |= OP_LOCAL;
@@ -509,21 +509,21 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
         c = *name++;
         *p++ = c;
         if( CHK_PATH_SEP( c, file ) ) {
-            have_ext = false;
-            have_path = true;
+            has_ext = false;
+            has_path = true;
         } else if( c == file->ext_separator ) {
-            have_ext = true;
+            has_ext = true;
         }
     }
-    if( !have_ext ) {
+    if( !has_ext && *defext != NULLCHAR ) {
         *p++ = file->ext_separator;
-        p = StrCopyDst( ext, p );
+        p = StrCopyDst( defext, p );
     }
     *p = NULLCHAR;
     if( oattrs & OP_REMOTE ) {
         RemoteStringToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)result_len );
         fh = FileOpen( result, OP_READ | OP_REMOTE );
-    } else if( have_path ) {
+    } else if( has_path ) {
         StrCopyDst( buffer, result );
         fh = FileOpen( buffer, OP_READ );
     } else {
@@ -538,35 +538,35 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     return( fh );
 }
 
-file_handle FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t result_len )
+file_handle FullPathOpen( const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
 {
-    return( FullPathOpenInternal( name, name_len, ext, result, result_len, false ) );
+    return( FullPathOpenInternal( name, name_len, defext, result, result_len, false ) );
 }
 
-file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t result_len )
+file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
 {
-    return( FullPathOpenInternal( name, name_len, ext, result, result_len, true ) );
+    return( FullPathOpenInternal( name, name_len, defext, result, result_len, true ) );
 }
 
-static file_handle PathOpenInternal( const char *name, size_t name_len, const char *ext, bool force_local )
+static file_handle PathOpenInternal( const char *name, size_t name_len, const char *defext, bool force_local )
 {
     char        result[TXT_LEN];
 
     if( force_local ) {
-        return( LocalFullPathOpen( name, name_len, ext, result, TXT_LEN ) );
+        return( LocalFullPathOpen( name, name_len, defext, result, TXT_LEN ) );
     } else {
-        return( FullPathOpen( name, name_len, ext, result, TXT_LEN ) );
+        return( FullPathOpen( name, name_len, defext, result, TXT_LEN ) );
     }
 }
 
-file_handle PathOpen( const char *name, size_t name_len, const char *ext )
+file_handle PathOpen( const char *name, size_t name_len, const char *defext )
 {
-    return( PathOpenInternal( name, name_len, ext, false ) );
+    return( PathOpenInternal( name, name_len, defext, false ) );
 }
 
-file_handle LocalPathOpen( const char *name, size_t name_len, const char *ext )
+file_handle LocalPathOpen( const char *name, size_t name_len, const char *defext )
 {
-    return( PathOpenInternal( name, name_len, ext, true ) );
+    return( PathOpenInternal( name, name_len, defext, true ) );
 }
 
 #if !defined( BUILD_RFX )
@@ -770,33 +770,33 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     char        buffer[TXT_LEN];
     char        filename[TXT_LEN];
     char        *p;
-    bool        have_ext;
-    bool        have_path;
+    bool        has_ext;
+    bool        has_path;
     char        c;
     char_ring   *curr;
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
-    have_ext = false;
-    have_path = false;
+    has_ext = false;
+    has_path = false;
     p = buffer;
     while( name_len-- > 0 ) {
         c = *name++;
         *p++ = c;
         if( CHK_PATH_SEP( c, &LclFile ) ) {
-            have_ext = false;
-            have_path = true;
+            has_ext = false;
+            has_path = true;
         } else if( c == LclFile.ext_separator ) {
-            have_ext = true;
+            has_ext = true;
         }
     }
-    if( !have_ext ) {
+    if( !has_ext && *defext != NULLCHAR ) {
         *p++ = LclFile.ext_separator;
         p = StrCopyDst( defext, p );
     }
     *p = NULLCHAR;
-    if( have_path ) {
+    if( has_path ) {
         p = buffer;
     } else {
         // check open file in current directory or in full path

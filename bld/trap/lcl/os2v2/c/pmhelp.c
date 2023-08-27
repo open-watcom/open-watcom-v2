@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include <os2.h>
 #include <string.h>
 #include <stdio.h>
+#include "bool.h"
 #include "wdpmhelp.rh"
 #include "wdpmhelp.h"
 #include "trperr.h"
@@ -59,7 +60,7 @@ static HFILE           InStream;
 static HFILE           OutStream;
 static HWND            hwndClient;
 static HWND            hwndFrame;
-static BOOL            Locked = FALSE;
+static bool            Locked = false;
 
 static PID             PidDebugee;  // These two seem unused?
 static TID             TidDebugee;
@@ -118,7 +119,7 @@ static void UnLockIt( void )
         WinThreadAssocQueue( Hab, Hmq );
         WinLockInput( 0, 0 );
         WinThreadAssocQueue( Hab, NULLHANDLE );
-        Locked = FALSE;
+        Locked = false;
     }
 }
 
@@ -134,7 +135,7 @@ static void LockIt( void )
         WinThreadAssocQueue( Hab, Hmq );
         WinLockInput( 0, 1 );
         WinThreadAssocQueue( Hab, NULLHANDLE );
-        Locked = TRUE;
+        Locked = true;
     }
 }
 

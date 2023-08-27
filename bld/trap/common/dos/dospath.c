@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,27 +110,27 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
     char        *p2;
     const char  *p3;
     tiny_ret_t  rc;
-    int         have_ext;
-    int         have_path;
+    bool        has_ext;
+    bool        has_path;
     const char  *ext_list;
 
-    have_ext = 0;
-    have_path = 0;
+    has_ext = false;
+    has_path = false;
     for( p3 = pgm, p2 = buffer; (*p2 = *p3) != '\0'; ++p3, ++p2 ) {
         switch( *p3 ) {
         case '\\':
         case '/':
         case ':':
-            have_path = 1;
-            have_ext = 0;
+            has_path = true;
+            has_ext = false;
             break;
         case '.':
-            have_ext = 1;
+            has_ext = true;
             break;
         }
     }
     ext_list = "\0";
-    if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
+    if( !has_ext && file_type == DIG_FILETYPE_EXE ) {
 #if defined( DOSXTRAP )
   #if defined( DOS4G )
         ext_list = ".exe\0";
@@ -142,7 +142,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
 #endif
     }
     rc = TryPath( buffer, p2, ext_list );
-    if( TINY_OK( rc ) || have_path )
+    if( TINY_OK( rc ) || has_path )
         return( rc );
     path = DOSEnvFind( "PATH" );
     if( path == NULL )

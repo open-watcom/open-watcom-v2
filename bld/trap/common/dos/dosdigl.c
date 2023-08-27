@@ -76,7 +76,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
             break;
         }
     }
-    if( !has_ext ) {
+    if( !has_ext && *defext != NULLCHAR ) {
         *p++ = '.';
         p = StrCopyDst( defext, p );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,67 +95,61 @@ bool CausePgmToLoadHelperDLL( ULONG startLinear )
     char        szHelperDLL[BUFF_SIZE];
     bool        rc;
 
+    rc = false;
     /*
      * save a chunk of the program's code, and put in LoadThisDLL instead
      */
-    if( DosQueryModuleHandle( "wdsplice", &hmodHelper ) != 0 )
-        return( FALSE );
-
-    if( DosQueryModuleName( hmodHelper, BUFF_SIZE, szHelperDLL ) != 0 )
-        return( FALSE );
-
-    codesize = (char *)EndLoadHelperDLL - (char *)LoadHelperDLL;
-    if( codesize > LOAD_HELPER_DLL_SIZE )
-        return( FALSE );
-    ReadLinear( savecode, startLinear, codesize );
-    if( Buff.Cmd != DBG_N_Success )
-        return( FALSE );
-    WriteLinear( (char*)LoadHelperDLL, startLinear, codesize );
-
-    /*
-     * set up the stack for the routine LoadHelperDLL; first set up
-     * the stack contents in temporary buffer, then copy it onto
-     * debuggee's real stack
-     */
-    dll_name_len = (strlen(szHelperDLL) + 3) & ~3; // DWORD align
-    size = sizeof(loadstack_t) + dll_name_len;
-    loadstack = (loadstack_t*)TempStack;
-    Buff.ESP -= size;
-    strcpy( (char *)loadstack->load_name, szHelperDLL );
-    // Offsets must be relative to where loadstack will end up!
-    loadstack->mod_name  = (PSZ)(MakeItFlatNumberOne( Buff.SS, Buff.ESP ) + 20);
-    loadstack->phmod     = (HMODULE*)(MakeItFlatNumberOne( Buff.SS, Buff.ESP ) + 16);
-    loadstack->fail_name = loadstack->mod_name;  // Reuse buffer
-    loadstack->fail_len  = dll_name_len;
-    len = WriteBuffer( (char *)loadstack, Buff.SS, Buff.ESP, size );
-    if( len != size )
-        return( FALSE );
-
-    /*
-     * set up flat CS:EIP, SS:ESP for execution; note that this works for
-     * 16-bit apps as well
-     */
-    Buff.EIP = startLinear;
-    Buff.CS  = FlatCS;
-    Buff.ESP = MakeItFlatNumberOne( Buff.SS, Buff.ESP );
-    Buff.SS  = FlatDS;
-    Buff.DS  = FlatDS;
-    Buff.ES  = FlatDS;
-
-    /*
-     * execute LoadThisDLL on behalf of the program
-     */
-    WriteRegs( &Buff );
-    DebugExecute( &Buff, DBG_C_Go, FALSE );
-    if( Buff.Cmd != DBG_N_Breakpoint ) {
-        rc = FALSE;
-    } else {
-        rc = TRUE;
+    if( DosQueryModuleHandle( "wdsplice", &hmodHelper ) == 0 ) {
+        if( DosQueryModuleName( hmodHelper, BUFF_SIZE, szHelperDLL ) == 0 ) {
+            codesize = (char *)EndLoadHelperDLL - (char *)LoadHelperDLL;
+            if( codesize <= LOAD_HELPER_DLL_SIZE ) {
+                ReadLinear( savecode, startLinear, codesize );
+                if( Buff.Cmd == DBG_N_Success ) {
+                    WriteLinear( (char*)LoadHelperDLL, startLinear, codesize );
+                    /*
+                     * set up the stack for the routine LoadHelperDLL; first set up
+                     * the stack contents in temporary buffer, then copy it onto
+                     * debuggee's real stack
+                     */
+                    dll_name_len = (strlen(szHelperDLL) + 3) & ~3; // DWORD align
+                    size = sizeof(loadstack_t) + dll_name_len;
+                    loadstack = (loadstack_t*)TempStack;
+                    Buff.ESP -= size;
+                    strcpy( (char *)loadstack->load_name, szHelperDLL );
+                    // Offsets must be relative to where loadstack will end up!
+                    loadstack->mod_name  = (PSZ)(MakeItFlatNumberOne( Buff.SS, Buff.ESP ) + 20);
+                    loadstack->phmod     = (HMODULE*)(MakeItFlatNumberOne( Buff.SS, Buff.ESP ) + 16);
+                    loadstack->fail_name = loadstack->mod_name;  // Reuse buffer
+                    loadstack->fail_len  = dll_name_len;
+                    len = WriteBuffer( (char *)loadstack, Buff.SS, Buff.ESP, size );
+                    if( len == size ) {
+                        /*
+                         * set up flat CS:EIP, SS:ESP for execution; note that this works for
+                         * 16-bit apps as well
+                         */
+                        Buff.EIP = startLinear;
+                        Buff.CS  = FlatCS;
+                        Buff.ESP = MakeItFlatNumberOne( Buff.SS, Buff.ESP );
+                        Buff.SS  = FlatDS;
+                        Buff.DS  = FlatDS;
+                        Buff.ES  = FlatDS;
+                        /*
+                         * execute LoadThisDLL on behalf of the program
+                         */
+                        WriteRegs( &Buff );
+                        DebugExecute( &Buff, DBG_C_Go, false );
+                        if( Buff.Cmd == DBG_N_Breakpoint ) {
+                            rc = true;
+                        }
+                        /*
+                         * put back original memory contents
+                         */
+                        WriteLinear( savecode, startLinear, codesize );
+                    }
+                }
+            }
+        }
     }
-    /*
-     * put back original memory contents
-     */
-    WriteLinear( savecode, startLinear, codesize );
     return( rc );
 }
 
@@ -170,7 +164,7 @@ static long TaskExecute( excfn rtn )
     if( CanExecTask ) {
         ULONG   oldExcNum = ExceptNum;
 
-        ExpectingAFault = TRUE;
+        ExpectingAFault = true;
         Buff.CS  = FlatCS;
         Buff.EIP = (ULONG)rtn;
         Buff.SS  = FlatDS;
@@ -184,10 +178,10 @@ static long TaskExecute( excfn rtn )
         if( Buff.Cmd != DBG_N_Success ) {
             retval = -1;
         } else {
-            DebugExecute( &Buff, DBG_C_Go, FALSE );
+            DebugExecute( &Buff, DBG_C_Go, false );
             retval = Buff.EAX;
         }
-        ExpectingAFault = FALSE;
+        ExpectingAFault = false;
         ExceptNum = oldExcNum;
         return( retval );
     } else {
@@ -256,10 +250,9 @@ bool TaskReadWord( USHORT seg, ULONG off, USHORT *data )
     Buff.EBX = off;
     Buff.GS  = seg;
     TaskExecute( (excfn)DoReadWord );
-    if( Buff.Cmd != DBG_N_Breakpoint ) {
-        rc = FALSE;
-    } else {
-        rc = TRUE;
+    rc = false;
+    if( Buff.Cmd == DBG_N_Breakpoint ) {
+        rc = true;
         *data = (USHORT)Buff.EAX;
     }
     WriteRegs( &save );
@@ -277,10 +270,9 @@ bool TaskWriteWord( USHORT seg, ULONG off, USHORT data )
     Buff.EBX = off;
     Buff.GS  = seg;
     TaskExecute( (excfn)DoWriteWord );
-    if( Buff.Cmd != DBG_N_Breakpoint ) {
-        rc = FALSE;
-    } else {
-        rc = TRUE;
+    rc = false;
+    if( Buff.Cmd == DBG_N_Breakpoint ) {
+        rc = true;
     }
     WriteRegs( &save );
     return( rc );

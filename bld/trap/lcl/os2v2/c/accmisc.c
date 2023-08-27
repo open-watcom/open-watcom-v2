@@ -56,7 +56,7 @@
  * globals
  */
 PID             Pid = 0;
-bool            AtEnd = FALSE;
+bool            AtEnd = false;
 ULONG           SID;                   /* Session ID */
 bool            Remote;
 char            UtilBuff[BUFF_SIZE];

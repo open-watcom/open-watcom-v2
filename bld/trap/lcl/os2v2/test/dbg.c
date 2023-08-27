@@ -122,7 +122,7 @@ int RunIt()
     trap_types  trap;
 
     for( ;; ) {
-        switch( trap = DoRunProg( FALSE, &why ) ) {
+        switch( trap = DoRunProg( false, &why ) ) {
         case TRAP_SKIP:
             if( why & CHANGE_LIBRARIES ) {
                 AddLibInfo();

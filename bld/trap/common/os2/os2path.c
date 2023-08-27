@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,31 +79,31 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
     const char      *p;
     char            *p2;
     unsigned long   rc;
-    int             have_ext;
-    int             have_path;
+    bool            has_ext;
+    bool            has_path;
     const char      *ext_list;
 
-    have_ext = 0;
-    have_path = 0;
+    has_ext = false;
+    has_path = false;
     for( p = pgm, p2 = buffer; (*p2 = *p) != '\0'; ++p, ++p2 ) {
         switch( *p ) {
         case '\\':
         case '/':
         case ':':
-            have_path = 1;
-            have_ext = 0;
+            has_path = true;
+            has_ext = false;
             break;
         case '.':
-            have_ext = 1;
+            has_ext = true;
             break;
         }
     }
     ext_list = "\0";
-    if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
+    if( !has_ext && file_type == DIG_FILETYPE_EXE ) {
         ext_list = ".exe\0";
     }
     rc = TryPath( buffer, p2, ext_list );
-    if( rc == 0 || have_path )
+    if( rc == 0 || has_path )
         return( rc );
     if( DosScanEnv( "PATH", (PSZ FAR *)&p ) != 0 )
         return( rc );

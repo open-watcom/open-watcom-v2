@@ -68,11 +68,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
             break;
         }
     }
-    if( !has_ext ) {
+    if( !has_ext && *defext != NULLCHAR ) {
         *p++ = '.';
-        while( (*p++ = *defext++) != '\0' ) {
-            /* nothing to do */
-        }
+        p = StrCopyDst( defext, p );
     }
     *p = '\0';
     p = trpfile;
