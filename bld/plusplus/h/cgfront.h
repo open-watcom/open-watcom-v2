@@ -200,6 +200,7 @@ typedef enum                    // CALL_OPT -- types of call optimizations
 #define ___NodeIsOp(node,op) ( (node)->cgop == (op) )
 #define conversionWorked( val ) ( (val) <= CNV_WORKED )
 
+#if _INTEL_CPU
 // TEST IF DEFAULT MEMORY MODEL USES BIG CODE
 #define IsBigCode()     ((TargetSwitches & CGSW_X86_BIG_CODE) != 0)
 // TEST IF DEFAULT MEMORY MODEL USES BIG DATA
@@ -208,6 +209,8 @@ typedef enum                    // CALL_OPT -- types of call optimizations
 #define IsHugeData()    ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)
 // TEST IF DEFAULT MEMORY MODEL IS FLAT
 #define IsFlat()        ((TargetSwitches & CGSW_X86_FLAT_MODEL) != 0)
+
+#endif
 
 // PROTOTYPES : exposed to C++ compiler
 
