@@ -87,7 +87,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     }
     if( Linked )
         RemoteUnLink();
-    KillTrap();
+    UnLoadTrap();
 
     return( msg.wParam );
 

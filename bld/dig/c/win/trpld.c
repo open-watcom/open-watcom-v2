@@ -56,7 +56,7 @@ static trap_fini_func   *FiniFunc = NULL;
 static HINSTANCE        TrapFile = 0;
 static HINSTANCE        toolhelp = 0;
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     TRAP_EXTFUNC_PTR( InputHook ) = NULL;
@@ -153,7 +153,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
     if( buff[0] == '\0' )
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    KillTrap();
+    UnLoadTrap();
     return( buff );
 }
 

@@ -103,7 +103,7 @@ static char *ReadInTrap( FILE *fp )
     return( NULL );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
@@ -165,6 +165,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
     if( buff[0] == '\0' )
         strcpy( buff, err );
-    KillTrap();
+    UnLoadTrap();
     return( buff );
 }

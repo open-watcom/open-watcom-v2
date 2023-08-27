@@ -42,7 +42,7 @@
 static int              TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
@@ -112,6 +112,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
     if( buff[0] == '\0' )
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    KillTrap();
+    UnLoadTrap();
     return( buff );
 }

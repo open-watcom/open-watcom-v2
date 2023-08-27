@@ -86,7 +86,7 @@ char TRAP_EXTFUNC( TellHardMode )( char hard )
     return( 0 );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     TRAP_EXTFUNC_PTR( TellHandles ) = NULL;
@@ -173,6 +173,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
     if( buff[0] == '\0' )
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    KillTrap();
+    UnLoadTrap();
     return( buff );
 }

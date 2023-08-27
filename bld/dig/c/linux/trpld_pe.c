@@ -61,7 +61,7 @@ const static trap_callbacks TrapCallbacks = {
     signal,
 };
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
@@ -140,6 +140,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #endif
     if( buff[0] == '\0' )
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    KillTrap();
+    UnLoadTrap();
     return( buff );
 }

@@ -125,7 +125,7 @@ int main( int argc, char **argv )
             if( KeyPress() ) {
                 key = KeyGet();
                 if( key == 'q' || key == 'Q' ) {
-                    KillTrap();
+                    UnLoadTrap();
                     RemoteUnLink();
                     ServTerminate( 0 );
                     // never return
@@ -146,7 +146,7 @@ int main( int argc, char **argv )
         OutputLine( "" );
         RemoteDisco();
         if( OneShot ) {
-            KillTrap();
+            UnLoadTrap();
             RemoteUnLink();
             ServTerminate( 0 );
             // never return

@@ -63,7 +63,7 @@ const static trap_callbacks TrapCallbacks = {
 static imp_header       *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
@@ -130,7 +130,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #endif
         if( buff[0] == '\0' )
             strcpy( buff, TC_ERR_BAD_TRAP_FILE );
-        KillTrap();
+        UnLoadTrap();
     }
     return( buff );
 }

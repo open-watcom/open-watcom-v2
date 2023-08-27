@@ -540,11 +540,11 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
     if( buff[0] == '\0' )
         strcpy( buff, err );
-    KillTrap();
+    UnLoadTrap();
     return( buff );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     if( IntrState != IS_NONE ) {
         GoToRealMode( RMTrapFini );
