@@ -538,18 +538,18 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
 }
 
 typedef struct {
-    int_64 low;
-    int_64 high;
+    int_32 low;
+    int_32 high;
 } enum_range;
 
 static bool AEnum( drmem_hdl var, int index, void *_de )
 {
     enum_range *de = _de;
-    int_64  value;
+    int_32  value;
 
     /* unused parameters */ (void)index;
 
-    if( !DRConstValAT64( var, (uint_64 *)&value ) ) {
+    if( !DRConstValAT( var, (uint_32 *)&value ) ) {
         return( false );
     }
     if( value < de->low ) {
@@ -569,12 +569,12 @@ static bool ArrayEnumType( drmem_hdl tenu, int index, void *_df )
 {
     array_wlk_wlk  *df = _df;
     enum_range     de;
-    int_64         count;
+    int_32         count;
 
     /* unused parameters */ (void)index;
 
-    de.low  = _I64_MIN;
-    de.high = _I64_MAX;
+    de.low  = _I32_MIN;
+    de.high = _I32_MAX;
     if( !DRWalkEnum( tenu, AEnum, &de ) ) {
         return( false );
     }
