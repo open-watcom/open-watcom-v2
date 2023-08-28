@@ -434,7 +434,7 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
  * size required by doing a SymType followed by a TypeInfo.
  */
 {
-    uint_64     value;
+    uint_32     value;
 
     /* unused parameters */ (void)ic;
 
@@ -442,7 +442,7 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
         return( DS_FAIL );
     }
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
-    if( !DRConstValAT64( ish->sym, &value ) ) {
+    if( !DRConstValAT( ish->sym, &value ) ) {
         return( DS_FAIL );
     }
     switch( ish->f.einfo.size ) {
@@ -454,9 +454,6 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
         break;
     case 4:
         *(uint_32 *)buff = value;
-        break;
-    case 8:
-        *(uint_64 *)buff = value;
         break;
     default:
         return( DS_FAIL );
