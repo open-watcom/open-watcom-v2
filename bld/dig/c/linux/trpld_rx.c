@@ -35,12 +35,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include "digcli.h"
 #include "digld.h"
 #include "trpld.h"
 #include "trpimp.h"
 #include "tcerr.h"
 #include "ldimp.h"
-#include "digcli.h"
 
 
 #define TRAPSIG 0x50415254UL    // "TRAP"

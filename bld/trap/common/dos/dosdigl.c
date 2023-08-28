@@ -71,7 +71,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         case '/':
         case '\\':
             has_ext = false;
-                /* fall through */
+            /* fall through */
         case ':':
             has_path = true;
             break;

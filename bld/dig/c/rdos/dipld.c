@@ -50,7 +50,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dip_sys_handle      dip_dll;
+    dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
     char                filename[256];
     dip_status          ds;
@@ -58,16 +58,16 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     *sys_hdl = NULL_SYSHDL;
     strcpy( filename, base_name );
     strcat( filename, ".dll" );
-    dip_dll = RdosLoadDll( filename );
-    if( dip_dll == NULL_SYSHDL ) {
+    mod_hdl = RdosLoadDll( filename );
+    if( mod_hdl == NULL_SYSHDL ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     ds = DS_ERR | DS_INVALID_DIP;
-    init_func = (dip_init_func *)RdosGetModuleProc( dip_dll, "DIPLOAD" );
+    init_func = (dip_init_func *)RdosGetModuleProc( mod_hdl, "DIPLOAD" );
     if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
-        *sys_hdl = dip_dll;
+        *sys_hdl = mod_hdl;
         return( DS_OK );
     }
-    RdosFreeDll( dip_dll );
+    DIPSysUnload( &mod_hdl );
     return( ds );
 }

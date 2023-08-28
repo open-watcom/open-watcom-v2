@@ -64,7 +64,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    HINSTANCE           dip_dll;
+    HINSTANCE           mod_hdl;
     char                filename[256];
     dip_status          ds;
     char                parm[10];
@@ -100,10 +100,10 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     parm_block.show = &show_block;
     parm_block.reserved = 0;
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    dip_dll = LoadModule( filename, &parm_block );
-    DIPLastHandle = dip_dll;
+    mod_hdl = LoadModule( filename, &parm_block );
+    DIPLastHandle = mod_hdl;
     SetErrorMode( prev );
-    if( dip_dll < HINSTANCE_ERROR ) {
+    if( mod_hdl < HINSTANCE_ERROR ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     ds = DS_ERR | DS_INVALID_DIP;

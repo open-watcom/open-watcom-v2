@@ -60,33 +60,36 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
 
 mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    HMODULE             dip_mod;
+    mad_sys_handle      mod_hdl;
     mad_init_func       *init_func;
     mad_status          status;
+    char                filename[CCHMAXPATH];
 #ifndef _M_I86
-    char                madname[CCHMAXPATH];
-    char                madpath[CCHMAXPATH];
+    char                fname[CCHMAXPATH];
+#endif
 
     *sys_hdl = NULL_SYSHDL;
     /*
      * To prevent conflicts with the 16-bit MAD DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy( madname, base_name );
-    strcat( madname, ".D32" );
-    _searchenv( madname, "PATH", madpath );
-    if( *madpath == '\0' )
+#ifdef _M_I86
+    strcpy( filename, base_name );
+#else
+    strcpy( fname, base_name );
+    strcat( fname, ".D32" );
+    _searchenv( fname, "PATH", filename );
+    if( *filename == '\0' )
         return( MS_ERR | MS_FOPEN_FAILED );
-    base_name = madpath;
 #endif
-    if( LOAD_MODULE( base_name, dip_mod ) ) {
+    if( LOAD_MODULE( filename, mod_hdl ) ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;
-    if( GET_PROC_ADDRESS( dip_mod, "MADLOAD", init_func ) && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = dip_mod;
+    if( GET_PROC_ADDRESS( mod_hdl, "MADLOAD", init_func ) && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = mod_hdl;
         return( MS_OK );
     }
-    DosFreeModule( dip_mod );
+    MADSysUnload( &mod_hdl );
     return( status );
 }

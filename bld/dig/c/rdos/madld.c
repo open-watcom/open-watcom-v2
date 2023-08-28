@@ -52,7 +52,7 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
 
 mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    mad_sys_handle      mad_dll;
+    mad_sys_handle      mod_hdl;
     mad_init_func       *init_func;
     char                filename[256];
     mad_status          status;
@@ -60,16 +60,16 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_
     *sys_hdl = NULL_SYSHDL;
     strcpy( filename, base_name );
     strcat( filename, ".dll" );
-    mad_dll = RdosLoadDll( filename );
-    if( mad_dll == NULL_SYSHDL ) {
+    mod_hdl = RdosLoadDll( filename );
+    if( mod_hdl == NULL_SYSHDL ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;
-    init_func = (mad_init_func *)RdosGetModuleProc( mad_dll, "MADLOAD" );
+    init_func = (mad_init_func *)RdosGetModuleProc( mod_hdl, "MADLOAD" );
     if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = mad_dll;
+        *sys_hdl = mod_hdl;
         return( MS_OK );
     }
-    RdosFreeDll( mad_dll );
+    MADSysUnload( &mod_hdl );
     return( status );
 }

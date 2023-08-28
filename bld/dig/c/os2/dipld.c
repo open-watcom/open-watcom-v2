@@ -60,33 +60,36 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dip_sys_handle      dip_mod;
+    dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
     dip_status          ds;
+    char                filename[CCHMAXPATH];
 #ifndef _M_I86
-    char                dipname[CCHMAXPATH];
-    char                dippath[CCHMAXPATH];
+    char                fname[CCHMAXPATH];
+#endif
 
     *sys_hdl = NULL_SYSHDL;
     /*
      * To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy( dipname, base_name );
-    strcat( dipname, ".D32" );
-    _searchenv( dipname, "PATH", dippath );
-    if( *dippath == '\0' )
+#ifdef _M_I86
+    strcpy( filename, base_name );
+#else
+    strcpy( fname, base_name );
+    strcat( fname, ".D32" );
+    _searchenv( fname, "PATH", filename );
+    if( *filename == '\0' )
         return( DS_ERR | DS_FOPEN_FAILED );
-    base_name = dippath;
 #endif
-    if( LOAD_MODULE( base_name, dip_mod ) ) {
+    if( LOAD_MODULE( filename, mod_hdl ) ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     ds = DS_ERR | DS_INVALID_DIP;
-    if( GET_PROC_ADDRESS( dip_mod, "DIPLOAD", init_func ) && (*imp = init_func( &ds, cli )) != NULL ) {
-        *sys_hdl = dip_mod;
+    if( GET_PROC_ADDRESS( mod_hdl, "DIPLOAD", init_func ) && (*imp = init_func( &ds, cli )) != NULL ) {
+        *sys_hdl = mod_hdl;
         return( DS_OK );
     }
-    DosFreeModule( dip_mod );
+    DIPSysUnload( &mod_hdl );
     return( ds );
 }

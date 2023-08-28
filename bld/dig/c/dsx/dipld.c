@@ -37,8 +37,8 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
-#include "ldimp.h"
 #include "dbgmod.h"
+#include "ldimp.h"
 
 
 #define DIPSIG  0x00504944UL    // "DIP"
@@ -57,7 +57,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     FILE                *fp;
-    imp_header          *dip;
+    imp_header          *mod_hdl;
     dip_init_func       *init_func;
     dip_status          ds;
     char                filename[_MAX_PATH];
@@ -70,23 +70,23 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     if( fp == NULL ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    dip = ReadInImp( fp );
+    mod_hdl = ReadInImp( fp );
     DIGLoader( Close )( fp );
     ds = DS_ERR | DS_INVALID_DIP;
-    if( dip != NULL ) {
+    if( mod_hdl != NULL ) {
 #ifdef __WATCOMC__
-        if( dip->sig == DIPSIG ) {
+        if( mod_hdl->sig == DIPSIG ) {
 #endif
 #ifdef WATCOM_DEBUG_SYMBOLS
             /*
              * Look for symbols in separate .sym files, not the .dip itself
              */
             strcpy( filename + strlen( filename ) - 4, ".sym" );
-            DebuggerLoadUserModule( filename, GetCS(), (unsigned long)dip );
+            DebuggerLoadUserModule( filename, GetCS(), (unsigned long)mod_hdl );
 #endif
-            init_func = (dip_init_func *)dip->init_rtn;
+            init_func = (dip_init_func *)mod_hdl->init_rtn;
             if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
-                *sys_hdl = dip;
+                *sys_hdl = mod_hdl;
                 return( DS_OK );
             }
 #ifdef WATCOM_DEBUG_SYMBOLS
@@ -95,7 +95,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
 #ifdef __WATCOMC__
         }
 #endif
-        DIGCli( Free )( dip );
+        DIPSysUnload( (dip_sys_handle *)&mod_hdl );
     }
     return( ds );
 }
