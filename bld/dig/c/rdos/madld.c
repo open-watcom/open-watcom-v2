@@ -54,13 +54,13 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_
 {
     mad_sys_handle      mad_dll;
     mad_init_func       *init_func;
-    char                newpath[256];
+    char                filename[256];
     mad_status          status;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".dll" );
-    mad_dll = RdosLoadDll( newpath );
+    strcpy( filename, base_name );
+    strcat( filename, ".dll" );
+    mad_dll = RdosLoadDll( filename );
     if( mad_dll == NULL_SYSHDL ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }

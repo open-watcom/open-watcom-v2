@@ -52,13 +52,13 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
 {
     dip_sys_handle      dip_dll;
     dip_init_func       *init_func;
-    char                newpath[256];
+    char                filename[256];
     dip_status          ds;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".dll" );
-    dip_dll = LoadLibrary( newpath );
+    strcpy( filename, base_name );
+    strcat( filename, ".dll" );
+    dip_dll = LoadLibrary( filename );
     if( dip_dll == NULL ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }

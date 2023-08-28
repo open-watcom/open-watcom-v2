@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +41,14 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
     HANDLE                  dll;
-    char                    newpath[256];
+    char                    filename[256];
     pill_init_func          *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    strcpy( newpath, path );
-    strcat( newpath, ".dll" );
-    dll = LoadLibrary( newpath );
+    strcpy( filename, path );
+    strcat( filename, ".dll" );
+    dll = LoadLibrary( filename );
     if( dll == NULL ) {
         msg->data.code = GetLastError();
         return( 0 );

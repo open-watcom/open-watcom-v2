@@ -67,7 +67,7 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     HINSTANCE           dip_dll;
-    char                newpath[256];
+    char                filename[256];
     mad_status          status;
     char                parm[10];
     struct {
@@ -85,8 +85,8 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
     UINT                prev;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".dll" );
+    strcpy( filename, base_name );
+    strcat( filename, ".dll" );
     p = parm;
     *p++ = ' ';
     utoa( _FP_SEG( &transfer_block ), p, 16 );
@@ -102,7 +102,7 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
     parm_block.show = &show_block;
     parm_block.reserved = 0;
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    dip_dll = LoadModule( newpath, &parm_block );
+    dip_dll = LoadModule( filename, &parm_block );
     MADLastHandle = dip_dll;
     SetErrorMode( prev );
     if( dip_dll < HINSTANCE_ERROR ) {
