@@ -568,7 +568,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     unsigned_16                 len;
     char                        *name;

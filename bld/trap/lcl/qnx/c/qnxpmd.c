@@ -674,7 +674,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     struct  stat                chk;
     unsigned_16                 len;
@@ -713,10 +713,8 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
         }
         PmdInfo.fd = save_handle;
     }
-    if( len == 0 ) {
+    if( len == 0 )
         ret->err = ENOENT;      /* File not found */
-        return( sizeof( *ret ) + 1 );
-    }
     return( sizeof( *ret ) + len + 1 );
 }
 

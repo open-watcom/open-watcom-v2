@@ -261,7 +261,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;

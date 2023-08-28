@@ -536,7 +536,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
 }
 
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     char                        *name;
     char                        *fullname;

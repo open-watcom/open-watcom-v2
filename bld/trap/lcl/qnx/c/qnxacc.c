@@ -874,9 +874,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ProcInfo.loaded_proc = false;
     } else {
         args[0] = name;
-        if( FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name ) == 0 ) {
-            exe_name[0] = '\0';
-        }
+        FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name );
         save_pgrp = getpgrp();
         setpgid( 0, OrigPGrp );
         ProcInfo.pid = qnx_spawn(0, 0, nid, -1, SCHED_OTHER,
@@ -1454,7 +1452,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     }
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     struct _psinfo      proc;
     pid_t               pid;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
     REQ_FILE_DEF( WRITE_CONSOLE,      write_console ) \
     REQ_FILE_DEF( CLOSE,              close ) \
     REQ_FILE_DEF( ERASE,              erase ) \
-    REQ_FILE_DEF( STRING_TO_FULLPATH, string_to_fullpath ) \
+    REQ_FILE_DEF( STRING_TO_FULLPATH, file_to_fullpath ) \
     REQ_FILE_DEF( RUN_CMD,            run_cmd )
 
 enum {

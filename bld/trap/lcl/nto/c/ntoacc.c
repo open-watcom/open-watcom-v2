@@ -1046,7 +1046,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void  )
 }
 
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     pid_t               pid;
     int                 len;
