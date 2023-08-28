@@ -77,10 +77,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     *p = '\0';
     if( has_path ) {
         p = fname;
-    } else if( FindFilePath( DIG_FILETYPE_DBG, fname, RWBuff ) ) {
-        p = RWBuff;
     } else {
-        p = "";
+        FindFilePath( DIG_FILETYPE_DBG, fname, RWBuff );
+        p = RWBuff;
     }
     len = strlen( p );
     if( filename_len > 0 ) {

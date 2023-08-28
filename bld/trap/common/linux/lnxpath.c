@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,34 +49,43 @@ char *StrCopyDst( const char *src, char *dst )
 
 unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
-    char        *end;
     char        *ptr;
 
-    if( path == NULL )
-        return( 0 );
-    ptr = result;
-    for( ;; ) {
-        switch( *path ) {
-        case ':':
-        case '\0':
-            if( ptr != result && ptr[-1] != '/' )
-                *ptr++ = '/';
-            end = StrCopyDst( name, ptr );
-            if( stat( result, tmp ) == 0 )
-                return( end - result );
-            if( *path == '\0' )
-                return( 0 );
-            ptr = result;
-            break;
-        case ' ':
-        case '\t':
-            break;
-        default:
-            *ptr++ = *path;
-            break;
+    if( path != NULL && *path != '\0' ) {
+        ptr = result;
+        for( ; *path != '\0'; path++ ) {
+            switch( *path ) {
+            case ':':
+                if( path[1] == ':' )
+                    continue;
+                if( ptr == result )
+                    continue;
+                if( ptr[-1] != '/' )
+                    *ptr++ = '/';
+                ptr = StrCopyDst( name, ptr );
+                if( stat( result, tmp ) == 0 )
+                    return( ptr - result );
+                ptr = result;
+                break;
+            case ' ':
+            case '\t':
+                break;
+            default:
+                *ptr++ = *path;
+                break;
+            }
         }
-        ++path;
+        if( ptr != result ) {
+            if( ptr[-1] != '/' )
+                *ptr++ = '/';
+            ptr = StrCopyDst( name, ptr );
+            if( stat( result, tmp ) == 0 ) {
+                return( ptr - result );
+            }
+        }
     }
+    *result = '\0';
+    return( 0 );
 }
 
 unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
