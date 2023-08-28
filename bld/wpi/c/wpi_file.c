@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 HFILE _wpi_fileopen( LPSTR filename, int format )
 /***********************************************/
 {
-#if 0   // this definition seems to interfere with C lib IO
     PM1632_FILESIZETYPE         action;
     HFILE                       hfile;
 
@@ -62,39 +61,12 @@ HFILE _wpi_fileopen( LPSTR filename, int format )
     // DosDevIOCtl( hfile, 0x08, 0x00, 0, 0, 0, 0, 512L, 0 );
 #endif
     return( hfile );
-#else
-    char                *fmt;
-    FILE                *f;
-
-    switch( format ) {
-
-    case OF_READ:
-        fmt = "r";
-        break;
-
-    case OF_WRITE:
-        fmt = "w";
-        break;
-
-    default:
-        return( -1 );
-    }
-    f = fopen( filename, fmt );
-    if( f == NULL ) {
-        return( -1 );
-    }
-
-    /* an HFILE is a long, so this next line works */
-    return( (HFILE) f );
-#endif
 
 } /* _wpi_fileopen */
 
 HFILE _wpi_filecreate( LPSTR filename, int format )
 /*************************************************/
 {
-
-#if 0   // this definition seems to interfere with C lib IO
     PM1632_FILESIZETYPE         action;
     HFILE                       hfile;
 
@@ -118,16 +90,12 @@ HFILE _wpi_filecreate( LPSTR filename, int format )
     // DosDevIOCtl( hfile, 0x08, 0x00, 0, 0, 0, 0, 512L, 0 );
 #endif
     return( hfile );
-#else
-    return( _wpi_fileopen( filename, format ) );
-#endif
 
 } /* _wpi_filecreate */
 
 PM1632_FILESIZETYPE _wpi_fileclose( HFILE hfile )
 /***********************************************/
 {
-#if 0   // this definition seems to interfere with C lib IO
     PM1632_FILESIZETYPE     ret;
 
     ret = (PM1632_FILESIZETYPE)DosClose( hfile );
@@ -138,16 +106,12 @@ PM1632_FILESIZETYPE _wpi_fileclose( HFILE hfile )
     // DosDevIOCtl( hfile, 0x08, 0x00, 0, 0, 0, 0, 512L, 0 );
 #endif
     return( ret );
-#else
-    return( fclose( (void *)hfile ) );
-#endif
+
 } /* _wpi_fileclose */
 
-PM1632_FILESIZETYPE _wpi_filewrite( HFILE hfile, void *buf,
-                                                    PM1632_FILESIZETYPE size )
-/****************************************************************************/
+PM1632_FILESIZETYPE _wpi_filewrite( HFILE hfile, void *buf, PM1632_FILESIZETYPE size )
+/************************************************************************************/
 {
-#if 0   // this definition seems to interfere with C lib IO
     PM1632_FILESIZETYPE len;
     PM1632_APIRET       ret;
 
@@ -156,16 +120,12 @@ PM1632_FILESIZETYPE _wpi_filewrite( HFILE hfile, void *buf,
         len = 0;
     }
     return( len );
-#else
-    return( fwrite( buf, 1, size, (void *)hfile ) );
-#endif
+
 } /* _wpi_filewrite */
 
-PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf,
-                                                    PM1632_FILESIZETYPE size )
-/****************************************************************************/
+PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf, PM1632_FILESIZETYPE size )
+/***********************************************************************************/
 {
-#if 0   // this definition seems to interfere with C lib IO
     PM1632_FILESIZETYPE     len;
     PM1632_APIRET           ret;
 
@@ -174,7 +134,5 @@ PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf,
         len = 0;
     }
     return( len );
-#else
-    return( fread( buf, 1, size, (void *)hfile ) );
-#endif
+
 } /* _wpi_fileread */

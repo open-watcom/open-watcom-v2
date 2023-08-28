@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -451,7 +451,7 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
 
     #define _wpi_filecreate( filename, format ) _lcreat( filename, 0 )
 
-    #define _wpi_fileclose( file_hdl ) _lclose( file_hdl )
+    #define _wpi_fileclose( hfile ) _lclose( hfile )
 
     #define _wpi_filewrite( hfile, buf, size ) _lwrite( hfile, buf, size )
 

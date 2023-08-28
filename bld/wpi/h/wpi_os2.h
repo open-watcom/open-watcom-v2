@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -633,10 +633,8 @@ extern int _wpi_selectcliprgn( WPI_PRES pres, HRGN rgn );
 extern HFILE _wpi_fileopen( LPSTR filename, int format );
 extern HFILE _wpi_filecreate( LPSTR filename, int format );
 extern PM1632_FILESIZETYPE _wpi_fileclose( HFILE hfile );
-extern PM1632_FILESIZETYPE _wpi_filewrite( HFILE hfile, void *buf,
-                                                    PM1632_FILESIZETYPE size );
-extern PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf,
-                                                    PM1632_FILESIZETYPE size );
+extern PM1632_FILESIZETYPE _wpi_filewrite( HFILE hfile, void *buf, PM1632_FILESIZETYPE size );
+extern PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf, PM1632_FILESIZETYPE size );
 
     #define _wpi_isdialogmessage( win_hld, wpi_msg ) ( (wpi_msg)->hwnd == win_hld )
     #define _wpi_ismessage( qmsg, id ) ( (qmsg)->msg == (id) )
