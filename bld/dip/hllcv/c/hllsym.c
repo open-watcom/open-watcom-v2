@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +38,10 @@
 #define SCOPE_CLASS_FLAG        0x80000000UL
 #define SCOPE_UNIQUE_MASK       (~SCOPE_CLASS_FLAG)
 
-/*
+dip_status hllSymFillIn( imp_image_handle *iih, imp_sym_handle *ish, unsigned_16 seg, virt_mem h, unsigned len )
+/***************************************************************************************************************
  * Fill in a symbol handle for a symbol scope record.
  */
-dip_status hllSymFillIn( imp_image_handle *iih, imp_sym_handle *ish, unsigned_16 seg,
-                         virt_mem h, unsigned len )
 {
     /* unused parameters */ (void)iih;
 
@@ -58,10 +57,10 @@ dip_status hllSymFillIn( imp_image_handle *iih, imp_sym_handle *ish, unsigned_16
 }
 
 #if 0
-/*
+static dip_status cv3SymFillIn( imp_image_handle *iih, imp_sym_handle *ish, virt_mem h, unsigned len )
+/*****************************************************************************************************
  * Fill in a symbol handle for a symbol scope record.
  */
-static dip_status cv3SymFillIn( imp_image_handle *iih, imp_sym_handle *ish, virt_mem h, unsigned len )
 {
     ish->type = HLL_SYM_TYPE_CV3_SSR;
     ish->segment = 0; //FIXME
@@ -77,11 +76,11 @@ static dip_status cv3SymFillIn( imp_image_handle *iih, imp_sym_handle *ish, virt
 
 #define GET_NAME_PTR(x) ((char *)&(x) + sizeof( x ))
 
-/*
- * Get the name in a SSR record.
- */
 static dip_status hllSymGetName( imp_image_handle *iih, imp_sym_handle *ish,
                                  const char **name_p, size_t *name_len_p )
+/***************************************************************************
+ * Get the name in a SSR record.
+ */
 {
     hll_ssr_all        *ssr;
 
@@ -208,14 +207,14 @@ static dip_status hllSymGetName( imp_image_handle *iih, imp_sym_handle *ish,
     return( DS_OK );
 }
 
-/*
- * Gets the symbol index.
- */
 #define DEFTYPE( t ) \
     if( idx == 0 ) \
         idx = t;
 
 static unsigned hllSymTypeIdx( imp_image_handle *iih, hll_ssr_all *p )
+/*********************************************************************
+ * Gets the symbol index.
+ */
 {
     unsigned    idx;
 
@@ -359,11 +358,11 @@ static unsigned hllSymTypeIdx( imp_image_handle *iih, hll_ssr_all *p )
     return( idx );
 }
 
-/*
- * Get the location of the given symbol.
- */
 dip_status hllSymLocation( imp_image_handle *iih, imp_sym_handle *ish,
                            location_context *lc, location_list *ll )
+/*********************************************************************
+ * Get the location of the given symbol.
+ */
 {
     address     addr = { 0 };
     void        *p;
@@ -495,17 +494,18 @@ dip_status hllSymLocation( imp_image_handle *iih, imp_sym_handle *ish,
         case HLL_SSR_CU_FUNC_NUM:
             return( DS_FAIL );
         }
-
     } else {
-        /* FIXME: CV3 */
+        /*
+         * FIXME: CV3
+         */
         return( DS_FAIL );
     }
-
-    /* (addresses only, the others return) */
+    /*
+     * (addresses only, the others return)
+     */
     hllMapLogical( iih, &addr );
     hllLocationCreate( ll, LT_ADDR, &addr );
     return( DS_OK );
-
 
 #if 0
     address             addr;
@@ -724,7 +724,9 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
         chk += p->common.length + sizeof( p->common.length );
         len -= p->common.length + sizeof( p->common.length );
     }
-    /* found first scope block, now find correct offset */
+    /*
+     * found first scope block, now find correct offset
+     */
     for( ;; ) {
         ds = hllScopeFillIn( iih, chk, scope, NULL );
         if( ds != DS_OK )
@@ -737,7 +739,9 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
             return( DS_FAIL );
         chk = scope->next;
     }
-    /* found enclosing scope block, now find smallest one */
+    /*
+     * found enclosing scope block, now find smallest one
+     */
     chk = scope->scope;
     new.cde = scope->cde;
     for( ;; ) {
@@ -745,21 +749,31 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
         if( ds & DS_ERR )
             return( ds );
         if( ds == DS_OK ) {
-            /* new scope */
+            /*
+             * new scope
+             */
             if( !(addr.mach.offset >= new.start.mach.offset
              && addr.mach.offset <  (new.start.mach.offset + new.len)) ) {
-                /* out of range */
+                /*
+                 * out of range
+                 */
                 chk = new.end;
             } else if( !(new.start.mach.offset >= scope->start.mach.offset
                    && (new.start.mach.offset+new.len) <= (scope->start.mach.offset+scope->len)) ) {
-                /* not smaller */
+                /*
+                 * not smaller
+                 */
                 chk = new.end;
             } else {
-                /* inner scope */
+                /*
+                 * inner scope
+                 */
                 *scope = new;
             }
         } else if( p->common.code == S_END ) {
-            /* all done */
+            /*
+             * all done
+             */
             return( DS_OK );
         }
         p = VMBlock( iih, chk, sizeof( p->common ) );
@@ -778,14 +792,14 @@ static dip_status ScopeFindNext( imp_image_handle *iih, scope_info *scope )
 #endif
 
 
-/*
- * Process one global symbol.
- * If 'scope' is a non-zero, symbols starting a scope will be skipped.
- */
 static walk_result hllScopeOneModSymbol( imp_image_handle *iih, hll_dir_entry *hde,
                                          scope_info *scope, DIP_IMP_SYM_WALKER *wk,
                                          void *d, unsigned_32 *posp,
                                          unsigned_16 *depthp, unsigned_16 *segp )
+/**********************************************************************************
+ * Process one global symbol.
+ * If 'scope' is a non-zero, symbols starting a scope will be skipped.
+ */
 {
     walk_result         wr = WR_CONTINUE;
     hll_ssr_all         *ssr;
@@ -827,9 +841,9 @@ static walk_result hllScopeOneModSymbol( imp_image_handle *iih, hll_dir_entry *h
         //don't know about the next ones...
         if( ds == DS_OK && scope != NULL ) {
             /*
-                starting a new scope and not doing file scope
-                symbols -- skip scope start symbol
-            */
+             * starting a new scope and not doing file scope
+             * symbols -- skip scope start symbol
+             */
             wr = WR_CONTINUE;
         } else {
             imp_sym_handle ish;
@@ -868,7 +882,9 @@ static walk_result hllScopeOneModSymbol( imp_image_handle *iih, hll_dir_entry *h
     case HLL_SSR_ARRAY_SYM: //??
     case HLL_SSR_CU_INFO:
     case HLL_SSR_CU_FUNC_NUM:
-        /* not interested in these */
+        /*
+         * not interested in these
+         */
         break;
     }
     return( wr );
@@ -886,7 +902,9 @@ static walk_result ScopeWalkOne( imp_image_handle *iih, scope_info *scope,
     p = VMBlock( iih, curr, sizeof( p->common ) );
     if( p == NULL )
         return( WR_FAIL );
-    /* skip over first scope start symbol */
+    /*
+     * skip over first scope start symbol
+     */
     curr += p->common.length + sizeof( p->common.length );
     for( ;; ) {
         p = VMBlock( iih, curr, sizeof( p->common ) );
@@ -975,7 +993,9 @@ static walk_result hllScopeWalkFile( imp_image_handle *iih,
             wr = hllScopeOneModSymbol( iih, hde, NULL, wk, d, &pos, &depth, &seg );
         }
     } else {
-        /* FIXME: CV3 */
+        /*
+         * FIXME: CV3
+         */
     }
 
     return( wr );
@@ -1173,12 +1193,16 @@ static search_result TableSearchForName( imp_image_handle *iih,
             if( scompn( name, curr, curr_len ) != 0 ) {
                 continue;
             }
-            /* Got one! */
+            /*
+             * Got one!
+             */
             switch( create( iih, sp, ish, d ) ) {
             case SR_FAIL:
                 return( SR_FAIL );
             case SR_CLOSEST:
-                /* means we found one, but keep on going */
+                /*
+                 * means we found one, but keep on going
+                 */
                 sr = SR_EXACT;
                 break;
             case SR_EXACT:
@@ -1238,12 +1262,12 @@ dip_status hllSymFindMatchingSym( imp_image_handle *iih,
     return( DS_FAIL );
 }
 
-/*
- * Walks the publics subsection for a module.
- */
 static walk_result hllWalkModulePublics( imp_image_handle *iih,
                                          hll_dir_entry *hde, DIP_IMP_SYM_WALKER *wk,
                                          imp_sym_handle *ish, void *d)
+/***********************************************************************************
+ * Walks the publics subsection for a module.
+ */
 {
     unsigned        off_name_len;
     unsigned_32     pos;
@@ -1262,7 +1286,9 @@ static walk_result hllWalkModulePublics( imp_image_handle *iih,
         unsigned_8      name_len;
         walk_result     wr;
 
-        /* get the record length and make sure it's all valid. */
+        /*
+         * get the record length and make sure it's all valid.
+         */
         if( !VMSsGetU8( iih, hde, pos + off_name_len, &name_len ) ) {
             return( WR_FAIL );
         }
@@ -1271,8 +1297,9 @@ static walk_result hllWalkModulePublics( imp_image_handle *iih,
         if( pub == NULL ) {
             return( WR_FAIL );
         }
-
-        /* construct a symbol handle and feed it to the walker function. */
+        /*
+         * construct a symbol handle and feed it to the walker function.
+         */
         ish->type = HLL_SYM_TYPE_PUB;
         ish->handle = pos + hde->lfo;
         ish->len = len;
@@ -1308,12 +1335,12 @@ static walk_result WalkGlue( imp_image_handle *iih, sym_walk_info swi,
     return( gd->wk( iih, swi, gd->ish, gd->d ) );
 }
 
-/*
+static walk_result hllWalkModuleGlobals( imp_image_handle *iih,
+                                         hll_dir_entry *hde, void *d )
+/*********************************************************************
  * Module walker callback which will in turn walk the global
  * symbols of a module.
  */
-static walk_result hllWalkModuleGlobals( imp_image_handle *iih,
-                                         hll_dir_entry *hde, void *d )
 {
     struct glue_info    *gd = d;
     walk_result         wr = WR_CONTINUE;
@@ -1331,6 +1358,9 @@ static walk_result hllWalkModuleGlobals( imp_image_handle *iih,
 }
 
 
+static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
+                            void *source, DIP_IMP_SYM_WALKER *wk,
+                            imp_sym_handle *ish, void *d )
 /*
  * Walk the list of symbols.
  *
@@ -1404,9 +1434,6 @@ static walk_result hllWalkModuleGlobals( imp_image_handle *iih,
  *      }
  *  }
  */
-static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
-                            void *source, DIP_IMP_SYM_WALKER *wk,
-                            imp_sym_handle *ish, void *d )
 {
     struct glue_info    glue;
     imp_mod_handle      imh;
@@ -1421,13 +1448,13 @@ static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
     glue.ish = ish;
     glue.d  = d;
     switch( ss ) {
+    case SS_MODULE:
         /*
          * The 'source' is a pointer to an imp_mod_handle. If the
          * '*(imp_mod_handle *)source' is IMH_NOMOD, the list is all the module
          * scope & global symbols in the image, otherwise it is the list of
          * module scope & global symbols in the indicated module.
          */
-    case SS_MODULE:
         imh = *(imp_mod_handle *)source;
         if( imh == IMH_NOMOD ) {
             wr = hllWalkDirList( iih, hll_sstModule, &hllWalkModuleGlobals, &glue );
@@ -1461,7 +1488,9 @@ static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
         if( ds != DS_OK )
             return( WR_CONTINUE );
         if( sc_block->unique & SCOPE_CLASS_FLAG ) {
-            /* Walk the member function class scope */
+            /*
+             * Walk the member function class scope
+             */
             ds = hllTypeIndexFillIn( iih, hllSymTypeIdx( iih, p ), &ith );
             if( ds & DS_ERR )
                 return( WR_FAIL );
@@ -1483,37 +1512,39 @@ static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
     return( WR_FAIL );
 }
 
-/*
- * Walk a symbol list.
- */
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih, symbol_source ss,
                                         void *source, DIP_IMP_SYM_WALKER *wk,
                                         imp_sym_handle *ish, void *d )
+/*******************************************************************************
+ * Walk a symbol list.
+ */
 {
     return( hllWalkSymList( iih, ss, source, wk, ish, d ) );
 }
 
-/*
- * Walk a symbol list, new api.
- */
 walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih,
                                           symbol_source ss, void *source,
                                           DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish,
                                           location_context *lc, void *d )
+/*************************************************************************************
+ * Walk a symbol list, new api.
+ */
 {
     lc=lc;
     return( hllWalkSymList( iih, ss, source, wk, ish, d ) );
 }
 
-/*
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish )
+/*********************************************************************************
  * Get the module of a symbol.
  */
-imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish )
 {
     iih = iih;
     return( ish->imh );
 }
 
+static size_t hllSymName( imp_image_handle *iih, imp_sym_handle *ish,
+    location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 /*
  * Given the imp_sym_handle, copy the name of the symbol into 'buff'.
  *
@@ -1544,8 +1575,6 @@ imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish
  *         when scanned in an expression, the symbol handle can
  *         be reconstructed. Deprecated - never used.
  */
-static size_t hllSymName( imp_image_handle *iih, imp_sym_handle *ish,
-    location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     const char  *name = NULL;
     size_t      name_len;
@@ -1559,8 +1588,9 @@ static size_t hllSymName( imp_image_handle *iih, imp_sym_handle *ish,
         if( snt != SNT_OBJECT && snt != SNT_DEMANGLED ) {
             return( 0 );
         }
-
-        /* get the name */
+        /*
+         * get the name
+         */
         if( HLL_IS_LVL_32BIT( iih->format_lvl ) ) {
             off_name = offsetof( hll_public, name_len ) + 1;
         } else {
@@ -1568,8 +1598,9 @@ static size_t hllSymName( imp_image_handle *iih, imp_sym_handle *ish,
         }
         name_len = ish->len - off_name;
         name = VMBlock( iih, ish->handle + off_name, name_len);
-
-        /* demangle... */
+        /*
+         * demangle...
+         */
         if( snt == SNT_DEMANGLED && name != NULL ) {
             if( __is_mangled( name, name_len ) ) {
                 return( __demangle_l( name, name_len, buff, buff_size ) );
@@ -1586,7 +1617,7 @@ static size_t hllSymName( imp_image_handle *iih, imp_sym_handle *ish,
         switch( snt ) {
         case SNT_EXPRESSION:
             return( 0 );
-/*
+#if 0
         case SNT_OBJECT:
         case SNT_DEMANGLED:
             ds = hllSymLocation( iih, ish, lc, &ll );
@@ -1608,7 +1639,7 @@ static size_t hllSymName( imp_image_handle *iih, imp_sym_handle *ish,
             if( !__is_mangled( name, len ) )
                 return( 0 );
             return( __demangle_l( name, len, buff, buff_size ) );
-*/
+#endif
         case SNT_SOURCE:
             if( hllSymGetName( iih, ish, &name, &name_len ) != DS_OK ) {
                 return( 0 );
@@ -1629,19 +1660,19 @@ static size_t hllSymName( imp_image_handle *iih, imp_sym_handle *ish,
     return( hllNameCopy( buff, name, buff_size, name_len ) );
 }
 
-/*
- * Get the symbol name.
- */
 size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
     location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
+/*****************************************************************************
+ * Get the symbol name.
+ */
 {
     return( hllSymName( iih, ish, lc, snt, buff, buff_size ) );
 }
 
-/*
+dip_status hllSymType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_handle *ith )
+/****************************************************************************************
  * Get the type of the given symbol.
  */
-dip_status hllSymType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_handle *ith )
 {
     unsigned    type_idx;
     void        *p;
@@ -1649,7 +1680,6 @@ dip_status hllSymType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_hand
     if( ish->containing_type != 0 ) {
         return( hllTypeSymGetType( iih, ish, ith ) );
     }
-
     /*
      * Load the record, get the type index and create a type handle from that
      */
@@ -1664,7 +1694,6 @@ dip_status hllSymType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_hand
         } else {
             type_idx = pub->cv3.type;
         }
-
     } else if( ish->type == HLL_SYM_TYPE_HLL_SSR ) {
         type_idx = hllSymTypeIdx( iih, p );
     } else {
@@ -1674,36 +1703,37 @@ dip_status hllSymType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_hand
     return( hllTypeIndexFillIn( iih, type_idx, ith ) );
 }
 
-/*
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *ish, imp_type_handle *ith )
+/****************************************************************************************************
  * Get the type of the given symbol.
  */
-dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *ish,
-                                   imp_type_handle *ith )
 {
     return( hllSymType( iih, ish, ith ) );
 }
 
-/*
- * Get the location of the given symbol.
- */
 dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_handle *ish,
                                        location_context *lc, location_list *ll )
+/*********************************************************************************
+ * Get the location of the given symbol.
+ */
 {
     return( hllSymLocation( iih, ish, lc, ll ) );
 }
 
 
-/*
- * Copy the value of a constant symbol into 'buff'.
- */
 dip_status hllSymValue( imp_image_handle *iih, imp_sym_handle *ish,
                         location_context *lc, void *buff )
+/******************************************************************
+ * Copy the value of a constant symbol into 'buff'.
+ */
 {
     void    *p;
 
     /* unused parameters */ (void)lc; (void)buff;
 
-    /* Doesn't apply to publics. */
+    /*
+     * Doesn't apply to publics.
+     */
     if( ish->type == HLL_SYM_TYPE_PUB ) {
         return( DS_FAIL );
     }
@@ -1714,12 +1744,16 @@ dip_status hllSymValue( imp_image_handle *iih, imp_sym_handle *ish,
             hll_ssr_all *ssr = p;
             switch( ssr->common.code ) {
             case HLL_SSR_CONSTANT:
-                /* FIXME */
+                /*
+                 * FIXME
+                 */
                 break;
 
             }
         } else {
-            /* FIXME: CV3 */
+            /*
+             * FIXME: CV3
+             */
         }
     }
 
@@ -1756,21 +1790,21 @@ dip_status hllSymValue( imp_image_handle *iih, imp_sym_handle *ish,
 #endif
 }
 
-/*
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *ish,
+                                    location_context *lc, void *buff )
+/******************************************************************************
  * Copy the value of a constant symbol into 'buff'. You can get the
  * size required by doing a SymType followed by a TypeInfo.
  */
-dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *ish,
-                                    location_context *lc, void *buff )
 {
     return( hllSymValue( iih, ish, lc, buff ) );
 }
 
-/*
- * Get some generic information about a symbol.
- */
 dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
                                    location_context *lc, sym_info *si )
+/*****************************************************************************
+ * Get some generic information about a symbol.
+ */
 {
     void    *p;
 
@@ -1779,8 +1813,9 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
     if( ish->containing_type != 0 ) {
         return( hllTypeSymGetInfo( iih, ish, lc, si ) );
     }
-
-    /* get the record. */
+    /*
+     * get the record.
+     */
     p = VMBlock( iih, ish->handle, ish->len );
     if( p == NULL ) {
         return( DS_FAIL );
@@ -1826,12 +1861,14 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
             si->prolog_size = ssr->proc.prologue_len;
             si->epilog_size = ssr->proc.len - ssr->proc.prologue_body_len;
             si->rtn_size = ssr->proc.len;
-            /* FIXME:
+#if 0
+            /* FIXME: */
             si->num_parms
             si->rtn_calloc
             si->ret_modifier
             si->ret_size
-            si->is_static */
+            si->is_static
+#endif
             break;
 
         case HLL_SSR_CONSTANT:
@@ -2016,11 +2053,15 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     if( n > parm_count )
         return( DS_NO_PARM );
     if( n == 0 ) {
-        /* return value */
+        /*
+         * return value
+         */
         p = VMRecord( iih, ish->handle + ish->len, NULL, 0 );
         if( p == NULL )
             return( DS_ERR | DS_FAIL );
-        /* WARNING: assuming that S_RETURN directly follows func defn */
+        /*
+         * WARNING: assuming that S_RETURN directly follows func defn
+         */
         if( p->common.code == S_RETURN ) {
             switch( p->return_.f.style ) {
             case CVRET_VOID:
@@ -2038,7 +2079,9 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
             }
             return( DS_ERR | DS_BAD_LOCATION );
         }
-        /* find out about return type */
+        /*
+         * find out about return type
+         */
         ds = hllTypeIndexFillIn( iih, type, &ith );
         if( ds != DS_OK )
             return( ds );
@@ -2102,7 +2145,9 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     switch( call ) {
     case CV_NEARC:
     case CV_FARC:
-        /* all on stack */
+        /*
+         * all on stack
+         */
         return( DS_NO_PARM );
     case CV_NEARPASCAL:
     case CV_FARPASCAL:
@@ -2116,7 +2161,9 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     case CV_MIPS:
     case CV_AXP:
     case CV_GENERIC:
-        //NYI: have to handle all of these suckers
+        /*
+         * NYI: have to handle all of these suckers
+         */
         NYI();
         break;
     }
@@ -2198,7 +2245,9 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
             break;
         check = next;
     }
-    /* We have a 'this' pointer! Repeat, we have a this pointer! */
+    /*
+     * We have a 'this' pointer! Repeat, we have a this pointer!
+     */
     ds = hllSymLocation( iih, &parm, lc, ll );
     if( ds != DS_OK )
         return( ds );
@@ -2293,7 +2342,9 @@ static walk_result SymFind( imp_image_handle *iih, sym_walk_info swi,
     if( scompn( li->name.start, name, len ) != 0 ) {
         return( WR_CONTINUE );
     }
-    /* Got one! */
+    /*
+     * Got one!
+     */
     new = DCSymCreate( iih, sd->d );
     if( new == NULL )
         return( WR_FAIL );
@@ -2331,7 +2382,9 @@ static search_result SymCreate( imp_image_handle *iih, s_all *p,
     if( new == NULL )
         return( SR_FAIL );
     *new = *ish;
-    /* keep on looking for more */
+    /*
+     * keep on looking for more
+     */
     return( SR_CLOSEST );
 }
 
@@ -2376,7 +2429,9 @@ static search_result    DoLookupSym( imp_image_handle *iih,
         break;
     case SS_SCOPED:
         if( ImpAddrMod( iih, *(address *)source, &ish.imh ) == SR_NONE ) {
-            /* just check the global symbols */
+            /*
+             * just check the global symbols
+             */
             break;
         }
         if( MH2IMH( data.li.mod ) != ish.imh && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
@@ -2554,7 +2609,9 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
         case S_LPROC16:
         case S_GPROC32:
         case S_LPROC32:
-            /* Might be a member function. We'll let WalkSym figure it out. */
+            /*
+             * Might be a member function. We'll let WalkSym figure it out.
+             */
             *out = *in;
             out->unique |= SCOPE_CLASS_FLAG;
             return( SR_CLOSEST );
@@ -2576,7 +2633,8 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
 #endif
 }
 
-/*
+int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_handle *ish2 )
+/*********************************************************************************************
  * Compare two sym handles and return 0 if they refer to the same
  * information. If they refer to differnt things return either a
  * positive or negative value to impose an 'order' on the information.
@@ -2588,7 +2646,6 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
  * The reason for the constraints is so that a client can sort a
  * list of handles and binary search them.
  */
-int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_handle *ish2 )
 {
     /* unused parameters */ (void)iih;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,8 @@
 
 
 /*
-    Stuff dealing with type handles.
-*/
-
+ * Stuff dealing with type handles.
+ */
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
                     imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,

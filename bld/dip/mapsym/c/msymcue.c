@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,8 @@
 
 #include "msym.h"
 
-/* Note: MAPSYM .sym files do suppport rudimentary line number information.
+/*
+ * Note: MAPSYM .sym files do suppport rudimentary line number information.
  * However we do not support this for two reasons: One, most .sym files do not
  * include line number information, and two, the .sym format is so pathetic
  * that anyone who actually has source code will definitely want to use some

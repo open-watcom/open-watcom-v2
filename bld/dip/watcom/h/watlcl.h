@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,18 +38,22 @@ typedef struct {
     unsigned char       namelen;
     unsigned            type_index;
     const char          *name;
-    /* stuff that we don't have to parse until we know we want the lcl */
+    /*
+     * stuff that we don't have to parse until we know we want the lcl
+     */
     const char          *unparsed;
 } lcl_info;
 
-/* variable, class = 1x */
-
+/*
+ * variable, class = 1x
+ */
 typedef struct {
     lcl_info            i;
 } lcl_variable;
 
-/* code,     class = 2x */
-
+/*
+ * code,     class = 2x
+ */
 typedef struct {
     lcl_info            i;
     unsigned int        parent_block;
@@ -77,13 +82,12 @@ typedef union {
     lcl_member          m;
 } lcl_defn;
 
-
 #define CLASS_MASK      0xf0
 #define SUBCLASS_MASK   0x0f
 
-
-/* variables */
-
+/*
+ * variables
+ */
 #define VAR_SYMBOL      0x10
 #define VAR_MODULE      0x00
 #define VAR_LOCAL       0x01
@@ -103,7 +107,6 @@ typedef union {
 #define ADD_PREV_SEG    0x00
 #define SET_BASE        0x01
 #define SET_BASE386     0x02
-
 
 extern unsigned         InfoSize( imp_image_handle *, imp_mod_handle, demand_kind dk, word entry );
 extern void             *InfoLoad( imp_image_handle *, imp_mod_handle, demand_kind dk, word entry, void (*clear)(void *, void *) );

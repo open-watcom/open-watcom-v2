@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,8 +201,8 @@ unsigned long   GetU32( ji_ptr off )
 }
 
 /*
-    Tell the trap file to do a FindClass on the given class name
-*/
+ * Tell the trap file to do a FindClass on the given class name
+ */
 ji_ptr GetClass( ji_ptr off )
 {
     location_list       src;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,9 @@
 #include "watldsym.h"
 
 
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 #if !defined( __WINDOWS__ )
 int __nullarea;
 #if defined( __WATCOMC__ )
@@ -77,10 +79,10 @@ static unsigned         TimeStamp;
 #define STASH_DMND_PTR( p )     ((pointer_uint)(p) | RESIDENT)
 
 
-/*
- * InfoSize -- return size of demand info section
- */
 unsigned InfoSize( imp_image_handle *iih, imp_mod_handle imh, demand_kind dk, word entry )
+/*****************************************************************************************
+ * return size of demand info section
+ */
 {
     demand_info         *dmnd;
     section_info        *inf;
@@ -94,10 +96,6 @@ unsigned InfoSize( imp_image_handle *iih, imp_mod_handle imh, demand_kind dk, wo
     return( (unsigned)DMND_SIZE( inf, real_entry ) );
 }
 
-
-/*
- * InitDemand -- allocate a last chance demand info location
- */
 
 struct walk_demand {
     unsigned long       max_size;
@@ -150,6 +148,9 @@ static void Unload( demand_ctrl *section )
 }
 
 dip_status InitDemand( imp_image_handle *iih )
+/*********************************************
+ * allocate a last chance demand info location
+ */
 {
     struct walk_demand  d;
 
@@ -216,11 +217,10 @@ void InfoClear( imp_image_handle *iih )
     MyWalkModList( iih, WlkClear, NULL );
 }
 
-/*
- * InfoUnlock -- arbitrarily set all demand section lock counts to zero
- */
-
 void InfoUnlock( void )
+/**********************
+ * arbitrarily set all demand section lock counts to zero
+ */
 {
     demand_ctrl *section;
 
@@ -233,12 +233,11 @@ void InfoUnlock( void )
 }
 
 
-/*
- * InfoLoad -- load demand info
- */
-
 void *InfoLoad( imp_image_handle *iih, imp_mod_handle imh, demand_kind dk,
                 word entry, void (*clear)(void *, void *) )
+/*************************************************************************
+ * load demand info
+ */
 {
     demand_ctrl         *section;
     demand_info         *info;
@@ -264,19 +263,27 @@ void *InfoLoad( imp_image_handle *iih, imp_mod_handle imh, demand_kind dk,
     if( IS_RESIDENT( *lnk ) ) {
         section = MK_DMND_PTR( *lnk );
     } else {
-        /* section not loaded */
+        /*
+         * section not loaded
+         */
         size = (unsigned)DMND_SIZE( sect, real_entry );
         if( ( LastDemand->owner == NULL || LastDemand->size < size ) && LastDemand->locks == 0 ) {
-            /* keep largest section in LastDemand */
+            /*
+             * keep largest section in LastDemand
+             */
             section = LastDemand;
             Unload( LastDemand );
         } else {
-            /* allocate some memory */
+            /*
+             * allocate some memory
+             */
             section = DCAlloc( _demand_size( size ) );
             if( section == NULL ) {
                 if( LastDemand->locks != 0 )
                     return( NULL );
-                /* no memory, use last chance */
+                /*
+                 * no memory, use last chance
+                 */
                 section = LastDemand;
                 Unload( LastDemand );
             }
@@ -312,27 +319,23 @@ static void AdjustLockCount( const char *p, int adjust )
     section->locks += adjust;
 }
 
-/*
+void InfoSpecLock( const char *p )
+/*********************************
  * Increment the lock count for a specific demand load section
  */
-void InfoSpecLock( const char *p )
 {
     AdjustLockCount( p, 1 );
 }
 
 
-/*
+void InfoSpecUnlock( const char *p )
+/***********************************
  * Decrement the lock count for a specific demand load section
  */
-void InfoSpecUnlock( const char *p )
 {
     AdjustLockCount( p, -1 );
 }
 
-
-/*
- * InfoRelease -- release the least recently used section
- */
 
 static dip_status ReleaseFromList( void )
 {
@@ -355,11 +358,16 @@ static dip_status ReleaseFromList( void )
 }
 
 dip_status InfoRelease( void )
+/*****************************
+ * release the least recently used section
+ */
 {
     if( ReleaseFromList() == DS_OK )
         return( DS_OK );
     if( LastDemand != NULL && LastDemand->locks == 0 && LastDemand->clear != NULL ) {
-        /* let's hope the clear routine frees up some memory */
+        /*
+         * let's hope the clear routine frees up some memory
+         */
         Unload( LastDemand );
         return( DS_OK );
     }

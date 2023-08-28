@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,8 @@
 #include "msym.h"
 
 
-/* Note: Not much to do here. Could possibly try to guess data vs. code by
+/*
+ * Note: Not much to do here. Could possibly try to guess data vs. code by
  * looking at segment names, but results would not necessarily be accurate.
  */
 

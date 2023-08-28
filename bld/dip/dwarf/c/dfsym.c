@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,42 +51,45 @@ imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish
 {
     /* unused parameters */ (void)iih;
 
-    /* Return the module that the implementation symbol handle comes from. */
+    /*
+     * Return the module that the implementation symbol handle comes from.
+     */
     return( ish->imh );
 }
 
 
 size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
     location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
-/****************************************************************************/
+/*****************************************************************************
+ *  SNT_SOURCE:
+ *          The name of the symbol as it appears in the source code.
+ *
+ *  SNT_OBJECT:
+ *          The name of the symbol as it appeared to the linker.
+ *
+ *  SNT_DEMANGLED:
+ *          C++ names, with full typing (essentially it looks like
+ *          a function prototype). If the symbol is not a C++ symbol
+ *          (not mangled), return zero for the length.
+ *
+ *  SNT_EXPRESSION:
+ *          Return whatever character string is necessary such that
+ *          when scanned in an expression, the symbol handle can
+ *          be reconstructed.
+ *
+ *  SNT_SCOPED:
+ *          The scoped name of the symbol as it appears in the source code.
+ */
 {
-    /*
-        SNT_SOURCE:
-                The name of the symbol as it appears in the source code.
-
-        SNT_OBJECT:
-                The name of the symbol as it appeared to the linker.
-
-        SNT_DEMANGLED:
-                C++ names, with full typing (essentially it looks like
-                a function prototype). If the symbol is not a C++ symbol
-                (not mangled), return zero for the length.
-
-        SNT_EXPRESSION:
-                Return whatever character string is necessary such that
-                when scanned in an expression, the symbol handle can
-                be reconstructed.
-
-        SNT_SCOPED:
-                The scoped name of the symbol as it appears in the source code.
-    */
     char        *name;
     size_t      demangled_len;
     size_t      len = 0;
 
     /* unused parameters */ (void)lc;
 
-//TODO: what's lc for?
+    /*
+     * TODO: what's lc for?
+     */
     DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     switch( snt ) {
     case SNT_SOURCE:
@@ -149,9 +152,10 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
                     imp_sym_handle *ish, imp_type_handle *ith )
-/*************************************************************/
+/**************************************************************
+ * Get the implementation type handle for the type of the given symbol.
+ */
 {
-    /* Get the implementation type handle for the type of the given symbol. */
     dip_status  ds;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
@@ -196,9 +200,10 @@ struct mod_wlk {
 };
 
 static bool AMod( drmem_hdl sym, void *_d, dr_search_context *cont )
-/******************************************************************/
+/*******************************************************************
+ * TODO: no segments, better TAG_label
+ */
 {
-//TODO: no segments, better TAG_label
     struct mod_wlk  *d = _d;
     uint_32         offset;
     addr_seg        seg;
@@ -322,9 +327,10 @@ static  addr_seg GetCodeSeg( imp_image_handle *iih )
 
 dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
                 imp_sym_handle *ish, location_context *lc, location_list *ll )
-/****************************************************************************/
+/*****************************************************************************
+ * Get the location of the given symbol.
+ */
 {
-    /* Get the location of the given symbol. */
     dip_status       ds;
     address          base; /* base segment & offset */
     addr_seg         seg;
@@ -423,20 +429,20 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
 
 dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
                 imp_sym_handle *ish, location_context *ic, void *buff )
-/*********************************************************************/
+/**********************************************************************
+ * Copy the value of a constant symbol into 'buff'. You can get the
+ * size required by doing a SymType followed by a TypeInfo.
+ */
 {
-    uint_32     value;
+    uint_64     value;
 
     /* unused parameters */ (void)ic;
 
-    /* Copy the value of a constant symbol into 'buff'. You can get the
-     * size required by doing a SymType followed by a TypeInfo.
-     */
     if( ish->sclass != SYM_ENUM ) {
         return( DS_FAIL );
     }
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
-    if( !DRConstValAT( ish->sym, &value ) ) {
+    if( !DRConstValAT64( ish->sym, &value ) ) {
         return( DS_FAIL );
     }
     switch( ish->f.einfo.size ) {
@@ -449,6 +455,9 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
     case 4:
         *(uint_32 *)buff = value;
         break;
+    case 8:
+        *(uint_64 *)buff = value;
+        break;
     default:
         return( DS_FAIL );
     }
@@ -458,9 +467,10 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
 
 dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
                 imp_sym_handle *ish, location_context *lc, sym_info *si )
-/***********************************************************************/
+/************************************************************************
+ * Get some generic information about a symbol.
+ */
 {
-    /* Get some generic information about a symbol. */
     uint_32         num1;
     uint_32         num2;
     dr_ptr          addr_class;
@@ -599,9 +609,10 @@ static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 
 
 drmem_hdl GetRet( imp_image_handle *iih, drmem_hdl proc )
-/*******************************************************/
+/********************************************************
+ * Find handle of Watcom return symbol.
+ */
 {
-    /* Find handle of Watcom return symbol. */
     drmem_hdl ret = DRMEM_HDL_NULL;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
@@ -615,16 +626,17 @@ drmem_hdl GetRet( imp_image_handle *iih, drmem_hdl proc )
 dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
                     imp_sym_handle *ish, location_context *lc,
                     location_list *ll, unsigned n )
-/*******************************************************************/
+/*******************************************************************
+ * Get information about where a routine's parameters/return value
+ * are located.
+ * If the 'n' parameter is zero, fill in the location list structure
+ * pointed at by 'll' with the information on the location of the
+ * function's return value. Otherwise fill it in with the location
+ * of the n'th parameter.
+ *
+ * TODO: brian only wants regs for now
+ */
 {
-    /* Get information about where a routine's parameters/return value
-     * are located.
-     * If the 'n' parameter is zero, fill in the location list structure
-     * pointed at by 'll' with the information on the location of the
-     * function's return value. Otherwise fill it in with the location
-     * of the n'th parameter.
-     */
-//TODO: brian only wants regs for now
     drmem_hdl       parm;
     dip_status      ds;
 
@@ -671,9 +683,10 @@ static bool AThis( drmem_hdl var, int index, void *_var_ptr )
 
 
 static drmem_hdl GetThis( imp_image_handle *iih, drmem_hdl proc )
-/***************************************************************/
+/****************************************************************
+ * Return handle of the this parmeter.
+ */
 {
-    /* Return handle of the this parmeter. */
     drmem_hdl   ret = DRMEM_HDL_NULL;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
@@ -686,14 +699,14 @@ static drmem_hdl GetThis( imp_image_handle *iih, drmem_hdl proc )
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
                     imp_sym_handle *ish, imp_type_handle *ith, dig_type_info *ti )
-/********************************************************************************/
+/*********************************************************************************
+ * Fill in the imp_type_handle with the type of the 'this' object
+ * for a C++ member function.
+ * If 'ti' is not NULL, fill in the dig_type_info with the kind of 'this'
+ * pointer that the routine is expecting (near/far, 16/32). If the
+ * routine is a static member, set ti->kind to TK_NONE.
+ */
 {
-    /* Fill in the imp_type_handle with the type of the 'this' object
-     * for a C++ member function.
-     * If 'ti' is not NULL, fill in the dig_type_info with the kind of 'this'
-     * pointer that the routine is expecting (near/far, 16/32). If the
-     * routine is a static member, set ti->kind to TK_NONE.
-     */
     drmem_hdl   dr_this;
     drmem_hdl   dr_type;
     dr_typeinfo typeinfo;
@@ -730,12 +743,12 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
 dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
                                 imp_sym_handle *ish, location_context *lc,
                                 location_list *ll )
-/***********************************************************************/
+/*************************************************************************
+ * Fill in the location list with the location of the '*this' object
+ * for a C++ member function. Return DS_FAIL if it's a static member
+ * function.
+ */
 {
-    /* Fill in the location list with the location of the '*this' object
-     * for a C++ member function. Return DS_FAIL if it's a static member
-     * function.
-     */
     drmem_hdl       dr_this;
     drmem_hdl       dr_type;
     dr_typeinfo     typeinfo;
@@ -814,13 +827,13 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
                         imp_mod_handle imh, address a, imp_sym_handle *ish )
-/**************************************************************************/
+/***************************************************************************
+ * Search the given module for a symbol who's address is greater than
+ * or equal to 'addr'. If none is found return SR_NONE. If you find
+ * a symbol at that address exactly, fill in '*ish' and return SR_EXACT.
+ * Otherwise, fill in '*ish' and return SR_CLOSEST.
+ */
 {
-    /* Search the given module for a symbol who's address is greater than
-     * or equal to 'addr'. If none is found return SR_NONE. If you find
-     * a symbol at that address exactly, fill in '*ish' and return SR_EXACT.
-     * Otherwise, fill in '*ish' and return SR_CLOSEST.
-     */
     addrsym_info    info;
     search_result   ret;
     seg_list        *addr_sym;
@@ -847,9 +860,9 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
     return( ret );
 }
 
-/**********************************/
-/* Walk inner and outer blocks   */
-/*********************************/
+/*********************************
+ * Walk inner and outer blocks   *
+ *********************************/
 
 static bool InBlk( drmem_hdl blk, int depth, void *_ctl )
 /*******************************************************/
@@ -937,37 +950,37 @@ static search_result  DFAddrScope( imp_image_handle *iih,
 
 search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
                 imp_mod_handle imh, address addr, scope_block *scope )
-/********************************************************************/
+/*********************************************************************
+ * Find the range of the lexical scope block enclosing 'addr' in
+ * module 'imh'. If there is no such scope, return SR_NONE. Otherwise
+ * fill in scope->start with the address of the start of the lexical
+ * block and scope->len with the size of the block. Fill in
+ * scope->unique with something that uniquely identifies the lexical
+ * block in question. This is used to disamibiguate between blocks
+ * that start at the same address and have the same length. The value
+ * should be chosen so that
+ *         1. It remains valid and consistant across a DIPUnloadInfo
+ *            and DIPLoadInfo of the same information.
+ *         2. It remains the same whether the scope_block was obtained
+ *            by DIPImpAddrScope or DIPImpScopeOuter.
+ * Then return SR_EXACT/SR_CLOSEST as appropriate.
+ */
 {
-    /* Find the range of the lexical scope block enclosing 'addr' in
-     * module 'imh'. If there is no such scope, return SR_NONE. Otherwise
-     * fill in scope->start with the address of the start of the lexical
-     * block and scope->len with the size of the block. Fill in
-     * scope->unique with something that uniquely identifies the lexical
-     * block in question. This is used to disamibiguate between blocks
-     * that start at the same address and have the same length. The value
-     * should be chosen so that
-     *         1. It remains valid and consistant across a DIPUnloadInfo
-     *            and DIPLoadInfo of the same information.
-     *         2. It remains the same whether the scope_block was obtained
-     *            by DIPImpAddrScope or DIPImpScopeOuter.
-     * Then return SR_EXACT/SR_CLOSEST as appropriate.
-     */
     return( DFAddrScope( iih, imh, addr, scope ) );
 }
 
 
 static search_result   DFScopeOuter( imp_image_handle *iih,
                 imp_mod_handle imh, scope_block *in, scope_block *out )
-/*********************************************************************/
+/**********************************************************************
+ * Given the scope_block pointed to by 'in' in the module 'imh', find
+ * the parent lexical block of it and fill in the scope_block pointed
+ * to by 'out' with the information. Return SR_EXACT/SR_CLOSEST as
+ * appropriate. Return SR_NONE if there is no parent block.
+ * Make sure that the case where 'in' and 'out' point to the same
+ * address is handled.
+ */
 {
-    /* Given the scope_block pointed to by 'in' in the module 'imh', find
-     * the parent lexical block of it and fill in the scope_block pointed
-     * to by 'out' with the information. Return SR_EXACT/SR_CLOSEST as
-     * appropriate. Return SR_NONE if there is no parent block.
-     * Make sure that the case where 'in' and 'out' point to the same
-     * address is handled.
-     */
     drmem_hdl           what;
     search_result       ret;
     address             addr;
@@ -1072,9 +1085,9 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
     return( ret );
 }
 
-/**********************************************/
-/* Walk or Search various scopes for symbols  */
-/**********************************************/
+/**********************************************
+ * Walk or Search various scopes for symbols  *
+ **********************************************/
 
 typedef struct {
     imp_mod_handle      imh;
@@ -1231,9 +1244,12 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
     len = DRGetNameBuff( var, df->buff, df->len );
     if( len == df->len
       && df->scompn( df->buff, df->li->name.start, df->li->name.len ) == 0 ) {
-        /* Found symbol by name */
+        /*
+         * Found symbol by name
+         */
         if( !DRIsFunc( var ) && !DRIsStatic( var ) && !DRIsSymDefined( var ) ) {
-            /* If symbol is a global variable declaration, ignore it; it
+            /*
+             * If symbol is a global variable declaration, ignore it; it
              * won't have location information and will likely be found in
              * another module.
              */
@@ -1296,11 +1312,11 @@ static bool WalkModSymList( blk_wlk *df, DRWLKBLK fn, imp_mod_handle imh )
 
 
 static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
-/**********************************************************************/
+/***********************************************************************
+ * Walk inner to outer function scopes, then containing class
+ * if present, then module scope.
+ */
 {
-    /* Walk inner to outer function scopes, then containing class
-     * if present, then module scope.
-     */
     imp_image_handle    *iih;
     scope_block         scope;
     drmem_hdl           cu_tag;
@@ -1574,11 +1590,11 @@ typedef struct {
 } strvo;
 
 static unsigned StrVCopy( strvo *dst, strvi *src )
-/************************************************/
+/*************************************************
+ * Copy source until null char or source runs out
+ * to dest until it runs out, return total length of source
+ */
 {
-    /* Copy source until null char or source runs out
-     * to dest until it runs out, return total length of source
-     */
     unsigned    total;
 
     total = src->len;
@@ -1690,7 +1706,9 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void 
         return( SR_EXACT );
     }
     if( li->type == ST_OPERATOR ) {
-//TODO this operator
+        /*
+         * TODO this operator
+         */
 //        src = li->name.start;
 //        len = li->name.len;
         return( SR_NONE );
@@ -1779,20 +1797,20 @@ search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih,
 
 
 int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_handle *ish2 )
-/********************************************************************************************/
+/*********************************************************************************************
+ * Compare two sym handles and return 0 if they refer to the same
+ * information. If they refer to differnt things return either a
+ * positive or negative value to impose an 'order' on the information.
+ * The value should obey the following constraints.
+ * Given three handles H1, H2, H3:
+ *         - if H1 < H2 then H1 is always < H2
+ *         - if H1 < H2 and H2 < H3 then H1 is < H3
+ * The reason for the constraints is so that a client can sort a
+ * list of handles and binary search them.
+ */
 {
     /* unused parameters */ (void)iih;
 
-    /* Compare two sym handles and return 0 if they refer to the same
-     * information. If they refer to differnt things return either a
-     * positive or negative value to impose an 'order' on the information.
-     * The value should obey the following constraints.
-     * Given three handles H1, H2, H3:
-     *         - if H1 < H2 then H1 is always < H2
-     *         - if H1 < H2 and H2 < H3 then H1 is < H3
-     * The reason for the constraints is so that a client can sort a
-     * list of handles and binary search them.
-     */
     if( ish1->sym < ish2->sym )
         return( -1 );
     if( ish1->sym > ish2->sym )

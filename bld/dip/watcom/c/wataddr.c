@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,15 +69,13 @@ static struct {
  * therefore it must be discarded when determining the number of
  * addr_dbg_info structures present.
  */
-
 #define GET_SEG_COUNT( ptr )    (((seg_dbg_info *)ptr)->count & SEG_COUNT_MASK)
 
 
-/*
- * AdjustAddrs -- adjust the addresses to reflect loader relocations
- */
-
 void AdjustAddrInit( void )
+/**************************
+ * adjust the addresses to reflect loader relocations
+ */
 {
     NonSectStart = 0xffff;
     NonSectEnd = 0;
@@ -137,12 +136,11 @@ void AdjustAddrs( imp_image_handle *iih, unsigned sectno )
 }
 
 
-/*
- * FindAddrInfo -- return the module and mem_block that addr is in
- */
-
 static dip_status SectFindAddrInfo( section_info *inf, address addr,
                                 imp_mod_handle *imh, mem_block *code )
+/*********************************************************************
+ * return the module and mem_block that addr is in
+ */
 {
     seg_dbg_info    *ptr;
     seg_dbg_info    *end;
@@ -211,11 +209,10 @@ static dip_status FindAddrInfo( imp_image_handle *iih, address addr,
 }
 
 
-/*
- * FindModBase -- return the start address for the code for a module
- */
-
 address FindModBase( imp_image_handle *iih, imp_mod_handle imh )
+/***************************************************************
+ * return the start address for the code for a module
+ */
 {
     seg_dbg_info        *ptr;
     seg_dbg_info        *end;
@@ -246,11 +243,10 @@ address FindModBase( imp_image_handle *iih, imp_mod_handle imh )
     return( NilAddr );
 }
 
-/*
- * FindSegBlock -- return the mem_block for a segment
- */
-
 mem_block FindSegBlock( imp_image_handle *iih, imp_mod_handle imh, unsigned long offset )
+/****************************************************************************************
+ * return the mem_block for a segment
+ */
 {
     seg_dbg_info        *ptr;
     seg_dbg_info        *next;
@@ -322,10 +318,12 @@ void AddrInfoFini( section_info *inf )
 
 
 /*
- * DIPImpAddrMod -- return the mod_handle for the given address
+ * DIPImpAddrMod
  */
-
 search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address addr, imp_mod_handle *imh )
+/***********************************************************************************************
+ * return the mod_handle for the given address
+ */
 {
     mem_block       code;
 

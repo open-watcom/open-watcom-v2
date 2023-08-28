@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,9 @@
 
 
 /*
-    There are a number of types that a dip implementation must define.
-    This file contains some example definitions.
-*/
+ * There are a number of types that a dip implementation must define.
+ * This file contains some example definitions.
+ */
 #ifndef DIP_SKEL
 #define DIP_SKEL
 
@@ -43,37 +44,47 @@
 
 
 /*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
+ * An imp_mod_handle is defined as an unsigned_16. The value zero is
+ * reserved to indicate "no module".
+ */
 
 struct imp_sym_handle {
-    /* any stuff for getting information on symbols */
+    /*
+     * any stuff for getting information on symbols
+     */
     imp_mod_handle      imh;
     void                *pointer;
 };
 
 struct imp_type_handle {
-    /* any stuff for getting information on types */
+    /*
+     * any stuff for getting information on types
+     */
     imp_mod_handle      imh;
     void                *pointer;
 };
 
 struct imp_cue_handle {
-    /* any stuff for getting information on source line cues */
+    /*
+     * any stuff for getting information on source line cues
+     */
     imp_mod_handle      imh;
     void                *pointer;
 };
 
-/* Remember that that imp_[sym/type/cue]_handle's may be freely copied and
-   destroyed by clients. No pointers to allocated memory unless there's
-   another pointer somewhere else to free that memory. Clients don't have
-   tell you how long they're hanging on to a handle either. Nasty bunch. */
+/*
+ * Remember that that imp_[sym/type/cue]_handle's may be freely copied and
+ * destroyed by clients. No pointers to allocated memory unless there's
+ * another pointer somewhere else to free that memory. Clients don't have
+ * tell you how long they're hanging on to a handle either. Nasty bunch.
+ */
 
 struct imp_image_handle {
-    /* This is the main structure that all other structures for an
-       image (executable file) are hung off of. NO globals allowed.
-       A single DIP may be used for multiple images. */
+    /*
+     * This is the main structure that all other structures for an
+     * image (executable file) are hung off of. NO globals allowed.
+     * A single DIP may be used for multiple images.
+     */
     struct section_info         *sect;
     unsigned                    num_sects;
     FILE                        *sym_fp;

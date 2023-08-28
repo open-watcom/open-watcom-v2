@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +50,10 @@ void  InitModList( mod_list *list )
 
 
 mod_info  *NextModInfo( mod_list *list )
-/**************************************/
-// Get next mod info in list
-// bump the item count
+/***************************************
+ * Get next mod info in list
+ * bump the item count
+ */
 {
     mod_blk     *blk;
     mod_info    *next;
@@ -73,9 +75,10 @@ mod_info  *NextModInfo( mod_list *list )
 }
 
 mod_info  *FiniModInfo( mod_list *list )
-/**************************************/
-//Free all offset blocks for a line segment
-//Free all line segments
+/***************************************
+ * Free all offset blocks for a line segment
+ * Free all line segments
+ */
 {
     mod_info    *new, *cpy;
     mod_blk     *curr, *next;

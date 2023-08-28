@@ -35,7 +35,9 @@
 #include "exepe.h"
 #include "exedos.h"
 
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 #if !defined( __WINDOWS__ )
 int __nullarea;
 #if defined( __WATCOMC__ )
@@ -44,8 +46,8 @@ int __nullarea;
 #endif
 
 /*
-        Loading/unloading symbolic information.
-*/
+ * Loading/unloading symbolic information.
+ */
 
 imp_image_handle        *ImageList;
 
@@ -58,12 +60,16 @@ static void Cleanup( imp_image_handle *iih )
 
     for( owner = &ImageList; (curr = *owner) != NULL; owner = &curr->next_image ) {
         if( curr == iih ) {
-            /* if found then remove it from list */
+            /*
+             * if found then remove it from list
+             */
             *owner = curr->next_image;
             break;
         }
     }
-    /* destroy entry */
+    /*
+     * destroy entry
+     */
     if( iih->directory != NULL ) {
         blocks = BLOCK_FACTOR( iih->dir_count, DIRECTORY_BLOCK_ENTRIES );
         for( i = 0; i < blocks; ++i ) {

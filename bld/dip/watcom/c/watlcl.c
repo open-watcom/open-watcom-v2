@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,11 +98,10 @@ static void LclCreate( imp_sym_handle *ish, const char *ptr, const char *name, l
     ish->name_off = (byte)( name - ptr );
 }
 
-/*
- * LoadLocalSyms -- load the local symbol information for the module
- */
-
 static dip_status LoadLocalSyms( imp_image_handle *iih, imp_mod_handle imh, lclinfo *new )
+/*****************************************************************************************
+ * load the local symbol information for the module
+ */
 {
     dip_status  ds;
 
@@ -129,13 +128,15 @@ static void PopLocal( lclinfo *local )
 
 void KillLclLoadStack( void )
 {
-    // Nothing to do - not using globals anymore
+    /*
+     * Nothing to do - not using globals anymore
+     */
 }
 
-/*
- * ProcBlock -- process a block definition
- */
 static const char *ProcBlock( imp_image_handle *iih, const char *ptr, lcl_defn *defn, lclinfo *local )
+/*****************************************************************************************************
+ * process a block definition
+ */
 {
     if( local->base_off == NO_BASE ) {
         defn->b.start = FindModBase( iih, local->imh );
@@ -159,10 +160,10 @@ static const char *ProcBlock( imp_image_handle *iih, const char *ptr, lcl_defn *
 }
 
 
-/*
- * ProcDefn -- process the next definition in the local symbol information
- */
 static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *defn, lclinfo *local )
+/****************************************************************************************************
+ * process the next definition in the local symbol information
+ */
 {
     const char  *end;
     unsigned    parms;
@@ -219,7 +220,9 @@ static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *d
         ptr = GetIndex( ptr, &defn->i.type_index );
         if( ptr < end ) {
             defn->i.unparsed = ptr;
-            /* skip the 'this' pointer type and the object loc expr */
+            /*
+             * skip the 'this' pointer type and the object loc expr
+             */
             ptr = SkipLocation( ptr + 1 );
         } else {
             defn->i.unparsed = NULL;
@@ -475,7 +478,9 @@ search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle
             mod_addr = DefnAddr( iih, &defn, local );
             if( DCSameAddrSpace( addr, mod_addr ) == DS_OK ) {
                 if( addr.mach.offset >= mod_addr.mach.offset ) {
-                    /* possible */
+                    /*
+                     * possible
+                     */
                     if( sr == SR_NONE || close_addr.mach.offset <= mod_addr.mach.offset ) {
                         LclCreate( ish, curr, defn.i.name, local );
                         close_addr = mod_addr;
@@ -813,7 +818,9 @@ static walk_result WalkOneBlock( imp_image_handle *iih, const char *ptr, lcl_def
     wr = WR_CONTINUE;
     switch( blk->i.class ) {
     case CODE_SYMBOL | CODE_MEMBER_SCOPE:
-        /* process member list */
+        /*
+         * process member list
+         */
         if( FindTypeHandle( iih, local->imh, blk->i.type_index, &ith ) == DS_OK ) {
             wr = WalkTypeSymList( iih, &ith, wk, ish, d );
         }
@@ -824,7 +831,9 @@ static walk_result WalkOneBlock( imp_image_handle *iih, const char *ptr, lcl_def
     case CODE_SYMBOL | CODE_NEAR_ROUT386:
     case CODE_SYMBOL | CODE_FAR_ROUT:
     case CODE_SYMBOL | CODE_FAR_ROUT386:
-        /* process local scope */
+        /*
+         * process local scope
+         */
         for( ; (ptr = FindLclVar( iih, ptr, local )) != NULL; ptr = next ) {
             next = ProcDefn( iih, ptr, &defn, local );
             LclCreate( ish, ptr, defn.i.name, local );

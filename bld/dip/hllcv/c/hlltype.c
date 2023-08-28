@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,16 +33,18 @@
 #include "hllinfo.h"
 #include "walloca.h"
 
-/* FIXME: kick out these! */
+/*
+ * FIXME: kick out these!
+ */
 #include "cv4w.h"
 
 enum {
-#define _CVREG( name, num )     CV_X86_##name = num,
-#include "cv4intl.h"
-#undef _CVREG
-#define _CVREG( name, num )     CV_AXP_##name = num,
-#include "cv4axp.h"
-CV_LAST_REG
+    #define _CVREG( name, num )     CV_X86_##name = num,
+    #include "cv4intl.h"
+    #undef _CVREG
+    #define _CVREG( name, num )     CV_AXP_##name = num,
+    #include "cv4axp.h"
+    CV_LAST_REG
 };
 
 
@@ -67,9 +69,9 @@ static dip_status TypeVMGetName( imp_image_handle *iih, virt_mem base,
         return( DS_OK );
     }
     /*
-       The "+ sizeof( unsigned_32 )" is to make sure that the GetNumLeaf's
-       have enough stuff mapped in to work.
-    */
+     * The "+ sizeof( unsigned_32 )" is to make sure that the GetNumLeaf's
+     * have enough stuff mapped in to work.
+     */
     p = VMBlock( iih, base, sizeof( *p ) + sizeof( unsigned_32 ) );
     if( p == NULL )
         return( DS_ERR | DS_FAIL );
@@ -125,7 +127,9 @@ static dip_status TypeVMGetName( imp_image_handle *iih, virt_mem base,
         *name_len_p = 0;
         return( DS_OK );
     }
-    /* A name can't be longer than 255 bytes */
+    /*
+     * A name can't be longer than 255 bytes
+     */
     p = VMBlock( iih, base, 256 + skip );
     if( p == NULL )
         return( DS_ERR | DS_FAIL );
@@ -350,10 +354,10 @@ new_list:
                 len += (unsigned_8 *)hllGetNumLeaf( ptr, &val ) - (unsigned_8 *)ptr;
                 if( list->prev != NULL ) {
                     /*
-                       If we're processing an inherited class, we want to
-                       ignore any virtual base classes. They'll get handled
-                       by the most derived class.
-                    */
+                     * If we're processing an inherited class, we want to
+                     * ignore any virtual base classes. They'll get handled
+                     * by the most derived class.
+                     */
                     list->curr += len;
                     continue;
                 }
@@ -475,7 +479,9 @@ static void TypePrimitiveInfo( unsigned idx, dig_type_info *ti )
                 break;
             case 0x5:
             case 0x6:
-                /* Basic string: what size? */
+                /*
+                 * Basic string: what size?
+                 */
                 ti->size = 0;
                 ti->kind = TK_STRING;
                 break;
@@ -554,7 +560,9 @@ static void TypePrimitiveInfo( unsigned idx, dig_type_info *ti )
             }
             break;
         case 0x0f:
-            /* my own invention: T_CODE_LBL*, T_DATA_LBL* */
+            /*
+             * my own invention: T_CODE_LBL*, T_DATA_LBL*
+             */
             ti->kind = (prim.s & 0x08) ? TK_DATA : TK_CODE;
             ti->size = 1 << prim.f.size;
             break;
@@ -719,7 +727,9 @@ static walk_result FindVTab( imp_image_handle *iih, sym_walk_info swi,
     case SWI_INHERIT_END:
         return( WR_STOP );
     }
-    /* SWI_SYMBOL: */
+    /*
+     * SWI_SYMBOL:
+     */
     switch( p->common.code ) {
     case LF_VFUNCTAB:
         vd->disp = 0;
@@ -810,7 +820,9 @@ static dip_status VFuncLocation( imp_image_handle *iih, imp_sym_handle *ish,
     switch( vfshape ) {
     case CV_VTNEAR:
     case CV_VTNEAR32:
-        /* since it's a code item, the default addr space is CI_EXECUTION */
+        /*
+         * since it's a code item, the default addr space is CI_EXECUTION
+         */
         save = ll->e[0].u.addr.mach.offset;
         ds = DCItemLocation( lc, CI_EXECUTION, ll );
         if( ds != DS_OK )
@@ -832,13 +844,15 @@ static dip_status MatchSymLocation( imp_image_handle *iih, imp_sym_handle *ish,
     dip_status          ds;
 
     /*
-        Have to lookup "<scope>::<name>" with given type index to get
-        address. Ugh :-(.
-    */
+     * Have to lookup "<scope>::<name>" with given type index to get
+     * address. Ugh :-(.
+     */
     ds = TypeVMGetName( iih, ish->handle, &name, &len, NULL );
     if( ds != DS_OK )
         return( ds );
-    /* name can't be longer than 256 because of CV format */
+    /*
+     * name can't be longer than 256 because of CV format
+     */
     buff = walloca( len + (SCOPE_TOKEN_LEN + 256) );
     start = &buff[SCOPE_TOKEN_LEN+256];
     buff = &start[len];
@@ -870,14 +884,18 @@ dip_status hllTypeSymGetAddr( imp_image_handle *iih, imp_sym_handle *ish,
     p = VMBlock( iih, ish->handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
     switch( p->common.code ) {
     case LF_MEMBER:
-        /* save type index from scurges of VM system */
+        /*
+         * save type index from scurges of VM system
+         */
         idx = p->member.f.type;
         hllGetNumLeaf( &p->member + 1, &val );
         ds = DCItemLocation( lc, CI_OBJECT, ll );
         if( ds != DS_OK )
             return( ds );
         if( ish->adjustor_type != 0 ) {
-            /* have to fish displacement out of virtual base table */
+            /*
+             * have to fish displacement out of virtual base table
+             */
             ds = GetVirtBaseDisp( iih, ish->adjustor_type, lc, *ll, &disp );
             if( ds != DS_OK )
                 return( ds );
@@ -885,7 +903,9 @@ dip_status hllTypeSymGetAddr( imp_image_handle *iih, imp_sym_handle *ish,
         }
         hllLocationAdd( ll, (ish->adjustor_offset + val.int_val) * 8 );
         if( idx >= CV_FIRST_USER_TYPE ) {
-            /* have to check type in case it's a bit field */
+            /*
+             * have to check type in case it's a bit field
+             */
             ds = hllTypeIndexFillIn( iih, idx, &base_ith );
             if( ds != DS_OK )
                 return( ds );
@@ -940,7 +960,9 @@ dip_status hllTypeSymGetType( imp_image_handle *iih, imp_sym_handle *ish,
     case LF_MEMBER:
         idx = p->member.f.type;
         if( idx >= CV_FIRST_USER_TYPE ) {
-            /* have to check type in case it's a bit field */
+            /*
+             * have to check type in case it's a bit field
+             */
             ds = hllTypeIndexFillIn( iih, idx, ith );
             if( ds != DS_OK )
                 return( ds );
@@ -967,7 +989,9 @@ dip_status hllTypeSymGetType( imp_image_handle *iih, imp_sym_handle *ish,
         ith->array_dim = 0;
         return( DS_OK );
     default:
-        /* type name */
+        /*
+         * type name
+         */
         ith->handle = ish->handle;
         ith->idx = UNKNOWN_TYPE_IDX;
         ith->array_dim = 0;
@@ -984,21 +1008,25 @@ dip_status hllTypeSymGetValue( imp_image_handle *iih, imp_sym_handle *ish,
 
     lc = lc;
     /*
-       The "+ sizeof( unsigned_32 )" is to make sure that the hllGetNumLeaf
-       has enough stuff mapped in to work.
-    */
+     * The "+ sizeof( unsigned_32 )" is to make sure that the hllGetNumLeaf
+     * has enough stuff mapped in to work.
+     */
     p = VMBlock( iih, ish->handle, sizeof( *p ) + sizeof( unsigned_32 ) );
     if( p == NULL )
         return( DS_ERR | DS_FAIL );
     switch( p->common.code ) {
     case LF_ENUMERATE:
         hllGetNumLeaf( &p->enumerate + 1, &val );
-        /* make sure everything is mapped in */
+        /*
+         * make sure everything is mapped in
+         */
         p = VMBlock( iih, ish->handle,
                 val.size + sizeof( *p ) + sizeof( unsigned_32 ) );
         if( p == NULL )
             return( DS_ERR | DS_FAIL );
-        /* VM might have shifted things around */
+        /*
+         * VM might have shifted things around
+         */
         hllGetNumLeaf( &p->enumerate + 1, &val );
         memcpy( buff, val.valp, val.size );
         return( DS_OK );
@@ -1124,7 +1152,9 @@ static walk_result WalkGlue( imp_image_handle *iih, sym_walk_info swi,
         }
         return( WR_CONTINUE );
     }
-    /* SWI_SYMBOL: */
+    /*
+     * SWI_SYMBOL:
+     */
     switch( p->common.code ) {
     case LF_MEMBER:
     case LF_STMEMBER:
@@ -1318,7 +1348,9 @@ static walk_result SymSearch( imp_image_handle *iih, sym_walk_info swi,
         }
         return( WR_CONTINUE );
     }
-    /* SWI_SYMBOL */
+    /*
+     * SWI_SYMBOL
+     */
     switch( p->common.code ) {
     case LF_MEMBER:
     case LF_STMEMBER:
@@ -1450,7 +1482,9 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
 
 static int IsFortranModule( imp_image_handle *iih, location_context *lc )
 {
-    /* No fortran support */
+    /*
+     * No fortran support
+     */
     iih = iih;
     lc = lc;
     return( 0 );
@@ -1477,7 +1511,9 @@ dip_status hllTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
         TypePrimitiveInfo( real.idx, ti );
         return( DS_OK );
     }
-    /* map in enough to get integer values from numeric leaves */
+    /*
+     * map in enough to get integer values from numeric leaves
+     */
     p = VMBlock( iih, real.handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
     if( p == NULL )
         return( DS_ERR | DS_FAIL );
@@ -1719,7 +1755,8 @@ static dip_status GetBound( imp_image_handle *iih, virt_mem vm, unsigned size,
 {
     /* unused parameters */ (void)iih; (void)vm; (void)size; (void)lc; (void)bound;
 
-#if 0 /* FIXME */
+#if 0
+    /* FIXME */
     dip_status          ds;
     imp_sym_handle      bnd;
     bound_data          data;
@@ -1878,7 +1915,9 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
     ai->stride = 0;
     ai->num_dims = 0;
     ai->column_major = IsFortranModule( iih, lc );
-    /* map in enough to get integer values from numeric leaves */
+    /*
+     * map in enough to get integer values from numeric leaves
+     */
     p = VMBlock( iih, real.handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
     if( p == NULL )
         return( DS_ERR | DS_FAIL );
@@ -2002,7 +2041,7 @@ dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *iih,
 dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
                     imp_type_handle *ith, location_context *lc, address *a )
 {
-    /* unised parameters */ (void)iih; (void)ith; (void)lc; (void)a;
+    /* unused parameters */ (void)iih; (void)ith; (void)lc; (void)a;
 
 #if 0
     lf_all              *p;
@@ -2080,7 +2119,9 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
             a->mach.offset = 0;
         return( DS_OK );
     case CV_BASETYPE:
-        //NYI: ????
+        /*
+         * NYI: ????
+         */
         /* fall through */
     case CV_BASESELF:
         return( DS_OK );
@@ -2123,7 +2164,9 @@ static walk_result ThunkSearch( imp_image_handle *iih, sym_walk_info swi,
     case SWI_SYMBOL:
         return( WR_CONTINUE );
     }
-    /* SWI_INHERIT_START */
+    /*
+     * SWI_INHERIT_START
+     */
     p = VMBlock( iih, list->curr, list->len );
     if( p == NULL )
         return( WR_FAIL );
@@ -2211,7 +2254,7 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
 
 int DIPIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1, imp_type_handle *ith2 )
 {
-    /* unised parameters */ (void)iih;
+    /* unused parameters */ (void)iih;
 
     if( ith2->idx < ith1->idx )
         return( -1 );
@@ -2260,21 +2303,21 @@ size_t DIPIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
 
 dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unised parameters */ (void)iih; (void)ith;
+    /* unused parameters */ (void)iih; (void)ith;
 
     return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unised parameters */ (void)iih; (void)ith;
+    /* unused parameters */ (void)iih; (void)ith;
 
     return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
 {
-    /* unised parameters */ (void)iih;
+    /* unused parameters */ (void)iih;
 
     return( DS_OK );
 }

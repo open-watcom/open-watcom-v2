@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,9 @@
 
 
 scope_node *FindScope( scope_node *last, addr_off in )
-/***** find the down scope of start, len ************/
+/*****************************************************
+ * find the down scope of start, len
+ */
 {
     scope_node *down;
 
@@ -49,7 +52,9 @@ scope_node *FindScope( scope_node *last, addr_off in )
         }
         last = last->down;
     }
-    /* climp up and across tree until you fall out */
+    /*
+     * find the down scope of start, len climp up and across tree until you fall out
+     */
     while( last != NULL ) {  //look for containing down scope
         if( last->start <= in  && in < last->end ) {
             down = last; // if containing go up the branch
@@ -61,11 +66,16 @@ scope_node *FindScope( scope_node *last, addr_off in )
     return( down );
 }
 
-static void FreeScope( scope_node *last ) {
-/** find the down scope of start, len*****/
+static void FreeScope( scope_node *last )
+/****************************************
+ * find the down scope of start, len
+ */
+{
     scope_node *old;
 
-    /* climp up and across free across and down */
+    /*
+     * climp up and across free across and down
+     */
     while( last != NULL ) {  //look for containing down scope
         if( last->up != NULL ) {
             old = last;
@@ -75,7 +85,7 @@ static void FreeScope( scope_node *last ) {
             if( last->next != NULL ) {
                 old = last;
                 last = last->next;
-            }else{/* done this level */
+            }else{ /* done this level */
                 old = last;
                 last = last->down;
             }

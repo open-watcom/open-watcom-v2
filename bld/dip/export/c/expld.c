@@ -42,11 +42,11 @@
 
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
-
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 int __nullarea;
 #pragma aux __nullarea "*";
-
 #endif
 
 static struct {
@@ -264,7 +264,9 @@ static dip_status ProcTable( FILE *fp, imp_image_handle *iih, unsigned resident 
                 return( ds );
             }
         } else if( ord != 0 ) {
-            /* this is putting in entry number, we'll get real addr later */
+            /*
+             * this is putting in entry number, we'll get real addr later
+             */
             ds = AddSymbol( iih, 0, ord, len, buff );
             if( ds != DS_OK ) {
                 return( ds );
@@ -318,7 +320,9 @@ static dip_status TryNE( FILE *fp, imp_image_handle *iih, unsigned_32 ne_header_
             return( ds );
         }
     }
-    /* change all the symbol addresses from entry numbers to seg/offsets */
+    /*
+     * change all the symbol addresses from entry numbers to seg/offsets
+     */
     if( BSeek( fp, ne_header_off + nehdr.entry_off, DIG_SEEK_ORG ) != ne_header_off + nehdr.entry_off ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
@@ -408,7 +412,9 @@ static dip_status TryLX( FILE *fp, imp_image_handle *iih, unsigned_32 ne_header_
             return( ds );
         }
     }
-    /* change all the symbol addresses from entry numbers to seg/offsets */
+    /*
+     * change all the symbol addresses from entry numbers to seg/offsets
+     */
     if( BSeek( fp, ne_header_off + lxhdr.entry_off, DIG_SEEK_ORG ) != ne_header_off + lxhdr.entry_off ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
@@ -447,7 +453,9 @@ static dip_status TryLX( FILE *fp, imp_image_handle *iih, unsigned_32 ne_header_
                     if( BRead( fp, &entry.fwd, sizeof( entry.fwd ) ) != sizeof( entry.fwd ) ) {
                         return( DS_ERR | DS_FREAD_FAILED );
                     }
-                    /* don't know how to handle these */
+                    /*
+                     * don't know how to handle these
+                     */
                     entry.fwd.e32_flags &= ~ENTRY_EXPORTED;
                     break;
                 }
@@ -514,7 +522,9 @@ static char *PECacheName( pe_export_info *exp, unsigned long rva )
     if( rva < exp->cache_name_rva
       || rva >= exp->cache_name_rva + exp->cache_name_len
       || memchr( &exp->name_cache[off], '\0', exp->cache_name_len - off ) == NULL ) {
-        /* Name is not fully in the cache. Have to read it in. */
+        /*
+         * Name is not fully in the cache. Have to read it in.
+         */
         exp->cache_name_rva = rva;
         exp->cache_name_len = PE_DIRECTORY( *(exp->pehdr), PE_TBL_EXPORT ).rva +
                               PE_DIRECTORY( *(exp->pehdr), PE_TBL_EXPORT ).size - rva;
@@ -530,7 +540,9 @@ static char *PECacheName( pe_export_info *exp, unsigned long rva )
             DCStatus( DS_ERR | DS_FREAD_FAILED );
             return( NULL );
         }
-        /* Assuming a single name is < NAME_CACHE_SIZE */
+        /*
+         * Assuming a single name is < NAME_CACHE_SIZE
+         */
         off = 0;
     }
     return( (char *)&exp->name_cache[off] );
@@ -563,15 +575,21 @@ static dip_status PEExportBlock( imp_image_handle *iih, pe_export_info *exp, uns
     export_rva = PE_DIRECTORY( *(exp->pehdr), PE_TBL_EXPORT ).rva;
     export_size = PE_DIRECTORY( *(exp->pehdr), PE_TBL_EXPORT ).size;
     for( i = 0; i < num; ++i ) {
-        /* MS document lies about bias in export ordinal table! */
+        /*
+         * MS document lies about bias in export ordinal table!
+         */
         exp_rva = exp->eat[exp->ords[i] /*- dir->ordinal_base*/];
         if( exp_rva < export_rva
           || exp_rva >= ( export_rva + export_size ) ) {
-            /* not a forwarder entry */
+            /*
+             * not a forwarder entry
+             */
             for( j = 0; j < num_objects; ++j ) {
                 if( exp_rva >= exp->obj[j].rva
                   && exp_rva < (exp->obj[j].rva + ObjSize( &exp->obj[j] )) ) {
-                    /* found the object */
+                    /*
+                     * found the object
+                     */
                     name = PECacheName( exp, exp->name_ptrs[i] );
                     if( name == NULL ) {
                         return( DS_ERR | DS_FAIL );
@@ -710,14 +728,20 @@ static dip_status TryStub( FILE *fp, imp_image_handle *iih )
     }
     switch( signature ) {
     case EXESIGN_NE:
-        /* Hey, it's an NE executable */
+        /*
+         * Hey, it's an NE executable
+         */
         return( TryNE( fp, iih, ne_header_off ) );
     case EXESIGN_LE:
     case EXESIGN_LX:
-        /* Hey, it's an LX/LE executable */
+        /*
+         * Hey, it's an LX/LE executable
+         */
         return( TryLX( fp, iih, ne_header_off ) );
     default:
-        /* Hey, it can be a PE executable (or Pharlap's variant of it) */
+        /*
+         * Hey, it can be a PE executable (or Pharlap's variant of it)
+         */
         return( TryPE( fp, iih, ne_header_off ) );
     }
 }
@@ -746,7 +770,9 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *iih )
         return( DS_FAIL );
     }
     if( nlmhdr.version > NLM_VERSION ) {
-        /* one of those funky packed NLM's */
+        /*
+         * one of those funky packed NLM's
+         */
         return( DS_FAIL );
     }
     ds = AddName( iih, nlmhdr.moduleName[0], &nlmhdr.moduleName[1] );
@@ -766,7 +792,9 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *iih )
         }
     }
     if( nlmhdr.numberOfDebugRecords != 0 ) {
-        /* use the Novell style debugging information */
+        /*
+         * use the Novell style debugging information
+         */
         if( BSeek( fp, nlmhdr.debugInfoOffset, DIG_SEEK_ORG ) != nlmhdr.debugInfoOffset ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
@@ -914,7 +942,9 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
     if( elfhdr.e_phoff == 0 || elfhdr.e_shoff == 0 ) {
         return( DS_FAIL );
     }
-    /* Add address blocks */
+    /*
+     * Add address blocks
+     */
     off = elfhdr.e_phoff;
     i = 0;
     for( i = 0; i < elfhdr.e_phnum; ++i ) {
@@ -940,7 +970,9 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
         }
         off += elfhdr.e_phentsize;
     }
-    /* Add Symbols */
+    /*
+     * Add Symbols
+     */
     sect = walloca( elfhdr.e_shnum * sizeof( *sect ) );
     off = elfhdr.e_shoff;
     for( i = 0; i < elfhdr.e_shnum; ++i ) {
@@ -954,7 +986,9 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
         off += elfhdr.e_shentsize;
     }
 
-    /* If there is a SHT_SYMTAB section use that, otherwise SHT_DYNSYM */
+    /*
+     * If there is a SHT_SYMTAB section use that, otherwise SHT_DYNSYM
+     */
     tab_type = SHT_NULL;
     for( i = 1; i < elfhdr.e_shnum; ++i ) {
         switch( sect[i].sh_type ) {
@@ -968,7 +1002,9 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
         }
     }
     if( tab_type == SHT_NULL ) {
-        /* We didn't find any symbol tables - must be stripped */
+        /*
+         * We didn't find any symbol tables - must be stripped
+         */
         ImpUnloadInfo( iih );
         return( DS_FAIL );
     }
@@ -1011,7 +1047,9 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
                 ds = DS_OK;
                 switch( ELF32_ST_TYPE( sym.st_info ) ) {
                 case STT_FILE:
-                    /* Make first filename we see be the module name */
+                    /*
+                     * Make first filename we see be the module name
+                     */
                     if( iih->name == NULL ) {
                         ds = AddName( iih, len, name );
                     }
@@ -1020,7 +1058,8 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
                     if( sym.st_shndx < elfhdr.e_shnum ) {
                         addr_seg    seg;
 
-                        /* Take a guess: If pointing to an executable section,
+                        /*
+                         * Take a guess: If pointing to an executable section,
                          * symbol is probably code.
                          */
                         if( sect[sym.st_shndx].sh_flags & SHF_EXECINSTR )
@@ -1051,12 +1090,16 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
     }
     DCFree( strings );
     if( iih->gbl == NULL ) {
-        /* We didn't find any symbols - must be stripped */
+        /*
+         * We didn't find any symbols - must be stripped
+         */
         ImpUnloadInfo( iih );
         return( DS_FAIL );
     }
 
-    /* No module name yet, make something up */
+    /*
+     * No module name yet, make something up
+     */
     if( iih->name == NULL ) {
         static char     unknown[] = "Unknown000";
 
@@ -1105,7 +1148,9 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
         ds = Try[i]( fp, iih );
         if( ds & DS_ERR ) {
             DCStatus( ds );
-            /* clean up any allocations */
+            /*
+             * clean up any allocations
+             */
             ImpUnloadInfo( iih );
             return( ds );
         }

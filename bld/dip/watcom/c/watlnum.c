@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,10 +177,6 @@ static size_t SpecCueFile( imp_image_handle *iih, imp_cue_handle *icueh,
 }
 
 
-/*
- * GetLineInfo -- get the line number infomation for a module
- */
-
 static void UnlockLine( void )
 {
     if( LinStart != NULL ) {
@@ -191,6 +187,9 @@ static void UnlockLine( void )
 
 
 static dip_status GetLineInfo( imp_image_handle *iih, imp_mod_handle imh, word entry )
+/*************************************************************************************
+ * get the line number infomation for a module
+ */
 {
     if( entry != 0 )
         UnlockLine();
@@ -213,9 +212,13 @@ static line_dbg_info *FindLineOff( addr_off off, addr_off adj,
     const char      *dummy;
 
     low = 0;
-    /* get number of entries minus one */
+    /*
+     * get number of entries minus one
+     */
     high = ( end - start ) / sizeof( line_dbg_info ) - 1;
-    /* point at first entry */
+    /*
+     * point at first entry
+     */
     ln_ptr = (line_dbg_info *)start;
     while( low <= high ) {
         target = (low + high) >> 1;
@@ -226,7 +229,9 @@ static line_dbg_info *FindLineOff( addr_off off, addr_off adj,
             low = target + 1;
         } else {                  /* exact match */
             if( ln_ptr[target].line >= PRIMARY_RANGE ) {
-                /* a special cue - have to make sure we have the table */
+                /*
+                 * a special cue - have to make sure we have the table
+                 */
                 if( close->have_spec_table == ST_UNKNOWN ) {
                     if( FindSpecCueTable( iih, close->icueh.imh, &dummy ) != NULL ) {
                         close->have_spec_table = ST_YES;
@@ -240,14 +245,18 @@ static line_dbg_info *FindLineOff( addr_off off, addr_off adj,
             } else {
                 return( ln_ptr + target );
             }
-            /* if it's a special & we don't have the table, ignore entry */
+            /*
+             * if it's a special & we don't have the table, ignore entry
+             */
             high = target - 1;
         }
     }
     if( high < 0 )
         return( NULL );
     if( ln_ptr[high].line >= PRIMARY_RANGE ) {
-        /* a special cue - have to make sure we have the table */
+        /*
+         * a special cue - have to make sure we have the table
+         */
         if( close->have_spec_table == ST_UNKNOWN ) {
             if( FindSpecCueTable( iih, close->icueh.imh, &dummy ) != NULL ) {
                 close->have_spec_table = ST_YES;
@@ -256,7 +265,9 @@ static line_dbg_info *FindLineOff( addr_off off, addr_off adj,
             }
         }
         if( close->have_spec_table == ST_NO ) {
-            /* if it's a special & we don't have the table, ignore entry */
+            /*
+             * if it's a special & we don't have the table, ignore entry
+             */
             for( ;; ) {
                 --high;
                 if( high < 0 )
@@ -477,7 +488,9 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
         UnlockLine();
     }
     if( icueh->entry == 0 ) {
-        /* Module with no line cues. Fake one up. */
+        /*
+         * Module with no line cues. Fake one up.
+         */
         icueh->entry = NO_LINE;
         return( wk( iih, icueh, d ) );
     }
@@ -617,7 +630,9 @@ static dip_status AdjBackward( imp_image_handle *iih, imp_cue_handle *icueh )
         }
         icueh->entry--;
         if( icueh->entry == 0 ) {
-            /* special handling since we're walking backwards */
+            /*
+             * special handling since we're walking backwards
+             */
             UnlockLine();
         }
         icueh->seg_bias = BIAS( seg );

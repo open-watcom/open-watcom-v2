@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,9 @@
 
 #include "watloc.h"
 
-/* classes */
+/*
+ * classes
+ */
 #define CLASS_MASK      0xf0
 #define SUBCLASS_MASK   0x0f
 
@@ -110,7 +113,9 @@
 #define CHAR_DESC386_LEN 0x04
 #define CHAR_DESC_LOC    0x05
 
-/* definition for 'scalar_type_byte' */
+/*
+ * definition for 'scalar_type_byte'
+ */
 #define SCLR_LEN_MASK   0x0f
 
 #define SCLR_CLASS_MASK 0x70
