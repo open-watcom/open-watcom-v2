@@ -84,15 +84,15 @@ extern sys_error        GetSystemErrCode( error_handle );
 extern const char       *SkipPathInfo( char const *, obj_attrs );
 extern const char       *ExtPointer( char const *, obj_attrs );
 extern char             *AppendPathDelim( char *path, obj_attrs oattrs );
-extern size_t           MakeFileName( char *result, const char *name, const char *ext, obj_attrs oattrs );
+extern size_t           MakeFileName( char *filename, const char *base_name, const char *defext, obj_attrs oattrs );
 extern const char       *RealFName( char const *name, obj_attrs *oattrs );
 extern bool             IsAbsolutePath( const char *path );
 extern const char       *ExtPointer( char const *path, obj_attrs oattrs );
-extern file_handle      LclFileToFullName( const char *name, size_t len, char *full );
-extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
-extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
-extern file_handle      PathOpen( const char *name, size_t name_len, const char *ext );
-extern file_handle      LocalPathOpen( const char *name, size_t name_len, const char *ext );
+extern file_handle      LclFileToFullName( const char *name, size_t name_len, char *full );
+extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len );
+extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len );
+extern file_handle      PathOpen( const char *name, size_t name_len, const char *defext );
+extern file_handle      LocalPathOpen( const char *name, size_t name_len, const char *defext );
 
 #if !defined( BUILD_RFX )
 extern bool             FindWritable( char const *src, char *dst );

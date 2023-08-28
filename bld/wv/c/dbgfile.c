@@ -399,23 +399,23 @@ const char  *ExtPointer( char const *path, obj_attrs oattrs )
 }
 
 
-size_t MakeFileName( char *result, const char *name, const char *ext, obj_attrs oattrs )
+size_t MakeFileName( char *filename, const char *base_name, const char *ext, obj_attrs oattrs )
 {
     const file_components   *info;
     char                    *p;
 
-    p = StrCopyDst( name, result );
-    if( *ExtPointer( result, oattrs ) == NULLCHAR ) {
-        info = PathInfo( name, oattrs );
+    p = StrCopyDst( base_name, filename );
+    if( *ExtPointer( filename, oattrs ) == NULLCHAR ) {
+        info = PathInfo( base_name, oattrs );
         *p++ = info->ext_separator;
         p = StrCopyDst( ext, p );
     }
-    return( p - result );
+    return( p - filename );
 }
 
 static size_t MakeNameWithPath( obj_attrs oattrs,
-                                const char *path, size_t plen,
-                                const char *name, size_t nlen, char *res )
+                                const char *path, size_t path_len,
+                                const char *name, size_t name_len, char *res )
 {
     const file_components   *info;
     char                    *p;
@@ -431,39 +431,39 @@ static size_t MakeNameWithPath( obj_attrs oattrs,
         oattrs = DefaultLoc( oattrs );
     }
     if( path != NULL ) {
-        strncpy( p, path, plen );
-        p += plen;
+        strncpy( p, path, path_len );
+        p += path_len;
         if( oattrs & OP_LOCAL ) {
             info = &LclFile;
         } else {
             info = &RemFile;
         }
-        if( plen > 0 && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
+        if( path_len > 0 && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
             *p++ = info->path_separator[0];
         }
     }
-    strncpy( p, name, nlen );
-    p += nlen;
+    strncpy( p, name, name_len );
+    p += name_len;
     *p = NULLCHAR;
     return( p - res );
 }
 
 
-file_handle LclFileToFullName( const char *name, size_t len, char *full )
+file_handle LclFileToFullName( const char *name, size_t name_len, char *full )
 {
     char_ring   *curr;
     file_handle fh;
-    size_t      plen;
+    size_t      path_len;
 
     // check open file in current directory or in full path
-    MakeNameWithPath( OP_LOCAL, NULL, 0, name, len, full );
+    MakeNameWithPath( OP_LOCAL, NULL, 0, name, name_len, full );
     fh = FileOpen( full, OP_READ );
     if( fh != NIL_HANDLE )
         return( fh );
     // check open file in debugger directory list
     for( curr = LclPath; curr != NULL; curr = curr->next ) {
-        plen = strlen( curr->name );
-        MakeNameWithPath( OP_LOCAL, curr->name, plen, name, len, full );
+        path_len = strlen( curr->name );
+        MakeNameWithPath( OP_LOCAL, curr->name, path_len, name, name_len, full );
         fh = FileOpen( full, OP_READ );
         if( fh != NIL_HANDLE ) {
             return( fh );
@@ -476,10 +476,10 @@ file_handle LclFileToFullName( const char *name, size_t len, char *full )
 /*
  *
  */
-static file_handle FullPathOpenInternal( const char *name, size_t name_len, const char *defext,
-                                    char *result, size_t result_len, bool force_local )
+static file_handle FullPathOpenInternal( const char *name, size_t name_len,
+                const char *defext, char *filename, size_t filename_len, bool force_local )
 {
-    char                    buffer[TXT_LEN];
+    char                    fname[TXT_LEN];
     char                    *p;
     const char              *p1;
     obj_attrs               oattrs;
@@ -504,7 +504,7 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     } else {
         file = &RemFile;
     }
-    p = buffer;
+    p = fname;
     while( name_len-- > 0 ) {
         c = *name++;
         *p++ = c;
@@ -521,41 +521,41 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     }
     *p = NULLCHAR;
     if( oattrs & OP_REMOTE ) {
-        RemoteFileToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)result_len );
-        fh = FileOpen( result, OP_READ | OP_REMOTE );
+        RemoteFileToFullName( DIG_FILETYPE_PRS, fname, filename, (trap_elen)filename_len );
+        fh = FileOpen( filename, OP_READ | OP_REMOTE );
     } else if( has_path ) {
-        StrCopyDst( buffer, result );
-        fh = FileOpen( buffer, OP_READ );
+        StrCopyDst( fname, filename );
+        fh = FileOpen( fname, OP_READ );
     } else {
-        fh = LclFileToFullName( buffer, p - buffer, result );
+        fh = LclFileToFullName( fname, p - fname, filename );
     }
     if( fh == NIL_HANDLE ) {
-        strcpy( result, buffer );
+        strcpy( filename, fname );
     } else {
-        p1 = RealFName( result, &oattrs );
-        memmove( result, p1, strlen( p1 ) + 1 );
+        p1 = RealFName( filename, &oattrs );
+        memmove( filename, p1, strlen( p1 ) + 1 );
     }
     return( fh );
 }
 
-file_handle FullPathOpen( const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+file_handle FullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len )
 {
-    return( FullPathOpenInternal( name, name_len, defext, result, result_len, false ) );
+    return( FullPathOpenInternal( name, name_len, defext, filename, filename_len, false ) );
 }
 
-file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
+file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len )
 {
-    return( FullPathOpenInternal( name, name_len, defext, result, result_len, true ) );
+    return( FullPathOpenInternal( name, name_len, defext, filename, filename_len, true ) );
 }
 
 static file_handle PathOpenInternal( const char *name, size_t name_len, const char *defext, bool force_local )
 {
-    char        result[TXT_LEN];
+    char        filename[TXT_LEN];
 
     if( force_local ) {
-        return( LocalFullPathOpen( name, name_len, defext, result, TXT_LEN ) );
+        return( LocalFullPathOpen( name, name_len, defext, filename, sizeof( filename ) ) );
     } else {
-        return( FullPathOpen( name, name_len, defext, result, TXT_LEN ) );
+        return( FullPathOpen( name, name_len, defext, filename, sizeof( filename ) ) );
     }
 }
 
@@ -595,9 +595,9 @@ static bool IsWritable( char const *name, obj_attrs oattrs )
 
 bool FindWritable( char const *src, char *dst )
 {
-    char        buffer[TXT_LEN];
-    size_t      plen;
-    size_t      nlen;
+    char        path[TXT_LEN];
+    size_t      path_len;
+    size_t      name_len;
     const char  *name;
     obj_attrs   oattrs;
 
@@ -608,17 +608,17 @@ bool FindWritable( char const *src, char *dst )
         return( true );
     }
     name = SkipPathInfo( src, oattrs );
-    nlen = strlen( name );
+    name_len = strlen( name );
     if( DefaultLoc( oattrs ) & OP_LOCAL ) {
-        plen = DUIEnvLkup( "HOME", buffer, sizeof( buffer ) );
-        if( plen > 0 ) {
-            MakeNameWithPath( oattrs, buffer, plen, name, nlen, dst );
+        path_len = DUIEnvLkup( "HOME", path, sizeof( path ) );
+        if( path_len > 0 ) {
+            MakeNameWithPath( oattrs, path, path_len, name, name_len, dst );
             if( IsWritable( dst, oattrs ) ) {
                 return( true );
             }
         }
     }
-    MakeNameWithPath( oattrs, NULL, 0, name, nlen, dst );
+    MakeNameWithPath( oattrs, NULL, 0, name, name_len, dst );
     return( IsWritable( dst, oattrs ) );
 }
 #endif
