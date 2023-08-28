@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -456,13 +456,20 @@ static bool LoadPmdHeader( char *name )
     struct stat     tmp;
     char            result[PATH_MAX + 1];
 
-    if( TryOnePath( ":/usr/dumps", &tmp, name, result ) == 0 )
-        return( false );
+    strcpy( result, name );
+    if( stat( result, &tmp ) != 0 ) {
+        #define DUMPSDIR    "/usr/dumps/"
+        strcpy( result, DUMPSDIR );
+        strcpy( result + sizeof( DUMPSDIR ) - 1, name );
+        #undef DUMPSDIR
+        if( stat( result, &tmp ) != 0 ) {
+            return( false );
+        }
+    }
     PmdInfo.fd = open( result, O_RDONLY );
     if( PmdInfo.fd < 0 )
         return( false );
-    if( read( PmdInfo.fd, &PmdInfo.hdr, sizeof( PmdInfo.hdr ) )
-            != sizeof( PmdInfo.hdr ) ) {
+    if( read( PmdInfo.fd, &PmdInfo.hdr, sizeof( PmdInfo.hdr ) ) != sizeof( PmdInfo.hdr ) ) {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;

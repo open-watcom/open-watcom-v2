@@ -47,7 +47,7 @@ char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
-size_t TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
+static size_t tryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *ptr;
 
@@ -88,10 +88,10 @@ size_t TryOnePath( const char *path, struct stat *tmp, const char *name, char *r
     return( 0 );
 }
 
-unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
+size_t FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
-    unsigned    len;
+    size_t      len;
 #if defined( SERVER )
     char        *end;
     char        cmd[256];
@@ -101,12 +101,12 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
         return( StrCopyDst( name, result ) - result );
     }
     if( file_type == DIG_FILETYPE_EXE ) {
-        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
+        return( tryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
-        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
+        len = tryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
         if( len != 0 )
             return( len );
-        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
+        len = tryOnePath( getenv( "HOME" ), &tmp, name, result );
         if( len != 0 )
             return( len );
 #if defined( SERVER )
@@ -119,7 +119,7 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
                     /* look in the wd sibling directory of where the command
                        came from */
                     StrCopyDst( "wd", end + 1 );
-                    len = TryOnePath( cmd, &tmp, name, result );
+                    len = tryOnePath( cmd, &tmp, name, result );
                     if( len != 0 ) {
                         return( len );
                     }
@@ -127,6 +127,6 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
             }
         }
 #endif
-        return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
+        return( tryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
     }
 }
