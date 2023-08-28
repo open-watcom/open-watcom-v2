@@ -82,10 +82,10 @@ FILE *PathOpen( char *name, unsigned len, const char *ext )
   #
   ##########################################################################*/
 
-/*
+void *DIGCLIENTRY( Alloc )( size_t size )
+/****************************************
  * DIGCliAlloc
  */
-void *DIGCLIENTRY( Alloc )( size_t size )
 {
     void        *ret;
 
@@ -95,10 +95,10 @@ void *DIGCLIENTRY( Alloc )( size_t size )
     return( ret );
 }
 
-/*
+void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
+/*****************************************************
  * DIGCliRealloc
  */
-void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
 {
     void        *ret;
 
@@ -108,20 +108,20 @@ void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
     return( ret );
 }
 
-/*
+void DIGCLIENTRY( Free )( void *ptr )
+/************************************
  * DIGCliFree
  */
-void DIGCLIENTRY( Free )( void *ptr )
 {
     DEBUGOUT( "free BEGIN" );
     MemFree( ptr );
     DEBUGOUT( "free END" );
 }
 
-/*
+FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
+/************************************************************
  * DIGCliOpen
  */
-FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
     const char  *access;
 
@@ -135,10 +135,10 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
     return( fopen( path, access ) );
 }
 
-/*
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
+/************************************************************************
  * DIGCliSeek
  */
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
 {
     int         mode;
     int         ret;
@@ -160,10 +160,10 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
     return( ret );
 }
 
-/*
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
+/********************************************
  * DIGCliTell
  */
-unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
     unsigned long   ret;
 
@@ -173,35 +173,35 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
     return( ret );
 }
 
-/*
+size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
+/*************************************************************
  * DIGCliRead
  */
-size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DEBUGOUT( "reading" );
     return( fread( buf, 1, size, fp ) );
 }
 
-/*
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
+/********************************************************************
  * DIGCliWrite
  */
-size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
     return( fwrite( buf, 1, size, fp ) );
 }
 
-/*
+void DIGCLIENTRY( Close )( FILE *fp )
+/************************************
  * DIGCliClose
  */
-void DIGCLIENTRY( Close )( FILE *fp )
 {
     fclose( fp );
 }
 
-/*
+void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
+/************************************************************
  * DIGCliRemove
  */
-void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 {
     /* unused parameters */ (void)mode;
 
@@ -209,19 +209,22 @@ void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 }
 
 
-/*
- * DIGCliMachineData
- */
 unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
                                         const void *in, dig_elen out_size, void *out )
+/********************************************************************************************
+ * DIGCliMachineData
+ */
 {
     /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size; (void)out;
 
     return( 0 );
 }
 
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
+                            const char *defext, char *result, size_t result_len )
+/********************************************************************************
+ * DIGLoaderFind
+ */
 {
     const char  *ext;
     char        filename[256];
