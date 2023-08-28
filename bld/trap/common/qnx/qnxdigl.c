@@ -125,4 +125,3 @@ void DIGCLIENTRY( Free )( void *p )
 {
     free( p );
 }
-
