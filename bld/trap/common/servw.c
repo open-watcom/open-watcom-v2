@@ -60,7 +60,7 @@ static bool     Linked = false;
 static bool     OneShot = false;
 
 static bool     FirstInstance( HINSTANCE );
-static bool     AnyInstance( HINSTANCE, int, LPSTR );
+static bool     AnyInstance( HINSTANCE, int );
 
 #define MENU_ON     (MF_ENABLED+MF_BYCOMMAND)
 #define MENU_OFF    (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
@@ -71,6 +71,8 @@ static bool     AnyInstance( HINSTANCE, int, LPSTR );
 int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
+    const char  *err;
+    char        trapparms[PARMS_MAXLEN];
 
     Instance = this_inst;
     if( !prev_inst ) {
@@ -78,7 +80,15 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
             return( FALSE );
         }
     }
-    if( !AnyInstance( this_inst, cmdshow, cmdline ) )
+    err = ParseCommandLine( cmdline, trapparms, ServParms, &OneShot );
+    if( err == NULL ) {
+        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+    }
+    if( err != NULL ) {
+        StartupErr( err );
+        return( FALSE );
+    }
+    if( !AnyInstance( this_inst, cmdshow ) )
         return( FALSE );
 
     while( GetMessage( (LPVOID)&msg, (HWND)0, 0, 0 ) ) {
@@ -138,19 +148,8 @@ static void EnableMenus( HWND hwnd, bool connected, bool session )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static bool AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
+static bool AnyInstance( HINSTANCE this_inst, int cmdshow )
 {
-    const char  *err;
-    char        trapparms[PARMS_MAXLEN];
-
-    err = ParseCommandLine( cmdline, trapparms, ServParms, &OneShot );
-    if( err == NULL ) {
-        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
-    }
-    if( err != NULL ) {
-        StartupErr( err );
-        return( false );
-    }
     /*
      * create main window
      */
