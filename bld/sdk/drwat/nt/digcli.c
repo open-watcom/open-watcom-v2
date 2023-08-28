@@ -235,10 +235,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         strncpy( fname, base_name, base_name_len );
         fname[base_name_len] = '\0';
         _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( pg.ext == NULL || *pg.ext == '\0' ) {
-            pg.ext = defext;
-        }
-        _makepath( fname, pg.drive, pg.dir, pg.fname, pg.ext );
+        if( pg.ext != NULL && *pg.ext != '\0' )
+            defext = pg.ext;
+        _makepath( fname, pg.drive, pg.dir, pg.fname, defext );
         len = strlen( fname );
         if( len > filename_len )
             len = filename_len;
