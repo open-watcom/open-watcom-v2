@@ -121,6 +121,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     ld_func = (trap_load_func *)PE_getProcAddress( TrapFile, "TrapLoad_" );
     if( ld_func != NULL ) {
 #else
+    buff[0] = '\0';
     ld_func = TrapLoad;
 #endif
         trap_funcs = ld_func( &TrapCallbacks );
