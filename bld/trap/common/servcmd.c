@@ -137,7 +137,7 @@ const char *ParseCommandLine( const char *cmdline, char *trapparms, char *servpa
         ptr = SkipSpaces( ptr + 1 );
         start = ptr;
         #undef isalpha
-        while( isalpha( *ptr ) )
+        while( isalpha( *(unsigned char *)ptr ) )
             ++ptr;
         if( ptr == start ) {
             return( TRP_ERR_expect_option );
