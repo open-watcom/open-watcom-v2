@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #define INCL_PM
+#define INCL_DOSDEVICES
 #include <os2.h>
 #include "wpi.h"
 
