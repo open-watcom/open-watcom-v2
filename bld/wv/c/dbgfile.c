@@ -449,7 +449,7 @@ static size_t MakeNameWithPath( obj_attrs oattrs,
 }
 
 
-file_handle LclStringToFullName( const char *name, size_t len, char *full )
+file_handle LclFileToFullName( const char *name, size_t len, char *full )
 {
     char_ring   *curr;
     file_handle fh;
@@ -521,13 +521,13 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     }
     *p = NULLCHAR;
     if( oattrs & OP_REMOTE ) {
-        RemoteStringToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)result_len );
+        RemoteFileToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)result_len );
         fh = FileOpen( result, OP_READ | OP_REMOTE );
     } else if( has_path ) {
         StrCopyDst( buffer, result );
         fh = FileOpen( buffer, OP_READ );
     } else {
-        fh = LclStringToFullName( buffer, p - buffer, result );
+        fh = LclFileToFullName( buffer, p - buffer, result );
     }
     if( fh == NIL_HANDLE ) {
         strcpy( result, buffer );

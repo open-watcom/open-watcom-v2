@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@ extern size_t           MakeFileName( char *result, const char *name, const char
 extern const char       *RealFName( char const *name, obj_attrs *oattrs );
 extern bool             IsAbsolutePath( const char *path );
 extern const char       *ExtPointer( char const *path, obj_attrs oattrs );
-extern file_handle      LclStringToFullName( const char *name, size_t len, char *full );
+extern file_handle      LclFileToFullName( const char *name, size_t len, char *full );
 extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
 extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
 extern file_handle      PathOpen( const char *name, size_t name_len, const char *ext );

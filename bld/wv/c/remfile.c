@@ -159,7 +159,7 @@ bool HaveRemoteFiles( void )
 }
 
 //NYI: The 'bool executable' should be changed to allow different file types
-size_t RemoteStringToFullName( dig_filetype file_type, const char *name, char *res,
+size_t RemoteFileToFullName( dig_filetype file_type, const char *name, char *res,
                                  trap_elen res_len )
 {
     in_mx_entry         in[2];
@@ -172,7 +172,7 @@ size_t RemoteStringToFullName( dig_filetype file_type, const char *name, char *r
 #endif
 
     if( SuppFileId == 0 ) {
-        fh = LclStringToFullName( name, strlen( name ), res );
+        fh = LclFileToFullName( name, strlen( name ), res );
         if( fh == NIL_HANDLE )
             return( 0 );
         FileClose( fh );

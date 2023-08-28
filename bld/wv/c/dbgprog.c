@@ -926,7 +926,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
             FileClose( fh );
         }
     } else {
-        len = RemoteStringToFullName( DIG_FILETYPE_EXE, name, fullname, sizeof( fullname ) );
+        len = RemoteFileToFullName( DIG_FILETYPE_EXE, name, fullname, sizeof( fullname ) );
         fullname[len] = NULLCHAR;
     }
     image = CreateImage( fullname, symfile );
@@ -1039,7 +1039,7 @@ size_t GetProgName( char *where, size_t len )
     /*
         Before, we did a:
 
-            RemoteStringToFullName( DIG_FILETYPE_EXE, TaskCmd, where, len );
+            RemoteFileToFullName( DIG_FILETYPE_EXE, TaskCmd, where, len );
 
         but that screws up when the user specified something other than
         just an executable on the command line. E.g. a PID to connect
