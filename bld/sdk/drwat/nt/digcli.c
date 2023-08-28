@@ -217,35 +217,35 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_
     return( 0 );
 }
 
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
-                            const char *defext, char *result, size_t result_len )
-/********************************************************************************
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_len )
+/*****************************************************************************************
  * DIGLoaderFind
  */
 {
     const char  *ext;
-    char        filename[256];
+    char        fname[256];
     pgroup2     pg;
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
     len = 0;
-    if( result_len > 0 ) {
-        result_len--;
-        strncpy( filename, name, name_len );
-        filename[name_len] = '\0';
-        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( filename_len > 0 ) {
+        filename_len--;
+        strncpy( fname, base_name, base_name_len );
+        fname[base_name_len] = '\0';
+        _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         ext = pg.ext;
         if( ext == NULL || *ext == '\0' ) {
             ext = defext;
         }
-        _makepath( filename, pg.drive, pg.dir, pg.fname, ext );
-        len = strlen( filename );
-        if( len > result_len )
-            len = result_len;
-        strncpy( result, filename, len );
-        result[len] = '\0';
+        _makepath( fname, pg.drive, pg.dir, pg.fname, ext );
+        len = strlen( fname );
+        if( len > filename_len )
+            len = filename_len;
+        strncpy( filename, fname, len );
+        filename[len] = '\0';
     }
     return( len );
 }

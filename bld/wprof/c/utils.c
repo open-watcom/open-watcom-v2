@@ -149,37 +149,38 @@ char *FindHelpFile( char *fullname, const char *help_name )
     return( fullname );
 }
 
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_len )
+/****************************************************************************************/
 {
-    char        realname[_MAX_PATH2];
+    char        fname[_MAX_PATH2];
     char        *p;
     pgroup2     pg;
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
-    strncpy( realname, name, name_len );
-    realname[name_len] = '\0';
+    strncpy( fname, base_name, base_name_len );
+    fname[base_name_len] = '\0';
     if( defext != NULL && *defext != NULLCHAR ) {
-        _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( realname, NULL, NULL, pg.fname, defext );
+        _splitpath2( fname, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        _makepath( fname, NULL, NULL, pg.fname, defext );
     }
-    p = findFile( pg.buffer, realname, FilePathList );
+    p = findFile( pg.buffer, fname, FilePathList );
     if( p == NULL ) {
-        p = findFile( pg.buffer, realname, DipExePathList );
+        p = findFile( pg.buffer, fname, DipExePathList );
         if( p == NULL ) {
             p = "";
         }
     }
     len = strlen( p );
-    if( result_len > 0 ) {
-        result_len--;
-        if( result_len > len )
-            result_len = len;
-        if( result_len > 0 )
-            strncpy( result, p, result_len );
-        result[result_len] = '\0';
+    if( filename_len > 0 ) {
+        filename_len--;
+        if( filename_len > len )
+            filename_len = len;
+        if( filename_len > 0 )
+            strncpy( filename, p, filename_len );
+        filename[filename_len] = '\0';
     }
     return( len );
 }

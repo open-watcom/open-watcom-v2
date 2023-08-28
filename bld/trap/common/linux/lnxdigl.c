@@ -42,8 +42,8 @@
 
 
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
-const char *defext, char *filename, size_t filename_len )
-/************************************************************************************************************************************/
+                                const char *defext, char *filename, size_t filename_len )
+/****************************************************************************************/
 {
     bool        has_ext;
     bool        has_path;

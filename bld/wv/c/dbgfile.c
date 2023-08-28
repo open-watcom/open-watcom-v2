@@ -764,11 +764,12 @@ static size_t MakeName( const char *path, const char *name, size_t nlen, char *r
     return( p - res );
 }
 
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_len )
+/****************************************************************************************/
 {
     char        buffer[TXT_LEN];
-    char        filename[TXT_LEN];
+    char        fname[TXT_LEN];
     char        *p;
     bool        has_ext;
     bool        has_path;
@@ -781,8 +782,8 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     has_ext = false;
     has_path = false;
     p = buffer;
-    while( name_len-- > 0 ) {
-        c = *name++;
+    while( base_name_len-- > 0 ) {
+        c = *base_name++;
         *p++ = c;
         if( CHK_PATH_SEP( c, &LclFile ) ) {
             has_ext = false;
@@ -801,16 +802,16 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
     } else {
         // check open file in current directory or in full path
         len = p - buffer;
-        MakeName( NULL, buffer, len, filename, sizeof( filename ) );
-        if( access( filename, F_OK ) == 0 ) {
-            p = filename;
+        MakeName( NULL, buffer, len, fname, sizeof( fname ) );
+        if( access( fname, F_OK ) == 0 ) {
+            p = fname;
         } else {
             p = "";
             // check open file in debugger directory list
             for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                if( MakeName( curr->name, buffer, len, filename, sizeof( filename ) ) ) {
-                    if( access( filename, F_OK ) == 0 ) {
-                        p = filename;
+                if( MakeName( curr->name, buffer, len, fname, sizeof( fname ) ) ) {
+                    if( access( fname, F_OK ) == 0 ) {
+                        p = fname;
                         break;
                     }
                 }
@@ -818,13 +819,13 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
         }
     }
     len = strlen( p );
-    if( result_len > 0 ) {
-        result_len--;
-        if( result_len > len )
-            result_len = len;
-        if( result_len > 0 )
-            strncpy( result, p, result_len );
-        result[result_len] = NULLCHAR;
+    if( filename_len > 0 ) {
+        filename_len--;
+        if( filename_len > len )
+            filename_len = len;
+        if( filename_len > 0 )
+            strncpy( filename, p, filename_len );
+        filename[filename_len] = NULLCHAR;
     }
     return( len );
 }

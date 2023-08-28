@@ -199,11 +199,12 @@ void PathFini( void )
     free( FilePathList );
 }
 
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_len )
+/****************************************************************************************/
 {
     char        fullname[_MAX_PATH2];
-    char        filename[_MAX_PATH2];
+    char        fname[_MAX_PATH2];
     FILE        *fp;
     char        *p;
     char        c;
@@ -211,16 +212,16 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
 
     /* unused parameters */ (void)ftype;
 
-    strncpy( filename, name, name_len );
-    filename[name_len] = '\0';
+    strncpy( fname, base_name, base_name_len );
+    fname[base_name_len] = '\0';
     if( defext != NULL && *defext != '\0' ) {
-        _splitpath2( filename, fullname, NULL, NULL, &p, NULL );
-        _makepath( filename, NULL, NULL, p, defext );
+        _splitpath2( fname, fullname, NULL, NULL, &p, NULL );
+        _makepath( fname, NULL, NULL, p, defext );
     }
-    if( access( filename, F_OK ) == 0 ) {
-        p = filename;
+    if( access( fname, F_OK ) == 0 ) {
+        p = fname;
     } else if( path_list != NULL ) {
-        strcpy( fullname, filename );
+        strcpy( fullname, fname );
         while( (c = *path_list) != '\0' ) {
             p = fullname;
             do {
@@ -233,7 +234,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
             if( !IS_PATH_SEP( c ) ) {
                 *p++ = DIR_SEP;
             }
-            strcpy( p, filename );
+            strcpy( p, fname );
             if( access( fullname, F_OK ) == 0 ) {
                 p = fullname;
                 break;
@@ -246,13 +247,13 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
         p = "";
     }
     len = strlen( p );
-    if( result_len > 0 ) {
-        result_len--;
-        if( result_len > len )
-            result_len = len;
-        if( result_len > 0 )
-            strncpy( result, p, result_len );
-        result[result_len] = '\0';
+    if( filename_len > 0 ) {
+        filename_len--;
+        if( filename_len > len )
+            filename_len = len;
+        if( filename_len > 0 )
+            strncpy( filename, p, filename_len );
+        filename[filename_len] = '\0';
     }
     return( len );
 }

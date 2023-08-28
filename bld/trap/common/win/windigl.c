@@ -38,13 +38,14 @@
 #include "servio.h"
 
 
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_len )
+/****************************************************************************************/
 {
     bool        has_ext;
     bool        has_path;
     char        *p;
-    char        trpfile[256];
+    char        fname[256];
     char        c;
     size_t      len;
 
@@ -52,9 +53,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
 
     has_ext = false;
     has_path = false;
-    p = trpfile;
-    while( name_len-- > 0 ) {
-        c = *name++;
+    p = fname;
+    while( base_name_len-- > 0 ) {
+        c = *base_name++;
         *p++ = c;
         switch( c ) {
         case '.':
@@ -74,19 +75,19 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
         p = StrCopyDst( defext, p );
     }
     *p = '\0';
-    p = trpfile;
+    p = fname;
     if( !has_path ) {
-        _searchenv( trpfile, "PATH", RWBuff );
+        _searchenv( fname, "PATH", RWBuff );
         p = RWBuff;
     }
     len = strlen( p );
-    if( result_len > 0 ) {
-        result_len--;
-        if( result_len > len )
-            result_len = len;
-        if( result_len > 0 )
-            strncpy( result, p, result_len );
-        result[result_len] = '\0';
+    if( filename_len > 0 ) {
+        filename_len--;
+        if( filename_len > len )
+            filename_len = len;
+        if( filename_len > 0 )
+            strncpy( filename, p, filename_len );
+        filename[filename_len] = '\0';
     }
     return( len );
 }
