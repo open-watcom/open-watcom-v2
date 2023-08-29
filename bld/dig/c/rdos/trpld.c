@@ -39,7 +39,7 @@
 #include "tcerr.h"
 
 
-static int              TrapFile = 0;
+static int              mod_hdl = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
 void UnLoadTrap( void )
@@ -49,9 +49,9 @@ void UnLoadTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapFile != 0 ) {
-        RdosFreeDll( TrapFile );
-        TrapFile = 0;
+    if( mod_hdl != 0 ) {
+        RdosFreeDll( mod_hdl );
+        mod_hdl = 0;
     }
 }
 
@@ -77,16 +77,16 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    TrapFile = RdosLoadDll( filename );
-    if( TrapFile == NULL ) {
+    mod_hdl = RdosLoadDll( filename );
+    if( mod_hdl == NULL ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';
-    init_func = RdosGetModuleProc( TrapFile, "TrapInit_" );
-    FiniFunc = RdosGetModuleProc( TrapFile, "TrapFini_" );
-    ReqFunc  = RdosGetModuleProc( TrapFile, "TrapRequest_" );
-//    LibListFunc = RdosGetModuleProc( TrapFile, "TrapLibList_" );
+    init_func = RdosGetModuleProc( mod_hdl, "TrapInit_" );
+    FiniFunc = RdosGetModuleProc( mod_hdl, "TrapFini_" );
+    ReqFunc  = RdosGetModuleProc( mod_hdl, "TrapRequest_" );
+//    LibListFunc = RdosGetModuleProc( mod_hdl, "TrapLibList_" );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL /* && LibListFunc != NULL */ ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {

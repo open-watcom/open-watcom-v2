@@ -44,7 +44,7 @@ extern char **environ;
 #endif
 
 #if !defined( BUILTIN_TRAP_FILE )
-static PE_MODULE        *TrapFile = NULL;
+static PE_MODULE        *mod_hdl = NULL;
 #endif
 static trap_fini_func   *FiniFunc = NULL;
 
@@ -69,9 +69,9 @@ void UnLoadTrap( void )
         FiniFunc = NULL;
     }
 #if !defined( BUILTIN_TRAP_FILE )
-    if( TrapFile != NULL ) {
-        PE_freeLibrary( TrapFile );
-        TrapFile = NULL;
+    if( mod_hdl != NULL ) {
+        PE_freeLibrary( mod_hdl );
+        mod_hdl = NULL;
     }
 #endif
 }
@@ -112,13 +112,13 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( fp == NULL ) {
         return( buff );
     }
-    TrapFile = PE_loadLibraryFile( fp, filename );
+    mod_hdl = PE_loadLibraryFile( fp, filename );
     DIGLoader( Close )( fp );
-    if( TrapFile == NULL ) {
+    if( mod_hdl == NULL ) {
         return( buff );
     }
     buff[0] = '\0';
-    ld_func = (trap_load_func *)PE_getProcAddress( TrapFile, "TrapLoad_" );
+    ld_func = (trap_load_func *)PE_getProcAddress( mod_hdl, "TrapLoad_" );
     if( ld_func != NULL ) {
 #else
     buff[0] = '\0';

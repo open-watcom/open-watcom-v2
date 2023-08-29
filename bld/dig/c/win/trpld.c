@@ -53,7 +53,7 @@
 bool    TrapHardModeRequired = false;
 
 static trap_fini_func   *FiniFunc = NULL;
-static HINSTANCE        TrapFile = 0;
+static HINSTANCE        mod_hdl = 0;
 static HINSTANCE        toolhelp = 0;
 
 void UnLoadTrap( void )
@@ -69,9 +69,9 @@ void UnLoadTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapFile != 0 ) {
-        FreeLibrary( TrapFile );
-        TrapFile = 0;
+    if( mod_hdl != 0 ) {
+        FreeLibrary( mod_hdl );
+        mod_hdl = 0;
     }
     if( toolhelp != 0 ) {
         FreeLibrary( toolhelp );
@@ -98,10 +98,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
-    }
     /*
      * load toolhelp since windows can't seem to handle having a static
      * reference to a dll inside a dynamically loaded dll
@@ -110,24 +106,28 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( (UINT)toolhelp < 32 ) {
         toolhelp = 0;
     }
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
+        return( buff );
+    }
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    TrapFile = LoadLibrary( filename );
+    mod_hdl = LoadLibrary( filename );
     SetErrorMode( prev );
-    if( (UINT)TrapFile < 32 ) {
-        TrapFile = 0;
+    if( (UINT)mod_hdl < 32 ) {
+        mod_hdl = 0;
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';
-    init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)2 );
-    FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)3 );
-    ReqFunc  = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)4 );
-    TRAP_EXTFUNC_PTR( InputHook ) = (TRAP_EXTFUNC_TYPE( InputHook ))GetProcAddress( TrapFile, (LPSTR)5 );
-    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( TrapFile, (LPSTR)6 );
-    TRAP_EXTFUNC_PTR( HardModeCheck ) = (TRAP_EXTFUNC_TYPE( HardModeCheck ))GetProcAddress( TrapFile, (LPSTR)7 );
-    TRAP_EXTFUNC_PTR( GetHwndFunc ) = (TRAP_EXTFUNC_TYPE( GetHwndFunc ))GetProcAddress( TrapFile, (LPSTR)8 );
-    TRAP_EXTFUNC_PTR( SetHardMode ) = (TRAP_EXTFUNC_TYPE( SetHardMode ))GetProcAddress( TrapFile, (LPSTR)12 );
-    TRAP_EXTFUNC_PTR( UnLockInput ) = (TRAP_EXTFUNC_TYPE( UnLockInput ))GetProcAddress( TrapFile, (LPSTR)13 );
+    init_func = (trap_init_func *)GetProcAddress( mod_hdl, (LPSTR)2 );
+    FiniFunc = (trap_fini_func *)GetProcAddress( mod_hdl, (LPSTR)3 );
+    ReqFunc  = (trap_req_func *)GetProcAddress( mod_hdl, (LPSTR)4 );
+    TRAP_EXTFUNC_PTR( InputHook ) = (TRAP_EXTFUNC_TYPE( InputHook ))GetProcAddress( mod_hdl, (LPSTR)5 );
+    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( mod_hdl, (LPSTR)6 );
+    TRAP_EXTFUNC_PTR( HardModeCheck ) = (TRAP_EXTFUNC_TYPE( HardModeCheck ))GetProcAddress( mod_hdl, (LPSTR)7 );
+    TRAP_EXTFUNC_PTR( GetHwndFunc ) = (TRAP_EXTFUNC_TYPE( GetHwndFunc ))GetProcAddress( mod_hdl, (LPSTR)8 );
+    TRAP_EXTFUNC_PTR( SetHardMode ) = (TRAP_EXTFUNC_TYPE( SetHardMode ))GetProcAddress( mod_hdl, (LPSTR)12 );
+    TRAP_EXTFUNC_PTR( UnLockInput ) = (TRAP_EXTFUNC_TYPE( UnLockInput ))GetProcAddress( mod_hdl, (LPSTR)13 );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {

@@ -49,7 +49,7 @@
 #include "_trpextf.h"
 #undef pick
 
-static HANDLE           TrapFile = 0;
+static HANDLE           mod_hdl = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
 bool TRAP_EXTFUNC( InfoFunction )( HWND hwnd )
@@ -89,9 +89,9 @@ void UnLoadTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapFile != 0 ) {
-        FreeLibrary( TrapFile );
-        TrapFile = 0;
+    if( mod_hdl != 0 ) {
+        FreeLibrary( mod_hdl );
+        mod_hdl = 0;
     }
 }
 
@@ -117,18 +117,18 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    TrapFile = LoadLibrary( filename );
-    if( TrapFile == NULL ) {
+    mod_hdl = LoadLibrary( filename );
+    if( mod_hdl == NULL ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';
-    init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)1 );
-    FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 );
-    ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
-    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( TrapFile, (LPSTR)4 );
-    TRAP_EXTFUNC_PTR( InterruptProgram ) = (TRAP_EXTFUNC_TYPE( InterruptProgram ))GetProcAddress( TrapFile, (LPSTR)5 );
-    TRAP_EXTFUNC_PTR( Terminate ) = (TRAP_EXTFUNC_TYPE( Terminate ))GetProcAddress( TrapFile, (LPSTR)6 );
+    init_func = (trap_init_func *)GetProcAddress( mod_hdl, (LPSTR)1 );
+    FiniFunc = (trap_fini_func *)GetProcAddress( mod_hdl, (LPSTR)2 );
+    ReqFunc = (trap_req_func *)GetProcAddress( mod_hdl, (LPSTR)3 );
+    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( mod_hdl, (LPSTR)4 );
+    TRAP_EXTFUNC_PTR( InterruptProgram ) = (TRAP_EXTFUNC_TYPE( InterruptProgram ))GetProcAddress( mod_hdl, (LPSTR)5 );
+    TRAP_EXTFUNC_PTR( Terminate ) = (TRAP_EXTFUNC_TYPE( Terminate ))GetProcAddress( mod_hdl, (LPSTR)6 );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {

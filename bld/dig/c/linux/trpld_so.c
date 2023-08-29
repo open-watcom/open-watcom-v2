@@ -46,7 +46,7 @@ extern char             **environ;
 #endif
 
 #if !defined( BUILTIN_TRAP_FILE )
-static void             *TrapFile = NULL;
+static void             *mod_hdl = NULL;
 #endif
 static trap_fini_func   *FiniFunc = NULL;
 
@@ -71,9 +71,9 @@ void UnLoadTrap( void )
         FiniFunc = NULL;
     }
 #if !defined( BUILTIN_TRAP_FILE )
-    if( TrapFile != NULL ) {
-        dlclose( TrapFile );
-        TrapFile = NULL;
+    if( mod_hdl != NULL ) {
+        dlclose( mod_hdl );
+        mod_hdl = NULL;
     }
 #endif
 }
@@ -114,14 +114,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( fp == NULL ) {
         return( buff );
     }
-    TrapFile = dlopen( filename, RTLD_NOW );
+    mod_hdl = dlopen( filename, RTLD_NOW );
     DIGLoader( Close )( fp );
-    if( TrapFile == NULL ) {
+    if( mod_hdl == NULL ) {
         puts( dlerror() );
         return( buff );
     }
     buff[0] = '\0';
-    ld_func = (trap_load_func *)dlsym( TrapFile, "TrapLoad" );
+    ld_func = (trap_load_func *)dlsym( mod_hdl, "TrapLoad" );
     if( ld_func != NULL ) {
 #else
     buff[0] = '\0';

@@ -60,7 +60,7 @@
 #include "_trpextf.h"
 #undef pick
 
-static HMODULE          TrapFile = 0;
+static HMODULE          mod_hdl = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
 bool IsTrapFilePumpingMessageQueue( void )
@@ -95,9 +95,9 @@ void UnLoadTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapFile != 0 ) {
-        DosFreeModule( TrapFile );
-        TrapFile = 0;
+    if( mod_hdl != 0 ) {
+        DosFreeModule( mod_hdl );
+        mod_hdl = 0;
     }
 }
 
@@ -145,18 +145,18 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    if( LOAD_MODULE( filename, TrapFile ) ) {
+    if( LOAD_MODULE( filename, mod_hdl ) ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     buff[0] = '\0';
-    if( GET_PROC_ADDRESS( TrapFile, 1, init_func )
-      && GET_PROC_ADDRESS( TrapFile, 2, FiniFunc )
-      && GET_PROC_ADDRESS( TrapFile, 3, ReqFunc ) ) {
-        if( !GET_PROC_ADDRESS( TrapFile, 4, TRAP_EXTFUNC_PTR( TellHandles ) ) ) {
+    if( GET_PROC_ADDRESS( mod_hdl, 1, init_func )
+      && GET_PROC_ADDRESS( mod_hdl, 2, FiniFunc )
+      && GET_PROC_ADDRESS( mod_hdl, 3, ReqFunc ) ) {
+        if( !GET_PROC_ADDRESS( mod_hdl, 4, TRAP_EXTFUNC_PTR( TellHandles ) ) ) {
             TRAP_EXTFUNC_PTR( TellHandles ) = NULL;
         }
-        if( !GET_PROC_ADDRESS( TrapFile, 5, TRAP_EXTFUNC_PTR( TellHardMode ) ) ) {
+        if( !GET_PROC_ADDRESS( mod_hdl, 5, TRAP_EXTFUNC_PTR( TellHardMode ) ) ) {
             TRAP_EXTFUNC_PTR( TellHardMode ) = NULL;
         }
         *trap_ver = init_func( parms, buff, trap_ver->remote );

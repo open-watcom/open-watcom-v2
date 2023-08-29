@@ -70,7 +70,9 @@ FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     const char  *fmode;
 
-    /* convert flags. */
+    /*
+     * convert flags.
+     */
     switch( mode & (DIG_OPEN_READ | DIG_OPEN_WRITE) ) {
     case DIG_OPEN_READ:
         fmode = "rb";
