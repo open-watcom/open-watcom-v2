@@ -47,49 +47,20 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
                                 const char *defext, char *filename, size_t filename_len )
 /****************************************************************************************/
 {
-    bool        has_ext;
-    bool        has_path;
-    char        *p;
-    char        c;
     char        fname[256];
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
-    has_ext = false;
-    has_path = false;
-    p = fname;
-    while( base_name_len-- > 0 ) {
-        c = *base_name++;
-        *p++ = c;
-        switch( c ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-            has_ext = false;
-            has_path = true;
-            break;
-        }
-    }
-    if( !has_ext && *defext != '\0' ) {
-        *p++ = '.';
-        p = StrCopyDst( defext, p );
-    }
-    *p = '\0';
-    if( has_path ) {
-        p = fname;
-    } else {
-        FindFilePath( DIG_FILETYPE_DBG, fname, RWBuff );
-        p = RWBuff;
-    }
-    len = strlen( p );
+    strncpy( fname, base_name, base_name_len );
+    strcat( fname + base_name_len, defext );
+    len = FindFilePath( DIG_FILETYPE_DBG, fname, RWBuff );
     if( filename_len > 0 ) {
         filename_len--;
         if( filename_len > len )
             filename_len = len;
         if( filename_len > 0 )
-            strncpy( filename, p, filename_len );
+            strncpy( filename, RWBuff, filename_len );
         filename[filename_len] = '\0';
     }
     return( len );

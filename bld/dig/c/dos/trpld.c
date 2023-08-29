@@ -136,7 +136,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, "trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }

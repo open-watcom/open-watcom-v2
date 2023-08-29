@@ -52,7 +52,7 @@ int PILLSysLoad( const char *base_name, const pill_client_routines *cli,
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), "pil", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".pil", filename, sizeof( filename ) ) == 0 ) {
         return( 0 );
     }
     fp = DIGLoader( Open )( filename );

@@ -154,21 +154,17 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 /****************************************************************************************/
 {
     char        fname[_MAX_PATH2];
+    char        buffer[_MAX_PATH2];
     char        *p;
-    pgroup2     pg;
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
     strncpy( fname, base_name, base_name_len );
-    fname[base_name_len] = '\0';
-    if( defext != NULL && *defext != NULLCHAR ) {
-        _splitpath2( fname, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( fname, NULL, NULL, pg.fname, defext );
-    }
-    p = findFile( pg.buffer, fname, FilePathList );
+    strcat( fname + base_name_len, defext );
+    p = findFile( buffer, fname, FilePathList );
     if( p == NULL ) {
-        p = findFile( pg.buffer, fname, DipExePathList );
+        p = findFile( buffer, fname, DipExePathList );
         if( p == NULL ) {
             p = "";
         }

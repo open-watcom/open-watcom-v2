@@ -103,50 +103,46 @@ void UnLoadTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                *p;
-    char                chr;
+    const char          *base_name;
+    size_t              len;
     trap_init_func      *init_func;
     char                filename[CCHMAXPATH];
-    char                trpname[CCHMAXPATH];
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = trpname;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        *p++ = chr;
+        len++;
     }
-    *p = '\0';
+    /*
+     * To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
+     * extension. We will search for them along the PATH (not in LIBPATH);
+     */
 #ifdef _M_I86
-    if( LOW( trpname[0] ) == 's' && LOW( trpname[1] ) == 't'
-      && LOW( trpname[2] ) == 'd' && trpname[3] == '\0' ) {
+    if( len == 3
+      && LOW( base_name[0] ) == 's' && LOW( base_name[1] ) == 't' && LOW( base_name[2] ) == 'd' ) {
         unsigned        version;
         char            os2ver;
 
         DosGetVersion( (PUSHORT)&version );
         os2ver = version >> 8;
         if( os2ver >= 20 ) {
-            strcpy( trpname, "std32" );
+            base_name = "std32";
         } else {
-            strcpy( trpname, "std16" );
+            base_name = "std16";
         }
+        len = 5;
     }
-#endif
-    /*
-     * To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
-     * extension. We will search for them along the PATH (not in LIBPATH);
-     */
-#ifdef _M_I86
-    strcat( trpname, ".DLL" );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".DLL", filename, sizeof( filename ) ) == 0 ) {
 #else
-    strcat( trpname, ".D32" );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
-    _searchenv( trpname, "PATH", filename );
-    if( *filename == '\0' ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpname );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
     if( LOAD_MODULE( filename, TrapFile ) ) {

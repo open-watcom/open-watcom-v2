@@ -213,11 +213,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     /* unused parameters */ (void)ftype;
 
     strncpy( fname, base_name, base_name_len );
-    fname[base_name_len] = '\0';
-    if( defext != NULL && *defext != '\0' ) {
-        _splitpath2( fname, fullname, NULL, NULL, &p, NULL );
-        _makepath( fname, NULL, NULL, p, defext );
-    }
+    strcat( fname + base_name_len, defext );
     if( access( fname, F_OK ) == 0 ) {
         p = fname;
     } else if( path_list != NULL ) {

@@ -58,39 +58,25 @@ void UnLoadTrap( void )
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                filename[256];
-    char                *p;
-    char                chr;
-    bool                have_ext;
+    const char          *base_name;
+    size_t              len;
     trap_init_func      *init_func;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    have_ext = false;
-    p = filename;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        switch( chr ) {
-        case ':':
-        case '/':
-        case '\\':
-            have_ext = false;
-            break;
-        case '.':
-            have_ext = true;
-            break;
-        }
-        *p++ = chr;
+        len++;
     }
-    if( !have_ext ) {
-        *p++ = '.';
-        *p++ = 'd';
-        *p++ = 'l';
-        *p++ = 'l';
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
+        return( buff );
     }
-    *p = '\0';
     TrapFile = RdosLoadDll( filename );
     if( TrapFile == NULL ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
