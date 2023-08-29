@@ -35,6 +35,7 @@
 #include <string.h>
 #include <process.h>
 #include "bool.h"
+#include "wio.h"
 #include "iopath.h"
 #include "digcli.h"
 #include "digld.h"
@@ -42,14 +43,15 @@
 #include "dipdump.h"
 
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 typedef struct char_ring {
     struct char_ring    *next;
     char                name[1];
 } char_ring;
 
 static char   *FilePathList = NULL;
-#endif
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
 {
@@ -139,8 +141,6 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_
     return( 0 ); /// @todo check this out out.
 }
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
-
 static char *addPath( char *old_list, const char *path_list )
 /***********************************************************/
 {
@@ -177,6 +177,9 @@ void PathInit( void )
     char        buff[_MAX_PATH];
     char        *p;
 
+#ifdef BLDVER
+    FilePathList = addPath( FilePathList, getenv( "WD_PATH" QSTR( BLDVER ) ) );
+#endif
     if( _cmdname( buff ) != NULL ) {
 #if defined( __UNIX__ )
         p = strrchr( buff, '/' );
@@ -207,13 +210,14 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 {
     char        fullname[_MAX_PATH2];
     char        fname[_MAX_PATH2];
-    FILE        *fp;
     char        *p;
     char        c;
     size_t      len;
+    const char  *path_list;
 
     /* unused parameters */ (void)ftype;
 
+    path_list = FilePathList;
     if( base_name_len == 0 )
         base_name_len = strlen( base_name );
     strncpy( fname, base_name, base_name_len );
@@ -257,6 +261,8 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     }
     return( len );
 }
+
+#if defined( __UNIX__ ) || defined( __DOS__ )
 
 FILE *DIGLoader( Open )( const char *filename )
 /*********************************************/

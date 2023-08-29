@@ -86,7 +86,7 @@ inc_dirs += -I"$(gui_dir)/ui/h"
 inc_dirs += -I"$(ncurses_dir)/h"
 !endif
 
-extra_cpp_flags = $(dig_arch_cpp_flags)
+extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 !ifdef wv_engine_noui
 extra_cpp_flags += -D__NOUI__
 !endif

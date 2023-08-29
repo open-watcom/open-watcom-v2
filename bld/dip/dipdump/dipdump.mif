@@ -24,6 +24,8 @@ dipdump_autodepends = .AUTODEPEND
 
 inc_dirs = -I"../h" -I"$(dig_dir)/h"
 
+extra_cpp_flags = -DBLDVER=$(bld_ver)
+
 # explicit rules
 #################
 

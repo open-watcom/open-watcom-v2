@@ -44,7 +44,6 @@
 #define HANDLE2FP(ph)    ((FILE *)((unsigned long)(ph) + 1))
 #define FP2HANDLE(fp)    ((int)((unsigned long)(fp) - 1))
 
-
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
                                 const char *defext, char *filename, size_t filename_len )
 /****************************************************************************************/
@@ -58,7 +57,13 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         base_name_len = strlen( base_name );
     strncpy( fname, base_name, base_name_len );
     strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+    _searchenv( fname, "WD_PATH" QSTR( BLDVER ), RWBuff );
+    if( *RWBuff == '\0' )
+        _searchenv( fname, "PATH", RWBuff );
+#else
     _searchenv( fname, "PATH", RWBuff );
+#endif
     len = strlen( RWBuff );
     if( filename_len > 0 ) {
         filename_len--;

@@ -31,7 +31,7 @@ dig_arch = $(host_cpu)
 
 inc_dirs = -I"../h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 
-extra_cpp_flags = $(dig_arch_cpp_flags)
+extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 
 #
 # lflags

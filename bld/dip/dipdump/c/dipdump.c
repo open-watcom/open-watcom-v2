@@ -751,13 +751,9 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
 {
     walk_result     walkres;
     struct stat     s;
-    char            buff[1024];
-    unsigned        len;
     int             i;
 
     /* unused parameters */ (void)proc;
-
-    /* unused variables */ (void)len; (void)buff;
 
     /*
      * Module.
@@ -781,10 +777,13 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
     /*
      * crashes codeview, nothing on dwarf.
      */
-    buff[0] = '\0';
-    len = DIPModName( mh, buff, sizeof( buff ) );
-    if( len ) {
-        printf( "module name = %s\n", buff );
+    {
+        char    buff[1024];
+
+        buff[0] = '\0';
+        if( DIPModName( mh, buff, sizeof( buff ) ) ) {
+            printf( "module name = %s\n", buff );
+        }
     }
 #endif
     printf( "\n"
@@ -1028,9 +1027,7 @@ int main( int argc, char **argv )
     }
 #endif
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
     PathInit();
-#endif
     /*
      * Try to dump debug info for all remaining arguments
      */
@@ -1043,8 +1040,6 @@ int main( int argc, char **argv )
         }
         ++optind;
     }
-#if defined( __UNIX__ ) || defined( __DOS__ )
     PathFini();
-#endif
     return( rc );
 }

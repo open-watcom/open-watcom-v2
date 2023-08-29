@@ -37,6 +37,7 @@
 #include <sys/stat.h>
 #include "digtypes.h"
 #include "qnxpath.h"
+#include "servio.h"
 
 
 char *StrCopyDst( const char *src, char *dst )
@@ -100,6 +101,11 @@ size_t FindFilePath( dig_filetype file_type, const char *name, char *result )
     if( stat( name, &tmp ) == 0 ) {
         return( StrCopyDst( name, result ) - result );
     }
+#ifdef BLDVER
+    len = tryOnePath( getenv( "WD_PATH" QSTR( BLDVER ) ), &tmp, name, result );
+    if( len != 0 )
+        return( len );
+#endif
     if( file_type == DIG_FILETYPE_EXE ) {
         return( tryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {

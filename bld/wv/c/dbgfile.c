@@ -77,6 +77,9 @@
 #define ISREMOTE(x)     ((x & REMOTE_IND) != 0)
 #define SETREMOTE(x)    x |= REMOTE_IND
 
+#define QQSTR(x)        # x
+#define QSTR(x)         QQSTR(x)
+
 static char_ring        *LclPath;
 
 static sys_handle       SysHandles[MAX_OPENS];
@@ -455,12 +458,16 @@ file_handle LclFileToFullName( const char *name, size_t name_len, char *full )
     file_handle fh;
     size_t      path_len;
 
-    // check open file in current directory or in full path
+    /*
+     * check open file in current directory or in full path
+     */
     MakeNameWithPath( OP_LOCAL, NULL, 0, name, name_len, full );
     fh = FileOpen( full, OP_READ );
     if( fh != NIL_HANDLE )
         return( fh );
-    // check open file in debugger directory list
+    /*
+     * check open file in debugger directory list
+     */
     for( curr = LclPath; curr != NULL; curr = curr->next ) {
         path_len = strlen( curr->name );
         MakeNameWithPath( OP_LOCAL, curr->name, path_len, name, name_len, full );
@@ -709,6 +716,9 @@ void PathInit( void )
     char        *p;
 
 //    parsePathList( &LclPath, "." );
+  #ifdef BLDVER
+    parseEnvVar( &LclPath, "WD_PATH" QSTR( BLDVER ) );
+  #endif
     parseEnvVar( &LclPath, "WD_PATH" );
     parseEnvVar( &LclPath, "HOME" );
     if( _cmdname( cmd ) != NULL ) {

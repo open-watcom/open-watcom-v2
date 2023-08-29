@@ -146,7 +146,7 @@ dig_arch = $(target_cpu)
 
 # cflags stuff
 ###############
-extra_cpp_flags = -D$(which) $(dig_arch_cpp_flags) $(extra_cppflags)
+extra_cpp_flags = -D$(which) $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver) $(extra_cppflags)
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE

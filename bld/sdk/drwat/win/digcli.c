@@ -49,6 +49,9 @@
 //#define DEBUGOUT( x ) LBPrintf( ListBox, x );
 #define DEBUGOUT( x )
 
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 #if 0
 FILE *PathOpen( char *name, unsigned len, const char *ext )
 {
@@ -238,6 +241,9 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
             base_name_len = strlen( base_name );
         strncpy( fname, base_name, base_name_len );
         strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+        _searchenv( fname, "WD_PATH" QSTR( BLDVER ), fname );
+#endif
         len = strlen( fname );
         if( len > filename_len )
             len = filename_len;

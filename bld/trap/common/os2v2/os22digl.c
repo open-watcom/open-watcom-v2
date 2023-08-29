@@ -51,7 +51,13 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         base_name_len = strlen( base_name );
     strncpy( fname, base_name, base_name_len );
     strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+    _searchenv( fname, "WD_PATH" QSTR( BLDVER ), RWBuff );
+    if( *RWBuff == '\0' )
+        _searchenv( fname, "PATH", RWBuff );
+#else
     _searchenv( fname, "PATH", RWBuff );
+#endif
     len = strlen( RWBuff );
     if( filename_len > 0 ) {
         filename_len--;

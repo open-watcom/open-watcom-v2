@@ -33,7 +33,7 @@ dig_arch = all
 inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) &
     $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(dig_dir)/h"
 
-extra_cpp_flags = $(dig_arch_cpp_flags)
+extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 !ifeq sys_windowed 1
 extra_cpp_flags    += -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__

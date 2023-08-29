@@ -82,6 +82,9 @@
 #endif
 #define HELP_NAME  "WWINHELP"
 
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 char   *HelpPathList = NULL;
 char   *FilePathList = NULL;
 char   *DipExePathList = NULL;
@@ -247,6 +250,13 @@ void InitPaths( void )
 
     watcom_setup_env();
 
+#ifdef BLDVER
+    env = getenv( "WD_PATH" QSTR( BLDVER ) );
+    FilePathList = AddPath( FilePathList, env );
+  #if defined(__UNIX__)
+    DipExePathList = AddPath( DipExePathList, env );
+  #endif
+#endif
     env = getenv( PATH_NAME );
     FilePathList = AddPath( FilePathList, env );
     HelpPathList = AddPath( HelpPathList, env );
