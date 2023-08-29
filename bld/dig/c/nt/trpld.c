@@ -122,13 +122,13 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
+    buff[0] = '\0';
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)1 );
     FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 );
     ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
     TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( TrapFile, (LPSTR)4 );
     TRAP_EXTFUNC_PTR( InterruptProgram ) = (TRAP_EXTFUNC_TYPE( InterruptProgram ))GetProcAddress( TrapFile, (LPSTR)5 );
     TRAP_EXTFUNC_PTR( Terminate ) = (TRAP_EXTFUNC_TYPE( Terminate ))GetProcAddress( TrapFile, (LPSTR)6 );
-    buff[0] = '\0';
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {

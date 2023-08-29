@@ -56,8 +56,9 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     dip_status          ds;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( filename, base_name );
-    strcat( filename, ".dll" );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
     mod_hdl = RdosLoadDll( filename );
     if( mod_hdl == NULL_SYSHDL ) {
         return( DS_ERR | DS_FOPEN_FAILED );

@@ -64,9 +64,6 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     dip_init_func       *init_func;
     dip_status          ds;
     char                filename[CCHMAXPATH];
-#ifndef _M_I86
-    char                fname[CCHMAXPATH];
-#endif
 
     *sys_hdl = NULL_SYSHDL;
     /*
@@ -74,14 +71,12 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
 #ifdef _M_I86
-    strcpy( filename, base_name );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".DLL", filename, sizeof( filename ) ) == 0 ) {
 #else
-    strcpy( fname, base_name );
-    strcat( fname, ".D32" );
-    _searchenv( fname, "PATH", filename );
-    if( *filename == '\0' )
-        return( DS_ERR | DS_FOPEN_FAILED );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
     if( LOAD_MODULE( filename, mod_hdl ) ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }

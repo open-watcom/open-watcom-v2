@@ -64,9 +64,6 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_
     mad_init_func       *init_func;
     mad_status          status;
     char                filename[CCHMAXPATH];
-#ifndef _M_I86
-    char                fname[CCHMAXPATH];
-#endif
 
     *sys_hdl = NULL_SYSHDL;
     /*
@@ -74,14 +71,12 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
 #ifdef _M_I86
-    strcpy( filename, base_name );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".DLL", filename, sizeof( filename ) ) == 0 ) {
 #else
-    strcpy( fname, base_name );
-    strcat( fname, ".D32" );
-    _searchenv( fname, "PATH", filename );
-    if( *filename == '\0' )
-        return( MS_ERR | MS_FOPEN_FAILED );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
+        return( MS_ERR | MS_FOPEN_FAILED );
+    }
     if( LOAD_MODULE( filename, mod_hdl ) ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }

@@ -85,8 +85,9 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
     UINT                prev;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( filename, base_name );
-    strcat( filename, ".dll" );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
+    }
     p = parm;
     *p++ = ' ';
     utoa( _FP_SEG( &transfer_block ), p, 16 );
@@ -103,8 +104,8 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
     parm_block.reserved = 0;
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
     mod_hdl = LoadModule( filename, &parm_block );
-    MADLastHandle = mod_hdl;
     SetErrorMode( prev );
+    MADLastHandle = mod_hdl;
     if( mod_hdl < HINSTANCE_ERROR ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
