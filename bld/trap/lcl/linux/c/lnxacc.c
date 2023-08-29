@@ -246,7 +246,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( pid == 0 || ptrace( PTRACE_ATTACH, pid, NULL, NULL ) == -1 ) {
         attached = false;
         args[0] = name;
-        FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name );
+        if( FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name ) == 0 )
+            goto fail;
         save_pgrp = getpgrp();
         setpgid( 0, OrigPGrp );
         pid = fork();

@@ -547,6 +547,7 @@ trap_retval TRAP_FILE( file_to_fullpath )( void )
     name = GetInPtr( sizeof( *acc ) );
     ret  = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
+    ret->err = 0;
     if( FindFilePath( acc->file_type, name, fullname ) == 0 ) {
         ret->err = ENOENT;
     }

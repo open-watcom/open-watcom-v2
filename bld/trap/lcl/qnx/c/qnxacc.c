@@ -1457,7 +1457,7 @@ trap_retval TRAP_FILE( file_to_fullpath )( void )
     struct _psinfo      proc;
     pid_t               pid;
     nid_t               nid;
-    int                 len;
+    size_t              len;
     const char          *name;
     char                *fullname;
     file_string_to_fullpath_req *acc;

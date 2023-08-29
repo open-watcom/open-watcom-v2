@@ -1047,7 +1047,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void  )
 trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     pid_t               pid;
-    int                 len;
+    size_t              len;
     const char          *name;
     char                *fullname;
     file_string_to_fullpath_req *acc;

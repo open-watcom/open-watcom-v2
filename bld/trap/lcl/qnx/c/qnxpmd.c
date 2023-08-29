@@ -476,8 +476,8 @@ static bool LoadPmdHeader( char *name )
         return( false );
     }
     if( PmdInfo.hdr.signature != DUMP_SIGNATURE
-     || PmdInfo.hdr.version != DUMP_VERSION
-     || PmdInfo.hdr.errnum != 0 ) {
+      || PmdInfo.hdr.version != DUMP_VERSION
+      || PmdInfo.hdr.errnum != 0 ) {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;
@@ -677,7 +677,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
 trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     struct  stat                chk;
-    unsigned_16                 len;
+    size_t                      len;
     char                        *name;
     char                        *fullname;
     unsigned                    save_handle;
