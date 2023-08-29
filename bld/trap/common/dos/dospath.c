@@ -32,6 +32,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <i86.h>
 #include "tinyio.h"
 #include "digtypes.h"
@@ -87,7 +88,7 @@ const char __far *DOSEnvFind( const char *src )
 }
 #endif
 
-tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
+static bool tryPath( const char *name, char *end, const char *ext_list )
 {
     tiny_ret_t  rc;
     int         mode;
@@ -98,18 +99,17 @@ tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
         rc = TinyOpen( name, mode );
         if( TINY_OK( rc ) ) {
             TinyClose( TINY_INFO( rc ) );
-            return( rc );
+            return( true );
         }
     } while( *ext_list != '\0' );
-    return( rc );
+    return( false );
 }
 
-unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffer )
+size_t FindFilePath( dig_filetype file_type, const char *pgm, char *buffer )
 {
     const char  __far *path;
     char        *p2;
     const char  *p3;
-    tiny_ret_t  rc;
     bool        has_ext;
     bool        has_path;
     const char  *ext_list;
@@ -141,27 +141,28 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
         ext_list = ".com\0.exe\0";
 #endif
     }
-    rc = TryPath( buffer, p2, ext_list );
-    if( TINY_OK( rc ) || has_path )
-        return( rc );
-    path = DOSEnvFind( "PATH" );
-    if( path == NULL )
-        return( rc );
-    for( ; *path != '\0'; path++ ) {
-        p2 = buffer;
-        while( *path != '\0' && *path != ';' ) {
-            *p2++ = *path++;
-        }
-        if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
-            *p2++ = '\\';
-        }
-        p2 = StrCopyDst( pgm, p2 );
-        rc = TryPath( buffer, p2, ext_list );
-        if( TINY_OK( rc ) )
-            break;
-        if( *path == '\0' ) {
-            break;
+    if( tryPath( buffer, p2, ext_list ) )
+        return( strlen( buffer ) );
+    if( !has_path ) {
+        path = DOSEnvFind( "PATH" );
+        if( path != NULL ) {
+            for( ; *path != '\0'; path++ ) {
+                p2 = buffer;
+                while( *path != '\0' && *path != ';' ) {
+                    *p2++ = *path++;
+                }
+                if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
+                    *p2++ = '\\';
+                }
+                p2 = StrCopyDst( pgm, p2 );
+                if( tryPath( buffer, p2, ext_list ) )
+                    return( strlen( buffer ) );
+                if( *path == '\0' ) {
+                    break;
+                }
+            }
         }
     }
-    return( rc );
+    *buffer = '\0';
+    return( 0 );
 }

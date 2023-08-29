@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "digld.h"
+#include "os2path.h"
 #include "servio.h"
 
 

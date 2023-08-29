@@ -276,10 +276,8 @@ trap_retval TRAP_FILE( file_to_fullpath )( void )
 
     if( GetMagicalFileHandle( name ) != NULL ) {
         strcpy( fullname, name );
-    } else {
-        ret->err = FindFilePath( acc->file_type, name, fullname );
+    } else if( FindFilePath( acc->file_type, name, fullname ) == 0 ) {
+        ret->err = ENOENT;
     }
-    if( ret->err != 0 )
-        *fullname = '\0';
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }

@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #define INCL_BASE
 #define INCL_DOSDEVICES
 #define INCL_DOSMEMMGR
@@ -547,9 +548,8 @@ trap_retval TRAP_FILE( file_to_fullpath )( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    ret->err = FindFilePath( acc->file_type, name, fullname );
-    if( ret->err != 0 ) {
-        *fullname = '\0';
+    if( FindFilePath( acc->file_type, name, fullname ) == 0 ) {
+        ret->err = ENOENT;
     }
     return( sizeof( *ret ) + strlen( fullname )  + 1 );
 }

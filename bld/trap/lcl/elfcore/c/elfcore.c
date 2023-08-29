@@ -688,10 +688,8 @@ trap_retval TRAP_FILE( file_to_fullpath )( void )
             close( fd );
         }
     }
-    if( len == 0 ) {
+    if( len == 0 )
         ret->err = ENOENT;      /* File not found */
-        return( sizeof( *ret ) + 1 );
-    }
     return( sizeof( *ret ) + len + 1 );
 }
 
