@@ -231,8 +231,10 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     len = 0;
     if( filename_len > 0 ) {
         filename_len--;
+        if( base_name_len == 0 )
+            base_name_len = strlen( base_name );
         strncpy( fname, base_name, base_name_len );
-        strcat( fname + base_name_len, defext );
+        strcpy( fname + base_name_len, defext );
         len = strlen( fname );
         if( len > filename_len )
             len = filename_len;

@@ -766,22 +766,25 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     char        buffer[TXT_LEN];
     char        fname[TXT_LEN];
     char        *p;
-    bool        has_ext;
-    bool        has_path;
-    char        c;
     char_ring   *curr;
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
     strncpy( fname, base_name, base_name_len );
     strcpy( fname + base_name_len, defext );
-    // check open file in current directory or in full path
+    /*
+     * check open file in current directory
+     */
     if( access( fname, F_OK ) == 0 ) {
         p = fname;
     } else {
         p = "";
-        // check open file in debugger directory list
+        /*
+         * check open file in debugger directory list
+         */
         for( curr = LclPath; curr != NULL; curr = curr->next ) {
             if( MakeName( curr->name, fname, buffer, sizeof( buffer ) ) ) {
                 if( access( buffer, F_OK ) == 0 ) {

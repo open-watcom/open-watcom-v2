@@ -71,9 +71,9 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
 #ifdef _M_I86
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".DLL", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".DLL", filename, sizeof( filename ) ) == 0 ) {
 #else
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".D32", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
         return( DS_ERR | DS_FOPEN_FAILED );
     }

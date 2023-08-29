@@ -58,7 +58,7 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_
     mad_status          status;
 
     *sys_hdl = NULL_SYSHDL;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".dll", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     mod_hdl = RdosLoadDll( filename );

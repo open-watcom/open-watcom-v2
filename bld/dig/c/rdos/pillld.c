@@ -40,26 +40,27 @@
 int PILLSysLoad( const char *path, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
-    int                         dll;
+    int                         mod_hdl;
     char                        filename[256];
     pill_init_func              *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    strcpy( filename, path );
-    strcat( filename, ".dll" );
-    dll = RdosLoadDll( filename );
-    if( dll == NULL ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_DBG, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( 0 );
+    }
+    mod_hdl = RdosLoadDll( filename );
+    if( mod_hdl == NULL ) {
         msg->data.code = -1;
         return( 0 );
     }
-    init_func = RdosGetModuleProc( dll, "PILLLOAD" );
+    lh->sys = (void *)mod_hdl;
+    init_func = RdosGetModuleProc( mod_hdl, "PILLLOAD" );
     if( init_func == NULL ) {
         msg->data.code = -1;
-        RdosFreeDll( dll );
+        PILLSysUnload( lh );
         return( 0 );
     }
-    lh->sys = (void *)dll;
     lh->rtns = init_func( cli, msg );
     if( lh->rtns == NULL ) {
         /* don't free DLL yet, we need the message processor */

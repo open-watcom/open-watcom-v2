@@ -63,7 +63,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     char                filename[_MAX_PATH];
 
     *sys_hdl = NULL_SYSHDL;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, strlen( base_name ), ".dip", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dip", filename, sizeof( filename ) ) == 0 ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     fp = DIGLoader( Open )( filename );

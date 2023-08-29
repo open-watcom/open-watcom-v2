@@ -37,28 +37,30 @@
 #include "pillimp.h"
 #include "pillctrl.h"
 
-int PILLSysLoad( const char *path, const pill_client_routines *cli,
+int PILLSysLoad( const char *base_name, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
-    HANDLE                  dll;
+    HANDLE                  mod_hdl;
     char                    filename[256];
     pill_init_func          *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    DIGLoader( Find )( DIG_FILETYPE_DBG, path, strlen( path ), ".dll", newpath, sizeof( newpath ) );
-    dll = LoadLibrary( filename );
-    if( dll == NULL ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_DBG, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( 0 );
+    }
+    mod_hdl = LoadLibrary( filename );
+    if( mod_hdl == NULL ) {
         msg->data.code = GetLastError();
         return( 0 );
     }
-    init_func = (pill_init_func *)GetProcAddress( dll, "PILLLOAD" );
+    init_func = (pill_init_func *)GetProcAddress( mod_hdl, "PILLLOAD" );
     if( init_func == NULL ) {
         msg->data.code = GetLastError();
-        FreeLibrary( dll );
+        FreeLibrary( mod_hdl );
         return( 0 );
     }
-    lh->sys = (void *)dll;
+    lh->sys = (void *)mod_hdl;
     lh->rtns = init_func( cli, msg );
     if( lh->rtns == NULL ) {
         /* don't free DLL yet, we need the message processor */
