@@ -46,8 +46,7 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    strcpy( filename, path );
-    strcat( filename, ".dll" );
+    DIGLoader( Find )( DIG_FILETYPE_DBG, path, strlen( path ), ".dll", newpath, sizeof( newpath ) );
     dll = LoadLibrary( filename );
     if( dll == NULL ) {
         msg->data.code = GetLastError();

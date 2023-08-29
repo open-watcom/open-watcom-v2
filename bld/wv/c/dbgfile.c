@@ -733,35 +733,30 @@ void PathInit( void )
 #endif
 }
 
-static size_t MakeName( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
+static size_t MakeName( const char *path, const char *name, char *filename, size_t filename_len )
 {
     char        *p;
     size_t      len;
 
-    if( rlen < 2 ) {
-        if( rlen == 1 )
-            *res = NULLCHAR;
-        return( 0 );
-    }
-    p = res;
-    --rlen;     // save space for terminator
+    filename_len--;     /* save space for terminator */
+    p = filename;
     len = 0;
     if( path != NULL ) {
-        while( len < rlen && *path != NULLCHAR ) {
+        while( len < filename_len && *path != NULLCHAR ) {
             *p++ = *path++;
             ++len;
         }
-        if( len > 0 && len < rlen && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
+        if( len > 0 && len < filename_len && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
             *p++ = LclFile.path_separator[0];
             ++len;
         }
     }
-    while( len < rlen && nlen-- > 0 ) {
+    while( len < filename_len && *name != NULLCHAR ) {
         *p++ = *name++;
         ++len;
     }
     *p = NULLCHAR;
-    return( p - res );
+    return( len );
 }
 
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
@@ -779,41 +774,19 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
 
     /* unused parameters */ (void)ftype;
 
-    has_ext = false;
-    has_path = false;
-    p = buffer;
-    while( base_name_len-- > 0 ) {
-        c = *base_name++;
-        *p++ = c;
-        if( CHK_PATH_SEP( c, &LclFile ) ) {
-            has_ext = false;
-            has_path = true;
-        } else if( c == LclFile.ext_separator ) {
-            has_ext = true;
-        }
-    }
-    if( !has_ext && *defext != NULLCHAR ) {
-        *p++ = LclFile.ext_separator;
-        p = StrCopyDst( defext, p );
-    }
-    *p = NULLCHAR;
-    if( has_path ) {
-        p = buffer;
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+    // check open file in current directory or in full path
+    if( access( fname, F_OK ) == 0 ) {
+        p = fname;
     } else {
-        // check open file in current directory or in full path
-        len = p - buffer;
-        MakeName( NULL, buffer, len, fname, sizeof( fname ) );
-        if( access( fname, F_OK ) == 0 ) {
-            p = fname;
-        } else {
-            p = "";
-            // check open file in debugger directory list
-            for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                if( MakeName( curr->name, buffer, len, fname, sizeof( fname ) ) ) {
-                    if( access( fname, F_OK ) == 0 ) {
-                        p = fname;
-                        break;
-                    }
+        p = "";
+        // check open file in debugger directory list
+        for( curr = LclPath; curr != NULL; curr = curr->next ) {
+            if( MakeName( curr->name, fname, buffer, sizeof( buffer ) ) ) {
+                if( access( buffer, F_OK ) == 0 ) {
+                    p = buffer;
+                    break;
                 }
             }
         }
