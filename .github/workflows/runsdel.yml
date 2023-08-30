@@ -1,7 +1,7 @@
 name: Delete Old (Workflow Runs)
 on:
   schedule:
-    - cron: '5 1 * * 0'
+    - cron: '5 3 * * 0'
 # Run weekly, at 01:05 on the Sunday.
   workflow_dispatch:
 
