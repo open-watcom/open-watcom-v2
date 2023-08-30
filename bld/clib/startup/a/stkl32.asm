@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2016-2023 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -67,7 +67,6 @@ hextab  db      "0123456789ABCDEF"
         xchg    eax,[esp]               ; exchange parm with return addr
         push    eax                     ; push return addr
         ; fall into __CHK
-        endproc __STK
 
         defpe   __CHK
         push    eax                     ; save parm for __GRO routine
@@ -92,7 +91,6 @@ endif
           pop   eax                     ; - restore EAX
           ret   4                       ; - return
         _endguess                       ; endguess
-
         pop     eax                     ; throw away saved eax value
 
 ;* modified stack overflow code to print the return address of the
@@ -145,6 +143,7 @@ endif
         ; never return
 
         endproc __CHK
+        endproc __STK
 
 _putw proc near
         mov     edx,ebx                 ; save value

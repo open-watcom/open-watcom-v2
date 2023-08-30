@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -55,18 +56,18 @@ enddata
         ret                             ; return
         endproc _init_stk
 
-        defpe   __CHK
-        xchg    eax,4[esp]
-        call    __STK
-        mov     eax,4[esp]
-        ret     4
-        endproc __CHK
-
         defpe   __GRO
         ret     4
         endproc __GRO
 
         defpe   __STK
+        xchg    eax,[esp]               ; exchange parm with return addr
+        push    eax                     ; push return addr
+        ; fall into __CHK
+
+        defpe   __CHK
+        push    eax                     ; save eax
+        mov     eax,8[esp]              ; get parameter
         _guess                          ; guess: no overflow
           cmp   eax,esp                 ; - check if user asking for too much
         _quif ae                        ; quit if user asking for too much
@@ -80,8 +81,10 @@ enddata
             cmp   ax,SS_seg             ; - - see if SS has been changed
           _endif                        ; - endif
         _quif e                         ; quit if too much
-          ret                           ; - return (running with a different stack)
+          pop   eax                     ; - restore EAX
+          ret   4                       ; - return (running with a different stack)
         _endguess                       ; endguess
+        pop     eax                     ; throw away saved eax value
 
 __STKOVERFLOW:
 ifdef __STACK__
@@ -93,6 +96,7 @@ else
 endif
         jmp     __fatal_runtime_error   ; display msg and exit
         ; never return
+        endproc __CHK
         endproc __STK
 
         endmod

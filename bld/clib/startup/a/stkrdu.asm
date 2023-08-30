@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -53,14 +54,14 @@ msg     db      "Stack Overflow!", 0
         ret                             ; return
         endproc _init_stk
 
-        defpe   __CHK                   ; new style stack check
-        xchg    eax,4[esp]              ; get parm in eax
-        call    __STK                   ; call stack checker
-        mov     eax,4[esp]              ; restore eax
-        ret     4
-        endproc __CHK
-
         defpe   __STK
+        xchg    eax,[esp]               ; exchange parm with return addr
+        push    eax                     ; push return addr
+        ; fall into __CHK
+
+        defpe   __CHK                   ; new style stack check
+        push    eax                     ; save eax
+        mov     eax,8[esp]              ; get parm
         push    eax                     ; save parm for __GRO routine
         _guess                          ; guess: no overflow
           cmp   eax,esp                 ; - check if user asking for too much
@@ -70,10 +71,11 @@ msg     db      "Stack Overflow!", 0
           cmp   eax,fs:[08h]            ; - compare with stack bottom in TIB
         _quif be                        ; quit if too much
           call  __GRO                   ; - grow stack allocation if necessary
-          ret                           ; - return
+          pop   eax                     ; - restore eax
+          ret   4                       ; - return
         _endguess                       ; endguess
-
-        pop     eax                     ; pop the stack (parm for __GRO routine)
+        pop     eax                     ; throw away parm for __GRO routine
+        pop     eax                     ; throw away saved eax value
 
 __STKOVERFLOW:
 ifdef __STACK__
@@ -85,6 +87,7 @@ else
 endif
         jmp     __fatal_runtime_error   ; display msg and exit
         ; never return
+        endproc __CHK
         endproc __STK
 
         defpe   __GRO                   ; dummy function to resolve symbol
