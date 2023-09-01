@@ -58,18 +58,18 @@ export_full_nt_risc = export TrapInfoFunction.4, TrapInterruptProgram.5, TrapTer
 export_full_win = export TRAPINPUTHOOK.5, TRAPINFOFUNCTION.6, TRAPHARDMODECHECK.7, TRAPGETHWNDFUNC.8, TRAPSETHARDMODE.12, TRAPUNLOCKINPUT.13
 !endif
 
-sys_x86_os2  = sys os2 dll initinstance &
+sys_x86_os2  = sys os2 dll initinstance opt dosseg &
     $(export_common_intel) $(export_full_os2) &
     op modname=$^& &
     option description $(description)
 
-sys_x86_os2v2  = sys os2v2 dll initinstance terminstance &
+sys_x86_os2v2  = sys os2v2 dll initinstance terminstance opt dosseg &
     $(export_common_intel) $(export_full_os2) &
     lib os2386.lib &
     op modname=$^& &
     option description $(description)
 
-sys_x86_win  = sys windows_dll &
+sys_x86_win  = sys windows_dll opt dosseg &
     export WEP.1 RESIDENT &
     export TRAPINIT.2, TRAPFINI.3, TRAPREQUEST.4 $(export_full_win) &
     op modname=$^& &
@@ -78,7 +78,7 @@ sys_x86_win  = sys windows_dll &
 
 sys_x86_dos  = sys dos opt dosseg
 
-sys_x86_rdos = sys rdos_dll &
+sys_x86_rdos = sys rdos_dll opt dosseg &
     export TrapInit_, TrapFini_, TrapRequest_ &
     $(dllbase)
 

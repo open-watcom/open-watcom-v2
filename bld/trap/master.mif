@@ -130,6 +130,12 @@ xname = z$(name)
 xname = $(name)
 !endif
 
+# stack check handling
+#######################
+!ifeq which TRAP
+nocheckstack = 1
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -280,9 +286,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     @%append $^&.lnk op elim
     @%append $^&.lnk name $@
     @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
-!ifeq which TRAP
-    @%append $^&.lnk op dosseg
-!endif
+    @%append $^&.lnk $(proj_l_flags)
     @for %i in ($(objs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk library %i
     @%append $^&.lnk $(extra_linker)
