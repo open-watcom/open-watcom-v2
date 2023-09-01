@@ -18,6 +18,7 @@ sys_dll  = 1
 
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
 
 dig_arch = $(host_cpu)
@@ -44,5 +45,6 @@ extra_l_flags_dll = op oneautodata
 #
 # DLL
 #
-dlltarg_objs = splice.obj
+dlltarg_prebuild_objs = $(dll_subdir)
+dlltarg_objs = $(dll_subdir)/splice.obj
 !include dlltarg.mif
