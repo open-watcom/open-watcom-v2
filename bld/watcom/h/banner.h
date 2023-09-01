@@ -58,9 +58,6 @@
 #define banner1(p,v)        p " " banner1v(v)
 #define banner1w(p,v)       banner1t(p) " " banner1v(v)
 
-#define banner1w1(p)        banner1t(p)
-#define banner1w2(v)        banner1v(v)
-
 #define banner21            "Copyright (c) 2002-" _MACROSTR( _CYEAR ) " The Open Watcom Contributors."
 #define banner21a(year)     "Portions Copyright (c) " _DOSTR( year ) "-2002 Sybase, Inc."
 
