@@ -32,6 +32,7 @@
 
 #include "miniproc.h"
 #include "debugme.h"
+#include "brkptcpu.h"
 #include <string.h>
 #undef POP_UP_SCREEN
 #define ConsolePrintf _
@@ -592,5 +593,20 @@ void WriteStdErr( char *str, int len )
     while( --len >= 0 ) {
         OutputToScreen( systemConsoleScreen, "%c", *str );
         ++str;
+    }
+}
+
+extern void __STK( int size );
+extern void __CHK( int size );
+#pragma off (check_stack);
+void __declspec(naked) __CHK( int size )
+{
+    (void)size;
+    __asm {
+        push eax
+        mov eax,8[esp]
+        call __STK
+        pop eax
+        ret 4
     }
 }

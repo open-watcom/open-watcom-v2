@@ -1028,7 +1028,3 @@ void GotInt3( void )
     _DBG0(( "Got Int 3!!!" ));
 }
 #endif
-
-extern void StackCheck( void );
-#pragma aux StackCheck "__STK";
-void StackCheck( void ) {}
