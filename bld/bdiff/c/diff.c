@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,30 +64,6 @@ typedef struct exe_mod {
     char                name[1];
 } exe_mod;
 
-#ifdef USE_DBGINFO
-typedef long            exe_form_t;
-
-typedef struct {
-    fpos_t              last_offset;
-} walker_data;
-
-typedef struct exe_info {
-    FILE                *fd;
-    symbol_table        mods_by_offset;
-    symbol_table        mods_by_name;
-    symbol_table        blks;
-    exe_form_t          form;
-    struct {
-        FILE            *fd;
-        fpos_t          start;          /* start of debugging info */
-    } sym;
-} exe_info;
-
-extern foff     ExeForm( FILE *, void *, exe_info * );
-extern foff     ExeTransformAddr( exe_form_t, addr_seg, addr48_off, word );
-extern fpos_t   ExeOverlayAccess( exe_form_t exe, uint_16 section, uint_16 *seg );
-#endif
-
 byte            *PatchBuffer;
 byte            *OldFile;
 
@@ -137,11 +113,6 @@ static foff         NumDiffs = 0;
 static byte         *CurrPatch;
 
 static foff         PatchSize;
-
-#ifdef USE_DBGINFO
-static exe_info     old;
-static exe_info     new;
-#endif
 
 /*
  * Utility routines
