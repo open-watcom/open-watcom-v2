@@ -180,13 +180,10 @@ cldebug_fmt = -hd
 !ifndef $(proj_name)_nooptimization
 mode_optimization = $(dft_oflags)
 !endif
-!ifndef $(proj_name)_checkstack
-mode_nocheckstack = -s
-!endif
 mode_libflags =
 !ifeq release 1
 mode_cppflags = -DNDEBUG
-mode_cflags   = $(mode_nocheckstack)$(mode_optimization) -d1 $(cdebug_fmt)
+mode_cflags   = $(mode_optimization) -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
 mode_clflags  = $(cldebug_fmt) -d1
@@ -320,6 +317,41 @@ fpu_flags = $(fpu_flags_$(host_os)_$(host_cpu))
 fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 !endif
 
+#########################
+# STACK CHECKING SETINGS
+######
+!ifdef nocheckstack
+checkstack_386 = -s
+checkstack_i86 = -s
+!else ifdef checkstack
+!else ifdef $(proj_name)_nocheckstack
+checkstack_386 = -s
+checkstack_i86 = -s
+!else ifdef $(proj_name)_checkstack
+!else
+! ifeq release 1
+checkstack_386 = -s
+checkstack_i86 = -s
+! else
+! endif
+!endif
+
+!ifdef nocheckstack_dll
+checkstack_dll_386 = -s
+checkstack_dll_i86 = -s
+!else ifdef checkstack_dll
+!else ifdef $(proj_name)_nocheckstack_dll
+checkstack_dll_386 = -s
+checkstack_dll_i86 = -s
+!else ifdef $(proj_name)_checkstack_dll
+!else
+! ifeq release 1
+checkstack_dll_386 = -s
+checkstack_dll_i86 = -s
+! else
+! endif
+!endif
+
 #######################
 # PREPROCESSOR SETINGS
 ######
@@ -409,9 +441,9 @@ proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags
 
 cflags_gen_all   = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_rtdll_$(host_os))
 
-cflags_gen       = $(cflags_gen_all) $(proj_c_flags)
-cflags_dll       = $(cflags_gen_all) $(cflags_dll_$(host_os)) $(proj_c_flags)
-cflags_wind      = $(cflags_gen_all) $(cflags_wind_$(host_os)) $(proj_c_flags)
+cflags_gen       = $(cflags_gen_all) $(checkstack_$(host_cpu)) $(proj_c_flags)
+cflags_dll       = $(cflags_gen_all) $(checkstack_dll_$(host_cpu)) $(cflags_dll_$(host_os)) $(proj_c_flags)
+cflags_wind      = $(cflags_gen_all) $(checkstack_$(host_cpu)) $(cflags_wind_$(host_os)) $(proj_c_flags)
 
 ###################################
 # COMPILE AND LINK UTILITY SETINGS
@@ -466,18 +498,18 @@ clflags_exe      = -fe=$@
 proj_cl_flags    = $(extra_cl_flags)
 clflags_gen_all  = $(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_exe)
 
-clflags_gen      = $(clflags_gen_all) $(clflags_$(host_os)_$(host_cpu)) $(proj_cl_flags)
+clflags_gen      = $(clflags_gen_all) $(checkstack_$(host_cpu)) $(clflags_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 
 !ifdef clflags_dll_$(host_os)_$(host_cpu)
-clflags_dll      = $(clflags_gen_all) $(clflags_dll_$(host_os)_$(host_cpu)) $(proj_cl_flags)
+clflags_dll      = $(clflags_gen_all) $(checkstack_dll_$(host_cpu)) $(clflags_dll_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 !else
-clflags_dll      = $(clflags_gen)
+clflags_dll      = $(clflags_gen_all) $(checkstack_dll_$(host_cpu)) $(clflags_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 !endif
 
 !ifdef clflags_wind_$(host_os)_$(host_cpu)
-clflags_wind     = $(clflags_gen_all) $(clflags_wind_$(host_os)_$(host_cpu)) $(proj_cl_flags)
+clflags_wind     = $(clflags_gen_all) $(checkstack_$(host_cpu)) $(clflags_wind_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 !else
-clflags_wind     = $(clflags_gen)
+clflags_wind     = $(clflags_gen_all) $(checkstack_$(host_cpu)) $(clflags_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 !endif
 
 #####################
