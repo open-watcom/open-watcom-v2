@@ -20,7 +20,7 @@ wic_trmem = 1
 #
 # cflags
 #
-.c : ../c;$(trmem_dir)
+.c : ../c;$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = -I"../h"
 

@@ -6,8 +6,6 @@ tree_depth = 4
 
 proj_name = pgchart
 
-subdir_v2 = v2objs
-
 crwatpro_gsp = crwatpro.gsp
 
 additional_clean = $(crwatpro_gsp)
@@ -30,6 +28,11 @@ memory_model_i86 = l
 !endif
 
 !include cproj.mif
+!include defrule.mif
+defrule_key = v2
+subdir_v2 = v2objs
+extra_cpp_v2_flags = -DVERSION2
+extra_a_v2_flags = -DVERSION2
 !include defrule.mif
 !include deftarg.mif
 
@@ -111,9 +114,3 @@ wsplice_opts_qnx = -kQNX -u
 wsplice_opts_win = -kDOS
 
 !include $(graphlib_dir)/headers.mif
-
-extra_cpp_v2_flags = -DVERSION2
-extra_a_v2_flags = -DVERSION2
-
-defrule_key = v2
-!include defrule.mif

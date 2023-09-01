@@ -8,23 +8,33 @@ proj_name = posix_all
 
 posix_all_autodepends = .AUTODEPEND
 
-!include ../model.mif
+!include ../common.mif
 
 model_switch_i86=
 model_switch_386=
 
 !include cproj.mif
 !include defrule.mif
+defrule_key = stdlib
+subdir_stdlib = $(stdlibdir)
+extra_cpp_stdlib_i86_flags = -m$(model)
+extra_cpp_stdlib_386_flags = -m$(model)
+extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
+!include defrule.mif
+!ifdef alt_posixlib
+defrule_key = altlib
+subdir_altlib = $(altlibdir)
+extra_cpp_altlib_i86s_flags = -mc
+extra_cpp_altlib_i86c_flags = -ms
+extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
+!include defrule.mif
+!endif
 
 !include ../commands.mif
-!include ../common.mif
 
 inc_dirs += -I"../h"
 
 .c: ../misc
-
-subdir_stdlib = $(stdlibdir)
-subdir_altlib = $(altlibdir)
 
 libs = $(stdlibdir)/posix.lib
 !ifdef alt_posixlib
@@ -40,25 +50,11 @@ all : $(libdirs) $(libs) $(commands) .symbolic
     @%null
 
 !ifdef alt_posixlib
-extra_cpp_altlib_i86s_flags = -mc
-extra_cpp_altlib_i86c_flags = -ms
-extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
-
-defrule_key = altlib
-!include defrule.mif
-
 _subdir_ = $(altlibdir)/
 libtarg_objs = $(posixlib_objs)
 libtarg_name = $(_subdir_)posix
 !include libtarg.mif
 !endif
-
-extra_cpp_stdlib_i86_flags = -m$(model)
-extra_cpp_stdlib_386_flags = -m$(model)
-extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
-
-defrule_key = stdlib
-!include defrule.mif
 
 _subdir_ = $(stdlibdir)/
 libtarg_objs = $(posixlib_objs)

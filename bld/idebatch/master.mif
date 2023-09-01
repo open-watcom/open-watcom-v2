@@ -4,6 +4,12 @@ idebatch_autodepend = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif
+!ifeq host_os win
+defrule_key = editor
+subdir_editor = eobjs
+extra_cpp_editor_flags = -D__EDITOR__
+!include defrule.mif
+!endif
 !include deftarg.mif
 
 !ifeq host_os os2
@@ -53,15 +59,11 @@ exetarg_name = tstos2
 
 !else ifeq host_os win
 
-subdir_editor = eobjs
-
 .c: ../win;../dos
 
 inc_dirs = -I"../win" -I"../dos"
 
 extra_cpp_flags = -DSERVER
-
-extra_cpp_editor_flags = -D__EDITOR__
 
 extra_c_flags = -zW -zu
 
@@ -89,8 +91,5 @@ exetarg_name = wininte
 winint.res wininte.res : ../winint.rc
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$@
-
-defrule_key = editor
-!include defrule.mif
 
 !endif

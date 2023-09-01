@@ -1,7 +1,5 @@
 proj_name = graph
 
-subdir_v2 = v2objs
-
 crwatpro_gsp = crwatpro.gsp
 
 additional_clean = $(crwatpro_gsp)
@@ -16,6 +14,13 @@ suppress_zc = 1
 
 supervga_support = -D_SUPERVGA
 
+!ifeq system windows
+default_windowing = 1
+!endif
+!ifeq default_windowing 1
+def_windowing = -DDEFWIN
+!endif
+
 memory_model_i86 = s
 !ifeq host_os dos
 memory_model_386 = s
@@ -27,6 +32,11 @@ suffix_register = r
 suffix_stack = s
 
 !include cproj.mif
+!include defrule.mif
+defrule_key = v2
+subdir_v2 = v2objs
+extra_cpp_v2_flags = -DVERSION2
+extra_a_v2_flags = -DVERSION2
 !include defrule.mif
 !include deftarg.mif
 
@@ -47,6 +57,9 @@ extra_cpp_flags_386 = -D_CGRAPH=
 !ifeq convention stack
 extra_cpp_flags_386 += -D__STACK
 !endif
+
+extra_cpp_flags_win = $(def_windowing)
+extra_cpp_flags_os2 = $(def_windowing)
 
 extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
 
@@ -196,6 +209,11 @@ win_objs = &
     $(_subdir_)gphmain.obj &
     $(_subdir_)winutil.obj
 
+os2_objs = &
+    $(_subdir_)gphmain.obj &
+    $(_subdir_)winutil.obj &
+    $(_subdir_)seginit.obj
+
 special_objs = &
     fsmath.obj &
     dummy.obj
@@ -209,6 +227,8 @@ svga_english_objs = &
 
 !ifeq host_os win
 grlib_template = $(common_objs) $(win_objs)
+!else ifeq host_os os2
+grlib_template = $(common_objs) $(os2_objs)
 !else
 grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs) $(svga_english_objs)
 !endif
@@ -248,9 +268,3 @@ wsplice_opts_win = -kDOS
 wsplice_opts = $(wsplice_extra_opts) $(wsplice_opts_$(host_os))
 
 !include $(graphlib_dir)/headers.mif
-
-extra_cpp_v2_flags = -DVERSION2
-extra_a_v2_flags = -DVERSION2
-
-defrule_key = v2
-!include defrule.mif
