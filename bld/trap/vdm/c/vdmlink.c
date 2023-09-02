@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,35 +40,35 @@
 #include "trptypes.h"
 
 
-int ValidName( const char *name ) {
-
+bool ValidName( const char *name )
+{
     char *end;
     char *dot;
 
     end = memchr( name, 0, MAX_NAME );
     if( end == NULL )
-        return( 0 );
+        return( false );
     if( end == name )
-        return( 0 );
+        return( false );
     dot = memchr( name, '.', end - name );
     if( dot != NULL ) {
         if( dot == name )
-            return( 0 );
+            return( false );
         if( dot - name > 8 )
-            return( 0 );
+            return( false );
         if( end - dot > 4 )
-            return( 0 );
+            return( false );
         if( dot[1] == '.' || dot[2] == '.' || dot[3] == '.' ) {
-            return( 0 );
+            return( false );
         }
     } else {
         if( end - name > 8 ) {
-            return( 0 );
+            return( false );
         }
     }
     while( name < end ) {
         if( *name <= 0x1f )
-            return( 0 );
+            return( false );
         switch( *name ) {
         case '"':
         case '/':
@@ -81,9 +81,9 @@ int ValidName( const char *name ) {
         case '>':
         case '&':
         case '|':
-            return( 0 );
+            return( false );
         }
         ++name;
     }
-    return( 1 );
+    return( true );
 }

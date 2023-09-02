@@ -49,25 +49,24 @@
 #include "trperr.h"
 #include "packet.h"
 
+
 HANDLE  pipeHdl;
 
 #define NT_PREF_LEN     (MACH_NAME_LEN + PREFIX_LEN)
 
 const char *RemoteLink( const char *parms, bool server )
 {
-    char        buf[NT_PREF_LEN + MAX_NAME + 1];
-
     if( server )
         return( "this should never be seen" );
-    strcpy( buf, NT_MACH_NAME PREFIX );
+    strcpy( PackBuff, NT_MACH_NAME PREFIX );
     if( *parms == '\0' ) {
-        strcpy( buf + NT_PREF_LEN, DEFAULT_LINK_NAME );
+        strcpy( PackBuff + NT_PREF_LEN, DEFAULT_LINK_NAME );
     } else if( ValidName( parms ) ) {
-        strcpy( buf + NT_PREF_LEN, parms );
+        strcpy( PackBuff + NT_PREF_LEN, parms );
     } else {
         return( TRP_ERR_invalid_server_name );
     }
-    pipeHdl = CreateNamedPipe( buf,
+    pipeHdl = CreateNamedPipe( PackBuff,
                     PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
                     PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT,
                     1, MAX_TRANS, MAX_TRANS, 0, NULL );

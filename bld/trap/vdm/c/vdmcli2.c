@@ -43,24 +43,24 @@
 #include "trperr.h"
 #include "packet.h"
 
+
 HPIPE   pipeHdl;
 
 const char *RemoteLink( const char *parms, bool server )
 {
     APIRET      rc;
-    char        buf[PREFIX_LEN + MAX_NAME + 1];
 
     if( server )
         return "this should never be seen";
-    strcpy( buf, PREFIX );
+    strcpy( PackBuff, PREFIX );
     if( *parms == '\0' ) {
-        strcpy( buf + PREFIX_LEN, DEFAULT_LINK_NAME );
+        strcpy( PackBuff + PREFIX_LEN, DEFAULT_LINK_NAME );
     } else if( ValidName( parms ) ) {
-        strcpy( buf + PREFIX_LEN, parms );
+        strcpy( PackBuff + PREFIX_LEN, parms );
     } else {
         return( TRP_ERR_invalid_server_name );
     }
-    rc = DosCreateNPipe( buf, &pipeHdl,
+    rc = DosCreateNPipe( PackBuff, &pipeHdl,
         NP_NOINHERIT | NP_NOWRITEBEHIND | NP_ACCESS_DUPLEX,
         NP_NOWAIT | NP_READMODE_BYTE | NP_TYPE_BYTE | 1,
         MAX_TRANS, MAX_TRANS, 0 );
