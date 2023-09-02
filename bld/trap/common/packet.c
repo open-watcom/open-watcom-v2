@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,8 @@
 #include "trptypes.h"
 #include "packet.h"
 
-static char         PackBuff[0x400];
+
+char                PackBuff[0x400];
 
 static trap_elen    PackInd = 0;
 

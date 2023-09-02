@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,8 @@
 *
 ****************************************************************************/
 
+
+extern char         PackBuff[0x400];
 
 #if defined( SERVER )
 extern trap_retval  PutBuffPacket( void *, trap_elen );
