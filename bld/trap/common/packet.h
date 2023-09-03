@@ -45,6 +45,10 @@ extern void         RemovePacket( void *, trap_elen );
 extern trap_retval  GetPacket( void );
 extern trap_elen    MaxPacketSize( void );
 
+extern const char   *RemoteLinkSet( const char * );
+#if defined( SERVER )
+extern const char   *RemoteLinkGet( char *, size_t len );
+#endif
 extern const char   *RemoteLink( const char *, bool );
 extern bool         RemoteConnect( void );
 extern void         RemoteDisco( void );
