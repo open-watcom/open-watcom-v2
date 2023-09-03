@@ -67,21 +67,15 @@ void ServMessage( const char *msg )
 
 static const char *ServInitialize( void )
 {
-
     const char  *err;
     char        trapparms[PARMS_MAXLEN];
     char        cmd_line[PARMS_MAXLEN];
 
-#define servparms RWBuff
-
     _bgetcmd( cmd_line, sizeof( cmd_line ) );
-    err = ParseCommandLine( cmd_line, trapparms, servparms, &OneShot );
+    err = ParseCommandLine( cmd_line, trapparms, RWBuff, &OneShot );
     if( err == NULL ) {
-        err = RemoteLink( servparms, true );
+        err = RemoteLink( RWBuff, true );
     }
-
-#undef servparms
-
     if( err == NULL ) {
         err = LoadTrap( trapparms, RWBuff, &TrapVersion );
     }

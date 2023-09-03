@@ -48,8 +48,6 @@
 
 extern trap_version TrapVersion;
 
-char            ServParms[PARMS_MAXLEN];
-
 HANDLE          Instance;
 
 static char     ServerClass[32]="ServerClass";
@@ -80,7 +78,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
             return( FALSE );
         }
     }
-    err = ParseCommandLine( cmdline, trapparms, ServParms, &OneShot );
+    err = ParseCommandLine( cmdline, trapparms, RWBuff, &OneShot );
     if( err == NULL ) {
         err = RemoteLinkSet( RWBuff );
         if( err == NULL ) {
