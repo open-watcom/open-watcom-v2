@@ -75,9 +75,9 @@ static const char *ServInitialize( void )
     err = ParseCommandLine( cmd_line, trapparms, RWBuff, &OneShot );
     if( err == NULL ) {
         err = RemoteLink( RWBuff, true );
-    }
-    if( err == NULL ) {
-        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        if( err == NULL ) {
+            err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        }
     }
     return( err );
 }

@@ -482,6 +482,9 @@ const char *RemoteLinkSet( const char *parms )
 {
 #ifdef SERVER
     trap_port = get_port( parms );
+    if( trap_port == 0 ) {
+        return( TRP_ERR_unable_to_parse_port_number );
+    }
 #else
     char        buff[128];
     char        *p;
