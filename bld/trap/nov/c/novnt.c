@@ -379,7 +379,7 @@ const char *RemoteLink( const char *parms, bool server )
     const char  *p;
 #endif
 
-    (void)server;
+    /* unused parameters */ (void)server;
 
     if( parms != NULL ) {
         parms = RemoteLinkSet( parms );

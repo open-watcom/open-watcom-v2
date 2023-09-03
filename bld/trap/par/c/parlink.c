@@ -202,7 +202,7 @@
 #include "portio.h"
 
 
-extern void             Wait(void);
+extern void Wait( void );
 #pragma aux Wait = ;
 
 #if defined(_DBG)

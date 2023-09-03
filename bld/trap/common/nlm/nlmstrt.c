@@ -47,7 +47,7 @@
 
 
 extern int main( int arg, char **argv ); // defined by user
-extern void TrapFini(void);
+extern void TrapFini( void );
 
 struct LoadDefinitionStruct         *MyNLMHandle;
 struct ScreenStruct                 *screenID;
@@ -126,7 +126,7 @@ int _bgetcmd( char *buff, int len )
         if( len > cmd_len )
             len = cmd_len;
         for( i = 0; i < len; i++ ) {
-             buff[i] = Command[i];
+            buff[i] = Command[i];
         }
         buff[len] = '\0';
     }
@@ -601,7 +601,7 @@ extern void __CHK( int size );
 #pragma off (check_stack);
 void __declspec(naked) __CHK( int size )
 {
-    (void)size;
+    /* unused parameters */ (void)size;
     __asm {
         push eax
         mov eax,8[esp]

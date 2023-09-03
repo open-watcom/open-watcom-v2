@@ -1313,7 +1313,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     SEL                 gi;
     __LINFOSEG          __far *linfo;
 
-    parms = parms;
+    /* unused parameters */ (void)parms;
+
     Remote = remote;
     err[0] = '\0';
     ver.major = TRAP_MAJOR_VERSION;

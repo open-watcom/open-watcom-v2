@@ -39,8 +39,8 @@
 #include "options.h"
 
 
-extern int              NumPrinters(void);
-extern unsigned         PrnAddress(int);
+extern int              NumPrinters( void );
+extern unsigned         PrnAddress( int );
 
 WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {

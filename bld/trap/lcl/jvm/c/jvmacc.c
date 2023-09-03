@@ -280,8 +280,8 @@ void BreakpointLoop( stack_item *p, ExecEnv *ee )
 }
 
 #pragma aux (cdecl) HandleExit;
-void HandleExit(void)
-/*******************/
+void HandleExit( void )
+/*********************/
 {
     Event( COND_TERMINATE );
     TheBigSleep();

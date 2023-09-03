@@ -349,7 +349,8 @@ trap_retval RemoteGet( void *data, trap_elen len )
     trap_elen       ret;
 #endif
 
-    (void)len;
+    /* unused parameters */ (void)len;
+
 #ifdef SERVER
     TinyRead( pipeHdl, &incoming, sizeof( incoming ) );
     ret = incoming;

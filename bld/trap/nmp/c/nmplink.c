@@ -171,7 +171,7 @@ const char *RemoteLink( const char *parms, bool server )
 {
     const char  *err;
 
-    (void)server;
+    /* unused parameters */ (void)server;
 
     err = NULL;
     if( parms != NULL ) {

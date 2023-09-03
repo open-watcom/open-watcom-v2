@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +51,9 @@ REMARKS:
 Installs the driver
 ****************************************************************************/
 static BOOL InstallDriver(
-        IN SC_HANDLE  SchSCManager,
-        IN LPCTSTR    DriverName,
-        IN LPCTSTR    ServiceExe)
+    IN SC_HANDLE  SchSCManager,
+    IN LPCTSTR    DriverName,
+    IN LPCTSTR    ServiceExe)
 {
     SC_HANDLE  schService;
     DWORD      err;
@@ -98,8 +98,8 @@ REMARKS:
 Removes the driver
 ****************************************************************************/
 static BOOL RemoveDriver(
-        IN SC_HANDLE  SchSCManager,
-        IN LPCTSTR    DriverName)
+    IN SC_HANDLE  SchSCManager,
+    IN LPCTSTR    DriverName)
 {
     SC_HANDLE  schService;
     BOOL       ret;
@@ -124,8 +124,8 @@ REMARKS:
 Starts the driver
 ****************************************************************************/
 static BOOL StartDriver(
-        IN SC_HANDLE  SchSCManager,
-        IN LPCTSTR    DriverName)
+    IN SC_HANDLE  SchSCManager,
+    IN LPCTSTR    DriverName)
 {
     SC_HANDLE  schService;
     BOOL       ret;
@@ -160,8 +160,8 @@ REMARKS:
 Stops the driver
 ****************************************************************************/
 static BOOL StopDriver(
-        IN SC_HANDLE  SchSCManager,
-        IN LPCTSTR    DriverName)
+    IN SC_HANDLE  SchSCManager,
+    IN LPCTSTR    DriverName)
 {
     SC_HANDLE       schService;
     BOOL            ret;
@@ -187,7 +187,7 @@ REMARKS:
 Opens the device driver
 ****************************************************************************/
 static BOOL OpenDevice(
-        IN LPCTSTR    test_file)
+    IN LPCTSTR    test_file)
 {
     char     completeDeviceName[64];
     HANDLE   hDevice;
@@ -210,7 +210,7 @@ static BOOL OpenDevice(
 REMARKS:
 Print usage information for the driver
 ****************************************************************************/
-static void Usage(void)
+static void Usage( void )
 {
     printf( "drvinst [options] <driver_name> <driver_image>\n" );
     printf( "    options:\n" );
@@ -223,7 +223,7 @@ static void Usage(void)
     exit( 1 );
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
     SC_HANDLE   schSCManager;
     BOOL        remove = FALSE;

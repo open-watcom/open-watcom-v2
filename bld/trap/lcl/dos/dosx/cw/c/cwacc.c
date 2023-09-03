@@ -1094,7 +1094,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version    ver;
     char            ver_msg[] = "CauseWay API version = 0.00\r\n$";
 
-    parms=parms;remote=remote;
+    /* unused parameters */ (void)parms; (void)remote;
+
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

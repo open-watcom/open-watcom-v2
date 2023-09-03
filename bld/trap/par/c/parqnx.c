@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,8 +68,8 @@ unsigned PrnAddress( int printer )
 #pragma aux get_cs = "mov ax,cs" __value [__ax]
 #pragma aux get_flags = "pushfd" "pop eax" __value [__eax]
 
-extern unsigned short get_cs(void);
-extern unsigned get_flags(void);
+extern unsigned short get_cs( void );
+extern unsigned get_flags( void );
 
 #define PRIV_MASK       3
 #define IOPL_SHIFT      12

@@ -198,7 +198,7 @@ static void IpxWait( void )
     //        how clears out a condition in IPX where IPXRelinquishControl
     //        won't return.
     //*******************************************************************
-    extern void clock(void);
+    extern void clock( void );
     #pragma aux clock = \
             "mov  ah,2ch"   \
             "int 21h"       \
@@ -561,7 +561,7 @@ const char *RemoteLink( const char *parms, bool server )
     BYTE        major_ver,minor_ver;
     WORD        max_conn,avail_conn;
 
-    (void)server;
+    /* unused parameters */ (void)server;
 
     if( parms != NULL ) {
         parms = RemoteLinkSet( parms );

@@ -350,7 +350,7 @@ void StartupErr( const char *err )
 
 void ServMessage( const char *msg )
 {
-    (void)msg;
+    /* unused parameters */ (void)msg;
 }
 
 int WantUsage( const char *ptr )

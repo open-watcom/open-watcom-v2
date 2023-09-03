@@ -132,7 +132,9 @@ const char *RemoteLink( const char *parms, bool server )
         SharedMem == NULL || Terminated == NULL || UniquePid == NULL ) {
         return( "can not connect to debugger" );
     }
-    parms = parms;
+
+    /* unused parameters */ (void)parms;
+
 #else
     STARTUPINFO             sinfo;
     PROCESS_INFORMATION     pinfo;
