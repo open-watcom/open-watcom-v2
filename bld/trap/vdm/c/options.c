@@ -38,7 +38,7 @@
 
 WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    lparam = lparam;                    /* turn off warning */
+    (void)lparam;                    /* turn off warning */
 
     switch( msg ) {
     case WM_INITDIALOG:

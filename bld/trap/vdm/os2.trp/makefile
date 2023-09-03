@@ -11,6 +11,4 @@ srv = vdm
 which = TRAP
 remote_link = 1
 
-extra_objs = vdmcli.obj
-
 !include $(trap_dir)/master.mif
