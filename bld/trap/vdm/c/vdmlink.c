@@ -40,7 +40,7 @@
     #define INCL_DOSERRORS
     #define INCL_NOXLATE_DOS16
     #include <wos2.h>
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     #include <windows.h>
 #endif
 #include "vdm.h"
@@ -53,7 +53,7 @@
     #include "tinyio.h"
 #elif defined( __OS2__ )
     #include "namepipe.h"
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     #include "namepipe.h"
 #endif
 
@@ -72,8 +72,8 @@
 #endif
 #endif
 
-#ifdef __NT__
-#define NT_PREF_LEN     (MACH_NAME_LEN + PREFIX_LEN)
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+#define WIN_PREF_LEN     (MACH_NAME_LEN + PREFIX_LEN)
 #endif
 
 #ifdef SERVER
@@ -81,7 +81,7 @@ char    pipeName[MACH_NAME_LEN + PREFIX_LEN + MAX_NAME];
 int     pipeHdl = -1;
 #elif defined( __OS2__ )
 HPIPE   pipeHdl;
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
 HANDLE  pipeHdl;
 #endif
 
@@ -134,30 +134,30 @@ bool ValidName( const char *name )
     return( true );
 }
 
-
-const char *RemoteLink( const char *parms, bool server )
-{
 #ifdef SERVER
-    tiny_ret_t          rc;
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    /* unused parameters */ (void)len;
+
+    strcpy( parms, pipeName + PREFIX_LEN );
+    return( NULL );
+}
+#endif
+#endif
+
+#ifdef SERVER
+const char *RemoteLinkSet( const char *parms )
+{
     tiny_dos_version    ver;
     char                *p;
-#elif defined( __OS2__ )
-    APIRET              rc;
-#else   /* __NT__ */
-#endif
 
-#ifdef SERVER
-    if( !server )
-#else
-    if( server )
-#endif
-        return( "this should never be seen" );
-
-#ifdef SERVER
     p = pipeName;
     ver = TinyDOSVersion();
     if( ver.major < 20 ) {
-        /* in NT */
+        /*
+         * in NT
+         */
         strcpy( p, NT_MACH_NAME );
         p += MACH_NAME_LEN;
     }
@@ -170,6 +170,36 @@ const char *RemoteLink( const char *parms, bool server )
     } else {
         return( TRP_ERR_invalid_server_name );
     }
+    return( NULL );
+}
+#elif defined( __OS2__ )
+#else   /* __WINDOWS__ or __NT__ */
+#endif
+
+
+const char *RemoteLink( const char *parms, bool server )
+{
+#ifdef SERVER
+    tiny_ret_t          rc;
+#elif defined( __OS2__ )
+    APIRET              rc;
+#else   /* __WINDOWS__ or __NT__ */
+#endif
+
+#ifdef SERVER
+    if( !server )
+#else
+    if( server )
+#endif
+        return( "this should never be seen" );
+
+#ifdef SERVER
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
+        }
+    }
     /*
      * Since we can't create the pipe ourselves, we can't reserve the
      * name.  We can at least check that there isn't a pipe with the
@@ -181,6 +211,9 @@ const char *RemoteLink( const char *parms, bool server )
     pipeHdl = -1;
     rc = TinyOpen( pipeName, TIO_READ_WRITE );
     if( TINY_ERROR( rc ) ) {
+        tiny_dos_version    ver;
+
+        ver = TinyDOSVersion();
         if( ver.major >= 20 ) {
             /*
              * in OS/2
@@ -210,12 +243,12 @@ const char *RemoteLink( const char *parms, bool server )
             return( TRP_ERR_server_name_already_in_use );
         return( TRP_ERR_unable_to_access_server );
     }
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     strcpy( PackBuff, NT_MACH_NAME PREFIX );
     if( *parms == '\0' ) {
-        strcpy( PackBuff + NT_PREF_LEN, DEFAULT_LINK_NAME );
+        strcpy( PackBuff + WIN_PREF_LEN, DEFAULT_LINK_NAME );
     } else if( ValidName( parms ) ) {
-        strcpy( PackBuff + NT_PREF_LEN, parms );
+        strcpy( PackBuff + WIN_PREF_LEN, parms );
     } else {
         return( TRP_ERR_invalid_server_name );
     }
@@ -240,7 +273,7 @@ bool RemoteConnect( void )
 #elif defined( __OS2__ )
     APIRET      rc;
     int         try;
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     DWORD       mode;
     int         try;
 #endif
@@ -280,7 +313,7 @@ bool RemoteConnect( void )
         DosSleep( 200 );
     }
     return( false );
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     for( try = 0; try < 25; ++try ) {
         SetLastError( 0 );
         ConnectNamedPipe( pipeHdl, NULL );
@@ -311,7 +344,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
 #elif defined( __OS2__ )
     APIRET          bytes_read;
     APIRET          ret;
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     ULONG           bytes_read;
     trap_elen       ret;
 #endif
@@ -333,7 +366,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
         data = (char *)data + bytes_read;
         incoming -= bytes_read;
     }
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     ReadFile( pipeHdl, &incoming, sizeof( incoming ), &bytes_read, NULL );
     ret = incoming;
     while( incoming != 0 ) {
@@ -352,7 +385,7 @@ trap_retval RemotePut( void *data, trap_elen len )
 #ifdef SERVER
 #elif defined( __OS2__ )
     APIRET      bytes_written;
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     ULONG       bytes_written;
 #endif
 
@@ -367,7 +400,7 @@ trap_retval RemotePut( void *data, trap_elen len )
     if( len > 0 ) {
         DosWrite( pipeHdl, data, len, &bytes_written );
     }
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     WriteFile( pipeHdl, &outgoing, sizeof( outgoing ), &bytes_written, NULL );
     if( len > 0 ) {
         WriteFile( pipeHdl, data, len, &bytes_written, NULL );
@@ -384,7 +417,7 @@ void RemoteDisco( void )
     APIRET      rc;
     APIRET      bytes_read;
     char        tmp[MAX_TRANS];
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     BOOL        rc;
     DWORD       bytes_read;
     char        tmp[MAX_TRANS];
@@ -403,7 +436,7 @@ void RemoteDisco( void )
         rc = DosRead( pipeHdl, tmp, MAX_TRANS, &bytes_read );
     } while( rc == 0 && bytes_read != 0 );
     OS2DosDisConnectNPipe( pipeHdl );
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     do {
         rc = ReadFile( pipeHdl, tmp, sizeof( tmp ), &bytes_read, NULL );
     } while( rc && bytes_read != 0 );
@@ -418,7 +451,7 @@ void RemoteUnLink( void )
     /* nothing */
 #elif defined( __OS2__ )
     DosClose( pipeHdl );
-#else   /* __NT__ */
+#else   /* __WINDOWS__ or __NT__ */
     CloseHandle( pipeHdl );
 #endif
 }

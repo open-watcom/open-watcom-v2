@@ -174,6 +174,11 @@
     typedef struct sockaddr         *LPSOCKADDR;
 #endif
 
+unsigned short          trap_port;
+#ifndef SERVER
+unsigned_32             trap_addr;
+#endif
+
 #ifdef __RDOS__
 
     #define SOCKET_BUFFER   0x7000
@@ -435,7 +440,8 @@ static unsigned short get_port( const char *p )
     return( port );
 }
 
-#if !defined( SERVER ) && !defined( __RDOS__ )
+#ifndef SERVER
+#ifndef __RDOS__
 static unsigned_32 get_addr( const char *p )
 {
     unsigned_32 addr;
@@ -444,6 +450,9 @@ static unsigned_32 get_addr( const char *p )
     if( addr == OW_INADDR_INVALID ) {
         struct hostent  *hp;
 
+        /*
+         * OS/2's TCP/IP gethostbyname doesn't handle numeric addresses
+         */
         hp = gethostbyname( p );
         if( hp != NULL ) {
             addr = 0;
@@ -455,11 +464,59 @@ static unsigned_32 get_addr( const char *p )
     return( addr );
 }
 #endif
+#endif
+
+#ifdef SERVER
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    /* unused parameters */ (void)len;
+
+    sprintf( parms, "%u", trap_port );
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
+{
+#ifdef SERVER
+    trap_port = get_port( parms );
+#else
+    char        buff[128];
+    char        *p;
+
+    /*
+     * get port number out of name
+     */
+    p = buff;
+    while( *parms != '\0' ) {
+        if( *parms == ':' ) {
+            parms++;
+            break;
+        }
+        *p++ = *parms++;
+    }
+    *p = '\0';
+    trap_port = get_port( parms );
+    if( trap_port == 0 ) {
+        return( TRP_ERR_unable_to_parse_port_number );
+    }
+  #ifdef __RDOS__
+    trap_addr = OW_INADDR_LOOPBACK;
+  #else
+    trap_addr = get_addr( buff );
+    if( trap_addr == OW_INADDR_INVALID ) {
+        trap_addr = OW_INADDR_LOOPBACK;
+//        return( TRP_ERR_unknown_host );
+    }
+  #endif
+#endif
+    return( NULL );
+}
 
 const char *RemoteLink( const char *parms, bool server )
 {
-    unsigned short      port;
-
 #ifdef SERVER
   #if !defined( __RDOS__ )
     trp_socklen         length;
@@ -468,6 +525,12 @@ const char *RemoteLink( const char *parms, bool server )
 
     _DBG_NET(("SERVER: Calling into RemoteLink\r\n"));
 
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
+        }
+    }
   #if defined(__NT__) || defined(__WINDOWS__)
     {
         WSADATA data;
@@ -477,11 +540,9 @@ const char *RemoteLink( const char *parms, bool server )
         }
     }
   #endif
-
-    port = get_port( parms );
   #ifdef __RDOS__
     wait_handle = RdosCreateWait( );
-    listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
+    listen_handle = RdosCreateTcpListen( trap_port, 1, SOCKET_BUFFER );
     RdosAddWaitForTcpListen( wait_handle, listen_handle, (int)(&listen_handle) );
   #else
     control_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -492,7 +553,7 @@ const char *RemoteLink( const char *parms, bool server )
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = htonl( INADDR_ANY );
-    socket_address.sin_port = htons( port );
+    socket_address.sin_port = htons( trap_port );
     if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
     }
@@ -503,7 +564,7 @@ const char *RemoteLink( const char *parms, bool server )
     if( getsockname( control_socket, (LPSOCKADDR)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
-    sprintf( buff, "%s%u", TRP_TCP_socket_number, (unsigned)port );
+    sprintf( buff, "%s%u", TRP_TCP_socket_number, (unsigned)trap_port );
     ServMessage( buff );
     _DBG_NET(("TCP: "));
     _DBG_NET((buff));
@@ -535,7 +596,6 @@ const char *RemoteLink( const char *parms, bool server )
     }
    #endif
   #endif
-
     _DBG_NET(("Start accepting connections\r\n"));
     /*
      * Start accepting connections
@@ -544,15 +604,17 @@ const char *RemoteLink( const char *parms, bool server )
     listen( control_socket, 5 );
   #endif
 #else
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
+        }
+    }
   #ifdef __RDOS__
     /*
      * TODO: handle connect
      */
   #else
-    char        buff[128];
-    char        *p;
-    unsigned_32 addr;
-
     #if defined(__NT__) || defined(__WINDOWS__)
     {
         WSADATA data;
@@ -563,35 +625,11 @@ const char *RemoteLink( const char *parms, bool server )
     }
     #endif
     /*
-     * get port number out of name
-     */
-    p = buff;
-    while( *parms != '\0' ) {
-        if( *parms == ':' ) {
-            parms++;
-            break;
-        }
-        *p++ = *parms++;
-    }
-    *p = '\0';
-    port = get_port( parms );
-    if( port == 0 ) {
-        return( TRP_ERR_unable_to_parse_port_number );
-    }
-    /*
      * Setup for socket connect using parms specified by command line.
      */
     socket_address.sin_family = AF_INET;
-    /*
-     * OS/2's TCP/IP gethostbyname doesn't handle numeric addresses
-     */
-    addr = get_addr( buff );
-    if( addr == OW_INADDR_INVALID ) {
-        addr = OW_INADDR_LOOPBACK;
-//        return( TRP_ERR_unknown_host );
-    }
-    socket_address.sin_addr.s_addr = htonl( addr );
-    socket_address.sin_port = htons( port );
+    socket_address.sin_addr.s_addr = htonl( trap_addr );
+    socket_address.sin_port = htons( trap_port );
   #endif
 #endif
     /* unused parameters */ (void)server;

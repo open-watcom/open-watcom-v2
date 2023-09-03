@@ -166,6 +166,9 @@ extra_cpp_flags += -DJAPANESE
 extra_cpp_flags += -DDEBUG_ME
 !endif
 !endif
+!ifdef gui
+extra_cpp_flags += -DTRAPGUI
+!endif
 
 extra_cppflags_nlm5 = -D__NW50__ -D_USE_NEW_KERNEL -D__NETWARE_LIBC__
 extra_cppflags_nlm4 = -D__NW40__

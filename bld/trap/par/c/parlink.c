@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,6 +187,8 @@
  * +-----------------------------------+
  */
 
+#include <stdio.h>
+#include <string.h>
 #if defined(__NETWARE__)
 #include <dos.h>
 #else
@@ -839,19 +841,58 @@ void RemoteDisco( void )
 
 static char InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
 
-const char *RemoteLink( const char *parms, bool server )
+#ifdef SERVER
+#ifdef TRAPGUI
+static char *hex( unsigned num )
+{
+    static char hexbuff[10];
+    char        *p;
+
+    p = &hexbuff[9];
+    *p = '\0';
+    if( num == 0 ) {
+        *--p = '0';
+        return( p );
+    }
+    while( num != 0 ) {
+        *--p = "0123456789abcdef"[num & 15];
+        num >>= 4;
+    }
+    return( p );
+}
+
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    int     num;
+
+    /* unused parameters */ (void)len;
+
+    num = NumPrinters();
+    if( num == 0 )
+        return( TRP_ERR_parallel_port_not_present );
+    if( num >= 1 && PrnAddress( 0 ) == DataPort ) {
+        parms[0] = '1';
+        parms[1] = '\0';
+    } else if( num >= 2 && PrnAddress( 1 ) == DataPort ) {
+        parms[0] = '2';
+        parms[1] = '\0';
+    } else if( num >= 3 && PrnAddress( 2 ) == DataPort ) {
+        parms[0] = '3';
+        parms[1] = '\0';
+    } else {
+        parms[0] = 'P';
+        strcpy( parms + 1, hex( DataPort ) );
+    }
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
 {
     unsigned    printer;
     unsigned    ch;
-    const char  *err;
 
-    dbgrtn( "\r\n-RemoteLink-" );
-    server = server;
-
-    err = InitSys();
-    if( err != NULL ) {
-        return( err );
-    }
     if( *parms == '\0' ) {
         printer = 0;
     } else if( parms[0] >= '1' && parms[0] <= '3' && parms[1] == '\0' ) {
@@ -888,6 +929,26 @@ const char *RemoteLink( const char *parms, bool server )
             return( TRP_ERR_parallel_port_not_present );
         }
         DataPort = PrnAddress( printer );
+    }
+    return( NULL );
+}
+
+const char *RemoteLink( const char *parms, bool server )
+{
+    const char  *err;
+
+    dbgrtn( "\r\n-RemoteLink-" );
+    server = server;
+
+    err = InitSys();
+    if( err != NULL ) {
+        return( err );
+    }
+    if( parms != NULL ) {
+        err = RemoteLinkSet( parms );
+        if( err != NULL ) {
+            return( err );
+        }
     }
     CtlPort1 = DataPort + 1;
     CtlPort2 = CtlPort1 + 1;

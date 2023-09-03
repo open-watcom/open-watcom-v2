@@ -82,7 +82,10 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     }
     err = ParseCommandLine( cmdline, trapparms, ServParms, &OneShot );
     if( err == NULL ) {
-        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        err = RemoteLinkSet( RWBuff );
+        if( err == NULL ) {
+            err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        }
     }
     if( err != NULL ) {
         StartupErr( err );
@@ -90,6 +93,12 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     }
     if( !AnyInstance( this_inst, cmdshow ) )
         return( FALSE );
+
+    /*
+     * toggle start/end processing and RemoteLink/RemoteUnLink
+     * here is used for first time that call RemoteLink and start processing
+     */
+    SendMessage( hwndMain, WM_COMMAND, MENU_CONNECT, 0 );
 
     while( GetMessage( (LPVOID)&msg, (HWND)0, 0, 0 ) ) {
         TranslateMessage( &msg );
@@ -179,7 +188,6 @@ static bool AnyInstance( HINSTANCE this_inst, int cmdshow )
      */
     ShowWindow( hwndMain, cmdshow );
     UpdateWindow( hwndMain );
-    SendMessage( hwndMain, WM_COMMAND, MENU_CONNECT, 0 );
 
     return( true );
 
@@ -238,7 +246,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             err = NULL;
             if( !Linked ) {
                 HCURSOR cursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
-                err = RemoteLink( ServParms, true );
+                err = RemoteLink( NULL, true );
                 SetCursor( cursor );
             }
             EnableMenus( hwnd, true, false );
