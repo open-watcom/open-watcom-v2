@@ -161,10 +161,10 @@ static void ReadThreadState( struct TDebugThread *obj )
     }
 
     if( ok ) {
-        strncpy(str, state.Name, 20);
-        str[20] = 0;
+        strncpy( str, state.Name, sizeof( str ) - 1 );
+        str[sizeof( str ) - 1] = 0;
 
-        for( i = 19; i >= 0; i-- ) {
+        for( i = sizeof( str ) - 2; i >= 0; i-- ) {
             if( str[i] == ' ' ) {
                 str[i] = 0;
             } else {
@@ -177,10 +177,10 @@ static void ReadThreadState( struct TDebugThread *obj )
         obj->ThreadName = malloc( strlen( str ) + 1 );
         strcpy( obj->ThreadName, str );
 
-        strncpy( str, state.List, 20 );
-        str[20] = 0;
+        strncpy( str, state.List, sizeof( str ) - 1 );
+        str[sizeof( str ) - 1] = 0;
 
-        for( i = 19; i >= 0; i-- ) {
+        for( i = sizeof( str ) - 2; i >= 0; i-- ) {
             if( str[i] == ' ' ) {
                 str[i] = 0;
             } else {

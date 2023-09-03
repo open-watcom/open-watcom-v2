@@ -42,8 +42,8 @@
 
 
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
-                                const char *defext, char *filename, size_t filename_len )
-/****************************************************************************************/
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
     char        fname[256];
     size_t      len;
@@ -55,13 +55,13 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     strncpy( fname, base_name, base_name_len );
     strcpy( fname + base_name_len, defext );
     len = FindFilePath( DIG_FILETYPE_DBG, fname, RWBuff );
-    if( filename_len > 0 ) {
-        filename_len--;
-        if( filename_len > len )
-            filename_len = len;
-        if( filename_len > 0 )
-            strncpy( filename, RWBuff, filename_len );
-        filename[filename_len] = '\0';
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, RWBuff, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
     return( len );
 }

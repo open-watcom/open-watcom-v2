@@ -153,8 +153,8 @@ char *FindHelpFile( char *fullname, const char *help_name )
 }
 
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
-                                const char *defext, char *filename, size_t filename_len )
-/****************************************************************************************/
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
     char        fname[_MAX_PATH2];
     char        buffer[_MAX_PATH2];
@@ -175,13 +175,13 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         }
     }
     len = strlen( p );
-    if( filename_len > 0 ) {
-        filename_len--;
-        if( filename_len > len )
-            filename_len = len;
-        if( filename_len > 0 )
-            strncpy( filename, p, filename_len );
-        filename[filename_len] = '\0';
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
     return( len );
 }

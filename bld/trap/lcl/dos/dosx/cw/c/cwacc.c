@@ -976,7 +976,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     int                 handle;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -988,9 +988,9 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( ModHandles[handle].loaded ) {
-        max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
-        strncpy( name, ModHandles[handle].epsp->FileName, max_len );
-        name[max_len] = '\0';
+        name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
+        strncpy( name, ModHandles[handle].epsp->FileName, name_maxlen );
+        name[name_maxlen] = '\0';
     }
     ret->mod_handle = handle;
     return( sizeof( *ret ) + strlen( name ) + 1 );

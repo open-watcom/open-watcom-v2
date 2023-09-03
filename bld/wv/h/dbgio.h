@@ -89,8 +89,8 @@ extern const char       *RealFName( char const *name, obj_attrs *oattrs );
 extern bool             IsAbsolutePath( const char *path );
 extern const char       *ExtPointer( char const *path, obj_attrs oattrs );
 extern file_handle      LclFileToFullName( const char *name, size_t name_len, char *full );
-extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len );
-extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len );
+extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_maxlen );
+extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_maxlen );
 extern file_handle      PathOpen( const char *name, size_t name_len, const char *defext );
 extern file_handle      LocalPathOpen( const char *name, size_t name_len, const char *defext );
 

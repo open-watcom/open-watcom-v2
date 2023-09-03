@@ -1036,7 +1036,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     ClassClass          *cb;
     int                 nbinclasses = get_nbinclasses();
     ClassClass          **binclasses = get_binclasses();
-    size_t              max_len;
+    size_t              name_maxlen;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1063,12 +1063,12 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         cb = binclasses[first];
     }
 
-    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, JAVAPREFIX, max_len );
-    name[max_len] = '\0';
-    strcat( name, cb->name, max_len - strlen( name ) );
-    name[max_len] = '\0';
+    strncpy( name, JAVAPREFIX, name_maxlen );
+    name[name_maxlen] = '\0';
+    strncat( name, cb->name, name_maxlen - strlen( name ) );
+    name[name_maxlen] = '\0';
     ret->mod_handle = LastClassGiven = first + 1;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }

@@ -484,7 +484,7 @@ file_handle LclFileToFullName( const char *name, size_t name_len, char *full )
  *
  */
 static file_handle FullPathOpenInternal( const char *name, size_t name_len,
-                const char *defext, char *filename, size_t filename_len, bool force_local )
+                const char *defext, char *filename, size_t filename_maxlen, bool force_local )
 {
     char                    fname[TXT_LEN];
     char                    *p;
@@ -528,7 +528,7 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len,
     }
     *p = NULLCHAR;
     if( oattrs & OP_REMOTE ) {
-        RemoteFileToFullName( DIG_FILETYPE_PRS, fname, filename, (trap_elen)filename_len );
+        RemoteFileToFullName( DIG_FILETYPE_PRS, fname, filename, (trap_elen)filename_maxlen );
         fh = FileOpen( filename, OP_READ | OP_REMOTE );
     } else if( has_path ) {
         StrCopyDst( fname, filename );
@@ -545,14 +545,14 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len,
     return( fh );
 }
 
-file_handle FullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len )
+file_handle FullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_maxlen )
 {
-    return( FullPathOpenInternal( name, name_len, defext, filename, filename_len, false ) );
+    return( FullPathOpenInternal( name, name_len, defext, filename, filename_maxlen, false ) );
 }
 
-file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_len )
+file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_maxlen )
 {
-    return( FullPathOpenInternal( name, name_len, defext, filename, filename_len, true ) );
+    return( FullPathOpenInternal( name, name_len, defext, filename, filename_maxlen, true ) );
 }
 
 static file_handle PathOpenInternal( const char *name, size_t name_len, const char *defext, bool force_local )
@@ -743,25 +743,25 @@ void PathInit( void )
 #endif
 }
 
-static size_t MakeName( const char *path, const char *name, char *filename, size_t filename_len )
+static size_t MakeName( const char *path, const char *name, char *filename, size_t filename_maxlen )
 {
     char        *p;
     size_t      len;
 
-    filename_len--;     /* save space for terminator */
+    filename_maxlen--;     /* save space for terminator */
     p = filename;
     len = 0;
     if( path != NULL ) {
-        while( len < filename_len && *path != NULLCHAR ) {
+        while( len < filename_maxlen && *path != NULLCHAR ) {
             *p++ = *path++;
             ++len;
         }
-        if( len > 0 && len < filename_len && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
+        if( len > 0 && len < filename_maxlen && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
             *p++ = LclFile.path_separator[0];
             ++len;
         }
     }
-    while( len < filename_len && *name != NULLCHAR ) {
+    while( len < filename_maxlen && *name != NULLCHAR ) {
         *p++ = *name++;
         ++len;
     }
@@ -770,8 +770,8 @@ static size_t MakeName( const char *path, const char *name, char *filename, size
 }
 
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
-                                const char *defext, char *filename, size_t filename_len )
-/****************************************************************************************/
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
     char        buffer[TXT_LEN];
     char        fname[TXT_LEN];
@@ -805,13 +805,13 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         }
     }
     len = strlen( p );
-    if( filename_len > 0 ) {
-        filename_len--;
-        if( filename_len > len )
-            filename_len = len;
-        if( filename_len > 0 )
-            strncpy( filename, p, filename_len );
-        filename[filename_len] = NULLCHAR;
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = NULLCHAR;
     }
     return( len );
 }

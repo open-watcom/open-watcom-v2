@@ -221,8 +221,8 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_
 }
 
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
-                                const char *defext, char *filename, size_t filename_len )
-/*****************************************************************************************
+                                const char *defext, char *filename, size_t filename_maxlen )
+/*******************************************************************************************
  * DIGLoaderFind
  */
 {
@@ -232,8 +232,8 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
     /* unused parameters */ (void)ftype;
 
     len = 0;
-    if( filename_len > 0 ) {
-        filename_len--;
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
         if( base_name_len == 0 )
             base_name_len = strlen( base_name );
         strncpy( fname, base_name, base_name_len );
@@ -242,8 +242,8 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base
         _searchenv( fname, "WD_PATH" QSTR( BLDVER ), fname );
 #endif
         len = strlen( fname );
-        if( len > filename_len )
-            len = filename_len;
+        if( len > filename_maxlen )
+            len = filename_maxlen;
         strncpy( filename, fname, len );
         filename[len] = '\0';
     }

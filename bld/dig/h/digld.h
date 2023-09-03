@@ -36,7 +36,7 @@
 
 #define DIGLoader(n)    DIGLoader ## n
 
-extern size_t   DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len, const char *defext, char *filename, size_t filename_len );
+extern size_t   DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len, const char *defext, char *filename, size_t filename_maxlen );
 extern FILE     *DIGLoader( Open )( const char *filename );
 extern int      DIGLoader( Close )( FILE *fp );
 extern int      DIGLoader( Read )( FILE *fp, void *buff, size_t len );

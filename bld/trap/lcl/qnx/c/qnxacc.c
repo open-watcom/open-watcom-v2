@@ -1574,7 +1574,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     char                *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
 #if 0
     acc = GetInPtr( 0 );
@@ -1601,10 +1601,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
 #else
     pid_t               pid, vid, proc;
     struct _psinfo      info;
@@ -1657,20 +1657,20 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( p != NULL ) {
-        max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+        name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
         if( p[0] == '/' ) {
             if( p[1] == '/' ) {
                 for( p += 2; *p >= '0' && *p <= '9'; p++ ) {
                     {}
                 }
             }
-            strncpy( name, p, max_len );
+            strncpy( name, p, name_maxlen );
         } else {
-            strncpy( name, "/boot/", max_len );
-            name[max_len] = '\0';
-            strncat( name, p, max_len - strlen( name ) );
+            strncpy( name, "/boot/", name_maxlen );
+            name[name_maxlen] = '\0';
+            strncat( name, p, name_maxlen - strlen( name ) );
         }
-        name[max_len] = '\0';
+        name[name_maxlen] = '\0';
     }
 #endif
     return( sizeof( *ret ) + strlen( name ) + 1 );
