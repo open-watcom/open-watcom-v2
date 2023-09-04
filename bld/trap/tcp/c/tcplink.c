@@ -131,7 +131,7 @@
 #define INADDR_ANY          (unsigned_32)0
 #endif
 
-#define OW_INADDR_LOOPBACK  0x7F000001UL
+#define OW_INADDR_LOOPBACK  htonl( 0x7F000001UL )
 
 #if defined( __RDOS__ )
     #define INVALID_SOCKET          0
@@ -182,9 +182,9 @@
 typedef struct sockaddr         *LPSOCKADDR;
 #endif
 
-unsigned short          trap_port;
+unsigned short          trap_port;  /* host byte order */
 #ifndef SERVER
-unsigned_32             trap_addr;
+unsigned_32             trap_addr;  /* network byte order */
 #endif
 
 #ifdef __RDOS__
@@ -429,6 +429,9 @@ void RemoteDisco( void )
 }
 
 static unsigned short get_port( const char *p )
+/*******************************************
+ * return port value in host byte order
+ */
 {
     unsigned short port;
 #ifndef __RDOS__
@@ -451,6 +454,9 @@ static unsigned short get_port( const char *p )
 #ifndef SERVER
 #ifndef __RDOS__
 static unsigned_32 get_addr( const char *p )
+/*******************************************
+ * return address value in network byte order
+ */
 {
     unsigned_32 addr;
 
@@ -466,7 +472,7 @@ static unsigned_32 get_addr( const char *p )
             addr = 0;
             memcpy( &addr, hp->h_addr, hp->h_length );
         } else {
-            addr = INADDR_NONE; /* POSIX value, not Microsoft */
+            addr = INADDR_NONE;
         }
     }
     return( addr );
@@ -563,7 +569,7 @@ const char *RemoteLink( const char *parms, bool server )
 
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.s_addr = htonl( INADDR_ANY );
+    socket_address.sin_addr.s_addr = INADDR_ANY;
     socket_address.sin_port = htons( trap_port );
     if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
@@ -639,7 +645,7 @@ const char *RemoteLink( const char *parms, bool server )
      * Setup for socket connect using parms specified by command line.
      */
     socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.s_addr = htonl( trap_addr );
+    socket_address.sin_addr.s_addr = trap_addr;
     socket_address.sin_port = htons( trap_port );
   #endif
 #endif
