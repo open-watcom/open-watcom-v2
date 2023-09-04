@@ -125,10 +125,13 @@
     #define _DBG_ERROR( x )
 #endif
 
-#define DEFAULT_PORT    0x0DEB  /* 3563 */
+#define DEFAULT_PORT        0x0DEB  /* 3563 */
+
+#ifndef INADDR_ANY
+#define INADDR_ANY          (unsigned_32)0
+#endif
 
 #define OW_INADDR_LOOPBACK  0x7F000001UL
-#define OW_INADDR_INVALID   ((unsigned_32)-1)
 
 #if defined( __RDOS__ )
     #define INVALID_SOCKET          0
@@ -136,23 +139,27 @@
     #define IS_RET_OK(x)            (x!=0)
     #define trp_socket              int
     #define soclose( s )            RdosCloseTcpConnection( s )
+    #define INVALID_INADDR(x)       (x==-1)
 #elif defined( __NT__ ) || defined( __WINDOWS__ )
     #define IS_VALID_SOCKET(x)      (x!=INVALID_SOCKET)
     #define IS_RET_OK(x)            (x!=SOCKET_ERROR)
     #define trp_socket              SOCKET
     #define trp_socklen             int
     #define soclose( s )            closesocket( s )
+    #define INVALID_INADDR(x)       (x==0 || x==-1)
 #elif defined( __DOS__ )
     #define IS_VALID_SOCKET(x)      (x>=0)
     #define IS_RET_OK(x)            (x!=-1)
     #define trp_socket              int
     #define trp_socklen             int
+    #define INVALID_INADDR(x)       (x==0)
 #elif defined( __OS2__ )
     #define INVALID_SOCKET          -1
     #define IS_VALID_SOCKET(x)      (x>=0)
     #define IS_RET_OK(x)            (x!=-1)
     #define trp_socket              int
     #define trp_socklen             int
+    #define INVALID_INADDR(x)       (x==-1)
 #elif defined( __NETWARE__ )
     #define INVALID_SOCKET          -1
     #define IS_VALID_SOCKET(x)      (x>=0)
@@ -160,6 +167,7 @@
     #define trp_socket              int
     #define trp_socklen             int
     #define soclose( s )            close( s )
+    #define INVALID_INADDR(x)       (x==-1)
 #else   /* POSIX */
     #define INVALID_SOCKET          -1
     #define IS_VALID_SOCKET(x)      (x>=0)
@@ -167,11 +175,11 @@
     #define trp_socket              int
     #define trp_socklen             socklen_t
     #define soclose( s )            close( s )
+    #define INVALID_INADDR(x)       (x==-1)
 #endif
 
-
 #if !defined( __NT__ ) && !defined( __WINDOWS__ )
-    typedef struct sockaddr         *LPSOCKADDR;
+typedef struct sockaddr         *LPSOCKADDR;
 #endif
 
 unsigned short          trap_port;
@@ -447,7 +455,7 @@ static unsigned_32 get_addr( const char *p )
     unsigned_32 addr;
 
     addr = inet_addr( p );
-    if( addr == OW_INADDR_INVALID ) {
+    if( INVALID_INADDR( addr ) ) {
         struct hostent  *hp;
 
         /*
@@ -458,7 +466,7 @@ static unsigned_32 get_addr( const char *p )
             addr = 0;
             memcpy( &addr, hp->h_addr, hp->h_length );
         } else {
-            addr = OW_INADDR_INVALID;
+            addr = INADDR_NONE; /* POSIX value, not Microsoft */
         }
     }
     return( addr );
@@ -472,7 +480,7 @@ const char *RemoteLinkGet( char *parms, size_t len )
 {
     /* unused parameters */ (void)len;
 
-    sprintf( parms, "%u", trap_port );
+    sprintf( parms, "%u", (unsigned)trap_port );
     return( NULL );
 }
 #endif
@@ -509,7 +517,7 @@ const char *RemoteLinkSet( const char *parms )
     trap_addr = OW_INADDR_LOOPBACK;
   #else
     trap_addr = get_addr( buff );
-    if( trap_addr == OW_INADDR_INVALID ) {
+    if( trap_addr == INADDR_NONE ) {
         trap_addr = OW_INADDR_LOOPBACK;
 //        return( TRP_ERR_unknown_host );
     }
@@ -635,7 +643,9 @@ const char *RemoteLink( const char *parms, bool server )
     socket_address.sin_port = htons( trap_port );
   #endif
 #endif
+
     /* unused parameters */ (void)server;
+
     return( NULL );
 }
 
