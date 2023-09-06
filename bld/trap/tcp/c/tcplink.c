@@ -109,7 +109,7 @@
 #endif
 #ifdef LIST_INTERFACES
 // TODO: need rework to POSIX if_nameindex in <net/if.h>
-#include "ifi.h"
+#include "tcpifi.h"
 #endif
 
 
