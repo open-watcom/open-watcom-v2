@@ -11,7 +11,8 @@ srv = tcp
 which = SERVER
 remote_link = 1
 
+inc_dirs   = -I"$(watcom_dir)/os220_h/tcpip"
 extra_libs = $(watcom_dir)/lib/tcpipdll.lib
-inc_dirs = -I"$(watcom_dir)/os220_h/tcpip"
+extra_objs = tcpifi.obj
 
 !include $(trap_dir)/master.mif

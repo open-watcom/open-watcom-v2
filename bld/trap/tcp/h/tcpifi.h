@@ -25,28 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  Structures and function prototypes for querying IP
-*               interfaces in a machine.
+* Description:  function prototype for list IP interfaces in a machine.
 *
 ****************************************************************************/
 
-#ifndef __IFI_H__
-#define __IFI_H__
+#ifndef __TCPIFI_H__
+#define __TCPIFI_H__
 
-#define IFI_NAME    16          /* same as IFNAMSIZ in <net/if.h> */
-
-struct ifi_info {
-    char    ifi_name[IFI_NAME]; /* interface name, null terminated */
-    short   ifi_flags;          /* IFF_xxx constants from <net/if.h> */
-    short   flags;              /* our own IFI_xxx flags */
-    struct sockaddr  *ifi_addr; /* primary address */
-    struct ifi_info  *ifi_next; /* next of these structures */
-};
-
-#define IFI_ALIAS   1           /* ifi_addr is an alias */
-#define IFI_LOOP    2           /* corresponds to IFF_LOOPBACK */
-
-//struct ifi_info *get_ifi_info( int, int );
-//void             free_ifi_info( struct ifi_info * );
+#ifdef LIST_INTERFACES
+  #if defined( SERVER ) && ( defined( __DOS__ ) || defined( __OS2__ ) )
+    extern void list_interfaces( void );
+  #else
+    #define list_interfaces()
+  #endif
+#else
+    #define list_interfaces()
+#endif
 
 #endif

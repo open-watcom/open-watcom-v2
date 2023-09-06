@@ -17,5 +17,6 @@ extra_incs   = -I"$(wattcp_dir)/inc"
 extra_cflags = -zm
 extra_linker = op eliminate
 extra_libs   = $(wattcp_dir)/dosi86/wattcpl.lib
+extra_objs   = tcpifi.obj
 
 !include $(trap_dir)/master.mif
