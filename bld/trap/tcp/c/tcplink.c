@@ -32,12 +32,6 @@
 
 #define LIST_INTERFACES
 
-#if defined( __OS2__ ) && defined( _M_I86 )
-#define OS2
-#define _TCP_ENTRY __cdecl __far
-#define BSD_SELECT
-#endif
-
 #if defined( __NETWARE__ )
 #define __FUNCTION_DATA_ACCESS
 #endif
@@ -54,13 +48,37 @@
 #elif defined( __NETWARE__ )
     #include <sys/types.h>
     #include <unistd.h>
-#else
-  #if defined( __OS2__ )
-    #include <types.h>
-  #else
-    #include <sys/types.h>
-  #endif
+#elif defined( __OS2__ )
+    #if defined( _M_I86 )
+        #define OS2
+        #define _TCP_ENTRY __cdecl __far
+        #define BSD_SELECT
+        #include <types.h>
+        #include <netlib.h>
+    #else
+        #include <types.h>
+        #include <arpa/inet.h>
+    #endif
+    #include <sys/socket.h>
+    #include <sys/time.h>
+    #include <netinet/in.h>
+    #include <netinet/tcp.h>
+    #include <netdb.h>
     #include <unistd.h>
+#elif defined( __DOS__ )
+    #define BSD
+    #include <arpa/inet.h>
+    #include <sys/select.h>
+    #include <netinet/in.h>
+    #include <netinet/tcp.h>
+    #include <netdb.h>
+    #include <tcp.h>
+#else   /* POSIX */
+    #include <sys/types.h>
+    #include <unistd.h>
+  #if defined( __UNIX__ )
+    #include <arpa/inet.h>
+  #endif
     #include <sys/socket.h>
   #if !defined( __LINUX__ )
     #include <sys/select.h>
@@ -69,24 +87,6 @@
     #include <netinet/in.h>
     #include <netinet/tcp.h>
     #include <netdb.h>
-  #if defined( __OS2__ )
-    #if defined( _M_I86 )
-        #include <netlib.h>
-    #else
-        #include <arpa/inet.h>
-    #endif
-    #include <sys/ioctl.h>
-    #include <net/if.h>
-  #elif defined( __DOS__ )
-    #include <arpa/inet.h>
-    #define BSD         /* To get the right macros from wattcp headers. */
-    #include <sys/ioctl.h>
-    #undef BSD
-    #include <net/if.h>
-    #include <tcp.h>
-  #elif defined( __UNIX__ )
-    #include <arpa/inet.h>
-  #endif
 #endif
 
 #include "watcom.h"
@@ -124,13 +124,9 @@
     #define _DBG_ERROR( x )
 #endif
 
-#define DEFAULT_PORT        0x0DEB  /* 3563 */
-
-#ifndef INADDR_ANY
-#define INADDR_ANY          (unsigned_32)0
-#endif
-
-#define OW_INADDR_LOOPBACK  htonl( 0x7F000001UL )
+#define DEFAULT_PORT        0x0DEB                  /* 3563 */
+#define OW_INADDR_ANY       0xFFFFFFFFUL            /* 255.255.255.255 */
+#define OW_INADDR_LOOPBACK  htonl( 0x7F000001UL )   /* 127.0.0.1 */
 
 #if defined( __RDOS__ )
     #define INVALID_SOCKET          0
@@ -181,14 +177,26 @@
 typedef struct sockaddr         *LPSOCKADDR;
 #endif
 
-unsigned short          trap_port;  /* host byte order */
-#ifndef SERVER
-unsigned_32             trap_addr;  /* network byte order */
+static unsigned short       trap_port;  /* host byte order */
+static trp_socket           data_socket = INVALID_SOCKET;
+#ifdef __RDOS__
+#else
+static struct sockaddr_in   socket_address;
+#endif
+#ifdef SERVER
+  #ifdef __RDOS__
+static int                  listen_handle = 0;
+static int                  wait_handle = 0;
+  #else
+static trp_socket           control_socket;
+  #endif
+#else
+static unsigned_32          trap_addr;  /* network byte order */
 #endif
 
 #ifdef __RDOS__
 
-    #define SOCKET_BUFFER   0x7000
+#define SOCKET_BUFFER       0x7000
 
 static int recv( int handle, void *buf, int size, int timeout )
 {
@@ -213,44 +221,25 @@ static int send( int handle, const void *buf, int size, int timeout )
     return( count );
 }
 
-#else
-
-  #ifndef IPPROTO_TCP
-    #define IPPROTO_TCP 6
-  #endif
-
-    static struct sockaddr_in   socket_address;
-
 #endif
 
 #ifdef SERVER
-  #ifdef __RDOS__
-    static int                  listen_handle = 0;
-    static int                  wait_handle = 0;
-  #else
-    static trp_socket           control_socket;
-  #endif
-#endif
-
-static trp_socket           data_socket = INVALID_SOCKET;
-
-#if !defined( SERVER )
+#else
 static bool terminate_connection( void )
 {
-#ifdef __RDOS__
+  #ifdef __RDOS__
     RdosPushTcpConnection( data_socket );
-#else
+  #else
     struct linger       linger;
 
     linger.l_onoff = 1;
     linger.l_linger = 0;
     setsockopt( data_socket, (int)SOL_SOCKET, SO_LINGER, (void*)&linger, sizeof( linger ) );
-#endif
+  #endif
     soclose( data_socket );
     data_socket = INVALID_SOCKET;
     return( true );
 }
-
 #endif
 
 #ifdef __RDOS__
@@ -336,7 +325,9 @@ trap_retval RemotePut( void *data, trap_elen len )
     return( REQUEST_FAILED );
 }
 
-#ifndef __RDOS__
+#ifdef __RDOS__
+
+#else
 
 static int get_proto( const char *p )
 {
@@ -423,12 +414,13 @@ void RemoteDisco( void )
 }
 
 static unsigned short get_port( const char *p )
-/*******************************************
+/**********************************************
  * return port value in host byte order
  */
 {
     unsigned short port;
-#ifndef __RDOS__
+#ifdef __RDOS__
+#else
     struct servent      *sp;
 
     sp = getservbyname( ( *p == '\0' ) ? "tcplink" : p, "tcp" );
@@ -446,7 +438,6 @@ static unsigned short get_port( const char *p )
 }
 
 #ifndef SERVER
-#ifndef __RDOS__
 static unsigned_32 get_addr( const char *p )
 /*******************************************
  * return address value in network byte order
@@ -454,13 +445,14 @@ static unsigned_32 get_addr( const char *p )
 {
     unsigned_32 addr;
 
+    /*
+     * TCP/IP gethostbyname OS/2 does not handle numeric addresses
+     * so a numeric format is tried first
+     */
     addr = inet_addr( p );
     if( INVALID_INADDR( addr ) ) {
         struct hostent  *hp;
 
-        /*
-         * OS/2's TCP/IP gethostbyname doesn't handle numeric addresses
-         */
         hp = gethostbyname( p );
         if( hp != NULL ) {
             addr = 0;
@@ -471,7 +463,6 @@ static unsigned_32 get_addr( const char *p )
     }
     return( addr );
 }
-#endif
 #endif
 
 #ifdef SERVER
@@ -513,15 +504,11 @@ const char *RemoteLinkSet( const char *parms )
     if( trap_port == 0 ) {
         return( TRP_ERR_unable_to_parse_port_number );
     }
-  #ifdef __RDOS__
-    trap_addr = OW_INADDR_LOOPBACK;
-  #else
     trap_addr = get_addr( buff );
     if( trap_addr == INADDR_NONE ) {
         trap_addr = OW_INADDR_LOOPBACK;
 //        return( TRP_ERR_unknown_host );
     }
-  #endif
 #endif
     return( NULL );
 }
@@ -529,12 +516,16 @@ const char *RemoteLinkSet( const char *parms )
 const char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
-  #if !defined( __RDOS__ )
+  #ifdef __RDOS__
+  #else
     trp_socklen         length;
     char                buff[128];
   #endif
 
     _DBG_NET(("SERVER: Calling into RemoteLink\r\n"));
+#endif
+
+    /* unused parameters */ (void)server;
 
     if( parms != NULL ) {
         parms = RemoteLinkSet( parms );
@@ -542,7 +533,9 @@ const char *RemoteLink( const char *parms, bool server )
             return( parms );
         }
     }
-  #if defined(__NT__) || defined(__WINDOWS__)
+  #if defined( __RDOS__ )
+    /* no initialization */
+  #elif defined(__NT__) || defined(__WINDOWS__)
     {
         WSADATA data;
 
@@ -550,20 +543,23 @@ const char *RemoteLink( const char *parms, bool server )
             return( TRP_ERR_unable_to_initialize_TCPIP );
         }
     }
-  #endif
-  #ifdef __RDOS__
-    wait_handle = RdosCreateWait( );
-    listen_handle = RdosCreateTcpListen( trap_port, 1, SOCKET_BUFFER );
-    RdosAddWaitForTcpListen( wait_handle, listen_handle, (int)(&listen_handle) );
   #else
-    control_socket = socket(AF_INET, SOCK_STREAM, 0);
+    /* no initialization */
+  #endif
+#ifdef SERVER
+  #ifdef __RDOS__
+    wait_handle = RdosCreateWait();
+    listen_handle = RdosCreateTcpListen( trap_port, 1, SOCKET_BUFFER );
+    RdosAddWaitForTcpListen( wait_handle, listen_handle, (int)&listen_handle );
+  #else
+    control_socket = socket( AF_INET, SOCK_STREAM, 0 );
     if( !IS_VALID_SOCKET( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
 
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.s_addr = INADDR_ANY;
+    socket_address.sin_addr.s_addr = OW_INADDR_ANY;
     socket_address.sin_port = htons( trap_port );
     if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
@@ -589,30 +585,16 @@ const char *RemoteLink( const char *parms, bool server )
     /*
      * Start accepting connections
      */
-  #ifndef __RDOS__
+  #ifdef __RDOS__
+  #else
     listen( control_socket, 5 );
   #endif
 #else
-    if( parms != NULL ) {
-        parms = RemoteLinkSet( parms );
-        if( parms != NULL ) {
-            return( parms );
-        }
-    }
   #ifdef __RDOS__
     /*
      * TODO: handle connect
      */
   #else
-    #if defined(__NT__) || defined(__WINDOWS__)
-    {
-        WSADATA data;
-
-        if( WSAStartup( 0x101, &data ) != 0 ) {
-            return( TRP_ERR_unable_to_initialize_TCPIP );
-        }
-    }
-    #endif
     /*
      * Setup for socket connect using parms specified by command line.
      */
@@ -621,9 +603,6 @@ const char *RemoteLink( const char *parms, bool server )
     socket_address.sin_port = htons( trap_port );
   #endif
 #endif
-
-    /* unused parameters */ (void)server;
-
     return( NULL );
 }
 
@@ -631,7 +610,6 @@ const char *RemoteLink( const char *parms, bool server )
 void RemoteUnLink( void )
 {
 #ifdef SERVER
-
   #ifdef __RDOS__
     if( wait_handle ) {
         RdosCloseWait( wait_handle );
@@ -648,7 +626,9 @@ void RemoteUnLink( void )
     terminate_connection();
 #endif
 
-#if defined(__NT__) || defined(__WINDOWS__)
+#if defined( __RDOS__ )
+    /* no finalization */
+#elif defined(__NT__) || defined(__WINDOWS__)
     WSACleanup();
 #elif defined(__DOS__)
     sock_exit();
