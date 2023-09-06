@@ -843,24 +843,6 @@ static char InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
 
 #ifdef SERVER
 #ifdef TRAPGUI
-static char *hex( unsigned num )
-{
-    static char hexbuff[10];
-    char        *p;
-
-    p = &hexbuff[9];
-    *p = '\0';
-    if( num == 0 ) {
-        *--p = '0';
-        return( p );
-    }
-    while( num != 0 ) {
-        *--p = "0123456789abcdef"[num & 15];
-        num >>= 4;
-    }
-    return( p );
-}
-
 const char *RemoteLinkGet( char *parms, size_t len )
 {
     int     num;
@@ -880,8 +862,7 @@ const char *RemoteLinkGet( char *parms, size_t len )
         parms[0] = '3';
         parms[1] = '\0';
     } else {
-        parms[0] = 'P';
-        strcpy( parms + 1, hex( DataPort ) );
+        sprintf( parms, "P%X", DataPort );
     }
     return( NULL );
 }
@@ -891,17 +872,17 @@ const char *RemoteLinkGet( char *parms, size_t len )
 const char *RemoteLinkSet( const char *parms )
 {
     unsigned    printer;
-    unsigned    ch;
+    char        ch;
 
-    if( *parms == '\0' ) {
+    ch = *parms++;
+    if( ch == '\0' ) {
         printer = 0;
-    } else if( parms[0] >= '1' && parms[0] <= '3' && parms[1] == '\0' ) {
-        printer = parms[0] - '1';
-    } else if( parms[0] == 'p' || parms[0] == 'P' ) {
+    } else if( ch >= '1' && ch <= '3' && *parms == '\0' ) {
+        printer = ch - '1';
+    } else if( ch == 'p' || ch == 'P' ) {
         printer = 0;
         for( ;; ) {
-            ++parms;
-            ch = *parms;
+            ch = *parms++;
             if( ch == 0 )
                 break;
             if( ch == ' ' )
@@ -937,8 +918,9 @@ const char *RemoteLink( const char *parms, bool server )
 {
     const char  *err;
 
+    /* unused parameters */ (void)server;
+
     dbgrtn( "\r\n-RemoteLink-" );
-    server = server;
 
     err = InitSys();
     if( err != NULL ) {

@@ -814,21 +814,22 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
+    char            ch;
     trap_version    ver;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     Core.fd   = NO_FILE;
     Core.x_fd = NO_FILE;
     Core.c_ehdr = malloc( sizeof( Elf32_Ehdr ) );
     Core.x_ehdr = malloc( sizeof( Elf32_Ehdr ) );
-    while( *parms != '\0' ) {
-        switch( *parms ) {
+    while( (ch = *parms++) != '\0' ) {
+        switch( ch ) {
         case 'I':
         case 'i':
             Core.ignore_timestamp = true;
             break;
         }
-        ++parms;
     }
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

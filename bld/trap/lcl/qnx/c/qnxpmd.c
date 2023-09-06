@@ -854,14 +854,16 @@ trap_retval TRAP_THREAD( get_extra )( void )
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
-    trap_version ver;
+    trap_version    ver;
+    char            ch;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     PmdInfo.fd = NO_FILE;
     PmdInfo.enable_read_gdts = true;
     PmdInfo.force_read_gdts  = false;
-    while( *parms != '\0' ) {
-        switch( *parms ) {
+    while( (ch = *parms++) != '\0' ) {
+        switch( ch ) {
         case 'I':
         case 'i':
             PmdInfo.ignore_timestamp = true;
@@ -875,7 +877,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
             PmdInfo.enable_read_gdts = false;
             break;
         }
-        ++parms;
     }
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

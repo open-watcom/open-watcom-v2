@@ -43,5 +43,4 @@
 
 #define DEFAULT_LINK_NAME   "VDMLink"
 
-extern  bool    ValidName( const char *name );
-
+extern bool     ValidName( const char *name );

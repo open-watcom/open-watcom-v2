@@ -465,7 +465,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
 
-    remote = remote;
     ver.remote = false;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

@@ -539,9 +539,9 @@ const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
-    server = server;
-putstring( "RemoteLink\r\n" );
+    /* unused parameters */ (void)server;
 
+putstring( "RemoteLink\r\n" );
     if( *parms == '\0' )
         parms = DEFAULT_LINK_NAME;
     for( i = 0; i < 47 && *parms != '\0'; ++parms ) {

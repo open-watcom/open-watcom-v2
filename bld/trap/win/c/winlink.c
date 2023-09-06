@@ -167,7 +167,8 @@ const char *RemoteLink( const char *parms, bool server )
     int     i;
     int     rc;
 
-    server = server;
+    /* unused parameters */ (void)server;
+
     if( *parms == '\0' )
         parms = DEFAULT_LINK_NAME;
     for( i = 0; i < LINKNAME_SIZE; i++ ) {

@@ -1781,6 +1781,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
+    /* unused parameters */ (void)remote;
+
     ForceFpu32 = 0;
     switch( *parms ) {
     case 'f':
@@ -1790,7 +1792,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         ForceFpu32 = 1;
         break;
     }
-    remote = remote;
     ProcInfo.save_in = -1;
     ProcInfo.save_out = -1;
     ProcInfo.thread = NULL;

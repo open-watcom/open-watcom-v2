@@ -99,10 +99,10 @@ static void DoOpen( bhandle *phdl, char *suff )
 {
     strcpy( NameEnd, suff );
     dbg( "DoOpen " );
-    dbg( NameBuff+1 );
+    dbg( NameBuff + 1 );
     dbg( "\r\n" );
     for( ;; ) {
-        *phdl = PipeOpen( NameBuff+1 );
+        *phdl = PipeOpen( NameBuff + 1 );
         if( *phdl != BHANDLE_INVALID )
             break;
         mysnooze();
