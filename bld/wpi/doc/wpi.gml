@@ -1192,9 +1192,9 @@ dialog procedure.  Initializing a dialog box procedure would look like the
 following under WPI:
 .np
 :XMP.
-fp = _wpi_makeprocinstance( (WPI_PROC)DlgProc, Instance );
+fp = _wpi_makedlgprocinstance( DlgProc, Instance );
 ret_val = _wpi_dialogbox( hparent, fp, Instance, DLG_ID, 0L );
-_wpi_freeprocinstance( fp );
+_wpi_freedlgprocinstance( fp );
 :eXMP.
 .np
 The dialog procedure itself looks much like a Windows dialog procedure
@@ -1286,23 +1286,22 @@ WPI_DLGRESULT CALLBACK dlg_sample( HWND dlg_hld,
 
     return( (WPI_DLGRESULT) FALSE );
 }
-        .
-        .
-        .
 
-        /* PM expects a pointer to the data    */
-        /* while Windows just expects the data */
+    .
+    .
+    .
+
+    /* PM expects a pointer to the data    */
+    /* while Windows just expects the data */
 
 #ifdef __OS2_PM__
-            dlg_ret = _wpi_dialogbox( frame_win_hld, proc, Inst, tpl,
-                                                &id );
+	dlg_ret = _wpi_dialogbox( frame_win_hld, proc, Inst, tpl, &id );
 #else
-            dlg_ret = _wpi_dialogbox( frame_win_hld, proc, Inst, tpl,
-                                                id );
+	dlg_ret = _wpi_dialogbox( frame_win_hld, proc, Inst, tpl, id );
 #endif
-        .
-        .
-        .
+    .
+    .
+    .
 :eXMP.
 .*
 .section Owner-Drawn Controls
