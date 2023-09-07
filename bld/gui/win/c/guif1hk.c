@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 
 /* Local Window callback functions prototypes */
 #ifdef __OS2_PM__
-int                     CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, ULONG fs );
+int                     CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, UINT fs );
 #else
 WINEXPORT LRESULT       CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param );
 #endif
@@ -48,8 +48,6 @@ static  unsigned        F1Hooked = 0;
 #ifndef __OS2_PM__
 static  HHOOK           F1HookHandle = (HHOOK)NULL;
 static  HOOKPROC        F1ProcInst;
-#else
-static  PFN             F1ProcInst;
 #endif
 
 // What the hell does this do??!!
@@ -84,7 +82,7 @@ static gui_window *getFirstGUIParent( HWND hwnd )
 }
 
 #ifdef __OS2_PM__
-int CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, ULONG fs )
+int CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, UINT fs )
 #else
 LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
 #endif
@@ -102,8 +100,9 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
 #endif
 
 #ifdef __OS2_PM__
-    fs = fs;            // unused
-    hab = hab;          // unused
+
+    /* unused parameters */ (void)fs; (void)hab;
+
     code = 0;
 #else
     qmsg = (WPI_QMSG *)msg_param;
@@ -129,7 +128,6 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
             }
         }
     }
-
 #ifdef __OS2_PM__
     return( false );            // No, we didn't gobble this msg
 #else
@@ -140,7 +138,11 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
 void GUIAPI GUIHookF1( void )
 {
     if( F1Hooked == 0 ) {
-#ifndef __OS2_PM__
+#ifdef __OS2_PM__
+        // in OS/2, it has to be an app. specific input filter (OS/2 has
+        // bad problems, occassionally, with system input hooks)
+        WinSetHook( GUIMainHInst.hab, HMQ_CURRENT, HK_INPUT, (PFN)F1Proc, GUIMainHInst.mod_handle );
+#else
         // we use a hook to trap F1 in dialogs that were not
         // created using this instance yet on our behalf. IE COMMDLG stuff
 
@@ -152,11 +154,6 @@ void GUIAPI GUIHookF1( void )
     #else
         F1HookHandle = SetWindowsHookEx( WH_MSGFILTER, F1ProcInst, GUIMainHInst, GetCurrentThreadId() );
     #endif
-#else
-        // in OS/2, it has to be an app. specific input filter (OS/2 has
-        // bad problems, occassionally, with system input hooks)
-        F1ProcInst = (PFN)F1Proc;
-        WinSetHook( GUIMainHInst.hab, HMQ_CURRENT, HK_INPUT, F1ProcInst, GUIMainHInst.mod_handle );
 #endif
     }
     F1Hooked++;
@@ -165,14 +162,13 @@ void GUIAPI GUIHookF1( void )
 void GUIAPI GUIUnHookF1( void )
 {
     if( F1Hooked == 1 ) {
-#ifndef __OS2_PM__
+#ifdef __OS2_PM__
+        WinReleaseHook( GUIMainHInst.hab, HMQ_CURRENT, HK_INPUT, (PFN)F1Proc, GUIMainHInst.mod_handle );
+#else
         UnhookWindowsHookEx( F1HookHandle );
         FreeProcInstance_HOOK( F1ProcInst );
-#else
-        WinReleaseHook( GUIMainHInst.hab, HMQ_CURRENT, HK_INPUT, F1ProcInst, GUIMainHInst.mod_handle );
 #endif
     }
-
     if( F1Hooked != 0 ) {
         F1Hooked--;
     }
