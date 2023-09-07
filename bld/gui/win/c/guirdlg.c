@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,29 +194,17 @@ BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam )
 
 bool GUIInsertResDialogControls( gui_window *wnd )
 {
-#ifdef __OS2_PM__
     WPI_ENUMPROC        wndenumproc;
 
     wndenumproc = _wpi_makeenumprocinstance( InsertResDlgCntlFunc, GUIMainHInst );
     _wpi_enumchildwindows( wnd->hwnd, wndenumproc, (LPARAM)wnd );
     _wpi_freeenumprocinstance( wndenumproc );
-#else
-    WNDENUMPROC         wndenumproc;
-
-    wndenumproc = MakeProcInstance_WNDENUM( InsertResDlgCntlFunc, GUIMainHInst );
-    EnumChildWindows( wnd->hwnd, wndenumproc, (LPARAM)wnd );
-    FreeProcInstance_WNDENUM( wndenumproc );
-#endif
     return( true );
 }
 
 bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
 {
-#ifdef __OS2_PM__
     WPI_DLGPROC     dlgproc;
-#else
-    DLGPROC         dlgproc;
-#endif
     HWND            parent_hwnd;
     bool            ok;
 
@@ -225,21 +213,12 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUIC
     parent_hwnd = parent_wnd->hwnd;
     if( parent_hwnd == NULLHANDLE )
         parent_hwnd = HWND_DESKTOP;
-#ifdef __OS2_PM__
     dlgproc = _wpi_makedlgprocinstance( GUIDialogDlgProc, GUIMainHInst );
     ok = ( dlgproc != NULL );
     if( ok ) {
         ok = ( _wpi_dialogbox( parent_hwnd, dlgproc, GUIResHInst, dlg_id, extra ) != -1 );
         _wpi_freedlgprocinstance( dlgproc );
     }
-#else
-    dlgproc = MakeProcInstance_DLG( GUIDialogDlgProc, GUIMainHInst );
-    ok = ( dlgproc != NULL );
-    if( ok ) {
-        ok = ( DialogBoxParam( GUIResHInst, dlg_id, parent_hwnd, dlgproc, (LPARAM)extra ) != -1 );
-        FreeProcInstance_DLG( dlgproc );
-    }
-#endif
     return( ok );
 }
 
