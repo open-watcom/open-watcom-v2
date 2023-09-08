@@ -429,6 +429,7 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
         }
         type = TY_INTEGER;
         break;
+  #endif
 #elif _CPU == _AXP
     case TY_INT_1:
     case TY_INT_2:
