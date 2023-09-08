@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -267,9 +267,7 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
     case TY_NEAR_POINTER:
     case TY_NEAR_CODE_PTR:
     case TY_POINTER:
-#if _CPU == _AXP
-        flags = DW_PTR_TYPE_DEFAULT;
-#else
+#if _INTEL_CPU
         if( IsFlat() ) {
             flags = DW_PTR_TYPE_DEFAULT;
         } else {
@@ -280,6 +278,8 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
                 flags = DW_PTR_TYPE_NEAR16;
             }
         }
+#else
+        flags = DW_PTR_TYPE_DEFAULT;
 #endif
         break;
     default:
