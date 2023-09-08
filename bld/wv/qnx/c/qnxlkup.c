@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ size_t EnvLkup( const char *name, char *buff, size_t buff_len )
         }
     }
     if( output ) {
-        buff[len] = NULLCHAR;
+        *buff = NULLCHAR;
     }
     return( len );
 }
