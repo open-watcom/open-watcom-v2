@@ -35,6 +35,7 @@
 #include <string.h>
 #include <process.h>
 #include "bool.h"
+#include "wio.h"
 #include "iopath.h"
 #include "digcli.h"
 #include "digld.h"
@@ -42,14 +43,15 @@
 #include "dipdump.h"
 
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 typedef struct char_ring {
     struct char_ring    *next;
     char                name[1];
 } char_ring;
 
 static char   *FilePathList = NULL;
-#endif
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
 {
@@ -70,7 +72,9 @@ FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     const char  *fmode;
 
-    /* convert flags. */
+    /*
+     * convert flags.
+     */
     switch( mode & (DIG_OPEN_READ | DIG_OPEN_WRITE) ) {
     case DIG_OPEN_READ:
         fmode = "rb";
@@ -137,8 +141,6 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_
     return( 0 ); /// @todo check this out out.
 }
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
-
 static char *addPath( char *old_list, const char *path_list )
 /***********************************************************/
 {
@@ -175,6 +177,9 @@ void PathInit( void )
     char        buff[_MAX_PATH];
     char        *p;
 
+#ifdef BLDVER
+    FilePathList = addPath( FilePathList, getenv( "WD_PATH" QSTR( BLDVER ) ) );
+#endif
     if( _cmdname( buff ) != NULL ) {
 #if defined( __UNIX__ )
         p = strrchr( buff, '/' );
@@ -199,28 +204,28 @@ void PathFini( void )
     free( FilePathList );
 }
 
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
     char        fullname[_MAX_PATH2];
-    char        filename[_MAX_PATH2];
-    FILE        *fp;
+    char        fname[_MAX_PATH2];
     char        *p;
     char        c;
     size_t      len;
+    const char  *path_list;
 
     /* unused parameters */ (void)ftype;
 
-    strncpy( filename, name, name_len );
-    filename[name_len] = '\0';
-    if( defext != NULL && *defext != '\0' ) {
-        _splitpath2( filename, fullname, NULL, NULL, &p, NULL );
-        _makepath( filename, NULL, NULL, p, defext );
-    }
-    if( access( filename, F_OK ) == 0 ) {
-        p = filename;
+    path_list = FilePathList;
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+    if( access( fname, F_OK ) == 0 ) {
+        p = fname;
     } else if( path_list != NULL ) {
-        strcpy( fullname, filename );
+        strcpy( fullname, fname );
         while( (c = *path_list) != '\0' ) {
             p = fullname;
             do {
@@ -233,7 +238,7 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
             if( !IS_PATH_SEP( c ) ) {
                 *p++ = DIR_SEP;
             }
-            strcpy( p, filename );
+            strcpy( p, fname );
             if( access( fullname, F_OK ) == 0 ) {
                 p = fullname;
                 break;
@@ -246,16 +251,18 @@ size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len,
         p = "";
     }
     len = strlen( p );
-    if( result_len > 0 ) {
-        result_len--;
-        if( result_len > len )
-            result_len = len;
-        if( result_len > 0 )
-            strncpy( result, p, result_len );
-        result[result_len] = '\0';
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
     return( len );
 }
+
+#if defined( __UNIX__ ) || defined( __DOS__ )
 
 FILE *DIGLoader( Open )( const char *filename )
 /*********************************************/

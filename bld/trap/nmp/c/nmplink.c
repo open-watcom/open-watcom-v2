@@ -55,26 +55,25 @@ bhandle ReadHdl;
 bhandle WriteHdl;
 bhandle BindHdl;
 
-static char     MachBuff[MACH_NAME+1];
-       char     NameBuff[MAX_PIPE_NAME+1];
+static char     MachBuff[MACH_NAME + 1];
+static char     NameBuff[MAX_PIPE_NAME + 1];
 static char     *NameEnd;
 
 static bhandle PipeOpen( char *name )
 {
-    char        buff[MAX_PIPE_NAME+1];
+    char        buff[MAX_PIPE_NAME + 1];
     char        *end;
 
     end = buff;
     if( MachBuff[0] != '\0' ) {
         buff[0] = '\\';
         buff[1] = '\\';
-        strcpy( buff+2, MachBuff );
+        strcpy( buff + 2, MachBuff );
         end = buff + strlen( buff );
     }
     strcpy( end, name );
     return( myopen( buff ) );
 }
-
 
 
 static const char *OpenRequest( void )
@@ -100,10 +99,10 @@ static void DoOpen( bhandle *phdl, char *suff )
 {
     strcpy( NameEnd, suff );
     dbg( "DoOpen " );
-    dbg( NameBuff+1 );
+    dbg( NameBuff + 1 );
     dbg( "\r\n" );
     for( ;; ) {
-        *phdl = PipeOpen( NameBuff+1 );
+        *phdl = PipeOpen( NameBuff + 1 );
         if( *phdl != BHANDLE_INVALID )
             break;
         mysnooze();
@@ -120,7 +119,7 @@ static const char *ValidName( const char *name )
     MachBuff[0] = '\0';
     while( *name != '\0' ) {
         if( *name == '@' ) {
-            strcpy( MachBuff, name+1 );
+            strcpy( MachBuff, name + 1 );
             return( name );
         }
         if( !isalnum( *name ) )
@@ -131,13 +130,26 @@ static const char *ValidName( const char *name )
     return( name );
 }
 
-
-const char *RemoteLink( const char *parms, bool server )
+#ifdef SERVER
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
 {
-    const char  *msg;
+    *NameEnd = '\0';
+    strcpy( parms, NameBuff + 1 + PREFIX_LEN );
+    if( *MachBuff != '\0' ) {
+        len = NameEnd - ( NameBuff + 1 + PREFIX_LEN );
+        parms[len++] = '@';
+        strcpy( parms + len, MachBuff );
+    }
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
+{
     const char  *end;
 
-    server=server;
     end = ValidName( parms );
     strcpy( NameBuff + 1, PREFIX );
     if( end == NULL ) {
@@ -150,20 +162,36 @@ const char *RemoteLink( const char *parms, bool server )
             NameBuff[end - parms + 1 + PREFIX_LEN] = '\0';
         }
     }
-    msg = OpenRequest();
     NameEnd = NameBuff + strlen( NameBuff );
-    if( msg != NULL )
-        return( msg );
-    if( NameBuff[0] != BIND_ACK ) {
-#ifdef SERVER
-        return( TRP_ERR_server_name_already_in_use );
-#else
-        return( TRP_ERR_server_not_found );
-#endif
-    } else {
-        DoOpen( &ConnHdl, CONN_SUFF );
-    }
     return( NULL );
+}
+
+
+const char *RemoteLink( const char *parms, bool server )
+{
+    const char  *err;
+
+    /* unused parameters */ (void)server;
+
+    err = NULL;
+    if( parms != NULL ) {
+        err = RemoteLinkSet( parms );
+    }
+    if( err == NULL ) {
+        err = OpenRequest();
+        if( err == NULL ) {
+            if( NameBuff[0] != BIND_ACK ) {
+#ifdef SERVER
+                err = TRP_ERR_server_name_already_in_use;
+#else
+                err = TRP_ERR_server_not_found;
+#endif
+            } else {
+                DoOpen( &ConnHdl, CONN_SUFF );
+            }
+        }
+    }
+    return( err );
 }
 
 

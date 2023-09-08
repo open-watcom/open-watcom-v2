@@ -345,15 +345,21 @@ static char FindPartner( void )
     return( 1 );
 }
 
-const char *RemoteLink( const char *parms, bool server )
-{
-    unsigned    i;
-    WSADATA     data;
 #ifdef SERVER
-    const char  *p;
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    /* unused parameters */ (void)len;
+
+    strcpy( parms, ServerName );
+    return( NULL );
+}
+#endif
 #endif
 
-    server = server;
+const char *RemoteLinkSet( const char *parms )
+{
+    unsigned    i;
 
     if( *parms == '\0' )
         parms = DEFAULT_LINK_NAME;
@@ -363,6 +369,24 @@ const char *RemoteLink( const char *parms, bool server )
         }
     }
     ServerName[i] = '\0';
+    return( NULL );
+}
+
+const char *RemoteLink( const char *parms, bool server )
+{
+    WSADATA     data;
+#ifdef SERVER
+    const char  *p;
+#endif
+
+    /* unused parameters */ (void)server;
+
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
+        }
+    }
     if( WSAStartup( 0x101, &data ) != 0 ) {
         return( TRP_ERR_can_not_obtain_socket );
     }

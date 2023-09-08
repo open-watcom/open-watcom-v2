@@ -278,7 +278,3 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
     return FALSE;
 }
 /**********************  End of window procedure  ***********************/
-
-extern void StackCheck( void );
-#pragma aux StackCheck "__STK";
-void StackCheck( void ) {}

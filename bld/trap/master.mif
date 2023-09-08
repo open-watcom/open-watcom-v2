@@ -130,6 +130,12 @@ xname = z$(name)
 xname = $(name)
 !endif
 
+# stack check handling
+#######################
+!ifeq which TRAP
+nocheckstack = 1
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -146,7 +152,7 @@ dig_arch = $(target_cpu)
 
 # cflags stuff
 ###############
-extra_cpp_flags = -D$(which) $(dig_arch_cpp_flags) $(extra_cppflags)
+extra_cpp_flags = -D$(which) $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver) $(extra_cppflags)
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE
@@ -159,6 +165,9 @@ extra_cpp_flags += -DJAPANESE
 !ifeq host_os nov
 extra_cpp_flags += -DDEBUG_ME
 !endif
+!endif
+!ifdef gui
+extra_cpp_flags += -DTRAPGUI
 !endif
 
 extra_cppflags_nlm5 = -D__NW50__ -D_USE_NEW_KERNEL -D__NETWARE_LIBC__
@@ -280,9 +289,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     @%append $^&.lnk op elim
     @%append $^&.lnk name $@
     @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
-!ifeq which TRAP
-    @%append $^&.lnk op dosseg
-!endif
+    @%append $^&.lnk $(proj_l_flags)
     @for %i in ($(objs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk library %i
     @%append $^&.lnk $(extra_linker)

@@ -82,6 +82,9 @@
 #endif
 #define HELP_NAME  "WWINHELP"
 
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 char   *HelpPathList = NULL;
 char   *FilePathList = NULL;
 char   *DipExePathList = NULL;
@@ -149,42 +152,41 @@ char *FindHelpFile( char *fullname, const char *help_name )
     return( fullname );
 }
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
-    char        realname[_MAX_PATH2];
+    char        fname[_MAX_PATH2];
+    char        buffer[_MAX_PATH2];
     char        *p;
-    pgroup2     pg;
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
-    strncpy( realname, name, name_len );
-    realname[name_len] = '\0';
-    if( defext != NULL && *defext != NULLCHAR ) {
-        _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( realname, NULL, NULL, pg.fname, defext );
-    }
-    p = findFile( pg.buffer, realname, FilePathList );
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+    p = findFile( buffer, fname, FilePathList );
     if( p == NULL ) {
-        p = findFile( pg.buffer, realname, DipExePathList );
+        p = findFile( buffer, fname, DipExePathList );
         if( p == NULL ) {
             p = "";
         }
     }
     len = strlen( p );
-    if( result_len > 0 ) {
-        result_len--;
-        if( result_len > len )
-            result_len = len;
-        if( result_len > 0 )
-            strncpy( result, p, result_len );
-        result[result_len] = '\0';
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
     return( len );
 }
 
+#if defined( __UNIX__ ) || defined( __DOS__ )
 FILE *DIGLoader( Open )( const char *filename )
 /*********************************************/
 {
@@ -248,6 +250,13 @@ void InitPaths( void )
 
     watcom_setup_env();
 
+#ifdef BLDVER
+    env = getenv( "WD_PATH" QSTR( BLDVER ) );
+    FilePathList = AddPath( FilePathList, env );
+  #if defined(__UNIX__)
+    DipExePathList = AddPath( DipExePathList, env );
+  #endif
+#endif
     env = getenv( PATH_NAME );
     FilePathList = AddPath( FilePathList, env );
     HelpPathList = AddPath( HelpPathList, env );

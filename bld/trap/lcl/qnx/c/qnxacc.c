@@ -874,9 +874,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ProcInfo.loaded_proc = false;
     } else {
         args[0] = name;
-        if( FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name ) == 0 ) {
-            exe_name[0] = '\0';
-        }
+        FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name );
         save_pgrp = getpgrp();
         setpgid( 0, OrigPGrp );
         ProcInfo.pid = qnx_spawn(0, 0, nid, -1, SCHED_OTHER,
@@ -1454,12 +1452,12 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     }
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     struct _psinfo      proc;
     pid_t               pid;
     nid_t               nid;
-    int                 len;
+    size_t              len;
     const char          *name;
     char                *fullname;
     file_string_to_fullpath_req *acc;
@@ -1576,7 +1574,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     char                *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
 #if 0
     acc = GetInPtr( 0 );
@@ -1603,10 +1601,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
 #else
     pid_t               pid, vid, proc;
     struct _psinfo      info;
@@ -1659,20 +1657,20 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( p != NULL ) {
-        max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+        name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
         if( p[0] == '/' ) {
             if( p[1] == '/' ) {
                 for( p += 2; *p >= '0' && *p <= '9'; p++ ) {
                     {}
                 }
             }
-            strncpy( name, p, max_len );
+            strncpy( name, p, name_maxlen );
         } else {
-            strncpy( name, "/boot/", max_len );
-            name[max_len] = '\0';
-            strncat( name, p, max_len - strlen( name ) );
+            strncpy( name, "/boot/", name_maxlen );
+            name[name_maxlen] = '\0';
+            strncat( name, p, name_maxlen - strlen( name ) );
         }
-        name[max_len] = '\0';
+        name[name_maxlen] = '\0';
     }
 #endif
     return( sizeof( *ret ) + strlen( name ) + 1 );
@@ -1783,6 +1781,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
+    /* unused parameters */ (void)remote;
+
     ForceFpu32 = 0;
     switch( *parms ) {
     case 'f':
@@ -1792,7 +1792,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         ForceFpu32 = 1;
         break;
     }
-    remote = remote;
     ProcInfo.save_in = -1;
     ProcInfo.save_out = -1;
     ProcInfo.thread = NULL;

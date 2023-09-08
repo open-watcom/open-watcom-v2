@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,22 +81,12 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 void GUIAPI GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
 {
     enum_info       info;
-#ifdef __OS2_PM__
     WPI_ENUMPROC    wndenumproc;
-#else
-    WNDENUMPROC         wndenumproc;
-#endif
 
     info.parent = wnd;
     info.func = func;
     info.param = param;
-#ifdef __OS2_PM__
     wndenumproc = _wpi_makeenumprocinstance( GUIEnumChildWindowsEnumFunc, GUIMainHInst );
     _wpi_enumchildwindows( wnd->hwnd, wndenumproc, (LPARAM)&info );
     _wpi_freeenumprocinstance( wndenumproc );
-#else
-    wndenumproc = MakeProcInstance_WNDENUM( GUIEnumChildWindowsEnumFunc, GUIMainHInst );
-    EnumChildWindows( wnd->hwnd, wndenumproc, (LPARAM)&info );
-    FreeProcInstance_WNDENUM( wndenumproc );
-#endif
 }

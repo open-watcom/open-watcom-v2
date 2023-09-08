@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -255,7 +255,9 @@ void DCStatus( dip_status ds )
 
 dig_arch DCCurrArch( void )
 {
-    /* check for old client */
+    /*
+     * check for old client
+     */
     if( DIPClient->sizeof_struct < offsetof(dip_client_routines,CurrArch) )
         return( DIG_ARCH_X86 );
     return( DIPClient->CurrArch() );
@@ -290,9 +292,8 @@ void DIGENTRY DIPUNLOAD( void )
 
 int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 /*****************************************************************************************
-
-    Initialization, message loop.
-*/
+ * Initialization, message loop.
+ */
 {
     MSG                 msg;
     FARPROC             *func;

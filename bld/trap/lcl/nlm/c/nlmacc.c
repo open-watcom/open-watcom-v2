@@ -1923,10 +1923,11 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version        ver;
     extern              struct LoadDefinitionStructure *MyNLMHandle;
 
+    /* unused parameters */ (void)remote; (void)parms;
+
 #if defined( __NW40__ )
     ImportCLIBSymbols();
 #endif
-    remote = remote; parms = parms;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

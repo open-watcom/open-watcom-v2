@@ -11,6 +11,4 @@ srv = vdm
 which = SERVER
 remote_link = 1
 
-extra_objs = vdmserv.obj
-
 !include $(trap_dir)/master.mif

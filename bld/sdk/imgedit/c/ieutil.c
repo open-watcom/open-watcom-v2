@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -544,7 +544,7 @@ BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
  */
 void FindOrigin( WPI_POINT *new_origin )
 {
-    WPI_ENUMPROC    enumproc;
+    WPI_ENUMPROC    wndenumproc;
     int             image_count;
     int             i, j;
     WPI_POINT       temp;
@@ -564,9 +564,9 @@ void FindOrigin( WPI_POINT *new_origin )
     windowCoords = MemAlloc( image_count * sizeof( WPI_POINT ) );
     windowIndex = 0;
 
-    enumproc = _wpi_makeenumprocinstance( GetPosProc, Instance );
-    _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
-    _wpi_freeenumprocinstance( enumproc );
+    wndenumproc = _wpi_makeenumprocinstance( GetPosProc, Instance );
+    _wpi_enumchildwindows( ClientWindow, wndenumproc, 0L );
+    _wpi_freeenumprocinstance( wndenumproc );
 
     /*
      * I'm just using a simple bubble sort ... we're using small amounts of data

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +35,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
+#include "digld.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
 #include "madsys.h"
+
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
 {
@@ -50,24 +52,25 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
 
 mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    mad_sys_handle      dip_dll;
+    mad_sys_handle      mod_hdl;
     mad_init_func       *init_func;
-    char                newpath[256];
+    char                filename[256];
     mad_status          status;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".dll" );
-    dip_dll = LoadLibrary( newpath );
-    if( dip_dll == NULL ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
+    }
+    mod_hdl = LoadLibrary( filename );
+    if( mod_hdl == NULL ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;
-    init_func = (mad_init_func *)GetProcAddress( dip_dll, "MADLOAD" );
+    init_func = (mad_init_func *)GetProcAddress( mod_hdl, "MADLOAD" );
     if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = dip_dll;
+        *sys_hdl = mod_hdl;
         return( MS_OK );
     }
-    FreeLibrary( dip_dll );
+    MADSysUnload( &mod_hdl );
     return( status );
 }

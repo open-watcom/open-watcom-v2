@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,14 +148,14 @@ static bool SubClassWindow( HWND hwnd, bool do_children )
 
 BOOL __export FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, LPARAM lparam )
 {
-    (void)lparam;
+    /* unused parameters */ (void)lparam;
 
     return( SubClassWindow( hwnd, true ) );
 }
 
 BOOL __export FAR PASCAL EnumChildWindowsFunc( HWND hwnd, LPARAM lparam )
 {
-    (void)lparam;
+    /* unused parameters */ (void)lparam;
 
     return( SubClassWindow( hwnd, false ) );
 }

@@ -38,12 +38,12 @@
 #include <i86.h>
 #include "dsxutil.h"
 #include "exedos.h"
+#include "digcli.h"
+#include "digld.h"
 #include "trpld.h"
 #include "trpcore.h"
 #include "trpsys.h"
 #include "tcerr.h"
-#include "digcli.h"
-#include "digld.h"
 #include "envlkup.h"
 #include "realmod.h"
 
@@ -134,12 +134,12 @@ extern void DoRawSwitchToRM( unsigned, unsigned, unsigned );
 extern void     BackFromRealMode( void );
 
 /*
-    We zero out the registers here so that there isn't any garbage
-    in the high word of them in 16-bit code. It turns out that the
-    Pentium sometimes uses the full 32-bit registers even
-    when the instruction specifies the 16-bit version (e.g string
-    instructions.
-*/
+ * We zero out the registers here so that there isn't any garbage
+ * in the high word of them in 16-bit code. It turns out that the
+ * Pentium sometimes uses the full 32-bit registers even
+ * when the instruction specifies the 16-bit version (e.g string
+ * instructions.
+ */
 extern void DoIntSwitchToRM( void );
 #pragma aux DoIntSwitchToRM = \
         "pushad" \
@@ -170,9 +170,10 @@ static char pkg_entry[] = "D32NullPtrCheck";
 #pragma aux extension_routine __parm [__eax] [__edx] [__ebx] __value [__eax]
 static extension_routine __far *RSI_extensions;
 
-/* These are static because I'm not conversant with your inline asm
-   facility, and this accomplished the desired result...
-*/
+/*
+ * These are static because I'm not conversant with your inline asm
+ * facility, and this accomplished the desired result...
+ */
 
 static P1616 _D32NullPtrCheck;
 
@@ -187,9 +188,10 @@ static P1616 __cdecl find_entry( void )
     return (retval);
 }
 
-/* Returns 16:16 pointer to MONITOR array, describing state of hardware
-   breakpoints.  You shouldn't care about the return value during your init.
-*/
+/*
+ * Returns 16:16 pointer to MONITOR array, describing state of hardware
+ * breakpoints.  You shouldn't care about the return value during your init.
+ */
 static int __cdecl D32NullPtrCheck( unsigned short on )
 {
     static int  old_state;
@@ -226,7 +228,9 @@ void SaveOrigVectors( void )
         PMExceptSaveList[i] = i;
 #endif
     old = D32NullPtrCheck( 0 );
-    /* haven't moved things yet, so PMData isn't set up */
+    /*
+     * haven't moved things yet, so PMData isn't set up
+     */
     p = (rm_data *)RMDataStart;
     for( i = 0; i < NUM_VECTS; ++i ) {
         p->orig_vects[i].a = MyGetRMVector( i );
@@ -458,7 +462,9 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
         return( REQUEST_FAILED );
     }
     if( mx_out != NULL ) {
-        /* msgptr is pointing at the start of the output buffer */
+        /*
+         * msgptr is pointing at the start of the output buffer
+         */
         j = 0;
         for( len = callstruct->retlen; len != 0; len -= copy ) {
             copy = len;
@@ -484,36 +490,37 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     FILE                *fp;
     trap_file_header    __far *head;
     char                filename[256];
-    char                *p;
-    char                chr;
+    const char          *base_name;
+    const char          *err;
+    size_t              len;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = filename;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        *p++ = chr;
+        len++;
     }
-    *p = '\0';
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
-    p = ReadInTrap( fp );
+    buff[0] = '\0';
+    err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( p == NULL ) {
-        if( (p = SetTrapHandler()) != NULL || (p = CopyEnv()) != NULL ) {
-            strcpy( buff, p );
-        } else {
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    if( err == TC_ERR_CANT_LOAD_TRAP ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
+    } else if( err == NULL ) {
+        if( (err = SetTrapHandler()) == NULL && (err = CopyEnv()) == NULL ) {
             head = EXTENDER_RM2PM( TrapMem.rm, 0 );
             if( head->sig == TRAP_SIGNATURE ) {
                 PMData->initfunc.s.offset = head->init;
@@ -528,16 +535,18 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                         ReqFunc = DoTrapAccess;
                         return( NULL );
                     }
-                    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
                 }
             }
+            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
-    KillTrap();
+    if( buff[0] == '\0' )
+        strcpy( buff, err );
+    UnLoadTrap();
     return( buff );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     if( IntrState != IS_NONE ) {
         GoToRealMode( RMTrapFini );

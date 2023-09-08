@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Trap module loader for QNX.
+* Description:  Trap module loader for Linux.
 *
 ****************************************************************************/
 
@@ -45,13 +45,11 @@
 
 #define TRAPSIG 0x50415254UL    // "TRAP"
 
-extern void             *_slib_func[2];
-
 const static trap_callbacks TrapCallbacks = {
     sizeof( trap_callbacks ),
 
     &environ,
-    _slib_func,
+    NULL,
 
     malloc,
     realloc,
@@ -87,7 +85,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    base_name = parms;
+    base_name = parms;;
     len = 0;
     for( ; *parms != '\0'; parms++ ) {
         if( *parms == TRAP_PARM_SEPARATOR ) {
@@ -96,7 +94,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }

@@ -37,9 +37,9 @@
 #include <stdlib.h>
 #include "tinyio.h"
 #include "exedos.h"
+#include "digld.h"
 #include "trpld.h"
 #include "tcerr.h"
-#include "digld.h"
 
 
 #define TRAP_SIGNATURE          0xDEAF
@@ -103,7 +103,7 @@ static char *ReadInTrap( FILE *fp )
     return( NULL );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
@@ -121,35 +121,36 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     FILE            *fp;
     trap_init_func  *init_func;
     char            filename[256];
-    char            *p;
-    char            chr;
+    const char      *base_name;
+    const char      *err;
+    size_t          len;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = filename;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        *p++ = chr;
+        len++;
     }
-    *p = '\0';
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
-    p = ReadInTrap( fp );
+    buff[0] = '\0';
+    err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( p != NULL ) {
-        strcpy( buff, p );
-    } else {
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    if( err == TC_ERR_CANT_LOAD_TRAP ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
+    } else if( err == NULL ) {
         if( TrapCode->signature == TRAP_SIGNATURE ) {
             init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
             FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
@@ -160,10 +161,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                     TrapVer = *trap_ver;
                     return( NULL );
                 }
-                strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
             }
         }
+        err = TC_ERR_WRONG_TRAP_VERSION;
     }
-    KillTrap();
+    if( buff[0] == '\0' )
+        strcpy( buff, err );
+    UnLoadTrap();
     return( buff );
 }

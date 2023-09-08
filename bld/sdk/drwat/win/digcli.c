@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,17 +38,19 @@
 #include <dos.h>
 #include <io.h>
 #include "sopen.h"
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
-#if 0
 #include "pathgrp2.h"
 
 #include "clibext.h"
-#endif
 
 
 //#define DEBUGOUT( x ) LBPrintf( ListBox, x );
 #define DEBUGOUT( x )
+
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
 
 #if 0
 FILE *PathOpen( char *name, unsigned len, const char *ext )
@@ -83,10 +85,10 @@ FILE *PathOpen( char *name, unsigned len, const char *ext )
   #
   ##########################################################################*/
 
-/*
+void *DIGCLIENTRY( Alloc )( size_t size )
+/****************************************
  * DIGCliAlloc
  */
-void *DIGCLIENTRY( Alloc )( size_t size )
 {
     void        *ret;
 
@@ -96,10 +98,10 @@ void *DIGCLIENTRY( Alloc )( size_t size )
     return( ret );
 }
 
-/*
+void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
+/*****************************************************
  * DIGCliRealloc
  */
-void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
 {
     void        *ret;
 
@@ -109,20 +111,20 @@ void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
     return( ret );
 }
 
-/*
+void DIGCLIENTRY( Free )( void *ptr )
+/************************************
  * DIGCliFree
  */
-void DIGCLIENTRY( Free )( void *ptr )
 {
     DEBUGOUT( "free BEGIN" );
     MemFree( ptr );
     DEBUGOUT( "free END" );
 }
 
-/*
+FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
+/************************************************************
  * DIGCliOpen
  */
-FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
     const char  *access;
 
@@ -136,10 +138,10 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
     return( fopen( path, access ) );
 }
 
-/*
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
+/************************************************************************
  * DIGCliSeek
  */
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
 {
     int         mode;
     int         ret;
@@ -161,10 +163,10 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
     return( ret );
 }
 
-/*
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
+/********************************************
  * DIGCliTell
  */
-unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
     unsigned long   ret;
 
@@ -174,35 +176,35 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
     return( ret );
 }
 
-/*
+size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
+/*************************************************************
  * DIGCliRead
  */
-size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DEBUGOUT( "reading" );
     return( fread( buf, 1, size, fp ) );
 }
 
-/*
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
+/********************************************************************
  * DIGCliWrite
  */
-size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
     return( fwrite( buf, 1, size, fp ) );
 }
 
-/*
+void DIGCLIENTRY( Close )( FILE *fp )
+/************************************
  * DIGCliClose
  */
-void DIGCLIENTRY( Close )( FILE *fp )
 {
     fclose( fp );
 }
 
-/*
+void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
+/************************************************************
  * DIGCliRemove
  */
-void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 {
     /* unused parameters */ (void)mode;
 
@@ -210,13 +212,43 @@ void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 }
 
 
-/*
- * DIGCliMachineData
- */
 unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
                                         const void *in, dig_elen out_size, void *out )
+/********************************************************************************************
+ * DIGCliMachineData
+ */
 {
     /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size; (void)out;
 
     return( 0 );
+}
+
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_maxlen )
+/*******************************************************************************************
+ * DIGLoaderFind
+ */
+{
+    char        fname[256];
+    size_t      len;
+
+    /* unused parameters */ (void)ftype;
+
+    len = 0;
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( base_name_len == 0 )
+            base_name_len = strlen( base_name );
+        strncpy( fname, base_name, base_name_len );
+        strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+        _searchenv( fname, "WD_PATH" QSTR( BLDVER ), fname );
+#endif
+        len = strlen( fname );
+        if( len > filename_maxlen )
+            len = filename_maxlen;
+        strncpy( filename, fname, len );
+        filename[len] = '\0';
+    }
+    return( len );
 }

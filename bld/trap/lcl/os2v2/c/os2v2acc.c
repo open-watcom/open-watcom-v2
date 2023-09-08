@@ -409,10 +409,10 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
                     break;
                 }
             }
-            return( FALSE );
+            return( false );
         }
     }
-//    return( FALSE );
+//    return( false );
 }
 
 
@@ -957,7 +957,7 @@ static bool ExecuteUntilLinearAddressHit( ULONG lin )
     splice_bp_lin_addr = lin;
     do {
         ExceptNum = 0;
-        DebugExecute( &Buff, DBG_C_Go, TRUE );
+        DebugExecute( &Buff, DBG_C_Go, true );
         if( ExceptNum == 0 ) {
             rc = true; // DLL loaded
             /* Breaking on DLL load means that this routine does not
@@ -1053,7 +1053,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ExceptNum  = -1;
     ret        = GetOutPtr( 0 );
     ret->err   = 0;
-    AtEnd      = FALSE;
+    AtEnd      = false;
     TaskFS     = 0;
     attach_pid = -1;
     src = name = GetInPtr( sizeof( prog_load_req ) );
@@ -1083,9 +1083,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     /* If PID was not specified, start the debuggee process */
     if( attach_pid == -1 ) {
         isAttached = false;
-        if( FindFilePath( DIG_FILETYPE_EXE, name, exe_name ) ) {
-            exe_name[0] = '\0';
-        }
+        FindFilePath( DIG_FILETYPE_EXE, name, exe_name );
         parms = AddDriveAndPath( exe_name, UtilBuff ) + 1;
         src = name;
         while( *src++ != '\0' )
@@ -1133,7 +1131,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         Buff.Pid = Pid;
         Buff.Tid = 1;
         if( !isAttached ) {
-            DebugExecute( &Buff, DBG_C_Stop, FALSE );
+            DebugExecute( &Buff, DBG_C_Stop, false );
             if( Buff.Cmd != DBG_N_Success ) {
                 ret->err = 14; /* can't load */
                 return( sizeof( *ret ) );
@@ -1314,7 +1312,7 @@ trap_retval TRAP_CORE( Clear_watch )( void )
             *dst = *src;
             ++dst;
         } else {
-            DebugExecute( &Buff, DBG_C_Stop, FALSE );
+            DebugExecute( &Buff, DBG_C_Stop, false );
             Buff.Cmd = DBG_C_ClearWatch;
             Buff.Index = 0; // src->id;
             CallDosDebug( &Buff );
@@ -1372,7 +1370,7 @@ static trap_conditions MapReturn( trap_conditions conditions )
         Buff.Pid = Pid;
         CallDosDebug( &Buff );
     default:
-        AtEnd = TRUE;
+        AtEnd = true;
         CanExecTask = false;
         return( conditions | COND_TERMINATE );
     }
@@ -1387,7 +1385,7 @@ static bool setDebugRegs( void )
     word        size;
 
     if( DRegsCount() > 4 ) {
-        return( FALSE );
+        return( false );
     }
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         linear = wp->linear;
@@ -1404,7 +1402,7 @@ static bool setDebugRegs( void )
             linear += size;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CheckWatchPoints( void )
@@ -1428,13 +1426,13 @@ static bool CheckWatchPoints( void )
 
 static void watchSingleStep(void)
 {
-    DebugExecute( &Buff, DBG_C_SStep, TRUE );
+    DebugExecute( &Buff, DBG_C_SStep, true );
     while( Buff.Cmd == DBG_N_SStep ) {
         if( CheckWatchPoints() ) {
             Buff.Cmd = DBG_N_Watchpoint;
             break;
         }
-        DebugExecute( &Buff, DBG_C_SStep, TRUE );
+        DebugExecute( &Buff, DBG_C_SStep, true );
     }
 }
 
@@ -1483,7 +1481,7 @@ static unsigned progRun( bool step )
         ret->program_counter.offset  = lastEIP;
         return( sizeof( *ret ) );
     }
-    BrkPending = FALSE;
+    BrkPending = false;
 
     // Set exception handler and don't forget to set signal focus!
     DosSetExceptionHandler( &RegRec );
@@ -1492,11 +1490,11 @@ static unsigned progRun( bool step )
     if( AtEnd ) {
         Buff.Cmd = DBG_N_ProcTerm;
     } else if( step ) {
-        DebugExecute( &Buff, DBG_C_SStep, TRUE );
+        DebugExecute( &Buff, DBG_C_SStep, true );
     } else if( !setDebugRegs() ) {
         watchSingleStep();
     } else {
-        DebugExecute( &Buff, DBG_C_Go, TRUE );
+        DebugExecute( &Buff, DBG_C_Go, true );
         if( Buff.Cmd == DBG_N_Success ) {
             Buff.Cmd = DBG_N_ProcTerm;
         }
@@ -1516,7 +1514,7 @@ static unsigned progRun( bool step )
     lastEIP = ret->program_counter.offset = Buff.EIP;
     //runret->thread = Buff.Tid;
     //if( runret->returnvalue == TRAP_TERMINATE ) {
-    //    AtEnd = TRUE;
+    //    AtEnd = true;
     //    CanExecTask = false;
     //}
     return( sizeof( *ret ) );
@@ -1527,7 +1525,7 @@ trap_retval TRAP_CORE( Prog_go )( void )
     trap_elen   rc;
 
     PMUnLock();
-    rc = progRun( FALSE );
+    rc = progRun( false );
     PMLock( Buff.Pid, Buff.Tid );
     return( rc );
 }
@@ -1537,7 +1535,7 @@ trap_retval TRAP_CORE( Prog_step )( void )
     trap_elen   rc;
 
     PMUnLock();
-    rc = progRun( TRUE );
+    rc = progRun( true );
     PMLock( Buff.Pid, Buff.Tid );
     return( rc );
 }
@@ -1743,7 +1741,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0';
     ver.major  = TRAP_MAJOR_VERSION;
     ver.minor  = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     SaveStdIn  = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     Screen     = DEBUG_SCREEN;

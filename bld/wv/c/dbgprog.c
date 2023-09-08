@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -926,7 +926,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
             FileClose( fh );
         }
     } else {
-        len = RemoteStringToFullName( DIG_FILETYPE_EXE, name, fullname, sizeof( fullname ) );
+        len = RemoteFileToFullName( DIG_FILETYPE_EXE, name, fullname, sizeof( fullname ) );
         fullname[len] = NULLCHAR;
     }
     image = CreateImage( fullname, symfile );
@@ -1039,7 +1039,7 @@ size_t GetProgName( char *where, size_t len )
     /*
         Before, we did a:
 
-            RemoteStringToFullName( DIG_FILETYPE_EXE, TaskCmd, where, len );
+            RemoteFileToFullName( DIG_FILETYPE_EXE, TaskCmd, where, len );
 
         but that screws up when the user specified something other than
         just an executable on the command line. E.g. a PID to connect
@@ -1561,7 +1561,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     map_entry   **owner;
     map_entry   *curr;
 
-    if( *fname == '\0' )
+    if( *fname == NULLCHAR )
         return( true );
 
     image = DoCreateImage( fname, fname );

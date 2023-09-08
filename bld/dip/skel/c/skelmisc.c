@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,18 +34,19 @@
 #include "skel.h"
 
 /*
-   Misc. stuff.
-*/
+ * Misc. stuff.
+ */
 
 const char      DIPImp( Name )[] = "Put the name of your DIP here";
 
 unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
+/***************************************************
+ * TODO:
+ *
+ * Return the sizes of the individual handle types. This version
+ * should be OK as given.
+ */
 {
-    //TODO:
-/*
-        Return the sizes of the individual handle types. This version
-        should be OK as given.
-*/
     static unsigned_8 Sizes[] = {
         #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   ihsize,
         #include "diphndls.h"
@@ -56,38 +57,42 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 }
 
 dip_status DIPIMPENTRY( MoreMem )( size_t size )
+/***********************************************
+ * TODO:
+ *
+ * Return DS_OK if you could release some memory, DS_FAIL if you
+ * couldn't.
+ */
 {
-    //TODO:
-/*
-        Return DS_OK if you could release some memory, DS_FAIL if you
-        couldn't.
-*/
     return( DS_FAIL );
 }
 
 dip_status DIPImp( Startup )( void )
+/***********************************
+ * TODO:
+ *
+ * Return DS_OK if startup initialization when OK, or a DS_ERR | DS_?
+ * constant if something went wrong.
+ */
 {
-    //TODO:
-/*
-        Return DS_OK if startup initialization when OK, or a DS_ERR | DS_?
-        constant if something went wrong.
-*/
     return( DS_OK );
 }
 
 void DIPIMPENTRY( Shutdown )( void )
+/***********************************
+ * TODO:
+ *
+ * Shutting down and unloading. Last chance to free up stuff.
+ */
 {
-    //TODO:
-/*
-        Shutting down and unloading. Last chance to free up stuff.
-*/
 }
 
 void DIPIMPENTRY( Cancel )( void )
+/*********************************
+ * TODO:
+ *
+ * The client is about to longjmp, and may bypass
+ * returns through the DIP. All handles remain valid though.
+ */
 {
-    //TODO:
-/*
-        The client is about to longjmp, and may bypass
-        returns through the DIP. All handles remain valid though.
-*/
 }

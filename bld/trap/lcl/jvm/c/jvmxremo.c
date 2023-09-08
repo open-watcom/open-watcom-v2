@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +42,12 @@
 #include "jvmxremo.h"
 
 
-bool                    TaskLoaded;
-HANDLE                  FakeHandle;
-HWND                    DebuggerHwnd;
+bool            TaskLoaded;
+HANDLE          FakeHandle;
+HWND            DebuggerHwnd;
 
-static char             LinkParms[256];
-static char             SavedError[256];
+static char     LinkParms[256];
+static char     SavedError[256];
 
 trap_retval DoAccess( void )
 {
@@ -556,9 +556,9 @@ trap_retval TRAP_CORE( Split_cmd )( void )
 trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
-    extern     void InitPSP();
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     ver.remote = FALSE;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,9 @@ static void InitSegOff( void *_new )
 
 
 static seg_blk_head *GetSegOffBlk( void )
-/***************************************/
-// Alloc a seg_info blk for seg routines
+/****************************************
+ * Alloc a seg_info blk for seg routines
+ */
 {
     seg_blk_off *new;
 
@@ -93,31 +94,29 @@ typedef struct {
     unsigned_16 last;
 } off_cmp;
 
-/*  JBS 2001/03/08
-
-    Let's say the table looks like this.
-
-    offset:32   len:32  map_offset:32   map_seg:16  im:16
-    [1000]      [10]    [x]             [x]         [x]
-    [1010]      [22]    [x]             [x]         [x]
-    [1032]      [10]    [x]             [x]         [x]
-    [2000]      [14]    [x]             [x]         [x]
-
-    If we look up offset 1000, then we return 0 (meaning a match was found).
-    If we look up offset 1002, then we return 0 (meaning a match was found)
-                            because it falls in the range of 1000-1009.
-    If we look up offset 1050, then we return 1 (meaning no match was found)
-                            because it does not fall in the range of 1032-1041
-                            and it is below 2000.
-    If we look up offset 0640, then we return -1 (meaning no match was found)
-                            and it is below 1000.
-
-    So 0 means "in range",
-       1 means "above range", and
-      -1 means "below range".
-
-*/
-
+/*
+ * Let's say the table looks like this.
+ *
+ * offset:32   len:32  map_offset:32   map_seg:16  im:16
+ * [1000]      [10]    [x]             [x]         [x]
+ * [1010]      [22]    [x]             [x]         [x]
+ * [1032]      [10]    [x]             [x]         [x]
+ * [2000]      [14]    [x]             [x]         [x]
+ *
+ * If we look up offset 1000, then we return 0 (meaning a match was found).
+ * If we look up offset 1002, then we return 0 (meaning a match was found)
+ *                         because it falls in the range of 1000-1009.
+ * If we look up offset 1050, then we return 1 (meaning no match was found)
+ *                         because it does not fall in the range of 1032-1041
+ *                         and it is below 2000.
+ * If we look up offset 0640, then we return -1 (meaning no match was found)
+ *                         and it is below 1000.
+ *
+ * So 0 means "in range",
+ *    1 means "above range", and
+ *   -1 means "below range".
+ *
+ */
 
 static long BlkOffRangeSearch( off_cmp *cmp )
 /*******************************************/
@@ -134,22 +133,20 @@ static long BlkOffRangeSearch( off_cmp *cmp )
             return( 0 );
         cmp->base++;
     }
-    /* So the offset is greater than the current one but it could fall
-       within the range of the current one
-    */
+    /*
+     * So the offset is greater than the current one but it could fall
+     * within the range of the current one
+     */
     return( 1 );
 }
 
-/*  JBS 2001/03/09
-
-    BlkOffSearch is like BlkOffRangeSearch except that it doesn't do range
-    checking.
-
-    If we look up offset 1002, then we return -1 (meaning it goes before 1010).
-*/
-
 static long BlkOffSearch( off_cmp *cmp )
-/**************************************/
+/***************************************
+ * BlkOffSearch is like BlkOffRangeSearch except that it doesn't do range
+ * checking.
+ *
+ * If we look up offset 1002, then we return -1 (meaning it goes before 1010).
+ */
 {
     unsigned_16     ctr;
 
@@ -161,15 +158,16 @@ static long BlkOffSearch( off_cmp *cmp )
             return( 0 );
         cmp->base++;
     }
-    /* So the offset is greater than the current one but it could fall
-       within the range of the current one
-    */
+    /*
+     * So the offset is greater than the current one but it could fall
+     * within the range of the current one
+     */
     return( 1 );
 }
 
 /*
-    Mike's old flawed binary search (did not work with addresses >= 0x80000000)
-*/
+ * Mike's old flawed binary search (did not work with addresses >= 0x80000000)
+ */
 
 // static long BlkOffSearch( off_cmp *cmp ) {
 // /****************************************/
@@ -211,11 +209,12 @@ static long BlkOffSearch( off_cmp *cmp )
 // }
 
 static  void AddSortOffset( seg_info *ctl, off_info *new )
-/********************************************************/
-// blocks are in decreasing order
-// within a block entries are in increasing order (history).
-// it would be better to keep in decreasing order so we could shuffle up
-// and not have mem overlap problems
+/*********************************************************
+ * blocks are in decreasing order
+ * within a block entries are in increasing order (history).
+ * it would be better to keep in decreasing order so we could shuffle up
+ * and not have mem overlap problems
+ */
 {
     off_blk         *blk;
     off_info        *info;
@@ -295,8 +294,9 @@ exit_rtn:
 
 
 void AddMapAddr( seg_list *list, void *dcmap, off_info *new )
-/***********************************************************/
-// Add a new address to map
+/************************************************************
+ * Add a new address to map
+ */
 {
     static seg_ctl  SegCtl = { GetSegOffBlk, InitSegOff };
     addr_ptr        a;
@@ -313,7 +313,9 @@ void AddMapAddr( seg_list *list, void *dcmap, off_info *new )
 
 #ifdef DEBUG
 static bool CheckInfo( seg_info *ctl )
-/**Internal check to see if sorted***/
+/*************************************
+ * Internal check to see if sorted
+ */
 {
     unsigned_16     rem;
     unsigned_16     blk_count;
@@ -355,8 +357,9 @@ error:
 
 
 static bool ChkOffsets( void *d, seg_info *ctl )
-/**********************************************/
-// Sort a seg's offsets
+/***********************************************
+ * Sort a seg's offsets
+ */
 {
     d = d;
     if( !CheckInfo( ctl ) ) {
@@ -366,7 +369,9 @@ static bool ChkOffsets( void *d, seg_info *ctl )
 }
 
 void DmpBlk( off_blk *blk, int count )
-/***** Print contents of blk ********/
+/*************************************
+ * Print contents of blk
+ */
 {
     off_info    *info;
 
@@ -478,8 +483,9 @@ void    SortMapAddr( seg_list *ctl )
 
 
 bool Real2Map( seg_list *ctl, address *what )
-/*******************************************/
-// convert a map address found in dbg to real address in image
+/********************************************
+ * convert a map address found in dbg to real address in image
+ */
 {
     bool        ret;
     off_info    *off;
@@ -498,16 +504,18 @@ bool Real2Map( seg_list *ctl, address *what )
 
 
 void InitAddrInfo( seg_list *list )
-/*********************************/
-//Init seg_ctl with addr info
+/**********************************
+ * Init seg_ctl with addr info
+ */
 {
     InitSegList( list, sizeof( seg_off ) );
 }
 
 
 static bool FreeSegOffsets( void *d, void *_curr )
-/************************************************/
-// Free all offset blocks for a segment
+/*************************************************
+ * Free all offset blocks for a segment
+ */
 {
     seg_info    *curr = (seg_info *)_curr;
     off_blk     *blk, *next;
@@ -523,9 +531,10 @@ static bool FreeSegOffsets( void *d, void *_curr )
 
 
 void FiniAddrInfo( seg_list *ctl )
-/********************************/
-//Free all offset blocks for a segment
-//Free all segment blocks
+/*********************************
+ * Free all offset blocks for a segment
+ * Free all segment blocks
+ */
 {
     SegWalk( ctl, FreeSegOffsets, NULL );
     FiniSegList( ctl );

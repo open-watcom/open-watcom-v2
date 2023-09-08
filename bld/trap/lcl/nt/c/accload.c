@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
 #include "stdnt.h"
 #include "globals.h"
 #include "trperr.h"
@@ -299,8 +300,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     IsDOS = false;
 #endif
     if( pid == 0 ) {
-        ret->err = FindFilePath( DIG_FILETYPE_EXE, parm, exe_name );
-        if( ret->err != 0 ) {
+        if( FindFilePath( DIG_FILETYPE_EXE, parm, exe_name ) == 0 ) {
+            ret->err = ENOENT;
             goto error_exit;
         }
         /*

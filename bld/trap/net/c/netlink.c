@@ -106,6 +106,8 @@ NCB             NetCtlBlk;
 byte            LanaNum;
 int             SkipEnum;
 
+static char     LinkName[NCBNAMSZ + 1];
+
 #if defined( __OS2__ )
   #if defined( __386__ )
 static unsigned short _System (*NetBiosSubmit)( unsigned short, unsigned short, NCB * );
@@ -194,13 +196,48 @@ void RemoteDisco( void )
 
 static char     NotThere[] = TRP_ERR_NetBIOS_is_not_running ;
 
+#ifdef SERVER
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    int     i;
+
+    /* unused parameters */ (void)len;
+
+    strcpy( parms, LinkName + 1 );
+    for( i = NCBNAMSZ - 1; i > 0 && parms[i] == ' '; i-- ) {
+        parms[i] = '\0';
+    }
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
+{
+    int     i;
+
+    if( *parms == '\0' ) {
+        parms = DEFAULT_LINK_NAME;
+    }
+    *LinkName = ' ';
+    for( i = 1; i < NCBNAMSZ; ++i ) {
+        LinkName[i] = ( *parms != '\0' ) ? *parms++ : ' ';
+    }
+    LinkName[i] = '\0';
+    return( NULL );
+}
+
 const char *RemoteLink( const char *parms, bool server )
 {
-    unsigned    i;
+    /* unused parameters */ (void)server;
 
-    server = server;
-    if( *parms == '\0' )
-        parms = DEFAULT_LINK_NAME;
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
+        }
+    }
 #if defined(__OS2__)
   #if defined(__386__)
     {
@@ -240,8 +277,9 @@ const char *RemoteLink( const char *parms, bool server )
         dos_ver = GetTrueDOSVersion();
         if( dos_ver.major == 5 && dos_ver.minor == 50 )
             is_nt = 1;
-        if( !is_nt )
+        if( !is_nt ) {
             SkipEnum = 1;
+        }
     }
 #endif
     NetCtlBlk.ncb_command = NET_INVALID_CMD;
@@ -264,9 +302,7 @@ const char *RemoteLink( const char *parms, bool server )
 #endif
 
     memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
-    for( i = 1; i < NCBNAMSZ; ++i ) {
-        NetCtlBlk.ncb_name[i] = ( *parms != '\0' ) ? *parms++ : ' ';
-    }
+    memcpy( NetCtlBlk.ncb_name, LinkName, NCBNAMSZ );
     NetCtlBlk.ncb_name[0] = ( server ) ? 'S' : 'C';
     NetCtlBlk.ncb_command = NCBADDNAME;
     NetCtlBlk.ncb_lana_num = LanaNum;

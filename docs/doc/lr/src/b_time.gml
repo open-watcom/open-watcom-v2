@@ -1,7 +1,7 @@
 .func _bios_timeofday
 .synop begin
 #include <bios.h>
-int _bios_timeofday( int service, long *timeval );
+unsigned short _bios_timeofday( int service, long *timeval );
 .ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -315,7 +315,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     char                *name;
     unsigned            i;
     unsigned            ret_len;
-    size_t              max_len;
+    size_t              name_maxlen;
 #ifdef DEBUG_OUT
     char                *p = "";
 #endif
@@ -344,10 +344,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
             dbg_print(( "(lib loaded, '%s')\n", name ));
             moduleInfo[i].newly_loaded = FALSE;
             ret->mod_handle = i;
-            max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+            name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
             name = GetOutPtr( sizeof( *ret ) );
-            strncpy( name, moduleInfo[i].filename, max_len );
-            name[max_len] = '\0';
+            strncpy( name, moduleInfo[i].filename, name_maxlen );
+            name[name_maxlen] = '\0';
             ret_len += strlen( name ) + 1;
 #ifdef DEBUG_OUT
             p = name;

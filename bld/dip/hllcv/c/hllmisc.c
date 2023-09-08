@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,9 @@
 
 #include "hllinfo.h"
 
-/* FIXME: kick out these! */
+/*
+ * FIXME: kick out these!
+ */
 #include "cv4w.h"
 
 enum {
@@ -46,10 +48,10 @@ CV_LAST_REG
 
 const char      DIPImp( Name )[] = "HLL/CV";
 
-/*
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
+/***************************************************
  * Get the size of a handle.
  */
-unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   ihsize,
@@ -60,41 +62,41 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
     return( Sizes[hk] );
 }
 
-/*
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
+/***********************************************
  * Free memory.
  */
-dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
     size = size;
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );
 }
 
-/*
+dip_status DIPImp( Startup )( void )
+/***********************************
  * Module startup.
  */
-dip_status DIPImp( Startup )(void)
 {
     return( DS_OK );
 }
 
-/*
+void DIPIMPENTRY( Shutdown )( void )
+/***********************************
  * Module shutdown.
  */
-void DIPIMPENTRY( Shutdown )( void )
 {
 }
 
-/*
+void DIPIMPENTRY( Cancel )( void )
+/*********************************
  * ?
  */
-void DIPIMPENTRY( Cancel )( void )
 {
 }
 
-/*
+size_t hllNameCopy( char *buff, const char *src, size_t buff_size, size_t len )
+/******************************************************************************
  * Creates a zero terminated string.
  */
-size_t hllNameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 {
     if( buff_size > 0 ) {
         --buff_size;
@@ -106,10 +108,10 @@ size_t hllNameCopy( char *buff, const char *src, size_t buff_size, size_t len )
     return( len );
 }
 
-/*
+hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle imh, hll_sst sst )
+/***************************************************************************************
  * Finds a subsection directory entry for a specific module.
  */
-hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle imh, hll_sst sst )
 {
     unsigned            i;
     unsigned            block;
@@ -136,13 +138,13 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle imh, hll_s
     return( NULL );
 }
 
-/*
+walk_result hllWalkDirList( imp_image_handle *iih, hll_sst sst, DIP_DIR_WALKER *wk, void *d )
+/********************************************************************************************
  * Walks the subsection directory.
  *
  * Use 'sst' to limit the callbacks to one specific type. A 'sst' of 0
  * means everything.
  */
-walk_result hllWalkDirList( imp_image_handle *iih, hll_sst sst, DIP_DIR_WALKER *wk, void *d )
 {
     unsigned            i;
     unsigned            block;
@@ -278,13 +280,15 @@ dip_status hllDoIndirection( imp_image_handle *iih, dig_type_info *ti,
     return( DS_OK );
 }
 
-/*
+void hllConfused( void )
+/***********************
  * Don't know what's happening.
  */
-void hllConfused()
 {
     volatile int a = 0;
     volatile int b = 0;
-
-    a /= b; /* cause a fault */
+    /*
+     * cause a fault
+     */
+    a /= b;
 }

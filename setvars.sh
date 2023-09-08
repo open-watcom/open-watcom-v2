@@ -13,7 +13,7 @@
 # If space character is used in the path then you must double quote
 # this path.
 #
-# export OWROOT="/home/ow/o w"
+# export "OWROOT=/home/ow/o w"
 #
 
 export OWROOT=$(realpath "`pwd`")

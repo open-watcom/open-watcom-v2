@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,18 +37,19 @@
 #include "exeflat.h"
 
 
-/* Implementation notes:
+/*
+ * Implementation notes:
  *
  * - Symbol files may contain multiple maps. This is not supported because
  *   I've never seen such a .sym file and I don't even know how to produce one.
  */
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
-
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 int __nullarea;
 #pragma aux __nullarea "*";
-
 #endif
 
 static struct {
@@ -240,18 +241,24 @@ static dip_status AddSymbol( imp_image_handle *iih, addr_seg seg, addr_off off,
     return( DS_OK );
 }
 
-/* Heuristics to determine whether given file is a MAPSYM .sym file */
 static dip_status CheckSymFile( FILE *fp )
+/*
+ * Heuristics to determine whether given file is a MAPSYM .sym file
+ */
 {
     sym_endmap          end_map;
     unsigned long       pos;
 
-    /* seek to the end, read and check end map record */
+    /*
+     * seek to the end, read and check end map record
+     */
     if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_SEEK_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( fp );
-    /* the endmap record must be 16-byte aligned */
+    /*
+     * the endmap record must be 16-byte aligned
+     */
     if( pos % 16 ) {
         return( DS_FAIL );
     }
@@ -261,8 +268,8 @@ static dip_status CheckSymFile( FILE *fp )
     if( end_map.zero != 0 ) {
         return( DS_FAIL );
     }
-
-    /* Check .sym file version. The version number seems to correspond to
+    /*
+     * Check .sym file version. The version number seems to correspond to
      * the linker version. Versions 3.10, 4.0, 5.10, 5.11, 6.0, 6.10 have
      * been seen. Version 5.1 seems to be identical to 4.0 with added
      * support for 32-bit symbols.
@@ -270,13 +277,16 @@ static dip_status CheckSymFile( FILE *fp )
     if( (end_map.major_ver < 3) || (end_map.major_ver > 6) || (end_map.minor_ver > 11) ) {
         return( DS_FAIL );
     }
-
-    /* looks like the right sort of .sym file */
+    /*
+     * looks like the right sort of .sym file
+     */
     return( DS_OK );
 }
 
-/* Read a Pascal style string - limited to 255 chars max length */
 static dip_status ReadString( FILE *fp, char *buf, unsigned *len_ptr )
+/*********************************************************************
+ * Read a Pascal style string - limited to 255 chars max length
+ */
 {
     unsigned_8  str_len;
 
@@ -292,10 +302,12 @@ static dip_status ReadString( FILE *fp, char *buf, unsigned *len_ptr )
     return( DS_OK );
 }
 
-/* Load symbols for a segment */
 static dip_status LoadSymTable( FILE *fp, imp_image_handle *iih, unsigned count,
                         unsigned long base_ofs, unsigned_32 table_ofs,
                         addr_seg seg, int big_syms )
+/*******************************************************************************
+ * Load symbols for a segment
+ */
 {
     dip_status      ds;
     unsigned_16     *sym_tbl;
@@ -370,8 +382,10 @@ done:
     return( ds );
 }
 
-/* Load all segments for a map */
 static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
+/***************************************************************************
+ * Load all segments for a map
+ */
 {
     dip_status      ds;
     sym_segdef      seg;
@@ -392,8 +406,8 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
         ds = ReadString( fp, name, &name_len );
         if( ds != DS_OK )
             return( ds );
-
-        /* There's no good way to tell whether segment is code or data. Try
+        /*
+         * There's no good way to tell whether segment is code or data. Try
          * to guess what a segment is based on its name.
          */
         if( strcmp( name, "DGROUP" ) == 0 ) {
@@ -415,8 +429,10 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
     return( DS_OK );
 }
 
-/* Load all symbols in a .sym file */
 static dip_status LoadSymFile( FILE *fp, imp_image_handle *iih )
+/***************************************************************
+ * Load all symbols in a .sym file
+ */
 {
     dip_status      ds;
     sym_mapdef      map;
@@ -426,8 +442,9 @@ static dip_status LoadSymFile( FILE *fp, imp_image_handle *iih )
     if( BSeek( fp, 0, DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-
-    /* Read the first map and use its name as the module name */
+    /*
+     * Read the first map and use its name as the module name
+     */
     if( BRead( fp, &map, SYM_MAPDEF_FIXSIZE ) != SYM_MAPDEF_FIXSIZE ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
@@ -467,7 +484,9 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 
     if( ds != DS_OK ) {
         DCStatus( ds );
-        /* clean up any allocations */
+        /*
+         * clean up any allocations
+         */
         ImpUnloadInfo( iih );
         return( ds );
     }

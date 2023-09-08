@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,9 @@
 ****************************************************************************/
 
 
-/* this stuff is written out by wvtypes.c in codegen */
+/*
+ * this stuff is written out by wvtypes.c in codegen
+ */
 
 #include "pushpck1.h"
 typedef struct cue_state{

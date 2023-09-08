@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include <i86.h>
 #include <windows.h>
 #include "watcom.h"
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
@@ -63,8 +64,8 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    HINSTANCE           dip_dll;
-    char                newpath[256];
+    HINSTANCE           mod_hdl;
+    char                filename[256];
     dip_status          ds;
     char                parm[10];
     struct {
@@ -82,8 +83,9 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     UINT                prev;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".dll" );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
     p = parm;
     *p++ = ' ';
     utoa( _FP_SEG( &transfer_block ), p, 16 );
@@ -99,10 +101,10 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     parm_block.show = &show_block;
     parm_block.reserved = 0;
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    dip_dll = LoadModule( newpath, &parm_block );
-    DIPLastHandle = dip_dll;
+    mod_hdl = LoadModule( filename, &parm_block );
+    DIPLastHandle = mod_hdl;
     SetErrorMode( prev );
-    if( dip_dll < HINSTANCE_ERROR ) {
+    if( mod_hdl < HINSTANCE_ERROR ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     ds = DS_ERR | DS_INVALID_DIP;

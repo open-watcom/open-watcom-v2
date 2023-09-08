@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,9 +73,10 @@ typedef struct {
 } off_cmp;
 
 static off_info *AddMapOffset( seg_off *ctl, off_info *new )
-/**********************************************************/
-// Add a new offset to the last block if full alloc a new one
-// bump the item count
+/***********************************************************
+ * Add a new offset to the last block if full alloc a new one
+ * bump the item count
+ */
 {
     off_blk         *blk;
     off_info        *next;
@@ -104,8 +106,9 @@ static void InitSegOff( void *_newseg )
 
 
 static seg_blk_head *GetSegOffBlk( void )
-/*************************************/
-// Alloc a seg_info blk for seg routines
+/****************************************
+ * Alloc a seg_info blk for seg routines
+ */
 {
     seg_blk_off     *new;
 
@@ -117,8 +120,9 @@ static seg_blk_head *GetSegOffBlk( void )
 
 
 void AddAddrSym( seg_list *list, addrsym_info *new )
-/**************************************************/
-// Add a new address to map
+/***************************************************
+ * Add a new address to map
+ */
 {
     static seg_ctl  SegCtl = { GetSegOffBlk, InitSegOff };
     off_info        data;
@@ -132,8 +136,9 @@ void AddAddrSym( seg_list *list, addrsym_info *new )
 
 
 static  long BlkOffSearch( off_cmp *cmp )
-/***************************************/
-// Do a B-search on the blk
+/****************************************
+ * Do a B-search on the blk
+ */
 {
     off_info        *curr;
     off_info        *base;
@@ -163,10 +168,11 @@ static  long BlkOffSearch( off_cmp *cmp )
     return( key - curr->map_offset );
 }
 
-// This is a bit screwy, maybe I should do something like dfaddr
-// so the blocks are in sorted order
 int  FindAddrSym( seg_list *addr_map, addr_ptr *mach, addrsym_info *ret )
-/***********************************************************************/
+/************************************************************************
+ * This is a bit screwy, maybe I should do something like dfaddr
+ * so the blocks are in sorted order
+ */
 {
     off_blk     *blk;
     off_info    *info;
@@ -211,8 +217,9 @@ int  FindAddrSym( seg_list *addr_map, addr_ptr *mach, addrsym_info *ret )
 
 
 static int  OffCmp( void const *_off1, void const *_off2 )
-/********************************************************/
-// Compare to offsets
+/*********************************************************
+ * Compare to offsets
+ */
 {
     off_info const  *off1 = _off1;
     off_info const  *off2 = _off2;
@@ -226,8 +233,9 @@ static int  OffCmp( void const *_off1, void const *_off2 )
 
 
 static bool SortOffsets( void *d, void *_ctl )
-/********************************************/
-// Sort a seg's offsets
+/*********************************************
+ * Sort a seg's offsets
+ */
 {
     seg_info        *ctl = (seg_info *)_ctl;
     off_blk         *blk;
@@ -266,8 +274,9 @@ struct wlk_glue {
 };
 
 static bool WalkOffsets( void *_wlk, void *_ctl )
-/***********************************************/
-// Sort a seg's offsets
+/************************************************
+ * Sort a seg's offsets
+ */
 {
     seg_info            *ctl = (seg_info *)_ctl;
     struct wlk_glue     *wlk = _wlk;
@@ -309,16 +318,18 @@ bool WlkAddrSyms( seg_list *ctl, WLKADDRSYM fn, void *d )
 
 
 void  InitAddrSym( seg_list *list )
-/*********************************/
-// Init seg_ctl with addr info
+/**********************************
+ * Init seg_ctl with addr info
+ */
 {
     InitSegList( list, sizeof( seg_off ) );
 }
 
 
 static bool FreeSegOffsets( void *d, void *_curr )
-/************************************************/
-// Free all offset blocks for a segment
+/*************************************************
+ * Free all offset blocks for a segment
+ */
 {
     seg_info    *curr = (seg_info *)_curr;
     off_blk     *blk, *next;
@@ -334,9 +345,10 @@ static bool FreeSegOffsets( void *d, void *_curr )
 
 
 void  FiniAddrSym( seg_list *ctl )
-/********************************/
-//Free all offset blocks for a segment
-//Free all segment blocks
+/*********************************
+ * Free all offset blocks for a segment
+ * Free all segment blocks
+ */
 {
     SegWalk( ctl, FreeSegOffsets, NULL );
     FiniSegList( ctl );

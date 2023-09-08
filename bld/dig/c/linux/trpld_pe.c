@@ -33,10 +33,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+#include "digld.h"
 #include "trpld.h"
 #include "tcerr.h"
 #include "peloader.h"
-#include "digld.h"
 
 
 #ifndef __WATCOMC__
@@ -44,7 +44,7 @@ extern char **environ;
 #endif
 
 #if !defined( BUILTIN_TRAP_FILE )
-static PE_MODULE        *TrapFile = NULL;
+static PE_MODULE        *mod_hdl = NULL;
 #endif
 static trap_fini_func   *FiniFunc = NULL;
 
@@ -61,7 +61,7 @@ const static trap_callbacks TrapCallbacks = {
     signal,
 };
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
@@ -69,9 +69,9 @@ void KillTrap( void )
         FiniFunc = NULL;
     }
 #if !defined( BUILTIN_TRAP_FILE )
-    if( TrapFile != NULL ) {
-        PE_freeLibrary( TrapFile );
-        TrapFile = NULL;
+    if( mod_hdl != NULL ) {
+        PE_freeLibrary( mod_hdl );
+        mod_hdl = NULL;
     }
 #endif
 }
@@ -80,48 +80,48 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
-    char                chr;
 #if !defined( BUILTIN_TRAP_FILE )
     FILE                *fp;
     char                filename[_MAX_PATH];
-    char                *p;
+    const char          *base_name;
+    size_t              len;
 #endif
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
 #if !defined( BUILTIN_TRAP_FILE )
-    p = filename;
+    base_name = parms;
+    len = 0;
 #endif
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
 #if !defined( BUILTIN_TRAP_FILE )
-        *p++ = chr;
+        len++;
 #endif
     }
 #if !defined( BUILTIN_TRAP_FILE )
-    *p = '\0';
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, filename, p - filename, "trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         return( buff );
     }
-    TrapFile = PE_loadLibraryFile( fp, filename );
+    mod_hdl = PE_loadLibraryFile( fp, filename );
     DIGLoader( Close )( fp );
-    if( TrapFile == NULL ) {
+    if( mod_hdl == NULL ) {
         return( buff );
     }
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    ld_func = (trap_load_func *)PE_getProcAddress( TrapFile, "TrapLoad_" );
+    buff[0] = '\0';
+    ld_func = (trap_load_func *)PE_getProcAddress( mod_hdl, "TrapLoad_" );
     if( ld_func != NULL ) {
 #else
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    buff[0] = '\0';
     ld_func = TrapLoad;
 #endif
         trap_funcs = ld_func( &TrapCallbacks );
@@ -134,12 +134,13 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                     TrapVer = *trap_ver;
                     return( NULL );
                 }
-                strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
             }
         }
 #if !defined( BUILTIN_TRAP_FILE )
     }
 #endif
-    KillTrap();
+    if( buff[0] == '\0' )
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    UnLoadTrap();
     return( buff );
 }

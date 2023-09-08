@@ -34,6 +34,9 @@
 
 #define PARMS_MAXLEN    256
 
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 extern char         ServUsage[];
 extern char         RWBuff[0x400];
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -456,21 +456,28 @@ static bool LoadPmdHeader( char *name )
     struct stat     tmp;
     char            result[PATH_MAX + 1];
 
-    if( TryOnePath( ":/usr/dumps", &tmp, name, result ) == 0 )
-        return( false );
+    strcpy( result, name );
+    if( stat( result, &tmp ) != 0 ) {
+        #define DUMPSDIR    "/usr/dumps/"
+        strcpy( result, DUMPSDIR );
+        strcpy( result + sizeof( DUMPSDIR ) - 1, name );
+        #undef DUMPSDIR
+        if( stat( result, &tmp ) != 0 ) {
+            return( false );
+        }
+    }
     PmdInfo.fd = open( result, O_RDONLY );
     if( PmdInfo.fd < 0 )
         return( false );
-    if( read( PmdInfo.fd, &PmdInfo.hdr, sizeof( PmdInfo.hdr ) )
-            != sizeof( PmdInfo.hdr ) ) {
+    if( read( PmdInfo.fd, &PmdInfo.hdr, sizeof( PmdInfo.hdr ) ) != sizeof( PmdInfo.hdr ) ) {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;
         return( false );
     }
     if( PmdInfo.hdr.signature != DUMP_SIGNATURE
-     || PmdInfo.hdr.version != DUMP_VERSION
-     || PmdInfo.hdr.errnum != 0 ) {
+      || PmdInfo.hdr.version != DUMP_VERSION
+      || PmdInfo.hdr.errnum != 0 ) {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;
@@ -667,10 +674,10 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     struct  stat                chk;
-    unsigned_16                 len;
+    size_t                      len;
     char                        *name;
     char                        *fullname;
     unsigned                    save_handle;
@@ -706,10 +713,8 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
         }
         PmdInfo.fd = save_handle;
     }
-    if( len == 0 ) {
+    if( len == 0 )
         ret->err = ENOENT;      /* File not found */
-        return( sizeof( *ret ) + 1 );
-    }
     return( sizeof( *ret ) + len + 1 );
 }
 
@@ -758,7 +763,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     const char          *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -786,10 +791,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     default:
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
     PmdInfo.mapping_shared = true;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
@@ -849,14 +854,16 @@ trap_retval TRAP_THREAD( get_extra )( void )
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
-    trap_version ver;
+    trap_version    ver;
+    char            ch;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     PmdInfo.fd = NO_FILE;
     PmdInfo.enable_read_gdts = true;
     PmdInfo.force_read_gdts  = false;
-    while( *parms != '\0' ) {
-        switch( *parms ) {
+    while( (ch = *parms++) != '\0' ) {
+        switch( ch ) {
         case 'I':
         case 'i':
             PmdInfo.ignore_timestamp = true;
@@ -870,7 +877,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
             PmdInfo.enable_read_gdts = false;
             break;
         }
-        ++parms;
     }
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

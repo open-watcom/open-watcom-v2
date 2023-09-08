@@ -299,7 +299,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char                *name;
     char                *endparm;
     const char          *err;
-    tiny_ret_t          rc;
+    bool                prog_ok;
     prog_load_ret       *ret;
     size_t              len;
 
@@ -308,7 +308,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindFilePath( DIG_FILETYPE_EXE, src, buffer );
+    prog_ok = ( FindFilePath( DIG_FILETYPE_EXE, src, buffer ) != 0 );
     endparm = LinkParms;
     while( *endparm++ != '\0' )         // skip trap parameters
         {}
@@ -323,7 +323,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->err = 1;
         len = 0;
     } else {
-        if( TINY_OK( rc ) ) {
+        if( prog_ok ) {
             while( *src++ != '\0' )
                 {}
             len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
@@ -465,7 +465,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
 
-    remote = remote;
     ver.remote = false;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

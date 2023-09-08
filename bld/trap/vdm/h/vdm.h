@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#include "bool.h"
+
+
 #define NT_MACH_NAME    "\\\\."
 #define PREFIX          "\\PIPE\\"
 #define PREFIX_LEN      (sizeof( PREFIX ) - 1)
@@ -40,5 +43,4 @@
 
 #define DEFAULT_LINK_NAME   "VDMLink"
 
-extern  int     ValidName( const char *name );
-
+extern bool     ValidName( const char *name );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,9 +132,9 @@ static bool GetStrLen( imp_image_handle *iih,
     return( true );
 }
 
-/***********************/
-/* Walk array dims     */
-/***********************/
+/***********************
+ * Walk array dims     *
+ ***********************/
 typedef struct {
     dig_type_bound      low;
     dig_type_size       count;
@@ -229,9 +229,10 @@ static void GetArraySubSize( imp_image_handle *iih,
 static void InitTypeHandle( imp_image_handle *iih,
                             imp_type_handle  *ith,
                             location_context *lc )
-/***********************************************************************/
-//Set type handle to the base state
-//If array poise at first index
+/*************************************************
+ * Set type handle to the base state
+ * If array poise at first index
+ */
 {
     imp_type_handle sub_ith;
     dr_array_info   info;
@@ -364,20 +365,20 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle i
 }
 
 imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *ith )
+/***********************************************************************************
+ * Return the module that the type handle comes from.
+ */
 {
     /* unused parameters */ (void)iih;
 
-    /*
-        Return the module that the type handle comes from.
-    */
     return( ith->imh );
 }
 
 void MapImpTypeInfo( dr_typeinfo *typeinfo, dig_type_info *ti )
+/**************************************************************
+ * Map dwarf info to dip imp
+ */
 {
-    /*
-        Map dwarf info to dip imp
-    */
     type_kind   kind;
 
     switch( typeinfo->kind ) {
@@ -478,13 +479,12 @@ void MapImpTypeInfo( dr_typeinfo *typeinfo, dig_type_info *ti )
 
 dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
                 imp_type_handle *ith, location_context *lc, dig_type_info *ti )
+/******************************************************************************
+ * Fill in the type information for the type handle. The location
+ * context is being passed in because it might be needed to calculate
+ * the size of the type (variable dimensioned arrays and the like).
+ */
 {
-    /*
-        Fill in the type information for the type handle. The location
-        context is being passed in because it might be needed to calculate
-        the size of the type (variable dimensioned arrays and the like).
-    */
-
     InitTypeHandle( iih, ith, lc );
     MapImpTypeInfo( &ith->typeinfo, ti );
     if( ti->kind == TK_INTEGER ) {  // this can be removed when 10.5 gets updated
@@ -505,15 +505,15 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
 dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
                         imp_type_handle *ith, imp_type_handle *base_ith,
                         location_context *lc, location_list *ll )
+/***********************************************************************
+ * Given an implementation type handle, fill in 'base' with the
+ * base type of the handle.
+ */
 {
     drmem_hdl  btype;
 
     /* unused parameters */ (void)lc; (void)ll;
 
-    /*
-        Given an implementation type handle, fill in 'base' with the
-        base type of the handle.
-     */
     if( base_ith != ith ) {
         *base_ith = *ith;
     }
@@ -561,10 +561,12 @@ static bool AEnum( drmem_hdl var, int index, void *_de )
 }
 
 static bool ArrayEnumType( drmem_hdl tenu, int index, void *_df )
-/****************************************************************/
-// Find low, high bounds of enum
+/****************************************************************
+ * Find low, high bounds of enum
+ *
+ * TODO:unsigned range
+ */
 {
-//TODO:unsigned range
     array_wlk_wlk  *df = _df;
     enum_range     de;
     int_32         count;
@@ -577,7 +579,7 @@ static bool ArrayEnumType( drmem_hdl tenu, int index, void *_df )
         return( false );
     }
     df->low = de.low;
-    count = de.high-de.low+1;
+    count = de.high - de.low + 1;
     df->count *= count;
 
     df->dim++;
@@ -623,8 +625,9 @@ static bool GetSymVal( imp_image_handle *iih,
 }
 
 static bool GetDrVal( array_wlk_wlk *df, dr_val32 *val, int_32 *ret )
-/*******************************************************************/
-// extract the value from val
+/********************************************************************
+ * extract the value from val
+ */
 {
     switch( val->val_class ) {
     case DR_VAL_INT:
@@ -652,12 +655,15 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
     /* unused parameters */ (void)index;
 
     DRGetSubrangeInfo( tsub, &info );
-    /* DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1) */
+    /*
+     * DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1)
+     */
     if( info.low.val_class == DR_VAL_NOT ) {
-        if( IMH2MODI( df->iih, df->ith->imh )->lang == DR_LANG_FORTRAN )
+        if( IMH2MODI( df->iih, df->ith->imh )->lang == DR_LANG_FORTRAN ) {
             low = 1;
-        else
+        } else {
             low = 0;
+        }
     } else {
         GetDrVal( df, &info.low, &low );
     }
@@ -666,8 +672,8 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
             return( false );
         }
         GetDrVal( df, &info.high, &high );
-        count = high - low +1;
-    }else{
+        count = high - low + 1;
+    } else {
         GetDrVal( df, &info.count, &count );
     }
     df->low = low;
@@ -679,15 +685,14 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
 dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
                         imp_type_handle *array_ith, location_context *lc,
                         array_info *ai, imp_type_handle *index_ith )
+/************************************************************************
+ * Given an implemenation type handle that represents an array type,
+ * get information about the array shape and index type. The location
+ * context is for variable dimensioned arrays again. The 'index'
+ * parameter is filled in with the type of variable used to subscript
+ * the array. It may be NULL, in which case no information is returned.
+ */
 {
-    /*
-        Given an implemenation type handle that represents an array type,
-        get information about the array shape and index type. The location
-        context is for variable dimensioned arrays again. The 'index'
-        parameter is filled in with the type of variable used to subscript
-        the array. It may be NULL, in which case no information is returned.
-    */
-
     DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( array_ith->state == DF_NOT ) {
         InitTypeHandle( iih, array_ith, lc );
@@ -722,12 +727,12 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
 }
 
 /*
-    Given an implementation type handle that represents a procedure type,
-    get information about the return and parameter types. If the 'n'
-    parameter is zero, store the return type handle into the 'parm'
-    variable. Otherwise store the handle for the n'th parameter in
-    'parm'.
-*/
+ * Given an implementation type handle that represents a procedure type,
+ * get information about the return and parameter types. If the 'n'
+ * parameter is zero, store the return type handle into the 'parm'
+ * variable. Otherwise store the handle for the n'th parameter in
+ * 'parm'.
+ */
 typedef struct {
     int             count;
     int             last;
@@ -751,8 +756,9 @@ static bool AParm( drmem_hdl var, int index, void *_df )
 }
 
 drmem_hdl GetParmN( imp_image_handle *iih, drmem_hdl proc, int count )
-/********************************************************************/
-// return handle of the n parm
+/*********************************************************************
+ * return handle of the n parm
+ */
 {
     parm_wlk    df;
     drmem_hdl   ret;
@@ -769,8 +775,9 @@ drmem_hdl GetParmN( imp_image_handle *iih, drmem_hdl proc, int count )
 }
 
 int GetParmCount( imp_image_handle *iih, drmem_hdl proc )
-/*******************************************************/
-// return handle of the n parm
+/********************************************************
+ * return handle of the n parm
+ */
 {
     parm_wlk df;
 
@@ -809,14 +816,14 @@ dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *iih,
 
 dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
                     imp_type_handle *ith, location_context *lc, address *a )
+/***************************************************************************
+ * Given an implementation type handle that represents a pointer type,
+ * get information about any implied address space for that pointer
+ * (based pointer cruft). If there is an implied address space for
+ * the pointer, fill in *a with the information and return DS_OK.
+ * Otherwise return DS_FAIL.
+ */
 {
-    /*
-        Given an implementation type handle that represents a pointer type,
-        get information about any implied address space for that pointer
-        (based pointer cruft). If there is an implied address space for
-        the pointer, fill in *a with the information and return DS_OK.
-        Otherwise return DS_FAIL.
-    */
     dip_status ds;
 
     ds = EvalBasedPtr( iih, lc, ith->type, a );
@@ -834,9 +841,10 @@ int DIPIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1, imp_ty
         return( 1 );
     return( 0 );
 }
-/*****************************/
-/* Structure Enum Walks      */
-/*****************************/
+
+/*****************************
+ * Structure Enum Walks      *
+ *****************************/
 typedef struct inh_vbase {
     struct inh_vbase *next;
     drmem_hdl        base;
@@ -876,8 +884,9 @@ typedef union {
 
 
 static bool AddBase( drmem_hdl base, inh_vbase **lnk )
-/****************************************************/
-//if base not in list add return false
+/*****************************************************
+ * if base not in list add return false
+ */
 {
     inh_vbase   *cur;
 
@@ -898,8 +907,9 @@ static bool AddBase( drmem_hdl base, inh_vbase **lnk )
 }
 
 static bool FreeBases( void *_lnk )
-/*********************************/
-//Free bases
+/**********************************
+ * Free bases
+ */
 {
     inh_vbase   **lnk = _lnk;
     inh_vbase   *cur;
@@ -977,9 +987,10 @@ static bool AMem( drmem_hdl var, int index, void *_d )
 }
 
 static bool AInherit( drmem_hdl inh, int index, void *_d )
-/********************************************************/
+/*********************************************************
+ * TODO: Need to track virtual base as not to visit same place twice
+ */
 {
-//TODO: Need to track virtual base as not to visit same place twice
     type_wlk_wlk    *d = _d;
     bool            cont;
     drmem_hdl       btype;
@@ -1075,8 +1086,9 @@ static bool AMemLookup( drmem_hdl var, int index, void *_d )
 }
 
 static bool AInheritLookup( drmem_hdl inh, int index, void *_d )
-/**************************************************************/
-//Push inherit handle and search
+/***************************************************************
+ * Push inherit handle and search
+ */
 {
     type_wlk_lookup *d = _d;
     drmem_hdl btype;
@@ -1200,7 +1212,9 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
 }
 
 search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith, lookup_item *li, void *d )
-//Search for matching lookup item
+/***********************************************************************************************
+ * Search for matching lookup item
+ */
 {
     drmem_hdl       btype;
     type_wlk_lookup df;
@@ -1250,13 +1264,14 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith, lookup_ite
     Cleaners = cleanup.prev; // pop cleanup
     return( df.sr );
 }
-/*********************************************/
-/*  Search for a derived type then eval loc  */
-/*********************************************/
+
+/*********************************************
+ *  Search for a derived type then eval loc  *
+ *********************************************/
 typedef struct inh_path {
     struct inh_path *next;
     drmem_hdl        inh;
-}inh_path;
+} inh_path;
 
 typedef struct type_wlk_inherit {
     imp_image_handle *iih;
@@ -1281,8 +1296,9 @@ static DRWLKBLK InheritWlk[DR_WLKBLK_STRUCT] = {
 
 
 static bool AInhFind( drmem_hdl inh, int index, void *_df )
-/*********************************************************/
-//Push inherit handle and search
+/**********************************************************
+ * Push inherit handle and search
+ */
 {
     type_wlk_inherit *df = _df;
     drmem_hdl       dr_derived;
@@ -1334,42 +1350,42 @@ dip_status  DFBaseAdjust( imp_image_handle *iih, drmem_hdl base, drmem_hdl deriv
 dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
                         imp_type_handle *base_ith, imp_type_handle *derived_ith,
                         location_context *lc, address *addr )
+/*******************************************************************************
+ * When you convert a pointer to a C++ class to a pointer at one
+ * of its derived classes you have to adjust the pointer so that
+ * it points at the start of the derived class. The 'derived' type
+ * may not actually be a derived type of 'base'. In that case, return
+ * DS_FAIL and nothing to 'addr'. If it is a derived type, let 'disp'
+ * be the displacement between the 'base' type and the 'derived' type.
+ * You need to do the following. "addr->mach.offset += disp;".
+ */
 {
-    /*
-        When you convert a pointer to a C++ class to a pointer at one
-        of its derived classes you have to adjust the pointer so that
-        it points at the start of the derived class. The 'derived' type
-        may not actually be a derived type of 'base'. In that case, return
-        DS_FAIL and nothing to 'addr'. If it is a derived type, let 'disp'
-        be the displacement between the 'base' type and the 'derived' type.
-        You need to do the following. "addr->mach.offset += disp;".
-    */
     return( DFBaseAdjust( iih, base_ith->type, derived_ith->type, lc, addr ) );
 }
 
 size_t DIPIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
                 unsigned num, symbol_type *tag, char *buff, size_t buff_size )
+/*****************************************************************************
+ * Given the imp_type_handle, copy the name of the type into 'buff'.
+ * Do not copy more than 'buff_size' - 1 characters into the buffer and
+ * append a trailing '\0' character. Return the real length
+ * of the type name (not including the trailing '\0' character) even
+ * if you had to truncate it to fit it into the buffer. If something
+ * went wrong and you can't get the type name, call DCStatus and
+ * return zero. NOTE: the client might pass in zero for 'buff_size'. In that
+ * case, just return the length of the module name and do not attempt
+ * to put anything into the buffer.
+ *
+ * Since there can be a "string" of typedef names associated with
+ * a type_handle, the 'num' parm indicates which one of the names
+ * the client wants returned. Zero is the first type name, one is
+ * the second, etc. Fill in '*tag' with ST_ENUM_TAG, ST_UNION_TAG,
+ * ST_STRUCT_TAG, ST_CLASS_TAG if the name is a enum, union, struct,
+ * or class tag name respectively. If not, set '*tag' to ST_NONE.
+ *
+ * If the type does not have a name, return zero.
+ */
 {
-    /*
-        Given the imp_type_handle, copy the name of the type into 'buff'.
-        Do not copy more than 'buff_size' - 1 characters into the buffer and
-        append a trailing '\0' character. Return the real length
-        of the type name (not including the trailing '\0' character) even
-        if you had to truncate it to fit it into the buffer. If something
-        went wrong and you can't get the type name, call DCStatus and
-        return zero. NOTE: the client might pass in zero for 'buff_size'. In that
-        case, just return the length of the module name and do not attempt
-        to put anything into the buffer.
-
-        Since there can be a "string" of typedef names associated with
-        a type_handle, the 'num' parm indicates which one of the names
-        the client wants returned. Zero is the first type name, one is
-        the second, etc. Fill in '*tag' with ST_ENUM_TAG, ST_UNION_TAG,
-        ST_STRUCT_TAG, ST_CLASS_TAG if the name is a enum, union, struct,
-        or class tag name respectively. If not, set '*tag' to ST_NONE.
-
-        If the type does not have a name, return zero.
-    */
     char        *name = NULL;
     drmem_hdl   dr_type;
     dr_typeinfo typeinfo;

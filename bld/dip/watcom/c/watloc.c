@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +160,9 @@ static unsigned SizeLocation( const char *e )
             return( 1 );
         }
     }
-    /* should never get here */
+    /*
+     * should never get here
+     */
     return( 1 );
 }
 
@@ -521,7 +524,9 @@ do_ind:
             op1 = sp;
             --sp;
             if( op1->type == LS_ADDR ) {
-                /* get the address into sp */
+                /*
+                 * get the address into sp
+                 */
                 tmp.lse = *sp;
                 *sp = *op1;
                 *op1 = tmp.lse;
@@ -544,12 +549,16 @@ do_ind:
             ++sp;
             break;
         case OPERATOR | LOP_NOP:
-            /* well, what did you expect? */
+            /*
+             * well, what did you expect?
+             */
             break;
         }
     }
     if( LocStkPtr == 0 && sp == start ) {
-        /* empty location */
+        /*
+         * empty location
+         */
         ds = DS_ERR | DS_BAD_LOCATION;
         goto done;
     }

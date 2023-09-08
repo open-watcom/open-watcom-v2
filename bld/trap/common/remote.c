@@ -135,7 +135,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     const char      *err;
     bool            fix_minor;
 
-    remote=remote;
+    /* unused parameters */ (void)remote;
+
     _DBG_EnterFunc( "TrapInit" );
     ver.remote = true;
     fix_minor = false;

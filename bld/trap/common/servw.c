@@ -48,8 +48,6 @@
 
 extern trap_version TrapVersion;
 
-char            ServParms[PARMS_MAXLEN];
-
 HANDLE          Instance;
 
 static char     ServerClass[32]="ServerClass";
@@ -60,7 +58,7 @@ static bool     Linked = false;
 static bool     OneShot = false;
 
 static bool     FirstInstance( HINSTANCE );
-static bool     AnyInstance( HINSTANCE, int, LPSTR );
+static bool     AnyInstance( HINSTANCE, int );
 
 #define MENU_ON     (MF_ENABLED+MF_BYCOMMAND)
 #define MENU_OFF    (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
@@ -71,6 +69,8 @@ static bool     AnyInstance( HINSTANCE, int, LPSTR );
 int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
+    const char  *err;
+    char        trapparms[PARMS_MAXLEN];
 
     Instance = this_inst;
     if( !prev_inst ) {
@@ -78,8 +78,25 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
             return( FALSE );
         }
     }
-    if( !AnyInstance( this_inst, cmdshow, cmdline ) )
+    err = ParseCommandLine( cmdline, trapparms, RWBuff, &OneShot );
+    if( err == NULL ) {
+        err = RemoteLinkSet( RWBuff );
+        if( err == NULL ) {
+            err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        }
+    }
+    if( err != NULL ) {
+        StartupErr( err );
         return( FALSE );
+    }
+    if( !AnyInstance( this_inst, cmdshow ) )
+        return( FALSE );
+
+    /*
+     * toggle start/end processing and RemoteLink/RemoteUnLink
+     * here is used for first time that call RemoteLink and start processing
+     */
+    SendMessage( hwndMain, WM_COMMAND, MENU_CONNECT, 0 );
 
     while( GetMessage( (LPVOID)&msg, (HWND)0, 0, 0 ) ) {
         TranslateMessage( &msg );
@@ -87,7 +104,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     }
     if( Linked )
         RemoteUnLink();
-    KillTrap();
+    UnLoadTrap();
 
     return( msg.wParam );
 
@@ -138,19 +155,8 @@ static void EnableMenus( HWND hwnd, bool connected, bool session )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static bool AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
+static bool AnyInstance( HINSTANCE this_inst, int cmdshow )
 {
-    const char  *err;
-    char        trapparms[PARMS_MAXLEN];
-
-    err = ParseCommandLine( cmdline, trapparms, ServParms, &OneShot );
-    if( err == NULL ) {
-        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
-    }
-    if( err != NULL ) {
-        StartupErr( err );
-        return( false );
-    }
     /*
      * create main window
      */
@@ -180,7 +186,6 @@ static bool AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
      */
     ShowWindow( hwndMain, cmdshow );
     UpdateWindow( hwndMain );
-    SendMessage( hwndMain, WM_COMMAND, MENU_CONNECT, 0 );
 
     return( true );
 
@@ -239,7 +244,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             err = NULL;
             if( !Linked ) {
                 HCURSOR cursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
-                err = RemoteLink( ServParms, true );
+                err = RemoteLink( NULL, true );
                 SetCursor( cursor );
             }
             EnableMenus( hwnd, true, false );
@@ -345,7 +350,7 @@ void StartupErr( const char *err )
 
 void ServMessage( const char *msg )
 {
-    (void)msg;
+    /* unused parameters */ (void)msg;
 }
 
 int WantUsage( const char *ptr )

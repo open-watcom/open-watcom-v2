@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +34,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "digld.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
 #include "madsys.h"
 #include "ldimp.h"
-#include "digld.h"
 
 
 #define MADSIG  0x0044414DUL    // "MAD"
@@ -52,39 +52,39 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
     }
 }
 
-mad_status MADSysLoad( const char *name, mad_client_routines *cli,
+mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     FILE                *fp;
-    imp_header          *mad;
+    imp_header          *mod_hdl;
     mad_init_func       *init_func;
     mad_status          status;
     char                filename[256];
 
     *sys_hdl = NULL_SYSHDL;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, name, strlen( name ), "mad", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".mad", filename, sizeof( filename ) ) == 0 ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
-    mad = ReadInImp( fp );
+    mod_hdl = ReadInImp( fp );
     DIGLoader( Close )( fp );
     status = MS_ERR | MS_INVALID_MAD;
-    if( mad != NULL ) {
+    if( mod_hdl != NULL ) {
 #ifdef __WATCOMC__
-        if( mad->sig == MADSIG ) {
+        if( mod_hdl->sig == MADSIG ) {
 #endif
-            init_func = (mad_init_func *)mad->init_rtn;
+            init_func = (mad_init_func *)mod_hdl->init_rtn;
             if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-                *sys_hdl = mad;
+                *sys_hdl = mod_hdl;
                 return( MS_OK );
             }
 #ifdef __WATCOMC__
         }
 #endif
-        DIGCli( Free )( mad );
+        MADSysUnload( (mad_sys_handle *)&mod_hdl );
     }
     return( status );
 }

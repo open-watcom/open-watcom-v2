@@ -67,23 +67,17 @@ void ServMessage( const char *msg )
 
 static const char *ServInitialize( void )
 {
-
     const char  *err;
     char        trapparms[PARMS_MAXLEN];
     char        cmd_line[PARMS_MAXLEN];
 
-#define servparms RWBuff
-
     _bgetcmd( cmd_line, sizeof( cmd_line ) );
-    err = ParseCommandLine( cmd_line, trapparms, servparms, &OneShot );
+    err = ParseCommandLine( cmd_line, trapparms, RWBuff, &OneShot );
     if( err == NULL ) {
-        err = RemoteLink( servparms, true );
-    }
-
-#undef servparms
-
-    if( err == NULL ) {
-        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        err = RemoteLink( RWBuff, true );
+        if( err == NULL ) {
+            err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        }
     }
     return( err );
 }
@@ -125,7 +119,7 @@ int main( int argc, char **argv )
             if( KeyPress() ) {
                 key = KeyGet();
                 if( key == 'q' || key == 'Q' ) {
-                    KillTrap();
+                    UnLoadTrap();
                     RemoteUnLink();
                     ServTerminate( 0 );
                     // never return
@@ -146,7 +140,7 @@ int main( int argc, char **argv )
         OutputLine( "" );
         RemoteDisco();
         if( OneShot ) {
-            KillTrap();
+            UnLoadTrap();
             RemoteUnLink();
             ServTerminate( 0 );
             // never return

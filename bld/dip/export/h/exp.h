@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,17 +50,23 @@ typedef struct exp_block        exp_block;
 typedef struct exp_hunk         exp_hunk;
 
 struct imp_sym_handle {
-    /* any stuff for getting information on symbols */
+    /*
+     * any stuff for getting information on symbols
+     */
     exp_sym             *p;
 };
 
 struct imp_type_handle {
-    /* any stuff for getting information on types */
+    /*
+     * any stuff for getting information on types
+     */
     unsigned_8          code;
 };
 
 struct imp_cue_handle {
-    /* any stuff for getting information on source line cues */
+    /*
+     * any stuff for getting information on source line cues
+     */
     void                *p;
 };
 

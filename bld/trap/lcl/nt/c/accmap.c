@@ -282,8 +282,8 @@ void AddProcess( header_info *hi )
     llo->filename[0] = '\0';
 }
 
-static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *buff, size_t maxlen )
-/****************************************************************************************
+static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *buff, size_t buff_maxlen )
+/*********************************************************************************************
  * get fully qualified filename for last DLL
  * that was loaded in process. Intended for Win9x.
  */
@@ -313,8 +313,8 @@ static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *buff, size_t
      */
     if( !pModule32First( hModuleSnap, &me32 ) )
         goto error_exit;
-    if( maxlen > 0 ) {
-        maxlen--;
+    if( buff_maxlen > 0 ) {
+        buff_maxlen--;
         /*
          * Look for freshly loaded module. Not tested on Win9x.
          * Unfortunately in WinXP not all newly loaded modules are in the list.
@@ -324,10 +324,10 @@ static bool NameFromProcess( lib_load_info *llo, DWORD dwPID, char *buff, size_t
         do {
             if( me32.modBaseAddr == llo->base ) {
                 len = strlen( me32.szExePath );
-                if( maxlen > len )
-                    maxlen = len;
-                strncpy( buff, me32.szExePath, maxlen );
-                buff[maxlen] = '\0';
+                if( buff_maxlen > len )
+                    buff_maxlen = len;
+                strncpy( buff, me32.szExePath, buff_maxlen );
+                buff[buff_maxlen] = '\0';
                 bSuccess = true;
                 break;
             }
@@ -341,8 +341,8 @@ error_exit:
     return( bSuccess );
 }
 
-static bool NameFromHandle( HANDLE hFile, char *buff, size_t maxlen )
-/********************************************************************
+static bool NameFromHandle( HANDLE hFile, char *buff, size_t buff_maxlen )
+/*************************************************************************
  * get fully qualified filename from file handle.
  * Intended for Windows NT.
  */
@@ -359,7 +359,7 @@ static bool NameFromHandle( HANDLE hFile, char *buff, size_t maxlen )
     pMem = NULL;
     hFileMap = NULL;
     bSuccess = false;
-    if( maxlen == 0 )
+    if( buff_maxlen == 0 )
         goto error_exit;
     buff[0] = '\0';
     /*
@@ -390,8 +390,8 @@ static bool NameFromHandle( HANDLE hFile, char *buff, size_t maxlen )
     /*
      * Translate path with device name to drive letters.
      */
-    if( maxlen > 3 ) {
-        maxlen -= 3;
+    if( buff_maxlen > 3 ) {
+        buff_maxlen -= 3;
 
         szTemp[0] = '\0';
         if( GetLogicalDriveStrings( BUFSIZE - 1, szTemp ) ) {
@@ -418,10 +418,10 @@ static bool NameFromHandle( HANDLE hFile, char *buff, size_t maxlen )
                              */
                             p = pszFilename + len;
                             len = strlen( p );
-                            if( maxlen > len )
-                                maxlen = len;
-                            strncpy( buff + 2, p, maxlen );
-                            buff[maxlen + 2] = '\0';
+                            if( buff_maxlen > len )
+                                buff_maxlen = len;
+                            strncpy( buff + 2, p, buff_maxlen );
+                            buff[buff_maxlen + 2] = '\0';
                             bSuccess = true;
                             break;
                         }
@@ -695,7 +695,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     unsigned            i;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -708,10 +708,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
             return( sizeof( *ret ) + 1 );
         } else if( moduleInfo[i].newly_loaded ) {
             ret->mod_handle = i;
-            max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+            name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
             name = GetOutPtr( sizeof( *ret ) );
-            strncpy( name, moduleInfo[i].filename, max_len );
-            name[max_len] = '\0';
+            strncpy( name, moduleInfo[i].filename, name_maxlen );
+            name[name_maxlen] = '\0';
             moduleInfo[i].newly_loaded = false;
             /*
              * once the debugger asks for a lib name, we also add it to our lib

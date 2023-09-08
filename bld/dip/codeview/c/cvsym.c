@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -287,7 +287,9 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *ish, location_
         addr48_off      off48;
     }                   tmp;
 
-    //NYI: parameters when at the start of a routine.
+    /*
+     * NYI: parameters when at the start of a routine.
+     */
     if( ish->containing_type != 0 ) {
         return( TypeSymGetAddr( iih, ish, lc, ll ) );
     }
@@ -546,7 +548,9 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
         chk += p->common.length + sizeof( p->common.length );
         len -= p->common.length + sizeof( p->common.length );
     }
-    /* found first scope block, now find correct offset */
+    /*
+     * found first scope block, now find correct offset
+     */
     for( ;; ) {
         ds = ScopeFillIn( iih, chk, scope, NULL );
         if( ds != DS_OK )
@@ -559,7 +563,9 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
             return( DS_FAIL );
         chk = scope->next;
     }
-    /* found enclosing scope block, now find smallest one */
+    /*
+     * found enclosing scope block, now find smallest one
+     */
     chk = scope->scope;
     new.cde = scope->cde;
     for( ;; ) {
@@ -567,21 +573,31 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
         if( ds & DS_ERR )
             return( ds );
         if( ds == DS_OK ) {
-            /* new scope */
+            /*
+             * new scope
+             */
             if( !(addr.mach.offset >= new.start.mach.offset
               && addr.mach.offset <  (new.start.mach.offset + new.len)) ) {
-                /* out of range */
+                /*
+                 * out of range
+                 */
                 chk = new.end;
             } else if( !(new.start.mach.offset >= scope->start.mach.offset
                    && (new.start.mach.offset + new.len) <= (scope->start.mach.offset + scope->len)) ) {
-                /* not smaller */
+                /*
+                 * not smaller
+                 */
                 chk = new.end;
             } else {
-                /* inner scope */
+                /*
+                 * inner scope
+                 */
                 *scope = new;
             }
         } else if( p->common.code == S_END ) {
-            /* all done */
+            /*
+             * all done
+             */
             return( DS_OK );
         }
         p = VMBlock( iih, chk, sizeof( p->common ) );
@@ -641,7 +657,9 @@ static walk_result ScopeOneSymbol( imp_image_handle *iih, cv_directory_entry *cd
     case S_THUNK32:
     case S_BLOCK32:
     case S_WITH32:
-        /* not interested in these */
+        /*
+         * not interested in these
+         */
         break;
     case S_ENTRYTHIS:
         curr += sizeof( s_common );
@@ -649,9 +667,9 @@ static walk_result ScopeOneSymbol( imp_image_handle *iih, cv_directory_entry *cd
     default:
         if( ds == DS_OK && scope != NULL ) {
             /*
-                starting a new scope and not doing file scope
-                symbols -- skip scope start symbol
-            */
+             * starting a new scope and not doing file scope
+             * symbols -- skip scope start symbol
+             */
             break;
         }
         ish.imh = cde->iMod;
@@ -676,7 +694,9 @@ static walk_result ScopeWalkOne( imp_image_handle *iih, scope_info *scope,
     p = VMBlock( iih, curr, sizeof( p->common ) );
     if( p == NULL )
         return( WR_FAIL );
-    /* skip over first scope start symbol */
+    /*
+     * skip over first scope start symbol
+     */
     curr += p->common.length + sizeof( p->common.length );
     for( ;; ) {
         p = VMBlock( iih, curr, sizeof( p->common ) );
@@ -827,7 +847,9 @@ static search_result TableSearchForAddr( imp_image_handle *iih,
             if( offset_count == 0 )
                 continue;
             curr.base += base + num_segs * sizeof( unsigned_32 );
-            //NYI: offsets are sorted, so we can binary search this sucker
+            /*
+             * NYI: offsets are sorted, so we can binary search this sucker
+             */
             curr.off = 0;
             new_off = 0;
             for( count = 0; count < offset_count; ++count ) {
@@ -863,7 +885,9 @@ static search_result TableSearchForAddr( imp_image_handle *iih,
         *best_off = best.off;
         return( (best.off == a.mach.offset) ? SR_EXACT : SR_CLOSEST );
     default:
-        //NYI: what to do when don't have hash function? */
+        /*
+         * NYI: what to do when don't have hash function?
+         */
         return( SR_NONE );
     }
 }
@@ -962,12 +986,16 @@ static search_result TableSearchForName( imp_image_handle *iih,
             if( scompn( name, curr, curr_len ) != 0 ) {
                 continue;
             }
-            /* Got one! */
+            /*
+             * Got one!
+             */
             switch( create( iih, sp, ish, d ) ) {
             case SR_FAIL:
                 return( SR_FAIL );
             case SR_CLOSEST:
-                /* means we found one, but keep on going */
+                /*
+                 * means we found one, but keep on going
+                 */
                 sr = SR_EXACT;
                 break;
             case SR_EXACT:
@@ -976,7 +1004,9 @@ static search_result TableSearchForName( imp_image_handle *iih,
         }
         return( sr );
     default:
-        //NYI: What to do if don't have hash table
+        /*
+         * NYI: What to do if don't have hash table
+         */
         return( SR_NONE );
     }
 }
@@ -1053,7 +1083,9 @@ static walk_result TableWalkSym( imp_image_handle *iih, imp_sym_handle *ish,
         case S_ALIGN:
         case S_PROCREF:
         case S_DATAREF:
-            /* not interested */
+            /*
+             * not interested
+             */
             break;
         case S_PUB16:
         case S_PUB32:
@@ -1162,7 +1194,9 @@ static walk_result DoWalkSymList( imp_image_handle *iih,
         if( ds != DS_OK )
             return( WR_CONTINUE );
         if( sc_block->unique & SCOPE_CLASS_FLAG ) {
-            /* Walk the member function class scope */
+            /*
+             * Walk the member function class scope
+             */
             ds = TypeIndexFillIn( iih, SymTypeIdx( iih, p ), &ith );
             if( ds & DS_ERR )
                 return( WR_FAIL );
@@ -1244,7 +1278,9 @@ static size_t ImpSymName( imp_image_handle *iih, imp_sym_handle *ish, location_c
     }
     if( snt == SNT_DEMANGLED )
         return( 0 );
-    /* SNT_SOURCE: */
+    /*
+     * SNT_SOURCE:
+     */
     if( SymGetName( iih, ish, &name, &len, NULL ) != DS_OK )
         return( 0 );
     return( NameCopy( buff, name, buff_size, len ) );
@@ -1381,10 +1417,12 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
         si->prolog_size = p->lproc16.f.debug_start;
         si->epilog_size = p->lproc16.f.proc_length - p->lproc16.f.debug_end;
         si->rtn_size = p->lproc16.f.proc_length;
-        //NYI: fill in si->rtn_calloc
-        //NYI: fill in si->rtn_modifier
-        //NYI: fill in si->ret_size
-        //NYI: fill in si->num_parms
+        /*
+         * NYI: fill in si->rtn_calloc
+         * NYI: fill in si->rtn_modifier
+         * NYI: fill in si->ret_size
+         * NYI: fill in si->num_parms
+         */
         break;
     case S_GPROC32:
         si->is_global = 1;
@@ -1400,10 +1438,12 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
         si->prolog_size = p->lproc32.f.debug_start;
         si->epilog_size = p->lproc32.f.proc_length - p->lproc32.f.debug_end;
         si->rtn_size = p->lproc32.f.proc_length;
-        //NYI: fill in si->rtn_calloc
-        //NYI: fill in si->rtn_modifier
-        //NYI: fill in si->ret_size
-        //NYI: fill in si->num_parms
+        /*
+         * NYI: fill in si->rtn_calloc
+         * NYI: fill in si->rtn_modifier
+         * NYI: fill in si->ret_size
+         * NYI: fill in si->num_parms
+         */
         break;
     case S_LABEL16:
     case S_LABEL32:
@@ -1455,11 +1495,15 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     if( n > parm_count )
         return( DS_NO_PARM );
     if( n == 0 ) {
-        /* return value */
+        /*
+         * return value
+         */
         p = VMRecord( iih, ish->handle + ish->len );
         if( p == NULL )
             return( DS_ERR | DS_FAIL );
-        /* WARNING: assuming that S_RETURN directly follows func defn */
+        /*
+         * WARNING: assuming that S_RETURN directly follows func defn
+         */
         if( p->common.code == S_RETURN ) {
             switch( p->return_.f.style ) {
             case CVRET_VOID:
@@ -1471,13 +1515,17 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
             case CVRET_CALLOC_FAR:
             case CVRET_RALLOC_NEAR:
             case CVRET_RALLOC_FAR:
-                //NYI: have to handle these suckers
+                /*
+                 * NYI: have to handle these suckers
+                 */
                 NYI();
                 break;
             }
             return( DS_ERR | DS_BAD_LOCATION );
         }
-        /* find out about return type */
+        /*
+         * find out about return type
+         */
         ds = TypeIndexFillIn( iih, type, &ith );
         if( ds != DS_OK )
             return( ds );
@@ -1532,7 +1580,9 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
             return( DS_ERR | DS_FAIL );
         case TK_STRUCT:
         case TK_ARRAY:
-            //NYI: have to handle these suckers
+            /*
+             * NYI: have to handle these suckers
+             */
             NYI();
             break;
         }
@@ -1541,7 +1591,9 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     switch( call ) {
     case CV_NEARC:
     case CV_FARC:
-        /* all on stack */
+        /*
+         * all on stack
+         */
         return( DS_NO_PARM );
     case CV_NEARPASCAL:
     case CV_FARPASCAL:
@@ -1555,7 +1607,9 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     case CV_MIPS:
     case CV_AXP:
     case CV_GENERIC:
-        //NYI: have to handle all of these suckers
+        /*
+         * NYI: have to handle all of these suckers
+         */
         NYI();
         break;
     }
@@ -1626,7 +1680,9 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
             break;
         check = next;
     }
-    /* We have a 'this' pointer! Repeat, we have a this pointer! */
+    /*
+     * We have a 'this' pointer! Repeat, we have a this pointer!
+     */
     ds = ImpSymLocation( iih, &parm, lc, ll );
     if( ds != DS_OK )
         return( ds );
@@ -1711,7 +1767,9 @@ static walk_result SymFind( imp_image_handle *iih, sym_walk_info swi,
     if( scompn( li->name.start, name, len ) != 0 ) {
         return( WR_CONTINUE );
     }
-    /* Got one! */
+    /*
+     * Got one!
+     */
     new_ish = DCSymCreate( iih, sd->d );
     if( new_ish == NULL )
         return( WR_FAIL );
@@ -1750,7 +1808,9 @@ static search_result SymCreate( imp_image_handle *iih, s_all *p,
     if( new_ish == NULL )
         return( SR_FAIL );
     *new_ish = *ish;
-    /* keep on looking for more */
+    /*
+     * keep on looking for more
+     */
     return( SR_CLOSEST );
 }
 
@@ -1796,7 +1856,9 @@ static search_result    DoLookupSym( imp_image_handle *iih,
         break;
     case SS_SCOPED:
         if( ImpAddrMod( iih, *(address *)source, &ish.imh ) == SR_NONE ) {
-            /* just check the global symbols */
+            /*
+             * just check the global symbols
+             */
             break;
         }
         if( MH2IMH( data.li.mod ) != ish.imh && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
@@ -1953,7 +2015,9 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
         case S_LPROC16:
         case S_GPROC32:
         case S_LPROC32:
-            /* Might be a member function. We'll let WalkSym figure it out. */
+            /*
+             * Might be a member function. We'll let WalkSym figure it out.
+             */
             *out = *in;
             out->unique |= SCOPE_CLASS_FLAG;
             return( SR_CLOSEST );

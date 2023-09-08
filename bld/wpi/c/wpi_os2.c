@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,7 @@ static unsigned _wpi_getmenuitemidfrompos( HMENU hmenu, int pos )
     if( result != (MRESULT)MIT_ERROR ) {
         return( (unsigned)result );
     }
-    return( -1 );
+    return( (unsigned)-1 );
 }
 
 static BOOL _wpi_getmenuparentpos( HMENU hmenu, unsigned id, HMENU *parent, int *pos_parent )
@@ -828,7 +828,7 @@ BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
                       unsigned attr_flags, unsigned new_id,
                       HMENU popup, const char *text )
 {
-    return( _wpi_insertmenu( hmenu, -1, menu_flags, attr_flags, new_id, popup, text, TRUE ) );
+    return( _wpi_insertmenu( hmenu, (unsigned)-1, menu_flags, attr_flags, new_id, popup, text, TRUE ) );
 }
 
 BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state, BOOL by_position )

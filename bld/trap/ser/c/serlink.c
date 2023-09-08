@@ -850,9 +850,10 @@ done:
     return( NULL );
 }
 
-/* The format for *parm is "1.9600<modem_connect_string>" */
-
 const char *RemoteLink( const char *parms, bool server )
+/*******************************************************
+ * The format for *parm is "1.9600<modem_connect_string>"
+ */
 {
     const char  *result;
 

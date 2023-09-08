@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
 #include <wos2.h>
+#include "digld.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madsys.h"
@@ -59,32 +60,31 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
 
 mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    HMODULE             dip_mod;
+    mad_sys_handle      mod_hdl;
     mad_init_func       *init_func;
     mad_status          status;
-#ifndef _M_I86
-    char                madname[CCHMAXPATH];
-    char                madpath[CCHMAXPATH];
+    char                filename[CCHMAXPATH];
 
     *sys_hdl = NULL_SYSHDL;
-    /* To prevent conflicts with the 16-bit MAD DLLs, the 32-bit versions have the "D32"
+    /*
+     * To prevent conflicts with the 16-bit MAD DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy( madname, base_name );
-    strcat( madname, ".D32" );
-    _searchenv( madname, "PATH", madpath );
-    if( *madpath == '\0' )
-        return( MS_ERR | MS_FOPEN_FAILED );
-    base_name = madpath;
+#ifdef _M_I86
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".DLL", filename, sizeof( filename ) ) == 0 ) {
+#else
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
-    if( LOAD_MODULE( base_name, dip_mod ) ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
+    }
+    if( LOAD_MODULE( filename, mod_hdl ) ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;
-    if( GET_PROC_ADDRESS( dip_mod, "MADLOAD", init_func ) && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = dip_mod;
+    if( GET_PROC_ADDRESS( mod_hdl, "MADLOAD", init_func ) && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = mod_hdl;
         return( MS_OK );
     }
-    DosFreeModule( dip_mod );
+    MADSysUnload( &mod_hdl );
     return( status );
 }

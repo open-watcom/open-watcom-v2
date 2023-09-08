@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,41 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  function prototype for list IP interfaces in a machine.
 *
 ****************************************************************************/
 
+#ifndef __TCPIFI_H__
+#define __TCPIFI_H__
 
-typedef struct avl_node {
-    struct avl_node     *left;
-    struct avl_node     *right;
-    void                *key;
-    unsigned char       equal_subtrees : 1;
-    unsigned char       left_heavy : 1;
-} avl_node;
+#ifdef LIST_INTERFACES
+  #if defined( SERVER ) && ( defined( __DOS__ ) || defined( __OS2__ ) )
+    extern void list_interfaces( void );
+  #else
+    #define list_interfaces()
+  #endif
+#else
+    #define list_interfaces()
+#endif
 
-typedef struct symbol_table {
-    int                 (*cmp)( void *key1, void *key2 );
-    unsigned            height;
-    avl_node            head;
-} *symbol_table;
-
-symbol_table SymInit( int (*cmp)( void *key1, void *key2 ) );
-int SymAdd( symbol_table symtab, void *key );
-void *SymFind( symbol_table symtab, void *key );
-/*
-    SymFini destroys the symbol_table and all the avl_nodes in the tree.
-    If you want to free the key's then you must do it by SymWalking before
-    SymFini.
-*/
-void SymFini( symbol_table symtab );
-/*
-    For SymWalk: If process returns -1 then abort the walking.
-                 If process returns  0 then continue walking.
-    SymWalk returns -1 if walking aborted, 0 otherwise.
-    SymWalk does an in-order walk of the symbol table.
-*/
-int SymWalk( symbol_table symtab, void *parm,
-    int (*process)( void *key, void *parm ) );
-
+#endif

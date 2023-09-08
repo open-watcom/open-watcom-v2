@@ -624,9 +624,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ProcInfo.loaded_proc = FALSE;
     } else {
         args[0] = name;
-        if( FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name ) == 0 ) {
-            exe_name[0] = '\0';
-        }
+        FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name );
         save_pgrp = getpgrp();
         setpgid( 0, OrigPGrp );
 
@@ -1046,10 +1044,10 @@ trap_retval TRAP_CORE( Redirect_stdout )( void  )
 }
 
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     pid_t               pid;
-    int                 len;
+    size_t              len;
     const char          *name;
     char                *fullname;
     file_string_to_fullpath_req *acc;
@@ -1330,7 +1328,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version    ver;
     sigset_t        sig_set;
 
-    parms = parms; remote = remote;
+    /* unused parameters */ (void)parms; (void)remote;
 
     /* We use SIGUSR1 to gain control after blocking wait for a process. */
     sigemptyset( &sig_set );

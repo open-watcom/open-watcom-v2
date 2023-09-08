@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,3 +32,8 @@
 
 
 #define DEFAULT_LINK_NAME   "NovLink"
+#ifdef MAX_NAME_LEN
+#define LINK_NAME_MAX_LEN   MAX_NAME_LEN
+#else
+#define LINK_NAME_MAX_LEN   47
+#endif

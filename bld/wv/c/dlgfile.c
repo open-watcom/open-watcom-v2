@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +50,9 @@
 #include "dlgfile.h"
 #include "wndhelp.h"
 
+
+#define FN_READABLE     0
+#define FN_WRITEABLE    (FN_HIDEREADONLY | FN_ISSAVE | FN_OVERWRITEPROMPT)
 
 #if defined(__UNIX__)
   #define ALLFILES      "All Files\0*\0"
@@ -226,13 +229,10 @@ bool WndShutDownHook( void )
 }
 
 
-#define OFN_FLAGS( writing ) \
-    ( writing ? (FN_HIDEREADONLY|FN_ISSAVE|FN_OVERWRITEPROMPT) : 0 )
-
 bool ConfigSave( bool writing )
 {
     WritableConfig();
-    if( DoFileBrowse( &LastCfg, LIT_DUI( Configuration_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
+    if( DoFileBrowse( &LastCfg, LIT_DUI( Configuration_File_Name ), ConfigFilter, writing ? FN_WRITEABLE : FN_READABLE ) ) {
         if( writing ) {
             SaveConfigToFile( TxtBuff );
             SaveMainWindowPos();
@@ -247,7 +247,7 @@ bool ConfigSave( bool writing )
 
 bool BreakSave( bool writing )
 {
-    if( DoFileBrowse( &LastBrk, LIT_DUI( Breakpoint_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
+    if( DoFileBrowse( &LastBrk, LIT_DUI( Breakpoint_File_Name ), ConfigFilter, writing ? FN_WRITEABLE : FN_READABLE ) ) {
         if( writing ) {
             SaveBreaksToFile( TxtBuff );
         } else {
@@ -262,7 +262,7 @@ bool BreakSave( bool writing )
 bool ReplaySave( bool writing )
 {
     if( OkToSaveReplay() ) {
-        if( DoFileBrowse( &LastRep, LIT_DUI( Replay_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
+        if( DoFileBrowse( &LastRep, LIT_DUI( Replay_File_Name ), ConfigFilter, writing ? FN_WRITEABLE : FN_READABLE ) ) {
             if( writing ) {
                 SaveReplayToFile( TxtBuff );
             } else {
@@ -277,7 +277,7 @@ bool ReplaySave( bool writing )
 
 void FileBrowse( void )
 {
-    if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )) {
+    if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, FN_READABLE )) {
         WndFileInspect( TxtBuff, false );
     }
 }
@@ -285,19 +285,19 @@ void FileBrowse( void )
 
 bool ExeBrowse( void )
 {
-    return( DoFileBrowse( &LastExe, LIT_DUI( Program_Name ), ExeFilter, OFN_FLAGS( 0 ) ) );
+    return( DoFileBrowse( &LastExe, LIT_DUI( Program_Name ), ExeFilter, FN_READABLE ) );
 }
 
 
 bool SymBrowse( char **name )
 {
-    return( DoFileBrowse( name, LIT_DUI( Symbol_File ), SymFilter, OFN_FLAGS( 0 ) ) );
+    return( DoFileBrowse( name, LIT_DUI( Symbol_File ), SymFilter, FN_READABLE ) );
 }
 
 
 bool AllBrowse( char *name )
 {
-    return( DlgFileBrowse( LIT_DUI( Enter_File_Name ), AllFilter, name, TXT_LEN, OFN_FLAGS( 0 ) ) );
+    return( DlgFileBrowse( LIT_DUI( Enter_File_Name ), AllFilter, name, TXT_LEN, FN_READABLE ) );
 }
 
 
@@ -305,7 +305,7 @@ char *GetDmpName( void )
 {
     bool        rc;
 
-    rc = DoFileBrowse( &LastDmp, LIT_DUI( Enter_File_Name ), AllFilter, OFN_FLAGS( 1 ) );
+    rc = DoFileBrowse( &LastDmp, LIT_DUI( Enter_File_Name ), AllFilter, FN_WRITEABLE );
     if( !rc )
         return( NULL );
     return( LastDmp );

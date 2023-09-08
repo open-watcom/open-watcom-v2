@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,26 +33,28 @@
 #include "hllinfo.h"
 
 
-/* Arguments passed to GlueModWalk. */
+/************************************
+ * Arguments passed to GlueModWalk. *
+ ************************************/
 struct glue_mod_walk {
     DIP_IMP_MOD_WALKER  *wk;
     void                *d;
     imp_mod_handle      imh;
 };
 
-/*
+static walk_result GlueModWalk( imp_image_handle *iih, hll_dir_entry *hdd, void *d )
+/***********************************************************************************
  * Glue function for the module walk.
  */
-static walk_result GlueModWalk( imp_image_handle *iih, hll_dir_entry *hdd, void *d )
 {
     struct glue_mod_walk *md = d;
     return( md->wk( iih, hdd->iMod, md->d ) );
 }
 
-/*
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKER *wk, void *d )
+/***********************************************************************************************
  * Walk modules.
  */
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     struct glue_mod_walk    md;
     walk_result             wr;
@@ -65,30 +68,39 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKE
     return( wr );
 }
 
-//NYI: should be OS && location sensitive
+/*
+ * NYI: should be OS && location sensitive
+ */
 #define IS_PATH_CHAR( c )   ( (c) == '\\' || (c) == '/' || (c) == ':')
 #define EXT_CHAR            '.'
 
-/* The name of the fictive global module. */
+/*
+ * The name of the fictive global module.
+ */
 #define GBL_NAME            "__global"
 
 
-/*
- * Strips path and extension from the name and copies into the specified buffer.
- */
 static size_t StripAndCopyName( unsigned_8 *name, char *buff, size_t buff_size )
+/*******************************************************************************
+ * Strips path and extension from the name and copies into the specified buffer.
+ *
+ * FIXME there should be generic functions for stripping this stuff!
+ */
 {
     char        *start = (char *)&name[1];
     char        *end   = start + *name;
     char        *cur   = end - 1;
-    /* FIXME there should be generic functions for stripping this stuff! */
 
-    /* strip path */
-    for( cur = end - 1; cur >= start && !IS_PATH_CHAR( *cur ); cur-- )
-        /* nothing */;
+    /*
+     * strip path
+     */
+    for( cur = end - 1; cur >= start && !IS_PATH_CHAR( *cur ); cur-- ) {
+        /* do nothing */;
+    }
     start = cur + 1;
-
-    /* strip extension */
+    /*
+     * strip extension
+     */
     for( cur = end - 1; cur > start; cur-- ) {
         if( *cur == EXT_CHAR ) {
             end = cur;
@@ -98,15 +110,17 @@ static size_t StripAndCopyName( unsigned_8 *name, char *buff, size_t buff_size )
     return( hllNameCopy( buff, start, buff_size, end - start ) );
 }
 
-/*
- * Gets the module name.
- */
 size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh,
                                  char *buff, size_t buff_size )
+/************************************************************************
+ * Gets the module name.
+ */
 {
     hll_dir_entry *hdd;
 
-    /* the fictive global module. */
+    /*
+     * the fictive global module.
+     */
     if( imh == IMH_GBL ) {
         return( hllNameCopy( buff, GBL_NAME, buff_size, sizeof( GBL_NAME ) - 1 ) );
     }
@@ -131,10 +145,10 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh,
     return( 0 );
 }
 
-/*
+hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
+/**************************************************************************
  * Gets the compiler unit infomation record (unit = module, so for a module).
  */
-hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
 {
     hll_dir_entry *hdd = hllFindDirEntry( iih, imh, hll_sstSymbols );
     if( hdd != NULL ) {
@@ -152,10 +166,10 @@ hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
     return( NULL );
 }
 
-/*
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+/***************************************************************************
  * Gets the source language for a module.
  */
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
     hll_ssr_cuinfo *cuinfo = hllGetCompInfo( iih, imh );
     if( cuinfo != NULL ) {
@@ -175,11 +189,10 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
     return( "c" );
 }
 
-/*
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
+/*********************************************************************************************
  * Checks if the specified information is available for this module.
  */
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh,
-                                   handle_kind hk )
 {
     hll_dir_entry   *hdd;
 
@@ -208,16 +221,18 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh,
 }
 
 
-/* Arguments passed to FindModNB04. */
+/************************************
+ * Arguments passed to FindModNB04. *
+ ************************************/
 struct find_mod {
     address         *a;
     imp_mod_handle  imh;
 };
 
-/*
+static walk_result FindModNB04( imp_image_handle *iih, hll_dir_entry *hdd, void *d )
+/***********************************************************************************
  * ImpAddrMod worker called for each module subsection.
  */
-static walk_result FindModNB04( imp_image_handle *iih, hll_dir_entry *hdd, void *d )
 {
     struct find_mod     *args = d;
     address             *a = args->a;
@@ -252,10 +267,10 @@ static walk_result FindModNB04( imp_image_handle *iih, hll_dir_entry *hdd, void 
     return( WR_CONTINUE );
 }
 
-/*
+search_result hllAddrMod( imp_image_handle *iih, address a, imp_mod_handle *imh )
+/********************************************************************************
  * Finds the module which contains the address 'a'.
  */
-search_result hllAddrMod( imp_image_handle *iih, address a, imp_mod_handle *imh )
 {
     unsigned    seg;
 
@@ -266,7 +281,6 @@ search_result hllAddrMod( imp_image_handle *iih, address a, imp_mod_handle *imh 
         if( iih->segments[seg].ovl == a.sect_id
           && iih->segments[seg].map.segment == a.mach.segment
           && a.mach.offset - iih->segments[seg].map.offset < iih->segments[seg].size ) {
-
             /*
              * Find the address among the module sections.
              * If not found in any, we return the global handle since
@@ -286,18 +300,18 @@ search_result hllAddrMod( imp_image_handle *iih, address a, imp_mod_handle *imh 
     return( SR_NONE );
 }
 
-/*
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *imh )
+/********************************************************************************************
  * Finds the module which contains the address 'a'.
  */
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *imh )
 {
     return( hllAddrMod( iih, a, imh ) );
 }
 
-/*
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
+/**************************************************************************
  * Gets the module address.
  */
-address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
 {
     hll_dir_entry *hdd = hllFindDirEntry( iih, imh, hll_sstModule );
     if( hdd != NULL) {
@@ -345,24 +359,24 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
     return( NilAddr );
 }
 
-/*
- * Construct default dig_type_info for a module.
- */
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
                                       default_kind dk, dig_type_info *ti )
+/*******************************************************************************
+ * Construct default dig_type_info for a module.
+ *
+ * Get the module entry and figure if it's a 16-bit or 32-bit module.
+ *
+ * FIXME: We need to record the kind executable image, segment type and
+ *        whatever else which could give of heuristics to decide here.
+ */
 {
-    /*
-     * Get the module entry and figure if it's a 16-bit or 32-bit module.
-     *
-     * FIXME: We need to record the kind executable image, segment type and
-     *        whatever else which could give of heuristics to decide here.
-     */
     hll_dir_entry *hdd = hllFindDirEntry( iih, imh, hll_sstModule );
     if( hdd == NULL && imh != IMH_GBL ) {
         return( DS_FAIL );
     }
-    /* ASSUMES everything is 32-bit for now */
-
+    /*
+     * ASSUMES everything is 32-bit for now
+     */
     ti->kind = TK_POINTER;
     ti->size = sizeof( addr48_off );  /*FIXME: 16-bit: sizeof( addr32_off )*/
     ti->modifier = TM_NEAR;
@@ -371,29 +385,35 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
     case DK_INT:
         ti->kind = TK_INTEGER;
         ti->modifier = TM_SIGNED;
-        /* size is OK */
+        /*
+         * size is OK
+         */
         break;
     case DK_DATA_PTR:
-        /*if( comp_info->flags.f.AmbientData != AMBIENT_NEAR ) {
+#if 0
+        if( comp_info->flags.f.AmbientData != AMBIENT_NEAR ) {
             ti->modifier = TM_FAR;
             ti->size += sizeof( addr_seg );
-        } */
+        }
+#endif
         break;
     case DK_CODE_PTR:
-        /*if( comp_info->flags.f.AmbientCode != AMBIENT_NEAR ) {
+#if 0
+        if( comp_info->flags.f.AmbientCode != AMBIENT_NEAR ) {
             ti->modifier = TM_FAR;
             ti->size += sizeof( addr_seg );
-        }*/
+        }
+#endif
         break;
     }
     return( DS_OK );
 }
 
 
-/*
+hll_style hllGetModStyle( imp_image_handle *iih, imp_mod_handle imh )
+/********************************************************************
  * Gets the debug style of a module.
  */
-hll_style hllGetModStyle( imp_image_handle *iih, imp_mod_handle imh )
 {
     hll_dir_entry *hdd = hllFindDirEntry( iih, imh, hll_sstModule );
     if( hdd ) {

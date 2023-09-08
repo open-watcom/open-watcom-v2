@@ -6,12 +6,23 @@ was_autodepends = .AUTODEPEND
 
 was_trmem = 1
 
-subdir_stand = stand
-subdir_lib = lib
-
 additional_clean = *.c *.h *.re *.y
 
 !include cproj.mif
+!include defrule.mif
+defrule_key = stand
+subdir_stand = stand
+extra_cpp_stand_flags = -D_STANDALONE_
+!ifdef __WATCOM_TOOLS__
+extra_cpp_stand_flags += -fh=stand.pch
+!endif
+!include defrule.mif
+defrule_key = lib
+subdir_lib = lib
+extra_cpp_lib_flags = -DINCL_MSGTEXT
+!ifdef __WATCOM_TOOLS__
+extra_cpp_lib_flags += -fh=lib.pch
+!endif
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
@@ -243,18 +254,3 @@ optencod_targets += dbg
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
-
-# implicit rules
-#################
-
-extra_cpp_stand_flags = -D_STANDALONE_
-extra_cpp_lib_flags = -DINCL_MSGTEXT
-!ifdef __WATCOM_TOOLS__
-extra_cpp_stand_flags += -fh=stand.pch
-extra_cpp_lib_flags += -fh=lib.pch
-!endif
-
-defrule_key = stand
-!include defrule.mif
-defrule_key = lib
-!include defrule.mif

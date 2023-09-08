@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ const char *StrCopySrc( const char *src, char *dst )
     return( src );
 }
 
-int tryPath( const char *name, char *end, const char *ext_list )
+static bool tryPath( const char *name, char *end, const char *ext_list )
 {
     HANDLE  h;
 
@@ -61,71 +61,70 @@ int tryPath( const char *name, char *end, const char *ext_list )
         h = CreateFile( name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
         if( h != INVALID_HANDLE_VALUE ) {
             CloseHandle( h );
-            return( 0 );
+            return( true );
         }
     } while( *ext_list != '\0' );
-    return( -1 );
+    return( false );
 }
 
-unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffer )
+size_t FindFilePath( dig_filetype file_type, const char *pgm, char *buffer )
 {
     const char      *p;
     char            *p2;
-    BOOL            have_ext;
-    BOOL            have_path;
+    bool            has_ext;
+    bool            has_path;
     char            *envbuf;
     DWORD           envlen;
-    unsigned long   rc;
     const char      *ext_list;
 
-    have_ext = FALSE;
-    have_path = FALSE;
+    has_ext = false;
+    has_path = false;
     for( p = pgm, p2 = buffer; (*p2 = *p) != 0; ++p, ++p2 ) {
         switch( *p ) {
         case '\\':
         case '/':
         case ':':
-            have_path = TRUE;
-            have_ext = FALSE;
+            has_path = true;
+            has_ext = false;
             break;
         case '.':
-            have_ext = TRUE;
+            has_ext = true;
             break;
         }
     }
     ext_list = "\0";
-    if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
+    if( !has_ext && file_type == DIG_FILETYPE_EXE ) {
         ext_list = ".com\0.exe\0";
     }
-    if( !tryPath( buffer, p2, ext_list ) ) {
-        return( 0 );
+    if( tryPath( buffer, p2, ext_list ) )
+        return( strlen( buffer ) );
+    if( !has_path ) {
+        envlen = GetEnvironmentVariable( "PATH", NULL, 0 );
+        if( envlen != 0 ) {
+            envbuf = LocalAlloc( LMEM_FIXED, envlen );
+            if( envbuf != NULL ) {
+                GetEnvironmentVariable( "PATH", envbuf, envlen );
+                for( p = envbuf; *p != '\0'; ++p ) {
+                    p2 = buffer;
+                    while( *p != '\0' && *p != ';' ) {
+                        *p2++ = *p++;
+                    }
+                    if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
+                        *p2++ = '\\';
+                    }
+                    p2 = StrCopyDst( pgm, p2 );
+                    if( tryPath( buffer, p2, ext_list ) ) {
+                        LocalFree( envbuf );
+                        return( strlen( buffer ) );
+                    }
+                    if( *p == '\0' ) {
+                        break;
+                    }
+                }
+                LocalFree( envbuf );
+            }
+        }
     }
-    if( have_path ) {
-        return( ERROR_FILE_NOT_FOUND );
-    }
-    envlen = GetEnvironmentVariable( "PATH", NULL, 0 );
-    if( envlen == 0 )
-        return( GetLastError() );
-    envbuf = LocalAlloc( LMEM_FIXED, envlen );
-    GetEnvironmentVariable( "PATH", envbuf, envlen );
-    rc = ERROR_FILE_NOT_FOUND;
-    for( p = envbuf; *p != '\0'; ++p ) {
-        p2 = buffer;
-        while( *p != '\0' && *p != ';' ) {
-            *p2++ = *p++;
-        }
-        if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
-            *p2++ = '\\';
-        }
-        p2 = StrCopyDst( pgm, p2 );
-        if( !tryPath( buffer, p2, ext_list ) ) {
-            rc = 0;
-            break;
-        }
-        if( *p == '\0' ) {
-            break;
-        }
-    }
-    LocalFree( envbuf );
-    return( rc );
+    *buffer = '\0';
+    return( 0 );
 }

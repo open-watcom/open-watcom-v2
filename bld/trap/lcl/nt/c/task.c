@@ -44,6 +44,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version    trapver;
     HANDLE          dll;
 
+    /* unused parameters */ (void)remote;
+
 #if MADARCH & MADARCH_X64
     dll = LoadLibrary( "PSAPI.DLL" );
     if( dll != NULL ) {
@@ -102,8 +104,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     if( *parms == 'k' ) {
         BreakOnKernelMessage = true;
     }
-    remote = remote;
-
     err[0] = 0;
     trapver.major = TRAP_MAJOR_VERSION;
     trapver.minor = TRAP_MINOR_VERSION;

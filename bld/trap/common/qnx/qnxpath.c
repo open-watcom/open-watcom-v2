@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <sys/stat.h>
 #include "digtypes.h"
 #include "qnxpath.h"
+#include "servio.h"
 
 
 char *StrCopyDst( const char *src, char *dst )
@@ -47,43 +48,51 @@ char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
-size_t TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
+static size_t tryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
-    char        *end;
     char        *ptr;
 
-    if( path == NULL )
-        return( 0 );
-    ptr = result;
-    for( ;; ) {
-        switch( *path ) {
-        case ':':
-        case '\0':
-            if( ptr != result && ptr[-1] != '/' )
-                *ptr++ = '/';
-            end = StrCopyDst( name, ptr );
-            //NYI: really should check permission bits
-            if( stat( result, tmp ) == 0 )
-                return( end - result );
-            if( *path == '\0' )
-                return( 0 );
-            ptr = result;
-            break;
-        case ' ':
-        case '\t':
-            break;
-        default:
-            *ptr++ = *path;
-            break;
+    if( path != NULL && *path != '\0' ) {
+        ptr = result;
+        for( ; *path != '\0'; path++ ) {
+            switch( *path ) {
+            case ':':
+                if( path[1] == ':' )
+                    continue;
+                if( ptr == result )
+                    continue;
+                if( ptr[-1] != '/' )
+                    *ptr++ = '/';
+                ptr = StrCopyDst( name, ptr );
+                if( stat( result, tmp ) == 0 )
+                    return( ptr - result );
+                ptr = result;
+                break;
+            case ' ':
+            case '\t':
+                break;
+            default:
+                *ptr++ = *path;
+                break;
+            }
         }
-        ++path;
+        if( ptr != result ) {
+            if( ptr[-1] != '/' )
+                *ptr++ = '/';
+            ptr = StrCopyDst( name, ptr );
+            if( stat( result, tmp ) == 0 ) {
+                return( ptr - result );
+            }
+        }
     }
+    *result = '\0';
+    return( 0 );
 }
 
-unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
+size_t FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
-    unsigned    len;
+    size_t      len;
 #if defined( SERVER )
     char        *end;
     char        cmd[256];
@@ -92,13 +101,18 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
     if( stat( name, &tmp ) == 0 ) {
         return( StrCopyDst( name, result ) - result );
     }
+#ifdef BLDVER
+    len = tryOnePath( getenv( "WD_PATH" QSTR( BLDVER ) ), &tmp, name, result );
+    if( len != 0 )
+        return( len );
+#endif
     if( file_type == DIG_FILETYPE_EXE ) {
-        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
+        return( tryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
-        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
+        len = tryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
         if( len != 0 )
             return( len );
-        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
+        len = tryOnePath( getenv( "HOME" ), &tmp, name, result );
         if( len != 0 )
             return( len );
 #if defined( SERVER )
@@ -111,7 +125,7 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
                     /* look in the wd sibling directory of where the command
                        came from */
                     StrCopyDst( "wd", end + 1 );
-                    len = TryOnePath( cmd, &tmp, name, result );
+                    len = tryOnePath( cmd, &tmp, name, result );
                     if( len != 0 ) {
                         return( len );
                     }
@@ -119,6 +133,6 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
             }
         }
 #endif
-        return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
+        return( tryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
     }
 }

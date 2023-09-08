@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ trap_elen           MaxPacketLen;
 
 static void TrapFailed( void )
 {
-    KillTrap();
+    UnLoadTrap();
     StartupErr( LIT_ENG( ERR_REMOTE_LINK_BROKEN ) );
 }
 
@@ -148,7 +148,7 @@ void InitTrap( const char *parms )
     TrapAccess( 1, in, 2, out );
     MaxPacketLen = ret.max_msg_size;
     if( buff[0] != NULLCHAR ) {
-        KillTrap();
+        UnLoadTrap();
         InitTrapError = true;
         StartupErr( buff );
     }
@@ -218,7 +218,7 @@ void FiniTrap( void )
     acc.req = REQ_DISCONNECT;
     TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
     RestoreHandlers();
-    KillTrap();
+    UnLoadTrap();
     GrabHandlers();
 #if !defined( BUILD_RFX )
     FiniSuppServices();

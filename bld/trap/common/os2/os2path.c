@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #define INCL_DOSMISC
 #include <os2.h>
 #include "digtypes.h"
@@ -53,9 +54,8 @@ const char *StrCopySrc( const char *src, char *dst )
     return( src );
 }
 
-long TryPath( const char *name, char *end, const char *ext_list )
+static bool tryPath( const char *name, char *end, const char *ext_list )
 {
-    long        rc;
     static struct {
         FILEFINDBUF d;
         char        name[256];
@@ -66,62 +66,61 @@ long TryPath( const char *name, char *end, const char *ext_list )
     do {
         ext_list = StrCopySrc( ext_list, end ) + 1;
         count = 1;
-        rc = DosFindFirst( (PSZ)name, &hdl, 0, &info.d, sizeof( info ), &count, 0 );
-        if( rc == 0 ) {
-            return( 0 );
+        if( DosFindFirst( (PSZ)name, &hdl, 0, &info.d, sizeof( info ), &count, 0 ) == 0 ) {
+            return( true );
         }
     } while( *ext_list != '\0' );
-    return( 0xffff0000 | rc );
+    return( false );
 }
 
-unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffer )
+size_t FindFilePath( dig_filetype file_type, const char *pgm, char *buffer )
 {
     const char      *p;
     char            *p2;
-    unsigned long   rc;
-    int             have_ext;
-    int             have_path;
+    bool            has_ext;
+    bool            has_path;
     const char      *ext_list;
 
-    have_ext = 0;
-    have_path = 0;
+    has_ext = false;
+    has_path = false;
     for( p = pgm, p2 = buffer; (*p2 = *p) != '\0'; ++p, ++p2 ) {
         switch( *p ) {
         case '\\':
         case '/':
         case ':':
-            have_path = 1;
-            have_ext = 0;
+            has_path = true;
+            has_ext = false;
             break;
         case '.':
-            have_ext = 1;
+            has_ext = true;
             break;
         }
     }
     ext_list = "\0";
-    if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
+    if( !has_ext && file_type == DIG_FILETYPE_EXE ) {
         ext_list = ".exe\0";
     }
-    rc = TryPath( buffer, p2, ext_list );
-    if( rc == 0 || have_path )
-        return( rc );
-    if( DosScanEnv( "PATH", (PSZ FAR *)&p ) != 0 )
-        return( rc );
-    for( ; *p != '\0'; p++ ) {
-        p2 = buffer;
-        while( *p != '\0' && *p != ';' ) {
-            *p2++ = *p++;
-        }
-        if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
-            *p2++ = '\\';
-        }
-        p2 = StrCopyDst( pgm, p2 );
-        rc = TryPath( buffer, p2, ext_list );
-        if( rc == 0 )
-            break;
-        if( *p == '\0' ) {
-            break;
+    if( tryPath( buffer, p2, ext_list ) )
+        return( strlen( buffer ) );
+    if( !has_path ) {
+        if( DosScanEnv( "PATH", (PSZ FAR *)&p ) == 0 ) {
+            for( ; *p != '\0'; p++ ) {
+                p2 = buffer;
+                while( *p != '\0' && *p != ';' ) {
+                    *p2++ = *p++;
+                }
+                if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
+                    *p2++ = '\\';
+                }
+                p2 = StrCopyDst( pgm, p2 );
+                if( tryPath( buffer, p2, ext_list ) )
+                    return( strlen( buffer ) );
+                if( *p == '\0' ) {
+                    break;
+                }
+            }
         }
     }
-    return( rc );
+    *buffer = '\0';
+    return( 0 );
 }

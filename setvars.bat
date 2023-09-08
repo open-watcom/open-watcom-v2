@@ -13,7 +13,7 @@ REM
 REM If space character is used in the path then you must double quote
 REM this path.
 REM
-REM set OWROOT="c:\ow\o w"
+REM set "OWROOT=c:\ow\o w"
 REM
 
 set OWROOT=c:\ow\ow

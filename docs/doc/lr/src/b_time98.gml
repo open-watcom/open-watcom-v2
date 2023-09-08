@@ -1,7 +1,7 @@
 .func _bios_timeofday for NEC PC98
 .synop begin
 #include <bios.h>
-unsigned _bios_timeofday( unsigned service,
+unsigned short _bios_timeofday( unsigned service,
                           char *timeval );
 .ixfunc2 '&BiosFunc' &funcb
 .synop end

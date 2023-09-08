@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -390,23 +390,23 @@ IOPM *IOPM_saved = 0;
 // the newly copied map is actually used.  Otherwise, the IOPM offset
 // points beyond the end of the TSS segment limit, causing any I/O
 // access by the user mode process to generate an exception.
-void PORTSTDCALL Ke386SetIoAccessMap(int, IOPM *);
-void PORTSTDCALL Ke386QueryIoAccessMap(int, IOPM *);
-void PORTSTDCALL Ke386IoSetAccessProcess(PEPROCESS, int);
+void PORTSTDCALL Ke386SetIoAccessMap( int, IOPM * );
+void PORTSTDCALL Ke386QueryIoAccessMap( int, IOPM * );
+void PORTSTDCALL Ke386IoSetAccessProcess( PEPROCESS, int );
 
-void NTAPI ZwYieldExecution(void);
+void NTAPI ZwYieldExecution( void );
 
-static void NothingToDo(void)
+static void NothingToDo( void )
 {
     ZwYieldExecution();
 }
 
-static unsigned long Ticks(void)
+static unsigned long Ticks( void )
 {
     _int64 ticks;
 
-    KeQueryTickCount((PLARGE_INTEGER)&ticks);
-    return (unsigned long)(ticks / 10);
+    KeQueryTickCount( (PLARGE_INTEGER)&ticks );
+    return( (unsigned long)( ticks / 10 ) );
 }
 
 /*

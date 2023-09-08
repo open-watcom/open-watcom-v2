@@ -409,7 +409,27 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
     /* unused parameters */ (void)parm; (void)func;
 
     switch( type ) {
-#if _CPU == _AXP
+#if _INTEL_CPU
+  #if _CPU == 8086
+    case TY_INT_1:
+    case TY_UINT_1:
+        type = TY_INTEGER;
+        break;
+  #else
+    case TY_UINT_2:
+    case TY_INT_2:
+    case TY_INT_1:
+    case TY_UINT_1:
+        if( func != NULL ) {
+            type_flag fn_flags;
+            TypeModFlags( ((SYMBOL)func)->sym_type, &fn_flags );
+            if( fn_flags & TF1_FAR16 ) {
+                return( TY_INT_2 );
+            }
+        }
+        type = TY_INTEGER;
+        break;
+#elif _CPU == _AXP
     case TY_INT_1:
     case TY_INT_2:
     case TY_INT_4:
@@ -424,21 +444,10 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
     case TY_UINT_4:
         return( TY_UINT_8 );
 #else
-  #if _CPU != 8086
     case TY_UINT_2:
     case TY_INT_2:
-  #endif
     case TY_INT_1:
     case TY_UINT_1:
-  #if _CPU != 8086
-        if( func != NULL ) {
-            type_flag fn_flags;
-            TypeModFlags( ((SYMBOL)func)->sym_type, &fn_flags );
-            if( fn_flags & TF1_FAR16 ) {
-                return( TY_INT_2 );
-            }
-        }
-  #endif
         type = TY_INTEGER;
         break;
 #endif

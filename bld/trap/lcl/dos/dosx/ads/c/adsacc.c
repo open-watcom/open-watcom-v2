@@ -596,7 +596,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
 void DumpRegs( trap_cpu_regs *regs )
 {
-    (void)regs;
+    /* unused parameters */ (void)regs;
 
     _DBG0(("EAX=%8.8x EBX=%8.8x ECX=%8.8x EDX=%8.8x",
     regs->EAX, regs->EBX, regs->ECX, regs->EDX ));
@@ -1028,7 +1028,3 @@ void GotInt3( void )
     _DBG0(( "Got Int 3!!!" ));
 }
 #endif
-
-extern void StackCheck( void );
-#pragma aux StackCheck "__STK";
-void StackCheck( void ) {}

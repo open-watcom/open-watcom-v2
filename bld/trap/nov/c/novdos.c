@@ -198,7 +198,7 @@ static void IpxWait( void )
     //        how clears out a condition in IPX where IPXRelinquishControl
     //        won't return.
     //*******************************************************************
-    extern void clock(void);
+    extern void clock( void );
     #pragma aux clock = \
             "mov  ah,2ch"   \
             "int 21h"       \
@@ -529,12 +529,46 @@ putstring( "got one\r\n" );
     return( 1 );
 }
 
-const char *RemoteLink( const char *parms, bool server )
+#ifdef SERVER
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    /* unused parameters */ (void)len;
+
+    strcpy( parms, SAPHead.name );
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
 {
     unsigned    i;
+
+    if( *parms == '\0' )
+        parms = DEFAULT_LINK_NAME;
+    for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
+        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
+            SAPHead.name[i++] = toupper( *parms );
+        }
+    }
+    SAPHead.name[i] = '\0';
+    return( NULL );
+}
+
+const char *RemoteLink( const char *parms, bool server )
+{
     BYTE        major_ver,minor_ver;
     WORD        max_conn,avail_conn;
 
+    /* unused parameters */ (void)server;
+
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
+        }
+    }
 #ifdef __WINDOWS__
     {
         HINSTANCE       ipxspx;
@@ -581,15 +615,6 @@ const char *RemoteLink( const char *parms, bool server )
         }
     }
 #endif
-    server = server;
-    if( *parms == '\0' )
-        parms = DEFAULT_LINK_NAME;
-    for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
-        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            SAPHead.name[i++] = toupper( *parms );
-        }
-    }
-    SAPHead.name[i] = '\0';
     if( !_SPXInitialize( 20, 576, &major_ver, &minor_ver, &max_conn, &avail_conn ) ) {
         return( TRP_ERR_SPX_not_present );
     }

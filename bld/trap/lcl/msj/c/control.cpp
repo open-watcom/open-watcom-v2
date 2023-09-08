@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -348,8 +348,8 @@ void AddCueInfo( int idx )
     }
 }
 
-unsigned GetLibName( unsigned handle, char *name, size_t max_len )
-/****************************************************************/
+unsigned GetLibName( unsigned handle, char *name, size_t name_maxlen )
+/********************************************************************/
 {
     int         i;
 
@@ -359,8 +359,8 @@ unsigned GetLibName( unsigned handle, char *name, size_t max_len )
             ImageMap[i].newly_unloaded = FALSE;
             return( i + 1 );
         } else if( ImageMap[i].newly_loaded ) {
-            strncpy( name, ImageMap[i].className, max_len );
-            name[max_len] = '\0';
+            strncpy( name, ImageMap[i].className, name_maxlen );
+            name[name_maxlen] = '\0';
             ImageMap[i].newly_loaded = FALSE;
             LastNameGiven = i;
             return( i + 1 );

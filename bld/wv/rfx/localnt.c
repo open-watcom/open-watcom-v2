@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,7 +133,7 @@ error_handle LocalSetDrv( int drv )
     dir[0] = drv + 'A';
     dir[1] = '\\';
     dir[2] = '.';
-    dir[3] = '\0';
+    dir[3] = NULLCHAR;
 
     if( SetCurrentDirectory( dir ) ) {
         rc = GetCurrentDirectory( sizeof( dir ), dir );
@@ -247,10 +247,10 @@ static void makeDTARFX( rfx_find *info, LPWIN32_FIND_DATA ffd )
     info->size = ffd->nFileSizeLow;
 #if RFX_NAME_MAX < MAX_PATH
     strncpy( info->name, ffd->cFileName, RFX_NAME_MAX );
-    info->name[RFX_NAME_MAX] = '\0';
+    info->name[RFX_NAME_MAX] = NULLCHAR;
 #else
     strncpy( info->name, ffd->cFileName, MAX_PATH - 1 );
-    info->name[MAX_PATH - 1] = '\0';
+    info->name[MAX_PATH - 1] = NULLCHAR;
 #endif
 }
 

@@ -32,6 +32,7 @@
 
 #include "miniproc.h"
 #include "debugme.h"
+#include "brkptcpu.h"
 #include <string.h>
 #undef POP_UP_SCREEN
 #define ConsolePrintf _
@@ -46,7 +47,7 @@
 
 
 extern int main( int arg, char **argv ); // defined by user
-extern void TrapFini(void);
+extern void TrapFini( void );
 
 struct LoadDefinitionStruct         *MyNLMHandle;
 struct ScreenStruct                 *screenID;
@@ -125,7 +126,7 @@ int _bgetcmd( char *buff, int len )
         if( len > cmd_len )
             len = cmd_len;
         for( i = 0; i < len; i++ ) {
-             buff[i] = Command[i];
+            buff[i] = Command[i];
         }
         buff[len] = '\0';
     }
@@ -592,5 +593,20 @@ void WriteStdErr( char *str, int len )
     while( --len >= 0 ) {
         OutputToScreen( systemConsoleScreen, "%c", *str );
         ++str;
+    }
+}
+
+extern void __STK( int size );
+extern void __CHK( int size );
+#pragma off (check_stack);
+void __declspec(naked) __CHK( int size )
+{
+    /* unused parameters */ (void)size;
+    __asm {
+        push eax
+        mov eax,8[esp]
+        call __STK
+        pop eax
+        ret 4
     }
 }

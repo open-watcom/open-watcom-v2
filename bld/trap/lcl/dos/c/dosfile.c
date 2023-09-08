@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
 #include "tinyio.h"
 #include "dosver.h"
 #include "trpimp.h"
@@ -189,25 +190,20 @@ trap_retval TRAP_FILE( erase )( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     char                        *name;
     char                        *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
-    tiny_ret_t                  rc;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
-    rc = FindFilePath( acc->file_type, name, fullname );
-    if( TINY_ERROR( rc ) ) {
-        ret->err = TINY_INFO( rc );
-        *fullname = '\0';
-        return( sizeof( *ret ) + 1 );
-    }
+    if( FindFilePath( acc->file_type, name, fullname ) == 0 )
+        ret->err = ENOENT;
     return( sizeof( *ret ) + 1 + strlen( fullname ) );
 }
 

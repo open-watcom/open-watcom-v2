@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,9 @@
 
 #include "hllinfo.h"
 
-/* FIXME: kick out these! They are all WRONG! */
+/*
+ * FIXME: kick out these! They are all WRONG!
+ */
 #include "cv4w.h"
 
 enum {

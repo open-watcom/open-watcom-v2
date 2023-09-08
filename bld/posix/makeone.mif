@@ -12,13 +12,11 @@ proj_name = posix
 
 posix_autodepends = .AUTODEPEND
 
-!include ../model.mif
+!include ../common.mif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
-!include ../common.mif
 
 !include tools.mif
 

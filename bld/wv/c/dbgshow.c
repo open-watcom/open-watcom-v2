@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,7 +151,7 @@ void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), b
     *ptr++ = ' ';
     if( ScanEOC() ) {
         /* show configuration on everything */
-        while( name_tab[0] != '\0' ) {
+        while( name_tab[0] != NULLCHAR ) {
             p = ptr;
             for( ;; ) {
                 *p = tolower( *name_tab++ );

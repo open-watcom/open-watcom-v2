@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,8 +93,9 @@ static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool byteswap )
 
 
 static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *bases, bool *byteswap )
-/***************************************************************************************************/
-// Fill in the starting offset & length of the dwarf sections
+/****************************************************************************************************
+ * Fill in the starting offset & length of the dwarf sections
+ */
 {
     TISTrailer          dbg_head;
     Elf32_Ehdr          elf_head;
@@ -114,7 +115,9 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
             return( DS_FAIL );
         }
         if( dbg_head.signature != TIS_TRAILER_SIGNATURE ) {
-            /* Seek to start of file and hope it's in ELF format */
+            /*
+             * Seek to start of file and hope it's in ELF format
+             */
             start = 0;
             DCSeek( fp, 0, DIG_SEEK_ORG );
             break;
@@ -189,7 +192,9 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
     if( sizes[DR_DEBUG_INFO] == 0
       || sizes[DR_DEBUG_ABBREV] == 0
       || sizes[DR_DEBUG_ARANGES] == 0 ) {
-        /* NOTE: aranges shouldn't be required to work, but currently is. */
+        /*
+         * NOTE: aranges shouldn't be required to work, but currently is.
+         */
         return( DS_FAIL );
     }
     return( DS_OK );
@@ -245,7 +250,9 @@ static void DWRErr( dr_except code )
 /**********************************/
 {
 #if !defined( NDEBUG ) && defined( __WATCOMC__ ) && defined( __386__ )
-    // for easier debugging
+    /*
+     * for easier debugging
+     */
     __asm int 3;
 #endif
     switch( code ) {
@@ -314,11 +321,14 @@ static void FiniDwarf( imp_image_handle *iih )
     }
 }
 
-/* Loading/unloading symbolic information. */
+/*
+ * Loading/unloading symbolic information.
+ */
 
 static bool APubName( void *_iih, dr_pubname_data *curr )
-/*******************************************************/
-// Add name from pubdefs to global name hash
+/********************************************************
+ * Add name from pubdefs to global name hash
+ */
 {
     imp_image_handle    *iih = _iih;
 
@@ -331,8 +341,9 @@ static bool APubName( void *_iih, dr_pubname_data *curr )
 
 
 static bool AModHash( drmem_hdl sym, void *_iih, dr_search_context *cont )
-/************************************************************************/
-// Add any global symbol to the hash
+/*************************************************************************
+ * Add any global symbol to the hash
+ */
 {
     imp_image_handle    *iih = _iih;
 //    unsigned            len;
@@ -350,8 +361,9 @@ static bool AModHash( drmem_hdl sym, void *_iih, dr_search_context *cont )
 
 
 static walk_result ModGlbSymHash( imp_image_handle *iih, imp_mod_handle imh, void *d )
-/************************************************************************************/
-// Add module's global syms to the name hash
+/*************************************************************************************
+ * Add module's global syms to the name hash
+ */
 {
     /* unused parameters */ (void)d;
 
@@ -361,8 +373,9 @@ static walk_result ModGlbSymHash( imp_image_handle *iih, imp_mod_handle imh, voi
 
 
 static void LoadGlbHash( imp_image_handle *iih )
-/**********************************************/
-// Load a name hash of all the gobal symbols
+/***********************************************
+ * Load a name hash of all the gobal symbols
+ */
 {
     DRSetDebug( iih->dwarf->handle );    /* must do at each interface */
     if( iih->has_pubnames ) {
@@ -449,8 +462,9 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
 
 
 void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
-/***********************************************************/
-// Read in address ranges and build map
+/************************************************************
+ * Read in address ranges and build map
+ */
 {
     a_walk_info     info;
 

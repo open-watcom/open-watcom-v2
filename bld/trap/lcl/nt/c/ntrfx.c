@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,8 +245,8 @@ trap_retval TRAP_RFX( getdatetime )( void )
     return( sizeof( *ret ) );
 }
 
-static void nt_getdcwd( int drive, char *buff, size_t max_len )
-/**************************************************************
+static void nt_getdcwd( int drive, char *buff, size_t buff_maxlen )
+/******************************************************************
  * entry 0=current drive,1=A,2=B,...
  */
 {
@@ -256,14 +256,14 @@ static void nt_getdcwd( int drive, char *buff, size_t max_len )
     *buff = '\0';
     if( GetError( GetCurrentDirectory( sizeof( tmp ), tmp ) ) == 0 ) {
         if( drive == 0 ) {
-            strncpy( buff, tmp, max_len );
-            buff[max_len] = '\0';
+            strncpy( buff, tmp, buff_maxlen );
+            buff[buff_maxlen] = '\0';
         } else {
             old_drive = CHARLOW( tmp[0] ) - 'a';
             if( nt_set_drive( drive ) == 0 ) {
                 if( GetError( GetCurrentDirectory( sizeof( tmp ), tmp ) ) == 0 ) {
-                    strncpy( buff, tmp, max_len );
-                    buff[max_len] = '\0';
+                    strncpy( buff, tmp, buff_maxlen );
+                    buff[buff_maxlen] = '\0';
                 }
                 nt_set_drive( old_drive );
             }
@@ -279,13 +279,13 @@ trap_retval TRAP_RFX( getcwd )( void )
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;
     char                *buff;
-    size_t              max_len;
+    size_t              cwd_maxlen;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
-    nt_getdcwd( acc->drive, buff, max_len );
+    cwd_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    nt_getdcwd( acc->drive, buff, cwd_maxlen );
     return( sizeof( *ret ) + strlen( buff ) + 1 );
 }
 
@@ -392,7 +392,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     char                        tmp[MAX_PATH];
     int                         level = 0;
     int                         drive;
-    size_t                      max_len;
+    size_t                      fullname_maxlen;
 
     /*
      * Not tested, and not used right now
@@ -400,7 +400,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    fullname_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     ret->err = 0;
     while( *name == ' ' ) {
         name++;
@@ -416,8 +416,8 @@ trap_retval TRAP_RFX( nametocanonical )( void )
         p = tmp;
         if( p[0] != '\0' && p[1] == ':' )
             p += 2;
-        strncpy( fullname, p, max_len );
-        fullname[max_len] = '\0';
+        strncpy( fullname, p, fullname_maxlen );
+        fullname[fullname_maxlen] = '\0';
         if( *fullname != '\0' ) {
             level++;
             while( *fullname != '\0' ) {

@@ -562,7 +562,7 @@ void Paint( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton )
     WPI_POINT           s_pt;
     WPI_POINT           e_pt;
     WPI_PARAM2          lparam;
-    WPI_LINEDDAPROC     fp;
+    WPI_LINEDDAPROC     lineddaproc;
 
     s_pt.x = MAKELOGPTX( start_pt->x );
     s_pt.y = MAKELOGPTY( start_pt->y );
@@ -579,9 +579,9 @@ void Paint( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton )
 
     currentMouseButton = mousebutton;
     SET_HWND_PARAM2( lparam, hwnd );
-    fp = _wpi_makelineddaprocinstance( DrawPt, Instance );
-    _wpi_linedda( s_pt.x, s_pt.y, e_pt.x, e_pt.y, (WPI_LINEDDAPROC)fp, lparam );
-    _wpi_freeprocinstance( fp );
+    lineddaproc = _wpi_makelineddaprocinstance( DrawPt, Instance );
+    _wpi_linedda( s_pt.x, s_pt.y, e_pt.x, e_pt.y, lineddaproc, lparam );
+    _wpi_freeprocinstance( lineddaproc );
 
     DrawSinglePoint( hwnd, end_pt, mousebutton );
     memcpy( start_pt, end_pt, sizeof( WPI_POINT ) );
@@ -1004,7 +1004,7 @@ void CreateDrawnImage( img_node *node )
  */
 void CheckGridItem( HMENU hmenu )
 {
-    WPI_ENUMPROC        enumproc;
+    WPI_ENUMPROC        wndenumproc;
     HCURSOR             prevcursor;
 
     prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
@@ -1022,9 +1022,9 @@ void CheckGridItem( HMENU hmenu )
     PressGridButton();
 
     if( DoImagesExist() ) {
-        enumproc = _wpi_makeenumprocinstance( GridEnumProc, Instance );
-        _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
-        _wpi_freeenumprocinstance( enumproc );
+        wndenumproc = _wpi_makeenumprocinstance( GridEnumProc, Instance );
+        _wpi_enumchildwindows( ClientWindow, wndenumproc, 0L );
+        _wpi_freeenumprocinstance( wndenumproc );
     }
     _wpi_setcursor( prevcursor );
 

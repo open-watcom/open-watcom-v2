@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,9 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
                 iih->object_class = super;
             }
         }
-        /* Don't bother walking java.lang.Object fields - nothing interesting */
+        /*
+         * Don't bother walking java.lang.Object fields - nothing interesting
+         */
         if( super != iih->object_class ) {
             wr = wk( iih, SWI_INHERIT_START, ish, d );
             if( wr == WR_CONTINUE ) {
@@ -73,7 +75,9 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
             }
         }
     }
-    /* walk the fields */
+    /*
+     * walk the fields
+     */
     block = GetPointer( clazz + offsetof( ClassClass, fields ) );
     num = GetU16( clazz + offsetof( ClassClass, fields_count ) );
     ish->kind = JS_FIELD;
@@ -90,14 +94,18 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
             return( wr );
         }
     }
-    /* walk the methods */
+    /*
+     * walk the methods
+     */
     block = GetPointer( clazz + offsetof( ClassClass, methods ) );
     num = GetU16( clazz + offsetof( ClassClass, methods_count ) );
     ish->kind = JS_METHOD;
     for( i = 0; i < num; ++i ) {
         acc = GetU16( block + offsetof( struct methodblock, fb.access ) );
         if( !(acc & ACC_NATIVE) ) {
-            /* Don't bother telling debugger about native methods */
+            /*
+             * Don't bother telling debugger about native methods
+             */
             ish->u.mb = block;
             wr = wk( iih, SWI_SYMBOL, ish, d );
             if( wr != WR_CONTINUE ) {
@@ -212,7 +220,9 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
         }
         return( wr );
     case SS_MODULE:
-       /* no module scope symbols in Java */
+       /*
+        * no module scope symbols in Java
+        */
        break;
     case SS_SCOPED:
         a = source;
@@ -451,8 +461,9 @@ dip_status FollowObject( ji_ptr sig, location_list *ll, ji_ptr *handle )
     unsigned                    len;
     Classjava_lang_String       str;
 
-    /* follow the object pointer(s) */
-
+    /*
+     * follow the object pointer(s)
+     */
     if( sig == 0 )
         return( DS_OK );
     len = GetString( sig, NameBuff, sizeof( NameBuff ) );
@@ -474,7 +485,9 @@ dip_status FollowObject( ji_ptr sig, location_list *ll, ji_ptr *handle )
     }
     if( NameBuff[0] == SIGNATURE_CLASS
      && memcmp( &NameBuff[1], JAVA_STRING_NAME, sizeof( JAVA_STRING_NAME ) - 1 ) == 0 ) {
-        /* Got a string, get pointer to actual character storage */
+        /*
+         * Got a string, get pointer to actual character storage
+         */
         *handle = ll->e[0].u.addr.mach.offset;
         ds = GetData( ll->e[0].u.addr.mach.offset, &str, sizeof( str ) );
         if( ds != DS_OK )
@@ -676,7 +689,9 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih, imp_sym_handle 
     cp = GetPointer( (ji_ptr)method.fb.clazz + offsetof( ClassClass, constantpool ) );
     this_ish.kind = JS_LOCAL;
     this_ish.u.lv = (ji_ptr)method.localvar_table;
-    /* guessing "this" pointer is near start of local var list */
+    /*
+     * guessing "this" pointer is near start of local var list
+     */
     for( i = 0; i < method.localvar_table_length; ++i ) {
         cp_idx = GetU16( this_ish.u.lv + offsetof( struct localvar, nameoff ) );
         name = GetPointer( cp + cp_idx * sizeof( union cp_item_type ) );
@@ -790,7 +805,9 @@ static search_result CheckScopeName( struct lookup_data *ld )
     }
     if( have_multi )
         return( SR_NONE );
-    /* Try the last element of the package name */
+    /*
+     * Try the last element of the package name
+     */
     i = pk_len - j;
     if( i == 0 )
         return( SR_NONE );
@@ -869,7 +886,7 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
     switch( ss ) {
     case SS_MODULE:
         data.static_only = 1;
-//      return( SR_NONE );
+//        return( SR_NONE );
         /* fall through */
     case SS_SCOPED:
         switch( li->type ) {
@@ -989,10 +1006,14 @@ static search_result FindAScope( imp_image_handle *iih, scope_block *scope )
             if( (off >= cache[i].pc0)
              && (off < (cache[i].pc0 + cache[i].length))
              && (scope->unique > (idx+i)) ) {
-                /* in range & not the same as a previous scope */
+                /*
+                 * in range & not the same as a previous scope
+                 */
                 if( (cache[i].pc0 > best.pc)
                  || (cache[i].pc0 == best.pc && cache[i].length < best.len) ) {
-                    /* better than best */
+                    /*
+                     * better than best
+                     */
                     best.pc = cache[i].pc0;
                     best.len = cache[i].length;
                     best.idx = idx + i;

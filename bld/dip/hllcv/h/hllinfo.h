@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +116,9 @@ typedef struct {
     unsigned         is_16bit : 1;  /* Set if this is a 16-bit segment. (not 100%?) */
 } hllinfo_seg;
 
-/* The NB level. */
+/*
+ * The NB level.
+ */
 typedef enum {
     HLL_LVL_NB00 = 1,               /* 16-bit codeview. */
     HLL_LVL_NB00_32BIT,             /* 32-bit codeview (cl386). */
@@ -123,7 +126,9 @@ typedef enum {
     HLL_LVL_NB04                    /* 32-bit HLL */
 } hllinfo_level;
 
-/* Checks if the format level is 32-bit or 16-bit. */
+/*
+ * Checks if the format level is 32-bit or 16-bit.
+ */
 #define HLL_IS_LVL_32BIT( format_lvl )  (   (format_lvl) == HLL_LVL_NB04 \
                                          || (format_lvl) == HLL_LVL_NB00_32BIT )
 

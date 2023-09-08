@@ -33,23 +33,29 @@
 
 #include <wwindows.h>
 #include "servio.h"
+#include "trptypes.h"
+#include "packet.h"
 #include "options.h"
 
 
 WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    lparam = lparam;                    /* turn off warning */
+    char    parms[PARMS_MAXLEN];
+
+    /* unused parameters */ (void)lparam;
 
     switch( msg ) {
     case WM_INITDIALOG:
-        SetDlgItemText( hwnd, IDDI_SERVER_NAME, ServParms );
+        RemoteLinkGet( parms, sizeof( parms ) );
+        SetDlgItemText( hwnd, IDDI_SERVER_NAME, parms );
         SendDlgItemMessage( hwnd, IDDI_SERVER_NAME, EM_SETSEL, 0, -1 );
         return( true );
 
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            GetDlgItemText( hwnd, IDDI_SERVER_NAME, ServParms, PARMS_MAXLEN );
+            GetDlgItemText( hwnd, IDDI_SERVER_NAME, parms, sizeof( parms ) );
+            RemoteLinkSet( parms );
         case IDCANCEL:
             EndDialog( hwnd, true );
             return( true );

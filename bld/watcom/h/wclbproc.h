@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2014-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2014-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -75,6 +75,7 @@ typedef LRESULT             (CALLBACK *HOOKPROCx)(int,WPARAM,LPARAM);
 typedef BOOL                (CALLBACK *WNDENUMPROCx)(HWND,LPARAM);
 typedef LRESULT             (CALLBACK *WNDPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef void                (CALLBACK *TIMERPROCx)( HWND, UINT, UINT_PTR, DWORD );
+typedef void                (CALLBACK *LINEDDAPROCx)( int, int, LPARAM );
 #if defined( INCLUDE_COMMDLG_H )
 typedef UINT_PTR            (CALLBACK *__CDHOOKPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef __CDHOOKPROCx       LPOFNHOOKPROCx;
@@ -88,6 +89,7 @@ typedef __CDHOOKPROCx       LPOFNHOOKPROCx;
 #define WNDENUMPROCx        WNDENUMPROC
 #define WNDPROCx            WNDPROC
 #define TIMERPROCx          TIMERPROC
+#define LINEDDAPROCx        LINEDDAPROC
 #if !defined( __WINDOWS__ ) || defined( INCLUDE_COMMDLG_H )
 #define LPOFNHOOKPROCx      LPOFNHOOKPROC
 #endif
@@ -104,9 +106,11 @@ extern HOOKPROC             MakeProcInstance_HOOK( HOOKPROCx fn, HINSTANCE insta
 extern WNDENUMPROC          MakeProcInstance_WNDENUM( WNDENUMPROCx fn, HINSTANCE instance );
 extern WNDPROC              MakeProcInstance_WND( WNDPROCx fn, HINSTANCE instance );
 extern TIMERPROC            MakeProcInstance_TIMER( TIMERPROCx fn, HINSTANCE instance );
+extern LINEDDAPROC          MakeProcInstance_LINEDDA( LINEDDAPROCx fn, HINSTANCE instance );
 #if defined( INCLUDE_COMMDLG_H )
 extern LPOFNHOOKPROC        MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTANCE instance );
 #endif
+
 #pragma aux MakeProcInstance_DLG         = MAKEPROCINSTANCE_INLINE
 #pragma aux MakeProcInstance_FONTENUM    = MAKEPROCINSTANCE_INLINE
 #pragma aux MakeProcInstance_OLDFONTENUM = MAKEPROCINSTANCE_INLINE
@@ -114,6 +118,7 @@ extern LPOFNHOOKPROC        MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTAN
 #pragma aux MakeProcInstance_WNDENUM     = MAKEPROCINSTANCE_INLINE
 #pragma aux MakeProcInstance_WND         = MAKEPROCINSTANCE_INLINE
 #pragma aux MakeProcInstance_TIMER       = MAKEPROCINSTANCE_INLINE
+#pragma aux MakeProcInstance_LINEDDA     = MAKEPROCINSTANCE_INLINE
 #if defined( INCLUDE_COMMDLG_H )
 #pragma aux MakeProcInstance_OFNHOOK     = MAKEPROCINSTANCE_INLINE
 #endif
@@ -127,6 +132,7 @@ extern LPOFNHOOKPROC        MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTAN
 #define MakeProcInstance_WNDENUM(f,i)       ((void)i,f)
 #define MakeProcInstance_WND(f,i)           ((void)i,f)
 #define MakeProcInstance_TIMER(f,i)         ((void)i,f)
+#define MakeProcInstance_LINEDDA(f,i)       ((void)i,f)
 #endif
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
@@ -137,6 +143,7 @@ extern void FreeProcInstance_HOOK( HOOKPROC f );
 extern void FreeProcInstance_WNDENUM( WNDENUMPROC f );
 extern void FreeProcInstance_WND( WNDPROC f );
 extern void FreeProcInstance_TIMER( TIMERPROC f );
+extern void FreeProcInstance_LINEDDA( LINEDDAPROC f );
 #if defined( INCLUDE_COMMDLG_H )
 extern void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
 #endif
@@ -147,6 +154,7 @@ extern void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
 #pragma aux FreeProcInstance_WNDENUM     = FREEPROCINSTANCE_INLINE
 #pragma aux FreeProcInstance_WND         = FREEPROCINSTANCE_INLINE
 #pragma aux FreeProcInstance_TIMER       = FREEPROCINSTANCE_INLINE
+#pragma aux FreeProcInstance_LINEDDA     = FREEPROCINSTANCE_INLINE
 #if defined( INCLUDE_COMMDLG_H )
 #pragma aux FreeProcInstance_OFNHOOK     = FREEPROCINSTANCE_INLINE
 #endif
@@ -159,6 +167,7 @@ extern void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
 #define FreeProcInstance_WNDENUM(f)         ((void)f)
 #define FreeProcInstance_WND(f)             ((void)f)
 #define FreeProcInstance_TIMER(f)           ((void)f)
+#define FreeProcInstance_LINEDDA(f)         ((void)f)
 #endif
 
 #ifdef __cplusplus

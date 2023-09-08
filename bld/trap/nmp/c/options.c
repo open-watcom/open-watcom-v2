@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,23 +33,29 @@
 
 #include <wwindows.h>
 #include "servio.h"
+#include "trptypes.h"
+#include "packet.h"
 #include "options.h"
 
 
 WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    lparam = lparam;                    /* turn off warning */
+    char    parms[PARMS_MAXLEN];
+
+    /* unused parameters */ (void)lparam;
 
     switch( msg ) {
     case WM_INITDIALOG:
-        SetDlgItemText( hwnd, IDDI_PIPE_NAME, ServParms );
+        RemoteLinkGet( parms, sizeof( parms ) );
+        SetDlgItemText( hwnd, IDDI_PIPE_NAME, parms );
         SendDlgItemMessage( hwnd, IDDI_PIPE_NAME, EM_SETSEL, 0, -1 );
         return( TRUE );
 
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            GetDlgItemText( hwnd, IDDI_PIPE_NAME, ServParms, PARMS_MAXLEN );
+            GetDlgItemText( hwnd, IDDI_PIPE_NAME, parms, sizeof( parms ) );
+            RemoteLinkSet( parms );
         case IDCANCEL:
             EndDialog( hwnd, TRUE );
             return( TRUE );

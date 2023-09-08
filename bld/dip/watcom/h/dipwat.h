@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,15 +57,21 @@ typedef struct type_pos {
 typedef struct imp_sym_handle {
     imp_mod_handle      imh;
     union {
-        /* for SH_GBL */
+        /*
+         * for SH_GBL
+         */
         gbl_info        *gbl;
-        /* for SH_LCL */
+        /*
+         * for SH_LCL
+         */
         struct {
             unsigned short base;
             unsigned short offset;
             gbl_info       *gbl_link;
         }               lcl;
-        /* for SH_MBR, SH_TYP, SH_CST */
+        /*
+         * for SH_MBR, SH_TYP, SH_CST
+         */
         struct {
             struct type_pos     t;
             struct type_pos     h;

@@ -14,7 +14,7 @@ dig_arch = $(host_cpu)
 
 inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h" -I"$(dig_dir)/h"
 
-extra_cpp_flags = $(dig_arch_cpp_flags)
+extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 
 .cpp: ../c
 

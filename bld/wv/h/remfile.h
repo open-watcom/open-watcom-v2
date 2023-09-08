@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 extern bool             InitFileSupp( void );
 extern bool             HaveRemoteFiles( void );
-extern size_t           RemoteStringToFullName( dig_filetype file_type, const char *name, char *res, trap_elen res_len );
+extern size_t           RemoteFileToFullName( dig_filetype file_type, const char *name, char *res, trap_elen res_len );
 #if !defined( BUILD_RFX )
 extern error_handle     RemoteFork( const char *cmd, trap_elen len );
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +46,9 @@ enum {
     PMHELP_SWITCHBACK,
 };
 
-extern void StartPMHelp(void);
-extern void StopPMHelp(void);
+extern void StartPMHelp( void );
+extern void StopPMHelp( void );
 
-extern void PMLock(unsigned long,unsigned long);
-extern void PMUnLock(void);
-extern int  PMFlip(void);
+extern void PMLock( unsigned long,unsigned long );
+extern void PMUnLock( void );
+extern int  PMFlip( void );

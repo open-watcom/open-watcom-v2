@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,36 +219,24 @@ target_size_t ArrayTypeNumberItems( // GET ACTUAL NUMBER OF ITEMS FOR AN ARRAY
 TYPE TypeTargetSizeT(           // GET TYPE OF TARGET'S size_t
     void )
 {
-    TYPE type;                  // - return type
-
 #if _INTEL_CPU
     if( IsHugeData() ) {
-        type = GetBasicType( TYP_ULONG );
-    } else {
-        type = GetBasicType( TYP_UINT );
+        return( GetBasicType( TYP_ULONG ) );
     }
-#else /* _RISC_CPU */
-    type = GetBasicType( TYP_UINT );
 #endif
-    return( type );
+    return( GetBasicType( TYP_UINT ) );
 }
 
 
 unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
     void )
 {
-    unsigned size;              // - size of type
-
 #if _INTEL_CPU
     if( IsHugeData() ) {
-        size = TARGET_ULONG;
-    } else {
-        size = TARGET_UINT;
+        return( TARGET_ULONG );
     }
-#else /* _RISC_CPU */
-    size = TARGET_UINT;
 #endif
-    return( size );
+    return( TARGET_UINT );
 }
 
 

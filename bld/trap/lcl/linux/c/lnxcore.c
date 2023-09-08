@@ -568,7 +568,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     unsigned_16                 len;
     char                        *name;
@@ -645,7 +645,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     char                *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     // TODO: we could probably figure out what shared libs were loaded
     acc = GetInPtr( 0 );
@@ -664,10 +664,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
@@ -729,17 +729,18 @@ trap_retval TRAP_THREAD( get_extra )( void )
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
+    char         ch;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     core_info.fd = NO_FILE;
-    while( *parms != '\0' ) {
-        switch( *parms ) {
+    while( (ch = *parms++) != '\0' ) {
+        switch( ch ) {
         case 'I':
         case 'i':
             core_info.ignore_timestamp = true;
             break;
         }
-        ++parms;
     }
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

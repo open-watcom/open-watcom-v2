@@ -44,56 +44,34 @@
 #define HANDLE2FP(ph)    ((FILE *)((unsigned long)(ph) + 1))
 #define FP2HANDLE(fp)    ((int)((unsigned long)(fp) - 1))
 
-
-size_t DIGLoader( Find )( dig_filetype ftype, const char *name, size_t name_len, const char *defext, char *result, size_t result_len )
-/************************************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
-    bool        has_ext;
-    bool        has_path;
-    char        *p;
-    char        trpfile[256];
-    char        c;
+    char        fname[256];
     size_t      len;
 
     /* unused parameters */ (void)ftype;
 
-    has_ext = false;
-    has_path = false;
-    p = trpfile;
-    while( name_len-- > 0 ) {
-        c = *name++;
-        *p++ = c;
-        switch( c ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-        case '\\':
-            has_ext = false;
-                /* fall through */
-        case ':':
-            has_path = true;
-            break;
-        }
-    }
-    if( !has_ext ) {
-        *p++ = '.';
-        p = StrCopyDst( defext, p );
-    }
-    *p = '\0';
-    p = trpfile;
-    if( !has_path ) {
-        _searchenv( trpfile, "PATH", RWBuff );
-        p = RWBuff;
-    }
-    len = strlen( p );
-    if( result_len > 0 ) {
-        result_len--;
-        if( result_len > len )
-            result_len = len;
-        if( result_len > 0 )
-            strncpy( result, p, result_len );
-        result[result_len] = '\0';
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+    _searchenv( fname, "WD_PATH" QSTR( BLDVER ), RWBuff );
+    if( *RWBuff == '\0' )
+        _searchenv( fname, "PATH", RWBuff );
+#else
+    _searchenv( fname, "PATH", RWBuff );
+#endif
+    len = strlen( RWBuff );
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, RWBuff, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
     return( len );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
+#include "digld.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "tcerr.h"
@@ -48,7 +49,7 @@
 #include "_trpextf.h"
 #undef pick
 
-static HANDLE           TrapFile = 0;
+static HANDLE           mod_hdl = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
 bool TRAP_EXTFUNC( InfoFunction )( HWND hwnd )
@@ -78,7 +79,7 @@ bool TRAP_EXTFUNC( Terminate )( void )
     return( false );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     TRAP_EXTFUNC_PTR( InfoFunction ) = NULL;
@@ -88,60 +89,46 @@ void KillTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapFile != 0 ) {
-        FreeLibrary( TrapFile );
-        TrapFile = 0;
+    if( mod_hdl != 0 ) {
+        FreeLibrary( mod_hdl );
+        mod_hdl = 0;
     }
 }
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                trpfile[256];
-    char                *p;
-    bool                have_ext;
-    char                chr;
+    char                filename[256];
+    const char          *base_name;
+    size_t              len;
     trap_init_func      *init_func;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    have_ext = false;
-    p = trpfile;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        switch( chr ) {
-        case ':':
-        case '/':
-        case '\\':
-            have_ext = false;
-            break;
-        case '.':
-            have_ext = true;
-            break;
-        }
-        *p++ = chr;
+        len++;
     }
-    if( !have_ext ) {
-        *p++ = '.';
-        *p++ = 'd';
-        *p++ = 'l';
-        *p++ = 'l';
-    }
-    *p = '\0';
-    TrapFile = LoadLibrary( trpfile );
-    if( TrapFile == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
-    init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)1 );
-    FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 );
-    ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
-    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( TrapFile, (LPSTR)4 );
-    TRAP_EXTFUNC_PTR( InterruptProgram ) = (TRAP_EXTFUNC_TYPE( InterruptProgram ))GetProcAddress( TrapFile, (LPSTR)5 );
-    TRAP_EXTFUNC_PTR( Terminate ) = (TRAP_EXTFUNC_TYPE( Terminate ))GetProcAddress( TrapFile, (LPSTR)6 );
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    mod_hdl = LoadLibrary( filename );
+    if( mod_hdl == NULL ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
+        return( buff );
+    }
+    buff[0] = '\0';
+    init_func = (trap_init_func *)GetProcAddress( mod_hdl, (LPSTR)1 );
+    FiniFunc = (trap_fini_func *)GetProcAddress( mod_hdl, (LPSTR)2 );
+    ReqFunc = (trap_req_func *)GetProcAddress( mod_hdl, (LPSTR)3 );
+    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( mod_hdl, (LPSTR)4 );
+    TRAP_EXTFUNC_PTR( InterruptProgram ) = (TRAP_EXTFUNC_TYPE( InterruptProgram ))GetProcAddress( mod_hdl, (LPSTR)5 );
+    TRAP_EXTFUNC_PTR( Terminate ) = (TRAP_EXTFUNC_TYPE( Terminate ))GetProcAddress( mod_hdl, (LPSTR)6 );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
@@ -149,9 +136,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( NULL );
             }
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         }
     }
-    KillTrap();
+    if( buff[0] == '\0' )
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    UnLoadTrap();
     return( buff );
 }

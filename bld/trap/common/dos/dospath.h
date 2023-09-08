@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,11 @@
 ****************************************************************************/
 
 
-extern char             *StrCopyDst( const char *src, char *dst );
-extern const char       *StrCopySrc( const char *src, char *dst );
+extern char         *StrCopyDst( const char *src, char *dst );
+extern const char   *StrCopySrc( const char *src, char *dst );
 #if defined( SERVER )
-extern const char       *DOSEnvFind( const char *src );
+extern const char   *DOSEnvFind( const char *src );
 #else
-extern const char       __far *DOSEnvFind( const char *src );
+extern const char   __far *DOSEnvFind( const char *src );
 #endif
-extern tiny_ret_t       TryPath( const char *name, char *end, const char *ext_list );
-extern unsigned long    FindFilePath( dig_filetype file_type, const char *pgm, char *buffer );
+extern size_t       FindFilePath( dig_filetype file_type, const char *pgm, char *buffer );

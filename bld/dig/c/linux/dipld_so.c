@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <dlfcn.h>
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
@@ -50,29 +51,25 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dip_sys_handle      shlib;
+    dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
-    char                newpath[_MAX_PATH];
-    char                full_path[_MAX_PATH];
+    char                filename[_MAX_PATH];
     dip_status          ds;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, base_name );
-    strcat( newpath, ".so" );
-    shlib = dlopen( newpath, RTLD_NOW );
-    if( shlib == NULL_SYSHDL ) {
-        _searchenv( newpath, "PATH", full_path );
-        shlib = dlopen( full_path, RTLD_NOW );
-        if( shlib == NULL_SYSHDL ) {
-            return( DS_ERR | DS_FOPEN_FAILED );
-        }
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".so", filename, sizeof( filename ) ) == 0 ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
+    mod_hdl = dlopen( filename, RTLD_NOW );
+    if( mod_hdl == NULL_SYSHDL ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
     ds = DS_ERR | DS_INVALID_DIP;
-    init_func = (dip_init_func *)dlsym( shlib, "DIPLOAD" );
+    init_func = (dip_init_func *)dlsym( mod_hdl, "DIPLOAD" );
     if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
-        *sys_hdl = shlib;
+        *sys_hdl = mod_hdl;
         return( DS_OK );
     }
-    dlclose( shlib );
+    DIPSysUnload( &mod_hdl );
     return( ds );
 }

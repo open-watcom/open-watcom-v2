@@ -659,10 +659,12 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
             } else {
                 ish->type = SH_TYP;
             }
-            /* we really should continue searching for more names that
-               match, but we're going to early out because I know that
-               the symbolic info format is too weak to have more than
-               one type name or enum const that will match */
+            /*
+             * we really should continue searching for more names that
+             * match, but we're going to early out because I know that
+             * the symbolic info format is too weak to have more than
+             * one type name or enum const that will match
+             */
             sr = SR_EXACT;
             break;
         }
@@ -915,10 +917,12 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
                             }
                             if( skip > 0 ) {
                                 GetIndex( p + skip, &index );
-                                /* Pulling a trick. We know that the size
-                                   field will only be absent in older objects,
-                                   and thus will only have one type section per
-                                   module. */
+                                /*
+                                 * Pulling a trick. We know that the size
+                                 * field will only be absent in older objects,
+                                 * and thus will only have one type section per
+                                 * module.
+                                 */
                                 FindTypeHandle( iih, ith->imh, index, &tmp_ith );
                                 GetTypeInfo( iih, &tmp_ith, lc, ti, NULL );
                                 offset += ti->size;
@@ -1157,7 +1161,9 @@ dip_status DIPIMPENTRY( TypeProcInfo )(imp_image_handle *iih, imp_type_handle *i
             ++p;
             for( ;; ) {
                 if( p == end ) {
-                    /* handle EXT_PARMS record */
+                    /*
+                     * handle EXT_PARMS record
+                     */
                     p += 2;
                     end = NEXT_TYPE( p );
                 }
@@ -1418,7 +1424,9 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
                 }
                 if( ds == DS_OK ) {
                     FreeLoad();
-                    /* reverse the inheritance list */
+                    /*
+                     * reverse the inheritance list
+                     */
                     new = NULL;
                     while( pending != NULL ) {
                         tmp = pending;
@@ -1426,7 +1434,9 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
                         tmp->prev = new;
                         new = tmp;
                     }
-                    /* do the adjustors at each level */
+                    /*
+                     * do the adjustors at each level
+                     */
                     ds = DCItemLocation( lc, CI_OBJECT, ll );
                     if( ds != DS_OK ) {
                         DCStatus( ds );
@@ -1461,7 +1471,9 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
             }
         }
         if( ds == DS_OK ) {
-            /* do field offset and bit field selection */
+            /*
+             * do field offset and bit field selection
+             */
             bit_start = 0;
             bit_len = 0;
             switch( MGET_U8( p + 1 ) ) {
@@ -1632,7 +1644,9 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
             }
         }
         if( ds == DS_OK ) {
-            /* reverse the inheritance list */
+            /*
+             * reverse the inheritance list
+             */
             new = NULL;
             while( pending != NULL ) {
                 tmp = pending;
@@ -1640,7 +1654,9 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
                 tmp->prev = new;
                 new = tmp;
             }
-            /* do the adjustors at each level */
+            /*
+             * do the adjustors at each level
+             */
             while( new != NULL ) {
                 ds = LoadType( iih, oith->imh, new->entry );
                 if( ds != DS_OK ) {
@@ -1771,7 +1787,9 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
             wr = WR_CONTINUE;
             for( ;; ) {
                 while( count != 0 ) {
-                    /* structure list is backwards -- reverse it */
+                    /*
+                     * structure list is backwards -- reverse it
+                     */
                     p = NEXT_TYPE( p );
                     if( used == NULL ) {
                         new_entry = walloca( sizeof( *new_entry ) );
@@ -1814,7 +1832,9 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
                         list = NULL;
                         p = Type->start + new_ith.t.offset;
                         count = MGET_U16( p + 2 );
-                        /* setting count will cause the list to be reversed */
+                        /*
+                         * setting count will cause the list to be reversed
+                         */
                         continue;
                     }
                 } else {

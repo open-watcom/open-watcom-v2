@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,9 @@ void __FPE_exception( void );
 void __FPE_exception( void ) {};
 #endif
 
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 #if !defined( __NT__ )
 int __nullarea;
 #pragma aux __nullarea "*";
