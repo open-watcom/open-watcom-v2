@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Command line processing for Alpha AXP targets.
+* Description:  Command line processing for RISC architecture targets.
 *
 ****************************************************************************/
 
@@ -45,14 +45,20 @@
 #define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS)
 #define DEF_CGSW_GEN_SWITCHES       0
 
-#define DEF_CGSW_AXP_SWITCHES       0
+#if _CPU == _AXP
+#define DEF_CGSW_RSC_SWITCHES       0
+#elif _CPU == _PPC
+#define DEF_CGSW_RSC_SWITCHES       0
+#elif _CPU == _MIPS
+#define DEF_CGSW_RSC_SWITCHES       0
+#endif
 
 
 void CmdSysInit( void )
 /*********************/
 {
     GenSwitches = DEF_CGSW_GEN_SWITCHES | DEF_CGSW_GEN_SWITCHES_ALL;
-    TargetSwitches = DEF_CGSW_AXP_SWITCHES;
+    TargetSwitches = DEF_CGSW_RSC_SWITCHES;
     CodeClassName = NULL;
     TextSegName = strsave( "" );
     DataSegName = strsave( "" );
@@ -87,6 +93,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     char buff[128];
 
     TargetSystem = TS_OTHER;
+#if _CPU == _AXP
     if( CompFlags.non_iso_compliant_names_enabled ) {
         PreDefineStringMacro( "M_ALPHA" );
     }
@@ -94,6 +101,21 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     PreDefineStringMacro( "__ALPHA__" );
     PreDefineStringMacro( "_ALPHA_" );
     PreDefineStringMacro( "__AXP__" );
+#elif _CPU == _PPC
+    if( CompFlags.non_iso_compliant_names_enabled ) {
+        PreDefineStringMacro( "M_PPC" );
+    }
+    PreDefineStringMacro( "_M_PPC" );
+    PreDefineStringMacro( "__POWERPC__" );
+    PreDefineStringMacro( "__PPC__" );
+    PreDefineStringMacro( "_PPC_" );
+#elif _CPU == _MIPS
+    if( CompFlags.non_iso_compliant_names_enabled ) {
+        PreDefineStringMacro( "M_MRX000" );
+    }
+    PreDefineStringMacro( "_M_MRX000" );
+    PreDefineStringMacro( "__MIPS__" );
+#endif
     if( target_name == NULL ) {
         /* right now, the only targeted system is NT */
         SetTargetLiteral( &target_name, "NT" );
@@ -292,18 +314,22 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         CMemFree( target );
     }
     setMemoryModel( data );
+#if _CPU == _AXP
     if( data->as ) {
         TargetSwitches |= CGSW_RISC_ALIGNED_SHORT;
     }
+#endif
     if( data->br ) {
         CompFlags.br_switch_used = true;
     }
+#if _CPU == _AXP
     if( data->la ) {
         TargetSwitches |= CGSW_RISC_ASM_OUTPUT;
     }
     if( data->lo ) {
         TargetSwitches |= CGSW_RISC_OWL_LOGGING;
     }
+#endif
     if( data->oc ) {
         GenSwitches |= CGSW_GEN_NO_CALL_RET_TRANSFORM;
     }
@@ -313,18 +339,22 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->nm ) {
         SetStringOption( &ModuleName, &(data->nm_value) );
     }
+#if _CPU == _AXP
     if( data->si ) {
         TargetSwitches |= CGSW_RISC_STACK_INIT;
     }
+#endif
     if( data->iso == OPT_ENUM_iso_za ) {
         GenSwitches &= ~CGSW_GEN_I_MATH_INLINE;
     }
+#if _CPU == _AXP
     if( data->vcap ) {
         CompFlags.vc_alloca_parm = true;
     }
     if( data->zm ) {
         CompFlags.zm_switch_used = true;
     }
+#endif
 
     // frees 'target_name' memory
     setFinalTargetSystem( data, target_name );
