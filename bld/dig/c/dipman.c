@@ -168,8 +168,7 @@ static dip_client_routines DIPClientInterface = {
     DIGCli( Close ),
     DIGCli( Remove ),
     DIPCli( Status ),
-    DIPCli( CurrArch ),
-    DIGCli( MachineData )
+    DIPCli( CurrArch )
 };
 
 

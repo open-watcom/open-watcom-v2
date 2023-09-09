@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,3 +43,4 @@ pick( system_config *, SystemConfig,    ( void ) )
 pick( mad_status,      TypeInfoForHost, ( mad_type_kind, int size, mad_type_info * ) )
 pick( mad_status,      TypeConvert,     ( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg ) )
 pick( mad_status,      TypeToString,    ( mad_radix radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p ) )
+pick( unsigned,        MachineData,     ( address, dig_info_type, dig_elen, const void *, dig_elen, void * ) )

@@ -132,15 +132,6 @@ void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
     remove( name );
 }
 
-unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
-                                        const void *in, dig_elen out_size, void *out )
-{
-    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in;
-    /* unused parameters */ (void)out_size; (void)out;
-
-    return( 0 ); /// @todo check this out out.
-}
-
 static char *addPath( char *old_list, const char *path_list )
 /***********************************************************/
 {

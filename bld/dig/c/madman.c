@@ -131,7 +131,7 @@ static mad_client_routines MADClientInterface = {
 
     MADCli( Notify ),
 
-    DIGCli( MachineData ),
+    MADCli( MachineData ),
 
     MADCli( AddrToString ),
     MADCli( MemExpr ),

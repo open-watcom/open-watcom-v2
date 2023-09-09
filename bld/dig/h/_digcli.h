@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,4 +39,3 @@ pick( size_t,           Read,           ( FILE *, void *, size_t ) )
 pick( size_t,           Write,          ( FILE *, const void *, size_t ) )
 pick( void,             Close,          ( FILE * ) )
 pick( void,             Remove,         ( const char *, dig_open ) )
-pick( unsigned,         MachineData,    ( address, dig_info_type, dig_elen, const void *, dig_elen, void * ) )

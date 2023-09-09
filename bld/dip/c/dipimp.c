@@ -263,14 +263,6 @@ dig_arch DCCurrArch( void )
     return( DIPClient->CurrArch() );
 }
 
-unsigned DCMachineData( address a, dig_info_type info_type, dig_elen in_size,
-                            const void *in, dig_elen out_size, void *out )
-{
-    if( DIPClient->sizeof_struct < offsetof(dip_client_routines,MachineData) )
-        return( 0 );
-    return( DIPClient->MachineData( a, info_type, in_size, in, out_size, out ) );
-}
-
 dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *iih, imp_type_handle *ith, imp_type_handle *base_ith )
 {
     return( ImpInterface.TypeBase( iih, ith, base_ith, NULL, NULL ) );
