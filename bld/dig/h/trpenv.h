@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ enum {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         res_len;
     /* followed by name of environment variable to get */
 } env_get_var_req;
@@ -70,7 +70,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by name of environment variable to set */
     /* followed by value of environment variable to set */
 } env_set_var_req;

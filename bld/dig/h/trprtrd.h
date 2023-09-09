@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ enum {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_16         col;        /* column in thread list to get info about */
 } _WCUNALIGNED run_thread_info_req;
 
@@ -81,7 +81,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         thread;     /* thread to ask about */
 } _WCUNALIGNED run_thread_get_next_req;
 
@@ -93,7 +93,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         thread;     /* thread to ask about */
 } _WCUNALIGNED run_thread_get_runtime_req;
 
@@ -108,7 +108,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } run_thread_poll_req;
 
 typedef struct {
@@ -119,7 +119,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         thread;
 } _WCUNALIGNED run_thread_set_req;
 
@@ -132,7 +132,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         thread;
 } _WCUNALIGNED run_thread_get_name_req;
 
@@ -142,7 +142,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         thread;     /* thread to stop */
 } _WCUNALIGNED run_thread_stop_req;
 
@@ -150,7 +150,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         thread;     /* thread to signal and stop */
 } _WCUNALIGNED run_thread_signal_stop_req;
 

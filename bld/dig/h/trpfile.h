@@ -65,7 +65,7 @@ typedef unsigned_64     trap_fhandle; /* file handle */
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } file_get_config_req;
 
 typedef struct {
@@ -75,7 +75,7 @@ typedef struct {
 /*==================== REQ_FILE_OPEN ===================*/
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          mode;
 } file_open_req;
 
@@ -87,7 +87,7 @@ typedef struct {
 /*====================== REQ_FILE_SEEK ===================*/
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
     unsigned_8          mode;
     unsigned_32         pos;
@@ -100,7 +100,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
     unsigned_16         len;
 } _WCUNALIGNED file_read_req;
@@ -112,7 +112,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
     /* followed by sequence of bytes to write */
 } _WCUNALIGNED file_write_req;
@@ -124,7 +124,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by data to write to console */
 } _WCUNALIGNED file_write_console_req;
 
@@ -135,7 +135,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
 } _WCUNALIGNED file_close_req;
 
@@ -145,7 +145,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by file name to be deleted */
 } file_erase_req;
 
@@ -156,7 +156,7 @@ typedef struct {
 /*====================== REQ_FILE_STRING_TO_FULLPATH =================*/
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          file_type;
     /* followed by file name to be searched for */
 } file_string_to_fullpath_req;
@@ -168,7 +168,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_16         chk_size;
 } _WCUNALIGNED file_run_cmd_req;
 

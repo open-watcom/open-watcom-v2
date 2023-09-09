@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ enum {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } async_go_req;
 
 typedef struct {
@@ -88,7 +88,7 @@ typedef async_go_ret     async_stop_ret;
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     addr48_ptr          break_addr;
     bool                local;
 } _WCUNALIGNED async_add_break_req;
@@ -97,7 +97,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     addr48_ptr          break_addr;
     bool                local;
 } _WCUNALIGNED async_remove_break_req;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@
     #define TrapVersionOK( ver )  ((ver).major == TRAP_MAJOR_VERSION)
 #endif
 
-#define TRP_REQUEST(x)      *((access_req *)(x)[0].ptr)
+#define TRP_REQUEST(x)      *((trap_req *)(x)[0].ptr)
 
 #define TRAP_SYM1(a,b,c)    a ## b ## _ ## c
 #define TRAP_SYM(a,b)       TRAP_SYM1( Req, a, b )
@@ -73,7 +73,7 @@ typedef struct {
     unsigned_8      remote;
 } trap_version;
 
-typedef unsigned_8  access_req;
+typedef unsigned_8  trap_req;
 typedef dig_elen    trap_elen;
 typedef unsigned_32 trap_error;
 typedef unsigned_32 trap_mhandle;   /* module handle */
@@ -84,7 +84,7 @@ typedef trap_elen   trap_retval;
 
 #include "pushpck1.h"
 typedef struct {
-    access_req      core_req;
+    trap_req        core_req;
     trap_shandle    id;
 } _WCUNALIGNED supp_prefix;
 

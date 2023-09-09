@@ -398,9 +398,9 @@ int handle_REQ_RESUME_REPLY( unsigned char * , unsigned short )
 
 int handle_REQ_GET_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short )
 {
-    access_req *    req = ( access_req * ) pkt;
+    trap_req *req = (trap_req *)pkt;
     req = &req[1];
-    char * service_name = ( char * ) req;
+    char *service_name = (char *)req;
 
     printf( "Debugger request: REQ_GET_SUPPLEMENTARY_SERVICE\n" );
     printf( "    Service :   %s\n", service_name );

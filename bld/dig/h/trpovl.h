@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } ovl_state_size_req;
 
 typedef struct {
@@ -72,7 +72,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_16         sect_id;
 } _WCUNALIGNED ovl_get_data_req;
 
@@ -83,14 +83,14 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } ovl_read_state_req;
 
 /* return message is state information data */
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by state information data */
 } ovl_write_state_req;
 
@@ -98,7 +98,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     ovl_address         ovl_addr;
 } _WCUNALIGNED ovl_trans_vect_addr_req;
 
@@ -111,7 +111,7 @@ typedef ovl_trans_vect_addr_ret         ovl_trans_ret_addr_ret;
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     ovl_address         ovl_addr;
 } _WCUNALIGNED ovl_get_remap_entry_req;
 

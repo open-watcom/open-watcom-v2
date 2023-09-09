@@ -511,12 +511,12 @@ trap_retval TRAP_CORE( Get_supplementary_service )( void )
 trap_retval TRAP_CORE( Perform_supplementary_service )( void )
 {
     unsigned    (* const * _WCUNALIGNED *vectors)(void);
-    access_req  *sup_req;
+    trap_req    *sup_req;
 
     if( TaskLoaded ) {
         return( DoAccess() );
     }
-    vectors = GetInPtr( sizeof( access_req ) );
+    vectors = GetInPtr( sizeof( trap_req ) );
     sup_req = GetInPtr( sizeof( supp_prefix ) );
     return( (*vectors)[*sup_req]() );
 }
