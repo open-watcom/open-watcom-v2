@@ -106,7 +106,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( (UINT)toolhelp < 32 ) {
         toolhelp = 0;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
         return( buff );
     }
