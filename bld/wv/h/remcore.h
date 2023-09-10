@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ extern void             RemoteRestoreBreak( address addr, dword value );
 extern bool             RemoteSetWatch( address addr, uint_8 size, unsigned long *mult );
 extern void             RemoteRestoreWatch( address addr, uint_8 size );
 extern void             RemoteSplitCmd( char *cmd, char **end, char **parm );
+extern void             RemoteGetSysConfig( void );
 extern void             CheckSegAlias( void );
-extern void             GetSysConfig( void );
 extern bool             InitCoreSupp( void );
 extern void             FiniCoreSupp( void );

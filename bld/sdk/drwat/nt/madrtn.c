@@ -212,7 +212,7 @@ unsigned MADCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_
 
 bool InitMADInfo( void )
 {
-    GetSysConfig();
+    LocalGetSysConfig();
     if( MADInit() != MS_OK ) {
         return( false );
     }

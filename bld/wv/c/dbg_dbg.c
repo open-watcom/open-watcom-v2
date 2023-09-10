@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -247,7 +247,7 @@ bool CreateSym( lookup_item *li, dig_type_info *ti )
 static void GetNPXType( void )
 {
     if( _IsOff( SW_KNOW_EMULATOR ) ) {
-        GetSysConfig(); /* might be emulator */
+        RemoteGetSysConfig(); /* might be emulator */
         _SwitchOn( SW_KNOW_EMULATOR );
     }
 }

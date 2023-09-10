@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +98,7 @@ unsigned MakeAsyncRun( bool single )
         CONV_LE_32( ret.program_counter.offset );
         CONV_LE_16( ret.program_counter.segment );
         if( ret.conditions & COND_CONFIG ) {
-            GetSysConfig();
+            RemoteGetSysConfig();
             CheckMADChange();
         }
         DbgRegs->arch = SysConfig.arch;
@@ -142,7 +142,7 @@ unsigned PollAsync( void )
         CONV_LE_32( ret.program_counter.offset );
         CONV_LE_16( ret.program_counter.segment );
         if( ret.conditions & COND_CONFIG ) {
-            GetSysConfig();
+            RemoteGetSysConfig();
             CheckMADChange();
         }
         DbgRegs->arch = SysConfig.arch;
@@ -186,7 +186,7 @@ unsigned StopAsync( void )
         CONV_LE_32( ret.program_counter.offset );
         CONV_LE_16( ret.program_counter.segment );
         if( ret.conditions & COND_CONFIG ) {
-            GetSysConfig();
+            RemoteGetSysConfig();
             CheckMADChange();
         }
         DbgRegs->arch = SysConfig.arch;
