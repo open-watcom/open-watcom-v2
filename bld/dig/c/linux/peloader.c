@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include "bool.h"
+#include "exedos.h"
 #include "dbgmod.h"
 #include "digld.h"
 
@@ -71,7 +72,7 @@ static bool PE_readHeader(
     FILE_HDR *filehdr,
     OPTIONAL_HDR *opthdr)
 {
-    EXE_HDR exehdr;
+    dos_exe_header exehdr;
     u_long  ne_header_off;
     u_long  signature;
 
@@ -82,7 +83,7 @@ static bool PE_readHeader(
     if( DIGLoader( Seek )( fp, startOffset, SEEK_SET )
       || DIGLoader( Read )( fp, &exehdr, sizeof( exehdr ) )
       || ( exehdr.signature != EXESIGN_DOS )
-      || !NE_HEADER_FOLLOWS( exehdr.reloc ) )
+      || !NE_HEADER_FOLLOWS( exehdr.reloc_offset ) )
         return( false );
     /*
      * Now seek to the start of the PE header defined at offset 0x3C

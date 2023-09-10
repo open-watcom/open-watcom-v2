@@ -47,18 +47,15 @@
 #include "watcom.h"
 
 /*---------------------- Macros and type definitions ----------------------*/
-#define EXESIGN_DOS             0x5a4d
-#define EXESIGN_PE              0x4550
-#define NE_HEADER_OFFSET        0x003c
-#define NE_HEADER_FOLLOWS(x)    ((x) >= 0x0040) /* reloc table offset 0x40 */
 
-#include "pushpck1.h"
 
 /****************************************************************************
 REMARKS:
 Structure of a module handle when loaded from disk
 {secret}
 ****************************************************************************/
+#include "pushpck1.h"
+
 typedef struct {
     u_char  *pbase;         /* Base of image in memory                  */
     u_char  *ptext;         /* Text section read from disk              */
