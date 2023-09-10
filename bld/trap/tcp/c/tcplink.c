@@ -558,6 +558,7 @@ const char *RemoteLink( const char *parms, bool server )
     }
 
     /* Name socket using wildcards */
+    memset( &socket_address, 0, sizeof( socket_address ) );
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = OW_INADDR_ANY;
     socket_address.sin_port = htons( trap_port );
@@ -598,6 +599,7 @@ const char *RemoteLink( const char *parms, bool server )
     /*
      * Setup for socket connect using parms specified by command line.
      */
+    memset( &socket_address, 0, sizeof( socket_address ) );
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = trap_addr;
     socket_address.sin_port = htons( trap_port );
