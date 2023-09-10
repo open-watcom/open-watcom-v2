@@ -37,13 +37,14 @@
 ****************************************************************************/
 
 #include "peloader.h"
-#include "pe.h"
+#include "exepe.h"
 #include <stdlib.h>
 #include <sys/mman.h>
 #include "bool.h"
 #include "exedos.h"
 #include "dbgmod.h"
 #include "digld.h"
+#include "roundmac.h"
 
 /*--------------------------- Global variables ----------------------------*/
 
@@ -69,8 +70,8 @@ open file and an offset within that file for the DLL to load.
 static bool PE_readHeader(
     FILE *fp,
     long startOffset,
-    FILE_HDR *filehdr,
-    OPTIONAL_HDR *opthdr)
+    pe_file_header *filehdr,
+    pe32_opt_header *opthdr)
 {
     dos_exe_header exehdr;
     u_long  ne_header_off;
@@ -101,15 +102,15 @@ static bool PE_readHeader(
      */
     if( DIGLoader( Read )( fp, filehdr, sizeof( *filehdr ) ) )
         return( false );
-    if( filehdr->Machine != IMAGE_FILE_MACHINE_I386 )
+    if( filehdr->cpu_type != PE_CPU_386 )
         return( false );
-    if( (filehdr->Characteristics & IMAGE_FILE_32BIT_MACHINE) == 0 )
+    if( (filehdr->flags & PE_FLG_32BIT_MACHINE) == 0 )
         return( false );
-    if( (filehdr->Characteristics & IMAGE_FILE_DLL) == 0 )
+    if( (filehdr->flags & PE_FLG_LIBRARY) == 0 )
         return( false );
     if( DIGLoader( Read )( fp, opthdr, sizeof( *opthdr ) ) )
         return( false );
-    if( opthdr->Magic != 0x10B )
+    if( opthdr->magic != 0x10B )
         return( false );
     /*
      * Success, so return true!
@@ -137,9 +138,9 @@ length of the DLL file on disk.
 ****************************************************************************/
 u_long PE_getFileSize( FILE *fp, u_long startOffset )
 {
-    FILE_HDR        filehdr;
-    OPTIONAL_HDR    opthdr;
-    SECTION_HDR     secthdr;
+    pe_file_header  filehdr;
+    pe32_opt_header opthdr;
+    pe_object       secthdr;
     u_long          size;
     int             i;
 
@@ -151,12 +152,12 @@ u_long PE_getFileSize( FILE *fp, u_long startOffset )
     /*
      * Scan all the section headers summing up the total size
      */
-    size = opthdr.SizeOfHeaders;
-    for( i = 0; i < filehdr.NumberOfSections; i++ ) {
+    size = opthdr.header_size;
+    for( i = 0; i < filehdr.num_objects; i++ ) {
         if( DIGLoader( Read )( fp, &secthdr, sizeof( secthdr ) ) )
             return( 0xFFFFFFFF );
-        if( (secthdr.Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA) == 0 ) {
-            size += secthdr.SizeOfRawData;
+        if( (secthdr.flags & PE_OBJ_UNINIT_DATA) == 0 ) {
+            size += secthdr.physical_size;
         }
     }
     return( size );
@@ -191,9 +192,9 @@ PE_MODULE * PE_loadLibraryExt(
     u_long startOffset,
     u_long *size)
 {
-    FILE_HDR        filehdr;
-    OPTIONAL_HDR    opthdr;
-    SECTION_HDR     secthdr;
+    pe_file_header  filehdr;
+    pe32_opt_header opthdr;
+    pe_object       secthdr;
     u_long          offset, pageOffset;
     u_long          text_raw_off, text_base, text_size, text_end;
     u_long          data_raw_off, data_base, data_size, data_virt_size, data_end;
@@ -207,7 +208,7 @@ PE_MODULE * PE_loadLibraryExt(
     u_short         relocType, *fixup;
     PE_MODULE       *hMod = NULL;
     void            *reloc = NULL;
-    BASE_RELOCATION *baseReloc;
+    pe_fixup_header *baseReloc;
 
     /*
      * Read the PE file headers from disk
@@ -223,58 +224,58 @@ PE_MODULE * PE_loadLibraryExt(
     import_raw_off = import_base = import_size = import_end = 0;
     export_raw_off = export_base = export_size = export_end = 0;
     reloc_raw_off = reloc_size = 0;
-    for( i = 0; i < filehdr.NumberOfSections; i++ ) {
+    for( i = 0; i < filehdr.num_objects; i++ ) {
         if( DIGLoader( Read )( fp, &secthdr, sizeof( secthdr ) ) )
             goto Error;
         if( i == 0 )
-            image_base = secthdr.VirtualAddress;
-        if( strcmp( secthdr.Name, ".edata" ) == 0 || strcmp( secthdr.Name, ".rdata" ) == 0 ) {
+            image_base = secthdr.rva;
+        if( strcmp( secthdr.name, ".edata" ) == 0 || strcmp( secthdr.name, ".rdata" ) == 0 ) {
             /*
              * Exports section
              */
-            export_raw_off = secthdr.PointerToRawData;
-            export_base = secthdr.VirtualAddress;
-            export_size = secthdr.SizeOfRawData;
+            export_raw_off = secthdr.physical_offset;
+            export_base = secthdr.rva;
+            export_size = secthdr.physical_size;
             export_end = export_base + export_size;
-        } else if( strcmp( secthdr.Name, ".idata" ) == 0 ) {
+        } else if( strcmp( secthdr.name, ".idata" ) == 0 ) {
             /*
              * Imports section
              */
-            import_raw_off = secthdr.PointerToRawData;
-            import_base = secthdr.VirtualAddress;
-            import_size = secthdr.SizeOfRawData;
+            import_raw_off = secthdr.physical_offset;
+            import_base = secthdr.rva;
+            import_size = secthdr.physical_size;
             import_end = import_base + import_size;
-        } else if( strcmp( secthdr.Name, ".reloc" ) == 0 ) {
+        } else if( strcmp( secthdr.name, ".reloc" ) == 0 ) {
             /*
              * Relocations section
              */
-            reloc_raw_off = secthdr.PointerToRawData;
-            reloc_base = secthdr.VirtualAddress;
-            reloc_size = secthdr.SizeOfRawData;
-        } else if( text_raw_off == 0 && (secthdr.Characteristics & IMAGE_SCN_CNT_CODE) ) {
+            reloc_raw_off = secthdr.physical_offset;
+            reloc_base = secthdr.rva;
+            reloc_size = secthdr.physical_size;
+        } else if( text_raw_off == 0 && (secthdr.flags & PE_OBJ_CODE) ) {
             /*
              * Code section
              */
-            text_raw_off = secthdr.PointerToRawData;
-            text_base = secthdr.VirtualAddress;
-            text_size = secthdr.SizeOfRawData;
+            text_raw_off = secthdr.physical_offset;
+            text_base = secthdr.rva;
+            text_size = secthdr.physical_size;
             text_end = text_base + text_size;
-        } else if( data_raw_off == 0 && (secthdr.Characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA) ) {
+        } else if( data_raw_off == 0 && (secthdr.flags & PE_OBJ_INIT_DATA) ) {
             /*
              * Data section
              */
-            data_raw_off = secthdr.PointerToRawData;
-            data_base = secthdr.VirtualAddress;
-            data_size = secthdr.SizeOfRawData;
-            data_virt_size = secthdr.VirtualSize;
+            data_raw_off = secthdr.physical_offset;
+            data_base = secthdr.rva;
+            data_size = secthdr.physical_size;
+            data_virt_size = secthdr.virtual_size;
             data_end = data_base + data_size;
-        } else if( bss_raw_off == 0 && (secthdr.Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA) ) {
+        } else if( bss_raw_off == 0 && (secthdr.flags & PE_OBJ_UNINIT_DATA) ) {
             /*
              * BSS data section
              */
-            bss_raw_off = secthdr.PointerToRawData;
-            bss_base = secthdr.VirtualAddress;
-            bss_size = secthdr.SizeOfRawData;
+            bss_raw_off = secthdr.physical_offset;
+            bss_base = secthdr.rva;
+            bss_size = secthdr.physical_size;
             bss_end = bss_base + bss_size;
         }
     }
@@ -338,7 +339,7 @@ PE_MODULE * PE_loadLibraryExt(
     hMod->bssBase = bss_base;
     hMod->importBase = import_base;
     hMod->exportBase = export_base;
-    hMod->exportDir = opthdr.DataDirectory[0].RelVirtualAddress - export_base;
+    hMod->exportDir = opthdr.table[PE_TBL_EXPORT].rva - export_base;
     hMod->modname = NULL;
     /*
      * Now read the section images from disk
@@ -353,7 +354,7 @@ PE_MODULE * PE_loadLibraryExt(
          * Some linkers will put uninitalised data at the end
          * of the primary data section, so we first must clear
          * the data section to zeros for the entire length of
-         * VirtualSize, which can be longer than the size on disk.
+         * virtual_size, which can be longer than the size on disk.
          * Note also that some linkers set this value to zero, so
          * we ignore this value in that case (those linkers also
          * have a seperate BSS section).
@@ -382,20 +383,20 @@ PE_MODULE * PE_loadLibraryExt(
     /*
      * Now perform relocations on all sections in the image
      */
-    delta = (u_long)image_ptr - opthdr.ImageBase - image_base;
-    baseReloc = (BASE_RELOCATION*)reloc;
+    delta = (u_long)image_ptr - opthdr.image_base - image_base;
+    baseReloc = (pe_fixup_header *)reloc;
     for( ;; ) {
         /*
          * Check for termination condition
          */
-        if( baseReloc->PageRVA == 0 || baseReloc->BlockSize == 0 )
+        if( baseReloc->page_rva == 0 || baseReloc->block_size == 0 )
             break;
         /*
          * Do fixups
          */
-        numFixups = ( baseReloc->BlockSize - sizeof( BASE_RELOCATION ) ) / sizeof( u_short );
+        numFixups = ( baseReloc->block_size - sizeof( pe_fixup_header ) ) / sizeof( u_short );
         fixup = (u_short*)( baseReloc + 1 );
-        pageOffset = baseReloc->PageRVA - image_base;
+        pageOffset = baseReloc->page_rva - image_base;
         for( i = 0; i < numFixups; i++ ) {
             relocType = *fixup >> 12;
             if( relocType ) {
@@ -407,7 +408,7 @@ PE_MODULE * PE_loadLibraryExt(
         /*
          * Move to next relocation block
          */
-        baseReloc = (BASE_RELOCATION*)( (u_long)baseReloc + baseReloc->BlockSize );
+        baseReloc = (pe_fixup_header*)( (u_long)baseReloc + baseReloc->block_size );
     }
     /*
      * On some platforms (such as AMD64 or x86 with NX bit), it is required
@@ -516,7 +517,7 @@ void * PE_getProcAddress(
     const char *szProcName )
 {
     unsigned            i;
-    EXPORT_DIRECTORY    *exports;
+    pe_export_directory *exports;
     u_long              funcOffset;
     u_long              *AddressTable;
     u_long              *NameTable;
@@ -528,20 +529,20 @@ void * PE_getProcAddress(
      */
     if( hModule == NULL )
         return( NULL );
-    exports = (EXPORT_DIRECTORY *)( hModule->pexport + hModule->exportDir );
-    AddressTable = (u_long *)( hModule->pexport + exports->AddressTableRVA - hModule->exportBase );
-    NameTable = (u_long*)( hModule->pexport + exports->NameTableRVA - hModule->exportBase );
-    OrdinalTable = (u_short*)( hModule->pexport + exports->OrdinalTableRVA - hModule->exportBase );
+    exports = (pe_export_directory *)( hModule->pexport + hModule->exportDir );
+    AddressTable = (u_long *)( hModule->pexport + exports->address_table_rva - hModule->exportBase );
+    NameTable = (u_long*)( hModule->pexport + exports->name_ptr_table_rva - hModule->exportBase );
+    OrdinalTable = (u_short*)( hModule->pexport + exports->ordinal_table_rva - hModule->exportBase );
     /*
      * Search the pexport name table to find the function name
      */
-    for( i = 0; i < exports->NumberOfNamePointers; i++ ) {
+    for( i = 0; i < exports->num_name_ptrs; i++ ) {
         name = (char*)( hModule->pexport + NameTable[i] - hModule->exportBase );
         if( strcmp( name, szProcName ) == 0 ) {
             break;
         }
     }
-    if( i == exports->NumberOfNamePointers )
+    if( i == exports->num_name_ptrs )
         return( NULL );
     funcOffset = AddressTable[OrdinalTable[i]];
     if( funcOffset == 0 )
