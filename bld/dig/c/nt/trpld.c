@@ -127,13 +127,16 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( mod_hdl, (LPSTR)4 );
     TRAP_EXTFUNC_PTR( InterruptProgram ) = (TRAP_EXTFUNC_TYPE( InterruptProgram ))GetProcAddress( mod_hdl, (LPSTR)5 );
     TRAP_EXTFUNC_PTR( Terminate ) = (TRAP_EXTFUNC_TYPE( Terminate ))GetProcAddress( mod_hdl, (LPSTR)6 );
-    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
+    if( init_func != NULL
+      && FiniFunc != NULL
+      && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
                 return( TC_OK );
             }
+            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();

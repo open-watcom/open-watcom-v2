@@ -46,6 +46,7 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     const char  *trpname;
     size_t      len;
+    trpld_error err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -58,6 +59,7 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
+    err = TC_ERR_BAD_TRAP_FILE;
     *trap_ver = TrapInit( parms, buff, trap_ver->remote );
     if( buff[0] == '\0' ) {
         if( TrapVersionOK( *trap_ver ) ) {
@@ -65,7 +67,8 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             ReqFunc = TrapRequest;
             return( TC_OK );
         }
+        err = TC_ERR_WRONG_TRAP_VERSION;
     }
     UnLoadTrap();
-    return( TC_ERR_BAD_TRAP_FILE );
+    return( err );
 }

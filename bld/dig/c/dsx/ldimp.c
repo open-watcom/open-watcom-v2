@@ -53,6 +53,7 @@
 #include "exephar.h"
 #include "digcli.h"
 #include "digld.h"
+#include "roundmac.h"
 #include "ldimp.h"
 
 
@@ -61,7 +62,7 @@
 imp_header *ReadInImp( FILE *fp )
 {
     simple_header       hdr;
-    unsigned            size;
+    unsigned            image_size;
     unsigned            hdr_size;
     unsigned            bss_size;
     unsigned            reloc_size;
@@ -76,13 +77,13 @@ imp_header *ReadInImp( FILE *fp )
     if( hdr.signature != EXESIGN_REX )
         return( NULL );
     hdr_size = hdr.hdr_size * 16;
-    size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
-    bss_size = hdr.min_data * 4096;
-    imp_start = DIGCli( Alloc )( size + bss_size );
+    image_size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
+    bss_size = hdr.min_data * _4K;
+    imp_start = DIGCli( Alloc )( image_size + bss_size );
     if( imp_start == NULL )
         return( NULL );
     DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
-    if( DIGLoader( Read )( fp, imp_start, size ) ) {
+    if( DIGLoader( Read )( fp, imp_start, image_size ) ) {
         DIGCli( Free )( imp_start );
         return( NULL );
     }
@@ -110,8 +111,8 @@ imp_header *ReadInImp( FILE *fp )
      * to map the code pages loaded from the BPD as executable, otherwise
      * a segfault will occur when attempting to run any BPD code.
      */
-    mprotect((void*)((u_long)imp_start & ~4095), ( size + 4095 ) & ~4095, PROT_READ | PROT_WRITE | PROT_EXEC);
+    mprotect((void*)__ROUND_DOWN_SIZE_4K( (u_long)imp_start ), __ROUND_UP_SIZE_4K( image_size ), PROT_READ | PROT_WRITE | PROT_EXEC);
 #endif
-    memset( imp_start + size, 0, bss_size );
+    memset( imp_start + image_size, 0, bss_size );
     return( (imp_header *)imp_start );
 }

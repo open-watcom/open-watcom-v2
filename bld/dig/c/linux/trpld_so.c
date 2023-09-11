@@ -133,6 +133,7 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( TC_OK );
             }
+            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();

@@ -85,13 +85,17 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     FiniFunc = RdosGetModuleProc( mod_hdl, "TrapFini_" );
     ReqFunc  = RdosGetModuleProc( mod_hdl, "TrapRequest_" );
 //    LibListFunc = RdosGetModuleProc( mod_hdl, "TrapLibList_" );
-    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL /* && LibListFunc != NULL */ ) {
+    if( init_func != NULL
+      && FiniFunc != NULL
+      && ReqFunc != NULL
+      /* && LibListFunc != NULL */ ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
                 return( TC_OK );
             }
+            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();

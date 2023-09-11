@@ -309,7 +309,7 @@ PE_MODULE * PE_loadLibraryExt(
      * the .rsrc section separately).
      */
     image_size = image_end - image_base;
-    *size = sizeof( PE_MODULE ) + image_size + 4096;
+    *size = sizeof( PE_MODULE ) + image_size + _4K;
     hMod = malloc( *size );
     reloc = malloc( reloc_size );
     if( hMod == NULL || reloc == NULL ) {

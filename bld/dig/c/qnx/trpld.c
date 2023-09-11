@@ -114,18 +114,17 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #else
     ld_func = (trap_load_func *)TrapCode->init_rtn;
 #endif
-    if( ld_func != NULL ) {
-        trap_funcs = ld_func( &TrapCallbacks );
-        if( trap_funcs != NULL ) {
-            *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
-            FiniFunc = trap_funcs->fini_func;
-            ReqFunc = trap_funcs->req_func;
-            if( buff[0] == '\0' ) {
-                if( TrapVersionOK( *trap_ver ) ) {
-                    TrapVer = *trap_ver;
-                    return( TC_OK );
-                }
+    if( ld_func != NULL
+      && (trap_funcs = ld_func( &TrapCallbacks )) != NULL ) {
+        *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
+        FiniFunc = trap_funcs->fini_func;
+        ReqFunc = trap_funcs->req_func;
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( TC_OK );
             }
+            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();

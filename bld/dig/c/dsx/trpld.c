@@ -45,6 +45,7 @@
 #include "trpsys.h"
 #include "envlkup.h"
 #include "realmod.h"
+#include "roundmac.h"
 
 
 #define DOS4G_COMM_VECTOR       0x15
@@ -53,8 +54,6 @@
 #define PSP_ENVSEG_OFF          0x2c
 
 #define TRAP_SIGNATURE          0xdeaf
-
-#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
 #include "pushpck1.h"
 typedef struct {
@@ -309,7 +308,7 @@ static trpld_error CopyEnv( void )
 
     envarea = _MK_FP( *(addr_seg __far *)_MK_FP( _psp, PSP_ENVSEG_OFF ), 0 );
     envsize = EnvAreaSize( envarea );
-    PMData->envseg = DPMIAllocateDOSMemoryBlock( _NBPARAS( envsize ) );
+    PMData->envseg = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( envsize ) );
     if( PMData->envseg.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
@@ -343,7 +342,7 @@ static trpld_error SetTrapHandler( void )
                 PMData->saveseg.rm = 0;
                 PMData->saveseg.pm = 0;
             } else {
-                PMData->saveseg = DPMIAllocateDOSMemoryBlock( _NBPARAS( PMData->savesize * 2 ) );
+                PMData->saveseg = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( PMData->savesize * 2 ) );
                 if( PMData->saveseg.pm == 0 ) {
                     return( TC_ERR_OUT_OF_DOS_MEMORY );
                 }
@@ -390,8 +389,8 @@ static trpld_error ReadInTrap( FILE *fp )
     dos_exe_header      hdr;
     memptr              relocbuff[NUM_BUFF_RELOCS];
     unsigned            relocnb;
-    unsigned            imagesize;
-    unsigned            hdrsize;
+    unsigned            image_size;
+    unsigned            hdr_size;
 
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
@@ -400,14 +399,14 @@ static trpld_error ReadInTrap( FILE *fp )
         return( TC_ERR_BAD_TRAP_FILE );
     }
 
-    hdrsize = hdr.hdr_size * 16;
-    imagesize = ( hdr.file_size * 0x200 ) - (-hdr.mod_size & 0x1ff) - hdrsize;
-    TrapMem = DPMIAllocateDOSMemoryBlock( _NBPARAS( imagesize ) + hdr.min_16 );
+    hdr_size = hdr.hdr_size * 16;
+    image_size = ( hdr.file_size * 0x200 ) - (-hdr.mod_size & 0x1ff) - hdr_size;
+    TrapMem = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) + hdr.min_16 );
     if( TrapMem.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
-    DIGLoader( Seek )( fp, hdrsize, DIG_SEEK_ORG );
-    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), imagesize ) ) {
+    DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
+    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), image_size ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
     }
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
@@ -516,7 +515,8 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( err != TC_OK ) {
         return( err );
     }
-    if( (err = SetTrapHandler()) == TC_OK && (err = CopyEnv()) == TC_OK ) {
+    if( (err = SetTrapHandler()) == TC_OK
+      && (err = CopyEnv()) == TC_OK ) {
         err = TC_ERR_BAD_TRAP_FILE;
         head = EXTENDER_RM2PM( TrapMem.rm, 0 );
         if( head->sig == TRAP_SIGNATURE ) {
@@ -532,6 +532,7 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                     ReqFunc = DoTrapAccess;
                     return( TC_OK );
                 }
+                err = TC_ERR_WRONG_TRAP_VERSION;
             }
         }
     }

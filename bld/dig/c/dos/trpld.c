@@ -39,6 +39,7 @@
 #include "exedos.h"
 #include "digld.h"
 #include "trpld.h"
+#include "roundmac.h"
 
 
 #define TRAP_SIGNATURE          0xDEAF
@@ -78,7 +79,7 @@ static trpld_error ReadInTrap( FILE *fp )
     }
     hdr_size = hdr.hdr_size * 16;
     size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
-    ret = TinyAllocBlock( (size + 15) >> 4 );
+    ret = TinyAllocBlock( __ROUND_UP_SIZE_TO_PARA( size ) );
     if( TINY_ERROR( ret ) ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
@@ -158,6 +159,7 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( TC_OK );
             }
+            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();
