@@ -59,7 +59,7 @@ static trap_fini_func   *FiniFunc = NULL;
 static trpld_error ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
-    unsigned            size;
+    unsigned            image_size;
     unsigned            hdr_size;
     struct {
         unsigned_16     off;
@@ -78,15 +78,15 @@ static trpld_error ReadInTrap( FILE *fp )
         return( TC_ERR_BAD_TRAP_FILE );
     }
     hdr_size = hdr.hdr_size * 16;
-    size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
-    ret = TinyAllocBlock( __ROUND_UP_SIZE_TO_PARA( size ) );
+    image_size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
+    ret = TinyAllocBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) );
     if( TINY_ERROR( ret ) ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
     start_seg = TINY_INFO( ret );
     TrapCode = _MK_FP( start_seg, 0 );
     DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
-    DIGLoader( Read )( fp, TrapCode, size );
+    DIGLoader( Read )( fp, TrapCode, image_size );
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     p = &buff[NUM_BUFF_RELOCS];
     for( relocs = hdr.num_relocs; relocs != 0; --relocs ) {

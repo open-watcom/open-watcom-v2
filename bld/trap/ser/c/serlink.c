@@ -678,6 +678,9 @@ static const char *CollectParm( const char *parm, char *arg, int *len )
 
 
 static char *SetLinkParms( const char **pparm )
+/**********************************************
+ * The format for *parms is "1.9600<modem_connect_string>"
+ */
 {
     const char  *parm;
     char        arg1[7];
@@ -852,7 +855,7 @@ done:
 
 const char *RemoteLink( const char *parms, bool server )
 /*******************************************************
- * The format for *parm is "1.9600<modem_connect_string>"
+ * The format for *parms is "1.9600<modem_connect_string>"
  */
 {
     const char  *result;
