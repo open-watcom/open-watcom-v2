@@ -42,6 +42,10 @@
 #define _TARGET_    "x86 32-bit"
 #elif _CPU == _AXP
 #define _TARGET_    "Alpha AXP"
+#elif _CPU == _MIPS
+#define _TARGET_    "MIPS"
+#elif _CPU == _PPC
+#define _TARGET_    "PowerPC"
 #else
 #error Unknown System
 #endif
