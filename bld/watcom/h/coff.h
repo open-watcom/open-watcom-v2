@@ -564,7 +564,7 @@ typedef struct {
     uint_16     subsys_minor;
     uint_32     reserved1;
     uint_32     image_size;
-    uint_32     header_size;
+    uint_32     headers_size;
     uint_32     file_checksum;
     uint_16     sub_system;
     uint_16     dll_flags;
@@ -608,7 +608,7 @@ typedef struct {
     uint_16     subsys_minor;
     uint_32     reserved1;
     uint_32     image_size;
-    uint_32     header_size;
+    uint_32     headers_size;
     uint_32     file_checksum;
     uint_16     sub_system;
     uint_16     dll_flags;

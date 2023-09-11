@@ -152,7 +152,7 @@ u_long PE_getFileSize( FILE *fp, u_long startOffset )
     /*
      * Scan all the section headers summing up the total size
      */
-    size = opthdr.header_size;
+    size = opthdr.headers_size;
     for( i = 0; i < filehdr.num_objects; i++ ) {
         if( DIGLoader( Read )( fp, &secthdr, sizeof( secthdr ) ) )
             return( 0xFFFFFFFF );

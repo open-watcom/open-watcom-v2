@@ -1185,7 +1185,7 @@ void FiniPELoadFile( void )
         }
         NullAlign( file_align ); /* pad out last page */
         PE64( pehdr ).image_size = image_size;
-        PE64( pehdr ).header_size = objects[0].physical_offset;
+        PE64( pehdr ).headers_size = objects[0].physical_offset;
     } else {
         if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
             pehdr.signature = EXESIGN_PL;
@@ -1362,7 +1362,7 @@ void FiniPELoadFile( void )
         }
         NullAlign( file_align ); /* pad out last page */
         PE32( pehdr ).image_size = image_size;
-        PE32( pehdr ).header_size = objects[0].physical_offset;
+        PE32( pehdr ).headers_size = objects[0].physical_offset;
     }
     DBIWrite();
     SeekLoad( stub_len );

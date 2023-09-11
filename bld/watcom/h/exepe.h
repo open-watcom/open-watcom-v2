@@ -290,7 +290,7 @@ typedef struct {
     unsigned_16         subsys_minor;
     unsigned_32         rsvd1;
     unsigned_32         image_size;
-    unsigned_32         header_size;  //size of dos hdr, nt hdr, obj table & pad
+    unsigned_32         headers_size;   //size of dos hdr, nt hdr, obj table & pad
     unsigned_32         file_checksum;
     unsigned_16         subsystem;
     unsigned_16         dll_flags;
@@ -327,7 +327,7 @@ typedef struct {
     unsigned_16         subsys_minor;
     unsigned_32         rsvd1;
     unsigned_32         image_size;
-    unsigned_32         header_size;  //size of dos hdr, nt hdr, obj table & pad
+    unsigned_32         headers_size;   //size of dos hdr, nt hdr, obj table & pad
     unsigned_32         file_checksum;
     unsigned_16         subsystem;
     unsigned_16         dll_flags;

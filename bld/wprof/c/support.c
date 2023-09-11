@@ -464,7 +464,7 @@ bool SetExeFile( FILE *fp, bool overlay )
 #if 0
         fseek( exeFP, ne_header_off + offsetof( pe_header, num_objects ), SEEK_SET );
         fread( exeFP, &data16, 1, sizeof( data16 ), exeFP );
-        fseek( exeFP, ne_header_off + offsetof( pe_header, header_size ), SEEK_SET );
+        fseek( exeFP, ne_header_off + offsetof( pe_header, headers_size ), SEEK_SET );
         fread( &data32, 1, sizeof( data32 ), exeFP );
         /* exeImageOffset is in bytes and points to the object table */
         exeImageOffset = data32 - data16 * sizeof( pe_object );
