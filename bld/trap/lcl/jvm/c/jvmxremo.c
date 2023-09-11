@@ -560,8 +560,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     /* unused parameters */ (void)remote;
 
     ver.remote = FALSE;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     FakeHandle = GetStdHandle( STD_INPUT_HANDLE );
     error[0] = '\0';
     strcpy( LinkParms, parms );

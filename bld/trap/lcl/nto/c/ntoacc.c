@@ -1340,8 +1340,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ProcInfo.node = ND_LOCAL_NODE;
     strcpy( ProcInfo.procfs_path, "/proc" );
     err[0] = '\0';      /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = FALSE;
     OrigPGrp = getpgrp();
     return( ver );

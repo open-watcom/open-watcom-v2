@@ -152,8 +152,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     } else {
         error[0] = '\0';
     }
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = fix_minor ? OLD_TRAP_MINOR_VERSION : TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = fix_minor ? OLD_TRAP_VERSION_MINOR : TRAP_VERSION_MINOR;
     _DBG_ExitFunc( "TrapInit" );
     return( ver );
 }

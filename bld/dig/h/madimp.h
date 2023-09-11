@@ -35,13 +35,13 @@
 
 #include "madcli.h"
 
-#define MAD_MAJOR       2
-#define MAD_MINOR       0
+#define MAD_VERSION_MAJOR   2
+#define MAD_VERSION_MINOR   0
 
-#define MADImp(n)       MADImp ## n
-#define _MADImp(n)      _MADImp ## n n
+#define MADImp(n)           MADImp ## n
+#define _MADImp(n)          _MADImp ## n n
 
-#define MADIMPENTRY(n)  DIGENTRY MADImp( n )
+#define MADIMPENTRY(n)      DIGENTRY MADImp( n )
 
 typedef struct imp_mad_state_data       imp_mad_state_data;
 

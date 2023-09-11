@@ -158,8 +158,8 @@ void InitTrap( const char *parms )
         StartupErr( buff );
     }
     acc.req = REQ_CONNECT;
-    acc.ver.major = TRAP_MAJOR_VERSION;
-    acc.ver.minor = TRAP_MINOR_VERSION;
+    acc.ver.major = TRAP_VERSION_MAJOR;
+    acc.ver.minor = TRAP_VERSION_MINOR;
     acc.ver.remote = false;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );

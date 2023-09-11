@@ -148,8 +148,8 @@ const address    NilAddr = { 0 };
  */
 
 static dip_client_routines DIPClientInterface = {
-    DIP_MAJOR,
-    DIP_MINOR,
+    DIP_VERSION_MAJOR,
+    DIP_VERSION_MINOR,
     sizeof( dip_client_routines ),
     DIGCli( Alloc ),
     DIGCli( Realloc ),

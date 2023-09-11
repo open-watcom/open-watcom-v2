@@ -35,16 +35,16 @@
 
 #include "dipcli.h"
 
-#define DIP_MAJOR       2
-#define DIP_MINOR       0
+#define DIP_VERSION_MAJOR   2
+#define DIP_VERSION_MINOR   0
 
-#define MH2IMH( mh )    ((mh)&0x0000FFFF)
-#define IMH2MH( imh )   (imh)
+#define MH2IMH( mh )        ((mh)&0x0000FFFF)
+#define IMH2MH( imh )       (imh)
 
 /*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
+ * An imp_mod_handle is defined as an unsigned_16. The value zero is
+ * reserved to indicate "no module".
+ */
 #define IMH_NOMOD       ((imp_mod_handle)0)
 #define IMH_BASE        ((imp_mod_handle)1)
 #define IMH_GBL         ((imp_mod_handle)-1)

@@ -49,17 +49,17 @@
     #define     TRAPENTRY
 #endif
 
-#define TRAP_MAJOR_VERSION      18
-#define TRAP_MINOR_VERSION      0
-#define OLD_TRAP_MINOR_VERSION  0
+#define TRAP_VERSION_MAJOR      18
+#define TRAP_VERSION_MINOR      0
+#define OLD_TRAP_VERSION_MINOR  0
 
 #define REQUEST_FAILED ((trap_retval)-1)
 
-#if OLD_TRAP_MINOR_VERSION > 0
-    #define TrapVersionOK( ver )  (((ver).major == TRAP_MAJOR_VERSION) && \
-                                   ((ver).minor >= OLD_TRAP_MINOR_VERSION))
+#if OLD_TRAP_VERSION_MINOR > 0
+    #define TrapVersionOK( ver )  (((ver).major == TRAP_VERSION_MAJOR) && \
+                                   ((ver).minor >= OLD_TRAP_VERSION_MINOR))
 #else
-    #define TrapVersionOK( ver )  ((ver).major == TRAP_MAJOR_VERSION)
+    #define TrapVersionOK( ver )  ((ver).major == TRAP_VERSION_MAJOR)
 #endif
 
 #define TRP_REQUEST(x)      *((trap_req *)(x)[0].ptr)

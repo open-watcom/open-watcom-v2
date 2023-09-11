@@ -1330,8 +1330,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     /* unused parameters */ (void)remote; (void)parms;
 
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = FALSE;
     sysAtexit( HandleExit );
     cbCallJava = FindClass( EE(), "sun/tools/debug/jvmhelp", TRUE );

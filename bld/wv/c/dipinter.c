@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -869,8 +869,8 @@ static dip_status WVIMPENTRY( SymFreeAll )( imp_image_handle *iih )
 }
 
 static dip_imp_routines InternalInterface = {
-    DIP_MAJOR,
-    DIP_MINOR,
+    DIP_VERSION_MAJOR,
+    DIP_VERSION_MINOR,
     DIP_PRIOR_EXPORTS,
     WVImp( Name ),
 

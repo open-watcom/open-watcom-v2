@@ -466,8 +466,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     trap_version    ver;
 
     ver.remote = false;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     if( !remote && DPMIVersion() == 90 && !DOSEMUCheck() ) {
         strcpy( error, TRP_ERR_bad_dpmi );
         return( ver );

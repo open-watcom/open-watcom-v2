@@ -1317,8 +1317,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     Remote = remote;
     err[0] = '\0';
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = FALSE;
     SaveStdIn = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;

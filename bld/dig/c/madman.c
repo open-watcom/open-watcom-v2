@@ -110,8 +110,8 @@ mad_status MADCLIENTRY( TypeToString )( mad_radix radix, const mad_type_info *mt
 }
 
 static mad_client_routines MADClientInterface = {
-    MAD_MAJOR,
-    MAD_MINOR,
+    MAD_VERSION_MAJOR,
+    MAD_VERSION_MINOR,
     sizeof( mad_client_routines ),
 
     DIGCli( Alloc ),
@@ -2174,8 +2174,8 @@ mad_status      MADUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_
 
 
 static mad_imp_routines DummyRtns = {
-    MAD_MAJOR,
-    MAD_MINOR,
+    MAD_VERSION_MAJOR,
+    MAD_VERSION_MINOR,
     sizeof( DummyRtns ),
 
     DummyImp( Init ),

@@ -1069,8 +1069,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     _DBG(( "in TrapInit\r\n" ));
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     //ver.is_32 = true;
     RedirectInit();

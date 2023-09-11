@@ -53,8 +53,8 @@ address                 NilAddr;
 dip_client_routines     *DIPClient;
 
 dip_imp_routines        ImpInterface = {
-    DIP_MAJOR,
-    DIP_MINOR,
+    DIP_VERSION_MAJOR,
+    DIP_VERSION_MINOR,
     DIP_PRIORITY,
     DIPImp( Name ),
 

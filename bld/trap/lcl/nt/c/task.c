@@ -41,7 +41,7 @@
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
-    trap_version    trapver;
+    trap_version    ver;
     HANDLE          dll;
 
     /* unused parameters */ (void)remote;
@@ -105,10 +105,10 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         BreakOnKernelMessage = true;
     }
     err[0] = 0;
-    trapver.major = TRAP_MAJOR_VERSION;
-    trapver.minor = TRAP_MINOR_VERSION;
-    trapver.remote = false;
-    return( trapver );
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
+    ver.remote = false;
+    return( ver );
 }
 
 void TRAPENTRY TrapFini( void )
