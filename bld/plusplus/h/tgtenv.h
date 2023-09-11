@@ -34,19 +34,18 @@
 #include "langenvd.h"
 
 #if _INTEL_CPU
-
     #define __TGT_SYS __TGT_SYS_X86
-    #include "langenv.h"
-
 #elif _CPU == _AXP
-
-    #define __TGT_SYS __TGT_SYS_AXP_NT
-    #include "langenv.h"
-
+    #define   __TGT_SYS   __TGT_SYS_AXP_NT
+#elif _CPU == _MIPS
+     #define   __TGT_SYS   __TGT_SYS_MIPS
+#elif _CPU == _PPC
+    #define   __TGT_SYS   __TGT_SYS_PPC_NT
 #else
-
     #error Invalid target environment
 
 #endif
+#include "langenv.h"
+
 
 #endif
