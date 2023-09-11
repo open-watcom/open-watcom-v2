@@ -68,9 +68,13 @@
 #define __ROUND_DOWN_SIZE_EVEN(__x)         __ROUND_DOWN_SIZE(__x,2)
 #define __ROUND_UP_SIZE_EVEN(__x)           __ROUND_UP_SIZE(__x,2)
 
+#define __ROUND_DOWN_SIZE_PARA(__x)         __ROUND_DOWN_SIZE(__x,16)
 #define __ROUND_UP_SIZE_PARA(__x)           __ROUND_UP_SIZE(__x,16)
+#define __ROUND_DOWN_SIZE_PAGE(__x)         __ROUND_DOWN_SIZE(__x,256)
 #define __ROUND_UP_SIZE_PAGE(__x)           __ROUND_UP_SIZE(__x,256)
+#define __ROUND_DOWN_SIZE_4K(__x)           __ROUND_DOWN_SIZE(__x,_4K)
 #define __ROUND_UP_SIZE_4K(__x)             __ROUND_UP_SIZE(__x,_4K)
+#define __ROUND_DOWN_SIZE_64K(__x)          __ROUND_DOWN_SIZE(__x,_64K)
 #define __ROUND_UP_SIZE_64K(__x)            __ROUND_UP_SIZE(__x,_64K)
 
 #define __ROUND_DOWN_SIZE_TO_PARA(__x)      __ROUND_DOWN_SIZE_TO((__x),16)
