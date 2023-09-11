@@ -63,6 +63,7 @@
 #endif
 
 #define TRP_REQUEST(x)      *((trap_req *)(x)[0].ptr)
+#define REQ_WANT_RETURN     (0x80)
 
 #define TRAP_SYM1(a,b,c)    a ## b ## _ ## c
 #define TRAP_SYM(a,b)       TRAP_SYM1( Req, a, b )

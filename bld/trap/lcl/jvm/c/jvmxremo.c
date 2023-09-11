@@ -59,12 +59,12 @@ trap_retval DoAccess( void )
     StartPacket();
     if( Out_Mx_Num == 0 ) {
         /* Tell the server we're not expecting anything back */
-        TRP_REQUEST( In_Mx_Ptr ) |= 0x80;
+        TRP_REQUEST( In_Mx_Ptr ) |= REQ_WANT_RETURN;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
         AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
-    TRP_REQUEST( In_Mx_Ptr ) &= ~0x80;
+    TRP_REQUEST( In_Mx_Ptr ) &= ~REQ_WANT_RETURN;
     PutPacket();
     if( Out_Mx_Num != 0 ) {
         len = GetPacket();

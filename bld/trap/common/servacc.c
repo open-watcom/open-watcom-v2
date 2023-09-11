@@ -116,13 +116,13 @@ bool Session( void )
         In_Mx_Num = 1;
         Out_Mx_Num = 1;
         req = TRP_REQUEST( In );
-        TRP_REQUEST( In ) &= ~0x80;
-        if( req & 0x80 ) {
-            req &= ~0x80;
+        if( req & REQ_WANT_RETURN ) {
+            req &= ~REQ_WANT_RETURN;
             want_return = false;
         } else {
             want_return = true;
         }
+        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_CONNECT:
             if( !AccConnect() )
