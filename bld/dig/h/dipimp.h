@@ -45,20 +45,20 @@
  * An imp_mod_handle is defined as an unsigned_16. The value zero is
  * reserved to indicate "no module".
  */
-#define IMH_NOMOD       ((imp_mod_handle)0)
-#define IMH_BASE        ((imp_mod_handle)1)
-#define IMH_GBL         ((imp_mod_handle)-1)
+#define IMH_NOMOD           ((imp_mod_handle)0)
+#define IMH_BASE            ((imp_mod_handle)1)
+#define IMH_GBL             ((imp_mod_handle)-1)
 
-#define DIPImp(n)       DIPImp ## n
-#define _DIPImp(n)      _DIPImp ## n n
+#define DIPImp(n)           DIPImp ## n
+#define _DIPImp(n)          _DIPImp ## n n
 
-#define DIPIMPENTRY(n)  DIGENTRY DIPImp( n )
+#define DIPIMPENTRY(n)      DIGENTRY DIPImp( n )
 
-typedef int strcomp_fn( const char *, const char * );
-typedef int strcompn_fn( const char *, const char *, size_t );
+typedef int                 strcomp_fn( const char *, const char * );
+typedef int                 strcompn_fn( const char *, const char *, size_t );
 
-typedef unsigned_16     imp_mod_handle;
-typedef unsigned_16     image_index;
+typedef unsigned_16         imp_mod_handle;
+typedef unsigned_16         image_index;
 
 typedef walk_result (DIGCLIENT DIP_IMP_MOD_WALKER)( imp_image_handle *, imp_mod_handle, void * );
 typedef walk_result (DIGCLIENT DIP_IMP_TYPE_WALKER)( imp_image_handle *, imp_type_handle *, void * );

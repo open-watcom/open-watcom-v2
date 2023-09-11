@@ -461,7 +461,7 @@ trap_retval TRAP_CORE( Prog_step )( void )
     return( TRAP_CORE( Prog_go )() );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
 
@@ -469,13 +469,13 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     ver.major = TRAP_VERSION_MAJOR;
     ver.minor = TRAP_VERSION_MINOR;
     if( !remote && DPMIVersion() == 90 && !DOSEMUCheck() ) {
-        strcpy( error, TRP_ERR_bad_dpmi );
+        strcpy( err, TRP_ERR_bad_dpmi );
         return( ver );
     }
     _DBG_EnterFunc( "TrapInit()" );
     InitPSP();
     LoadError = NULL;
-    error[0] = '\0';
+    err[0] = '\0';
     strcpy( LinkParms, parms );      // save trap parameters
     TaskLoaded = false;
     _DBG_ExitFunc( "TrapInit()" );

@@ -300,7 +300,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     const char          *err;
     prog_load_ret       *ret;
     size_t              len;
-    const char          *loaderr;
 
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
@@ -315,7 +314,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     }
     err = RemoteLink( LinkParms, FALSE );
     if( err != NULL ) {
-        loaderr = err;
         strcpy( SavedError, err );
         ret->err = ERR_JVM_SAVED_ERROR;
         return( sizeof( *ret ) );
@@ -553,7 +551,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
 
@@ -563,7 +561,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     ver.major = TRAP_VERSION_MAJOR;
     ver.minor = TRAP_VERSION_MINOR;
     FakeHandle = GetStdHandle( STD_INPUT_HANDLE );
-    error[0] = '\0';
+    err[0] = '\0';
     strcpy( LinkParms, parms );
     TaskLoaded = FALSE;
     return( ver );
