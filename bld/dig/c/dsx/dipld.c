@@ -59,7 +59,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     FILE                *fp;
     imp_header          *mod_hdl;
     dip_init_func       *init_func;
-    dip_status          ds;
+    dip_status          status;
     char                filename[_MAX_PATH];
 
     *sys_hdl = NULL_SYSHDL;
@@ -72,30 +72,26 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     }
     mod_hdl = ReadInImp( fp );
     DIGLoader( Close )( fp );
-    ds = DS_ERR | DS_INVALID_DIP;
-    if( mod_hdl != NULL ) {
-#ifdef __WATCOMC__
-        if( mod_hdl->sig == DIPSIG ) {
-#endif
-#ifdef WATCOM_DEBUG_SYMBOLS
-            /*
-             * Look for symbols in separate .sym files, not the .dip itself
-             */
-            strcpy( filename + strlen( filename ) - 4, ".sym" );
-            DebuggerLoadUserModule( filename, GetCS(), (unsigned long)mod_hdl );
-#endif
-            init_func = (dip_init_func *)mod_hdl->init_rtn;
-            if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
-                *sys_hdl = mod_hdl;
-                return( DS_OK );
-            }
-#ifdef WATCOM_DEBUG_SYMBOLS
-            DebuggerUnloadUserModule( filename );
-#endif
-#ifdef __WATCOMC__
-        }
-#endif
-        DIPSysUnload( (dip_sys_handle *)&mod_hdl );
+    status = DS_ERR | DS_INVALID_DIP;
+    if( mod_hdl == NULL ) {
+        return( status );
     }
-    return( ds );
+#ifdef __WATCOMC__
+    init_func = (dip_init_func *)((mod_hdl->sig == DIPSIG) ? mod_hdl->init_rtn : NULL);
+#else
+    init_func = (dip_init_func *)mod_hdl->init_rtn;
+#endif
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+#ifdef WATCOM_DEBUG_SYMBOLS
+        /*
+         * Look for symbols in separate .sym files, not the .dip itself
+         */
+        strcpy( filename + strlen( filename ) - 4, ".sym" );
+        DebuggerLoadUserModule( filename, GetCS(), (unsigned long)mod_hdl );
+#endif
+        *sys_hdl = mod_hdl;
+        return( DS_OK );
+    }
+    DIPSysUnload( (dip_sys_handle *)&mod_hdl );
+    return( status );
 }

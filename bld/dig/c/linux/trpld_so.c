@@ -36,7 +36,6 @@
 #include <dlfcn.h>
 #include "digld.h"
 #include "trpld.h"
-#include "tcerr.h"
 
 #include "clibext.h"
 
@@ -78,11 +77,12 @@ void UnLoadTrap( void )
 #endif
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
+    trpld_error         err;
 #if !defined( BUILTIN_TRAP_FILE )
     char                filename[_MAX_PATH];
     const char          *base_name;
@@ -106,44 +106,35 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
 #if !defined( BUILTIN_TRAP_FILE )
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".so", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+        return( TC_ERR_CANT_FIND_TRAP );
     }
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( buff );
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
     mod_hdl = dlopen( filename, RTLD_NOW );
     DIGLoader( Close )( fp );
     if( mod_hdl == NULL ) {
         puts( dlerror() );
-        return( buff );
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
-    buff[0] = '\0';
     ld_func = (trap_load_func *)dlsym( mod_hdl, "TrapLoad" );
-    if( ld_func != NULL ) {
+    trap_funcs = ((ld_func != NULL) ? ld_func( &TrapCallbacks ) : NULL);
 #else
-    buff[0] = '\0';
-    ld_func = TrapLoad;
+    trap_funcs = TrapLoad( &TrapCallbacks );
 #endif
-        trap_funcs = ld_func( &TrapCallbacks );
-        if( trap_funcs != NULL ) {
-            *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
-            FiniFunc = trap_funcs->fini_func;
-            ReqFunc = trap_funcs->req_func;
-            if( buff[0] == '\0' ) {
-                if( TrapVersionOK( *trap_ver ) ) {
-                    TrapVer = *trap_ver;
-                    return( NULL );
-                }
+    err = TC_ERR_BAD_TRAP_FILE;
+    if( trap_funcs != NULL ) {
+        *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
+        FiniFunc = trap_funcs->fini_func;
+        ReqFunc = trap_funcs->req_func;
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( TC_OK );
             }
         }
-#if !defined( BUILTIN_TRAP_FILE )
     }
-#endif
-    if( buff[0] == '\0' )
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     UnLoadTrap();
-    return( buff );
+    return( err );
 }

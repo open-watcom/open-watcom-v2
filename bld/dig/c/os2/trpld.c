@@ -39,7 +39,6 @@
 #include "digld.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "tcerr.h"
 
 
 #ifdef _M_I86
@@ -101,12 +100,13 @@ void UnLoadTrap( void )
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     const char          *base_name;
     size_t              len;
     trap_init_func      *init_func;
     char                filename[CCHMAXPATH];
+    trpld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -142,14 +142,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #else
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+        return( TC_ERR_CANT_FIND_TRAP );
     }
     if( LOAD_MODULE( filename, mod_hdl ) ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-        return( buff );
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
-    buff[0] = '\0';
+    err = TC_ERR_BAD_TRAP_FILE;
     if( GET_PROC_ADDRESS( mod_hdl, 1, init_func )
       && GET_PROC_ADDRESS( mod_hdl, 2, FiniFunc )
       && GET_PROC_ADDRESS( mod_hdl, 3, ReqFunc ) ) {
@@ -163,12 +161,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
-                return( NULL );
+                return( TC_OK );
             }
         }
     }
-    if( buff[0] == '\0' )
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     UnLoadTrap();
-    return( buff );
+    return( err );
 }

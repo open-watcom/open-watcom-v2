@@ -35,7 +35,6 @@
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "tcerr.h"
 #include "dbglit.h"
 #include "dui.h"
 #include "trapaccs.h"
@@ -723,15 +722,4 @@ void FiniCoreSupp( void )
 {
     _Free( MData );
     MData = NULL;
-}
-
-char    *TrapClientString( tc_error err )
-{
-    switch( err ) {
-    case TC_BAD_TRAP_FILE:      return( LIT_ENG( BAD_TRAP_FILE ) );
-    case TC_CANT_LOAD_TRAP:     return( LIT_ENG( CANT_LOAD_TRAP_FILE ) );
-    case TC_WRONG_TRAP_VERSION: return( LIT_ENG( INCORRECT_TRAP_FILE_VERSION ) );
-    case TC_OUT_OF_DOS_MEMORY:  return( LIT_ENG( OUT_OF_DOS_MEMORY ) );
-    }
-    return( NULL );
 }

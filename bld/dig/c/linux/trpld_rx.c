@@ -39,7 +39,6 @@
 #include "digld.h"
 #include "trpld.h"
 #include "trpimp.h"
-#include "tcerr.h"
 #include "ldimp.h"
 
 
@@ -74,7 +73,7 @@ void UnLoadTrap( void )
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_load_func      *ld_func;
@@ -82,6 +81,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     char                filename[256];
     const char          *base_name;
     size_t              len;
+    trpld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -95,40 +95,37 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+        return( TC_ERR_CANT_FIND_TRAP );
     }
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( buff );
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
     TrapCode = ReadInImp( fp );
     DIGLoader( Close )( fp );
-    if( TrapCode != NULL ) {
-        buff[0] = '\0';
+    if( TrapCode == NULL ) {
+        return( TC_ERR_CANT_LOAD_TRAP );
+    }
+    err = TC_ERR_BAD_TRAP_FILE;
 #ifdef __WATCOMC__
-        if( TrapCode->sig == TRAPSIG ) {
+    ld_func = (trap_load_func *)((TrapCode->sig == TRAPSIG) ? TrapCode->init_rtn : NULL);
+#else
+    ld_func = (trap_load_func *)TrapCode->init_rtn;
 #endif
-            ld_func = (trap_load_func *)TrapCode->init_rtn;
-            trap_funcs = ld_func( &TrapCallbacks );
-            if( trap_funcs != NULL ) {
-                *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
-                FiniFunc = trap_funcs->fini_func;
-                ReqFunc = trap_funcs->req_func;
-                if( buff[0] == '\0' ) {
-                    if( TrapVersionOK( *trap_ver ) ) {
-                        TrapVer = *trap_ver;
-                        return( NULL );
-                    }
+    if( ld_func != NULL ) {
+        trap_funcs = ld_func( &TrapCallbacks );
+        if( trap_funcs != NULL ) {
+            *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
+            FiniFunc = trap_funcs->fini_func;
+            ReqFunc = trap_funcs->req_func;
+            if( buff[0] == '\0' ) {
+                if( TrapVersionOK( *trap_ver ) ) {
+                    TrapVer = *trap_ver;
+                    return( TC_OK );
                 }
             }
-#ifdef __WATCOMC__
         }
-#endif
-        if( buff[0] == '\0' )
-            strcpy( buff, TC_ERR_BAD_TRAP_FILE );
-        UnLoadTrap();
     }
-    return( buff );
+    UnLoadTrap();
+    return( err );
 }

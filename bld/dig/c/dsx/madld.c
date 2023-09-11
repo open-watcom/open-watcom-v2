@@ -72,19 +72,18 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
     mod_hdl = ReadInImp( fp );
     DIGLoader( Close )( fp );
     status = MS_ERR | MS_INVALID_MAD;
-    if( mod_hdl != NULL ) {
-#ifdef __WATCOMC__
-        if( mod_hdl->sig == MADSIG ) {
-#endif
-            init_func = (mad_init_func *)mod_hdl->init_rtn;
-            if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-                *sys_hdl = mod_hdl;
-                return( MS_OK );
-            }
-#ifdef __WATCOMC__
-        }
-#endif
-        MADSysUnload( (mad_sys_handle *)&mod_hdl );
+    if( mod_hdl == NULL ) {
+        return( status );
     }
+#ifdef __WATCOMC__
+    init_func = (mad_init_func *)((mod_hdl->sig == MADSIG) ? mod_hdl->init_rtn : NULL);
+#else
+    init_func = (mad_init_func *)mod_hdl->init_rtn;
+#endif
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = mod_hdl;
+        return( MS_OK );
+    }
+    MADSysUnload( (mad_sys_handle *)&mod_hdl );
     return( status );
 }

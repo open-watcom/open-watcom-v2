@@ -39,7 +39,6 @@
 #include "exedos.h"
 #include "digld.h"
 #include "trpld.h"
-#include "tcerr.h"
 
 
 #define TRAP_SIGNATURE          0xDEAF
@@ -56,7 +55,7 @@ typedef struct {
 static trap_header      __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
-static char *ReadInTrap( FILE *fp )
+static trpld_error ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
     unsigned            size;
@@ -100,7 +99,7 @@ static char *ReadInTrap( FILE *fp )
         *fixup += start_seg;
         ++p;
     }
-    return( NULL );
+    return( TC_OK );
 }
 
 void UnLoadTrap( void )
@@ -116,13 +115,13 @@ void UnLoadTrap( void )
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE            *fp;
     trap_init_func  *init_func;
     char            filename[256];
     const char      *base_name;
-    const char      *err;
+    trpld_error     err;
     size_t          len;
 
     if( parms == NULL || *parms == '\0' )
@@ -137,36 +136,30 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+        return( TC_ERR_CANT_FIND_TRAP );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-        return( buff );
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
-    buff[0] = '\0';
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( err == TC_ERR_CANT_LOAD_TRAP ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-    } else if( err == NULL ) {
-        if( TrapCode->signature == TRAP_SIGNATURE ) {
-            init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
-            FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
-            ReqFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->req_off );
-            *trap_ver = init_func( parms, buff, trap_ver->remote );
-            if( buff[0] == '\0' ) {
-                if( TrapVersionOK( *trap_ver ) ) {
-                    TrapVer = *trap_ver;
-                    return( NULL );
-                }
+    if( err != TC_OK ) {
+        return( err );
+    }
+    err = TC_ERR_BAD_TRAP_FILE;
+    if( TrapCode->signature == TRAP_SIGNATURE ) {
+        init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
+        FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
+        ReqFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->req_off );
+        *trap_ver = init_func( parms, buff, trap_ver->remote );
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( TC_OK );
             }
         }
-        err = TC_ERR_WRONG_TRAP_VERSION;
     }
-    if( buff[0] == '\0' )
-        strcpy( buff, err );
     UnLoadTrap();
-    return( buff );
+    return( err );
 }

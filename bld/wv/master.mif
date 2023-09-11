@@ -73,7 +73,7 @@ wv_res_inc_dirs = -I"../../res/dlgs" -I"$(res_strings_dir)" -I"../../res"
 
 inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" &
     $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) &
-    $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
+    $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(trap_dir)/h"
 !ifeq sys_rtdll 1
 !else
 !ifeq sys_windowed 1
@@ -144,14 +144,14 @@ extra_l_flags_rdos =
 # EXE
 #
 !ifdef wv_engine_noui
-exetarg_prebuild_objs = litdef.gh
+exetarg_prebuild_objs = litdef.gh _err.gh _jerr.gh
 exetarg_objs          = $(wv_drv_objs)
 exetarg_libs          = wd.lib
 exetarg_res           = wvuidll.res
 exetarg_name          = $(wv_engine_noui)
 !include exetarg.mif
 !else
-exetarg_prebuild_objs = litdef.gh usage.gh
+exetarg_prebuild_objs = litdef.gh usage.gh _err.gh _jerr.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
@@ -172,7 +172,7 @@ exetarg_ext           = .exe
 #
 # LIB
 #
-libtarg_prebuild_objs = litdef.gh usage.gh
+libtarg_prebuild_objs = litdef.gh usage.gh _err.gh _jerr.gh
 libtarg_objs          = $(engine_objs)
 libtarg_name          = wd
 !include libtarg.mif
@@ -459,6 +459,14 @@ litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     $(awk) -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
     $(awk) -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
     $(awk) -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
+
+_err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) $(rc_ui8_flags) -I"$(trap_dir)/h" $(rc_ui_inc_path) $[@ -o$@
+
+_jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) $(rc_ui8_flags) -DJAPANESE -I"$(trap_dir)/h" $(rc_ui_inc_path) $[@ -o$@
 
 !ifeq release 0
 wsplice_keys = -kHIDDEN

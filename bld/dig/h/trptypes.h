@@ -37,6 +37,7 @@
 #if defined( __WINDOWS__ )
     #include "setevent.h"
 #endif
+#include "trplderr.h"
 
 #if defined( __WINDOWS__ )
     #define     TRAPENTRY   __far __pascal

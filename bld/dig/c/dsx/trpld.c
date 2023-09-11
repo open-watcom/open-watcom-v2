@@ -43,7 +43,6 @@
 #include "trpld.h"
 #include "trpcore.h"
 #include "trpsys.h"
-#include "tcerr.h"
 #include "envlkup.h"
 #include "realmod.h"
 
@@ -303,7 +302,7 @@ static uint_16 EnvAreaSize( char __far *envarea )
     return( envptr - envarea + 1 );
 }
 
-static char *CopyEnv( void )
+static trpld_error CopyEnv( void )
 {
     char        __far *envarea;
     uint_16     envsize;
@@ -315,10 +314,10 @@ static char *CopyEnv( void )
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
     _fmemcpy( EXTENDER_RM2PM( PMData->envseg.rm, 0 ), envarea, envsize );
-    return( NULL );
+    return( TC_OK );
 }
 
-static char *SetTrapHandler( void )
+static trpld_error SetTrapHandler( void )
 {
     char                dummy;
     long                sel;
@@ -369,7 +368,7 @@ static char *SetTrapHandler( void )
     if( IntrState == IS_RATIONAL ) {
         MySetRMVector( TRAP_VECTOR, RMData.rm, RM_OFF( RMTrapHandler ) );
     }
-    return( NULL );
+    return( TC_OK );
 }
 
 static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
@@ -386,7 +385,7 @@ static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ve
     return( *errmsg == '\0' );
 }
 
-static char *ReadInTrap( FILE *fp )
+static trpld_error ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
     memptr              relocbuff[NUM_BUFF_RELOCS];
@@ -421,7 +420,7 @@ static char *ReadInTrap( FILE *fp )
         }
         *(addr_seg __far *)EXTENDER_RM2PM( TrapMem.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.rm;
     }
-    return( NULL );
+    return( TC_OK );
 }
 
 static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
@@ -485,13 +484,13 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
     return( callstruct->retlen );
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_file_header    __far *head;
     char                filename[256];
     const char          *base_name;
-    const char          *err;
+    trpld_error         err;
     size_t              len;
 
     if( parms == NULL || *parms == '\0' )
@@ -506,44 +505,38 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+        return( TC_ERR_CANT_FIND_TRAP );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-        return( buff );
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
-    buff[0] = '\0';
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( err == TC_ERR_CANT_LOAD_TRAP ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-    } else if( err == NULL ) {
-        if( (err = SetTrapHandler()) == NULL && (err = CopyEnv()) == NULL ) {
-            head = EXTENDER_RM2PM( TrapMem.rm, 0 );
-            if( head->sig == TRAP_SIGNATURE ) {
-                PMData->initfunc.s.offset = head->init;
-                PMData->reqfunc.s.offset  = head->req;
-                PMData->finifunc.s.offset = head->fini;
-                PMData->initfunc.s.segment = TrapMem.rm;
-                PMData->reqfunc.s.segment  = TrapMem.rm;
-                PMData->finifunc.s.segment = TrapMem.rm;
-                if( CallTrapInit( parms, buff, trap_ver ) ) {
-                    if( TrapVersionOK( *trap_ver ) ) {
-                        TrapVer = *trap_ver;
-                        ReqFunc = DoTrapAccess;
-                        return( NULL );
-                    }
+    if( err != TC_OK ) {
+        return( err );
+    }
+    if( (err = SetTrapHandler()) == TC_OK && (err = CopyEnv()) == TC_OK ) {
+        err = TC_ERR_BAD_TRAP_FILE;
+        head = EXTENDER_RM2PM( TrapMem.rm, 0 );
+        if( head->sig == TRAP_SIGNATURE ) {
+            PMData->initfunc.s.offset = head->init;
+            PMData->reqfunc.s.offset  = head->req;
+            PMData->finifunc.s.offset = head->fini;
+            PMData->initfunc.s.segment = TrapMem.rm;
+            PMData->reqfunc.s.segment  = TrapMem.rm;
+            PMData->finifunc.s.segment = TrapMem.rm;
+            if( CallTrapInit( parms, buff, trap_ver ) ) {
+                if( TrapVersionOK( *trap_ver ) ) {
+                    TrapVer = *trap_ver;
+                    ReqFunc = DoTrapAccess;
+                    return( TC_OK );
                 }
             }
-            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
-    if( buff[0] == '\0' )
-        strcpy( buff, err );
     UnLoadTrap();
-    return( buff );
+    return( err );
 }
 
 void UnLoadTrap( void )

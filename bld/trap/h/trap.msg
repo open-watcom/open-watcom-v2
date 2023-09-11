@@ -3,6 +3,9 @@
 trappick( TRP_ERR_BAD_TRAP_FILE,
     "Invalid trap file",
     "jInvalid trap file" )
+trappick( TRP_ERR_CANT_FIND_TRAP,
+    "Unable to find trap file",
+    "jUnable to find trap file" )
 trappick( TRP_ERR_CANT_LOAD_TRAP,
     "Unable to load trap file",
     "jUnable to load trap file" )

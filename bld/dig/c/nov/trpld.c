@@ -35,7 +35,6 @@
 #include "digld.h"
 #include "trpld.h"
 #include "trpcomm.h"
-#include "tcerr.h"
 
 
 void UnLoadTrap( void )
@@ -43,7 +42,7 @@ void UnLoadTrap( void )
     TrapFini();
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     const char  *trpname;
     size_t      len;
@@ -64,10 +63,9 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( TrapVersionOK( *trap_ver ) ) {
             TrapVer = *trap_ver;
             ReqFunc = TrapRequest;
-            return( NULL );
+            return( TC_OK );
         }
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     }
     UnLoadTrap();
-    return( buff );
+    return( TC_ERR_BAD_TRAP_FILE );
 }

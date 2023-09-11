@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,28 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  TRAP file loader errors enumeration
 *
 ****************************************************************************/
 
 
-#ifndef _TCERR_H_INCLUDED
-#define _TCERR_H_INCLUDED
+#ifndef _TRPLDERR_H_INCLUDED
+#define _TRPLDERR_H_INCLUDED
 
 typedef enum {
-    TC_NO_ERROR,
-    TC_BAD_TRAP_FILE,
-    TC_CANT_LOAD_TRAP,
-    TC_WRONG_TRAP_VERSION,
-    TC_OUT_OF_DOS_MEMORY,
-} tc_error;
-
-extern char     *TrapClientString( tc_error );
-
-#define TC_ERR_BAD_TRAP_FILE            TrapClientString( TC_BAD_TRAP_FILE )
-#define TC_ERR_CANT_LOAD_TRAP           TrapClientString( TC_CANT_LOAD_TRAP )
-#define TC_ERR_WRONG_TRAP_VERSION       TrapClientString( TC_WRONG_TRAP_VERSION )
-#define TC_ERR_OUT_OF_DOS_MEMORY        TrapClientString( TC_OUT_OF_DOS_MEMORY )
+    TC_OK,
+    TC_ERR,
+    TC_ERR_CANT_FIND_TRAP,
+    TC_ERR_CANT_LOAD_TRAP,
+    TC_ERR_WRONG_TRAP_VERSION,
+    TC_ERR_BAD_TRAP_FILE,
+    TC_ERR_OUT_OF_DOS_MEMORY,
+} trpld_error;
 
 #endif

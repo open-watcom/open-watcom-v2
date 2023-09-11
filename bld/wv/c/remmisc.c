@@ -42,6 +42,7 @@
 #include "dbgmem.h"
 #include "trpld.h"
 #include "trpcore.h"
+#include "trperr.h"
 #include "dbgio.h"
 #include "strutil.h"
 #include "trapglbl.h"
@@ -124,7 +125,29 @@ void InitTrap( const char *parms )
         error = LoadDumbTrap( &ver );
     } else {
 #endif
-        error = LoadTrap( parms, buff, &ver );
+        switch( LoadTrap( parms, buff, &ver ) ) {
+        case TC_OK:
+            break;
+        case TC_ERR_CANT_FIND_TRAP:
+            error = TRP_ERR_CANT_FIND_TRAP;
+            break;
+        case TC_ERR_CANT_LOAD_TRAP:
+            error = TRP_ERR_CANT_LOAD_TRAP;
+            break;
+        case TC_ERR_WRONG_TRAP_VERSION:
+            error = TRP_ERR_WRONG_TRAP_VERSION;
+            break;
+        case TC_ERR_BAD_TRAP_FILE:
+            error = TRP_ERR_BAD_TRAP_FILE;
+            break;
+        case TC_ERR_OUT_OF_DOS_MEMORY:
+            error = TRP_ERR_OUT_OF_DOS_MEMORY;
+            break;
+        case TC_ERR:
+        default:
+            error = TRP_ERR_unknown_system_error;
+            break;
+        }
 #if !defined( BUILD_RFX )
     }
 #endif
