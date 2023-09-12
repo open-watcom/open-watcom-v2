@@ -191,6 +191,11 @@ set PROJDIR=<CWD>
     <CCCMD> par/ntsupp.x64/dbgport.sys              "<OWRELROOT>/binnt64/"
     <CCCMD> par/ntsupp.x64/dbginst.exe              "<OWRELROOT>/binnt64/"
 
+    <CCCMD> ser/linuxx64.trp/ser*.so                "<OWRELROOT>/binl64/"
+    <CCCMD> ser/linuxx64.trp/ser*.sym               "<OWRELROOT>/binl64/"
+    <CCCMD> tcp/linuxx64.trp/tcp*.so                "<OWRELROOT>/binl64/"
+    <CCCMD> tcp/linuxx64.trp/tcp*.sym               "<OWRELROOT>/binl64/"
+
 [ BLOCK . . ]
 
 [ INCLUDE "<OWROOT>/build/epilog.ctl" ]
