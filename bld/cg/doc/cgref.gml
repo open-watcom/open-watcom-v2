@@ -61,7 +61,7 @@
 :FRONTM.
 :TITLEP.
 :TITLE.&company Code Generator Interface
-:CMT. :DATE.
+:DATE.&cpyyear.
 :eTITLEP.
 :TOC.
 .do end
