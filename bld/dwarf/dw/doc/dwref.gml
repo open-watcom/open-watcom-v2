@@ -20,7 +20,7 @@
 :TITLE.Draft #6
 :AUTHOR.Originally written by WATCOM International Corp.
 :AUTHOR.Revised by Open Watcom contributors
-:CMT. :DATE.
+:DATE.&cpyyear.
 :eTITLEP.
 :TOC.
 .pa odd
