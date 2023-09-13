@@ -116,6 +116,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
         FiniFunc = trap_funcs->fini_func;
         ReqFunc = trap_funcs->req_func;
+        err = DIGS_ERR_BUF;
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;

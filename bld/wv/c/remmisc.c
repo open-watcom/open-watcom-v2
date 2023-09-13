@@ -126,9 +126,9 @@ void InitTrap( const char *parms )
 #endif
         switch( LoadTrap( parms, buff, &ver ) ) {
         #define DIGS_ERROR(e,t) case e: error = t; break;
-            DIGS_ERRORS( "TRAP Loader: " )
-            #undef DIGS_ERROR
-            default:    error = DIGS_ERRORS_default( "TRAP Loader: " ); break;
+        DIGS_ERRORS( "TRAP Loader: ", buff )
+        #undef DIGS_ERROR
+        default: error = DIGS_ERRORS_default( "TRAP Loader: " ); break;
         }
 #if !defined( BUILD_RFX )
     }

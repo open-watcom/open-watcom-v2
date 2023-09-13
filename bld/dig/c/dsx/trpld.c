@@ -369,7 +369,7 @@ static digld_error SetTrapHandler( void )
     return( DIGS_OK );
 }
 
-static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
+static trap_version CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
 {
     trap_init_struct    __far *callstruct;
 
@@ -378,9 +378,8 @@ static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ve
     _fstrcpy( (char __far *)&callstruct[1], parms );
     callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parms ) + 1;
     GoToRealMode( RMTrapInit );
-    *trap_ver = callstruct->version;
     _fstrcpy( errmsg, (char __far *)callstruct + callstruct->errmsg_off );
-    return( *errmsg == '\0' );
+    return( callstruct->version );
 }
 
 static digld_error ReadInTrap( FILE *fp )
@@ -525,7 +524,9 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             PMData->initfunc.s.segment = TrapMem.rm;
             PMData->reqfunc.s.segment  = TrapMem.rm;
             PMData->finifunc.s.segment = TrapMem.rm;
-            if( CallTrapInit( parms, buff, trap_ver ) ) {
+            *trap_ver = CallTrapInit( parms, buff, trap_ver );
+            err = DIGS_ERR_BUF;
+            if( buff[0] == '\0' ) {
                 if( TrapVersionOK( *trap_ver ) ) {
                     TrapVer = *trap_ver;
                     ReqFunc = DoTrapAccess;

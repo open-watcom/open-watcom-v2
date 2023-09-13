@@ -157,6 +157,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             TRAP_EXTFUNC_PTR( TellHardMode ) = NULL;
         }
         *trap_ver = init_func( parms, buff, trap_ver->remote );
+        err = DIGS_ERR_BUF;
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;

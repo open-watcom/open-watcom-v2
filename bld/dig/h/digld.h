@@ -38,7 +38,7 @@
 
 #define DIGS_ERRORS_default(x) x "Unknown system error"
 
-#define DIGS_ERRORS(x) \
+#define DIGS_ERRORS(x, b) \
     DIGS_ERROR( DIGS_OK, NULL ) \
     DIGS_ERROR( DIGS_ERR, DIGS_ERRORS_default( x ) ) \
     DIGS_ERROR( DIGS_ERR_CANT_FIND_MODULE, x "Unable to find module file" ) \
@@ -46,11 +46,12 @@
     DIGS_ERROR( DIGS_ERR_WRONG_MODULE_VERSION, x "Incorrect version of module file" ) \
     DIGS_ERROR( DIGS_ERR_BAD_MODULE_FILE, x "Invalid module file" ) \
     DIGS_ERROR( DIGS_ERR_OUT_OF_DOS_MEMORY, x "Out of DOS memory" ) \
-    DIGS_ERROR( DIGS_ERR_OUT_OF_MEMORY, x "Out of memory" )
+    DIGS_ERROR( DIGS_ERR_OUT_OF_MEMORY, x "Out of memory" ) \
+    DIGS_ERROR( DIGS_ERR_BUF, b )
 
 typedef enum {
     #define DIGS_ERROR(e,t) e,
-    DIGS_ERRORS()
+    DIGS_ERRORS( "", "" )
     #undef DIGS_ERROR
 } digld_error;
 

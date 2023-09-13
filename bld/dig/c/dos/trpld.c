@@ -153,6 +153,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
         ReqFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->req_off );
         *trap_ver = init_func( parms, buff, trap_ver->remote );
+        err = DIGS_ERR_BUF;
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;

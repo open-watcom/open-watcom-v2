@@ -58,8 +58,8 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    err = DIGS_ERR_BAD_MODULE_FILE;
     *trap_ver = TrapInit( parms, buff, trap_ver->remote );
+    err = DIGS_ERR_BUF;
     if( buff[0] == '\0' ) {
         if( TrapVersionOK( *trap_ver ) ) {
             TrapVer = *trap_ver;
