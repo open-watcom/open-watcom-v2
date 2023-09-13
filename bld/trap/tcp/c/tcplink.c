@@ -125,7 +125,6 @@
 #endif
 
 #define DEFAULT_PORT        0x0DEB                  /* 3563 */
-#define OW_INADDR_ANY       0xFFFFFFFFUL            /* 255.255.255.255 */
 #define OW_INADDR_LOOPBACK  htonl( 0x7F000001UL )   /* 127.0.0.1 */
 
 #if defined( __RDOS__ )
@@ -560,7 +559,7 @@ const char *RemoteLink( const char *parms, bool server )
     /* Name socket using wildcards */
     memset( &socket_address, 0, sizeof( socket_address ) );
     socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.s_addr = OW_INADDR_ANY;
+    socket_address.sin_addr.s_addr = INADDR_ANY;
     socket_address.sin_port = htons( trap_port );
     if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
