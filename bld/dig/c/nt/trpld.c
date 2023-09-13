@@ -35,7 +35,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "digld.h"
 #include "trpld.h"
 #include "trpsys.h"
 
@@ -94,13 +93,13 @@ void UnLoadTrap( void )
     }
 }
 
-trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                filename[256];
     const char          *base_name;
     size_t              len;
     trap_init_func      *init_func;
-    trpld_error         err;
+    digld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -114,13 +113,13 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
-        return( TC_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_TRAP );
     }
     mod_hdl = LoadLibrary( filename );
     if( mod_hdl == NULL ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
-    err = TC_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_TRAP_FILE;
     init_func = (trap_init_func *)GetProcAddress( mod_hdl, (LPSTR)1 );
     FiniFunc = (trap_fini_func *)GetProcAddress( mod_hdl, (LPSTR)2 );
     ReqFunc = (trap_req_func *)GetProcAddress( mod_hdl, (LPSTR)3 );
@@ -134,9 +133,9 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
-                return( TC_OK );
+                return( DIGS_OK );
             }
-            err = TC_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();

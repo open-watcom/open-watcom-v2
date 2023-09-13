@@ -43,7 +43,6 @@
 #include "bool.h"
 #include "exedos.h"
 #include "dbgmod.h"
-#include "digld.h"
 #include "roundmac.h"
 
 /*--------------------------- Global variables ----------------------------*/

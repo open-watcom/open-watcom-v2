@@ -37,7 +37,6 @@
 #include <stdlib.h>
 #include "tinyio.h"
 #include "exedos.h"
-#include "digld.h"
 #include "trpld.h"
 #include "roundmac.h"
 
@@ -56,7 +55,7 @@ typedef struct {
 static trap_header      __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
-static trpld_error ReadInTrap( FILE *fp )
+static digld_error ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
     unsigned            image_size;
@@ -72,16 +71,16 @@ static trpld_error ReadInTrap( FILE *fp )
 
     hdr.signature = 0;
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
     if( hdr.signature != EXESIGN_DOS ) {
-        return( TC_ERR_BAD_TRAP_FILE );
+        return( DIGS_ERR_BAD_TRAP_FILE );
     }
     hdr_size = hdr.hdr_size * 16;
     image_size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
     ret = TinyAllocBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) );
     if( TINY_ERROR( ret ) ) {
-        return( TC_ERR_OUT_OF_DOS_MEMORY );
+        return( DIGS_ERR_OUT_OF_DOS_MEMORY );
     }
     start_seg = TINY_INFO( ret );
     TrapCode = _MK_FP( start_seg, 0 );
@@ -92,7 +91,7 @@ static trpld_error ReadInTrap( FILE *fp )
     for( relocs = hdr.num_relocs; relocs != 0; --relocs ) {
         if( p >= &buff[ NUM_BUFF_RELOCS ] ) {
             if( DIGLoader( Read )( fp, buff, sizeof( buff ) ) ) {
-                return( TC_ERR_BAD_TRAP_FILE );
+                return( DIGS_ERR_BAD_TRAP_FILE );
             }
             p = buff;
         }
@@ -100,7 +99,7 @@ static trpld_error ReadInTrap( FILE *fp )
         *fixup += start_seg;
         ++p;
     }
-    return( TC_OK );
+    return( DIGS_OK );
 }
 
 void UnLoadTrap( void )
@@ -116,13 +115,13 @@ void UnLoadTrap( void )
     }
 }
 
-trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE            *fp;
     trap_init_func  *init_func;
     char            filename[256];
     const char      *base_name;
-    trpld_error     err;
+    digld_error     err;
     size_t          len;
 
     if( parms == NULL || *parms == '\0' )
@@ -137,18 +136,18 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        return( TC_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_TRAP );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( err != TC_OK ) {
+    if( err != DIGS_OK ) {
         return( err );
     }
-    err = TC_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_TRAP_FILE;
     if( TrapCode->signature == TRAP_SIGNATURE ) {
         init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
         FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
@@ -157,9 +156,9 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
-                return( TC_OK );
+                return( DIGS_OK );
             }
-            err = TC_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();

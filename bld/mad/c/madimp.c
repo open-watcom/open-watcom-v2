@@ -129,7 +129,9 @@ mad_imp_routines        MadImpInterface = {
 #define FIRST_IMP_FUNC      Init
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 int __nullarea;
 #pragma aux __nullarea "*";
 #endif

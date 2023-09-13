@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "digld.h"
 #include "trptypes.h"
 
 
@@ -50,7 +51,7 @@ extern int              CloseTrapTraceFile( void );
 
 /* Client interface routines */
 extern char             *LoadDumbTrap( trap_version * );
-extern trpld_error      LoadTrap( const char *, char *, trap_version * );
+extern digld_error      LoadTrap( const char *, char *, trap_version * );
 extern void             UnLoadTrap( void );
 extern void             TrapSetFailCallBack( void (*func)(void) );
 extern unsigned         TrapAccess( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );

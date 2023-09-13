@@ -36,6 +36,16 @@
 
 #define DIGLoader(n)    DIGLoader ## n
 
+typedef enum {
+    DIGS_OK,
+    DIGS_ERR,
+    DIGS_ERR_CANT_FIND_TRAP,
+    DIGS_ERR_CANT_LOAD_TRAP,
+    DIGS_ERR_WRONG_TRAP_VERSION,
+    DIGS_ERR_BAD_TRAP_FILE,
+    DIGS_ERR_OUT_OF_DOS_MEMORY,
+} digld_error;
+
 extern size_t   DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len, const char *defext, char *filename, size_t filename_maxlen );
 extern FILE     *DIGLoader( Open )( const char *filename );
 extern int      DIGLoader( Close )( FILE *fp );

@@ -36,7 +36,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include "digcli.h"
-#include "digld.h"
 #include "trpld.h"
 #include "trpimp.h"
 #include "ldimp.h"
@@ -73,7 +72,7 @@ void UnLoadTrap( void )
     }
 }
 
-trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_load_func      *ld_func;
@@ -81,7 +80,7 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     char                filename[256];
     const char          *base_name;
     size_t              len;
-    trpld_error         err;
+    digld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -95,18 +94,18 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        return( TC_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_TRAP );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
     TrapCode = ReadInImp( fp );
     DIGLoader( Close )( fp );
     if( TrapCode == NULL ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
-    err = TC_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_TRAP_FILE;
 #ifdef __WATCOMC__
     ld_func = (trap_load_func *)((TrapCode->sig == TRAPSIG) ? TrapCode->init_rtn : NULL);
 #else
@@ -120,9 +119,9 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
-                return( TC_OK );
+                return( DIGS_OK );
             }
-            err = TC_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_TRAP_VERSION;
         }
     }
     UnLoadTrap();

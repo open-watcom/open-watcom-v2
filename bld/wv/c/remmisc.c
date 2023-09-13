@@ -126,24 +126,24 @@ void InitTrap( const char *parms )
     } else {
 #endif
         switch( LoadTrap( parms, buff, &ver ) ) {
-        case TC_OK:
+        case DIGS_OK:
             break;
-        case TC_ERR_CANT_FIND_TRAP:
+        case DIGS_ERR_CANT_FIND_TRAP:
             error = TRP_ERR_CANT_FIND_TRAP;
             break;
-        case TC_ERR_CANT_LOAD_TRAP:
+        case DIGS_ERR_CANT_LOAD_TRAP:
             error = TRP_ERR_CANT_LOAD_TRAP;
             break;
-        case TC_ERR_WRONG_TRAP_VERSION:
+        case DIGS_ERR_WRONG_TRAP_VERSION:
             error = TRP_ERR_WRONG_TRAP_VERSION;
             break;
-        case TC_ERR_BAD_TRAP_FILE:
+        case DIGS_ERR_BAD_TRAP_FILE:
             error = TRP_ERR_BAD_TRAP_FILE;
             break;
-        case TC_ERR_OUT_OF_DOS_MEMORY:
+        case DIGS_ERR_OUT_OF_DOS_MEMORY:
             error = TRP_ERR_OUT_OF_DOS_MEMORY;
             break;
-        case TC_ERR:
+        case DIGS_ERR:
         default:
             error = TRP_ERR_unknown_system_error;
             break;

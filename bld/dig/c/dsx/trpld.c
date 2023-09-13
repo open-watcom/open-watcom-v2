@@ -39,7 +39,6 @@
 #include "dsxutil.h"
 #include "exedos.h"
 #include "digcli.h"
-#include "digld.h"
 #include "trpld.h"
 #include "trpcore.h"
 #include "trpsys.h"
@@ -301,7 +300,7 @@ static uint_16 EnvAreaSize( char __far *envarea )
     return( envptr - envarea + 1 );
 }
 
-static trpld_error CopyEnv( void )
+static digld_error CopyEnv( void )
 {
     char        __far *envarea;
     uint_16     envsize;
@@ -310,13 +309,13 @@ static trpld_error CopyEnv( void )
     envsize = EnvAreaSize( envarea );
     PMData->envseg = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( envsize ) );
     if( PMData->envseg.pm == 0 ) {
-        return( TC_ERR_OUT_OF_DOS_MEMORY );
+        return( DIGS_ERR_OUT_OF_DOS_MEMORY );
     }
     _fmemcpy( EXTENDER_RM2PM( PMData->envseg.rm, 0 ), envarea, envsize );
-    return( TC_OK );
+    return( DIGS_OK );
 }
 
-static trpld_error SetTrapHandler( void )
+static digld_error SetTrapHandler( void )
 {
     char                dummy;
     long                sel;
@@ -344,13 +343,13 @@ static trpld_error SetTrapHandler( void )
             } else {
                 PMData->saveseg = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( PMData->savesize * 2 ) );
                 if( PMData->saveseg.pm == 0 ) {
-                    return( TC_ERR_OUT_OF_DOS_MEMORY );
+                    return( DIGS_ERR_OUT_OF_DOS_MEMORY );
                 }
             }
             PMData->othersaved = false;
             sel = DPMIAllocateLDTDescriptors( 1 );
             if( sel < 0 ) {
-                return( TC_ERR_CANT_LOAD_TRAP );
+                return( DIGS_ERR_CANT_LOAD_TRAP );
             }
             DPMIGetDescriptor( _FP_SEG( PMData ), &desc );
             PMData->pmode_cs = sel;
@@ -367,7 +366,7 @@ static trpld_error SetTrapHandler( void )
     if( IntrState == IS_RATIONAL ) {
         MySetRMVector( TRAP_VECTOR, RMData.rm, RM_OFF( RMTrapHandler ) );
     }
-    return( TC_OK );
+    return( DIGS_OK );
 }
 
 static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
@@ -384,7 +383,7 @@ static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ve
     return( *errmsg == '\0' );
 }
 
-static trpld_error ReadInTrap( FILE *fp )
+static digld_error ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
     memptr              relocbuff[NUM_BUFF_RELOCS];
@@ -393,33 +392,33 @@ static trpld_error ReadInTrap( FILE *fp )
     unsigned            hdr_size;
 
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
     if( hdr.signature != EXESIGN_DOS ) {
-        return( TC_ERR_BAD_TRAP_FILE );
+        return( DIGS_ERR_BAD_TRAP_FILE );
     }
 
     hdr_size = hdr.hdr_size * 16;
     image_size = ( hdr.file_size * 0x200 ) - (-hdr.mod_size & 0x1ff) - hdr_size;
     TrapMem = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) + hdr.min_16 );
     if( TrapMem.pm == 0 ) {
-        return( TC_ERR_OUT_OF_DOS_MEMORY );
+        return( DIGS_ERR_OUT_OF_DOS_MEMORY );
     }
     DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
     if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), image_size ) ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
             if( DIGLoader( Read )( fp, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) {
-                return( TC_ERR_CANT_LOAD_TRAP );
+                return( DIGS_ERR_CANT_LOAD_TRAP );
             }
             relocnb = 0;
         }
         *(addr_seg __far *)EXTENDER_RM2PM( TrapMem.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.rm;
     }
-    return( TC_OK );
+    return( DIGS_OK );
 }
 
 static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
@@ -483,13 +482,13 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
     return( callstruct->retlen );
 }
 
-trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_file_header    __far *head;
     char                filename[256];
     const char          *base_name;
-    trpld_error         err;
+    digld_error         err;
     size_t              len;
 
     if( parms == NULL || *parms == '\0' )
@@ -504,20 +503,20 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        return( TC_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_TRAP );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_TRAP );
     }
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( err != TC_OK ) {
+    if( err != DIGS_OK ) {
         return( err );
     }
-    if( (err = SetTrapHandler()) == TC_OK
-      && (err = CopyEnv()) == TC_OK ) {
-        err = TC_ERR_BAD_TRAP_FILE;
+    if( (err = SetTrapHandler()) == DIGS_OK
+      && (err = CopyEnv()) == DIGS_OK ) {
+        err = DIGS_ERR_BAD_TRAP_FILE;
         head = EXTENDER_RM2PM( TrapMem.rm, 0 );
         if( head->sig == TRAP_SIGNATURE ) {
             PMData->initfunc.s.offset = head->init;
@@ -530,9 +529,9 @@ trpld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 if( TrapVersionOK( *trap_ver ) ) {
                     TrapVer = *trap_ver;
                     ReqFunc = DoTrapAccess;
-                    return( TC_OK );
+                    return( DIGS_OK );
                 }
-                err = TC_ERR_WRONG_TRAP_VERSION;
+                err = DIGS_ERR_WRONG_TRAP_VERSION;
             }
         }
     }
