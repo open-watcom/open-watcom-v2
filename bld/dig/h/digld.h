@@ -36,14 +36,22 @@
 
 #define DIGLoader(n)    DIGLoader ## n
 
+#define DIGS_ERRORS \
+    DIGS_ERROR( DIGS_OK, NULL ) \
+    DIGS_ERROR( DIGS_ERR, "Unknown system error" ) \
+    DIGS_ERROR( DIGS_ERR_CANT_FIND_MODULE, "Unable to find module file" ) \
+    DIGS_ERROR( DIGS_ERR_CANT_LOAD_MODULE, "Unable to load module file" ) \
+    DIGS_ERROR( DIGS_ERR_WRONG_MODULE_VERSION, "Incorrect version of module file" ) \
+    DIGS_ERROR( DIGS_ERR_BAD_MODULE_FILE, "Invalid module file" ) \
+    DIGS_ERROR( DIGS_ERR_OUT_OF_DOS_MEMORY, "Out of DOS memory" ) \
+    DIGS_ERROR( DIGS_ERR_OUT_OF_MEMORY, "Out of memory" )
+
+#define DIGS_ERRORS_default "Unknown system error"
+
 typedef enum {
-    DIGS_OK,
-    DIGS_ERR,
-    DIGS_ERR_CANT_FIND_TRAP,
-    DIGS_ERR_CANT_LOAD_TRAP,
-    DIGS_ERR_WRONG_TRAP_VERSION,
-    DIGS_ERR_BAD_TRAP_FILE,
-    DIGS_ERR_OUT_OF_DOS_MEMORY,
+    #define DIGS_ERROR(e,t) e,
+    DIGS_ERRORS
+    #undef DIGS_ERROR
 } digld_error;
 
 extern size_t   DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len, const char *defext, char *filename, size_t filename_maxlen );

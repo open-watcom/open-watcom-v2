@@ -76,27 +76,10 @@ static const char *ServInitialize( void )
         err = RemoteLink( RWBuff, true );
         if( err == NULL ) {
             switch( LoadTrap( trapparms, RWBuff, &TrapVersion ) ) {
-            case DIGS_OK:
-                break;
-            case DIGS_ERR_CANT_FIND_TRAP:
-                err = TRP_ERR_CANT_FIND_TRAP;
-                break;
-            case DIGS_ERR_CANT_LOAD_TRAP:
-                err = TRP_ERR_CANT_LOAD_TRAP;
-                break;
-            case DIGS_ERR_WRONG_TRAP_VERSION:
-                err = TRP_ERR_WRONG_TRAP_VERSION;
-                break;
-            case DIGS_ERR_BAD_TRAP_FILE:
-                err = TRP_ERR_BAD_TRAP_FILE;
-                break;
-            case DIGS_ERR_OUT_OF_DOS_MEMORY:
-                err = TRP_ERR_OUT_OF_DOS_MEMORY;
-                break;
-            case DIGS_ERR:
-            default:
-                err = TRP_ERR_unknown_system_error;
-                break;
+            #define DIGS_ERROR(e,t) case e: err = t; break;
+            DIGS_ERRORS
+            #undef DIGS_ERROR
+            default:    err = DIGS_ERRORS_default; break
             }
         }
     }
