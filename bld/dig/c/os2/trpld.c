@@ -141,12 +141,12 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #else
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
-        return( DIGS_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     if( LOAD_MODULE( filename, mod_hdl ) ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    err = DIGS_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_MODULE_FILE;
     if( GET_PROC_ADDRESS( mod_hdl, 1, init_func )
       && GET_PROC_ADDRESS( mod_hdl, 2, FiniFunc )
       && GET_PROC_ADDRESS( mod_hdl, 3, ReqFunc ) ) {
@@ -162,7 +162,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( DIGS_OK );
             }
-            err = DIGS_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
     UnLoadTrap();

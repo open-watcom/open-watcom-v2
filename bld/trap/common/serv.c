@@ -77,9 +77,9 @@ static const char *ServInitialize( void )
         if( err == NULL ) {
             switch( LoadTrap( trapparms, RWBuff, &TrapVersion ) ) {
             #define DIGS_ERROR(e,t) case e: err = t; break;
-            DIGS_ERRORS
+            DIGS_ERRORS( "TRAP Loader: " )
             #undef DIGS_ERROR
-            default:    err = DIGS_ERRORS_default; break
+            default:    err = DIGS_ERRORS_default( "TRAP Loader: " ); break;
             }
         }
     }

@@ -36,21 +36,21 @@
 
 #define DIGLoader(n)    DIGLoader ## n
 
-#define DIGS_ERRORS \
-    DIGS_ERROR( DIGS_OK, NULL ) \
-    DIGS_ERROR( DIGS_ERR, "Unknown system error" ) \
-    DIGS_ERROR( DIGS_ERR_CANT_FIND_MODULE, "Unable to find module file" ) \
-    DIGS_ERROR( DIGS_ERR_CANT_LOAD_MODULE, "Unable to load module file" ) \
-    DIGS_ERROR( DIGS_ERR_WRONG_MODULE_VERSION, "Incorrect version of module file" ) \
-    DIGS_ERROR( DIGS_ERR_BAD_MODULE_FILE, "Invalid module file" ) \
-    DIGS_ERROR( DIGS_ERR_OUT_OF_DOS_MEMORY, "Out of DOS memory" ) \
-    DIGS_ERROR( DIGS_ERR_OUT_OF_MEMORY, "Out of memory" )
+#define DIGS_ERRORS_default(x) x "Unknown system error"
 
-#define DIGS_ERRORS_default "Unknown system error"
+#define DIGS_ERRORS(x) \
+    DIGS_ERROR( DIGS_OK, NULL ) \
+    DIGS_ERROR( DIGS_ERR, DIGS_ERRORS_default( x ) ) \
+    DIGS_ERROR( DIGS_ERR_CANT_FIND_MODULE, x "Unable to find module file" ) \
+    DIGS_ERROR( DIGS_ERR_CANT_LOAD_MODULE, x "Unable to load module file" ) \
+    DIGS_ERROR( DIGS_ERR_WRONG_MODULE_VERSION, x "Incorrect version of module file" ) \
+    DIGS_ERROR( DIGS_ERR_BAD_MODULE_FILE, x "Invalid module file" ) \
+    DIGS_ERROR( DIGS_ERR_OUT_OF_DOS_MEMORY, x "Out of DOS memory" ) \
+    DIGS_ERROR( DIGS_ERR_OUT_OF_MEMORY, x "Out of memory" )
 
 typedef enum {
     #define DIGS_ERROR(e,t) e,
-    DIGS_ERRORS
+    DIGS_ERRORS()
     #undef DIGS_ERROR
 } digld_error;
 

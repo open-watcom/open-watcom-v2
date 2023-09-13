@@ -105,24 +105,24 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
 #if !defined( BUILTIN_TRAP_FILE )
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".so", filename, sizeof( filename ) ) == 0 ) {
-        return( DIGS_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     mod_hdl = dlopen( filename, RTLD_NOW );
     DIGLoader( Close )( fp );
     if( mod_hdl == NULL ) {
         puts( dlerror() );
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     ld_func = (trap_load_func *)dlsym( mod_hdl, "TrapLoad" );
     trap_funcs = ((ld_func != NULL) ? ld_func( &TrapCallbacks ) : NULL);
 #else
     trap_funcs = TrapLoad( &TrapCallbacks );
 #endif
-    err = DIGS_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_MODULE_FILE;
     if( trap_funcs != NULL ) {
         *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
         FiniFunc = trap_funcs->fini_func;
@@ -132,7 +132,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( DIGS_OK );
             }
-            err = DIGS_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
     UnLoadTrap();

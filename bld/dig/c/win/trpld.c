@@ -106,16 +106,16 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         toolhelp = 0;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
-        return( DIGS_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
     mod_hdl = LoadLibrary( filename );
     SetErrorMode( prev );
     if( (UINT)mod_hdl < 32 ) {
         mod_hdl = 0;
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    err = DIGS_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_MODULE_FILE;
     init_func = (trap_init_func *)GetProcAddress( mod_hdl, (LPSTR)2 );
     FiniFunc = (trap_fini_func *)GetProcAddress( mod_hdl, (LPSTR)3 );
     ReqFunc  = (trap_req_func *)GetProcAddress( mod_hdl, (LPSTR)4 );
@@ -134,7 +134,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( DIGS_OK );
             }
-            err = DIGS_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
     UnLoadTrap();

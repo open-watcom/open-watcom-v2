@@ -349,7 +349,7 @@ static digld_error SetTrapHandler( void )
             PMData->othersaved = false;
             sel = DPMIAllocateLDTDescriptors( 1 );
             if( sel < 0 ) {
-                return( DIGS_ERR_CANT_LOAD_TRAP );
+                return( DIGS_ERR_CANT_LOAD_MODULE );
             }
             DPMIGetDescriptor( _FP_SEG( PMData ), &desc );
             PMData->pmode_cs = sel;
@@ -392,10 +392,10 @@ static digld_error ReadInTrap( FILE *fp )
     unsigned            hdr_size;
 
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     if( hdr.signature != EXESIGN_DOS ) {
-        return( DIGS_ERR_BAD_TRAP_FILE );
+        return( DIGS_ERR_BAD_MODULE_FILE );
     }
 
     hdr_size = hdr.hdr_size * 16;
@@ -406,13 +406,13 @@ static digld_error ReadInTrap( FILE *fp )
     }
     DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
     if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), image_size ) ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
             if( DIGLoader( Read )( fp, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) {
-                return( DIGS_ERR_CANT_LOAD_TRAP );
+                return( DIGS_ERR_CANT_LOAD_MODULE );
             }
             relocnb = 0;
         }
@@ -503,11 +503,11 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        return( DIGS_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
@@ -516,7 +516,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     }
     if( (err = SetTrapHandler()) == DIGS_OK
       && (err = CopyEnv()) == DIGS_OK ) {
-        err = DIGS_ERR_BAD_TRAP_FILE;
+        err = DIGS_ERR_BAD_MODULE_FILE;
         head = EXTENDER_RM2PM( TrapMem.rm, 0 );
         if( head->sig == TRAP_SIGNATURE ) {
             PMData->initfunc.s.offset = head->init;
@@ -531,7 +531,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                     ReqFunc = DoTrapAccess;
                     return( DIGS_OK );
                 }
-                err = DIGS_ERR_WRONG_TRAP_VERSION;
+                err = DIGS_ERR_WRONG_MODULE_VERSION;
             }
         }
     }

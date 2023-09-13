@@ -96,18 +96,18 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        return( DIGS_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     TrapCode = ReadInImp( fp );
     DIGLoader( Close )( fp );
     if( TrapCode == NULL ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    err = DIGS_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_MODULE_FILE;
 #ifdef __WATCOMC__
     ld_func = (trap_load_func *)((TrapCode->sig == TRAPSIG) ? TrapCode->init_rtn : NULL);
 #else
@@ -123,7 +123,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( DIGS_OK );
             }
-            err = DIGS_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
     UnLoadTrap();

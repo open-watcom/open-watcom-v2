@@ -58,7 +58,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    err = DIGS_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_MODULE_FILE;
     *trap_ver = TrapInit( parms, buff, trap_ver->remote );
     if( buff[0] == '\0' ) {
         if( TrapVersionOK( *trap_ver ) ) {
@@ -66,7 +66,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             ReqFunc = TrapRequest;
             return( DIGS_OK );
         }
-        err = DIGS_ERR_WRONG_TRAP_VERSION;
+        err = DIGS_ERR_WRONG_MODULE_VERSION;
     }
     UnLoadTrap();
     return( err );

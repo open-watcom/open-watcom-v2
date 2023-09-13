@@ -73,13 +73,13 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
-        return( DIGS_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     mod_hdl = RdosLoadDll( filename );
     if( mod_hdl == NULL ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    err = DIGS_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_MODULE_FILE;
     init_func = RdosGetModuleProc( mod_hdl, "TrapInit_" );
     FiniFunc = RdosGetModuleProc( mod_hdl, "TrapFini_" );
     ReqFunc  = RdosGetModuleProc( mod_hdl, "TrapRequest_" );
@@ -94,7 +94,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( DIGS_OK );
             }
-            err = DIGS_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
     UnLoadTrap();

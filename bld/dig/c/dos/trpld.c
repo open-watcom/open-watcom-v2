@@ -71,10 +71,10 @@ static digld_error ReadInTrap( FILE *fp )
 
     hdr.signature = 0;
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     if( hdr.signature != EXESIGN_DOS ) {
-        return( DIGS_ERR_BAD_TRAP_FILE );
+        return( DIGS_ERR_BAD_MODULE_FILE );
     }
     hdr_size = hdr.hdr_size * 16;
     image_size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
@@ -91,7 +91,7 @@ static digld_error ReadInTrap( FILE *fp )
     for( relocs = hdr.num_relocs; relocs != 0; --relocs ) {
         if( p >= &buff[ NUM_BUFF_RELOCS ] ) {
             if( DIGLoader( Read )( fp, buff, sizeof( buff ) ) ) {
-                return( DIGS_ERR_BAD_TRAP_FILE );
+                return( DIGS_ERR_BAD_MODULE_FILE );
             }
             p = buff;
         }
@@ -136,18 +136,18 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        return( DIGS_ERR_CANT_FIND_TRAP );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( DIGS_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
     if( err != DIGS_OK ) {
         return( err );
     }
-    err = DIGS_ERR_BAD_TRAP_FILE;
+    err = DIGS_ERR_BAD_MODULE_FILE;
     if( TrapCode->signature == TRAP_SIGNATURE ) {
         init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
         FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
@@ -158,7 +158,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 TrapVer = *trap_ver;
                 return( DIGS_OK );
             }
-            err = DIGS_ERR_WRONG_TRAP_VERSION;
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
     UnLoadTrap();
