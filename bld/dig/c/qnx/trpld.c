@@ -113,8 +113,8 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #else
     ld_func = (trap_load_func *)TrapCode->init_rtn;
 #endif
-    if( ld_func != NULL
-      && (trap_funcs = ld_func( &TrapCallbacks )) != NULL ) {
+    trap_funcs = (( ld_func != NULL ) ? ld_func( &TrapCallbacks ) : NULL);
+    if( trap_funcs != NULL ) {
         *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
         FiniFunc = trap_funcs->fini_func;
         ReqFunc = trap_funcs->req_func;
