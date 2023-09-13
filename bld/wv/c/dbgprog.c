@@ -224,7 +224,8 @@ static void DoDownLoadCode( void )
         return;
     fh = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
     if( fh == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TaskCmd );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TaskCmd );
+        return;
     }
     FileClose( fh );
     FindLocalDebugInfo( TxtBuff );
@@ -1477,7 +1478,8 @@ static void SymFileNew( void )
     image->mapper = MapAddrUser;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
+        return;
     }
     owner = &image->map_list;
     while( !ScanEOC() ) {
@@ -1571,7 +1573,8 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     image->mapper = MapAddrUsrMod;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), fname );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), fname );
+        return( true );
     }
     owner = &image->map_list;
 
