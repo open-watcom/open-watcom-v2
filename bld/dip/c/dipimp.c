@@ -136,7 +136,7 @@ static HANDLE       TaskId;
 #endif
 
 #if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
-const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
+const char __based( __segname( "_CODE" ) ) Signature[4] = DIPSIG;
 #endif
 
 DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *ds, dip_client_routines *client )

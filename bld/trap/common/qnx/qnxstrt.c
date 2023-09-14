@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ static const trap_callbacks *Client;
 static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 
 #ifdef __WATCOMC__
-const char __based( __segname( "_CODE" ) ) Signature[4] = "TRAP";
+const char __based( __segname( "_CODE" ) ) Signature[4] = TRAPSIG;
 #endif
 
 const trap_requests *TrapLoad( const trap_callbacks *client )
