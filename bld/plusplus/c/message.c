@@ -92,6 +92,10 @@ static SUICIDE_CALLBACK *suicideCallbacks;
 #define INTL_NAME   "wppi86"
 #elif _CPU == _AXP
 #define INTL_NAME   "wppaxp"
+#elif _CPU == _MIPS
+#define INTL_NAME   "wppmps"
+#elif _CPU == _PPC
+#define INTL_NAME   "wppppc"
 #else
 #error missing _CPU check
 #endif

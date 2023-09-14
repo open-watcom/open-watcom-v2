@@ -220,6 +220,10 @@ static TRY_IMPL* tryImpl(       // FIND/ALLOCATE A TRY IMPLEMENTATION
     #define JMPBUF_SIZE ( 24 * TARGET_DOUBLE )
 #elif _INTEL_CPU
     #define JMPBUF_SIZE ( 13 * TARGET_INT )
+#elif _CPU == _MIPS
+    #define JMPBUF_SIZE ( 26 * TARGET_LONG )
+#elif _CPU == _PPC
+    #define JMPBUF_SIZE ( 1 * TARGET_INT )
 #else
     #error bad target
 #endif

@@ -48,6 +48,8 @@ enum {
 #define PCH_DEFAULT_FILE_NAME   "wpp.pch"
 #elif _CPU == _AXP
 #define PCH_DEFAULT_FILE_NAME   "wppaxp.pch"
+#elif _CPU == _MIPS
+#define PCH_DEFAULT_FILE_NAME   "wppmps.pch"
 #elif _CPU == _PPC
 #define PCH_DEFAULT_FILE_NAME   "wppppc.pch"
 #else
@@ -55,7 +57,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x33
+#define PHH_MINOR               0x34
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__
@@ -83,6 +85,7 @@ enum {
 #define PHH_ARCHITECTURE_X64    0x05
 #define PHH_ARCHITECTURE_ARM    0x06
 #define PHH_ARCHITECTURE_ARM64  0x07
+#define PHH_ARCHITECTURE_MIPS   0x08
 
 #if _CPU == 386
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_386
@@ -90,6 +93,8 @@ enum {
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_286
 #elif _CPU == _AXP
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_AXP
+#elif _CPU == _MIPS
+#define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_MIPS
 #elif _CPU == _PPC
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_PPC
 #else
@@ -117,6 +122,8 @@ enum {
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM
 #elif defined( _M_ARM64 )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM64
+#elif defined( __MIPS__ )
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_MIPS
 #elif defined( __PPC__ )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_PPC
 #else

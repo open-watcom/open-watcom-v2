@@ -290,7 +290,7 @@ static void genInitFiniReference( // GENERATE INIT/FINI REFERENCE TO FUNCTION
         CgFrontDataInt( IC_DATA_INT, 0 );
     }
     CgFrontDataInt( IC_DATA_INT, priority );
-#elif _CPU == _AXP
+#elif _RISC_CPU
     CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_UINT ) );
     CgFrontDataInt( IC_DATA_INT, 0 );
     CgFrontDataInt( IC_DATA_INT, priority );
