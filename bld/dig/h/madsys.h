@@ -33,9 +33,6 @@
 // on WIN64 long is OK because HANDLE can be hold as 32-bit sign extended value
 // even if HANDLE is defined as 64-bit value
 
-#define MADSIG      "MAD"
-#define MADSIGVAL   0x0044414DUL    // "MAD"
-
 #if defined( __WINDOWS__ )
 #define NULL_SYSHDL NULL
 typedef void (DIGENTRY *mad_sys_handle)( void );
