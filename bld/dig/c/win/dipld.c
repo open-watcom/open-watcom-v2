@@ -66,7 +66,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
 {
     HINSTANCE           mod_hdl;
     char                filename[256];
-    dip_status          ds;
+    dip_status          status;
     char                parm[10];
     struct {
         WORD            mb2;
@@ -107,11 +107,11 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     if( mod_hdl < HINSTANCE_ERROR ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    ds = DS_ERR | DS_INVALID_DIP;
-    if( transfer_block.load != NULL && (*imp = transfer_block.load( &ds, cli )) != NULL ) {
+    status = DS_ERR | DS_INVALID_DIP;
+    if( transfer_block.load != NULL && (*imp = transfer_block.load( &status, cli )) != NULL ) {
         *sys_hdl = transfer_block.unload;
         return( DS_OK );
     }
     DIPSysUnload( &transfer_block.unload );
-    return( ds );
+    return( status );
 }

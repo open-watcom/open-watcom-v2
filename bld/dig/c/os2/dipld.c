@@ -62,7 +62,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
 {
     dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
-    dip_status          ds;
+    dip_status          status;
     char                filename[CCHMAXPATH];
 
     *sys_hdl = NULL_SYSHDL;
@@ -80,11 +80,11 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     if( LOAD_MODULE( filename, mod_hdl ) ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    ds = DS_ERR | DS_INVALID_DIP;
-    if( GET_PROC_ADDRESS( mod_hdl, "DIPLOAD", init_func ) && (*imp = init_func( &ds, cli )) != NULL ) {
+    status = DS_ERR | DS_INVALID_DIP;
+    if( GET_PROC_ADDRESS( mod_hdl, "DIPLOAD", init_func ) && (*imp = init_func( &status, cli )) != NULL ) {
         *sys_hdl = mod_hdl;
         return( DS_OK );
     }
     DIPSysUnload( &mod_hdl );
-    return( ds );
+    return( status );
 }

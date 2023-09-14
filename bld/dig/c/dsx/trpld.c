@@ -182,7 +182,7 @@ static P1616 __cdecl find_entry( void )
     if( RSI_extensions != NULL ) {
         retval = RSI_extensions( 0, pkg_entry, pkg_name );
     }
-    return (retval);
+    return( retval );
 }
 
 /*
