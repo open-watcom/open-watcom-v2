@@ -44,7 +44,6 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "guirdlg.h"
-#include "wclbproc.h"
 #ifdef __NT__
     #undef _WIN32_IE
     #define _WIN32_IE   0x0400
@@ -558,7 +557,15 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, c
         }
     }
 
-#ifdef __OS2_PM__
+    /* create invisible
+     * if GUIAlloc fails, window will never show
+     */
+    style &= ~WS_VISIBLE;
+    if( parent_wnd != NULL ) {
+        style |= WS_CHILD;
+    }
+
+#if defined( __OS2_PM__ )
     pctldata = NULL;
     if( ctl_info->control_class == GUI_EDIT ) {
         edata.cb = sizeof( edata );
@@ -567,16 +574,6 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, c
         edata.ichMaxSel = 0;
         pctldata = &edata;
     }
-#endif
-
-    style &= ~WS_VISIBLE;  /* create invisible -- if GUIAlloc fails, window
-                            * will never show
-                            */
-    if( parent_wnd != NULL ) {
-        style |= WS_CHILD;
-    }
-
-#if defined( __OS2_PM__ )
     _wpi_createanywindow( (PSZ)GUIControls[ctl_info->control_class].classname,
                   new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y,
                   parent_wnd->hwnd, (HMENU)ctl_info->id, GUIMainHInst,

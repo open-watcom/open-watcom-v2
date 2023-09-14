@@ -34,7 +34,6 @@
 #include "guiwind.h"
 #include <string.h>
 #include "guixutil.h"
-#include "wclbproc.h"
 #include "guixwind.h"
 
 
