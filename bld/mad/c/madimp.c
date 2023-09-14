@@ -279,9 +279,8 @@ void DIGENTRY MADUNLOAD( void )
 
 int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 /*****************************************************************************************
-
-    Initialization, message loop.
-*/
+ * Initialization, message loop.
+ */
 {
     MSG                 msg;
     FARPROC             *func;

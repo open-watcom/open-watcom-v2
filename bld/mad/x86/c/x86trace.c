@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,8 @@
 
 #include "x86.h"
 #include "madregs.h"
+#include "brkptcpu.h"
+
 
 unsigned MADIMPENTRY( TraceSize )( void )
 {
@@ -375,8 +377,7 @@ void MADIMPENTRY( TraceFini )( mad_trace_data *td )
     /* unused parameters */ (void)td;
 }
 
-#define JMP_SHORT        ((unsigned char)0XEB)
-#define BRK_POINT        ((unsigned char)0XCC)
+#define JMP_SHORT        ((unsigned char)0xEB)
 
 mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
@@ -396,7 +397,7 @@ mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t
     a = GetRegIP( mr );
     memset( &data, 0, sizeof( data ) );
     MCReadMem( a, sizeof( data.b ), data.b );
-    if( data.b[0] != BRK_POINT )
+    if( data.b[0] != BRKPOINT )
         return( MS_FAIL );
     mr->x86.cpu.eip += 1;
     if( data.b[1] != JMP_SHORT )
