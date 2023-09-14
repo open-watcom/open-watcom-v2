@@ -38,6 +38,9 @@
 
 #define DEFAULT_TRP_NAME    "std"
 
+#define TRAPSIG         "TRAP"
+#define TRAPSIGVAL      0x50415254UL    // "TRAP"
+
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;
 

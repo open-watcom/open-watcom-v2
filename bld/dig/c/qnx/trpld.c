@@ -38,10 +38,15 @@
 #include "digcli.h"
 #include "trpld.h"
 #include "trpimp.h"
-#include "ldimp.h"
+#include "exephar.h"
+#include "roundmac.h"
 
 
-#define TRAPSIG 0x50415254UL    // "TRAP"
+#define DEFEXT      ".trp"
+//#define MODINIT     "TrapLoad"
+#define MODSIG      TRAPSIGVAL
+
+#include "../ldrrex.c"       /* PharLap REX format loader */
 
 extern void             *_slib_func[2];
 
@@ -58,7 +63,7 @@ const static trap_callbacks TrapCallbacks = {
     signal,
 };
 
-static imp_header       *TrapCode = NULL;
+static module           modhdl = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
 void UnLoadTrap( void )
@@ -68,9 +73,9 @@ void UnLoadTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapCode != NULL ) {
-        DIGCli( Free )( TrapCode );
-        TrapCode = NULL;
+    if( modhdl != NULL ) {
+        loader_unload_image( modhdl );
+        modhdl = NULL;
     }
 }
 
@@ -95,24 +100,19 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
         return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    TrapCode = ReadInImp( fp );
+    err = loader_load_image( fp, filename, &modhdl, (void **)&ld_func );
     DIGLoader( Close )( fp );
-    if( TrapCode == NULL ) {
-        return( DIGS_ERR_CANT_LOAD_MODULE );
+    if( err != DIGS_OK ) {
+        return( err );
     }
     err = DIGS_ERR_BAD_MODULE_FILE;
-#ifdef __WATCOMC__
-    ld_func = (trap_load_func *)((TrapCode->sig == TRAPSIG) ? TrapCode->init_rtn : NULL);
-#else
-    ld_func = (trap_load_func *)TrapCode->init_rtn;
-#endif
     trap_funcs = (( ld_func != NULL ) ? ld_func( &TrapCallbacks ) : NULL);
     if( trap_funcs != NULL ) {
         *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
@@ -127,6 +127,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
-    UnLoadTrap();
+    loader_unload_image( modhdl );
+    modhdl = NULL;
     return( err );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,9 @@
 
 // on WIN64 long is OK because HANDLE can be hold as 32-bit sign extended value
 // even if HANDLE is defined as 64-bit value
+
+#define DIPSIG      "DIP"
+#define DIPSIGVAL   0x00504944UL    // "DIP"
 
 #if defined( __WINDOWS__ )
 #define NULL_SYSHDL NULL

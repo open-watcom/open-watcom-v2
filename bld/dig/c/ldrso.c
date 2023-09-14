@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,16 +25,25 @@
 *
 *  ========================================================================
 *
-* Description:  Pharlap executable loader for QNX.
+* Description:  DIP/MAD/TRP module loader for shared library file format.
 *
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
+typedef void    *module;
 
-/* At this point QNX is sharing the Pharlap executable loader with 32-bit DOS.
- * This is not the final solution (should be real QNX shared lib).
- */
-#include "../dsx/ldimp.c"
+static void loader_unload_image( module modhdl )
+{
+    dlclose( modhdl );
+}
 
-#endif
+static digld_error loader_load_image( FILE *fp, char *filename, module *mod_hdl, void **init_func )
+{
+    *mod_hdl = dlopen( filename, RTLD_NOW );
+    if( *mod_hdl != NULL ) {
+        *init_func = dlsym( *mod_hdl, MODINIT );
+        return( DIGS_OK );
+    }
+//    puts( dlerror() );
+    return( DIGS_ERR_CANT_LOAD_MODULE );
+}

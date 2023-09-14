@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Trap file loading for DOS extended debugger.
+* Description:  Trap module loader for DOS extended debugger.
 *
 ****************************************************************************/
 
