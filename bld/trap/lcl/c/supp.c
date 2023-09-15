@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,10 +167,10 @@ trap_retval TRAP_CORE( Get_supplementary_service )(void)
 
 trap_retval TRAP_CORE( Perform_supplementary_service )( void )
 {
-    access_req      *sup_req;
+    trap_req        *sup_req;
     trap_shandle    *id;
 
-    id = GetInPtr( sizeof( access_req ) );
+    id = GetInPtr( sizeof( trap_req ) );
     if( *id == 0 )
         return( 0 );
     sup_req = GetInPtr( sizeof( supp_prefix ) );

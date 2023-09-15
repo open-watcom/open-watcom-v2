@@ -243,9 +243,9 @@ debug_objs = &
 
 plusplus_objs_i86 = $(_subdir_)cmdlnx86.obj $(_subdir_)cpragx86.obj $(_subdir_)pragi86.obj
 plusplus_objs_386 = $(_subdir_)cmdlnx86.obj $(_subdir_)cpragx86.obj $(_subdir_)prag386.obj
-plusplus_objs_axp = $(_subdir_)cmdlnaxp.obj $(_subdir_)cpragaxp.obj $(_subdir_)pragaxp.obj
-#plusplus_objs_ppc = $(_subdir_)cmdlnppc.obj $(_subdir_)cpragppc.obj $(_subdir_)pragppc.obj
-#plusplus_objs_mps = $(_subdir_)cmdlnmps.obj $(_subdir_)cpragmps.obj $(_subdir_)pragmps.obj
+plusplus_objs_axp = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragrsc.obj $(_subdir_)pragaxp.obj
+plusplus_objs_ppc = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragrsc.obj $(_subdir_)pragppc.obj
+plusplus_objs_mps = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragrsc.obj $(_subdir_)pragmps.obj
 
 plusplus_template = $(common_objs) $(plusplus_matherr_objs) $(debug_objs) $(asminline_objs) $(cg_objs) $(plusplus_objs_$(target_cpu)) $(plusplus_trmem_objs)
 

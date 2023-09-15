@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,13 @@
 ****************************************************************************/
 
 
-typedef struct {
-#ifdef __WATCOMC__
-    unsigned long       sig;
-#endif
-    unsigned_8          init_rtn[1];    /* offset is start of routine */
-} imp_header;
+#include "plusplus.h"
 
-extern imp_header *ReadInImp( FILE *fp );
+#include <stddef.h>
+
+#include "pragdefn.h"
+
+#include "pdefnmps.h"
+// #include "pdefnfs.h"
+
+#include "callinfo.c"

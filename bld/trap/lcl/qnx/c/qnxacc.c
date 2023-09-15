@@ -1801,8 +1801,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     StdPos.in  = lseek( 0, 0, SEEK_CUR );
     StdPos.out = lseek( 1, 0, SEEK_CUR );
     StdPos.err = lseek( 2, 0, SEEK_CUR );
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     //ver.is_32 = false;
     OrigPGrp = getpgrp();

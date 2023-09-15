@@ -36,14 +36,17 @@
 #include <unistd.h>
 #include <signal.h>
 #include "digcli.h"
-#include "digld.h"
 #include "trpld.h"
 #include "trpimp.h"
-#include "tcerr.h"
-#include "ldimp.h"
+#include "exephar.h"
+#include "roundmac.h"
 
 
-#define TRAPSIG 0x50415254UL    // "TRAP"
+#define DEFEXT      ".trp"
+//#define MODINIT     "TrapLoad"
+#define MODSIG      TRAPSIGVAL
+
+#include "../ldrrex.c"       /* PharLap REX format loader */
 
 extern void             *_slib_func[2];
 
@@ -60,7 +63,7 @@ const static trap_callbacks TrapCallbacks = {
     signal,
 };
 
-static imp_header       *TrapCode = NULL;
+static module           modhdl = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
 void UnLoadTrap( void )
@@ -70,13 +73,13 @@ void UnLoadTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapCode != NULL ) {
-        DIGCli( Free )( TrapCode );
-        TrapCode = NULL;
+    if( modhdl != NULL ) {
+        loader_unload_image( modhdl );
+        modhdl = NULL;
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_load_func      *ld_func;
@@ -84,6 +87,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     char                filename[256];
     const char          *base_name;
     size_t              len;
+    digld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -96,41 +100,34 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        return( buff );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    TrapCode = ReadInImp( fp );
+    err = loader_load_image( fp, filename, &modhdl, (void **)&ld_func );
     DIGLoader( Close )( fp );
-    if( TrapCode != NULL ) {
-        buff[0] = '\0';
-#ifdef __WATCOMC__
-        if( TrapCode->sig == TRAPSIG ) {
-#endif
-            ld_func = (trap_load_func *)TrapCode->init_rtn;
-            trap_funcs = ld_func( &TrapCallbacks );
-            if( trap_funcs != NULL ) {
-                *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
-                FiniFunc = trap_funcs->fini_func;
-                ReqFunc = trap_funcs->req_func;
-                if( buff[0] == '\0' ) {
-                    if( TrapVersionOK( *trap_ver ) ) {
-                        TrapVer = *trap_ver;
-                        return( NULL );
-                    }
-                }
-            }
-#ifdef __WATCOMC__
-        }
-#endif
-        if( buff[0] == '\0' )
-            strcpy( buff, TC_ERR_BAD_TRAP_FILE );
-        UnLoadTrap();
+    if( err != DIGS_OK ) {
+        return( err );
     }
-    return( buff );
+    err = DIGS_ERR_BAD_MODULE_FILE;
+    trap_funcs = (( ld_func != NULL ) ? ld_func( &TrapCallbacks ) : NULL);
+    if( trap_funcs != NULL ) {
+        *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
+        FiniFunc = trap_funcs->fini_func;
+        ReqFunc = trap_funcs->req_func;
+        err = DIGS_ERR_BUF;
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( DIGS_OK );
+            }
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
+        }
+    }
+    loader_unload_image( modhdl );
+    modhdl = NULL;
+    return( err );
 }

@@ -40,7 +40,6 @@
 #include "banner.h"
 #include "dbgio.h"
 #include "objloc.h"
-#include "tcerr.h"
 #include "trprfx.h"
 #include "local.h"
 #include "remote.h"
@@ -1728,22 +1727,6 @@ static bool ProcDrive( int argc, char **argv )
     }
     return( false );
 }
-
-char *TrapClientString( tc_error err )
-{
-    switch( err ) {
-    case TC_BAD_TRAP_FILE:
-        return( "Bad trap file" );
-    case TC_CANT_LOAD_TRAP:
-        return( "Cannot load trap file %s" );
-    case TC_WRONG_TRAP_VERSION:
-        return( "Incorrect trap file version" );
-    case TC_OUT_OF_DOS_MEMORY:
-        return( "Out of DOS memory" );
-    }
-    return( NULL );
-}
-
 
 /**************************************************************************/
 /* MAIN LINEISH                                                           */

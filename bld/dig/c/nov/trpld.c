@@ -25,17 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap module loader for Novell Netware.
 *
 ****************************************************************************/
 
 
 #include <string.h>
-#include "digld.h"
 #include "trpld.h"
 #include "trpcomm.h"
-#include "tcerr.h"
 
 
 void UnLoadTrap( void )
@@ -43,10 +40,11 @@ void UnLoadTrap( void )
     TrapFini();
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     const char  *trpname;
     size_t      len;
+    digld_error err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -60,14 +58,15 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     *trap_ver = TrapInit( parms, buff, trap_ver->remote );
+    err = DIGS_ERR_BUF;
     if( buff[0] == '\0' ) {
         if( TrapVersionOK( *trap_ver ) ) {
             TrapVer = *trap_ver;
             ReqFunc = TrapRequest;
-            return( NULL );
+            return( DIGS_OK );
         }
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+        err = DIGS_ERR_WRONG_MODULE_VERSION;
     }
     UnLoadTrap();
-    return( buff );
+    return( err );
 }

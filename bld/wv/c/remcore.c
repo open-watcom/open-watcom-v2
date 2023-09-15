@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "tcerr.h"
 #include "dbglit.h"
 #include "dui.h"
 #include "trapaccs.h"
@@ -350,7 +349,7 @@ error_handle DoLoad( const char *args, unsigned long *phandle )
     OnAnotherThreadAccess( 2, in, 1, out );
     InitSuppServices();
     GrabHandlers();
-    GetSysConfig();
+    RemoteGetSysConfig();
     CheckMADChange();
     ReadDbgRegs();
     DbgRegs->tid = RemoteSetThread( 0 );
@@ -394,7 +393,7 @@ bool KillProgOvlay( void )
     _SwitchOff( SW_HAVE_TASK );
     GrabHandlers();
     FreeThreads();
-    GetSysConfig();
+    RemoteGetSysConfig();
     ClearMachineDataCache();
     CONV_LE_32( ret.err );
     return( ( ret.err == 0 ) );
@@ -419,7 +418,7 @@ unsigned MakeProgRun( bool single )
     CONV_LE_16( ret.program_counter.segment );
     CONV_LE_16( ret.conditions );
     if( ret.conditions & COND_CONFIG ) {
-        GetSysConfig();
+        RemoteGetSysConfig();
         CheckMADChange();
     }
     DbgRegs->arch = SysConfig.arch;
@@ -688,7 +687,7 @@ void CheckSegAlias( void )
     }
 }
 
-void GetSysConfig( void )
+void RemoteGetSysConfig( void )
 {
     get_sys_config_req  acc;
     get_sys_config_ret  ret;
@@ -711,7 +710,7 @@ bool InitCoreSupp( void )
         _Alloc( MData, sizeof( *MData ) );
         MData->len = sizeof( MData->data );
         ClearMachineDataCache();
-        GetSysConfig();
+        RemoteGetSysConfig();
         CheckMADChange();
         return( true );
     } else {
@@ -723,15 +722,4 @@ void FiniCoreSupp( void )
 {
     _Free( MData );
     MData = NULL;
-}
-
-char    *TrapClientString( tc_error err )
-{
-    switch( err ) {
-    case TC_BAD_TRAP_FILE:      return( LIT_ENG( BAD_TRAP_FILE ) );
-    case TC_CANT_LOAD_TRAP:     return( LIT_ENG( CANT_LOAD_TRAP_FILE ) );
-    case TC_WRONG_TRAP_VERSION: return( LIT_ENG( INCORRECT_TRAP_FILE_VERSION ) );
-    case TC_OUT_OF_DOS_MEMORY:  return( LIT_ENG( OUT_OF_DOS_MEMORY ) );
-    }
-    return( NULL );
 }

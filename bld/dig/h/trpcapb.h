@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ enum {
  */
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } capabilities_get_exact_bp_req;
 
 typedef struct {
@@ -70,7 +70,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          status;     /* 0 = off, 1 = on */
 } capabilities_set_exact_bp_req;
 

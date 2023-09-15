@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  RDOS trap file loading.
+* Description:  Trap module loader for RDOS.
 *
 ****************************************************************************/
 
@@ -34,9 +34,7 @@
 #include <rdos.h>
 #include <string.h>
 #include <stdlib.h>
-#include "digld.h"
 #include "trpld.h"
-#include "tcerr.h"
 
 
 static int              mod_hdl = 0;
@@ -55,12 +53,13 @@ void UnLoadTrap( void )
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                filename[256];
     const char          *base_name;
     size_t              len;
     trap_init_func      *init_func;
+    digld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
@@ -74,30 +73,31 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     mod_hdl = RdosLoadDll( filename );
     if( mod_hdl == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-        return( buff );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    buff[0] = '\0';
+    err = DIGS_ERR_BAD_MODULE_FILE;
     init_func = RdosGetModuleProc( mod_hdl, "TrapInit_" );
     FiniFunc = RdosGetModuleProc( mod_hdl, "TrapFini_" );
     ReqFunc  = RdosGetModuleProc( mod_hdl, "TrapRequest_" );
 //    LibListFunc = RdosGetModuleProc( mod_hdl, "TrapLibList_" );
-    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL /* && LibListFunc != NULL */ ) {
+    if( init_func != NULL
+      && FiniFunc != NULL
+      && ReqFunc != NULL
+      /* && LibListFunc != NULL */ ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
+        err = DIGS_ERR_BUF;
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
-                return( NULL );
+                return( DIGS_OK );
             }
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
-    if( buff[0] == '\0' )
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     UnLoadTrap();
-    return( buff );
+    return( err );
 }

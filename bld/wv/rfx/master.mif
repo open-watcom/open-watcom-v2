@@ -22,7 +22,7 @@ dig_arch = $(host_cpu)
 #
 .c: ..;../../$(host_os)/c;../../c;$(dig_srcs)
 
-inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h"
+inc_dirs = -I. -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h" -I"$(trap_dir)/h"
 
 extra_cpp_flags = -DBUILD_RFX
 
@@ -37,6 +37,7 @@ extra_cpp_flags = -DBUILD_RFX
 #
 # EXE
 #
+exetarg_prebuild_objs = _err.gh
 exetarg_objs_dos = inthdlrs.obj
 exetarg_objs = &
     rfx.obj        &
@@ -51,3 +52,7 @@ exetarg_objs = &
     $(host_os)filio.obj &
     $(exetarg_objs_$(host_os))
 !include exetarg.mif
+
+_err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) $(rc_ui8_flags) -I"$(trap_dir)/h" $(rc_ui_inc_path) $[@ -o$@

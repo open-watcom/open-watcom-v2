@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP module loader for RDOS.
 *
 ****************************************************************************/
 
@@ -53,7 +52,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
     char                filename[256];
-    dip_status          ds;
+    dip_status          status;
 
     *sys_hdl = NULL_SYSHDL;
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
@@ -63,12 +62,12 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     if( mod_hdl == NULL_SYSHDL ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    ds = DS_ERR | DS_INVALID_DIP;
+    status = DS_ERR | DS_INVALID_DIP;
     init_func = (dip_init_func *)RdosGetModuleProc( mod_hdl, "DIPLOAD" );
-    if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
         *sys_hdl = mod_hdl;
         return( DS_OK );
     }
     DIPSysUnload( &mod_hdl );
-    return( ds );
+    return( status );
 }

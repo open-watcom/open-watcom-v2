@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Trap file loading for DOS extended debugger.
+* Description:  Trap module loader for DOS extended debugger.
 *
 ****************************************************************************/
 
@@ -39,13 +39,12 @@
 #include "dsxutil.h"
 #include "exedos.h"
 #include "digcli.h"
-#include "digld.h"
 #include "trpld.h"
 #include "trpcore.h"
 #include "trpsys.h"
-#include "tcerr.h"
 #include "envlkup.h"
 #include "realmod.h"
+#include "roundmac.h"
 
 
 #define DOS4G_COMM_VECTOR       0x15
@@ -54,8 +53,6 @@
 #define PSP_ENVSEG_OFF          0x2c
 
 #define TRAP_SIGNATURE          0xdeaf
-
-#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
 #include "pushpck1.h"
 typedef struct {
@@ -185,7 +182,7 @@ static P1616 __cdecl find_entry( void )
     if( RSI_extensions != NULL ) {
         retval = RSI_extensions( 0, pkg_entry, pkg_name );
     }
-    return (retval);
+    return( retval );
 }
 
 /*
@@ -303,22 +300,22 @@ static uint_16 EnvAreaSize( char __far *envarea )
     return( envptr - envarea + 1 );
 }
 
-static char *CopyEnv( void )
+static digld_error CopyEnv( void )
 {
     char        __far *envarea;
     uint_16     envsize;
 
     envarea = _MK_FP( *(addr_seg __far *)_MK_FP( _psp, PSP_ENVSEG_OFF ), 0 );
     envsize = EnvAreaSize( envarea );
-    PMData->envseg = DPMIAllocateDOSMemoryBlock( _NBPARAS( envsize ) );
+    PMData->envseg = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( envsize ) );
     if( PMData->envseg.pm == 0 ) {
-        return( TC_ERR_OUT_OF_DOS_MEMORY );
+        return( DIGS_ERR_OUT_OF_DOS_MEMORY );
     }
     _fmemcpy( EXTENDER_RM2PM( PMData->envseg.rm, 0 ), envarea, envsize );
-    return( NULL );
+    return( DIGS_OK );
 }
 
-static char *SetTrapHandler( void )
+static digld_error SetTrapHandler( void )
 {
     char                dummy;
     long                sel;
@@ -344,15 +341,15 @@ static char *SetTrapHandler( void )
                 PMData->saveseg.rm = 0;
                 PMData->saveseg.pm = 0;
             } else {
-                PMData->saveseg = DPMIAllocateDOSMemoryBlock( _NBPARAS( PMData->savesize * 2 ) );
+                PMData->saveseg = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( PMData->savesize * 2 ) );
                 if( PMData->saveseg.pm == 0 ) {
-                    return( TC_ERR_OUT_OF_DOS_MEMORY );
+                    return( DIGS_ERR_OUT_OF_DOS_MEMORY );
                 }
             }
             PMData->othersaved = false;
             sel = DPMIAllocateLDTDescriptors( 1 );
             if( sel < 0 ) {
-                return( TC_ERR_CANT_LOAD_TRAP );
+                return( DIGS_ERR_CANT_LOAD_MODULE );
             }
             DPMIGetDescriptor( _FP_SEG( PMData ), &desc );
             PMData->pmode_cs = sel;
@@ -369,10 +366,10 @@ static char *SetTrapHandler( void )
     if( IntrState == IS_RATIONAL ) {
         MySetRMVector( TRAP_VECTOR, RMData.rm, RM_OFF( RMTrapHandler ) );
     }
-    return( NULL );
+    return( DIGS_OK );
 }
 
-static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
+static trap_version CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
 {
     trap_init_struct    __far *callstruct;
 
@@ -381,47 +378,46 @@ static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ve
     _fstrcpy( (char __far *)&callstruct[1], parms );
     callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parms ) + 1;
     GoToRealMode( RMTrapInit );
-    *trap_ver = callstruct->version;
     _fstrcpy( errmsg, (char __far *)callstruct + callstruct->errmsg_off );
-    return( *errmsg == '\0' );
+    return( callstruct->version );
 }
 
-static char *ReadInTrap( FILE *fp )
+static digld_error ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
     memptr              relocbuff[NUM_BUFF_RELOCS];
     unsigned            relocnb;
-    unsigned            imagesize;
-    unsigned            hdrsize;
+    unsigned            image_size;
+    unsigned            hdr_size;
 
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     if( hdr.signature != EXESIGN_DOS ) {
-        return( TC_ERR_BAD_TRAP_FILE );
+        return( DIGS_ERR_BAD_MODULE_FILE );
     }
 
-    hdrsize = hdr.hdr_size * 16;
-    imagesize = ( hdr.file_size * 0x200 ) - (-hdr.mod_size & 0x1ff) - hdrsize;
-    TrapMem = DPMIAllocateDOSMemoryBlock( _NBPARAS( imagesize ) + hdr.min_16 );
+    hdr_size = hdr.hdr_size * 16;
+    image_size = ( hdr.file_size * 0x200 ) - (-hdr.mod_size & 0x1ff) - hdr_size;
+    TrapMem = DPMIAllocateDOSMemoryBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) + hdr.min_16 );
     if( TrapMem.pm == 0 ) {
-        return( TC_ERR_OUT_OF_DOS_MEMORY );
+        return( DIGS_ERR_OUT_OF_DOS_MEMORY );
     }
-    DIGLoader( Seek )( fp, hdrsize, DIG_SEEK_ORG );
-    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), imagesize ) ) {
-        return( TC_ERR_CANT_LOAD_TRAP );
+    DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
+    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), image_size ) ) {
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
             if( DIGLoader( Read )( fp, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) {
-                return( TC_ERR_CANT_LOAD_TRAP );
+                return( DIGS_ERR_CANT_LOAD_MODULE );
             }
             relocnb = 0;
         }
         *(addr_seg __far *)EXTENDER_RM2PM( TrapMem.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.rm;
     }
-    return( NULL );
+    return( DIGS_OK );
 }
 
 static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
@@ -485,13 +481,13 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
     return( callstruct->retlen );
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_file_header    __far *head;
     char                filename[256];
     const char          *base_name;
-    const char          *err;
+    digld_error         err;
     size_t              len;
 
     if( parms == NULL || *parms == '\0' )
@@ -506,44 +502,42 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         len++;
     }
     if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, base_name );
-        return( buff );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-        return( buff );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    buff[0] = '\0';
     err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( err == TC_ERR_CANT_LOAD_TRAP ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, filename );
-    } else if( err == NULL ) {
-        if( (err = SetTrapHandler()) == NULL && (err = CopyEnv()) == NULL ) {
-            head = EXTENDER_RM2PM( TrapMem.rm, 0 );
-            if( head->sig == TRAP_SIGNATURE ) {
-                PMData->initfunc.s.offset = head->init;
-                PMData->reqfunc.s.offset  = head->req;
-                PMData->finifunc.s.offset = head->fini;
-                PMData->initfunc.s.segment = TrapMem.rm;
-                PMData->reqfunc.s.segment  = TrapMem.rm;
-                PMData->finifunc.s.segment = TrapMem.rm;
-                if( CallTrapInit( parms, buff, trap_ver ) ) {
-                    if( TrapVersionOK( *trap_ver ) ) {
-                        TrapVer = *trap_ver;
-                        ReqFunc = DoTrapAccess;
-                        return( NULL );
-                    }
+    if( err != DIGS_OK ) {
+        return( err );
+    }
+    if( (err = SetTrapHandler()) == DIGS_OK
+      && (err = CopyEnv()) == DIGS_OK ) {
+        err = DIGS_ERR_BAD_MODULE_FILE;
+        head = EXTENDER_RM2PM( TrapMem.rm, 0 );
+        if( head->sig == TRAP_SIGNATURE ) {
+            PMData->initfunc.s.offset = head->init;
+            PMData->reqfunc.s.offset  = head->req;
+            PMData->finifunc.s.offset = head->fini;
+            PMData->initfunc.s.segment = TrapMem.rm;
+            PMData->reqfunc.s.segment  = TrapMem.rm;
+            PMData->finifunc.s.segment = TrapMem.rm;
+            *trap_ver = CallTrapInit( parms, buff, trap_ver );
+            err = DIGS_ERR_BUF;
+            if( buff[0] == '\0' ) {
+                if( TrapVersionOK( *trap_ver ) ) {
+                    TrapVer = *trap_ver;
+                    ReqFunc = DoTrapAccess;
+                    return( DIGS_OK );
                 }
+                err = DIGS_ERR_WRONG_MODULE_VERSION;
             }
-            err = TC_ERR_WRONG_TRAP_VERSION;
         }
     }
-    if( buff[0] == '\0' )
-        strcpy( buff, err );
     UnLoadTrap();
-    return( buff );
+    return( err );
 }
 
 void UnLoadTrap( void )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +35,13 @@
 
 #include "madcli.h"
 
-#define MAD_MAJOR       2
-#define MAD_MINOR       0
+#define MAD_VERSION_MAJOR   2
+#define MAD_VERSION_MINOR   0
 
-#define MADImp(n)       MADImp ## n
-#define _MADImp(n)      _MADImp ## n n
+#define MADImp(n)           MADImp ## n
+#define _MADImp(n)          _MADImp ## n n
 
-#define MADIMPENTRY(n)  DIGENTRY MADImp( n )
+#define MADIMPENTRY(n)      DIGENTRY MADImp( n )
 
 typedef struct imp_mad_state_data       imp_mad_state_data;
 
@@ -165,7 +165,7 @@ typedef struct mad_client_routines {
 
     _MADCli( Notify );
 
-    _DIGCli( MachineData );
+    _MADCli( MachineData );
 
     _MADCli( AddrToString );
     _MADCli( MemExpr );

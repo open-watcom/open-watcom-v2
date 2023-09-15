@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,8 +141,3 @@ void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
     FileRemove( name, DIG2WVOpenMode( mode ) );
 }
 
-unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
-                                        const void *in, dig_elen out_size, void *out )
-{
-    return( RemoteMachineData( addr, info_type, in_size, in, out_size, out ) );
-}

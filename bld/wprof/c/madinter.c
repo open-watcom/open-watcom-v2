@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,6 +174,37 @@ void MADCLIENTRY( Notify )( mad_notify_type nt, const void *d )
 system_config *MADCLIENTRY( SystemConfig )( void )
 {
     return( &CurrSIOData->config );
+}
+
+unsigned MADCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
+                                        const void *in, dig_elen out_size, void *out )
+/*******************************************************************************************/
+{
+    /* unused parameters */ (void)in_size; (void)in; (void)out_size;
+
+    switch( CurrSIOData->config.arch ) {
+    case DIG_ARCH_X86:
+        if( info_type == X86MD_ADDR_CHARACTERISTICS ) {
+            *(x86_addrflags *)out = 0;
+            if( IsX86BigAddr( addr ) ) {
+                *(x86_addrflags *)out = X86AC_BIG;
+            } else if( IsX86RealAddr( addr ) ) {
+                *(x86_addrflags *)out = X86AC_REAL;
+            }
+            return( sizeof( x86_addrflags ) );
+        }
+        break;
+#if 0
+    case DIG_ARCH_AXP:
+        if( acc->info_type == AXPMD_PDATA ) {
+            memcpy( out, in, sizeof( axp_data ) );
+            return( sizeof( axp_data ) );
+        }
+        break;
+#endif
+    /* add other machines here */
+    }
+    return( 0 );
 }
 
 /*

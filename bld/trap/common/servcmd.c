@@ -41,8 +41,8 @@
 #include "trpld.h"
 #include "trperr.h"
 #include "packet.h"
-#include "tcerr.h"
 #include "servio.h"
+
 
 extern trap_version     TrapVersion;
 

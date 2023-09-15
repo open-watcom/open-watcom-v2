@@ -44,7 +44,6 @@
 #include "trperr.h"
 #include "packet.h"
 #include "servname.rh"
-#include "tcerr.h"
 #include "servio.h"
 #include "nothing.h"
 
@@ -76,7 +75,12 @@ static const char *ServInitialize( void )
     if( err == NULL ) {
         err = RemoteLink( RWBuff, true );
         if( err == NULL ) {
-            err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+            switch( LoadTrap( trapparms, RWBuff, &TrapVersion ) ) {
+            #define DIGS_ERROR(e,t) case e: err = t; break;
+            DIGS_ERRORS( "TRAP Loader: ", RWBuff )
+            #undef DIGS_ERROR
+            default: err = DIGS_ERRORS_default( "TRAP Loader: " ); break;
+            }
         }
     }
     return( err );

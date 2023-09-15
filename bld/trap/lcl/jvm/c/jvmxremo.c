@@ -59,12 +59,12 @@ trap_retval DoAccess( void )
     StartPacket();
     if( Out_Mx_Num == 0 ) {
         /* Tell the server we're not expecting anything back */
-        TRP_REQUEST( In_Mx_Ptr ) |= 0x80;
+        TRP_REQUEST( In_Mx_Ptr ) |= REQ_WANT_RETURN;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
         AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
-    TRP_REQUEST( In_Mx_Ptr ) &= ~0x80;
+    TRP_REQUEST( In_Mx_Ptr ) &= ~REQ_WANT_RETURN;
     PutPacket();
     if( Out_Mx_Num != 0 ) {
         len = GetPacket();
@@ -300,7 +300,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     const char          *err;
     prog_load_ret       *ret;
     size_t              len;
-    const char          *loaderr;
 
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
@@ -315,7 +314,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     }
     err = RemoteLink( LinkParms, FALSE );
     if( err != NULL ) {
-        loaderr = err;
         strcpy( SavedError, err );
         ret->err = ERR_JVM_SAVED_ERROR;
         return( sizeof( *ret ) );
@@ -511,12 +509,12 @@ trap_retval TRAP_CORE( Get_supplementary_service )( void )
 trap_retval TRAP_CORE( Perform_supplementary_service )( void )
 {
     unsigned    (* const * _WCUNALIGNED *vectors)(void);
-    access_req  *sup_req;
+    trap_req    *sup_req;
 
     if( TaskLoaded ) {
         return( DoAccess() );
     }
-    vectors = GetInPtr( sizeof( access_req ) );
+    vectors = GetInPtr( sizeof( trap_req ) );
     sup_req = GetInPtr( sizeof( supp_prefix ) );
     return( (*vectors)[*sup_req]() );
 }
@@ -553,17 +551,17 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
 
     /* unused parameters */ (void)remote;
 
     ver.remote = FALSE;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     FakeHandle = GetStdHandle( STD_INPUT_HANDLE );
-    error[0] = '\0';
+    err[0] = '\0';
     strcpy( LinkParms, parms );
     TaskLoaded = FALSE;
     return( ver );

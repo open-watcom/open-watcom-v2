@@ -94,13 +94,13 @@ bool Session( void )
         In[0].ptr = GetPacketBuffPtr();
         _DBG(("Session got request "));
         req = TRP_REQUEST( In );
-        TRP_REQUEST( In ) &= ~0x80;
-        if( req & 0x80 ) {
-            req &= ~0x80;
+        if( req & REQ_WANT_RETURN ) {
+            req &= ~REQ_WANT_RETURN;
             want_return = false;
         } else {
             want_return = true;
         }
+        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_PROG_KILL:
             _DBG(("REQ_KILL_PROG\n"));

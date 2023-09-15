@@ -407,7 +407,7 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
         printf( MSG_PE_SUBSYSMINOR ,            PE( exeFile->pexHdr, subsys_minor ) );
         printf( MSG_PE_RSVD1 ,                  PE( exeFile->pexHdr, rsvd1 ) );
         printf( MSG_PE_IMAGESIZE ,              PE( exeFile->pexHdr, image_size ) );
-        printf( MSG_PE_HEADERSIZE ,             PE( exeFile->pexHdr, header_size ) );
+        printf( MSG_PE_HEADERSIZE ,             PE( exeFile->pexHdr, headers_size ) );
         printf( MSG_PE_FILECHECKSUM ,           PE( exeFile->pexHdr, file_checksum ) );
         printf( MSG_PE_SUBSYSTEM ,              PE( exeFile->pexHdr, subsystem ) );
         count = ED_PE_SS_COUNT;

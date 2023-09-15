@@ -40,7 +40,6 @@
 #include "packet.h"
 #include "servname.rh"
 #include "servio.h"
-#include "tcerr.h"
 #include "nothing.h"
 #include "options.h"
 #include "wclbproc.h"
@@ -82,7 +81,12 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     if( err == NULL ) {
         err = RemoteLinkSet( RWBuff );
         if( err == NULL ) {
-            err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+            switch( LoadTrap( trapparms, RWBuff, &TrapVersion ) ) {
+            #define DIGS_ERROR(e,t) case e: err = t; break;
+            DIGS_ERRORS( "TRAP Loader: ", RWBuff )
+            #undef DIGS_ERROR
+            default: err = DIGS_ERRORS_default( "TRAP Loader: " ); break;
+            }
         }
     }
     if( err != NULL ) {

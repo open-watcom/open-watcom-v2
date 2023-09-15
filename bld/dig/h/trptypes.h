@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,20 +48,21 @@
     #define     TRAPENTRY
 #endif
 
-#define TRAP_MAJOR_VERSION      18
-#define TRAP_MINOR_VERSION      0
-#define OLD_TRAP_MINOR_VERSION  0
+#define TRAP_VERSION_MAJOR      18
+#define TRAP_VERSION_MINOR      0
+#define OLD_TRAP_VERSION_MINOR  0
 
 #define REQUEST_FAILED ((trap_retval)-1)
 
-#if OLD_TRAP_MINOR_VERSION > 0
-    #define TrapVersionOK( ver )  (((ver).major == TRAP_MAJOR_VERSION) && \
-                                   ((ver).minor >= OLD_TRAP_MINOR_VERSION))
+#if OLD_TRAP_VERSION_MINOR > 0
+    #define TrapVersionOK( ver )  (((ver).major == TRAP_VERSION_MAJOR) && \
+                                   ((ver).minor >= OLD_TRAP_VERSION_MINOR))
 #else
-    #define TrapVersionOK( ver )  ((ver).major == TRAP_MAJOR_VERSION)
+    #define TrapVersionOK( ver )  ((ver).major == TRAP_VERSION_MAJOR)
 #endif
 
-#define TRP_REQUEST(x)      *((access_req *)(x)[0].ptr)
+#define TRP_REQUEST(x)      *((trap_req *)(x)[0].ptr)
+#define REQ_WANT_RETURN     (0x80)
 
 #define TRAP_SYM1(a,b,c)    a ## b ## _ ## c
 #define TRAP_SYM(a,b)       TRAP_SYM1( Req, a, b )
@@ -73,7 +74,7 @@ typedef struct {
     unsigned_8      remote;
 } trap_version;
 
-typedef unsigned_8  access_req;
+typedef unsigned_8  trap_req;
 typedef dig_elen    trap_elen;
 typedef unsigned_32 trap_error;
 typedef unsigned_32 trap_mhandle;   /* module handle */
@@ -84,7 +85,7 @@ typedef trap_elen   trap_retval;
 
 #include "pushpck1.h"
 typedef struct {
-    access_req      core_req;
+    trap_req        core_req;
     trap_shandle    id;
 } _WCUNALIGNED supp_prefix;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +46,8 @@
 mad_client_routines     *MADClient;
 
 mad_imp_routines        MadImpInterface = {
-    MAD_MAJOR,
-    MAD_MINOR,
+    MAD_VERSION_MAJOR,
+    MAD_VERSION_MINOR,
     sizeof( MadImpInterface ),
 
     MADImp( Init ),
@@ -129,7 +129,9 @@ mad_imp_routines        MadImpInterface = {
 #define FIRST_IMP_FUNC      Init
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 int __nullarea;
 #pragma aux __nullarea "*";
 #endif
@@ -140,7 +142,7 @@ static HINSTANCE    ThisInst;
 #endif
 
 #if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
-const char __based( __segname( "_CODE" ) ) Signature[4] = "MAD";
+const char __based( __segname( "_CODE" ) ) Signature[4] = MADSIG;
 #endif
 
 DIG_DLLEXPORT mad_imp_routines * DIGENTRY MADLOAD( mad_status *status, mad_client_routines *client )
@@ -277,9 +279,8 @@ void DIGENTRY MADUNLOAD( void )
 
 int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 /*****************************************************************************************
-
-    Initialization, message loop.
-*/
+ * Initialization, message loop.
+ */
 {
     MSG                 msg;
     FARPROC             *func;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 
 #include "axp.h"
 #include "madregs.h"
+#include "brkptcpu.h"
+
 
 unsigned MADIMPENTRY( TraceSize )( void )
 {
@@ -136,7 +139,6 @@ void MADIMPENTRY( TraceFini )( mad_trace_data *td )
 }
 
 #define JMP_SHORT       0xc3e00002
-#define BRK_POINT       0x00000080
 
 mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
@@ -158,7 +160,7 @@ mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t
     a.mach.offset = mr->axp.pal.nt.fir.u._32[0];
     memset( &data, 0, sizeof( data ) );
     MCReadMem( a, sizeof( data ), &data );
-    if( data.brk != BRK_POINT )
+    if( data.brk != BRKPOINT )
         return( MS_FAIL );
     mr->axp.pal.nt.fir.u._32[0] += sizeof( unsigned_32 );
     if( data.br != JMP_SHORT )

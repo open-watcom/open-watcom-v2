@@ -37,7 +37,6 @@
 #include "guicontr.h"
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
-#include "wclbproc.h"
 #include "guixwind.h"
 #include "oswincls.h"
 

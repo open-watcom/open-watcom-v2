@@ -30,12 +30,16 @@
 ****************************************************************************/
 
 
+#include "digld.h"
 #include "trptypes.h"
 
 
 #define TRAP_PARM_SEPARATOR ';'
 
 #define DEFAULT_TRP_NAME    "std"
+
+#define TRAPSIG         "TRAP"
+#define TRAPSIGVAL      0x50415254UL    // "TRAP"
 
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;
@@ -50,7 +54,7 @@ extern int              CloseTrapTraceFile( void );
 
 /* Client interface routines */
 extern char             *LoadDumbTrap( trap_version * );
-extern char             *LoadTrap( const char *, char *, trap_version * );
+extern digld_error      LoadTrap( const char *, char *, trap_version * );
 extern void             UnLoadTrap( void );
 extern void             TrapSetFailCallBack( void (*func)(void) );
 extern unsigned         TrapAccess( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );

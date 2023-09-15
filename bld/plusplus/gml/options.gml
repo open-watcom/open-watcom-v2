@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -287,7 +287,7 @@
 :jusage. 構築ターゲットはマルチスレッド環境です
 
 :option. br
-:target. 386 axp ppc
+:target. 386 axp ppc mps
 :usage.  build target uses DLL version of C/C++ run-time library
 :jusage. 構築ターゲットはDLL版のC/C++実行時ライブラリを使用します
 
@@ -704,20 +704,20 @@
 :jusage. Watcomデバッグ情報を生成します
 
 :option. hd
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :enumerate. dbg_output
 :usage.  generate DWARF debugging information
 :jusage. DWARFデバッグ情報を生成します
 
 :option. hda
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :enumerate. dbg_output
 :usage.  generate DWARF debugging information
 :jusage. DWARFデバッグ情報を生成します
 :internal.
 
 :option. hc
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :enumerate. dbg_output
 :usage.  generate Codeview debugging information
 :jusage. Codeviewデバッグ情報を生成します
@@ -814,7 +814,7 @@
 :jusage. データ･セグメント名を設定します
 
 :option. nm
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :file.
 :usage.  set module name
 :jusage. モジュール名を設定します
@@ -836,7 +836,7 @@
 :jusage. 分岐予測にそったコードを生成します
 
 :option. oc
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :usage.  disable <call followed by return> to <jump> optimization
 :jusage. <call followed by return>から<jump>の最適化を無効にします
 
@@ -894,7 +894,7 @@
 :jusage. ループ・アンローリングでループ最適化を可能にします
 
 :option. om
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :usage.  generate inline code for math functions
 :jusage. 算術関数をインラインの80x87コードで展開して生成します
 

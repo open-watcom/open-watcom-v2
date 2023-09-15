@@ -57,7 +57,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x33
+#define PHH_MINOR               0x34
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__
@@ -86,7 +86,6 @@ enum {
 #define PHH_ARCHITECTURE_ARM    0x06
 #define PHH_ARCHITECTURE_ARM64  0x07
 #define PHH_ARCHITECTURE_MIPS   0x08
-
 
 #if _CPU == 386
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_386

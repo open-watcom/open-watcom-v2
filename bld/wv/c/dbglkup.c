@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +56,8 @@
 #define CASE_OPTS \
     pick( "Ignore",  CASE_IGNORE  ) \
     pick( "Respect", CASE_RESPECT )
+
+#define SYM_STR(x)  DEBUG_SYM_STR(x)
 
 enum {
     #define pick(t,e)   e,
@@ -538,7 +540,7 @@ bool SetWDPresent( mod_handle mh )
 {
     address     addr;
 
-    if( !GetSymAddr( DEBUG_SYM_STR( DEBUG_PRESENT_NAME ), mh, &addr ) )
+    if( !GetSymAddr( SYM_STR( DEBUG_PRESENT_NAME ), mh, &addr ) )
         return( false );
     ProgPoke( addr, "\x1", 1 );
     return( true );

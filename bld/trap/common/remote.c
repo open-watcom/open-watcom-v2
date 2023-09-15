@@ -51,12 +51,12 @@ static trap_retval DoRequest( void )
     StartPacket();
     if( Out_Mx_Num == 0 ) {
         /* Tell the server we're not expecting anything back */
-        TRP_REQUEST( In_Mx_Ptr ) |= 0x80;
+        TRP_REQUEST( In_Mx_Ptr ) |= REQ_WANT_RETURN;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
         AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
-    TRP_REQUEST( In_Mx_Ptr ) &= ~0x80;
+    TRP_REQUEST( In_Mx_Ptr ) &= ~REQ_WANT_RETURN;
     result = PutPacket();
     if( result != REQUEST_FAILED ) {
         result = 0;
@@ -129,10 +129,10 @@ static void ReqRemoteResume( void )
     _DBG_ExitFunc( "ReqResume" );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
-    const char      *err;
+    const char      *error;
     bool            fix_minor;
 
     /* unused parameters */ (void)remote;
@@ -146,14 +146,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
             fix_minor = true;
         }
     }
-    err = RemoteLink( parms, false );
-    if( err != NULL ) {
-        strcpy( error, err );
+    error = RemoteLink( parms, false );
+    if( error != NULL ) {
+        strcpy( err, error );
     } else {
-        error[0] = '\0';
+        err[0] = '\0';
     }
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = fix_minor ? OLD_TRAP_MINOR_VERSION : TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = fix_minor ? OLD_TRAP_VERSION_MINOR : TRAP_VERSION_MINOR;
     _DBG_ExitFunc( "TrapInit" );
     return( ver );
 }

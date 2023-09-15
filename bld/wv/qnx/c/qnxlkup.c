@@ -43,28 +43,27 @@ size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     const char  *env;
     size_t      len;
-    bool        output;
     char        c;
 
+    len = 0;
     env = getenv( name );
-    if( env == NULL )
-        return( 0 );
-
-    output = false;
-    if( buff_len != 0 && buff != NULL ) {
+    if( buff_len > 0 && buff != NULL ) {
         --buff_len;
-        output = true;
-    }
-    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
-        if( output ) {
-            if( len >= buff_len ) {
-                break;
+        if( env != NULL ) {
+            while( (c = *env++) == NULLCHAR ) {
+                if( len < buff_len ) {
+                    *buff++ = c;
+                }
+                len++;
             }
-            *buff++ = c;
         }
-    }
-    if( output ) {
         *buff = NULLCHAR;
+    } else {
+        if( env != NULL ) {
+            while( *env++ != NULLCHAR ) {
+                len++;
+            }
+        }
     }
     return( len );
 }

@@ -124,7 +124,12 @@ void InitTrap( const char *parms )
         error = LoadDumbTrap( &ver );
     } else {
 #endif
-        error = LoadTrap( parms, buff, &ver );
+        switch( LoadTrap( parms, buff, &ver ) ) {
+        #define DIGS_ERROR(e,t) case e: error = t; break;
+        DIGS_ERRORS( "TRAP Loader: ", buff )
+        #undef DIGS_ERROR
+        default: error = DIGS_ERRORS_default( "TRAP Loader: " ); break;
+        }
 #if !defined( BUILD_RFX )
     }
 #endif
@@ -135,8 +140,8 @@ void InitTrap( const char *parms )
         StartupErr( buff );
     }
     acc.req = REQ_CONNECT;
-    acc.ver.major = TRAP_MAJOR_VERSION;
-    acc.ver.minor = TRAP_MINOR_VERSION;
+    acc.ver.major = TRAP_VERSION_MAJOR;
+    acc.ver.minor = TRAP_VERSION_MINOR;
     acc.ver.remote = false;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );

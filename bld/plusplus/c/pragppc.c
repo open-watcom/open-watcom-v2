@@ -25,51 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  Load a DIP which is a UNIX shared library.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <dlfcn.h>
-#include "digld.h"
-#include "dip.h"
-#include "dipimp.h"
-#include "dipsys.h"
+#include "plusplus.h"
 
-#include "clibext.h"
+#include <stddef.h>
 
+#include "pragdefn.h"
 
-void DIPSysUnload( dip_sys_handle *sys_hdl )
-{
-    if( *sys_hdl != NULL_SYSHDL ) {
-        dlclose( *sys_hdl );
-        *sys_hdl = NULL_SYSHDL;
-    }
-}
+#include "pdefnppc.h"
+// #include "pdefnfs.h"
 
-dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
-{
-    dip_sys_handle      mod_hdl;
-    dip_init_func       *init_func;
-    char                filename[_MAX_PATH];
-    dip_status          ds;
-
-    *sys_hdl = NULL_SYSHDL;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".so", filename, sizeof( filename ) ) == 0 ) {
-        return( DS_ERR | DS_FOPEN_FAILED );
-    }
-    mod_hdl = dlopen( filename, RTLD_NOW );
-    if( mod_hdl == NULL_SYSHDL ) {
-        return( DS_ERR | DS_FOPEN_FAILED );
-    }
-    ds = DS_ERR | DS_INVALID_DIP;
-    init_func = (dip_init_func *)dlsym( mod_hdl, "DIPLOAD" );
-    if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
-        *sys_hdl = mod_hdl;
-        return( DS_OK );
-    }
-    DIPSysUnload( &mod_hdl );
-    return( ds );
-}
+#include "callinfo.c"

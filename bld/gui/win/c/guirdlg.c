@@ -36,7 +36,6 @@
 #include "guixdlg.h"
 #include "guirdlg.h"
 #include "guixwind.h"
-#include "wclbproc.h"
 #ifdef __NT__
     #undef _WIN32_IE
     #define _WIN32_IE   0x0400

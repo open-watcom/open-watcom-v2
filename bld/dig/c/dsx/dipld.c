@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Module to load DIP libraries in PharLap REX format.
+* Description:  DIP module loader for DOS extended debugger.
 *
 ****************************************************************************/
 
@@ -37,11 +37,15 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
-#include "dbgmod.h"
-#include "ldimp.h"
+#include "exephar.h"
+#include "roundmac.h"
 
 
-#define DIPSIG  0x00504944UL    // "DIP"
+#define DEFEXT      ".dip"
+//#define MODINIT     "DIPLOAD"
+#define MODSIG      DIPSIGVAL
+
+#include "../ldrrex.c"       /* PharLap REX format loader */
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
@@ -49,7 +53,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
      * We should unload the symbols here but it's not worth the trouble
      */
     if( *sys_hdl != NULL_SYSHDL ) {
-        DIGCli( Free )( *sys_hdl );
+        loader_unload_image( *sys_hdl );
         *sys_hdl = NULL_SYSHDL;
     }
 }
@@ -57,45 +61,42 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     FILE                *fp;
-    imp_header          *mod_hdl;
+    module              modhdl;
     dip_init_func       *init_func;
-    dip_status          ds;
+    dip_status          status;
     char                filename[_MAX_PATH];
+    digld_error         err;
 
     *sys_hdl = NULL_SYSHDL;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dip", filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    mod_hdl = ReadInImp( fp );
+    err = loader_load_image( fp, filename, &modhdl, (void **)&init_func );
     DIGLoader( Close )( fp );
-    ds = DS_ERR | DS_INVALID_DIP;
-    if( mod_hdl != NULL ) {
-#ifdef __WATCOMC__
-        if( mod_hdl->sig == DIPSIG ) {
-#endif
-#ifdef WATCOM_DEBUG_SYMBOLS
-            /*
-             * Look for symbols in separate .sym files, not the .dip itself
-             */
-            strcpy( filename + strlen( filename ) - 4, ".sym" );
-            DebuggerLoadUserModule( filename, GetCS(), (unsigned long)mod_hdl );
-#endif
-            init_func = (dip_init_func *)mod_hdl->init_rtn;
-            if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
-                *sys_hdl = mod_hdl;
-                return( DS_OK );
-            }
-#ifdef WATCOM_DEBUG_SYMBOLS
-            DebuggerUnloadUserModule( filename );
-#endif
-#ifdef __WATCOMC__
-        }
-#endif
-        DIPSysUnload( (dip_sys_handle *)&mod_hdl );
+    if( err == DIGS_ERR_CANT_LOAD_MODULE )
+        return( DS_ERR | DS_FREAD_FAILED );
+    if( err == DIGS_ERR_OUT_OF_DOS_MEMORY
+      || err == DIGS_ERR_OUT_OF_DOS_MEMORY )
+        return( DS_ERR | DS_NO_MEM );
+    status = DS_ERR | DS_INVALID_DIP;
+    if( err != DIGS_OK ) {
+        return( status );
     }
-    return( ds );
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+#ifdef WATCOM_DEBUG_SYMBOLS
+        /*
+         * Look for symbols in separate .sym files, not the .dip itself
+         */
+        strcpy( filename + strlen( filename ) - 4, ".sym" );
+        DebuggerLoadUserModule( filename, GetCS(), (unsigned long)modhdl );
+#endif
+        *sys_hdl = modhdl;
+        return( DS_OK );
+    }
+    loader_unload_image( modhdl );
+    return( status );
 }

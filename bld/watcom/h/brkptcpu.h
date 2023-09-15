@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -68,14 +68,14 @@ typedef unsigned        opcode_type;
 
 #elif defined( __MIPS__ )
 
-//#define TRACE_BIT      0
+//#define TRACE_BIT      0    /* no single step CPU flag */
 #define BRKPOINT        0x0000000D
 
 typedef unsigned        opcode_type;
 
 #elif defined( __AXP__ )
 
-//#define TRACE_BIT      0
+//#define TRACE_BIT      0    /* no single step CPU flag */
 #define BRKPOINT        0x00000080
 
 typedef unsigned        opcode_type;

@@ -211,18 +211,6 @@ void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
     remove( path );
 }
 
-
-unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
-                                        const void *in, dig_elen out_size, void *out )
-/********************************************************************************************
- * DIGCliMachineData
- */
-{
-    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size; (void)out;
-
-    return( 0 );
-}
-
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
                                 const char *defext, char *filename, size_t filename_maxlen )
 /*******************************************************************************************
