@@ -67,42 +67,7 @@ struct enum_range           // describe range for enum
 };
 
 static struct enum_range const range_table[] =
-#if _CPU == 386 || _CPU == _AXP
-{   {   Init64Val( 0xFFFFFFFF, 0xFFFFFF80 )
-      , Init64Val( 0x00000000, 0x0000007F )
-      , TYP_SCHAR
-    }
-,   {   Init64Val( 0x00000000, 0x00000000 )
-      , Init64Val( 0x00000000, 0x000000FF )
-      , TYP_UCHAR
-    }
-,   {   Init64Val( 0xFFFFFFFF, 0xFFFF8000 )
-      , Init64Val( 0x00000000, 0x00007FFF )
-      , TYP_SSHORT
-    }
-,   {   Init64Val( 0x00000000, 0x00000000 )
-      , Init64Val( 0x00000000, 0x0000FFFF )
-      , TYP_USHORT
-    }
-,   {   Init64Val( 0xFFFFFFFF, 0x80000000 )
-      , Init64Val( 0x00000000, 0x7FFFFFFF )
-      , TYP_SINT
-    }
-,   {   Init64Val( 0x00000000, 0x00000000 )
-      , Init64Val( 0x00000000, 0xFFFFFFFF )
-      , TYP_UINT
-    }
-,   {   Init64Val( 0x80000000, 0x00000000 )
-      , Init64Val( 0x7FFFFFFF, 0xFFFFFFFF )
-      , TYP_SLONG64
-    }
-,   {   Init64Val( 0x00000000, 0x00000000 )
-      , Init64Val( 0xFFFFFFFF, 0xFFFFFFFF )
-      , TYP_ULONG64
-    }
-};
-    #define RANGE_INDEX_SINT 4
-#elif _CPU == 8086
+#if _CPU == 8086
 {   {   Init64Val( 0xFFFFFFFF, 0xFFFFFF80 )
       , Init64Val( 0x00000000, 0x0000007F )
       , TYP_SCHAR
@@ -138,7 +103,40 @@ static struct enum_range const range_table[] =
 };
     #define RANGE_INDEX_SINT 2
 #else
-#error unknown _CPU
+{   {   Init64Val( 0xFFFFFFFF, 0xFFFFFF80 )
+      , Init64Val( 0x00000000, 0x0000007F )
+      , TYP_SCHAR
+    }
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0x000000FF )
+      , TYP_UCHAR
+    }
+,   {   Init64Val( 0xFFFFFFFF, 0xFFFF8000 )
+      , Init64Val( 0x00000000, 0x00007FFF )
+      , TYP_SSHORT
+    }
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0x0000FFFF )
+      , TYP_USHORT
+    }
+,   {   Init64Val( 0xFFFFFFFF, 0x80000000 )
+      , Init64Val( 0x00000000, 0x7FFFFFFF )
+      , TYP_SINT
+    }
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0x00000000, 0xFFFFFFFF )
+      , TYP_UINT
+    }
+,   {   Init64Val( 0x80000000, 0x00000000 )
+      , Init64Val( 0x7FFFFFFF, 0xFFFFFFFF )
+      , TYP_SLONG64
+    }
+,   {   Init64Val( 0x00000000, 0x00000000 )
+      , Init64Val( 0xFFFFFFFF, 0xFFFFFFFF )
+      , TYP_ULONG64
+    }
+};
+    #define RANGE_INDEX_SINT 4
 #endif
 
 #define ENUM_RNG_MAX ARRAY_SIZE( range_table )

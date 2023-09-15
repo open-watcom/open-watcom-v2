@@ -1032,7 +1032,6 @@ static void addDefaultImports( void )
         CM_NULL         = 0x00
     } check_mask;
     PragmaExtrefsInject();
-#if _INTEL_CPU || ( _CPU == _AXP )
     if( _HAS_ANY_MAIN ) {
         check_mask control;
 
@@ -1077,9 +1076,6 @@ static void addDefaultImports( void )
             control = CM_NULL;
         }
     }
-#else
-    #error bad system
-#endif
     if( CompFlags.emit_library_names ) {
         if( CompFlags.float_used ) {
             CgInfoAddImport( "_fltused_" );
@@ -1116,8 +1112,8 @@ static void addDefaultImports( void )
         }
 #endif
     }
-    if( CompFlags.main_has_parms ) {
 #if _INTEL_CPU
+    if( CompFlags.main_has_parms ) {
     #if _CPU == 8086
         if( CompFlags.has_wide_char_main ) {
             CgInfoAddImport( "__wargc" );
@@ -1139,16 +1135,14 @@ static void addDefaultImports( void )
             }
         }
     #endif
-#elif _CPU == _AXP
-        if( CompFlags.has_wide_char_main ) {
-            CgInfoAddImport( "_wargc" );
-        } else {
-            CgInfoAddImport( "_argc" );
-        }
+    }
+#elif _RISC_CPU
+    if( CompFlags.main_has_parms ) {
+        CgInfoAddImport( "_argc" );
+    }
 #else
     #error missing _CPU case
 #endif
-    }
     if( CompFlags.bw_switch_used ) {
         CgInfoAddImport( "__init_default_win" );
     }

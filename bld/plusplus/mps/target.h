@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,27 +25,18 @@
 *
 *  ========================================================================
 *
-* Description:  Get appropriate language environment for target.
+* Description:  Configuration for MIPS target.
 *
 ****************************************************************************/
 
 
-#ifndef __TGTENV_H__
+/*  size of data types on target machine */
 
-#include "langenvd.h"
+#ifndef _TARGET_INCLUDED
+#define _TARGET_INCLUDED
+#include "target32.h"
+#include "targdef.h"
 
-#if _INTEL_CPU
-    #define __TGT_SYS __TGT_SYS_X86
-#elif _CPU == _AXP
-    #define   __TGT_SYS   __TGT_SYS_AXP_NT
-#elif _CPU == _MIPS
-     #define   __TGT_SYS   __TGT_SYS_MIPS
-#elif _CPU == _PPC
-    #define   __TGT_SYS   __TGT_SYS_PPC_NT
-#else
-    #error Invalid target environment
-#endif
-
-#include "langenv.h"
+#define _CPU            _MIPS
 
 #endif

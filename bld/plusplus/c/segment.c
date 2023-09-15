@@ -211,7 +211,7 @@ static PC_SEGMENT *segIdLookup( // LOOKUP SEGMENT FOR ID
 }
 
 
-#if _CPU == _AXP || COMP_CFG_COFF == 1
+#if _RISC_CPU || COMP_CFG_COFF == 1
 static fe_seg_id markSegmentComdat(  // MARK SEGMENT AS COMDAT SEGMENT
     fe_seg_id segid )          // - segment id
 {
@@ -320,10 +320,8 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
         // we don't want padding introduced
 #if _INTEL_CPU
         curr->align = TARGET_SHORT;
-#elif _CPU == _AXP
-        curr->align = TARGET_POINTER;
 #else
-#error no alignment set
+        curr->align = TARGET_POINTER;
 #endif
         // we don't want alignment changed either
         curr->fixed_alignment = true;
@@ -437,7 +435,7 @@ target_offset_t SegmentAlignment(   // SEGMENT: ALIGNMENT FOR TYPE
     if( CompFlags.dont_align_segs ) {
         return( TARGET_CHAR );
     }
-#if _CPU == _AXP
+#if _RISC_CPU
     if( PackAmount != TARGET_CHAR ) {
 #else
     if( OptSize <= 50 || PackAmount != TARGET_CHAR ) {
@@ -828,7 +826,7 @@ fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
 }
 
 
-#if _CPU == _AXP || COMP_CFG_COFF == 1
+#if _RISC_CPU || COMP_CFG_COFF == 1
 fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
     SYMBOL sym,                 // - the symbol
     SEGID_CONTROL control )     // - segment control
@@ -934,10 +932,8 @@ SYMBOL SegmentLabelStackReset(  // RESET STACK-SEGMENT LABEL
 
 #if _INTEL_CPU
     #define CODE_ENDING "TEXT"
-#elif _CPU == _AXP
-    #define CODE_ENDING "text"
 #else
-    #error Invalid machine
+    #define CODE_ENDING "text"
 #endif
 #define ENDING_SIZE (sizeof(CODE_ENDING)-1)
 
@@ -1234,7 +1230,7 @@ fe_seg_id SegmentForDefinedFunc(// GET SEGMENT FOR A DEFINED FUNCTION
             } else {
                 segid = nextZmSegment();
             }
-#elif _CPU == _AXP || COMP_CFG_COFF == 1
+#elif _RISC_CPU || COMP_CFG_COFF == 1
             segid = nextZmSegment();
             if( SymIsGennedComdatFun( func ) ) {
                 segid = markSegmentComdat( segid );
@@ -1242,7 +1238,7 @@ fe_seg_id SegmentForDefinedFunc(// GET SEGMENT FOR A DEFINED FUNCTION
 #else
             #error Bad Machine Type
 #endif
-#if _CPU == _AXP || COMP_CFG_COFF == 1
+#if _RISC_CPU || COMP_CFG_COFF == 1
         } else if( SymIsGennedComdatFun( func ) ) {
             segid = nextZmSegment();
             segid = markSegmentComdat( segid );
