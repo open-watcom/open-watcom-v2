@@ -67,9 +67,6 @@
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
-    /*
-     * We should unload the symbols here but it's not worth the trouble
-     */
     if( *sys_hdl != NULL_SYSHDL ) {
         loader_unload_image( *sys_hdl );
         *sys_hdl = NULL_SYSHDL;
@@ -105,13 +102,6 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
         return( status );
     }
     if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-#ifdef WATCOM_DEBUG_SYMBOLS
-        /*
-         * Look for symbols in separate .sym files, not the .dip itself
-         */
-        strcpy( filename + strlen( filename ) - 4, ".sym" );
-        DebuggerLoadUserModule( filename, GetCS(), (unsigned long)modhdl );
-#endif
         *sys_hdl = modhdl;
         return( DS_OK );
     }

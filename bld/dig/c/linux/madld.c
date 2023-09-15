@@ -49,6 +49,8 @@
 #include "madsys.h"
 #include "roundmac.h"
 
+#include "clibext.h"
+
 
 #ifdef __WATCOMC__
 
@@ -79,7 +81,7 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
     module              modhdl;
     mad_init_func       *init_func;
     mad_status          status;
-    char                filename[256];
+    char                filename[_MAX_PATH];
     digld_error         err;
 
     *sys_hdl = NULL_SYSHDL;

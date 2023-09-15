@@ -141,11 +141,11 @@ static void *pe_get_proc_address( module modhdl, const char *proc_name )
 
 static void loader_unload_image( module modhdl )
 {
-    /*
-     * Notify the Watcom Debugger of module load and let it remove symbolic info
-     */
 #ifdef WATCOM_DEBUG_SYMBOLS
-    if( modhdl->modname ) {
+    if( modhdl->modname != NULL ) {
+        /*
+         * Notify the Watcom Debugger of module unload and let it remove symbolic info
+         */
         DebuggerUnloadUserModule( modhdl->modname );
         free( modhdl->modname );
     }
@@ -166,7 +166,10 @@ static digld_error loader_load_image( FILE *fp, char *filename, module *mod_hdl,
     u_long          reloc_raw_off, reloc_base = 0, reloc_size;
     u_long          image_base = 0, image_size, image_end;
     u_char          *image_ptr;
-    int             i, delta, numFixups;
+    size_t          i;
+    size_t          len;
+    size_t          numFixups;
+    int             delta;
     u_short         relocType, *fixup;
     module          modhdl;
     void            *reloc = NULL;
@@ -286,17 +289,32 @@ static digld_error loader_load_image( FILE *fp, char *filename, module *mod_hdl,
      * the .rsrc section separately).
      */
     image_size = image_end - image_base;
+#if defined( __LINUX__ )
+    /*
+     * the content in memory must be aligned to the _4K boundary,
+     * so one _4K page is added
+     */
     modhdl = malloc( sizeof( *modhdl ) + image_size + _4K );
+#else
+    modhdl = malloc( sizeof( *modhdl ) + image_size );
+#endif
     reloc = malloc( reloc_size );
     if( modhdl == NULL
       || reloc == NULL ) {
         err = DIGS_ERR_OUT_OF_MEMORY;
         goto Error;
     }
+#if defined( __LINUX__ )
+    /*
+     * align memory pointer to the _4K boundary
+     */
+    image_ptr = (char *)__ROUND_UP_SIZE_4K( (u_long)modhdl + sizeof( *modhdl ) );
+#else
+    image_ptr = (char *)( (u_long)modhdl + sizeof( *modhdl ) );
+#endif
     /*
      * Setup all the pointers into our loaded executeable image
      */
-    image_ptr = (u_char *)__ROUND_UP_SIZE_4K( (u_long)modhdl + sizeof( *modhdl ) );
     modhdl->pbase = image_ptr;
     modhdl->ptext = image_ptr + ( text_base - image_base );
     modhdl->pdata = image_ptr + ( data_base - image_base );
@@ -400,26 +418,45 @@ static digld_error loader_load_image( FILE *fp, char *filename, module *mod_hdl,
      * Clean up, close the file and return the loaded module handle
      */
     free( reloc );
-    /*
-     * Notify the Watcom Debugger of module load and let it load symbolic info
-     */
+    *init_func = pe_get_proc_address( modhdl, MODINIT );
+    *mod_hdl = modhdl;
 #ifdef WATCOM_DEBUG_SYMBOLS
     /*
      * Store the file name in the modhdl structure; this must be the real
      * file name where the debugger will try to load symbolic info from
+     *
+     * remove driver from begining of file name
      */
-    modhdl->modname = malloc( strlen( filename ) + 1 );
-    if( modhdl->modname != NULL ) {
-        if( filename[1] == ':' ) {
-            strcpy( modhdl->modname, filename + 2 );
-        } else {
-            strcpy( modhdl->modname, filename );
+    if( filename[0] != '\0' && filename[1] == ':' ) {
+        filename += 2;
+    }
+    len = strlen( filename );
+    if( len > 0 ) {
+        modhdl->modname = malloc( len + 4 + 1 );
+        if( modhdl->modname != NULL ) {
+            size_t  pos;
+
+            pos = len;
+            for( i = 0; i < len; i++ ) {
+                switch( *filename ) {
+                case '\\':
+                case '/':
+                    pos = len;
+                    break;
+                case '.':
+                    pos = i;
+                    break;
+                }
+                modhdl->modname[i] = *filename++;
+            }
+            strcpy( modhdl->modname + pos, ".sym" );
+            /*
+             * Notify the Watcom Debugger of module load and let it load symbolic info
+             */
+            DebuggerLoadUserModule( modhdl->modname, GetCS(), (unsigned long)image_ptr );
         }
-        DebuggerLoadUserModule( modhdl->modname, GetCS(), (u_long)modhdl->pbase );
     }
 #endif
-    *init_func = pe_get_proc_address( modhdl, MODINIT );
-    *mod_hdl = modhdl;
     return( DIGS_OK );
 
 Error:

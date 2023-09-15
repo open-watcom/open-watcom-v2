@@ -50,13 +50,26 @@
 
 typedef struct {
 #ifdef __WATCOMC__
-    unsigned_32         sig;
+    unsigned_32     sig;
 #endif
-    unsigned_8          init_rtn[1];    /* offset is start of routine */
+    unsigned_8      init_rtn[1];    /* offset is start of routine */
+} image_hdr;
+
+typedef struct {
+    char            *modname;
 } *module;
 
 static void loader_unload_image( module modhdl )
 {
+#ifdef WATCOM_DEBUG_SYMBOLS
+    if( modhdl->modname != NULL ) {
+        /*
+         * Notify the Watcom Debugger of module unload and let it remove symbolic info
+         */
+        DebuggerUnloadUserModule( modhdl->modname );
+        free( modhdl->modname );
+    }
+#endif
     DIGCli( Free )( modhdl );
 }
 
@@ -68,12 +81,16 @@ static digld_error loader_load_image( FILE *fp, const char *filename, module *mo
     unsigned            bss_size;
     unsigned            reloc_size;
     unsigned            bunch;
-    unsigned            i;
+    size_t              i;
+    size_t              len;
     unsigned_32         *fixup_loc;
     unsigned            buff[RELOC_BUFF_SIZE];
     module              modhdl;
+    char                *image_ptr;
 
+#ifndef WATCOM_DEBUG_SYMBOLS
     (void)filename;
+#endif
     (void)init_func;
 
     *mod_hdl = NULL;
@@ -84,11 +101,28 @@ static digld_error loader_load_image( FILE *fp, const char *filename, module *mo
     hdr_size = hdr.hdr_size * 16;
     image_size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
     bss_size = hdr.min_data * _4K;
-    modhdl = DIGCli( Alloc )( image_size + bss_size );
+#if defined( __LINUX__ )
+    /*
+     * the content in memory must be aligned to the _4K boundary,
+     * so one _4K page is added
+     */
+    modhdl = DIGCli( Alloc )( sizeof( *modhdl ) + image_size + bss_size + _4K );
+#else
+    modhdl = DIGCli( Alloc )( sizeof( *modhdl ) + image_size + bss_size );
+#endif
     if( modhdl == NULL )
         return( DIGS_ERR_OUT_OF_MEMORY );
+#if defined( __LINUX__ )
+    /*
+     * align memory pointer to the _4K boundary
+     */
+    image_ptr = (char *)__ROUND_UP_SIZE_4K( (unsigned_32)modhdl + sizeof( *modhdl ) );
+#else
+    image_ptr = (char *)( (unsigned_32)modhdl + sizeof( *modhdl ) );
+#endif
+    modhdl->modname = NULL;
     DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
-    if( DIGLoader( Read )( fp, modhdl, image_size ) ) {
+    if( DIGLoader( Read )( fp, image_ptr, image_size ) ) {
         loader_unload_image( modhdl );
         return( DIGS_ERR_CANT_LOAD_MODULE );
     }
@@ -105,25 +139,63 @@ static digld_error loader_load_image( FILE *fp, const char *filename, module *mo
             return( DIGS_ERR_CANT_LOAD_MODULE );
         }
         for( i = 0; i < bunch; ++i ) {
-            fixup_loc = (void *)((char *)modhdl + (buff[i] & ~0x80000000));
-            *fixup_loc += (unsigned_32)modhdl;
+            fixup_loc = (void *)(image_ptr + (buff[i] & ~0x80000000));
+            *fixup_loc += (unsigned_32)image_ptr;
         }
         hdr.num_relocs -= bunch;
     }
-#ifdef __LINUX__
+#if defined( __LINUX__ )
     /*
      * On some platforms (such as AMD64 or x86 with NX bit), it is required
      * to map the code pages loaded from the BPD as executable, otherwise
      * a segfault will occur when attempting to run any BPD code.
      */
-    mprotect((void*)__ROUND_DOWN_SIZE_4K( (u_long)modhdl ), __ROUND_UP_SIZE_4K( image_size ), PROT_READ | PROT_WRITE | PROT_EXEC);
+    mprotect( (void *)image_ptr, image_size, PROT_READ | PROT_WRITE | PROT_EXEC );
 #endif
-    memset( (char *)modhdl + image_size, 0, bss_size );
+    memset( image_ptr + image_size, 0, bss_size );
 #ifdef __WATCOMC__
-    *init_func = (modhdl->sig == MODSIG) ? modhdl->init_rtn : NULL;
+    *init_func = ((image_hdr *)image_ptr)->sig == MODSIG) ? ((image_hdr *)image_ptr)->init_rtn : NULL;
 #else
-    *init_func = modhdl->init_rtn;
+    *init_func = ((image_hdr *)image_ptr)->init_rtn;
 #endif
     *mod_hdl = modhdl;
+#ifdef WATCOM_DEBUG_SYMBOLS
+    /*
+     * Store the file name in the modhdl structure; this must be the real
+     * file name where the debugger will try to load symbolic info from
+     *
+     * remove driver from begining of file name
+     */
+    if( filename[0] != '\0' && filename[1] == ':' ) {
+        filename += 2;
+    }
+    len = strlen( filename );
+    if( len > 0 ) {
+        modhdl->modname = malloc( len + 4 + 1 );
+        if( modhdl->modname != NULL ) {
+            size_t  pos;
+
+            pos = len;
+            for( i = 0; i < len; i++ ) {
+                switch( *filename ) {
+                case '\\':
+                case '/':
+                case ':':
+                    pos = len;
+                    break;
+                case '.':
+                    pos = i;
+                    break;
+                }
+                modhdl->modname[i] = *filename++;
+            }
+            strcpy( modhdl->modname + pos, ".sym" );
+            /*
+             * Notify the Watcom Debugger of module load and let it load symbolic info
+             */
+            DebuggerLoadUserModule( modhdl->modname, GetCS(), (unsigned long)image_ptr );
+        }
+    }
+#endif
     return( DIGS_OK );
 }
