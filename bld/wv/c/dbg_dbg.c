@@ -53,7 +53,7 @@
 #define WV_SYM_DEF(size) struct { fixed_wv_sym_entry s; unsigned char len, name[size]; }
 
 #define WV_SYM( prfx, tk, tm, ts, sc, intrnl, vn, np ) \
-    static const WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
+    static const WV_SYM_DEF( sizeof( np #vn ) ) wv ## prfx ## _ ## vn = {  \
         {                                       \
             { ts, tk, tm }, sc, { intrnl }      \
         },                                      \
