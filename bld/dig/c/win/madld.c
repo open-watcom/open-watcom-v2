@@ -67,7 +67,7 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     HINSTANCE           mod_hdl;
-    char                filename[256];
+    char                filename[_MAX_PATH];
     mad_status          status;
     char                parm[10];
     struct {

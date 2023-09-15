@@ -485,7 +485,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
     trap_file_header    __far *head;
-    char                filename[256];
+    char                filename[_MAX_PATH];
     const char          *base_name;
     digld_error         err;
     size_t              len;

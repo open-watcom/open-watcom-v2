@@ -43,7 +43,7 @@
 
 #define DEFEXT      ".dip"
 //#define MODINIT     "DIPLOAD"
-#define MODSIG      DIPSIGVAL
+#define MODSIGN     DIPSIGN
 
 #include "../ldrrex.c"       /* PharLap REX format loader */
 
@@ -76,7 +76,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     DIGLoader( Close )( fp );
     if( err == DIGS_ERR_CANT_LOAD_MODULE )
         return( DS_ERR | DS_FREAD_FAILED );
-    if( err == DIGS_ERR_OUT_OF_DOS_MEMORY
+    if( err == DIGS_ERR_OUT_OF_MEMORY
       || err == DIGS_ERR_OUT_OF_DOS_MEMORY )
         return( DS_ERR | DS_NO_MEM );
     status = DS_ERR | DS_INVALID_DIP;

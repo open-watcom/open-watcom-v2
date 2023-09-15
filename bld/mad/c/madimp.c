@@ -142,7 +142,7 @@ static HINSTANCE    ThisInst;
 #endif
 
 #if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
-const char __based( __segname( "_CODE" ) ) Signature[4] = MADSIG;
+const char __based( __segname( "_CODE" ) ) Signature[4] = { MADSIGN };
 #endif
 
 DIG_DLLEXPORT mad_imp_routines * DIGENTRY MADLOAD( mad_status *status, mad_client_routines *client )

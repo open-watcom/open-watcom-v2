@@ -51,7 +51,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
 {
     dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
-    char                filename[256];
+    char                filename[_MAX_PATH];
     dip_status          status;
 
     *sys_hdl = NULL_SYSHDL;

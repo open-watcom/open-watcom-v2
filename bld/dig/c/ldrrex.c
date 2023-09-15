@@ -45,14 +45,17 @@
  *  OSX         -       yes     yes
  */
 
+#if defined(__WATCOMC__) && defined(__386__) && !defined(NDEBUG)
+#define WATCOM_DEBUG_SYMBOLS
+#endif
 
 #define RELOC_BUFF_SIZE 64
 
 typedef struct {
 #ifdef __WATCOMC__
-    unsigned_32     sig;
+    char        signature[4];
 #endif
-    unsigned_8      init_rtn[1];    /* offset is start of routine */
+    char        init_rtn[1];    /* offset is start of routine */
 } image_hdr;
 
 typedef struct {
@@ -82,7 +85,9 @@ static digld_error loader_load_image( FILE *fp, const char *filename, module *mo
     unsigned            reloc_size;
     unsigned            bunch;
     size_t              i;
+#ifdef WATCOM_DEBUG_SYMBOLS
     size_t              len;
+#endif
     unsigned_32         *fixup_loc;
     unsigned            buff[RELOC_BUFF_SIZE];
     module              modhdl;
@@ -154,7 +159,7 @@ static digld_error loader_load_image( FILE *fp, const char *filename, module *mo
 #endif
     memset( image_ptr + image_size, 0, bss_size );
 #ifdef __WATCOMC__
-    *init_func = ((image_hdr *)image_ptr)->sig == MODSIG) ? ((image_hdr *)image_ptr)->init_rtn : NULL;
+    *init_func = SIGN_EQUAL( ((image_hdr *)image_ptr)->signature, MODSIGN ) ? ((image_hdr *)image_ptr)->init_rtn : NULL;
 #else
     *init_func = ((image_hdr *)image_ptr)->init_rtn;
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,6 +63,8 @@
 #define DIG_SEEK_POSBACK(x) ((unsigned long)-(long)(x))
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
 #define DIG_RW_ERROR        ((size_t)-1)
+
+#define SIGN_EQUAL(s1,s2)   (memcmp( s1, s2, 4 ) == 0)
 
 typedef enum {
     SR_NONE,

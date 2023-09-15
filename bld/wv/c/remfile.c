@@ -62,7 +62,9 @@
 
 typedef int             loc_handle;
 
-/* Remote file "cache" - correlates remote and local file handles */
+/*
+ * Remote file "cache" - correlates remote and local file handles
+ */
 typedef struct _fcache_t {
     loc_handle  lochandle;
     sys_handle  remhandle;
@@ -80,8 +82,10 @@ static fcache_t         fcache[CACHED_HANDLES];
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 static const unsigned_8 remote_seek_method[] = { DIG_SEEK_ORG, DIG_SEEK_CUR, DIG_SEEK_END };
 
-/* Return local handle of remote file equivalent */
 static loc_handle GetCachedHandle( sys_handle remote )
+/*****************************************************
+ * Return local handle of remote file equivalent
+ */
 {
     int i;
 
@@ -93,8 +97,10 @@ static loc_handle GetCachedHandle( sys_handle remote )
     return( LOC_NIL_HANDLE );
 }
 
-/* Initialize local/remote handle cache */
 static void InitHandleCache( void )
+/**********************************
+ * Initialize local/remote handle cache
+ */
 {
     int     i;
 
@@ -109,8 +115,10 @@ static void InitHandleCache( void )
     }
 }
 
-/* Add entry for local/remote "cached" file */
 static int AddCachedHandle( loc_handle local, sys_handle remote )
+/****************************************************************
+ * Add entry for local/remote "cached" file
+ */
 {
     int     i;
 
@@ -124,8 +132,10 @@ static int AddCachedHandle( loc_handle local, sys_handle remote )
     return( -1 );
 }
 
-/* Remove cached file entry from the list */
 static int DelCachedHandle( loc_handle local )
+/*********************************************
+ * Remove cached file entry from the list
+ */
 {
     int     i;
 
@@ -158,9 +168,11 @@ bool HaveRemoteFiles( void )
     return( SuppFileId != 0 );
 }
 
-//NYI: The 'bool executable' should be changed to allow different file types
 size_t RemoteFileToFullName( dig_filetype file_type, const char *name, char *res,
                                  trap_elen res_len )
+/********************************************************************************
+ * NYI: The 'bool executable' should be changed to allow different file types
+ */
 {
     in_mx_entry         in[2];
     mx_entry            out[2];
@@ -184,14 +196,18 @@ size_t RemoteFileToFullName( dig_filetype file_type, const char *name, char *res
     in[0].len = sizeof( acc );
     in[1].ptr = (void *)name;
 #ifdef __NT__
-    // check whether short filename is necessary
+    /*
+     * check whether short filename is necessary
+     */
     switch( SysConfig.os ) {
     case DIG_OS_AUTOCAD:
     case DIG_OS_DOS:
     case DIG_OS_RATIONAL:
     case DIG_OS_PHARLAP:
     case DIG_OS_WINDOWS:
-        // convert long file name to short "DOS" compatible form
+        /*
+         * convert long file name to short "DOS" compatible form
+         */
         {
             GetShortPathNameA( name, short_filename, MAX_PATH );
             if( *short_filename != NULLCHAR ) {
@@ -255,12 +271,12 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
         return( sh );
     }
     CONV_LE_64( ret.handle );
-
-    /* See if the file is available locally. If so, open it here as
+    /*
+     * See if the file is available locally. If so, open it here as
      * well as on the remote machine.
+     *
+     * TODO: check if remote file is the same!
      */
-    // TODO: check if remote file is the same!
-
 #ifdef LOGGING
     fprintf( logf, "Trying to open local copy of remote file (remote handle %d)\n", ret.handle );
     fprintf( logf, "%s\n", name );
@@ -427,8 +443,9 @@ size_t RemoteRead( sys_handle sh, void *buff, size_t len )
 
     if( SuppFileId == 0 )
         return( 0 );
-
-    /* Try reading from local copy first */
+    /*
+     * Try reading from local copy first
+     */
     lochandle = GetCachedHandle( sh );
     if( lochandle != LOC_NIL_HANDLE )
         return( read( lochandle, buff, len ) );
@@ -444,8 +461,9 @@ unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
 
     if( SuppFileId == 0 )
         return( 0 );
-
-    /* Seek on local copy too (if available) */
+    /*
+     * Seek on local copy too (if available)
+     */
     lochandle = GetCachedHandle( sh );
     if( lochandle != LOC_NIL_HANDLE ) {
         lseek( lochandle, pos, local_seek_method[method] );
@@ -453,7 +471,9 @@ unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_SEEK );
     acc.handle = sh;
-    /* Magic again! The seek mode mapped exactly to our definition! */
+    /*
+     * Magic again! The seek mode mapped exactly to our definition!
+     */
     acc.mode = remote_seek_method[method];
     acc.pos = pos;
     CONV_LE_64( acc.handle );

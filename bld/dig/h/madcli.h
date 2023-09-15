@@ -37,8 +37,7 @@
 #include "digsyscf.h"
 #include "madtypes.h"
 
-#define MADSIG          "MAD"
-#define MADSIGVAL       0x0044414DUL    // "MAD"
+#define MADSIGN         "MAD"
 
 #define MADCli(n)       MADCli ## n
 #define _MADCli(n)      _MADCli ## n n

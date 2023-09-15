@@ -43,7 +43,7 @@ int PILLSysLoad( const char *base_name, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
     HMODULE                 mod_hdl;
-    char                    filename[256];
+    char                    filename[_MAX_PATH];
     pill_init_func          *init_func;
 
     msg->source = NULL;

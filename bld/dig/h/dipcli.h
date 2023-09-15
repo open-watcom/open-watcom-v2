@@ -36,8 +36,7 @@
 #include "digcli.h"
 #include "diptypes.h"
 
-#define DIPSIG          "DIP"
-#define DIPSIGVAL       0x00504944UL    // "DIP"
+#define DIPSIGN         "DIP"
 
 #define DIPCli(n)       DIPCli ## n
 #define _DIPCli(n)      _DIPCli ## n n

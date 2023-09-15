@@ -65,7 +65,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HINSTANCE           mod_hdl;
-    char                filename[256];
+    char                filename[_MAX_PATH];
     dip_status          status;
     char                parm[10];
     struct {

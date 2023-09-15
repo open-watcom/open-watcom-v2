@@ -53,7 +53,7 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_
 {
     mad_sys_handle      mod_hdl;
     mad_init_func       *init_func;
-    char                filename[256];
+    char                filename[_MAX_PATH];
     mad_status          status;
 
     *sys_hdl = NULL_SYSHDL;

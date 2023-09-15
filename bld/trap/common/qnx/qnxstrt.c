@@ -44,7 +44,7 @@ static const trap_callbacks *Client;
 static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 
 #ifdef __WATCOMC__
-const char __based( __segname( "_CODE" ) ) Signature[4] = { TRAPSIG };
+const char __based( __segname( "_CODE" ) ) Signature[4] = { TRAPSIGN };
 #endif
 
 const trap_requests *TrapLoad( const trap_callbacks *client )

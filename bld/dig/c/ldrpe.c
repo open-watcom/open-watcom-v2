@@ -42,13 +42,17 @@
  *             Now used by Linux 32-bit code only for TRAP modules
  */
 
+#if defined(__WATCOMC__) && defined(__386__) && !defined(NDEBUG)
+#define WATCOM_DEBUG_SYMBOLS
+#endif
+
 typedef struct {
-    u_char  *pbase;         /* Base of image in memory                  */
-    u_char  *ptext;         /* Text section read from disk              */
-    u_char  *pdata;         /* Data section read from disk              */
-    u_char  *pbss;          /* BSS section read                         */
-    u_char  *pimport;       /* Import section read from disk            */
-    u_char  *pexport;       /* Export section read from disk            */
+    char    *pbase;         /* Base of image in memory                  */
+    char    *ptext;         /* Text section read from disk              */
+    char    *pdata;         /* Data section read from disk              */
+    char    *pbss;          /* BSS section read                         */
+    char    *pimport;       /* Import section read from disk            */
+    char    *pexport;       /* Export section read from disk            */
     u_long  textBase;       /* Base of text section in image            */
     u_long  dataBase;       /* Base of data section in image            */
     u_long  bssBase;        /* Base of BSS data section in image        */
@@ -165,9 +169,11 @@ static digld_error loader_load_image( FILE *fp, char *filename, module *mod_hdl,
     u_long          export_raw_off, export_base, export_size, export_end;
     u_long          reloc_raw_off, reloc_base = 0, reloc_size;
     u_long          image_base = 0, image_size, image_end;
-    u_char          *image_ptr;
+    char            *image_ptr;
     size_t          i;
+#ifdef WATCOM_DEBUG_SYMBOLS
     size_t          len;
+#endif
     size_t          numFixups;
     int             delta;
     u_short         relocType, *fixup;

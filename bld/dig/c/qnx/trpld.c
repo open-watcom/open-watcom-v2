@@ -44,7 +44,7 @@
 
 #define DEFEXT      ".trp"
 //#define MODINIT     "TrapLoad"
-#define MODSIG      TRAPSIGVAL
+#define MODSIGN     TRAPSIGN
 
 #include "../ldrrex.c"       /* PharLap REX format loader */
 
@@ -84,7 +84,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     FILE                *fp;
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
-    char                filename[256];
+    char                filename[_MAX_PATH];
     const char          *base_name;
     size_t              len;
     digld_error         err;

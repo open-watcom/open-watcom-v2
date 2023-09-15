@@ -65,7 +65,7 @@ int PILLSysLoad( const char *base_name, const pill_client_routines *cli,
     DIGLoader( Close )( fp );
     lh->sys = SuppSegs;
 #ifdef __WATCOMC__
-    if( pill == NULL || pill->sig != PILLSIG ) {
+    if( pill == NULL || memcmp( pill->signature, PILLSIGN, 4 ) != 0 ) {
 #else
     if( pill == NULL ) {
 #endif

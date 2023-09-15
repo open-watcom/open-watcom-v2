@@ -84,7 +84,7 @@ const static trap_callbacks TrapCallbacks = {
 #ifdef REX
 
 #define DEFEXT      ".trp"
-#define MODSIG      TRAPSIGVAL
+#define MODSIGN     TRAPSIGN
 #include "../ldrrex.c"      /* PharLap REX format loader */
 
 #else

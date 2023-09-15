@@ -44,7 +44,7 @@
 
 #define DEFEXT      ".mad"
 //#define MODINIT     "MADLOAD"
-#define MODSIG      MADSIGVAL
+#define MODSIGN     MADSIGN
 
 #include "../ldrrex.c"       /* PharLap REX format loader */
 
@@ -78,7 +78,7 @@ mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
     DIGLoader( Close )( fp );
     if( err == DIGS_ERR_CANT_LOAD_MODULE )
         return( MS_ERR | MS_FREAD_FAILED );
-    if( err == DIGS_ERR_OUT_OF_DOS_MEMORY
+    if( err == DIGS_ERR_OUT_OF_MEMORY
       || err == DIGS_ERR_OUT_OF_DOS_MEMORY )
         return( MS_ERR | MS_NO_MEM );
     status = MS_ERR | MS_INVALID_MAD;

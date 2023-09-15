@@ -78,7 +78,7 @@ void UnLoadTrap( void )
 
 digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                filename[256];
+    char                filename[_MAX_PATH];
     const char          *base_name;
     size_t              len;
     UINT                prev;
