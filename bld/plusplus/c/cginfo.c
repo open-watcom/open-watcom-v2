@@ -1143,7 +1143,6 @@ static void addDefaultImports( void )
 #else
     #error missing _CPU case
 #endif
-    }
     if( CompFlags.bw_switch_used ) {
         CgInfoAddImport( "__init_default_win" );
     }
