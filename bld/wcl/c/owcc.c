@@ -235,6 +235,7 @@ static option_mapping mappings[] = {
     { "mwindows",                       "bg" },
     { "mconsole",                       "bc" },
     { "mthreads",                       "bm" },
+    { "pthread",                        "bm" },
     { "mrtdll",                         "br" },
     { "mdefault-windowing",             "bw" },
     { "mhard-emu-float",                "fpi" },
@@ -242,6 +243,7 @@ static option_mapping mappings[] = {
     { "w",                              "w0" },
     { "Wlevel:",                        "w" },
     { "Wall",                           "w4" },
+    { "pedantic",                       "wx" },
     { "Wextra",                         "wx" },
     { "Werror",                         "we" },
     { "Wno-n:",                         "wcd=" }, /* NOTE: this needs to be listed before -Wn to work */
@@ -659,7 +661,7 @@ static  int  ParseArgs( int argc, char **argv )
 #else
                         "b:CcD:Ef:g::"
                         "HI:i::L:l:M::m:"
-                        "O::o:P::QSs::U:vW::wx::yz::",
+                        "O::o:P::p:QSs::U:vW::wx::yz::",
 #endif
                         UsageText )) != -1 ) {
 
