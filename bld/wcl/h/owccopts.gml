@@ -774,7 +774,14 @@
 :number. . . =<stack_size>
 :target. any
 
+:cmt. used on windows
 :option. mthreads
+:usage. build Multi-thread application
+:group. 7
+:target. any
+
+:cmt. used on unix
+:option. pthread
 :usage. build Multi-thread application
 :group. 7
 :target. any
