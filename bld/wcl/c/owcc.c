@@ -950,14 +950,17 @@ static  int  ParseArgs( int argc, char **argv )
             }
             break;
         case 'l':
-            new_item = MemAlloc( sizeof( list ) );
-            new_item->next = NULL;
-            p = MemAlloc( strlen( Word ) + 2 + 1 );
-            strcpy( p, Word );
-            strcat( p, "." LIB_EXT_SECONDARY );
-            new_item->item = strfdup( p );
-            MemFree( p );
-            ListAppend( &Libs_List, new_item );
+            if( Word[0] != '\0' ) {
+                new_item = MemAlloc( sizeof( list ) );
+                new_item->next = NULL;
+                p = MemAlloc( 3 + strlen( Word ) + 2 + 1 );
+                strcpy( p, "lib" );
+                strcpy( p + 3, Word );
+                strcat( p, "." LIB_EXT_SECONDARY );
+                new_item->item = strfdup( p );
+                MemFree( p );
+                ListAppend( &Libs_List, new_item );
+            }
             wcc_option = false;
             break;
         case 'L':
