@@ -99,8 +99,11 @@ mbsnbi        _mbsnbicmp        _mbsnbicoll       d16 d32 nt  nta ntm ntp       
 mbsnco        _mbsncmp          _mbsncoll         d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
 mbsnic        _mbsnicmp         _mbsnicoll        d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
 memccp        memccpy           _memccpy          d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32         rdu rdk
-memicm        _memicmp          memicmp           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32         w16 w32 l32         rdu rdk
+memcmp        memcmp            bcmp              d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 memic0        memicmp           _memicmp                                      ncl     nll
+memicm        _memicmp          memicmp           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32         w16 w32 l32         rdu rdk
+memove        memmove           bcopy             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
+memset        memset            bzero             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 mkdir_        mkdir             _mkdir            d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 onexit        _onexit           onexit            d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 onexi0        onexit            _onexit                                       ncl     nll
