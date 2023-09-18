@@ -19,6 +19,8 @@
 _WCRTLINK extern int    bcmp( const void *__s1, const void *__s2, __w_size_t __n );
 _WCRTLINK extern void   bcopy( const void *__s1, void *__s2, __w_size_t __n );
 _WCRTLINK extern void   bzero( void *__s, __w_size_t __n );
+_WCRTLINK extern char   *index( const char *s, int c );
+_WCRTLINK extern char   *rindex( const char *s, int c );
 
 /* Non-legacy functions */
 

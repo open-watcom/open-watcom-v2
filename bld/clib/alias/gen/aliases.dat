@@ -32,6 +32,9 @@
 access        access            _access           d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
 asct_r        _asctime          asctime_r                                                                         l32 lpc lmp
 atoi64        atoll             _atoi64           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+bcmp__        memcmp            bcmp              d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+bcopy_        memmove           bcopy             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+bzero_        memset            bzero             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 chdir_        chdir             _chdir            d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 chmod_        chmod             _chmod            d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
 chsize        _chsize           chsize            d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
@@ -77,6 +80,7 @@ getpwe        setpwent          endpwent                                        
 getws_        getws             _getws            d16 d32 nt  nta ntm ntp                 o16 o32 q16 q32 w16 w32 l32
 gmtm_r        _gmtime           gmtime_r                                                                          l32 lpc lmp
 i64toa        lltoa             _i64toa           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+index_        strchr            index             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 isatty        isatty            _isatty           d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
 iscsyf        __iscsymf         iscsymf           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 iscsym        __iscsym          iscsym            d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
@@ -99,11 +103,8 @@ mbsnbi        _mbsnbicmp        _mbsnbicoll       d16 d32 nt  nta ntm ntp       
 mbsnco        _mbsncmp          _mbsncoll         d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
 mbsnic        _mbsnicmp         _mbsnicoll        d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
 memccp        memccpy           _memccpy          d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32         rdu rdk
-memcmp        memcmp            bcmp              d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 memic0        memicmp           _memicmp                                      ncl     nll
 memicm        _memicmp          memicmp           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32         w16 w32 l32         rdu rdk
-memove        memmove           bcopy             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
-memset        memset            bzero             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 mkdir_        mkdir             _mkdir            d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 onexit        _onexit           onexit            d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 onexi0        onexit            _onexit                                       ncl     nll
@@ -113,6 +114,7 @@ popen_        popen             _popen                                          
 putenv        putenv            _putenv           d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 putws_        putws             _putws            d16 d32 nt  nta ntm ntp                 o16 o32 q16 q32 w16 w32 l32
 read__        read              _read             d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk
+rindex        strrchr           rindex            d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 rmdir_        rmdir             _rmdir            d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 setenv        setenv            _setenv           d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 setmod        _setmode          setmode           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
