@@ -113,13 +113,19 @@ as_mps          = *bwasmps
 
 !endif
 
-!ifndef release
+!ifndef debug
 !ifdef $(proj_name)_release
-release = $($(proj_name)_release)
-!else ifeq %OWDEBUGBUILD 1
-release = 0
+!ifeq $(proj_name)_release 0
+debug = 1
 !else
-release = 1
+debug = 0
+!endif
+!else ifeq %OWDEVBUILD 1
+debug = 2
+!else ifeq %OWDEBUGBUILD 1
+debug = 1
+!else
+debug = 0
 !endif
 !endif
 
@@ -181,7 +187,7 @@ cldebug_fmt = -hd
 mode_optimization = $(dft_oflags)
 !endif
 mode_libflags =
-!ifeq release 1
+!ifeq debug 0
 mode_cppflags = -DNDEBUG
 mode_cflags   = $(mode_optimization) -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
@@ -191,7 +197,11 @@ mode_clflags  = $(cldebug_fmt) -d1
 mode_libflags = -s-t-zld
 !endif
 !else
+!ifeq debug 2
+mode_cppflags = -DDEVBUILD
+!else
 mode_cppflags =
+!endif
 mode_cflags   = -od -d2 $(cdebug_fmt)
 mode_aflags   = -d2
 mode_lflags   = $(ldebug_fmt) all
@@ -329,7 +339,7 @@ checkstack_386 = -s
 checkstack_i86 = -s
 !else ifdef $(proj_name)_checkstack
 !else
-! ifeq release 1
+! ifeq debug 0
 checkstack_386 = -s
 checkstack_i86 = -s
 ! else
@@ -345,7 +355,7 @@ checkstack_dll_386 = -s
 checkstack_dll_i86 = -s
 !else ifdef $(proj_name)_checkstack_dll
 !else
-! ifeq release 1
+! ifeq debug 0
 checkstack_dll_386 = -s
 checkstack_dll_i86 = -s
 ! else

@@ -104,7 +104,7 @@ common_flags_dbg = -Zi -fast
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
 !endif
-!ifeq release 1
+!ifeq debug 0
 common_flags = $(common_flags_rel)
 !else
 common_flags = $(common_flags_dbg)
@@ -123,7 +123,7 @@ common_cflags = $(common_cflags_wng) -D_STATIC_CPPLIB
 
 common_ldflags_rel =
 common_ldflags_dbg =
-!ifeq release 1
+!ifeq debug 0
 common_ldflags = $(common_ldflags_rel)
 !else
 common_ldflags = $(common_ldflags_dbg)
@@ -350,7 +350,7 @@ common_cppflags_osx_a64     = -D__OSX_ARM64__
 # common release/debug options
 common_flags_rel = -O -g1 -gz -gdwarf-2
 common_flags_dbg = -g -gz -gdwarf
-!ifeq release 1
+!ifeq debug 0
 common_flags = $(common_flags_rel)
 !else
 common_flags = $(common_flags_dbg)
@@ -366,7 +366,7 @@ common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
 common_ldflags_dbg =
-!ifeq release 1
+!ifeq debug 0
 common_ldflags = $(common_ldflags_rel)
 !else
 common_ldflags = $(common_ldflags_dbg)

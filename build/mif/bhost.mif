@@ -33,10 +33,10 @@ bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 bld_new_cflags  = -xx-zam
 !endif
 
-!ifeq release 0
-bld_gen_cflags  = $(watcom_common_cflags)-j-za99-d2$(bld_new_cflags)-fo=.obj
-!else
+!ifeq debug 0
 bld_gen_cflags  = $(watcom_common_cflags)-j-za99-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
+!else
+bld_gen_cflags  = $(watcom_common_cflags)-j-za99-d2$(bld_new_cflags)-fo=.obj
 !endif
 
 # options for source compilations
