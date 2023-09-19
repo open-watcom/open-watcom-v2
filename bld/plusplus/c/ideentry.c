@@ -45,7 +45,7 @@
 #include "clibext.h"
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 // #undef DbgVerify
 // #define DbgVerify(c,m) if( !(c) ) printIDE( "** IDEDLL **" m )
 #endif
@@ -59,7 +59,7 @@ typedef char    NUMBER_STR[8];  // number string
 
 // MEMORY-ALLOCATION INTERFACE
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define allocMem( p ) CMemAlloc( p )
 #else
 static void* allocMem           // ALLOCATE MEMORY
@@ -70,7 +70,7 @@ static void* allocMem           // ALLOCATE MEMORY
 #endif
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define freeMem( p ) CMemFree( p )
 #else
 static void freeMem             // FREE MEMORY

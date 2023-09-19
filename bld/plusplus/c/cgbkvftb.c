@@ -42,7 +42,7 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 

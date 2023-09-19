@@ -55,7 +55,7 @@
 #include "intlload.h"
 #include "ideentry.h"
 #include "cbanner.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "enterdb.h"
 #endif
 
@@ -655,7 +655,7 @@ static msg_status_t doError(    // ISSUE ERROR
         unsigned too_many   : 1;    // - true ==> too many messages
     } flag;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     fflush(stdout);
     fflush(stderr);
 #endif

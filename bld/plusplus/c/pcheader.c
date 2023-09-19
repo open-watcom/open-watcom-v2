@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ static char *pchName;
 static NAME pchDebugInfoName;
 static int  pchFile;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define IO_BUFFER_SIZE  1024
 #else
 #define IO_BUFFER_SIZE  65536
@@ -112,16 +112,7 @@ static long     bufferPosition;
 
 static jmp_buf  *abortData;
 
-#ifdef NDEBUG
-
-#define PCHTrashAlreadyRead()
-
-void PCHActivate( void )
-/**********************/
-{
-}
-
-#else
+#ifdef DEVBUILD
 
 static clock_t start_parse;
 
@@ -137,6 +128,15 @@ static void PCHTrashAlreadyRead( void )
 void PCHActivate( void )
 {
     start_parse = clock();
+}
+
+#else
+
+#define PCHTrashAlreadyRead()
+
+void PCHActivate( void )
+/**********************/
+{
 }
 
 #endif
@@ -286,7 +286,7 @@ static void alignPCH( unsigned i, bool writing )
             PCHRead( dummy, skip );
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( writing ) {
         unsigned w = -i;
         PCHWriteUInt( w );
@@ -370,7 +370,7 @@ void PCHFlushBuffer( void )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
 {
     DbgVerify( (int)(pointer_uint)handle == pchFile, "PCH handle is bad" );
@@ -478,7 +478,7 @@ void PCHeaderCreate( char *include_file )
     char * volatile pch_fname;  // must be preserved by setjmp()
     int status;
     jmp_buf restore_state;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     clock_t start;
     clock_t stop;
 
@@ -533,7 +533,7 @@ void PCHeaderCreate( char *include_file )
             CompFlags.all_debug_type_names = true;
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     stop = clock();
     printf( "%u ticks to parse header\n", (unsigned)( start - start_parse ) );
     printf( "%u ticks to save pre-compiled header\n", (unsigned)( stop - start ) );
@@ -783,7 +783,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     pch_absorb ret;
     int status;
     jmp_buf restore_state;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     clock_t start;
     clock_t stop;
 
@@ -845,7 +845,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     if( CompFlags.pch_debug_info_opt && ret == PCHA_OK ) {
         CompFlags.pch_debug_info_read = true;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     stop = clock();
     printf( "%u ticks to load pre-compiled header\n", (unsigned)( stop - start ) );
 #endif
@@ -1040,7 +1040,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     char        *volatile pch_fname;  // must be preserved by setjmp()
     int         status;
     jmp_buf     restore_state;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     clock_t     start;
     clock_t     stop;
 
@@ -1093,13 +1093,13 @@ void PCHPerformReloc( pch_reloc_index ri )
         // write error occurred; delete PCH file
         remove( pch_fname );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     stop = clock();
     printf( "%u ticks to relocate pre-compiled header (%u section)\n", (unsigned)( stop - start ), ri );
 #endif
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static char const * const pchRegionNames[] = {
     #define PCH_EXEC( a, b )    #a ,
     #include "pcregdef.h"
@@ -1118,7 +1118,7 @@ static void pchInit( INITFINI* defn )
     for( cri = relocInfo; cri < &relocInfo[PCHRELOC_MAX]; ++cri ) {
         cri->start = 0;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     ExtraRptRegisterCtr( &ctr_pch_length, "# bytes in PCH" );
     ExtraRptRegisterCtr( &ctr_pch_waste, "# bytes wasted in PCH for alignment" );
     ExtraRptRegisterTab( "PCH region size table (pcregdef.h)", pchRegionNames, &ctr_pchw_region[0][0], PCHRW_MAX + 1, 1 );

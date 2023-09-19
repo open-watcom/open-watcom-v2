@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -283,7 +283,7 @@ static bool GetNovSymbolImportExport( bool import )
         result = SetCurrentPrefix( Token.this, Token.len );
         if( result ) {
             Token.skipToNext = DoWeNeedToSkipASeparator( false );
-#ifndef NDEBUG
+#ifdef DEVBUILD
             printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
 #endif
         }
@@ -303,7 +303,7 @@ static bool GetNovSymbolImportExport( bool import )
         if( sym == NULL || sym->p.import != NULL ) {
             return( true );
         }
-#ifndef NDEBUG
+#ifdef DEVBUILD
         printf( "imported %s from %s\n", sym->name.u.ptr, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
 #endif
         SET_SYM_TYPE( sym, SYM_IMPORTED );

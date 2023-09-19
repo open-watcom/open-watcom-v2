@@ -15,7 +15,7 @@ modstart        macro   modname
                 endm
 
 xdefp           macro   xsym
-ifndef NDEBUG
+ifdef DEVBUILD
                 public  xsym
 endif
                 endm

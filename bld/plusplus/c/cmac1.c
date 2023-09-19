@@ -42,7 +42,7 @@
 #include "carve.h"
 #include "dumpapi.h"
 #include "cscanbuf.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -252,7 +252,7 @@ static TOKEN doGetMacroToken(       // GET NEXT TOKEN
         *mlist = mtok->next;
         CMemFree( mtok );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DumpMacToken();
 #endif
     return( token );
@@ -580,7 +580,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #if 0
 void DumpMTokens( MACRO_TOKEN *mtok )
 {
@@ -746,7 +746,7 @@ static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, bool rescanning )
 
     ptail = &head;
     ++macroDepth;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( macroDepth > 100 ) {
   #if defined( __WATCOMC__ )
         EnterDebugger();

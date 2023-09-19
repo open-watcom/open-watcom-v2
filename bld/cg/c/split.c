@@ -443,7 +443,7 @@ instruction      *rFIXSHIFT( instruction *ins )
 /*********************************************/
 {
     instruction         *new_ins;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     signed_32           shift_count;
 #endif
 
@@ -452,7 +452,7 @@ instruction      *rFIXSHIFT( instruction *ins )
      * rights shifts must never exceed (REGISTER_BITS - 1), logical shifts can
      * be replaced with loads of zero constant.
      */
-#ifndef NDEBUG
+#ifdef DEVBUILD
     assert( ins->operands[1]->n.class == N_CONSTANT );
     shift_count = ins->operands[1]->c.lo.int_value;
     assert( shift_count >= REG_SIZE * 8 );

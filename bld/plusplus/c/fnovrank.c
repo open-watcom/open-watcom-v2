@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1398,7 +1398,7 @@ static uint_8 rkdTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 
 ExtraRptTable( type_combos, RKD_MAX, RKD_MAX ); // counts arg rankings
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static int FNOV_infinite_ctr = 0;
 #define INFINITY 10
 

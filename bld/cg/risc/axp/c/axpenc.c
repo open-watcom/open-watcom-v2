@@ -951,7 +951,7 @@ static  void    Encode( instruction *ins )
         _Zoiks( ZOIKS_028 );
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
@@ -975,7 +975,7 @@ void    GenJumpIf( instruction *ins, pointer label )
 {
     GenBRANCH( BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][_IsFloating( ins->type_class )],
                 _NameReg( ins->operands[0] ), label );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "Jcc L" );
         DumpPtr( label );

@@ -823,7 +823,7 @@ static  void    Encode( instruction *ins )
         _Zoiks( ZOIKS_028 );
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
@@ -859,7 +859,7 @@ void    CodeLabel( label_handle label, unsigned alignment )
         ObjBytes( Zeros, alignment - modulus );
     }
     OutLabel( label );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpChar( 'L' );
         DumpPtr( label );
@@ -873,7 +873,7 @@ void    CodeLabel( label_handle label, unsigned alignment )
 void    CodeLineNumber( cg_linenum line, bool label )
 /***************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "Source Line: " );
         DumpInt( line );
@@ -888,7 +888,7 @@ void    GenJumpLabel( label_handle label )
 /****************************************/
 {
     GenBRANCH( 18, label, false, false );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "JMP L" );
         DumpPtr( label );
@@ -904,7 +904,7 @@ static void    GenJumpIf( instruction *ins, pointer label )
 
     ops = &BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][0]; // fixme - floating point
     GenCONDBR( 16, ops[0], ops[1], label );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "Jcc L" );
         DumpPtr( label );

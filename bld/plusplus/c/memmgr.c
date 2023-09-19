@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "codegen.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -68,7 +68,7 @@ typedef struct perm_blk {
 static CLEANPTR cleanupList;
 static PERMPTR permList;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void *deferredFreeList;
 #endif
 
@@ -131,7 +131,7 @@ void *CMemAlloc( size_t size )
     if( size == 0 ) {
         return( NULL );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( !TOGGLEDBG( no_mem_cleanup ) ) {
         CLEANPTR curr;
         static unsigned test_cleanup;
@@ -188,7 +188,7 @@ void CMemFreePtr( void *pp )
     }
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CMemDeferredFree( void *p )
 /******************************/
 {
@@ -289,7 +289,7 @@ static void cmemInit(           // INITIALIZATION
 #elif defined( USE_CG_MEMMGT )
     BEMemInit();
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
     deferredFreeList = NULL;
 #endif
     cleanupList = NULL;
@@ -303,11 +303,11 @@ static void cmemFini(           // COMPLETION
     /* unused parameters */ (void)defn;
 
     RingFree( &permList );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     RingFree( &deferredFreeList );
 #endif
 #ifdef TRMEM
- #ifndef NDEBUG
+ #ifdef DEVBUILD
     if( TOGGLEDBG( dump_memory ) ) {
         _trmem_prt_list( trackerHdl );
     }

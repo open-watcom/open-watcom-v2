@@ -255,7 +255,7 @@ void Banner( void )
         if( !Options.quiet && !Options.terse_listing && IdeCbs != NULL ) {
             ConsolePuts(
                 banner1t( "Library Manager" )
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 " [Internal Development]"
 #endif
                 "\n"

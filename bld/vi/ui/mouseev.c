@@ -99,7 +99,7 @@ void PopMouseEventHandler( void )
     if( mh != NULL ) {
         hookHead = hookHead->next;
         MemFree( mh );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     } else {
         Message1( "Popped null mouse event handler!!!" );
         while( getchar() != ' ' ) {

@@ -41,7 +41,7 @@
 #include "cgbackut.h"
 #include "objmodel.h"
 #include "cgio.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -910,7 +910,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
 
     StabCtlInit( &sctl, &dctl );
     StabDefnInit( &dctl, DTRG_STATIC_INITLS );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( "State Table for static object: %p\n", &dctl.state_table );
     }

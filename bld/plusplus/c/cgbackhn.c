@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "rtfuns.h"
 #include "pstk.h"
 #include "feprotos.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -87,7 +87,7 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
     SCOPE scope;                // - scope for symbol
     SYMBOL check_sym;           // - SYMBOL temp
     back_handle cg_handle;      // - handle for symbol
-#ifndef NDEBUG
+#ifdef DEVBUILD
     SYMBOL orig                 // - original symbol
         = sym;
 #endif
@@ -121,7 +121,7 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
             sym->flag2 |= SYMF2_CG_HANDLE;
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( auxinfo ) ) {
         printf( "FEBack( %p ) -> bh[%p]\n", orig, cg_handle );
     }

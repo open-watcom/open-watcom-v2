@@ -64,7 +64,7 @@
 #include "rtti.h"
 #include "dumpapi.h"
 #include "compinfo.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
 #endif
@@ -957,7 +957,7 @@ static bool dupCompare( TYPE test1, TYPE test2 )
     case TYP_POINTER:
         break;
     default:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         CFatal( "unknown type being compared" );
 #else
         return( false );
@@ -1065,7 +1065,7 @@ TYPE CheckDupType( TYPE newtype )
         ExtraRptIncrementCtr( ctr_cg_dups );
     }
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( id == TYP_MODIFIER ) {
         if( newtype->flag == TF1_NULL ) {
             if( newtype->u.m.base == NULL ) {
@@ -1237,7 +1237,7 @@ DECL_INFO *MakeNewDeclarator( DECL_SPEC *dspec,DECL_INFO *ptrs,DECL_INFO*arrays)
         FreeDeclInfo( ptrs );
     }
     arrays = FinishDeclarator( dspec, arrays );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( arrays->type );
     }
@@ -1526,7 +1526,7 @@ TYPE MakeTypeOf(                // MAKE UNIQUE TYPE OF
     return( CheckDupType( new_type ) );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 typedef struct {
     unsigned sum;
@@ -2983,7 +2983,7 @@ static PTREE nameOfId( PTREE id )
     if( ( id->op == PT_BINARY ) && ( id->cgop == CO_TEMPLATE ) ) {
         CFatal( "template-id not supported in this context" );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( id->op != PT_BINARY || ( id->cgop != CO_COLON_COLON && id->cgop != CO_STORAGE )) {
         CFatal( "corrupted qualified id" );
     }
@@ -4047,7 +4047,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
             }
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( prev_type );
     }
@@ -4081,7 +4081,7 @@ DECL_INFO *AddMSCVQualifierKludge( specifier_t spec, DECL_INFO *dinfo )
 bool IdenticalClassModifiers( TYPE cmod1, TYPE cmod2 )
 /****************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         TYPE test1 = cmod1;
         TYPE test2 = cmod2;
@@ -4256,7 +4256,7 @@ void PTypeClassInstantiationUndo( DECL_SPEC *dspec )
     PTREE id;
 
     /* must be kept in synch with PTypeActualTypeName/PTypeClassInstantiation */
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( dspec->decl_checked ||
         dspec->partial == NULL ||
         ! dspec->class_instantiation ||
@@ -4998,7 +4998,7 @@ TYPE MakeFarPointerToNear( TYPE base )
 {
     TYPE ptr_type;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         type_flag mod;
 
@@ -7440,7 +7440,7 @@ static void pushArguments( PSTK_CTL *stk, arg_list *args )
     for( i = args->num_args; i != 0; --i ) {
         type = *p;
         TypeStripTdMod( type );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_types ) ) {
             printf( "arg #%u\n", ( args->num_args - i ) + 1 );
             DumpFullType( type );
@@ -7485,7 +7485,7 @@ static void pushPrototypeAndArguments( type_bind_info *data,
             a_type = NULL;
         }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_types ) ) {
             printf( "p_arg #%u\n", i + 1 );
             if( p->op == PT_TYPE ) {
@@ -7670,7 +7670,7 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
                 bound_type->of = NULL;
             }
             break;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         default:
             CFatal( "bound generic type corrupted" );
 #endif
@@ -8628,7 +8628,7 @@ static void markFreeType( void *p )
     s->id = TYP_NONE;
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 unsigned num_refs;
 
 static void initXrefType( void *e, carve_walk_base *d )

@@ -290,10 +290,10 @@ char *malloc();
 /* version, then files will be kept.                               */
 
 #ifndef KEEPFLAG
-#ifdef NDEBUG
-#define KEEPFLAG false
-#else
+#ifdef DEVBUILD
 #define KEEPFLAG true
+#else
+#define KEEPFLAG false
 #endif
 #endif
 
@@ -748,10 +748,10 @@ long checkpoint = CHECK_GAP;
 /* force the overwrite */
 bool force = false;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 bool verbose = VERBOSE;
 bool debug = false;
-#endif /* !NDEBUG */
+#endif
 
 #ifndef NOSIGNAL
 SIGTYPE (*bgnd_flag)();
@@ -793,10 +793,10 @@ extern long checkpoint;
 #endif
 extern bool force;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern bool verbose;
 extern bool debug;
-#endif /* !NDEBUG */
+#endif
 
 #ifndef NOSIGNAL
 extern SIGTYPE (*bgnd_flag)();

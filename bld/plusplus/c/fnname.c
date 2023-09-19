@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -386,7 +386,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         appendChar( IN_BASED_VOID );
         break;
     case TF1_BASED_STRING:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( base == NULL ) {
             CFatal( "invalid based modifier" );
         }
@@ -395,7 +395,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         appendBasedString( base );
         break;
     case TF1_BASED_FETCH:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( base == NULL ) {
             CFatal( "invalid based modifier" );
         }
@@ -405,7 +405,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         appendScopedSymName( base );
         break;
     case TF1_BASED_ADD:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( base == NULL ) {
             CFatal( "invalid based modifier" );
         }
@@ -414,7 +414,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         appendStr( IN_NAME_PREFIX );
         appendScopedSymName( base );
         break;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     default:
         CFatal( "invalid based modifier" );
 #endif
@@ -780,7 +780,7 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
     CGOP *oper )                // - index found
 {
     CGOP index;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     CGOP i;
 #endif
 
@@ -790,7 +790,7 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
             // name is an operator
             ExtraRptIncrementCtr( ctr_lookups_slow );
             index = (CGOP)( NameHash( name ) - NameHash( operatorNames[0] ) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
             operatorNames[MAX_OP_NAMES] = name;
             i = 0;
             for(;;) {
@@ -1427,7 +1427,7 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
                 // use in CppLookupOperatorName will still work
                 *op = operatorNames[*ap];
             } else {
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 {
                     const char  **t;
                     for( t = operatorNamesStr; t < cp; ++t ) {

@@ -81,7 +81,7 @@ STATIC char * cmdNames[] = {
 #endif
     "?",
     "help",
-#ifndef NDEBUG
+#ifdef DEVBUILD
     "r",
 #endif
     NULL
@@ -95,7 +95,7 @@ STATIC unsigned_8 cmdLen[] = {
 #endif
     1,
     1,
-#ifndef NDEBUG
+#ifdef DEVBUILD
     1
 #endif
 };
@@ -108,7 +108,7 @@ STATIC int cmdType[] = {
 #endif
     HELP_OPT,
     HELP_OPT,
-#ifndef NDEBUG
+#ifdef DEVBUILD
     R_OPT
 #endif
 };
@@ -270,7 +270,7 @@ STATIC bool procCmd( char * cmd )
                 WndStyle &= ~(GUI_CHARMAP_DLG|GUI_CHARMAP_MOUSE);
                 break;
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
             case R_OPT:
                 do_report = true;
                 break;

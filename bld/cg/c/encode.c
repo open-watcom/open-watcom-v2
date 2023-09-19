@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ void    CodeLabel( label_handle label, unsigned align )
         align = 1;
     CodeHandle( OC_LABEL, align - 1, label );
 #if _TARGET_RISC
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpChar( 'L' );
         DumpPtr( label );
@@ -107,7 +107,7 @@ void    CodeLineNumber( cg_linenum line, bool label_line )
         oc.oc_linenum.label_line = label_line;
         oc.oc_linenum.line = line;
 #if _TARGET_RISC
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
             DumpLiteral( "Source Line: " );
             DumpInt( line );
@@ -193,7 +193,7 @@ static  void    DoCondJump( instruction *cond )
 #endif
         InputOC( &oc );
 #if _TARGET_RISC
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
             DumpLiteral( "Jcc L" );
             DumpPtr( dest_true );
@@ -236,7 +236,7 @@ void    GenJumpLabel( label_handle label )
 {
     CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), label );
 #if _TARGET_RISC
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "JMP L" );
         DumpPtr( label );

@@ -126,7 +126,7 @@ extern void WriteFileTable( void );
 extern void WriteFileBody( sym_file *sfile );
 extern void AddSym( const char *name, symbol_strength strength, unsigned char info );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void DumpFileTable( void );
 extern void DumpHashTable( void );
 #endif

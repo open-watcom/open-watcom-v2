@@ -41,7 +41,7 @@
 #include "makeins.h"
 #include "objout.h"
 #include "dbsyms.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "echoapi.h"
 #endif
 #if _TARGET_INTEL
@@ -92,13 +92,13 @@ uint    _CGAPI DBSrcFile( cchar_ptr fname )
     fname_lst   *curr;
     fname_lst   **lnk;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBSrcFile( %c )", fname );
 #endif
     index = 0;
     for( lnk = &DBFiles.lst; (curr = *lnk) != NULL; lnk = &curr->next ) {
         if( strcmp( fname, curr->fname ) == 0 ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             EchoAPI( " -> %i\n", index );
 #endif
             return( index );
@@ -112,7 +112,7 @@ uint    _CGAPI DBSrcFile( cchar_ptr fname )
     strcpy( curr->fname, fname );
     ++DBFiles.count;
     *lnk = curr;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", index );
 #endif
     return( index );
@@ -410,7 +410,7 @@ void    FiniDbgInfo( void )
 void    _CGAPI DBLineNum( uint no )
 /*********************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "\nDBLineNum( %i )\n", no );
 #endif
     SrcLine = no;
@@ -423,7 +423,7 @@ void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
     bool        hasxcue;
 //    const char  *fname;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "\nDBsrcCue( %i, %i, %i )\n", fno, line, col );
 #endif
 //  fname = SrcFNoFind( fno );
@@ -442,7 +442,7 @@ void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
 void _CGAPI DBGenStMem( cg_sym_handle sym, dbg_loc loc )
 /******************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBGenStMem( %s,%i)\n", sym, loc );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -485,7 +485,7 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
     fe_attr     attr;
     dbg_local   *lcl;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBGenSym( %s, %i, %i )\n", sym, loc, scoped );
 #endif
     if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
@@ -530,7 +530,7 @@ void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
 
     /* unused parameters */ (void)indirect;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBModSym( %s, %t )\n",  sym, indirect );
 #endif
     if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
@@ -554,7 +554,7 @@ void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
 {
     /* unused parameters */ (void)ptr_type;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBObject( %i, %i, %t )\n", tipe, loc, ptr_type );
 #endif
     CurrProc->targ.debug->obj_type = tipe;
@@ -581,7 +581,7 @@ void    DBAllocReg( name *reg, name *temp )
 void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
 /**************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBTypeDef( %c, %t )\n", nm, tipe );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -600,7 +600,7 @@ void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
 
     /* unused parameters */ (void)indirect;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocalSym( %s, %t )\n", sym, indirect );
 #endif
     if( CurrProc->targ.debug != NULL ) {
@@ -619,7 +619,7 @@ void    _CGAPI DBLocalType( cg_sym_handle sym, bool kind )
 {
     dbg_local   *lcl;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocalType( %s, %i)\n", sym, kind );
 #endif
     if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
@@ -672,7 +672,7 @@ dbg_block *DoDBBegBlock( int fast_codegen )
 void _CGAPI     DBBegBlock( void )
 /********************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegBlock()\n" );
 #endif
     DoDBBegBlock( 0 );
@@ -684,7 +684,7 @@ void    DoDBEndBlock( int fast_codegen )
 {
     dbg_block   *blk;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBEndBlock()\n" );
 #endif
     if( CurrProc->targ.debug != NULL ) {

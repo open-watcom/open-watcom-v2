@@ -42,7 +42,7 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -153,7 +153,7 @@ bool StabGenerate(              // GENERATE A STATE TABLE
             }
         }
     } RingIterEnd( se )
-#if defined( _RISC_CPU ) || !defined( NDEBUG )
+#if defined( _RISC_CPU ) || defined( DEVBUILD )
     DgPtrSymCode( NULL );
     DgPtrSymData( NULL );
 #endif

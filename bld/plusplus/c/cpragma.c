@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 #include "cgfront.h"
 #include "compinfo.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 // from \watcom\h
@@ -79,7 +79,7 @@ typedef struct prag_stack {
 } prag_stack;
 
 pragma_toggles          PragmaToggles;
-#ifndef NDEBUG
+#ifdef DEVBUILD
 pragma_dbg_toggles      PragmaDbgToggles;
 #endif
 
@@ -1045,7 +1045,7 @@ static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
     PPCTL_DISABLE_MACROS();
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 // forms:
 //
 // #pragma break
@@ -1370,7 +1370,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
             pragError();
         } else if( pragmaNameRecog( "STDC" ) ) {
             pragSTDC();
-#ifndef NDEBUG
+#ifdef DEVBUILD
         } else if( pragmaNameRecog( "break" ) ) {
             pragBreak();
 #endif
@@ -1945,7 +1945,7 @@ void PragmaSetToggle(           // SET TOGGLE
     int func,                   // - -1/0/1 ==> func pop/off/on
     bool push )                 // - true ==> push current value on stack
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define pick( x ) \
         if( strcmp( name, #x ) == 0 ) { \
             if( func == -1 ) { \

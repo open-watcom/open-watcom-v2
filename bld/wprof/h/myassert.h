@@ -34,14 +34,14 @@
 #define MYASSERT_H  1
 
 #undef  myassert
-#ifdef NDEBUG
-    #define myassert(ignore)
-#else
+#ifdef DEVBUILD
     extern void AssertionFailed( char *, unsigned int );
   #if defined( __WATCOMC__ )
     #pragma aux AssertionFailed __aborts
   #endif
     #define myassert(expr)    if(!(expr)) AssertionFailed(__FILE__,__LINE__)
+#else
+    #define myassert(ignore)
 #endif
 
 #endif

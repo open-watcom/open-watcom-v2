@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ void OWLENTRY OWLEmitLabel( owl_section_handle section, owl_symbol_handle symbol
 void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk_sym, owl_symbol_handle alt_sym, owl_wksym_flags flags ) {
 //****************************************************************************************************************************
 
-#ifdef NDEBUG
+#ifndef DEVBUILD
     /* unused parameters */ (void)file;
 #endif
     _Log(( file, "OWLWeakExt( %x, %x, %x, %x )\n", file, wk_sym, alt_sym, flags ));

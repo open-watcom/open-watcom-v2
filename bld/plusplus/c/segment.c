@@ -1286,7 +1286,7 @@ void SegmentMarkUsed(           // MARK SEGMENT AS BEING USED
 void SegmentCgDefineCode(       // DEFINE CODE SEGMENT IF REQ'D
     fe_seg_id segid )           // - segment id
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     PC_SEGMENT *seg;
 
     seg = segIdLookup( segid );

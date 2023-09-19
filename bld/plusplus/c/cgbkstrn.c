@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "vstk.h"
 #include "initdefs.h"
 #include "preproc.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
     #include "pragdefn.h"
 #endif
@@ -55,7 +55,7 @@ typedef struct                  // SYM_TRANS -- symbol translation
     unsigned id;                // - id for translation block
 } SYM_TRANS;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
     static void dump( const char* msg, SYM_TRANS* tr )
     {
@@ -114,7 +114,7 @@ void SymTransPush(              // ADD A SYMBOL TO BE TRANSLATED
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void SymTransEmpty(             // DEBUG: VERIFY SYMBOL TRANSLATIONS OVER
     void )
 {

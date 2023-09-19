@@ -45,7 +45,7 @@
 #include "stats.h"
 #include "module.h"
 #include "dumpapi.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
     #include "dbg.h"
     #include "pragdefn.h"
@@ -70,7 +70,7 @@ ExtraRptCtr( cgio_comps );
 ExtraRptCtr( cgio_locates_thunk );
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
     static void _dump( CGFILE* cgfile, const char* prefix )
     {
@@ -211,8 +211,7 @@ static CGFILE* lookupFile(      // DO A FILE LOOKUP FOR A SYMBOL, RING
     return( NULL );
 }
 
-#ifndef NDEBUG
-
+#ifdef DEVBUILD
 
 void DbgCgioEndFront(           // CALLED AT END OF FRONT END
     void )
@@ -301,7 +300,7 @@ void CgioWriteIC(               // WRITE IC RECORD TO VIRTUAL FILE
     CGFILE *ctl,                // - control for the file
     CGINTER *ins )              // - instruction
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     ExtraRptIncrementCtr( cgio_write_ins );
     if( ICOpTypes[ins->opcode] == ICOT_NUL ) {
         ExtraRptIncrementCtr( cgio_write_nul );
@@ -442,7 +441,7 @@ void CgioFreeFile(              // FREE A VIRTUAL FILE
     CarveFree( carveCGFILE, ctl );
 #else
     if( ! changeRing( &cg_file_removed, ctl, &cg_file_ring ) ) {
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         int changed =
   #endif
         changeRing( &cg_file_removed, ctl, &cg_thunk_ring );
@@ -467,7 +466,7 @@ void CgioWalkFiles(             // WALK THRU FILES
 void CgioThunkStash(            // STASH AWAY A THUNK TO BE GEN'ED
     CGFILE* thunk )             // - that thunk
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     int changed =
 #endif
     changeRing( &cg_thunk_ring, thunk, &cg_file_ring );

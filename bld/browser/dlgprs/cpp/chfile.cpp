@@ -188,12 +188,12 @@ void CheckedFile::reOpen()
 // re-open a file and seek to the position it
 // was closed at.
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     long newOff;
 #endif
 
     CheckedFile::open( _openAccess, _openPermission );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     newOff = ::lseek( _handle, _currOffset, SEEK_SET );
     assert( newOff == _currOffset );
 #else
@@ -220,12 +220,12 @@ void CheckedFile::privClose()
 // since privClose is called from a destructor, avoid
 // doing a throw in it.
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     int retVal;
 #endif
 
     if( _isOpen ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         retVal = ::close( _handle );
         assert( retVal == 0 );
 #else

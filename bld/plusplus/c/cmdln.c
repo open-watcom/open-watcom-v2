@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 #include "vstk.h"
 #include "vbuf.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -328,7 +328,7 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     CompFlags.inline_functions = true;
 
     memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
 #endif
     TOGGLE( check_stack ) = true;

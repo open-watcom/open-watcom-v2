@@ -67,7 +67,7 @@
 #include "dwarfid.h"
 #include "cgfront.h"
 #include "feprotos.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -373,7 +373,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     }
     DbgAssert( mask == 0 || (attr & FE_COMMON) == 0 );
     attr &= ~mask;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( auxinfo ) ) {
         printf( "FeAttr( %p = %s ) -> %x\n"
               , (void *)sym
@@ -1202,7 +1202,7 @@ static void addDefaultImports( void )
 #endif
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define DbgNotSym() isSym = false;
     #define DbgNotRetn() isRetn = false;
 #else
@@ -1221,7 +1221,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     static SYMBOL dtor_sym;     // - symbol to be DTOR'ed
     static EXTRF res_info;      // - external-symbol resolution information
     SYMBOL sym = _sym;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     bool isSym = true;          // DEBUGGING: true ==> "sym" is SYMBOL
     bool isRetn = true;         // DEBUGGING: true ==> "retn" is SYMBOL
 #endif
@@ -1471,7 +1471,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
     case FEINF_DEFAULT_IMPORT_RESOLVE :
         retn = ExtrefResolve( sym, &res_info );
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         if( TOGGLEDBG( extref ) ) {
             printf( "DEFAULT_IMPORT_RESOLVE[%p]: %s ==> %s\n", sym
                   , GetMangledName( sym )
@@ -1482,7 +1482,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case FEINF_IMPORT_TYPE :
         DbgNotRetn();
         retn = ExtrefImportType( &res_info );
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         if( TOGGLEDBG( extref ) ) {
             printf( "  IMPORT_TYPE[%p]: %s <%p>\n"
                   , sym, GetMangledName( sym ), retn );
@@ -1493,7 +1493,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case FEINF_NEXT_CONDITIONAL :
         DbgNotSym();
         retn = ExtrefVirtualSymbol( &res_info );
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         if( TOGGLEDBG( extref ) ) {
             printf( "  NEXT_/CONDITIONAL/_IMPORT: %s\n"
                   , GetMangledName( retn ) );
@@ -1502,7 +1502,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
     case FEINF_CONDITIONAL_SYMBOL :
         retn = sym;
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         if( TOGGLEDBG( extref ) ) {
             printf( "  CONDITIONAL_SYMBOL: %s\n"
                   , GetMangledName( retn ) );
@@ -1510,7 +1510,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
   #endif
         break;
     case FEINF_VIRT_FUNC_REFERENCE :
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         DbgNotRetn();
         if( ( TOGGLEDBG( extref ) )
           &&( sym->id == SYMC_VIRTUAL_FUNCTION ) ) {
@@ -1531,7 +1531,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotSym();
         DbgNotRetn();
         retn = ExtrefNextVfunSym( sym );
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         if( TOGGLEDBG( extref ) ) {
             printf( "  VIRT_FUNC_NEXT_REFERENCE[%p]: <%p>\n", sym, retn );
         }
@@ -1540,7 +1540,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case FEINF_VIRT_FUNC_SYM :
         DbgNotSym();
         retn = ExtrefVfunSym( sym );
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         if( TOGGLEDBG( extref ) ) {
             printf( "  VIRT_FUNC_SYM[%p]: %s\n"
                   , sym, GetMangledName( retn ) );
@@ -1577,7 +1577,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = NULL;
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( auxinfo ) ) {
         printf( "FeAuxInfo( %p, %x ) -> %p\n", sym, request, retn );
         if( isSym && ( NULL != sym )) {

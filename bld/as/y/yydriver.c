@@ -13,7 +13,7 @@ instruction             *AsCurrIns;
 
 static directive_t      *AsCurrDir;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define YYDEBUG
 #endif
 

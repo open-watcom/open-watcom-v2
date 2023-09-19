@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,7 +227,7 @@ static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclud
     case TYP_TYPENAME:
         return( !strcmp( type1->u.n.name, type2->u.n.name ) );
     default:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         CFatal( "unknown type being compared" );
 #else
         return( false );

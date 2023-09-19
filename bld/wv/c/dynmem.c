@@ -334,7 +334,7 @@ void MemFini( void )
         return;
     h_info._pentry = NULL;
     while( (status = _heapwalk( &h_info )) == _HEAPOK ) {
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
         if( h_info._useflag == _USEDENTRY ) {
             end = Format( buf, "%s block",
                 h_info._useflag == _USEDENTRY ? "Used" : "Free" );

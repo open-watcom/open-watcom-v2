@@ -29,7 +29,7 @@
 ;*****************************************************************************
 
 
-ifndef NDEBUG
+ifdef DEVBUILD
     if _OS eq _NW
       extrn  puts_ : near
       NC = 0
@@ -42,7 +42,7 @@ ifndef __WIN387__
         extrn   "C",__FPE_exception : proc
 endif
 
-ifndef NDEBUG
+ifdef DEVBUILD
   public  badop,prtnyi,my87,mrm,sib,memop,stkop,stkop1
 endif
 
@@ -72,7 +72,7 @@ endif
 ifdef __WIN387__
 precrtn dd              p_extended ; address of precision rtn
 endif
-ifndef NDEBUG
+ifdef DEVBUILD
     nyimsg      db ": not yet implemented",0dH,0aH,NC
     illopmsg    db "Illegal instruction encountered by 8087 emulator",0dH,0aH,NC
 endif
@@ -1071,7 +1071,7 @@ dosib:  mov     bl,[esi]                ; get sib byte in bl           ssiiibbb
         xrefp   __f2xm1
         xrefp   __frndint                 ; 24-mar-90
 
-ifndef NDEBUG
+ifdef DEVBUILD
 badop   proc    near
       if _OS eq _PLDT
         mov     edx,offset illopmsg
@@ -1086,12 +1086,12 @@ badop   endp
 endif
 
 illop   macro
-ifndef NDEBUG
+ifdef DEVBUILD
         call    badop
 endif
         endm
 
-ifndef NDEBUG
+ifdef DEVBUILD
 prtnyi  proc    near
       if _OS eq _PLDT
         mov     ah,9H

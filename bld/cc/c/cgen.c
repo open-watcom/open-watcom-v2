@@ -43,7 +43,7 @@
 #ifdef __SEH__
 #include "tryblock.h"
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "togglesd.h"
 #endif
 
@@ -1380,7 +1380,7 @@ void DoCompile( void )
                 TargetSwitches &= ~ CGSW_X86_FLOATING_SS;
             }
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_cg ) ) {
                 GenSwitches |= CGSW_GEN_ECHO_API_CALLS;
             }

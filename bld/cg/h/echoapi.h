@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #ifndef __ECHOAPI__H__
 #define __ECHOAPI__H__
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 #include "seldef.h"
 #include "tree.h"
@@ -66,6 +67,6 @@ void        handleExists( handle_type hdltype, use_info *useinfo );
 #define hdlAdd( type, handle ) ( handleAdd( type, (use_info *)handle ) )
 #define hdlExists( type, handle ) ( handleExists( type, (use_info *)handle ) )
 
-#endif // NDEBUG
+#endif // DEVBUILD
 
 #endif // __ECHOAPI__H__

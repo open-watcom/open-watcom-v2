@@ -333,7 +333,7 @@ int OSExecDLL( DLL_CMD* dll, char const* cmd_args )
 
 #endif
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 STATIC void cleanDLLCmd( void )
 {
 #ifdef DLLS_IMPLEMENTED
@@ -358,7 +358,7 @@ STATIC void cleanDLLCmd( void )
 #endif
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DLLFini( void )
 {
     cleanDLLCmd();
@@ -573,7 +573,7 @@ int SetEnvSafe( const char *name, const char *value )
 }
 
 
-#if !defined(NDEBUG) || defined(DEVELOPMENT)
+#if defined( DEVBUILD ) || defined( DEVELOPMENT )
 void SetEnvFini( void )
 /*********************/
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +176,7 @@ static  void    BuildPossible( reg_tree *tree )
                 *dst++ = *src;
             }
             *dst = *src;
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( dst - tree->regs >= REG_COUNT ) { /* '>=' 'coz no increment before 'break' */
                 Zoiks( ZOIKS_143 );
             }

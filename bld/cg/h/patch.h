@@ -44,7 +44,7 @@ extern void DeadBeef();
 #endif
 
 typedef struct patch_info {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     use_info    useinfo;
 #endif
     union {

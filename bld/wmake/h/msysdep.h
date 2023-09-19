@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 
 // For debug versions, always use scarce memory manager - memory
 // leak checking depends on it
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define USE_SCARCE  1
 #endif
 
@@ -194,7 +194,7 @@ extern void         DLLFini( void );
 extern char         *GetEnvExt( const char *str );
 extern int          SetEnvExt( ENV_TRACKER *env );
 extern int          SetEnvSafe( const char *name, const char *value );
-#if !defined(NDEBUG) || defined(DEVELOPMENT)
+#if defined( DEVBUILD ) || defined( DEVELOPMENT )
 extern void         SetEnvFini( void );
 #endif
 

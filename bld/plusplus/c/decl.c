@@ -333,7 +333,7 @@ void DeclDefaultStorageClass( SCOPE scope, SYMBOL sym )
     case SCOPE_FUNCTION:
         sym->id = SYMC_AUTO;
         break;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     case SCOPE_TEMPLATE_PARM:
     case SCOPE_TEMPLATE_SPEC_PARM:
     case SCOPE_TEMPLATE_DECL:

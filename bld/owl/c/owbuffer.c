@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include "owlpriv.h"
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define NUM_BINS                (16)
 #define INITIAL_BIN_SIZE        ((8*1024)/16)
 #else

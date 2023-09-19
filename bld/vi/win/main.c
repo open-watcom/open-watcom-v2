@@ -93,7 +93,9 @@ void FiniInstance( void )
     // OLE2Fini();
 }
 
-#if defined( __WINDOWS__ ) && defined( __WATCOMC__ ) && !defined( NDEBUG ) && 0
+#if 0
+#if defined( __WINDOWS__ ) && defined( __WATCOMC__ )
+#ifdef DEVBUILD
 void _WCFAR *HeapWalker( void )
 {
     struct _heapinfo    info;
@@ -113,6 +115,8 @@ void _WCFAR *HeapWalker( void )
     }
     return( NULL );
 }
+#endif
+#endif
 #endif
 
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )

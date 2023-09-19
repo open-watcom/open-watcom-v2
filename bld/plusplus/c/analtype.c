@@ -698,7 +698,7 @@ bool ExprIsLvalue               // TEST IF EXPRESSION IS LVALUE
     if( expr->flags & PTF_LVALUE ) {
         ok = true;
     } else {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         TYPE type_expr;
         TYPE type_lv;
         type_expr = NodeType( expr );

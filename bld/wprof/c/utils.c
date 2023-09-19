@@ -300,7 +300,7 @@ void Ring( void )
 #endif
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void AssertionFailed( char * file, unsigned line )
 /************************************************/
 {

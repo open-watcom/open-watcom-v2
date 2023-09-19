@@ -435,7 +435,7 @@ void     MemFree( pointer p )
         blk    = header->block;
         blk->free += header->size + sizeof( blk_hdr );
         blk->size += header->size + sizeof( blk_hdr );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         // Must zero the memory for later checks in GetFromBlk
         memset( header, 0, length + sizeof( blk_hdr ) );
 #endif
@@ -488,10 +488,10 @@ static  pointer MemFromSys( size_t amount )
 
     // round up size to multiple of 64K
     size = _RoundUp( amount + sizeof( mem_blk ) + sizeof( blk_hdr ), _64K );
-#ifdef NDEBUG
-    ptr = malloc( size );
-#else
+#ifdef DEVBUILD
     ptr = calloc( 1, size );   // Need to clear memory for later assert() calls
+#else
+    ptr = malloc( size );
 #endif
     if( ptr != NULL ) {
         AllocSize += size;

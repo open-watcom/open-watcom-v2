@@ -28,7 +28,7 @@ YYDRIVER: driver code to make use of YACC generated parser tables and support
 #include "memmgr.h"
 #include "cgfront.h"
 #include "rtngen.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "dbg.h"
     #include "togglesd.h"
@@ -45,7 +45,7 @@ ExtraRptCtr( found_id );
 
 // YY* definitions
 #define YYFAR
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define YYDEBUG
 #endif
 
@@ -225,7 +225,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK * );
 
 #include "yylex.gh"
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static void dump_rule( YYACTIONTYPE rule )
 {
@@ -753,7 +753,7 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
             case LK_NAMESPACE:
                 return( Y_SCOPED_NAMESPACE_NAME );
             }
-#ifndef NDEBUG
+#ifdef DEVBUILD
             CFatal( "unknown lexical category" );
 #else
             return( Y_IMPOSSIBLE );
@@ -1023,7 +1023,7 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
     if( token != Y_IMPOSSIBLE ) {
         return( token );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgZapMem( &yylval, 0xef, sizeof( yylval ) );
 #endif
     switch( CurToken ) {
@@ -1170,7 +1170,7 @@ void ParseFlush( void )
 /*********************/
 {
     if( tokenMakesPTREE( currToken ) && yylval.tree ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         // NYI: we have a problem when this triggers!
         switch( currToken ) {
         case Y_GLOBAL_ID:
@@ -1299,7 +1299,7 @@ static void pushUserDeclSpec( PARSE_STACK *state, DECL_SPEC *dspec )
 static void zapTemplateClassDeclSpec( PARSE_STACK *state )
 /********************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( GStackType( state->gstack ) != GS_DECL_SPEC ) {
         CFatal( "incorrect function template declaration" );
     }
@@ -1517,7 +1517,7 @@ static void deleteStack( PARSE_STACK *stack )
     ScopeAdjustUsing( GetCurrScope(), stack->reset_scope );
     SetCurrScope( stack->reset_scope );
     check_stack = StackPop( &currParseStack );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( check_stack != stack ) {
         CFatal( "incorrect nesting of parse stacks" );
     }
@@ -1535,7 +1535,7 @@ static void pushRestartDecl( PARSE_STACK *state )
     restart->gstack = state->gstack;
     restart->reset_scope = GetCurrScope();
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_parse ) ) {
         printf( "===============================================================================\n" );
         printf( "*** pushRestartDecl: 0x%p 0x%p\n", state, restart );
@@ -1554,7 +1554,7 @@ static void popRestartDecl( PARSE_STACK *state )
     DbgStmt( RESTART_PARSE *restart );
 
     DbgStmt( restart = state->restart );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_parse ) ) {
         printf( "===============================================================================\n" );
         printf( "*** popRestartDecl: 0x%p 0x%p\n", state, restart );
@@ -1600,7 +1600,7 @@ static void syncToRestart( PARSE_STACK *state )
         DbgAssert( restart->reset_scope == GetCurrScope() );
         restartInit( state );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_parse ) ) {
             dump_state_stack("after syncToRestart", state);
         }
@@ -1718,7 +1718,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
         /* we have a unit reduction */
         lhs = yyplhstab[rule];
         top_state = yyactiontab[lhs + yygotobase[ssp[-1]]];
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_parse ) ) {
             printf( "=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0] );
         }
@@ -1741,7 +1741,7 @@ static void pushOperatorQualification( PTREE tree )
 
 static void lookAheadShift( PARSE_STACK *state, YYACTIONTYPE new_state, YYTOKENTYPE t )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_parse ) ) {
         puts( yytoknames[t] );
     }
@@ -1757,7 +1757,7 @@ static la_action lookAheadReduce( PARSE_STACK *state, YYACTIONTYPE new_rule )
 {
     YYACTIONTYPE yyaction;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_parse ) ) {
         dump_rule( new_rule );
     }
@@ -1841,13 +1841,13 @@ static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
 {
     look_ahead_storage *save;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( state->use_saved_tokens ) {
         CFatal( "trying to unsave a saved token" );
     }
 #endif
     save = VstkPop( &(state->look_ahead_storage) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( save->yytok != tok ) {
         CFatal( "trying to unsave an unaligned saved token" );
     }
@@ -1921,13 +1921,13 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
     }
     newLookAheadStack( &look_ahead_expr_state, state );
     newLookAheadStack( &look_ahead_decl_state, state );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_parse ) ) {
         printf( "expr...\n" );
     }
 #endif
     lookAheadShift( &look_ahead_expr_state, YYAMBIGH0, t );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_parse ) ) {
         printf( "decl...\n" );
     }
@@ -1940,13 +1940,13 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
             nextYYLexToken( host );
             t = yylex( host );
             lookAheadSaveToken( host, t );
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_parse ) ) {
                 printf( "expr...\n" );
             }
 #endif
             expr_what = lookAheadShiftReduce( t, &look_ahead_expr_state, host );
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_parse ) ) {
                 printf( "decl...\n" );
             }
@@ -2031,7 +2031,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
 
     state->expect = NULL;
     for( ;; ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         unsigned stackDepth;
 #endif
         yyk = *(state->ssp);
@@ -2042,7 +2042,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         /*
         //  DumpStack
         */
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_parse ) ) {
             dump_state_stack("in start of doAction loop", state);
         }
@@ -2078,7 +2078,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
             *curr_vsp = yylval;
             INC_STACK( lsp );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_parse ) ) {
                 dump_state_stack("after yyaction shift", state);
             }
@@ -2091,7 +2091,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
                 pushOperatorQualification( yylval.tree );
                 break;
             }
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_parse ) ) {
                 switch( t ) {
                 case Y_ID:
@@ -2117,7 +2117,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
             if( state->ssp < state->sstack ) {
                 fatalParserError();
             }
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_parse ) ) {
                 printf( "=== Parser stack reduced by %u levels ===\n", yyl );
             }
@@ -2133,12 +2133,12 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         INC_STACK( vsp );
         yyvp = curr_vsp;
         yylp = state->lsp;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_parse ) ) {
             dump_state_stack("shift / reduce?", state);
         }
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_parse ) ) {
             dump_rule( rule );
         }
@@ -2381,7 +2381,7 @@ static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg
                 break;
             }
             makeStable( end_token );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         } else {
             CFatal( "invalid return from doAction" );
 #endif
@@ -2458,7 +2458,7 @@ DECL_INFO *ParseException( void )
                 break;
             }
             makeStable( T_RIGHT_PAREN );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         } else {
             CFatal( "invalid return from doAction" );
 #endif
@@ -2532,7 +2532,7 @@ void ParseDecls( void )
                     /* we don't want the linkage reset */
                     ParseFlush();
                     syncLocation();
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 } else {
                     CFatal( "invalid return from doAction" );
 #endif
@@ -2606,7 +2606,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
                 CErr1( ERR_COMPLICATED_DECLARATION );
                 break;
             }
-#ifndef NDEBUG
+#ifdef DEVBUILD
         } else {
             CFatal( "invalid return from doAction" );
 #endif
@@ -2681,7 +2681,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
                 CErr1( ERR_COMPLICATED_DECLARATION );
                 break;
             }
-#ifndef NDEBUG
+#ifdef DEVBUILD
         } else {
             CFatal( "invalid return from doAction" );
 #endif
@@ -2737,7 +2737,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
                 CErr1( ERR_COMPLICATED_DECLARATION );
                 break;
             }
-#ifndef NDEBUG
+#ifdef DEVBUILD
         } else {
             CFatal( "invalid return from doAction" );
 #endif

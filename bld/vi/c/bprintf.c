@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ void BasePrintf( const char *in, void(*out_fn)(char), va_list args )
             case 's':
                 tmp = va_arg( args, char * );
                 goto copyloop2;
-#ifndef NDEBUG
+#ifdef DEVBUILD
             case 'W':
 #ifdef _M_I86
                 i = va_arg( args, int );

@@ -45,7 +45,7 @@
 #include "cansymb.h"
 #include "canmisc.h"
 #include "array.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include <io.h>
     #include <fcntl.h>
 #endif
@@ -1332,7 +1332,7 @@ void Wat2CanTandS( seghdr *dd_types, seghdr *dd_symbols ) {
         wat->rec_len = 0;
         finish = ddTypes->data + ddTypes->alloc;
         wat->finish = finish;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         {
             int fh;
             fh = open( "debug.seg", O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, S_IWRITE|S_IREAD );
@@ -1361,7 +1361,7 @@ void Wat2CanTandS( seghdr *dd_types, seghdr *dd_symbols ) {
         wat->rec_len = 0;
         finish = ddSymbols->data + ddSymbols->alloc;
         wat->finish = finish;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         {
             int fh;
             fh = open( "symbols.seg", O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, S_IWRITE|S_IREAD );

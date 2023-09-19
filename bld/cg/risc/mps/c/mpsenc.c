@@ -1151,7 +1151,7 @@ static  void Encode( instruction *ins )
         _Zoiks( ZOIKS_028 );
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );

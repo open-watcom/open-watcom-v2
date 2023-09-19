@@ -97,7 +97,7 @@ static void *vstkPushBlk(       // PUSH THE BLOCK
     return( cur );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void _VstkIntegrity( VSTK_CTL const *stack )
 {
     if( stack->current != NULL ) {
@@ -285,7 +285,7 @@ unsigned VstkDimension(         // GET UPPER DIMENSION OF VIRTUAL STACK
     if( blk != NULL ) {
         dimension -= ( (char*)stack->current - blk->data ) / stack->size;
         per_block = stack->per_block;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( dimension + per_block > per_block ) {
             _FatalAbort( "vstk: dimension > per_block" );
         }

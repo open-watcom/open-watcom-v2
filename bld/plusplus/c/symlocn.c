@@ -37,7 +37,7 @@
 #include "toknlocn.h"
 #include "initdefs.h"
 #include "pcheader.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -144,7 +144,7 @@ static void saveTokenLocn( void *e, carve_walk_base *d )
     DbgAssert( b->u.dwh == 0 );
     save_src_file = b->tl.src_file;
     b->tl.src_file = SrcFileGetIndex( save_src_file );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( b->u.dwh != 0 ) {
         CFatal( "token locn contains dwarf info!" );
     }

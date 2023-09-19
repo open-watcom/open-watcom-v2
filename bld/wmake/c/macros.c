@@ -1420,7 +1420,7 @@ void MacroInit( void )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 STATIC bool freeMacro( MACRO *mac, const void *ptr )
 /**************************************************/
 {
@@ -1437,7 +1437,7 @@ STATIC bool freeMacro( MACRO *mac, const void *ptr )
 void MacroFini( void )
 /***************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     WalkHashTab( macTab, (bool (*)(void *,void *))freeMacro, NULL );
     FreeHashTab( macTab );
     macTab = NULL;

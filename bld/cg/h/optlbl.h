@@ -33,7 +33,7 @@
 #include "optopts.h"
 #include "offset.h"
 #include "rtclass.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "useinfo.h"
 #endif
 
@@ -71,7 +71,7 @@ typedef struct label_def {
 } label_def;
 
 typedef struct code_lbl {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     use_info                useinfo;
 #endif
     struct label_def        lbl;

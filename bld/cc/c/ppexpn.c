@@ -81,7 +81,7 @@
 
 #define IS_OPERAND( token ) ( IS_ID_OR_KEYWORD( token ) || token == T_CONSTANT )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define __xstr(x)   #x
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
     #define DbgDefault( msg )   default: CFatal( msg __location )
@@ -135,7 +135,7 @@ static int  Prec[] = {     // table of token precedences
     #undef pick
 };
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void CFatal( char *msg )
 /*****************************/
 {

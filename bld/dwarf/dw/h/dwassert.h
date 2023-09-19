@@ -41,13 +41,13 @@
         exported functions have proper values.
 */
 #define _Validate(__e)  _Assert(__e)
-#ifdef NDEBUG
-#define _Assert(__ignore)       ((void)0)
-#else
+#ifdef DEVBUILD
 /* Note: Old code used to call __assert() directly - not such a good idea
          since that is an undocumented function.
 */
 #define _Assert assert
+#else
+#define _Assert(__ignore)       ((void)0)
 #endif
 
 #endif

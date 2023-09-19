@@ -790,7 +790,7 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
     HashTable[hash] = sym;
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DumpFileTable( void )
 {
     sym_file    *sfile;
@@ -852,7 +852,7 @@ void DumpHashTable( void )
     }
     printf( "----------------------------------------------------------\n" );
 }
-#endif // !NDEBUG
+#endif // DEVBUILD
 
 
 bool RemoveObjectSymbols( const char *name )

@@ -251,7 +251,7 @@ static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *message )
 {
     /* unused parameters */ (void)hdl;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     fputs( "stubPrintMsgFn called!\n", stderr );
     fputs( message, stderr );
     fputc( '\n', stderr );
@@ -261,7 +261,7 @@ static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *message )
     return( false );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void IDEAPI printProgressIndex( IDECBHdl hdl, unsigned index )
 {
     /* unused parameters */ (void)hdl;
@@ -439,7 +439,7 @@ static void finiInterrupt( void )
 #endif  /* __UNIX__ */
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define _SET_PROGRESS \
     if( getenv( "__idedrv_progress_messages" ) != NULL ) { info.progress_messages = 1; } \
     if( getenv( "__idedrv_progress_index" ) != NULL ) { info.progress_index = 1; }

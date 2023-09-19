@@ -389,7 +389,7 @@ pch_status PCHInitStringPool( bool writing )
         ++p;
     }
     qsort( stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpString );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         unsigned i;
         for( i = 1; i < stringCount; ++i ) {
@@ -455,7 +455,7 @@ STRING_CONSTANT StringMapIndex( STRING_CONSTANT index )
     if( PCHGetUInt( index ) < PCH_FIRST_INDEX ) {
         return( NULL );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( PCHGetUInt( index ) >= stringCount + PCH_FIRST_INDEX ) {
         CFatal( "invalid string index" );
     }

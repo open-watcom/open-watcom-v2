@@ -38,7 +38,7 @@
 #include "model.h"
 #include "types.h"
 #include "zoiks.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "echoapi.h"
 #endif
 #include "i64.h"
@@ -68,7 +68,7 @@ dbg_type _CGAPI DBFtnType( cchar_ptr name, dbg_ftn_type tipe )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBFtnType( %c, %i )", name, tipe );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -82,7 +82,7 @@ dbg_type _CGAPI DBFtnType( cchar_ptr name, dbg_ftn_type tipe )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -94,7 +94,7 @@ dbg_type _CGAPI DBScalar( cchar_ptr name, cg_type tipe )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBScalar( %c,%t )", name, tipe );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -108,7 +108,7 @@ dbg_type _CGAPI DBScalar( cchar_ptr name, cg_type tipe )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -121,7 +121,7 @@ dbg_type _CGAPI DBScope( cchar_ptr name )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBScope( %c )", name );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -135,7 +135,7 @@ dbg_type _CGAPI DBScope( cchar_ptr name )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -149,7 +149,7 @@ dbg_name _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
     dbg_name    name;
     uint        len;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegName( %c, %i )", nm, scope );
 #endif
     len = strlen( nm );
@@ -158,7 +158,7 @@ dbg_name _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
     name->len = len;
     name->scope = scope;
     name->refno = DBG_NIL_TYPE;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", name );
 #endif
     return( name );
@@ -168,7 +168,7 @@ dbg_name _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
 dbg_type _CGAPI DBForward( dbg_name name )
 /************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBForward( %i )", name );
 #endif
     if( name->refno == DBG_NIL_TYPE ) {
@@ -182,7 +182,7 @@ dbg_type _CGAPI DBForward( dbg_name name )
 #endif
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", name->refno );
 #endif
     return( name->refno );
@@ -194,7 +194,7 @@ dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
 {
     dbg_type    retv;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBEndName( %i, %i )", name, tipe );
 #endif
     if( name->refno == DBG_NIL_TYPE ) {
@@ -220,7 +220,7 @@ dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
     }
     retv = name->refno;
     CGFree( name );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", retv );
 #endif
     return( retv );
@@ -232,7 +232,7 @@ dbg_type _CGAPI DBCharBlock( unsigned_32 len )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBCharBlock( %i )", len );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -254,7 +254,7 @@ dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, unsigned_32 len )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBCharBlock( %i )", len );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -276,7 +276,7 @@ dbg_type _CGAPI DBIndCharBlock( back_handle len, cg_type len_type, int off )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBIndCharBlock( %i, %t, %i )", len,len_type, off );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -290,7 +290,7 @@ dbg_type _CGAPI DBIndCharBlock( back_handle len, cg_type len_type, int off )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -301,7 +301,7 @@ dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocCharBlock( %i, %t )", loc, len_type );
 #endif
 
@@ -316,7 +316,7 @@ dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -330,7 +330,7 @@ dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBFtnArray( %B,%t,%t,%i,%i)", dims, lo_bound_tipe,
              num_elts_tipe, off, base );
 #endif
@@ -345,7 +345,7 @@ dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -357,7 +357,7 @@ dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBArray( %i, %i)", idx, base );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -371,7 +371,7 @@ dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -385,7 +385,7 @@ dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
 
     /* unused parameters */ (void)tipe;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegArray( %i,%t,%i)", base, tipe, is_col_major );
 #endif
     ar = CGAlloc( sizeof( *ar ) );
@@ -396,7 +396,7 @@ dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
     ar->base = base;
     ar->is_col_major = is_col_major;
     ar->is_variable = false;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ar );
 #endif
     return( ar );
@@ -425,7 +425,7 @@ void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, signed_32 lo, signed_32 hi )
 {
     dim_con *dim;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBDimCon( %i, %i, %i, %i )\n", ar, idx, lo, hi );
 #endif
     dim = CGAlloc( sizeof( *dim ) );
@@ -443,7 +443,7 @@ void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
 {
     dim_var *dim;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBDimVar(%i, %B, %i, %t, %t)\n", ar, dims, off, lo_bound_tipe, num_elts_tipe);
 #endif
     dim = CGAlloc( sizeof( *dim ) );
@@ -461,7 +461,7 @@ dbg_type _CGAPI DBEndArray( dbg_array ar )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBEndArray( %i )", ar );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -476,7 +476,7 @@ dbg_type _CGAPI DBEndArray( dbg_array ar )
 #endif
     }
     CGFree( ar );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -487,7 +487,7 @@ dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI(  "DBIntArray( %i, %i )", hi, base );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -501,7 +501,7 @@ dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -513,7 +513,7 @@ dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
     dbg_type          ret;
     type_def          *tipe_addr;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBIntArrayCG( %t, %i, %i )", tipe, hi, base );
 #endif
     tipe_addr = TypeAddress( tipe );
@@ -528,7 +528,7 @@ dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -539,7 +539,7 @@ dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBSubRange( %i, %i, %i )", lo, hi, base );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -553,7 +553,7 @@ dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -566,7 +566,7 @@ dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base )
     dbg_type ret;
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBDereference( %t, %i)", ptr_type, base );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -581,7 +581,7 @@ dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base )
 #endif
     }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -592,7 +592,7 @@ dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBPtr( %t, %i )", ptr_type, base );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -606,7 +606,7 @@ dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base )
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -618,7 +618,7 @@ dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI("DBBasedPtr( %t, %i, %i )", ptr_type, base, loc_segment );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -632,7 +632,7 @@ dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
         ret = 0;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -644,12 +644,12 @@ bool _CGAPI DBNested( bool nested )
 {
     bool ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBNested(%i)", nested );
 #endif
     ret = Nested;
     Nested = nested;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -661,7 +661,7 @@ dbg_struct _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
     uint        n_len;
     dbg_struct  st;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegNameStruct( %c, %t, %i )", nm, tipe, is_struct );
 #endif
     n_len = Length( nm );
@@ -688,7 +688,7 @@ dbg_struct _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
     st->ptr_type = 0;
     st->vtbl_esize = 0;
     st->vf = NULL;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", st );
 #endif
     return( st );
@@ -699,11 +699,11 @@ dbg_struct _CGAPI DBBegStruct( cg_type tipe, bool is_struct )
 {
     dbg_struct  st;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegStruct( %t, %i )", tipe, is_struct );
 #endif
     st = DBBegNameStruct( "", tipe, is_struct );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", st );
 #endif
     return( st );
@@ -742,7 +742,7 @@ void _CGAPI DBAddBitField( dbg_struct st, unsigned_32 off, byte strt,
 {
     field_member *field;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddBitField(%i,%i,%i,%i,%c,%i)\n", st, off, strt, len, nm, base );
 #endif
     field = CreateMember( nm, strt, len, base, 0 );
@@ -756,7 +756,7 @@ void _CGAPI DBAddField( dbg_struct st, unsigned_32 off,
                                    cchar_ptr nm, dbg_type  base )
 /***************************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddField( %i, %i,%c,%i)\n", st, off, nm, base );
 #endif
     DBAddBitField( st, off, 0, 0, nm, base );
@@ -770,7 +770,7 @@ void _CGAPI DBAddLocField( dbg_struct st, dbg_loc loc, uint attr,
     field_member *field;
     offset      off;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddLocField( %i,%i,%i,%i,%i,%c,%i)\n", st, loc, attr, strt, len, nm, base );
 #endif
     field = CreateMember( nm, strt, len, base, attr );
@@ -791,7 +791,7 @@ void _CGAPI DBAddStField( dbg_struct st, dbg_loc loc, cchar_ptr nm, unsigned_32 
     uint          n_len;
     field_stfield *field;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddStField(%i,%i,%c,%i,%i)\n", st, loc, nm, attr, base );
 #endif
     n_len = Length( nm );
@@ -811,7 +811,7 @@ void _CGAPI DBAddMethod( dbg_struct st, dbg_loc loc, uint attr,
     uint          n_len;
     field_method *field;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddMethod( %i,%i,%i,%i,%c,%i)\n", st, loc, attr, kind, nm, base );
 #endif
     n_len = Length( nm );
@@ -832,7 +832,7 @@ void _CGAPI DBAddNestedType( dbg_struct st, cchar_ptr nm, dbg_type base )
     uint          n_len;
     field_nested *field;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddNestedType( %i,%c,%i)\n", st, nm, base );
 #endif
     n_len = Length( nm );
@@ -851,7 +851,7 @@ void _CGAPI DBAddInheritance( dbg_struct st, dbg_type inherit,
 {
     field_bclass *field;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddInheritance(%i,%i,%i,%i,%i)\n", st, inherit, attr, kind, loc );
 #endif
     field = CGAlloc( sizeof( field_bclass ) );
@@ -868,7 +868,7 @@ void _CGAPI DBAddBaseInfo( dbg_struct st, unsigned_32 vb_off, int esize,
                                               dbg_type vtbl, cg_type ptr_type )
 /********************************************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddBaseInfo( %i,%i,%i,%i,%t)\n", st, vb_off, esize, vtbl, ptr_type );
 #endif
     st->vtbl_off    = vb_off;
@@ -884,7 +884,7 @@ void _CGAPI DBAddVFuncInfo( dbg_struct st, unsigned_32 vfptr_off,
 {
     field_vfunc  *field;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddVFuncInfo( %i,%i,%i,%t )\n", st, vfptr_off, size, vft_cgtype );
 #endif
     field = CGAlloc( sizeof( field_vfunc ) );
@@ -901,7 +901,7 @@ dbg_type _CGAPI DBEndStruct( dbg_struct st )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBEndStruct(%i)", st );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -916,7 +916,7 @@ dbg_type _CGAPI DBEndStruct( dbg_struct st )
 #endif
     }
     CGFree( st );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -925,7 +925,7 @@ dbg_type _CGAPI DBEndStruct( dbg_struct st )
 dbg_type _CGAPI DBStructForward( dbg_struct st )
 /******************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBStructForward( %i )", st );
     EchoAPI( " -> %i\n", st->me );
 #endif
@@ -937,7 +937,7 @@ dbg_enum _CGAPI DBBegEnum( cg_type tipe )
 {
     dbg_enum    en;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegEnum( %t )", tipe );
 #endif
     en = CGAlloc( sizeof( enum_list ) );
@@ -946,7 +946,7 @@ dbg_enum _CGAPI DBBegEnum( cg_type tipe )
     en->tipe = tipe;
     en->is_nested = Nested;
     en->is_c  = true;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", en );
 #endif
     return( en );
@@ -958,7 +958,7 @@ void _CGAPI DBAddConst( dbg_enum en, cchar_ptr nm, signed_32 val )
     const_entry *cons;
     uint        len;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddConst( %i,%c,%i)\n", en, nm, val );
 #endif
     len = Length( nm );
@@ -977,7 +977,7 @@ void _CGAPI DBAddConst64( dbg_enum en, cchar_ptr nm, signed_64  val )
     const_entry *cons;
     uint        len;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddConst( %i,%c,%x %x )\n", en, nm, val.u._32[0],val.u._32[1] );
 #endif
     len = Length( nm );
@@ -995,7 +995,7 @@ dbg_type _CGAPI DBEndEnum( dbg_enum en )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBEndEnum(%i)", en );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -1010,7 +1010,7 @@ dbg_type _CGAPI DBEndEnum( dbg_enum en )
 #endif
     }
     CGFree( en );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );
@@ -1022,7 +1022,7 @@ dbg_proc _CGAPI DBBegProc( cg_type call_type, dbg_type  ret )
 {
     dbg_proc    pr;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegProc( %t,%i)", call_type, ret );
 #endif
     pr = CGAlloc( sizeof( proc_list ) );
@@ -1032,7 +1032,7 @@ dbg_proc _CGAPI DBBegProc( cg_type call_type, dbg_type  ret )
     pr->ret = ret;
     pr->cls = DBG_NIL_TYPE;
     pr->this = DBG_NIL_TYPE;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", pr );
 #endif
     return(pr);
@@ -1041,7 +1041,7 @@ dbg_proc _CGAPI DBBegProc( cg_type call_type, dbg_type  ret )
 void  _CGAPI DBAddMethParms( dbg_proc pr, dbg_type cls, dbg_type this )
 /*****************************************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddMethParms( %i, %i, %i)\n", pr, cls, this );
 #endif
     pr->cls = cls;
@@ -1054,7 +1054,7 @@ void _CGAPI DBAddParm( dbg_proc pr, dbg_type tipe )
     parm_entry  *parm;
     parm_entry  **owner;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBAddParm( %i,%i )\n", pr, tipe );
 #endif
     parm = CGAlloc( sizeof( parm_entry ) );
@@ -1073,7 +1073,7 @@ dbg_type _CGAPI DBEndProc( dbg_proc pr )
 {
     dbg_type ret;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBEndProc( %i )", pr );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -1088,7 +1088,7 @@ dbg_type _CGAPI DBEndProc( dbg_proc pr )
 #endif
     }
     CGFree( pr );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", ret );
 #endif
     return( ret );

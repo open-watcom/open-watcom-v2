@@ -50,7 +50,7 @@
 #include "dbgwintr.h"
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void         WndUserAdd(char *,unsigned int );
 #endif
 
@@ -59,7 +59,7 @@ static void BadCmd( void )
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void MenuCopy( char *dst, const char *from, char *to )
 {
     char        ampchar;
@@ -177,7 +177,7 @@ static void (*InternalJmpTab[])() =
 
 void ProcInternal( void )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     int     cmd;
 
     cmd = ScanCmd( InternalNameTab );

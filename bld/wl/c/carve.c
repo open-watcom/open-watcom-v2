@@ -130,7 +130,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     return( cv );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CarveVerifyAllGone( carve_t cv, const char *node_name )
 /**********************************************************/
 {
@@ -249,7 +249,7 @@ void *CarveZeroAlloc( carve_t cv )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void CarveDebugFree( carve_t cv, void *elm )
 {
     free_t      *check;
@@ -386,7 +386,7 @@ void CarveWalkAllFree( carve_t cv, void (*rtn)( void * ) )
     free_t *check;
 
     for( check = cv->free_list; check != NULL; check = check->next_free ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         free_t *check_next = check->next_free;
         (*rtn)( check );
         if( check->next_free != check_next ) {

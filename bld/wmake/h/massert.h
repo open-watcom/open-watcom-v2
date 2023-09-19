@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,10 @@
 #ifndef _MASSERT_H
 #define _MASSERT_H  1
 
-#ifdef NDEBUG
-#   define assert(expr)
+#ifdef DEVBUILD
+#define assert(expr)  ((expr)?(void)0:massert( #expr, __FILE__, __LINE__ ))
 #else
-#   define assert(expr)  ((expr)?(void)0:massert( #expr, __FILE__, __LINE__ ))
+#define assert(expr)
 #endif
 
 #endif /* !_MASSERT_H */

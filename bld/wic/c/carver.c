@@ -228,7 +228,7 @@ static void CreateNewCarverBlk(pCarver carver) {
     newBlk->next = carver->tail;
     carver->tail = newBlk;
     carver->topElem = (pBlkElem) (newBlk->data + nextBlockSize);
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
     {
         char* ptr;
         for (ptr = newBlk->data;

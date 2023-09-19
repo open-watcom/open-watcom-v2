@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "fmtsym.h"
 #include "fmtmsg.h"
 #include "template.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -177,13 +177,13 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list args )
                         formatClassForSym( sym, pbuf );
                     } else {
                         sn = sym->name;
-#ifndef NDEBUG
+#ifdef DEVBUILD
                         if( sn == NULL ) {
                             CFatal( "FormatMsg -- %S symbol has NULL SYMBOL_NAME" );
                         }
 #endif
                         name = sn->name;
-#ifndef NDEBUG
+#ifdef DEVBUILD
                         if( name == NULL ) {
                             CFatal( "FormatMsg -- %S SYMBOL_NAME has NULL name" );
                         }

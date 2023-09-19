@@ -47,7 +47,7 @@ void DefineDefaultValues(       // MAKE DEFAULT VALUE FOR EACH DEFARG PARM
     DECL_INFO *dinfo            // - function declaration information
 );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DefArgPCHWrite( void );
 void DefArgPCHRead( void );
 #else

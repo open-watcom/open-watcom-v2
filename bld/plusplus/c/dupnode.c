@@ -36,7 +36,7 @@
 #include "carve.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "dbg.h"
     #include "togglesd.h"
@@ -59,7 +59,7 @@ static TOKEN_LOCN* exprPosition;// position for expression
 
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static void printPromo
     ( PROMO const * promo
@@ -217,7 +217,7 @@ static void setAncestor(        // SET ANCESTRY FOR CURRENT NODE
                         srch->container = NULL;
                     }
                 } RingIterEnd( srch )
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_dups ) ) {
                 printf( "Node %p ", zap_left );
                 printPromo( promo, "-- added to promotion ring" );
@@ -277,7 +277,7 @@ static PTREE dupProc(           // PROCESS NODE IN TREE
             break;
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_dups ) && NULL != promoHdr ) {
         printf( "Node %p ", dup );
         printPromoRing( promoHdr, "Duplicates Ring" );
@@ -293,7 +293,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
 {
     PROMO *promo;               // - current promotion
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgAssert( dup != NULL );
     if( TOGGLEDBG( dump_dups ) ) {
         printf( "Original Tree\n\n" );
@@ -306,7 +306,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
     promoRing = NULL;
     dup = PTreeTraversePostfix( dup, &dupProc );
     DbgVerify( promoHdr == NULL, "NodePromoteDups -- common nodes not found" );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_dups ) ) {
         printPromoRing( promoRing, "Promotion Ring" );
         printf( "Original Tree\n\n" );
@@ -315,7 +315,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
 #endif
     RingIterBegSafe( promoRing, promo ) {
         dupPromote( promo );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_dups ) ) {
             printf( "promo[%p]: ", promo );
             printPromo( promo, "Unduplicated Tree\n" );

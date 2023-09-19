@@ -465,7 +465,7 @@ void PrtMsg( enum MsgClass num, ... )
 #pragma off(check_stack);
 #endif
 
-#if !defined( NDEBUG )
+#ifdef DEVBUILD
 void massert( const char *expr, const char *file, int line )
 {
     PrtMsg( FTL | ASSERTION_FAILED, expr, file, line );

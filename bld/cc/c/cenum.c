@@ -346,7 +346,7 @@ void FreeEnums( void )
     }
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 void DumpEnumTable( void )
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 #include "conpool.h"
 #include "pcheader.h"
 #include "cgio.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
     #include "togglesd.h"
@@ -62,7 +62,7 @@
 // maximum capacity of a buffer before an IC_NEXT instruction is req'd
 #define MAX_WRITE_AMT   ( TMPBLOCK_BSIZE - sizeof( BUFF_XFER ) - sizeof( CGINTER ) )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define DICT_SIZE       4
 #else
 #define DICT_SIZE       128
@@ -377,7 +377,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
                 ctl->free_offset += ((char*)dest) - (char*)start;
                 *pctl = ctl;
                 // rest of block can be ignored
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 {
                     CGINTER *c = p_instr + 1;
                     DbgAssert( c <= s_instr );
@@ -439,7 +439,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
         }
     }
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgAssert( ins->opcode != IC_EOF );
     if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
         if( TOGGLEDBG( browse_emit ) ) {
@@ -488,7 +488,7 @@ CGIOBUFF *CgioBuffRdOpen(       // GET BUFFER FOR READING
     return( findRdBuffer( block ) );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
     ( CGIOBUFF *ctl             // - buffer control
     , CGINTER *curr             // - current instruction
@@ -774,7 +774,7 @@ void CgioBuffInit(              // BUFFERING INITIALIZATION
 void CgioBuffFini(              // BUFFERING COMPLETION
     void )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         CGIOBUFF *curr;
 
@@ -798,7 +798,7 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
     CGIOBUFF *ctl;              // - buffer control
 
     ctl = findRdBuffer( zap.block );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
         if( TOGGLEDBG( browse_emit ) ) {
             DumpCgFront( "ZAP ", zap.block, zap.offset, ins );

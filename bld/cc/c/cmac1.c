@@ -593,7 +593,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 void DumpMDefn( const char *p )
 /*****************************/

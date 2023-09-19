@@ -614,7 +614,7 @@ static int ExitSafe( int rc )
         if( rc == EXIT_ERROR || rc == EXIT_FATAL ) {
             PrtMsg( ERR | MAKE_ABORT );
         }
-#ifndef NDEBUG
+#ifdef DEVBUILD
         while( filesToDo != NULL ) {
             NODE * const cur = filesToDo;
             filesToDo = cur->next;
@@ -636,7 +636,7 @@ static int ExitSafe( int rc )
         MacroFini();
         CacheFini();
         VecFini();
-#ifndef NDEBUG
+#ifdef DEVBUILD
         SetEnvFini();
         DLLFini();
 #endif

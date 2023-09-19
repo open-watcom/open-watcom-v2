@@ -47,7 +47,7 @@
 #include "initdefs.h"
 #include "iosupp.h"
 #include "pathlist.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -87,7 +87,7 @@ enum {                          // GUARD STATE
     #undef GDEF
 };
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static const char *guardStateNames[] = {    // - names of guard states
     #define GDEF( id )  #id ,
     GUARD_DEFS
@@ -157,7 +157,7 @@ static const struct tri_graph triGraphs[] = {
 
 #define _FIND_ACTUAL( curr ) for( ; curr->alias; curr = curr->sister )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static OPEN_FILE *activeSrc( void )
 {
     SRCFILE src;
@@ -265,7 +265,7 @@ static void setGuardState(      // SET GUARD STATE FOR CURRENT FILE
 
     actual = srcFile;
     _FIND_ACTUAL( actual );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_tokens ) ) {
         if( actual->guard_state != new_state ) {
             printf( "New Guard State[%s]: %s\n"

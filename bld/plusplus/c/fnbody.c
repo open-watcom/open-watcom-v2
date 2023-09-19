@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@
 #include "initdefs.h"
 #include "objmodel.h"
 #include "asmstmt.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
 #endif
@@ -1606,7 +1606,7 @@ static void exceptSpec(         // GENERATE AN EXCEPTION SPECIFICATION
     bool err_occurred;          // - true ==> error during type-sig
 
     TypeSigFind( 0, except, NULL, &err_occurred );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( err_occurred ) {
         CFatal( "setExceptionSpecs -- unexpected error" );
     }

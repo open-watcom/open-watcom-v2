@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -280,7 +281,7 @@
 , IC( IC_PARM_SCP,           SCP, __x__ ) // - push a SCOPE on the IC code parm stack
 , IC( IC_PARM_XXX,           NUL, __x__ ) // - padding
 
-#if defined(_IN_ICMASK) || !defined(NDEBUG)
+#if defined(_IN_ICMASK) || defined( DEVBUILD )
                                           // Internal Debugging
                                           // ------------------------------------------
 , IC( IC_TRACE_BEG,          NUL, __x__ ) // - start IC instruction trace

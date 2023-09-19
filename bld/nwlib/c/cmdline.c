@@ -276,7 +276,7 @@ static const char *ParseOption( const char *c, char *token_buff )
         break;
     case 'x': //                       (explode all objects in library)
         Options.explode = true;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         Options.explode_count = 0;
         if( my_tolower( *c ) == 'n' ) {
             Options.explode_count = 1;

@@ -38,7 +38,7 @@
 // 91/11/07 -- J.W.Welch        -- placed common definitions in WCCP.H
 // 92/12/29 -- B.J. Stecher     -- QNX support
 
-#ifdef NDEBUG
+#ifndef DEVBUILD
 #define NAME_PTR_IS_NAME_MEMBER
 #endif
 
@@ -49,7 +49,7 @@
 #include "bool.h"
 #include "wcpp.h"
 #include "target.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "enterdb.h"
 #endif
 #include "dbgzap.h"
@@ -61,7 +61,7 @@
 #define OPTIMIZE_EMPTY
 #define CARVEPCH
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 //#define OPT_BR          // OPTIMA-STYLE BROWSING
 #endif
 
@@ -111,7 +111,7 @@ typedef const struct idname *NAME;      // name pointer
 
 #define FatalMsgExit(msg)   CFatal( msg )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
     #define DbgVerify( cond, msg ) if( !( cond ) ) CFatal( msg __location )
     #define DbgDefault( msg )   default: CFatal( msg __location )

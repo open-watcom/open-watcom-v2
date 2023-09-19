@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "rtngen.h"
 #include "context.h"
 #include "stats.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "dbg.h"
     #include "togglesd.h"
@@ -206,7 +206,7 @@ ExtraRptCtr( ctr_opeq_elem );   // # opeq elements processed
 ExtraRptCtr( ctr_opeq_kept );   // # opeq elements kept
 ExtraRptCtr( ctr_caches );      // # caches
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static const char *tob_names[] = {
     #define TOB_DEF(a) # a
@@ -1469,7 +1469,7 @@ static void addInfoElement(     // ADD ELEMENT TO CD_DESCR
     CD_DESCR* info,             // - class infomation
     CL_ELEM* elem )             // - the element
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( cdopt ) ) {
         printf( "-- ADDED %p TO %p\n", elem, info );
     }
@@ -1894,7 +1894,7 @@ bool TypeReallyDefCtorable(     // TEST IF TYPE REALLY NEEDS DEFAULT CTOR'ING
 void CDoptBackEnd(              // START OF BACK-END PROCESSING
     void )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_cdopt ) ) {
         DumpCdoptCaches();
     }

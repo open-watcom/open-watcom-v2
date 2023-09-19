@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,7 +192,7 @@ PTREE PTreeFree( PTREE tree )
     float_handle fp_val;
 
     if( tree != NULL ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( tree->op == PT_DUP_EXPR ) {
             if( tree->u.dup.subtree[0] != NULL ) {
                 CFatal( "trying to free a duplicated expr with a dangling reference" );

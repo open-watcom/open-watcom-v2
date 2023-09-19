@@ -57,7 +57,7 @@ static PTREE set_meaningful_side_effects(   // SET MEANINGFUL, SIDE_EFFECTS
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 bool NodeIsUnaryOp(             // TEST IF UNARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation

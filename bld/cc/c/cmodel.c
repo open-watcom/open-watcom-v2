@@ -37,7 +37,7 @@
 #include <ctype.h>
 #include "cmacadd.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -350,7 +350,7 @@ void InitModInfo( void )
     CompFlags.check_truncated_fnames            = true;
 
     memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
 #endif
     TOGGLE( check_stack ) = true;

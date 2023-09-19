@@ -70,7 +70,7 @@
 #if _TARGET_INTEL
     #include "x86segs.h"
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "echoapi.h"
 #endif
 
@@ -132,7 +132,7 @@ static  tn  NewTreeNode( void )
 
     new = AllocFrl( &TreeFrl, sizeof( tree_node ) );
     new->flags = TF_USED;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     new->useinfo.hdltype = NO_HANDLE;
     new->useinfo.used = false;
 #endif
@@ -1617,11 +1617,11 @@ static  an  TNCallback( tn node )
     rtn = node->u.left->u.callback;
     parm = (callback_handle)node->u2.t.rite->u.handle;
     if( rtn != NULL ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         EchoAPICallBack( node, rtn, parm, "started\n\n" );
 #endif
         rtn( parm );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         EchoAPICallBack( node, rtn, parm, "ended\n\n" );
 #endif
     }

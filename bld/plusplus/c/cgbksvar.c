@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
     #include "pragdefn.h"
@@ -70,7 +70,7 @@ static const carve_t *seCarvers[] = {
     #undef pick
 };
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static carve_t seCarver(        // GET CARVER FOR AN SE TYPE
     DTC_KIND se_type )           // - code for entry
 {
@@ -98,7 +98,7 @@ static void pruneSE(            // PRUNE STATE ENTRY
     SE *next = se->base.next;   // - next entry
 
     RingPrune( a_stab, se );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( "State Table[%p] removed: %p\n", a_stab, se );
         DbgDumpStateEntry( se );
@@ -128,7 +128,7 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
             case DTC_SET_SV :
                 last->set_sv.se = se->set_sv.se;
 // check for SET_SV to previous
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( TOGGLEDBG( dump_stab ) ) {
                     printf( "State Table replacement %p\n", se );
                     DbgDumpStateEntry( last );
@@ -185,7 +185,7 @@ static SE* stateTableAddSe(     // ADD TO STATE TABLE
         next = se->base.next;
         se->base.prev = next->base.prev;
         next->base.prev = se;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_stab ) ) {
             printf( "State Table[%p] added: %p\n", a_stab, se );
             DbgDumpStateEntry( se );
@@ -416,7 +416,7 @@ SE* StabCtlPosnGened(           // GET GENERATED POSITION IF REQUIRED
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 
 static void DbgDumpTypeSigEnt(  // DUMP TYPE_SIG_ENT entries

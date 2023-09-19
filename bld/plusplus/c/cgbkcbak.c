@@ -39,7 +39,7 @@
 #include "carve.h"
 #include "pstk.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
     #include "pragdefn.h"
@@ -64,7 +64,7 @@ static carve_t carve_ctor_flag;     // carver: ctor flag patch entries
 static carve_t carve_temp_entry;    // carver: temp_entry's
 static PSTK_CTL stack_new_ctors;    // stack: newed ctoring
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
     static void _peDump( patch_entry* pe, const char* msg ) {
         if( TOGGLEDBG( dump_stab ) ) {
@@ -238,7 +238,7 @@ static void checkCtorTest(      // ELIMINATE CTOR-TEST IF POSSIBLE
 {
     SE* se = data;
     SE* test = FstabActualPosn();
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( "CallBack: checkCtorTest: se[%p] test[%p]\n"
               , se
@@ -419,7 +419,7 @@ SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
                                     , patch
                                     , se_dlt );
         CgExprPush( top_expr, top_type );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         DbgSetState( "patchForDtorDelBeg", se_dlt );
 #endif
     } else {

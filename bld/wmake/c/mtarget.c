@@ -749,7 +749,7 @@ void CheckNoCmds( void )
 }
 
 
-#if defined( USE_SCARCE ) || !defined( NDEBUG )
+#if defined( USE_SCARCE ) || defined( DEVBUILD )
 STATIC bool cleanupLeftovers( void )
 /**********************************/
 {
@@ -829,7 +829,7 @@ void TargetInit( void )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 STATIC bool walkFree( void *targ, void *ptr )
 /*******************************************/
 {
@@ -844,7 +844,7 @@ STATIC bool walkFree( void *targ, void *ptr )
 void TargetFini( void )
 /*********************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     WalkHashTab( targTab, walkFree, NULL );
     FreeHashTab( targTab );
     targTab = NULL;

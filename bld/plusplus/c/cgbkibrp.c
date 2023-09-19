@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "ring.h"
 #include "initdefs.h"
 #include "dumpapi.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
     #include "dbg.h"
     #include "pragdefn.h"
@@ -69,10 +69,7 @@ static carve_t carveIBRP;           // allocations for IBRPs
 static IBRP *ibrps;                 // ring of IBRPs scheduled
 static unsigned parm_no;            // parm # being defined
 
-
-#ifdef NDEBUG
-    #define dump_ibrp( ibrp, text )
-#else
+#ifdef DEVBUILD
     static void prt_ibrp(           // PRINT IBRP ENTRY
         IBRP* ibrp,                 // - entry
         const char *text )          // - text string
@@ -113,6 +110,8 @@ static unsigned parm_no;            // parm # being defined
             } RingIterEnd( curr )
         }
     }
+#else
+    #define dump_ibrp( ibrp, text )
 #endif
 
 

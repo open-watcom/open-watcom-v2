@@ -306,7 +306,7 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles,
             dir->num_pages++;
         }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         printf( "    %d.%d (%d bytes)\n", entry->resource.name_id,
             entry->resource.type_id, entry->resource.res_size );
 #endif
@@ -323,7 +323,7 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles,
     if( curr_total )
         dir->num_pages++;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     printf( "total size: %d bytes in %d page(s)\n", total, dir->num_pages );
 #endif
 

@@ -268,7 +268,7 @@ void DWENTRY DWLocConstU( dw_client cli, dw_loc_id loc, dw_uconst value )
     } else if( value < ( 1UL << 21 ) ) {
         /* will only take 3 bytes to encode in ULEB128 form */
         end = WriteULEB128( buf, value );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         _Assert( end - buf == 3 );
 #endif
         op = nextOp( cli, loc, DW_OP_constu, 3 );

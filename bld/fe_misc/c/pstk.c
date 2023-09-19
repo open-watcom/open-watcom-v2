@@ -37,7 +37,7 @@
 #include "initdefs.h"
 #include "pstk.h"
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define PSTK_BLOCK_SIZE         (4-1)   // stress the code
 #else
 #define PSTK_BLOCK_SIZE         (64-1)  // so each block is 64 pointers
@@ -234,7 +234,7 @@ static void pstkFini( INITFINI* defn )
 {
     /* unused parameters */ (void)defn;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     CarveVerifyAllGone( carvePSTK_BLK, "PSTK_BLK" );
 #endif
     CarveDestroy( carvePSTK_BLK );

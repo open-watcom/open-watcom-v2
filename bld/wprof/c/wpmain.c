@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ bool WndProcMacro( a_window wnd, gui_key key )
     case GUI_KEY_PERIOD:
         WPDoPopUp( wnd, NULL );
         return( true );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     case GUI_KEY_CTRL_R:
         ReportSampleInfo();
         return( true );

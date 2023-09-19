@@ -59,7 +59,7 @@
 #include "cmdlnsys.h"
 #include "compinfo.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -1154,7 +1154,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.virtual_stripping = true;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( data->tp ) {
         OPT_STRING *str;
         while( (str = data->tp_value) != NULL ) {

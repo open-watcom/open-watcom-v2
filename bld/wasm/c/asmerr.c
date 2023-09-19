@@ -68,7 +68,7 @@ void DoDebugMsg( const char *format, ... )
 }
 #endif
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 int InternalError( const char *file, unsigned line )
 /**************************************************/
 // it is used by myassert function in debug version

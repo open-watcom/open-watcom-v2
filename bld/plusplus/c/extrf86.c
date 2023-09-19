@@ -42,7 +42,7 @@
 #include "vfun.h"
 #include "initdefs.h"
 #include "stats.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 

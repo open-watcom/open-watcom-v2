@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ pointer AllocFrl( pointer **head, size_t size )
         *head = **head;
         FrlSize -= size;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     memset( new, 0xda, size );
 #endif
     _AlignmentCheck( new, 8 );
@@ -67,7 +68,7 @@ pointer AllocFrl( pointer **head, size_t size )
 void    FrlFreeSize( pointer **head, pointer *what, size_t size )
 /***************************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     memset( what, 0xdf, size );
 #endif
     FrlSize += size;

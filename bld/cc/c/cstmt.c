@@ -1197,7 +1197,7 @@ void Statement( void )
     struct return_info  return_info;
     SYM_ENTRY           sym;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( DebugFlag >= 1 ) {
         printf( "***** line %u, func=%s\n", TokenLoc.line, CurFunc->name );
         PrintStats();

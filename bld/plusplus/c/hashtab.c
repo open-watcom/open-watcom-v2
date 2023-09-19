@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 #define MAX_HASH                4096
 #define EXPAND_THRESHOLD        5
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define MIN_HASHTAB_SIZE        (1)     // 2 items
 #else
 #define MIN_HASHTAB_SIZE        (5)     // 32 items
@@ -76,7 +76,7 @@ struct hash_tab {
     unsigned    expand_next;    // next bucket to expand 0<=expand_next<half
     unsigned    half;           // number of buckets in full half of table
     SYMBOL_NAME *table;         // table of size 2*half, with half+expand_next buckets used
-#ifndef NDEBUG
+#ifdef DEVBUILD
     unsigned    uniques;        // number of unique names inserted
     unsigned    looks;          // number of search requests
     unsigned    max_probes;     // largest number of probes needed to find name
@@ -200,7 +200,7 @@ HASHTAB HashCreate( unsigned init_table_size )
     for( i = 0; i < buckets; ++i ) {
         table[i] = init_name;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     hash->uniques = 0;
     hash->looks = 0;
     hash->max_probes = 0;
@@ -275,7 +275,7 @@ SYMBOL_NAME HashLookup( HASHTAB hash, NAME name )
         DbgStmt( ++probes );
         ExtraRptIncrementCtr( hash_lookup_cost );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     hash->sum_probes += probes;
     if( probes > hash->max_probes ) {
         hash->max_probes = probes;
@@ -294,7 +294,7 @@ SYMBOL_NAME HashLookup( HASHTAB hash, NAME name )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static double dragonStat( HASHTAB hash )
 /*******************************/
 {

@@ -161,7 +161,7 @@ static void pragmasFini(        // FINISH PRAGMAS
                 info->use--;
             } else {
                 freeInfo( info );
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( IsAuxInfoBuiltIn( info ) ) {
                     CFatal( "freeing a static calling convention info" );
                 }
@@ -886,7 +886,7 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
     byte *c;
     byte *p;
     byte *tmp_buff;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     byte buff[8];
 #else
     byte buff[1024];

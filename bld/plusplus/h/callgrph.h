@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ struct callgraph                                // CALLGRAPH INFORMATION
     boolbit         scope_call_opt      : 1;    // - true ==> scope-call optimization enabled
     boolbit         push_unresolved     : 1;    // - true ==> push unresolved function
     boolbit         stmt_scope          : 1;    // - true == statement scope open
-#ifndef NDEBUG
+#ifdef DEVBUILD
     boolbit         doing_rescan        : 1;    // - true ==> (debug only) rescanning
 #endif
     CALLNODE        *curr_node;                 // - current node being processed

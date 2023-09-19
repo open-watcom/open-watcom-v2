@@ -42,7 +42,7 @@
 
 #define isUDF( node ) ( node->cgop == CO_NAME_CONVERT )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void DumpPTree( PTREE );
 #endif
 
@@ -668,12 +668,12 @@ static bool analyseMembRight(   // ANALYSE MEMBER ON RIGHT
             } else if( NodeIsBinaryOp( right, CO_TEMPLATE )
                     && ( right->u.subtree[0]->op == PT_SYMBOL ) ) {
                 // TODO
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 printf("%s:%d\n", __FILE__, __LINE__);
                 DumpPTree( right );
 #endif
                 ok = analyseMemberExpr( a_expr );
-#ifndef NDEBUG
+#ifdef DEVBUILD
             } else {
                 CFatal( "corrupted member tree" );
 #endif

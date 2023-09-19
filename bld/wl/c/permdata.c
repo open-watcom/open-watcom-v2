@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1009,7 +1009,7 @@ void FreeSavedRelocs( void )
 void CleanPermData( void )
 /*******************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         CarveVerifyAllGone( CarveLeader, "seg_leader" );
         CarveVerifyAllGone( CarveModEntry, "mod_entry" );

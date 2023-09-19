@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ EXIT_END
 // - cg_typing must execute after the command line is processed
 // - dbg must be before scopes
 EXIT_BEG( cpp_object )          // analysis, code generation
-#ifndef NDEBUG
+#ifdef DEVBUILD
   EXIT_REG( dbg )
 #endif
   EXIT_REG( global_stack )
@@ -174,7 +174,7 @@ EXIT_BEG( cpp_object )          // analysis, code generation
   EXIT_REG( node_promo )
   EXIT_REG( segment )
   //EXIT_REG( access_filter )
-#ifndef NDEBUG
+#ifdef DEVBUILD
   EXIT_REG( comma_insertion )
 #endif
 EXIT_END

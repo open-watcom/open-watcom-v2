@@ -69,7 +69,7 @@ enum {
 // use a different signature for the debugging version of the compiler
 // since extra info may be written into the pre-compiled header file
 #define SIGNATURE_SIZE          4
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define PHH_SIGNATURE_0         'D'
 #else
 #define PHH_SIGNATURE_0         'W'
@@ -246,7 +246,7 @@ extern void         *PCHReadCVIndexElement( cvinit_t * );
 #ifdef OPT_BR
 extern long         PCHSeek( long offset, int type );
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void         PCHVerifyFile( void *handle );
 #else
 #define  PCHVerifyHandle( handle ) handle = handle

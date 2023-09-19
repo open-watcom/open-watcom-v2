@@ -183,7 +183,7 @@ int main( int argc, char **argv )
         if (**argv == '-') {        /* A flag argument */
             while (*++(*argv)) {    /* Process all flags in this arg */
                 switch (**argv) {
-#if !defined(NDEBUG)
+#ifdef DEVBUILD
                     case 'D':
                         debug = true;
                         keep_error = true;
@@ -196,7 +196,7 @@ int main( int argc, char **argv )
                     case 'V':
                         version();
                         break;
-#endif /*!NDEBUG */
+#endif /* !DEVBUILD */
                     case 'v':
                         quiet = !quiet;
                         break;
@@ -477,7 +477,7 @@ static char *keep3 =  "kill (erase)";
 static char *on = "on";
 static char *off = "off";
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     fprintf(stderr,"Usage: %s [-cCdDf?hkKvV][-b maxbits][-Iinpath][-Ooutpath][filenames...]\n",
         prog_name);
 #else
@@ -488,7 +488,7 @@ static char *off = "off";
         return;
     fprintf(stderr,"Argument Processing..case is significant:\n");
     fprintf(stderr,"     MUST use '-' for switch character\nAll flags are optional.\n");
-#ifndef NDEBUG
+#ifdef DEVBUILD
     fprintf(stderr,"     -D => debug; Keep file on error.\n");
     fprintf(stderr,"     -V => print Version; debug verbose\n");
 #else

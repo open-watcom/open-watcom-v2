@@ -45,7 +45,7 @@ typedef struct select_list {
 } select_list;
 
 typedef struct select_node {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         use_info                useinfo;
 #endif
         struct select_list      *list;

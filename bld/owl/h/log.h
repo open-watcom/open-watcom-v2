@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void OWLENTRY OWLLog( owl_file_handle file, char *str,... );
 #define _Log( x ) OWLLog x
 #else

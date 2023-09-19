@@ -60,7 +60,7 @@
 #include "ialias.h"
 #include "ideentry.h"
 #include "pathgrp2.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
     #include "togglesd.h"
@@ -351,7 +351,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CtxSetCurrContext( CTX_ENDFILE );
                 ModuleInitFini();
                 ScopeEndFileScope();
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( TOGGLEDBG( dump_scopes ) ) {
                     DumpScopes();
                 }
@@ -466,7 +466,7 @@ static int front_end(           // FRONT-END PROCESSING
     } else {
         exit_status = makeExitStatus( WPP_FATAL );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
   #if defined( __WATCOMC__ )
     CheckEnterDebugger();
   #endif
@@ -531,7 +531,7 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define ZAP_NUM 20
 #define ZAP_SIZE 1024
 #define ZAP_CHAR 0xA7
@@ -575,7 +575,7 @@ int WppCompile(                 // MAIN-LINE (DLL)
     stackZap();
     InitFiniStartup( &exitPointStart );
     ExitPointAcquire( mem_management );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgHeapInit();
 #endif
     if( dll_data->cmd_line != NULL ) {
@@ -627,7 +627,7 @@ int WppCompile(                 // MAIN-LINE (DLL)
             exit_status = WPP_FATAL;
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgHeapFini();
 #endif
     ExitPointRelease( mem_management );

@@ -1107,13 +1107,13 @@ PTREE NodeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
     ( int val                   // - value
     , TYPE type )               // - node type (integral,enum,ptr)
 ;
-#ifdef NDEBUG
-#define NodeIsBinaryOp(node,op) ___NodeIsOp(node,op)
-#else
+#ifdef DEVBUILD
 bool NodeIsBinaryOp(            // TEST IF BINARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 ;
+#else
+#define NodeIsBinaryOp(node,op) ___NodeIsOp(node,op)
 #endif
 bool NodeIsConstantInt(         // TEST IF A CONSTANT INT NODE
     PTREE node )                // - node
@@ -1130,13 +1130,13 @@ bool NodeIsIntConstant          // TEST IF INTEGRAL CONSTANT AND GET VALUE
     ( PTREE node                // - potential constant node
     , INT_CONSTANT* pval )      // - addr[ value ]
 ;
-#ifdef NDEBUG
-#define NodeIsUnaryOp(node,op) ___NodeIsOp(node,op)
-#else
+#ifdef DEVBUILD
 bool NodeIsUnaryOp(             // TEST IF UNARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 ;
+#else
+#define NodeIsUnaryOp(node,op) ___NodeIsOp(node,op)
 #endif
 bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
     PTREE node )                // - node

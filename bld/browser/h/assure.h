@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef __ASSURE_H__
 #define __ASSURE_H__
 
-#if defined( DEBUG_ASSERT ) && !defined( NDEBUG )
+#if defined( DEBUG_ASSERT ) && defined( DEVBUILD )
 
     void Assure( int condition, char * msg, int fatal = -1 );
     void NoDefault( char * file, int line );

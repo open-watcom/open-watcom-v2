@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,7 +190,7 @@ PTREE PtdGetOffsetofExpr(       // GET OFFSETOF EXPR
 extern PTD *PtdGetIndex( PTD *e );
 extern PTD *PtdMapIndex( PTD *e );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 // PROTOTYPES (Debugging only)
 

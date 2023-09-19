@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ struct handle_blk {
     handle_blk          *next[1];
 };
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static struct {
     unsigned    dump_handle : 1;

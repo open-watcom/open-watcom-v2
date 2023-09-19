@@ -1148,7 +1148,7 @@ void FstabDeRegister(           // DE-REGISTER FUNCTION
 void FstabRegister(             // REGISTER FUNCTION
     FN_CTL *fctl )              // - function control
 ;
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void FstabDump(                 // DEBUG ONLY: DUMP FUNCTION STATE TABLE
     void )
 ;
@@ -1427,7 +1427,7 @@ SE *StateTableCurrPosn(         // GET STATE ENTRY FOR CURRENT POSITION
 void *SymTrans(                 // TRANSLATE SYMBOL/SCOPE
     void *src )                 // - source value
 ;
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void SymTransEmpty(             // DEBUG: VERIFY SYMBOL TRANSLATIONS OVER
     void )
 ;

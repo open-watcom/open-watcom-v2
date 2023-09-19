@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 #else
     #include <direct.h>
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
 #endif
@@ -267,7 +267,7 @@ static void recordBlkScopeIns   // RECORD A BLK-SCOPE INSTRUCTION
     }
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void _dbgScope
     ( SCOPE scope
     , char const * text )
@@ -368,7 +368,7 @@ static void adjustSrcFile       // ADJUST OPEN/CLOSE OF SOURCE FILE(S)
     }
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #   define ShcVerify(t,m) if( !(t) ) printf( "%s\n", m );
 #else
 #   define ShcVerify(a,b)
@@ -410,7 +410,7 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
             short_circuit = false;
             break;
         }
-#ifdef NDEBUG
+#ifndef DEVBUILD
         if( ! short_circuit )
 #endif
         {
@@ -904,7 +904,7 @@ void BrinfReferenceSymbol       // SYMBOL REFERENCE
                     }
                 }
             } else {
-            #ifndef NDEBUG
+            #ifdef DEVBUILD
                 if( SymIsAutomatic( sym ) ) {
                     ExtraRptIncrementCtr( ctr_ref_data_bare_auto );
                 } else {

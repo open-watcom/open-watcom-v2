@@ -38,7 +38,7 @@
 #include "cfeinfo.h"
 #include "asmstmt.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -61,7 +61,7 @@ typedef struct prag_stack {
 
 hw_reg_set              AsmRegsSaved = HW_D( HW_FULL );
 pragma_toggles          PragmaToggles;
-#ifndef NDEBUG
+#ifdef DEVBUILD
 pragma_dbg_toggles      PragmaDbgToggles;
 #endif
 
@@ -686,7 +686,7 @@ hw_reg_set *PragManyRegSets( void )
 void SetToggleFlag( char const *name, int func, bool push )
 /*********************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define pick( x ) \
         if( strcmp( name, #x ) == 0 ) { \
             if( func == -1 ) { \

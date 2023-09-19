@@ -41,7 +41,7 @@
 #include "context.h"
 #include "unicode.h"
 #include "cscanbuf.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -1530,7 +1530,7 @@ TOKEN NextToken( void )
         return( CurToken );
     }
     (*tokenSource)();
-#ifndef NDEBUG
+#ifdef DEVBUILD
     CtxScanToken();
     DumpToken();
 #endif

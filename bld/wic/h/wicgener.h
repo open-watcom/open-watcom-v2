@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,14 +78,14 @@ void zapDebug(void);
 void wicAssert( int exprTrue, char *expr, char *file, int line);
 void debugOut(char *format, ...);
 
-#ifdef NDEBUG
- #define assert(__ignore) ((void)0)
-#else
+#ifdef DEVBUILD
  #if !defined( _NO_EXT_KEYS ) /* extensions enabled */
-  #define assert(expr)   ((expr)?(void)0:wicAssert(0,#expr,__FILE__,__LINE__))
+  #define assert(expr)  ((expr)?(void)0:wicAssert(0,#expr,__FILE__,__LINE__))
  #else
   #define assert(expr)  wicAssert(expr,#expr,__FILE__,__LINE__)
  #endif
+#else
+ #define assert(__ignore) ((void)0)
 #endif
 
 /*-------------------------- File IO -----------------------------*/

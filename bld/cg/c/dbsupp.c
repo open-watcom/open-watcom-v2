@@ -41,7 +41,7 @@
 #include "types.h"
 #include "objout.h"
 #include "targetdb.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "echoapi.h"
 #endif
 #include "regset.h"
@@ -132,7 +132,7 @@ cg_sym_handle   LocSimpStatic( dbg_loc loc )
 dbg_loc  _CGAPI DBLocInit( void )
 /*******************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     dbg_loc retn;
     EchoAPI( "DBLocInit()" );
     retn = NULL;
@@ -169,14 +169,14 @@ dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
 {
     name        *tmp;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocTemp( %i, %i )", loc, temp );
 #endif
     loc = LocCreate( loc, LOC_BP_OFFSET );
     tmp = DeAlias( (name *)temp );
     tmp->v.usage |= VAR_VOLATILE|NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
     loc->u.be_sym = tmp;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", loc );
 #endif
     return( loc );
@@ -185,13 +185,13 @@ dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
 dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val )
 /*******************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocConst( %i, %i  )", loc, val );
 #endif
 
     loc = LocCreate( loc, LOC_CONST_1 );
     loc->u.val = val;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", loc );
 #endif
     return( loc );
@@ -203,7 +203,7 @@ dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
 {
     unsigned    stkop;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocOp( %i, %i, %i )", loc, op, other );
 #endif
     stkop = 0;
@@ -275,7 +275,7 @@ dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
         Zoiks( ZOIKS_083 );
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", loc );
 #endif
     return( loc );
@@ -288,7 +288,7 @@ void _CGAPI DBLocFini( dbg_loc loc )
     dbg_loc     *owner;
     dbg_loc     curr;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocFini( %i )\n", loc );
 #endif
     owner = &loc;

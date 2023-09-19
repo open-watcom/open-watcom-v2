@@ -50,7 +50,7 @@
 #include "name.h"
 #include "icopmask.h"
 #include "fmttype.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -153,7 +153,7 @@ static void sym_reset( SYMBOL sym )
 static void sym_update( SYMBOL sym, symbol_flag2 flags, dw_handle dh )
 /********************************************************************/
 {
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
     if( sym->flag2 & SYMF2_CG_HANDLE ) {
         DumpSymbol( sym );
         CFatal( "dwarf: handle for sym busy" );
@@ -1190,7 +1190,7 @@ static dw_handle dwarfType( TYPE type, DC_CONTROL control )
         DbgStmt( CFatal( "dwarf: illegal type" ) );
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( dh == 0 && (control & DC_RETURN) == 0 ) {
         DumpFullType( type );
         CFatal( "dwarf: unable to define type" );
@@ -1523,7 +1523,7 @@ static dw_handle dwarfData( SYMBOL sym )
     dw_handle class_dh;
     uint      flags;
 
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
         if( sym->flag2 & SYMF2_DW_HANDLE_DEF ) {
             DumpSymbol( sym );
             CFatal( "dwarf: data symbol already defined" );
@@ -1569,7 +1569,7 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
     char            *name;
 
     sym_reset( sym );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( sym->flag2 & SYMF2_DW_HANDLE_DEF ) {
         DumpSymbol( sym );
         CFatal( "dwarf: data symbol already defined" );
@@ -1666,7 +1666,7 @@ static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
         dh = dwarfFunction( sym, control );
     } else if( SymIsData( sym ) ) {
         dh = dwarfData( sym );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     } else {
         DumpSymbol( sym );
         CFatal( "dwarf: illegal symbol" );
@@ -1680,7 +1680,7 @@ static void doDwarfForwardFollowupClass( TYPE type, void *ignore )
 {
     bool *keep_going = ignore;
     if( (type->dbgflag & TF2_DWARF) == TF2_DWARF_FWD ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( type->flag & TF1_UNBOUND ) {
             DumpFullType( type );
             CFatal( "dwarf: unbound template type in browser info" );

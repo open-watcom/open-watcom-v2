@@ -42,7 +42,7 @@
 #include "stats.h"
 #include "template.h"
 #include "class.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -158,7 +158,7 @@ typedef struct {                            // OLINF -- overload information
     unsigned    have_user_type      : 1;    // - true ==> have a class,enum operand
 } OLINF;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DumpOpovLoad               // DEBUG -- DUMP ROUTINE
     ( OLINF* oli )              // - overload info
 ;
@@ -1222,7 +1222,7 @@ pch_status PCHFiniOperatorOverloadData( bool writing )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static void dumpOVOP            // DEBUG -- DUMP OVOP structure
     ( OVOP* ovop                // - OVOP

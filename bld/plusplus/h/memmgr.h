@@ -40,7 +40,7 @@ extern void CMemFree( void * );
 extern void CMemFreePtr( void * );
 extern void *CPermAlloc( size_t );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void CMemDeferredFree( void * );
 #endif
 

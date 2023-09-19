@@ -792,7 +792,7 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     unsigned size )             // - output buffer size
 {
     DbgAssert( size >= _MAX_PATH );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     // caller should use return value only!
     // - this code will make sure caller doesn't use buff
     *buff = '.';

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ static struct {
 } fmem;
 
 typedef struct {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     size_t bigSize;
     unsigned char check;
 #endif
@@ -75,7 +76,7 @@ static void FMemMsg(FMemMsgType type, pFMemBigElem bigElem) {
         break;
 
     case FMEM_BIG_CORRUPTED:
-        #ifndef NDEBUG
+        #ifdef DEVBUILD
             sprintf(errStr, "FMEM: Big elem corrupted. Size %d; chkA5: %Xh; "
                             "chk0: %Xh;  data &%Xh",
                             bigElem->bigSize, bigElem->check,
@@ -173,7 +174,7 @@ void *FAlloc(size_t size) {
     } else {
         pFMemBigElem bigElem = fmem.allocFunc(sizeof *bigElem - 1 + size );
         bigElem->smallSize.size = 0;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         bigElem->bigSize = size;
         bigElem->check = 0xa5;
 #endif
@@ -197,7 +198,7 @@ void FFree(void *elem) {
     } else {
         pFMemBigElem bigElem = (pFMemBigElem)((char*) elem - BIG_ELEM_PREFIX_SIZE);
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if (bigElem->check != 0xa5 || adjustSize(bigElem->bigSize) != -1) {
             FMemMsg(FMEM_BIG_CORRUPTED, bigElem);
             return;
