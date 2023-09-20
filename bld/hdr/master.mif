@@ -27,7 +27,10 @@ wsplice_opts_ppc  = $(wsplice_extra_opts) -i.. -kARCHPPC $($(system)_options) ..
 # DOS can create only simple sub-directory in existing directory
 # you must create parent before child directory
 dos_dirs   = h h/sys
-linux_dirs = h h/sys h/netinet h/arpa h/arch h/arch/i386 h/arch/i386/sys h/arch/mips h/arch/mips/sys h/arch/ppc h/arch/ppc/sys
+linux_i386_arch_dirs = h/arch/i386 h/arch/i386/sys
+linux_mips_arch_dirs = h/arch/mips h/arch/mips/sys
+linux_ppc_arch_dirs = h/arch/ppc h/arch/ppc/sys
+linux_dirs = h h/sys h/netinet h/arpa h/arch $(linux_i386_arch_dirs) $(linux_mips_arch_dirs) $(linux_ppc_arch_dirs)
 qnx_dirs   = h h/sys
 rdos_dirs  = h h/sys h/netinet h/arpa
 

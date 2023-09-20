@@ -1,0 +1,22 @@
+/*
+ *  arch/ppc/sys/endian.h
+ *
+:include crwatcnt.sp
+ */
+
+#define BYTE_ORDER      BIG_ENDIAN
+
+#define htobe16(x) (x)
+#define htole16(x) _SWAPNC_16(x)
+#define be16toh(x) (x)
+#define le16toh(x) _SWAPNC_16(x)
+
+#define htobe32(x) (x)
+#define htole32(x) _SWAPNC_32(x)
+#define be32toh(x) (x)
+#define le32toh(x) _SWAPNC_32(x)
+
+#define htobe64(x) (x)
+#define htole64(x) _SWAPNC_64(x)
+#define be64toh(x) (x)
+#define le64toh(x) _SWAPNC_64(x)

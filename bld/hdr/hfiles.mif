@@ -54,6 +54,7 @@
 !inject h/dirent.h                            hlnx hqnx
 !inject h/dos.h                          hdos
 !inject h/dosfunc.h                      hdos
+!inject h/endian.h                       hdos hlnx hqnx hrdos
 !inject h/eh.h                           hdos
 !inject h/env.h                          hdos hlnx hqnx hrdos
 !inject h/errno.h                        hdos hlnx hqnx hrdos
@@ -217,6 +218,7 @@
 !inject h/arch/i386/siginfo.h                 hlnx
 !inject h/arch/i386/signal.h                  hlnx
 !inject h/arch/i386/sigposix.h                hlnx
+!inject h/arch/i386/sys/endian.h              hlnx
 !inject h/arch/i386/sys/ioctl.h               hlnx
 !inject h/arch/i386/sys/resource.h            hlnx
 !inject h/arch/i386/sys/socket.h              hlnx
@@ -228,12 +230,15 @@
 !inject h/arch/mips/siginfo.h                 hlnx
 !inject h/arch/mips/signal.h                  hlnx
 !inject h/arch/mips/sigposix.h                hlnx
+!inject h/arch/mips/sys/endian.h              hlnx
 !inject h/arch/mips/sys/ioctl.h               hlnx
 !inject h/arch/mips/sys/resource.h            hlnx
 !inject h/arch/mips/sys/socket.h              hlnx
 !inject h/arch/mips/sys/stat.h                hlnx
 !inject h/arch/mips/sys/sysmacro.h            hlnx
 !inject h/arch/mips/sys/types.h               hlnx
+!inject h/arch/ppc/err_no.h                   hlnx
+!inject h/arch/ppc/sys/endian.h               hlnx
 !inject h/arpa/inet.h                         hlnx      hrdos
 !inject h/netinet/in.h                        hlnx      hrdos
 !inject h/netinet/tcp.h                       hlnx      hrdos
