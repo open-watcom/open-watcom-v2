@@ -43,18 +43,6 @@ noecho = @
 noecho =
 !endif
 
-!ifdef devdebug
-debug = 2
-!else ifdef debug
-debug = 1
-!else ifdef release
-!ifeq release 0
-debug = 1
-!else
-debug = 0
-!endif
-!endif
-
 mif_path      = $(%OWROOT)/build/mif
 
 .mif: "$(mif_path)"

@@ -3,7 +3,7 @@
 host_os  = os2
 host_cpu = 386
 
-cc_release = 0
+cc_debug   = 1
 debug_cg   = 1
 debug      = 1
 

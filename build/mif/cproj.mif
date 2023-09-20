@@ -114,15 +114,13 @@ as_mps          = *bwasmps
 !endif
 
 !ifndef debug
-!ifdef $(proj_name)_release
-!ifeq $(proj_name)_release 0
-debug = 1
-!else
+!ifeq $(proj_name)_debug 0
 debug = 0
-!endif
 !else ifeq %OWDEVBUILD 1
 debug = 2
 !else ifeq %OWDEBUGBUILD 1
+debug = 1
+!else ifeq $(proj_name)_debug 1
 debug = 1
 !else
 debug = 0
@@ -199,11 +197,12 @@ mode_libflags = -s-t-zld
 !else
 !ifeq debug 2
 mode_cppflags = -DDEVBUILD
+mode_aflags   = -d2 -DDEVBUILD
 !else
 mode_cppflags =
+mode_aflags   = -d2
 !endif
 mode_cflags   = -od -d2 $(cdebug_fmt)
-mode_aflags   = -d2
 mode_lflags   = $(ldebug_fmt) all
 mode_clflags  = $(cldebug_fmt) -d2
 !endif

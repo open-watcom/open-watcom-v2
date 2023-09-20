@@ -220,7 +220,7 @@ plusplus_matherr_objs = $(_subdir_)cmatherr.obj
 !endif
 
 # debugging objects
-!ifeq release 0
+!ifeq debug 2
 debug_objs = &
     $(_subdir_)dbg.obj &
     $(_subdir_)dbgcomma.obj &

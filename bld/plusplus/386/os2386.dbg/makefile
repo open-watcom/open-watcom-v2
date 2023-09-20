@@ -3,7 +3,7 @@
 host_os  = os2
 host_cpu = 386
 
-debug_cg          = 1
-plusplus_release  = 0
+plusplus_debug = 1
+debug_cg       = 1
 
 !include ../target.mif

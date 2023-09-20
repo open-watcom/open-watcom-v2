@@ -25,7 +25,7 @@ target : $(pre_obj_deps) cg$(target_cpu).lib $(cg_target_host_name).lib .SYMBOLI
 
 !include $(cg_dir)/mif/rules.mif
 
-!ifeq release 0
+!ifeq debug 2
 debug_objs = $(cg_dump_objs)
 !endif
 

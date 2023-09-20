@@ -87,7 +87,7 @@ common_objs = &
     $(_subdir_)ppexpn.obj &
     $(_subdir_)unicode.obj
 
-!ifeq release 0
+!ifeq debug 2
 cc_debug_objs = $(_subdir_)cfedump.obj
 !endif
 

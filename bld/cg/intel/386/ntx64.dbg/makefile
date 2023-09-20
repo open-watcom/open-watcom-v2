@@ -3,6 +3,6 @@
 host_os  = nt
 host_cpu = x64
 
-cg_release = 0
+cg_debug = 1
 
 !include ../master.mif

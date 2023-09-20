@@ -65,8 +65,8 @@ wmake_opts = host_os=$(host_os) host_cpu=$(host_cpu)
 !ifdef bootstrap
 wmake_opts += bootstrap=$(bootstrap)
 !endif
-!ifdef release
-wmake_opts += release=$(release)
+!ifdef debug
+wmake_opts += debug=$(debug)
 !endif
 
 $(commands) : .symbolic $(__MAKEFILES__)

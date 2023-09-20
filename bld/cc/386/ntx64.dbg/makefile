@@ -3,7 +3,7 @@
 host_os  = nt
 host_cpu = x64
 
-cc_release = 0
+cc_debug = 1
 debug_cg = 1
 
 !include ../target.mif

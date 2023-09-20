@@ -71,7 +71,7 @@ extra_cppflags_axp = -DAS_ALPHA
 extra_cppflags_mps = -DAS_MIPS
 extra_cppflags_ppc = -DAS_PPC
 extra_cpp_flags += $(extra_cppflags_$(target_cpu))
-!ifeq release 0
+!ifeq debug 2
 extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
 
@@ -89,7 +89,7 @@ extra_c_flags_386 = -3r
 
 !ifdef __WATCOM_TOOLS__
 ! ifndef bootstrap
-!  ifeq release 1
+!  ifeq debug 0
 extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 !  endif
@@ -225,7 +225,7 @@ optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 #optencod_enc_linux  = -utf8
 optencod_targets = $(target_cpu) $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 
