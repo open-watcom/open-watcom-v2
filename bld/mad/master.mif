@@ -12,6 +12,10 @@ mad_autodepends = .autodepend
 
 mad_nofpu = 1
 
+!ifneq host_os win
+mad_nocheckstack = 1
+!endif
+
 !ifeq host_cpu x64
 sys_dll = 1
 !endif

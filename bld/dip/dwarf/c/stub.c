@@ -71,3 +71,15 @@ int fltused_;
 #elif defined(__AXP__)
 int _fltused_;
 #endif
+
+#ifndef __WINDOWS__
+#if defined( _M_I86 )
+extern void __STK( int );
+#pragma aux __STK "*" __parm [__ax];
+void __STK( int x ) { (void)x; }
+#elif defined( _M_IX86 )
+extern void __CHK( int );
+#pragma aux __CHK "*" __parm [];
+void __CHK( int x ) { (void)x; }
+#endif
+#endif
