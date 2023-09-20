@@ -4,6 +4,5 @@ host_os  = nt
 host_cpu = 386
 
 cg_debug = 1
-debug = 1
 
 !include ../master.mif
