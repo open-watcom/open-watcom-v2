@@ -358,7 +358,9 @@ static pointer  GetFromFrl( size_t amount, int frl_class )
 
     free = _FreeList[frl_class];
     if( free != NULL ) {
+#ifdef DEVBUILD
         assert( (free->length & ALLOCATED) == 0 );
+#endif
         free->length |= ALLOCATED;
         _FreeList[frl_class] = free->link;
         return( free );
@@ -373,15 +375,16 @@ static pointer  GetFromBlk( size_t amount )
     mem_blk     *block;
     tag         *alloc;
 
-    for( block = _Blks; block && (block->free < amount); ) {
-        block = block->next;
-    }
-    if( block ) {
-        alloc = (tag *)((char *)block + block->size - block->free);
-        assert( *alloc == 0 );
-        *alloc = amount | ALLOCATED;
-        block->free -= amount;
-        return( ++alloc );
+    for( block = _Blks; block != NULL; block = block->next ) {
+        if( block->free >= amount ) {
+            alloc = (tag *)( (char *)block + block->size - block->free );
+#ifdef DEVBUILD
+            assert( *alloc == 0 );
+#endif
+            *alloc = amount | ALLOCATED;
+            block->free -= amount;
+            return( ++alloc );
+        }
     }
     if( MemFromSys( 0 ) == NULL)    // Grab one empty block
         return( NULL );
@@ -424,7 +427,9 @@ void     MemFree( pointer p )
     tag     length;
 
     free   = (frl *)( (char *)p - TAG_SIZE );
+#ifdef DEVBUILD
     assert( free->length & ALLOCATED );
+#endif
     free->length &= ~ALLOCATED;
     length = free->length;
     if( length > MAX_ALLOC ) {   // This was a full block
