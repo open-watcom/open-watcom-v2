@@ -23,7 +23,7 @@ files = $+ $(static_objs) $-
 
 .asm : ../../a;../../inc
 
-!ifeq release 0
+!ifneq debug 0
 objs += $(dbg_objs_c)
 xobjs += $(dbg_objs_c)
 !endif

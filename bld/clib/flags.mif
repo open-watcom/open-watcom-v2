@@ -4,16 +4,13 @@ default_windowing = 1
 !ifeq default_windowing 1
 def_windowing = -DDEFWIN
 !endif
-!ifdef lib_debug
-release = 0
-!endif
 
 #######################
 # C PREPROCESSOR SETINGS
 ######
 # Include system headers in dependency lists
 clib_cpp_flags = -D_ENABLE_AUTODEPEND
-!ifeq release 0
+!ifneq debug 0
 clib_cpp_flags += -D__RUNTIME_HANDLE_CHECKS__
 !endif
 !ifeq linkage dynamic
@@ -41,7 +38,7 @@ clib_cpp_flags += $(clib_cpp_flags_$(system)) $(clib_cpp_flags_$(system)_$(proce
 # C COMPILER SETINGS
 ######
 sw_c_common = $(watcom_common_cflags)-we-j-za99-zl-x-xx-zam-wpx
-!ifeq release 0
+!ifneq debug 0
 !else
 sw_c_common += -s
 !endif
@@ -66,7 +63,7 @@ sw_c_common += -bm-bd
 !else ifdef mthreaded
 sw_c_common += -bm
 !endif
-!ifdef lib_debug
+!ifneq debug 0
 sw_c_common += -en
 !endif
 
@@ -102,7 +99,7 @@ sw_c_register = -5r
 sw_c_stack    = -5s
 
 # special case switches
-!ifeq release 0
+!ifneq debug 0
 sw_c_fi_nonx86 = -finonx86.h
 !endif
 
@@ -258,7 +255,7 @@ clib_a_flags =$(sw_a_common) $(sw_a_$(processor)_$(model)) $(sw_a_$(processor)) 
     $(sw_a_$(system)_$(processor)) $(sw_a_$(system)) $(extra_clib_a_flags)
 
 # debug flags need to be last to override optimization flags
-!ifeq release 0
+!ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
 !else

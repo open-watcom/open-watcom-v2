@@ -24,6 +24,10 @@ clib_host_os_rdosdev    =rdosdev
 clib_host_os_linux      =linux
 host_os=$(clib_host_os_$(system))
 
+!ifdef lib_debug
+debug = 1
+!endif
+
 !include cproj.mif
 !include libsubdi.mif
 

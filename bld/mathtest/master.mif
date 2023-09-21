@@ -107,7 +107,7 @@ ext=
 
 # Avoid the need for !include $(mathlib_dir)/flags.mif with
 # debug flags need to be last to override optimization flags
-!ifeq release 0
+!ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
 !else
@@ -120,7 +120,7 @@ defwin=-bw
 
 link_x86  = DEBUG dwarf
 link_axp  = DEBUG codeview
-!ifeq release 0
+!ifneq debug 0
 link_opts = OPTION quiet, map, symf
 !else
 link_opts = OPTION quiet, map

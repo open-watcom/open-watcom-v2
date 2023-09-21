@@ -59,7 +59,7 @@ cc_axp    = *wccaxp
 
 # Avoid the need for !include $(clib_dir)/flags.mif with
 # debug flags need to be last to override optimization flags
-!ifeq release 0
+!ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
 !endif

@@ -46,6 +46,10 @@ suffix = mt$(plib_suffix_$(processor))
 suffix = $(plib_suffix_$(processor))
 !endif
 
+!ifdef lib_debug
+debug = 1
+!endif
+
 !include cproj.mif
 !include deftarg.mif
 !include libsubdi.mif

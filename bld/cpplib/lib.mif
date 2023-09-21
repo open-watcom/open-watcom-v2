@@ -12,7 +12,7 @@ target_lib_x = plbx$(suffix).lib
 
 !endif
 
-!ifeq release 0
+!ifneq debug 0
 plib_lib_flags = -b-c-n-pa
 !else
 plib_lib_flags = -b-c-n-pa-s-t-zld

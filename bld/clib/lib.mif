@@ -30,7 +30,7 @@ libname = clibdl$(libname_$(processor))
 libname = clib$(libname_$(processor))
 !endif
 
-!ifeq release 0
+!ifneq debug 0
 clib_lib_flags  = -b-c-n-pa$(extra_clib_lib_flags)
 !else
 clib_lib_flags  = -b-c-n-pa-s-t-zld$(extra_clib_lib_flags)

@@ -1,8 +1,4 @@
-!ifdef lib_debug
-release = 0
-!endif
-
-!ifeq release 0
+!ifneq debug 0
 sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-oax-zl-wpx
 !else
 sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-s-oax-zl-wpx
@@ -118,7 +114,7 @@ mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(mlib_$(processor))_$(m
     $(sw_a_$(processor)) $(sw_a_$(system)) $(extra_mlib_a_flags)
 
 # debug flags need to be last to override optimization flags
-!ifeq release 0
+!ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
 !else

@@ -26,7 +26,7 @@ host_os=$(rtdll_host_os_$(system))
 
 !ifdef profile
 rtdll_nosymfile = 1
-!else ifeq release 0
+!else ifneq debug 0
 rtdll_nosymfile = 1
 !endif
 
@@ -56,7 +56,7 @@ patch_level=0
 # lflags
 #
 extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121 $(rtdll_dllbase_$(system)_$(host_cpu)_$(component))
-!ifeq release 0
+!ifneq debug 0
 extra_l_flags_dll += option mangle,artificial,verbose
 !endif
 
@@ -66,7 +66,7 @@ extra_l_flags_dll_nt = initinstance terminstance
 #
 # libflags
 #
-!ifeq release 0
+!ifneq debug 0
 extra_lib_flags = -irn
 !else
 extra_lib_flags = -irn -s-t-zld

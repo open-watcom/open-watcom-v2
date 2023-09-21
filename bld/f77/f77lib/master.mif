@@ -35,6 +35,10 @@ flib_host_os_netware = nov
 flib_host_os_linux   = linux
 host_os = $(flib_host_os_$(system))
 
+!ifdef lib_debug
+debug = 1
+!endif
+
 !include cproj.mif
 !include deftarg.mif
 
