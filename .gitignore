@@ -5,6 +5,7 @@
 *.COP
 *.core
 *.d32
+*.dep
 *.dip
 *.dis
 # ignore *.dll files, but include *.dll subdirectories
