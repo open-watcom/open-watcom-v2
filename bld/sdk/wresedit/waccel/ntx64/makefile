@@ -2,6 +2,6 @@
 host_os  = nt
 host_cpu = x64
 
-wresedit_release = 0
+wresedit_debug = 1
 
 !include ../waccel.mif

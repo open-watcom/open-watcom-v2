@@ -40,7 +40,7 @@ inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(docs_host_di
     $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DNOPERSIST=1
-!ifeq release 0
+!ifneq debug 0
 extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
 !endif
 !ifeq use_virtmem 1
@@ -96,7 +96,7 @@ mbr_files = $+$(template)$-
 ext = obj
 objs      = $+$(template)$- rxwrap.obj brmem.obj $(trmem_objs)
 
-!ifeq release 0
+!ifneq debug 0
 objs_dbg  = debuglog.obj
 !endif
 

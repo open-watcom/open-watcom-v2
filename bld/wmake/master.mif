@@ -14,7 +14,7 @@ wmake_trmem = 1
 # DOS code will not fit in 64k with /d2
 #!ifeq host_os dos
 #!ifeq host_cpu i86
-#wmake_release = 1
+#wmake_debug = 0
 #!endif
 #!endif
 

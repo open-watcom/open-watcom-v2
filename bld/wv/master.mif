@@ -90,7 +90,7 @@ extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 !ifdef wv_engine_noui
 extra_cpp_flags += -D__NOUI__
 !endif
-!ifeq release 0
+!ifeq debug 2
 extra_cpp_flags += -DAUI_DBG
 !endif
 !ifeq sys_windowed 1
@@ -460,7 +460,7 @@ litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     $(awk) -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
     $(awk) -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
 
-!ifeq release 0
+!ifeq debug 2
 wsplice_keys = -kHIDDEN
 !endif
 

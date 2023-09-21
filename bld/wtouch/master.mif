@@ -52,7 +52,7 @@ msg.grh : ../wtouch.msg $(__MAKEFILES__)
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 

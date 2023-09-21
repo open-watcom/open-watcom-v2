@@ -2,6 +2,6 @@
 host_os  = nt
 host_cpu = x64
 
-wzoom_release = 0
+wzoom_debug = 1
 
 !include ../master.mif

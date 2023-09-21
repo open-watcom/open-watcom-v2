@@ -24,7 +24,7 @@ inc_dirs  = -I. -I"../h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags =-D_STANDALONE_
 #extra_cpp_flags += -DINCL_MSGTEXT
-!ifeq release 0
+!ifeq debug 2
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
@@ -121,7 +121,7 @@ wasmsmsg.grh : ../h/wasms.msg $(__MAKEFILES__)
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 

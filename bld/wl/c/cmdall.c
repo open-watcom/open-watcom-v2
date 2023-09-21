@@ -1569,7 +1569,7 @@ static bool ProcModule( void )
 }
 #endif
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 static bool ProcXDbg( void )
 /***************************
  * process DEBUG command
@@ -2148,7 +2148,7 @@ static parse_entry  Directives[] = {
 #if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
     "NEWsegment",   ProcNewSegment,     (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
 #endif
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     "Xdbg",         ProcXDbg,           MK_ALL,             0,
     "INTDBG",       ProcIntDbg,         MK_ALL,             0,
 #endif

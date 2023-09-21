@@ -11,15 +11,15 @@ host_cpu = x64
 
 all: dbginst.exe .SYMBOLIC
 
-!ifeq release 0
-
-debug_compiler=/Z7 /Odi
-debug_linker=-debug:none -debugtype:both /pdb:none
-
-!else
+!ifeq debug 0
 
 debug_compiler=
 debug_linker=-debug:none
+
+!else
+
+debug_compiler=/Z7 /Odi
+debug_linker=-debug:none -debugtype:both /pdb:none
 
 !endif
 

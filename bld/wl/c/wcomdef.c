@@ -393,7 +393,7 @@ static bool CompInfoSym( void *info, void *sym )
     return( ((comdat_info *)info)->sym == (symbol *)sym );
 }
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 static bool CheckSameComdat( void *info, void *sym )
 /***********************************************************/
 {
@@ -501,7 +501,7 @@ void ProcComdat( void )
         info->flags = (attr & CDAT_SELECT_MASK) << CDAT_SELECT_SHIFT;
         info->flags |= SYM_DEAD;        // assume redefined
         RingAppend( &info->pieces, piece );
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
         RingLookup( CDatList, CheckSameComdat, sym );
 #endif
         RingAppend( &CDatList, info );

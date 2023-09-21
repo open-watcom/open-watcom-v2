@@ -1,6 +1,6 @@
 srcmgt_obj = srcmgt.obj
 
-!ifeq release 0
+!ifneq debug 0
 debug_objs = dumpmem.obj
 !endif
 

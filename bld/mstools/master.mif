@@ -60,7 +60,7 @@ exetarg_res_version_nt_x64 = exever.res
 
 #optencod_enc_linux = -utf8
 optencod_targets = $(target_cpu) $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 

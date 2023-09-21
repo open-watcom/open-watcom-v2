@@ -84,7 +84,7 @@ ui_sysobjs = &
     guif1hk.obj  &
     guigetrc.obj
 
-!ifeq release 0
+!ifneq debug 0
 ui_sysobjs += uibarf.obj
 !endif
 

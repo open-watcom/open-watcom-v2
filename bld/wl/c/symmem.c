@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ static bool ShrinkBlock( block_data *block )
     _LnkRealloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
-  #ifdef _DEVELOPMENT
+  #ifdef DEVBUILD
     if( new != block->list ) {
         LnkMsg( FTL+MSG_INTERNAL, "s", "realloc moved shrinked block!" );
     }

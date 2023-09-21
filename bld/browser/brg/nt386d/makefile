@@ -3,6 +3,6 @@
 host_os  = nt
 host_cpu = 386
 
-merge_release = 0
+merge_debug = 1
 
 !include ../master.mif

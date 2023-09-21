@@ -81,7 +81,7 @@ optencod_opt_qnx = -u=$(exetarg_qnx_res)
 !endif
 #optencod_enc_linux  = -utf8
 optencod_targets = $(target_cpu) $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 

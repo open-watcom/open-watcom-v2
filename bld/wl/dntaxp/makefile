@@ -2,8 +2,6 @@
 host_os  = nt
 host_cpu = axp
 
-debug_cpp_flags=-D_DEVELOPMENT -D_INT_DEBUG
-
-wlink_release = 0
+debug = 2
 
 !include ../master.mif

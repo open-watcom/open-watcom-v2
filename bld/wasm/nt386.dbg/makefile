@@ -3,6 +3,6 @@
 host_os  = nt
 host_cpu = 386
 
-wasm_release = 0
+wasm_debug = 1
 
 !include ../master.mif

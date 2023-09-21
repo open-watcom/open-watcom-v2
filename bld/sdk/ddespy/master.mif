@@ -52,7 +52,7 @@ exetarg_nt_manif_x64  = ntmanif.res
 !include exetarg.mif
 
 #!ifeq host_cpu axp
-#!ifeq release 0
+#!ifneq debug 0
 #    cvpack $^&.exe
 #    @%make echo_wstrip_sym
 #    $(wstrip) $^&.exe $^&.exe $^&.sym

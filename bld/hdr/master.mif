@@ -8,7 +8,7 @@ linux_options = -kLINUX -u
 qnx_options   = -kQNX -t8 -u
 rdos_options  = -kRDOS
 
-!ifeq release 1
+!ifeq debug 0
 wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"

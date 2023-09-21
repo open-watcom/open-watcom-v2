@@ -17,7 +17,7 @@ inc_dirs = -I"../h"
 # To work around duplicate inlined symbols, e.g. __sputc
 c_flags += -std=gnu89
 !endif
-!ifeq release 0
+!ifeq debug 2
 c_flags += -DTRACE
 !endif
 
@@ -44,7 +44,7 @@ libtarg_ncurses_objs = &
     lib_tput.obj &
     lib_ttyf.obj &
     read_ent.obj
-!ifeq release 0
+!ifeq debug 2
 libtarg_ncurses_trace_objs = &
     lib_data.obj &
     lib_trce.obj &

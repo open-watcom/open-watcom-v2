@@ -161,7 +161,7 @@ extra_cpp_flags += -DBUILTIN_TRAP_FILE
 !ifdef japanese
 extra_cpp_flags += -DJAPANESE
 !endif
-!ifeq release 0
+!ifeq debug 2
 !ifeq host_os nov
 extra_cpp_flags += -DDEBUG_ME
 !endif
@@ -271,7 +271,7 @@ remote_objs = &
     $(srv)link.obj &
 !endif
 
-!ifeq release 1
+!ifeq debug 0
 objs = $(extra_objs) $($(which)_common_objs) mxutil.obj $(remote_objs)
 !else
 objs = $(extra_dobjs) $($(which)_common_objs) mxutil.obj $(remote_objs)

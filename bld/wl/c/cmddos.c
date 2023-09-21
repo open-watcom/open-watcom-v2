@@ -74,7 +74,7 @@ overlay_ref GetOvlRef( void )
     return( ( OvlLevel == 0 ) ? 0 : OvlSectNum - 1 );
 }
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 static void PrintAreas( OVL_AREA *ovlarea );
 
 static void PrintSect( section *sect )
@@ -182,7 +182,7 @@ void CmdOvlFini( void )
     }
     SetOvlClasses();
     MakeNonArea();
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     PrintOvl();
 #endif
 }

@@ -56,7 +56,7 @@ extra_cpp_flags   += -DIDE_PGM
 extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
 !ifdef trmem_objs
 extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
-!else ifeq release 0
+!else ifneq debug 0
 extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
 extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
 !endif
@@ -241,7 +241,7 @@ $(misc_objs):
 optencod_opt_qnx = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 

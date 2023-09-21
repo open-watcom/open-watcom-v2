@@ -45,7 +45,7 @@ full_export = 1
 alias_symbols_nt = alias __DLLstart_='_LibMain@12'
 !endif
 
-!ifneq release 0
+!ifeq debug 0
 dllbase = $(trap_dllbase_$(host_os)_$(host_cpu))
 !endif
 

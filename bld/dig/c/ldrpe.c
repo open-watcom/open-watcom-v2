@@ -29,6 +29,9 @@
 *
 ****************************************************************************/
 
+
+#include "enterdb.h"
+
 /*
  * Module to implement a simple Portable Binary DLL library loader.
  *
@@ -61,6 +64,14 @@ typedef struct {
     u_long  exportDir;      /* Offset of export directory               */
     char    *modname;       /* Filename of the image                    */
 } *module;
+
+#ifdef WATCOM_DEBUG_SYMBOLS
+unsigned short GetCS(void);
+#pragma aux GetCS \
+     __parm __caller [] = \
+        "mov ax,cs" \
+     __value [__ax]
+#endif
 
 static digld_error pe_read_header( FILE *fp, pe_exe_header *pe_hdr )
 {

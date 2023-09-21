@@ -15,7 +15,7 @@ prs_list = &
     $(c_prs) &
     $(java_prs)
 
-!ifeq release 0
+!ifneq debug 0
 ssl_options = -v
 !endif
 

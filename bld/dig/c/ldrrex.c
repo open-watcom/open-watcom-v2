@@ -29,6 +29,9 @@
 *
 ****************************************************************************/
 
+
+#include "enterdb.h"
+
 /*
  * Pharlap executable Loader (used by 32-bit code only)
  *
@@ -61,6 +64,14 @@ typedef struct {
 typedef struct {
     char            *modname;
 } *module;
+
+#ifdef WATCOM_DEBUG_SYMBOLS
+unsigned short GetCS(void);
+#pragma aux GetCS \
+     __parm __caller [] = \
+        "mov ax,cs" \
+     __value [__ax]
+#endif
 
 static void loader_unload_image( module modhdl )
 {

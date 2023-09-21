@@ -2,6 +2,6 @@
 host_os  = os2
 host_cpu = 386
 
-wrc_release = 0
+wrc_debug = 1
 
 !include ../master.mif

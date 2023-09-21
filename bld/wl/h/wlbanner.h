@@ -32,7 +32,7 @@
 
 #if 0
     #define IDV     "** EXPERIMENTAL ** "
-#elif defined( _DEVELOPMENT )
+#elif defined( DEVBUILD )
     #define IDV     "**INTERNAL DEVELOPMENT** "
 #else
     #define IDV

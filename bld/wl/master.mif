@@ -48,7 +48,7 @@ suppress_zc = 1
 inc_dirs = -I. -I"$(wlink_dir)/h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" &
     $(wres_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
-extra_cpp_flags = -DINSIDE_WLINK $(debug_cpp_flags)
+extra_cpp_flags = -DINSIDE_WLINK
 !ifdef DLLS_IMPLEMENTED
 extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif

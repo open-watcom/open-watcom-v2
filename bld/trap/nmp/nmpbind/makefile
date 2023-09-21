@@ -34,10 +34,10 @@ extra_l_flags = op stack=8k
 # explicit rules
 #################
 
-!ifeq release 0
-default_targ    = d
-!else
+!ifeq debug 0
 default_targ    = w
+!else
+default_targ    = d
 !endif
 
 first : $(default_targ)

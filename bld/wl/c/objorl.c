@@ -506,7 +506,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
         sdata->iscode = true;
     } else if( flags & ORL_SEC_FLAG_UNINITIALIZED_DATA ) {
         sdata->isuninit = true;
-#ifdef _DEVELOPMENT
+#ifdef DEVBUILD
     } else {
         unsigned namelen;
 
