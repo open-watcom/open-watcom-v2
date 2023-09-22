@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -19,15 +19,17 @@
     #include <endian.h>
 #else
 /*
- * endian.h content
+ * Intel systems without endian.h
+ * OW 1.9, MSVC, OSX
+ * implementation of endian.h content
  */
 #define LITTLE_ENDIAN   1234
 #define BIG_ENDIAN      4321
 
 #define _SWAPNC_16(w)   \
 (\
-    (((w) & 0x000000FFUL) << 8)\
-    | (((w) & 0x0000FF00UL) >> 8)\
+    (((w) & 0x00FFU) << 8)\
+    | (((w) & 0xFF00U) >> 8)\
 )
 #define _SWAPNC_32(w)   \
 (\

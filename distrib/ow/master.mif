@@ -82,8 +82,10 @@ nulldevice = /dev/null
 nulldevice = nul
 !endif
 
-!ifdef %OWDEBUGBUILD
-debug = $(%OWDEBUGBUILD)
+!ifeq %OWDEBUGBUILD 1
+debug = 1
+!else ifeq %OWDEVBUILD 1
+debug = 1
 !endif
 
 distrib_bindir = ../bin
