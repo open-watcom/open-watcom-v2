@@ -195,11 +195,10 @@ typedef enum {
     MOD_VISITED         = CONSTU32( 0x00000400 ),   // true if visited in call graph analysis.
     MOD_NEED_PASS_2     = CONSTU32( 0x00000800 ),   // true if pass 2 needed for this module.
     MOD_LAST_SEG        = CONSTU32( 0x00001000 ),   // true if this module should end a group
-    MOD_GOT_NAME        = CONSTU32( 0x00002000 ),   // true if already got a source file name
-    MOD_IMPORT_LIB      = CONSTU32( 0x00004000 ),   // ORL: true if this is an import lib.
-    MOD_KILL            = CONSTU32( 0x00008000 ),   // module should be removed from list
-    MOD_FLATTEN_DBI     = CONSTU32( 0x00010000 ),   // flatten DBI found in this mod.
-    MOD_DONE_PASS_1     = CONSTU32( 0x00020000 ),   // module been through pass 1 already.
+    MOD_IMPORT_LIB      = CONSTU32( 0x00002000 ),   // ORL: true if this is an import lib.
+    MOD_KILL            = CONSTU32( 0x00004000 ),   // module should be removed from list
+    MOD_FLATTEN_DBI     = CONSTU32( 0x00008000 ),   // flatten DBI found in this mod.
+    MOD_DONE_PASS_1     = CONSTU32( 0x00010000 ),   // module been through pass 1 already.
     MOD_IS_FREE         = CONSTU32( 0x80000000 ),   // used for marking carve free blocks
 } module_flags;
 

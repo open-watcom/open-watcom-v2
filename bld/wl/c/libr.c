@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,9 @@
 #include "procfile.h"
 #include "ar.h"
 #include "omfhash.h"
+#include "strtab.h"
+#include "carve.h"
+#include "permdata.h"
 
 #include "clibext.h"
 
@@ -616,6 +619,7 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     unsigned long       pos;
     unsigned long       dummy;
     bool                retval;
+    char                *objname;
 
     pos = 0;
     if( lib->u.dict == NULL ) {
@@ -638,11 +642,17 @@ mod_entry *SearchLib( file_list *lib, const char *name )
      *  update lib struct since we found desired object file
      */
     obj = NewModEntry();
-    obj->name.u.ptr = IdentifyObject( lib, &pos, &dummy );
     obj->location = pos;
     obj->f.source = lib;
     obj->modtime = lib->infile->modtime;
     obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    objname = IdentifyObject( lib, &pos, &dummy );
+    if( objname != NULL ) {
+        obj->name.u.ptr = AddStringStringTable( &PermStrings, objname );
+        _LnkFree( objname );
+    } else {
+        obj->name.u.ptr = NULL;
+    }
     return( obj );
 }
 

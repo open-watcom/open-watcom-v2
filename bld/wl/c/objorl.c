@@ -607,11 +607,6 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
     type = ORLSymbolGetType( symhdl );
     name = ORLSymbolGetName( symhdl );
     if( type & ORL_SYM_TYPE_FILE ) {
-        if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
-            CurrMod->modinfo |= MOD_GOT_NAME;
-            _LnkFree( CurrMod->name.u.ptr );
-            CurrMod->name.u.ptr = AddStringStringTable( &PermStrings, name );
-        }
         return( ORL_OKAY );
     }
     if( type & ORL_SYM_TYPE_DEBUG )

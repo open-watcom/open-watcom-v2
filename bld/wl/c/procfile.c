@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -440,10 +440,12 @@ static void DoPass1( mod_entry *next, file_list *list )
                 }
                 AddToModList( next );
                 next->location = loc;
-                if( membname == NULL ) {
-                    membname = ChkStrDup( list->infile->name.u.ptr );
+                if( membname != NULL ) {
+                    next->name.u.ptr = AddStringStringTable( &PermStrings, membname );
+                    _LnkFree( membname );
+                } else {
+                    next->name.u.ptr = list->infile->name.u.ptr;
                 }
-                next->name.u.ptr = membname;
                 loc = ObjPass1();
                 if( list->flags & STAT_TRACE_SYMS ) {
                     TraceSymList( CurrMod->publist );
@@ -624,7 +626,6 @@ unsigned long ObjPass1( void )
 /* Pass 1 of 8086 linker. */
 {
     unsigned long loc;
-    char          *savename;
 
     DEBUG(( DBG_BASE, "1 : file = %s, module = %s", CurrMod->f.source->infile->name.u.ptr, CurrMod->name.u.ptr ));
     CurrMod->modinfo |= MOD_DONE_PASS_1;
@@ -635,12 +636,6 @@ unsigned long ObjPass1( void )
     loc = Process[GET_FMT_IDX( ObjFormat )].Pass1();
     CollapseLazyExtdefs();
     SymModEnd();
-    if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
-        savename = CurrMod->name.u.ptr;
-        CurrMod->name.u.ptr = AddStringStringTable( &PermStrings, savename );
-        _LnkFree( savename );
-        CurrMod->modinfo |= MOD_GOT_NAME;
-    }
     DBIP1ModuleScanned();
     ReleaseNames();
     PermEndMod( CurrMod );
