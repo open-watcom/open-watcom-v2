@@ -26,7 +26,7 @@ host_os=$(rtdll_host_os_$(system))
 
 !ifdef profile
 rtdll_nosymfile = 1
-!else ifneq debug 0
+!else ifdef lib_debug
 rtdll_nosymfile = 1
 !endif
 
