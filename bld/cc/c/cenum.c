@@ -44,19 +44,19 @@
 #   define i64val(h,l) { l, h }
 #endif
 
+#if _CPU == 8086
+#define ENUM_INT    ENUM_S16
+#else
+#define ENUM_INT    ENUM_S32
+#endif
+
 enum enum_rng {
     ENUM_UNDEF = -1,
     ENUM_S8,
     ENUM_U8,
     ENUM_S16,
-#if TARGET_INT == 2
-    ENUM_INT = ENUM_S16,
-#endif
     ENUM_U16,
     ENUM_S32,
-#if TARGET_INT == 4
-    ENUM_INT = ENUM_S32,
-#endif
     ENUM_U32,
     ENUM_S64,
     ENUM_U64,
@@ -84,24 +84,21 @@ struct {
     DATA_TYPE decl_type;
     target_size size;
 } ItypeTable[ENUM_SIZE] = {
-    { TYP_CHAR, TARGET_CHAR  },    //S8
-    { TYP_UCHAR,TARGET_CHAR  },    //U8
-#if TARGET_INT == 2
-    { TYP_INT,  TARGET_INT  },     //S16
-    { TYP_UINT, TARGET_INT  },     //U16
+    { TYP_CHAR,     TARGET_CHAR },      //S8
+    { TYP_UCHAR,    TARGET_CHAR },      //U8
+#if _CPU == 8086
+    { TYP_INT,      TARGET_INT },       //S16
+    { TYP_UINT,     TARGET_INT },       //U16
+    { TYP_LONG,     TARGET_LONG },      //S32
+    { TYP_ULONG,    TARGET_LONG },      //U32
 #else
-    { TYP_SHORT, TARGET_SHORT },   //S16
-    { TYP_USHORT,TARGET_SHORT },   //U16
+    { TYP_SHORT,    TARGET_SHORT },     //S16
+    { TYP_USHORT,   TARGET_SHORT },     //U16
+    { TYP_INT,      TARGET_INT },       //S32
+    { TYP_UINT,     TARGET_INT },       //U32
 #endif
-#if TARGET_INT == 4
-    { TYP_INT,   TARGET_INT  },    //S32
-    { TYP_UINT,  TARGET_INT  },    //U32
-#else
-    { TYP_LONG,  TARGET_LONG },    //S32
-    { TYP_ULONG, TARGET_LONG },    //U32
-#endif
-    { TYP_LONG64, TARGET_LONG64  },//S64
-    { TYP_ULONG64, TARGET_LONG64 },//U64
+    { TYP_LONG64,   TARGET_LONG64 },    //S64
+    { TYP_ULONG64,  TARGET_LONG64 },    //U64
 };
 
 void EnumInit( void )
@@ -269,8 +266,10 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 }
             }
             error = ENUM_UNDEF;
-            if( !CompFlags.extensions_enabled && ( index > ENUM_INT )) {
-                error = ENUM_INT;
+            if( index > ENUM_INT ) {
+                if( !CompFlags.extensions_enabled ) {
+                    error = ENUM_INT;
+                }
             }
             if( index >= ENUM_SIZE ) {
                 /*
