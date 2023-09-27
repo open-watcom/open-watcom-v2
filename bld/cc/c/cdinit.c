@@ -56,7 +56,9 @@ typedef struct {
     fold_state          state;
 } addrfold_info;
 
-/* use a double-linked list of dataquads to facilitate insertions */
+/*
+ * use a double-linked list of dataquads to facilitate insertions
+ */
 typedef struct data_quad_list {
     DATA_QUAD               dq;
     target_size             size;
@@ -1048,7 +1050,7 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
         break;
     case TYP_LONG_DOUBLE:
     case TYP_LDIMAGINARY:
-        //StoreFloat( typ->decl_type, size );
+//        StoreFloat( typ->decl_type, size );
         StoreFloat( TYP_DOUBLE, size );
         break;
     default:

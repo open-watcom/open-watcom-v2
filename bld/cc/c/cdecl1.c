@@ -92,7 +92,9 @@ static void FuncDefn( SYMPTR sym )
     SYM_NAMEPTR sym_name;
     TYPEPTR     typ;
 
-    /* duplicate name in near space */
+    /*
+     * duplicate name in near space
+     */
     sym_name = SymName( sym, CurFuncHandle );
     sym->name = CStrSave( sym_name );
     if( sym->flags & SYM_DEFINED ) {
@@ -202,7 +204,7 @@ static void BeginFunc( void )
     switch( checkMain( CurFunc->name ) ) {
     case MAIN_WMAIN:
         CompFlags.has_wchar_entry = true;
-        // fall through!
+        /* fall through */
     case MAIN_MAIN:
         if( CurFunc->u.func.parms != SYM_NULL ) {
             CompFlags.main_has_parms = true;
@@ -214,7 +216,7 @@ static void BeginFunc( void )
 
     case MAIN_WWINMAIN:
         CompFlags.has_wchar_entry = true;
-        // fall through!
+        /* fall through */
     case MAIN_WINMAIN:
         if( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS || TargetSystem == TS_NT ) {
             CompFlags.has_winmain = true;
@@ -226,7 +228,7 @@ static void BeginFunc( void )
     case MAIN_WLIBMAIN:
     case MAIN_WDLLMAIN:
         CompFlags.has_wchar_entry = true;
-        // fall through!
+        /* fall through */
     case MAIN_LIBMAIN:
     case MAIN_DLLMAIN:
         CompFlags.has_libmain = true;
@@ -262,7 +264,9 @@ static void  ArgPromotion( SYMPTR sym )
 
     AdjParmType( sym );
     arg_typ = sym->sym_type;
-    /* perform default argument promotions */
+    /*
+     * perform default argument promotions
+     */
     typ = arg_typ;
     SKIP_TYPEDEFS( typ );
 
@@ -437,7 +441,9 @@ static void AddParms( void )
         parm->sym.attribs.is_parm = true;
         hash = parm->sym.info.hash;
         if( parm->sym.name[0] == '\0' ) {
-            /* no name ==> ... */
+            /*
+             * no name ==> ...
+             */
             parm->sym.sym_type = GetType( TYP_DOT_DOT_DOT );
             parm->sym.attribs.stg_class = SC_AUTO;
         } else if( parm->sym.sym_type == NULL ) {
@@ -515,7 +521,9 @@ static void AddParms( void )
         CMemFree( prev_parm );
     }
     typ = CurFunc->sym_type;
-    // TODO not following my scheme
+    /*
+     * TODO not following my scheme
+     */
     CurFunc->sym_type = FuncNode( typ->object, FLAG_NONE,
         MakeParmList( parmlist, ParmsToBeReversed( CurFunc->mods, NULL ) ) );
 
@@ -552,7 +560,9 @@ static void ChkParms( void )
             if( parm->sym.sym_type == NULL ) {
                 parm->sym.sym_type = TypeDefault();
             }
-            /* make sure name not already defined in this SymLevel */
+            /*
+             * make sure name not already defined in this SymLevel
+             */
             sym_handle = SymAdd( parm->sym.info.hash, &parm->sym );
             if( prev_parm == NULL ) {
                 CurFunc->u.func.parms = sym_handle;

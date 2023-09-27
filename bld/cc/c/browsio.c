@@ -53,26 +53,26 @@ static uint_32      relocValues[DW_W_MAX];
 
 static C_DW_SECTION dw_sections[DW_DEBUG_MAX];
 
-// -- code to generate ELF output ------------------------------------------
-//
-// note: the pre-initialized fields in these structures assume the following
-//       layout in the file
-//              elf_header
-//              string_table
-//              .debug_abbrev
-//              .debug_info
-//              .WATCOM_references
-//              .debug_line
-//              .debug_macinfo
-//              section_header_index0
-//              section_header_string_table
-//              section_header_template( .debug_abbrev )
-//              section_header_template( .debug_info )
-//              section_header_template( .WATCOM_references )
-//              section_header_template( .debug_line )
-//              section_header_template( .debug_macinfo )
-//
-
+/*
+ * -- code to generate ELF output ------------------------------------------
+ *
+ * note: the pre-initialized fields in these structures assume the following
+ *       layout in the file
+ *              elf_header
+ *              string_table
+ *              .debug_abbrev
+ *              .debug_info
+ *              .WATCOM_references
+ *              .debug_line
+ *              .debug_macinfo
+ *              section_header_index0
+ *              section_header_string_table
+ *              section_header_template( .debug_abbrev )
+ *              section_header_template( .debug_info )
+ *              section_header_template( .WATCOM_references )
+ *              section_header_template( .debug_line )
+ *              section_header_template( .debug_macinfo )
+ */
 static Elf32_Ehdr elf_header = {
     { ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3, ELFCLASS32, ELFDATA2LSB, EV_CURRENT },
     ET_DYN,
@@ -80,7 +80,7 @@ static Elf32_Ehdr elf_header = {
     EV_CURRENT,
     0,
     0,
-    0,//<offset of section table>=sizeof(Elf32_Ehdr)+sizeof(string_table)+sizes of 5 sections
+    0,/* <offset of section table>=sizeof(Elf32_Ehdr)+sizeof(string_table)+sizes of 5 sections */
     0,
     sizeof( Elf32_Ehdr ),
     sizeof( Elf32_Phdr ),
@@ -142,12 +142,12 @@ static Elf32_Shdr section_header_string_table = {
 };
 
 static Elf32_Shdr section_header_template = {
-    0,//<index of name in string section>
+    0, /* <index of name in string section> */
     SHT_PROGBITS,
     0,
     0,
-    0,//<offset of section in file>
-    0,//<size of section>
+    0, /* <offset of section in file> */
+    0, /* <size of section> */
     SHN_UNDEF,
     0,
     0,
@@ -170,7 +170,8 @@ static void mywrite( FILE *fp, const void *data, size_t len )
     }
 }
 
-/* output DWARF sections in following order
+/*
+ * output DWARF sections in following order
  * .debug_abbrev
  * .debug_info
  * .WATCOM_reference
@@ -196,20 +197,25 @@ static int createBrowseFile( FILE *browseFile )
     dw_out_offset   sectionSize;
     dw_out_offset   sectionOffset[SECTION_COUNT];
 
-    // calculate sections data size
+    /*
+     * calculate sections data size
+     */
     elf_header.e_shoff = sizeof( Elf32_Ehdr ) + sizeof( string_table );
     for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
         elf_header.e_shoff += dw_sections[inSect[fileNum]].length;
     }
-
-    // write elf header
+    /*
+     * write elf header
+     */
     mywrite( browseFile, &elf_header, sizeof( elf_header ) );
-
-    // write string table
+    /*
+     * write string table
+     */
     mywrite( browseFile, string_table, sizeof( string_table ) );
-
-    // calculate each of the sections, tracking offset
-    // write each of the sections
+    /*
+     * calculate each of the sections, tracking offset
+     * write each of the sections
+     */
     sectionOffset[0] = sizeof( elf_header ) + sizeof( string_table );
     for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
         if( fileNum > 0 )
@@ -228,14 +234,17 @@ static int createBrowseFile( FILE *browseFile )
             CMemFree( dw_sections[inSect[fileNum]].bufptrs );
         }
     }
-
-    // write section_header_index0
+    /*
+     * write section_header_index0
+     */
     mywrite( browseFile, &section_header_index0, sizeof( section_header_index0 ) );
-
-    // write section_header_string_table
+    /*
+     * write section_header_string_table
+     */
     mywrite( browseFile, &section_header_string_table, sizeof( section_header_string_table ) );
-
-    // write rest of section headers
+    /*
+     * write rest of section headers
+     */
     for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
         section_header_template.sh_name     = string_table_offsets[fileNum];
         section_header_template.sh_offset   = sectionOffset[fileNum];
@@ -244,7 +253,6 @@ static int createBrowseFile( FILE *browseFile )
     }
     return( 0 );
 }
-//---------------------------------------------------------------------------
 
 static void dw_write( dw_sectnum sect, const void *block, size_t len )
 /********************************************************************/
@@ -256,14 +264,14 @@ static void dw_write( dw_sectnum sect, const void *block, size_t len )
     char                *bufptr;
 
 #ifdef __DD__
-    //int i;
+//    int i;
     printf( "\nDW_WRITE(%d:%lu): offset: %lu len: %u ", sect,
         (unsigned long)dw_sections[sect].length,
         (unsigned long)dw_sections[sect].offset,
         (unsigned)len );
-    //for( i = 0 ; i < len; i++ ) {
-    //    printf( "%02x ", (int)((char *)block)[i] );
-    //}
+//    for( i = 0 ; i < len; i++ ) {
+//        printf( "%02x ", (int)((char *)block)[i] );
+//    }
 #endif
     bufnum = dw_sections[sect].offset / C_DWARF_BUFSIZE;
     endbufnum = ( dw_sections[sect].offset + len ) / C_DWARF_BUFSIZE;
@@ -293,8 +301,8 @@ static void dw_write( dw_sectnum sect, const void *block, size_t len )
         memcpy( bufptr, block, bufsize );
         block = (char *)block + bufsize;
         len -= bufsize;
-        ++bufnum;                       // advance to next buffer
-        bufsize = C_DWARF_BUFSIZE;      // buffer is full size
+        ++bufnum;                       /* advance to next buffer */
+        bufsize = C_DWARF_BUFSIZE;      /* buffer is full size */
     }
 }
 
@@ -325,11 +333,11 @@ static void dw_reloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
     case DW_W_DEFAULT_FUNCTION:
     case DW_W_ARANGE_ADDR:
     case DW_W_LOW_PC:
-        u32_data = 0;   // NOTE: assumes little-endian byte order
+        u32_data = 0;   /* NOTE: assumes little-endian byte order */
         dw_write( sect, &u32_data, TARGET_NEAR_POINTER );
         break;
     case DW_W_HIGH_PC:
-        u32_data = 1;   // NOTE: assumes little-endian byte order
+        u32_data = 1;   /* NOTE: assumes little-endian byte order */
         dw_write( sect, &u32_data, TARGET_NEAR_POINTER );
         break;
     case DW_W_UNIT_SIZE:
@@ -452,7 +460,9 @@ dw_client DwarfInit( void )
         incsize = strlen( HFileList ) + 1;
         inclist = CMemAlloc( incsize );
         memcpy( inclist, HFileList, incsize );
-        // need to handle the case where there are multiple ';' in a row
+        /*
+         * need to handle the case where there are multiple ';' in a row
+         */
         for( p = inclist; *p != '\0'; p++ ) {
             if( *p == ';' ) {
                 *p = '\0';
@@ -488,7 +498,9 @@ void DwarfFini( dw_client client )
 
     out_file = OpenBrowseFile();
     if( out_file != NULL ) {
-        // concatenate files
+        /*
+         * concatenate files
+         */
         createBrowseFile( out_file );
         fclose( out_file );
     }

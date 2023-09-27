@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,9 @@ static void dwarfFile( unsigned filenum )
     FNAMEPTR    flist;
     char       *fname;
 
-    // if current file changed, call DWDeclFile
+    /*
+     * if current file changed, call DWDeclFile
+     */
     if( filenum != Current_File_Index ) {
         flist = FileIndexToFName(filenum);
         fname = FNameFullPath( flist );
@@ -104,7 +106,9 @@ static void dwarfStructInfo( TAGPTR tag )
         if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
             fld_dh = dwarfType( GetType( typ->u.f.field_type ), DC_DEFAULT );
             if( xref != NULL ) {    //stupid struct { int x; int y[] ) = init thing
-                // Also watch for side effects with the DWDeclPos and a dwtype
+                /*
+                 * Also watch for side effects with the DWDeclPos and a dwtype
+                 */
                 dwarfLocation( &xref->src_loc );
             }
             dh = DWAddBitField( Client,
@@ -556,16 +560,16 @@ static void dwarfEmitVariables( SYM_HANDLE sym_handle )
                 if( (sym->flags & SYM_DEFINED) == 0 ) {
                     dh = dwarfFunctionDecl( sym );
                 }
-//              printf( "func: %s", sym->name );
+//                printf( "func: %s", sym->name );
             } else if( sym->attribs.stg_class == SC_TYPEDEF ) {
                 dh = dwarfType( typ, DC_DEFAULT );
-//              printf( "typedef: %s", sym->name );
+//                printf( "typedef: %s", sym->name );
             } else {
                 dh = dwarfVariable( sym );
-//              printf( "var:: %s", sym->name );
+//                printf( "var:: %s", sym->name );
             }
             sym->dwarf_handle = dh;
-//          printf( " defined on line %u\n", sym->d.defn_line );
+//            printf( " defined on line %u\n", sym->d.defn_line );
         }
     }
 }

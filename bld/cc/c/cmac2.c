@@ -71,8 +71,8 @@ struct preproc {
 };
 
 static unsigned char PreProcWeights[] = {
-//a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z
-  2, 0, 0, 9, 1, 4, 3, 0, 5, 0, 0, 7, 0, 0, 0,10, 0,11, 0,13,12, 0,14
+/* a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z */
+   2, 0, 0, 9, 1, 4, 3, 0, 5, 0, 0, 7, 0, 0, 0,10, 0,11, 0,13,12, 0,14
 };
 
 static struct preproc PreProcTable[] = {
@@ -252,9 +252,11 @@ TOKEN ChkControl( void )
             }
         }
     }
-    // we have already skipped past all white space at the start of the line
+    /*
+     * we have already skipped past all white space at the start of the line
+     */
     token = T_WHITE_SPACE;
-//  token = ScanToken();
+//    token = ScanToken();
     return( token );
 }
 
@@ -413,7 +415,9 @@ MEPTR MacroScan( void )
             }
         }
     }
-    /* grab replacement tokens */
+    /*
+     * grab replacement tokens
+     */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
     mentry = GrabTokens( parm_count, mflags, formal_parms, token_buf, &macro_loc );
     FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
@@ -464,7 +468,9 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
     for( ; CurToken != T_NULL && CurToken != T_EOF ; ) {
         switch( CurToken ) {
         case T_SHARP:
-            /* if it is a function-like macro definition */
+            /*
+             * if it is a function-like macro definition
+             */
             if( parm_count != 0 ) {
                 CurToken = T_MACRO_SHARP;
             }
@@ -635,7 +641,9 @@ static void CElif( void )
             CppStack->processing = false;
             CppStack->cpp_type = PRE_ELIF;
         } else if( SkipLevel + 1 == NestLevel ) {
-            /* only evaluate the expression when required */
+            /*
+             * only evaluate the expression when required
+             */
             if( CppStack->cpp_type == PRE_IF ) {
                 value = PpConstExpr();
                 ChkEOL();
@@ -661,7 +669,9 @@ static void CElse( void )
             --SkipLevel;                /* start skipping else part */
             CppStack->processing = false;
         } else if( SkipLevel + 1 == NestLevel ) {
-            /* cpp_type will be PRE_ELIF if an elif was true */
+            /*
+             * cpp_type will be PRE_ELIF if an elif was true
+             */
             if( CppStack->cpp_type == PRE_IF ) {
                 SkipLevel = NestLevel;  /* start including else part */
                 CppStack->processing = true;
@@ -726,7 +736,9 @@ bool MacroDel( const char *name )
                 MacHash[hash] = mentry->next_macro;
             }
             if( (InitialMacroFlags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE) == 0 ) {
-                /* remember macros that were defined before first include */
+                /*
+                 * remember macros that were defined before first include
+                 */
                 if( mentry->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
                     mentry->next_macro = UndefMacroList;
                     UndefMacroList = mentry;
@@ -774,11 +786,13 @@ static void CLine( void )
         } else {
             if( ExpectingToken( T_STRING ) ) {
                 if( CompFlags.wide_char_string ) {
-                    /* wide char string not allowed */
+                    /*
+                     * wide char string not allowed
+                     */
                     ExpectString();
                 } else {
                     if( !CompFlags.cpp_ignore_line ) {
-                        // RemoveEscapes( Buffer );
+//                        RemoveEscapes( Buffer );
                         flist = AddFlist( Buffer );
                         flist->rwflag = false;  // not a real file so no autodep
                         SrcFile->src_name = flist->name;
@@ -811,7 +825,9 @@ static void get_arg_message( void )
 static void CError( void )
 {
     get_arg_message();
-    /* Force #error output to be reported, even with preprocessor */
+    /*
+     * Force #error output to be reported, even with preprocessor
+     */
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
 }
 
@@ -820,7 +836,9 @@ static void CWarning( void )
 {
     if( CompFlags.extensions_enabled || CompVars.cstd >= CSTD_C23 ) {
         get_arg_message();
-        /* Force #error output to be reported, even with preprocessor */
+        /*
+         * Force #error output to be reported, even with preprocessor
+         */
         CWarn2p( ERR_USER_WARNING_MSG, Buffer );
     } else {
         CUnknown();
@@ -881,18 +899,24 @@ TOKEN Process_Pragma( void )
 
                 stringize( token_buf );
                 InsertReScanPragmaTokens( token_buf );
-                // call CPragma()
+                /*
+                 * call CPragma()
+                 */
                 old_ppctl = PPControl;
                 PPCTL_ENABLE_EOL();
                 CPragma();
                 PPControl = old_ppctl;
             } else {
-                /* error, incorrect syntax of the operator _Pragma() */
+                /*
+                 * error, incorrect syntax of the operator _Pragma()
+                 */
             }
             CMemFree( token_buf );
             PPNextToken();
         } else {
-            /* error, incorrect syntax of the operator _Pragma() */
+            /*
+             * error, incorrect syntax of the operator _Pragma()
+             */
         }
     } else {
         InsertToken( CurToken, Buffer );

@@ -74,7 +74,9 @@ static void ReadUnicodeFile( FILE *fp )
     unicode_type    unicode_table[256];
 
     len = fread( unicode_table, sizeof( unicode_type ), 256, fp );
-    /* UniCode might be a FAR table */
+    /*
+     * UniCode might be a FAR table
+     */
     for( i = 0; i < 256; i++ ) {
         UniCode[i] = ( i < len ) ? unicode_table[i] : 0;
     }
@@ -198,13 +200,17 @@ STR_HANDLE GetLiteral( void )
     STR_HANDLE          q;
     bool                is_wide;
 
-    /* first we store the whole string in a linked list to see if
-       the end result is wide or not wide */
+    /*
+     * first we store the whole string in a linked list to see if
+     * the end result is wide or not wide
+     */
     p = str_lit = CMemAlloc( sizeof( STRING_LITERAL ) );
     q = NULL;
     is_wide = false;
     do {
-        /* if one component is wide then the whole string is wide */
+        /*
+         * if one component is wide then the whole string is wide
+         */
         if( CompFlags.wide_char_string )
             is_wide = true;
         if( q != NULL ) {
@@ -217,8 +223,10 @@ STR_HANDLE GetLiteral( void )
         p->literal = ToString( Buffer, TokenLen );
     } while( NextToken() == T_STRING );
     CompFlags.wide_char_string = is_wide;
-    /* then remove escapes (C99: translation phase 5), and only then
-       concatenate (translation phase 6), not the other way around! */
+    /*
+     * then remove escapes (C99: translation phase 5), and only then
+     * concatenate (translation phase 6), not the other way around!
+     */
     len = 1;
     s = NULL;
     q = str_lit;

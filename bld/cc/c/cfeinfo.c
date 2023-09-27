@@ -55,47 +55,51 @@
 #define _HAS_ANY_MAIN   (_HAS_EXE_MAIN || _HAS_DLL_MAIN)
 
 static unsigned char VarFuncWeights[] = {
-//a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
-  0, 0,13, 0, 2, 1, 0, 0, 0, 0, 0,12, 0,14, 4,10, 0, 0, 6, 0, 0, 0, 0, 0, 0,0
+/* a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z */
+   0, 0,13, 0, 2, 1, 0, 0, 0, 0, 0,12, 0,14, 4,10, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0
 };
 
 static const char *VarParmFuncs[] = {
-    /* functions with var parm lists */
-    "",             // 0
-    "",             // 1
-    "",             // 2
-    "",             // 3
-    "",             // 4
-    "",             // 5
-    "",             // 6
-    "",             // 7
-    "fscanf",       // 8
-    "fprintf",      // 9
-    "execle",       // 10
-    "execlpe",      // 11
-    "scanf",        // 12
-    "sscanf",       // 13
-    "sprintf",      // 14
-    "spawnle",      // 15
-    "spawnlpe",     // 16
-    "printf",       // 17
-    "execlp",       // 18
-    "execl",        // 19
-    "cscanf",       // 20
-    "cprintf",      // 21
-    "open",         // 22
-    "spawnlp",      // 23
-    "spawnl",       // 24
-    "sopen",        // 25
-    "",             // 26
-    "",             // 27
-    "",             // 28
-    "",             // 29
-    "",             // 30
-    "",             // 31
+    /*
+     * functions with var parm lists
+     */
+    "",             /* 0 */
+    "",             /* 1 */
+    "",             /* 2 */
+    "",             /* 3 */
+    "",             /* 4 */
+    "",             /* 5 */
+    "",             /* 6 */
+    "",             /* 7 */
+    "fscanf",       /* 8 */
+    "fprintf",      /* 9 */
+    "execle",       /* 10 */
+    "execlpe",      /* 11 */
+    "scanf",        /* 12 */
+    "sscanf",       /* 13 */
+    "sprintf",      /* 14 */
+    "spawnle",      /* 15 */
+    "spawnlpe",     /* 16 */
+    "printf",       /* 17 */
+    "execlp",       /* 18 */
+    "execl",        /* 19 */
+    "cscanf",       /* 20 */
+    "cprintf",      /* 21 */
+    "open",         /* 22 */
+    "spawnlp",      /* 23 */
+    "spawnl",       /* 24 */
+    "sopen",        /* 25 */
+    "",             /* 26 */
+    "",             /* 27 */
+    "",             /* 28 */
+    "",             /* 29 */
+    "",             /* 30 */
+    "",             /* 31 */
 };
 
-/* bitmap for which of the above are Standard */
+/*
+ * bitmap for which of the above are Standard
+ */
 #define VAR_PARM_FUNCS_ANSI \
     ((1<<8) | (1<<9) | (1<<12) | (1<<13) | (1<<14) | (1<<17))
 
@@ -132,10 +136,10 @@ static struct STRUCT_BYTE_SEQ( 6 ) TryFiniCode = {
 #endif
 
 
-/*
-//    does the specified symbol take variable parameters? manual search.
-*/
 bool VarParm( SYMPTR sym )
+/*************************
+ * does the specified symbol take variable parameters? manual search.
+ */
 {
     TYPEPTR     *parm_types;
     TYPEPTR     typ;
@@ -158,11 +162,10 @@ bool VarParm( SYMPTR sym )
     return( false );
 }
 
-/*
-//    does the specified symbol take variable args? hash calc'ed
-//
-*/
 bool VarFunc( SYMPTR sym )
+/*************************
+ * does the specified symbol take variable args? hash calc'ed
+ */
 {
     unsigned    hash;
     size_t      len;
@@ -412,7 +415,9 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 #endif
     if( (sym->flags & SYM_TEMP) == 0 ) {
-        /* not an indirect func call*/
+        /*
+         * not an indirect func call
+         */
         inf = InfoLookup( sym );
     }
     if( inf == &DefaultInfo ) {
@@ -568,21 +573,20 @@ call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
 }
 #endif
 
-/*
-//    NextLibrary
-//        Called (indirectly) from the code generator to inject automagically defined symbols.
-//    Inputs:
-//        index    (n-1)
-//            Usually called from a loop until we return 0/NULL to show no more libraries
-//        request
-//            FEINF_NEXT_LIBRARY
-//                examines the current flags to see if any libraries should be
-//                automagically referenced and returns the relevant index if so.
-//            FEINF_LIBRARY_NAME
-//                returns the requested name.
-//
-*/
 static void addDefaultLibs( void )
+/*********************************
+ * NextLibrary
+ *     Called (indirectly) from the code generator to inject automagically defined symbols.
+ * Inputs:
+ *     index    (n-1)
+ *         Usually called from a loop until we return 0/NULL to show no more libraries
+ *     request
+ *         FEINF_NEXT_LIBRARY
+ *             examines the current flags to see if any libraries should be
+ *             automagically referenced and returns the relevant index if so.
+ *         FEINF_LIBRARY_NAME
+ *             returns the requested name.
+ */
 {
     if( CompFlags.emit_library_names ) {
         if( _HAS_ANY_MAIN || CompFlags.pragma_library || CompFlags.emit_all_default_libs ) {
@@ -616,34 +620,40 @@ static CGPOINTER NextLibrary( int index, aux_class request )
             ++i;
         }
     }
-    /* return library name, or */
+    /*
+     * return library name, or
+     */
     if( request == FEINF_LIBRARY_NAME || name == NULL )
         return( (CGPOINTER)name );
-    /* library index */
+    /*
+     * library index
+     */
     return( (CGPOINTER)(pointer_uint)index );
 }
 
-//    NextAlias
-//        Called (indirectly) from the code generator to go through the list of
-//        linker aliases.
-//    Inputs:
-//        index    (n-1)
-//            Called from a loop until we return 0/NULL to show no more aliases
-//        request
-//            FEINF_NEXT_ALIAS
-//                returns the index of next alias in the list, or zero if none.
-//            FEINF_ALIAS_NAME
-//                returns the alias name, or NULL if alias refers to a symbol.
-//            FEINF_ALIAS_SYMBOL
-//                returns the alias symbol, or NULL if alias refers to a name.
-//            FEINF_ALIAS_SUBST_NAME
-//                returns the name to be substituted for the alias, or NULL.
-//            FEINF_ALIAS_SUBST_SYMBOL
-//                returns the symbol to be substituted for the alias, or NULL.
-//
-// Note: One of FEINF_ALIAS..._NAME and FEINF_ALIAS..._SYMBOL will always be 0/NULL and the other
-// will be valid, depending on which form of the pragma was used.
 static CGPOINTER NextAlias( int index, aux_class request )
+/*********************************************************
+ * NextAlias
+ *     Called (indirectly) from the code generator to go through the list of
+ *     linker aliases.
+ * Inputs:
+ *     index    (n-1)
+ *         Called from a loop until we return 0/NULL to show no more aliases
+ *     request
+ *         FEINF_NEXT_ALIAS
+ *             returns the index of next alias in the list, or zero if none.
+ *         FEINF_ALIAS_NAME
+ *             returns the alias name, or NULL if alias refers to a symbol.
+ *         FEINF_ALIAS_SYMBOL
+ *             returns the alias symbol, or NULL if alias refers to a name.
+ *         FEINF_ALIAS_SUBST_NAME
+ *             returns the name to be substituted for the alias, or NULL.
+ *         FEINF_ALIAS_SUBST_SYMBOL
+ *             returns the symbol to be substituted for the alias, or NULL.
+ *
+ * Note: One of FEINF_ALIAS..._NAME and FEINF_ALIAS..._SYMBOL will always be 0/NULL and the other
+ * will be valid, depending on which form of the pragma was used.
+ */
 {
     alias_list          *aliaslist;
     SYM_HANDLE          alias_sym = SYM_NULL;
@@ -680,10 +690,11 @@ static CGPOINTER NextAlias( int index, aux_class request )
     }
 }
 
-/* Return the size of function parameters or -1 if size could
+static unsigned GetParmsSize( SYM_HANDLE sym_handle )
+/****************************************************
+ * Return the size of function parameters or -1 if size could
  * not be determined (symbol isn't a function or is variadic)
  */
-static unsigned GetParmsSize( SYM_HANDLE sym_handle )
 {
     unsigned    total_parm_size = 0;
     unsigned    parm_size;
@@ -717,10 +728,10 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
     return( total_parm_size );
 }
 
-/*
-//    Return name pattern manipulator string
-*/
 static const char *GetNamePattern( SYM_HANDLE sym_handle )
+/*********************************************************
+ * Return name pattern manipulator string
+ */
 {
     char                 *pattern;
     SYM_ENTRY            sym;
@@ -880,7 +891,9 @@ static void addDefaultImports( void )
     }
 #else /* _RISC_CPU */
     if( CompFlags.emit_library_names ) {
-        /* handle floating-point support */
+        /*
+         * handle floating-point support
+         */
         if( CompFlags.float_used ) {
             AddExtRefN( "_fltused_" );
         }
@@ -915,53 +928,62 @@ static void addDefaultImports( void )
         AddExtRefN( "_argc" );
     }
 #endif
-    /* handle default windowing app */
+    /*
+     * handle default windowing app
+     */
     if( CompFlags.bw_switch_used ) {
         AddExtRefN( "__init_default_win" );
     }
 #if _INTEL_CPU
-    /* handle NetWare */
+    /*
+     * handle NetWare
+     */
     if( TargetSystem == TS_NETWARE || TargetSystem == TS_NETWARE5 ) {
-        /* is target NETWARE or NETWARE5? */
+        /*
+         * is target NETWARE or NETWARE5?
+         */
         AddExtRefN( "__WATCOM_Prelude" );
     }
-
-    /* handle 'old' profiling */
+    /*
+     * handle 'old' profiling
+     */
     if( TargetSwitches & CGSW_X86_P5_PROFILING ) {
-        /* is profiling enabled (-et)? */
+        /*
+         * is profiling enabled (-et)?
+         */
         AddExtRefN( "__p5_profile" );
     }
-
-    /* handle 'new' profiling */
+    /*
+     * handle 'new' profiling
+     */
     if( TargetSwitches & CGSW_X86_NEW_P5_PROFILING ) {
-        /* is profiling enabled (-etp)? */
+        /*
+         * is profiling enabled (-etp)?
+         */
         AddExtRefN( "__new_p5_profile" );
     }
 #endif
 }
 
 
-/*
-//    NextImport
-//        Called (indirectly) from the code generator to inject automagically defined symbols.
-//    Inputs:
-//        index    (n-1)
-//            Usually called from a loop until we return 0/NULL to show no more symbols
-//            are required.
-//        request
-//            FEINF_NEXT_IMPORT
-//                examines the current flags to see if any symbols should be
-//                automagically inserted and returns the relevant index if so.
-//            FEINF_IMPORT_NAME
-//                returns the requested name. if we have returned an index for
-//                the current compiler settings we should be called with a valid
-//                index but we still perform exactly the same checks as this is
-//                good practise.
-//
-*/
-
 static CGPOINTER NextImport( int index, aux_class request )
-/*********************************************************/
+/**********************************************************
+ * NextImport
+ *     Called (indirectly) from the code generator to inject automagically defined symbols.
+ * Inputs:
+ *     index    (n-1)
+ *         Usually called from a loop until we return 0/NULL to show no more symbols
+ *         are required.
+ *     request
+ *         FEINF_NEXT_IMPORT
+ *             examines the current flags to see if any symbols should be
+ *             automagically inserted and returns the relevant index if so.
+ *         FEINF_IMPORT_NAME
+ *             returns the requested name. if we have returned an index for
+ *             the current compiler settings we should be called with a valid
+ *             index but we still perform exactly the same checks as this is
+ *             good practise.
+ */
 {
     char        *name;
     int         i;
@@ -987,10 +1009,14 @@ static CGPOINTER NextImport( int index, aux_class request )
             ++i;
         }
     }
-    /* return the import name, or */
+    /*
+     * return the import name, or
+     */
     if( request == FEINF_IMPORT_NAME || name == NULL )
         return( (CGPOINTER)name );
-    /* return the index */
+    /*
+     * return the index
+     */
     return( (CGPOINTER)(pointer_uint)index );
 }
 
@@ -1018,10 +1044,14 @@ static CGPOINTER NextImportS( int index, aux_class request )
             ++i;
         }
     }
-    /* return the import symbol, or */
+    /*
+     * return the import symbol, or
+     */
     if( request == FEINF_IMPORT_NAME_S || symbol == NULL )
         return( (CGPOINTER)symbol );
-    /* return the index */
+    /*
+     * return the index
+     */
     return( (CGPOINTER)(pointer_uint)index );
 }
 

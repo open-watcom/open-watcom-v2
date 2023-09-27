@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,12 +29,13 @@
 *
 ****************************************************************************/
 
-/* it is used in definition for
-    CGDataType[] table in  cgen.c
-    AsmDataType[] table in cpragx86.c
-    CTypenames[] table in  cdump.c
-    CTypeSizes[] table in  ctype.c
-*/
+/*
+ * it is used in definition for
+ * CGDataType[] table in  cgen.c
+ * AsmDataType[] table in cpragx86.c
+ * CTypenames[] table in  cdump.c
+ * CTypeSizes[] table in  ctype.c
+ */
 
 /*      enum         cgtype          asmtype       name                     size */
 pick1( BOOL,        TY_UINT_1,       SYM_INT1,    "_Bool",                  TARGET_BOOL        )

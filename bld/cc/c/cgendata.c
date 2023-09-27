@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,15 +179,17 @@ static void EmitDQuad( DATA_QUAD *dq )
 
     case QDT_FLOAT:
     case QDT_FIMAGINARY:
-//      ftoa( dq->u.double_value, Buffer );
-//      DGFloat( Buffer, TY_SINGLE );
+//        ftoa( dq->u.double_value, Buffer );
+//        DGFloat( Buffer, TY_SINGLE );
         {
             DATA_QUAD   local_dq;
             float       float_value;
 
-            // dq->u.double_value may not have proper alignment on Alpha
-            // so copy pieces to local copy on stack which will have
-            // proper alignment
+            /*
+             * dq->u.double_value may not have proper alignment on Alpha
+             * so copy pieces to local copy on stack which will have
+             * proper alignment
+             */
             local_dq.u_long_value1 = dq->u_long_value1;
             local_dq.u_long_value2 = dq->u_long_value2;
             float_value = (float)local_dq.u.double_value;
@@ -197,8 +199,8 @@ static void EmitDQuad( DATA_QUAD *dq )
         break;
     case QDT_DOUBLE:
     case QDT_DIMAGINARY:
-//      ftoa( dq->u.double_value, Buffer );
-//      DGFloat( Buffer, TY_DOUBLE );
+//        ftoa( dq->u.double_value, Buffer );
+//        DGFloat( Buffer, TY_DOUBLE );
         DGBytes( TARGET_DOUBLE, (char *)&dq->u.double_value );
         size += TARGET_DOUBLE;
         break;

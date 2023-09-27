@@ -236,7 +236,9 @@ dbug_type DBType( TYPEPTR typ )
     fwd_info.typ = typ;
     fwd_info.debug_name = NULL;
     fwd_info.scope = DBG_NIL_TYPE;
-    /* default is INT */
+    /*
+     * default is INT
+     */
     ret_val = B_Int;
     switch( typ->decl_type ) {
     case TYP_VOID:
@@ -335,7 +337,9 @@ static void DumpFieldList( dbg_struct st, target_size bias,
     for( ; pfield != NULL; pfield = pfield->next_field ) {
         field_typ = pfield->field_type;
         if( pfield->name[0] == '\0' ) {
-            /* anonymous struct/union -- suck up to this level */
+            /*
+             * anonymous struct/union -- suck up to this level
+             */
             while( field_typ->decl_type == TYP_TYPEDEF ) {
                 field_typ = field_typ->object;
             }
@@ -367,7 +371,9 @@ static dbug_type DBTypeStruct( TYPEPTR typ )
     TYPEPTR     obj;
 
     if( typ->object != NULL ) {
-        /* structure has a zero length array as last field */
+        /*
+         * structure has a zero length array as last field
+         */
         obj = typ->object;
     } else {
         obj = NULL;

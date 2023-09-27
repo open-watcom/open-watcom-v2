@@ -116,7 +116,9 @@ void AssignSeg( SYMPTR sym )
     if( (sym->attribs.stg_class == SC_AUTO)
       || (sym->attribs.stg_class == SC_REGISTER)
       || (sym->attribs.stg_class == SC_TYPEDEF) ) {
-        /* if stack/register var, there is no segment */
+        /*
+         * if stack/register var, there is no segment
+         */
         sym->u.var.segid = SEG_NULL;
     } else if( sym->attribs.stg_class != SC_EXTERN ) {  /* if not imported */
         if( (sym->flags & SYM_INITIALIZED) == 0 ) {
@@ -429,7 +431,9 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
 
             p1 = SkipUnderscorePrefix( segname );
             if( p1 == NULL ) {
-                /* error missing underscore prefix */
+                /*
+                 * error missing underscore prefix
+                 */
                 PragRegNameErr( segname );
                 p1 = segname;
             }
@@ -530,9 +534,13 @@ char *SegClassName( segment_id segid )
     }
     for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {
         if( tseg->segid == segid )  {
-            // class name appears after the segment name
+            /*
+             * class name appears after the segment name
+             */
             classname = tseg->segname + tseg->class;
-            // if class name not specified, then use the default
+            /*
+             * if class name not specified, then use the default
+             */
             if( *classname == '\0' )
                 classname = CodeClassName;
             return( classname );
@@ -645,9 +653,11 @@ void    SetSegs( void )
     for( useg = userSegments; useg != NULL ; useg = useg->next ) {
         segid = useg->segid;
         switch( useg->segtype ) {
-//      case SEGTYPE_CODE:
-//          BEDefSeg( segid, INIT | GLOBAL | EXEC, useg->name, 1 );
-//          break;
+#if 0
+        case SEGTYPE_CODE:
+            BEDefSeg( segid, INIT | GLOBAL | EXEC, useg->name, 1 );
+            break;
+#endif
         case SEGTYPE_DATA:  /* created through #pragma data_seg */
             BEDefSeg( segid, INIT | GLOBAL, useg->name, SegAlign( TARGET_INT ) );
             break;
@@ -785,7 +795,9 @@ void FEMessage( int class, CGPOINTER parm )
         MyExit( 1 );        /* exit to DOS do not pass GO */
         break;
     case MSG_BAD_PARM_REGISTER:
-        /* this will be issued after a call to CGInitCall or CGProcDecl */
+        /*
+         * this will be issued after a call to CGInitCall or CGProcDecl
+         */
         CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_uint)parm );
         break;
     case MSG_BAD_RETURN_REGISTER:
@@ -862,7 +874,8 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
 
         attr = FESymAttr( sym );
         if( attr & FE_PROC ) {
-            /* in large code models, should return different segment #
+            /*
+             * in large code models, should return different segment #
              * for every imported routine.
              */
             segid = SEG_CODE;

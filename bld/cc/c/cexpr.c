@@ -112,8 +112,11 @@ static TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result_type )
 }
 
 static TYPEPTR Far16Type( TYPEPTR typ )
-{ // TODO all this stuff should be part of the func defn.
-  // not some hack on for later
+/**************************************
+ * TODO all this stuff should be part of the func defn.
+ * not some hack on for later
+ */
+{
     TYPEPTR     typ2;
 
     typ2 = typ;
@@ -232,7 +235,7 @@ static TREEPTR ConstLeaf( void )
         break;
     case TYP_CHAR:
         leaf->op.u1.const_type = TYP_INT;
-        // fall through
+        /* fall through */
     case TYP_INT:
         leaf->op.u2.long_value = Constant;
         break;
@@ -264,7 +267,9 @@ static TREEPTR ConstLeaf( void )
         flt->next = NULL;
         leaf->op.u2.float_value = flt;
         leaf->op.opr = OPR_PUSHFLOAT;
-        /* Convert constant to binary; that ensures it'll be cast properly. */
+        /*
+         * Convert constant to binary; that ensures it'll be cast properly.
+         */
         MakeBinaryFloat( leaf );
         break;
     }
@@ -316,7 +321,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
     case TYP_CHAR:
     case TYP_SHORT:
         decl_type = TYP_INT;
-        // fall through
+        /* fall through */
     case TYP_INT:
     case TYP_LONG:
         leaf->op.u2.long_value = (signed_32)ep->value.u._32[I64LO32];
@@ -324,7 +329,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
     case TYP_UCHAR:
     case TYP_USHORT:
         decl_type = TYP_INT;
-        // fall through
+        /* fall through */
     case TYP_UINT:
     case TYP_ULONG:
         leaf->op.u2.long_value = ep->value.u._32[I64LO32];
@@ -410,14 +415,18 @@ static TREEPTR SymLeaf( void )
     }
 
     if( tree == NULL ) {
-        /* if( SizeOfCount == 0 ) */ /* causes defined but not referenced */
-        /* always turning it on can cause referenced but not assigned */
-        /* for the case:  int i;  j = sizeof(i);  */
+        /*
+         * if( SizeOfCount == 0 )  causes defined but not referenced
+         * always turning it on can cause referenced but not assigned
+         * for the case:  int i;  j = sizeof(i);
+         */
         sym.flags |= SYM_REFERENCED;
         if( sym_handle == SYM_NULL ) {
             if( CurToken == T_LEFT_PAREN ) {
                 sym.attribs.stg_class = SC_FORWARD;     /* indicate forward decl */
-                /* Warn about unprototyped function */
+                /*
+                 * Warn about unprototyped function
+                 */
                 CWarn2p( ERR_ASSUMED_IMPORT, sym.name );
                 sym_handle = SymAddL0( hash, &sym ); /* add symbol to level 0 */
                 sym.flags |= SYM_FUNCTION;
@@ -477,7 +486,9 @@ bool IsLValue( TREEPTR tree )
         case OPR_CALL:
         case OPR_QUESTION:
         case OPR_COMMA:
-            // These are not lvalues
+            /*
+             * These are not lvalues
+             */
             break;
         default:
             return( true );
@@ -496,8 +507,10 @@ static bool IsCallValue( TREEPTR tree )
     return( tree->op.opr == OPR_CALL );
 }
 
-// This RVALUE thing is backwards -mjc
 static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
+/*****************************************************
+ * This RVALUE thing is backwards
+ */
 {
     TYPEPTR             typ;
     sym_flags           symb_flags;
@@ -595,7 +608,9 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                   && sym.attribs.stg_class != SC_STATIC
                   && sym.attribs.stg_class != SC_EXTERN ) {
                     if( (sym.flags & SYM_ASSIGNED) == 0 ) {
-                      /* turn on flag so msg only comes out once per sym */
+                        /*
+                         * turn on flag so msg only comes out once per sym
+                         */
                         sym.flags |= SYM_ASSIGNED;
                         CWarn2p( ERR_SYM_NOT_ASSIGNED, SymName( &sym, tree->op.u2.sym_handle ) );
                     }
@@ -714,8 +729,10 @@ static TREEPTR AddrOp( TREEPTR tree )
             leaf = tree->left;
         }
     } else if( tree->op.opr == OPR_ARROW ) {
-        // checking for offsetof macro construct
-        // #define offsetof(typ,field) (size_t)&(((typ*)0)->field)
+        /*
+         * checking for offsetof macro construct
+         * #define offsetof(typ,field) (size_t)&(((typ*)0)->field)
+         */
         if( tree->left->op.opr == OPR_PUSHINT ) {
             leaf = tree->left;
             leaf->op.u2.ulong_value += tree->right->op.u2.ulong_value;
@@ -895,7 +912,9 @@ static TREEPTR CheckBasedPtr( TREEPTR tree, TYPEPTR typ, type_modifiers *p_flags
             SYMPTR      base_sym;
             TYPEPTR     base_typ;
 
-            // For pointers based on another pointer, copy flags from the base ptr
+            /*
+             * For pointers based on another pointer, copy flags from the base ptr
+             */
             base_sym_handle = typ->u.p.based_sym;
             base_sym = SymGetPtr( base_sym_handle );
             base_typ = base_sym->sym_type;
@@ -927,7 +946,7 @@ static TREEPTR PtrOp( TREEPTR tree )
     tree = CheckBasedPtr( tree, typ, &flags );
     tree = ExprNode( tree, OPR_POINTS, NULL );
     typ = typ->object;
-//  SKIP_TYPEDEFS( typ );
+//    SKIP_TYPEDEFS( typ );
     tree->u.expr_type = typ;
     tree->op.u2.result_type = ptrtyp;
     tree->op.flags = OpFlags( flags );
@@ -1210,9 +1229,10 @@ static TREEPTR GetExpr( void )
         curclass = TokenClass[CurToken];
         while( curclass <= Class[ExprLevel] ) {
             op1 = ValueStack[ExprLevel];
-
-            /* the following cases are listed from lowest to highest
-               priority */
+            /*
+             * the following cases are listed from lowest to highest
+             * priority
+             */
             switch( Class[ExprLevel] ) {
             case TC_START:
             case TC_START1:
@@ -1367,7 +1387,9 @@ static TREEPTR GetExpr( void )
                     expr_level_type n;
                     TREEPTR         functree;
 
-                    // find the corresponding function symbol
+                    /*
+                     * find the corresponding function symbol
+                     */
                     n = ExprLevel;
                     while( Token[n] != T_LEFT_PAREN ) {
                         --n;
@@ -1427,7 +1449,7 @@ static TREEPTR GetExpr( void )
         case TC_SHIFT_OP:
         case TC_ADD_OP:
         case TC_MUL_OP:
-/*              tree = RValue( tree ); */
+//            tree = RValue( tree );
             break;
         case TC_ASSIGN_OP:
             curclass = TC_ASSIGNMENT;
@@ -1698,9 +1720,9 @@ static TREEPTR ExprId( void )
                 NextToken();
             }
         } else {
-//          if( SizeOfCount == 0 ) {
-//              CWarn2p( ERR_UNDECLARED_PP_SYM, Buffer);
-//          }
+//            if( SizeOfCount == 0 ) {
+//                CWarn2p( ERR_UNDECLARED_PP_SYM, Buffer);
+//            }
             NextToken();
             if( CurToken == T_LEFT_PAREN ) {
                 count = 0;
@@ -1754,11 +1776,13 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
     TYPEPTR         typ;
     op_flags        tree_flags;
 
-//  if( ! LValueArray( tree ) ) {
-//      CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
-//      FreeExprTree( index_expr );
-//      return( ErrorNode( tree ) );
-//  }
+#if 0
+    if( ! LValueArray( tree ) ) {
+        CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
+        FreeExprTree( index_expr );
+        return( ErrorNode( tree ) );
+    }
+#endif
     index_expr = RValue( index_expr );
     if( DataTypeOf( TypeOf( index_expr ) ) > TYP_ULONG64 ) {
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
@@ -1776,7 +1800,9 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         type_modifiers  flags;
 
         tree = CheckBasedPtr( tree, typ, &flags );
-        // We will indirect so get modifiers of indirected obj
+        /*
+         * We will indirect so get modifiers of indirected obj
+         */
         tree_flags = OpFlags( flags );
     } else {
         CErr2p( ERR_FATAL_ERROR, "Bad array index tree" );
@@ -1784,7 +1810,9 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
     }
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
-    // Some crappy little optimization that probably does nothing
+    /*
+     * Some crappy little optimization that probably does nothing
+     */
     if( index_expr->op.opr == OPR_PUSHINT
       && tree->u.expr_type->decl_type == TYP_ARRAY ) {
         index_expr->op.u2.long_value *= SizeOfArg( typ );
@@ -1848,8 +1876,10 @@ static TREEPTR IndexOp( TREEPTR tree, TREEPTR index_expr )
 }
 
 static void AddCallNode( TREEPTR tree )
-// if a function call has no prototype wait till end
-// to check it out
+/**************************************
+ * if a function call has no prototype wait till end
+ * to check it out
+ */
 {
     call_list   *new;
 
@@ -1877,7 +1907,9 @@ void ChkCallNode( TREEPTR tree )
 }
 
 static int ParmNum( void )
-// get current parm num
+/*************************
+ * get current parm num
+ */
 {
     int             parm_count;
     expr_level_type n;
@@ -1899,13 +1931,17 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
     tree = RValue( tree );
     if( tree->op.opr == OPR_ERROR )
         return( tree );
-    // skip typedefs, go into enum base
+    /*
+     * skip typedefs, go into enum base
+     */
     typ = SkipTypeFluff( tree->u.expr_type );
     plist = *plistptr;
     if( plist != NULL ) {
         if( *plist == NULL ) {  // To many parm trees
 #if _CPU == 386
-            /* can allow wrong number of parms with -3s option */
+            /*
+             * can allow wrong number of parms with -3s option
+             */
             if( !CompFlags.register_conventions ) {
                 CWarn1( ERR_PARM_COUNT_WARNING );
             } else {
@@ -1926,7 +1962,9 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
         parm_typ = *plist;
         ParmAsgnCheck( parm_typ, tree, ParmNum(), true );
         if( parm_typ != NULL ) {
-            // skip typedefs, go into enum base
+            /*
+             * skip typedefs, go into enum base
+             */
             parm_typ = SkipTypeFluff( parm_typ );
             if( parm_typ != typ ) {
                 tree = FixupAss( tree, parm_typ );
@@ -1963,19 +2001,22 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 
 
 #if _RISC_CPU
-// This really ought to be defined somewhere else...
+/*
+ * This really ought to be defined somewhere else...
+ */
   #if (_CPU == _AXP)
     #define REG_SIZE    8
   #else
     #define REG_SIZE    4
   #endif
 static TREEPTR GenVaStartNode( TREEPTR last_parm )
+/*************************************************
+ * there should be 3 parms __builtin_va_start( list, parm_name, stdarg )
+ * - first parm should be name of va_list
+ * - second parm should be name of the parameter before the ...
+ * - last_parm should be an integer 0 or 1 (0=>varargs, 1=>stdarg)
+ */
 {
-    // there should be 3 parms __builtin_va_start( list, parm_name, stdarg )
-    // - first parm should be name of va_list
-    // - second parm should be name of the parameter before the ...
-    // - last_parm should be an integer 0 or 1 (0=>varargs, 1=>stdarg)
-
     SYMPTR      sym;
     SYM_HANDLE  sym_handle;
     int         offset;
@@ -2004,7 +2045,9 @@ static TREEPTR GenVaStartNode( TREEPTR last_parm )
             }
         }
         if( offset == 0 || sym_handle == SYM_NULL ) {
-            // error: name not found in symbol list
+            /*
+             * error: name not found in symbol list
+             */
             sym = SymGetPtr( parmsym->op.u2.sym_handle );
             CErr2p( ERR_SYM_NOT_IN_PARM_LIST, SymName( sym, parmsym->op.u2.sym_handle ) );
         }
@@ -2017,21 +2060,27 @@ static TREEPTR GenVaStartNode( TREEPTR last_parm )
         tree = ExprNode( tree, OPR_VASTART, IntLeaf(offset) );
         ExprLevel -= 2;
     } else {
-        // error
+        /*
+         * error
+         */
     }
     return( tree );
 }
 
 static TREEPTR GenAllocaNode( TREEPTR size_parm )
 {
-    // there should be 1 parm __builtin_alloca( size )
+    /*
+     * there should be 1 parm __builtin_alloca( size )
+     */
     TREEPTR     tree;
 
     if( Token[ExprLevel] == T_LEFT_PAREN ) {
         tree = ExprNode( NULL, OPR_ALLOCA, size_parm );
         tree->u.expr_type = PtrNode( GetType( TYP_VOID ), FLAG_NONE, SEG_STACK );
     } else {
-        // error
+        /*
+         * error
+         */
         tree = NULL;
     }
     return( tree );
@@ -2041,9 +2090,11 @@ static TREEPTR GenAllocaNode( TREEPTR size_parm )
 #if _CPU == _PPC
 static TREEPTR GenVaArgNode( TREEPTR last_parm )
 {
-    // there should be 2 parms __builtin_va_arg( list, type_arg )
-    // - first parm should be name of va_list
-    // - last_parm should be an integer 0 or 1 (0=>varargs, 1=>stdarg)
+    /*
+     * there should be 2 parms __builtin_va_arg( list, type_arg )
+     * - first parm should be name of va_list
+     * - last_parm should be an integer 0 or 1 (0=>varargs, 1=>stdarg)
+     */
 
     TREEPTR     parmsym;
     TREEPTR     tree;
@@ -2066,7 +2117,9 @@ static TREEPTR GenVaArgNode( TREEPTR last_parm )
         tree = ExprNode( tree, OPR_VASTART, IntLeaf( 0) );
         ExprLevel -= 2;
     } else {
-        // error
+        /*
+         * error
+         */
     }
     return( tree );
 }
@@ -2285,7 +2338,9 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         }
 #endif
         decl_flags = sym.mods;
-        // is it OK to inline?
+        /*
+         * is it OK to inline?
+         */
     } else {                                    /* indirect call */
         if( CompFlags.initializing_data ) {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
@@ -2318,7 +2373,9 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
     parm_types = typ->u.fn.parms;   /* Parameters (prototype), if any */
     NextToken();                        /* skip over '(' */
     if( CurToken != T_RIGHT_PAREN ) {
-        // push previous plist for nested calls
+        /*
+         * push previous plist for nested calls
+         */
         struct nested_parm_lists    *npl;
 
         npl = CMemAlloc( sizeof( struct nested_parm_lists ) );
@@ -2397,7 +2454,9 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
 
 static TREEPTR OrOr( TREEPTR tree )
 {
-    // This routine is called when || token is found
+    /*
+     * This routine is called when || token is found
+     */
     if( tree->op.opr == OPR_PUSHINT ) {
         if( tree->op.u2.long_value != 0 ) {
             ++SizeOfCount;      /* skip code gen */
@@ -2410,7 +2469,9 @@ static TREEPTR OrOr( TREEPTR tree )
 
 static TREEPTR AndAnd( TREEPTR tree )
 {
-    // This routine is called when && token is found
+    /*
+     * This routine is called when && token is found
+     */
     if( tree->op.opr == OPR_PUSHINT ) {
         if( tree->op.u2.long_value == 0 ) {
             ++SizeOfCount;      /* skip code gen */

@@ -483,7 +483,9 @@ static void CopyCode( void )
     byte_seq    *code;
     unsigned    size;
 
-// TODO deal with reloc list
+    /*
+     * TODO deal with reloc list
+     */
     if( CurrInfo->code == NULL )
         return;
     if( CurrInfo->code != CurrAlias->code )
@@ -537,8 +539,9 @@ void PragmaAuxEnding( void )
         CurrInfo->use = 1;
         CurrEntry->info = CurrInfo;
     }
-
-    /* If this pragma defines code, check to see if we already have a function body */
+    /*
+     * If this pragma defines code, check to see if we already have a function body
+     */
     if( CurrEntry != NULL && CurrEntry->info != NULL && CurrEntry->info->code != NULL ) {
         SYM_HANDLE  sym_handle;
         SYM_ENTRY   sym;
@@ -612,7 +615,9 @@ int PragRegNumIndex( const char *str, int max_reg )
 {
     int         index;
 
-    /* decode regular register index, max 2 digit */
+    /*
+     * decode regular register index, max 2 digit
+     */
     if( isdigit( (unsigned char)str[0] ) ) {
         index = str[0] - '0';
         if( isdigit( (unsigned char)str[1] ) ) {
@@ -717,14 +722,14 @@ void SetToggleFlag( char const *name, int func, bool push )
     #undef pick
 }
 
-/* forms:
- *
- *      #pragma on (<toggle name>)
- *      #pragma off (<toggle name>)
- *      #pragma pop (<toggle name>)
- */
 static void pragOptions( int func )
-/**********************************/
+/**********************************
+ * forms:
+ *
+ *  #pragma on (<toggle name>)
+ *  #pragma off (<toggle name>)
+ *  #pragma pop (<toggle name>)
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -792,13 +797,13 @@ static void GetLibraryNames( void )
     }
 }
 
-/* forms:
- *
- *      #pragma library
- *      #pragma library (<libraries name list>)
- */
 static void pragLibs( void )
-/**************************/
+/***************************
+ * forms:
+ *
+ *  #pragma library
+ *  #pragma library (<libraries name list>)
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -812,12 +817,12 @@ static void pragLibs( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- *      #pragma comment ( comment_type [, "comment_string"] )
- */
 static void pragComment( void )
-/*****************************/
+/******************************
+ * forms:
+ *
+ *  #pragma comment ( comment_type [, "comment_string"] )
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -853,7 +858,9 @@ void SetPackAmount( unsigned amount )
 static void getPackArgs( void )
 /****************************/
 {
-    /* check to make sure it is a numeric token */
+    /*
+     * check to make sure it is a numeric token
+     */
     if( PragRecogId( "push" ) ) {
         pushPrag( &TOGGLE_STK( pack ), (unsigned)PackAmount );
         if( CurToken == T_COMMA ) {
@@ -874,16 +881,16 @@ static void getPackArgs( void )
     }
 }
 
-/* forms:
- *
- *      #pragma pack ()
- *      #pragma pack ( n )
- *      #pragma pack ( push )
- *      #pragma pack ( pop )
- *      #pragma pack ( push, n )
- */
 static void pragPack( void )
-/**************************/
+/***************************
+ * forms:
+ *
+ *  #pragma pack ()
+ *  #pragma pack ( n )
+ *  #pragma pack ( push )
+ *  #pragma pack ( pop )
+ *  #pragma pack ( push, n )
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -938,12 +945,12 @@ textsegment *LkSegName( const char *segname, const char *classname )
     return( NewTextSeg( segname, "", classname ) );
 }
 
-/* forms:
- *
- *      #pragma alloc_text ( seg_name, fn [, fn] )
- */
 static void pragAllocText( void )
-/*******************************/
+/********************************
+ * forms:
+ *
+ *  #pragma alloc_text ( seg_name, fn [, fn] )
+ */
 {
     struct textsegment  *tseg;
     SYM_HANDLE          sym_handle;
@@ -953,22 +960,30 @@ static void pragAllocText( void )
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
-        /* current token can be an T_ID or a T_STRING */
+        /*
+         * current token can be an T_ID or a T_STRING
+         */
         tseg = LkSegName( Buffer, "" );
         PPNextToken();
         for( ;; ) {
             MustRecog( T_COMMA );
-            /* current token can be an T_ID or a T_STRING */
+            /*
+             * current token can be an T_ID or a T_STRING
+             */
             sym_handle = Sym0Look( CalcHashID( Buffer ), Buffer );
             if( sym_handle == SYM_NULL ) {
-                /* error */
+                /*
+                 * error
+                 */
             } else {
                 SymGet( &sym, sym_handle );
                 if( sym.flags & SYM_FUNCTION ) {
                     sym.seginfo = tseg;
                     SymReplace( &sym, sym_handle );
                 } else {
-                    /* error, must be function */
+                    /*
+                     * error, must be function
+                     */
                 }
             }
             PPNextToken();
@@ -994,12 +1009,16 @@ static void changeLevel( unsigned level, int msg_index )
     if( msg_level[msg_index].level != level ) {
         msg_level[msg_index].level = level;
         if( level == WLEVEL_DISABLED ) {
-            /* disable message */
+            /*
+             * disable message
+             */
             if( msg_level[msg_index].enabled ) {
                 msg_level[msg_index].enabled = false;
             }
         } else {
-            /* enable message */
+            /*
+             * enable message
+             */
             if( !msg_level[msg_index].enabled ) {
                 msg_level[msg_index].enabled = true;
             }
@@ -1016,8 +1035,9 @@ static void changeStatus( bool enabled, int msg_index )
 }
 
 static void warnChangeLevel( unsigned level, msg_codes msgnum )
-/*************************************************************/
-/* CHANGE WARNING LEVEL FOR A MESSAGE */
+/**************************************************************
+ * CHANGE WARNING LEVEL FOR A MESSAGE
+ */
 {
     unsigned    msg_index;
 
@@ -1042,8 +1062,9 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
 }
 
 static void warnChangeLevels( unsigned level )
-/********************************************/
-/* CHANGE WARNING LEVELS FOR ALL MESSAGES */
+/*********************************************
+ * CHANGE WARNING LEVELS FOR ALL MESSAGES
+ */
 {
     int     msg_index;          // - index for number
 
@@ -1084,16 +1105,16 @@ void WarnEnableDisable( bool enabled, msg_codes msgnum )
     }
 }
 
-/*
- * forms: #pragma warning # level   (change message # to have level "level)
- *      : #pragma warning * level   (change all messages to have level "level)
- *
- *   "level" must be digit (0-5)
- *   "level==0" implies warning will be treated as an error
- */
 static bool pragWarning( void )
-/*****************************/
-/* PROCESS #PRAGMA WARNING */
+/******************************
+ * forms:
+ *
+ *  #pragma warning # level   (change message # to have level "level)
+ *  #pragma warning * level   (change all messages to have level "level)
+ *
+ * "level" must be digit (0-5)
+ * "level==0" implies warning will be treated as an error
+ */
 {
     unsigned msgnum;            // - message number
     unsigned level;             // - new level
@@ -1110,7 +1131,9 @@ static bool pragWarning( void )
     } else if( CurToken == T_CONSTANT ) {
         msgnum = Constant;
     } else {
-        // ignore; MS or other vendor's #pragma
+        /*
+         * ignore; MS or other vendor's #pragma
+         */
         ignore = true;
     }
     if( !ignore ) {
@@ -1132,15 +1155,15 @@ static bool pragWarning( void )
     return( ignore );
 }
 
-/* forms:
+static void pragEnableDisableMessage( bool enabled )
+/***************************************************
+ * forms:
  *
- *    #pragma enable_message( messageNo )
- *    #pragma disable_message( messageNo )
+ *  #pragma enable_message( messageNo )
+ *  #pragma disable_message( messageNo )
  *
  * disable/enable display of selected message number
  */
-static void pragEnableDisableMessage( bool enabled )
-/**************************************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1174,16 +1197,16 @@ static char *collectStrings( char *message )
     return( message );
 }
 
-/* form:
+static void pragMessage( void )
+/******************************
+ * form:
  *
- * #pragma message ("one or more " "long message " "strings")
+ *  #pragma message ("one or more " "long message " "strings")
  *
  * output these strings to stdout
  * this output is _not_ dependent on setting
  * of #pragma enable_message or disable_message.
  */
-static void pragMessage( void )
-/*****************************/
 {
     char    *message;
 
@@ -1203,12 +1226,14 @@ static void pragMessage( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragEnum( void )
+/***************************
+ * forms:
  *
- * (1) #pragma enum int
- * (2) #pragma enum minimum
- * (3) #pragma enum original
- * (4) #pragma enum pop
+ *  #pragma enum int        (1)
+ *  #pragma enum minimum    (2)
+ *  #pragma enum original   (3)
+ *  #pragma enum pop        (4)
  *
  * The pragma affects the underlying storage-definition for subsequent
  * enum declarations.
@@ -1220,8 +1245,6 @@ static void pragMessage( void )
  *
  * 1-3 all push previous value before affecting value
  */
-static void pragEnum( void )
-/**************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1244,12 +1267,12 @@ static void pragEnum( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma intrinsic ( fn [, fn] )
- */
 static void pragIntrinsic( int intrinsic )
-/****************************************/
+/*****************************************
+ * forms:
+ *
+ *  #pragma intrinsic ( fn [, fn] )
+ */
 {
     SYM_HANDLE  sym_handle;
     SYM_ENTRY   sym;
@@ -1276,12 +1299,12 @@ static void pragIntrinsic( int intrinsic )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma code_seg ( seg_name [, class_name] )
- */
 static void pragCodeSeg( void )
-/*****************************/
+/******************************
+ * forms:
+ *
+ *  #pragma code_seg ( seg_name [, class_name] )
+ */
 {
     textsegment     *tseg;
     char            *segname;
@@ -1301,7 +1324,7 @@ static void pragCodeSeg( void )
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     CMemFree( classname );
                     classname = CStrSave( Buffer );
-//                  CodeClassName = CStrSave( Buffer ); */
+//                    CodeClassName = CStrSave( Buffer ); */
                     PPNextToken();
                 }
             }
@@ -1318,12 +1341,12 @@ static void pragCodeSeg( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma data_seg ( seg_name [, class_name] )
- */
 static void pragDataSeg( void )
-/*****************************/
+/******************************
+ * forms:
+ *
+ *  #pragma data_seg ( seg_name [, class_name] )
+ */
 {
     char        *segname;
     segment_id  segid;
@@ -1355,12 +1378,12 @@ static void pragDataSeg( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma unroll ( n )
- */
 static void pragUnroll( void )
-/****************************/
+/*****************************
+ * forms:
+ *
+ *  #pragma unroll ( n )
+ */
 {
     unroll_type unroll_count;
 
@@ -1379,17 +1402,17 @@ static void pragUnroll( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragReadOnlyFile( void )
+/***********************************
+ * forms:
  *
- * (1) #pragma read_only_file
- * (2) #pragma read_only_file "file"*
+ *  #pragma read_only_file          (1)
+ *  #pragma read_only_file "file"*  (2)
  *
  * (1) causes current file to be marked read-only
  * (2) causes indicated file to be marked read-only
  *      - file must have started inclusion (may have completed)
  */
-static void pragReadOnlyFile( void )
-/**********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1408,14 +1431,14 @@ static void pragReadOnlyFile( void )
 }
 
 
-/* forms:
+static void pragReadOnlyDir( void )
+/**********************************
+ * forms:
  *
  *  #pragma read_only_directory "directory"*
  *
- * (1) causes all files within directory to be marked read-only
+ * causes all files within directory to be marked read-only
  */
-static void pragReadOnlyDir( void )
-/*********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1429,16 +1452,16 @@ static void pragReadOnlyDir( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragIncludeAlias( void )
+/***********************************
+ * forms:
  *
- * (1) #pragma include_alias ( "alias_name", "real_name" )
- * (2) #pragma include_alias ( <alias_name>, <real_name> )
+ *  #pragma include_alias ( "alias_name", "real_name" )
+ *  #pragma include_alias ( <alias_name>, <real_name> )
  *
  * causes include directives referencing alias_name to be refer
  * to real_name instead
  */
-static void pragIncludeAlias( void )
-/**********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1485,14 +1508,14 @@ static void pragIncludeAlias( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragOnce( void )
+/***************************
+ * forms:
  *
- * #pragma once
+ *  #pragma once
  *
  * include file once
  */
-static void pragOnce( void )
-/**************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1509,12 +1532,12 @@ static void OptionPragSTDC( void )
     }
 }
 
-/* forms:
- *
- * #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
- */
 static void pragSTDC( void )
-/**************************/
+/***************************
+ * forms:
+ *
+ *  #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
+ */
 {
     PPCTL_DISABLE_MACROS();
     PPNextToken();
@@ -1574,13 +1597,13 @@ static void parseExtRef ( void )
     }
 }
 
-/* forms:
- *
- * #pragma extref ( symbolid [, ...] )
- * #pragma extref ( "symbolname" [, ...] )
- */
 static void pragExtRef( void )
-/****************************/
+/*****************************
+ * forms:
+ *
+ *  #pragma extref ( symbolid [, ...] )
+ *  #pragma extref ( "symbolname" [, ...] )
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1600,16 +1623,16 @@ static void pragExtRef( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragAlias( void )
+/****************************
+ * forms:
  *
- * #pragma alias(id1/"name1", id2/"name2")
+ *  #pragma alias(id1/"name1", id2/"name2")
  *
  * Causes linker to replace references to id1/name1 with references
  * to id2/name2. Both the alias and the substituted symbol may be defined
  * either as a string name or an id of existing symbol.
  */
-static void pragAlias( void )
-/***************************/
 {
     SYM_HANDLE      alias_sym;
     SYM_HANDLE      subst_sym;
@@ -1649,8 +1672,9 @@ static void pragAlias( void )
         MustRecog( T_RIGHT_PAREN );
     }
     PPCTL_DISABLE_MACROS();
-
-    /* Add a new alias record - if it's valid - to the list */
+    /*
+     * Add a new alias record - if it's valid - to the list
+     */
     if( ( alias_name != NULL || alias_sym != SYM_NULL ) && ( subst_name != NULL || subst_sym != SYM_NULL ) ) {
         for( alias = &AliasHead; *alias != NULL; alias = &(*alias)->next )
             ; /* nothing to do */
@@ -1675,7 +1699,8 @@ void CPragma( void )
 {
     bool    check_end;
 
-    /* Note that the include_alias pragma must always be processed
+    /*
+     * Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.
      */
     CompFlags.in_pragma = true;
@@ -1718,8 +1743,10 @@ void CPragma( void )
             pragDataSeg();
         } else if( pragmaNameRecog( "warning" ) ) {
             if( pragWarning() ) {
-                /* ignore #pragma warning */
-                /* skip rest of line */
+                /*
+                 * ignore #pragma warning
+                 * skip rest of line
+                 */
                 check_end = false;
             }
         } else if( pragmaNameRecog( "disable_message" ) ) {

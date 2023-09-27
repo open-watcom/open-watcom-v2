@@ -162,10 +162,11 @@ TYPEPTR EnumDecl( type_modifiers flags )
 
     NextToken();
     if( CurToken == T_ID ) {
-        /* could be: (1) "enum" <id> ";"
-                     (2) "enum" <id> <variable_name> ";"
-                     (3) "enum" <id> "{" <enum_const_decl> ... "}"
-        */
+        /*
+         * could be: (1) "enum" <id> ";"
+         *           (2) "enum" <id> <variable_name> ";"
+         *           (3) "enum" <id> "{" <enum_const_decl> ... "}"
+         */
         tag = TagLookup( Buffer );
         NextToken();
         if( CurToken != T_LEFT_BRACE ) {
@@ -272,12 +273,16 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 error = ENUM_INT;
             }
             if( index >= ENUM_SIZE ) {
-                // overflow signed maximum range
+                /*
+                 * overflow signed maximum range
+                 */
                 if( error == ENUM_UNDEF ) {
                     error = const_index;
                 }
             } else if(( const_index == ENUM_SIZE - 1 ) && minus ) {
-                // overflow unsigned maximum range by any negative signed value
+                /*
+                 * overflow unsigned maximum range by any negative signed value
+                 */
                 if( error == ENUM_UNDEF )
                     error = const_index;
                 step = 1;
@@ -285,7 +290,9 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 if( !has_sign && minus ) {
                     has_sign = true;
                     if( index < const_index ) {
-                        // round up to signed
+                        /*
+                         * round up to signed
+                         */
                         index = ( const_index + 1 ) & ~1;
                     }
                 }

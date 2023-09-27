@@ -128,27 +128,35 @@ static void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     if( (new_sym->mods & ~MASK_FUNC) != (old_sym->mods & ~MASK_FUNC) ) {
         CErr2p( ERR_MODIFIERS_DISAGREE, new_sym->name );
     }
-
-    /* check for conflicting information */
-    /* skip over TYPEDEF's  */
+    /*
+     * check for conflicting information
+     * skip over TYPEDEF's
+     */
     type_new = new_sym->sym_type;
     SKIP_TYPEDEFS( type_new );
     type_old = old_sym->sym_type;
     SKIP_TYPEDEFS( type_old );
-
-    // diagnostics for function, target=old and source=new
+    /*
+     * diagnostics for function, target=old and source=new
+     */
     SetDiagType2( type_old->object, type_new->object );
     if( !IdenticalType( type_new->object, type_old->object ) ) {
         TYPEPTR     ret_new, ret_old;
 
-        /* save return types */
+        /*
+         * save return types
+         */
         ret_new = type_new->object;
         ret_old = type_old->object;
-        // skip over typedef's
+        /*
+         * skip over typedef's
+         */
         SKIP_TYPEDEFS( ret_new );
         SKIP_TYPEDEFS( ret_old );
-        /* don't reorder this expression */
-        //return value used in forward
+        /*
+         * don't reorder this expression
+         * return value used in forward
+         */
         if( old_sym->attribs.stg_class != SC_FORWARD ) {
             CErr2p( ERR_INCONSISTENT_TYPE, new_sym->name );
         } else if( ret_new->decl_type != TYP_VOID || (old_sym->flags & SYM_TYPE_GIVEN) ) {
@@ -156,8 +164,9 @@ static void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
         }
     }
     SetDiagPop();
-
-    /* check types of parms, including promotion */
+    /*
+     * check types of parms, including promotion
+     */
     ChkCompatibleFunction( type_old, type_new, true );
 }
 
@@ -174,7 +183,9 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
     ENUMPTR             ep;
 
     PrevProtoType = NULL;
-    // Warn if assuming 'int' return type - should be an error in strict C99 mode
+    /*
+     * Warn if assuming 'int' return type - should be an error in strict C99 mode
+     */
     if( *state & DECL_STATE_NOTYPE ) {
         CWarn2p( ERR_NO_RET_TYPE_GIVEN, sym->name );
     }
@@ -210,7 +221,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
         SetDiagSymbol( &old_sym, old_sym_handle );
         if( (old_sym.flags & SYM_FUNCTION) == 0 ) {
             CErr2p( ERR_SYM_ALREADY_DEFINED_AS_VAR, sym->name );
-            // sym_handle = old_sym_handle;
+//            sym_handle = old_sym_handle;
             sym_handle = SymAddL0( sym->info.hash, sym );
         } else {
             CmpFuncDecls( sym, &old_sym );
@@ -231,9 +242,11 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
                     old_sym.src_loc = sym->src_loc;
                 }
             }
-            // check lang flags to make sure no one saw an incompatible prototype; if
-            // previous prototype specified calling convention and later definition does
-            // not, propagate the convention from the prototype
+            /*
+             * check lang flags to make sure no one saw an incompatible prototype; if
+             * previous prototype specified calling convention and later definition does
+             * not, propagate the convention from the prototype
+             */
             if( (sym->mods & MASK_LANGUAGES) && !ChkCompatibleLanguage( sym->mods, old_sym.mods ) ) {
                 CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }
@@ -262,7 +275,8 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
                     CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                     break;
                 case DECLSPEC_DLLEXPORT:
-                    /* Allow the following:     void foo( void ); void _Export foo( void );
+                    /*
+                     * Allow the following:     void foo( void ); void _Export foo( void );
                      * IBM's compiler allows this, so does our C++ compiler; and it's real useful!
                      */
                     if( old_sym.attribs.declspec == DECLSPEC_DLLIMPORT || old_sym.attribs.declspec == DECLSPEC_NONE ) {
@@ -275,8 +289,10 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
             }
             old_sym.attribs.naked |= sym->attribs.naked;
             if( stg_class == SC_STATIC && old_sym.attribs.stg_class == SC_EXTERN ) {
-                /* can't redeclare extern function as static */
-                /* NB: We may want to handle SC_FORWARD functions too! */
+                /*
+                 * can't redeclare extern function as static
+                 * NB: We may want to handle SC_FORWARD functions too!
+                 */
                 CWarn2p( ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
             }
             CMemFree( sym->name );
@@ -316,14 +332,17 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     type_modifiers      old_attrs;
     type_modifiers      new_attrs;
 
-    // Warn if neither type nor storage class were given; this should probably be
-    // an error in strict C89 (and naturally C99) mode
+    /*
+     * Warn if neither type nor storage class were given; this should probably be
+     * an error in strict C89 (and naturally C99) mode
+     */
     if( (stg_class == SC_NONE) && (*state & DECL_STATE_NOTYPE) && (*state & DECL_STATE_NOSTWRN) == 0 ) {
         CWarn1( ERR_NO_STG_OR_TYPE );
         *state |= DECL_STATE_NOSTWRN;   // Only warn once for each declarator list
     }
-
-    // Additionally warn if assuming 'int' type - should be an error in strict C99 mode
+    /*
+     * Additionally warn if assuming 'int' type - should be an error in strict C99 mode
+     */
     if( *state & DECL_STATE_NOTYPE ) {
         CWarn2p( ERR_NO_DATA_TYPE_GIVEN, sym->name );
     }
@@ -338,8 +357,8 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
 
     if( SymLevel == 0 ) {
         /*
-        //  SymLevel == 0 is global scope (SymLevel is the count of nested {'s)
-        */
+         * SymLevel == 0 is global scope (SymLevel is the count of nested {'s)
+         */
         if( (stg_class == SC_AUTO) || (stg_class == SC_REGISTER) ) {
             CErr1( ERR_INV_STG_CLASS_FOR_GLOBAL );
             stg_class = SC_STATIC;
@@ -355,8 +374,8 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         }
     } else {
         /*
-        //  SymLevel != 0 is function scoped (SymLevel is the count of nested {'s)
-        */
+         * SymLevel != 0 is function scoped (SymLevel is the count of nested {'s)
+         */
         if( stg_class == SC_NONE ) {
             stg_class = SC_AUTO;
         }
@@ -369,18 +388,18 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             }
 #if _INTEL_CPU
             /*
-            // Local variables in stack will be far when SS != DS (/zu)
-            // (applies only to auto vars, functions params are handled
-            // NOT here but in "cexpr.c" [OPR_PUSHADDR])
-            */
+             * Local variables in stack will be far when SS != DS (/zu)
+             * (applies only to auto vars, functions params are handled
+             * NOT here but in "cexpr.c" [OPR_PUSHADDR])
+             */
             if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
                 sym->mods |= FLAG_FAR;
             }
 #endif
         }
         /*
-        // static class variables can be thread local also
-        */
+         * static class variables can be thread local also
+         */
         if( (stg_class == SC_STATIC) && (sym->attribs.declspec == DECLSPEC_THREAD) ) {
             if( !CompFlags.thread_data_present ) {
                 thread_segid = DefThreadSeg();
@@ -417,7 +436,9 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             old_attrs = old_sym.mods;
             new_attrs = sym->mods;
 #if _INTEL_CPU
-            /* add default far/near flags depending on data model */
+            /*
+             * add default far/near flags depending on data model
+             */
             if( TargetSwitches & CGSW_X86_BIG_DATA ) {
                 old_attrs |= FLAG_FAR;
                 new_attrs |= FLAG_FAR;
@@ -430,8 +451,10 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
                  CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }
             if( (sym->mods & MASK_LANGUAGES) != (old_sym.mods & MASK_LANGUAGES) ) {
-                // just inherit old lang flags
-                // if new != 0 then it's possible someone saw a different prototype
+                /*
+                 * just inherit old lang flags
+                 * if new != 0 then it's possible someone saw a different prototype
+                 */
                 if( (sym->mods & MASK_LANGUAGES) != 0 ) {
                      CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                 }
@@ -457,14 +480,16 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     if( ( old_sym_handle != SYM_NULL )
       && (stg_class == SC_NONE || stg_class == SC_EXTERN
       || (stg_class == SC_STATIC && SymLevel == 0)) ) {
-
-        /* make sure sym->sym_type same type as old_sym->sym_type */
-
+        /*
+         * make sure sym->sym_type same type as old_sym->sym_type
+         */
         SetDiagSymbol( &old_sym, old_sym_handle );
         old_def = VerifyType( sym->sym_type, old_sym.sym_type, sym );
         SetDiagPop();
         if( !old_def && ChkEqSymLevel( &old_sym ) ) {
-            /* new symbol's type supersedes old type */
+            /*
+             * new symbol's type supersedes old type
+             */
             old_sym.sym_type = sym->sym_type;
             if( (old_sym.flags & SYM_FUNCTION) ) {
                 old_sym = *sym;  // ditch old sym
@@ -477,21 +502,31 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         memcpy( sym, &old_sym, sizeof( SYM_ENTRY ) );
         sym_handle = old_sym_handle;
         SetDiagSymbol( &old_sym, old_sym_handle );
-        /* verify that newly specified storage class doesn't conflict */
+        /*
+         * verify that newly specified storage class doesn't conflict
+         */
         if( (stg_class == SC_NONE) || (stg_class == SC_STATIC) ) {
             if( sym->attribs.stg_class == SC_EXTERN ) {
-                /* was extern, OK to change to none */
+                /*
+                 * was extern, OK to change to none
+                 */
                 if( stg_class == SC_NONE ) {
                     sym->attribs.stg_class = stg_class;
                 } else {
-                    /* was extern, not OK to make static */
+                    /*
+                     * was extern, not OK to make static
+                     */
                     CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
                 }
             } else if( sym->attribs.stg_class == SC_STATIC && stg_class == SC_NONE ) {
-                /* was static, not OK to redefine */
+                /*
+                 * was static, not OK to redefine
+                 */
                 CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
             } else if( sym->attribs.stg_class == SC_NONE && stg_class == SC_STATIC ) {
-                /* was extern linkage, not OK to to make static */
+                /*
+                 * was extern linkage, not OK to to make static
+                 */
                 CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
             }
         }
@@ -580,7 +615,9 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
         return( SYM_NULL );
     }
     typ = sym->sym_type;
-    /* skip over typedef's */
+    /*
+     * skip over typedef's
+     */
     SKIP_TYPEDEFS( typ );
     if( info->stg == SC_TYPEDEF ) {
         if( CompFlags.extensions_enabled ) {
@@ -699,7 +736,9 @@ bool DeclList( SYM_HANDLE *sym_head )
             }
             for( ;; ) {
                 sym_handle = InitDeclarator( &sym, &info, &state );
-                /* NULL is returned if sym already exists in symbol table */
+                /*
+                 * NULL is returned if sym already exists in symbol table
+                 */
                 if( sym_handle != SYM_NULL ) {
                     sym.handle = SYM_NULL;
                     if( sym.flags & SYM_FUNCTION ) {
@@ -719,19 +758,22 @@ bool DeclList( SYM_HANDLE *sym_head )
                     }
                     SymReplace( &sym, sym_handle );
                 }
-                /* case "int x *p" ==> missing ',' msg already given */
+                /*
+                 * case "int x *p" ==> missing ',' msg already given
+                 */
                 if( CurToken != T_TIMES ) {
                     if( CurToken != T_COMMA )
                         break;
                     NextToken();
                 }
             }
-/*              the following is illegal:
-                    typedef double math(double);
-                    math sin { ; }
-            That's the reason for the check
-                    "typ->decl_type != TYP_FUNCTION"
-*/
+            /*
+             * the following is illegal:
+             *         typedef double math(double);
+             *         math sin { ; }
+             * That's the reason for the check
+             *         "typ->decl_type != TYP_FUNCTION"
+             */
             if( SymLevel == 0 && CurToken != T_SEMI_COLON && sym_handle != SYM_NULL ) {
                 if( sym.sym_type->decl_type == TYP_FUNCTION && sym.sym_type != info.typ ) {
                     CurFuncHandle = sym_handle;
@@ -746,7 +788,9 @@ bool DeclList( SYM_HANDLE *sym_head )
             NextToken();                /* skip over ';' */
         }
     }
-// can't get here!      return( false );
+    /*
+     * can't get here!      return( false );
+     */
 }
 
 
@@ -773,7 +817,8 @@ bool LoopDecl( SYM_HANDLE *sym_head )
     }
     state = DECL_STATE_FORLOOP;
     if( info.typ == NULL ) {
-        /* C99 requires a type specifier; we could get away with defaulting
+        /*
+         * C99 requires a type specifier; we could get away with defaulting
          * to int but what would be the point?
          */
         CErr1( ERR_NO_TYPE_IN_DECL );
@@ -782,7 +827,9 @@ bool LoopDecl( SYM_HANDLE *sym_head )
     if( CurToken != T_SEMI_COLON ) {
         for( ;; ) {
             sym_handle = InitDeclarator( &sym, &info, &state );
-            /* NULL is returned if sym already exists in symbol table */
+            /*
+             * NULL is returned if sym already exists in symbol table
+             */
             if( sym_handle != SYM_NULL ) {
                 sym.handle = SYM_NULL;
                 if( sym.flags & SYM_FUNCTION ) {
@@ -802,7 +849,9 @@ bool LoopDecl( SYM_HANDLE *sym_head )
                 }
                 SymReplace( &sym, sym_handle );
             }
-            /* case "int x *p" ==> missing ',' msg already given */
+            /*
+             * case "int x *p" ==> missing ',' msg already given
+             */
             if( CurToken != T_TIMES ) {
                 if( CurToken != T_COMMA )
                     break;
@@ -811,7 +860,7 @@ bool LoopDecl( SYM_HANDLE *sym_head )
         }
         MustRecog( T_SEMI_COLON );
     } else {
-        //  Chk_Struct_Union_Enum( info.typ );
+//        Chk_Struct_Union_Enum( info.typ );
         NextToken();                /* skip over ';' */
     }
     return( true );    /* We found a declaration */
@@ -894,7 +943,9 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
 
     sym_handle = SYM_NULL;
     if( (typ != NULL) && (typ->decl_type == TYP_TYPEDEF) ) {
-        // get segment from typedef TODO should be done sooner
+        /*
+         * get segment from typedef TODO should be done sooner
+         */
         TYPEPTR     ptr_typ;
         SYMPTR      symp;
 
@@ -1034,7 +1085,9 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
         if( CurToken == T_TIMES ) {
             NextToken();
 #if _INTEL_CPU
-            // * seg16 binds with * cause of IBM dorks, and so does far16
+            /*
+             * * seg16 binds with * cause of IBM dorks, and so does far16
+             */
             if( (CurToken == T__SEG16) || (CurToken == T__FAR16) || (CurToken == T___FAR16) ) {
     #if _CPU == 8086
                 info->modifier |= FLAG_FAR;
@@ -1069,7 +1122,9 @@ static void ParseDeclPart2( TYPEPTR *typep, TYPEPTR typ, type_modifiers mod )
             decl1 = decl1->object;
         }
     }
-    // Pass on pointer flags
+    /*
+     * Pass on pointer flags
+     */
     if( (decl1 != NULL) && (decl1->decl_type == TYP_POINTER) )
         mod = decl1->u.p.decl_flags;
     decl2 = DeclPart2( typ, mod );
@@ -1339,10 +1394,14 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
         parms = FuncProtoType();
         if( (parms == NULL) && (ParmList != NULL) ) {
             if( CurToken == T_SEMI_COLON || CurToken == T_COMMA ) {
-                /* int f16(i,j); */
+                /*
+                 * int f16(i,j);
+                 */
                 CErr1( ERR_ID_LIST_SHOULD_BE_EMPTY );
             }
-            /* Old-style declarations are obsolescent (ever since ANSI C89!) */
+            /*
+             * Old-style declarations are obsolescent (ever since ANSI C89!)
+             */
             CWarn1( ERR_OBSOLETE_FUNC_DECL );
         }
         if( parms_list != NULL ) {
@@ -1351,7 +1410,8 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
         }
     } else {
         NextToken();    /* skip over ')' */
-        /* Non-prototype declarators are obsolescent too; however, __interrupt
+        /*
+         * Non-prototype declarators are obsolescent too; however, __interrupt
          * functions have a special exemption due to messy historical usage,
          * with variants both with and without arguments in use. Note that
          * __interrupt functions are unlikely to be called directly.
@@ -1528,7 +1588,9 @@ static TYPEPTR *GetProtoType( decl_info *first )
         FullDeclSpecifier( &info );
     }
     ParmList = parm_namelist;
-    /* if void is specified as a parm, it is the only parm allowed */
+    /*
+     * if void is specified as a parm, it is the only parm allowed
+     */
     return( MakeParmList( parmlist, false ) );
 }
 
@@ -1559,8 +1621,9 @@ TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
         for( next_parm = parm; next_parm != NULL; next_parm = next_parm->next_parm ) {
             ++parm_count;
         }
-
-        /* try to find an existing parm list that matches */
+        /*
+         * try to find an existing parm list that matches
+         */
         hash = MAX_PARM_LIST_HASH_SIZE;
         if( parm_count < MAX_PARM_LIST_HASH_SIZE ) {
             hash = (parm_hash_idx)parm_count;
@@ -1637,8 +1700,10 @@ static TYPEPTR *FuncProtoType( void )
         }
         if( CurToken != T_LEFT_BRACE ) {
             if( SymLevel > 1 || !CompFlags.extensions_enabled ) {
-                /* get rid of any new tags regardless of SymLevel */
-                /* get rid of new tags from proto */
+                /*
+                 * get rid of any new tags regardless of SymLevel
+                 * get rid of new tags from proto
+                 */
                 TagHead = old_taghead;
                 FreeEnums();
             }
@@ -1658,7 +1723,9 @@ static void GetFuncParmList( void )
     PARMPTR     parm_namelist;
 
     parm_namelist = NULL;
-    /* scan off func parm list */
+    /*
+     * scan off func parm list
+     */
     while( CurToken == T_ID ) {
         if( parm_namelist == NULL ) {
             parm = (PARMPTR)CMemAlloc( sizeof( PARM_ENTRY ) );
@@ -1682,7 +1749,9 @@ static void GetFuncParmList( void )
             break;
         if( CurToken != T_COMMA ) {
             MustRecog( T_COMMA );               /* forces error msg */
-            /* skip until ')' to avoid cascading errors */
+            /*
+             * skip until ')' to avoid cascading errors
+             */
             while( CurToken != T_RIGHT_PAREN && CurToken != T_EOF ) {
                 NextToken();
             }
@@ -1693,7 +1762,9 @@ static void GetFuncParmList( void )
             parm->next_parm = (PARMPTR)CMemAlloc( sizeof( PARM_ENTRY ) );
             parm = parm->next_parm;
             SymCreate( &parm->sym, "" );
-            /* set flags so we don't give funny error messages */
+            /*
+             * set flags so we don't give funny error messages
+             */
             parm->sym.flags |= SYM_TEMP | SYM_ASSIGNED | SYM_REFERENCED;
             NextToken();
             break;
@@ -1716,10 +1787,10 @@ static void FreeParmList( void )
 
 #if _CPU == 370
 static bool IsIntComp( TYPEPTR ret1 )
-    /*
-     * what's target compatible between default int as ret type
-     * and a later declaration
-     */
+/************************************
+ * what's target compatible between default int as ret type
+ * and a later declaration
+ */
 {
     bool        ret;
 

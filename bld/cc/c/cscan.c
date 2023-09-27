@@ -207,8 +207,9 @@ TOKEN KwLookup( const char *buf, size_t len )
     TOKEN       token;
 
     token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
-
-    /* look up id in keyword table */
+    /*
+     * look up id in keyword table
+     */
     if( CompVars.cstd < CSTD_C99 ) {
         switch( token ) {
         case T_INLINE:
@@ -223,15 +224,15 @@ TOKEN KwLookup( const char *buf, size_t len )
             return( T_ID );
         }
     }
-
     keyword = Tokens[token];
     if( *keyword == buf[0] ) {
         if( strcmp( keyword, buf ) == 0 ) {
             return( token );
         }
     }
-
-    /* not in keyword table, so must be just an identifier */
+    /*
+     * not in keyword table, so must be just an identifier
+     */
     return( T_ID );
 }
 
@@ -270,13 +271,17 @@ static TOKEN doScanName( void )
             token = KwLookup( Buffer, TokenLen );
         }
     } else {
-        /* this is a macro */
+        /*
+         * this is a macro
+         */
         if( MacroIsSpecial( mentry ) ) {
             return( SpecialMacro( mentry ) );
         }
         mentry->macro_flags |= MFLAG_REFERENCED;
-        /* if macro requires parameters and next char is not a '('
-        then this is not a macro */
+        /*
+         * if macro requires parameters and next char is not a '('
+         * then this is not a macro
+         */
         if( MacroWithParenthesis( mentry ) ) {
             SkipAhead();
             if( CurrChar != '(' ) {
@@ -449,12 +454,13 @@ static TOKEN doScanPPNumber( void )
           && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
-                /* concession to existing practice...
-                    #define A2 0x02
-                    #define A3 0xaa0e+A2
-                    // users want: 0xaa0e + 0x02
-                    // not: 0xaa0e + A2 (but, this is what ISO C requires!)
-                */
+                /*
+                 * concession to existing practice...
+                 *  #define A2 0x02
+                 *  #define A3 0xaa0e+A2
+                 *  // users want: 0xaa0e + 0x02
+                 *  // not: 0xaa0e + A2 (but, this is what ISO C requires!)
+                 */
                 prevc = c;  //advance to next
                 c = NextChar();
                 if( (CharSet[c] & C_DI) == 0 ) {
@@ -1024,9 +1030,11 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         return( false );
     case T_COLON:
         if( last == T_GT ) {            /* :> */
-            // TODO: according to the standard, ":>" should be an
-            // alternative token (digraph) for "]"
-            // *token = T_RIGHT_BRACKET;   /* -> ] */
+            /*
+             * TODO: according to the standard, ":>" should be an
+             * alternative token (digraph) for "]"
+             * *token = T_RIGHT_BRACKET;   -> ]
+             */
             *token = T_SEG_OP;
             break;
         }
@@ -1174,7 +1182,9 @@ static TOKEN ScanSlash( void )
         CompFlags.scanning_cpp_comment = true;
         for( ;; ) {
             if( CurrChar == '\r' ) {
-                /* some editors don't put linefeeds on end of lines */
+                /*
+                 * some editors don't put linefeeds on end of lines
+                 */
                 NextChar();
                 break;
             }
@@ -1296,7 +1306,9 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
             break;
 #ifdef __QNX__
         case 'l':
-            /* for lazy QNX programmers */
+            /*
+             * for lazy QNX programmers
+             */
             if( CompFlags.extensions_enabled ) {
                 c = ESCAPE_n;
             }
@@ -1409,7 +1421,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             }
             ++i;
             value = (value << 8) + c;
-            /* handle case where user wants a \ but doesn't escape it */
+            /*
+             * handle case where user wants a \ but doesn't escape it
+             */
             if( c == '\'' && CurrChar != '\'' ) {
                 token = T_BAD_TOKEN;
                 break;
@@ -1495,8 +1509,10 @@ static TOKEN doScanString( bool wide )
                 c = CurrChar;
             }
         } else {
-            /* if first character of a double-byte character, then
-               save it and get the next one. */
+            /*
+             * if first character of a double-byte character, then
+             * save it and get the next one.
+             */
             if( CharSet[c] & C_DB ) {
                 c = WriteBufferCharNextChar( c );
             }
@@ -1750,7 +1766,9 @@ TOKEN ReScanToken( void )
     int             (*saved_getcharcheck)( int );
     TOKEN           token;
 
-    /* save current status */
+    /*
+     * save current status
+     */
     saved_currchar = CurrChar;
     saved_nextchar = NextChar;
     saved_ungetchar = UnGetChar;
@@ -1807,15 +1825,16 @@ void ScanInit( void )
     GetCharCheck = GetCharCheckFile;
 }
 
-// called by CollectParms() to gather tokens for macro parms
-// and CDefine() to gather tokens for macro definition
-// example usage:
-//      bool ppscan_mode;
-//      ppscan_mode = InitPPScan();
-//      CollectParms();
-//      FiniPPScan( ppscan_mode );
 bool InitPPScan( void )
-/*********************/
+/**********************
+ * called by CollectParms() to gather tokens for macro parms
+ * and CDefine() to gather tokens for macro definition
+ * example usage:
+ *      bool ppscan_mode;
+ *      ppscan_mode = InitPPScan();
+ *      CollectParms();
+ *      FiniPPScan( ppscan_mode );
+ */
 {
     if( ScanFunc[SCAN_NUM] == ScanNum ) {
         ScanFunc[SCAN_NUM] = ScanPPDigit;

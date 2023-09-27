@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,9 @@ static bool EndOfAsmStmt( void )
 /******************************/
 {
     if( CurToken == T_SEMI_COLON ) {
-        // ; .ASM comment
+        /*
+         * ; .ASM comment
+         */
         for( ;; ) {
             NextToken();
             if( ( CurToken == T_EOF ) || ( CurToken == T_NULL ) ) {
@@ -102,8 +104,10 @@ void AsmStmt( void )
     TREEPTR         tree;
 
     old_ppctl = PPControl;
-    // indicate that we are inside an __asm statement so scanner will
-    // allow tokens unique to the assembler. e.g. 21h
+    /*
+     * indicate that we are inside an __asm statement so scanner will
+     * allow tokens unique to the assembler. e.g. 21h
+     */
     PPCTL_ENABLE_ASM();
 
     NextToken();
@@ -118,7 +122,9 @@ void AsmStmt( void )
                     CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
                     too_many_bytes = true;
                 }
-                // reset index to we don't overrun buffer
+                /*
+                 * reset index to we don't overrun buffer
+                 */
                 AsmCodeAddress = 0;
             }
             if( CurToken == T_RIGHT_BRACE )

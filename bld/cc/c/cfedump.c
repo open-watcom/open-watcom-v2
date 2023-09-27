@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,8 +65,10 @@ static void DumpAString( STR_HANDLE str_handle )
 }
 
 #ifdef _LONG_DOUBLE_
-/* Dump a long_double value */
 void DumpALD( long_double *pld )
+/*******************************
+ * Dump a long_double value
+ */
 {
     CVT_INFO    cvt;
     char        buf[256];
@@ -80,8 +82,10 @@ void DumpALD( long_double *pld )
     printf( "%s", buf );
 }
 
-/* Dump a long double followed by newline */
 void DumpALDNL( long_double *pld )
+/*********************************
+ * Dump a long double followed by newline
+ */
 {
     DumpALD( pld );
     printf( "\n" );
@@ -236,12 +240,14 @@ static void DumpInfix( TREEPTR node )
         break;
     default:
         printf( " " );
-        // fall through
+        /* fall through */
     case OPR_RETURN:
         printf( "%s ", _Ops[node->op.opr] );
         break;
     case OPR_POINTS:
-        // already printed in prefix routine
+        /*
+         * already printed in prefix routine
+         */
         break;
     }
 }

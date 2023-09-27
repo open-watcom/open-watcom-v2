@@ -73,9 +73,9 @@ static  bool    IsStdIn;
 static  char    *FNameBuf = NULL;
 
 void FrontEndInit( bool reuse )
-//***************************//
-// Do the once only things   //
-//***************************//
+/******************************
+ * Do the once only things
+ ******************************/
 {
     GlobalCompFlags.cc_reuse = reuse;
     GlobalCompFlags.cc_first_use = true;
@@ -88,9 +88,9 @@ void FrontEndInit( bool reuse )
 }
 
 void FrontEndFini( void )
-//********************//
-// Fini the once only //
-//********************//
+/************************
+ * Fini the once only
+ ************************/
 {
     GlobalCompFlags.cc_reuse = false;
     GlobalCompFlags.cc_first_use = true;
@@ -216,7 +216,9 @@ static char *createFileName( const char *template, const char *ext, bool forceex
         template = WholeFName;
     _splitpath2( template, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( use_defaults ) {
-        /* default object file goes in current directory */
+        /*
+         * default object file goes in current directory
+         */
         pg.drive = "";
         pg.dir = "";
     }
@@ -274,7 +276,9 @@ static IALIASPTR AddIAlias( const char *alias_name, const char *real_name, bool 
     strcpy( alias->real_name, real_name );
     *lnk = alias;
     if( old_alias != NULL ) {
-        /* Replace old alias if it exists */
+        /*
+         * Replace old alias if it exists
+         */
         alias->next = old_alias->next;
         CMemFree( old_alias );
     }
@@ -325,11 +329,12 @@ static bool openForcePreInclude( void )
 }
 
 
-/* open the primary source file, and return pointer to root file name */
-
 #define STDIN_NAME      "stdin"
 
 static void MakePgmName( void )
+/******************************
+ * open the primary source file, and return pointer to root file name
+ */
 {
     size_t      len;
     pgroup2     pg;
@@ -559,7 +564,9 @@ void CClose( FILE *fp )
 /*********************/
 {
     if( fp == NULL ) {
-        /* nothing to do */
+        /*
+         * nothing to do
+         */
     } else if( fp != stdin ) {
         fclose( fp );
     }
@@ -596,7 +603,10 @@ static bool FreeSrcFP( void )
 
 
 static FNAMEPTR FindFlist( char const *filename )
-{ // find a flist
+/************************************************
+ * find a flist
+ */
+{
     FNAMEPTR    flist;
 
     for( flist = FNames; flist != NULL; flist = flist->next ) {
@@ -639,7 +649,9 @@ static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
     if( ff->drive[0] != '\0' && fd.drive[0] != '\0' ) {
         return( false );
     }
-    // concatenate fd.dir + sep + fp.dir
+    /*
+     * concatenate fd.dir + sep + fp.dir
+     */
     p = fd.dir + strlen( fd.dir );
     if( fd.dir[0] != '\0' ) {
         if( !IS_PATH_SEP( p[-1] ) ) {
@@ -660,7 +672,7 @@ static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
     }
     if( fp == NULL )
         return( false );
-/*
+#if 0
     if( CompFlags.use_precompiled_header ) {
         CompFlags.use_precompiled_header = false;
         if( UsePreCompiledHeader( filename ) ) {
@@ -668,7 +680,7 @@ static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
             return( true );
         }
     }
-*/
+#endif
     if( OpenFCB( fp, filename, typ ) ) {
         if( CompFlags.cpp_mode ) {
             if( CppFile == NULL )
@@ -846,10 +858,13 @@ void FreeRDir( void )
 }
 
 void SrcFileReadOnlyDir( char const *dirs )
-{ // add dir to ro set
+/******************************************
+ * add dir to ro set
+ */
+{
     char    *full;              // - full path
-    char    path[_MAX_PATH];  // - used to extract directory
-    char    buff[_MAX_PATH];  // - expanded path for directory
+    char    path[_MAX_PATH];    // - used to extract directory
+    char    buff[_MAX_PATH];    // - expanded path for directory
 
     while( *dirs != '\0' ) {
         char *p = path;
@@ -1096,13 +1111,17 @@ static bool try_open_file( const char *path, pgroup2 *fp, pgroup2 *fa, src_file_
     char    save_chr_fname;
     char    save_chr_ext;
 
-    // try to open regular name
+    /*
+     * try to open regular name
+     */
     ok = TryOpen( path, fp, typ );
     if( ok ) {
         return( ok );
     }
     if( fa != NULL ) {
-        // try to open alias name if defined
+        /*
+         * try to open alias name if defined
+         */
         ok = TryOpen( path, fa, typ );
         if( ok ) {
             return( ok );
@@ -1120,7 +1139,9 @@ static bool try_open_file( const char *path, pgroup2 *fp, pgroup2 *fa, src_file_
             fp->ext[4] = '\0';
         }
         if( save_chr_fname != '\0' || save_chr_ext != '\0' ) {
-            // try to open truncated name if enabled
+            /*
+             * try to open truncated name if enabled
+             */
             ok = TryOpen( path, fp, typ );
             if( !ok ) {
                 if( save_chr_fname != '\0' ) {
@@ -1274,7 +1295,9 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
     case FT_HEADER_FORCED:
     case FT_HEADER_PRE:
     case FT_LIBRARY:
-        // See if there's an alias for this filename
+        /*
+         * See if there's an alias for this filename
+         */
         alias_filename = IncludeAlias( filename, ( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) );
         if( alias_filename != NULL ) {
             _splitpath2( alias_filename, fa.buffer, &fa.drive, &fa.dir, &fa.fname, &fa.ext );
@@ -1296,11 +1319,11 @@ void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
         sprintf( buf, "#line %u \"", line_num );
         CppPuts( buf );
         while( (c = *filename++) != '\0' ) {
-        	if( c == '\\' )
-            	c = '/';
-        	CppPutc( c );
-    	}
-    	CppPutc( '"' );
+            if( c == '\\' )
+                c = '/';
+            CppPutc( c );
+        }
+        CppPutc( '"' );
         if( newline ) {
             CppPutc( '\n' );
         }
@@ -1371,7 +1394,9 @@ void CloseFiles( void )
             char    msgtxt[80];
             char    msgbuf[MAX_MSG_LEN];
 
-            /* issue message */
+            /*
+             * issue message
+             */
             CGetMsg( msgtxt, ERR_FATAL_ERROR );
             sprintf( msgbuf, msgtxt, strerror( errno ) );
             NoteMsg( msgbuf );
@@ -1396,7 +1421,9 @@ void CloseFiles( void )
 bool FrontEnd( char **cmdline )
 {
 #if defined(__WATCOMC__) && defined( _M_IX86 )
-    /* set to 0 in case 8087 is present */
+    /*
+     * set to 0 in case 8087 is present
+     */
     _real87 = 0;
     _8087 = 0;
 #endif

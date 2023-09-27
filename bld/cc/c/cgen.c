@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +109,9 @@ struct func_save {
     LABEL_INDEX     labelindex;
 };
 
-/* matches table of type in ctypes.h */
+/*
+ * matches table of type in ctypes.h
+ */
 static  char    CGDataType[] = {
     #define pick1(enum,cgtype,x86asmtype,name,size) cgtype,
     #include "cdatatyp.h"
@@ -450,11 +452,12 @@ static void GenVaStart( cg_name op1, cg_name offset )
     CGDone( name );
 }
 #elif _CPU == _MIPS
-/* Similar to Alpha, except we point va_list.__base to the first
+static void GenVaStart( cg_name op1, cg_name offset )
+/****************************************************
+ * Similar to Alpha, except we point va_list.__base to the first
  * vararg and va_list.__offset initially to zero. Strictly speaking
  * we don't need va_list.__offset.
  */
-static void GenVaStart( cg_name op1, cg_name offset )
 {
     cg_name     name;
     cg_name     baseptr;
@@ -517,10 +520,12 @@ static cg_name PushSymAddr( OPNODE *node )
         name = CGTempName( sym.info.return_var, dtype );
     } else {
         name = CGFEName( (CGSYM_HANDLE)node->u2.sym_handle, dtype );
-     // if( (sym.mods & FLAG_VOLATILE) ||
-     //     (sym.flags & SYM_USED_IN_PRAGMA) ) {
-     //     name = CGVolatile( name );
-     // }
+#if 0
+        if( (sym.mods & FLAG_VOLATILE)
+          || (sym.flags & SYM_USED_IN_PRAGMA) ) {
+            name = CGVolatile( name );
+        }
+#endif
         if( sym.flags & SYM_USED_IN_PRAGMA ) {
             name = CGVolatile( name );
         }
@@ -541,9 +546,11 @@ static cg_name PushRValue( OPNODE *node, cg_name name )
         }
         name = CGUnary( O_POINTS, name, CGenType( typ ) );
     } else {
-//      if( node->flags & OPFLAG_VOLATILE ) {
-//          name = CGVolatile( name );
-//      }
+#if 0
+        if( node->flags & OPFLAG_VOLATILE ) {
+            name = CGVolatile( name );
+        }
+#endif
     }
     return( name );
 }
@@ -553,8 +560,10 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
     TYPEPTR     typ;
     cg_name     name;
 
-    // node->u2.result_type is the type of the data
-    // for the O_PLUS we want a pointer type
+    /*
+     * node->u2.result_type is the type of the data
+     * for the O_PLUS we want a pointer type
+     */
     name = CGBinary( O_PLUS, op1, op2, DataPointerType( node ) );
     typ = node->u2.result_type;
     if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
@@ -569,14 +578,18 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
 
 static cg_name ArrowOperator( cg_name op1, OPNODE *node, cg_name op2 )
 {
-    // node->u2.result_type is the type of the data
-    // for the O_PLUS we want a pointer type
+    /*
+     * node->u2.result_type is the type of the data
+     * for the O_PLUS we want a pointer type
+     */
 #if _CPU == 386
     if( Far16Pointer( node->flags ) ) {
         op1 = CGUnary( O_PTR_TO_NATIVE, op1, TY_POINTER );
     }
 #endif
-//  rvalue has already been done on left side of tree
+    /*
+     *  rvalue has already been done on left side of tree
+     */
 //    op1 = CGUnary( O_POINTS, op1, DataPointerType( node ) );
     return( DotOperator( op1, node, op2 ) );
 }
@@ -586,10 +599,11 @@ static cg_name IndexOperator( cg_name op1, OPNODE *node, cg_name op2 )
     int         element_size;
     cg_type     index_type;
 
-    // node->u2.result_type is the type of the data
-    // for the O_PLUS we want a pointer type
-    // op2 needs to be multiplied by the element size of the array
-
+    /*
+     * node->u2.result_type is the type of the data
+     * for the O_PLUS we want a pointer type
+     * op2 needs to be multiplied by the element size of the array
+     */
 #if _CPU == 386
     if( Far16Pointer( node->flags ) ) {
         op1 = CGUnary( O_PTR_TO_NATIVE, op1, TY_POINTER );
@@ -622,11 +636,13 @@ static cg_name DoAddSub( cg_name op1, OPNODE *node, cg_name op2 )
     typ = node->u2.result_type;
     SKIP_TYPEDEFS( typ );
     name = CGBinary( CGOperator[node->opr], op1, op2, CGenType( typ ) );
-//  if( typ->decl_type == TYP_POINTER ) {
-//      if( typ->u.p.decl_flags & FLAG_VOLATILE ) {
-//          name = CGVolatile( name );
-//      }
-//  }
+#if 0
+    if( typ->decl_type == TYP_POINTER ) {
+        if( typ->u.p.decl_flags & FLAG_VOLATILE ) {
+            name = CGVolatile( name );
+        }
+    }
+#endif
     return( name );
 }
 static cg_name PushConstant( OPNODE *node )
@@ -690,12 +706,16 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
 {
     TYPEPTR     typ;
 
-    // check for special kinds of pointers, eg. call __Far16ToFlat
+    /*
+     * check for special kinds of pointers, eg. call __Far16ToFlat
+     */
     typ = node->u2.result_type;
 #if _CPU == 386
     if( Far16Pointer( node->flags ) ) {
-        // Do NOT convert __far16 function pointers to flat because the
-        // thunk routine expects 16:16 pointers!
+        /*
+         * Do NOT convert __far16 function pointers to flat because the
+         * thunk routine expects 16:16 pointers!
+         */
         if( ( typ->object != NULL ) && ( typ->object->decl_type != TYP_FUNCTION ) ) {
             name = CGUnary( O_PTR_TO_NATIVE, name, TY_POINTER );
         }
@@ -912,7 +932,9 @@ static void EmitNodes( TREEPTR tree )
             PushCGName( PushRValue( node, op1 ) );
           } break;
         case OPR_COLON:                 // :
-            // do nothing, wait for OPR_QUESTION to come along
+            /*
+             * do nothing, wait for OPR_QUESTION to come along
+             */
             break;
         case OPR_OR_OR:                 // ||
         case OPR_AND_AND:               // &&
@@ -1177,7 +1199,9 @@ static TREEPTR GenOptimizedCode( TREEPTR tree )
             unroll_count = tree->op.u1.unroll_count;
             BEUnrollCount( unroll_count );
         }
-        /* eliminate functions that are always inlined or not used */
+        /*
+         * eliminate functions that are always inlined or not used
+         */
         if( tree->right->op.opr == OPR_FUNCTION ) {     // if start of func
             TREEPTR right;
 
@@ -1207,7 +1231,10 @@ static TREEPTR GenOptimizedCode( TREEPTR tree )
 }
 
 static void DoInLineFunction( TREEPTR tree )
-{   // Push some state info and use InLineDepth for turning some stuff off
+/*******************************************
+ * Push some state info and use InLineDepth for turning some stuff off
+ */
+{
     struct func_save    save;
 
     ++InLineDepth;
@@ -1267,14 +1294,15 @@ bool IsInLineFunc( SYM_HANDLE sym_handle )
     return( ret );
 }
 
-/* This function recursively checks if a function is really used and
-   needs to be emitted.
-   A function is not inlined and generated if it calls itself recursively,
-   or if the inline depth goes over the limit.
-   In that case, and for normal function calls, the function is marked
-   as FUNC_USED and can't be skipped by the GenOptimizedCode().
-*/
 static int ScanFunction( TREEPTR tree, int inline_depth )
+/********************************************************
+ * This function recursively checks if a function is really used and
+ * needs to be emitted.
+ * A function is not inlined and generated if it calls itself recursively,
+ * or if the inline depth goes over the limit.
+ * In that case, and for normal function calls, the function is marked
+ * as FUNC_USED and can't be skipped by the GenOptimizedCode().
+ */
 {
     TREEPTR             right;
     struct func_info   *f;
@@ -1285,14 +1313,20 @@ static int ScanFunction( TREEPTR tree, int inline_depth )
     f = &tree->right->op.u2.func;
 
     if( inline_depth == -1 ) {
-        /* non-recursive call */
+        /*
+         * non-recursive call
+         */
         inline_depth = 0;
     } else if( (f->flags & FUNC_OK_TO_INLINE) && (f->flags & FUNC_INUSE) == 0 &&
         inline_depth < MAX_INLINE_DEPTH ) {
-        /* simulate inlining when appropriate */
+        /*
+         * simulate inlining when appropriate
+         */
         inline_depth++;
     } else {
-        /* if already examined no need to do it again */
+        /*
+         * if already examined no need to do it again
+         */
         if( f->flags & FUNC_USED )
             return 0;
         f->flags |= FUNC_USED | FUNC_MARKED;
@@ -1315,12 +1349,13 @@ static int ScanFunction( TREEPTR tree, int inline_depth )
     return( marked );
 }
 
-/* This function scans the source file tree for functions. Any non-static
-   function or static function whose address is taken is scanned for
-   any functions called, and not inlined.
-   These functions are marked as used.
-*/
 static void PruneFunctions( void )
+/*********************************
+ * This function scans the source file tree for functions. Any non-static
+ * function or static function whose address is taken is scanned for
+ * any functions called, and not inlined.
+ * These functions are marked as used.
+ */
 {
     TREEPTR     tree;
     SYM_ENTRY   sym;
@@ -1354,7 +1389,7 @@ static void GenModuleCode( void )
     TREEPTR     tree;
 
     InLineDepth = 0;
-//  InLineFuncStack = NULL;
+//    InLineFuncStack = NULL;
     for( tree = FirstStmt; tree != NULL; tree = tree->left ) {
         tree = GenOptimizedCode( tree );
     }
@@ -1461,8 +1496,10 @@ static void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
                 BESetSeg( segid );
                 AlignIt( typ );
                 DGLabel( FEBack( (CGSYM_HANDLE)sym_handle ) );
-                /* initialize all bytes to 0 */
-                /* if size > 64k, have to break it into chunks of 64k */
+                /*
+                 * initialize all bytes to 0
+                 * if size > 64k, have to break it into chunks of 64k
+                 */
                 size = SizeOfArg( typ );
                 if( segid == SEG_BSS ) {
                     DGUBytes( size );
@@ -1749,7 +1786,7 @@ static void FreeGblVars( SYM_HANDLE sym_handle )
     for( ; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
         sym = SymGetPtr( sym_handle );
         if( sym->info.backinfo != NULL ) {
-//              BEFiniBack( sym->info.backinfo );
+//            BEFiniBack( sym->info.backinfo );
             BEFreeBack( sym->info.backinfo );
         }
     }
@@ -1800,7 +1837,9 @@ cg_type CGenType( TYPEPTR typ )
     case TYP_STRUCT:
     case TYP_UNION:
         if( typ->object != NULL ) {
-            /* structure has a zero length array as last field */
+            /*
+             * structure has a zero length array as last field
+             */
             dtype = NewRefno();
             align = GetTypeAlignment( typ );
             BEDefType( dtype, align, TypeSize(typ) );

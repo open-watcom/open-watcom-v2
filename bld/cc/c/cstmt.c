@@ -50,7 +50,9 @@ typedef struct block_entry {
     bool        gen_endblock;   /* set if OPR_ENDBLOCK needed */
 } BLOCKDEFN, *BLOCKPTR;
 
-// values for return_type
+/*
+ * values for return_type
+ */
 enum return_with {
     RETURN_WITH_NONE = 0,
     RETURN_WITH_NO_EXPR = 1,
@@ -190,7 +192,9 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     tree->op.flags = OpFlags( sym->mods );
     tree->u.expr_type = sym->sym_type->object;    // function return type
     AddStmt( tree );
-    // Evil, evil globals! But we need this for later lookups in cgen.c
+    /*
+     * Evil, evil globals! But we need this for later lookups in cgen.c
+     */
     sym->u.func.start_of_func = LastStmt;
     CurFuncNode = tree;
     NodeCount = 0;
@@ -441,8 +445,10 @@ static SYM_HANDLE GetLocalVarDecls( void )
     DeclList( &symlist );
     if( symlist != SYM_NULL ) {
         symhandle = CurFunc->u.func.locals;
-        // symhandle will be non-zero if MakeNewSym was called while
-        // parsing the declaration list.
+        /*
+         * symhandle will be non-zero if MakeNewSym was called while
+         * parsing the declaration list.
+         */
         if( symhandle != SYM_NULL ) {   // if some temporaries were created
             for( ;; ) {                 // - find end of list
                 SymGet( &sym, symhandle );
@@ -493,8 +499,10 @@ static void LeftBrace( void )
     {   <- this is SymLevel == 1
     (weird code is for SymLevel > 1 )
 */
-    // DeclList might generate some quads to do some initializers
-    // if that happens, we want them output after the OPR_NEWBLOCK node
+    /*
+     * DeclList might generate some quads to do some initializers
+     * if that happens, we want them output after the OPR_NEWBLOCK node
+     */
     StartNewBlock();
     NextToken();
     ++SymLevel;
@@ -754,7 +762,7 @@ static void AddCaseLabel( unsigned value )
     leaf.u.ulong_konst = value;
     leaf.data_type = SwitchStack->case_type;
     SetLeafType( &leaf, 1 );
-//      converted_value = value & SwitchStack->case_mask;
+//    converted_value = value & SwitchStack->case_mask;
     converted_value = leaf.u.ulong_konst;
 #else
     converted_value = value;
@@ -1029,9 +1037,9 @@ static void EndSwitch( void )
             sw->default_label = BlockStack->break_label;
         }
     }
-//      if( sw->case_list == NULL ) {
-//          CWarn1( ERR_EMPTY_SWITCH );
-//      }
+//    if( sw->case_list == NULL ) {
+//        CWarn1( ERR_EMPTY_SWITCH );
+//    }
 #if 0
     for( ; (ce = sw->case_list) != NULL; ) {
         sw->case_list = ce->next_case;

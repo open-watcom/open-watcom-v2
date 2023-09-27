@@ -44,7 +44,9 @@
 
 extern  char    CompilerID[];
 
-/* COMMAND LINE PARSING OF MACRO DEFINITIONS */
+/*
+ * COMMAND LINE PARSING OF MACRO DEFINITIONS
+ */
 
 static size_t get_namelen( const char *start )
 {
@@ -253,7 +255,9 @@ static void Define_Macros_Extension( void )
     PreDefine_Macro( "_leave=__leave");
     PreDefine_Macro( "_asm=__asm");
 #if _CPU == 8086
-    /* SOM for Windows macros */
+    /*
+     * SOM for Windows macros
+     */
     PreDefine_Macro( "SOMLINK=__cdecl" );
     PreDefine_Macro( "SOMDLINK=__far" );
 #else

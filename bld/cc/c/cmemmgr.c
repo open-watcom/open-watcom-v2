@@ -55,7 +55,9 @@
 
 #define MCB_SHIFT       MEM_ALIGN
 
-/* Mask to get real allocation size */
+/*
+ * Mask to get real allocation size
+ */
 #define SIZE_MASK       ~ALLOC_FLAG
 
 #define NEXT_MCB(x)     ((MCB *)((char *)(x) + ((x)->len & SIZE_MASK)))
@@ -65,7 +67,8 @@
 #define PTR2MCB_SIZE(x) ((x) + MCB_SHIFT)
 #define MCB2PTR_SIZE(x) ((x) - MCB_SHIFT)
 
-/* Size of permanent area. Needs to be reasonably big to satisfy
+/*
+ * Size of permanent area. Needs to be reasonably big to satisfy
  * large allocation requests. Must by multiple of 0x20
  */
 #define MAX_PERM_SIZE   0x00100000
@@ -93,7 +96,8 @@ typedef struct mem_blk {
 #endif
 } mem_blk;
 
-/*  variables used:
+/*
+ *  variables used:
  *      char *PermPtr;          first free byte in permanent area block
  *      size_t PermSize;        total size of permanent area block
  *      size_t PermAvail;       number of bytes available in permanent area block
@@ -222,7 +226,9 @@ static void Ccoalesce( MCB *mcb1 )
          */
         if( mcb2->len & ALLOC_FLAG )
             break;
-        /* coalesce mcb1 and mcb2 and remove mcb2 from free list */
+        /*
+         * coalesce mcb1 and mcb2 and remove mcb2 from free list
+         */
         mcb1->len += mcb2->len;
         removeMCBfromFreeList( mcb2 );
     }
@@ -244,7 +250,9 @@ static void *CFastAlloc( size_t size )
         Ccoalesce( mcb );
         if( mcb->len >= mcb_len ) {
             if( mcb->len - mcb_len > sizeof( MCB ) ) {
-                /* block is big enough to split it */
+                /*
+                 * block is big enough to split it
+                 */
                 mcb->len -= mcb_len;
                 mcb = NEXT_MCB( mcb );
                 mcb->len = mcb_len;
@@ -278,7 +286,9 @@ void *CMemAlloc( size_t size )
             CSuicide();
         }
     }
-    /* make sure pointer is properly aligned */
+    /*
+     * make sure pointer is properly aligned
+     */
     assert( ((unsigned)(pointer_uint)p & (MEM_ALIGN - 1)) == 0 );
 
     return( memset( p, 0, size ) );
@@ -302,7 +312,9 @@ void *CMemRealloc( void *old_p, size_t size )
         CMemFree( old_p );
 #if 0
     } else {
-        /* the current block is big enough -- nothing to do (very lazy realloc) */
+        /*
+         * the current block is big enough -- nothing to do (very lazy realloc)
+         */
 #endif
     }
     return( p );
@@ -319,11 +331,15 @@ static enum cmem_kind CMemKind( const char *p )
     size = PermSize;
     for( blk = Blks; blk != NULL; blk = blk->next ) {
         if( p > (char *)blk ) {
-            /* check if permanent memory (from beginning of block) */
+            /*
+             * check if permanent memory (from beginning of block)
+             */
             if( p < ptr ) {
                 return( CMEM_PERM );
             }
-            /* check if dynamic memory (from end of block) */
+            /*
+             * check if dynamic memory (from end of block)
+             */
             if( p < ( (char *)blk + sizeof( mem_blk ) + size ) ) {
                 return( CMEM_MEM );
             }
@@ -375,7 +391,9 @@ void *CPermAlloc( size_t size )
     size = _RoundUp( size, MEM_ALIGN );
     if( size > PermAvail ) {
         if( size <= MAX_PERM_SIZE ) {
-            /* allocate another permanent area block */
+            /*
+             * allocate another permanent area block
+             */
             AllocPermArea();
         }
         if( size > PermAvail ) {

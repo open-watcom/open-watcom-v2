@@ -35,7 +35,9 @@
 #endif
 
 #if _CPU != 8086
-    /* enable Structured Exception Handling for all 32-bit targets */
+    /*
+     * enable Structured Exception Handling for all 32-bit targets
+     */
     #define __SEH__
 #endif
 

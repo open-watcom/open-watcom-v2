@@ -201,7 +201,7 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
         break;
     case OPR_NEG:
         U64Neg( &right, &value );
-//      value = - right;
+//        value = - right;
         break;
     case OPR_COM:
         value.u._32[I64LO32] = ~right.u._32[I64LO32];
@@ -220,7 +220,7 @@ static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
 }
 
 static int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
-/******************************************************/
+/*************************************************************/
 {
     int_32          value;
     int_32          left;
@@ -279,7 +279,7 @@ static int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 
 
 static int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
-/********************************************************/
+/***************************************************************/
 {
     uint_32         value;
     uint_32         left;
@@ -418,7 +418,7 @@ int64 LongValue64( TREEPTR leaf )
 
 
 static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
-/**********************************************************/
+/*****************************************************************/
 {
     uint64          value;
     uint64          left;
@@ -476,7 +476,7 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 
 
 static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
-/********************************************************/
+/***************************************************************/
 {
     int64           value;
     int64           left;
@@ -568,8 +568,10 @@ static void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
   #if 0
             ld.u.value = (double)leaf->op.u2.ulong64_value.u._64[0];
   #else
-            /* temporary fix for missing uint_64 -> double conversion in OW code generator for RISC */
-            /* it is valid for two's complement integers */
+            /*
+             * temporary fix for missing uint_64 -> double conversion in OW code generator for RISC
+             * it is valid for two's complement integers
+             */
             ld.u.value = (double)(int_64)leaf->op.u2.ulong64_value.u._64[0];
             if( (int_64)leaf->op.u2.ulong64_value.u._64[0] < 0 ) {
                 ld.u.value += U64_DOUBLE_CORRECTION;
@@ -581,7 +583,9 @@ static void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
         case TYP_SHORT:
         case TYP_INT:
         case TYP_LONG:
-            // signed types
+            /*
+             * signed types
+             */
 #ifdef _LONG_DOUBLE_
             __I4LD( leaf->op.u2.long_value, &ld );
 #else
@@ -589,7 +593,9 @@ static void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #endif
             break;
         default:
-            // unsigned types
+            /*
+             * unsigned types
+             */
 #ifdef _LONG_DOUBLE_
             __U4LD( leaf->op.u2.ulong_value, &ld );
 #else
@@ -686,7 +692,9 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     TYPEPTR     typ1;
     TYPEPTR     typ2;
 
-    // load ld1 and ld2 from op1 and op2
+    /*
+     * load ld1 and ld2 from op1 and op2
+     */
     MakeBinaryFloat( op2 );
     ld2 = op2->op.u2.float_value->ld;
     typ2 = TypeOf( op2 );
@@ -786,7 +794,9 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     default:
         return( 0 );
     }
-    /* The expression type must obey the usual arithmetic conversions. */
+    /*
+     * The expression type must obey the usual arithmetic conversions.
+     */
     tree->op.opr = OPR_PUSHFLOAT;
     tree->op.u2.float_value = op2->op.u2.float_value;
     tree->op.u2.float_value->ld = result;
@@ -795,8 +805,10 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     tree->left = NULL;
     tree->right = NULL;
     FreeExprNode( op1 );
-    // we reused op2->op.u2.float_value, so change op2->op.opr so that
-    // FreeExprNode doesn't try to free op2->op.u2.float_value
+    /*
+     * we reused op2->op.u2.float_value, so change op2->op.opr so that
+     * FreeExprNode doesn't try to free op2->op.u2.float_value
+     */
     op2->op.opr = OPR_NOP;
     FreeExprNode( op2 );
     return( 1 );
@@ -931,8 +943,10 @@ void CastConstNode( TREEPTR leaf, TYPEPTR newtyp )
     CastConstValue( leaf, newtyp->decl_type );
     if( newtyp->decl_type == TYP_POINTER ) {
         leaf->op.flags = OpFlags( newtyp->u.p.decl_flags );
-        // This really ought to be in CastConstValue, but that
-        // function can't figure out the exact pointer size
+        /*
+         * This really ought to be in CastConstValue, but that
+         * function can't figure out the exact pointer size
+         */
         if ( TypeSize( newtyp ) == TARGET_SHORT ) {
             leaf->op.u2.ulong_value = (target_ushort)leaf->op.u2.ulong_value;
         }
@@ -1062,8 +1076,10 @@ static bool FoldableTree( TREEPTR tree )
 
             SymGet( &sym, opnd->right->op.u2.sym_handle );
             if( sym.attribs.stg_class != SC_AUTO && sym.attribs.stg_class != SC_REGISTER ) {
-                /* &(static object) is known to be non-zero */
-                /* replace it by a 1 */
+                /*
+                 * &(static object) is known to be non-zero
+                 * replace it by a 1
+                 */
                 FreeExprNode( opnd->right );
                 FreeExprNode( opnd );
                 tree->left = UIntLeaf( 1 );
@@ -1097,7 +1113,8 @@ static bool FoldableTree( TREEPTR tree )
         }
         break;
 #if _CPU == 8086
-    /* The :> operator is currently only folded for 16-bit targets. The
+    /*
+     * The :> operator is currently only folded for 16-bit targets. The
      * folding itself can handle 16:32 pointers, but other places in cfe
      * and cg don't understand larger than 32-bit pointer constants.
      */
@@ -1164,12 +1181,13 @@ static arithmetic_type ArithmeticType( DATA_TYPE decl_type )
 }
 
 
-/* Check values of constant operands of certain operators. Needs to be done
+static void CheckOpndValues( TREEPTR tree )
+/******************************************
+ * Check values of constant operands of certain operators. Needs to be done
  * after all sub-trees are folded (the checked operands may be result of
  * constant folding) but before potentially constant folding the examined
  * operator.
  */
-static void CheckOpndValues( TREEPTR tree )
 {
     TYPEPTR             r_type;
     TREEPTR             opnd;
@@ -1191,9 +1209,10 @@ static void CheckOpndValues( TREEPTR tree )
             opnd = tree->right;
             r_type = opnd->u.expr_type;
             con = ArithmeticType( r_type->decl_type );
-
-            // shift arguments undergo integral promotion; 'char c = 1 << 10;'
-            // is not undefined, though it will overflow
+            /*
+             * shift arguments undergo integral promotion; 'char c = 1 << 10;'
+             * is not undefined, though it will overflow
+             */
             max_shift = SizeOfArg( GetType( TYP_INT ) );
             if( max_shift < SizeOfArg( tree->left->u.expr_type ) )
                 max_shift = SizeOfArg( tree->left->u.expr_type );
@@ -1235,7 +1254,9 @@ static void CheckOpndValues( TREEPTR tree )
                 }
                 } break;
             default:
-                // Not supposed to happen!
+                /*
+                 * Not supposed to happen!
+                 */
                 break;
             }
             if( shift_negative ) {
@@ -1270,11 +1291,15 @@ static void CheckOpndValues( TREEPTR tree )
                 break;
                 }
             case FLOATING:
-                // Should we warn here? Floating-point division by zero is
-                // not necessarily undefined...
+                /*
+                 * Should we warn here? Floating-point division by zero is
+                 * not necessarily undefined...
+                 */
                 break;
             default:
-                // Not supposed to happen?
+                /*
+                 * Not supposed to happen?
+                 */
                 break;
             }
             if( zero_divisor ) {

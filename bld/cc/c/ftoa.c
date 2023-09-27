@@ -51,7 +51,9 @@ char *ftoa( FLOATVAL *flt )
     cvt.expchar = 0;
     __LDcvt( &flt->ld, &cvt, mant );
     if( !isdigit( (unsigned char)*mant ) ) {
-        /* special magical thingy (nan, inf, ...) */
+        /*
+         * special magical thingy (nan, inf, ...)
+         */
         strcpy( buf, mant );
         return( buf );
     }

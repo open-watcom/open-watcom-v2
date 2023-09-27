@@ -44,7 +44,9 @@ typedef struct {
 
 static void DoDumpType( TYPEPTR realtype, SYMPTR sym, STRCHUNK *pch );
 
-/* matches table of type in ctypes.h */
+/*
+ * matches table of type in ctypes.h
+ */
 static const char   *CTypeNames[] = {
     #define pick1(enum,cgtype,x86asmtype,name,size) name,
     #include "cdatatyp.h"
@@ -64,7 +66,9 @@ static char *ChunkToStr( STRCHUNK *pch )
 {
     char    *ret;
 
-    /* remove spaces from end of string */
+    /*
+     * remove spaces from end of string
+     */
     while( pch->cursize > 0 && pch->data[pch->cursize - 1] == ' ' ) {
         pch->data[--pch->cursize] = '\0';
     }
@@ -156,7 +160,9 @@ static TYPEPTR TrueType( TYPEPTR typ )
         return typ;
 
     if( do_message_output ) {
-        /* For human: smart typedef expansion. Stop before unnamed struct */
+        /*
+         * For human: smart typedef expansion. Stop before unnamed struct
+         */
         while( typ->decl_type == TYP_TYPEDEF ) {
             newtyp = typ->object;
             if( newtyp->decl_type == TYP_STRUCT || newtyp->decl_type == TYP_UNION
@@ -169,7 +175,9 @@ static TYPEPTR TrueType( TYPEPTR typ )
         }
     } else {
         if( !CompFlags.dump_prototypes ) {
-            /* -zg, not -v */
+            /*
+             * -zg, not -v
+             */
             SKIP_TYPEDEFS( typ );
         }
     }
@@ -294,7 +302,9 @@ static TYPEPTR DefArgPromotion( TYPEPTR arg_typ )
 {
     TYPEPTR     typ;
 
-    /* perform default argument promotions */
+    /*
+     * perform default argument promotions
+     */
     typ = arg_typ;
     while( typ->decl_type == TYP_TYPEDEF ) typ = Object( typ );
     switch( typ->decl_type ) {
@@ -344,10 +354,10 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
         }
         if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION
           || typ->decl_type == TYP_ENUM ) {
-
-            /* if there is no tag name, then should print out the
-               entire structure or union definition or enum list */
-
+            /*
+             * if there is no tag name, then should print out the
+             * entire structure or union definition or enum list
+             */
             DumpTagName( typ->u.tag->name, pch );
         }
     }
@@ -420,7 +430,9 @@ static void DumpTail( TYPEPTR typ, SYMPTR funcsym, type_modifiers pointer_flags,
         if( typ->decl_type == TYP_ARRAY ) {
             ChunkSaveChar( pch, ')' );
             if( pointer_flags & FLAG_WAS_ARRAY ) {
-                /* we don't know the dimension anymore. just put out [1] */
+                /*
+                 * we don't know the dimension anymore. just put out [1]
+                 */
                 ChunkSaveStr( pch, "[1]" );
                 pointer_flags = 0;
             }

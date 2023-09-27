@@ -291,7 +291,9 @@ static void SetTargetSystem( void )
         #error "Target OS not defined"
     #endif
 #elif _RISC_CPU
-        /* we only have NT libraries for Alpha right now */
+        /*
+         * we only have NT libraries for Alpha right now
+         */
         _SetTargetNameConst( "nt" );
 #elif _CPU == _SPARC
         _SetTargetNameConst( "solaris" );
@@ -339,15 +341,17 @@ static void SetTargetSystem( void )
         Stack87 = 4;
         /* fall through */
     case TS_NETWARE5:
-        /* no "fpr" for Netware 5.0 */
+        /*
+         * no "fpr" for Netware 5.0
+         */
         if( SwData.mem == SW_M_DEF ) {
             SwData.mem = SW_MS;
         }
         PreDefine_Macro( "__NETWARE_386__" );
         /*
-        //  NETWARE uses stack based calling conventions
-        //  by default - silly people.
-        */
+         * NETWARE uses stack based calling conventions
+         * by default - silly people.
+         */
         CompFlags.register_conventions = false;
         break;
 
@@ -492,13 +496,17 @@ static void SetGenSwitches( void )
 #endif
     switch( SwData.dbg_fmt ) {
     case SW_DF_WATCOM:
-        /* nothing to do */
+        /*
+         * nothing to do
+         */
         break;
     case SW_DF_CV:
         GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     case SW_DF_DEF:
-        /* DWARF is the default */
+        /*
+         * DWARF is the default
+         */
     case SW_DF_DWARF:
         GenSwitches |= CGSW_GEN_DBG_DF;
         break;
@@ -836,8 +844,10 @@ static void AddIncList( const char *path_list )
 }
 
 void MergeInclude( void )
+/************************
+ * must be called after GenCOptions to get req'd IncPathList
+ */
 {
-    /* must be called after GenCOptions to get req'd IncPathList */
     const char  *env_var;
     char        *buff;
 
@@ -2067,7 +2077,9 @@ static void ProcOptions( const char *str )
                 p = ToString( beg, str - beg );
                 StripQuotes( p );
                 if( WholeFName != NULL ) {
-                    /* more than one file to compile ? */
+                    /*
+                     * more than one file to compile ?
+                     */
                     CBanner();
                     CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
                     CMemFree( WholeFName );
@@ -2232,13 +2244,17 @@ static void SetDebug( void )
 void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
-    /* Add precision warning but disabled by default */
+    /*
+     * Add precision warning but disabled by default
+     */
     WarnEnableDisable( false, ERR_LOSE_PRECISION );
-    /* Warning about non-prototype declarations is disabled by default
+    /*
+     * Warning about non-prototype declarations is disabled by default
      * because Windows and OS/2 API headers use it
      */
     WarnEnableDisable( false, ERR_OBSOLETE_FUNC_DECL );
-    /* Warning about pointer truncation during cast is disabled by
+    /*
+     * Warning about pointer truncation during cast is disabled by
      * default because it would cause too many build breaks right now
      * by correctly diagnosing broken code.
      */
@@ -2276,7 +2292,9 @@ void GenCOptions( char **cmdline )
     Define_Memory_Model();
 #if _INTEL_CPU
     if( GET_CPU( ProcRevision ) < CPU_386 ) {
-        /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
+        /*
+         * issue warning message if /zf[f|p] or /zg[f|p] spec'd?
+         */
         TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
     }
     if( !CompFlags.save_restore_segregs ) {

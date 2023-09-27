@@ -61,7 +61,9 @@ void ConBlip( void )
  */
 {
     IDEFN( PrintWithCRLF )( IdeHdl, "." );
-    /* we are ignoring return for now */
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void ConsErrMsg( cmsg_info *cinfo )
@@ -94,7 +96,9 @@ void ConsErrMsg( cmsg_info *cinfo )
         IdeMsgSetSrcLine( &info, cinfo->line );
     }
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    /* we are ignoring return for now */
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void ConsErrMsgVerbatim( char const *line )
@@ -106,7 +110,9 @@ void ConsErrMsgVerbatim( char const *line )
 
     IdeMsgInit( &info, IDEMSGSEV_ERROR, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    /* we are ignoring return for now */
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void BannerMsg( char const  *line )
@@ -118,7 +124,9 @@ void BannerMsg( char const  *line )
 
     IdeMsgInit( &info, IDEMSGSEV_BANNER, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    /* we are ignoring return for now */
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void DebugMsg( char const  *line )
@@ -130,7 +138,9 @@ void DebugMsg( char const  *line )
 
     IdeMsgInit( &info, IDEMSGSEV_DEBUG, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    /* we are ignoring return for now */
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void NoteMsg( char const  *line )
@@ -142,7 +152,9 @@ void NoteMsg( char const  *line )
 
     IdeMsgInit( &info, IDEMSGSEV_NOTE_MSG, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    /* we are ignoring return for now */
+    /*
+     * we are ignoring return for now
+     */
 }
 
 const char *FEGetEnv( char const *name )
@@ -171,7 +183,6 @@ void MyExit( int ret )
 
 // IDE INTERFACE
 
-
 unsigned IDEAPI IDEGetVersion ( void )
 /*************************************
  * GET IDE VERSION
@@ -191,9 +202,9 @@ IDEBool IDEAPI IDEInitDLL
     ( IDECBHdl      idehdl          // - handle for this instantiation
     , IDECallBacks  *idecbs         // - call backs into IDE
     , IDEDllHdl     *dllhdl ) {     // - uninitialized info
-//***********************
-// DLL INITIALIZATION
-//***********************
+/************************
+ * DLL INITIALIZATION
+ ************************/
     IdeHdl = idehdl;
     IdeCbs = idecbs;
     *dllhdl = NULL;
@@ -321,7 +332,9 @@ int IDEAPI IDERunYourSelf       // COMPILE A PROGRAM
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
     FatalEnv = JMPBUF_PTR( env );
-    /* initialize argv array */
+    /*
+     * initialize argv array
+     */
     argv[0] = (char *)opts;
     argv[1] = NULL;
     getFrontEndArgv( argv + 1, infile, outfile );
@@ -382,7 +395,9 @@ int IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
     FatalEnv = JMPBUF_PTR( env );
-    /* allocate and initialize argv array */
+    /*
+     * allocate and initialize argv array
+     */
     argv = init_argv( args, argc, infile, outfile );
     if( setjmp( env ) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;

@@ -103,7 +103,6 @@ static bool ReadBuffer( FCB *srcfcb )
             }
         }
     }
-
     /*
      * ANSI/ISO C says a non-empty source file must be terminated
      * with a newline. If it's not, we insert one, otherwise
@@ -146,7 +145,7 @@ int GetNextChar( void )
 
     c = *SrcFile->src_ptr++;
     if(( CharSet[c] & C_EX ) == 0 ) {
-//      SrcFile->column++;
+//        SrcFile->column++;
         CurrChar = c;
         return( c );
     }
@@ -157,11 +156,13 @@ static int getCharAfterOneQuestion( void )
 {
     int c;
 
-    // column for 'LastChar' has not been set yet
+    /*
+     * column for 'LastChar' has not been set yet
+     */
     NextChar = GetNextChar;
     c = LastChar;
     if( c == '?' ) {
-//      SrcFile->column++;
+//        SrcFile->column++;
         CurrChar = c;
         return( c );
     }
@@ -170,7 +171,7 @@ static int getCharAfterOneQuestion( void )
 
 static int getCharAfterTwoQuestion( void )
 {
-//  SrcFile->column++;
+//    SrcFile->column++;
     CurrChar = '?';
     NextChar = getCharAfterOneQuestion;
     return( CurrChar );
@@ -218,7 +219,9 @@ static int getSecondMultiByte( void )
     int c;
 
     c = getTestCharFromFile();
-    // should we do this for a multi-byte char?
+    /*
+     * should we do this for a multi-byte char?
+     */
     NextChar = GetNextChar;
     CurrChar = c;
     return( c );
@@ -245,7 +248,9 @@ static int tryBackSlashNewLine( void )
 {
     int nc;
 
-    // CurrChar is '\\' and SrcFile->column is up to date
+    /*
+     * CurrChar is '\\' and SrcFile->column is up to date
+     */
     Blank1Count = 0;
     Blank2Count = 0;
     Tab1Count = 0;
@@ -281,7 +286,7 @@ static int tryBackSlashNewLine( void )
         }
         NewLineStartPos( SrcFile );
         SrcFileLoc = SrcFile->src_loc;
-//      SrcFile->column = 0;
+//        SrcFile->column = 0;
         return( GetNextChar() );
     }
     LastChar = nc;
@@ -294,12 +299,12 @@ static int tryTrigraphAgain( void )
     int c;
     int xc;
 
-//  SrcFile->column++;
+//    SrcFile->column++;
     c = getTestCharFromFile();
     if( c != '?' ) {
         xc = translateTriGraph( c );
         if( c != xc ) {
-//          SrcFile->column += 2;
+//            SrcFile->column += 2;
             CurrChar = xc;
             NextChar = GetNextChar;
             if( xc == '\\' ) {
@@ -313,7 +318,9 @@ static int tryTrigraphAgain( void )
         return( '?' );
     }
     CurrChar = c;
-    /* leave NextChar set here because it could still be a trigraph */
+    /*
+     * leave NextChar set here because it could still be a trigraph
+     */
     return( c );
 }
 
@@ -323,7 +330,9 @@ int GetCharCheckFile( int c )
     int nc;
     int nnc;
 
-    // column has not being changed for 'c' yet
+    /*
+     * column has not being changed for 'c' yet
+     */
     if( c != '?' ) {
         switch( c ) {
         case '\0':
@@ -344,20 +353,20 @@ int GetCharCheckFile( int c )
             return( CurrChar );
         case '\n':
 //            NewLineStartPos( SrcFile );
-//          SrcFile->column = 0;
+//            SrcFile->column = 0;
             break;
         case '\t':
-//          SrcFile->column +=
+//            SrcFile->column +=
 //              ( ( TAB_WIDTH + 1 ) - (( SrcFile->column + 1 ) % TAB_WIDTH ) );
             break;
         case '\\':
-//          SrcFile->column++;
+//            SrcFile->column++;
             CurrChar = c;
             return( tryBackSlashNewLine() );
         case '\r':
             break;
         default:
-//          SrcFile->column++;
+//            SrcFile->column++;
             if( c > 0x7f && (CharSet[c] & C_DB) ) {
                 /*
                  * we should not process the second byte through
@@ -371,7 +380,9 @@ int GetCharCheckFile( int c )
         CurrChar = c;
         return( c );
     }
-    /* we have one '?' */
+    /*
+     * we have one '?'
+     */
 //    SrcFile->column++;
     nc = getTestCharFromFile();
     if( nc != '?' ) {
@@ -380,11 +391,13 @@ int GetCharCheckFile( int c )
         NextChar = getCharAfterOneQuestion;
         return( c );
     }
-    /* we have two '?'s */
+    /*
+     * we have two '?'s
+     */
     nnc = getTestCharFromFile();
     xc = translateTriGraph( nnc );
     if( nnc != xc ) {
-//      SrcFile->column += 2;
+//        SrcFile->column += 2;
         CurrChar = xc;
         if( xc == '\\' ) {
             return( tryBackSlashNewLine() );
@@ -394,7 +407,9 @@ int GetCharCheckFile( int c )
     LastChar = nnc;
     CurrChar = c;
     if( nnc == '?' ) {
-        /* the next char after this may be a valid trigraph! */
+        /*
+         * the next char after this may be a valid trigraph!
+         */
         NextChar = tryTrigraphAgain;
         return( c );
     }
@@ -406,7 +421,9 @@ static int regetUngotCharAfterOneQuestion( void )
 {
     int c;
 
-    // column for 'LastChar' has been set
+    /*
+     * column for 'LastChar' has been set
+     */
     NextChar = GetNextChar;
     c = LastChar;
     CurrChar = c;
@@ -456,26 +473,34 @@ static int restartBackSlashWhiteSpace( void )
 void GetNextCharUndo( int c )
 {
     if( NextChar == GetNextChar ) {
-        // will return 'LastChar' and reset back to 'GetNextChar'
+        /*
+         * will return 'LastChar' and reset back to 'GetNextChar'
+         */
         NextChar = regetUngotCharAfterOneQuestion;
         LastChar = c;
         return;
     }
     if( NextChar == getCharAfterOneQuestion ) {
-        // LastChar already has character saved in it
-        // c should be '?'
+        /*
+         * LastChar already has character saved in it
+         * c should be '?'
+         */
         NextChar = restartDetectOneQuestion;
         return;
     }
     if( NextChar == getCharAfterTwoQuestion ) {
-        // LastChar already has character saved in it
-        // c should be '?'
+        /*
+         * LastChar already has character saved in it
+         * c should be '?'
+         */
         NextChar = restartDetectTwoQuestion;
         return;
     }
     if( NextChar == getCharAfterBackSlash ) {
-        // LastChar already has character saved in it
-        // c should be '\\'
+        /*
+         * LastChar already has character saved in it
+         * c should be '\\'
+         */
         NextChar = restartBackSlashWhiteSpace;
         return;
     }
@@ -517,7 +542,9 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
 #endif
         if( SrcFile != NULL ) {
             if( SrcFile == MainSrcFile ) {
-                // remember name of included file
+                /*
+                 * remember name of included file
+                 */
                 AddIncFileList( filename );
             }
         }
@@ -546,8 +573,10 @@ bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
         return( false );
     }
     if( CompFlags.track_includes ) {
-        // Don't track the top level file (any semi-intelligent user should
-        // have no trouble tracking *that* down)
+        /*
+         * Don't track the top level file (any semi-intelligent user should
+         * have no trouble tracking *that* down)
+         */
         if( IncFileDepth < MAX_INC_DEPTH ) {
             CInfoMsg( INFO_INCLUDING_FILE, filename );
         }
@@ -579,7 +608,9 @@ void CloseFCB( FCB *srcfcb )
     CurrChar = srcfcb->prev_currchar;
     if( SrcFile != NULL ) {
         if( SrcFile->src_fp == NULL ) {
-            // physical file name must be used, not logical
+            /*
+             * physical file name must be used, not logical
+             */
             SrcFile->src_fp = fopen( SrcFile->src_flist->name, "rb" );
             fseek( SrcFile->src_fp, SrcFile->rseekpos, SEEK_SET );
         }

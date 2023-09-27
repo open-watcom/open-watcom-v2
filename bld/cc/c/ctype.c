@@ -48,7 +48,9 @@ static void CheckBitfieldType( TYPEPTR typ );
         }
 #endif
 
-/* matches enum DataType in ctypes.h */
+/*
+ * matches enum DataType in ctypes.h
+ */
 static unsigned char  CTypeSizes[] = {
     #define pick1(enum,cgtype,x86asmtype,name,size) size,
     #include "cdatatyp.h"
@@ -605,8 +607,10 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         case T_ID:
             if( typ != NULL || bmask != M_NONE )
                 goto got_specifier;
-            /* lookup id in symbol table */
-            /* if valid type identifier then OK */
+            /*
+             * lookup id in symbol table
+             * if valid type identifier then OK
+             */
             if( CurToken == T_ID ) {
                 sym_handle = SymLookTypedef( CalcHashID( Buffer ), Buffer, &sym );
             } else {    /* T_SAVED_ID */
@@ -681,8 +685,10 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
 got_specifier:
     info->stg = specified_stg_class;
     if( typ != NULL ) {
-        /* already have a type (TYP_STRUCT, TYP_UNION, TYP_ENUM) */
-        /* or an ID that was a typedef name */
+        /*
+         * already have a type (TYP_STRUCT, TYP_UNION, TYP_ENUM)
+         * or an ID that was a typedef name
+         */
         if( bmask != M_NONE ) {
             CErr1( ERR_INV_TYPE );  // picked up an int
         }
@@ -772,7 +778,9 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         SKIP_TYPEDEFS( typ );
     }
     if( new_field->name[0] == '\0' ) {
-        /* allow nameless structs and unions */
+        /*
+         * allow nameless structs and unions
+         */
         if( (typ->decl_type != TYP_STRUCT && typ->decl_type != TYP_UNION)
           || !CompFlags.extensions_enabled ) {
             CErr1( ERR_INVALID_DECLARATOR );
@@ -781,7 +789,9 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     if( typ == decl ) {
         CErr1( ERR_STRUCT_OR_UNION_INSIDE_ITSELF );
     } else if( SizeOfArg( typ ) == 0 ) {   /* was TypeSize(typ) */
-        /* can't have an array of incomplete type */
+        /*
+         * can't have an array of incomplete type
+         */
         if( typ->decl_type == TYP_ARRAY
           && ( SizeOfArg( typ->object ) == 0 || !CompFlags.extensions_enabled )
           || typ->decl_type != TYP_ARRAY ) {
@@ -927,9 +937,11 @@ static DATA_TYPE UnQualifiedType( TYPEPTR typ )
     return( TYP_UNDEFINED );
 }
 
-/* clear the hash table of all fields that were just defined
-   in the struct with tag tag */
 static void ClearFieldHashTable( TAGPTR tag )
+/********************************************
+ * clear the hash table of all fields that were just defined
+ * in the struct with tag tag
+ */
 {
     FIELDPTR field;
     FIELDPTR hash_field;
@@ -939,11 +951,15 @@ static void ClearFieldHashTable( TAGPTR tag )
         prev_field = NULL;
         hash_field = FieldHash[field->hash];
         if( hash_field == field ) {
-            /* first entry: easy kick out */
+            /*
+             * first entry: easy kick out
+             */
             FieldHash[field->hash] = field->next_field_same_hash;
         } else {
             while( hash_field != NULL ) {
-                /* search for candidate to kick */
+                /*
+                 * search for candidate to kick
+                 */
                 prev_field = hash_field;
                 hash_field = hash_field->next_field_same_hash;
                 if( hash_field == field ) {
@@ -1023,7 +1039,9 @@ static target_size GetFields( TYPEPTR decl )
     worst_alignment = 1;
     bits_available = 1;
     bits_total = 0;
-    /* assertion: bits_available != bits_total && ( bits_total / CHAR_BIT ) == 0 */
+    /*
+     * assertion: bits_available != bits_total && ( bits_total / CHAR_BIT ) == 0
+     */
     struct_size = start;
     next_offset = start;
     for(;;) {
@@ -1088,10 +1106,14 @@ static target_size GetFields( TYPEPTR decl )
                 if( width > bits_available || width == 0 ) {
                     scalar_size = TypeSize( typ );
                     if( bits_available != bits_total ) {
-                        /* some bits have been used; abandon this unit */
+                        /*
+                         * some bits have been used; abandon this unit
+                         */
                         next_offset += bits_total / CHAR_BIT;
                     } else if( width == 0 ) {
-                        /* no bits have been used; align to base type */
+                        /*
+                         * no bits have been used; align to base type
+                         */
                         next_offset = _RoundUp( next_offset, scalar_size );
                     }
                     bits_total = scalar_size * CHAR_BIT;
@@ -1210,14 +1232,13 @@ static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
 }
 
 /*
-Next three functions descripe a struct that looks like
-struct {
-    double __ow_real;
-    double _Imaginary __ow_imaginary;
-}
-*/
-
-/*
+ * Next three functions describe a struct that looks like
+ * struct {
+ *     double __ow_real;
+ *     double _Imaginary __ow_imaginary;
+ * }
+ */
+#if 0
 static void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
 {
     info->stg = SC_NONE;      // indicate don't want any storage class specifiers
@@ -1311,7 +1332,7 @@ static TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
 
     return( typ );
 }
-*/
+#endif
 
 static void CheckBitfieldType( TYPEPTR typ )
 {
@@ -1325,7 +1346,9 @@ static void CheckBitfieldType( TYPEPTR typ )
     case TYP_INT:
     case TYP_UINT:
     case TYP_BOOL:
-        /* ANSI C only allows int and unsigned [int]; C99 adds _Bool */
+        /*
+         * ANSI C only allows int and unsigned [int]; C99 adds _Bool
+         */
         return;
     case TYP_CHAR:
     case TYP_UCHAR:
@@ -1597,7 +1620,9 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
     case TYP_STRUCT:
         size = typ->u.tag->size;
         if( typ->object != NULL ) {
-            /* structure has a zero length array as last field */
+            /*
+             * structure has a zero length array as last field
+             */
             typ = typ->object;  /* point to TYP_ARRAY entry */
             size += SizeOfArg( typ );
         }
@@ -1619,7 +1644,8 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
     return( size );
 }
 
-/* Return an integer type of specified size, or NULL in case of failure.
+/*
+ * Return an integer type of specified size, or NULL in case of failure.
  * The type will be signed if 'sign' is true. The type will have exactly
  * requested size if 'exact' is true, or the next larger type will be
  * returned (eg. 64-bit integer if 6 byte size is requested).
@@ -1633,7 +1659,9 @@ TYPEPTR GetIntTypeBySize( target_size size, bool sign, bool exact )
     TYPEPTR                 typ = NULL;
     unsigned                i;
 
-    /* Make sure the types are laid out the way we expect */
+    /*
+     * Make sure the types are laid out the way we expect
+     */
     assert( TYP_BOOL == 0 );
     assert( TYP_CHAR == 1 );
     assert( TYP_FLOAT == TYP_ULONG64 + 1 );
@@ -1655,7 +1683,9 @@ TYPEPTR GetIntTypeBySize( target_size size, bool sign, bool exact )
 void TypesPurge( void )
 {
 #if 0
-    /* The type entries are in permanent memory, so they can't be freed */
+    /*
+     * The type entries are in permanent memory, so they can't be freed
+     */
     TYPEPTR     temp;
 
     while( TypeHead != NULL ) {

@@ -63,24 +63,36 @@
 
 #define ERR     TYP_ERROR       /* no real type behind this value */
 
-/* define macros for promoted types */
+/*
+ * define macros for promoted types
+ */
 #if TARGET_INT == 4
 
-    /* Promoted Unsigned Short is Signed Int */
+    /*
+     * Promoted Unsigned Short is Signed Int
+     */
     #define PUS     TYP_INT
-    /* Promoted Unsigned Int is Unsigned Long */
+    /*
+     * Promoted Unsigned Int is Unsigned Long
+     */
     #define PUI     TYP_ULONG
 
 #else /* 16-bit ints */
 
-    /* Promoted Unsigned Short is Unsigned Int */
+    /*
+     * Promoted Unsigned Short is Unsigned Int
+     */
     #define PUS     TYP_UINT
-    /* Promoted Unsigned Int is Signed Long */
+    /*
+     * Promoted Unsigned Int is Signed Long
+     */
     #define PUI     TYP_LONG
 
 #endif
 
-/* matches enum DATA_TYPE in ctypes.h */
+/*
+ * matches enum DATA_TYPE in ctypes.h
+ */
 static const unsigned char  AddResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
@@ -118,7 +130,9 @@ static const unsigned char  AddResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /* LCX */ { LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,LCX,LCX,LCX, },
 };
 
-/* matches enum DATA_TYPE in ctypes.h */
+/*
+ * matches enum DATA_TYPE in ctypes.h
+ */
 static const unsigned char  SubResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
@@ -156,7 +170,9 @@ static const unsigned char  SubResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /* LCX */ { LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,LCX,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,LCX,LCX,LCX, },
 };
 
-/* matches enum DATA_TYPE in ctypes.h */
+/*
+ * matches enum DATA_TYPE in ctypes.h
+ */
 static const unsigned char  IntResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX,  */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
@@ -194,7 +210,9 @@ static const unsigned char  IntResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /* LCX */ { ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 };
 
-/* matches enum DATA_TYPE in ctypes.h */
+/*
+ * matches enum DATA_TYPE in ctypes.h
+ */
 static char ShiftResult[DATA_TYPE_SIZE] = {
 /* >>      op2 */
 /* BOL */  INT,
@@ -232,7 +250,9 @@ static char ShiftResult[DATA_TYPE_SIZE] = {
 /* LCX */  ERR,
 };
 
-/* matches enum DATA_TYPE in ctypes.h */
+/*
+ * matches enum DATA_TYPE in ctypes.h
+ */
 static const unsigned char  BinResult[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { BOL,INT,UCH,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
@@ -368,8 +388,10 @@ enum    conv_types {
 #define T2F     CER
 #define T2D     CER
 
-/* matches enum DATA_TYPE in ctypes.h */
-/* When indexing, row is the source type, column is the target. */
+/*
+ * matches enum DATA_TYPE in ctypes.h
+ * When indexing, row is the source type, column is the target.
+ */
 static enum  conv_types const CnvTable[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*          BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { NIL,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
@@ -462,21 +484,22 @@ DATA_TYPE DataTypeOf( TYPEPTR typ )
     return( data_type );
 }
 
-// 0 - near data
-// 1 - based data
-// 2 - far data
-// 3 - far16 data
-// 4 - huge data
-// 5 - interrupt
-// 6 - near func
-// 7 - based func
-// 8 - far func
-// 9 - far16 func
-// 10 - huge func
-// 11 - interrupt func
-// 12 - NOT
-
 static pointer_class PointerClass( TYPEPTR typ )
+/***********************************************
+ * 0 - near data
+ * 1 - based data
+ * 2 - far data
+ * 3 - far16 data
+ * 4 - huge data
+ * 5 - interrupt
+ * 6 - near func
+ * 7 - based func
+ * 8 - far func
+ * 9 - far16 func
+ * 10 - huge func
+ * 11 - interrupt func
+ * 12 - NOT
+ */
 {
     type_modifiers    flags;
     pointer_class     ptrclass;
@@ -529,8 +552,10 @@ pointer_class ExprTypeClass( TYPEPTR typ )
 
 #define Convert( opnd, opnd_type, result_type )     opnd
 
-// return 0 not a num, else number of bits | SIGN_BIT if signed
 static int NumSize( DATA_TYPE op_type )
+/**************************************
+ * return 0 not a num, else number of bits | SIGN_BIT if signed
+ */
 {
     int     size;
 
@@ -578,8 +603,10 @@ static int NumSize( DATA_TYPE op_type )
     return( size );
 }
 
-// return 0 not a num, else number of bits | SIGN_BIT if signed
 static int NumSizeType( TYPEPTR typ )
+/************************************
+ * return 0 not a num, else number of bits | SIGN_BIT if signed
+ */
 {
     int     size;
 
@@ -657,7 +684,9 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
         }
     } else {
         if( rel == REL_LE && !rev_ret && !NumSign( op1_size ) && U64Test( &val ) == 0 ) {
-            // special case for unsigned <= 0
+            /*
+             * special case for unsigned <= 0
+             */
             ret = CMP_COMPLEX;
         }
     }
@@ -666,7 +695,7 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
 
 
 static int ReverseRelOp( int opr )
-/*
+/*********************************
  * map opr to reversed operand equivalent
  */
 {
@@ -713,9 +742,13 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
     type_modifiers  typ1_flags, typ2_flags;
 
     typ2 =  op2->u.expr_type;
-    // skip typedefs, go into enum base
+    /*
+     * skip typedefs, go into enum base
+     */
     typ1 = SkipTypeFluff( typ1 );
-    // skip typedefs, go into enum base
+    /*
+     * skip typedefs, go into enum base
+     */
     typ2 = SkipTypeFluff( typ2 );
     typ1_flags = typ1->u.p.decl_flags;
     typ2_flags = typ2->u.p.decl_flags;
@@ -739,10 +772,12 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
         }
 #endif
     } else if( typ2->decl_type == TYP_POINTER ) {
-        // If we're converting a based pointer to some larger arithmetic type,
-        // we must convert it to a long pointer first to get proper segment.
-        // However, in flat model this conversion isn't done, we pretend
-        // that segments don't exist.
+        /*
+         * If we're converting a based pointer to some larger arithmetic type,
+         * we must convert it to a long pointer first to get proper segment.
+         * However, in flat model this conversion isn't done, we pretend
+         * that segments don't exist.
+         */
         if( TypeSize( typ1 ) > TypeSize( typ2 ) ) {
 #if _CPU == 386
             if( (TargetSwitches & CGSW_X86_FLAT_MODEL) == 0 && (typ2_flags & FLAG_BASED) ) {
@@ -754,8 +789,10 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
             }
         }
     } else if( typ1->decl_type == TYP_POINTER ) {
-        // If we're converting an arithmetic type to a pointer, first convert
-        // it to appropriately sized integer to correctly extend/truncate.
+        /*
+         * If we're converting an arithmetic type to a pointer, first convert
+         * it to appropriately sized integer to correctly extend/truncate.
+         */
         if( TypeSize( typ1 ) != TypeSize( typ2 ) ) {
             op2 = CnvOp( op2, GetIntTypeBySize( TypeSize( typ1 ), false, false ), true );
         }
@@ -764,14 +801,17 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
 }
 
 
-/* Convert a scalar to boolean */
 static TREEPTR BoolConv( TYPEPTR typ, TREEPTR tree )
+/***************************************************
+ * Convert a scalar to boolean
+ */
 {
     if( tree->op.opr == OPR_ERROR ) {
         return( ErrorNode( tree ) );
     }
     SKIP_TYPEDEFS( typ );
-    /* Non-boolean types need to be converted to _Bool; _Bool expressions
+    /*
+     * Non-boolean types need to be converted to _Bool; _Bool expressions
      * also need to be converted unless they're constants.
      */
     if( DataTypeOf( typ ) == TYP_BOOL && TypeOf( tree ) != typ ) {
@@ -785,11 +825,11 @@ static TREEPTR BoolConv( TYPEPTR typ, TREEPTR tree )
 }
 
 
-/*
+static bool IsInt( DATA_TYPE op )
+/********************************
  * what's target compatible between default int as ret type
  * and a later declaration
  */
-static bool IsInt( DATA_TYPE op )
 {
     bool        ret;
 
@@ -845,9 +885,10 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     op2_type = DataTypeOf( typ2 );
     cmp_type = typ1;
     result_type = op1_type;
-
-    /* check for meaningless comparison: */
-    //TODO this would be a better check maybe in foldtree
+    /*
+     * check for meaningless comparison:
+     * TODO this would be a better check maybe in foldtree
+     */
     if( IS_PPCTL_NORMAL() ) {
         cmp_cc = CMP_VOID;
         if( op2->op.opr == OPR_PUSHINT ) {
@@ -870,12 +911,16 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     } else if( op1_type == TYP_POINTER && op2_type == TYP_POINTER ) {
          CompatiblePtrType( typ1, typ2, opr );
          if( TypeSize( typ2 ) > TypeSize( typ1 ) ) {
-             /* Make sure near pointer is converted to far if necessary */
+             /*
+              * Make sure near pointer is converted to far if necessary
+              */
              cmp_type = typ2;
          }
     } else if( (op1_type == TYP_POINTER && IsInt( op2_type )) ||
                (op2_type == TYP_POINTER && IsInt( op1_type )) ) {
-        /* ok to compare pointer with constant 0 */
+        /*
+         * ok to compare pointer with constant 0
+         */
         if( opr != T_EQ && opr != T_NE ) {
             CWarn1( ERR_POINTER_TYPE_MISMATCH );
         } else if( !IsZero( op1 ) && !IsZero( op2 ) ) {
@@ -1032,8 +1077,10 @@ static TREEPTR PtrSubtract( TREEPTR result, target_ssize size, DATA_TYPE result_
 }
 
 
-// Remove the OPR_CONVERT for lcast so it looks like an LVALUE
 extern TREEPTR LCastAdj( TREEPTR tree )
+/**************************************
+ * Remove the OPR_CONVERT for lcast so it looks like an LVALUE
+ */
 {
     TREEPTR         opnd;
     TYPEPTR         typ;
@@ -1049,7 +1096,9 @@ extern TREEPTR LCastAdj( TREEPTR tree )
     if( opnd->op.opr == OPR_PUSHSYM ) {
         opnd->op.opr = OPR_PUSHADDR;
     } else if( opnd->op.opr == OPR_POINTS ) {
-        // fix up fred's screw ball pointer op
+        /*
+         * fix up fred's screw ball pointer op
+         */
         modifiers = FlagOps( opnd->op.flags );
         opnd->op.u2.result_type = PtrNode( typ, modifiers, SEG_DATA );
     }
@@ -1218,7 +1267,9 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         default:
             result_type = SubResult[op1_type][op2_type];
             if(( op1_type == PTR )&&( op2_type == PTR )) {
-                /* make sure both pointers are same type */
+                /*
+                 * make sure both pointers are same type
+                 */
                 CompatiblePtrType( op1_tp, op2_tp, opr );
 #if _INTEL_CPU
                 if(( op1_tp->u.p.decl_flags & FLAG_HUGE ) ||
@@ -1245,12 +1296,16 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             CErr1( ERR_CANT_USE_VOID );
             size = 1;
         }
-        /* subtraction of 2 pointers */
+        /*
+         * subtraction of 2 pointers
+         */
         if( (result_type == INT) || (result_type == LNG) ) {
             res_type = GetType( result_type );
         }
         if( size != 1 ) {
-            /* subtraction of 2 pointers */
+            /*
+             * subtraction of 2 pointers
+             */
             if( (result_type == INT) || (result_type == LNG) ) {
                 result = ExprNode( op1, TokenToOperator( opr ), op2 );
                 return( PtrSubtract( result, size, result_type ) );
@@ -1336,14 +1391,18 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     switch( opr ) {
     case T_XOR_EQUAL:
     case T_OR_EQUAL:
-        /* if op2 is a constant, check to see if constant truncated */
+        /*
+         * if op2 is a constant, check to see if constant truncated
+         */
         AssRangeChk( typ, op2 );
         /* fall through */
     case T_AND_EQUAL:
     case T_RSHIFT_EQUAL:
     case T_LSHIFT_EQUAL:
     case T_PERCENT_EQUAL:
-        /* check for integral operand. */
+        /*
+         * check for integral operand.
+         */
         result_type = IntResult[op1_type][op2_type];
         if( result_type == ERR ) {
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
@@ -1457,7 +1516,9 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         op2_ptrclass = ExprTypeClass( op2->u.expr_type );
         if( op1_ptrclass != op2_ptrclass ) {
             if( FAR16_PTRCLASS( op1_ptrclass ) || FAR16_PTRCLASS( op2_ptrclass ) ) {
-                // if far16 pointer
+                /*
+                 * if far16 pointer
+                 */
                 op2 = ExprNode( NULL, OPR_CONVERT_PTR, op2 );
                 op2->op.u2.sp.old_ptrclass = op2_ptrclass;
                 op2->op.u2.sp.new_ptrclass = op1_ptrclass;
@@ -1581,14 +1642,15 @@ bool IsFuncPtr( TYPEPTR typ )
     return( true );
 }
 
-/* Check if pointer conversion is losing high (segment) bits.
+bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
+/****************************************************************
+ * Check if pointer conversion is losing high (segment) bits.
  * A special dispensation is made for null pointer conversions; if the
  * source operand is a zero integer constant, chopping off high bits
  * is not considered an error. This helps in Win16 programming where
  * NULL (which may be a 32-bit quantity) is often converted to
  * a 16-bit HANDLE type.
  */
-bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
 {
     bool                is_safe = true;
     segment_id          new_segid;
@@ -1600,11 +1662,14 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
     SKIP_TYPEDEFS( newtyp );
     assert( oldtyp->decl_type == TYP_POINTER );
     assert( newtyp->decl_type == TYP_POINTER );
-
-    /* If new type isn't smaller than old, assume conversion is safe. */
+    /*
+     * If new type isn't smaller than old, assume conversion is safe.
+     */
     if( TypeSize( newtyp ) < TypeSize( oldtyp ) ) {
         is_safe = IsZero( src );
-        /* Determine target pointer base. */
+        /*
+         * Determine target pointer base.
+         */
         new_flags = newtyp->u.p.decl_flags;
         old_flags = oldtyp->u.p.decl_flags;
         if( (new_flags & FLAG_BASED) || (old_flags & FLAG_BASED) ) {
@@ -1613,7 +1678,9 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
                 case BASED_SEGNAME:
                     new_segid = newtyp->u.p.segid;
                     break;
-                /* NYI: This could be smarter and check other based types. */
+                /*
+                 * NYI: This could be smarter and check other based types.
+                 */
                 default:
                     new_segid = SEG_NULL;
                 }
@@ -1622,14 +1689,18 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
             } else {
                 new_segid = SEG_DATA;
             }
-            /* Determine source pointer base. */
+            /*
+             * Determine source pointer base.
+             */
             old_flags = oldtyp->u.p.decl_flags;
             if( old_flags & FLAG_BASED ) {
                 switch( oldtyp->u.p.based_kind ) {
                 case BASED_SEGNAME:
                     old_segid = oldtyp->u.p.segid;
                     break;
-                /* NYI: This could be smarter and check other based types. */
+                /*
+                 * NYI: This could be smarter and check other based types.
+                 */
                 default:
                     old_segid = SEG_NULL;
                 }
@@ -1739,20 +1810,24 @@ convert:                                /* moved here */
                     SetDiagPop();
                     return( opnd );
                 } else if( cast_op && CompFlags.extensions_enabled ) {
-                    /* We know the following: */
-                    /* - it is a cast operation  */
-                    /* - both types are pointers */
-                    /* - extensions are enabled  */
-                    /* - both pointers are the same size */
-                    /* - neither pointer is a function pointer */
-                    /* So, if it is still an lvalue */
-                    /* - then just update the type and leave it */
-                    /* - as an lvalue. This will allow the */
-                    /* - following statement to get through without */
-                    /* - generating an error! */
-                    /*              (char *)p += 2;  */
+                    /*
+                     * We know the following:
+                     * - it is a cast operation
+                     * - both types are pointers
+                     * - extensions are enabled
+                     * - both pointers are the same size
+                     * - neither pointer is a function pointer
+                     * So, if it is still an lvalue
+                     * - then just update the type and leave it
+                     * - as an lvalue. This will allow the
+                     * - following statement to get through without
+                     * - generating an error!
+                     *              (char *)p += 2;
+                     */
                     if( opr == OPR_PUSHADDR || IsLValue( opnd ) ) {
-                        /* don't do it for based or far16. */
+                        /*
+                         * don't do it for based or far16.
+                         */
                         if( !Far16Pointer( opnd->op.flags ) ) {
                             opnd->u.expr_type = newtyp;
                             opnd->op.opr = opr;
@@ -1768,12 +1843,16 @@ convert:                                /* moved here */
             }
             if( cnv == P2A || cnv == A2P ) {
                 if( TypeSize( typ ) != TypeSize( newtyp ) ) {
-                    // Conversion to/from a pointer may need special treatment
+                    /*
+                     * Conversion to/from a pointer may need special treatment
+                     */
                     opnd = BaseConv( newtyp, opnd );
                 }
             }
             if( cnv == S2B ) {
-                // Conversion to _Bool needs special treatment
+                /*
+                 * Conversion to _Bool needs special treatment
+                 */
                 opnd = BoolConv( newtyp, opnd );
             }
             if( cast_op || cnv != P2P ) {
@@ -1789,13 +1868,17 @@ convert:                                /* moved here */
                     old_ptrclass = ExprTypeClass( typ );
                     if( new_ptrclass != old_ptrclass
                       && ( FAR16_PTRCLASS( new_ptrclass ) || FAR16_PTRCLASS( old_ptrclass ) ) ) {
-                        // foreign pointers
+                        /*
+                         * foreign pointers
+                         */
                         opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
                         opnd->op.u2.sp.old_ptrclass = old_ptrclass;
                         opnd->op.u2.sp.new_ptrclass = new_ptrclass;
 #if _CPU == 8086
                     } else if( cnv == P2A && (newtyp->type_flags & TF2_TYP_SEGMENT) ) {
-                        // getting segment value of pointer
+                        /*
+                         * getting segment value of pointer
+                         */
                         opnd = BasedPtrNode( typ, opnd );
                         opnd = ExprNode( NULL, OPR_CONVERT_SEG, opnd );
                         opnd->op.u2.result_type = newtyp;
@@ -1822,12 +1905,14 @@ convert:                                /* moved here */
     return( opnd );
 }
 
-/* Fix up assignments - used for passing function arguments and also
- * return values. Fixes up based pointers and other x86 weirdnesses.
- */
 TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
+/***********************************************
+ * Fix up assignments - used for passing function arguments and also
+ * return values. Fixes up based pointers and other x86 weirdnesses.
+ *
+ * TODO check out base ptrs
+ */
 {
-//TODO check out base ptrs
     TYPEPTR             typ;
     enum conv_types     cnv;
     DATA_TYPE           decl1;
@@ -1835,11 +1920,15 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
 
     if( opnd->op.opr == OPR_ERROR )
         return( opnd );
-    // skip typedefs, go into enum base
+    /*
+     * skip typedefs, go into enum base
+     */
     typ = SkipTypeFluff( opnd->u.expr_type );
     opnd = BaseConv( newtyp, opnd );
     opnd = BoolConv( newtyp, opnd );
-    // skip typedefs, go into enum base
+    /*
+     * skip typedefs, go into enum base
+     */
     newtyp = SkipTypeFluff( newtyp );
     decl1 = DataTypeOf( typ );
     decl2 = DataTypeOf( newtyp );
@@ -1857,7 +1946,9 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
         old_ptrclass = ExprTypeClass( typ );
         if( new_ptrclass != old_ptrclass
           && ( FAR16_PTRCLASS( new_ptrclass ) || FAR16_PTRCLASS( old_ptrclass ) ) ) {
-            // if far16 pointer
+            /*
+             * if far16 pointer
+             */
             opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
             opnd->op.u2.sp.old_ptrclass = old_ptrclass;
             opnd->op.u2.sp.new_ptrclass = new_ptrclass;
@@ -1879,7 +1970,7 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
 
 TREEPTR UMinus( TREEPTR opnd )
 {
-//  FLOATVAL        *flt;
+//    FLOATVAL        *flt;
     DATA_TYPE       t;
 
     opnd = RValue( opnd );
@@ -2023,20 +2114,21 @@ TREEPTR UComplement( TREEPTR opnd )
 
 
 static TYPEPTR MergedType( TYPEPTR typ1, TYPEPTR typ2 )
+/******************************************************
+ * (type huge *) : (type *)            -> (type huge *)
+ * (type *) : (type huge *)            -> (type huge *)
+ * (type far *) : (type *)             -> (type far *)
+ * (type *) : (type far *)             -> (type far *)
+ * (type const *) : (type *)           -> (type const *)
+ * (type *) : (type const *)           -> (type const *)
+ * (type volatile *) : (type *)        -> (type volatile *)
+ * (type *) : (type volatile *)        -> (type volatile *)
+ *          etc.
+ */
 {
     type_modifiers  flags, new_flags;
     TYPEPTR         typ;
-/*
-(type huge *) : (type *)            -> (type huge *)
-(type *) : (type huge *)            -> (type huge *)
-(type far *) : (type *)             -> (type far *)
-(type *) : (type far *)             -> (type far *)
-(type const *) : (type *)           -> (type const *)
-(type *) : (type const *)           -> (type const *)
-(type volatile *) : (type *)        -> (type volatile *)
-(type *) : (type volatile *)        -> (type volatile *)
-            etc.
-*/
+
     typ = typ1;
     flags = typ1->u.p.decl_flags | typ2->u.p.decl_flags;
     new_flags = flags & MASK_CV_QUALIFIERS;
@@ -2066,10 +2158,10 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
     SKIP_TYPEDEFS( typ1 );
     typ2 = false_part->u.expr_type;
     SKIP_TYPEDEFS( typ2 );
-/*
-    (type1) : (type1)                           -> (type1)
-    nb. structs, unions, and identical pointers are handled here
-*/
+    /*
+     *  (type1) : (type1)                           -> (type1)
+     *  nb. structs, unions, and identical pointers are handled here
+     */
     if( typ1 == typ2 )
         return( typ1 );
     dtype1 = DataTypeOf( typ1 );
@@ -2086,18 +2178,17 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
         }
         return( MergedType( typ2, typ1 ) ); /* merge near/far/const etc. */
     }
-/*
-    (arithmetic type) : (arithmetic type)       -> (promoted arithmetic type)
-*/
+    /*
+     * (arithmetic type) : (arithmetic type)    -> (promoted arithmetic type)
+     */
     if( (dtype1 <= TYP_LONG_DOUBLE) && (dtype2 <= TYP_LONG_DOUBLE) ) {
         return( GetType( SubResult[dtype1][dtype2] ) );
     }
     TernChk( typ1, typ2 );
     if( dtype1 == TYP_POINTER && dtype2 == TYP_POINTER ) {
-/*
-    (void *) : (anything *)                     -> (void *)
-*/
-
+        /*
+         * (void *) : (anything *)              -> (void *)
+         */
         if( typ1->object->decl_type == TYP_VOID ) {
             return( MergedType( typ1, typ2 ) );
         } else if( typ2->object->decl_type == TYP_VOID ) {

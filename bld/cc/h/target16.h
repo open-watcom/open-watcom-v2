@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
-/* target16.h: target types for 16-bit machine */
+/*
+ * target16.h: target types for 16-bit machine
+ */
 
 #define TARGET_CHAR     1
 #define TARGET_SHORT    2

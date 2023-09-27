@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@ pick( "__STDC__",           MACRO_STDC,         MFLAG_NONE )
 pick( "__STDC_HOSTED__",    MACRO_STDC_HOSTED,  MFLAG_NONE )
 pick( "__STDC_VERSION__",   MACRO_STDC_VERSION, MFLAG_NONE )
 pick( "__TIME__",           MACRO_TIME,         MFLAG_NONE )
-/* compile time macros */
+/*
+ * compile time macros
+ */
 pick( "__FUNCTION__",       MACRO_FUNCTION,     MFLAG_NONE )
 pick( "__func__",           MACRO_FUNC,         MFLAG_HIDDEN )

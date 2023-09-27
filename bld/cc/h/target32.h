@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
-/* target32.h: target types for 32-bit machine */
+/*
+ * target32.h: target types for 32-bit machine
+ */
 
 #define TARGET_CHAR     1
 #define TARGET_SHORT    2

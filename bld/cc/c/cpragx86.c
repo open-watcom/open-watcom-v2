@@ -67,10 +67,11 @@ static void pragmaAuxInfoInit( void )
 #endif
 
 #if _CPU == 386
-    /* these are internal, and will never be pointed to by
-       an aux_entry, so we don't have to worry about them
-       or their fields being freed */
-
+    /*
+     * these are internal, and will never be pointed to by
+     * an aux_entry, so we don't have to worry about them
+     * or their fields being freed
+     */
     STOSBInfo = WatcallInfo;
     STOSBInfo.cclass        = FECALL_GEN_NONE;
     STOSBInfo.cclass_target = FECALL_X86_NO_FLOAT_REG_RETURNS |
@@ -153,7 +154,9 @@ static void PragmaAuxEnd( void )
     hw_reg_set      flt_n_seg;
 
     if( CurrEntry == NULL ) {
-        // Redefining a built-in calling convention
+        /*
+         * Redefining a built-in calling convention
+         */
     } else {
         CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
         *CurrInfo = *CurrAlias;
@@ -293,7 +296,9 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
     }
 }
 
-/* matches enum DataType in ctypes.h */
+/*
+ * matches enum DataType in ctypes.h
+ */
 static enum sym_type AsmDataType[] = {
     #define pick1(enum,cgtype,x86asmtype,name,size) x86asmtype,
     #include "cdatatyp.h"
@@ -384,7 +389,9 @@ bool AsmInsertFixups( aux_info *info )
     head = FixupHead;
     if( head != NULL ) {
         FixupHead = NULL;
-        /* sort the fixup list in increasing fixup_loc's */
+        /*
+         * sort the fixup list in increasing fixup_loc's
+         */
         for( fix = head; fix != NULL; fix = next ) {
             for( owner = &FixupHead; (chk = *owner) != NULL; owner = &chk->next ) {
                 if( chk->fixup_loc > fix->fixup_loc ) {
@@ -399,7 +406,9 @@ bool AsmInsertFixups( aux_info *info )
         end = src + len;
         fix = FixupHead;
         owner = &FixupHead;
-        /* insert fixup escape sequences */
+        /*
+         * insert fixup escape sequences
+         */
         while( src < end ) {
             if( fix != NULL && fix->fixup_loc == (src - AsmCodeBuffer) ) {
                 name = fix->name;
@@ -421,7 +430,9 @@ bool AsmInsertFixups( aux_info *info )
                     }
                     SymReplace( &sym, sym_handle );
                 }
-                /* insert fixup information */
+                /*
+                 * insert fixup information
+                 */
                 skip = 0;
                 *dst++ = FLOATING_FIXUP_BYTE;
                 mutate_to_segment = false;
@@ -435,16 +446,24 @@ bool AsmInsertFixups( aux_info *info )
                     break;
                 case FIX_SEG:
                     if( name == NULL ) {
-                        // special case for floating point fixup
+                        /*
+                         * special case for floating point fixup
+                         */
                         if( ( src[0] == 0x90 ) && ( src[1] == 0x9B ) ) {
-                           // inline assembler FWAIT instruction 0x90, 0x9b
+                            /*
+                             * inline assembler FWAIT instruction 0x90, 0x9b
+                             */
                             *dst++ = FIX_FPP_WAIT;
                         } else if( src[0] == 0x9b && (src[1] & 0xd8) == 0xd8 ) {
-                           // FWAIT as first byte and FPU instruction opcode as second byte
+                            /*
+                             * FWAIT as first byte and FPU instruction opcode as second byte
+                             */
                             *dst++ = FIX_FPP_NORMAL;
                         } else if( src[0] == 0x9b && (src[2] & 0xd8) == 0xd8 ) {
-                           // FWAIT as first byte and FPU instruction opcode as third byte
-                           // second byte should be segment override prefix
+                            /*
+                             * FWAIT as first byte and FPU instruction opcode as third byte
+                             * second byte should be segment override prefix
+                             */
                             switch( src[1] ) {
                             case PREFIX_ES: *dst++ = FIX_FPP_ES;    break;
                             case PREFIX_CS: *dst++ = FIX_FPP_CS;    break;
@@ -455,7 +474,9 @@ bool AsmInsertFixups( aux_info *info )
                             default: --dst; break;  // skip FP patch
                             }
                         } else {
-                            // skip FP patch
+                            /*
+                             * skip FP patch
+                             */
                             --dst;
                         }
                     } else {
@@ -505,8 +526,10 @@ bool AsmInsertFixups( aux_info *info )
                 }
 #if _CPU == 8086
                 if( fixup_padding ) {
-                    // add offset fixup padding to 32-bit
-                    // cg create only 16-bit offset fixup
+                    /*
+                     * add offset fixup padding to 32-bit
+                     * cg create only 16-bit offset fixup
+                     */
                     *dst++ = 0;
                     *dst++ = 0;
                     //
@@ -514,12 +537,12 @@ bool AsmInsertFixups( aux_info *info )
 #endif
                 if( mutate_to_segment ) {
                     /*
-                        Since the CG escape sequences don't allow for
-                        FAR pointer fixups, we have to split them into two.
-                        This is done by doing the offset fixup first, then
-                        mutating the fixup structure to look like a segment
-                        fixup one near pointer size later.
-                    */
+                     * Since the CG escape sequences don't allow for
+                     * FAR pointer fixups, we have to split them into two.
+                     * This is done by doing the offset fixup first, then
+                     * mutating the fixup structure to look like a segment
+                     * fixup one near pointer size later.
+                     */
                     fix->fixup_type = FIX_SEG;
                     fix->fixup_loc += skip;
                     fix->u_offset = 0;
@@ -732,7 +755,9 @@ hw_reg_set PragRegName( const char *regname )
     hw_reg_set      name;
 
     if( *regname != '\0' ) {
-        // search register or alias name
+        /*
+         * search register or alias name
+         */
         index = PragRegIndex( Registers, regname, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
@@ -756,7 +781,9 @@ hw_reg_set PragReg( void )
 
     p = SkipUnderscorePrefix( Buffer );
     if( p == NULL ) {
-        /* error, missing undercore prefix */
+        /*
+         * error, missing undercore prefix
+         */
         PragRegNameErr( Buffer );
         p = Buffer;
     }
