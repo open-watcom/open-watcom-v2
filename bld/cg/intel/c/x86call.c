@@ -169,7 +169,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
                 HW_CAsgn( state->return_reg, HW_EBX );
             }
         }
-        if( ( state->attr & ROUTINE_ALLOCS_RETURN ) == 0 ) {
+        if( (state->attr & ROUTINE_ALLOCS_RETURN) == 0 ) {
             if( HW_CEqual( state->return_reg, HW_EMPTY ) ) {
                 ret_ptr = AllocTemp( WD );
             } else {
@@ -261,7 +261,8 @@ an      BGCall( cn call, bool use_return, bool in_line )
             AddIns( ret_ins );
         }
     }
-    if( state->parm.offset != 0 && ( state->attr & ROUTINE_REMOVES_PARMS ) == 0 ) {
+    if( state->parm.offset != 0
+      && (state->attr & ROUTINE_REMOVES_PARMS) == 0 ) {
         reg_name = AllocRegName( HW_xSP );
         AddIns( MakeBinary( OP_ADD, reg_name,
                 AllocS32Const( state->parm.offset ), reg_name, WD ) );

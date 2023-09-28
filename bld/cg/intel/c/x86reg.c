@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -210,7 +210,9 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
 {
     hw_reg_set  normal;
 
-    if( _FPULevel( FPU_87 ) && _NPX( state->attr ) && (tipe->attr & TYPE_FLOAT) ) {
+    if( _FPULevel( FPU_87 )
+      && _NPX( state->attr )
+      && (tipe->attr & TYPE_FLOAT) ) {
         HW_COnlyOn( state->return_reg, HW_ST0 );
     } else {
         HW_CTurnOff( state->return_reg, HW_FLTS );
