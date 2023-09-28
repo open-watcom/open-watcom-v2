@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,9 @@ enum sym_state {
 
 };
 
-/* It must correspond with CvtTable in asmsym.c */
+/*
+ * It must correspond with CvtTable in asmsym.c
+ */
 enum sym_type {
     SYM_INT1,               /* a byte variable */
     SYM_INT2,               /* a word variable */
@@ -107,21 +109,19 @@ typedef enum prefix_reg {
 extern void             *AsmQuerySymbol( const char *name );
 
 /*
-   The following function is supplied by the user of the mini-assembler.
-   It returns either:
-        SYM_UNDEFINED   - the name is not in the user's symbol table
-        SYM_EXTERNAL    - the name is a static symbol in the user's
-                                symbol table
-        SYM_STACK       - the symbol is an auto symbol in the user's
-                                symbol table
-*/
+ * The following function is supplied by the user of the mini-assembler.
+ * It returns either:
+ *      SYM_UNDEFINED   - the name is not in the user's symbol table
+ *      SYM_EXTERNAL    - the name is a static symbol in the user's symbol table
+ *      SYM_STACK       - the symbol is an auto symbol in the user's symbol table
+ */
 extern enum sym_state   AsmQueryState( void *handle );
 
 /*
-   The following function is supplied by the user of the mini-assembler.
-   It returns the type of the symbol via one of the 'enum sym_type'
-   constants.
-*/
+ * The following function is supplied by the user of the mini-assembler.
+ * It returns the type of the symbol via one of the 'enum sym_type'
+ * constants.
+ */
 extern enum sym_type    AsmQueryType( void *handle );
 
 #endif
