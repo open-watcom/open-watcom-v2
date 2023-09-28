@@ -470,7 +470,9 @@ static  void    AllocStack( void )
 {
     type_length     size;
 
-    /* keep stack aligned */
+    /*
+     * keep stack aligned
+     */
     size = _RoundUp( CurrProc->locals.size, WORD_SIZE );
     CurrProc->locals.size = size;
     if( BlockByBlock ) {
@@ -528,14 +530,18 @@ static  int PushAll( void )
     Gcld();
     if( HW_COvlap( CurrProc->state.unalterable, HW_DS ) ) {
         DoLoadDS();
-        // If ES is also unalterable, copy DS to ES; else things
-        // like memcpy() are likely to blow up
+        /*
+         * If ES is also unalterable, copy DS to ES; else things
+         * like memcpy() are likely to blow up
+         */
         if( HW_COvlap( CurrProc->state.unalterable, HW_ES ) ) {
             QuickSave( HW_DS, OP_PUSH );
             QuickSave( HW_ES, OP_POP );
         }
     }
-    /* 8 general purpose registers + 4 segment registers */
+    /*
+     * 8 general purpose registers + 4 segment registers
+     */
     return( 12 * WORD_SIZE );
 }
 
@@ -575,7 +581,9 @@ static  void    DoEnter( level_depth level )
 {
     type_length size;
 
-    /* keep stack aligned */
+    /*
+     * keep stack aligned
+     */
     size = _RoundUp( CurrProc->locals.size, WORD_SIZE );
     CurrProc->locals.size = size;
 
@@ -652,7 +660,9 @@ static  void    CalcUsedRegs( void )
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
             }
-            /* place holder for big label doesn't really zap anything */
+            /*
+             * place holder for big label doesn't really zap anything
+             */
             if( ins->head.opcode != OP_NOP ) {
                 HW_TurnOn( used, ins->zap->reg );
                 if( HW_COvlap( ins->zap->reg, HW_xSP ) ) {
@@ -748,7 +758,9 @@ static  void    DoEpilog( void )
             if( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) {
                 size = CurrProc->locals.size + CurrProc->targ.push_local_size;
                 if( (CurrProc->prolog_state & GENERATE_RESET_SP) || size != 0 ) {
-                    /* sp is not pointing at saved registers already */
+                    /*
+                     * sp is not pointing at saved registers already
+                     */
                     if( CurrProc->targ.sp_frame ) {
                         if( CurrProc->targ.sp_align ) {
                             GenRegMove( HW_xBP, HW_xSP );
@@ -923,7 +935,7 @@ void    GenProlog( void )
     if( _RoutineIsFar16( CurrProc->state.attr ) ) {
         label = GenFar16Thunk( CurrProc->label, CurrProc->parms.size,
                     CurrProc->state.attr & ROUTINE_REMOVES_PARMS );
-        // CurrProc->label = label; - ugly mess if following are combined
+//        CurrProc->label = label; /* ugly mess if following are combined */
     }
 #endif
 
@@ -966,7 +978,9 @@ void    GenProlog( void )
     }
 
     if( attr & FE_NAKED ) {
-        // don't do anything - empty prologue
+        /*
+         * don't do anything - empty prologue
+         */
     } else if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
         ret_size = -PushAll();
         CurrProc->targ.base_adjust = 0;
@@ -982,9 +996,11 @@ void    GenProlog( void )
                         GenCypWindowsProlog();
                     } else {
 #if _TARGET & _TARG_8086
-                        // Windows prologs zap AX, so warn idiot user if we
-                        // generate one for a routine in which AX is live
-                        // upon entry to routine, or unalterable.
+                        /*
+                         * Windows prologs zap AX, so warn idiot user if we
+                         * generate one for a routine in which AX is live
+                         * upon entry to routine, or unalterable.
+                         */
                         if( HW_COvlap( CurrProc->state.unalterable, HW_xAX ) ||
                             HW_COvlap( CurrProc->state.parm.used, HW_xAX ) ) {
                             FEMessage( MSG_ERROR, "exported routine with AX live on entry" );

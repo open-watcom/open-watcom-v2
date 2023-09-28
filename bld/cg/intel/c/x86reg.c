@@ -227,9 +227,9 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
             return;
         if( HW_CEqual( state->return_reg, HW_EMPTY ) )
             return;
-        // if( !HW_Ovlap( state->return_reg, state->unalterable ) &&
-        //    IsRegClass( state->return_reg, WD ) )
-        //     return;
+//        if( !HW_Ovlap( state->return_reg, state->unalterable )
+//          && IsRegClass( state->return_reg, WD ) )
+//            return;
         if( IsRegClass( state->return_reg, WD ) )
             return;
         FEMessage( MSG_BAD_RETURN_REGISTER, aux );
@@ -239,9 +239,9 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
         normal = ReturnReg( type_class, _NPX( state->attr ) );
         if( HW_Equal( state->return_reg, normal ) )
             return;
-        // if( !HW_Ovlap( state->return_reg, state->unalterable ) &&
-        //    IsRegClass( state->return_reg, type_class ) )
-        //     return;
+//        if( !HW_Ovlap( state->return_reg, state->unalterable )
+//          && IsRegClass( state->return_reg, type_class ) )
+//            return;
         if( IsRegClass( state->return_reg, type_class ) )
             return;
         FEMessage( MSG_BAD_RETURN_REGISTER, aux );

@@ -63,9 +63,9 @@
 static  void    AddCall( instruction *ins, cn call );
 
 #if _TARGET & _TARG_80386
-static  void    Far16Parms( cn call ) {
-/*************************************/
-
+static  void    Far16Parms( cn call )
+/***********************************/
+{
     instruction         *ins;
     type_length         parm_size;
     pn                  parm, next;
@@ -157,10 +157,10 @@ an      BGCall( cn call, bool use_return, bool in_line )
     state = call->state;
     result = BGNewTemp( call->tipe );
     call_ins = call->ins;
-
-/*   If we have a return value that won't fit in a register*/
-/*   pass a pointer to result as the first parm*/
-
+    /*
+     * If we have a return value that won't fit in a register
+     * pass a pointer to result as the first parm
+     */
     if( call_ins->type_class == XX ) {
         if( _RoutineIsFar16( state->attr ) ) {
             if( state->attr & ROUTINE_ALLOCS_RETURN ) {
