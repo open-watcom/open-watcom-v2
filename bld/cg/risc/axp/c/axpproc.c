@@ -578,7 +578,7 @@ void    GenEpilog( void )
     EmitEpiBeg();
     emitEpilog( &CurrProc->targ.stack_map );
     GenReturn();
-    CurrProc->prolog_state |= GENERATED_EPILOG;
+    CurrProc->prolog_state |= PST_EPILOG_GENERATED;
     EmitRtnEnd();
     SetOP( old_segid );
 }

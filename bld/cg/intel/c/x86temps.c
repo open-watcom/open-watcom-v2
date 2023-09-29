@@ -76,7 +76,7 @@ static  void    AssignPushLocals( void ) {
 
     curr_offset = 0;
     for( ins = HeadBlock->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-        if( CurrProc->prolog_state & GENERATED_PROLOG )
+        if( CurrProc->prolog_state & PST_PROLOG_GENERATED )
             break;
         if( DoesSomething( ins ) ) {
             if( ins->head.opcode != OP_MOV )

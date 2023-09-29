@@ -130,32 +130,32 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     }
     if( state == &CurrProc->state ) {
         if( cclass_target & (FECALL_X86_GENERATE_STACK_FRAME | FECALL_X86_PROLOG_HOOKS | FECALL_X86_EPILOG_HOOKS) ) {
-            CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
+            CurrProc->prolog_state |= PST_PROLOG_FAT;
             state->attr |= ROUTINE_NEEDS_PROLOG;
         }
         if( cclass_target & FECALL_X86_PROLOG_HOOKS ) {
-            CurrProc->prolog_state |= GENERATE_PROLOG_HOOKS;
+            CurrProc->prolog_state |= PST_PROLOG_HOOKS;
         }
         if( cclass_target & FECALL_X86_EPILOG_HOOKS ) {
-            CurrProc->prolog_state |= GENERATE_EPILOG_HOOKS;
+            CurrProc->prolog_state |= PST_EPILOG_HOOKS;
         }
         if( cclass_target & FECALL_X86_PROLOG_FAT_WINDOWS ) {
-            CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
+            CurrProc->prolog_state |= PST_PROLOG_FAT;
         }
         if( cclass_target & FECALL_X86_EMIT_FUNCTION_NAME ) {
-            CurrProc->prolog_state |= GENERATE_FUNCTION_NAME;
+            CurrProc->prolog_state |= PST_FUNCTION_NAME;
         }
         if( cclass_target & FECALL_X86_THUNK_PROLOG ) {
-            CurrProc->prolog_state |= GENERATE_THUNK_PROLOG;
+            CurrProc->prolog_state |= PST_PROLOG_THUNK;
         }
         if( cclass_target & FECALL_X86_GROW_STACK ) {
-            CurrProc->prolog_state |= GENERATE_GROW_STACK;
+            CurrProc->prolog_state |= PST_GROW_STACK;
         }
         if( cclass_target & FECALL_X86_TOUCH_STACK ) {
-            CurrProc->prolog_state |= GENERATE_TOUCH_STACK;
+            CurrProc->prolog_state |= PST_TOUCH_STACK;
         }
         if( cclass_target & FECALL_X86_LOAD_RDOSDEV_ON_ENTRY ) {
-            CurrProc->prolog_state |= GENERATE_RDOSDEV_PROLOG;
+            CurrProc->prolog_state |= PST_PROLOG_RDOSDEV;
         }
     }
     type_class = ReturnTypeClass( tipe, state->attr );

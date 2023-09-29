@@ -508,7 +508,7 @@ void    GenEpilog( void )
     // Pop();
     emitEpilog( &CurrProc->targ.stack_map );
     GenReturn();
-    CurrProc->prolog_state |= GENERATED_EPILOG;
+    CurrProc->prolog_state |= PST_EPILOG_GENERATED;
     lc = AskLocation();
     if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         DbgRtnEnd( CurrProc->targ.debug, lc );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,15 @@
 ****************************************************************************/
 
 
-        GENERATE_EXPORT                = 0x0004,
-        GENERATE_FAT_PROLOG            = 0x0008,
-        GENERATE_FUNCTION_NAME         = 0x0010,
-        GENERATE_THUNK_PROLOG          = 0x0020,
-        GENERATE_GROW_STACK            = 0x0040,
-        GENERATE_RESET_SP              = 0x0080,
-        GENERATE_PROLOG_HOOKS          = 0x0100,
-        GENERATE_EPILOG_HOOKS          = 0x0200,
-        GENERATE_TOUCH_STACK           = 0x0400,
-        GENERATE_RDOSDEV_PROLOG        = 0x0800,
+pick( PROLOG_FAT,       0x0001 )
+pick( PROLOG_THUNK,     0x0002 )
+pick( PROLOG_HOOKS,     0x0004 )
+pick( PROLOG_RDOSDEV,   0x0008 )
+pick( PROLOG_GENERATED, 0x0010 )
+pick( EPILOG_HOOKS,     0x0020 )
+pick( EPILOG_GENERATED, 0x0040 )
+pick( EXPORT,           0x0080 )
+pick( FUNCTION_NAME,    0x0100 )
+pick( GROW_STACK,       0x0200 )
+pick( RESET_SP,         0x0400 )
+pick( TOUCH_STACK,      0x0800 )

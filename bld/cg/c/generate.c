@@ -434,7 +434,7 @@ static  void    BlockToCode( bool partly_done )
 
     /* generate a prolog that saves all registers*/
 
-    if( ( CurrProc->prolog_state & GENERATED_PROLOG ) == 0 ) {
+    if( (CurrProc->prolog_state & PST_PROLOG_GENERATED) == 0 ) {
         CurrProc->state.used = AllCacheRegs();
         GenProlog();
     }
@@ -582,7 +582,7 @@ static  void    Panic( bool partly_done )
     curr_proc = CurrProc;
     FlushBlocks( partly_done );
     if( curr_proc == CurrProc /* if not freed (dummy!) */
-     && ( CurrProc->prolog_state & GENERATED_EPILOG ) == 0 ) {
+     && (CurrProc->prolog_state & PST_EPILOG_GENERATED) == 0 ) {
         GenEpilog();
         FiniStackMap();
         FreeProc();
@@ -740,7 +740,7 @@ void    Generate( bool routine_done )
     UnFixEdges();
     OptSegs();
     GenObject();
-    if( ( CurrProc->prolog_state & GENERATED_EPILOG ) == 0 ) {
+    if( (CurrProc->prolog_state & PST_EPILOG_GENERATED) == 0 ) {
         GenEpilog();
     }
     FreeProc();
