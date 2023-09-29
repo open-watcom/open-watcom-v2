@@ -93,7 +93,8 @@ static  void    ReCalcAddrTaken( void )
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->v.usage & VAR_VOLATILE )
             continue;
-        if( temp->v.symbol != NULL && (FEAttr( temp->v.symbol ) & FE_ADDR_TAKEN) )
+        if( temp->v.symbol != NULL
+          && (FEAttr( temp->v.symbol ) & FE_ADDR_TAKEN) )
             continue;
         if( temp->t.temp_flags & STACK_PARM )   /* See DoParmDecl() */
             continue;
@@ -158,7 +159,8 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, opcnt i )
                 break;
             if( input->depth < blk->depth ) { // don't make 2 entries into loop
                 for( other_input = blk->input_edges; other_input != NULL; other_input = other_input->next_source ) {
-                    if( other_input->source->depth < blk->depth && other_input->source != input ) {
+                    if( other_input->source->depth < blk->depth
+                      && other_input->source != input ) {
                         break;
                     }
                 }
@@ -336,7 +338,8 @@ static  void    TreeBits( block *root )
         change = false;
         for( blk = root->u.partition; blk != root; blk = blk->u.partition ) {
             daddy = blk->input_edges->source;
-            if( _BLKBITS( blk ) == 0 && _BLKBITS( daddy ) ) {
+            if( _BLKBITS( blk ) == 0
+              && _BLKBITS( daddy ) ) {
                 next_bit <<= 1;
                 if( next_bit == 0 )
                     break;
@@ -385,7 +388,8 @@ static  void    FindPartition( void )
     block_num   i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkAttr( blk, BLK_BIG_LABEL ) || blk->inputs != 1 ) {
+        if( _IsBlkAttr( blk, BLK_BIG_LABEL )
+          || blk->inputs != 1 ) {
             _MarkBlkVisited( blk );
         }
         blk->u.partition = blk;
@@ -396,7 +400,8 @@ static  void    FindPartition( void )
         for( i = blk->targets; i > 0; --i ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 oth = edge->destination.u.blk;
-                if( !_IsBlkVisited( oth ) && oth->inputs == 1 ) {
+                if( !_IsBlkVisited( oth )
+                  && oth->inputs == 1 ) {
                     temp = oth->u.partition;
                     oth->u.partition = blk->u.partition;
                     blk->u.partition = temp;
@@ -479,7 +484,8 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
          * scan back over all the conditional branches at the end of block
          */
         for( ; ; first = first->head.prev ) {
-            if( ( first->head.opcode != OP_SELECT ) && !_OpIsCondition( first->head.opcode ) ) {
+            if( ( first->head.opcode != OP_SELECT )
+              && !_OpIsCondition( first->head.opcode ) ) {
                 break;
             }
         }
@@ -680,7 +686,8 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
     if( ins1->operands[0] != ins2->operands[0] || ins1->operands[i] != ins2->operands[i] ) {
         if( !_OpCommutes( ins1->head.opcode ) )
             return( NULL );
-        if( ins1->operands[0] != ins2->operands[i] || ins1->operands[i] != ins2->operands[0] ) {
+        if( ins1->operands[0] != ins2->operands[i]
+          || ins1->operands[i] != ins2->operands[0] ) {
             return( NULL );
         }
     }
@@ -694,7 +701,8 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
             killed = BinOpsLiveFrom( ins1, ins2, ins1->operands[0], ins1->operands[i], ins1->result );
             if( killed != OP_DIES ) {
                 type_class = ins1->result->n.type_class;
-                if( killed == RESULT_DIES || !CanCrossBlocks( ins1, ins2, ins1->result ) ) {
+                if( killed == RESULT_DIES
+                  || !CanCrossBlocks( ins1, ins2, ins1->result ) ) {
                     temp = AllocTemp( type_class );
                     new_ins = MakeMove( temp, ins1->result, type_class );
                     ins1->result = temp;
@@ -751,7 +759,8 @@ static  bool    OkToInvert( name *div )
 {
     if( _IsModel( CGSW_GEN_FP_UNSTABLE_OPTIMIZATION ) )
         return( true );
-    if( (div->n.class == N_TEMP) && (div->t.temp_flags & CONST_TEMP) ) {
+    if( (div->n.class == N_TEMP)
+      && (div->t.temp_flags & CONST_TEMP) ) {
         div = div->v.symbol;
     }
     if( div->n.class != N_CONSTANT )
@@ -1092,13 +1101,13 @@ static  bool    FixStructRet( block *root )
     for( ;; ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) ) {
-                if( ins->result != NULL &&
-                   ins->result->n.class == N_TEMP &&
-                   (ins->flags.call_flags & CALL_RETURNS_STRUCT) &&
-                   FixOneStructRet( ins ) ) {
+                if( ins->result != NULL
+                  && ins->result->n.class == N_TEMP
+                  && (ins->flags.call_flags & CALL_RETURNS_STRUCT)
+                  && FixOneStructRet( ins ) ) {
                     change = true;
                 }
-               ins->flags.call_flags &= ~CALL_RETURNS_STRUCT;
+                ins->flags.call_flags &= ~CALL_RETURNS_STRUCT;
             }
         }
         blk = blk->u.partition;
@@ -1110,7 +1119,7 @@ static  bool    FixStructRet( block *root )
 }
 
 static  block   *NextBlock( block *blk, void *parm )
-/***************************************************/
+/**************************************************/
 {
     if( blk->u.partition == (block *)parm )
         return( NULL );
@@ -1118,13 +1127,14 @@ static  block   *NextBlock( block *blk, void *parm )
 }
 
 static  bool    isMoveIns( instruction *ins )
-/******************************************
+/********************************************
  * Is "ins" a move type instruction?
  */
 {
     if( ins->head.opcode == OP_MOV )
         return( true );
-    if( _IsConvert( ins ) && ins->operands[0]->n.class == N_CONSTANT
+    if( _IsConvert( ins )
+      && ins->operands[0]->n.class == N_CONSTANT
       && ins->operands[0]->c.const_type == CONS_ABSOLUTE )
         return( true );
     return( false );
@@ -1143,7 +1153,8 @@ static  bool    CanLinkMove( instruction *ins )
      */
     if( ins->operands[0]->n.class == N_REGISTER )
         return( false );
-    if( ins->operands[0]->n.class == N_TEMP && (ins->operands[0]->t.temp_flags & STACK_PARM) )
+    if( ins->operands[0]->n.class == N_TEMP
+      && (ins->operands[0]->t.temp_flags & STACK_PARM) )
         return( false );
     if( ins->result->n.class == N_REGISTER )
         return( false );
@@ -1241,7 +1252,7 @@ static  void    LinkMoves( block *root )
 
 
 static  void    LinkMemMoves( block *root )
-/***************************************** *
+/******************************************
  * Link together all move instructions in partion defined by "root" using
  * a field in ins->operands[0] as the head of the list.
  */
@@ -1256,7 +1267,8 @@ static  void    LinkMemMoves( block *root )
                 continue;
             if( !CanLinkMove( ins ) )
                 continue;
-            if( ins->operands[0]->n.class != N_MEMORY && ins->operands[0]->n.class != N_INDEXED )
+            if( ins->operands[0]->n.class != N_MEMORY
+              && ins->operands[0]->n.class != N_INDEXED )
                 continue;
             CreateLink( ins, ins->operands[0] );
         }
@@ -1336,14 +1348,17 @@ static  bool    PropOpnd( instruction *ins, name **op,
     opnd = *op;
     change = false;
     for( ; definition != NULL; definition = _INSLINK( definition ) ) {
-        if( WhichIsAncestor( definition, ins ) == definition && UnOpsLiveFrom( definition, ins ) ) {
+        if( WhichIsAncestor( definition, ins ) == definition
+          && UnOpsLiveFrom( definition, ins ) ) {
             defop = definition->operands[0];
             defres = definition->result;
             if( backward ) {
-                if( defop == opnd && defres->n.class == N_TEMP && is_opnd ) {
+                if( defop == opnd
+                  && defres->n.class == N_TEMP
+                  && is_opnd ) {
                     if( ( _IsFloating( definition->type_class ) == _IsFloating( _OpClass( ins ) ) )
-                     && CanCrossBlocks( definition, ins, defres )
-                     && !FPStackOp( defres ) ) {
+                      && CanCrossBlocks( definition, ins, defres )
+                      && !FPStackOp( defres ) ) {
                         UseInOther( definition, ins, defres );
                         *op = defres;
                         change = true;
@@ -1351,20 +1366,21 @@ static  bool    PropOpnd( instruction *ins, name **op,
                 }
             } else {
                 if( defres == opnd ) {
-                    if( defres->n.class != N_INDEXED && is_opnd ) {
-                        if( ( _IsFloating( definition->type_class )
-                           == _IsFloating( _OpClass( ins ) ) )
-                         && CanCrossBlocks( definition, ins, defop )
-                         && !FPStackOp( defop ) ) {
+                    if( defres->n.class != N_INDEXED
+                      && is_opnd ) {
+                        if( ( _IsFloating( definition->type_class ) == _IsFloating( _OpClass( ins ) ) )
+                          && CanCrossBlocks( definition, ins, defop )
+                          && !FPStackOp( defop ) ) {
                             UseInOther( definition, ins, defop );
                             *op = defop;
                             change = true;
                         }
                     }
-                } else if( opnd->n.class == N_INDEXED && definition->result->n.class == N_TEMP ) {
+                } else if( opnd->n.class == N_INDEXED
+                  && definition->result->n.class == N_TEMP ) {
                     if( defop->n.class == N_TEMP
-                          && defop->n.type_class==opnd->i.index->n.type_class
-                          && CanCrossBlocks( definition, ins, defop ) ) {
+                      && defop->n.type_class == opnd->i.index->n.type_class
+                      && CanCrossBlocks( definition, ins, defop ) ) {
                         UseInOther( definition, ins, defop );
                         *op = ScaleIndex( defop, opnd->i.base,
                                         opnd->i.constant,
@@ -1372,12 +1388,13 @@ static  bool    PropOpnd( instruction *ins, name **op,
                                         opnd->i.scale, opnd->i.index_flags );
                         change = true;
                     } else if( defop->n.class == N_CONSTANT
-                            && ins->head.opcode != OP_SELECT ) {
+                      && ins->head.opcode != OP_SELECT ) {
                         disp = 0;
                         base = NULL;
                         switch( defop->c.const_type ) {
                         case CONS_ABSOLUTE:
-                            if( opnd->i.base != NULL && (opnd->i.index_flags & X_FAKE_BASE) == 0 ) {
+                            if( opnd->i.base != NULL
+                              && (opnd->i.index_flags & X_FAKE_BASE) == 0 ) {
                                 disp = opnd->i.constant + defop->c.lo.int_value;
                                 base = opnd->i.base;
                             }
@@ -1385,7 +1402,8 @@ static  bool    PropOpnd( instruction *ins, name **op,
                         case CONS_ADDRESS:
                         case CONS_OFFSET:
                         case CONS_TEMP_ADDR:
-                            if( opnd->i.base == NULL || (opnd->i.index_flags & X_FAKE_BASE) ) {
+                            if( opnd->i.base == NULL
+                              || (opnd->i.index_flags & X_FAKE_BASE) ) {
                                 disp = opnd->i.constant;
                                 base = defop->c.value;
                             }
