@@ -505,15 +505,15 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     return( cclass );
 }
 
-#if _INTEL_CPU
-call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
-/************************************************************
+static call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
+/*******************************************************************
  * handle only target specific attributes for call class
  */
 {
+    call_class_target   cclass_target;
+#if _INTEL_CPU
     aux_info            *inf;
     SYM_ENTRY           sym;
-    call_class_target   cclass_target;
 
     sym.mods = 0;
     inf = FindInfo( &sym, sym_handle );
@@ -569,9 +569,12 @@ call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
     if( CompFlags.st_switch_used ) {
         cclass_target |= FECALL_X86_TOUCH_STACK;
     }
+#else
+    /* unused parameters */ (void)sym_handle;
+    cclass_target = 0;
+#endif
     return( cclass_target );
 }
-#endif
 
 static void addDefaultLibs( void )
 /*********************************
@@ -1117,10 +1120,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
         }
     case FEINF_CALL_CLASS:
         return( (CGPOINTER)GetCallClass( req_handle ) );
-#if _INTEL_CPU
     case FEINF_CALL_CLASS_TARGET:
         return( (CGPOINTER)GetCallClassTarget( req_handle ) );
-#endif
     case FEINF_FREE_SEGMENT:
         return( NULL );
     case FEINF_NEXT_LIBRARY:

@@ -1807,10 +1807,12 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
     case FEINF_CALL_CLASS :
         info = GetAuxInfo( req_handle );
         return( (pointer)(call_class)( info->cclass ^ FECALL_GEN_REVERSE_PARMS ) );
-#if _INTEL_CPU
     case FEINF_CALL_CLASS_TARGET :
+#if _INTEL_CPU
         info = GetAuxInfo( req_handle );
         return( (pointer)info->cclass_target );
+#else
+        return( (pointer)0 );
 #endif
     case FEINF_SAVE_REGS :
         info = GetAuxInfo( req_handle );

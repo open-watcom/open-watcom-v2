@@ -866,17 +866,17 @@ static call_class getCallClass( SYMBOL sym )
     return( cclass );
 }
 
-#if _INTEL_CPU
 static call_class_target getCallClassTarget( SYMBOL sym )                        // - symbol
 /********************************************************
  * handle only target specific attributes for call class
  */
 {
+    call_class_target cclass_target;    // - call class
+#if _INTEL_CPU
     AUX_INFO *inf;                      // - aux info. for symbol
     TYPE fn_type;                       // - function type
     type_flag flags;                    // - flags for the function TYPE
     type_flag fn_flags;                 // - flags in the function TYPE
-    call_class_target cclass_target;    // - call class
 
     inf = getLangInfo( sym );
     cclass_target = inf->cclass_target;
@@ -955,9 +955,13 @@ static call_class_target getCallClassTarget( SYMBOL sym )                       
             cclass_target |= FECALL_X86_TOUCH_STACK;
         }
     }
+#else
+    /* unused parameters */ (void)sym;
+
+    cclass_target = 0;
+#endif
     return( cclass_target );
 }
-#endif
 
 static sym_access getSymAccess( // GET access flag of symbol
     SYMBOL sym )                // - symbol
@@ -1341,12 +1345,10 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotRetn();
         retn = (void *)getCallClass( sym );
         break;
-#if _INTEL_CPU
     case FEINF_CALL_CLASS_TARGET:
         DbgNotRetn();
         retn = (void *)getCallClassTarget( sym );
         break;
-#endif
     case FEINF_FREE_SEGMENT:
         DbgNotSym();
         DbgNotRetn();

@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-//typedef enum {
-//    FECALL_PPC_NONE                 = 0,
+typedef enum {
+    FECALL_PPC_NONE                 = 0,
 //    FECALL_PPC_....           = 0x00000001,
-//} call_class_target;
+} call_class_target;

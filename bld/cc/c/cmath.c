@@ -739,7 +739,10 @@ static bool IsZero( TREEPTR tree )
 static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
 {
     TYPEPTR         typ2;
-    type_modifiers  typ1_flags, typ2_flags;
+#if _INTEL_CPU
+    type_modifiers  typ1_flags;
+#endif
+    type_modifiers  typ2_flags;
 
     typ2 =  op2->u.expr_type;
     /*
@@ -750,7 +753,9 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
      * skip typedefs, go into enum base
      */
     typ2 = SkipTypeFluff( typ2 );
+#if _INTEL_CPU
     typ1_flags = typ1->u.p.decl_flags;
+#endif
     typ2_flags = typ2->u.p.decl_flags;
     if( typ1->decl_type == TYP_POINTER && typ2->decl_type == TYP_POINTER ) {
 #if _INTEL_CPU

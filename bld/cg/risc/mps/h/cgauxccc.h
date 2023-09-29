@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-//typedef enum {
-//    FECALL_MPS_NONE                 = 0,
+typedef enum {
+    FECALL_MPS_NONE                 = 0,
 //    FECALL_MPS_....           = 0x00000001,
-//} call_class_target;
+} call_class_target;

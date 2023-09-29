@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-//typedef enum {
-//    FECALL_AXP_NONE                 = 0,
+typedef enum {
+    FECALL_AXP_NONE                 = 0,
 //    FECALL_AXP_....           = 0x00000001,
-//} call_class_target;
+} call_class_target;
