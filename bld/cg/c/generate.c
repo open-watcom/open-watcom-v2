@@ -296,9 +296,9 @@ static  void    FreeExtraTemps( name *last, block_num id )
         temp = *owner;
         if( temp == last )
             break;
-        if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
-         && !_FrontEndTmp( temp )
-         && temp->t.u.block_id == id ) {
+        if( (temp->v.usage & USE_IN_ANOTHER_BLOCK) == 0
+          && !_FrontEndTmp( temp )
+          && temp->t.u.block_id == id ) {
             *owner = temp->n.next_name;
             FreeAName( temp );
         } else {
@@ -317,7 +317,8 @@ static  void    ForceTempsMemory( void )
     ParmPropagate();
     for( op = Names[N_TEMP]; op != LastTemp; op = next ) {
         next = op->n.next_name;
-        if( ( op->v.usage & USE_IN_ANOTHER_BLOCK ) || _FrontEndTmp( op ) ) {
+        if( (op->v.usage & USE_IN_ANOTHER_BLOCK)
+          || _FrontEndTmp( op ) ) {
             op = DeAlias( op );
             op->v.usage |= NEEDS_MEMORY | USE_MEMORY;
             while( op->v.conflict != NULL ) {
@@ -505,8 +506,8 @@ static  void    FreeExtraSyms( name *last )
         temp = *owner;
         if( temp == last )
             break;
-        if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
-         && !_FrontEndTmp( temp ) ) {
+        if( (temp->v.usage & USE_IN_ANOTHER_BLOCK) == 0
+          && !_FrontEndTmp( temp ) ) {
             *owner = temp->n.next_name;
             FreeAName( temp );
         } else {
@@ -557,9 +558,9 @@ static  void    ForceConflictsMemory( void )
     for( conf = ConfList; conf != NULL; conf = next ) {
         next = conf->next_conflict;
         if( !_GBitEmpty( conf->id.out_of_block )
-         || ( conf->name->n.class == N_TEMP && _FrontEndTmp( conf->name ) )
-         || ( conf->name->n.class == N_MEMORY && conf->name->v.symbol != NULL )
-         || ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
+          || ( conf->name->n.class == N_TEMP && _FrontEndTmp( conf->name ) )
+          || ( conf->name->n.class == N_MEMORY && conf->name->v.symbol != NULL )
+          || (conf->name->v.usage & USE_IN_ANOTHER_BLOCK) ) {
             next = InMemory( conf );
         }
     }
@@ -582,7 +583,7 @@ static  void    Panic( bool partly_done )
     curr_proc = CurrProc;
     FlushBlocks( partly_done );
     if( curr_proc == CurrProc /* if not freed (dummy!) */
-     && (CurrProc->prolog_state & PST_EPILOG_GENERATED) == 0 ) {
+      && (CurrProc->prolog_state & PST_EPILOG_GENERATED) == 0 ) {
         GenEpilog();
         FiniStackMap();
         FreeProc();
@@ -659,7 +660,8 @@ void    Generate( bool routine_done )
 
     /* if we couldn't get the whole procedure in memory, generate part of it */
     if( BlockByBlock ) {
-        if( _MemLow || routine_done ) {
+        if( _MemLow
+          || routine_done ) {
             GenPartialRoutine( routine_done );
         } else {
             BlkTooBig();
