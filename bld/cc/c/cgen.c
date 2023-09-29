@@ -1219,19 +1219,26 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
     }
     parms_reversed = false;
     if( CurFunc->u.func.parms != SYM_NULL ) {
-        if( GetCallClass( CurFuncHandle ) & FECALL_GEN_REVERSE_PARMS ) {
+        SYMPTR              psym;
+#ifndef REVERSE
+        aux_info            *inf;
+        SYM_ENTRY           sym;
+
+        inf = FindInfo( &sym, CurFuncHandle );
+        if( inf->cclass & FECALL_GEN_REVERSE_PARMS ) {
             ParmReverse( CurFunc->u.func.parms );
             parms_reversed = true;
         } else {
-            SYMPTR      sym;
-
-            for( sym_handle = CurFunc->u.func.parms; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
-                sym = SymGetPtr( sym_handle );
-                if( sym->sym_type->decl_type == TYP_DOT_DOT_DOT )
+#endif
+            for( sym_handle = CurFunc->u.func.parms; sym_handle != SYM_NULL; sym_handle = psym->handle ) {
+                psym = SymGetPtr( sym_handle );
+                if( psym->sym_type->decl_type == TYP_DOT_DOT_DOT )
                     break;
-                CDoParmDecl( sym, sym_handle );
+                CDoParmDecl( psym, sym_handle );
             }
+#ifndef REVERSE
         }
+#endif
     }
     CGLastParm();
     CDoAutoDecl( CurFunc->u.func.locals );

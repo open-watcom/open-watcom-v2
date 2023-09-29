@@ -32,7 +32,6 @@
 
 extern bool                 VarFunc( SYMPTR );
 extern bool                 VarParm( SYMPTR );
-extern call_class           GetCallClass( SYM_HANDLE );
 extern aux_info             *FindInfo( SYMPTR, SYM_HANDLE );
 extern bool                 FunctionAborts( SYMPTR, SYM_HANDLE );
 extern bool                 ParmsToBeReversed( type_modifiers, aux_info * );

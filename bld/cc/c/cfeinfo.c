@@ -468,8 +468,8 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
     return( false );
 }
 
-call_class GetCallClass( SYM_HANDLE sym_handle )
-/***********************************************
+static call_class getCallClass( SYM_HANDLE sym_handle )
+/******************************************************
  * handle only generic attributes for call class
  */
 {
@@ -505,7 +505,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     return( cclass );
 }
 
-static call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
+static call_class_target getCallClassTarget( SYM_HANDLE sym_handle )
 /*******************************************************************
  * handle only target specific attributes for call class
  */
@@ -571,6 +571,7 @@ static call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
     }
 #else
     /* unused parameters */ (void)sym_handle;
+
     cclass_target = 0;
 #endif
     return( cclass_target );
@@ -1119,9 +1120,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
             return( (CGPOINTER)ModuleName );
         }
     case FEINF_CALL_CLASS:
-        return( (CGPOINTER)GetCallClass( req_handle ) );
+        return( (CGPOINTER)getCallClass( req_handle ) );
     case FEINF_CALL_CLASS_TARGET:
-        return( (CGPOINTER)GetCallClassTarget( req_handle ) );
+        return( (CGPOINTER)getCallClassTarget( req_handle ) );
     case FEINF_FREE_SEGMENT:
         return( NULL );
     case FEINF_NEXT_LIBRARY:
