@@ -31,5 +31,5 @@
 ****************************************************************************/
 
 
-pick( PROLOG_GENERATED, 0x0001 )
-pick( EPILOG_GENERATED, 0x0002 )
+pick( PST_PROLOG_GENERATED, 0x0001 )
+pick( PST_EPILOG_GENERATED, 0x0002 )

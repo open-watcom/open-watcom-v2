@@ -36,7 +36,7 @@
 
 
 typedef enum {
-    #define pick(e,v)   PST_ ## e = v,
+    #define pick(e,v)   e = v,
     #include "targprol.h"
     #undef pick
     PST__LAST           = 0x8000,   // force to unsigned short type if possible
