@@ -914,7 +914,7 @@ static call_class_target getCallClassTarget( SYMBOL sym )                       
                          * matches what it would be for an exported fn
                          */
                         if( TargetSwitches & CGSW_X86_WINDOWS ) {
-                            cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
+                            cclass_target |= FECALL_X86_PROLOG_FAT_WINDOWS;
                         }
                     }
                 }
@@ -934,7 +934,7 @@ static call_class_target getCallClassTarget( SYMBOL sym )                       
     #if _CPU == 8086
             if( inf == &PascalInfo || inf == &CdeclInfo ) {
                 if( TargetSwitches & CGSW_X86_WINDOWS ) {
-                    cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
+                    cclass_target |= FECALL_X86_PROLOG_FAT_WINDOWS;
                 }
             }
     #endif

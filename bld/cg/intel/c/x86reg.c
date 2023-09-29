@@ -139,7 +139,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         if( cclass_target & FECALL_X86_EPILOG_HOOKS ) {
             CurrProc->prolog_state |= GENERATE_EPILOG_HOOKS;
         }
-        if( cclass_target & FECALL_X86_FAT_WINDOWS_PROLOG ) {
+        if( cclass_target & FECALL_X86_PROLOG_FAT_WINDOWS ) {
             CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
         }
         if( cclass_target & FECALL_X86_EMIT_FUNCTION_NAME ) {

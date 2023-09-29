@@ -523,7 +523,7 @@ call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
   #if _CPU == 8086
             if( TargetSystem == TS_WINDOWS ) {
                 if( inf == &PascalInfo || inf == &CdeclInfo ) {
-                    cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
+                    cclass_target |= FECALL_X86_PROLOG_FAT_WINDOWS;
                 }
             }
   #endif
@@ -544,7 +544,7 @@ call_class_target GetCallClassTarget( SYM_HANDLE sym_handle )
             if( sym.mods & FLAG_LOADDS ) {
   #if 0
                 if( TargetSystem == TS_WINDOWS ) {
-                    cclass_target |= FECALL_X86_FAT_WINDOWS_PROLOG;
+                    cclass_target |= FECALL_X86_PROLOG_FAT_WINDOWS;
                 } else {
                     cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
                 }
