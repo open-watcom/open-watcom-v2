@@ -1,4 +1,3 @@
-/****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -172,7 +171,8 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
     /*
      * if either struct is undefined, let's be conservative
      */
-    if( (field1 == NULL) || (field2 == NULL) )
+    if( (field1 == NULL)
+      || (field2 == NULL) )
         return( NO );
     for( ; field1 != NULL && field2 != NULL; ) {
         typ1 = field1->field_type;
@@ -180,8 +180,8 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
         typ2 = field2->field_type;
         SKIP_TYPEDEFS( typ2 );
         if( !IdenticalType( typ1, typ2 ) ) {
-            if( ( typ1->decl_type == TYP_STRUCT && typ2->decl_type == TYP_STRUCT ) ||
-                ( typ1->decl_type == TYP_UNION && typ2->decl_type == TYP_UNION ) ) {
+            if( ( typ1->decl_type == TYP_STRUCT && typ2->decl_type == TYP_STRUCT )
+              || ( typ1->decl_type == TYP_UNION && typ2->decl_type == TYP_UNION ) ) {
                 if( CompatibleStructs( typ1->u.tag, typ2->u.tag ) != OK ) {
                     return( NO );
                 }
@@ -195,7 +195,8 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
     /*
      * one list longer than other (possible with -zp4)
      */
-    if( field1 != NULL || field2 != NULL )
+    if( field1 != NULL
+      || field2 != NULL )
         return( NO );
     return( OK );
 }
@@ -232,7 +233,8 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
         } else {
             p1 = *plist1++; p2 = *plist2++;
             for( parmno = 1; p1 != NULL && p2 != NULL; ++parmno ) {
-                if( p1->decl_type == TYP_DOT_DOT_DOT || p2->decl_type == TYP_DOT_DOT_DOT ) {
+                if( p1->decl_type == TYP_DOT_DOT_DOT
+                  || p2->decl_type == TYP_DOT_DOT_DOT ) {
                     break;
                 }
                 if( !IdenticalType( p1, p2 ) ) {
@@ -245,11 +247,13 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
                 }
                 p1 = *plist1++; p2 = *plist2++;
             }
-            if( p1 != NULL && p1->decl_type == TYP_DOT_DOT_DOT || p2 != NULL && p2->decl_type == TYP_DOT_DOT_DOT ) {
+            if( ( p1 != NULL && p1->decl_type == TYP_DOT_DOT_DOT )
+              || ( p2 != NULL && p2->decl_type == TYP_DOT_DOT_DOT ) ) {
                 p1 = NULL;
                 p2 = NULL;
             }
-            if( p1 != NULL || p2 != NULL ) {
+            if( p1 != NULL
+              || p2 != NULL ) {
                 if( topLevelCheck ) {
                     CErr1( ERR_PARM_COUNT_MISMATCH );
                 }
@@ -300,7 +304,8 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             /*
              * See C99, 6.7.5.2p5
              */
-            if( typ1->u.array->dimension && typ2->u.array->dimension ) {
+            if( typ1->u.array->dimension
+              && typ2->u.array->dimension ) {
                 if( typ1->u.array->dimension != typ2->u.array->dimension ) {
                     ret_val = PM;
                 }
@@ -309,7 +314,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             typ1_flags = typ1->u.p.decl_flags;
             typ2_flags = typ2->u.p.decl_flags;
             if( (typ1_flags & MASK_QUALIFIERS) != (typ2_flags & MASK_QUALIFIERS) ) {
-                if( ret_val == OK ) {   //PM is a worse case
+                if( ret_val == OK ) {   // PM is a worse case
                     ret_val = PQ;
                 }
             }
@@ -329,18 +334,21 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
     }
     if( typ1 != typ2 ) {    // if not equal see if diff by pointers
         if( ptr_indir_level > 0 ) {
-            if( typ1->decl_type == TYP_VOID || typ2->decl_type == TYP_VOID ) {
+            if( typ1->decl_type == TYP_VOID
+              || typ2->decl_type == TYP_VOID ) {
                 /*
                  * allow  void ** with any ** (but warn about it)
                  */
-                if( ( ptr_indir_level == 1 ) || !CompFlags.strict_ANSI ) {
+                if( ( ptr_indir_level == 1 )
+                  || !CompFlags.strict_ANSI ) {
                     if( ptr_indir_level > 1 ) {
                         ret_val = PM;
                     }
                     return( ret_val ); // void *  and  anything *
                 }
             }
-            if( typ1->decl_type == TYP_POINTER && typ2->decl_type != TYP_ARRAY ) {
+            if( typ1->decl_type == TYP_POINTER
+              && typ2->decl_type != TYP_ARRAY ) {
                 ret_val = PW;
                 while( typ1->decl_type == TYP_POINTER ) {
                     /*
@@ -349,7 +357,8 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                     typ1 = SkipTypeFluff( typ1->object );
                     ++ptr_indir_level;
                 }
-            } else if( typ2->decl_type == TYP_POINTER && typ1->decl_type != TYP_ARRAY ) {
+            } else if( typ2->decl_type == TYP_POINTER
+              && typ1->decl_type != TYP_ARRAY ) {
                 ret_val = PW;
                 while( typ2->decl_type == TYP_POINTER ) {
                     /*
@@ -372,12 +381,13 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             } else if( !IdenticalType( typ1->object, typ2->object ) ) {
                 ret_val = NO;
             }
-        } else if( typ1->decl_type == TYP_STRUCT || typ1->decl_type == TYP_UNION ) {
+        } else if( typ1->decl_type == TYP_STRUCT
+          || typ1->decl_type == TYP_UNION ) {
            /*
             * allow pointers to different structs
             * stop this for ANSI!
             */
-            if( ( typ1 != typ2 ) ) {
+            if( typ1 != typ2 ) {
                 /*
                  * Types are not the same
                  * if extensions are enabled, then we can do a compatible struct test
@@ -398,18 +408,21 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                     ret_val = NO;
                 }
             }
-        } else if( ( TYP_FIELD == typ1->decl_type ) || ( TYP_UFIELD == typ1->decl_type ) ) {
+        } else if( ( TYP_FIELD == typ1->decl_type )
+          || ( TYP_UFIELD == typ1->decl_type ) ) {
             if( typ2->u.f.field_width > typ1->u.f.field_width ) {
                 ret_val = AC;
             }
         }
-    } else if( typ1->decl_type == TYP_UNION && ptr_indir_level > 0 ) {
+    } else if( typ1->decl_type == TYP_UNION
+      && ptr_indir_level > 0 ) {
         if( InUnion( typ1, typ2, false ) != OK ) {
             ret_val = NO;
         } else {
             ret_val = PM;
         }
-    } else if( typ2->decl_type == TYP_UNION && ptr_indir_level > 0 ) {
+    } else if( typ2->decl_type == TYP_UNION
+      && ptr_indir_level > 0 ) {
         if( InUnion( typ2, typ1, true ) != OK ) {
             ret_val = NO;
         } else {
@@ -435,7 +448,8 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                 ret_val = PM;
             }
         }
-    } else if( typ1->decl_type >= DATA_TYPE_SIZE || typ2->decl_type >= DATA_TYPE_SIZE ) {
+    } else if( typ1->decl_type >= DATA_TYPE_SIZE
+      || typ2->decl_type >= DATA_TYPE_SIZE ) {
         ret_val = NO;
     } else if( ptr_indir_level == 0 ) {
         ret_val = CompTable[typ1->decl_type][typ2->decl_type];
@@ -488,7 +502,8 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
      * skip typedefs, go into enum base
      */
     typ2 = SkipTypeFluff( typ2 );
-    if( typ1->decl_type == TYP_POINTER && typ2->decl_type == TYP_POINTER ) {
+    if( typ1->decl_type == TYP_POINTER
+      && typ2->decl_type == TYP_POINTER ) {
         /*
          * top level pointer
          */
@@ -498,14 +513,15 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
          * Special dispensation: assigning null pointer constant is allowed even
          * when the pointer size doesn't match. Required for MS compatibility.
          */
-        if( assignment && !null_ptr ) {
+        if( assignment
+          && !null_ptr ) {
             type_modifiers  subnot;
 
             subnot = SUBNOT( typ1_flags, typ2_flags, MASK_QUALIFIERS );
             if( subnot ) {  // allow void * =  unaligned *
                 if( subnot & (MASK_QUALIFIERS & ~FLAG_UNALIGNED) ) {
                     ret_pq = PQ;
-                } else if( subnot & FLAG_UNALIGNED) {
+                } else if( subnot & FLAG_UNALIGNED ) {
                     align_type align1;
 
                     align1 = GetTypeAlignment( typ1->object );
@@ -626,13 +642,15 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
          */
         ParmAsgnCheck( typ1, parm, parmno, false );
         typ1 = *master++;
-        if( typ1 != NULL && typ1->decl_type == TYP_DOT_DOT_DOT ) {
+        if( typ1 != NULL
+          && typ1->decl_type == TYP_DOT_DOT_DOT ) {
             typ1 = NULL;
             parm = NULL;
             break;
         }
     }
-    if( typ1 != NULL || parm != NULL ) {     /* should both be NULL now */
+    if( typ1 != NULL
+      || parm != NULL ) {     /* should both be NULL now */
 #if _CPU == 386
         /*
          * can allow wrong number of parms with -3s option
@@ -675,7 +693,8 @@ extern void ChkCallParms( void )
             if( (sym.flags & SYM_TEMP) == 0 )
                 SetDiagSymbol( &sym, callsite->op.u2.sym_handle );
             SetErrLoc( &nextcall->src_loc );
-            if( typ->u.fn.parms == NULL && callnode->right == NULL ) {
+            if( typ->u.fn.parms == NULL
+              && callnode->right == NULL ) {
                 /*
                  * this relax case
                  * if function prototype is defined without any parameter type
@@ -732,10 +751,12 @@ bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
         case TYP_ULONG:
         case TYP_LONG64:
         case TYP_ULONG64:
-            if( opnd2->u.expr_type->decl_type == TYP_LONG64 || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
+            if( opnd2->u.expr_type->decl_type == TYP_LONG64
+              || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
                 value = opnd2->op.u2.ulong64_value.u._32[I64HI32];
                 sign = ( value == 0xffffffffU );
-                if( value != 0 && !sign ) {
+                if( value != 0
+                  && !sign ) {
                     return( typ1->decl_type == TYP_LONG64 || typ1->decl_type == TYP_ULONG64 );
                 }
                 value = opnd2->op.u2.ulong64_value.u._32[I64LO32];
@@ -911,7 +932,8 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         break;
     case PC:
         if( asgn_check ) {  /* Allow only "... *p = int 0";  */
-            if( IsPointer( typ1 ) && opnd2->op.opr == OPR_PUSHINT ) {
+            if( IsPointer( typ1 )
+              && opnd2->op.opr == OPR_PUSHINT ) {
                 if( opnd2->op.u2.long_value != 0 ) {
                     CWarnP1( parmno, ERR_NONPORTABLE_PTR_CONV );
                 }
@@ -1069,10 +1091,10 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
                 break;
             }
         }
-        if( TypeSize(typ1) != TypeSize(typ2) ) {
-            if( TypeSize(typ1) == 0 ) {
+        if( TypeSize( typ1 ) != TypeSize( typ2 ) ) {
+            if( TypeSize( typ1 ) == 0 ) {
                 retcode = TCE_TYPE2_HAS_MORE_INFO;
-            } else if( TypeSize(typ2) == 0 ) {
+            } else if( TypeSize( typ2 ) == 0 ) {
                 retcode = TCE_OK;
             } else {
                 break;
@@ -1081,12 +1103,14 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
                 return( retcode );
             }
         }
-        if( ( TYP_FIELD == typ1->decl_type ) || ( TYP_UFIELD == typ1->decl_type ) ) {
+        if( ( TYP_FIELD == typ1->decl_type )
+          || ( TYP_UFIELD == typ1->decl_type ) ) {
             if( typ1->u.f.field_width != typ2->u.f.field_width ) {
                 break;
             }
         }
-        if( typ1->decl_type == TYP_STRUCT || typ1->decl_type == TYP_UNION ) {
+        if( typ1->decl_type == TYP_STRUCT
+          || typ1->decl_type == TYP_UNION ) {
             /*
              * must be the same tag to be identical, if they are the
              * same tag, then typ1 == typ2 which is checked above
@@ -1097,7 +1121,8 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
             retcode = ChkCompatibleFunctionParms( typ1, typ2, false );
             if( retcode != TCE_OK )
                 return( retcode );
-            if( typ1->object == NULL || typ2->object == NULL ) {
+            if( typ1->object == NULL
+              || typ2->object == NULL ) {
                 return( TCE_OK );
             }
         }
