@@ -655,8 +655,8 @@ static CGPOINTER NextAlias( int index, aux_class request )
  *         FEINF_ALIAS_SUBST_SYMBOL
  *             returns the symbol to be substituted for the alias, or NULL.
  *
- * Note: One of FEINF_ALIAS..._NAME and FEINF_ALIAS..._SYMBOL will always be 0/NULL and the other
- * will be valid, depending on which form of the pragma was used.
+ * Note: One of FEINF_ALIAS..._NAME and FEINF_ALIAS..._SYMBOL will always be 0/NULL
+ * and the other will be valid, depending on which form of the pragma was used.
  */
 {
     alias_list          *aliaslist;

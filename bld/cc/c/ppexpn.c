@@ -573,7 +573,7 @@ static bool CConditional( void )
 
 static bool Binary( TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
 /**************************************************************************
- * pop binary operand and two operands, error check
+ * pop binary operator and two operands, error check
  */
 {
     loc_info e1_info;

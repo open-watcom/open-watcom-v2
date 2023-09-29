@@ -1154,6 +1154,7 @@ static void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 }
 
+#ifndef REVERSE
 static void ParmReverse( SYM_HANDLE sym_handle )
 {
     SYMPTR      sym;
@@ -1165,6 +1166,7 @@ static void ParmReverse( SYM_HANDLE sym_handle )
     }
     CDoParmDecl( sym, sym_handle );
 }
+#endif
 
 static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
 {
