@@ -2304,8 +2304,8 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     an              retv;
     an              parman;
     type_def        *tipe;
-    bool            aux_inline;
-    bool            call_inline;
+    bool            aux_inline;     /* ASM inline code */
+    bool            call_inline;    /* C inline code */
     name            *base;
     call_class      cclass;
     cg_sym_handle   sym;

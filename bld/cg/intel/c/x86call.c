@@ -137,8 +137,8 @@ static  void    Far16Parms( cn call )
 #endif
 
 
-an      BGCall( cn call, bool use_return, bool in_line )
-/******************************************************/
+an      BGCall( cn call, bool use_return, bool aux_inline )
+/*********************************************************/
 {
     instruction         *call_ins;
     call_state          *state;
@@ -189,7 +189,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
         Far16Parms( call );
 #endif
     } else {
-        if( AssgnParms( call, in_line ) ) {
+        if( AssgnParms( call, aux_inline ) ) {
             if( state->attr & ROUTINE_REMOVES_PARMS ) {
                 call_ins->flags.call_flags |= CALL_POPS_PARMS;
             }

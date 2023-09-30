@@ -86,7 +86,7 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     hw_reg_set          *pregs;
     call_class          cclass;
     byte_seq            *code;
-    bool                have_aux_code = false;
+    bool                aux_inline = false;
 
     state->unalterable = FixedRegs();
     if( FEAttr( AskForLblSym( CurrProc->label ) ) & FE_VARARGS ) {
@@ -100,13 +100,13 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( !AskIfRTLabel( CurrProc->label ) ) {
         code = FEAuxInfo( aux, FEINF_CALL_BYTES );
         if( code != NULL ) {
-            have_aux_code = true;
+            aux_inline = true;
         }
     }
 
     pregs = FEAuxInfo( aux, FEINF_SAVE_REGS );
     HW_CAsgn( state->modify, HW_FULL );
-    if( have_aux_code ) {
+    if( aux_inline ) {
         HW_TurnOff( state->modify, *pregs );
     } else {
         HW_TurnOff( state->modify, SavedRegs() );
@@ -130,7 +130,7 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & FECALL_GEN_NO_MEMORY_READ ) {
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
-    if( have_aux_code ) {
+    if( aux_inline ) {
         parm_src = FEAuxInfo( aux, FEINF_PARM_REGS );
     } else {
         parm_src = ParmRegs();

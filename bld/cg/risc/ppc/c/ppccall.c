@@ -51,8 +51,8 @@
 #include "bgcall.h"
 
 
-an      BGCall( cn call, bool use_return, bool in_line )
-/******************************************************/
+an      BGCall( cn call, bool use_return, bool aux_inline )
+/*********************************************************/
 {
     instruction         *call_ins;
     instruction         *conv_ins;
@@ -84,7 +84,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
     } else {
         call_ins->result = AllocRegName( state->return_reg );
     }
-    AssgnParms( call, in_line );
+    AssgnParms( call, aux_inline );
     AddCallIns( call_ins, call );
     if( use_return ) {
 #if 1

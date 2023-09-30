@@ -805,7 +805,7 @@ static void SplitStructParms( pn *parm_list, call_state *state )
 }
 #endif
 
-bool        AssgnParms( cn call, bool in_line )
+bool        AssgnParms( cn call, bool aux_inline )
 /********************************************************
  * Decide what registers the parms should go in.
  * Assign registers to first parm first, etc. Also, assign a congolmeration
@@ -833,7 +833,7 @@ bool        AssgnParms( cn call, bool in_line )
     parm = call->parms;
 #endif
     for( ; parm != NULL; parm = parm->next ) {
-        if( in_line ) {
+        if( aux_inline ) {
             parm->regs = ParmInLineReg( &state->parm );
             if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
                 if( !HW_CEqual( *(state->parm.curr_entry), HW_EMPTY ) ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern an               BGCall( cn call, bool use_return, bool in_line );
+extern an               BGCall( cn call, bool use_return, bool aux_inline );
 extern void             BGProcDecl( cg_sym_handle sym, type_def *tipe );
 extern name             *StReturn( an retval, type_def *tipe, instruction **pins );
 extern reg_set_index    CallIPossible( instruction *ins );
