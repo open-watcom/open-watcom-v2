@@ -35,7 +35,7 @@
 #include "asinline.h"
 #endif
 
-#include "mipsenc.h"
+#include "mipsenco.h"
 
 
 /*

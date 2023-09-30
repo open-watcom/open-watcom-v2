@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "coderep.h"
 #include "optmain.h"
-#include "mipsenc.h"
+#include "mipsenco.h"
 #include "reloc.h"
 #include "zoiks.h"
 #include "coff.h"

@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "mipsenc.h"
+#include "mipsenco.h"
 #include "data.h"
 #include "rtrtn.h"
 #include "objout.h"

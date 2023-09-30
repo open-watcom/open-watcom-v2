@@ -33,7 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
-#include "ppcenc.h"
+#include "ppcencod.h"
 #include "ppcgen.h"
 #include "data.h"
 #include "objout.h"
