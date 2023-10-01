@@ -588,7 +588,7 @@ static  void addressTemp( name *temp, uint_8 *reg, int_16 *offset )
     temp_offset = TempLocation( temp );
     if( temp_offset > MIPS_MAX_OFFSET ) {
         /*
-         * gen some code to load temp address into SCRATCH_REG
+         * gen some code to load temp address into scratch register
          */
         GenLOADS32( temp_offset, AT_REG_IDX );
         /*
@@ -703,7 +703,10 @@ static  void GenCallIndirect( instruction *call )
     int_16      mem_offset;
     name        *addr;
 
-    reg_index = AT_REG_IDX;   /* use the volatile scratch reg if possible */
+    /*
+     * use the scratch register if possible
+     */
+    reg_index = AT_REG_IDX;
     addr = call->operands[CALL_OP_ADDR];
     switch( addr->n.class ) {
     case N_REGISTER:
@@ -824,11 +827,11 @@ static  bool    encodeThreadDataRef( instruction *ins )
     GenMEMINSRELOC( 0x08, AT_REG_IDX, AT_REG_IDX, 0,
                 tls_index, OWL_RELOC_HALF_LO );
     EmitIns( RDTEB_ENCODING );
-    GenMEMINS( loadOpcodes[I4], V0, V0, RDTEB_MAGIC_CONST );
-    GenOPINS( 0x0010, 0x0002, AT_REG_IDX, V0, V0 );
-    GenMEMINS( loadOpcodes[I4], V0, V0, 0 );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, RDTEB_MAGIC_CONST );
+    GenOPINS( 0x0010, 0x0002, AT_REG_IDX, RT_RET_REG_IDX, RT_RET_REG_IDX );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, 0 );
     GenMEMINSRELOC( 0x08, _NameReg( ins->result ),
-                V0, 0, symLabel( op ), OWL_RELOC_HALF_LO );
+                RT_RET_REG_IDX, 0, symLabel( op ), OWL_RELOC_HALF_LO );
 #else
     assert( 0 );
 #endif

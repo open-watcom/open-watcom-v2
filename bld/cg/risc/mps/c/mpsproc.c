@@ -197,11 +197,6 @@ static  void initSavedRegs( stack_record *saved_regs, type_length *offset )
 #define ADDIU_OPCODE    0x09
 #define NOP_OPCODE      0x00
 
-#define VARARGS_PTR     23      // TODO
-#define RT_PARM1        8       // $t0
-#define RT_RET_REG      2       // $v0
-
-
 static  void genMove( uint_32 src, uint_32 dst )
 /**********************************************/
 {
@@ -493,13 +488,13 @@ static  void SetupVarargsReg( stack_map *map )
             offset += REG_SIZE;
         }
         if( offset > MIPS_MAX_OFFSET ) {
-            GenLOADS32( offset, VARARGS_PTR );
+            GenLOADS32( offset, VARARGS_PTR_REG_IDX );
             /*
              * 'add va_home,va_home,sp'
              */
-            GenRType( 0x00, 0x21, SP_REG_IDX, VARARGS_PTR, VARARGS_PTR );
+            GenRType( 0x00, 0x21, SP_REG_IDX, VARARGS_PTR_REG_IDX, VARARGS_PTR_REG_IDX );
         } else {
-            genLoadImm( SP_REG_IDX, offset, VARARGS_PTR );
+            genLoadImm( SP_REG_IDX, offset, VARARGS_PTR_REG_IDX );
         }
     }
 }
@@ -522,14 +517,14 @@ static  void emitProlog( stack_map *map )
             GenRType( 0x00, 0x23, SP_REG_IDX, SP_REG_IDX, AT_REG_IDX );
         }
         if( frame_size >= _TARGET_PAGE_SIZE ) {
-            GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG );
+            GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG_IDX );
             /*
              * Next instruction will be in delay slot!
              */
             if( frame_size <= MIPS_MAX_OFFSET ) {
-                genLoadImm( ZERO_REG_IDX, frame_size, RT_PARM1 );
+                genLoadImm( ZERO_REG_IDX, frame_size, RT_PARM1_REG_IDX );
             } else {
-                genMove( AT_REG_IDX, RT_PARM1 );
+                genMove( AT_REG_IDX, RT_PARM1_REG_IDX );
             }
         }
     }
@@ -540,15 +535,15 @@ static  void emitProlog( stack_map *map )
 
             size = map->locals.size + map->parm_cache.size;
             if( size > MIPS_MAX_OFFSET ) {
-                GenLOADS32( size, RT_PARM1 );
-                GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG );
+                GenLOADS32( size, RT_PARM1_REG_IDX );
+                GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG_IDX );
                 genNOP();   // could split LOADS32 call to fill in delay slot...
             } else {
-                GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG );
+                GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG_IDX );
                 /*
                  * Next instruction will be in delay slot!
                  */
-                genLoadImm( ZERO_REG_IDX, map->locals.size + map->parm_cache.size, RT_PARM1 );
+                genLoadImm( ZERO_REG_IDX, map->locals.size + map->parm_cache.size, RT_PARM1_REG_IDX );
             }
         }
     }
