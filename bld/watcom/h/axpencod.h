@@ -55,12 +55,17 @@
 
 typedef uint_32                 axp_ins;
 
-#define FP_REG_IDX              15  // Contains the Frame pointer (if needed)
-#define RA_REG_IDX              26  // Contains the Return address
-#define AT_REG_IDX              28  // Reserved for the assembler temporary
-#define GP_REG_IDX              29  // Contains the Global pointer
-#define SP_REG_IDX              30  // Contains the Stack pointer
-#define ZERO_REG_IDX            31  // Contains 0
-#define ATFP_REG_IDX            30  // Foating-point reserved for the assembler temporary
+#define FP_REG_IDX              15      // Contains the Frame pointer (if needed)
+#define RA_REG_IDX              26      // Contains the Return address
+#define AT_REG_IDX              28      // Reserved for the temporary
+#define GP_REG_IDX              29      // Contains the Global pointer
+#define SP_REG_IDX              30      // Contains the Stack pointer
+#define ZERO_REG_IDX            31      // Contains 0
+#define FP_AT_REG_IDX           30      // Reserved for the temporary floating-point
+
+#define VARARGS_PTR_REG_IDX     14      // $s5
+#define RT_PARM2_REG_IDX        2       // $t1
+#define RT_PARM1_REG_IDX        1       // $t0
+#define RT_RET_REG_IDX          0       // $v0
 
 #define AXP_MAX_OFFSET          0x7fff

@@ -61,12 +61,18 @@
 
 typedef uint_32                 mips_ins;
 
-#define ZERO_REG_IDX            0   // Contains 0
-#define AT_REG_IDX              1   // Reserved for the assembler temporary
-#define GP_REG_IDX              28  // Contains the Global pointer
-#define SP_REG_IDX              29  // Contains the Stack pointer
-#define FP_REG_IDX              30  // Contains the Frame pointer
-#define RA_REG_IDX              31  // Contains the Return address
+#define ZERO_REG_IDX            0       // Contains 0
+#define AT_REG_IDX              1       // Reserved for the temporary
+#define GP_REG_IDX              28      // Contains the Global pointer
+#define SP_REG_IDX              29      // Contains the Stack pointer
+#define FP_REG_IDX              30      // Contains the Frame pointer
+#define RA_REG_IDX              31      // Contains the Return address
+//#define FP_AT_REG_IDX           1       // Reserved for the temporary floating-point
+
+#define VARARGS_PTR_REG_IDX     23      // $s7 !TODO!
+#define RT_PARM2_REG_IDX        9       // $t1
+#define RT_PARM1_REG_IDX        8       // $t0
+#define RT_RET_REG_IDX          2       // $v0
 
 #define MIPS_MAX_OFFSET         0x7fff  // immediate displacement range
 
