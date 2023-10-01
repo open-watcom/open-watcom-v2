@@ -154,9 +154,9 @@ void *StartDataQuadAccess( void )
     if( DataQuadsAvailable() ) {
         cur_dqp = CurDataQuad;
         CurDataQuad = DataQuadSegs[0]->next;
-        return( cur_dqp );              // indicate data quads exist
+        return( cur_dqp );  /* indicate data quads exist */
     }
-    return( NULL );                     // indicate no data quads
+    return( NULL );         /* indicate no data quads */
 }
 
 void EndDataQuadAccess( void *p )
@@ -544,11 +544,11 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
             info->state = IS_VALUE;
         }
         break;
-    case OPR_CONVERT:  //should check for pointer to smaller
+    case OPR_CONVERT:   // should check for pointer to smaller
     case OPR_CONVERT_PTR:
         AddrFold( tree->right, info );
         break;
-    case OPR_ERROR:                 // error has already been issued
+    case OPR_ERROR:     // error has already been issued
         break;
     default:
         info->is_error = true;
@@ -1690,9 +1690,9 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
             if( CurToken == T_LEFT_BRACE
               && CompFlags.auto_agg_inits
               && SimpleStruct( typ ) ) {
-                NextToken(); //T_LEFT_BRACE
+                NextToken();    /* skip T_LEFT_BRACE */
                 InitStructUnionVar( sym, sym_handle, 0, typ );
-                NextToken(); //T_RIGHT_BRACE
+                NextToken();    /* skip T_RIGHT_BRACE */
             } else {
                 AggregateVarDeclEquals( sym, sym_handle );
             }

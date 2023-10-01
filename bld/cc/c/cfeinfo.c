@@ -327,13 +327,17 @@ static aux_info *InfoLookup( SYMPTR sym )
     aux_entry       *ent;
 
     name = sym->name;
-    inf = &DefaultInfo;         /* assume default */
+    /*
+     * assume default
+     */
+    inf = &DefaultInfo;
     if( name == NULL )
         return( inf );
     ent = AuxLookup( name );
     if( ent != NULL )
         inf = ent->info;
-    if( ( ent == NULL ) || (sym->flags & SYM_INTRINSIC) ) {
+    if( ( ent == NULL )
+      || (sym->flags & SYM_INTRINSIC) ) {
         if( sym->flags & SYM_DEFINED )
             return( inf );
         if( (sym->flags & SYM_INTRINSIC) == 0 ) {
@@ -368,14 +372,16 @@ static aux_info *InfoLookup( SYMPTR sym )
             inf->cclass         = FECALL_GEN_NONE;
             inf->cclass_target  = (WatcallInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
 
-            if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) ) {
+            if( (sym->flags & SYM_INTRINSIC)
+              && ( ent != NULL ) ) {
                 inf->cclass         |= ent->info->cclass;
                 inf->cclass_target  |= ent->info->cclass_target;
             }
             inf->code = ifunc->code;
             inf->parms = ifunc->parms;
             inf->returns = ifunc->returns;
-            if( !HW_CEqual( inf->returns, HW_xAX ) && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
+            if( !HW_CEqual( inf->returns, HW_xAX )
+              && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
                 inf->cclass_target |= FECALL_X86_SPECIAL_RETURN;
             }
             HW_CAsgn( inf->streturn, HW_EMPTY );
@@ -395,13 +401,17 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     TYPEPTR         typ;
     aux_info        *inf;
 
-    inf = &DefaultInfo;         /* assume default */
+    /*
+     * assume default
+     */
+    inf = &DefaultInfo;
     if( sym_handle == SYM_NULL )
         return( inf );
 
     SymGet( sym, sym_handle );
 #if _CPU == 386
-    if( (sym_handle == SymSTOSB) || (sym_handle == SymSTOSD) ) {
+    if( (sym_handle == SymSTOSB)
+      || (sym_handle == SymSTOSD) ) {
         return( &STOSBInfo );
     } else if( sym_handle == SymFinally ) {
         InlineInfo = WatcallInfo;
@@ -434,8 +444,10 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
         }
     }
 #if _CPU == 386
-    if( (inf->flags & AUX_FLAG_FAR16) || (sym->mods & FLAG_FAR16) ) {
-        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & FECALL_GEN_REVERSE_PARMS) ) {
+    if( (inf->flags & AUX_FLAG_FAR16)
+      || (sym->mods & FLAG_FAR16) ) {
+        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL
+          || (inf->cclass & FECALL_GEN_REVERSE_PARMS) ) {
             return( &Far16PascalInfo );
         } else {
             return( &Far16CdeclInfo );
@@ -522,7 +534,8 @@ static call_class_target getCallClassTarget( SYM_HANDLE sym_handle )
         if( sym.flags & SYM_FUNCTION ) {
   #if _CPU == 8086
             if( TargetSystem == TS_WINDOWS ) {
-                if( inf == &PascalInfo || inf == &CdeclInfo ) {
+                if( inf == &PascalInfo
+                  || inf == &CdeclInfo ) {
                     cclass_target |= FECALL_X86_PROLOG_FAT_WINDOWS;
                 }
             }
@@ -580,20 +593,22 @@ static call_class_target getCallClassTarget( SYM_HANDLE sym_handle )
 static void addDefaultLibs( void )
 /*********************************
  * NextLibrary
- *     Called (indirectly) from the code generator to inject automagically defined symbols.
+ *  Called (indirectly) from the code generator to inject automagically defined symbols.
  * Inputs:
- *     index    (n-1)
- *         Usually called from a loop until we return 0/NULL to show no more libraries
- *     request
- *         FEINF_NEXT_LIBRARY
- *             examines the current flags to see if any libraries should be
- *             automagically referenced and returns the relevant index if so.
- *         FEINF_LIBRARY_NAME
- *             returns the requested name.
+ *  index   (n-1)
+ *      Usually called from a loop until we return 0/NULL to show no more libraries
+ *  request
+ *      FEINF_NEXT_LIBRARY
+ *          examines the current flags to see if any libraries should be
+ *          automagically referenced and returns the relevant index if so.
+ *      FEINF_LIBRARY_NAME
+ *          returns the requested name.
  */
 {
     if( CompFlags.emit_library_names ) {
-        if( _HAS_ANY_MAIN || CompFlags.pragma_library || CompFlags.emit_all_default_libs ) {
+        if( _HAS_ANY_MAIN
+          || CompFlags.pragma_library
+          || CompFlags.emit_all_default_libs ) {
             AddLibraryName( CLIB_Name + 1, CLIB_Name[0] );
         }
         AddLibraryName( MATHLIB_Name + 1, MATHLIB_Name[0] );
@@ -627,7 +642,8 @@ static CGPOINTER NextLibrary( int index, aux_class request )
     /*
      * return library name, or
      */
-    if( request == FEINF_LIBRARY_NAME || name == NULL )
+    if( request == FEINF_LIBRARY_NAME
+      || name == NULL )
         return( (CGPOINTER)name );
     /*
      * library index
@@ -638,22 +654,22 @@ static CGPOINTER NextLibrary( int index, aux_class request )
 static CGPOINTER NextAlias( int index, aux_class request )
 /*********************************************************
  * NextAlias
- *     Called (indirectly) from the code generator to go through the list of
- *     linker aliases.
+ *  Called (indirectly) from the code generator to go through the list of
+ *  linker aliases.
  * Inputs:
- *     index    (n-1)
- *         Called from a loop until we return 0/NULL to show no more aliases
- *     request
- *         FEINF_NEXT_ALIAS
- *             returns the index of next alias in the list, or zero if none.
- *         FEINF_ALIAS_NAME
- *             returns the alias name, or NULL if alias refers to a symbol.
- *         FEINF_ALIAS_SYMBOL
- *             returns the alias symbol, or NULL if alias refers to a name.
- *         FEINF_ALIAS_SUBST_NAME
- *             returns the name to be substituted for the alias, or NULL.
- *         FEINF_ALIAS_SUBST_SYMBOL
- *             returns the symbol to be substituted for the alias, or NULL.
+ *  index    (n-1)
+ *      Called from a loop until we return 0/NULL to show no more aliases
+ *  request
+ *      FEINF_NEXT_ALIAS
+ *          returns the index of next alias in the list, or zero if none.
+ *      FEINF_ALIAS_NAME
+ *          returns the alias name, or NULL if alias refers to a symbol.
+ *      FEINF_ALIAS_SYMBOL
+ *          returns the alias symbol, or NULL if alias refers to a name.
+ *      FEINF_ALIAS_SUBST_NAME
+ *          returns the name to be substituted for the alias, or NULL.
+ *      FEINF_ALIAS_SUBST_SYMBOL
+ *          returns the symbol to be substituted for the alias, or NULL.
  *
  * Note: One of FEINF_ALIAS..._NAME and FEINF_ALIAS..._SYMBOL will always be 0/NULL
  * and the other will be valid, depending on which form of the pragma was used.
@@ -689,7 +705,7 @@ static CGPOINTER NextAlias( int index, aux_class request )
         return( (CGPOINTER)subst_name );
     } else if( request == FEINF_ALIAS_SUBST_SYMBOL ) {
         return( (CGPOINTER)subst_sym );
-    } else {    // this had better be a FEINF_NEXT_ALIAS request
+    } else {    /* this had better be a FEINF_NEXT_ALIAS request */
         return( (CGPOINTER)(pointer_uint)index );
     }
 }
@@ -773,7 +789,7 @@ static const char *GetNamePattern( SYM_HANDLE sym_handle )
             }
         }
 #ifdef __SEH__
-    }       // close that else
+    }   /* close that else */
 #endif
     return( pattern );
 }
@@ -803,7 +819,6 @@ const char *FEExtName( CGSYM_HANDLE sym_handle, int request )
         return( NULL );
     }
 }
-
 
 static void addDefaultImports( void )
 {
@@ -837,7 +852,8 @@ static void addDefaultImports( void )
             control = CM_NULL;
         }
 #if _CPU == 8086
-        if( (control & CM_WINMAIN) && CompFlags.has_winmain || (TargetSwitches & CGSW_X86_WINDOWS) && CompFlags.has_main ) {
+        if( (control & CM_WINMAIN) && CompFlags.has_winmain
+          || (TargetSwitches & CGSW_X86_WINDOWS) && CompFlags.has_main ) {
 #else
         if( (control & CM_WINMAIN) && CompFlags.has_winmain ) {
 #endif
@@ -876,7 +892,8 @@ static void addDefaultImports( void )
             }
         }
   #endif
-        if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
+        if( CompFlags.pgm_used_8087
+          || CompFlags.float_used ) {
             if( GET_FPU( ProcRevision ) & FPU_EMU ) {
   #if _CPU == 8086
                 AddExtRefN( "__init_87_emulator" );
@@ -942,7 +959,8 @@ static void addDefaultImports( void )
     /*
      * handle NetWare
      */
-    if( TargetSystem == TS_NETWARE || TargetSystem == TS_NETWARE5 ) {
+    if( TargetSystem == TS_NETWARE
+      || TargetSystem == TS_NETWARE5 ) {
         /*
          * is target NETWARE or NETWARE5?
          */
@@ -973,20 +991,20 @@ static void addDefaultImports( void )
 static CGPOINTER NextImport( int index, aux_class request )
 /**********************************************************
  * NextImport
- *     Called (indirectly) from the code generator to inject automagically defined symbols.
+ *  Called (indirectly) from the code generator to inject automagically defined symbols.
  * Inputs:
- *     index    (n-1)
- *         Usually called from a loop until we return 0/NULL to show no more symbols
- *         are required.
- *     request
- *         FEINF_NEXT_IMPORT
- *             examines the current flags to see if any symbols should be
- *             automagically inserted and returns the relevant index if so.
- *         FEINF_IMPORT_NAME
- *             returns the requested name. if we have returned an index for
- *             the current compiler settings we should be called with a valid
- *             index but we still perform exactly the same checks as this is
- *             good practise.
+ *  index    (n-1)
+ *      Usually called from a loop until we return 0/NULL to show no more symbols
+ *      are required.
+ *  request
+ *      FEINF_NEXT_IMPORT
+ *          examines the current flags to see if any symbols should be
+ *          automagically inserted and returns the relevant index if so.
+ *      FEINF_IMPORT_NAME
+ *          returns the requested name. if we have returned an index for
+ *          the current compiler settings we should be called with a valid
+ *          index but we still perform exactly the same checks as this is
+ *          good practise.
  */
 {
     char        *name;
@@ -1016,7 +1034,8 @@ static CGPOINTER NextImport( int index, aux_class request )
     /*
      * return the import name, or
      */
-    if( request == FEINF_IMPORT_NAME || name == NULL )
+    if( request == FEINF_IMPORT_NAME
+      || name == NULL )
         return( (CGPOINTER)name );
     /*
      * return the index
@@ -1051,7 +1070,8 @@ static CGPOINTER NextImportS( int index, aux_class request )
     /*
      * return the import symbol, or
      */
-    if( request == FEINF_IMPORT_NAME_S || symbol == NULL )
+    if( request == FEINF_IMPORT_NAME_S
+      || symbol == NULL )
         return( (CGPOINTER)symbol );
     /*
      * return the index
@@ -1192,7 +1212,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
 #endif
         inf = FindInfo( &sym, req_handle );
         if( req_handle != NULL ) {
-            if( inf->code == NULL && VarFunc( &sym ) ) {
+            if( inf->code == NULL
+              && VarFunc( &sym ) ) {
                 return( (CGPOINTER)DefaultVarParms );
             }
         }
