@@ -281,30 +281,31 @@ static  void EmitIns( mips_ins ins )
 }
 
 
-void GenLOADS32( signed_32 value, uint_8 reg )
+void GenLOADS32( int_32 value, uint_8 reg )
 /*****************************************************
  * Load a signed 32-bit constant 'value' into register 'reg'
  */
 {
-    if( (value < 32768) && (value > -32769) ) {
+    if( (value < 32768)
+      && (value > -32769) ) {
         /*
          * Only need sign extended low 16 bits - 'addiu rt,$zero,value'
          */
-        GenIType( 0x09, reg, MIPS_ZERO_SINK, (unsigned_16)value );
+        GenIType( 0x09, reg, ZERO_REG_IDX, (int_16)value );
     } else if( (value & 0xffff) == 0 ) {
         /*
          * Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
          */
-        GenIType( 0x0f, reg, MIPS_ZERO_SINK, (unsigned_16)(value >> 16) );
+        GenIType( 0x0f, reg, ZERO_REG_IDX, (int_16)(value >> 16) );
     } else {
         /*
          * Need two instructions - 'lui rt,$zero,(value >> 16)'
          */
-        GenIType( 0x0f, reg, MIPS_ZERO_SINK, (unsigned_16)(value >> 16) );
+        GenIType( 0x0f, reg, ZERO_REG_IDX, (int_16)(value >> 16) );
         /*
          * followed by 'ori rt,$zero,(value & 0xffff)'
          */
-        GenIType( 0x0d, reg, MIPS_ZERO_SINK, (unsigned_16)value );
+        GenIType( 0x0d, reg, ZERO_REG_IDX, (int_16)value );
     }
 }
 
@@ -317,7 +318,8 @@ static  uint_8  *FindOpcodes( instruction *ins )
     uint_8      *opcodes;
 
     if( _OpIsBinary( ins->head.opcode ) ) {
-        if( ins->type_class == U8 || ins->type_class == I8 ) {
+        if( ins->type_class == U8
+          || ins->type_class == I8 ) {
             opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         } else {
             opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
@@ -373,7 +375,9 @@ static  uint_8 FindFloatingOpcodes( instruction *ins )
     assert( _IsFloating( ins->type_class ) );
     if( _OpIsBinary( ins->head.opcode ) ) {
         opcode = FloatingBinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP];
-        /* NB: this opcode may legitimately be zero - that's 'add' */
+        /*
+         * NB: this opcode may legitimately be zero - that's 'add'
+         */
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcode = FloatingSetOpcodes[ins->head.opcode - FIRST_SET_OP];
         assert( opcode );
@@ -385,7 +389,7 @@ static  uint_8 FindFloatingOpcodes( instruction *ins )
 }
 
 
-void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type )
+void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, int_16 displacement, pointer lbl, owl_reloc_type type )
 /**************************************************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
@@ -393,7 +397,7 @@ void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement
 }
 
 
-void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
+void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, int_16 displacement )
 /*********************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rt( a ) | _Rs( b ) | _SignedImmed( displacement );
@@ -401,10 +405,10 @@ void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
 }
 
 
-void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed )
+void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, int_16 immed )
 /***************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Immed( immed );
+    ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _SignedImmed( immed );
     EmitIns( ins_encoding );
 }
 
@@ -446,13 +450,13 @@ static  void GenFloatRType( type_class_def type_class, uint_8 fnc, uint_8 fd, ui
      */
     if( type_class == FS ) {
         fmt = 0x10;
-    } else if( type_class == FD || type_class == FL ) {
+    } else if( type_class == FD
+      || type_class == FL ) {
         fmt = 0x11;
     } else {
         fmt = 0;
         assert( 0 );
     }
-
     /*
      * Opcode is always COP1
      */
@@ -511,15 +515,14 @@ void GenCallLabelReg( pointer label, uint reg )
      * Load address into $at (lui/addiu)
      * TODO: This should be different for PIC
      */
-    GenMEMINSRELOC( 0x0f, MIPS_GPR_SCRATCH, MIPS_ZERO_SINK, 0,
+    GenMEMINSRELOC( 0x0f, AT_REG_IDX, ZERO_REG_IDX, 0,
                 label, OWL_RELOC_HALF_HI );
-    GenMEMINSRELOC( 0x09, MIPS_GPR_SCRATCH, MIPS_GPR_SCRATCH, 0,
+    GenMEMINSRELOC( 0x09, AT_REG_IDX, AT_REG_IDX, 0,
                 label, OWL_RELOC_HALF_LO );
-
     /*
      * 'jalr reg,$at'
      */
-    GenRType( 0x00, 0x09, reg, MIPS_GPR_SCRATCH, 0 );
+    GenRType( 0x00, 0x09, reg, AT_REG_IDX, 0 );
     /*
      * WARNING! WARNING! WARNING!
      * There's no delay slot here. Caller must handle that.
@@ -589,18 +592,18 @@ static  void addressTemp( name *temp, uint_8 *reg, int_16 *offset )
         /*
          * gen some code to load temp address into SCRATCH_REG
          */
-        GenLOADS32( temp_offset, MIPS_GPR_SCRATCH );
+        GenLOADS32( temp_offset, AT_REG_IDX );
         /*
          * 'or $sp,$at,$zero', aka 'move $sp,$at'
          */
-        GenRType( 0x00, 0x25, MIPS_STACK_REG, MIPS_GPR_SCRATCH, MIPS_ZERO_SINK );
+        GenRType( 0x00, 0x25, SP_REG_IDX, AT_REG_IDX, ZERO_REG_IDX );
         *offset = 0;
-        *reg = MIPS_GPR_SCRATCH;
+        *reg = AT_REG_IDX;
     } else {
         *offset = temp_offset;
-        *reg = MIPS_STACK_REG;
+        *reg = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
-            *reg = MIPS_FRAME_REG;
+            *reg = FP_REG_IDX;
         }
     }
 }
@@ -613,7 +616,7 @@ static  void getMemEncoding( name *mem, uint_8 *reg_index, int_16 *offset )
     case N_INDEXED:
         assert( mem->i.index->n.class == N_REGISTER );
         assert( mem->i.scale == 0 );
-        assert( mem->i.constant == (type_length)((signed_16)mem->i.constant) );
+        assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
         *reg_index = _NameReg( mem->i.index );
         *offset = (int_16)mem->i.constant;
@@ -623,7 +626,7 @@ static  void getMemEncoding( name *mem, uint_8 *reg_index, int_16 *offset )
         break;
     case N_MEMORY:
     default:
-        *reg_index = MIPS_ZERO_SINK;
+        *reg_index = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_078 );
         break;
@@ -702,7 +705,7 @@ static  void GenCallIndirect( instruction *call )
     int_16      mem_offset;
     name        *addr;
 
-    reg_index = MIPS_GPR_SCRATCH;   /* use the volatile scratch reg if possible */
+    reg_index = AT_REG_IDX;   /* use the volatile scratch reg if possible */
     addr = call->operands[CALL_OP_ADDR];
     switch( addr->n.class ) {
     case N_REGISTER:
@@ -717,7 +720,7 @@ static  void GenCallIndirect( instruction *call )
     /*
      * 'jalr ra,reg_index'
      */
-    GenRType( 0x00, 0x09, MIPS_RETURN_ADDR, reg_index, 0 );
+    GenRType( 0x00, 0x09, RA_REG_IDX, reg_index, 0 );
     /*
      * TODO: Handle delay slot better
      */
@@ -742,7 +745,7 @@ static  void doZero( instruction *ins, type_class_def type_class )
         /*
          * 'andi res,op1,0xffff'
          */
-        GenIType( 0x0c, _NameReg( ins->result ), _NameReg( ins->operands[0] ), (signed_16)0x0ffff );
+        GenIType( 0x0c, _NameReg( ins->result ), _NameReg( ins->operands[0] ), (int_16)0x0ffff );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -765,7 +768,7 @@ static  void doSignExtend( instruction *ins, type_class_def type_class )
         /*
          * 'addu rd,$zero,rs' - MIPS64 only?
          */
-        GenRType( 0x00, 0x21, res_index, MIPS_ZERO_SINK, src_index );
+        GenRType( 0x00, 0x21, res_index, ZERO_REG_IDX, src_index );
     } else {
         /*
          * MIPS32 ISA Release 2 has 'seb'/'seh' instructions for this
@@ -818,13 +821,13 @@ static  bool    encodeThreadDataRef( instruction *ins )
      */
 //    tls_index = RTLabel( RT_TLS_INDEX );
 #if 0
-    GenMEMINSRELOC( 0x09, MIPS_GPR_SCRATCH, MIPS_ZERO_SINK, 0,
+    GenMEMINSRELOC( 0x09, AT_REG_IDX, ZERO_REG_IDX, 0,
                 tls_index, OWL_RELOC_HALF_HI );
-    GenMEMINSRELOC( 0x08, MIPS_GPR_SCRATCH, MIPS_GPR_SCRATCH, 0,
+    GenMEMINSRELOC( 0x08, AT_REG_IDX, AT_REG_IDX, 0,
                 tls_index, OWL_RELOC_HALF_LO );
     EmitIns( RDTEB_ENCODING );
     GenMEMINS( loadOpcodes[I4], V0, V0, RDTEB_MAGIC_CONST );
-    GenOPINS( 0x0010, 0x0002, MIPS_GPR_SCRATCH, V0, V0 );
+    GenOPINS( 0x0010, 0x0002, AT_REG_IDX, V0, V0 );
     GenMEMINS( loadOpcodes[I4], V0, V0, 0 );
     GenMEMINSRELOC( 0x08, _NameReg( ins->result ),
                 V0, 0, symLabel( op ), OWL_RELOC_HALF_LO );
@@ -838,16 +841,16 @@ static  bool    encodeThreadDataRef( instruction *ins )
 static  void Encode( instruction *ins )
 /*************************************/
 {
-    uint_8              *opcodes;
-    uint_8              opcode;
-    uint_16             function;
-    uint_8              reg_index;
-    uint_8              mem_index;
-    int_16              mem_offset;
-    signed_16           high;
-    signed_16           extra;
-    signed_16           low;
-    signed_16           imm_value;
+    uint_8          *opcodes;
+    uint_8          opcode;
+    uint_16         function;
+    uint_8          reg_index;
+    uint_8          mem_index;
+    int_16          mem_offset;
+    int_16          high;
+    int_16          extra;
+    int_16          low;
+    int_16          imm_value;
 
     switch( G( ins ) ) {
     case G_CALL:
@@ -875,14 +878,14 @@ static  void Encode( instruction *ins )
                 /*
                  * 'subu rd,$zero,rs'
                  */
-                GenRType( 0x00, 0x23, _NameReg( ins->result ), MIPS_ZERO_SINK, _NameReg( ins->operands[0] ) );
+                GenRType( 0x00, 0x23, _NameReg( ins->result ), ZERO_REG_IDX, _NameReg( ins->operands[0] ) );
             }
             break;
         case OP_COMPLEMENT:
             /*
              * 'nor rd,$zero,rs'
              */
-            GenRType( 0x00, 0x27, _NameReg( ins->result ), MIPS_ZERO_SINK, _NameReg( ins->operands[0] ) );
+            GenRType( 0x00, 0x27, _NameReg( ins->result ), ZERO_REG_IDX, _NameReg( ins->operands[0] ) );
             break;
         default:
             _Zoiks( ZOIKS_028 );
@@ -1038,7 +1041,7 @@ static  void Encode( instruction *ins )
         /*
          * 'addiu rt,$zero,immed'
          */
-        GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, (uint_8)ins->operands[0]->c.lo.int_value );
+        GenIType( 0x09, _NameReg( ins->result ), ZERO_REG_IDX, (uint_8)ins->operands[0]->c.lo.int_value );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -1046,13 +1049,13 @@ static  void Encode( instruction *ins )
         /*
          * 'or rd,rs,$zero'
          */
-        GenRType( 0x00, 0x25, _NameReg( ins->result ), _NameReg( ins->operands[0] ), MIPS_ZERO_SINK );
+        GenRType( 0x00, 0x25, _NameReg( ins->result ), _NameReg( ins->operands[0] ), ZERO_REG_IDX );
         if( TypeClassSize[ins->type_class] == 8 ) {
             /*
              * Move the odd register, too
              * TODO: there should probably be a separate G_MOVE8?
              */
-            GenRType( 0x00, 0x25, _NameReg( ins->result ) + 1, _NameReg( ins->operands[0] ) + 1, MIPS_ZERO_SINK );
+            GenRType( 0x00, 0x25, _NameReg( ins->result ) + 1, _NameReg( ins->operands[0] ) + 1, ZERO_REG_IDX );
         }
         break;
     case G_LEA_HIGH:
@@ -1062,7 +1065,7 @@ static  void Encode( instruction *ins )
         /*
          * 'lui rt,immed'
          */
-        GenIType( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
+        GenIType( 0x0f, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -1072,7 +1075,7 @@ static  void Encode( instruction *ins )
             /*
              * 'addiu rt,$zero,immed'
              */
-            GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
+            GenIType( 0x09, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -1103,7 +1106,7 @@ static  void Encode( instruction *ins )
                 /*
                  * 'lui rt,immed'
                  */
-                GenMEMINSRELOC( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
+                GenMEMINSRELOC( 0x0f, _NameReg( ins->result ), ZERO_REG_IDX, high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
                 /*
                  * 'addiu rt,rs,immed'
                  */
@@ -1119,7 +1122,7 @@ static  void Encode( instruction *ins )
          * a load of an unsigned 16-bit immediate
          * 'ori rt,rs,immed'
          */
-        GenIType( 0x0d, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
+        GenIType( 0x0d, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
         break;
     case G_LOAD_UA:
         doLoadStoreUnaligned( ins, true );

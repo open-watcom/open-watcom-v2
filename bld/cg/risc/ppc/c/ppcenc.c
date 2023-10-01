@@ -181,8 +181,10 @@ static  gen_opcode  storeOpcodes[] = {
 };
 
 static  gen_opcode  BranchOpcodes[][2] = {
-    // page 3-68 for a real description
-    // BO     BI
+    /*
+     * page 3-68 for a real description
+     * BO     BI
+     */
     { NORMAL, EQ },     /* OP_CMP_EQUAL */
     { INVERT, EQ },     /* OP_CMP_NOT_EQUAL */
     { NORMAL, GT },     /* OP_CMP_GREATER */
@@ -218,7 +220,9 @@ void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
 /**************************************************************/
 {
 #if 0
-    // copy & paste from AXP cg
+    /*
+     * copy & paste from AXP cg
+     */
     any_oc      oc;
 
     oc.oc_rins.op.class = OC_RCODE;
@@ -265,7 +269,7 @@ static  gen_opcode  *FindImmedOpcodes( instruction *ins )
 static void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
 //******************************************************************************************
 {
-    ins_encoding = _Op1( op1 ) | _A( a ) | _C( c ) | _D( d ) | _Op2( op2 );
+    ins_encoding = _Opcode( op1 ) | _A( a ) | _C( c ) | _D( d ) | _Opcode2( op2 );
     _EmitIns( ins_encoding );
 }
 
@@ -273,7 +277,7 @@ static void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c,
 void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx s )
 //*********************************************************************************
 {
-    ins_encoding = _Op1( op1 ) | _A( a ) | _B( b ) | _S( s ) | _Op2( op2 );
+    ins_encoding = _Opcode( op1 ) | _A( a ) | _B( b ) | _S( s ) | _Opcode2( op2 );
     _EmitIns( ins_encoding );
 }
 
@@ -281,7 +285,7 @@ void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx 
 void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
 //***********************************************************************
 {
-    ins_encoding = _Op1( op1 ) | _D( d ) | _A( a ) | _SignedImmed( immed );
+    ins_encoding = _Opcode( op1 ) | _D( d ) | _A( a ) | _SignedImmed( immed );
     _EmitIns( ins_encoding );
 }
 
@@ -289,9 +293,9 @@ void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
 void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
 //***************************************************
 {
-    ins_encoding = _Op1( 31 ) | _Op2( 467 );
+    ins_encoding = _Opcode( 31 ) | _Opcode2( 467 );
     if( from ) {
-        ins_encoding = _Op1( 31 ) | _Op2( 339 );
+        ins_encoding = _Opcode( 31 ) | _Opcode2( 339 );
     }
     ins_encoding |= _D( d ) | _SPR( spr );
     _EmitIns( ins_encoding );
@@ -301,7 +305,7 @@ void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
 void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
 /******************************************************************************/
 {
-    ins_encoding = _Op1( op ) | _D( d ) | _A( i ) | _SignedImmed( displacement );
+    ins_encoding = _Opcode( op ) | _D( d ) | _A( i ) | _SignedImmed( displacement );
     _EmitIns( ins_encoding );
 }
 
@@ -312,7 +316,7 @@ static void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute
     int_32              loc;
 
     loc = AskLocation();
-    ins_encoding = _Op1( op ) | _AA( absolute ) | _LK( link ) | _BranchImmed( -loc );
+    ins_encoding = _Opcode( op ) | __AA( absolute ) | __LK( link ) | _BranchImmed( -loc );
     OutReloc( label, PPC_RELOC_BRANCH, 0 );
     _EmitIns( ins_encoding );
 }
@@ -321,7 +325,7 @@ static void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute
 static void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
 /************************************************************************************/
 {
-    ins_encoding = _Op1( op ) | _S( bo ) | _A( bi );
+    ins_encoding = _Opcode( op ) | _S( bo ) | _A( bi );
     OutReloc( label, PPC_RELOC_BRANCH_COND, 0 );
     _EmitIns( ins_encoding );
 }
@@ -330,7 +334,7 @@ static void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer l
 static void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
 /**************************************************************************/
 {
-    ins_encoding = _Op1( op ) | _A( a ) | _B( b ) | _Op2( op2 );
+    ins_encoding = _Opcode( op ) | _A( a ) | _B( b ) | _Opcode2( op2 );
     _EmitIns( ins_encoding );
 }
 
@@ -338,7 +342,7 @@ static void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
 static void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
 /*****************************************************************/
 {
-    ins_encoding = _Op1( op ) | _A( a ) | _SignedImmed( imm );
+    ins_encoding = _Opcode( op ) | _A( a ) | _SignedImmed( imm );
     _EmitIns( ins_encoding );
 }
 
@@ -476,12 +480,16 @@ static  void    doSign( instruction *ins )
     switch( ins->base_type_class ) {
     case U1:
     case I1:
-        // extsb
+        /*
+         * extsb
+         */
         GenOPINS( 31, 954, _NameReg( ins->result ), 0, _NameReg( ins->operands[0] ) );
         break;
     case U2:
     case I2:
-        // extsh
+        /*
+         * extsh
+         */
         GenOPINS( 31, 922, _NameReg( ins->result ), 0, _NameReg( ins->operands[0] ) );
         break;
     default:
@@ -496,12 +504,16 @@ static  void    doZero( instruction *ins )
     switch( ins->base_type_class ) {
     case U1:
     case I1:
-        // andi op1,0x00ff -> res
+        /*
+         * andi op1,0x00ff -> res
+         */
         GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), 0x00ff );
         break;
     case U2:
     case I2:
-        // andi op1,0xffff -> res
+        /*
+         * andi op1,0xffff -> res
+         */
         GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), (signed_16)0xffff );
         break;
     default:
@@ -696,7 +708,8 @@ static  void    Encode( instruction *ins )
         a = _NameReg( ins->operands[0] );
         b = _NameReg( ins->operands[1] );
         s = _NameReg( ins->result );
-        if( ins->head.opcode == OP_SUB && G( ins ) == G_BINARY ) {
+        if( ins->head.opcode == OP_SUB
+          && G( ins ) == G_BINARY ) {
             /* someone sucks - it's not me */
             temp = a;
             a = b;
@@ -839,9 +852,9 @@ void    GenObjCode( instruction *ins )
 /************************************/
 {
     Encode( ins );
-    if( G( ins ) == G_CMP ||
-        G( ins ) == G_CMP_I ||
-        G( ins ) == G_CMP_FP ) {
+    if( G( ins ) == G_CMP
+      || G( ins ) == G_CMP_I
+      || G( ins ) == G_CMP_FP ) {
         GenCondJump( ins );
     }
 }

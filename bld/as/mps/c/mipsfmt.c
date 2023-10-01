@@ -34,32 +34,21 @@
 #ifndef _STANDALONE_
 #include "asinline.h"
 #endif
-
 #include "mipsenco.h"
 
 
 /*
  * TODO: kill off all these once the axp residue is gone
  */
-#define _EightBits( x )         ( (x) & 0x00ff )
-#define _ElevenBits( x )        ( (x) & 0x07ff )
-#define _FourteenBits( x )      ( (x) & 0x3fff )
-#define _TwentyBits( x    )     ( (x) & 0x000fffff )
-
-#define _LIT_value( x )         ( _EightBits( x )     << 1  )
-#define _LIT_bit                1
-#define _LIT_unshifted( x )     ( _LIT_value( x ) | _LIT_bit )
 
 #define _Memory_disp( x )       ( _SixteenBits( x )   << 0  )
 #define _Mem_Func( x )          ( _SixteenBits( x )   << 0  )
 #define _Op_Func( x )           ( _SixBits( x )       << 0  )
 #define _FP_Op_Func( x )        ( _ElevenBits( x )    << 5  )
-#define _LIT( x )               ( _LIT_unshifted( x ) << 12 )
 
 /*
  * This is real MIPS stuff
  */
-#define _TenBits( x )           ( (x) & 0x03ff )
 #define _Code( x )              ( _TwentyBits( x )    << 6  )
 #define _TrapCode( x )          ( _TenBits( x )       << 6  )
 
@@ -69,28 +58,28 @@
                                     // 21 dwords for an ins that emits multiple
                                     // instructions. (eg. ldb)
 
-#define OPCODE_NOP      0x00
-#define OPCODE_ADDIU    0x09
-#define OPCODE_ORI      0x0d
-#define OPCODE_LUI      0x0f
-#define FNCCODE_OR      0x25
-#define FNCCODE_JR      0x08
-#define FNCCODE_JALR    0x09
+#define OPCODE_NOP              0x00
+#define OPCODE_ADDIU            0x09
+#define OPCODE_ORI              0x0d
+#define OPCODE_LUI              0x0f
+#define FNCCODE_OR              0x25
+#define FNCCODE_JR              0x08
+#define FNCCODE_JALR            0x09
 
 /*
  * TODO: kill off these macros
  */
-#define OPCODE_BIS      0x11
-#define FUNCCODE_BIS    0x0020
-#define OPCODE_LDA      0x8
-#define OPCODE_LDAH     0x9
+#define OPCODE_BIS              0x11
+#define FUNCCODE_BIS            0x0020
+#define OPCODE_LDA              0x8
+#define OPCODE_LDAH             0x9
 
 #define OP_HAS_RELOC( op )      (((op)->flags & (RELOC | UNNAMED_RELOC)) != 0)
 #define OP_RELOC_NAMED( op )    ((op)->flags & RELOC)
 
 typedef struct reloc_entry      *reloc_list;
 
-typedef op_type         ot_array[MAX_OPERANDS];
+typedef op_type                 ot_array[MAX_OPERANDS];
 
 struct reloc_entry {
     reloc_list          next;
@@ -276,7 +265,7 @@ static void doOpcodeJType( uint_32 *buffer, uint_8 opcode )
 static void doOpcodeIType( uint_32 *buffer, uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed )
 //************************************************************************************************
 {
-    *buffer = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Immed( immed );
+    *buffer = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _SignedImmed( immed );
 }
 
 
@@ -350,7 +339,7 @@ static void doOpcodeFcRsRtImm( uint_32 *buffer, ins_opcode opcode, ins_funccode 
 //*********************************************************************************************************************
 {
     *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Rs( rs ) | _Rt( rt ) |
-              _Immed( imm );
+              _SignedImmed( imm );
 }
 
 
@@ -979,7 +968,7 @@ static void ITBranch( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
     doOpcodeRsRt( buffer, table->opcode, RegIndex( ins->operands[0]->reg ), 0,
-                  _Immed( _Longword_offset( op->constant ) ) );
+                  _SignedImmed( _Longword_offset( op->constant ) ) );
     doReloc( reloc, op, OWL_RELOC_BRANCH_REL, buffer );
     numExtendedIns += doDelaySlotNOP( buffer );
 }
@@ -994,7 +983,7 @@ static void ITBranchTwo( ins_table *table, instruction *ins, uint_32 *buffer, as
     op = ins->operands[2];
     doOpcodeIType( buffer, table->opcode, RegIndex( ins->operands[1]->reg ),
                    RegIndex( ins->operands[0]->reg ),
-                  _Immed( _Longword_offset( op->constant ) ) );
+                  _SignedImmed( _Longword_offset( op->constant ) ) );
     doReloc( reloc, op, OWL_RELOC_BRANCH_REL, buffer );
     numExtendedIns += doDelaySlotNOP( buffer );
 }
@@ -1009,7 +998,7 @@ static void ITBranchZero( ins_table *table, instruction *ins, uint_32 *buffer, a
     op = ins->operands[1];
     doOpcodeIType( buffer, table->opcode, table->funccode,
                    RegIndex( ins->operands[0]->reg ),
-                  _Immed( _Longword_offset( op->constant ) ) );
+                  _SignedImmed( _Longword_offset( op->constant ) ) );
     doReloc( reloc, op, OWL_RELOC_BRANCH_REL, buffer );
     numExtendedIns += doDelaySlotNOP( buffer );
 }
@@ -1025,7 +1014,7 @@ static void ITBranchCop( ins_table *table, instruction *ins, uint_32 *buffer, as
     opcode = cop_codes[table->opcode >> 8];
     op = ins->operands[0];
     doOpcodeIType( buffer, opcode, table->funccode, table->opcode & 0xff,
-                  _Immed( _Longword_offset( op->constant ) ) );
+                  _SignedImmed( _Longword_offset( op->constant ) ) );
     doReloc( reloc, op, OWL_RELOC_BRANCH_REL, buffer );
     numExtendedIns += doDelaySlotNOP( buffer );
 }
@@ -1174,7 +1163,7 @@ static void ITBr( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc
             return;
         }
         doOpcodeRsRt( buffer, table->opcode, ZERO_REG_IDX, 0,
-                      _Immed( _Longword_offset( op0->constant ) ) );
+                      _SignedImmed( _Longword_offset( op0->constant ) ) );
         doReloc( reloc, op0, OWL_RELOC_BRANCH_REL, buffer );
         return;
     }

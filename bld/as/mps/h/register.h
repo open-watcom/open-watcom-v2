@@ -30,19 +30,15 @@
 ****************************************************************************/
 
 
+#include "mipsenco.h"
+
+
 #define MakeReg( c, i ) ( ( (i) & 0xff ) | ( (int)(c) << 8 ) )
 #define RegClass( r )   ( ( (r) >> 8 ) & 0xff )
 #define RegIndex( r )   ( (r) & 0xff )
 
 #define NULL_REG_IDX    0
 #define NULL_REG        MakeReg( RC_NOTHING, NULL_REG_IDX )
-
-#define ZERO_REG_IDX    0   // Contains 0
-#define AT_REG_IDX      1   // Reserved for the assembler temporary
-#define GP_REG_IDX      28  // Contains the Global pointer
-#define SP_REG_IDX      29  // Contains the Stack pointer
-#define FP_REG_IDX      30  // Contains the Frame pointer
-#define RA_REG_IDX      31  // Contains the Return address
 
 #define AT_REG          MakeReg( RC_GPR, AT_REG_IDX )
 #define ZERO_REG        MakeReg( RC_GPR, ZERO_REG_IDX )

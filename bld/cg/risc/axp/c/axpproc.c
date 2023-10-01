@@ -188,7 +188,7 @@ static  void    initSavedRegs( stack_record *saved_regs, type_length *offset )
 static  void    genMove( uint_32 src, uint_32 dst )
 /*************************************************/
 {
-    GenOPINS( 0x11, 0x20, AXP_ZERO_SINK, src, dst );
+    GenOPINS( 0x11, 0x20, ZERO_REG_IDX, src, dst );
 }
 
 
@@ -204,13 +204,13 @@ static  uint_32 addressableRegion( stack_record *region, type_length *offset )
 {
     if( region->start > AXP_MAX_OFFSET ) {
         *offset = 0;
-        GenLOADS32( region->start, AXP_GPR_SCRATCH );
+        GenLOADS32( region->start, AT_REG_IDX );
         // add sp, r28 -> r28
-        GenOPINS( 0x10, 0x00, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_GPR_SCRATCH );
-        return( AXP_GPR_SCRATCH );
+        GenOPINS( 0x10, 0x00, SP_REG_IDX, AT_REG_IDX, AT_REG_IDX );
+        return( AT_REG_IDX );
     } else {
         *offset = region->start;
-        return( AXP_STACK_REG );
+        return( SP_REG_IDX );
     }
 }
 
@@ -365,7 +365,7 @@ static  void    emitFrameSaveProlog( stack_record *fs )
 
     if( fs->size != 0 ) {
         index_reg = addressableRegion( fs, &offset );
-        saveReg( index_reg, AXP_FRAME_REG, offset, false );
+        saveReg( index_reg, FP_REG_IDX, offset, false );
     }
 }
 
@@ -381,7 +381,7 @@ static  void    emitFrameSaveEpilog( stack_record *fs )
     // varargs epilog above must be empty
     if( fs->size != 0 ) {
         index_reg = addressableRegion( fs, &offset );
-        loadReg( index_reg, AXP_FRAME_REG, offset, false );
+        loadReg( index_reg, FP_REG_IDX, offset, false );
     }
 }
 
@@ -455,9 +455,9 @@ static  void    SetupVarargsReg( stack_map *map )
         }
         if( offset > AXP_MAX_OFFSET ) {
             GenLOADS32( offset, VARARGS_PTR );
-            GenOPINS( 0x10, 0x00, AXP_STACK_REG, VARARGS_PTR, VARARGS_PTR );
+            GenOPINS( 0x10, 0x00, SP_REG_IDX, VARARGS_PTR, VARARGS_PTR );
         } else {
-            genLea( AXP_STACK_REG, offset, VARARGS_PTR );
+            genLea( SP_REG_IDX, offset, VARARGS_PTR );
         }
     }
 }
@@ -471,17 +471,17 @@ static  void    emitProlog( stack_map *map )
     frame_size = frameSize( map );
     if( frame_size != 0 ) {
         if( frame_size <= AXP_MAX_OFFSET ) {
-            genLea( AXP_STACK_REG, -frame_size, AXP_STACK_REG );
+            genLea( SP_REG_IDX, -frame_size, SP_REG_IDX );
         } else {
-            GenLOADS32( frame_size, AXP_GPR_SCRATCH );
+            GenLOADS32( frame_size, AT_REG_IDX );
             // sub sp,r28 -> sp
-            GenOPINS( 0x10, 0x09, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_STACK_REG );
+            GenOPINS( 0x10, 0x09, SP_REG_IDX, AT_REG_IDX, SP_REG_IDX );
         }
         if( frame_size >= _TARGET_PAGE_SIZE ) {
             if( frame_size <= AXP_MAX_OFFSET ) {
-                genLea( AXP_ZERO_SINK, frame_size, RT_PARM1 );
+                genLea( ZERO_REG_IDX, frame_size, RT_PARM1 );
             } else {
-                genMove( AXP_GPR_SCRATCH, RT_PARM1 );
+                genMove( AT_REG_IDX, RT_PARM1 );
             }
             GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG );
         }
@@ -493,7 +493,7 @@ static  void    emitProlog( stack_map *map )
             if( size > AXP_MAX_OFFSET ) {
                 GenLOADS32( size, RT_PARM1 );
             } else {
-                genLea( AXP_ZERO_SINK, map->locals.size + map->parm_cache.size, RT_PARM1 );
+                genLea( ZERO_REG_IDX, map->locals.size + map->parm_cache.size, RT_PARM1 );
             }
             GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG );
         }
@@ -505,7 +505,7 @@ static  void    emitProlog( stack_map *map )
     emitLocalProlog( &map->locals );
     emitParmCacheProlog( &map->parm_cache );
     if( map->frame_save.size != 0 ) {
-        genMove( AXP_STACK_REG, AXP_FRAME_REG );
+        genMove( SP_REG_IDX, FP_REG_IDX );
     }
 }
 
@@ -516,9 +516,9 @@ static  void    emitEpilog( stack_map *map )
     type_length         frame_size;
 
     if( map->frame_save.size != 0 ) {
-        // NB should just use AXP_FRAME_REG instead of AXP_STACK_REG in restore
+        // NB should just use FP_REG_IDX instead of SP_REG_IDX in restore
         // code and not bother emitting this instruction
-        genMove( AXP_FRAME_REG, AXP_STACK_REG );
+        genMove( FP_REG_IDX, SP_REG_IDX );
     }
     emitParmCacheEpilog( &map->parm_cache );
     emitLocalEpilog( &map->locals );
@@ -529,10 +529,10 @@ static  void    emitEpilog( stack_map *map )
     frame_size = frameSize( map );
     if( frame_size != 0 ) {
         if( frame_size <= AXP_MAX_OFFSET ) {
-            genLea( AXP_STACK_REG, frame_size, AXP_STACK_REG );
+            genLea( SP_REG_IDX, frame_size, SP_REG_IDX );
         } else {
-            GenLOADS32( frame_size, AXP_GPR_SCRATCH );
-            GenOPINS( 0x10, 0x00, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_STACK_REG );
+            GenLOADS32( frame_size, AT_REG_IDX );
+            GenOPINS( 0x10, 0x00, SP_REG_IDX, AT_REG_IDX, SP_REG_IDX );
         }
     }
 }

@@ -31,15 +31,15 @@
 ****************************************************************************/
 
 
+#include "ppcencod.h"
+
+
 #define MakeReg( c, i ) ( ( (i) & 0xff ) | ( (int)(c) << 8 ) )
 #define RegClass( r )   ( ( (r) >> 8 ) & 0xff )
 #define RegIndex( r )   ( (r) & 0xff )
 
 #define NULL_REG_IDX    0
 #define NULL_REG        MakeReg( RC_NOTHING, NULL_REG_IDX )
-
-#define SP_REG_IDX      1
-#define RTOC_REG_IDX    2
 
 #define AT_REG          NULL_REG
 

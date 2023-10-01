@@ -36,29 +36,11 @@
 #endif
 
 
-#define _FiveBits( x )          ( (x) & 0x001f )
-#define _SixBits( x )           ( (x) & 0x003f )
-#define _SevenBits( x )         ( (x) & 0x007f )
-#define _EightBits( x )         ( (x) & 0x00ff )
-#define _ElevenBits( x )        ( (x) & 0x07ff )
-#define _FourteenBits( x )      ( (x) & 0x3fff )
-#define _SixteenBits( x )       ( (x) & 0xffff )
-#define _TwentyOneBits( x )     ( (x) & 0x001fffff )
-
-#define _LIT_value( x )         ( _EightBits( x )     << 1  )
-#define _LIT_bit                1
-#define _LIT_unshifted( x )     ( _LIT_value( x ) | _LIT_bit )
-
-#define _Opcode( x )            ( _SixBits( x )       << 26 )
-#define _Ra( x )                ( _FiveBits( x )      << 21 )
-#define _Rb( x )                ( _FiveBits( x )      << 16 )
-#define _Rc( x )                ( _FiveBits( x )      << 0  )
 #define _Memory_disp( x )       ( _SixteenBits( x )   << 0  )
 #define _Mem_Func( x )          ( _SixteenBits( x )   << 0  )
 #define _Branch_disp( x )       ( _TwentyOneBits( x ) << 0  )
 #define _Op_Func( x )           ( _SevenBits( x )     << 5  )
 #define _FP_Op_Func( x )        ( _ElevenBits( x )    << 5  )
-#define _LIT( x )               ( _LIT_unshifted( x ) << 12 )
 
 #define _Longword_offset( x )   ( (x) >> 2 )
 
@@ -66,17 +48,17 @@
                                     // 21 dwords for an ins that emits multiple
                                     // instructions. (eg. ldb)
 
-#define OPCODE_BIS      0x11
-#define FUNCCODE_BIS    0x0020
-#define OPCODE_LDA      0x8
-#define OPCODE_LDAH     0x9
+#define OPCODE_BIS              0x11
+#define FUNCCODE_BIS            0x0020
+#define OPCODE_LDA              0x8
+#define OPCODE_LDAH             0x9
 
 #define OP_HAS_RELOC( op )      (((op)->flags & (RELOC | UNNAMED_RELOC)) != 0)
 #define OP_RELOC_NAMED( op )    ((op)->flags & RELOC)
 
 typedef struct reloc_entry      *reloc_list;
 
-typedef op_type         ot_array[MAX_OPERANDS];
+typedef op_type                 ot_array[MAX_OPERANDS];
 
 struct reloc_entry {
     reloc_list          next;

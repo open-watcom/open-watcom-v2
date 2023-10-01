@@ -30,36 +30,43 @@
 ****************************************************************************/
 
 
-#define _FiveBits( x )      ( (x) & 0x0000001f )
-#define _SixBits( x )       ( (x) & 0x0000003f )
-#define _SixteenBits( x )   ( (x) & 0x0000ffff )
-#define _TwentySixBits( x ) ( (x) & 0x03ffffff )
+#define _FiveBits( x )          ( (x) & 0x0000001f )
+#define _SixBits( x )           ( (x) & 0x0000003f )
+#define _EightBits( x )         ( (x) & 0x000000ff )
+#define _TenBits( x )           ( (x) & 0x000003ff )
+#define _ElevenBits( x )        ( (x) & 0x000007ff )
+#define _FourteenBits( x )      ( (x) & 0x00003fff )
+#define _SixteenBits( x )       ( (x) & 0x0000ffff )
+#define _TwentyBits( x )        ( (x) & 0x000fffff )
+#define _TwentySixBits( x )     ( (x) & 0x03ffffff )
 
 // MIPS operand encodings, from Appendix A of MIPS RISC Architecture
-#define _Rs( x )            ( _FiveBits(x)      << 21 )
-#define _Rt( x )            ( _FiveBits(x)      << 16 )
-#define _Rd( x )            ( _FiveBits(x)      << 11 )
-#define _Shift( x )         ( _FiveBits(x)      << 6 )
-#define _Ft( x )            ( _FiveBits(x)      << 16 )
-#define _Fs( x )            ( _FiveBits(x)      << 11 )
-#define _Fd( x )            ( _FiveBits(x)      << 6 )
-#define _Immed( x )         ( _SixteenBits(x)   << 0 )
-#define _Target( x )        ( _TwentySixBits(x) << 0 )
+#define _Rs( x )                ( _FiveBits(x)      << 21 )
+#define _Rt( x )                ( _FiveBits(x)      << 16 )
+#define _Rd( x )                ( _FiveBits(x)      << 11 )
+#define _Shift( x )             ( _FiveBits(x)      << 6 )
+#define _Ft( x )                ( _FiveBits(x)      << 16 )
+#define _Fs( x )                ( _FiveBits(x)      << 11 )
+#define _Fd( x )                ( _FiveBits(x)      << 6 )
+#define _Target( x )            ( _TwentySixBits(x) << 0 )
 
-#define _Opcode( x )        ( _SixBits(x)       << 26 )
-#define _Function( x )      ( _SixBits(x)       << 0 )
-#define _FPFormat( x )      ( _FiveBits(x)      << 21 )
+#define _Opcode( x )            ( _SixBits(x)       << 26 )
+#define _Function( x )          ( _SixBits(x)       << 0 )
+#define _FPFormat( x )          ( _FiveBits(x)      << 21 )
+
+#define _LIT( x )               ( ( ( _EightBits(x) << 1 ) | 1 ) << 12 )
 
 // sixteen bit signed immediate
-#define _SignedImmed( x )   ( _Immed( x ) )
+#define _SignedImmed( x )       _SixteenBits(x)
 
 typedef uint_32                 mips_ins;
 
-#define MIPS_ZERO_SINK          0       // $zero
-#define MIPS_RETURN_ADDR        31      // $ra
-#define MIPS_STACK_REG          29      // $sp
-#define MIPS_FRAME_REG          30      // $fp
-#define MIPS_GPR_SCRATCH        1       // $at
+#define ZERO_REG_IDX            0   // Contains 0
+#define AT_REG_IDX              1   // Reserved for the assembler temporary
+#define GP_REG_IDX              28  // Contains the Global pointer
+#define SP_REG_IDX              29  // Contains the Stack pointer
+#define FP_REG_IDX              30  // Contains the Frame pointer
+#define RA_REG_IDX              31  // Contains the Return address
 
 #define MIPS_MAX_OFFSET         0x7fff  // immediate displacement range
 

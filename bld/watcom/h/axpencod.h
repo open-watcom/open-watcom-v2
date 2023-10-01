@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,32 +31,36 @@
 ****************************************************************************/
 
 
-#define _SixBits( x )   ( (x) & 0x003f )
-#define _SevenBits( x ) ( (x) & 0x007f )
-#define _FiveBits( x )  ( (x) & 0x001f )
-#define _EightBits( x ) ( (x) & 0x00ff )
-#define _ElevenBits( x )( (x) & 0x07ff )
+#define _FiveBits( x )          ( (x) & 0x0000001f )
+#define _SixBits( x )           ( (x) & 0x0000003f )
+#define _SevenBits( x )         ( (x) & 0x0000007f )
+#define _EightBits( x )         ( (x) & 0x000000ff )
+#define _ElevenBits( x )        ( (x) & 0x000007ff )
+#define _FourteenBits( x )      ( (x) & 0x00003fff )
+#define _SixteenBits( x )       ( (x) & 0x0000ffff )
+#define _TwentyOneBits( x )     ( (x) & 0x001fffff )
 
 // these correspond to letters in section 3.3 of the Alpha Architecture Manual
-#define _A( x )         ( _FiveBits(x) << 21 )
-#define _B( x )         ( _FiveBits(x) << 16 )
-#define _C( x )         ( _FiveBits(x) << 0 )
-#define _LIT( x )       ( _EightBits(x) << 13 )
+#define _Ra( x )                ( _FiveBits(x) << 21 )
+#define _Rb( x )                ( _FiveBits(x) << 16 )
+#define _Rc( x )                ( _FiveBits(x) << 0 )
+#define _LIT( x )               ( ( ( _EightBits(x) << 1 ) | 1 ) << 12 )
 
-#define _Opcode( x )    ( _SixBits(x) << 26 )
-#define _Function( x )  ( _SevenBits(x) << 5 )
-#define _FPFunction( x )( _ElevenBits(x) << 5 )
+#define _Opcode( x )            ( _SixBits(x) << 26 )
+#define _Function( x )          ( _SevenBits(x) << 5 )
+#define _FPFunction( x )        ( _ElevenBits(x) << 5 )
 
 // sixteen bit signed immediate
-#define _SignedImmed( x )       ( (x) & 0xffff )
+#define _SignedImmed( x )       _SixteenBits( x )
 
 typedef uint_32                 axp_ins;
 
-#define AXP_ZERO_SINK           31
-#define AXP_FLOAT_SCRATCH       30
-#define AXP_RETURN_ADDR         26
-#define AXP_STACK_REG           30
-#define AXP_FRAME_REG           15
-#define AXP_GPR_SCRATCH         28
+#define FP_REG_IDX              15  // Contains the Frame pointer (if needed)
+#define RA_REG_IDX              26  // Contains the Return address
+#define AT_REG_IDX              28  // Reserved for the assembler temporary
+#define GP_REG_IDX              29  // Contains the Global pointer
+#define SP_REG_IDX              30  // Contains the Stack pointer
+#define ZERO_REG_IDX            31  // Contains 0
+#define ATFP_REG_IDX            30  // Foating-point reserved for the assembler temporary
 
 #define AXP_MAX_OFFSET          0x7fff

@@ -31,37 +31,46 @@
 ****************************************************************************/
 
 
-#define _SixBits( x )   ( (x) & 0x003f )
-#define _SevenBits( x ) ( (x) & 0x007f )
-#define _FiveBits( x )  ( (x) & 0x001f )
-#define _EightBits( x ) ( (x) & 0x00ff )
-#define _TenBits( x )   ( (x) & 0x03ff )
-#define _OneBit( x )    ( (x) & 0x0001 )
+#define _OneBit( x )            ( (x) & 0x00000001 )
+#define _FiveBits( x )          ( (x) & 0x0000001f )
+#define _SixBits( x )           ( (x) & 0x0000003f )
+#define _SevenBits( x )         ( (x) & 0x0000007f )
+#define _EightBits( x )         ( (x) & 0x000000ff )
+#define _TenBits( x )           ( (x) & 0x000003ff )
+#define _FourteenBits( x )      ( (x) & 0x00003fff )
+#define _SixteenBits( x )       ( (x) & 0x0000ffff )
+#define _TwentyFourBits( x )    ( (x) & 0x00ffffff )
 
 // these correspond to letters in section 3.3 of the Alpha Architecture Manual
-#define _A( x )         ( _FiveBits(x) << 16 )
-#define _B( x )         ( _FiveBits(x) << 11 )
-#define _C( x )         ( _FiveBits(x) <<  6 )
-#define _S( x )         ( _FiveBits(x) << 21 )
-#define _D( x )         ( _FiveBits(x) << 21 )
+#define _A( x )                 ( _FiveBits(x) << 16 )
+#define _B( x )                 ( _FiveBits(x) << 11 )
+#define _C( x )                 ( _FiveBits(x) <<  6 )
+#define _S( x )                 ( _FiveBits(x) << 21 )
+#define _D( x )                 ( _FiveBits(x) << 21 )
 
-#define _Op1( x )       ( _SixBits(x) << 26 )
-#define _Op2( x )       ( _TenBits(x) << 1 )
+#define _Opcode( x )            ( _SixBits(x) << 26 )
+#define _Opcode2( x )           ( _TenBits(x) << 1 )
 
 // Note: this assumes SPR[5-9] is 0 (so we can put simple decimal value as parm)
-#define _SPR( x )       ( _TenBits( x ) << 16 )
+#define _SPR( x )               ( _TenBits( x ) << 11 )
 
-#define _AA( x )        ( _OneBit( x ) << 1 )
-#define _LK( x )        ( _OneBit( x ) )
+#define __AA( x )               ( _OneBit( x ) << 1 )
+#define __LK( x )               _OneBit( x )
+#define __OE( x )               ( _OneBit( x ) << 10 )
+#define __RC( x )               _OneBit( x )
 
 // sixteen bit signed immediate
-#define _SignedImmed( x )       ( (x) & 0xffffU )
+#define _SignedImmed( x )       _SixteenBits( x )
 
 // twenty-four bit signed immediate (note - this effectively divides by 4)
 #define _BranchImmed( x )       ( (x) & 0x3fffffc )
 
 // SPR registers (page 10-131)
-#define SPR_LR          8
-#define SPR_CTR         9
+#define SPR_LR                  8
+#define SPR_CTR                 9
+
+#define ZERO_REG_IDX            0
+#define SP_REG_IDX              1
+#define RTOC_REG_IDX            2
 
 typedef uint_32                 ppc_ins;
