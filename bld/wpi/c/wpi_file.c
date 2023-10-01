@@ -53,7 +53,7 @@ HFILE _wpi_fileopen( LPSTR filename, int format )
                 OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
                 format,
                 0 ) != 0 ) {
-        hfile = -1;
+        hfile = (HFILE)-1;
     }
 #ifdef __FLAT__
     DosDevIOCtl( hfile, 0x08, 0x00, 0, 0, 0, 0, 512L, 0 );
@@ -81,7 +81,7 @@ HFILE _wpi_filecreate( LPSTR filename, int format )
                 OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS,
                 format,
                 0 ) != 0 ) {
-        hfile = -1;
+        hfile = (HFILE)-1;
     }
 
 #ifdef __FLAT__
