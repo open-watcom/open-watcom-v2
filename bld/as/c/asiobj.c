@@ -58,13 +58,13 @@ typedef struct asm_label *label_list;
 static label_list       labelList = NULL;       // The list of pending labels
 static asmreloc         *lastReloc;
 
-static owl_offset tellOffset( void ) {
-//************************************
-
+static owl_offset tellOffset( void )
+/**********************************/
+{
     return( AsmCodeAddress );
 }
 
-static void doEmitData( char *buffer, size_t size ) 
+static void doEmitData( char *buffer, size_t size )
 //*************************************************
 {
     memcpy( &AsmCodeBuffer[AsmCodeAddress], buffer, size );
@@ -74,9 +74,9 @@ static void doEmitData( char *buffer, size_t size )
     }
 }
 
-static void doEmitLabel( label_list label ) {
-//*******************************************
-
+static void doEmitLabel( label_list label )
+/*****************************************/
+{
     sym_location    loc;
 
     labelList = label->next;
@@ -90,9 +90,9 @@ static void doEmitLabel( label_list label ) {
     }
 }
 
-static owl_offset getSymOffset( sym_handle sym ) {
-//************************************************
-
+static owl_offset getSymOffset( sym_handle sym )
+/**********************************************/
+{
     sym_location    loc;
 
     assert( SymLocationKnown( sym ) );
@@ -100,9 +100,9 @@ static owl_offset getSymOffset( sym_handle sym ) {
     return( loc.offset );
 }
 
-static owl_offset relocTargetDisp( owl_offset from, owl_offset to ) {
-//*******************************************************************
-
+static owl_offset relocTargetDisp( owl_offset from, owl_offset to )
+/*****************************************************************/
+{
     owl_offset  ret;
 
 #ifdef AS_ALPHA
@@ -167,16 +167,16 @@ static unsigned relocMasks[] = {
 #endif
 };
 
-static unsigned relocBitMask( asmreloc *reloc ) {
-//***********************************************
-
+static unsigned relocBitMask( asmreloc *reloc )
+/*********************************************/
+{
     assert( reloc != NULL );
     return( relocMasks[ reloc->type ] );
 }
 
-static void doReloc( asmreloc *reloc ) {
-//**************************************
-
+static void doReloc( asmreloc *reloc )
+/************************************/
+{
     sym_handle  sym;
     uint_32     bit_mask;
     uint_32     *data;
@@ -189,12 +189,13 @@ static void doReloc( asmreloc *reloc ) {
     *data = (*data&~bit_mask)|(((displacement&bit_mask)+(*data&bit_mask))&bit_mask);
 }
 
-static void resolveRelativeRelocs( void ) {
-//*****************************************
-// Do all relative relocs within the inline code and
-// complain about references that are not internal and not defined by the
-// compiler.
-
+static void resolveRelativeRelocs( void )
+/****************************************
+ * Do all relative relocs within the inline code and
+ * complain about references that are not internal and not defined by the
+ * compiler.
+ */
+{
     asmreloc            *curr_reloc;
     asmreloc            **last;
     char                *keep_name;
@@ -236,9 +237,9 @@ static void resolveRelativeRelocs( void ) {
     }
 }
 
-static asmreloc *newReloc( owl_offset offset, char *name, owl_reloc_type type ) {
-//*******************************************************************************
-
+static asmreloc *newReloc( owl_offset offset, char *name, owl_reloc_type type )
+/*****************************************************************************/
+{
     asmreloc    *reloc;
 
     reloc = MemAlloc( sizeof( asmreloc ) );
@@ -249,9 +250,9 @@ static asmreloc *newReloc( owl_offset offset, char *name, owl_reloc_type type ) 
     return( reloc );
 }
 
-static void doEmitReloc( owl_offset offset, void *target, owl_reloc_type type, bool named_sym ) {
-//***********************************************************************************************
-
+static void doEmitReloc( owl_offset offset, void *target, owl_reloc_type type, bool named_sym )
+/*********************************************************************************************/
+{
     asmreloc    *reloc;
     int_32      label_num;
 
@@ -271,9 +272,9 @@ static void doEmitReloc( owl_offset offset, void *target, owl_reloc_type type, b
     }
 }
 
-static void doStackLabel( sym_handle sym ) {
-//******************************************
-
+static void doStackLabel( sym_handle sym )
+/****************************************/
+{
     label_list          new_label;
 
     new_label = MemAlloc( sizeof( struct asm_label ) );
@@ -322,9 +323,9 @@ void ObjEmitRelocAddend( owl_reloc_type type, uint_32 addend )
     *pdata = (*pdata&~bit_mask)|(((addend&bit_mask)+(*pdata&bit_mask))&bit_mask);
 }
 
-static bool findLabel( label_list labels, char *label_name ) {
-//************************************************************
-
+static bool findLabel( label_list labels, char *label_name )
+/**********************************************************/
+{
     label_list          curr_label;
 
     curr_label = labels;
@@ -358,10 +359,11 @@ bool ObjLabelDefined( sym_handle sym )
     return( false );
 }
 
-static void doStackNumericLabel( uint_32 label_num ) {
-//****************************************************
-// Numeric labels have label_num going from 1 to 10 (corresponds to 0: - 9:)
-
+static void doStackNumericLabel( uint_32 label_num )
+/***************************************************
+ * Numeric labels have label_num going from 1 to 10 (corresponds to 0: - 9:)
+ */
+{
     label_list          new_label;
 
     new_label = MemAlloc( sizeof( struct asm_label ) );

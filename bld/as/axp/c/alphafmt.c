@@ -1126,14 +1126,14 @@ bool AlphaValidate( instruction *ins )
 }
 
 #ifdef _STANDALONE_
-static void emitIns( owl_section_handle hdl, char *inscode, int size )
-//********************************************************************
+static void emitIns( owl_section_handle hdl, char *inscode, size_t size )
+//***********************************************************************
 {
     ObjEmitData( hdl, inscode, size, true );
 }
 #else
-static void emitIns( char *inscode, int size )
-//********************************************
+static void emitIns( char *inscode, size_t size )
+//***********************************************
 {
     ObjEmitData( inscode, size, true );
 }
