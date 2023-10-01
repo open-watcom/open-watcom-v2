@@ -655,11 +655,13 @@ segment_id  AskBackSeg( void )
 static bool     InlineFunction( cg_sym_handle sym )
 /*************************************************/
 {
-    if( (FEAttr( sym ) & FE_PROC) == 0 )
-        return( false );
-    if( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) != NULL )
-        return( true );
-    return( ((call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_MAKE_CALL_INLINE) != 0 );
+    if( FEAttr( sym ) & FE_PROC ) {
+        if( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) != NULL
+          || ((call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_MAKE_CALL_INLINE) ) {
+            return( true );
+        }
+    }
+    return( false );
 }
 
 segment_id  AskSegID( pointer hdl, cg_class class )

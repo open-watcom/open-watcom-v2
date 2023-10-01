@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,9 +64,9 @@ static owl_offset tellOffset( void ) {
     return( AsmCodeAddress );
 }
 
-static void doEmitData( char *buffer, int size ) {
-//************************************************
-
+static void doEmitData( char *buffer, size_t size ) 
+//*************************************************
+{
     memcpy( &AsmCodeBuffer[AsmCodeAddress], buffer, size );
     AsmCodeAddress += size;
     if( AsmCodeAddress > AsmLastAddress ) {
@@ -403,9 +403,10 @@ void ObjFlushLabels( void )
     }
 }
 
-void ObjEmitData( void *buffer, int size, bool align )
-//****************************************************
-// Aligns to proper address, emits all pending labels, then emits the data
+void ObjEmitData( void *buffer, size_t size, bool align )
+/********************************************************
+ * Aligns to proper address, emits all pending labels, then emits the data
+ */
 {
     if( align ) {
         (void)ObjAlign( CurrAlignment );
@@ -414,8 +415,8 @@ void ObjEmitData( void *buffer, int size, bool align )
     doEmitData( buffer, size );
 }
 
-void ObjDirectEmitData( void *buffer, int size )
-//**********************************************
+void ObjDirectEmitData( void *buffer, size_t size )
+//*************************************************
 {
     doEmitData( buffer, size );
 }

@@ -298,10 +298,11 @@ void ObjFlushLabels( void ) {
     }
 }
 
-void ObjEmitData( owl_section_handle section, void *buffer, int size, bool align ) {
-//**********************************************************************************
-// Aligns to proper address, emits all pending labels, then emits the data
-
+void ObjEmitData( owl_section_handle section, void *buffer, size_t size, bool align ) 
+/************************************************************************************
+ * Aligns to proper address, emits all pending labels, then emits the data
+ */
+{
     if( align ) {
         (void)ObjAlign( section, CurrAlignment );
     }
