@@ -64,11 +64,6 @@
 #define _EmitIns( ins )             ObjBytes( &(ins), sizeof( ppc_ins ) )
 #define _ObjEmitSeq( code )         ObjBytes( code->data, code->length )
 
-#define ZERO_SINK       0
-#define STACK_REG       1
-#define TOC_REG         2
-#define VOLATILE_REG    12
-
 #define _BinaryOpcode( a, b )       { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d ) { { a, b }, { c, d } }
 
@@ -441,7 +436,7 @@ static  void    getMemEncoding( name *mem, reg_idx *index, int_16 *offset )
         break;
     case N_MEMORY:
     default:
-        *index = ZERO_SINK;
+        *index = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_119 );
         break;
@@ -533,12 +528,12 @@ static  void    GenCallIndirect( instruction *call )
     gen_opcode  ldw;
     gen_opcode  stw;
 
-    reg = VOLATILE_REG; /* use the volatile scratch reg if possible */
-    src = VOLATILE_REG;
+    reg = AT_REG_IDX; /* use the volatile scratch reg if possible */
+    src = AT_REG_IDX;
     addr = call->operands[CALL_OP_ADDR];
     ldw = loadOpcodes[U4];
     stw = storeOpcodes[U4];
-    GenMEMINS( stw, TOC_REG, STACK_REG, 4 );
+    GenMEMINS( stw, RTOC_REG_IDX, SP_REG_IDX, 4 );
     switch( addr->n.class ) {
     case N_REGISTER:
         src = _NameReg( addr );
@@ -549,11 +544,11 @@ static  void    GenCallIndirect( instruction *call )
         GenMEMINS( ldw, src, mem_index, mem_offset );
         break;
     }
-    GenMEMINS( ldw, TOC_REG, src, 4 );  // careful - src, reg could be same reg
+    GenMEMINS( ldw, RTOC_REG_IDX, src, 4 );  // careful - src, reg could be same reg
     GenMEMINS( ldw, reg, src, 0 );
     GenMTSPR( reg, SPR_CTR, false );
     GenRAWINS( 0x4e9e0421 );
-    GenMEMINS( ldw, TOC_REG, STACK_REG, 4 );
+    GenMEMINS( ldw, RTOC_REG_IDX, SP_REG_IDX, 4 );
 }
 
 
@@ -569,14 +564,14 @@ static  void    GenVaStart( instruction *ins )
 
     assert( ins->operands[0]->n.class == N_REGISTER );
     reg = _NameReg( ins->operands[0] );
-    tmp = VOLATILE_REG;
+    tmp = AT_REG_IDX;
     stack = RegTrans( FrameReg() );
     stb = storeOpcodes[U1];
     stw = storeOpcodes[U4];
     li = 14;    // addi
-    GenOPIMM( li, tmp, ZERO_SINK, CurrProc->state.parm.gr );
+    GenOPIMM( li, tmp, ZERO_REG_IDX, CurrProc->state.parm.gr );
     GenMEMINS( stb, tmp, reg, 0 );
-    GenOPIMM( li, tmp, ZERO_SINK, CurrProc->state.parm.fr );
+    GenOPIMM( li, tmp, ZERO_REG_IDX, CurrProc->state.parm.fr );
     GenMEMINS( stb, tmp, reg, 1 );
     GenOPIMM( li, tmp, stack, CurrProc->state.parm.offset + CurrProc->targ.frame_size + STACK_HEADER_SIZE );
     GenMEMINS( stw, tmp, reg, 4 );
@@ -646,12 +641,12 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         /* addis k(r0) -> rn */
-        GenOPIMM( 15, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
+        GenOPIMM( 15, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_MOVE_UI:
         /* a load of an unsigned 16-bit immediate */
         /* use or rd, imm(r0) */
-        GenOPIMM( 24, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value );
+        GenOPIMM( 24, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -659,7 +654,7 @@ static  void    Encode( instruction *ins )
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             // addi rd, imm(r0)
-            GenOPIMM( 14, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value );
+            GenOPIMM( 14, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -681,7 +676,7 @@ static  void    Encode( instruction *ins )
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );
             OutReloc( symLabel( ins->operands[0] ), PPC_RELOC_TOC_OFFSET, 2 );
-            GenMEMINS( 32, _NameReg( ins->result ), TOC_REG, 0 );
+            GenMEMINS( 32, _NameReg( ins->result ), RTOC_REG_IDX, 0 );
             break;
         default:
             _Zoiks( ZOIKS_119 );

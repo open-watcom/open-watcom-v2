@@ -68,7 +68,6 @@
 
 #define RDTEB_ENCODING          0x000000ab
 #define RDTEB_MAGIC_CONST       0x2c
-#define V0                      0
 
 /*
  * Our table for opcode values is really a list of pairs of
@@ -717,11 +716,11 @@ static  bool    encodeThreadDataRef( instruction *ins )
     GenMEMINSRELOC( 0x08, AT_REG_IDX, AT_REG_IDX, 0,
                 tls_index, OWL_RELOC_HALF_LO );
     EmitIns( RDTEB_ENCODING );
-    GenMEMINS( loadOpcodes[I4], V0, V0, RDTEB_MAGIC_CONST );
-    GenOPINS( 0x0010, 0x0002, AT_REG_IDX, V0, V0 );
-    GenMEMINS( loadOpcodes[I4], V0, V0, 0 );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, RDTEB_MAGIC_CONST );
+    GenOPINS( 0x0010, 0x0002, AT_REG_IDX, RT_RET_REG_IDX, RT_RET_REG_IDX );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, 0 );
     GenMEMINSRELOC( 0x08, _NameReg( ins->result ),
-                V0, 0, symLabel( op ), OWL_RELOC_HALF_LO );
+                RT_RET_REG_IDX, 0, symLabel( op ), OWL_RELOC_HALF_LO );
     return( true );
 }
 

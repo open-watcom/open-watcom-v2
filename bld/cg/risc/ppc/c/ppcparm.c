@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,8 +76,8 @@ static  hw_reg_set      scalarRegs[] = {
 void    InitPPCParmState( call_state *state )
 /*******************************************/
 {
-    state->parm.gr = FIRST_SCALAR_PARM_REG;
-    state->parm.fr = FIRST_FLOAT_PARM_REG;
+    state->parm.gr = FIRST_SCALAR_PARM_REG_IDX;
+    state->parm.fr = FIRST_FLOAT_PARM_REG_IDX;
 }
 
 type_length     ParmAlignment( type_def *tipe )
@@ -101,15 +101,15 @@ type_length     ParmAlignment( type_def *tipe )
 static  hw_reg_set      floatRegSet( int index )
 /**********************************************/
 {
-    assert( index >= FIRST_FLOAT_PARM_REG && index <= LAST_FLOAT_PARM_REG );
-    return( floatRegs[index - FIRST_FLOAT_PARM_REG] );
+    assert( index >= FIRST_FLOAT_PARM_REG_IDX && index <= LAST_FLOAT_PARM_REG_IDX );
+    return( floatRegs[index - FIRST_FLOAT_PARM_REG_IDX] );
 }
 
 static  hw_reg_set      scalarRegSet( int index )
 /***********************************************/
 {
-    assert( index >= FIRST_SCALAR_PARM_REG && index <= LAST_SCALAR_PARM_REG );
-    return( scalarRegs[index - FIRST_SCALAR_PARM_REG] );
+    assert( index >= FIRST_SCALAR_PARM_REG_IDX && index <= LAST_SCALAR_PARM_REG_IDX );
+    return( scalarRegs[index - FIRST_SCALAR_PARM_REG_IDX] );
 }
 
 hw_reg_set      ParmReg( type_class_def type_class, type_length len, type_length alignment, call_state *state )
@@ -129,21 +129,21 @@ hw_reg_set      ParmReg( type_class_def type_class, type_length len, type_length
     }
     if( _IsFloating( type_class ) ) {
         // if we are passing on stack it was busted up in AssgnParms prior to this
-        if( state->parm.fr <= LAST_FLOAT_PARM_REG ) {
+        if( state->parm.fr <= LAST_FLOAT_PARM_REG_IDX ) {
             state->parm.fr += 1;
             state->parm.gr += 2;
             state->parm.offset += 8;
             parm = floatRegSet( state->parm.fr - 1 );
         }
     } else if( _IsI64( type_class ) ) {
-        if( state->parm.gr <= (LAST_SCALAR_PARM_REG - 1) ) {
+        if( state->parm.gr <= (LAST_SCALAR_PARM_REG_IDX - 1) ) {
             state->parm.gr += 2;
             state->parm.offset += 8;
             parm = scalarRegSet( state->parm.gr - 2 );
             HW_TurnOn( parm, scalarRegSet( state->parm.gr - 1 ) );
         }
     } else {
-        if( state->parm.gr <= LAST_SCALAR_PARM_REG ) {
+        if( state->parm.gr <= LAST_SCALAR_PARM_REG_IDX ) {
             state->parm.gr += 1;
             state->parm.offset += 4;
             parm = scalarRegSet( state->parm.gr - 1 );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,9 @@
 ****************************************************************************/
 
 
-#define FIRST_FLOAT_PARM_REG    1
-#define LAST_FLOAT_PARM_REG     13
-#define FIRST_SCALAR_PARM_REG   3
-#define LAST_SCALAR_PARM_REG    10
-
-#define FP_SCRATCH_REG          13
+#define FIRST_FLOAT_PARM_REG_IDX    1
+#define LAST_FLOAT_PARM_REG_IDX     13
+#define FIRST_SCALAR_PARM_REG_IDX   3
+#define LAST_SCALAR_PARM_REG_IDX    10
 
 extern void     InitPPCParmState( call_state *state );

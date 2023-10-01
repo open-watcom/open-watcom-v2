@@ -49,6 +49,13 @@
 #include "feprotos.h"
 
 
+#define STORE_DWORD     36
+#define STORE_DOUBLE    54
+#define LOAD_DWORD      32
+#define LOAD_DOUBLE     50
+#define ADDI_OPCODE     14
+
+
 static  void    CalcUsedRegs( void )
 /**********************************/
 {
@@ -174,16 +181,6 @@ static  void    initSavedRegs( stack_record *saved_regs, type_length *offset )
     *offset += saved_regs->size;
 }
 
-#define STORE_DWORD     36
-#define STORE_DOUBLE    54
-#define LOAD_DWORD      32
-#define LOAD_DOUBLE     50
-#define ADDI_OPCODE     14
-
-#define STACK_REG       1
-#define FRAME_REG       31
-#define VARARGS_PTR     14
-
 static  void    genMove( uint_32 src, uint_32 dst )
 /*************************************************/
 {
@@ -205,7 +202,7 @@ static  void    saveReg( uint_32 index, type_length offset, bool fp )
     if( fp ) {
         opcode = STORE_DOUBLE;
     }
-    GenMEMINS( opcode, index, STACK_REG, offset );
+    GenMEMINS( opcode, index, SP_REG_IDX, offset );
 }
 
 static  void    loadReg( uint_32 index, type_length offset, bool fp )
@@ -218,9 +215,9 @@ static  void    loadReg( uint_32 index, type_length offset, bool fp )
     if( fp ) {
         opcode = LOAD_DOUBLE;
     }
-    frame_reg = STACK_REG;
+    frame_reg = SP_REG_IDX;
     if( CurrProc->targ.base_is_fp ) {
-        frame_reg = FRAME_REG;
+        frame_reg = FP_REG_IDX;
     }
     GenMEMINS( opcode, index, frame_reg, offset + CurrProc->locals.size );
 }
@@ -311,8 +308,8 @@ static  void    emitVarargsProlog( stack_record *varargs )
     if( CurrProc->state.attr & ROUTINE_HAS_VARARGS ) {
         // save our registers in our caller's context - uhg!
         offset = CurrProc->targ.frame_size + STACK_HEADER_SIZE;
-        for( i = CurrProc->state.parm.gr; i <= LAST_SCALAR_PARM_REG; i++ ) {
-            saveReg( i, offset + ( i - FIRST_SCALAR_PARM_REG ) * 4, false );
+        for( i = CurrProc->state.parm.gr; i <= LAST_SCALAR_PARM_REG_IDX; i++ ) {
+            saveReg( i, offset + ( i - FIRST_SCALAR_PARM_REG_IDX ) * 4, false );
         }
     }
 }
@@ -415,7 +412,7 @@ static  void    emitProlog( stack_map *map )
     }
     if( frame_size != 0 ) {
         // stwu sp,-frame_size(sp)
-        GenMEMINS( 37, STACK_REG, STACK_REG, -frame_size );
+        GenMEMINS( 37, SP_REG_IDX, SP_REG_IDX, -frame_size );
         emitVarargsProlog( &map->varargs );
         emitSlopProlog( &map->varargs );
         emitSavedRegsProlog( &map->saved_regs );
@@ -423,7 +420,7 @@ static  void    emitProlog( stack_map *map )
         emitParmCacheProlog( &map->parm_cache );
         emitStackHeaderProlog( &map->stack_header );
         if( CurrProc->targ.base_is_fp ) {
-            genMove( STACK_REG, FRAME_REG );
+            genMove( SP_REG_IDX, FP_REG_IDX );
         }
     }
 }
@@ -445,11 +442,11 @@ static  void    emitEpilog( stack_map *map )
         if( !CurrProc->targ.leaf ) {
             GenMTSPR( 0, SPR_LR, false );
         }
-        frame_reg = STACK_REG;
+        frame_reg = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
-            frame_reg = FRAME_REG;
+            frame_reg = FP_REG_IDX;
         }
-        genAdd( frame_reg, frame_size, STACK_REG );
+        genAdd( frame_reg, frame_size, SP_REG_IDX );
     }
 }
 

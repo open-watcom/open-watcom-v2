@@ -70,10 +70,8 @@
  * This is NT stuff - probably irreleveant unless someone wanted to
  * support the MIPS version of NT!
  */
-
 #define RDTEB_ENCODING          0x000000ab
 #define RDTEB_MAGIC_CONST       0x2c
-#define V0                      0
 
 /*
  * Our table for opcode values is really a list of pairs of

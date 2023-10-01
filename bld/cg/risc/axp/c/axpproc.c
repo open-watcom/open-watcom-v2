@@ -52,6 +52,14 @@
 #include "feprotos.h"
 
 
+#define STORE_QUADWORD  0x2d
+#define STORE_DOUBLE    0x27
+#define LOAD_QUADWORD   0x29
+#define LOAD_DOUBLE     0x23
+#define LEA_OPCODE      0x08
+#define LEAH_OPCODE     0x09
+
+
 static  void    calcUsedRegs( void )
 /**********************************/
 {
@@ -171,19 +179,6 @@ static  void    initSavedRegs( stack_record *saved_regs, type_length *offset )
     saved_regs->start = *offset;
     *offset += saved_regs->size;
 }
-
-#define STORE_QUADWORD  0x2d
-#define STORE_DOUBLE    0x27
-#define LOAD_QUADWORD   0x29
-#define LOAD_DOUBLE     0x23
-#define LEA_OPCODE      0x08
-#define LEAH_OPCODE     0x09
-
-#define VARARGS_PTR     14
-#define RT_PARM2        2
-#define RT_PARM1        1
-#define RT_RET_REG      0
-
 
 static  void    genMove( uint_32 src, uint_32 dst )
 /*************************************************/
@@ -454,10 +449,10 @@ static  void    SetupVarargsReg( stack_map *map )
             offset += REG_SIZE;
         }
         if( offset > AXP_MAX_OFFSET ) {
-            GenLOADS32( offset, VARARGS_PTR );
-            GenOPINS( 0x10, 0x00, SP_REG_IDX, VARARGS_PTR, VARARGS_PTR );
+            GenLOADS32( offset, VARARGS_PTR_REG_IDX );
+            GenOPINS( 0x10, 0x00, SP_REG_IDX, VARARGS_PTR_REG_IDX, VARARGS_PTR_REG_IDX );
         } else {
-            genLea( SP_REG_IDX, offset, VARARGS_PTR );
+            genLea( SP_REG_IDX, offset, VARARGS_PTR_REG_IDX );
         }
     }
 }
@@ -479,11 +474,11 @@ static  void    emitProlog( stack_map *map )
         }
         if( frame_size >= _TARGET_PAGE_SIZE ) {
             if( frame_size <= AXP_MAX_OFFSET ) {
-                genLea( ZERO_REG_IDX, frame_size, RT_PARM1 );
+                genLea( ZERO_REG_IDX, frame_size, RT_PARM1_REG_IDX );
             } else {
-                genMove( AT_REG_IDX, RT_PARM1 );
+                genMove( AT_REG_IDX, RT_PARM1_REG_IDX );
             }
-            GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG );
+            GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG_IDX );
         }
     }
     if( map->locals.size != 0 || map->parm_cache.size != 0 ) {
@@ -491,11 +486,11 @@ static  void    emitProlog( stack_map *map )
             type_length         size;
             size = map->locals.size + map->parm_cache.size;
             if( size > AXP_MAX_OFFSET ) {
-                GenLOADS32( size, RT_PARM1 );
+                GenLOADS32( size, RT_PARM1_REG_IDX );
             } else {
-                genLea( ZERO_REG_IDX, map->locals.size + map->parm_cache.size, RT_PARM1 );
+                genLea( ZERO_REG_IDX, map->locals.size + map->parm_cache.size, RT_PARM1_REG_IDX );
             }
-            GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG );
+            GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG_IDX );
         }
     }
     emitVarargsProlog( &map->varargs );
