@@ -101,11 +101,11 @@ static bool ensureTypeCorrect( ins_operand *op, op_type type, uint_8 opIdx )
     return( true );
 }
 
-static bool ensureOpAbsolute( ins_operand *op, uint_8 opIdx )
+static bool checkOpAbsolute( ins_operand *op, uint_8 op_idx )
 //***********************************************************
 {
     if( ( op->flags & ( RELOC | UNNAMED_RELOC ) ) ) {
-        Error( RELOC_NOT_ALLOWED, opIdx );
+        Error( RELOC_NOT_ALLOWED, op_idx );
         return( false );
     }
     return( true );
@@ -217,12 +217,12 @@ static void doReloc( asm_reloc *reloc, ins_operand *op, owl_reloc_type rtype, in
  */
 {
     assert( rtype != OWL_RELOC_JUMP_ABS && rtype != OWL_RELOC_BRANCH_ABS );
-    if( ( op->flags & RELOC ) == RELOC ) {
+    if( op->flags & RELOC ) {
         reloc->target.sym = op->reloc.target.ptr;
         reloc->type = relocType( op->reloc.type, rtype, _IsAbsolute( flags ) );
         reloc->is_unnamed = false;
         reloc->valid = true;
-    } else if( ( op->flags & UNNAMED_RELOC ) == UNNAMED_RELOC ) {
+    } else if( op->flags & UNNAMED_RELOC ) {
         reloc->target.label_num = op->reloc.target.label;
         reloc->type = relocType( op->reloc.type, rtype, _IsAbsolute( flags ) );
         reloc->is_unnamed = true;
@@ -385,7 +385,7 @@ static void ITBranchCond( ins_table *table, instruction *ins, uint_32 *buffer, a
     assert( ins->num_operands == 3 );
     for( ctr = 0; ctr < 3; ++ctr ) {
         op[ctr] = ins->operands[ctr];
-        if( ( ctr < 2 ) && !ensureOpAbsolute( op[ctr], ctr ) ) {
+        if( ( ctr < 2 ) && !checkOpAbsolute( op[ctr], ctr ) ) {
             return;
         }
     }
@@ -408,7 +408,7 @@ static void ITBranchSpec( ins_table *table, instruction *ins, uint_32 *buffer, a
 //    flags = ( ins->format->flags & table->optional ) | table->required;
     for( ctr = 0; ctr < 2; ++ctr ) {
         op[ctr] = ins->operands[ctr];
-        if( !ensureOpAbsolute( op[ctr], ctr ) ) {
+        if( !checkOpAbsolute( op[ctr], ctr ) ) {
             return;
         }
     }
@@ -448,7 +448,7 @@ static void ITCmp( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
     if( ( L_bit & 1 ) != L_bit ) {
         Error( OP_OUT_OF_RANGE, ctr );
     }
-    if( ensureOpAbsolute( op[ctr], ctr ) ) {
+    if( checkOpAbsolute( op[ctr], ctr ) ) {
         opRa = op[++ctr];
         opRb = op[++ctr];
         doEncode3( buffer, table->primary, table->secondary,
@@ -487,7 +487,7 @@ static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm
     if( ( L_bit & 1 ) != L_bit ) {
         Error( OP_OUT_OF_RANGE, ctr );
     }
-    if( ensureOpAbsolute( op[ctr], ctr ) ) {
+    if( checkOpAbsolute( op[ctr], ctr ) ) {
         opRa = op[++ctr];
         opSimm = op[++ctr];
         doEncode2( buffer, table->primary, ( crfIdx << 2 ) | L_bit,
@@ -576,7 +576,7 @@ static void ITMfspr( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     if( !SPRValidate( const_op->constant ) ) {
         Error( BAD_REG_ENCODING, 1, "SPR" );
     }
-    if( ensureOpAbsolute( const_op, 1 ) ) {
+    if( checkOpAbsolute( const_op, 1 ) ) {
         doEncodeSPR( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[0]->reg ), const_op->constant,
             ( ins->format->flags & table->optional ) | table->required );
@@ -595,7 +595,7 @@ static void ITMfsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     if( const_op->constant > 0xf ) {
         Error( OP_OUT_OF_RANGE, 1 );
     }
-    if( ensureOpAbsolute( const_op, 1 ) ) {
+    if( checkOpAbsolute( const_op, 1 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[0]->reg ), const_op->constant, 0,
             ( ins->format->flags & table->optional ) | table->required );
@@ -626,7 +626,7 @@ static void ITMftb( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     if( const_op->constant != 0x188 && const_op->constant != 0x1a8 ) {
         Error( BAD_REG_ENCODING, 1, "TBR" );
     }
-    if( ensureOpAbsolute( const_op, 1 ) ) {
+    if( checkOpAbsolute( const_op, 1 ) ) {
         flags = ( ins->format->flags & table->optional ) | table->required;
         *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
               _D( RegIndex( ins->operands[0]->reg ) ) |
@@ -647,7 +647,7 @@ static void ITMtcrf( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     if( const_op->constant > 0xff ) {
         Error( OP_OUT_OF_RANGE, 0 );
     }
-    if( ensureOpAbsolute( const_op, 0 ) ) {
+    if( checkOpAbsolute( const_op, 0 ) ) {
         flags = ( ins->format->flags & table->optional ) | table->required;
         *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
               _S( RegIndex( ins->operands[1]->reg ) ) |
@@ -674,7 +674,7 @@ static void ITMtfsf( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     if( opFM->constant > 0xff ) {
         Error( OP_OUT_OF_RANGE, 0 );
     }
-    if( ensureOpAbsolute( opFM, 0 ) ) {
+    if( checkOpAbsolute( opFM, 0 ) ) {
         flags = ( ins->format->flags & table->optional ) | table->required;
         *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
               _FM( opFM->constant ) | _B( RegIndex( ins->operands[1]->reg ) ) |
@@ -694,7 +694,7 @@ static void ITMtfsfImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
     if( const_op->constant > 0xff ) {
         Error( OP_OUT_OF_RANGE, 1 );
     }
-    if( ensureOpAbsolute( const_op, 1 ) ) {
+    if( checkOpAbsolute( const_op, 1 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[0]->reg ) << 2, 0, const_op->constant << 1,
             ( ins->format->flags & table->optional ) | table->required );
@@ -714,7 +714,7 @@ static void ITMtspr( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
         Error( BAD_REG_ENCODING, 0, "SPR" );
         return;
     }
-    if( ensureOpAbsolute( const_op, 0 ) ) {
+    if( checkOpAbsolute( const_op, 0 ) ) {
         doEncodeSPR( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[1]->reg ), const_op->constant,
             ( ins->format->flags & table->optional ) | table->required );
@@ -733,7 +733,7 @@ static void ITMtsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     if( const_op->constant > 0xf ) {
         Error( OP_OUT_OF_RANGE, 0 );
     }
-    if( ensureOpAbsolute( const_op, 1 ) ) {
+    if( checkOpAbsolute( const_op, 1 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[1]->reg ), const_op->constant, 0,
             ( ins->format->flags & table->optional ) | table->required );
@@ -825,7 +825,7 @@ static void ITLswi( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 
     assert( ins->num_operands == 3 );
     op = ins->operands[2];
-    if( ensureOpAbsolute( op, 2 ) ) {
+    if( checkOpAbsolute( op, 2 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[0]->reg ), RegIndex( ins->operands[1]->reg ),
             op->constant,
@@ -842,7 +842,7 @@ static void ITShift( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
 
     assert( ins->num_operands == 3 );
     op = ins->operands[2];
-    if( ensureOpAbsolute( op, 2 ) ) {
+    if( checkOpAbsolute( op, 2 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[0]->reg ),
             op->constant,
@@ -861,7 +861,7 @@ static void ITShiftImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
     assert( ins->num_operands == 5 );
     for( ctr = 0; ctr < 3; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 2];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) {
+        if( !checkOpAbsolute( const_op[ctr], ctr + 2 ) ) {
             return;
         }
     }
@@ -882,7 +882,7 @@ static void ITShiftIndex( ins_table *table, instruction *ins, uint_32 *buffer, a
     assert( ins->num_operands == 5 );
     for( ctr = 0; ctr < 2; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 3];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 3 ) ) {
+        if( !checkOpAbsolute( const_op[ctr], ctr + 3 ) ) {
             return;
         }
     }
@@ -912,7 +912,7 @@ static void ITTrap( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 
     assert( ins->num_operands == 3 );
     op = ins->operands[0];
-    if( ensureOpAbsolute( op, 0 ) ) {
+    if( checkOpAbsolute( op, 0 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             op->constant, RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[2]->reg ),
             ( ins->format->flags & table->optional ) | table->required );
@@ -926,7 +926,7 @@ static void ITTrapImmed( ins_table *table, instruction *ins, uint_32 *buffer, as
 
     assert( ins->num_operands == 3 );
     op0 = ins->operands[0];
-    if( ensureOpAbsolute( op0, 0 ) ) {
+    if( checkOpAbsolute( op0, 0 ) ) {
         op2 = ins->operands[2];
         doEncode2( buffer, table->primary, op0->constant,
             RegIndex( ins->operands[1]->reg ), op2->constant,
@@ -982,7 +982,7 @@ static void ITSMSubImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
 
     assert( ins->num_operands == 3 );
     op = ins->operands[2];
-    if( ensureOpAbsolute( op, 0 ) ) {
+    if( checkOpAbsolute( op, 0 ) ) {
         doEncode2( buffer, table->primary, RegIndex( ins->operands[0]->reg ),
             RegIndex( ins->operands[1]->reg ), -op->constant,
             ( ins->format->flags & table->optional ) | table->required );
@@ -1064,7 +1064,7 @@ static void ITSMExtlwi( ins_table *table, instruction *ins, uint_32 *buffer, asm
     assert( ins->num_operands == 4 );
     for( ctr = 0; ctr < 2; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 2];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) {
+        if( !checkOpAbsolute( const_op[ctr], ctr + 2 ) ) {
             return;
         }
     }
@@ -1087,7 +1087,7 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
 
     assert( ins->num_operands == 3 );
     const_op = ins->operands[2];
-    if( !ensureOpAbsolute( const_op, 2 ) )
+    if( !checkOpAbsolute( const_op, 2 ) )
         return;
     n = const_op->constant;
     switch( table->special ) {
@@ -1129,7 +1129,7 @@ static void ITSMInslw( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     assert( ins->num_operands == 4 );
     for( ctr = 0; ctr < 2; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 2];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) {
+        if( !checkOpAbsolute( const_op[ctr], ctr + 2 ) ) {
             return;
         }
     }
@@ -1205,7 +1205,7 @@ static void ITSMMovSprNCover( bool isMoveTo, ins_table *table, instruction *ins,
         idx1 = 0;
     }
     op = ins->operands[idx0];
-    if( !ensureOpAbsolute( op, idx0 ) )
+    if( !checkOpAbsolute( op, idx0 ) )
         return;
     if( ( op->constant & 3 ) != op->constant ) {
         Error( OP_OUT_OF_RANGE, idx0 );
@@ -1301,7 +1301,7 @@ static void ITSMBC( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
             valueBI = RegCrfToBI( op0->reg );
             break;
         case OP_IMMED:
-            if( !ensureOpAbsolute( op0, 0 ) )
+            if( !checkOpAbsolute( op0, 0 ) )
                 return;
             // fall through
         case OP_BI:
@@ -1370,7 +1370,7 @@ static void ITSMBSpec( ins_table *table, instruction *ins, uint_32 *buffer, asm_
             valueBI = RegCrfToBI( op0->reg );
             break;
         case OP_IMMED:
-            if( !ensureOpAbsolute( op0, 0 ) )
+            if( !checkOpAbsolute( op0, 0 ) )
                 return;
             // fall through
         case OP_BI:

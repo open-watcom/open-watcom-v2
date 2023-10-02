@@ -127,11 +127,11 @@ static uint_32  cop_codes[4] = {
 };
 
 
-static bool ensureOpAbsolute( ins_operand *op, uint_8 opIdx )
+static bool checkOpAbsolute( ins_operand *op, uint_8 op_idx )
 //***********************************************************
 {
     if( OP_HAS_RELOC( op ) ) {
-        Error( RELOC_NOT_ALLOWED, opIdx );
+        Error( RELOC_NOT_ALLOWED, op_idx );
         return( false );
     }
     return( true );
@@ -464,12 +464,12 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
         doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, ZERO_REG_IDX, RegIndex( op1->reg ), extra );
     } else if( ( op0->constant & 0xff ) == op0->constant ) { // OP_IMMED implied
         extra = _LIT( op0->constant ); // this lit is between 0..255
-        ensureOpAbsolute( op0, 0 );
+        checkOpAbsolute( op0, 0 );
         doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, ZERO_REG_IDX, RegIndex( op1->reg ), extra );
     } else if( ( -op0->constant & 0xff ) == -op0->constant && m_opt == DOMOV_ABS ) { // -255..0
         extra = _LIT( -op0->constant ); // this lit is between 0..255
         /*
-         * ensureOpAbsolute( op0, 0 );  should be done before calling doMov
+         * checkOpAbsolute( op0, 0 );  should be done before calling doMov
          */
         doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, ZERO_REG_IDX, RegIndex( op1->reg ), extra );
     } else {
@@ -477,7 +477,7 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
          * Otherwise it's OP_IMMED with a greater than 8-bit literal.
          * We'll then use multiple LDA, LDAH instructions to load the literal.
          */
-        if( ensureOpAbsolute( op0, 0 ) ) {
+        if( checkOpAbsolute( op0, 0 ) ) {
             numExtendedIns += load32BitLiteral( buffer, op0, op1, m_opt ) - 1;
         }
     }
@@ -495,7 +495,7 @@ static void doLoadImm( uint_32 *buffer, ins_operand *operands[] )
 
     op0 = operands[0];
     op1 = operands[1];
-    ensureOpAbsolute( op1, 1 );
+    checkOpAbsolute( op1, 1 );
     reg = RegIndex( op0->reg );
     value = op1->constant;
 
@@ -539,7 +539,7 @@ static void ITSysCode( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     assert( ins->num_operands < 2 );
     if( ins->num_operands > 0 ) {
         op = ins->operands[0];
-        ensureOpAbsolute( op, 0 );
+        checkOpAbsolute( op, 0 );
         constant = op->constant;
     } else {
         constant = 0;
@@ -558,7 +558,7 @@ static void ITTrap( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 
     if( ins->num_operands > 2 ) {
         op = ins->operands[2];
-        ensureOpAbsolute( op, 2 );
+        checkOpAbsolute( op, 2 );
         code = op->constant;
     } else {
         code = 0;
@@ -579,7 +579,7 @@ static void ITLoadUImm( ins_table *table, instruction *ins, uint_32 *buffer, asm
 
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
-    ensureOpAbsolute( op, 1 );
+    checkOpAbsolute( op, 1 );
     doOpcodeIType( buffer, table->opcode, RegIndex( ins->operands[0]->reg ),
                    0, op->constant );
 }
@@ -594,7 +594,7 @@ static void ITTrapImm( ins_table *table, instruction *ins, uint_32 *buffer, asm_
 
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
-    ensureOpAbsolute( op, 1 );
+    checkOpAbsolute( op, 1 );
     doOpcodeIType( buffer, table->opcode, table->funccode,
                    RegIndex( ins->operands[0]->reg ), op->constant );
 }
@@ -1100,7 +1100,7 @@ static void ITOperateImm( ins_table *table, instruction *ins, uint_32 *buffer, a
 
     assert( ins->num_operands == 3 );
     op = ins->operands[2];
-    ensureOpAbsolute( op, 2 );
+    checkOpAbsolute( op, 2 );
     doOpcodeFcRsRtImm( buffer, table->opcode, table->funccode,
                        RegIndex( ins->operands[1]->reg ),
                        RegIndex( ins->operands[0]->reg ), op->constant );
@@ -1332,7 +1332,7 @@ static void ITPseudoNot( ins_table *table, instruction *ins, uint_32 *buffer, as
     } else {    // OP_IMMED
         assert( op->type == OP_IMMED );
         extra = _LIT( op->constant );
-        (void)ensureOpAbsolute( op, 0 );
+        (void)checkOpAbsolute( op, 0 );
     }
     fc = getFuncCode( table, ins );
     doOpcodeFcRsRt( buffer, table->opcode, fc, ZERO_REG_IDX,
@@ -1384,7 +1384,7 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
          * Then just evaluate it and do a mov instead.
          * mov  abs(src_op->constant), d_reg
          */
-        if( ensureOpAbsolute( src_op, 0 ) ) {
+        if( checkOpAbsolute( src_op, 0 ) ) {
             doMov( buffer, ins->operands, DOMOV_ABS );
         }
         return;
