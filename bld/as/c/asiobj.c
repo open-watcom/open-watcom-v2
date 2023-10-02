@@ -68,7 +68,7 @@ static void doEmitData( char *buffer, size_t size )
 //*************************************************
 {
     memcpy( &AsmCodeBuffer[AsmCodeAddress], buffer, size );
-    AsmCodeAddress += size;
+    AsmCodeAddress += (unsigned)size;
     if( AsmCodeAddress > AsmLastAddress ) {
         AsmLastAddress = AsmCodeAddress;
     }

@@ -91,11 +91,11 @@ static int_32 SPRChkList[] = {
     528, 529, 530, 531, 532, 533, 534, 535, 1008, 1009, 1010, 1013, 1023
 };
 
-static bool ensureTypeCorrect( ins_operand *op, op_type type, uint_8 opIdx )
-//**************************************************************************
+static bool checkTypeCorrect( ins_operand *op, op_type type, int op_idx )
+//***********************************************************************
 {
     if( op->type != type ) {
-        Error( IMPROPER_OPERAND, opIdx );
+        Error( IMPROPER_OPERAND, op_idx );
         return( false );
     }
     return( true );
@@ -111,8 +111,8 @@ static bool checkOpAbsolute( ins_operand *op, int op_idx )
     return( true );
 }
 
-static void doEncode2( uint_32 *buffer, ins_opcode p, reg_idx r1, reg_idx r2, uint imm, ins_flags flags )
-/********************************************************************************************************
+static void doEncode2( uint_32 *buffer, ins_opcode p, reg_idx r1, reg_idx r2, op_const imm, ins_flags flags )
+/************************************************************************************************************
  * Use when there are 2 5-bit blocks (other than opcode blocks) and
  * an immediate block (16-bit)
  */
@@ -421,8 +421,8 @@ static void ITCmp( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
 /****************************************************************************************/
 {
     ins_operand *op[4], *opRa, *opRb;
-    uint        crfIdx;
-    uint        L_bit;
+    reg_idx     crf_idx;
+    reg_idx     L_bit;
     int         ctr;
     ins_opcount opcount;
     op_type     verify4[4] = { OP_CRF, OP_IMMED, OP_GPR, OP_GPR };
@@ -435,27 +435,26 @@ static void ITCmp( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
     opcount = ins->num_operands;
     verify = ( opcount == 3 ) ?  verify3 : verify4;
     for( ctr = 0; ctr < opcount; ctr++ ) {
-        if( !ensureTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) {
+        if( !checkTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) {
             return;
         }
     }
     if( opcount == 4 ) {
-        crfIdx = RegIndex( op[0]->reg );
+        crf_idx = RegIndex( op[0]->reg );
         ctr = 1;
     } else {    // 3 operands
-        crfIdx = 0;
+        crf_idx = 0;
         ctr = 0;
     }
-    L_bit = op[ctr]->constant;
-    if( ( L_bit & 1 ) != L_bit ) {
+    L_bit = op[ctr]->constant & 1;
+    if( L_bit != op[ctr]->constant ) {
         Error( OP_OUT_OF_RANGE, ctr );
     }
     if( checkOpAbsolute( op[ctr], ctr ) ) {
         opRa = op[++ctr];
         opRb = op[++ctr];
         doEncode3( buffer, table->primary, table->secondary,
-            ( crfIdx << 2 ) | L_bit,
-            RegIndex( opRa->reg ), RegIndex( opRb->reg ),
+            ( crf_idx << 2 ) | L_bit, RegIndex( opRa->reg ), RegIndex( opRb->reg ),
             ( ins->format->flags & table->optional ) | table->required );
     }
 }
@@ -464,8 +463,8 @@ static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm
 /*********************************************************************************************/
 {
     ins_operand *op[4], *opRa, *opSimm;
-    uint        crfIdx;
-    uint        L_bit;
+    reg_idx     crf_idx;
+    reg_idx     L_bit;
     int         ctr;
     ins_opcount opcount;
     op_type     verify4[4] = { OP_CRF, OP_IMMED, OP_GPR, OP_IMMED };
@@ -476,25 +475,25 @@ static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm
     opcount = ins->num_operands;
     verify = ( opcount == 3 ) ?  verify3 : verify4;
     for( ctr = 0; ctr < opcount; ctr++ ) {
-        if( !ensureTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) {
+        if( !checkTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) {
             return;
         }
     }
     if( opcount == 4 ) {
-        crfIdx = RegIndex( op[0]->reg );
+        crf_idx = RegIndex( op[0]->reg );
         ctr = 1;
     } else {    // 3 operands
-        crfIdx = 0;
+        crf_idx = 0;
         ctr = 0;
     }
-    L_bit = op[ctr]->constant;
-    if( ( L_bit & 1 ) != L_bit ) {
+    L_bit = op[ctr]->constant & 1;
+    if( L_bit != op[ctr]->constant ) {
         Error( OP_OUT_OF_RANGE, ctr );
     }
     if( checkOpAbsolute( op[ctr], ctr ) ) {
         opRa = op[++ctr];
         opSimm = op[++ctr];
-        doEncode2( buffer, table->primary, ( crfIdx << 2 ) | L_bit,
+        doEncode2( buffer, table->primary, (reg_idx)( ( crf_idx << 2 ) | L_bit ),
             RegIndex( opRa->reg ), opSimm->constant,
             ( ins->format->flags & table->optional ) | table->required );
         doReloc( reloc, opSimm, OWL_RELOC_HALF_LO, 0 );
@@ -601,7 +600,7 @@ static void ITMfsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     }
     if( checkOpAbsolute( const_op, 1 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
-            RegIndex( ins->operands[0]->reg ), const_op->constant, 0,
+            RegIndex( ins->operands[0]->reg ), (reg_idx)const_op->constant, 0,
             ( ins->format->flags & table->optional ) | table->required );
     }
 }
@@ -700,7 +699,7 @@ static void ITMtfsfImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
     }
     if( checkOpAbsolute( const_op, 1 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
-            RegIndex( ins->operands[0]->reg ) << 2, 0, const_op->constant << 1,
+            RegIndex( ins->operands[0]->reg ) << 2, 0, (reg_idx)( const_op->constant << 1 ),
             ( ins->format->flags & table->optional ) | table->required );
     }
 }
@@ -739,7 +738,7 @@ static void ITMtsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     }
     if( checkOpAbsolute( const_op, 1 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
-            RegIndex( ins->operands[1]->reg ), const_op->constant, 0,
+            RegIndex( ins->operands[1]->reg ), (reg_idx)const_op->constant, 0,
             ( ins->format->flags & table->optional ) | table->required );
     }
 }
@@ -761,7 +760,8 @@ static void ITEieio( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     /* unused parameters */ (void)reloc;
 
     assert( ins->num_operands == 0 );
-    doEncode3( buffer, table->primary, table->secondary, 0, 0, 0,
+    doEncode3( buffer, table->primary, table->secondary,
+        0, 0, 0,
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -832,7 +832,7 @@ static void ITLswi( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     if( checkOpAbsolute( op, 2 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[0]->reg ), RegIndex( ins->operands[1]->reg ),
-            op->constant,
+            (reg_idx)op->constant,
             ( ins->format->flags & table->optional ) | table->required );
     }
 }
@@ -849,7 +849,7 @@ static void ITShift( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     if( checkOpAbsolute( op, 2 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
             RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[0]->reg ),
-            op->constant,
+            (reg_idx)op->constant,
             ( ins->format->flags & table->optional ) | table->required );
     }
 }
@@ -870,8 +870,8 @@ static void ITShiftImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
         }
     }
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
-        RegIndex( ins->operands[0]->reg ), const_op[0]->constant,
-        const_op[1]->constant, const_op[2]->constant,
+        RegIndex( ins->operands[0]->reg ), (reg_idx)const_op[0]->constant,
+        (reg_idx)const_op[1]->constant, (reg_idx)const_op[2]->constant,
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -892,7 +892,7 @@ static void ITShiftIndex( ins_table *table, instruction *ins, uint_32 *buffer, a
     }
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
         RegIndex( ins->operands[0]->reg ), RegIndex( ins->operands[2]->reg ),
-        const_op[0]->constant, const_op[1]->constant,
+        (reg_idx)const_op[0]->constant, (reg_idx)const_op[1]->constant,
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -918,7 +918,8 @@ static void ITTrap( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     op = ins->operands[0];
     if( checkOpAbsolute( op, 0 ) ) {
         doEncode3( buffer, table->primary, table->secondary,
-            op->constant, RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[2]->reg ),
+            (reg_idx)op->constant, RegIndex( ins->operands[1]->reg ),
+            RegIndex( ins->operands[2]->reg ),
             ( ins->format->flags & table->optional ) | table->required );
     }
 }
@@ -932,7 +933,7 @@ static void ITTrapImmed( ins_table *table, instruction *ins, uint_32 *buffer, as
     op0 = ins->operands[0];
     if( checkOpAbsolute( op0, 0 ) ) {
         op2 = ins->operands[2];
-        doEncode2( buffer, table->primary, op0->constant,
+        doEncode2( buffer, table->primary, (reg_idx)op0->constant,
             RegIndex( ins->operands[1]->reg ), op2->constant,
             ( ins->format->flags & table->optional ) | table->required );
         doReloc( reloc, op2, OWL_RELOC_HALF_LO, 0 );
@@ -997,30 +998,30 @@ static void ITSMCmpwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_
 /********************************************************************************************/
 {
     ins_operand *op0, *opRa, *opSimm;
-    uint        crfIdx;
+    reg_idx     crf_idx;
 
     assert( ins->num_operands == 2 || ins->num_operands == 3 );
     op0 = ins->operands[0];
     if( ins->num_operands == 3 ) {
-        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) )
+        if( !checkTypeCorrect( op0, OP_CRF, 0 ) )
             return;
-        crfIdx = RegIndex( op0->reg );
+        crf_idx = RegIndex( op0->reg );
         opRa = ins->operands[1];
-        if( !ensureTypeCorrect( opRa, OP_GPR, 1 ) )
+        if( !checkTypeCorrect( opRa, OP_GPR, 1 ) )
             return;
         opSimm = ins->operands[2];
         assert( opSimm->type == OP_IMMED );
     } else { // 2 operands
-        crfIdx = 0;
+        crf_idx = 0;
         opRa = op0;
         opSimm = ins->operands[1];
-        if( !ensureTypeCorrect( opRa, OP_GPR, 0 ) )
+        if( !checkTypeCorrect( opRa, OP_GPR, 0 ) )
             return;
-        if( !ensureTypeCorrect( opSimm, OP_IMMED, 1 ) ) {
+        if( !checkTypeCorrect( opSimm, OP_IMMED, 1 ) ) {
             return;
         }
     }
-    doEncode2( buffer, table->primary, crfIdx << 2,
+    doEncode2( buffer, table->primary, (reg_idx)( crf_idx << 2 ),
         RegIndex( opRa->reg ), opSimm->constant,
         ( ins->format->flags & table->optional ) | table->required );
     doReloc( reloc, opSimm, OWL_RELOC_HALF_LO, 0 );
@@ -1030,30 +1031,30 @@ static void ITSMCmpw( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
 /*******************************************************************************************/
 {
     ins_operand *op0, *opRa, *opRb;
-    uint        crfIdx;
+    reg_idx     crf_idx;
 
     /* unused parameters */ (void)reloc;
 
     assert( ins->num_operands == 2 || ins->num_operands == 3 );
     op0 = ins->operands[0];
     if( ins->num_operands == 3 ) {
-        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) )
+        if( !checkTypeCorrect( op0, OP_CRF, 0 ) )
             return;
-        crfIdx = RegIndex( op0->reg );
+        crf_idx = RegIndex( op0->reg );
         opRa = ins->operands[1];
         opRb = ins->operands[2];
         assert( opRa->type == OP_GPR );
         assert( opRb->type == OP_GPR );
     } else { // 2 operands
-        crfIdx = 0;
+        crf_idx = 0;
         opRa = op0;
         opRb = ins->operands[1];
-        if( !ensureTypeCorrect( opRa, OP_GPR, 0 ) )
+        if( !checkTypeCorrect( opRa, OP_GPR, 0 ) )
             return;
         assert( opRb->type == OP_GPR );
     }
-    doEncode3( buffer, table->primary, table->secondary, crfIdx << 2,
-        RegIndex( opRa->reg ), RegIndex( opRb->reg ),
+    doEncode3( buffer, table->primary, table->secondary,
+        crf_idx << 2, RegIndex( opRa->reg ), RegIndex( opRb->reg ),
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -1073,8 +1074,8 @@ static void ITSMExtlwi( ins_table *table, instruction *ins, uint_32 *buffer, asm
         }
     }
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
-        RegIndex( ins->operands[0]->reg ), const_op[1]->constant, 0,
-        const_op[0]->constant - 1,
+        RegIndex( ins->operands[0]->reg ), (reg_idx)const_op[1]->constant, 0,
+        (reg_idx)( const_op[0]->constant - 1 ),
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -1082,7 +1083,7 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
 /*******************************************************************************************/
 {
     ins_operand *const_op;
-    uint        n;
+    reg_idx     n;
     reg_idx     sh = 0;
     reg_idx     mb = 0;
     reg_idx     me = 0;
@@ -1093,7 +1094,7 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
     const_op = ins->operands[2];
     if( !checkOpAbsolute( const_op, 2 ) )
         return;
-    n = const_op->constant;
+    n = (reg_idx)const_op->constant;
     switch( table->special ) {
     case SRWI:
         sh = 32 - n;
@@ -1126,9 +1127,10 @@ static void ITSMRotlw( ins_table *table, instruction *ins, uint_32 *buffer, asm_
 static void ITSMInslw( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc )
 /********************************************************************************************/
 {
-    ins_operand *const_op[2];
-    uint        n, b;
-    int         ctr;
+    ins_operand     *const_op[2];
+    reg_idx         n;
+    reg_idx         b;
+    int             ctr;
 
     /* unused parameters */ (void)reloc;
 
@@ -1139,8 +1141,8 @@ static void ITSMInslw( ins_table *table, instruction *ins, uint_32 *buffer, asm_
             return;
         }
     }
-    n = const_op[0]->constant;
-    b = const_op[1]->constant;
+    n = (reg_idx)const_op[0]->constant;
+    b = (reg_idx)const_op[1]->constant;
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
         RegIndex( ins->operands[0]->reg ), 32 - b, b, b + n - 1,
         ( ins->format->flags & table->optional ) | table->required );
@@ -1152,7 +1154,8 @@ static void ITSMTrapUncond( ins_table *table, instruction *ins, uint_32 *buffer,
     /* unused parameters */ (void)reloc;
 
     assert( ins->num_operands == 0 );
-    doEncode3( buffer, table->primary, table->secondary, TO_ANY, 0, 0,
+    doEncode3( buffer, table->primary, table->secondary,
+        TO_ANY, 0, 0,
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -1162,8 +1165,9 @@ static void ITSMTrap( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
     /* unused parameters */ (void)reloc;
 
     assert( ins->num_operands == 2 );
-    doEncode3( buffer, table->primary, table->secondary, table->special,
-        RegIndex( ins->operands[0]->reg ), RegIndex( ins->operands[1]->reg ),
+    doEncode3( buffer, table->primary, table->secondary,
+        (reg_idx)table->special, RegIndex( ins->operands[0]->reg ),
+        RegIndex( ins->operands[1]->reg ),
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -1174,7 +1178,7 @@ static void ITSMTrapImmed( ins_table *table, instruction *ins, uint_32 *buffer, 
 
     assert( ins->num_operands == 2 );
     op1 = ins->operands[1];
-    doEncode2( buffer, table->primary, table->special,
+    doEncode2( buffer, table->primary, (reg_idx)table->special,
         RegIndex( ins->operands[0]->reg ), op1->constant,
         ( ins->format->flags & table->optional ) | table->required );
     doReloc( reloc, op1, OWL_RELOC_HALF_LO, 0 );
@@ -1258,14 +1262,14 @@ static void ITSMBCIcc( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     assert( ins->num_operands == 1 || ins->num_operands == 2 );
     op0 = ins->operands[0];
     if( ins->num_operands == 1 ) {
-        if( !ensureTypeCorrect( op0, OP_IMMED, 0 ) )
+        if( !checkTypeCorrect( op0, OP_IMMED, 0 ) )
             return;
         opBd = op0;
         startBI = 0;
     } else { // ins->num_operands == 2
         opBd = ins->operands[1];
         assert( opBd->type == OP_IMMED );
-        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) )
+        if( !checkTypeCorrect( op0, OP_CRF, 0 ) )
             return;
         startBI = RegCrfToBI( op0->reg );
     }
@@ -1294,14 +1298,14 @@ static void ITSMBC( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     op0 = ins->operands[0];
     switch( ins->num_operands ) {
     case 1: // case i
-        if( !ensureTypeCorrect( op0, OP_IMMED, 0 ) )
+        if( !checkTypeCorrect( op0, OP_IMMED, 0 ) )
             return;
         valueBI = 0;
         opBd = op0;
         break;
     case 2: // cases ii, iii, iv
         opBd = ins->operands[1];
-        if( !ensureTypeCorrect( opBd, OP_IMMED, 1 ) )
+        if( !checkTypeCorrect( opBd, OP_IMMED, 1 ) )
             return;
         switch( op0->type ) {
         case OP_CRF:

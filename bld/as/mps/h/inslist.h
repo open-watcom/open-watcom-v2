@@ -52,8 +52,8 @@ typedef enum {
     #undef PICK
 } ins_enum_method;              // All the possible enumeration methods
 
-typedef uint_16 ins_opcode;
-typedef uint_16 ins_funccode;
+typedef uint_16         ins_opcode;
+typedef uint_16         ins_funccode;
 
 typedef enum {
     NOTHING             = 0x00,
@@ -70,8 +70,8 @@ typedef enum {
     OP_REG_INDIRECT     = (1 << (REGCLASS_COUNT+1)),    // register with an immediate attached
 } op_type;
 
-typedef int_32  op_const;
-typedef reg     op_reg;                 /* from chip-specific register.h - must be included before inslist.h */
+typedef int_32          op_const;
+typedef reg             op_reg;     /* from chip-specific register.h - must be included before inslist.h */
 
 typedef union {
     int_32              label;

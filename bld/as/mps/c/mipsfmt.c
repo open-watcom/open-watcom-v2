@@ -34,7 +34,6 @@
 #ifndef _STANDALONE_
 #include "asinline.h"
 #endif
-#include "mipsenco.h"
 
 
 /*
@@ -119,7 +118,7 @@ static owl_reloc_type reloc_translate[] = {
     OWL_RELOC_JUMP_REL,     // jump hint
 };
 
-static uint_32  cop_codes[4] = {
+static ins_opcode   cop_codes[4] = {
     0x10,   // COP0
     0x11,   // COP1
     0x12,   // COP2
@@ -255,29 +254,29 @@ static ins_funccode getFuncCode( ins_table *table, instruction *ins )
 }
 
 
-static void doOpcodeJType( uint_32 *buffer, uint_8 opcode )
-//*********************************************************
+static void doOpcodeJType( uint_32 *buffer, ins_opcode opcode )
+//*************************************************************
 {
     *buffer = _Opcode( opcode );
 }
 
 
-static void doOpcodeIType( uint_32 *buffer, uint_8 opcode, reg_idx rt, reg_idx rs, int_32 imm )
-//**************************************************************************************************
+static void doOpcodeIType( uint_32 *buffer, ins_opcode opcode, reg_idx rt, reg_idx rs, op_const imm )
+//***************************************************************************************************
 {
     *buffer = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _SignedImmed( imm );
 }
 
 
-static void doOpcodeRType( uint_32 *buffer, uint_8 opcode, uint_8 fc, reg_idx rd, reg_idx rs, reg_idx rt )
-//********************************************************************************************************
+static void doOpcodeRType( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx rd, reg_idx rs, reg_idx rt )
+//******************************************************************************************************************
 {
     *buffer = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rd( rd ) | _Function( fc );
 }
 
 
-static void doOpcodeCopOp( uint_32 *buffer, uint_8 opcode, uint_8 fc, uint_32 extra )
-/************************************************************************************
+static void doOpcodeCopOp( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, uint_32 extra )
+/**********************************************************************************************
  * This procedure doesn't fill in all the bits (missing bits 6-24).
  * But we can fill it in using extra.
  */
@@ -287,8 +286,8 @@ static void doOpcodeCopOp( uint_32 *buffer, uint_8 opcode, uint_8 fc, uint_32 ex
 }
 
 #if 0
-static void doOpcodeIShift( uint_32 *buffer, uint_8 fc, reg_idx rd, reg_idx rt, uint_8 sa )
-//*****************************************************************************************
+static void doOpcodeIShift( uint_32 *buffer, uint_8 fc, reg_idx rd, reg_idx rt, op_const sa )
+//*******************************************************************************************
 {
     *buffer = _Opcode( 0 ) | _Rs( 0 ) | _Rt( rt ) | _Rd( rd ) | _Shift( sa ) | _Function( fc );
 }
@@ -335,16 +334,16 @@ static void doOpcodeFcRsRt( uint_32 *buffer, ins_opcode opcode, ins_funccode fc,
 }
 
 
-static void doOpcodeFcRsRtImm( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx rs, reg_idx rt, uint_32 imm )
-//***********************************************************************************************************************
+static void doOpcodeFcRsRtImm( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx rs, reg_idx rt, op_const imm )
+//************************************************************************************************************************
 {
     *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Rs( rs ) | _Rt( rt ) |
               _SignedImmed( imm );
 }
 
 
-static void doOpcodeFcRdRtSa( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx rd, reg_idx rt, uint_8 sa )
-//********************************************************************************************************************
+static void doOpcodeFcRdRtSa( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx rd, reg_idx rt, op_const sa )
+//**********************************************************************************************************************
 {
     *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Rd( rd ) | _Rt( rt ) |
               _Shift( sa );
@@ -589,7 +588,7 @@ static void ITTrapImm( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
     checkOpAbsolute( op, 1 );
-    doOpcodeIType( buffer, table->opcode, table->funccode, RegIndex( ins->operands[0]->reg ), op->constant );
+    doOpcodeIType( buffer, table->opcode, (reg_idx)table->funccode, RegIndex( ins->operands[0]->reg ), op->constant );
 }
 
 
@@ -999,7 +998,7 @@ static void ITBranchZero( ins_table *table, instruction *ins, uint_32 *buffer, a
 
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
-    doOpcodeIType( buffer, table->opcode, table->funccode,
+    doOpcodeIType( buffer, table->opcode, (reg_idx)table->funccode,
                    RegIndex( ins->operands[0]->reg ),
                   _SignedImmed( _Longword_offset( op->constant ) ) );
     doReloc( reloc, op, OWL_RELOC_BRANCH_REL, buffer );
@@ -1011,12 +1010,12 @@ static void ITBranchCop( ins_table *table, instruction *ins, uint_32 *buffer, as
 //**********************************************************************************************
 {
     ins_operand     *op;
-    uint_32         opcode;
+    ins_opcode      opcode;
 
     assert( ins->num_operands == 1 );
     opcode = cop_codes[table->opcode >> 8];
     op = ins->operands[0];
-    doOpcodeIType( buffer, opcode, table->funccode, table->opcode & 0xff,
+    doOpcodeIType( buffer, opcode, (reg_idx)table->funccode, table->opcode & 0xff,
                   _SignedImmed( _Longword_offset( op->constant ) ) );
     doReloc( reloc, op, OWL_RELOC_BRANCH_REL, buffer );
     numExtendedIns += doDelaySlotNOP( buffer );
@@ -1026,7 +1025,7 @@ static void ITBranchCop( ins_table *table, instruction *ins, uint_32 *buffer, as
 static void ITCop0Spc( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc )
 //********************************************************************************************
 {
-    uint_32         opcode;
+    ins_opcode      opcode;
 
     /* unused parameters */ (void)reloc; (void)ins;
 
@@ -1096,7 +1095,7 @@ static void ITMovCop( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
     assert( ins->num_operands == 2 );
     doOpcodeRType( buffer, table->opcode, 0,
                     RegIndex( ins->operands[1]->reg ),
-                    table->funccode,
+                    (reg_idx)table->funccode,
                     RegIndex( ins->operands[0]->reg ) );
 }
 
@@ -1247,7 +1246,7 @@ static void ITPseudoLAddr( ins_table *table, instruction *ins, uint_32 *buffer, 
     ins_operand         *ops[2];
     unsigned            inc;
 //    op_const            val;
-    uint_8              s_reg;
+    reg_idx             s_reg;
 
     /* unused parameters */ (void)table;
 
