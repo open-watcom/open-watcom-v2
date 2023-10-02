@@ -149,7 +149,7 @@ ins_operand *OpImmed( expr_tree *expr )
 
 static op_type RegClassOpTypes[] = {
     #define PICK( a, b )        OP_##a,
-    #include "regclass.inc"
+    #include "_regclass.h"
     #undef PICK
     0
 };

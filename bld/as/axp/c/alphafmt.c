@@ -1074,7 +1074,7 @@ static void ITCallPAL( ins_table *table, instruction *ins, uint_32 *buffer, asm_
 
 alpha_format AlphaFormatTable[] = {
     #define PICK( a, b, c, d, e )       { b, { c, d, e } },
-    #include "alphafmt.inc"
+    #include "_axpfmt.h"
     #undef PICK
 };
 

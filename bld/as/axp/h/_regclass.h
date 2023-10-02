@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,25 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Default section definitions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 *****************************************************************************/
 
 
-#define SEC_ATTR_READONLY_DATA  (OWL_SEC_ATTR_DATA|OWL_SEC_ATTR_PERM_READ)
-
-PICK( TEXT, ".text", OWL_SECTION_CODE, OBJ_DEF_ALIGNMENT )
-PICK( DATA, ".data", OWL_SECTION_DATA, OBJ_DEF_ALIGNMENT )
-PICK( BSS, ".bss", OWL_SECTION_BSS, OBJ_DEF_ALIGNMENT )
-PICK( PDATA, ".pdata", OWL_SECTION_PDATA, OBJ_DEF_ALIGNMENT )
-PICK( DEBUG_P, ".debug$P", OWL_SECTION_DEBUG, 0 )
-PICK( DEBUG_S, ".debug$S", OWL_SECTION_DEBUG, 0 )
-PICK( DEBUG_T, ".debug$T", OWL_SECTION_DEBUG, 0 )
-PICK( RDATA, ".rdata", SEC_ATTR_READONLY_DATA, OBJ_DEF_ALIGNMENT )
-PICK( XDATA, ".xdata", SEC_ATTR_READONLY_DATA, OBJ_DEF_ALIGNMENT )
-PICK( YDATA, ".ydata", SEC_ATTR_READONLY_DATA, OBJ_DEF_ALIGNMENT )
-
-#ifdef AS_PPC
-PICK( RELDATA, ".reldata", OWL_SECTION_DATA, OBJ_DEF_ALIGNMENT )
-PICK( TOCD, ".tocd", OWL_SECTION_DATA, OBJ_DEF_ALIGNMENT )
-#endif
+#define REGCLASS_COUNT  3   // must set up to correspond the number of entries
+PICK( NOTHING,  0x01 )
+PICK( GPR,      0x02 )
+PICK( FPR,      0x04 )

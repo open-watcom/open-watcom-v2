@@ -47,7 +47,7 @@ typedef uint_16 reg;
 
 typedef enum {
     #define PICK( a, b )    RC_##a,
-    #include "regclass.inc"
+    #include "_regclass.h"
     #undef PICK
     RC_LAST
 } reg_class;

@@ -90,7 +90,7 @@ typedef struct {
 
 static sect_info reservedSecInfo[] = {
     #define PICK( a, b, c, d )  { b, c, d },
-    #include "sections.inc"
+    #include "_section.h"
     #undef PICK
 };
 

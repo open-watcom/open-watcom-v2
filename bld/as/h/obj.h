@@ -36,7 +36,7 @@
 
 typedef enum {
     #define PICK( a, b, c, d ) AS_SECTION_##a,
-    #include "sections.inc"
+    #include "_section.h"
     #undef PICK
 } reserved_section;
 

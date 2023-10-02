@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ typedef enum {
 
 typedef enum {
     #define PICK( a, b ) OP_##a = b,
-    #include "regclass.inc"
+    #include "_regclass.h"
     #undef PICK
     OP_IMMED            = (1 << REGCLASS_COUNT),        // an immediate constant (could have reloc with it)
     OP_REG_INDIRECT     = (1 << (REGCLASS_COUNT + 1)),  // register with an immediate attached

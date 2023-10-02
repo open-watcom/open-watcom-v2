@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -449,7 +449,7 @@ typedef void (*enumFunc_t)( ins_enum_method, uint_32, uint_8, void (*func)( qual
 
 static enumFunc_t enumFunc[] = {
     #define PICK( a, b )    b,
-    #include "insenum.inc"
+    #include "_insenum.h"
     #undef PICK
 };
 
@@ -465,7 +465,7 @@ static void enumInstructions( ins_enum_method method, void (*func)( qualifier_fl
 #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 static char *itStrings[] = {
     #define PICK( a, b, c, d, e ) #a,
-    #include "alphafmt.inc"
+    #include "_axpfmt.h"
     #undef PICK
 };
 
@@ -476,7 +476,7 @@ static void DumpITString( ins_template template )
 
 static char *insEnumStrings[] = {
     #define PICK( a, b ) #a,
-    #include "insenum.inc"
+    #include "_insenum.h"
     #undef PICK
 };
 

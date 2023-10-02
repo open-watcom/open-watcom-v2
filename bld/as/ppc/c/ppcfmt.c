@@ -1387,7 +1387,7 @@ static void ITSMBSpec( ins_table *table, instruction *ins, uint_32 *buffer, asm_
 
 ppc_format PPCFormatTable[] = {
     #define PICK( a, b, c, d, e, f, g ) { b, { c, d, e, f, g } },
-    #include "ppcfmt.inc"
+    #include "_ppcfmt.h"
     #undef PICK
 };
 

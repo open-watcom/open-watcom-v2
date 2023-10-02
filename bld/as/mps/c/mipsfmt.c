@@ -1435,7 +1435,7 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
 
 mips_format MIPSFormatTable[] = {
     #define PICK( a, b, c, d, e )       { b, { c, d, e } },
-    #include "mipsfmt.inc"
+    #include "_mipsfmt.h"
     #undef PICK
 };
 

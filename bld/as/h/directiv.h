@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +120,7 @@ typedef enum {
 #endif
 #ifdef _STANDALONE_
     #define PICK( a, b, c, d ) DT_SEC_##a,
-    #include "sections.inc"
+    #include "_section.h"
     #undef PICK
     DT_USERSEC_NEW,
 #endif

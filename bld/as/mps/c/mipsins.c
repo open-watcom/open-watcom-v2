@@ -399,7 +399,7 @@ typedef void (*enumFunc_t)( ins_enum_method, uint_32, uint_8, void (*func)( qual
 
 static enumFunc_t enumFunc[] = {
     #define PICK( a, b )    b,
-    #include "insenum.inc"
+    #include "_insenum.h"
     #undef PICK
 };
 
@@ -426,7 +426,7 @@ static void DumpITString( ins_template template )
 
 static char *insEnumStrings[] = {
     #define PICK( a, b ) #a,
-    #include "insenum.inc"
+    #include "_insenum.h"
     #undef PICK
 };
 
