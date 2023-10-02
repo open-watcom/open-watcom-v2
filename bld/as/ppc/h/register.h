@@ -36,14 +36,15 @@
 
 #define MakeReg( c, i ) ( ( (i) & 0xff ) | ( (int)(c) << 8 ) )
 #define RegClass( r )   ( ( (r) >> 8 ) & 0xff )
-#define RegIndex( r )   ( (r) & 0xff )
+#define RegIndex( r )   ((reg_idx)((r) & 0xff))
 
 #define NULL_REG_IDX    0
 #define NULL_REG        MakeReg( RC_NOTHING, NULL_REG_IDX )
 
 #define AT_REG          NULL_REG
 
-typedef uint_16 reg;
+typedef uint_16         reg;
+typedef uint_8          reg_idx;
 
 typedef enum {
     #define PICK( a, b )    RC_##a,

@@ -101,8 +101,8 @@ static bool ensureTypeCorrect( ins_operand *op, op_type type, uint_8 opIdx )
     return( true );
 }
 
-static bool checkOpAbsolute( ins_operand *op, uint_8 op_idx )
-//***********************************************************
+static bool checkOpAbsolute( ins_operand *op, int op_idx )
+//********************************************************
 {
     if( ( op->flags & ( RELOC | UNNAMED_RELOC ) ) ) {
         Error( RELOC_NOT_ALLOWED, op_idx );
@@ -111,8 +111,8 @@ static bool checkOpAbsolute( ins_operand *op, uint_8 op_idx )
     return( true );
 }
 
-static void doEncode2( uint_32 *buffer, ins_opcode p, uint r1, uint r2, uint imm, ins_flags flags )
-/**************************************************************************************************
+static void doEncode2( uint_32 *buffer, ins_opcode p, reg_idx r1, reg_idx r2, uint imm, ins_flags flags )
+/********************************************************************************************************
  * Use when there are 2 5-bit blocks (other than opcode blocks) and
  * an immediate block (16-bit)
  */
@@ -120,24 +120,24 @@ static void doEncode2( uint_32 *buffer, ins_opcode p, uint r1, uint r2, uint imm
     *buffer = _Opcode( p ) | _D( r1 ) | _A( r2 ) | _SignedImmed( imm ) | _IF_OE( flags ) | _IF_RC( flags );
 }
 
-static void doEncode3( uint_32 *buffer, ins_opcode p, ins_opcode s, uint r1, uint r2, uint r3, ins_flags flags )
-/***************************************************************************************************************
+static void doEncode3( uint_32 *buffer, ins_opcode p, ins_opcode s, reg_idx r1, reg_idx r2, reg_idx r3, ins_flags flags )
+/************************************************************************************************************************
  * Use when there are 3 5-bit blocks (other than opcode blocks)
  */
 {
     *buffer = _Opcode( p ) | _D( r1 ) | _A( r2 ) | _B( r3 ) | _IF_OE( flags ) | _Opcode2( s ) | _IF_RC( flags );
 }
 
-static void doEncode4( uint_32 *buffer, ins_opcode p, ins_opcode s, uint r1, uint r2, uint r3, uint r4, ins_flags flags )
-/************************************************************************************************************************
+static void doEncode4( uint_32 *buffer, ins_opcode p, ins_opcode s, reg_idx r1, reg_idx r2, reg_idx r3, reg_idx r4, ins_flags flags )
+/************************************************************************************************************************************
  * Use when there are 4 5-bit blocks (other than opcode blocks)
  */
 {
     *buffer = _Opcode( p ) | _D( r1 ) | _A( r2 ) | _C( r3 ) | _B( r4 ) | _Opcode2( s ) | _IF_RC( flags );
 }
 
-static void doEncode5( uint_32 *buffer, ins_opcode p, uint r1, uint r2, uint r3, uint r4, uint r5, ins_flags flags )
-/*******************************************************************************************************************
+static void doEncode5( uint_32 *buffer, ins_opcode p, reg_idx r1, reg_idx r2, reg_idx r3, reg_idx r4, reg_idx r5, ins_flags flags )
+/**********************************************************************************************************************************
  * Use when there are 5 5-bit blocks (other than opcode blocks) e.g. rlwimi
  */
 {
@@ -421,7 +421,9 @@ static void ITCmp( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
 /****************************************************************************************/
 {
     ins_operand *op[4], *opRa, *opRb;
-    uint        crfIdx, L_bit, ctr;
+    uint        crfIdx;
+    uint        L_bit;
+    int         ctr;
     ins_opcount opcount;
     op_type     verify4[4] = { OP_CRF, OP_IMMED, OP_GPR, OP_GPR };
     op_type     verify3[3] = { OP_IMMED, OP_GPR, OP_GPR };
@@ -462,7 +464,9 @@ static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm
 /*********************************************************************************************/
 {
     ins_operand *op[4], *opRa, *opSimm;
-    uint        crfIdx, L_bit, ctr;
+    uint        crfIdx;
+    uint        L_bit;
+    int         ctr;
     ins_opcount opcount;
     op_type     verify4[4] = { OP_CRF, OP_IMMED, OP_GPR, OP_IMMED };
     op_type     verify3[3] = { OP_IMMED, OP_GPR, OP_IMMED };
@@ -898,8 +902,8 @@ static void ITTlbie( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     /* unused parameters */ (void)reloc;
 
     assert( ins->num_operands == 1 );
-    doEncode3( buffer, table->primary, table->secondary, 0, 0,
-        RegIndex( ins->operands[0]->reg ),
+    doEncode3( buffer, table->primary, table->secondary,
+        0, 0, RegIndex( ins->operands[0]->reg ),
         ( ins->format->flags & table->optional ) | table->required );
 }
 
@@ -1079,9 +1083,9 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
 {
     ins_operand *const_op;
     uint        n;
-    uint        sh = 0;
-    uint        mb = 0;
-    uint        me = 0;
+    reg_idx     sh = 0;
+    reg_idx     mb = 0;
+    reg_idx     me = 0;
 
     /* unused parameters */ (void)reloc;
 
@@ -1092,10 +1096,12 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
     n = const_op->constant;
     switch( table->special ) {
     case SRWI:
-        sh = 32 - n; mb = n; me = 31;
+        sh = 32 - n;
+        mb = n;
+        me = 31;
         break;
     case CLRRWI:
-        sh = 0; mb = 0; me = 31 - n;
+        me = 31 - n;
         break;
     default:
         assert( false );
@@ -1191,7 +1197,8 @@ static void ITSMMovSprNCover( bool isMoveTo, ins_table *table, instruction *ins,
 {
     ins_operand *op;
     uint        spr;
-    int         idx0, idx1;
+    int         idx0;
+    int         idx1;
 
     /* unused parameters */ (void)reloc;
 

@@ -98,8 +98,8 @@ static owl_reloc_type reloc_translate[] = {
     OWL_RELOC_JUMP_REL,     // jump hint
 };
 
-static bool checkOpAbsolute( ins_operand *op, uint_8 op_idx )
-//***********************************************************
+static bool checkOpAbsolute( ins_operand *op, int op_idx )
+//********************************************************
 {
     if( OP_HAS_RELOC( op ) ) {
         Error( RELOC_NOT_ALLOWED, op_idx );
@@ -218,8 +218,8 @@ static ins_funccode getFuncCode( ins_table *table, instruction *ins )
     return( fc );
 }
 
-static void doOpcodeRaRb( uint_32 *buffer, ins_opcode opcode, uint_8 ra, uint_8 rb, uint_32 remain )
-//**************************************************************************************************
+static void doOpcodeRaRb( uint_32 *buffer, ins_opcode opcode, reg_idx ra, reg_idx rb, uint_32 remain )
+//****************************************************************************************************
 {
     *buffer = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | remain;
 }
@@ -256,8 +256,8 @@ static void doAutoVar( asm_reloc *reloc, op_reloc_target targ, uint_32 *buffer, 
 }
 #endif
 
-static unsigned ldaConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_operand *op, op_const c, asm_reloc *reloc, bool force_pair )
-/****************************************************************************************************************************************
+static unsigned ldaConst32( uint_32 *buffer, reg_idx d_reg, reg_idx s_reg, ins_operand *op, op_const c, asm_reloc *reloc, bool force_pair )
+/******************************************************************************************************************************************
  * LDA-LDAH sequence for 32-bit constants
  * Given: lda $d_reg, foobar+c($s_reg)
  *        info for foobar is stored in op
@@ -269,7 +269,7 @@ static unsigned ldaConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_ope
     int                 ctr;
     unsigned            ret = 1;
     int_16              low, high[2];
-    uint_8              base_reg;
+    reg_idx             base_reg;
     owl_reloc_type      type;
     bool                hi_reloc_emitted = false;
 
@@ -317,15 +317,13 @@ static unsigned ldaConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_ope
     if( !hi_reloc_emitted && force_pair ) { // no LDAH has been generated yet
         // force_pair => no modifier should've been specified
         // We are asked to force one, so here
-        doOpcodeRaRb( buffer, OPCODE_LDAH, d_reg, s_reg,
-                      _Memory_disp( 0 ) );
+        doOpcodeRaRb( buffer, OPCODE_LDAH, d_reg, s_reg, _Memory_disp( 0 ) );
         doReloc( reloc, op, OWL_RELOC_HALF_HI, buffer );
         ++buffer;
         ++ret;
     }
     base_reg = ( ret == 1 ? s_reg : d_reg );
-    doOpcodeRaRb( buffer, OPCODE_LDA, d_reg, base_reg,
-                  _Memory_disp( low ) );
+    doOpcodeRaRb( buffer, OPCODE_LDA, d_reg, base_reg, _Memory_disp( low ) );
     if( reloc ) {
         doReloc( reloc, op, OWL_RELOC_HALF_LO, buffer );
     }
@@ -333,8 +331,8 @@ static unsigned ldaConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_ope
 }
 
 #if 0
-static unsigned forceLoadAddressComplete( uint_8 d_reg, uint_8 s_reg, ins_operand *op, uint_32 *buffer, asm_reloc *reloc )
-/*************************************************************************************************************************
+static unsigned forceLoadAddressComplete( reg_idx d_reg, reg_idx s_reg, ins_operand *op, uint_32 *buffer, asm_reloc *reloc )
+/***************************************************************************************************************************
  *
  * Generate:
  *   LDAH    $d_reg, h^foo($s_reg)
@@ -342,12 +340,10 @@ static unsigned forceLoadAddressComplete( uint_8 d_reg, uint_8 s_reg, ins_operan
  *  store them in buffer[0], buffer[1]
  */
 {
-    doOpcodeRaRb( buffer, OPCODE_LDAH, d_reg, s_reg,
-                  _Memory_disp( 0 ) );
+    doOpcodeRaRb( buffer, OPCODE_LDAH, d_reg, s_reg, _Memory_disp( 0 ) );
     doReloc( reloc, op, OWL_RELOC_HALF_HI, buffer );
     buffer++;
-    doOpcodeRaRb( buffer, OPCODE_LDA, d_reg, d_reg,
-                  _Memory_disp( op->constant ) );
+    doOpcodeRaRb( buffer, OPCODE_LDA, d_reg, d_reg, _Memory_disp( op->constant ) );
     doReloc( reloc, op, OWL_RELOC_HALF_LO, buffer );
     return( 2 );
 }
@@ -536,8 +532,8 @@ static void ITMemB( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
                   _Mem_Func( table->funccode ) );
 }
 
-static void doMemJump( uint_32 *buffer, ins_table *table, uint_8 ra, uint_8 rb, ins_operand *addr_op, int_32 hint, asm_reloc *reloc )
-//***********************************************************************************************************************************
+static void doMemJump( uint_32 *buffer, ins_table *table, reg_idx ra, reg_idx rb, ins_operand *addr_op, int_32 hint, asm_reloc *reloc )
+//*************************************************************************************************************************************
 {
     // Note that addr_op maybe NULL. If not, addr_op->constant == hint.
     assert( addr_op == NULL || addr_op->constant == hint );
