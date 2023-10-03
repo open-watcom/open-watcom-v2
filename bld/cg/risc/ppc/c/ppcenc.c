@@ -59,7 +59,7 @@
 #include "feprotos.h"
 
 
-#define _NameReg( op )              ( (op)->r.arch_index )
+#define _NameRegIndex( op )              ( (op)->r.arch_index )
 #define _EmitIns( ins )             ObjBytes( &(ins), sizeof( ppc_ins ) )
 #define _ObjEmitSeq( code )         ObjBytes( code->data, code->length )
 
@@ -417,7 +417,7 @@ static  void    doCall( instruction *ins )
 }
 
 
-static  void    getMemEncoding( name *mem, reg_idx *index, int_16 *offset )
+static  void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
 /*************************************************************************/
 {
     switch( mem->n.class ) {
@@ -426,16 +426,16 @@ static  void    getMemEncoding( name *mem, reg_idx *index, int_16 *offset )
         assert( mem->i.scale == 0 );
         assert( mem->i.constant == (type_length)((signed_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
-        *index = RegTrans( mem->i.index->r.reg );
+        *regidx_mem = RegIndex( mem->i.index->r.reg );
         *offset = (int_16)mem->i.constant;
         break;
     case N_TEMP:
-        *index = RegTrans( FrameReg() );
+        *regidx_mem = RegIndex( FrameReg() );
         *offset = TempLocation( mem );
         break;
     case N_MEMORY:
     default:
-        *index = ZERO_REG_IDX;
+        *regidx_mem = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_119 );
         break;
@@ -449,7 +449,7 @@ static  void    doLoadStore( instruction *ins, bool load )
     name        *mem;
     name        *reg;
     gen_opcode  op;
-    reg_idx     index;
+    reg_idx     regidx_mem;
     int_16      offset;
 
     if( load ) {
@@ -463,8 +463,8 @@ static  void    doLoadStore( instruction *ins, bool load )
     }
     assert( op != 0 );
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &index, &offset );
-    GenMEMINS( op, RegTrans( reg->r.reg ), index, offset );
+    getMemEncoding( mem, &regidx_mem, &offset );
+    GenMEMINS( op, RegIndex( reg->r.reg ), regidx_mem, offset );
 }
 
 
@@ -477,14 +477,14 @@ static  void    doSign( instruction *ins )
         /*
          * extsb
          */
-        GenOPINS( 31, 954, _NameReg( ins->result ), 0, _NameReg( ins->operands[0] ) );
+        GenOPINS( 31, 954, _NameRegIndex( ins->result ), 0, _NameRegIndex( ins->operands[0] ) );
         break;
     case U2:
     case I2:
         /*
          * extsh
          */
-        GenOPINS( 31, 922, _NameReg( ins->result ), 0, _NameReg( ins->operands[0] ) );
+        GenOPINS( 31, 922, _NameRegIndex( ins->result ), 0, _NameRegIndex( ins->operands[0] ) );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -501,14 +501,14 @@ static  void    doZero( instruction *ins )
         /*
          * andi op1,0x00ff -> res
          */
-        GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), 0x00ff );
+        GenOPIMM( 28, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->result ), 0x00ff );
         break;
     case U2:
     case I2:
         /*
          * andi op1,0xffff -> res
          */
-        GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), (signed_16)0xffff );
+        GenOPIMM( 28, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->result ), (signed_16)0xffff );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -521,7 +521,7 @@ static  void    GenCallIndirect( instruction *call )
 {
     reg_idx     src;
     reg_idx     reg;
-    reg_idx     mem_index;
+    reg_idx     regidx_mem;
     int_16      mem_offset;
     name        *addr;
     gen_opcode  ldw;
@@ -535,12 +535,12 @@ static  void    GenCallIndirect( instruction *call )
     GenMEMINS( stw, RTOC_REG_IDX, SP_REG_IDX, 4 );
     switch( addr->n.class ) {
     case N_REGISTER:
-        src = _NameReg( addr );
+        src = _NameRegIndex( addr );
         break;
     case N_TEMP:
     case N_INDEXED:
-        getMemEncoding( addr, &mem_index, &mem_offset );
-        GenMEMINS( ldw, src, mem_index, mem_offset );
+        getMemEncoding( addr, &regidx_mem, &mem_offset );
+        GenMEMINS( ldw, src, regidx_mem, mem_offset );
         break;
     }
     GenMEMINS( ldw, RTOC_REG_IDX, src, 4 );  // careful - src, reg could be same reg
@@ -562,9 +562,9 @@ static  void    GenVaStart( instruction *ins )
     reg_idx     stack;
 
     assert( ins->operands[0]->n.class == N_REGISTER );
-    reg = _NameReg( ins->operands[0] );
+    reg = _NameRegIndex( ins->operands[0] );
     tmp = AT_REG_IDX;
-    stack = RegTrans( FrameReg() );
+    stack = RegIndex( FrameReg() );
     stb = storeOpcodes[U1];
     stw = storeOpcodes[U4];
     li = 14;    // addi
@@ -612,21 +612,21 @@ static  void    Encode( instruction *ins )
     gen_opcode          op2;
     gen_opcode          *ops;
     signed_16           mem_offset;
-    reg_idx             mem_index;
+    reg_idx             regidx_mem;
 
 
     switch( G( ins ) ) {
     case G_MOVE_FP:
         assert( ins->result->n.class == N_REGISTER );
         assert( ins->operands[0]->n.class == N_REGISTER );
-        GenOPINS( 63, 72, 0, _NameReg( ins->operands[0] ), _NameReg( ins->result ) );
+        GenOPINS( 63, 72, 0, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->result ) );
         break;
     case G_MOVE:
         // or op, op -> dst
         assert( ins->result->n.class == N_REGISTER );
         assert( ins->operands[0]->n.class == N_REGISTER );
-        b = _NameReg( ins->operands[0] );
-        GenOPINS( 31, 444, _NameReg( ins->result ), b, b );
+        b = _NameRegIndex( ins->operands[0] );
+        GenOPINS( 31, 444, _NameRegIndex( ins->result ), b, b );
         break;
     case G_LOAD:
     case G_STORE:
@@ -640,12 +640,12 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         /* addis k(r0) -> rn */
-        GenOPIMM( 15, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value & 0xffff );
+        GenOPIMM( 15, _NameRegIndex( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_MOVE_UI:
         /* a load of an unsigned 16-bit immediate */
         /* use or rd, imm(r0) */
-        GenOPIMM( 24, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
+        GenOPIMM( 24, _NameRegIndex( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -653,7 +653,7 @@ static  void    Encode( instruction *ins )
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             // addi rd, imm(r0)
-            GenOPIMM( 14, _NameReg( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
+            GenOPIMM( 14, _NameRegIndex( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -668,14 +668,14 @@ static  void    Encode( instruction *ins )
         case N_INDEXED:
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
-            getMemEncoding( ins->operands[0], &mem_index, &mem_offset );
+            getMemEncoding( ins->operands[0], &regidx_mem, &mem_offset );
             // addi rd,off(ri|sp)
-            GenOPIMM( 14, _NameReg( ins->result ), mem_index, mem_offset );
+            GenOPIMM( 14, _NameRegIndex( ins->result ), regidx_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );
             OutReloc( symLabel( ins->operands[0] ), PPC_RELOC_TOC_OFFSET, 2 );
-            GenMEMINS( 32, _NameReg( ins->result ), RTOC_REG_IDX, 0 );
+            GenMEMINS( 32, _NameRegIndex( ins->result ), RTOC_REG_IDX, 0 );
             break;
         default:
             _Zoiks( ZOIKS_119 );
@@ -688,9 +688,9 @@ static  void    Encode( instruction *ins )
         if( ins->head.opcode == OP_MUL ) {
             ops = FindOpcodes( ins );
             GenFPOPINS( ops[0], ops[1],
-                        _NameReg( ins->operands[0] ),
-                        _NameReg( ins->operands[1] ),
-                        _NameReg( ins->result ) );
+                        _NameRegIndex( ins->operands[0] ),
+                        _NameRegIndex( ins->operands[1] ),
+                        _NameRegIndex( ins->result ) );
             break;
         }
         /* fall through */
@@ -699,9 +699,9 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         ops = FindOpcodes( ins );
-        a = _NameReg( ins->operands[0] );
-        b = _NameReg( ins->operands[1] );
-        s = _NameReg( ins->result );
+        a = _NameRegIndex( ins->operands[0] );
+        b = _NameRegIndex( ins->operands[1] );
+        s = _NameRegIndex( ins->result );
         if( ins->head.opcode == OP_SUB
           && G( ins ) == G_BINARY ) {
             /* someone sucks - it's not me */
@@ -716,9 +716,9 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         ops = FindOpcodes( ins );
-        s = _NameReg( ins->operands[0] );
-        b = _NameReg( ins->operands[1] );
-        a = _NameReg( ins->result );
+        s = _NameRegIndex( ins->operands[0] );
+        b = _NameRegIndex( ins->operands[1] );
+        a = _NameRegIndex( ins->result );
         GenOPINS( ops[0], ops[1], a, b, s );
         break;
     case G_BINARYS_IMM:
@@ -731,28 +731,28 @@ static  void    Encode( instruction *ins )
             // rlwinm dst,src,n,0,31-n
             op2 = 31 - _FiveBits( ins->operands[1]->c.lo.int_value );
             b = _FiveBits( ins->operands[1]->c.lo.int_value );
-            GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
+            GenOPINS( 21, op2, _NameRegIndex( ins->result ), b, _NameRegIndex( ins->operands[0] ) );
             break;
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
-                GenOPINS( 31, 824, _NameReg( ins->result ),
-                    ins->operands[1]->c.lo.int_value, _NameReg( ins->operands[0] ) );
+                GenOPINS( 31, 824, _NameRegIndex( ins->result ),
+                    ins->operands[1]->c.lo.int_value, _NameRegIndex( ins->operands[0] ) );
             } else {
                 // rlwinm dst,src,32-n,n,31
                 b = _FiveBits( ins->operands[1]->c.lo.int_value );
                 op2 = ( b << 5 ) | 31;
                 b = 32 - b;
-                GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
+                GenOPINS( 21, op2, _NameRegIndex( ins->result ), b, _NameRegIndex( ins->operands[0] ) );
             }
             break;
         default:
             ops = FindImmedOpcodes( ins );
             if( G( ins ) == G_BINARYS_IMM ) {
-                s = _NameReg( ins->operands[0] );
-                a = _NameReg( ins->result );
+                s = _NameRegIndex( ins->operands[0] );
+                a = _NameRegIndex( ins->result );
             } else {
-                s = _NameReg( ins->result );
-                a = _NameReg( ins->operands[0] );
+                s = _NameRegIndex( ins->result );
+                a = _NameRegIndex( ins->operands[0] );
             }
             GenOPIMM( ops[0], s, a, ins->operands[1]->c.lo.int_value );
             break;
@@ -761,7 +761,7 @@ static  void    Encode( instruction *ins )
     case G_CMP_FP:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->operands[1]->n.class == N_REGISTER );
-        GenCMP( 63, 32, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
+        GenCMP( 63, 32, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->operands[1] ) );
         break;
     case G_CMP:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -770,7 +770,7 @@ static  void    Encode( instruction *ins )
         if( _IsSigned( ins->type_class ) ) {
             op2 = 0;
         }
-        GenCMP( 31, op2, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
+        GenCMP( 31, op2, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->operands[1] ) );
         break;
     case G_CMP_I:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -779,7 +779,7 @@ static  void    Encode( instruction *ins )
         if( _IsSigned( ins->type_class ) ) {
             op1 = 11;
         }
-        GenCMPIMM( op1, _NameReg( ins->operands[0] ), ins->operands[1]->c.lo.int_value );
+        GenCMPIMM( op1, _NameRegIndex( ins->operands[0] ), ins->operands[1]->c.lo.int_value );
         break;
     case G_SIGN:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -798,8 +798,8 @@ static  void    Encode( instruction *ins )
     case G_UNARY:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        a = _NameReg( ins->operands[0] );
-        s = _NameReg( ins->result );
+        a = _NameRegIndex( ins->operands[0] );
+        s = _NameRegIndex( ins->result );
         switch( ins->head.opcode ) {
         case OP_NEGATE:
             // neg src -> dst

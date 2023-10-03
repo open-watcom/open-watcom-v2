@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,6 @@ extern reg_set_index    UsualPossible( type_class_def type_class );
 extern hw_reg_set       FrameBaseReg( void );
 extern hw_reg_set       FrameReg( void );
 extern void             SetArchIndex( name *new_r, hw_reg_set regs );
-extern byte             RegTrans( hw_reg_set reg );
 extern hw_reg_set       *ParmRegs( void );
 extern hw_reg_set       *GPRegs( void );
 extern hw_reg_set       *FPRegs( void );

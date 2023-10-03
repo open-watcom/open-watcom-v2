@@ -34,6 +34,8 @@
 
 typedef uint_8      reg_idx;
 
+extern reg_idx      RegIndex( hw_reg_set reg );
+
 extern void         GenCallLabelReg( pointer label, uint reg );
 extern void         GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c );
 extern void         GenLOADS32( signed_32 value, uint_8 reg );

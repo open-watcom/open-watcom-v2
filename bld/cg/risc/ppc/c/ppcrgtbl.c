@@ -812,21 +812,21 @@ reg_idx RegIndex( hw_reg_set reg )
  * Translate reg to register index
  */
 {
-    return( regTranslate( reg, true ) );
+    return( (reg_idx)regTranslate( reg, true ) );
 }
 
 void SetArchIndex( name *new_r, hw_reg_set regs )
 /***********************************************/
 {
-    new_r->r.arch_index = RegTrans( regs );
+    new_r->r.arch_index = RegIndex( regs );
 }
 
-byte    RegTrans( hw_reg_set reg )
-/*********************************
+ppc_regn    RegTrans( hw_reg_set reg )
+/*************************************
  * Translate reg to register index
  */
 {
-    return( regTranslate( reg, true ) );
+    return( (ppc_regn)regTranslate( reg, true ) );
 }
 
 ppc_regn    RegTransN( name *reg_name )
@@ -834,7 +834,7 @@ ppc_regn    RegTransN( name *reg_name )
  * Translate reg name to enum name
  */
 {
-    return( regTranslate( reg_name->r.reg, false ) );
+    return( (ppc_regn)regTranslate( reg_name->r.reg, false ) );
 }
 
 

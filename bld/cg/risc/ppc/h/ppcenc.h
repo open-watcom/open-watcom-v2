@@ -33,11 +33,13 @@
 #include "ppcencod.h"
 
 
-typedef uint_32         gen_opcode;
-typedef uint_32         reg_idx;
+typedef uint_32     gen_opcode;
+typedef uint_32     reg_idx;
 
-extern  void            GenMEMINS( gen_opcode, reg_idx, reg_idx, signed_16 );
-extern  void            GenOPINS( gen_opcode, gen_opcode, reg_idx, reg_idx, reg_idx );
-extern  void            GenOPIMM( gen_opcode, reg_idx, reg_idx, signed_16 );
-extern  void            GenMTSPR( reg_idx, uint_32, bool );
-extern  void            GenReturn( void );
+extern reg_idx      RegIndex( hw_reg_set reg );
+
+extern  void        GenMEMINS( gen_opcode, reg_idx, reg_idx, signed_16 );
+extern  void        GenOPINS( gen_opcode, gen_opcode, reg_idx, reg_idx, reg_idx );
+extern  void        GenOPIMM( gen_opcode, reg_idx, reg_idx, signed_16 );
+extern  void        GenMTSPR( reg_idx, uint_32, bool );
+extern  void        GenReturn( void );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -824,7 +824,7 @@ reg_idx RegIndex( hw_reg_set reg )
  * Translate reg to register index
  */
 {
-    return( regTranslate( reg, true ) );
+    return( (reg_idx)regTranslate( reg, true ) );
 }
 
 void SetArchIndex( name *new_r, hw_reg_set regs )
@@ -833,12 +833,12 @@ void SetArchIndex( name *new_r, hw_reg_set regs )
     new_r->r.arch_index = RegIndex( regs );
 }
 
-byte    RegTrans( hw_reg_set reg )
-/*********************************
+axp_regn    RegTrans( hw_reg_set reg )
+/*************************************
  * Translate reg to register index
  */
 {
-    return( regTranslate( reg, true ) );
+    return( (axp_regn)regTranslate( reg, false ) );
 }
 
 axp_regn    RegTransN( name *reg_name )
@@ -846,7 +846,7 @@ axp_regn    RegTransN( name *reg_name )
  * Translate reg name to enum name
  */
 {
-    return( regTranslate( reg_name->r.reg, false ) );
+    return( (axp_regn)regTranslate( reg_name->r.reg, false ) );
 }
 
 
