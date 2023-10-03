@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include "coderep.h"
 #include "optmain.h"
-#include "axpencod.h"
 #include "reloc.h"
 #include "zoiks.h"
 #include "coff.h"

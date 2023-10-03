@@ -29,6 +29,10 @@
 *
 ****************************************************************************/
 
+
+#include "ppcencod.h"
+
+
 typedef uint_32         gen_opcode;
 typedef uint_32         reg_idx;
 

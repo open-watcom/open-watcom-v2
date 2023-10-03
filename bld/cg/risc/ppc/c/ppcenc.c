@@ -39,7 +39,6 @@
 #include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "optmain.h"
-#include "ppcencod.h"
 #include "ppcenc.h"
 #include "data.h"
 #include "objout.h"

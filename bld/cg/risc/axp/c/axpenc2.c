@@ -34,10 +34,10 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "symdbg.h"
-#include "axpencod.h"
 #include "reloc.h"
 #include "rscenc2.h"
 #include "rscobj.h"
+#include "axpenc.h"
 
 
 void EncodeRet( oc_ret *oc ) {

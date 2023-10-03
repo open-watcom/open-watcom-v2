@@ -33,10 +33,10 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "symdbg.h"
-#include "mipsenco.h"
 #include "reloc.h"
 #include "rscenc2.h"
 #include "rscobj.h"
+#include "mpsenc.h"
 
 
 void EncodeRet( oc_ret *oc )
