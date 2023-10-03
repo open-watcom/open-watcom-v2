@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "mpsregn.h"
+#include "mpsenc.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"
@@ -852,8 +853,8 @@ void InitRegTbl( void )
 }
 
 
-byte    RegTrans( hw_reg_set reg )
-/********************************/
+static int      regTranslate( hw_reg_set reg, bool index )
+/********************************************************/
 {
     int                 i;
 
@@ -862,50 +863,60 @@ byte    RegTrans( hw_reg_set reg )
      */
     for( i = 0; i < sizeof( GeneralRegs ) / sizeof( GeneralRegs[0] ); i++ ) {
         if( HW_Subset( GeneralRegs[i], reg ) ) {
-            return( i );
-        }
-    }
-    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
-        if( HW_Subset( QWordRegs[i], reg ) ) {
-            return( i * 2 + 2 );
-        }
-    }
-    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) {
-            return( i );
-        }
-    }
-    return( 0 );
-}
-
-
-mips_regn RegTransN( name *reg_name )
-/************************************
- * Translate reg name to enum name
- */
-{
-    hw_reg_set reg;
-    int       i;
-    reg = reg_name->r.reg;
-
-    for( i = 0; i < sizeof( GeneralRegs ) / sizeof( GeneralRegs[0] ); i++ ) {
-        if( HW_Subset( GeneralRegs[i], reg ) ) {
+            if( index )
+                return( i );
             return( i + MIPS_REGN_r0 );
         }
     }
+    if( index ) {
+        for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
+            if( HW_Subset( QWordRegs[i], reg ) ) {
+                return( i * 2 + 2 );
+            }
+        }
+    }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
         if( HW_Equal( reg, FloatRegs[i] ) ) {
+            if( index )
+                return( i );
             return( i + MIPS_REGN_f0 );
         }
     }
+    if( index )
+        return( 0 );
     _Zoiks( ZOIKS_031 );
     return( MIPS_REGN_END );
 }
 
+reg_idx RegIndex( hw_reg_set reg )
+/*********************************
+ * Translate reg to register index
+ */
+{
+    return( regTranslate( reg, true ) );
+}
 
 void SetArchIndex( name *new_r, hw_reg_set regs )
+/***********************************************/
 {
-    new_r->r.arch_index = RegTrans( regs );
+    new_r->r.arch_index = RegIndex( regs );
+}
+
+
+byte    RegTrans( hw_reg_set reg )
+/*********************************
+ * Translate reg to register index
+ */
+{
+    return( regTranslate( reg, true ) );
+}
+
+mips_regn    RegTransN( name *reg_name )
+/***************************************
+ * Translate reg name to enum name
+ */
+{
+    return( regTranslate( reg_name->r.reg, false ) );
 }
 
 

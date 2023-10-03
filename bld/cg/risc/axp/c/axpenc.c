@@ -384,8 +384,8 @@ static  uint_16 FindFloatingOpcodes( instruction *ins )
     return( opcode );
 }
 
-void GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type )
-/****************************************************************************************************************/
+static void GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type )
+/***********************************************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Ra( a ) | _Rb( b ) | _SignedImmed( displacement );
     EmitInsReloc( &ins_encoding, lbl, type );

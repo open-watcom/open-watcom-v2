@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "ppcregn.h"
+#include "ppcenc.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"
@@ -781,57 +782,66 @@ void            InitRegTbl( void )
 {
 }
 
-byte    RegTrans( hw_reg_set reg )
-/********************************/
+static int  regTranslate( hw_reg_set reg, bool index )
+/****************************************************/
 {
     int                 i;
 
     for( i = 0; i < sizeof( DWordRegs ) / sizeof( DWordRegs[0] ); i++ ) {
         if( HW_Subset( DWordRegs[i], reg ) ) {
-            return( i );
-        }
-    }
-    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) {
-            return( i );
-        }
-    }
-    return( 0 );
-}
-
-ppc_regn RegTransN( name *reg_name )
-/**********************************/
-/***** Translate reg name to enum name ****/
-{
-    hw_reg_set reg;
-    int       i;
-
-    reg = reg_name->r.reg;
-
-    for( i = 0; i < sizeof( DWordRegs ) / sizeof( DWordRegs[0] ); i++ ) {
-        if( HW_Subset( DWordRegs[i], reg ) ) {
+            if( index )
+                return( i );
             return( i + PPC_REGN_r0 );
         }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
         if( HW_Equal( reg, FloatRegs[i] ) ) {
+            if( index )
+                return( i );
             return( i + PPC_REGN_f0 );
         }
     }
+    if( index )
+        return( 0 );
     _Zoiks( ZOIKS_031 );
     return( PPC_REGN_END );
 }
+
+reg_idx RegIndex( hw_reg_set reg )
+/*********************************
+ * Translate reg to register index
+ */
+{
+    return( regTranslate( reg, true ) );
+}
+
+void SetArchIndex( name *new_r, hw_reg_set regs )
+/***********************************************/
+{
+    new_r->r.arch_index = RegTrans( regs );
+}
+
+byte    RegTrans( hw_reg_set reg )
+/*********************************
+ * Translate reg to register index
+ */
+{
+    return( regTranslate( reg, true ) );
+}
+
+ppc_regn    RegTransN( name *reg_name )
+/**************************************
+ * Translate reg name to enum name
+ */
+{
+    return( regTranslate( reg_name->r.reg, false ) );
+}
+
 
 hw_reg_set ParmRegConflicts( hw_reg_set r )
 /*****************************************/
 {
     return( r );
-}
-
-
-void SetArchIndex( name *new_r, hw_reg_set regs )
-{
-    new_r->r.arch_index = RegTrans( regs );
 }
 
 

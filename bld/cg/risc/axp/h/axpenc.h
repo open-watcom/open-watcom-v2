@@ -32,11 +32,11 @@
 
 #include "axpencod.h"
 
+typedef uint_8      reg_idx;
 
 extern void         GenCallLabelReg( pointer label, uint reg );
 extern void         GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c );
 extern void         GenLOADS32( signed_32 value, uint_8 reg );
-extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type );
 extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
 extern void         GenLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement );
 extern void         GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement );

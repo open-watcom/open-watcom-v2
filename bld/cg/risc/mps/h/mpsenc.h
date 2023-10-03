@@ -33,9 +33,10 @@
 #include "mipsenco.h"
 
 
+typedef uint_8      reg_idx;
+
 extern void         GenCallLabelReg( pointer label, uint reg );
 extern void         GenLOADS32( signed_32 value, uint_8 reg );
-extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type );
 extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
 extern void         GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 extern void         GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt );
