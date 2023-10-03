@@ -58,7 +58,7 @@
 #include "feprotos.h"
 
 
-#define _NameRegIndex( op )                  ( (op)->r.arch_index )
+#define _NameRegIndex( op )             ( (op)->r.arch_index )
 
 #define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }

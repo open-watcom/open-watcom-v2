@@ -856,7 +856,7 @@ void InitRegTbl( void )
 static int      regTranslate( hw_reg_set reg, bool index )
 /********************************************************/
 {
-    int                 i;
+    int         i;
 
     /*
      * This should be cached in the reg name and used instead of a stupid lookup
@@ -868,11 +868,11 @@ static int      regTranslate( hw_reg_set reg, bool index )
             return( i + MIPS_REGN_r0 );
         }
     }
-    if( index ) {
-        for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
-            if( HW_Subset( QWordRegs[i], reg ) ) {
+    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
+        if( HW_Subset( QWordRegs[i], reg ) ) {
+            if( index )
                 return( i * 2 + 2 );
-            }
+            return( i * 2 + 2 + MIPS_REGN_r0 );
         }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {

@@ -283,34 +283,34 @@ static  void EmitIns( axp_ins ins )
     EmitInsReloc( &ins, NULL, 0 );
 }
 
-static  void GenFPOPINS( uint_8 opcode, uint_16 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c )
-/**************************************************************************************************/
+static  void GenFPOPINS( uint_8 opcode, uint_16 function, reg_idx ra, reg_idx rb, reg_idx rc )
+/********************************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Ra( reg_a ) | _Rb( reg_b ) | _Rc( reg_c ) | _FPFunction( function );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _Rc( rc ) | _FPFunction( function );
     EmitIns( ins_encoding );
 }
 
-void GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c )
-/***************************************************************************************/
+void GenOPINS( uint_8 opcode, uint_8 function, reg_idx ra, reg_idx rb, reg_idx rc )
+/*********************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Ra( reg_a ) | _Rb( reg_b ) | _Rc( reg_c ) | _Function( function );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _Rc( rc ) | _Function( function );
     EmitIns( ins_encoding );
 }
 
-static  void    GenOPIMM( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 imm, uint_8 reg_c )
-/************************************************************************************************/
+static  void    GenOPIMM8( uint_8 opcode, uint_8 function, reg_idx ra, uint_8 imm, reg_idx rc )
+/*********************************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Ra( reg_a ) | _LIT( imm ) | _LIT_bit | _Rc( reg_c ) | _Function( function );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _LIT( imm ) | _LIT_bit | _Rc( rc ) | _Function( function );
     EmitIns( ins_encoding );
 }
 
-void    GenLOADS32( signed_32 value, uint_8 reg )
-/***********************************************/
+void    GenLOADS32( signed_32 value, reg_idx reg )
+/************************************************/
 {
     signed_16           high;
     signed_16           extra;
     signed_16           low;
-    uint_8              curr;
+    reg_idx             curr;
 
     curr = ZERO_REG_IDX;
     FactorInt32( value, &high, &extra, &low );
@@ -384,22 +384,22 @@ static  uint_16 FindFloatingOpcodes( instruction *ins )
     return( opcode );
 }
 
-static void GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type )
-/***********************************************************************************************************************/
+static void GenMEMINSRELOC( uint_8 opcode, reg_idx ra, reg_idx rb, signed_16 displacement, pointer lbl, owl_reloc_type type )
+/***************************************************************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Ra( a ) | _Rb( b ) | _SignedImmed( displacement );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _SignedImmed( displacement );
     EmitInsReloc( &ins_encoding, lbl, type );
 }
 
-void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
-/*************************************************************************/
+void GenMEMINS( uint_8 opcode, reg_idx ra, reg_idx rb, signed_16 displacement )
+/*****************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Ra( a ) | _Rb( b ) | _SignedImmed( displacement );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _SignedImmed( displacement );
     EmitIns( ins_encoding );
 }
 
-static  void    GenBRANCH( uint_8 opcode, uint_8 reg, pointer label )
-/*******************************************************************/
+static  void    GenBRANCH( uint_8 opcode, reg_idx reg, pointer label )
+/********************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Ra( reg );
     EmitInsReloc( &ins_encoding, label, OWL_RELOC_BRANCH_REL );
@@ -478,8 +478,8 @@ type_length     TempLocation( name *temp )
     return( offset + base->t.location + temp->v.offset - base->v.offset );
 }
 
-void    GenCallLabelReg( pointer label, uint reg )
-/************************************************/
+void    GenCallLabelReg( pointer label, reg_idx reg )
+/***************************************************/
 {
     GenBRANCH( 0x34, reg, label );
 }
@@ -533,8 +533,8 @@ static  void    doCall( instruction *ins )
     }
 }
 
-static  void    addressTemp( name *temp, uint_8 *reg, int_16 *offset )
-/********************************************************************/
+static  void    addressTemp( name *temp, reg_idx *regidx_mem, int_16 *offset )
+/****************************************************************************/
 {
     type_length         temp_offset;
 
@@ -546,18 +546,18 @@ static  void    addressTemp( name *temp, uint_8 *reg, int_16 *offset )
         GenLOADS32( temp_offset, AT_REG_IDX );
         GenOPINS( 0x10, 0x00, SP_REG_IDX, AT_REG_IDX, AT_REG_IDX );
         *offset = 0;
-        *reg = AT_REG_IDX;
+        *regidx_mem = AT_REG_IDX;
     } else {
         *offset = temp_offset;
-        *reg = SP_REG_IDX;
+        *regidx_mem = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
-            *reg = FP_REG_IDX;
+            *regidx_mem = FP_REG_IDX;
         }
     }
 }
 
-static void    getMemEncoding( name *mem, uint_8 *regidx_mem, int_16 *offset )
-/****************************************************************************/
+static void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
+/*****************************************************************************/
 {
     switch( mem->n.class ) {
     case N_INDEXED:
@@ -586,7 +586,7 @@ static  void    doLoadStore( instruction *ins, bool load )
     name        *mem;
     name        *reg;
     uint_8      opcode;
-    uint_8      regidx_mem;
+    reg_idx     regidx_mem;
     int_16      offset;
 
     if( load ) {
@@ -612,8 +612,8 @@ static  void    doLoadStore( instruction *ins, bool load )
 static  void    GenCallIndirect( instruction *call )
 /**************************************************/
 {
-    uint_8      regidx;
-    uint_8      regidx_mem;
+    reg_idx     regidx;
+    reg_idx     regidx_mem;
     int_16      mem_offset;
     name        *addr;
 
@@ -654,15 +654,17 @@ static  void    doChop( instruction *ins, type_class_def type_class )
         _Zoiks( ZOIKS_078 );
     }
     /* zapnot */
-    GenOPIMM( 0x12, 0x31, _NameRegIndex( ins->operands[0] ), zap_mask, _NameRegIndex( ins->result ) );
+    GenOPIMM8( 0x12, 0x31, _NameRegIndex( ins->operands[0] ),
+        (uint_8)zap_mask,
+        _NameRegIndex( ins->result ) );
 }
 
 static  void    doSignExtend( instruction *ins, type_class_def type_class )
 /*************************************************************************/
 {
     unsigned    from_size;
-    int         res_index;
-    int         src_index;
+    reg_idx     res_index;
+    reg_idx     src_index;
     int         shift_amt;
 
     res_index = _NameRegIndex( ins->result );
@@ -674,9 +676,9 @@ static  void    doSignExtend( instruction *ins, type_class_def type_class )
     } else {
         shift_amt = ( REG_SIZE - from_size ) * 8;
         /* shl */
-        GenOPIMM( 0x12, 0x39, src_index, shift_amt, res_index );
+        GenOPIMM8( 0x12, 0x39, src_index, (uint_8)shift_amt, res_index );
         /* sra */
-        GenOPIMM( 0x12, 0x3c, res_index, shift_amt, res_index );
+        GenOPIMM8( 0x12, 0x3c, res_index, (uint_8)shift_amt, res_index );
     }
 }
 
@@ -728,8 +730,8 @@ static  void    Encode( instruction *ins )
 {
     uint_8              *opcodes;
     uint_16             function;
-    uint_8              regidx;
-    uint_8              regidx_mem;
+    reg_idx             regidx;
+    reg_idx             regidx_mem;
     int_16              mem_offset;
     signed_16           high;
     signed_16           extra;
@@ -841,9 +843,9 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[1]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
-        GenOPIMM( opcodes[0], opcodes[1],
-                        _NameRegIndex( ins->operands[0] ), ins->operands[1]->c.lo.int_value,
-                        _NameRegIndex( ins->result ) );
+        GenOPIMM8( opcodes[0], opcodes[1], _NameRegIndex( ins->operands[0] ), 
+            (uint_8)ins->operands[1]->c.lo.int_value,
+            _NameRegIndex( ins->result ) );
         break;
     case G_BYTE_CONST:
         /*
@@ -851,9 +853,9 @@ static  void    Encode( instruction *ins )
          */
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
-        GenOPIMM( 0x10, 0x00,
-                        ZERO_REG_IDX, (uint_8)ins->operands[0]->c.lo.int_value,
-                        _NameRegIndex( ins->result ) );
+        GenOPIMM8( 0x10, 0x00, ZERO_REG_IDX,
+            (uint_8)ins->operands[0]->c.lo.int_value,
+            _NameRegIndex( ins->result ) );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -872,10 +874,9 @@ static  void    Encode( instruction *ins )
         /*
          * generate a "ZAPNOT Ra,#i,Rb" instruction
          */
-        GenOPIMM( 0x12, 0x31,
-                        _NameRegIndex( ins->operands[0] ),
-                        zapMask[ins->flags.zap_value],
-                        _NameRegIndex( ins->result ) );
+        GenOPIMM8( 0x12, 0x31, _NameRegIndex( ins->operands[0] ),
+            zapMask[ins->flags.zap_value],
+            _NameRegIndex( ins->result ) );
         break;
     case G_LEA_HIGH:
         assert( ins->operands[0]->n.class == N_CONSTANT );

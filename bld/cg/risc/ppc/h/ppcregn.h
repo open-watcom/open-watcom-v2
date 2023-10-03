@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-typedef enum ppc_regn{
+typedef enum ppc_regn {
     PPC_REGN_r0,
     PPC_REGN_r1,
     PPC_REGN_r2,

@@ -782,8 +782,8 @@ void            InitRegTbl( void )
 {
 }
 
-static int  regTranslate( hw_reg_set reg, bool index )
-/****************************************************/
+static int      regTranslate( hw_reg_set reg, bool index )
+/********************************************************/
 {
     int                 i;
 
@@ -807,8 +807,8 @@ static int  regTranslate( hw_reg_set reg, bool index )
     return( PPC_REGN_END );
 }
 
-reg_idx RegIndex( hw_reg_set reg )
-/*********************************
+reg_idx     RegIndex( hw_reg_set reg )
+/*************************************
  * Translate reg to register index
  */
 {
@@ -823,10 +823,10 @@ void SetArchIndex( name *new_r, hw_reg_set regs )
 
 ppc_regn    RegTrans( hw_reg_set reg )
 /*************************************
- * Translate reg to register index
+ * Translate reg to enum name
  */
 {
-    return( (ppc_regn)regTranslate( reg, true ) );
+    return( (ppc_regn)regTranslate( reg, false ) );
 }
 
 ppc_regn    RegTransN( name *reg_name )
