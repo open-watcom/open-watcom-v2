@@ -377,12 +377,12 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
     if( op0->type == OP_GPR ) {
         extra = _Rb( RegIndex( op0->reg ) );
     } else if( ( op0->constant & 0xff ) == op0->constant ) { // OP_IMMED implied
-        extra = _LIT( op0->constant ); // this lit is between 0..255
+        extra = _LIT( op0->constant ) | _LIT_bit;   // this lit is between 0..255
         (void)checkOpAbsolute( op0, 0 );
     } else if( m_opt == DOMOV_ABS ) {
         abs_val = abs( op0->constant );
         if( ( abs_val & 0xff ) == abs_val ) {
-            extra = _LIT( abs_val ); // this lit is between 0..255
+            extra = _LIT( abs_val ) | _LIT_bit;     // this lit is between 0..255
             // checkOpAbsolute( op0, 0 );  should be done before calling doMov
         } else {
             ready = false;
@@ -814,7 +814,7 @@ static void ITOperate( ins_table *table, instruction *ins, uint_32 *buffer, asm_
         extra = _Rb( RegIndex( op->reg ) );
     } else {    // OP_IMMED
         assert( op->type == OP_IMMED );
-        extra = _LIT( op->constant );
+        extra = _LIT( op->constant ) | _LIT_bit;
         (void)checkOpAbsolute( op, 1 );
     }
     fc = getFuncCode( table, ins );
@@ -951,7 +951,7 @@ static void ITPseudoNot( ins_table *table, instruction *ins, uint_32 *buffer, as
         extra = _Rb( RegIndex( op->reg ) );
     } else {    // OP_IMMED
         assert( op->type == OP_IMMED );
-        extra = _LIT( op->constant );
+        extra = _LIT( op->constant ) | _LIT_bit;
         (void)checkOpAbsolute( op, 0 );
     }
     fc = getFuncCode( table, ins );

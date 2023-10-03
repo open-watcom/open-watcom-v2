@@ -44,7 +44,8 @@
 #define _Ra( x )                ( _FiveBits(x) << 21 )
 #define _Rb( x )                ( _FiveBits(x) << 16 )
 #define _Rc( x )                ( _FiveBits(x) << 0 )
-#define _LIT( x )               ( ( ( _EightBits(x) << 1 ) | 1 ) << 12 )
+#define _LIT( x )               ( _EightBits(x) << 13 )
+#define _LIT_bit                ( 1 << 12 )
 
 #define _Opcode( x )            ( _SixBits(x) << 26 )
 #define _Function( x )          ( _SevenBits(x) << 5 )

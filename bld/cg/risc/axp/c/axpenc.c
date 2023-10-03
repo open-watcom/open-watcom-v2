@@ -300,7 +300,7 @@ void GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_
 static  void    GenOPIMM( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 imm, uint_8 reg_c )
 /************************************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Ra( reg_a ) | _LIT( imm ) | ( 1 << 12 ) | _Rc( reg_c ) | _Function( function );
+    ins_encoding = _Opcode( opcode ) | _Ra( reg_a ) | _LIT( imm ) | _LIT_bit | _Rc( reg_c ) | _Function( function );
     EmitIns( ins_encoding );
 }
 
