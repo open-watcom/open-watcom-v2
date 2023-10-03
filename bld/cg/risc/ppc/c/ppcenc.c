@@ -40,7 +40,7 @@
 #include "cgauxinf.h"
 #include "optmain.h"
 #include "ppcencod.h"
-#include "ppcgen.h"
+#include "ppcenc.h"
 #include "data.h"
 #include "objout.h"
 #include "dbsyms.h"

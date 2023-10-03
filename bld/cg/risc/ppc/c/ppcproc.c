@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "ppcencod.h"
-#include "ppcgen.h"
+#include "ppcenc.h"
 #include "data.h"
 #include "objout.h"
 #include "dbsyms.h"
