@@ -39,8 +39,6 @@
 #define _Memory_disp( x )       ( _SixteenBits( x )   << 0  )
 #define _Mem_Func( x )          ( _SixteenBits( x )   << 0  )
 #define _Branch_disp( x )       ( _TwentyOneBits( x ) << 0  )
-#define _Op_Func( x )           ( _SevenBits( x )     << 5  )
-#define _FP_Op_Func( x )        ( _ElevenBits( x )    << 5  )
 
 #define _Longword_offset( x )   ( (x) >> 2 )
 
@@ -224,20 +222,18 @@ static void doOpcodeRaRb( uint_32 *buffer, ins_opcode opcode, reg_idx ra, reg_id
     *buffer = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | remain;
 }
 
-static void doOpcodeFcRaRc( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, uint_8 ra, uint_8 rc, uint_32 extra )
-//********************************************************************************************************************
+static void doOpcodeFcRaRc( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx ra, reg_idx rc, uint_32 extra )
+//**********************************************************************************************************************
 // This procedure doesn't fill in all the bits (missing bits 20-12).
 // But we can fill it in using extra.
 {
-    *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Ra( ra ) | _Rc( rc ) |
-              extra;
+    *buffer = _Opcode( opcode ) | _Function( fc ) | _Ra( ra ) | _Rc( rc ) | extra;
 }
 
-static void doFPInst( uint_32 *buffer, ins_opcode opcode, uint_8 ra, uint_8 rb, uint_8 rc, uint_32 remain )
-//*********************************************************************************************************
+static void doFPInst( uint_32 *buffer, ins_opcode opcode, reg_idx ra, reg_idx rb, reg_idx rc, uint_32 fc )
+//********************************************************************************************************
 {
-    *buffer = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) |
-              _FP_Op_Func( remain ) | _Rc( rc );
+    *buffer = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _FPFunction( fc ) | _Rc( rc );
 }
 
 #ifndef _STANDALONE_
@@ -408,7 +404,7 @@ static void ITLoadAddress( ins_table *table, instruction *ins, uint_32 *buffer, 
     ins_operand         *ops[2];
     unsigned            inc;
 //    op_const            val;
-    uint_8              s_reg;
+    reg_idx             s_reg;
 
     /* unused parameters */ (void)table;
 
@@ -632,7 +628,7 @@ static void ITMemJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     ins_operand *op0, *op1;
     int         num_op;
     int         inc;
-    uint_8      d_reg_idx;      // default d_reg if not specified
+    reg_idx     d_reg_idx;      // default d_reg if not specified
 
     num_op = ins->num_operands;
     // First check if the operands are of the right types
@@ -727,7 +723,7 @@ static void ITRet( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
 {
     ins_operand     *op0, *op1;
     int             num_op;
-    uint_8          d_reg_idx;  // default d_reg if not specified
+    reg_idx         d_reg_idx;  // default d_reg if not specified
 
     num_op = ins->num_operands;
     // First check if the operands are of the right types
@@ -884,7 +880,7 @@ static void ITMTMFFpcr( ins_table *table, instruction *ins, uint_32 *buffer, asm
 {
     assert( ins->num_operands == 1 || ins->num_operands == 3 );
     if( ins->num_operands == 1 ) {
-        uint_8          reg_num;
+        reg_idx     reg_num;
 
         reg_num = RegIndex( ins->operands[0]->reg );
         doFPInst( buffer, table->opcode, reg_num, reg_num, reg_num,
@@ -926,7 +922,7 @@ static void ITPseudoMov( ins_table *table, instruction *ins, uint_32 *buffer, as
 static void ITPseudoFmov( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc )
 //***********************************************************************************************
 {
-    uint_8          reg_idx0;
+    reg_idx         reg_idx0;
 
     /* unused parameters */ (void)reloc;
 
@@ -975,7 +971,7 @@ static void ITPseudoNegf( ins_table *table, instruction *ins, uint_32 *buffer, a
 static void ITPseudoFneg( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc )
 //***********************************************************************************************
 {
-    uint_8          reg_idx0;
+    reg_idx         reg_idx0;
 
     /* unused parameters */ (void)reloc;
 
@@ -988,7 +984,9 @@ static void ITPseudoFneg( ins_table *table, instruction *ins, uint_32 *buffer, a
 static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc )
 //**********************************************************************************************
 {
-    uint_8          s_reg_idx, d_reg_idx, rc_reg_idx;
+    reg_idx         s_reg_idx;
+    reg_idx         d_reg_idx;
+    reg_idx         rc_reg_idx;
     ins_operand     *src_op;
     bool            same_reg;
 

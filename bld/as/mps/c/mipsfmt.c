@@ -42,7 +42,6 @@
 
 #define _Memory_disp( x )       ( _SixteenBits( x )   << 0  )
 #define _Mem_Func( x )          ( _SixteenBits( x )   << 0  )
-#define _Op_Func( x )           ( _SixBits( x )       << 0  )
 #define _FP_Op_Func( x )        ( _ElevenBits( x )    << 5  )
 
 /*
@@ -330,23 +329,21 @@ static void doOpcodeFcRsRt( uint_32 *buffer, ins_opcode opcode, ins_funccode fc,
  * But we can fill it in using extra.
  */
 {
-    *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Rs( ra ) | _Rt( rc ) | extra;
+    *buffer = _Opcode( opcode ) | _Function( fc ) | _Rs( ra ) | _Rt( rc ) | extra;
 }
 
 
 static void doOpcodeFcRsRtImm( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx rs, reg_idx rt, op_const imm )
 //************************************************************************************************************************
 {
-    *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Rs( rs ) | _Rt( rt ) |
-              _SignedImmed( imm );
+    *buffer = _Opcode( opcode ) | _Function( fc ) | _Rs( rs ) | _Rt( rt ) | _SignedImmed( imm );
 }
 
 
 static void doOpcodeFcRdRtSa( uint_32 *buffer, ins_opcode opcode, ins_funccode fc, reg_idx rd, reg_idx rt, op_const sa )
 //**********************************************************************************************************************
 {
-    *buffer = _Opcode( opcode ) | _Op_Func( fc ) | _Rd( rd ) | _Rt( rt ) |
-              _Shift( sa );
+    *buffer = _Opcode( opcode ) | _Function( fc ) | _Rd( rd ) | _Rt( rt ) | _Shift( sa );
 }
 
 
@@ -538,7 +535,7 @@ static void ITSysCode( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     } else {
         constant = 0;
     }
-    *buffer = _Opcode( table->opcode ) | _Code( constant ) | _Op_Func( table->funccode );
+    *buffer = _Opcode( table->opcode ) | _Code( constant ) | _Function( table->funccode );
 }
 
 
@@ -560,7 +557,7 @@ static void ITTrap( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     *buffer = _Opcode( table->opcode ) |
               _Rs( RegIndex( ins->operands[0]->reg ) ) |
               _Rt( RegIndex( ins->operands[1]->reg ) ) |
-              _TrapCode( code ) | _Op_Func( table->funccode );
+              _TrapCode( code ) | _Function( table->funccode );
 }
 
 
