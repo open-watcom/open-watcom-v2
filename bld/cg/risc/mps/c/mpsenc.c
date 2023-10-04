@@ -490,8 +490,8 @@ type_length TempLocation( name *temp )
 }
 
 
-void GenCallLabelReg( pointer label, uint reg )
-/*********************************************/
+void GenCallLabelReg( pointer label, reg_idx reg )
+/************************************************/
 {
     /*
      * This is used for calling into certain cg support routines. We'd
