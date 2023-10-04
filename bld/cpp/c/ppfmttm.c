@@ -46,17 +46,17 @@ void FormatTime_tm( char *buf, struct tm *t )
     /*  01234567  */
     /* '00:00:00' */
     x = div( t->tm_sec, 10 );
-    buf[7] = x.rem + '0';
+    buf[7] = (char)( x.rem + '0' );
     x = div( x.quot, 10 );
-    buf[6] = x.rem + '0';
+    buf[6] = (char)( x.rem + '0' );
     x = div( t->tm_min, 10 );
-    buf[4] = x.rem + '0';
+    buf[4] = (char)( x.rem + '0' );
     x = div( x.quot, 10 );
-    buf[3] = x.rem + '0';
+    buf[3] = (char)( x.rem + '0' );
     x = div( t->tm_hour, 10 );
-    buf[1] = x.rem + '0';
+    buf[1] = (char)( x.rem + '0' );
     x = div( x.quot, 10 );
-    buf[0] = x.rem + '0';
+    buf[0] = (char)( x.rem + '0' );
 }
 
 void FormatDate_tm( char *buf, struct tm *t )
@@ -66,20 +66,20 @@ void FormatDate_tm( char *buf, struct tm *t )
     /*  01234567890  */
     /* 'Dec 00 0000' */
     x = div( t->tm_year + 1900, 10 );
-    buf[10] = x.rem + '0';
+    buf[10] = (char)( x.rem + '0' );
     x = div( x.quot, 10 );
-    buf[9] = x.rem + '0';
+    buf[9] = (char)( x.rem + '0' );
     x = div( x.quot, 10 );
-    buf[8] = x.rem + '0';
+    buf[8] = (char)( x.rem + '0' );
     x = div( x.quot, 10 );
-    buf[7] = x.rem + '0';
+    buf[7] = (char)( x.rem + '0' );
     x = div( t->tm_mday, 10 );
-    buf[5] = x.rem + '0';
+    buf[5] = (char)( x.rem + '0' );
     if( t->tm_mday < 10 ) {
         buf[4] = ' ';
     } else {
         x = div( x.quot, 10 );
-        buf[4] = x.rem + '0';
+        buf[4] = (char)( x.rem + '0' );
     }
     buf[2] = Months[t->tm_mon][2];
     buf[1] = Months[t->tm_mon][1];
