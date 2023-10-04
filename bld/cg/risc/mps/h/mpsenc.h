@@ -37,11 +37,11 @@ typedef uint_8      reg_idx;
 
 extern reg_idx      RegIndex( hw_reg_set reg );
 
-extern void         GenCallLabelReg( pointer label, uint reg );
-extern void         GenLOADS32( signed_32 value, uint_8 reg );
-extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
-extern void         GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
-extern void         GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt );
-extern void         GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa );
+extern void         GenCallLabelReg( pointer label, reg_idx reg );
+extern void         GenLOADS32( signed_32 value, reg_idx reg );
+extern void         GenMEMINS( uint_8 opcode, reg_idx rt, reg_idx rs, signed_16 displacement );
+extern void         GenIType( uint_8 opcode, reg_idx rt, reg_idx rs, signed_16 immed );
+extern void         GenRType( uint_8 opcode, uint_8 fc, reg_idx rd, reg_idx rs, reg_idx rt );
+extern void         GenIShift( uint_8 fc, reg_idx rd, reg_idx rt, uint_8 sa );
 extern void         GenJType( uint_8 opcode, pointer label );
 extern void         GenReturn( void );

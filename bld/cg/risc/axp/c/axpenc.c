@@ -663,22 +663,22 @@ static  void    doSignExtend( instruction *ins, type_class_def type_class )
 /*************************************************************************/
 {
     unsigned    from_size;
-    reg_idx     res_index;
-    reg_idx     src_index;
+    reg_idx     regidx_res;
+    reg_idx     regidx_src;
     int         shift_amt;
 
-    res_index = _NameRegIndex( ins->result );
-    src_index = _NameRegIndex( ins->operands[0] );
+    regidx_res = _NameRegIndex( ins->result );
+    regidx_src = _NameRegIndex( ins->operands[0] );
     from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
         /* addl r31, src -> dst */
-        GenOPINS( 0x10, 0x00, ZERO_REG_IDX, src_index, res_index );
+        GenOPINS( 0x10, 0x00, ZERO_REG_IDX, regidx_src, regidx_res );
     } else {
         shift_amt = ( REG_SIZE - from_size ) * 8;
         /* shl */
-        GenOPIMM8( 0x12, 0x39, src_index, (uint_8)shift_amt, res_index );
+        GenOPIMM8( 0x12, 0x39, regidx_src, (uint_8)shift_amt, regidx_res );
         /* sra */
-        GenOPIMM8( 0x12, 0x3c, res_index, (uint_8)shift_amt, res_index );
+        GenOPIMM8( 0x12, 0x3c, regidx_res, (uint_8)shift_amt, regidx_res );
     }
 }
 
@@ -712,10 +712,8 @@ static  bool    encodeThreadDataRef( instruction *ins )
      * This is done in FixMemRefs.
      */
     tls_index = RTLabel( RT_TLS_INDEX );
-    GenMEMINSRELOC( 0x09, AT_REG_IDX, ZERO_REG_IDX, 0,
-                tls_index, OWL_RELOC_HALF_HI );
-    GenMEMINSRELOC( 0x08, AT_REG_IDX, AT_REG_IDX, 0,
-                tls_index, OWL_RELOC_HALF_LO );
+    GenMEMINSRELOC( 0x09, AT_REG_IDX, ZERO_REG_IDX, 0, tls_index, OWL_RELOC_HALF_HI );
+    GenMEMINSRELOC( 0x08, AT_REG_IDX, AT_REG_IDX, 0, tls_index, OWL_RELOC_HALF_LO );
     EmitIns( RDTEB_ENCODING );
     GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, RDTEB_MAGIC_CONST );
     GenOPINS( 0x0010, 0x0002, AT_REG_IDX, RT_RET_REG_IDX, RT_RET_REG_IDX );
@@ -843,7 +841,7 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[1]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
-        GenOPIMM8( opcodes[0], opcodes[1], _NameRegIndex( ins->operands[0] ), 
+        GenOPIMM8( opcodes[0], opcodes[1], _NameRegIndex( ins->operands[0] ),
             (uint_8)ins->operands[1]->c.lo.int_value,
             _NameRegIndex( ins->result ) );
         break;

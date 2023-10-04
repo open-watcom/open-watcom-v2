@@ -193,17 +193,6 @@ static  uint_8 FloatingSetOpcodes[] = {
     0x34,                       /* OP_SET_GREATER_EQUAL */
 };
 
-#if 0
-static  uint_8  BranchOpcodes[][2] = {
-    { 0x39, 0x31 },             /* OP_CMP_EQUAL */
-    { 0x3d, 0x35 },             /* OP_CMP_NOT_EQUAL */
-    { 0x3f, 0x37 },             /* OP_CMP_GREATER */
-    { 0x3b, 0x33 },             /* OP_CMP_LESS_EQUAL */
-    { 0x3a, 0x32 },             /* OP_CMP_LESS */
-    { 0x3e, 0x36 },             /* OP_CMP_GREATER_EQUAL */
-};
-#endif
-
 static  uint_8  loadOpcodes[] = {
     0x24,                       /* U1 */
     0x20,                       /* I1 */
@@ -278,8 +267,8 @@ static  void EmitIns( mips_ins ins )
 }
 
 
-void GenLOADS32( int_32 value, uint_8 reg )
-/*****************************************************
+void GenLOADS32( int_32 value, reg_idx reg )
+/*******************************************
  * Load a signed 32-bit constant 'value' into register 'reg'
  */
 {
@@ -386,46 +375,46 @@ static  uint_8 FindFloatingOpcodes( instruction *ins )
 }
 
 
-static void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, int_16 displacement, pointer lbl, owl_reloc_type type )
-/**********************************************************************************************************************/
+static void GenMEMINSRELOC( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 displacement, pointer lbl, owl_reloc_type type )
+/************************************************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
     EmitInsReloc( &ins_encoding, lbl, type );
 }
 
 
-void GenMEMINS( uint_8 opcode, uint_8 rt, uint_8 rs, int_16 displacement )
-/*********************************************************************************/
+void GenMEMINS( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 displacement )
+/**************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
     EmitIns( ins_encoding );
 }
 
 
-void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, int_16 immed )
-/***************************************************************************/
+void GenIType( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 immed )
+/******************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _SignedImmed( immed );
     EmitIns( ins_encoding );
 }
 
 
-void GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt )
-/********************************************************************************/
+void GenRType( uint_8 opcode, uint_8 fc, reg_idx rd, reg_idx rs, reg_idx rt )
+/***************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rd( rd ) | _Function( fc );
     EmitIns( ins_encoding );
 }
 
-void GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa )
-/******************************************************************/
+void GenIShift( uint_8 fc, reg_idx rd, reg_idx rt, uint_8 sa )
+/************************************************************/
 {
     ins_encoding = _Opcode( 0 ) | _Rs( 0 ) | _Rt( rt ) | _Rd( rd ) | _Shift( sa ) | _Function( fc );
     EmitIns( ins_encoding );
 }
 
 void GenJType( uint_8 opcode, pointer label )
-/***************************************************/
+/*******************************************/
 {
     ins_encoding = _Opcode( opcode );
     EmitInsReloc( &ins_encoding, label, OWL_RELOC_JUMP_ABS );
@@ -437,8 +426,8 @@ void GenJType( uint_8 opcode, pointer label )
 }
 
 
-static  void GenFloatRType( type_class_def type_class, uint_8 fnc, uint_8 fd, uint_8 fs, uint_8 ft )
-/**************************************************************************************************/
+static  void GenFloatRType( type_class_def type_class, uint_8 fnc, reg_idx fd, reg_idx fs, reg_idx ft )
+/*****************************************************************************************************/
 {
     int                 fmt;
 
@@ -579,8 +568,8 @@ static  void doCall( instruction *ins )
 }
 
 
-static  void addressTemp( name *temp, uint_8 *reg, int_16 *offset )
-/*****************************************************************/
+static  void addressTemp( name *temp, reg_idx *reg, int_16 *offset )
+/******************************************************************/
 {
     type_length         temp_offset;
 
@@ -606,8 +595,8 @@ static  void addressTemp( name *temp, uint_8 *reg, int_16 *offset )
 }
 
 
-static  void getMemEncoding( name *mem, uint_8 *regidx_mem, int_16 *offset )
-/*************************************************************************/
+static  void getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
+/***************************************************************************/
 {
     switch( mem->n.class ) {
     case N_INDEXED:
@@ -637,7 +626,7 @@ static  void doLoadStore( instruction *ins, bool load )
     name        *mem;
     name        *reg;
     uint_8      opcode;
-    uint_8      regidx_mem;
+    reg_idx     regidx_mem;
     int_16      offset;
 
     if( load ) {
@@ -663,7 +652,7 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
     name        *reg;
     uint_8      opcode1;
     uint_8      opcode2;
-    uint_8      regidx_mem;
+    reg_idx     regidx_mem;
     int_16      offset;
 
     if( load ) {
@@ -697,8 +686,8 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
 static  void GenCallIndirect( instruction *call )
 /***********************************************/
 {
-    uint_8      regidx;
-    uint_8      regidx_mem;
+    reg_idx     regidx;
+    reg_idx     regidx_mem;
     int_16      mem_offset;
     name        *addr;
 
@@ -844,8 +833,8 @@ static  void Encode( instruction *ins )
     uint_8          *opcodes;
     uint_8          opcode;
     uint_16         function;
-    uint_8          regidx;
-    uint_8          regidx_mem;
+    reg_idx         regidx;
+    reg_idx         regidx_mem;
     int_16          mem_offset;
     int_16          high;
     int_16          extra;

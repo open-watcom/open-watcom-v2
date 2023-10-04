@@ -59,10 +59,10 @@ void EncodeRet( oc_ret *oc )
 }
 
 
-static void doBranch( mips_ins opcode, uint_8 cc, pointer lbl, uint reg1, uint reg2 )
-/***********************************************************************************/
+static void doBranch( mips_ins opcode, uint_8 cc, pointer lbl, reg_idx rs, reg_idx rt )
+/*************************************************************************************/
 {
-    opcode = _Opcode( opcode ) | _Rs( reg1 ) | _Rt( reg2 ) | _Rt( cc );
+    opcode = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rt( cc );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
     ObjBytes( &opcode, sizeof( opcode ) );
     /*
@@ -142,13 +142,13 @@ void EncodeCond( oc_jcond *oc )
     mips_ins    opcode;
     uint_8      cncode;
     int         floating;
-    uint        reg2;
+    reg_idx     reg2;
 
     floating = 0;
     if( oc->hdr.class & OC_ATTR_FLOAT ) {
         floating = 1;
     }
-    reg2 = oc->index2 == -1 ? 0 : oc->index2;
+    reg2 = ( oc->index2 == -1 ) ? 0 : (reg_idx)oc->index2;
     opcode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating][0];
     cncode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating][1];
     /*
@@ -165,6 +165,6 @@ void EncodeCond( oc_jcond *oc )
             assert( reg2 == ZERO_REG_IDX );
         }
         assert( opcode );
-        doBranch( opcode, cncode, oc->handle, oc->index, reg2 );
+        doBranch( opcode, cncode, oc->handle, (reg_idx)oc->index, reg2 );
     }
 }
