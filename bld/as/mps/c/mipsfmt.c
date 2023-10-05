@@ -396,7 +396,7 @@ static unsigned loadConst32( uint_32 *buffer, reg_idx reg_dst, reg_idx reg_src, 
         if( reloc_type != 0 ) {
             doOpcodeIType( buffer, opcode, reg_dst, ZERO_REG_IDX, val );
             if( reloc != NULL )
-                doReloc( reloc, op, OWL_RELOC_HALF_HI, buffer );
+                doReloc( reloc, op, reloc_type, buffer );
             return( 1 );
         }
     }
@@ -505,9 +505,9 @@ static void ITTrap( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
         code = 0;
     }
     *buffer = _Opcode( table->opcode ) |
-              _Rs( RegIndex( ins->operands[0]->reg ) ) |
-              _Rt( RegIndex( ins->operands[1]->reg ) ) |
-              _TrapCode( code ) | _Function( table->funccode );
+                _Rs( RegIndex( ins->operands[0]->reg ) ) |
+                _Rt( RegIndex( ins->operands[1]->reg ) ) |
+                _TrapCode( code ) | _Function( table->funccode );
 }
 
 
