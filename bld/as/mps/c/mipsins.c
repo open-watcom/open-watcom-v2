@@ -112,10 +112,10 @@ ins_table MIPSTable[] = {
 
     INS( "br",      0x30,   0x00,   IT_BR,              ENUM_NONE,  MIPS_ISA1 ),
     INS( "fbeq",    0x31,   0x00,   IT_FP_BRANCH,       ENUM_NONE,  MIPS_ISA1 ),
-    INS( "blt",     0x3A,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
-    INS( "ble",     0x3B,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
-    INS( "bge",     0x3E,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
-    INS( "bgt",     0x3F,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "blt",     0x3A,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "ble",     0x3B,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "bge",     0x3E,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "bgt",     0x3F,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
  // Coprocessor branch instructions; high byte of opcode is coprocessor number
     INS( "bc0f",    0x008,  0x00,   IT_BRANCH_COP,      ENUM_NONE,  MIPS_ISA1 ),
     INS( "bc0fl",   0x008,  0x02,   IT_BRANCH_COP,      ENUM_NONE,  MIPS_ISA2 ),
@@ -257,6 +257,11 @@ ins_table MIPSTable[] = {
     // abs pseudo ins (opcode & funccode are from subl/v, subq/v)
     INS( "absl",    0x10,   0x49,   IT_PSEUDO_ABS,      ENUM_NONE,  MIPS_ISA1 ),
     INS( "absq",    0x10,   0x69,   IT_PSEUDO_ABS,      ENUM_NONE,  MIPS_ISA1 ),
+
+    INS( "blt",     0x05,   0x00,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
+    INS( "ble",     0x04,   0x01,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
+    INS( "bge",     0x04,   0x00,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
+    INS( "bgt",     0x05,   0x01,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
 };
 
 static bool insErrFlag = false;    // to tell whether we had problems or not

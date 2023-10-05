@@ -70,3 +70,4 @@ PICK( IT_PSEUDO_NOT,    ITPseudoNot,    OP_GPR, (OP_GPR | OP_IMMED), OP_NOTHING 
 PICK( IT_PSEUDO_NEGF,   ITPseudoNegf,   OP_FPR, OP_FPR, OP_NOTHING )                                    /* negf    */
 PICK( IT_PSEUDO_FNEG,   ITPseudoFneg,   OP_FPR, OP_FPR, OP_NOTHING )                                    /* fneg    */
 PICK( IT_PSEUDO_ABS,    ITPseudoAbs,    (OP_GPR | OP_IMMED), OP_GPR, OP_NOTHING )                       /* absl    */
+PICK( IT_PSEUDO_BRANCH2, ITPseudoBranch2, OP_GPR, OP_GPR, OP_IMMED )                                      /* beq     */
