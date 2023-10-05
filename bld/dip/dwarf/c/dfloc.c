@@ -693,7 +693,7 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
         DCStatus( d->ds );
         return( false );
     }
-    if( arch == DIG_ARCH_X86 && (reg == DW_X86_esp || reg == DW_X86_sp) ) { /* kludge for now */
+    if( arch == DIG_ARCH_X86 && (reg == DW_X86_ESP || reg == DW_X86_SP) ) { /* kludge for now */
         d->ds = SafeDCItemLocation( d->lc, CI_STACK, &ll );
         if( d->ds != DS_OK ) {
             DCStatus( d->ds );
