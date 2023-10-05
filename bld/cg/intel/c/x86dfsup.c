@@ -56,9 +56,9 @@
 
 
 typedef enum {
-    #define DW_REG(name,ci,start,len) DW_REG_##name,
+    #define pick(id,name,ci,start,len) DW_REG_ ## id,
     #include "dwregx86.h"
-    #undef DW_REG
+    #undef pick
     DW_REG_MAX
 } dw_regs;
 
@@ -85,44 +85,44 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
 };
 
 static struct reg_map    HWRegValues[] = {
-   { HW_D( HW_AL ),  DW_REG_al },
-   { HW_D( HW_AH ),  DW_REG_ah },
-   { HW_D( HW_BL ),  DW_REG_bl },
-   { HW_D( HW_BH ),  DW_REG_bh },
-   { HW_D( HW_CL ),  DW_REG_cl },
-   { HW_D( HW_CH ),  DW_REG_ch },
-   { HW_D( HW_DL ),  DW_REG_dl },
-   { HW_D( HW_DH ),  DW_REG_dh },
-   { HW_D( HW_AX ),  DW_REG_ax },
-   { HW_D( HW_BX ),  DW_REG_bx },
-   { HW_D( HW_CX ),  DW_REG_cx },
-   { HW_D( HW_DX ),  DW_REG_dx },
-   { HW_D( HW_SI ),  DW_REG_si },
-   { HW_D( HW_DI ),  DW_REG_di },
-   { HW_D( HW_BP ),  DW_REG_bp },
-   { HW_D( HW_SP ),  DW_REG_sp },
-   { HW_D( HW_CS ),  DW_REG_cs },
-   { HW_D( HW_SS ),  DW_REG_ss },
-   { HW_D( HW_DS ),  DW_REG_ds },
-   { HW_D( HW_ES ),  DW_REG_es },
-   { HW_D( HW_ST0 ), DW_REG_st0 },
-   { HW_D( HW_ST1 ), DW_REG_st1 },
-   { HW_D( HW_ST2 ), DW_REG_st2 },
-   { HW_D( HW_ST3 ), DW_REG_st3 },
-   { HW_D( HW_ST4 ), DW_REG_st4 },
-   { HW_D( HW_ST5 ), DW_REG_st5 },
-   { HW_D( HW_ST6 ), DW_REG_st6 },
-   { HW_D( HW_ST7 ), DW_REG_st7 },
-   { HW_D( HW_EAX ), DW_REG_eax },
-   { HW_D( HW_EBX ), DW_REG_ebx },
-   { HW_D( HW_ECX ), DW_REG_ecx },
-   { HW_D( HW_EDX ), DW_REG_edx },
-   { HW_D( HW_ESI ), DW_REG_esi },
-   { HW_D( HW_EDI ), DW_REG_edi },
-   { HW_D( HW_EBP ), DW_REG_ebp },
-   { HW_D( HW_ESP ), DW_REG_esp },
-   { HW_D( HW_FS ),  DW_REG_fs },
-   { HW_D( HW_GS ),  DW_REG_gs }
+   { HW_D( HW_AL ),  DW_REG_AL },
+   { HW_D( HW_AH ),  DW_REG_AH },
+   { HW_D( HW_BL ),  DW_REG_BL },
+   { HW_D( HW_BH ),  DW_REG_BH },
+   { HW_D( HW_CL ),  DW_REG_CL },
+   { HW_D( HW_CH ),  DW_REG_CH },
+   { HW_D( HW_DL ),  DW_REG_DL },
+   { HW_D( HW_DH ),  DW_REG_DH },
+   { HW_D( HW_AX ),  DW_REG_AX },
+   { HW_D( HW_BX ),  DW_REG_BX },
+   { HW_D( HW_CX ),  DW_REG_CX },
+   { HW_D( HW_DX ),  DW_REG_DX },
+   { HW_D( HW_SI ),  DW_REG_SI },
+   { HW_D( HW_DI ),  DW_REG_DI },
+   { HW_D( HW_BP ),  DW_REG_BP },
+   { HW_D( HW_SP ),  DW_REG_SP },
+   { HW_D( HW_CS ),  DW_REG_CS },
+   { HW_D( HW_SS ),  DW_REG_SS },
+   { HW_D( HW_DS ),  DW_REG_DS },
+   { HW_D( HW_ES ),  DW_REG_ES },
+   { HW_D( HW_ST0 ), DW_REG_ST0 },
+   { HW_D( HW_ST1 ), DW_REG_ST1 },
+   { HW_D( HW_ST2 ), DW_REG_ST2 },
+   { HW_D( HW_ST3 ), DW_REG_ST3 },
+   { HW_D( HW_ST4 ), DW_REG_ST4 },
+   { HW_D( HW_ST5 ), DW_REG_ST5 },
+   { HW_D( HW_ST6 ), DW_REG_ST6 },
+   { HW_D( HW_ST7 ), DW_REG_ST7 },
+   { HW_D( HW_EAX ), DW_REG_EAX },
+   { HW_D( HW_EBX ), DW_REG_EBX },
+   { HW_D( HW_ECX ), DW_REG_ECX },
+   { HW_D( HW_EDX ), DW_REG_EDX },
+   { HW_D( HW_ESI ), DW_REG_ESI },
+   { HW_D( HW_EDI ), DW_REG_EDI },
+   { HW_D( HW_EBP ), DW_REG_EBP },
+   { HW_D( HW_ESP ), DW_REG_ESP },
+   { HW_D( HW_FS ),  DW_REG_FS },
+   { HW_D( HW_GS ),  DW_REG_GS }
 };
 
 
@@ -165,13 +165,13 @@ void   DFOutReg( dw_loc_id locid, name *reg )
     hw_reg = reg->r.reg;
 #if _TARGET & _TARG_8086
     if( HW_CEqual( hw_reg, HW_ABCD ) ) {
-        DWLocReg( Client, locid, DW_REG_dx );
+        DWLocReg( Client, locid, DW_REG_DX );
         DWLocPiece( Client, locid, WD );
-        DWLocReg( Client, locid, DW_REG_cx );
+        DWLocReg( Client, locid, DW_REG_CX );
         DWLocPiece( Client, locid, WD );
-        DWLocReg( Client, locid, DW_REG_bx );
+        DWLocReg( Client, locid, DW_REG_BX );
         DWLocPiece( Client, locid, WD );
-        DWLocReg( Client, locid, DW_REG_ax );
+        DWLocReg( Client, locid, DW_REG_AX );
         DWLocPiece( Client, locid, WD );
         return;
     }

@@ -146,9 +146,9 @@ void LocationTrunc( location_list *ll, unsigned bits )
 }
 
 typedef enum {
-    #define DW_REG(name,ci,start,len) DW_X86_##name,
+    #define pick(id,name,ci,start,len) DW_X86_ ## id,
     #include "dwregx86.h"
-    #undef DW_REG
+    #undef pick
     DW_X86_MAX
 }dw_X86_regs;
 
@@ -159,16 +159,16 @@ typedef struct {
 } reg_entry;
 
 static reg_entry const CLRegX86[DW_X86_MAX] = {
-    #define DW_REG(name,ci,start,len) { ci, start, len },
+    #define pick(id,name,ci,start,len) { ci, start, len },
     #include "dwregx86.h"
-    #undef DW_REG
+    #undef pick
 };
 
 typedef enum {
-    #define DW_REG( __n  )   DW_AXP_##__n,
+    #define pick(id,name)   DW_AXP_ ## id,
     #include "dwregaxp.h"
-    DW_REG( MAX )
-    #undef DW_REG
+    #undef pick
+    DW_AXP_MAX
 }dw_axp_regs;
 
 /*
@@ -245,10 +245,10 @@ static uint_16 const CLRegAXP[DW_AXP_MAX] = {
 };
 
 typedef enum {
-    #define DW_REG( __n  )   DW_PPC_##__n,
+    #define pick(id,name)   DW_PPC_ ## id,
     #include "dwregppc.h"
-    DW_REG( MAX )
-    #undef DW_REG
+    #undef pick
+    DW_PPC_MAX
 } dw_ppc_regs;
 
 typedef struct {
@@ -331,10 +331,10 @@ static ppcreg_entry const CLRegPPC[DW_PPC_MAX] = {
 };
 
 typedef enum {
-    #define DW_REG( __n  )   DW_MIPS_##__n,
+    #define pick(id,name)   DW_MIPS_ ## id,
     #include "dwregmps.h"
-    DW_REG( MAX )
-    #undef DW_REG
+    #undef pick
+    DW_MIPS_MAX
 } dw_mips_regs;
 
 typedef struct {

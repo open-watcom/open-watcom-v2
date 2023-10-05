@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,10 @@
 #define MapReg2DW(r)   ((dw_regs)r)
 
 typedef enum {
-    #define DW_REG( __n  )   DW_AXP_##__n,
+    #define pick(id,name)   DW_REG_ ## id,
     #include "dwregaxp.h"
-    DW_REG( MAX )
-    #undef DW_REG
+    #undef pick
+    DW_REG_MAX
 } dw_regs;
 
 static dw_regs  DFRegMap( hw_reg_set hw_reg )
