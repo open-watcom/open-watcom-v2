@@ -112,12 +112,14 @@
 __inline HRESULT StringCchCatA( LPSTR lpszDestination, size_t cchDestination,
                                 LPCSTR lpszSource )
 {
-    int cchInit;
+    size_t cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = strlen( lpszDestination );
-    strncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    if( cchDestination > cchInit ) {
+        strncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    }
     if( cchInit + strlen( lpszSource ) >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -128,12 +130,14 @@ __inline HRESULT StringCchCatA( LPSTR lpszDestination, size_t cchDestination,
 __inline HRESULT StringCchCatW( LPWSTR lpszDestination, size_t cchDestination,
                                 LPCWSTR lpszSource )
 {
-    int cchInit;
+    size_t cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = wcslen( lpszDestination );
-    wcsncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    if( cchDestination > cchInit ) {
+        wcsncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    }
     if( cchInit + wcslen( lpszSource ) >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -145,14 +149,16 @@ __inline HRESULT StringCchCatExA( LPSTR lpszDestination, size_t cchDestination,
                                   LPCSTR lpszSource, LPSTR *lplpszDestinationEnd,
                                   size_t *pcchRemaining, DWORD dwFlags )
 {
-    int cchInit;
-    int cchSource;
+    size_t cchInit;
+    size_t cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = strlen( lpszDestination );
     cchSource = strlen( lpszSource );
-    strncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    if( cchDestination > cchInit ) {
+        strncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    }
     if( cchInit + cchSource >= cchDestination ) {
         if( dwFlags & STRSAFE_NO_TRUNCATION ) {
             lpszDestination[0] = '\0';
@@ -187,14 +193,16 @@ __inline HRESULT StringCchCatExW( LPWSTR lpszDestination, size_t cchDestination,
                                   LPCWSTR lpszSource, LPWSTR *lplpszDestinationEnd,
                                   size_t *pcchRemaining, DWORD dwFlags )
 {
-    int cchInit;
-    int cchSource;
+    size_t cchInit;
+    size_t cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = wcslen( lpszDestination );
     cchSource = wcslen( lpszSource );
-    wcsncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    if( cchDestination > cchInit ) {
+        wcsncat( lpszDestination, lpszSource, cchDestination - cchInit - 1 );
+    }
     if( cchInit + cchSource >= cchDestination ) {
         if( dwFlags & STRSAFE_NO_TRUNCATION ) {
             lpszDestination[0] = '\0';
@@ -228,13 +236,15 @@ __inline HRESULT StringCchCatExW( LPWSTR lpszDestination, size_t cchDestination,
 __inline HRESULT StringCchCatNA( LPSTR lpszDestination, size_t cchDestination,
                                  LPCSTR lpszSource, size_t cchMaxAppend )
 {
-    int cchInit;
+    size_t cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = strlen( lpszDestination );
-    strncat( lpszDestination, lpszSource,
-             max( cchDestination - cchInit - 1, cchMaxAppend ) );
+    if( cchDestination > cchInit ) {
+        strncat( lpszDestination, lpszSource,
+             min( cchDestination - cchInit - 1, cchMaxAppend ) );
+    }
     if( cchInit + min( strlen( lpszSource ), cchMaxAppend ) >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -245,13 +255,15 @@ __inline HRESULT StringCchCatNA( LPSTR lpszDestination, size_t cchDestination,
 __inline HRESULT StringCchCatNW( LPWSTR lpszDestination, size_t cchDestination,
                                  LPCWSTR lpszSource, size_t cchMaxAppend )
 {
-    int cchInit;
+    size_t cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = wcslen( lpszDestination );
-    wcsncat( lpszDestination, lpszSource,
-             max( cchDestination - cchInit - 1, cchMaxAppend ) );
+    if( cchDestination > cchInit ) {
+        wcsncat( lpszDestination, lpszSource,
+             min( cchDestination - cchInit - 1, cchMaxAppend ) );
+    }
     if( cchInit + min( wcslen( lpszSource ), cchMaxAppend ) >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -264,15 +276,17 @@ __inline HRESULT StringCchCatNExA( LPSTR lpszDestination, size_t cchDestination,
                                    LPSTR *lplpszDestinationEnd, size_t *pcchRemaining,
                                    DWORD dwFlags )
 {
-    int cchInit;
-    int cchSource;
+    size_t cchInit;
+    size_t cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = strlen( lpszDestination );
     cchSource = strlen( lpszSource );
-    strncat( lpszDestination, lpszSource,
-             max( cchDestination - cchInit - 1, cchMaxAppend ) );
+    if( cchDestination > cchInit ) {
+        strncat( lpszDestination, lpszSource,
+             min( cchDestination - cchInit - 1, cchMaxAppend ) );
+    }
     if( cchInit + min( cchSource, cchMaxAppend ) >= cchDestination ) {
         if( dwFlags & STRSAFE_NO_TRUNCATION ) {
             lpszDestination[0] = '\0';
@@ -308,15 +322,17 @@ __inline HRESULT StringCchCatNExW( LPWSTR lpszDestination, size_t cchDestination
                                    LPWSTR *lplpszDestinationEnd, size_t *pcchRemaining,
                                    DWORD dwFlags )
 {
-    int cchInit;
-    int cchSource;
+    size_t cchInit;
+    size_t cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     cchInit = wcslen( lpszDestination );
     cchSource = wcslen( lpszSource );
-    wcsncat( lpszDestination, lpszSource,
-             max( cchDestination - cchInit - 1, cchMaxAppend ) );
+    if( cchDestination > cchInit ) {
+        wcsncat( lpszDestination, lpszSource,
+             min( cchDestination - cchInit - 1, cchMaxAppend ) );
+    }
     if( cchInit + min( cchSource, cchMaxAppend ) >= cchDestination ) {
         if( dwFlags & STRSAFE_NO_TRUNCATION ) {
             lpszDestination[0] = '\0';
@@ -354,6 +370,7 @@ __inline HRESULT StringCchCopyA( LPSTR lpszDestination, size_t cchDestination,
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     strncpy( lpszDestination, lpszSource, cchDestination - 1 );
+    lpszDestination[cchDestination - 1] = '\0';
     if( strlen( lpszSource ) >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -368,6 +385,7 @@ __inline HRESULT StringCchCopyW( LPWSTR lpszDestination, size_t cchDestination,
         return( STRSAFE_E_INVALID_PARAMETER );
     }
     wcsncpy( lpszDestination, lpszSource, cchDestination - 1 );
+    lpszDestination[cchDestination - 1] = '\0';
     if( wcslen( lpszSource ) >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -379,7 +397,7 @@ __inline HRESULT StringCchCopyExA( LPSTR lpszDestination, size_t cchDestination,
                                    LPCSTR lpszSource, LPSTR *lplpszDestinationEnd,
                                    size_t *pcchRemaining, DWORD dwFlags )
 {
-    int cchSource;
+    size_t cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -418,7 +436,7 @@ __inline HRESULT StringCchCopyExW( LPWSTR lpszDestination, size_t cchDestination
                                    LPCWSTR lpszSource, LPWSTR *lplpszDestinationEnd,
                                    size_t *pcchRemaining, DWORD dwFlags )
 {
-    int cchSource;
+    size_t cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -456,10 +474,13 @@ __inline HRESULT StringCchCopyExW( LPWSTR lpszDestination, size_t cchDestination
 __inline HRESULT StringCchCopyNA( LPSTR lpszDestination, size_t cchDestination,
                                   LPCSTR lpszSource, size_t cchSource )
 {
+    size_t len;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
-    strncpy( lpszDestination, lpszSource, min( cchDestination - 1, cchSource ) );
+    len = min( cchDestination - 1, cchSource );
+    strncpy( lpszDestination, lpszSource, len );
+    lpszDestination[len] = '\0';
     if( cchSource >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -470,10 +491,13 @@ __inline HRESULT StringCchCopyNA( LPSTR lpszDestination, size_t cchDestination,
 __inline HRESULT StringCchCopyNW( LPWSTR lpszDestination, size_t cchDestination,
                                   LPCWSTR lpszSource, size_t cchSource )
 {
+    size_t len;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
-    wcsncpy( lpszDestination, lpszSource, min( cchDestination - 1, cchSource ) );
+    len = min( cchDestination - 1, cchSource );
+    wcsncpy( lpszDestination, lpszSource, len );
+    lpszDestination[len] = '\0';
     if( cchSource >= cchDestination ) {
         return( STRSAFE_E_INSUFFICIENT_BUFFER );
     } else {
@@ -482,7 +506,7 @@ __inline HRESULT StringCchCopyNW( LPWSTR lpszDestination, size_t cchDestination,
 }
 
 __inline HRESULT StringCchCopyNExA( LPSTR lpszDestination, size_t cchDestination,
-                                    LPCSTR lpszSource, int cchSource,
+                                    LPCSTR lpszSource, size_t cchSource,
                                     LPSTR *lplpszDestinationEnd, size_t *pcchRemaining,
                                     DWORD dwFlags )
 {
@@ -520,7 +544,7 @@ __inline HRESULT StringCchCopyNExA( LPSTR lpszDestination, size_t cchDestination
 }
 
 __inline HRESULT StringCchCopyNExW( LPWSTR lpszDestination, size_t cchDestination,
-                                    LPCWSTR lpszSource, int cchSource,
+                                    LPCWSTR lpszSource, size_t cchSource,
                                     LPWSTR *lplpszDestinationEnd, size_t *pcchRemaining,
                                     DWORD dwFlags )
 {
@@ -560,7 +584,7 @@ __inline HRESULT StringCchCopyNExW( LPWSTR lpszDestination, size_t cchDestinatio
 __inline HRESULT StringCchGetsA( LPSTR lpszDestination, size_t cchDestination )
 {
     int ch;
-    int i;
+    size_t i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -583,7 +607,7 @@ __inline HRESULT StringCchGetsA( LPSTR lpszDestination, size_t cchDestination )
 __inline HRESULT StringCchGetsW( LPWSTR lpszDestination, size_t cchDestination )
 {
     wint_t  ch;
-    int     i;
+    size_t  i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -608,7 +632,7 @@ __inline HRESULT StringCchGetsExA( LPSTR lpszDestination, size_t cchDestination,
                                    DWORD dwFlags )
 {
     int ch;
-    int i;
+    size_t i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -659,7 +683,7 @@ __inline HRESULT StringCchGetsExW( LPWSTR lpszDestination, size_t cchDestination
                                    DWORD dwFlags )
 {
     wint_t  ch;
-    int     i;
+    size_t  i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
