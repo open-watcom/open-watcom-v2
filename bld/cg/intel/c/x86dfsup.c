@@ -134,7 +134,7 @@ void   DFOutRegInd( dw_loc_id locid, name *reg )
 {
     dw_regs     dw_reg;
 
-    dw_reg = RegTransDW(  reg->r.reg );
+    dw_reg = RegTransDW( reg->r.reg );
     DWLocOp( Client, locid, DW_LOC_breg, dw_reg, 0 );
 }
 

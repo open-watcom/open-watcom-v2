@@ -90,8 +90,8 @@ extern hw_reg_set       *GPRegs( void );
 extern hw_reg_set       *FPRegs( void );
 extern hw_reg_set       SavedRegs( void );
 #if _TARGET & _TARG_370
-extern  hw_reg_set      RAReg( void );
-extern  hw_reg_set      LNReg( void );
+extern hw_reg_set       RAReg( void );
+extern hw_reg_set       LNReg( void );
 #endif
 #if _TARGET & _TARG_PPC
 extern hw_reg_set       TocReg( void );
