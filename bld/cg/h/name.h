@@ -180,7 +180,7 @@ typedef struct register_name {
         struct name_def         _n;
         hw_reg_set              reg;
         int                     reg_index;      /*  for scoreboarding */
-        int                     arch_index;     /*  used for encoding on AXP */
+        int                     arch_index;     /*  used for encoding on RISC architectures */
 } register_name;
 
 typedef struct indexed_name {
