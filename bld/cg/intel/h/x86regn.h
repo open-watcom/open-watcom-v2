@@ -45,6 +45,8 @@ typedef enum {
     DW_REG_END
 } dw_regs;
 
+typedef uint_8      reg_idx;
+
 extern hw_reg_set   GetFPReg( int idx );
 extern int          CountFPRegs( hw_reg_set regs );
 extern int          FPRegNum( name *reg_name );

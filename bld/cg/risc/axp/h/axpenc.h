@@ -31,10 +31,8 @@
 
 
 #include "axpencod.h"
+#include "axpregn.h"
 
-typedef uint_8      reg_idx;
-
-extern reg_idx      RegIndex( hw_reg_set reg );
 
 extern void         GenCallLabelReg( pointer label, reg_idx reg );
 extern void         GenOPINS( uint_8 opcode, uint_8 function, reg_idx ra, reg_idx rb, reg_idx rc );

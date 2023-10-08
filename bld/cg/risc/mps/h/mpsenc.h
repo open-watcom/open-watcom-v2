@@ -31,11 +31,8 @@
 
 
 #include "mipsenco.h"
+#include "mpsregn.h"
 
-
-typedef uint_8      reg_idx;
-
-extern reg_idx      RegIndex( hw_reg_set reg );
 
 extern void         GenCallLabelReg( pointer label, reg_idx reg );
 extern void         GenLOADS32( signed_32 value, reg_idx reg );

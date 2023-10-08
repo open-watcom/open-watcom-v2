@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "ppcregn.h"
 #include "ppcenc.h"
 #include "zoiks.h"
 #include "data.h"
@@ -791,20 +790,20 @@ static int      regTranslate( hw_reg_set reg, bool index )
         if( HW_Subset( DWordRegs[i], reg ) ) {
             if( index )
                 return( i );
-            return( i + PPC_REGN_r0 );
+            return( i + DW_REG_R0 );
         }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
         if( HW_Equal( reg, FloatRegs[i] ) ) {
             if( index )
                 return( i );
-            return( i + PPC_REGN_f0 );
+            return( i + DW_REG_F0 );
         }
     }
     if( index )
         return( 0 );
     _Zoiks( ZOIKS_031 );
-    return( PPC_REGN_END );
+    return( DW_REG_END );
 }
 
 reg_idx     RegIndex( hw_reg_set reg )
@@ -821,22 +820,13 @@ int GetArchIndex( hw_reg_set regs )
     return( RegIndex( regs ) );
 }
 
-ppc_regn    RegTrans( hw_reg_set reg )
+int    RegTransDW( hw_reg_set reg )
 /*************************************
  * Translate reg to enum name
  */
 {
-    return( (ppc_regn)regTranslate( reg, false ) );
+    return( regTranslate( reg, false ) );
 }
-
-ppc_regn    RegTransN( name *reg_name )
-/**************************************
- * Translate reg name to enum name
- */
-{
-    return( (ppc_regn)regTranslate( reg_name->r.reg, false ) );
-}
-
 
 hw_reg_set ParmRegConflicts( hw_reg_set r )
 /*****************************************/

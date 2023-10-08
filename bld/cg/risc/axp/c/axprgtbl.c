@@ -33,7 +33,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "axpregn.h"
 #include "axpenc.h"
 #include "zoiks.h"
 #include "data.h"
@@ -803,20 +802,20 @@ static int      regTranslate( hw_reg_set reg, bool index )
         if( HW_Subset( QWordRegs[i], reg ) ) {
             if( index )
                 return( i );
-            return( i+AXP_REGN_r0 );
+            return( i + DW_REG_R0 );
         }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
         if( HW_Equal( reg, FloatRegs[i] ) ) {
             if( index )
                 return( i );
-            return( i+AXP_REGN_f0 );
+            return( i + DW_REG_F0 );
         }
     }
     if( index )
         return( 0 );
     _Zoiks( ZOIKS_031 );
-    return( AXP_REGN_END );
+    return( DW_REG_END );
 }
 
 reg_idx RegIndex( hw_reg_set reg )
@@ -833,22 +832,13 @@ int GetArchIndex( hw_reg_set regs )
     return( RegIndex( regs ) );
 }
 
-axp_regn    RegTrans( hw_reg_set reg )
+int    RegTransDW( hw_reg_set reg )
 /*************************************
  * Translate reg to register index
  */
 {
-    return( (axp_regn)regTranslate( reg, false ) );
+    return( regTranslate( reg, false ) );
 }
-
-axp_regn    RegTransN( name *reg_name )
-/**************************************
- * Translate reg name to enum name
- */
-{
-    return( (axp_regn)regTranslate( reg_name->r.reg, false ) );
-}
-
 
 hw_reg_set      FirstReg( reg_set_index regs_idx )
 /*************************************************

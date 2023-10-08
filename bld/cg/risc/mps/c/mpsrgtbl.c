@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "mpsregn.h"
 #include "mpsenc.h"
 #include "zoiks.h"
 #include "data.h"
@@ -865,27 +864,27 @@ static int      regTranslate( hw_reg_set reg, bool index )
         if( HW_Subset( GeneralRegs[i], reg ) ) {
             if( index )
                 return( i );
-            return( i + MIPS_REGN_r0 );
+            return( i + DW_REG_R0 );
         }
     }
     for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
         if( HW_Subset( QWordRegs[i], reg ) ) {
             if( index )
                 return( i * 2 + 2 );
-            return( i * 2 + 2 + MIPS_REGN_r0 );
+            return( i * 2 + 2 + DW_REG_R0 );
         }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
         if( HW_Equal( reg, FloatRegs[i] ) ) {
             if( index )
                 return( i );
-            return( i + MIPS_REGN_f0 );
+            return( i + DW_REG_F0 );
         }
     }
     if( index )
         return( 0 );
     _Zoiks( ZOIKS_031 );
-    return( MIPS_REGN_END );
+    return( DW_REG_END );
 }
 
 reg_idx RegIndex( hw_reg_set reg )
@@ -903,22 +902,13 @@ int GetArchIndex( hw_reg_set regs )
 }
 
 
-mips_regn   RegTrans( hw_reg_set reg )
+int   RegTransDW( hw_reg_set reg )
 /*************************************
  * Translate reg to register index
  */
 {
-    return( (mips_regn)regTranslate( reg, false ) );
+    return( regTranslate( reg, false ) );
 }
-
-mips_regn    RegTransN( name *reg_name )
-/***************************************
- * Translate reg name to enum name
- */
-{
-    return( (mips_regn)regTranslate( reg_name->r.reg, false ) );
-}
-
 
 hw_reg_set      FirstReg( reg_set_index regs_idx )
 /*************************************************

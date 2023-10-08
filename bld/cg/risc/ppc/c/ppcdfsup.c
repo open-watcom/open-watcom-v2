@@ -52,35 +52,12 @@
 #include "cgprotos.h"
 
 
-#define MapReg2DW(r)   ((dw_regs)r)
-
-typedef enum {
-    #define pick(id,name)   DW_REG_ ## id,
-    #include "dwregppc.h"
-    DW_REG_MAX
-    #undef pick
-} dw_regs;
-
-static dw_regs  DFRegMap( hw_reg_set hw_reg )
-/*******************************************/
-{
-    return( MapReg2DW( RegTrans( hw_reg ) ) );
-}
-
-
-static dw_regs  DFRegMapN( name *reg )
-/************************************/
-{
-    return( MapReg2DW( RegTransN( reg ) ) );
-}
-
-
 void    DFOutReg( dw_loc_id locid, name *reg )
 /********************************************/
 {
     dw_regs     regnum;
 
-    regnum = DFRegMapN( reg );
+    regnum = RegTransDW( reg->r.reg );
     DWLocReg( Client, locid, regnum );
 }
 
@@ -90,7 +67,7 @@ void    DFOutRegInd( dw_loc_id locid, name *reg )
 {
     dw_regs     regnum;
 
-    regnum = DFRegMapN( reg );
+    regnum = RegTransDW( reg->r.reg );
     DWLocOp( Client, locid, DW_LOC_breg, regnum, 0 );
 }
 
@@ -98,5 +75,5 @@ void    DFOutRegInd( dw_loc_id locid, name *reg )
 uint     DFStkReg( void )
 /***********************/
 {
-    return( DFRegMap( StackReg() ) );
+    return( RegTransDW( StackReg() ) );
 }

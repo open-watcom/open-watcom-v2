@@ -31,73 +31,14 @@
 ****************************************************************************/
 
 
-typedef enum ppc_regn {
-    PPC_REGN_r0,
-    PPC_REGN_r1,
-    PPC_REGN_r2,
-    PPC_REGN_r3,
-    PPC_REGN_r4,
-    PPC_REGN_r5,
-    PPC_REGN_r6,
-    PPC_REGN_r7,
-    PPC_REGN_r8,
-    PPC_REGN_r9,
-    PPC_REGN_r10,
-    PPC_REGN_r11,
-    PPC_REGN_r12,
-    PPC_REGN_r13,
-    PPC_REGN_r14,
-    PPC_REGN_r15,
-    PPC_REGN_r16,
-    PPC_REGN_r17,
-    PPC_REGN_r18,
-    PPC_REGN_r19,
-    PPC_REGN_r20,
-    PPC_REGN_r21,
-    PPC_REGN_r22,
-    PPC_REGN_r23,
-    PPC_REGN_r24,
-    PPC_REGN_r25,
-    PPC_REGN_r26,
-    PPC_REGN_r27,
-    PPC_REGN_r28,
-    PPC_REGN_r29,
-    PPC_REGN_r30,
-    PPC_REGN_r31,
-    PPC_REGN_f0,
-    PPC_REGN_f1,
-    PPC_REGN_f2,
-    PPC_REGN_f3,
-    PPC_REGN_f4,
-    PPC_REGN_f5,
-    PPC_REGN_f6,
-    PPC_REGN_f7,
-    PPC_REGN_f8,
-    PPC_REGN_f9,
-    PPC_REGN_f10,
-    PPC_REGN_f11,
-    PPC_REGN_f12,
-    PPC_REGN_f13,
-    PPC_REGN_f14,
-    PPC_REGN_f15,
-    PPC_REGN_f16,
-    PPC_REGN_f17,
-    PPC_REGN_f18,
-    PPC_REGN_f19,
-    PPC_REGN_f20,
-    PPC_REGN_f21,
-    PPC_REGN_f22,
-    PPC_REGN_f23,
-    PPC_REGN_f24,
-    PPC_REGN_f25,
-    PPC_REGN_f26,
-    PPC_REGN_f27,
-    PPC_REGN_f28,
-    PPC_REGN_f29,
-    PPC_REGN_f30,
-    PPC_REGN_f31,
-    PPC_REGN_END,
-} ppc_regn;
+typedef enum {
+    #define pick(id,name)   DW_REG_ ## id,
+    #include "dwregppc.h"
+    DW_REG_END
+    #undef pick
+} dw_regs;
 
-extern ppc_regn     RegTrans( hw_reg_set reg );
-extern ppc_regn     RegTransN( name *reg_name );
+typedef uint_8      reg_idx;
+
+extern reg_idx      RegIndex( hw_reg_set reg );
+extern int          RegTransDW( hw_reg_set reg );
