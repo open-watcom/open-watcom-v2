@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +104,8 @@ typedef int                 level_depth;
 
 typedef unsigned_32         cg_linenum;
 
-typedef unsigned            objoffset;
-typedef unsigned            objhandle;
+typedef size_t              objoffset;
+typedef size_t              objhandle;
 #define INVALID_OBJHANDLE   0
 
 /* symbolic debugging type handles */

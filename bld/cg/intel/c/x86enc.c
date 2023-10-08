@@ -106,6 +106,58 @@ static hw_reg_set FPRegs[] = {
     HW_D( HW_ST7 )
 };
 
+struct reg_map {
+    hw_reg_set reg;
+    dw_regs    dwarf;
+};
+
+static struct reg_map    DWHWRegValues[] = {
+   { HW_D( HW_AL ),  DW_REG_AL },
+   { HW_D( HW_AH ),  DW_REG_AH },
+   { HW_D( HW_BL ),  DW_REG_BL },
+   { HW_D( HW_BH ),  DW_REG_BH },
+   { HW_D( HW_CL ),  DW_REG_CL },
+   { HW_D( HW_CH ),  DW_REG_CH },
+   { HW_D( HW_DL ),  DW_REG_DL },
+   { HW_D( HW_DH ),  DW_REG_DH },
+   { HW_D( HW_AX ),  DW_REG_AX },
+   { HW_D( HW_BX ),  DW_REG_BX },
+   { HW_D( HW_CX ),  DW_REG_CX },
+   { HW_D( HW_DX ),  DW_REG_DX },
+   { HW_D( HW_SI ),  DW_REG_SI },
+   { HW_D( HW_DI ),  DW_REG_DI },
+   { HW_D( HW_BP ),  DW_REG_BP },
+   { HW_D( HW_SP ),  DW_REG_SP },
+   { HW_D( HW_CS ),  DW_REG_CS },
+   { HW_D( HW_SS ),  DW_REG_SS },
+   { HW_D( HW_DS ),  DW_REG_DS },
+   { HW_D( HW_ES ),  DW_REG_ES },
+   { HW_D( HW_ST0 ), DW_REG_ST0 },
+   { HW_D( HW_ST1 ), DW_REG_ST1 },
+   { HW_D( HW_ST2 ), DW_REG_ST2 },
+   { HW_D( HW_ST3 ), DW_REG_ST3 },
+   { HW_D( HW_ST4 ), DW_REG_ST4 },
+   { HW_D( HW_ST5 ), DW_REG_ST5 },
+   { HW_D( HW_ST6 ), DW_REG_ST6 },
+   { HW_D( HW_ST7 ), DW_REG_ST7 },
+   { HW_D( HW_EAX ), DW_REG_EAX },
+   { HW_D( HW_EBX ), DW_REG_EBX },
+   { HW_D( HW_ECX ), DW_REG_ECX },
+   { HW_D( HW_EDX ), DW_REG_EDX },
+   { HW_D( HW_ESI ), DW_REG_ESI },
+   { HW_D( HW_EDI ), DW_REG_EDI },
+   { HW_D( HW_EBP ), DW_REG_EBP },
+   { HW_D( HW_ESP ), DW_REG_ESP },
+   { HW_D( HW_FS ),  DW_REG_FS },
+   { HW_D( HW_GS ),  DW_REG_GS }
+};
+
+static    hw_reg_set    WVHWRegValues[] = {
+    #define pick(name,ci,start,len)  HW_D( HW_##name ),
+    #include "watdbreg.h"
+    #undef pick
+};
+
 /* routines that maintain instruction buffers*/
 
 void    Format( oc_class class )
@@ -348,6 +400,35 @@ static int FPRegTrans( hw_reg_set reg )
     }
     return( -1 );
 }
+
+int RegTransDW( hw_reg_set reg )
+/******************************/
+{
+    int     i;
+
+    for( i = 0; i < sizeof( DWHWRegValues ) / sizeof( DWHWRegValues[0] ); i++ ) {
+        if( HW_Equal( DWHWRegValues[i].reg, reg ) ) {
+            return( DWHWRegValues[i].dwarf );
+        }
+    }
+    Zoiks( ZOIKS_085 ); /* reg not found */
+    return( DW_REG_END );
+}
+
+
+int RegTransWV( hw_reg_set reg )
+/******************************/
+{
+    int     i;
+
+    for( i = 0; i < sizeof( WVHWRegValues ) / sizeof( WVHWRegValues[0] ); i++ ) {
+        if( HW_Equal( WVHWRegValues[i], reg ) ) {
+            return( i );
+        }
+    }
+    return( -1 );
+}
+
 
 int     FPRegNum( name *reg_name )
 /*********************************

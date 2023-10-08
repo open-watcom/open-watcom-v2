@@ -31,6 +31,22 @@
 ****************************************************************************/
 
 
+typedef enum {
+    #define pick(id,ci,start,len) WV_REG_ ## id,
+    #include "watdbreg.h"
+    #undef pick
+    WV_REG_END
+} wv_regs;
+
+typedef enum {
+    #define pick(id,name,ci,start,len) DW_REG_ ## id,
+    #include "dwregx86.h"
+    #undef pick
+    DW_REG_END
+} dw_regs;
+
 extern hw_reg_set   GetFPReg( int idx );
 extern int          CountFPRegs( hw_reg_set regs );
 extern int          FPRegNum( name *reg_name );
+extern int          RegTransDW( hw_reg_set reg );
+extern int          RegTransWV( hw_reg_set reg );

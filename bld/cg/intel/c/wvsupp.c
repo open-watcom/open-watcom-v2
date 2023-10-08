@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,28 +40,9 @@
 #include "regset.h"
 #include "rgtbl.h"
 #include "x86dbsup.h"
+#include "x86regn.h"
 #include "wvsupp.h"
 #include "cgprotos.h"
-
-
-static    hw_reg_set    HWRegValues[] = {
-    #define pick(name,ci,start,len)  HW_D( HW_##name ),
-    #include "watdbreg.h"
-    #undef pick
-};
-
-static int  RegIndex( hw_reg_set hw_reg )
-/***************************************/
-{
-    int     i;
-
-    for( i = 0; i < sizeof( HWRegValues ) / sizeof( HWRegValues[0] ); i++ ) {
-        if( HW_Equal( HWRegValues[i], hw_reg ) ) {
-            return( i );
-        }
-    }
-    return( -1 );
-}
 
 
 static  uint    MultiReg( register_name *reg )
@@ -73,10 +54,10 @@ static  uint    MultiReg( register_name *reg )
     hw_reg = reg->reg;
 #if _TARGET & _TARG_8086
     if( HW_CEqual( hw_reg, HW_ABCD ) ) {
-        BuffByte( REG_DX );
-        BuffByte( REG_CX );
-        BuffByte( REG_BX );
-        BuffByte( REG_AX );
+        BuffByte( WV_REG_DX );
+        BuffByte( WV_REG_CX );
+        BuffByte( WV_REG_BX );
+        BuffByte( WV_REG_AX );
         return( 4 );
     }
 #endif
@@ -86,13 +67,13 @@ static  uint    MultiReg( register_name *reg )
     hw_reg = Low64Reg( hw_reg );
 #endif
     if( HW_CEqual( hw_reg, HW_EMPTY ) ) {
-        BuffByte( RegIndex( reg->reg ) );
+        BuffByte( RegTransWV( reg->reg ) );
         return( 1 );
    } else {
-        BuffByte( RegIndex( hw_reg ) );
+        BuffByte( RegTransWV( hw_reg ) );
         tmp = reg->reg;
         HW_TurnOff( tmp, hw_reg );
-        BuffByte( RegIndex( tmp ) );
+        BuffByte( RegTransWV( tmp ) );
         return( 2 );
     }
 }
@@ -140,7 +121,7 @@ static  void    DoLocDump( dbg_loc loc )
         }
         break;
     case LOC_REG:
-        reg = RegIndex( loc->u.be_sym->r.reg );
+        reg = RegTransWV( loc->u.be_sym->r.reg );
         if( reg > 15 ) {
             patch = BuffLoc();
             BuffByte( 0 );
@@ -155,7 +136,7 @@ static  void    DoLocDump( dbg_loc loc )
             //       suitable. For now, output a no location.
             BuffByte( 0 );
         } else {
-            reg = RegIndex( loc->u.be_sym->r.reg );
+            reg = RegTransWV( loc->u.be_sym->r.reg );
             if( reg < 0 ) { /* register not found */
                 BuffByte( loc->class + 1 ); /* assumes ..._FAR is one greater*/
                 MultiReg( &loc->u.be_sym->r );
