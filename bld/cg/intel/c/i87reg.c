@@ -48,18 +48,8 @@
 #include "escape.h"
 #include "pcencode.h"
 #include "liveinfo.h"
+#include "x86regn.h"
 
-
-static hw_reg_set FPRegs[] = {
-    HW_D( HW_ST0 ),
-    HW_D( HW_ST1 ),
-    HW_D( HW_ST2 ),
-    HW_D( HW_ST3 ),
-    HW_D( HW_ST4 ),
-    HW_D( HW_ST5 ),
-    HW_D( HW_ST6 ),
-    HW_D( HW_ST7 )
-};
 
 static fp_patches   FPPatchType;
 
@@ -154,42 +144,12 @@ void FPPatchTypeRef( void )
     }
 }
 
-int FPRegTrans( hw_reg_set reg )
-/******************************/
-{
-    int         i;
-
-    for( i = 0; i < 8; i++ ) {
-        if( HW_Equal( reg, FPRegs[i] ) ) {
-            return( i );
-        }
-    }
-    return( -1 );
-}
-
-int     Count87Regs( hw_reg_set regs )
-/***********************************************
-    Count the number of 8087 registers named in hw_reg_set "regs".
-*/
-{
-    int         count;
-    int         i;
-
-    count = 0;
-    for( i = 0; i < 8; i++ ) {
-        if( HW_Ovlap( FPRegs[i], regs ) ) {
-            ++count;
-        }
-    }
-    return( count );
-}
-
 void SetFPParmsUsed( call_state *state, int parms )
 /*************************************************/
 {
     HW_CTurnOff( state->parm.used, HW_FLTS );
     while( parms-- > 0 ) {
-        HW_TurnOn( state->parm.used, FPRegs[parms] );
+        HW_TurnOn( state->parm.used, GetFPReg( parms ) );
     }
 }
 
@@ -198,7 +158,7 @@ name    *ST( int num )
     return an N_REGISTER for ST(num)
 */
 {
-    return( AllocRegName( FPRegs[num] ) );
+    return( AllocRegName( GetFPReg( num ) ) );
 }
 
 
@@ -267,7 +227,7 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level )
     if( MathOpsBlowStack( conf, *stk_level ) )
         return( false );
     ++*stk_level;
-    need_live_update = AssignARegister( conf, FPRegs[*stk_level] );
+    need_live_update = AssignARegister( conf, GetFPReg( *stk_level ) );
     return( need_live_update );
 }
 
@@ -286,7 +246,7 @@ static  void    AssignFPOps( instruction *ins, int *stk_level )
     /* Now check operands ... bump down stack level for each*/
     /* top of stack operand that will be popped (may be more than one)*/
     if( _OpIsCall( ins->head.opcode ) ) {
-        *stk_level -= Count87Regs( ins->operands[CALL_OP_USED]->r.reg );
+        *stk_level -= CountFPRegs( ins->operands[CALL_OP_USED]->r.reg );
     } else {
         old_level = *stk_level;
         for( i = ins->num_operands; i-- > 0; ) {

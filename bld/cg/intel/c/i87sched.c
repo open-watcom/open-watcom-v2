@@ -47,6 +47,7 @@
 #include "optab.h"
 #include "fixindex.h"
 #include "revcond.h"
+#include "x86regn.h"
 
 
 static const opcode_entry    RFST[1] = {
@@ -902,7 +903,7 @@ static  void    ReOrderForCall( instruction *ins )
     int         i;
     int         count;
 
-    count = Count87Regs( ins->operands[CALL_OP_USED]->r.reg );
+    count = CountFPRegs( ins->operands[CALL_OP_USED]->r.reg );
     XchForCall( ins, count - 1 );
     for( i = 0; i < count; ++i ) {
         PopStack( ins );

@@ -95,6 +95,17 @@ static  hw_reg_set SegTab[] = {
     #undef _SR_
 };
 
+static hw_reg_set FPRegs[] = {
+    HW_D( HW_ST0 ),
+    HW_D( HW_ST1 ),
+    HW_D( HW_ST2 ),
+    HW_D( HW_ST3 ),
+    HW_D( HW_ST4 ),
+    HW_D( HW_ST5 ),
+    HW_D( HW_ST6 ),
+    HW_D( HW_ST7 )
+};
+
 /* routines that maintain instruction buffers*/
 
 void    Format( oc_class class )
@@ -323,6 +334,55 @@ static  byte    RegTrans( hw_reg_set regs ) {
     }
     i = i / 3;
     return( i );
+}
+
+static int FPRegTrans( hw_reg_set reg )
+/*************************************/
+{
+    int         i;
+
+    for( i = 0; i < 8; i++ ) {
+        if( HW_Equal( reg, FPRegs[i] ) ) {
+            return( i );
+        }
+    }
+    return( -1 );
+}
+
+int     FPRegNum( name *reg_name )
+/*********************************
+    given a name, return the 8087 register number (0-7) or -1 if
+    it isn't an 8087 register
+*/
+{
+    if( reg_name == NULL
+      || reg_name->n.class != N_REGISTER
+      || !HW_COvlap( reg_name->r.reg, HW_FLTS ) )
+        return( -1 );
+    return( FPRegTrans( reg_name->r.reg ) );
+}
+
+hw_reg_set   GetFPReg( int idx )
+{
+    return( FPRegs[idx] );
+}
+
+
+int     CountFPRegs( hw_reg_set regs )
+/***********************************************
+    Count the number of 8087 registers named in hw_reg_set "regs".
+*/
+{
+    int         count;
+    int         i;
+
+    count = 0;
+    for( i = 0; i < 8; i++ ) {
+        if( HW_Ovlap( FPRegs[i], regs ) ) {
+            ++count;
+        }
+    }
+    return( count );
 }
 
 #if _TARGET & _TARG_80386

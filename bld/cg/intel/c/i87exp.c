@@ -49,6 +49,7 @@
 #include "revcond.h"
 #include "temps.h"
 #include "opctable.h"
+#include "x86regn.h"
 #include "feprotos.h"
 
 
@@ -221,7 +222,7 @@ bool    FPStackReg( name *reg_name )
 {
     int         reg_num;
 
-    reg_num = FPRegNum( reg_name->r.reg );
+    reg_num = FPRegNum( reg_name );
     if( reg_num == -1 )
         return( false );
     if( reg_num < Max87Stk )
@@ -229,19 +230,6 @@ bool    FPStackReg( name *reg_name )
     return( false );
 }
 
-
-int     FPRegNum( name *reg_name )
-/*********************************
-    given a name, return the 8087 register number (0-7) or -1 if
-    it isn't an 8087 register
-*/
-{
-    if( reg_name == NULL
-      || reg_name->n.class != N_REGISTER
-      || !HW_COvlap( reg_name->r.reg, HW_FLTS ) )
-        return( -1 );
-    return( FPRegTrans( reg_name->r.reg ) );
-}
 
 instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
 /*********************************************************************/

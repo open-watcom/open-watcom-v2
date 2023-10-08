@@ -53,6 +53,7 @@
 #include "inssched.h"
 #include "bldins.h"
 #include "liveinfo.h"
+#include "x86regn.h"
 
 
 void    FPParms( void )

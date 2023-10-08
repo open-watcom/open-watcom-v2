@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 
 
 /* i87exp.c*/
-extern int              FPRegNum( name *reg_name );
 extern instruction      *PrefFLDOp( instruction *ins, operand_type op, name *opnd );
 extern bool             FPResultNotNeeded( instruction *ins );
 extern instruction      *SuffFSTPRes( instruction *ins, name *opnd, result_type res );
@@ -59,8 +58,6 @@ extern void             SetFPParmsUsed( call_state *state, int parms );
 extern name             *ST( int i );
 extern void             FPInitStkReq( void );
 extern int              FPStkReq( instruction *ins );
-extern int              Count87Regs( hw_reg_set regs );
-extern int              FPRegTrans( hw_reg_set reg );
 extern void             SetFPPatchSegm( int i );
 extern void             SetFPPatchType( fp_patches type );
 extern void             FPPatchTypeRef( void );
