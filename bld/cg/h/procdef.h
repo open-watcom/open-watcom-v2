@@ -53,8 +53,8 @@ typedef struct parm_state {
     hw_reg_set          *curr_entry;
     type_length         offset;
 #if _TARGET & _TARG_PPC
-    uint_32             gr;
-    uint_32             fr;
+    unsigned            gr;
+    unsigned            fr;
 #endif
 } parm_state;
 
