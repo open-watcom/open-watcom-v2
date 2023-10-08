@@ -815,10 +815,10 @@ reg_idx     RegIndex( hw_reg_set reg )
     return( (reg_idx)regTranslate( reg, true ) );
 }
 
-void SetArchIndex( name *new_r, hw_reg_set regs )
+int GetArchIndex( hw_reg_set regs )
 /***********************************************/
 {
-    new_r->r.arch_index = RegIndex( regs );
+    return( RegIndex( regs ) );
 }
 
 ppc_regn    RegTrans( hw_reg_set reg )

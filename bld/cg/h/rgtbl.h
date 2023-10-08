@@ -84,7 +84,7 @@ extern hw_reg_set       ReturnReg( type_class_def type_class );
 extern reg_set_index    UsualPossible( type_class_def type_class );
 extern hw_reg_set       FrameBaseReg( void );
 extern hw_reg_set       FrameReg( void );
-extern void             SetArchIndex( name *new_r, hw_reg_set regs );
+extern int              GetArchIndex( hw_reg_set regs );
 extern hw_reg_set       *ParmRegs( void );
 extern hw_reg_set       *GPRegs( void );
 extern hw_reg_set       *FPRegs( void );
