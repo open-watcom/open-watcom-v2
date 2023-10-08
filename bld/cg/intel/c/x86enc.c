@@ -401,8 +401,8 @@ static int FPRegTrans( hw_reg_set reg )
     return( -1 );
 }
 
-int RegTransDW( hw_reg_set reg )
-/******************************/
+dw_regs RegTransDW( hw_reg_set reg )
+/**********************************/
 {
     int     i;
 

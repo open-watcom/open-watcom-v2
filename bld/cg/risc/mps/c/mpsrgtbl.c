@@ -902,12 +902,12 @@ int GetArchIndex( hw_reg_set regs )
 }
 
 
-int   RegTransDW( hw_reg_set reg )
+dw_regs   RegTransDW( hw_reg_set reg )
 /*************************************
  * Translate reg to register index
  */
 {
-    return( regTranslate( reg, false ) );
+    return( (dw_regs)regTranslate( reg, false ) );
 }
 
 hw_reg_set      FirstReg( reg_set_index regs_idx )

@@ -820,12 +820,12 @@ int GetArchIndex( hw_reg_set regs )
     return( RegIndex( regs ) );
 }
 
-int    RegTransDW( hw_reg_set reg )
+dw_regs   RegTransDW( hw_reg_set reg )
 /*************************************
  * Translate reg to enum name
  */
 {
-    return( regTranslate( reg, false ) );
+    return( (dw_regs)regTranslate( reg, false ) );
 }
 
 hw_reg_set ParmRegConflicts( hw_reg_set r )

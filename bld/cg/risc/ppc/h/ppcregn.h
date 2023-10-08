@@ -41,4 +41,4 @@ typedef enum {
 typedef uint_8      reg_idx;
 
 extern reg_idx      RegIndex( hw_reg_set reg );
-extern int          RegTransDW( hw_reg_set reg );
+extern dw_regs      RegTransDW( hw_reg_set reg );
