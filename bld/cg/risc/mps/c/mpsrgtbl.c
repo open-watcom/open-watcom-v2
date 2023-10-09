@@ -887,7 +887,7 @@ static int      regTranslate( hw_reg_set reg, bool index )
     return( DW_REG_END );
 }
 
-reg_idx RegIndex( hw_reg_set reg )
+reg_idx RegTrans( hw_reg_set reg )
 /*********************************
  * Translate reg to register index
  */
@@ -898,7 +898,7 @@ reg_idx RegIndex( hw_reg_set reg )
 int GetArchIndex( hw_reg_set regs )
 /***********************************************/
 {
-    return( RegIndex( regs ) );
+    return( RegTrans( regs ) );
 }
 
 

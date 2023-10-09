@@ -58,7 +58,7 @@
 #include "feprotos.h"
 
 
-#define _NameRegIndex( op )             ( (op)->r.arch_index )
+#define _NameRegTrans( op )             ( (op)->r.arch_index )
 
 #define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
@@ -604,7 +604,7 @@ static  void getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
         assert( mem->i.scale == 0 );
         assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
-        *regidx_mem = _NameRegIndex( mem->i.index );
+        *regidx_mem = _NameRegTrans( mem->i.index );
         *offset = (int_16)mem->i.constant;
         break;
     case N_TEMP:
@@ -640,7 +640,7 @@ static  void doLoadStore( instruction *ins, bool load )
     }
     assert( reg->n.class == N_REGISTER );
     getMemEncoding( mem, &regidx_mem, &offset );
-    GenMEMINS( opcode, _NameRegIndex( reg ), regidx_mem, offset );
+    GenMEMINS( opcode, _NameRegTrans( reg ), regidx_mem, offset );
 }
 
 
@@ -675,8 +675,8 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
     /*
      * TODO: make sure offset can't overflow
      */
-    GenMEMINS( opcode1, _NameRegIndex( reg ), regidx_mem, offset + 3 );
-    GenMEMINS( opcode2, _NameRegIndex( reg ), regidx_mem, offset );
+    GenMEMINS( opcode1, _NameRegTrans( reg ), regidx_mem, offset + 3 );
+    GenMEMINS( opcode2, _NameRegTrans( reg ), regidx_mem, offset );
 #else
     doLoadStore( ins, load );
 #endif
@@ -698,7 +698,7 @@ static  void GenCallIndirect( instruction *call )
     addr = call->operands[CALL_OP_ADDR];
     switch( addr->n.class ) {
     case N_REGISTER:
-        regidx = _NameRegIndex( addr );
+        regidx = _NameRegTrans( addr );
         break;
     case N_TEMP:
     case N_INDEXED:
@@ -728,13 +728,13 @@ static  void doZero( instruction *ins, type_class_def type_class )
         /*
          * 'andi res,op1,0x00ff'
          */
-        GenIType( 0x0c, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), 0x00ff );
+        GenIType( 0x0c, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0x00ff );
         break;
     case 2:
         /*
          * 'andi res,op1,0xffff'
          */
-        GenIType( 0x0c, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), (int_16)0x0ffff );
+        GenIType( 0x0c, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), (int_16)0x0ffff );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -750,8 +750,8 @@ static  void doSignExtend( instruction *ins, type_class_def type_class )
     int         src_index;
     int         shift_amt;
 
-    res_index = _NameRegIndex( ins->result );
-    src_index = _NameRegIndex( ins->operands[0] );
+    res_index = _NameRegTrans( ins->result );
+    src_index = _NameRegTrans( ins->operands[0] );
     from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
         /*
@@ -818,7 +818,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
     GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, RDTEB_MAGIC_CONST );
     GenOPINS( 0x0010, 0x0002, AT_REG_IDX, RT_RET_REG_IDX, RT_RET_REG_IDX );
     GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, 0 );
-    GenMEMINSRELOC( 0x08, _NameRegIndex( ins->result ),
+    GenMEMINSRELOC( 0x08, _NameRegTrans( ins->result ),
                 RT_RET_REG_IDX, 0, symLabel( op ), OWL_RELOC_HALF_LO );
 #else
     assert( 0 );
@@ -861,20 +861,20 @@ static  void Encode( instruction *ins )
             case FS:
             case FD:
             case FL:
-                GenFloatRType( ins->type_class, 0x07, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), 0 );
+                GenFloatRType( ins->type_class, 0x07, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0 );
                 break;
             default:
                 /*
                  * 'subu rd,$zero,rs'
                  */
-                GenRType( 0x00, 0x23, _NameRegIndex( ins->result ), ZERO_REG_IDX, _NameRegIndex( ins->operands[0] ) );
+                GenRType( 0x00, 0x23, _NameRegTrans( ins->result ), ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ) );
             }
             break;
         case OP_COMPLEMENT:
             /*
              * 'nor rd,$zero,rs'
              */
-            GenRType( 0x00, 0x27, _NameRegIndex( ins->result ), ZERO_REG_IDX, _NameRegIndex( ins->operands[0] ) );
+            GenRType( 0x00, 0x27, _NameRegTrans( ins->result ), ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ) );
             break;
         default:
             _Zoiks( ZOIKS_028 );
@@ -886,7 +886,7 @@ static  void Encode( instruction *ins )
         /*
          * 'mov.s fd,fs'
          */
-        GenFloatRType( FS, 0x06, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), 0 );
+        GenFloatRType( FS, 0x06, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0 );
         break;
     case G_ZERO:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -906,12 +906,12 @@ static  void Encode( instruction *ins )
         /*
          * 'cvt.s.d fd,fs'
          */
-        GenFloatRType( FD, 0x20, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), 0 );
+        GenFloatRType( FD, 0x20, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0 );
         break;
     case G_FREGTOMI8:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class != N_REGISTER );
-        regidx = _NameRegIndex( ins->operands[0] );
+        regidx = _NameRegTrans( ins->operands[0] );
         getMemEncoding( ins->result, &regidx_mem, &mem_offset );
         /*
          * 'sdc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
@@ -921,7 +921,7 @@ static  void Encode( instruction *ins )
     case G_MI8TOFREG:
         assert( ins->operands[0]->n.class != N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        regidx = _NameRegIndex( ins->result );
+        regidx = _NameRegTrans( ins->result );
         getMemEncoding( ins->operands[0], &regidx_mem, &mem_offset );
         /*
          * 'ldc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
@@ -933,8 +933,8 @@ static  void Encode( instruction *ins )
         assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         function = FindFloatingOpcodes( ins );
-        regidx = _OpIsSet( ins->head.opcode ) ? 0 : _NameRegIndex( ins->result );
-        GenFloatRType( ins->type_class, function, regidx, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->operands[1] ) );
+        regidx = _OpIsSet( ins->head.opcode ) ? 0 : _NameRegTrans( ins->result );
+        GenFloatRType( ins->type_class, function, regidx, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
         break;
     case G_BINARY:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -947,37 +947,37 @@ static  void Encode( instruction *ins )
             /*
              * 'sllv', 'srlv' and 'srav' have the operands backwards
              */
-            GenRType( opcodes[0], opcodes[1], _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[1] ), _NameRegIndex( ins->operands[0] ) );
+            GenRType( opcodes[0], opcodes[1], _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[1] ), _NameRegTrans( ins->operands[0] ) );
             break;
         case OP_MUL:
-            GenRType( opcodes[0], opcodes[1], 0, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], 0, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             /*
              * 'mflo rd'
              */
-            GenRType( 0, 0x12, _NameRegIndex( ins->result ), 0, 0 );
+            GenRType( 0, 0x12, _NameRegTrans( ins->result ), 0, 0 );
             break;
         case OP_DIV:
             /*
              * TODO: do something if divisor is zero
              */
-            GenRType( opcodes[0], opcodes[1], 0, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], 0, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             /*
              * 'mflo rd'
              */
-            GenRType( 0, 0x12, _NameRegIndex( ins->result ), 0, 0 );
+            GenRType( 0, 0x12, _NameRegTrans( ins->result ), 0, 0 );
             break;
         case OP_MOD:
             /*
              * TODO: do something if divisor is zero
              */
-            GenRType( opcodes[0], opcodes[1], 0, _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], 0, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             /*
              * 'mfhi rd'
              */
-            GenRType( 0, 0x10, _NameRegIndex( ins->result ), 0, 0 );
+            GenRType( 0, 0x10, _NameRegTrans( ins->result ), 0, 0 );
             break;
         default:
-            GenRType( opcodes[0], opcodes[1], _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), _NameRegIndex( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             break;
         }
         break;
@@ -991,19 +991,19 @@ static  void Encode( instruction *ins )
             /*
              * 'sll rd,rs,n'
              */
-            GenIShift( 0x00, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), imm_value );
+            GenIShift( 0x00, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), imm_value );
             break;
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
                 /*
                  * 'sra rd,rs,n'
                  */
-                GenIShift( 0x03, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), imm_value );
+                GenIShift( 0x03, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), imm_value );
             } else {
                 /*
                  * 'srl rd,rs,n'
                  */
-                GenIShift( 0x02, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), imm_value );
+                GenIShift( 0x02, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), imm_value );
             }
             break;
         case OP_SUB:
@@ -1017,7 +1017,7 @@ static  void Encode( instruction *ins )
              */
         default:
             opcode = FindImmedOpcode( ins );
-            GenIType( opcode, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), imm_value );
+            GenIType( opcode, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), imm_value );
             break;
         }
         break;
@@ -1030,7 +1030,7 @@ static  void Encode( instruction *ins )
         /*
          * 'addiu rt,$zero,immed'
          */
-        GenIType( 0x09, _NameRegIndex( ins->result ), ZERO_REG_IDX, (uint_8)ins->operands[0]->c.lo.int_value );
+        GenIType( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX, (uint_8)ins->operands[0]->c.lo.int_value );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -1038,13 +1038,13 @@ static  void Encode( instruction *ins )
         /*
          * 'or rd,rs,$zero'
          */
-        GenRType( 0x00, 0x25, _NameRegIndex( ins->result ), _NameRegIndex( ins->operands[0] ), ZERO_REG_IDX );
+        GenRType( 0x00, 0x25, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
         if( TypeClassSize[ins->type_class] == 8 ) {
             /*
              * Move the odd register, too
              * TODO: there should probably be a separate G_MOVE8?
              */
-            GenRType( 0x00, 0x25, _NameRegIndex( ins->result ) + 1, _NameRegIndex( ins->operands[0] ) + 1, ZERO_REG_IDX );
+            GenRType( 0x00, 0x25, _NameRegTrans( ins->result ) + 1, _NameRegTrans( ins->operands[0] ) + 1, ZERO_REG_IDX );
         }
         break;
     case G_LEA_HIGH:
@@ -1054,7 +1054,7 @@ static  void Encode( instruction *ins )
         /*
          * 'lui rt,immed'
          */
-        GenIType( 0x0f, _NameRegIndex( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value & 0xffff );
+        GenIType( 0x0f, _NameRegTrans( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -1064,7 +1064,7 @@ static  void Encode( instruction *ins )
             /*
              * 'addiu rt,$zero,immed'
              */
-            GenIType( 0x09, _NameRegIndex( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
+            GenIType( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -1083,7 +1083,7 @@ static  void Encode( instruction *ins )
             /*
              * 'addiu rt,rs,immed'
              */
-            GenIType( 0x09, _NameRegIndex( ins->result ), regidx_mem, mem_offset );
+            GenIType( 0x09, _NameRegTrans( ins->result ), regidx_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );
@@ -1095,11 +1095,11 @@ static  void Encode( instruction *ins )
                 /*
                  * 'lui rt,immed'
                  */
-                GenMEMINSRELOC( 0x0f, _NameRegIndex( ins->result ), ZERO_REG_IDX, high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
+                GenMEMINSRELOC( 0x0f, _NameRegTrans( ins->result ), ZERO_REG_IDX, high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
                 /*
                  * 'addiu rt,rs,immed'
                  */
-                GenMEMINSRELOC( 0x09, _NameRegIndex( ins->result ), _NameRegIndex( ins->result ), low, symLabel( ins->operands[0] ), OWL_RELOC_HALF_LO );
+                GenMEMINSRELOC( 0x09, _NameRegTrans( ins->result ), _NameRegTrans( ins->result ), low, symLabel( ins->operands[0] ), OWL_RELOC_HALF_LO );
             }
             break;
         default:
@@ -1111,7 +1111,7 @@ static  void Encode( instruction *ins )
          * a load of an unsigned 16-bit immediate
          * 'ori rt,rs,immed'
          */
-        GenIType( 0x0d, _NameRegIndex( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
+        GenIType( 0x0d, _NameRegTrans( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
         break;
     case G_LOAD_UA:
         doLoadStoreUnaligned( ins, true );

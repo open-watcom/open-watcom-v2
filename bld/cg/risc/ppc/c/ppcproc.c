@@ -148,7 +148,7 @@ static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl )
     result = 0;
     for( curr = rl; !HW_CEqual( *curr, HW_EMPTY ); curr++ ) {
         if( HW_Ovlap( rs, *curr ) ) {
-            result |= 1 << RegIndex( *curr );
+            result |= 1 << RegTrans( *curr );
         }
     }
     return( result );
