@@ -799,7 +799,7 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         GenFPOPINS( 0x16, 0xac,
-                31, _NameRegTrans( ins->operands[0] ),
+                ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
                 _NameRegTrans( ins->result ) );
         break;
     case G_FREGTOMI8:

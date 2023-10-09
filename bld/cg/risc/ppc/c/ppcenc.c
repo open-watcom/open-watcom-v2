@@ -477,14 +477,14 @@ static  void    doSign( instruction *ins )
         /*
          * extsb
          */
-        GenOPINS( 31, 954, _NameRegTrans( ins->result ), 0, _NameRegTrans( ins->operands[0] ) );
+        GenOPINS( 31, 954, _NameRegTrans( ins->result ), ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ) );
         break;
     case U2:
     case I2:
         /*
          * extsh
          */
-        GenOPINS( 31, 922, _NameRegTrans( ins->result ), 0, _NameRegTrans( ins->operands[0] ) );
+        GenOPINS( 31, 922, _NameRegTrans( ins->result ), ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ) );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -619,7 +619,7 @@ static  void    Encode( instruction *ins )
     case G_MOVE_FP:
         assert( ins->result->n.class == N_REGISTER );
         assert( ins->operands[0]->n.class == N_REGISTER );
-        GenOPINS( 63, 72, 0, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->result ) );
+        GenOPINS( 63, 72, ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->result ) );
         break;
     case G_MOVE:
         // or op, op -> dst
@@ -803,7 +803,7 @@ static  void    Encode( instruction *ins )
         switch( ins->head.opcode ) {
         case OP_NEGATE:
             // neg src -> dst
-            GenOPINS( 31, 104, a, 0, s );
+            GenOPINS( 31, 104, a, ZERO_REG_IDX, s );
             break;
         case OP_COMPLEMENT:
             GenOPINS( 31, 124, a, a, s );
