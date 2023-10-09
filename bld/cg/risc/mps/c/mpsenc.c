@@ -58,12 +58,12 @@
 #include "feprotos.h"
 
 
-#define _NameRegTrans( op )             ( (op)->r.arch_index )
+#define _NameRegTrans( op )         ((reg_idx)(op)->r.arch_index)
 
-#define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
-#define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
-#define _BinaryImmOpcode( a )           { a, a }
-#define _SignedImmOpcode( a, b )        { a, b }
+#define _BinaryOpcode( a, b )       { { a, b }, { a, b } }
+#define _SignedOpcode( a, b, c, d ) { { a, b }, { c, d } }
+#define _BinaryImmOpcode( a )       { a, a }
+#define _SignedImmOpcode( a, b )    { a, b }
 
 /*
  * This is NT stuff - probably irreleveant unless someone wanted to
@@ -734,7 +734,7 @@ static  void doZero( instruction *ins, type_class_def type_class )
         /*
          * 'andi res,op1,0xffff'
          */
-        GenIType( 0x0c, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), (int_16)0x0ffff );
+        GenIType( 0x0c, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), -1 );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -746,18 +746,18 @@ static  void doSignExtend( instruction *ins, type_class_def type_class )
 /**********************************************************************/
 {
     unsigned    from_size;
-    int         res_index;
-    int         src_index;
+    reg_idx     reg_res;
+    reg_idx     reg_src;
     int         shift_amt;
 
-    res_index = _NameRegTrans( ins->result );
-    src_index = _NameRegTrans( ins->operands[0] );
+    reg_res = _NameRegTrans( ins->result );
+    reg_src = _NameRegTrans( ins->operands[0] );
     from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
         /*
          * 'addu rd,$zero,rs' - MIPS64 only?
          */
-        GenRType( 0x00, 0x21, res_index, ZERO_REG_IDX, src_index );
+        GenRType( 0x00, 0x21, reg_res, ZERO_REG_IDX, reg_src );
     } else {
         /*
          * MIPS32 ISA Release 2 has 'seb'/'seh' instructions for this
@@ -766,11 +766,11 @@ static  void doSignExtend( instruction *ins, type_class_def type_class )
         /*
          * 'sll rd,rs,n'
          */
-        GenIShift( 0x00, res_index, src_index, shift_amt );
+        GenIShift( 0x00, reg_res, reg_src, shift_amt );
         /*
          * 'sra rd,rs,n'
          */
-        GenIShift( 0x03, res_index, res_index, shift_amt );
+        GenIShift( 0x03, reg_res, reg_res, shift_amt );
     }
 }
 

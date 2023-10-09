@@ -38,6 +38,39 @@
 #include "rgtbl.h"
 
 
+#define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
+
+/*
+ * register, register class and range definitions
+ */
+#define pick_item(id)    ARCH_IDX_ ## id
+#define pick_start(id)   ARCH_ ## id ## _START
+#define pick_end(id)     ARCH_ ## id ## _END
+
+enum {
+    #define pick(id,idx,cls) pick_item(id),
+    #include "regindex.h"
+    #undef pick
+    pick_item( END ),
+    pick_item( START ) = 0
+};
+
+enum {
+    #define MAPREGCLASS
+    #include "regindex.h"
+    #undef MAPREGCLASS
+};
+
+#undef pick_end
+#undef pick_start
+#undef pick_item
+
+const arch_reg_info RegsTab[] = {
+    #define pick(id,idx,cls) { HW_D_1( HW_ ## id ), idx, cls ## _IDX, DW_REG_ ## id },
+    #include "regindex.h"
+    #undef pick
+};
+
 static  hw_reg_set      Empty[] = {
     EMPTY
 };
@@ -351,6 +384,40 @@ static  reg_set_index   IsSets[] = {
     RL_                     /* XX*/
 };
 
+#if 0
+static int findArchRegIndex( hw_reg_set regs, reg_cls cls )
+{
+    int         i;
+
+    if( cls & GPR_IDX ) {
+        for( i = ARCH_GPR_START; i < ARCH_GPR_END; i++ ) {
+            if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+                return( i );
+            }
+        }
+    }
+    if( cls & FPR_IDX ) {
+        for( i = ARCH_FPR_START; i < ARCH_FPR_END; i++ ) {
+            if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+                return( i );
+            }
+        }
+    }
+    return( -1 );
+}
+
+hw_reg_set GetArchReg( int idx, reg_cls cls )
+{
+    if( cls & GPR_IDX ) {
+        return( RegsTab[ARCH_GPR_START + idx].hw_reg );
+    }
+    if( cls & FPR_IDX ) {
+        return( RegsTab[ARCH_FPR_START + idx].hw_reg );
+    }
+    return( HW_EMPTY );
+}
+#endif
+
 /*      Information for register set intersections
  *      if sets are of different classes {
  *          intersection is empty
@@ -358,8 +425,6 @@ static  reg_set_index   IsSets[] = {
  *          intersection given in square matrix for class
  *      }
  */
-
-#define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
 
 reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 /****************************************************************/
@@ -670,14 +735,15 @@ reg_set_index   UsualPossible( type_class_def type_class )
 
 
 hw_reg_set      ActualParmReg( hw_reg_set reg )
-/***********************************************/
+/*********************************************/
 {
     return( reg );
 }
 
 hw_reg_set      FixedRegs( void )
-/*******************************/
-/* MJC do you really want to fix them */
+/********************************
+ * MJC do you really want to fix them
+ */
 {
     hw_reg_set          fixed;
 
@@ -696,15 +762,17 @@ hw_reg_set      VarargsHomePtr( void )
 }
 
 hw_reg_set      StackReg( void )
-/******************************/
-/* MJC should be up to linkage conventions */
+/*******************************
+ * MJC should be up to linkage conventions
+ */
 {
     return( HW_D1 );
 }
 
 hw_reg_set      FrameReg( void )
-/******************************/
-/* MJC should be up to linkage conventions */
+/*******************************
+ * MJC should be up to linkage conventions
+ */
 {
     if( CurrProc->targ.base_is_fp ) {
         return( HW_D31 );
@@ -770,62 +838,59 @@ hw_reg_set      *FPRegs( void )
     return( FloatRegs );
 }
 
-hw_reg_set      *IdxRegs( void )
-/******************************/
+hw_reg_set  *IdxRegs( void )
+/**************************/
 {
     return( DWordRegs );
 }
 
-void            InitRegTbl( void )
-/********************************/
+void        InitRegTbl( void )
+/****************************/
 {
 }
 
-static int      regTranslate( hw_reg_set reg, bool index )
-/********************************************************/
-{
-    int                 i;
-
-    for( i = 0; i < sizeof( DWordRegs ) / sizeof( DWordRegs[0] ); i++ ) {
-        if( HW_Subset( DWordRegs[i], reg ) ) {
-            if( index )
-                return( i );
-            return( i + DW_REG_R0 );
-        }
-    }
-    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) {
-            if( index )
-                return( i );
-            return( i + DW_REG_F0 );
-        }
-    }
-    if( index )
-        return( 0 );
-    _Zoiks( ZOIKS_031 );
-    return( DW_REG_END );
-}
-
-reg_idx     RegTrans( hw_reg_set reg )
-/*************************************
+reg_idx     RegTrans( hw_reg_set regs )
+/**************************************
  * Translate reg to register index
  */
 {
-    return( (reg_idx)regTranslate( reg, true ) );
+    int     i;
+
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].idx );
+        }
+    }
+    return( 0 );
 }
 
 int GetArchIndex( hw_reg_set regs )
-/***********************************************/
+/*********************************/
 {
-    return( RegTrans( regs ) );
+    int     i;
+
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].idx );
+        }
+    }
+    return( 0 );
 }
 
-dw_regs   RegTransDW( hw_reg_set reg )
-/*************************************
+dw_regs   RegTransDW( hw_reg_set regs )
+/**************************************
  * Translate reg to enum name
  */
 {
-    return( (dw_regs)regTranslate( reg, false ) );
+    int     i;
+
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].dw_idx );
+        }
+    }
+    _Zoiks( ZOIKS_031 );
+    return( DW_REG_END );
 }
 
 hw_reg_set ParmRegConflicts( hw_reg_set r )

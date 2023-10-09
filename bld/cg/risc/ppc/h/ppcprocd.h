@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,9 @@ typedef enum {
         ROUTINE_HAS_VARARGS             = 0x0080,
 } call_attributes;
 
-typedef byte    reg_num;
+typedef byte                    reg_num;
 
-#define NO_REGISTER     ((reg_num)-1)
+#define NO_REGISTER             ((reg_num)-1)
 
 typedef struct {
         char                    wasted_space;

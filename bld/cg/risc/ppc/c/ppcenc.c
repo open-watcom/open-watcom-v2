@@ -59,7 +59,7 @@
 #include "feprotos.h"
 
 
-#define _NameRegTrans( op )         ( (op)->r.arch_index )
+#define _NameRegTrans( op )         ((reg_idx)(op)->r.arch_index)
 #define _EmitIns( ins )             ObjBytes( &(ins), sizeof( ppc_ins ) )
 #define _ObjEmitSeq( code )         ObjBytes( code->data, code->length )
 
@@ -508,7 +508,7 @@ static  void    doZero( instruction *ins )
         /*
          * andi op1,0xffff -> res
          */
-        GenOPIMM( 28, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->result ), (signed_16)0xffff );
+        GenOPIMM( 28, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->result ), -1 );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -736,7 +736,7 @@ static  void    Encode( instruction *ins )
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
                 GenOPINS( 31, 824, _NameRegTrans( ins->result ),
-                    ins->operands[1]->c.lo.int_value, _NameRegTrans( ins->operands[0] ) );
+                    (reg_idx)ins->operands[1]->c.lo.int_value, _NameRegTrans( ins->operands[0] ) );
             } else {
                 // rlwinm dst,src,32-n,n,31
                 b = _FiveBits( ins->operands[1]->c.lo.int_value );

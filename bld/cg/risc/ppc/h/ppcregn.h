@@ -32,13 +32,27 @@
 
 
 typedef enum {
-    #define pick(id,name)   DW_REG_ ## id,
+    GPR_IDX  = 0x01,    /* general purpose registers */
+    FPR_IDX  = 0x02,    /* floating-point registers */
+} reg_cls;
+
+typedef enum {
+    #define pick(id,name) DW_REG_ ## id,
     #include "dwregppc.h"
-    DW_REG_END
     #undef pick
+    DW_REG_END
 } dw_regs;
 
 typedef uint_8      reg_idx;
+
+typedef struct arch_reg_info {
+    hw_reg_set  hw_reg;
+    reg_idx     idx;
+    reg_cls     cls;
+    dw_regs     dw_idx;
+} arch_reg_info;
+
+extern const arch_reg_info  RegsTab[];
 
 extern reg_idx      RegTrans( hw_reg_set reg );
 extern dw_regs      RegTransDW( hw_reg_set reg );

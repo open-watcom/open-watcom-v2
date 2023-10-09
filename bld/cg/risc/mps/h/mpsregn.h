@@ -31,13 +31,41 @@
 
 
 typedef enum {
-    #define pick(id,name)   DW_REG_ ## id,
+    GPR_IDX  = 0x01,    /* general purpose registers */
+    FPR_IDX  = 0x02,    /* floating-point registers */
+    QW_IDX   = 0x04,    /* 64-bit general purpose registers (MIPS 32-bit) */
+} reg_cls;
+
+typedef enum {
+    #define pick(id,name) DW_REG_ ## id,
     #include "dwregmps.h"
-    DW_REG_END
     #undef pick
+    DW_REG_END
 } dw_regs;
+
+/*
+ * Dwarf debug information
+ *
+ * remaping code generator QWord pseudo registers
+ * to first of 32-bit pair-register
+ */
+#define DW_REG_Q2   DW_REG_R2
+#define DW_REG_Q4   DW_REG_R4
+#define DW_REG_Q6   DW_REG_R6
+#define DW_REG_Q8   DW_REG_R8
+#define DW_REG_Q10  DW_REG_R10
 
 typedef uint_8      reg_idx;
 
+typedef struct arch_reg_info {
+    hw_reg_set  hw_reg;
+    reg_idx     idx;
+    reg_cls     cls;
+    dw_regs     dw_idx;
+} arch_reg_info;
+
+extern const arch_reg_info  RegsTab[];
+
+extern hw_reg_set   GetFPReg( int idx );
 extern reg_idx      RegTrans( hw_reg_set reg );
 extern dw_regs      RegTransDW( hw_reg_set reg );

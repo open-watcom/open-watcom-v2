@@ -68,6 +68,37 @@
 #include "feprotos.h"
 
 
+/*
+ * register, register class and range definitions
+ */
+#define pick_item(id)    ARCH_IDX_ ## id
+#define pick_start(id)   ARCH_ ## id ## _START
+#define pick_end(id)     ARCH_ ## id ## _END
+
+enum {
+    #define pick(id,idx,cls) pick_item(id),
+    #include "regindex.h"
+    #undef pick
+    pick_item( END ),
+    pick_item( START ) = 0
+};
+
+enum {
+    #define MAPREGCLASS
+    #include "regindex.h"
+    #undef MAPREGCLASS
+};
+
+#undef pick_end
+#undef pick_start
+#undef pick_item
+
+const arch_reg_info RegsTab[] = {
+    #define pick(id,idx,cls) { HW_D_1( HW_ ## id ), idx, cls ## _IDX, WV_REG_ ## id, DW_REG_ ## id },
+    #include "regindex.h"
+    #undef pick
+};
+
 template            Temp;           /* template for oc_entries */
 byte                Inst[INSSIZE];  /* template for instructions */
 byte                ILen;           /* length of object instruction */
@@ -75,88 +106,64 @@ byte                ILen;           /* length of object instruction */
 static  byte        ICur;           /* cursor for writing into Inst */
 static  byte        IEsc;           /* number of initial bytes that must be */
                                     /* checked for escapes when copied into Temp */
+#if 0
+static int findArchRegIndex( hw_reg_set regs, reg_cls cls )
+{
+    hw_reg_set  save_regs;
+    int         i;
 
-static  hw_reg_set RegTab[] = {
-#define REGS 24
-    HW_D( HW_AL ),      HW_D( HW_AX ),      HW_D( HW_EAX ),
-    HW_D( HW_CL ),      HW_D( HW_CX ),      HW_D( HW_ECX ),
-    HW_D( HW_DL ),      HW_D( HW_DX ),      HW_D( HW_EDX ),
-    HW_D( HW_BL ),      HW_D( HW_BX ),      HW_D( HW_EBX ),
-    HW_D( HW_AH ),      HW_D( HW_SP ),      HW_D( HW_ESP ),
-    HW_D( HW_CH ),      HW_D( HW_BP ),      HW_D( HW_EBP ),
-    HW_D( HW_DH ),      HW_D( HW_SI ),      HW_D( HW_ESI ),
-    HW_D( HW_BH ),      HW_D( HW_DI ),      HW_D( HW_EDI )
-};
+    if( cls & SEG_IDX ) {
+        save_regs = regs;
+    }
+    HW_CTurnOff( regs, HW_SEGS );
+    if( cls & GPR_IDX ) {
+        for( i = ARCH_GPR_START; i < ARCH_GPR_END; i++ ) {
+            if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+                return( i );
+            }
+        }
+    }
+    if( cls & FPR_IDX ) {
+        for( i = ARCH_FPR_START; i < ARCH_FPR_END; i++ ) {
+            if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+                return( i );
+            }
+        }
+    }
+    if( cls & SEG_IDX ) {
+        HW_COnlyOn( save_regs, HW_SEGS );
+        for( i = ARCH_SEG_START; i < ARCH_SEG_END; i++ ) {
+            if( HW_Equal( save_regs, RegsTab[i].hw_reg ) ) {
+                return( i );
+            }
+        }
+    }
+    return( -1 );
+}
 
-static  hw_reg_set SegTab[] = {
-#define SEGS 6
-    #define _SR_(h,f)   HW_D( h ),
-    #include "x86sregs.h"
-    #undef _SR_
-};
-
-static hw_reg_set FPRegs[] = {
-    HW_D( HW_ST0 ),
-    HW_D( HW_ST1 ),
-    HW_D( HW_ST2 ),
-    HW_D( HW_ST3 ),
-    HW_D( HW_ST4 ),
-    HW_D( HW_ST5 ),
-    HW_D( HW_ST6 ),
-    HW_D( HW_ST7 )
-};
-
-struct reg_map {
-    hw_reg_set reg;
-    dw_regs    dwarf;
-};
-
-static struct reg_map    DWHWRegValues[] = {
-   { HW_D( HW_AL ),  DW_REG_AL },
-   { HW_D( HW_AH ),  DW_REG_AH },
-   { HW_D( HW_BL ),  DW_REG_BL },
-   { HW_D( HW_BH ),  DW_REG_BH },
-   { HW_D( HW_CL ),  DW_REG_CL },
-   { HW_D( HW_CH ),  DW_REG_CH },
-   { HW_D( HW_DL ),  DW_REG_DL },
-   { HW_D( HW_DH ),  DW_REG_DH },
-   { HW_D( HW_AX ),  DW_REG_AX },
-   { HW_D( HW_BX ),  DW_REG_BX },
-   { HW_D( HW_CX ),  DW_REG_CX },
-   { HW_D( HW_DX ),  DW_REG_DX },
-   { HW_D( HW_SI ),  DW_REG_SI },
-   { HW_D( HW_DI ),  DW_REG_DI },
-   { HW_D( HW_BP ),  DW_REG_BP },
-   { HW_D( HW_SP ),  DW_REG_SP },
-   { HW_D( HW_CS ),  DW_REG_CS },
-   { HW_D( HW_SS ),  DW_REG_SS },
-   { HW_D( HW_DS ),  DW_REG_DS },
-   { HW_D( HW_ES ),  DW_REG_ES },
-   { HW_D( HW_ST0 ), DW_REG_ST0 },
-   { HW_D( HW_ST1 ), DW_REG_ST1 },
-   { HW_D( HW_ST2 ), DW_REG_ST2 },
-   { HW_D( HW_ST3 ), DW_REG_ST3 },
-   { HW_D( HW_ST4 ), DW_REG_ST4 },
-   { HW_D( HW_ST5 ), DW_REG_ST5 },
-   { HW_D( HW_ST6 ), DW_REG_ST6 },
-   { HW_D( HW_ST7 ), DW_REG_ST7 },
-   { HW_D( HW_EAX ), DW_REG_EAX },
-   { HW_D( HW_EBX ), DW_REG_EBX },
-   { HW_D( HW_ECX ), DW_REG_ECX },
-   { HW_D( HW_EDX ), DW_REG_EDX },
-   { HW_D( HW_ESI ), DW_REG_ESI },
-   { HW_D( HW_EDI ), DW_REG_EDI },
-   { HW_D( HW_EBP ), DW_REG_EBP },
-   { HW_D( HW_ESP ), DW_REG_ESP },
-   { HW_D( HW_FS ),  DW_REG_FS },
-   { HW_D( HW_GS ),  DW_REG_GS }
-};
-
-static    hw_reg_set    WVHWRegValues[] = {
-    #define pick(name,ci,start,len)  HW_D( HW_##name ),
-    #include "watdbreg.h"
-    #undef pick
-};
+hw_reg_set GetArchReg( int idx, reg_cls cls )
+{
+    if( cls & GPRB_IDX ) {
+        return( RegsTab[ARCH_BYTE_START + idx].hw_reg );
+    }
+    if( cls & GPRW_IDX ) {
+        return( RegsTab[ARCH_WORD_START + idx].hw_reg );
+    }
+    if( cls & GPRD_IDX ) {
+        return( RegsTab[ARCH_DWORD_START + idx].hw_reg );
+    }
+    if( cls & FPR_IDX ) {
+        return( RegsTab[ARCH_FPR_START + idx].hw_reg );
+    }
+    if( cls & SEG_IDX ) {
+        return( RegsTab[ARCH_SEG_START + idx].hw_reg );
+    }
+    if( cls & GPR_IDX ) {
+        return( RegsTab[ARCH_GPR_START + idx].hw_reg );
+    }
+    return( HW_EMPTY );
+}
+#endif
 
 /* routines that maintain instruction buffers*/
 
@@ -354,78 +361,75 @@ static  byte    SegTrans( hw_reg_set regs )
  * Return the encoding of a segment register name
  */
 {
-    byte i;
+    int     i;
 
     HW_COnlyOn( regs, HW_SEGS );
-    for( i = 0; i < SEGS; ++i ) {
-        if( HW_Equal( regs, SegTab[i] ) ) {
-            break;
+    for( i = ARCH_SEG_START; i < ARCH_SEG_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].idx );
         }
     }
-    if( i >= SEGS ) {
-        _Zoiks( ZOIKS_032 );
-    }
-    return( i );
+    _Zoiks( ZOIKS_032 );
+    return( 0 );
 }
 
-static  byte    RegTrans( hw_reg_set regs )
-/******************************************
+reg_idx  RegTrans( hw_reg_set regs )
+/***********************************
  * Return the encoding of a register name
  */
 {
-    byte i;
+    int     i;
 
     HW_CTurnOff( regs, HW_SEGS );
-    for( i = 0; i < REGS; ++i ) {
-        if( HW_Equal( regs, RegTab[i] ) ) {
-            break;
+    for( i = ARCH_GPR_START; i < ARCH_GPR_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].idx );
         }
     }
-    if( i >= REGS ) {
-        _Zoiks( ZOIKS_031 );
-    }
-    i = i / 3;
-    return( i );
+    _Zoiks( ZOIKS_031 );
+    return( 0 );
 }
 
-static int FPRegTrans( hw_reg_set reg )
-/*************************************/
+static int FPRegTrans( hw_reg_set regs )
+/**************************************/
 {
     int         i;
 
-    for( i = 0; i < 8; i++ ) {
-        if( HW_Equal( reg, FPRegs[i] ) ) {
-            return( i );
+    for( i = ARCH_FPR_START; i < ARCH_FPR_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].idx );
         }
     }
     return( -1 );
 }
 
-dw_regs RegTransDW( hw_reg_set reg )
-/**********************************/
+dw_regs RegTransDW( hw_reg_set regs )
+/***********************************/
 {
     int     i;
 
-    for( i = 0; i < sizeof( DWHWRegValues ) / sizeof( DWHWRegValues[0] ); i++ ) {
-        if( HW_Equal( DWHWRegValues[i].reg, reg ) ) {
-            return( DWHWRegValues[i].dwarf );
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].dw_idx );
         }
     }
-    Zoiks( ZOIKS_085 ); /* reg not found */
+    _Zoiks( ZOIKS_031 );
     return( DW_REG_END );
 }
 
 
-int RegTransWV( hw_reg_set reg )
-/******************************/
+int RegTransWV( hw_reg_set regs )
+/*******************************/
 {
     int     i;
 
-    for( i = 0; i < sizeof( WVHWRegValues ) / sizeof( WVHWRegValues[0] ); i++ ) {
-        if( HW_Equal( WVHWRegValues[i], reg ) ) {
-            return( i );
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].wv_idx );
         }
     }
+    _Zoiks( ZOIKS_031 );
+//    return( WV_REG_END );
     return( -1 );
 }
 
@@ -445,13 +449,14 @@ int     FPRegNum( name *reg_name )
 }
 
 hw_reg_set   GetFPReg( int idx )
+/******************************/
 {
-    return( FPRegs[idx] );
+    return( RegsTab[ARCH_FPR_START + idx].hw_reg );
 }
 
 
 int     CountFPRegs( hw_reg_set regs )
-/***********************************************
+/*************************************
  * Count the number of 8087 registers named in hw_reg_set "regs".
  */
 {
@@ -459,8 +464,8 @@ int     CountFPRegs( hw_reg_set regs )
     int         i;
 
     count = 0;
-    for( i = 0; i < 8; i++ ) {
-        if( HW_Ovlap( FPRegs[i], regs ) ) {
+    for( i = ARCH_FPR_START; i < ARCH_FPR_END; i++ ) {
+        if( HW_Ovlap( regs, RegsTab[i].hw_reg ) ) {
             ++count;
         }
     }
@@ -1106,29 +1111,29 @@ void    GenSeg( hw_reg_set regs )
         AddToTemp( M_SEGOVER | ( SegTrans( regs ) << S_KEY_SR ) );
     }
     if( _IsEmulation() ) {
-        for( i = 0; i < SEGS; ++i ) {
-            if( HW_Equal( segreg, SegTab[i] ) ) {
-                SetFPPatchSegm( i );
+        for( i = ARCH_SEG_START; i < ARCH_SEG_END; i++ ) {
+            if( HW_Equal( segreg, RegsTab[i].hw_reg ) ) {
+                SetFPPatchSegm( RegsTab[i].idx );
                 break;
             }
         }
     }
 }
 
-type_class_def  OpndSize( hw_reg_set reg )
-/***************************************************
+type_class_def  OpndSize( hw_reg_set regs )
+/******************************************
  * Generate an operand size prefix if we need it and return the
  * type_class of the register "reg"
  */
 {
-    if( HW_COvlap( reg, HW_SEGS ) )
+    if( HW_COvlap( regs, HW_SEGS ) )
         return( U2 );
 #if _TARGET & _TARG_8086
     if( _IsTargetModel( CGSW_X86_USE_32 ) )
         AddToTemp( M_OPND_SIZE );
     return( U2 );
 #else
-    if( HW_COvlap( reg, HW_32 ) ) {
+    if( HW_COvlap( regs, HW_32 ) ) {
         if( _IsntTargetModel( CGSW_X86_USE_32 ) )
             AddToTemp( M_OPND_SIZE );
         return( U4 );
@@ -1291,17 +1296,17 @@ static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def type_class
 void    AddWData( signed_32 value, type_class_def type_class )
 /************************************************************/
 {
-    AddByte( value );
+    AddByte( (byte)value );
     if( type_class == U1 || type_class == I1 )
         return;
     value >>= 8;
-    AddByte( value );
+    AddByte( (byte)value );
     if( type_class == U2 || type_class == I2 )
         return;
     value >>= 8;
-    AddByte( value );
+    AddByte( (byte)value );
     value >>= 8;
-    AddByte( value );
+    AddByte( (byte)value );
 }
 
 void    AddWCons( name *op, type_class_def type_class )
@@ -1618,7 +1623,7 @@ void    GenEnter( int size, int level )
     LayOpbyte( 0xc8 );
     OpndSize( HW_xBP );
     AddWData( size, U2 );
-    AddByte( level );
+    AddByte( (byte)level );
     _Emit;
 }
 
@@ -1676,7 +1681,7 @@ void    GenUnkEnter( pointer value, int level )
     LayOpbyte( 0xc8 );
     DoAbsPatch( value, 2 );
     ILen += 2;
-    AddByte( level );
+    AddByte( (byte)level );
     _Emit;
 }
 
@@ -2056,11 +2061,11 @@ void    GenObjCode( instruction *ins )
             break;
         case G_RNSHIFT:
             LayRMRegOp( left );
-            AddByte( right->c.lo.int_value ); /* never address */
+            AddByte( (byte)right->c.lo.int_value ); /* never address */
             break;
         case G_NSHIFT:
             LayModRM( left );
-            AddByte( right->c.lo.int_value ); /* never address */
+            AddByte( (byte)right->c.lo.int_value ); /* never address */
             break;
         case G_R2:
             LayRMRegOp( right );

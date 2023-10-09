@@ -32,6 +32,15 @@
 
 
 typedef enum {
+    GPR_IDX  = 0x01,    /* general purpose registers */
+    FPR_IDX  = 0x02,    /* floating-point registers */
+    SEG_IDX  = 0x04,    /* segment registers */
+    GPRB_IDX = 0x08,    /* 8-bit registers */
+    GPRD_IDX = 0x10,    /* 16-bit registers */
+    GPRW_IDX = 0x20,    /* 32-bit registers */
+} reg_cls;
+
+typedef enum {
     #define pick(id,ci,start,len) WV_REG_ ## id,
     #include "watdbreg.h"
     #undef pick
@@ -47,8 +56,19 @@ typedef enum {
 
 typedef uint_8      reg_idx;
 
+typedef struct arch_reg_info {
+    hw_reg_set  hw_reg;
+    reg_idx     idx;
+    reg_cls     cls;
+    wv_regs     wv_idx;
+    dw_regs     dw_idx;
+} arch_reg_info;
+
+extern const arch_reg_info  RegsTab[];
+
 extern hw_reg_set   GetFPReg( int idx );
 extern int          CountFPRegs( hw_reg_set regs );
 extern int          FPRegNum( name *reg_name );
+extern reg_idx      RegTrans( hw_reg_set reg );
 extern dw_regs      RegTransDW( hw_reg_set reg );
 extern int          RegTransWV( hw_reg_set reg );

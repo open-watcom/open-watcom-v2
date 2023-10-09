@@ -54,7 +54,6 @@
 #define LOAD_DOUBLE     50
 #define ADDI_OPCODE     14
 
-
 static  void    CalcUsedRegs( void )
 /**********************************/
 {
@@ -139,7 +138,7 @@ static  void    emitLocalEpilog( stack_record *locals )
     /* unused parameters */ (void)locals;
 }
 
-static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl )
+static uint_32  registerMask( hw_reg_set rs, hw_reg_set *rl )
 /***********************************************************/
 {
     hw_reg_set          *curr;
@@ -180,20 +179,20 @@ static  void    initSavedRegs( stack_record *saved_regs, type_length *offset )
     *offset += saved_regs->size;
 }
 
-static  void    genMove( uint_32 src, uint_32 dst )
+static  void    genMove( reg_idx src, reg_idx dst )
 /*************************************************/
 {
     GenOPINS( 31, 444, dst, src, src );
 }
 
-static  void    genAdd( uint_32 src, signed_16 disp, uint_32 dst )
+static  void    genAdd( reg_idx src, signed_16 disp, reg_idx dst )
 /****************************************************************/
 {
     GenOPIMM( ADDI_OPCODE, dst, src, disp );
 }
 
-static  void    saveReg( uint_32 index, type_length offset, bool fp )
-/*******************************************************************/
+static  void    saveReg( int index, type_length offset, bool fp )
+/***************************************************************/
 {
     uint_8              opcode;
 
@@ -201,14 +200,14 @@ static  void    saveReg( uint_32 index, type_length offset, bool fp )
     if( fp ) {
         opcode = STORE_DOUBLE;
     }
-    GenMEMINS( opcode, index, SP_REG_IDX, offset );
+    GenMEMINS( opcode, (reg_idx)index, SP_REG_IDX, offset );
 }
 
-static  void    loadReg( uint_32 index, type_length offset, bool fp )
-/*******************************************************************/
+static  void    loadReg( int index, type_length offset, bool fp )
+/***************************************************************/
 {
     uint_8              opcode;
-    uint_8              frame_reg;
+    reg_idx             frame_reg;
 
     opcode = LOAD_DWORD;
     if( fp ) {
@@ -218,7 +217,7 @@ static  void    loadReg( uint_32 index, type_length offset, bool fp )
     if( CurrProc->targ.base_is_fp ) {
         frame_reg = FP_REG_IDX;
     }
-    GenMEMINS( opcode, index, frame_reg, offset + CurrProc->locals.size );
+    GenMEMINS( opcode, (reg_idx)index, frame_reg, offset + CurrProc->locals.size );
 }
 
 static  int     regSize( bool fp )
@@ -230,7 +229,7 @@ static  int     regSize( bool fp )
 static  void    saveRegSet( uint_32 reg_set, type_length offset, bool fp )
 /************************************************************************/
 {
-    uint_32     index;
+    int         index;
     uint_32     high_bit;
 
     index = sizeof( reg_set ) * 8 - 1;
@@ -248,7 +247,7 @@ static  void    saveRegSet( uint_32 reg_set, type_length offset, bool fp )
 static  void    loadRegSet( uint_32 reg_set, type_length offset, bool fp )
 /************************************************************************/
 {
-    uint_32     index;
+    int         index;
 
     index = 0;
     while( reg_set != 0 ) {
@@ -428,7 +427,7 @@ static  void    emitEpilog( stack_map *map )
 /******************************************/
 {
     type_length         frame_size;
-    uint_8              frame_reg;
+    reg_idx             frame_reg;
 
     frame_size = frameSize( map );
     if( frame_size != 0 ) {
