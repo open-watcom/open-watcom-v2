@@ -186,8 +186,8 @@ static  void    genMove( uint_32 src, uint_32 dst )
 }
 
 
-static  void    genLea( uint_32 src, signed_16 disp, uint_32 dst )
-/****************************************************************/
+static  void    genLea( uint_32 src, int_16 disp, uint_32 dst )
+/*************************************************************/
 {
     GenMEMINS( LEA_OPCODE, dst, src, disp );
 }
@@ -409,10 +409,10 @@ static  void    emitSlopEpilog( stack_record *fs )
 }
 
 
-static  signed_32 frameSize( stack_map *map )
-/*******************************************/
+static int_32   frameSize( stack_map *map )
+/*****************************************/
 {
-    signed_32           size;
+    int_32      size;
 
     size = map->slop.size + map->varargs.size + map->frame_save.size + map->saved_regs.size +
                 map->locals.size + map->parm_cache.size;

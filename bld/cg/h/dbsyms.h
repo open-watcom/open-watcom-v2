@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-typedef unsigned_32 cue_idx;
+typedef uint_32     cue_idx;
 
 typedef struct cue_state{
     cue_idx     cue;
@@ -61,8 +61,8 @@ typedef struct cue_ctl {
 
 /* filename to number mapping */
 typedef struct fname_lst {
-    struct fname_lst   *next;
-    unsigned_16         len;
+    struct fname_lst    *next;
+    uint_16             len;
     char                fname[1];
 } fname_lst;
 

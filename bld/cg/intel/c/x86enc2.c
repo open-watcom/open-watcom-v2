@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -499,8 +499,8 @@ void    Gen1ByteValue( byte value )
 }
 
 
-void    Gen2ByteValue( unsigned_16 value )
-/*****************************************
+void    Gen2ByteValue( uint_16 value )
+/*************************************
  * Drop a 16 bit integer into the queue.
  */
 {
@@ -511,8 +511,8 @@ void    Gen2ByteValue( unsigned_16 value )
 }
 
 
-void    Gen4ByteValue( unsigned_32 value )
-/*****************************************
+void    Gen4ByteValue( uint_32 value )
+/*************************************
  * Drop a 32 bit integer into the queue.
  */
 {

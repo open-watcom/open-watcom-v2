@@ -185,8 +185,8 @@ static  void    genMove( reg_idx src, reg_idx dst )
     GenOPINS( 31, 444, dst, src, src );
 }
 
-static  void    genAdd( reg_idx src, signed_16 disp, reg_idx dst )
-/****************************************************************/
+static  void    genAdd( reg_idx src, int_16 disp, reg_idx dst )
+/*************************************************************/
 {
     GenOPIMM( ADDI_OPCODE, dst, src, disp );
 }
@@ -366,10 +366,10 @@ static  void    emitStackHeaderEpilog( stack_record *stk )
 }
 
 
-static  signed_32 frameSize( stack_map *map )
-/*******************************************/
+static int_32   frameSize( stack_map *map )
+/*****************************************/
 {
-    signed_32           size;
+    int_32      size;
 
     size = map->varargs.size + map->slop.size + map->saved_regs.size +
                 map->locals.size + map->parm_cache.size + map->stack_header.size;

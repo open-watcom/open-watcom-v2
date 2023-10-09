@@ -84,7 +84,7 @@ cg_name BGPatchNode( patch_handle patch, type_def *tipe )
     return( patch->u.node );
 }
 
-void    BGPatchInteger( patch_handle patch, signed_32 value )
+void    BGPatchInteger( patch_handle patch, int_32 value )
 {
     tn                  node;
     name                *c;

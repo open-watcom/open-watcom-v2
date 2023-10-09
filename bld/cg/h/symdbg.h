@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +102,7 @@ typedef struct field_entry{
 typedef struct{
     field_entry         entry;
     union {
-        unsigned_32     off;
+        uint_32         off;
         dbg_loc         loc;
     }                   u;
     uint                attr;
@@ -124,7 +124,7 @@ typedef struct{
 typedef struct {
     field_entry         entry;
     union {
-        unsigned_32     off;
+        uint_32         off;
         dbg_loc         adjustor;
     }                   u;
     uint                attr;
@@ -135,7 +135,7 @@ typedef struct {
 typedef struct{
     field_entry         entry;
     union {
-        unsigned_32     off;
+        uint_32         off;
         dbg_loc         loc;
     }                   u;
     uint                attr;
@@ -225,16 +225,16 @@ typedef struct{
 }dim_var;
 
 typedef struct{
-    dim_entry entry;
-    signed_32 lo;
-    signed_32 hi;
-    dbg_type  idx;
+    dim_entry   entry;
+    int_32      lo;
+    int_32      hi;
+    dbg_type    idx;
 }dim_con;
 
 typedef union dim_any {
-    dim_entry entry;
-    dim_var   var;
-    dim_con   con;
+    dim_entry   entry;
+    dim_var     var;
+    dim_con     con;
 }dim_any;
 
 typedef struct array_list {
@@ -268,7 +268,7 @@ typedef struct location {
         cg_sym_handle       fe_sym;
         unsigned            ptr_type;
         unsigned            stk;
-        unsigned_32         val;
+        uint_32             val;
     }                       u;
     unsigned                use;
     byte                    class;
@@ -313,7 +313,7 @@ typedef struct dbg_block {
     dbg_local               *locals;
     block_patch             *patches;
     back_handle             end_lbl;
-    unsigned_32             start;
+    uint_32                 start;
 } dbg_block;
 
 typedef struct dbg_rtn {
@@ -324,8 +324,8 @@ typedef struct dbg_rtn {
     dbg_local               *parms;
     dbg_loc                 obj_loc;        /* for member functions */
     dbg_type                obj_type;       /* for member functions */
-    unsigned_32             ret_offset;
-    unsigned_32             epi_start;
+    uint_32                 ret_offset;
+    uint_32                 epi_start;
     byte                    pro_size;
     byte                    obj_ptr_type;   /* for member functions */
     back_handle             end_lbl;

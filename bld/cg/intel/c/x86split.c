@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,7 +206,7 @@ name    *IntEquivalent( name *name )
     constant_defn       *defn;
 
     defn = GetFloat( name, FS );
-    return( AllocConst( CFCnvU32F( _TargetBigInt( *(unsigned_32 *)( defn->value + 0 ) ) ) ) );
+    return( AllocConst( CFCnvU32F( _TargetBigInt( *(uint_32 *)( defn->value + 0 ) ) ) ) );
 }
 
 name    *Int64Equivalent( name *name )
@@ -215,7 +215,7 @@ name    *Int64Equivalent( name *name )
     constant_defn       *defn;
 
     defn = GetFloat( name, FD );
-    return( AllocU64Const( *(unsigned_32 *)( defn->value + 0 ), *(unsigned_32 *)( defn->value + 2 ) ) );
+    return( AllocU64Const( *(uint_32 *)( defn->value + 0 ), *(uint_32 *)( defn->value + 2 ) ) );
 }
 
 instruction      *rFSCONSCMP( instruction *ins )

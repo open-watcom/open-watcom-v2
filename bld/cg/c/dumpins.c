@@ -50,8 +50,8 @@
 #define DO_DUMPOFFSET(str,off) DumpLiteral( str ); DoOffset( (off) )
 
 
-static  void    DoOffset( unsigned_32 o ) {
-/*****************************************/
+static  void    DoOffset( uint_32 o ) {
+/***********************************/
 
     DumpChar( '\t' );
     Dump8h( o );

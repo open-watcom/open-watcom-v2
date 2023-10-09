@@ -182,8 +182,8 @@ dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
     return( loc );
 }
 
-dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val )
-/*******************************************************/
+dbg_loc _CGAPI DBLocConst( dbg_loc loc, uint_32 val )
+/***************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "DBLocConst( %i, %i  )", loc, val );

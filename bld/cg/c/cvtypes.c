@@ -225,8 +225,8 @@ static  void PutFld2( cv_out *out, short num )
     out->ptr += sizeof( short );
 }
 
-static void PutFldSized( cv_out *out, int size, unsigned_32 val )
-/***************************************************************/
+static void PutFldSized( cv_out *out, int size, uint_32 val )
+/***********************************************************/
 {
     switch( size ) {
     case 1:
@@ -244,8 +244,8 @@ static void PutFldSized( cv_out *out, int size, unsigned_32 val )
     }
 }
 
-static void PutLFInt( cv_out *out, cv_psize size, unsigned_32 val )
-/*****************************************************************/
+static void PutLFInt( cv_out *out, cv_psize size, uint_32 val )
+/*************************************************************/
 {
     switch( size ) {
     case CV_IB1:
@@ -285,8 +285,8 @@ static lf_values   LFIntType( int size )
     return( itipe );
 }
 
-void CVPutINum( cv_out *out, signed_32 num )
-/******************************************/
+void CVPutINum( cv_out *out, int_32 num )
+/***************************************/
 {
     byte       *ptr;
 #define LC( what, to )   *((to *)&what)
@@ -355,8 +355,8 @@ void        CVPutNullStr( cv_out *out )
 }
 
 
-static  lf_values   LFSignedSize( signed_32 num )
-/***********************************************/
+static  lf_values   LFSignedSize( int_32 num )
+/********************************************/
 {
     cv_primitive    index;
 
@@ -373,8 +373,8 @@ static  lf_values   LFSignedSize( signed_32 num )
     return( index.s );
 }
 
-static  lf_values    LFSignedRange( signed_32 lo, signed_32 hi )
-/**************************************************************/
+static  lf_values    LFSignedRange( int_32 lo, int_32 hi )
+/********************************************************/
 {
     cv_primitive    index;
 
@@ -579,8 +579,8 @@ dbg_type    CVArray( dbg_type dims, dbg_type base )
     return( ret );
 }
 
-dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base )
-/*******************************************************************/
+dbg_type    CVArraySize( offset size, uint_32 hi, dbg_type base )
+/***************************************************************/
 {
     cv_out      out[1];
     ct_array    *array;
@@ -598,8 +598,10 @@ dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base )
     return( ret );
 }
 
-static  lf_values   ArrayDim( unsigned_32  hi )
-/************ Make 1 dim array bound *********/
+static  lf_values   ArrayDim( uint_32 hi )
+/*****************************************
+ * Make 1 dim array bound
+ */
 {
     cv_out          out[1];
     ct_dimconu      *dim;
@@ -617,8 +619,8 @@ static  lf_values   ArrayDim( unsigned_32  hi )
     return( ret );
 }
 
-dbg_type    CVCharBlock( unsigned_32 len )
-/****************************************/
+dbg_type    CVCharBlock( uint_32 len )
+/************************************/
 {
     return( CVArraySize( len, len, LF_TRCHAR ) );
 }
@@ -845,8 +847,8 @@ dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
 
 
 
-dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
-/*****************************************************/
+dbg_type    CVIntArray( uint_32 hi, dbg_type base )
+/*************************************************/
 {
     cv_out          out[1];
     ct_dimarray     *array;
@@ -867,8 +869,8 @@ dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
 
 
 
-static  lf_values   ArrayDimL( signed_32 low, signed_32 hi )
-/************ Make 1 dim array bound **********************/
+static  lf_values   ArrayDimL( int_32 low, int_32 hi )
+/************ Make 1 dim array bound ****************/
 {
     cv_out          out[1];
     ct_dimconlu     *dim;
@@ -979,9 +981,10 @@ dbg_type    CVEndArray( dbg_array ar )
     return( CVArray( dims, ar->base ) );
 }
 
-dbg_type   CVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/****************************************************************/
-/* not supported by CV */
+dbg_type   CVSubRange( int_32 lo, int_32 hi, dbg_type base )
+/***********************************************************
+ * not supported by CV
+ */
 {
     /* unused parameters */ (void)base;
 

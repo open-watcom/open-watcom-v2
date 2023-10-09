@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,14 @@
 ****************************************************************************/
 
 
-typedef signed_32   cost_val;
+typedef int_32      cost_val;
 
 extern  cost_val        IfCost(sel_handle,int);
 extern  name            *ScanCall(tbl_control*,name*,type_class_def);
 extern  cost_val        JumpCost(sel_handle);
 extern  cost_val        ScanCost(sel_handle);
-extern  tbl_control     *MakeScanTab(select_list *,signed_32,label_handle,cg_type,cg_type);
-extern  tbl_control     *MakeJmpTab(select_list *,signed_32,signed_32,label_handle);
+extern  tbl_control     *MakeScanTab(select_list *,int_32,label_handle,cg_type,cg_type);
+extern  tbl_control     *MakeJmpTab(select_list *,int_32,int_32,label_handle);
 extern  name            *SelIdx(tbl_control *,an);
 extern  type_def        *SelNodeType(an,bool);
 extern  void            MkSelOp( name *idx, type_class_def type_class );

@@ -1240,9 +1240,9 @@ void    GenRegMove( hw_reg_set src, hw_reg_set dst )
 }
 
 
-static  void    AddSWData( opcode_defs op, signed_32 val, type_class_def type_class )
+static  void    AddSWData( opcode_defs op, int_32 val, type_class_def type_class )
 /**************************************************************************
- * Add a const (signed_32) to Inst[] with sign extension if the opcode
+ * Add a const (int_32) to Inst[] with sign extension if the opcode
  * allows it
  */
 {
@@ -1293,8 +1293,8 @@ static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def type_class
 }
 
 
-void    AddWData( signed_32 value, type_class_def type_class )
-/************************************************************/
+void    AddWData( int_32 value, type_class_def type_class )
+/*********************************************************/
 {
     AddByte( (byte)value );
     if( type_class == U1 || type_class == I1 )
@@ -1331,9 +1331,9 @@ void    AddWCons( name *op, type_class_def type_class )
     }
 }
 
-void    AddSData( signed_32 value, type_class_def type_class )
-/*****************************************************************
- * Add a constant (signed_32) to Inst[], with possible sign extension
+void    AddSData( int_32 value, type_class_def type_class )
+/**********************************************************
+ * Add a constant (int_32) to Inst[], with possible sign extension
  */
 {
     if( ( type_class == U2 || type_class == I2 )

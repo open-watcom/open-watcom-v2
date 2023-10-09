@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ void _CGDLLEXPORT BEDLLFini( cg_interface *func_table )
     // nothing yet
 }
 
-int __stdcall LibMain( unsigned_32 hdll, unsigned_32 reason, void *reserved )
+int __stdcall LibMain( uint_32 hdll, uint_32 reason, void *reserved )
 {
     /* unused parameters */ (void)hdll; (void)reason; (void)reserved;
 

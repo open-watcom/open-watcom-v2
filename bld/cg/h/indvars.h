@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,20 +51,20 @@ typedef enum {
 #define _ChkLoopUsage(x,b)              (((x)->v.block_usage & (var_usage)(b)) != 0)
 #define _SetLoopUsage(x,b)              ((x)->v.block_usage = (var_usage)(b))
 
-typedef signed_16       invar_id;
+typedef int_16              invar_id;
 typedef struct invariant {              /*  an invariant list is */
-        signed_32               times;  /*  + <v>*times */
+        int_32                  times;  /*  + <v>*times */
         union  name             *name;  /*  this is <v> */
         struct invariant        *next;  /*  ... add the next one */
         invar_id                id;
 } invariant;
 
 typedef struct induction {              /* an induction variable is */
-        signed_32               times;     /*  ( <i>*times ) */
+        int_32                  times;     /*  ( <i>*times ) */
         union name              *ivtimes;  /*     *ivtimes */
         struct invariant        *invar;    /*     +invariant_list[*ivtimes?] */
-        signed_32               plus2;     /*     +plus2*ivtimes */
-        signed_32               plus;      /*  .. +plus */
+        int_32                  plus2;     /*     +plus2*ivtimes */
+        int_32                  plus;      /*  .. +plus */
         union  name             *name;     /*  this is <j> */
         struct induction        *prev;     /*  link in list of induction vars */
         struct induction        *basic;    /*  this is <i> */

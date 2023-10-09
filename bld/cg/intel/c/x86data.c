@@ -56,8 +56,8 @@
 static void DoLblPtr( label_handle lbl, segment_id segid, fix_class class, offset plus );
 
 
-void    DataAlign( unsigned_32 align )
-/************************************/
+void    DataAlign( uint_32 align )
+/********************************/
 {
     offset      curr_loc;
     uint        modulus;
@@ -85,8 +85,8 @@ void    DataBytes( unsigned len, const void *src )
 }
 
 
-void    DataShort( unsigned_16 val )
-/**********************************/
+void    DataShort( uint_16 val )
+/******************************/
 {
     TellOptimizerByPassed();
     SetUpObj( true );
@@ -94,8 +94,8 @@ void    DataShort( unsigned_16 val )
     TellByPassOver();
 }
 
-void    DataLong( unsigned_32 val )
-/*********************************/
+void    DataLong( uint_32 val )
+/*****************************/
 {
     TellOptimizerByPassed();
     SetUpObj( true );

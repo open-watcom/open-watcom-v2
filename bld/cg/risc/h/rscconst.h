@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,4 +31,4 @@
 ****************************************************************************/
 
 
-extern void FactorInt32( signed_32 val, signed_16 *high, signed_16 *extra, signed_16 *low );
+extern void FactorInt32( int_32 val, int_16 *high, int_16 *extra, int_16 *low );

@@ -93,8 +93,8 @@ static name *AllocName( name_class_def class, type_class_def type_class, type_le
     return( new );
 }
 
-static name *findConst64( unsigned_32 low, unsigned_32 high, float_handle cf_value )
-/**********************************************************************************/
+static name *findConst64( uint_32 low, uint_32 high, float_handle cf_value )
+/**************************************************************************/
 {
     name        *new_c;
     name        **last;
@@ -135,7 +135,7 @@ name    *AllocConst( float_handle cf_value )
 {
     name        *new_c;
     name        **last;
-    signed_32   int_value;
+    int_32      int_value;
     int         test;
 
     int_value = CFCnvF32( cf_value );
@@ -214,8 +214,8 @@ name    *AllocAddrConst( name *value, int seg, constant_type_class const_type, t
 }
 
 
-name    *FindIntValue( signed_32 value )
-/**************************************/
+name    *FindIntValue( int_32 value )
+/***********************************/
 {
     if( value == 0 && ConstZero != NULL )
         return( ConstZero );
@@ -249,8 +249,8 @@ name    *AllocUIntConst( uint value )
 }
 
 
-name    *AllocS32Const( signed_32 value )
-/***************************************/
+name    *AllocS32Const( int_32 value )
+/************************************/
 {
     name        *konst;
 
@@ -260,8 +260,8 @@ name    *AllocS32Const( signed_32 value )
     return( AllocConst( CFCnvI32F( value ) ) );
 }
 
-name    *AllocU32Const( unsigned_32 value )
-/*****************************************/
+name    *AllocU32Const( uint_32 value )
+/*************************************/
 {
     name        *konst;
 
@@ -271,8 +271,8 @@ name    *AllocU32Const( unsigned_32 value )
     return( AllocConst( CFCnvU32F( value ) ) );
 }
 
-name    *AllocS64Const( unsigned_32 low, unsigned_32 high )
-/*********************************************************/
+name    *AllocS64Const( uint_32 low, uint_32 high )
+/*************************************************/
 {
     name            *new_c;
     float_handle    cf_value = CFCnvI64F( low, high );
@@ -291,8 +291,8 @@ name    *AllocS64Const( unsigned_32 low, unsigned_32 high )
     return( new_c );
 }
 
-name    *AllocU64Const( unsigned_32 low, unsigned_32 high )
-/*********************************************************/
+name    *AllocU64Const( uint_32 low, uint_32 high )
+/*************************************************/
 {
     name            *new_c;
     float_handle    cf_value = CFCnvU64F( low, high );

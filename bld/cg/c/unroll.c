@@ -280,13 +280,13 @@ static  void    UnMarkHeaderEdges( block *loop )
 #define MAX_CODE_SIZE   0x20
 #define UNROLL_MAX      0x20
 
-static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *complete )
-/***********************************************************************************
+static int_32   UnrollCount( block *loop_tail, bool *clean, bool *complete )
+/***************************************************************************
  * Figure out how many times we want to unroll the given loop.
  */
 {
-    signed_32   num_ins;
-    signed_32   unroll_count;
+    int_32      num_ins;
+    int_32      unroll_count;
     block       *blk;
 
     /*
@@ -373,7 +373,7 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
 }
 
 static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
-                                       signed_32 scale )
+                                       int_32 scale )
 /*******************************************************
  * Replace all occurrences of an induction var in the loop with a new
  * temp, and add an instruction to initialize that temp onto the ins_list.
@@ -390,7 +390,7 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
     instruction *new_ins;
     block       *blk;
     opcnt       i;
-    signed_32   adjust;
+    int_32      adjust;
 
     for( ind = IndVarList; ind != NULL; ind = ind->next ) {
         if( _IsV( ind, IV_DEAD ) )
@@ -466,12 +466,12 @@ static  void    ChainTwoLoops( loop_abstract *first, loop_abstract *last )
     last->head->u.loop = first->tail;
 }
 
-static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
-/**************************************************************************
+static  block   *DoUnroll( block *tail, int_32 reps, bool replace_vars )
+/***********************************************************************
  * Unroll the given loop (this is the tail block, and loop is connected
  * through blk->u.loop to the head, in which blk->u.loop == NULL) reps
- * times (there will be reps + 1 copies of the loop body) and replace induction
- * vars with new temps if replace_vars == true
+ * times (there will be reps + 1 copies of the loop body) and replace
+ * induction vars with new temps if replace_vars == true
  * All of the copies made will be connected through blk->u.loop, and a
  * pointer to the tail of the new super-loop will be returned.
  */
@@ -482,8 +482,8 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     loop_abstract       *first;
     loop_abstract       *last;
     block               *next_block;
-    signed_32           i;
-    signed_32           size;
+    int_32              i;
+    int_32              size;
 
     /* unused parameters */ (void)replace_vars;
 
@@ -549,7 +549,7 @@ static  bool    TractableCond( loop_condition *cond )
 {
     bool        ok;
     induction   *tmp;
-    signed_32   plus;
+    int_32      plus;
 //    bool        exit_true;
     byte        opcode;
     name        *n;
@@ -950,8 +950,8 @@ static  void    MarkLoopHeader( block *loop, block *header )
  *   +---------------------------+
  */
 
-static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loop_condition *cond, signed_32 reps )
-/******************************************************************************************************************
+static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loop_condition *cond, int_32 reps )
+/***************************************************************************************************************
  * This functions lays out the code as given above, creating and linking in condition
  * blocks as needed. It then sorts the blocks into the given order, to make sure that nothing
  * screws up our lovely flow of control.
@@ -963,7 +963,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     type_class_def      comp_type_class;
     block               *new;
     instruction         *ins;
-    unsigned_32         high_bit;
+    uint_32             high_bit;
 
     comp_type_class = cond->compare_ins->type_class;
     temp = AllocTemp( comp_type_class );
@@ -1081,7 +1081,7 @@ bool    UnRoll( void )
 {
     loop_condition      cond;
     block               *last;
-    signed_32           unroll_count;
+    int_32              unroll_count;
     bool                one_cond;
     loop_abstract       cleanup_copy;
 

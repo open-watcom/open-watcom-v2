@@ -58,8 +58,8 @@ static instruction *AndResult( instruction *ins, type_class_def type_class )
     order junk.
 */
 {
-    signed_32           constant;
-    instruction         *new_ins;
+    int_32          constant;
+    instruction     *new_ins;
 
     if( type_class == U1 ) {
         constant = 0xFF;

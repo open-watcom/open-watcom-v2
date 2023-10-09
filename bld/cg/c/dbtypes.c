@@ -227,8 +227,8 @@ dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
 }
 
 
-dbg_type _CGAPI DBCharBlock( unsigned_32 len )
-/****************************************************/
+dbg_type _CGAPI DBCharBlock( uint_32 len )
+/****************************************/
 {
     dbg_type ret;
 
@@ -249,8 +249,8 @@ dbg_type _CGAPI DBCharBlock( unsigned_32 len )
     return( ret );
 }
 
-dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, unsigned_32 len )
-/*************************************************************************/
+dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, uint_32 len )
+/*************************************************************/
 {
     dbg_type ret;
 
@@ -420,8 +420,8 @@ static  void    AddDim( dbg_array ar, dim_any *dim )
     ar->num++;
 }
 
-void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, signed_32 lo, signed_32 hi )
-/************************************************************************************/
+void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, int_32 lo, int_32 hi )
+/**********************************************************************/
 {
     dim_con *dim;
 
@@ -482,8 +482,8 @@ dbg_type _CGAPI DBEndArray( dbg_array ar )
     return( ret );
 }
 
-dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
-/*****************************************************************/
+dbg_type _CGAPI DBIntArray( uint_32 hi, dbg_type base )
+/*****************************************************/
 {
     dbg_type ret;
 
@@ -507,8 +507,8 @@ dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
     return( ret );
 }
 
-dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
-/*********************************************************************************/
+dbg_type _CGAPI DBIntArrayCG( cg_type tipe, uint_32 hi, dbg_type base )
+/*********************************************************************/
 {
     dbg_type          ret;
     type_def          *tipe_addr;
@@ -534,8 +534,8 @@ dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
     return( ret );
 }
 
-dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/*****************************************************************************/
+dbg_type _CGAPI DBSubRange( int_32 lo, int_32 hi, dbg_type base )
+/***************************************************************/
 {
     dbg_type ret;
 
@@ -736,9 +736,9 @@ static  void    AddField( dbg_struct st, field_any *field )
 }
 
 
-void _CGAPI DBAddBitField( dbg_struct st, unsigned_32 off, byte strt,
-                                        byte len, cchar_ptr nm, dbg_type base )
-/*****************************************************************************/
+void _CGAPI DBAddBitField( dbg_struct st, uint_32 off, byte strt,
+                            byte len, cchar_ptr nm, dbg_type base )
+/*****************************************************************/
 {
     field_member *field;
 
@@ -752,9 +752,9 @@ void _CGAPI DBAddBitField( dbg_struct st, unsigned_32 off, byte strt,
 }
 
 
-void _CGAPI DBAddField( dbg_struct st, unsigned_32 off,
-                                   cchar_ptr nm, dbg_type  base )
-/***************************************************************/
+void _CGAPI DBAddField( dbg_struct st, uint_32 off,
+                        cchar_ptr nm, dbg_type  base )
+/****************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "DBAddField( %i, %i,%c,%i)\n", st, off, nm, base );
@@ -785,8 +785,8 @@ void _CGAPI DBAddLocField( dbg_struct st, dbg_loc loc, uint attr,
     AddField( st, (field_any *)field );
 }
 
-void _CGAPI DBAddStField( dbg_struct st, dbg_loc loc, cchar_ptr nm, unsigned_32 attr, dbg_type base )
-/***********************************************************************************************************/
+void _CGAPI DBAddStField( dbg_struct st, dbg_loc loc, cchar_ptr nm, uint_32 attr, dbg_type base )
+/***********************************************************************************************/
 {
     uint          n_len;
     field_stfield *field;
@@ -864,9 +864,9 @@ void _CGAPI DBAddInheritance( dbg_struct st, dbg_type inherit,
     AddField( st, (field_any *)field );
 }
 
-void _CGAPI DBAddBaseInfo( dbg_struct st, unsigned_32 vb_off, int esize,
-                                              dbg_type vtbl, cg_type ptr_type )
-/********************************************************************************/
+void _CGAPI DBAddBaseInfo( dbg_struct st, uint_32 vb_off, int esize,
+                                    dbg_type vtbl, cg_type ptr_type )
+/*******************************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "DBAddBaseInfo( %i,%i,%i,%i,%t)\n", st, vb_off, esize, vtbl, ptr_type );
@@ -878,9 +878,9 @@ void _CGAPI DBAddBaseInfo( dbg_struct st, unsigned_32 vb_off, int esize,
 }
 
 
-void _CGAPI DBAddVFuncInfo( dbg_struct st, unsigned_32 vfptr_off,
-                                        int size, cg_type vft_cgtype )
-/********************************************************************/
+void _CGAPI DBAddVFuncInfo( dbg_struct st, uint_32 vfptr_off,
+                                int size, cg_type vft_cgtype )
+/************************************************************/
 {
     field_vfunc  *field;
 
@@ -952,8 +952,8 @@ dbg_enum _CGAPI DBBegEnum( cg_type tipe )
     return( en );
 }
 
-void _CGAPI DBAddConst( dbg_enum en, cchar_ptr nm, signed_32 val )
-/****************************************************************/
+void _CGAPI DBAddConst( dbg_enum en, cchar_ptr nm, int_32 val )
+/*************************************************************/
 {
     const_entry *cons;
     uint        len;

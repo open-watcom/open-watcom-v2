@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,8 @@
 #include "feprotos.h"
 
 
-void    DataAlign( unsigned_32 align )
-/************************************/
+void    DataAlign( uint_32 align )
+/********************************/
 {
     offset      curr_loc;
     uint        modulus;
@@ -60,24 +60,24 @@ void    DataAlign( unsigned_32 align )
     }
 }
 
-void    DataBytes( unsigned_32 len, const void *src )
-/***************************************************/
+void    DataBytes( uint_32 len, const void *src )
+/***********************************************/
 {
     TellOptimizerByPassed();
     ObjBytes( src, len );
     TellByPassOver();
 }
 
-void    DataShort( unsigned_16 val )
-/**********************************/
+void    DataShort( uint_16 val )
+/******************************/
 {
     TellOptimizerByPassed();
     ObjBytes( &val, sizeof( val ) );
     TellByPassOver();
 }
 
-void    DataLong( unsigned_32 val )
-/*********************************/
+void    DataLong( uint_32 val )
+/*****************************/
 {
     TellOptimizerByPassed();
     ObjBytes( &val, sizeof( val ) );

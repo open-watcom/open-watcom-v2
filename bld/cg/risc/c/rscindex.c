@@ -151,7 +151,7 @@ static  name    *TruncImmediate( instruction *mem_ins, name *index ) {
 
     assert( index->n.class == N_INDEXED );
     result = index;
-    if( index->i.constant != (signed_16)index->i.constant ) {
+    if( index->i.constant != (int_16)index->i.constant ) {
         // too big to fit into a signed-16 displacement on a memory operand
         temp = AllocTemp( I4 );
         ins = MakeBinary( OP_ADD, index->i.index, AllocS32Const( index->i.constant ), temp, I4 );

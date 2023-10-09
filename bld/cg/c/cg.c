@@ -68,7 +68,7 @@ extern  char            *Op(cg_op );
 extern  void            NotDefault(cg_type );
 extern  void            CGError(const char *,... );
 extern  void            VerBack(b *);
-extern  char            *LToS(signed_32 );
+extern  char            *LToS( int_32 );
 extern  void            DumpT(n *);
 extern  void            VerOp(cg_op ,cg_op *);
 extern  void            Find(char *,pointer *,pointer );
@@ -78,7 +78,7 @@ extern  void            CDefLabel(l *lb);
 extern  void            DRefLabel(l *lb);
 extern  void            DDefLabel(l *lb);
 extern  pointer         LkAddBack(sym_handle,pointer);
-extern  unsigned_32     BETypeLength( cg_type );
+extern  uint_32         BETypeLength( cg_type );
 
 /********************************************************************/
 /* Handle feedback for auto locations                               */
@@ -483,16 +483,16 @@ extern  sh      *CGSelInit() {
     Action( " -> %d%n", SelId );
     return(s);
 }
-extern  void    CGSelCase( sh *s, l *lb, signed_32 v ) {
-/******************************************************/
+extern  void    CGSelCase( sh *s, l *lb, int_32 v ) {
+/*************************************************/
 
     Action( "CGSelCase" );
     Action( "( %d, %l, %s )%n", s->i, v, Label( lb ) );
     CRefLabel( lb );
     SelRange(s,v,v,lb);
 }
-extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
-/**********************************************************************/
+extern  void    CGSelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
+/**************************************************************/
 
     Action( "CGSelRange" );
     Action( "( %d, %l, %l, %s )%n", s->i, lo, hi, Label( lb ) );
@@ -500,8 +500,8 @@ extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
     SelRange(s,lo,hi,lb);
 }
 
-extern  void    SelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
-/********************************************************************/
+extern  void    SelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
+/************************************************************/
 
     rh  **or;
     rh  *n;
@@ -559,8 +559,8 @@ extern  void    CGSelect( sh *s, n *e ) {
     Code("}%n");
     CGFree(s);
 }
-extern  n       *CGInteger( signed_32 i, cg_type t ) {
-/****************************************************/
+extern  n       *CGInteger( int_32 i, cg_type t ) {
+/***********************************************/
 
     n   *in;
 

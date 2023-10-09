@@ -76,8 +76,8 @@ static  void    InsReset( instruction *ins )
     }
 }
 
-static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
-/*************************************************************************/
+static  bool    MergeTwo( instruction *a, instruction *b, int_32 value )
+/**********************************************************************/
 {
     name        *cons;
     name        *old_res_a;
@@ -192,7 +192,7 @@ static TWO_OP AndOr;
 static bool AndOr( instruction *and_ins, instruction *or_ins )
 /************************************************************/
 {
-    signed_32   new_and;
+    int_32      new_and;
     name        *mask;
 
     if( and_ins->operands[0] != and_ins->result )
@@ -215,9 +215,9 @@ static TWO_OP OrAnd;
 static bool OrAnd( instruction *or_ins, instruction *and_ins )
 /************************************************************/
 {
-    signed_32   new_or;
-    signed_32   or;
-    signed_32   and;
+    int_32      new_or;
+    int_32      or;
+    int_32      and;
     name        *mask;
 
     if( or_ins->operands[0] != or_ins->result )
@@ -252,7 +252,7 @@ static THREE_OP OrAndOr;
 static bool OrAndOr( instruction *a, instruction *b )
 /***************************************************/
 {
-    signed_32   and_val;
+    int_32      and_val;
     name        *mask;
 
     if( a->result != b->result )
@@ -283,7 +283,7 @@ static THREE_OP AndOrAnd;
 static bool AndOrAnd( instruction *a, instruction *b )
 /****************************************************/
 {
-    signed_32   or_val;
+    int_32      or_val;
     name        *mask;
 
     if( a->result != b->result )

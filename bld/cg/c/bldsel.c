@@ -48,8 +48,8 @@
 #include "generate.h"
 
 
-static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label )
-/****************************************************************************/
+static  select_list *NewCase( int_32 lo, int_32 hi, label_handle label )
+/**********************************************************************/
 {
     select_list         *new_entry;
 
@@ -80,15 +80,15 @@ sel_handle  BGSelInit( void )
 }
 
 
-void    BGSelCase( sel_handle s_node, label_handle label, signed_32 value )
-/*************************************************************************/
+void    BGSelCase( sel_handle s_node, label_handle label, int_32 value )
+/**********************************************************************/
 {
     BGSelRange( s_node, value, value, label );
 }
 
 
-void    BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label )
-/*************************************************************************************/
+void    BGSelRange( sel_handle s_node, int_32 lo, int_32 hi, label_handle label )
+/*******************************************************************************/
 {
     select_list         *new_entry;
 
@@ -109,8 +109,8 @@ void    BGSelOther( sel_handle s_node, label_handle other )
 
 static type_def         *SortTipe;
 
-int SelCompare( signed_32 lo1, signed_32 lo2 )
-/********************************************/
+int SelCompare( int_32 lo1, int_32 lo2 )
+/**************************************/
 {
     if( lo1 == lo2 )
         return( 0 );
@@ -119,7 +119,7 @@ int SelCompare( signed_32 lo1, signed_32 lo2 )
             return( -1 );
         }
     } else {
-        if( (unsigned_32)lo1 < (unsigned_32)lo2 ) {
+        if( (uint_32)lo1 < (uint_32)lo2 ) {
             return( -1 );
         }
     }
@@ -196,8 +196,8 @@ static cost_val DistinctIfCost( sel_handle s_node )
 }
 
 
-cg_type SelType( unsigned_32 value_range )
-/****************************************/
+cg_type SelType( uint_32 value_range )
+/************************************/
 {
     cg_type     tipe;
 
@@ -374,7 +374,7 @@ static  an      GenSelTable( an node, sel_handle s_node, type_def *tipe )
 
 static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
                                int lo, int hi, label_handle other,
-                               signed_32 lobound, signed_32 hibound,
+                               int_32 lobound, int_32 hibound,
                                bool have_lobound, bool have_hibound )
 /*************************************************************************/
 {
@@ -496,10 +496,10 @@ static  an      GenIfStmts( an node, sel_handle s_node, type_def *tipe )
 }
 
 
-signed_32       NumValues( select_list *list, signed_32 hi )
-/**********************************************************/
+int_32      NumValues( select_list *list, int_32 hi )
+/***************************************************/
 {
-    signed_32           cases;
+    int_32      cases;
 
     cases = 0;
     for( ; list != NULL; list = list->next ) {

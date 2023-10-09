@@ -50,8 +50,8 @@
 #define HasBigConst( t )       ( ( (t)->attr & TYPE_FLOAT ) || (t)->length == 8 )
 
 typedef union i32 {
-    signed_32   s;
-    unsigned_32 u;
+    int_32      s;
+    uint_32     u;
 } i32;
 
 static cg_op RevOpcode[] = {
@@ -198,10 +198,10 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     return( ret );
 }
 
-static signed_32 CFConvertByType( float_handle cf, type_def *tipe )
-/*****************************************************************/
+static int_32 CFConvertByType( float_handle cf, type_def *tipe )
+/**************************************************************/
 {
-    signed_32   data;
+    int_32      data;
 
     data = CFCnvF32( cf );
     switch( tipe->length ) {
@@ -214,9 +214,9 @@ static signed_32 CFConvertByType( float_handle cf, type_def *tipe )
         break;
     case 2:
         if( tipe->attr & TYPE_SIGNED ) {
-            data = (signed_16)data;
+            data = (int_16)data;
         } else {
-            data = (unsigned_16)data;
+            data = (uint_16)data;
         }
         break;
     }
@@ -244,10 +244,10 @@ static  float_handle IntToCF( signed_64 value, type_def *tipe )
 {
     signed_8    s8;
     unsigned_8  u8;
-    signed_16   s16;
-    unsigned_16 u16;
-    signed_32   s32;
-    unsigned_32 u32;
+    int_16      s16;
+    uint_16     u16;
+    int_32      s32;
+    uint_32     u32;
 
     if( tipe->attr & TYPE_SIGNED ) {
         switch( tipe->length ) {
@@ -288,8 +288,8 @@ static  float_handle IntToCF( signed_64 value, type_def *tipe )
     }
 }
 
-static  tn      IntToType( signed_32 value, type_def *tipe )
-/**********************************************************/
+static  tn      IntToType( int_32 value, type_def *tipe )
+/*******************************************************/
 {
     signed_64   temp;
 
@@ -321,11 +321,11 @@ static  tn      CFToType( float_handle cf, type_def *tipe )
 
 
 
-int     GetLog2( unsigned_32 value )
-/******************************************/
+int     GetLog2( uint_32 value )
+/******************************/
 {
-    unsigned_32     count;
-    int             log;
+    uint_32     count;
+    int         log;
 
     if( _IsPowerOfTwo( value ) && value != 0 ) {
         log = 0;
@@ -350,8 +350,8 @@ tn      FoldTimes( tn left, tn rite, type_def *tipe )
     int             log;
     float_handle    lv;
     float_handle    rv;
-    unsigned_32     li;
-    unsigned_32     ri;
+    uint_32         li;
+    uint_32         ri;
 
     if( left->class == TN_CONS ) {
         temp = left;
@@ -458,8 +458,8 @@ tn      FoldMinus( tn left, tn rite, type_def *tipe )
     tn              fold;
     float_handle    lv;
     float_handle    rv;
-    unsigned_32     li;
-    unsigned_32     ri;
+    uint_32         li;
+    uint_32         ri;
 
     fold = NULL;
     if( left->class == TN_CONS ) {
@@ -515,8 +515,8 @@ tn      FoldPlus( tn left, tn rite, type_def *tipe )
     tn              temp;
     float_handle    lv;
     float_handle    rv;
-    unsigned_32     li;
-    unsigned_32     ri;
+    uint_32         li;
+    uint_32         ri;
 
     if( left->class == TN_CONS ) {
         temp = left;
@@ -625,7 +625,7 @@ tn      FoldAnd( tn left, tn rite, type_def *tipe )
         lv = left->u.name->c.value;
         rv = rite->u.name->c.value;
         if( CFIs32( lv ) && CFIs32( rv ) ) {
-            unsigned_32     and;
+            uint_32     and;
 
             and = CFConvertByType( rv, tipe ) & CFConvertByType( lv, tipe );
             fold = IntToType( and, tipe );
@@ -677,7 +677,7 @@ tn      FoldOr( tn left, tn rite, type_def *tipe )
         lv = left->u.name->c.value;
         rv = rite->u.name->c.value;
         if( CFIs32( lv ) && CFIs32( rv ) ) {
-            unsigned_32     or;
+            uint_32     or;
 
             or = CFConvertByType( rv, tipe ) | CFConvertByType( lv, tipe );
             fold = IntToType( or, tipe );
@@ -729,8 +729,8 @@ tn      FoldXor( tn left, tn rite, type_def *tipe )
         lv = left->u.name->c.value;
         rv = rite->u.name->c.value;
         if( CFIs32( lv ) && CFIs32( rv ) ) {
-            unsigned_32     li;
-            unsigned_32     ri;
+            uint_32     li;
+            uint_32     ri;
 
             li = CFConvertByType( lv, tipe );
             ri = CFConvertByType( rv, tipe );
@@ -772,7 +772,7 @@ tn      FoldRShift( tn left, tn rite, type_def *tipe )
     tn              fold;
     float_handle    rv;
     float_handle    lv;
-    signed_32       ri;
+    int_32          ri;
 
     fold = NULL;
     if( rite->class == TN_CONS ) {
@@ -794,14 +794,14 @@ tn      FoldRShift( tn left, tn rite, type_def *tipe )
             if( !done ) {
                 lv = left->u.name->c.value;
                 if( !HasBigConst( tipe ) && CFIs32( lv ) && CFIs32( rv ) ) {
-                    signed_32       li;
-                    unsigned_32     shft;
+                    int_32      li;
+                    uint_32     shft;
 
                     li = CFConvertByType( lv, tipe );
                     if( tipe->attr & TYPE_SIGNED ) {
                         shft = li >> ri;
                     } else {
-                        shft = (unsigned_32)li >> (unsigned_32)ri;
+                        shft = (uint_32)li >> (uint_32)ri;
                     }
                     fold = IntToType( shft, tipe );
                 } else if( CFIs64( lv ) && CFIs64( rv ) ) {
@@ -838,7 +838,7 @@ tn      FoldLShift( tn left, tn rite, type_def *tipe )
     tn              fold;
     float_handle    rv;
     float_handle    lv;
-    signed_32       ri;
+    int_32          ri;
 
     fold = NULL;
     ri = 0;
@@ -856,7 +856,7 @@ tn      FoldLShift( tn left, tn rite, type_def *tipe )
             } else {
                 lv = left->u.name->c.value;
                 if( !HasBigConst( tipe ) && CFIs32( lv ) && CFIs32( rv ) ) {
-                    signed_32       li;
+                    int_32  li;
 
                     li = CFConvertByType( lv, tipe );
                     fold = IntToType( li << ri, tipe );
@@ -936,8 +936,8 @@ tn      FoldDiv( tn left, tn rite, type_def *tipe )
             lv = left->u.name->c.value;
             if( tipe->attr & TYPE_SIGNED ) {
                 if( CFIsI32( lv ) && CFIsI32( rv ) ) {
-                    signed_32       li;
-                    signed_32       ri;
+                    int_32  li;
+                    int_32  ri;
 
                     li = CFConvertByType( lv, tipe );
                     ri = CFConvertByType( rv, tipe );
@@ -947,8 +947,8 @@ tn      FoldDiv( tn left, tn rite, type_def *tipe )
                 }
             } else {
                 if( CFIsU32( lv ) && CFIsU32( rv ) ) {
-                    unsigned_32     li;
-                    unsigned_32     ri;
+                    uint_32     li;
+                    uint_32     ri;
 
                     li = CFCnvF32( lv );
                     ri = CFCnvF32( rv );
@@ -1013,8 +1013,8 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
             } else {
                 if( tipe->attr & TYPE_SIGNED ) {
                     if( CFIsI32( lv ) && CFIsI32( rv ) ) {
-                        signed_32     ri;
-                        signed_32     li;
+                        int_32  ri;
+                        int_32  li;
 
                         li = CFConvertByType( lv, tipe );
                         ri = CFConvertByType( rv, tipe );
@@ -1024,8 +1024,8 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
                     }
                 } else {
                     if( CFIsU32( lv ) && CFIsU32( rv ) ) {
-                        unsigned_32     ri;
-                        unsigned_32     li;
+                        uint_32     ri;
+                        uint_32     li;
 
                         li = CFConvertByType( lv, tipe );
                         ri = CFConvertByType( rv, tipe );
@@ -1043,7 +1043,7 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
         } else if( !HasBigConst( tipe ) ) {
             if( ( left->tipe->attr & TYPE_SIGNED ) == 0 ) {
                 if( CFIsU32( rv ) ) {
-                    unsigned_32 ri = CFConvertByType( rv, tipe );
+                    uint_32 ri = CFConvertByType( rv, tipe );
                     log = GetLog2( ri );
                     if( log != -1 ) {
                         fold = TGBinary( O_AND, left, IntToType( ri - 1, tipe ), tipe );
@@ -1059,7 +1059,7 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
                    t2 = t & (rv - 1);
                    fold = (t2 ^ b) - b;
                  */
-                signed_32 ri = CFConvertByType( rv, tipe );
+                int_32 ri = CFConvertByType( rv, tipe );
                 if( ri < 0 )    /* sign of constant doesn't matter */
                     ri = -ri;
                 log = GetLog2( ri );
@@ -1264,9 +1264,9 @@ tn      FoldFlNot( tn left )
 tn      FoldBitCompare( cg_op op, tn left, tn rite )
 /**********************************************************/
 {
-    tn              fold;
-    unsigned_32     new_cons;
-    unsigned_32     mask;
+    tn          fold;
+    uint_32     new_cons;
+    uint_32     mask;
 
     if( left->class == TN_CONS ) {
         fold = left;
@@ -1534,9 +1534,9 @@ tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
 {
 //    tn              compare;
     tn              temp;
-    signed_32       ri;
-    signed_32       li;
-    signed_32       value;
+    int_32          ri;
+    int_32          li;
+    int_32          value;
     float_handle    rv;
     float_handle    lv;
 

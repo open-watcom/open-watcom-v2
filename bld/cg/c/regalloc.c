@@ -413,7 +413,7 @@ static  void    BitOff( conflict_node *conf )
 }
 
 
-static signed_32     CountRegMoves( conflict_node *conf,
+static int_32   CountRegMoves( conflict_node *conf,
                                hw_reg_set reg, reg_tree *tree,
                                int levels )
 /********************************************
@@ -427,7 +427,7 @@ static signed_32     CountRegMoves( conflict_node *conf,
     block               *blk;
     instruction         *ins;
     instruction         *last;
-    signed_32           count;
+    int_32              count;
     int                 half;
     name                *reg_name;
     name                *op1;

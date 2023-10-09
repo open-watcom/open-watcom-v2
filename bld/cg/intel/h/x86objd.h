@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@
 #define WEAK_EXTRN_COMMENT  CMT_NP( WKEXT )
 #define LAZY_EXTRN_COMMENT  CMT_NP( LZEXT )
 
-typedef unsigned_16     omf_idx;
+typedef uint_16             omf_idx;
 
 typedef enum {
 /*  order is important -- see documentation */
@@ -144,8 +144,8 @@ typedef struct index_rec {
     base_type               btype;
     byte                    attr;
     byte                    data_prefix_size;
-    unsigned_32             comdat_size;
-    unsigned_32             total_comdat_size;
+    uint_32                 comdat_size;
+    uint_32                 total_comdat_size;
     cg_sym_handle           comdat_symbol;
     label_handle            comdat_label;
     omf_idx                 comdat_nidx;

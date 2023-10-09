@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,8 @@
 #ifndef _OFFSET_H
 #define _OFFSET_H
 
-typedef unsigned_16             short_offset;
-typedef unsigned_32             long_offset;
-typedef unsigned_32             offset;
+typedef uint_16         short_offset;
+typedef uint_32         long_offset;
+typedef uint_32         offset;
 
 #endif

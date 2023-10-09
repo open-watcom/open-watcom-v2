@@ -57,15 +57,15 @@ typedef struct op {
 static  op      Ops[MAXOPS];
 
 
-static  int     Factor( unsigned_32 num, int *cost )
-/**************************************************/
+static  int     Factor( uint_32 num, int *cost )
+/**********************************************/
 {
     int         shlcnt;
     int         i;
     int         j;
     unsigned    num_oprs;
-    unsigned_32 test;
-    unsigned_32 pow2;
+    uint_32     test;
+    uint_32     pow2;
 
     *cost = 0;
     i = MAXOPS;
@@ -174,7 +174,7 @@ static  int     Factor( unsigned_32 num, int *cost )
 static  instruction     *CheckMul( instruction *ins )
 /***************************************************/
 {
-    signed_32           rhs;
+    int_32              rhs;
     int                 i;
     bool                neg;
     instruction         *new_ins;

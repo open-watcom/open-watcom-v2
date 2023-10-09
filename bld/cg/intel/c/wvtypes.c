@@ -75,8 +75,8 @@ static  byte    GetScalar( cg_type tipe ) {
 }
 
 
-static  uint    SignedSizeClass( signed_32 num ) {
-/************************************************/
+static  uint    SignedSizeClass( int_32 num ) {
+/*******************************************/
 
     uint        class;
 
@@ -196,8 +196,8 @@ void WVBackRefType( dbg_name name, dbg_type tipe )
     SetOP( old_segid );
 }
 
-dbg_type        WVCharBlock( unsigned_32 len )
-/********************************************/
+dbg_type        WVCharBlock( uint_32 len )
+/****************************************/
 {
     temp_buff   temp;
     int         class;
@@ -262,8 +262,8 @@ dbg_type        WVArray( dbg_type idx, dbg_type base )
 }
 
 
-dbg_type        WVIntArray( unsigned_32 hi, dbg_type base )
-/*********************************************************/
+dbg_type        WVIntArray( uint_32 hi, dbg_type base )
+/*****************************************************/
 {
     uint        class;
     temp_buff   temp;
@@ -276,8 +276,8 @@ dbg_type        WVIntArray( unsigned_32 hi, dbg_type base )
     return( TypeIdx );
 }
 
-dbg_type    WVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/*****************************************************************/
+dbg_type    WVSubRange( int_32 lo, int_32 hi, dbg_type base )
+/***********************************************************/
 {
     uint        class_lo;
     uint        class_hi;
@@ -603,8 +603,8 @@ static  void    EndType( bool check_too_big ) {
 static void DmpFileInfo( void )
 /*****************************/
 {
-    fname_lst *lst;
-    unsigned_16 index;
+    fname_lst   *lst;
+    uint_16     index;
 
     DataShort( DBFiles.count );
     index = 0;

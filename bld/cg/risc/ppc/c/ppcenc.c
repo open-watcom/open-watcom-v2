@@ -276,8 +276,8 @@ void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx 
 }
 
 
-void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
-//***********************************************************************
+void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, int_16 immed )
+//********************************************************************
 {
     ins_encoding = _Opcode( op1 ) | _D( d ) | _A( a ) | _SignedImmed( immed );
     _EmitIns( ins_encoding );
@@ -296,8 +296,8 @@ void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
 }
 
 
-void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
-/******************************************************************************/
+void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, int_16 displacement )
+/***************************************************************************/
 {
     ins_encoding = _Opcode( op ) | _D( d ) | _A( i ) | _SignedImmed( displacement );
     _EmitIns( ins_encoding );
@@ -333,8 +333,8 @@ static void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
 }
 
 
-static void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
-/*****************************************************************/
+static void    GenCMPIMM( gen_opcode op, reg_idx a, int_16 imm )
+/**************************************************************/
 {
     ins_encoding = _Opcode( op ) | _A( a ) | _SignedImmed( imm );
     _EmitIns( ins_encoding );
@@ -424,7 +424,7 @@ static  void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
     case N_INDEXED:
         assert( mem->i.index->n.class == N_REGISTER );
         assert( mem->i.scale == 0 );
-        assert( mem->i.constant == (type_length)((signed_16)mem->i.constant) );
+        assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
         *regidx_mem = RegTrans( mem->i.index->r.reg );
         *offset = (int_16)mem->i.constant;
@@ -611,7 +611,7 @@ static  void    Encode( instruction *ins )
     gen_opcode          op1;
     gen_opcode          op2;
     gen_opcode          *ops;
-    signed_16           mem_offset;
+    int_16              mem_offset;
     reg_idx             regidx_mem;
 
 

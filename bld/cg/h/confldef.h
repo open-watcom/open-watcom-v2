@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #define MAX_SAVE                0xFFFFFFFF
 #define DEL_CONFLICT_SAVE       10
 
-typedef unsigned_32             save_def;
+typedef uint_32                 save_def;
 
 typedef enum {
     CST_CONF_IS_NEXT            = 0x0001,

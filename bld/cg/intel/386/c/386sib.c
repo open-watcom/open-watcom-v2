@@ -49,7 +49,7 @@ typedef struct sib_info {
     scale_typ           scale;
     i_flags             flags;
     instruction         *ins;
-    signed_32           offset;
+    int_32              offset;
 } sib_info;
 
 

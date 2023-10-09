@@ -454,7 +454,7 @@ instruction_id  Renumber( void )
     instruction         *ins;
     instruction_id      id;
     instruction_id      increment;
-    unsigned_32         number_instrs;
+    uint_32             number_instrs;
 
     number_instrs = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

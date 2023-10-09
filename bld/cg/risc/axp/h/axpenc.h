@@ -36,12 +36,12 @@
 
 extern void         GenCallLabelReg( pointer label, reg_idx reg );
 extern void         GenOPINS( uint_8 opcode, uint_8 function, reg_idx ra, reg_idx rb, reg_idx rc );
-extern void         GenLOADS32( signed_32 value, reg_idx reg );
-extern void         GenMEMINS( uint_8 opcode, reg_idx ra, reg_idx rb, signed_16 displacement );
-extern void         GenLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement );
-extern void         GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement );
-extern void         GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
-extern void         GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
+extern void         GenLOADS32( int_32 value, reg_idx reg );
+extern void         GenMEMINS( uint_8 opcode, reg_idx ra, reg_idx rb, int_16 displacement );
+extern void         GenLOAD( hw_reg_set dst, hw_reg_set src, int_16 displacement );
+extern void         GenFLOAD( hw_reg_set dst, hw_reg_set src, int_16 displacement );
+extern void         GenSTORE( hw_reg_set dst, int_16 displacement, hw_reg_set src );
+extern void         GenFSTORE( hw_reg_set dst, int_16 displacement, hw_reg_set src );
 extern void         GenReturn( void );
 #if 0
 extern void         GenJumpIf( instruction *ins, pointer label );

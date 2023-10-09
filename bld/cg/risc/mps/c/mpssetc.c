@@ -81,8 +81,8 @@ static  bool    isNiceCondIns( instruction *ins )
 }
 
 
-static  instruction     *SetToConst( block *blk, signed_32 *pcons )
-/*****************************************************************/
+static  instruction     *SetToConst( block *blk, int_32 *pcons )
+/**************************************************************/
 {
     instruction *ins;
     instruction *next;
@@ -111,8 +111,8 @@ static  instruction     *SetToConst( block *blk, signed_32 *pcons )
 static  bool    FindFlowOut( block *blk )
 /***************************************/
 {
-    signed_32           false_cons;
-    signed_32           true_cons;
+    int_32              false_cons;
+    int_32              true_cons;
     instruction         *ins;
     instruction         *ins0;
     instruction         *ins1;
@@ -183,8 +183,8 @@ static  bool    FindFlowOut( block *blk )
 
     /* Replace 'x <= const' with 'x < const + 1' */
     if( oc == OP_CMP_LESS_EQUAL || oc == OP_CMP_GREATER_EQUAL ) {
-        signed_32           value;
-        name                *op1;
+        int_32          value;
+        name            *op1;
 
         op1 = ins->operands[1];
         assert( op1->n.class == N_CONSTANT && op1->c.const_type == CONS_ABSOLUTE );

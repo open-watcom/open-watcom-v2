@@ -399,8 +399,8 @@ tn  TGCompare( cg_op op, tn left, tn rite, type_def *tipe )
 }
 
 
-static  an  Int( unsigned_32 num )
-/*********************************
+static  an  Int( uint_32 num )
+/*****************************
  * return an address name for an integer
  */
 {
@@ -416,18 +416,18 @@ static  an  Int64( unsigned_64 num )
     return( BGInt64( num, TypeLongLongInteger ) );
 }
 
-unsigned_32    TGMask32( tn node )
-/*****************************************
+uint_32    TGMask32( tn node )
+/*****************************
  * return a mask of 1's in the positions a bit field occupies.
  */
 {
-    unsigned_32     mask;
-    uint            len;
-    unsigned_32     bit;
+    uint_32     mask;
+    uint        len;
+    uint_32     bit;
 
     len = node->u2.b.len;
     mask = 0;
-    bit = (unsigned_32)1 << node->u2.b.start;
+    bit = (uint_32)1 << node->u2.b.start;
     for( ;; ) {
         mask |= bit;
         bit <<= 1;
@@ -1840,8 +1840,8 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
     FreeTreeNode( lhs );
     U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
-        retv = Int( shiftmask.u._32[I64LO32] & (unsigned_32)after_value->u.n.name->c.lo.int_value );
-        if( (unsigned_32)retv->u.n.name->c.lo.int_value != shiftmask.u._32[I64LO32] ) {
+        retv = Int( shiftmask.u._32[I64LO32] & (uint_32)after_value->u.n.name->c.lo.int_value );
+        if( (uint_32)retv->u.n.name->c.lo.int_value != shiftmask.u._32[I64LO32] ) {
             DoAnd( left, mask, node );
         }
         if( retv->u.n.name->c.lo.int_value != 0 ) {
@@ -1938,7 +1938,7 @@ static  an  TNBitAssign( tn node )
     an          retv;
     tn          lhs;
     tn          rhs;
-    unsigned_32 mask;
+    uint_32     mask;
 
     lhs = node->u.left;
     rhs = node->u2.t.rite;

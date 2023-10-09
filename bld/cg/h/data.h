@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ extern  bool                    BlocksUnTrimmed;
 extern  an                      AddrList;
 extern  segment_id              DbgLocals;
 extern  segment_id              DbgTypes;
-extern  unsigned_16             TypeIdx;      // uint ???
+extern  uint_16                 TypeIdx;      // uint ???
 extern  byte                    OptForSize;
 extern  bool                    HaveLiveInfo;
 extern  bool                    HaveDominatorInfo;

@@ -102,14 +102,14 @@ typedef short               segment_id;
 
 typedef int                 level_depth;
 
-typedef unsigned_32         cg_linenum;
+typedef uint_32             cg_linenum;
 
 typedef size_t              objoffset;
 typedef size_t              objhandle;
 #define INVALID_OBJHANDLE   0
 
 /* symbolic debugging type handles */
-typedef unsigned_32         dbg_type;
+typedef uint_32             dbg_type;
 typedef struct struct_list  *dbg_struct;
 typedef struct array_list   *dbg_array;
 typedef struct enum_list    *dbg_enum;

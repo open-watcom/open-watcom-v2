@@ -35,9 +35,9 @@
 
 
 extern void         GenCallLabelReg( pointer label, reg_idx reg );
-extern void         GenLOADS32( signed_32 value, reg_idx reg );
-extern void         GenMEMINS( uint_8 opcode, reg_idx rt, reg_idx rs, signed_16 displacement );
-extern void         GenIType( uint_8 opcode, reg_idx rt, reg_idx rs, signed_16 immed );
+extern void         GenLOADS32( int_32 value, reg_idx reg );
+extern void         GenMEMINS( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 displacement );
+extern void         GenIType( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 immed );
 extern void         GenRType( uint_8 opcode, uint_8 fc, reg_idx rd, reg_idx rs, reg_idx rt );
 extern void         GenIShift( uint_8 fc, reg_idx rd, reg_idx rt, uint_8 sa );
 extern void         GenJType( uint_8 opcode, pointer label );

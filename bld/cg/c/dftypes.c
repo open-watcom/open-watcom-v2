@@ -147,8 +147,8 @@ void DFBackRefType( dbg_name name, dbg_type tipe )
     Zoiks( ZOIKS_108 );
 }
 
-dbg_type        DFCharBlock( unsigned_32 len )
-/********************************************/
+dbg_type        DFCharBlock( uint_32 len )
+/****************************************/
 {
     dbg_type    ret;
 
@@ -156,8 +156,8 @@ dbg_type        DFCharBlock( unsigned_32 len )
     return( ret );
 }
 
-dbg_type    DFCharBlockNamed( const char *name, unsigned_32 len )
-/***************************************************************/
+dbg_type    DFCharBlockNamed( const char *name, uint_32 len )
+/***********************************************************/
 {
     dbg_type    ret;
 
@@ -217,8 +217,8 @@ dbg_type        DFArray( dbg_type idx, dbg_type base )
     return( ret );
 }
 
-dbg_type        DFIntArray( unsigned_32 hi, dbg_type base )
-/*********************************************************/
+dbg_type        DFIntArray( uint_32 hi, dbg_type base )
+/*****************************************************/
 {
     dbg_type    ret;
 
@@ -324,9 +324,10 @@ dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
 }
 
 
-dbg_type DFSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/**************************************************************/
-/* need some dwarflib support */
+dbg_type DFSubRange( int_32 lo, int_32 hi, dbg_type base )
+/*********************************************************
+ * need some dwarflib support
+ */
 {
     /* unused parameters */ (void)lo; (void)hi; (void)base;
 

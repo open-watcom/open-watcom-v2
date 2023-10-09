@@ -54,7 +54,7 @@
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 
-typedef unsigned_32             block_flags;
+typedef uint_32                 block_flags;
 
 typedef enum {
         BLOCK_LABEL_DIES        = 0x01,
@@ -170,7 +170,7 @@ typedef struct block {
         block_num               inputs;         /* number of input edges */
         block_num               targets;        /* number of target blocks */
         block_class             class;
-        signed_32               iterations;
-        unsigned_32             unroll_count;
+        int_32                  iterations;
+        uint_32                 unroll_count;
         struct block_edge       edge[1];
 } block;

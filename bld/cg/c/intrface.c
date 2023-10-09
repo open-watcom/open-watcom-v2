@@ -353,11 +353,11 @@ void _CGAPI     BEFiniLabel( label_handle lbl )
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 
-unsigned_32 _CGAPI      BEUnrollCount( unsigned_32 unroll_count )
-/***************************************************************/
+uint_32 _CGAPI      BEUnrollCount( uint_32 unroll_count )
+/*******************************************************/
 {
 #ifdef DEVBUILD
-    unsigned_32 retn;
+    uint_32 retn;
     EchoAPI( "BEUnrollCount( %i )", unroll_count );
     retn = BGUnrollCount( unroll_count );
     return EchoAPIIntReturn( retn );
@@ -405,8 +405,8 @@ cg_name _CGAPI          CGPatchNode( patch_handle patch, cg_type tipe )
 #endif
 }
 
-void _CGAPI     BEPatchInteger( patch_handle patch, signed_32 value )
-/*******************************************************************/
+void _CGAPI     BEPatchInteger( patch_handle patch, int_32 value )
+/****************************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "BEPatchInteger( %P, %x )\n", patch, value );
@@ -551,8 +551,8 @@ void _CGAPI     BEFreeBack( back_handle bck )
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-void _CGAPI     BEDefType( cg_type what, uint align, unsigned_32 len )
-/********************************************************************/
+void _CGAPI     BEDefType( cg_type what, uint align, uint_32 len )
+/****************************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "BEDefType( %t, %x, %i )\n", what, align, len );
@@ -569,11 +569,11 @@ void _CGAPI     BEAliasType( cg_type what, cg_type to )
     TypeAlias( what, to );
 }
 
-unsigned_32 _CGAPI      BETypeLength( cg_type tipe )
-/**************************************************/
+uint_32 _CGAPI      BETypeLength( cg_type tipe )
+/**********************************************/
 {
 #ifdef DEVBUILD
-    unsigned_32 retn;
+    uint_32 retn;
     EchoAPI( "BETypeLength( %t )\n", tipe );
     retn = TypeLength( tipe) ;
     return EchoAPIIntReturn( retn );
@@ -708,8 +708,8 @@ cg_name _CGAPI CGVarargsBasePtr( cg_type tipe )
 #endif
 }
 
-cg_name _CGAPI CGInteger( signed_32 val, cg_type tipe )
-/*****************************************************/
+cg_name _CGAPI CGInteger( int_32 val, cg_type tipe )
+/**************************************************/
 {
 #ifdef DEVBUILD
     cg_name     retn;
@@ -1207,8 +1207,8 @@ sel_handle _CGAPI       CGSelInit( void )
 #endif
 }
 
-void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_32 val )
-/************************************************************************/
+void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, int_32 val )
+/*********************************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "CGSelCase( %S, %L, %i )\n", s, lbl, val );
@@ -1218,9 +1218,9 @@ void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_32 val )
     BGSelCase( s, lbl, val );
 }
 
-void _CGAPI     CGSelRange( sel_handle s, signed_32 lo,
-                            signed_32 hi, label_handle lbl )
-/**********************************************************/
+void _CGAPI     CGSelRange( sel_handle s, int_32 lo,
+                            int_32 hi, label_handle lbl )
+/*******************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "CGSelRange( %S, %L, %i, %i )\n", s, lbl, lo, hi );
@@ -1434,7 +1434,7 @@ void _CGAPI     DGLabel( back_handle bck )
 }
 
 void _CGAPI     DGBackPtr( back_handle bck, segment_id segid,
-                            signed_32 offset, cg_type tipe )
+                            int_32 offset, cg_type tipe )
 /***********************************************************/
 {
 #ifdef DEVBUILD
@@ -1446,8 +1446,8 @@ void _CGAPI     DGBackPtr( back_handle bck, segment_id segid,
     BackPtr( bck, segid, offset, TypeAddress( tipe ) );
 }
 
-void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, signed_32 offset )
-/**********************************************************************/
+void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, int_32 offset )
+/*******************************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "DGFEPtr( %S, %t, %i )\n", sym, tipe, offset );
@@ -1456,8 +1456,8 @@ void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, signed_32 offset )
     FEPtr( sym, TypeAddress( tipe ), offset );
 }
 
-void _CGAPI     DGBytes( unsigned_32 len, const void *src )
-/*********************************************************/
+void _CGAPI     DGBytes( uint_32 len, const void *src )
+/*****************************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "DGBytes( %x, %x )\n", len, src );
@@ -1466,8 +1466,8 @@ void _CGAPI     DGBytes( unsigned_32 len, const void *src )
     DataBytes( len, src );
 }
 
-void _CGAPI     DGInteger( unsigned_32 value, cg_type tipe )
-/**********************************************************/
+void _CGAPI     DGInteger( uint_32 value, cg_type tipe )
+/******************************************************/
 {
     type_length len;
     int         i;
@@ -1503,7 +1503,7 @@ void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
 {
     type_length len;
     union{
-        unsigned_32 vall;
+        uint_32     vall;
         unsigned_64 val;
         byte        buff[8];
     } data;
@@ -1551,8 +1551,8 @@ void _CGAPI     DGFloat( cchar_ptr value, cg_type tipe )
     DGBytes( TypeLength( tipe ), &buff );
 }
 
-void _CGAPI     DGIBytes( unsigned_32 len, byte pat )
-/***************************************************/
+void _CGAPI     DGIBytes( uint_32 len, byte pat )
+/***********************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "DGIBytes( %x, %x )\n", len, pat );
@@ -1622,8 +1622,8 @@ void _CGAPI DGString( cchar_ptr value, uint len )
 #endif
 }
 
-void _CGAPI     DGUBytes( unsigned_32 len )
-/*****************************************/
+void _CGAPI     DGUBytes( uint_32 len )
+/*************************************/
 {
 #ifdef DEVBUILD
     EchoAPI( "DGUBytes( %x )\n", len );
@@ -1643,8 +1643,8 @@ void _CGAPI     DGAlign( uint align )
 }
 
 
-unsigned_32 _CGAPI  DGSeek( unsigned_32 where )
-/*********************************************/
+uint_32 _CGAPI  DGSeek( uint_32 where )
+/*************************************/
 {
     uint        old;
 
@@ -1663,11 +1663,11 @@ unsigned_32 _CGAPI  DGSeek( unsigned_32 where )
 #endif
 }
 
-unsigned_32 _CGAPI      DGTell( void )
-/************************************/
+uint_32 _CGAPI      DGTell( void )
+/********************************/
 {
 #ifdef DEVBUILD
-    unsigned_32     retn;
+    uint_32     retn;
 
     EchoAPI( "DGTell()" );
     retn = AskLocation();
@@ -1678,11 +1678,11 @@ unsigned_32 _CGAPI      DGTell( void )
 }
 
 
-unsigned_32 _CGAPI      DGBackTell( back_handle bck )
-/***************************************************/
+uint_32 _CGAPI      DGBackTell( back_handle bck )
+/***********************************************/
 {
 #ifdef DEVBUILD
-    unsigned_32 retn;
+    uint_32 retn;
     EchoAPI( "DGBackTell( %B )", bck );
 #endif
 
@@ -1857,8 +1857,8 @@ float_handle _CGAPI     BFCnvUF( uint data )
     return( CFCnvUF( data ) );
 }
 
-signed_32 _CGAPI        BFCnvF32( float_handle f )
-/************************************************/
+int_32 _CGAPI        BFCnvF32( float_handle f )
+/*********************************************/
 {
     return( CFCnvF32( f ) );
 }

@@ -112,12 +112,12 @@ static bool     MemMove( instruction *ins )
 static bool     OptMemMove( instruction *ins, instruction *next )
 /***************************************************************/
 {
-    unsigned_32         shift;
-    unsigned_32         lo;
-    unsigned_32         hi;
-    type_class_def      result_type_class;
-    unsigned_32         result_const;
-    name                *result;
+    uint_32         shift;
+    uint_32         lo;
+    uint_32         hi;
+    type_class_def  result_type_class;
+    uint_32         result_const;
+    name            *result;
 
     assert( MemMove( ins ) && MemMove( next ) );
     if( ins->type_class == next->type_class ) {

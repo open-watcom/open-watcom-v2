@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,14 +152,14 @@ instruction *rMOVEXX_8( instruction *ins )
 instruction *rCONSTLOAD( instruction *ins )
 /*****************************************/
 {
-    unsigned_32         low;
-    unsigned_32         high;
-    unsigned_32         c;
-    name                *high_part;
-    name                *temp;
-    instruction         *first_ins;
-    instruction         *new_ins;
-    type_class_def      type_class;
+    uint_32         low;
+    uint_32         high;
+    uint_32         c;
+    name            *high_part;
+    name            *temp;
+    instruction     *first_ins;
+    instruction     *new_ins;
+    type_class_def  type_class;
 
     assert( ins->operands[0]->n.class == N_CONSTANT );
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
@@ -257,7 +257,7 @@ instruction *rALLOCA( instruction *ins )
     name                *amount;
     name                *real_amount;
     name                *temp;
-    unsigned_32         value;
+    uint_32             value;
     instruction         *first;
     instruction         *last;
     type_class_def      type_class;
@@ -341,7 +341,7 @@ instruction      *rM_SIMPCMP( instruction *ins )
         /* Special reduction: use OP_SET_LESS but increment constant */
         if( (ins->operands[1]->n.class == N_CONSTANT)
             && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) ) {
-            signed_32           value;
+            int_32      value;
 
             opcode = OP_SET_LESS;
             // TODO: we may be leaking memory here by losing track of the

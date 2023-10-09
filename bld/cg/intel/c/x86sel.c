@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,8 +75,8 @@
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
 
-static cost_val Balance( signed_32 size, signed_32 time )
-/*******************************************************/
+static cost_val Balance( int_32 size, int_32 time )
+/*************************************************/
 {
     cost_val    balance;
     byte        opt_size;
@@ -103,9 +103,9 @@ cost_val ScanCost( sel_handle s_node )
 /************************************/
 {
     select_list *list;
-    signed_32   hi;
-    signed_32   lo;
-    signed_32   values;
+    int_32      hi;
+    int_32      lo;
+    int_32      values;
     cost_val    cost;
     int         type_length;
     cg_type     tipe;
@@ -132,7 +132,7 @@ cost_val ScanCost( sel_handle s_node )
 cost_val JumpCost( sel_handle s_node )
 /************************************/
 {
-    signed_32   in_range;
+    int_32      in_range;
     cost_val    cost;
 
     in_range = s_node->upper - s_node->lower + 1;
@@ -168,10 +168,10 @@ cost_val JumpCost( sel_handle s_node )
 cost_val IfCost( sel_handle s_node, int entries )
 /***********************************************/
 {
-    signed_32   hi;
-    signed_32   lo;
+    int_32      hi;
+    int_32      lo;
     cost_val    cost;
-    signed_32   jumpsize;
+    int_32      jumpsize;
     int         log_entries;
     int         tipe_length;
 
@@ -192,7 +192,7 @@ cost_val IfCost( sel_handle s_node, int entries )
     log_entries = 0;
     while( entries != 0 ) {
         log_entries++;
-        entries = (unsigned_32)entries >> 2;
+        entries = (uint_32)entries >> 2;
     }
     /* add cost for extra jumps generated for grandparents and
        every other child except the last one */
@@ -204,12 +204,12 @@ cost_val IfCost( sel_handle s_node, int entries )
     return( cost );
 }
 
-static  void    GenValuesForward( select_list *list, signed_32 hi,
-                                  signed_32 lo, signed_32 to_sub,
+static  void    GenValuesForward( select_list *list, int_32 hi,
+                                  int_32 lo, int_32 to_sub,
                                   cg_type tipe )
 /****************************************************************/
 {
-    signed_32           curr;
+    int_32      curr;
 
     curr = lo;
     for(;;) {
@@ -236,13 +236,13 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
 }
 
 
-static  void    GenValuesBackward( select_list *list, signed_32 hi,
-                                   signed_32 lo, signed_32 to_sub,
+static  void    GenValuesBackward( select_list *list, int_32 hi,
+                                   int_32 lo, int_32 to_sub,
                                    cg_type tipe )
 {
-    select_list         *scan;
-    select_list         *next;
-    signed_32           curr;
+    select_list     *scan;
+    select_list     *next;
+    int_32          curr;
 
     curr = hi;
     for( scan = list; scan->high != hi; ) {
@@ -275,19 +275,19 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
 }
 
 
-tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
+tbl_control     *MakeScanTab( select_list *list, int_32 hi,
                                       label_handle other, cg_type tipe,
                                       cg_type real_tipe )
 /*********************************************************************/
 {
     tbl_control         *table;
     label_handle        *tab_ptr;
-    unsigned_32         cases;
-    signed_32           lo;
-    signed_32           to_sub;
+    uint_32             cases;
+    int_32              lo;
+    int_32              to_sub;
     segment_id          old_segid;
     select_list         *scan;
-    signed_32           curr;
+    int_32              curr;
 
     cases = NumValues( list, hi );
     lo = list->low;
@@ -339,13 +339,13 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     return( table );
 }
 
-tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
-                                     signed_32 hi, label_handle other )
+tbl_control     *MakeJmpTab( select_list *list, int_32 lo,
+                                     int_32 hi, label_handle other )
 /*********************************************************************/
 {
     tbl_control         *table;
     label_handle        *tab_ptr;
-    unsigned_32         cases;
+    uint_32             cases;
     segment_id          old_segid;
 
     cases = hi - lo + 1;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,8 +184,8 @@ hw_reg_set      ZapReg( instruction *ins )
     return( *list );
 }
 
-instruction *MoveConst( unsigned_32 value, name *result, type_class_def type_class )
-/**********************************************************************************/
+instruction *MoveConst( uint_32 value, name *result, type_class_def type_class )
+/******************************************************************************/
 {
     return( MakeMove( AllocConst( CFCnvU32F( value ) ), result, type_class ) );
 }
@@ -430,7 +430,7 @@ instruction      *rUSEREGISTER( instruction *ins )
 instruction      *rCHANGESHIFT( instruction *ins )
 /************************************************/
 {
-    signed_32   shift_count;
+    int_32      shift_count;
 
     shift_count = ins->operands[1]->c.lo.int_value;
     assert( shift_count >= 0 );
@@ -442,9 +442,9 @@ instruction      *rCHANGESHIFT( instruction *ins )
 instruction      *rFIXSHIFT( instruction *ins )
 /*********************************************/
 {
-    instruction         *new_ins;
+    instruction     *new_ins;
 #ifdef DEVBUILD
-    signed_32           shift_count;
+    int_32          shift_count;
 #endif
 
     /* Fix up shift instructions that try to shift by too large amounts. This
@@ -500,7 +500,7 @@ instruction      *rCLRHI_R( instruction *ins )
     type_class_def      type_class;
     hw_reg_set          high;
     name                *res;
-    signed_32           value;
+    int_32              value;
     type_class_def      half_type_class;
     name                *op;
 

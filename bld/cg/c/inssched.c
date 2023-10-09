@@ -855,7 +855,7 @@ static void ScheduleIns( void )
     int             curr_cost;
     int             stk_depth;
     int             stk_over;
-    unsigned_16     last_seq;
+    uint_16         last_seq;
 
     /*
      * What the hell is he doing with the visited bit here!?...

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-typedef unsigned_16     gen_opcode;
+typedef uint_16     gen_opcode;
 
 typedef enum {
         BYTE_OPCODE     = 0x01,

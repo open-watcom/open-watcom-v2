@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,12 +46,12 @@ extern  void    DumpChar( char );
 extern  void    DumpNL( void );
 extern  void    DumpPtr( void *ptr );
 extern  void    DumpInt( int );
-extern  void    DumpLong( signed_32 );
-extern  void    DumpLongLen( signed_32, int );
+extern  void    DumpLong( int_32 );
+extern  void    DumpLongLen( int_32, int );
 extern  void    DumpUInt( unsigned );
-extern  void    DumpULong( unsigned_32 );
-extern  void    DumpULongLen( unsigned_32, int );
-extern  void    Dump8h( unsigned_32 );
+extern  void    DumpULong( uint_32 );
+extern  void    DumpULongLen( uint_32, int );
+extern  void    Dump8h( uint_32 );
 extern  void    DumpByte( byte n );
 extern  void    DumpId( unsigned );
 

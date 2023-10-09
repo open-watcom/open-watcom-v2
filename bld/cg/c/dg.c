@@ -50,7 +50,7 @@
 #include "cgprotos.h"
 
 
-extern  unsigned_16     TypeIdx;
+extern  uint_16         TypeIdx;
 
 extern  char            *ACopyOf(const char *);
 extern  void            VerTipe(cg_type ,cg_type *);
@@ -64,7 +64,7 @@ extern  char            *Name(pointer );
 extern  void            Put(char *,... );
 extern  void            SymDbg(char *,... );
 extern  void            VerBack(b *);
-extern  char            *LToS(signed_32 );
+extern  char            *LToS( int_32 );
 extern  void            CGError(const char *, ... );
 extern  void            DDefLabel(l *);
 extern  void            DRefLabel(l *);
@@ -80,10 +80,10 @@ void    DGAlign( uint algn )
     Put("        align to %d byte boundry (%d)%n", algn, Locs[CurSeg] );
 }
 
-uint    DGSeek( unsigned_32 where )
-//=================================
+uint    DGSeek( uint_32 where )
+//=============================
 {
-    unsigned_32 old;
+    uint_32 old;
 
     Action( "DGSeek( %l )", where );
     Put( "        seek to location %l%n", where );
@@ -93,16 +93,16 @@ uint    DGSeek( unsigned_32 where )
     return( old );
 }
 
-void    DGUBytes( unsigned_32 len )
-//=================================
+void    DGUBytes( uint_32 len )
+//=============================
 {
     Action( "DGUBytes( %l )%n", len );
     Put("        %l B(?)%n", len );
     Locs[CurSeg] += len;
 }
 
-void    DGIBytes( unsigned_32 len, byte pat )
-//===========================================
+void    DGIBytes( uint_32 len, byte pat )
+//=======================================
 {
     Action( "DGIBytes( %l, %h )%n", len, pat );
     Put("        %d B(%h)%n", len, pat );
@@ -121,16 +121,16 @@ void    DGLabel( b *bk )
     Put(":%n");
 }
 
-unsigned_32     DGTell( void )
-//============================
+uint_32 DGTell( void )
+//====================
 {
     Action( "DGTell() -> %l%n", Locs[CurSeg] );
     return( Locs[CurSeg] );
 }
 
-extern  unsigned_32     DGBackTell( b *bk ) {
-//===================================
-
+extern uint_32  DGBackTell( b *bk )
+//=================================
+{
     Action( "DGBackTell" );
     VerBack(bk);
     if( !bk->lp->ddef ) {
@@ -140,8 +140,8 @@ extern  unsigned_32     DGBackTell( b *bk ) {
     Action( "( %s ) -> %l%n", Label( bk->lp ), bk->loc );
     return( bk->loc );
 }
-extern  void    DGFEPtr( sym s, cg_type t, signed_32 o ) {
-//==========================================================
+extern  void    DGFEPtr( sym s, cg_type t, int_32 o ) {
+//===================================================
 
     b   *bk;
 
@@ -155,8 +155,8 @@ extern  void    DGFEPtr( sym s, cg_type t, signed_32 o ) {
     Put( ") + %l %s%n",o,Tipe(t) );
     Locs[CurSeg] += TypeAddress( t )->length;
 }
-extern  void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t ) {
-//==========================================================================
+extern  void    DGBackPtr( b *bk, segment_id s, int_32 o, cg_type t ) {
+//===================================================================
 
     Action( "DGBackPtr" );
     Action( "( %s, %d, %l, %s )%n", Label( bk->lp ), s, o, Tipe( t ) );
@@ -167,9 +167,9 @@ extern  void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t ) {
     Put( ") + %l (seg %d) %s%n",o,s,Tipe(t) );
     Locs[CurSeg] += TypeAddress( t )->length;
 }
-extern  void    DGBytes( unsigned_32 len, const void *bp ) {
-//============================================
-
+extern  void    DGBytes( uint_32 len, const void *bp )
+//====================================================
+{
     const byte *p = bp;
     Action( "DGBytes( %l, ... )%n", len );
     Put( "        " );
@@ -188,9 +188,9 @@ extern  void    PutName( b *bk ) {
         Put( " [%s]", Name( bk->s ) );
     }
 }
-extern  void    DGInteger(  unsigned_32 i,  cg_type  t ) {
-//======================================================
-
+extern  void    DGInteger( uint_32 i, cg_type t )
+//===============================================
+{
     Action( "DGInteger" );
     VerTipe( t,DGIntTypes );
     Action( "( %l, %s )%n", i, Tipe( t ) );
@@ -271,7 +271,7 @@ typedef struct location {
             t                   *be_sym;
             cg_sym_handle       fe_sym;
             unsigned            stk;
-            unsigned_32         val;
+            uint_32             val;
         }                       u;
         byte                    class;
 } location;
@@ -363,8 +363,8 @@ extern dbg_loc          DBLocTemp( dbg_loc loc, t *tm  ) {
     return( loc );
 }
 
-extern  dbg_loc         DBLocConst( dbg_loc loc, unsigned_32 val ) {
-/******************************************************************/
+extern  dbg_loc         DBLocConst( dbg_loc loc, uint_32 val ) {
+/************************************************************/
 
     Action( "DBLocConst( %p, %l ) ==>", loc, val );
     loc = LocCreate( loc, LOC_CONST );
@@ -655,8 +655,8 @@ extern  dbg_type        DBEndName( dbg_name nm, dbg_type tipe ) {
     Action( " -> %d%n", retv );
     return( retv );
 }
-extern  dbg_type        DBCharBlock( unsigned_32 len ) {
-//======================================================
+extern  dbg_type        DBCharBlock( uint_32 len ) {
+//================================================
 
     Action( "DBCharBlock( %l )", len );
     TypDbg( "(%d) CharBlock len==%l%n", ++TypeIdx, len );
@@ -722,16 +722,16 @@ extern  dbg_type        DBArray( dbg_type idx, dbg_type base ) {
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  dbg_type        DBIntArray( unsigned_32 hi, dbg_type base ) {
-//===================================================================
+extern  dbg_type        DBIntArray( uint_32 hi, dbg_type base ) {
+//=============================================================
 
     Action( "DBIntArray( %l, %d )", hi, base );
     TypDbg( "(%d) Int Array hi==%l, base==%d%n", ++TypeIdx, hi, base );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  dbg_type        DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
-/*********************************************************************************/
+extern  dbg_type        DBIntArrayCG( cg_type tipe, uint_32 hi, dbg_type base )
+/*****************************************************************************/
 {
     Action( "DBIntArrayCg( %s, %l, %d )", Tipe(tipe), hi, base );
     TypDbg( "(%d) Int Array hi==%l, base==%d%n", ++TypeIdx, hi, base );
@@ -776,8 +776,8 @@ static  void    AddDim( array_list *ar, dim_any *dim )
     ar->num++;
 }
 
-extern  void DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi )
-/*******************************************************************************/
+extern  void DBDimCon( array_list *ar, dbg_type idx, int_32 lo, int_32 hi )
+/*************************************************************************/
 {
     dim_con *dim;
 
@@ -821,8 +821,8 @@ extern  dbg_type        DBEndArray( array_list  *ar ) {
     return( TypeIdx );
 }
 
-extern  dbg_type        DBSubRange( signed_32 lo, signed_32 hi, dbg_type base ) {
-//=============================================================================
+extern  dbg_type        DBSubRange( int_32 lo, int_32 hi, dbg_type base ) {
+//=======================================================================
 
     Action( "DBSubRange( %l, %l, %d )", lo, hi, base );
     TypDbg( "(%d) Subrange  lo==%l, hi==%l, base==%d%n", ++TypeIdx,
@@ -909,9 +909,9 @@ static  void    AddField( struct_list *st, field_any *field )
     st->num++;
 }
 
-extern  void    DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
-                                     byte len, cchar_ptr nm, dbg_type base)
-/*************************************************************************/
+extern  void    DBAddBitField( struct_list *st, uint_32 off, byte strt,
+                                byte len, cchar_ptr nm, dbg_type base)
+/*********************************************************************/
 {
     field_member *field;
 
@@ -937,8 +937,8 @@ extern  void    DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
 }
 
 
-extern void DBAddField(struct_list *st,unsigned_32 off,cchar_ptr nm,dbg_type base)
-//================================================================================
+extern void DBAddField(struct_list *st,uint_32 off,cchar_ptr nm,dbg_type base)
+//============================================================================
 {
     field_member *field;
 
@@ -1022,9 +1022,9 @@ extern  void        DBAddInheritance( struct_list *st, dbg_type inherit,
     AddField( st, field );
 }
 
-void    DBAddBaseInfo( struct_list  *st, unsigned_32 vb_off,  unsigned_32 esize,
-                                              dbg_type vtbl, cg_type ptr_type )
-/******************************************************************************/
+void    DBAddBaseInfo( struct_list  *st, uint_32 vb_off,  uint_32 esize,
+                                        dbg_type vtbl, cg_type ptr_type )
+/***********************************************************************/
 {
     st->vtbl_off    = vb_off;
     st->vtbl_type  = vtbl;
@@ -1034,7 +1034,7 @@ void    DBAddBaseInfo( struct_list  *st, unsigned_32 vb_off,  unsigned_32 esize,
                              esize, vtbl, Tipe( ptr_type) );
 }
 
-extern  void    DBAddVFuncInfo( struct_list  *st, unsigned_32 vfptr_off,
+extern  void    DBAddVFuncInfo( struct_list  *st, uint_32 vfptr_off,
                                                   int size,
                                                   cg_type vft_cgtype )
 //======================================================================
@@ -1126,8 +1126,8 @@ enum_list   *DBBegEnum( cg_type tipe )
     return( en );
 }
 
-void    DBAddConst( enum_list *en, cchar_ptr nm, signed_32 val )
-//==============================================================
+void    DBAddConst( enum_list *en, cchar_ptr nm, int_32 val )
+//===========================================================
 {
     const_entry *cons;
 

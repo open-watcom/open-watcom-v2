@@ -242,7 +242,7 @@ static  byte    DoSum( const byte *buff, size_t len )
 static void PutObjOMFRec( byte class, const void *buff, size_t len )
 /******************************************************************/
 {
-    unsigned_16     blen;
+    uint_16         blen;
     byte            cksum;
 
     blen = _TargetShort( len + 1 );
@@ -261,7 +261,7 @@ static void PatchObj( objhandle rec, objoffset roffset, const byte *buff, size_t
 /************************************************************************************/
 {
     byte            cksum;
-    unsigned_16     reclen;
+    uint_16         reclen;
     byte            inbuff[80];
 
     SeekGetObj( rec, 1, (byte *)&reclen, 2 );
@@ -461,29 +461,29 @@ static  void    OutByte( byte value, array_control *dest )
     dest->used = need;
 }
 
-static  void    OutShort( unsigned_16 value, array_control *dest )
-/****************************************************************/
+static  void    OutShort( uint_16 value, array_control *dest )
+/************************************************************/
 {
     unsigned    need;
 
-    need = dest->used + sizeof( unsigned_16 );
+    need = dest->used + sizeof( uint_16 );
     if( need > dest->alloc ) {
         ReallocArray( dest, need );
     }
-    _ARRAY( dest, unsigned_16 ) = _TargetShort( value );
+    _ARRAY( dest, uint_16 ) = _TargetShort( value );
     dest->used = need;
 }
 
-static  void    OutLongInt( unsigned_32 value, array_control *dest )
-/******************************************************************/
+static  void    OutLongInt( uint_32 value, array_control *dest )
+/**************************************************************/
 {
     unsigned    need;
 
-    need = dest->used + sizeof( unsigned_32 );
+    need = dest->used + sizeof( uint_32 );
     if( need > dest->alloc ) {
         ReallocArray( dest, need );
     }
-    _ARRAY( dest, unsigned_32 ) = _TargetLongInt( value );
+    _ARRAY( dest, uint_32 ) = _TargetLongInt( value );
     dest->used = need;
 }
 
@@ -1763,8 +1763,8 @@ static  void    FlushObject( void )
 }
 
 
-static  index_rec       *AskIndexRec( unsigned_16 sidx )
-/******************************************************/
+static  index_rec       *AskIndexRec( uint_16 sidx )
+/**************************************************/
 {
     index_rec   *rec;
     unsigned    i;
@@ -1937,8 +1937,8 @@ static void DoSegARange( offset *codesize, index_rec *rec )
 static  void    DoPatch( obj_patch *pat, offset lc )
 /**************************************************/
 {
-    unsigned_32 lword_val;
-    unsigned_16 word_val;
+    uint_32     lword_val;
+    uint_16     word_val;
     byte        byte_val;
 
     if( pat->attr & LONG_PATCH ) {
@@ -2410,17 +2410,17 @@ void    OutLabel( label_handle lbl )
                     patptr = &_ARRAYOF( &obj->data, byte )[curr_pat->pat.where];
                     if( curr_pat->pat.attr & ADD_PATCH ) {
                         if( curr_pat->pat.attr & LONG_PATCH ) {
-                            _TargetAddL( *(unsigned_32 *)patptr, lc );
+                            _TargetAddL( *(uint_32 *)patptr, lc );
                         } else if( curr_pat->pat.attr & WORD_PATCH ) {
-                            _TargetAddW( *(unsigned_16 *)patptr, lc );
+                            _TargetAddW( *(uint_16 *)patptr, lc );
                         } else {
                             *(byte *)patptr += lc;
                         }
                     } else {
                         if( curr_pat->pat.attr & LONG_PATCH ) {
-                            *(unsigned_32 *)patptr = _TargetLongInt( lc );
+                            *(uint_32 *)patptr = _TargetLongInt( lc );
                         } else if( curr_pat->pat.attr & WORD_PATCH ) {
-                            *(unsigned_16 *)patptr = _TargetShort( lc );
+                            *(uint_16 *)patptr = _TargetShort( lc );
                         } else {
                             *(byte *)patptr = lc;
                         }
@@ -2849,19 +2849,19 @@ void    OutDataByte( byte value )
     _ARRAYOF( &obj->data, byte )[i] = value;
 }
 
-void    OutDataShort( unsigned_16 value )
-/***************************************/
+void    OutDataShort( uint_16 value )
+/***********************************/
 {
     unsigned    i;
     unsigned    need;
     object      *obj;
 
     SetPendingLine();
-    CheckLEDataSize( sizeof( unsigned_16 ), true );
+    CheckLEDataSize( sizeof( uint_16 ), true );
     obj = CurrSeg->obj;
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-    IncLocation( sizeof( unsigned_16 ) );
-    need = i + sizeof( unsigned_16 );
+    IncLocation( sizeof( uint_16 ) );
+    need = i + sizeof( uint_16 );
     if( need > obj->data.used ) {
         if( need > obj->data.alloc ) {
             ReallocArray( &obj->data, need );
@@ -2869,23 +2869,23 @@ void    OutDataShort( unsigned_16 value )
         obj->data.used = need;
     }
     SetMaxWritten();
-    *(unsigned_16 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetShort( value );
+    *(uint_16 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetShort( value );
 }
 
 
-void    OutDataLong( unsigned_32 value )
-/**************************************/
+void    OutDataLong( uint_32 value )
+/**********************************/
 {
     unsigned    i;
     unsigned    need;
     object      *obj;
 
     SetPendingLine();
-    CheckLEDataSize( sizeof( unsigned_32 ), true );
+    CheckLEDataSize( sizeof( uint_32 ), true );
     obj = CurrSeg->obj;
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-    IncLocation( sizeof( unsigned_32 ) );
-    need = i + sizeof( unsigned_32 );
+    IncLocation( sizeof( uint_32 ) );
+    need = i + sizeof( uint_32 );
     if( need > obj->data.used ) {
         if( need > obj->data.alloc ) {
             ReallocArray( &obj->data, need );
@@ -2893,7 +2893,7 @@ void    OutDataLong( unsigned_32 value )
         obj->data.used = need;
     }
     SetMaxWritten();
-    *(unsigned_32 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetLongInt( value );
+    *(uint_32 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetLongInt( value );
 }
 
 

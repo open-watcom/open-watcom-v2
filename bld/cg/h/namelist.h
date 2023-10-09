@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +32,13 @@
 
 extern name             *AllocConst( float_handle value );
 extern name             *AllocAddrConst( name *value, int seg, constant_type_class const_type, type_class_def type_class );
-extern name             *FindIntValue( signed_32 value );
+extern name             *FindIntValue( int_32 value );
 extern name             *AllocIntConst( int value );
 extern name             *AllocUIntConst( uint value );
-extern name             *AllocS32Const( signed_32 value );
-extern name             *AllocU32Const( unsigned_32 value );
-extern name             *AllocS64Const( unsigned_32 low, unsigned_32 high );
-extern name             *AllocU64Const( unsigned_32 low, unsigned_32 high );
+extern name             *AllocS32Const( int_32 value );
+extern name             *AllocU32Const( uint_32 value );
+extern name             *AllocS64Const( uint_32 low, uint_32 high );
+extern name             *AllocU64Const( uint_32 low, uint_32 high );
 extern constant_defn    *GetFloat( name *cons, type_class_def type_class );
 extern memory_name      *SAllocMemory( pointer symbol, type_length offset, cg_class class, type_class_def type_class, type_length size );
 extern name             *AllocMemory( pointer symbol, type_length offset, cg_class class, type_class_def type_class );

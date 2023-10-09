@@ -888,8 +888,8 @@ static invariant    *CopyInvariant( invariant *invar )
 }
 
 
-static void     MulInvariant( invariant *invar, signed_32 by )
-/*************************************************************
+static void     MulInvariant( invariant *invar, int_32 by )
+/**********************************************************
  * Multiply all entries in invariant list "invar" by "by"
  */
 {
@@ -1026,10 +1026,10 @@ static induction    *AddIndVar( instruction *ins,
                                 invariant *invar,
                                 name *ivtimes,
                                 invar_id lasttimes,
-                                signed_32 times,
-                                signed_32 plus,
-                                signed_32 plus2,
-                                signed_32 iv_mult,
+                                int_32 times,
+                                int_32 plus,
+                                int_32 plus2,
+                                int_32 iv_mult,
                                 type_class_def type_class )
 /****************************************************************
  * Add an induction variable to our list of induction variables for the
@@ -1295,11 +1295,11 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
  * constants and fold.
  */
 {
-    signed_32   plus;
-    signed_32   plus2;
-    signed_32   times;
-    signed_32   c;
-    signed_32   mul;
+    int_32      plus;
+    int_32      plus2;
+    int_32      times;
+    int_32      c;
+    int_32      mul;
     invariant   *invar;
     name        *ivtimes;
     invar_id    lasttimes;
@@ -1376,9 +1376,9 @@ static  void    CheckInvariant( instruction *ins, induction *var,
  * the instruction.
  */
 {
-    signed_32   plus;
-    signed_32   plus2;
-    signed_32   times;
+    int_32      plus;
+    int_32      plus2;
+    int_32      times;
     int         iv_mult;
     invariant   *invar;
     name        *ivtimes;
@@ -1869,9 +1869,9 @@ static  name    *FindPointerPart( induction *var )
 }
 
 
-static  instruction     *Multiply( name *op, signed_32 by, name *temp,
-                                   type_class_def type_class, instruction *prev )
-/*****************************************************************************
+static  instruction     *Multiply( name *op, int_32 by, name *temp,
+                            type_class_def type_class, instruction *prev )
+/*************************************************************************
  * Generate "optimal" code for op*by => temp and suffix instruction
  * "prev" with it.  Return a pointer to the last instruction generated.
  */
@@ -1907,8 +1907,8 @@ static  instruction     *Multiply( name *op, signed_32 by, name *temp,
 
 
 static  instruction     *MakeMul( instruction *prev,
-                                  name *op, signed_32 by, name *ivtimes )
-/**************************************************************************
+                                  name *op, int_32 by, name *ivtimes )
+/*********************************************************************
  * Generate "optimal" instruction calcualte "op" * "by" * "ivtimes" and
  * place them after "prev".  Return a pointer to the last instruction
  * generated.
@@ -2277,7 +2277,7 @@ void    MoveDownLoop( block *cond )
 
 
 static  void            AdjustOp( instruction *blk_end, name **pop,
-                                  name *var, signed_32 adjust )
+                                  name *var, int_32 adjust )
 /***************************************************************/
 {
     name        *op;
@@ -2298,7 +2298,7 @@ static  void            AdjustOp( instruction *blk_end, name **pop,
 
 
 instruction     *DupIns( instruction *blk_end, instruction *ins,
-                                 name *var, signed_32 adjust )
+                                 name *var, int_32 adjust )
 /**************************************************************/
 {
     instruction *new;
@@ -2327,7 +2327,7 @@ instruction     *DupIns( instruction *blk_end, instruction *ins,
 
 instruction     *DupInstrs( instruction *blk_end,
                             instruction *first, instruction *last,
-                            induction *var, signed_32 adjust )
+                            induction *var, int_32 adjust )
 /****************************************************************/
 {
     instruction *ins;
@@ -2348,16 +2348,16 @@ instruction     *DupInstrs( instruction *blk_end,
 static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
                         instruction *cond, instruction *indins,
                         block_edge *exit_edge, bool know_bounds,
-                        signed_32 initial, signed_32 final )
+                        int_32 initial, int_32 final )
 /***************************************************************/
 {
     instruction         *first;
     instruction         *last;
     instruction         *ins;
     instruction         *blk_end;
-    signed_32           iterations;
+    int_32              iterations;
     int                 i;
-    signed_32           adjust;
+    int_32              adjust;
     int                 unroll_count;
     int                 remainder;
     int                 num_instrs;
@@ -2574,8 +2574,8 @@ bool    AnalyseLoop( induction *var, bool *ponecond,
 }
 
 
-static  signed_32       Sgn( signed_32 x )
-/****************************************/
+static int_32       Sgn( int_32 x )
+/*********************************/
 {
     if( x < 0 )
         return( -1 );
@@ -2583,8 +2583,8 @@ static  signed_32       Sgn( signed_32 x )
 }
 
 
-static  signed_32       Abs( signed_32 x )
-/****************************************/
+static int_32       Abs( int_32 x )
+/*********************************/
 {
     if( x < 0 )
         return( -x );
@@ -2629,20 +2629,20 @@ static  name    *InitialValue( name *op )
 
 
 bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
-                                signed_32 *final, signed_32 *initial )
+                                int_32 *final, int_32 *initial )
 /*********************************************************************
  * See if we can figure out what the final value of induction variable
  * "var" will be, based on the facts that instruction "ins" (in block
  * "blk") is the only exit from "Loop".
  */
 {
-    name                *temp;
-    name                *op;
-    signed_32           init;
-    signed_32           test;
-    signed_32           incr;
-    signed_32           remd;
-    signed_32           dist;
+    name            *temp;
+    name            *op;
+    int_32          init;
+    int_32          test;
+    int_32          incr;
+    int_32          remd;
+    int_32          dist;
 
     if( _IsV( var, IV_DEAD ) )
         return( false );
@@ -2747,8 +2747,8 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var )
 {
     instruction         *other;
     name                *op;
-    signed_32           final;
-    signed_32           initial;
+    int_32              final;
+    int_32              initial;
     type_class_def      type_class;
     block               *dest;
 
@@ -3395,8 +3395,8 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
     block_edge          *exit_edge;
     block_edge          *loop_edge;
     bool                onecond;
-    signed_32           final;
-    signed_32           initial;
+    int_32              final;
+    int_32              initial;
     induction           *var;
     block_edge          *edge;
     bool                know_bounds;

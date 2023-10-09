@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,15 +156,15 @@ typedef struct oc_idata {
 
 typedef struct oc_linenum {
     oc_header               hdr;
-    unsigned_32             line;
+    uint_32                 line;
     bool                    label_line;
 } oc_linenum;
 
 typedef struct oc_riscins {
     oc_header               hdr;
-    unsigned_32             opcode;
+    uint_32                 opcode;
     pointer                 sym;        // symbol to which there is reloc (if any)
-    unsigned_32             reloc;      // type of reloc (owl_reloc_type)
+    uint_32                 reloc;      // type of reloc (owl_reloc_type)
 } oc_riscins;
 
 typedef struct oc_func_start {

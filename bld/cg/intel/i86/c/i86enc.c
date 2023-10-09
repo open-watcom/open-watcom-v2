@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,8 +91,8 @@ byte    DoIndex( hw_reg_set regs )
 }
 
 
-byte    Displacement( signed_32 val, hw_reg_set regs )
-/****************************************************/
+byte    Displacement( int_32 val, hw_reg_set regs )
+/*************************************************/
 {
     HW_CTurnOff( regs, HW_SEGS );
     if( val == 0 && !HW_CEqual( regs, HW_BP ) )
@@ -205,7 +205,7 @@ void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
                 _Next;
                 LayOpword( 0x2081 ); /* AND reg,immed (word) */
                 LayRegRM( lreg );
-                AddWData( ((unsigned_16)~0) << shift, U2 );
+                AddWData( ((uint_16)~0) << shift, U2 );
                 _Next;
                 LayOpword( M_XORRR | B_KEY_W );
                 LayReg( lreg );
@@ -228,7 +228,7 @@ void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
                 _Next;
                 LayOpword( 0x2081 ); /* AND reg,immed (word) */
                 LayRegRM( hreg );
-                AddWData( ((unsigned_16)~0) >> shift, U2 );
+                AddWData( ((uint_16)~0) >> shift, U2 );
                 _Next;
                 LayOpword( M_XORRR | B_KEY_W );
                 LayReg( hreg );

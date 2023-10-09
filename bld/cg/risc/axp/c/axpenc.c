@@ -304,13 +304,13 @@ static  void    GenOPIMM8( uint_8 opcode, uint_8 function, reg_idx ra, uint_8 im
     EmitIns( ins_encoding );
 }
 
-void    GenLOADS32( signed_32 value, reg_idx reg )
-/************************************************/
+void    GenLOADS32( int_32 value, reg_idx reg )
+/*********************************************/
 {
-    signed_16           high;
-    signed_16           extra;
-    signed_16           low;
-    reg_idx             curr;
+    int_16          high;
+    int_16          extra;
+    int_16          low;
+    reg_idx         curr;
 
     curr = ZERO_REG_IDX;
     FactorInt32( value, &high, &extra, &low );
@@ -384,15 +384,15 @@ static  uint_16 FindFloatingOpcodes( instruction *ins )
     return( opcode );
 }
 
-static void GenMEMINSRELOC( uint_8 opcode, reg_idx ra, reg_idx rb, signed_16 displacement, pointer lbl, owl_reloc_type type )
-/***************************************************************************************************************************/
+static void GenMEMINSRELOC( uint_8 opcode, reg_idx ra, reg_idx rb, int_16 displacement, pointer lbl, owl_reloc_type type )
+/************************************************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _SignedImmed( displacement );
     EmitInsReloc( &ins_encoding, lbl, type );
 }
 
-void GenMEMINS( uint_8 opcode, reg_idx ra, reg_idx rb, signed_16 displacement )
-/*****************************************************************************/
+void GenMEMINS( uint_8 opcode, reg_idx ra, reg_idx rb, int_16 displacement )
+/**************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _SignedImmed( displacement );
     EmitIns( ins_encoding );
@@ -409,14 +409,14 @@ static  void    GenBRANCH( uint_8 opcode, reg_idx reg, pointer label )
  * move disp(Rs) -> Rd
  */
 
-void    GenLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement )
-/***********************************************************************/
+void    GenLOAD( hw_reg_set dst, hw_reg_set src, int_16 displacement )
+/********************************************************************/
 {
     GenMEMINS( 0x29, RegTrans( dst ), RegTrans( src ), displacement );
 }
 
-void    GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement )
-/************************************************************************/
+void    GenFLOAD( hw_reg_set dst, hw_reg_set src, int_16 displacement )
+/*********************************************************************/
 {
     GenMEMINS( 0x23, RegTrans( dst ), RegTrans( src ), displacement );
 }
@@ -425,8 +425,8 @@ void    GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement )
  * move Rs -> disp(Rd)
  */
 
-void    GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
-/************************************************************************/
+void    GenSTORE( hw_reg_set dst, int_16 displacement, hw_reg_set src )
+/*********************************************************************/
 {
     GenMEMINS( 0x2d, RegTrans( src ), RegTrans( dst ), displacement );
 }
@@ -435,8 +435,8 @@ void    GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
  * move Fs -> disp(Rd)
  */
 
-void    GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
-/*************************************************************************/
+void    GenFSTORE( hw_reg_set dst, int_16 displacement, hw_reg_set src )
+/**********************************************************************/
 {
     GenMEMINS( 0x27, RegTrans( src ), RegTrans( dst ), displacement );
 }
@@ -563,7 +563,7 @@ static void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
     case N_INDEXED:
         assert( mem->i.index->n.class == N_REGISTER );
         assert( mem->i.scale == 0 );
-        assert( mem->i.constant == (type_length)((signed_16)mem->i.constant) );
+        assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
         *regidx_mem = _NameRegTrans( mem->i.index );
         *offset = (int_16)mem->i.constant;
@@ -726,14 +726,14 @@ static  bool    encodeThreadDataRef( instruction *ins )
 static  void    Encode( instruction *ins )
 /****************************************/
 {
-    uint_8              *opcodes;
-    uint_16             function;
-    reg_idx             regidx;
-    reg_idx             regidx_mem;
-    int_16              mem_offset;
-    signed_16           high;
-    signed_16           extra;
-    signed_16           low;
+    uint_8          *opcodes;
+    uint_16         function;
+    reg_idx         regidx;
+    reg_idx         regidx_mem;
+    int_16          mem_offset;
+    int_16          high;
+    int_16          extra;
+    int_16          low;
 
     switch( G( ins ) ) {
     case G_CALL:

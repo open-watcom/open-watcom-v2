@@ -150,8 +150,8 @@ static  hw_reg_set IndexTab[] = {
 };
 
 
-static  void    Add32Displacement( signed_32 val )
-/************************************************/
+static  void    Add32Displacement( int_32 val )
+/*********************************************/
 {
     AddByte( val );
     AddByte( val >> 8 );
@@ -159,8 +159,8 @@ static  void    Add32Displacement( signed_32 val )
     AddByte( val >> 24 );
 }
 
-byte    Displacement( signed_32 val, hw_reg_set regs )
-/****************************************************/
+byte    Displacement( int_32 val, hw_reg_set regs )
+/*************************************************/
 {
     if( val == 0 && !HW_COvlap( regs, HW_EBP ) )
         return( DISP0 );
@@ -254,7 +254,7 @@ byte    DoMDisp( name *op, bool alt_encoding )
 
 
 static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
-                         signed_32 val, name *mem_loc, bool lea )
+                         int_32 val, name *mem_loc, bool lea )
 /***************************************************************/
 {
     if( HW_CEqual( index, HW_ESP ) )
@@ -318,12 +318,12 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
  * Caller must embed returned constant into current opcode.
  */
 
-static  signed_32  GetNextAddConstant( instruction *ins )
-/*******************************************************/
+static int_32   GetNextAddConstant( instruction *ins )
+/****************************************************/
 {
     instruction *next;
     int         neg;
-    signed_32   disp;
+    int_32      disp;
 
     next = ins->head.next;
     neg = 1;
@@ -365,7 +365,7 @@ void    LayLeaRegOp( instruction *ins )
     name        *right;
     scale_typ   scale = 0;
     int         neg;
-    signed_32   disp;
+    int_32      disp;
 
     left = ins->operands[0];
     right = ins->operands[1];
@@ -548,8 +548,8 @@ void    GenUnkPush( pointer value )
 }
 
 
-void    GenPushC( signed_32 value )
-/*********************************/
+void    GenPushC( int_32 value )
+/******************************/
 {
     _Code;
     LayOpbyte( M_PUSHI );
@@ -559,8 +559,8 @@ void    GenPushC( signed_32 value )
 }
 
 
-pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
-/*******************************************************************************/
+pointer GenFar16Thunk( pointer label, uint_16 parms_size, bool remove_parms )
+/***************************************************************************/
 {
     segment_id  old_segid;
     pointer     code_32;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ typedef struct call_back {          // call-back entry (pointed to by l field)
 typedef struct{
     field_entry         entry;
     union {
-        unsigned_32     off;
+        uint_32         off;
         dbg_loc         loc;
     }                   u;
     uint                attr;
@@ -97,7 +98,7 @@ typedef struct{
 typedef struct {
     field_entry         entry;
     union {
-        unsigned_32     off;
+        uint_32         off;
         dbg_loc         adjustor;
     }                   u;
     uint                attr;
@@ -108,7 +109,7 @@ typedef struct {
 typedef struct{
     field_entry         entry;
     union {
-        unsigned_32     off;
+        uint_32         off;
         dbg_loc         loc;
     }                   u;
     uint                attr;
@@ -151,7 +152,7 @@ typedef struct struct_list {
 } struct_list;
 typedef struct const_entry {
     struct const_entry  *next;
-    signed_32           val;
+    int_32              val;
     char                *name;
 } const_entry;
 
@@ -172,10 +173,10 @@ typedef struct{
 }dim_var;
 
 typedef struct{
-    dim_entry entry;
-    signed_32 lo;
-    signed_32 hi;
-    dbg_type  idx;
+    dim_entry   entry;
+    int_32      lo;
+    int_32      hi;
+    dbg_type    idx;
 }dim_con;
 
 typedef union{
@@ -247,7 +248,7 @@ typedef struct b {
     struct b    *n;
     sym s;
     l   *lp;
-    unsigned_32 loc;
+    uint_32     loc;
     int i;
 } b;
 typedef struct t {
@@ -268,9 +269,9 @@ typedef struct ic {
 } ic;
 typedef struct rh {
     struct rh   *n;
-    signed_32   l;
-    signed_32   h;
-    l   *lb;
+    int_32      l;
+    int_32      h;
+    l           *lb;
 } rh;
 typedef struct sh {
     l   *o;

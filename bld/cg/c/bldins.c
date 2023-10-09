@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@
 
 
 static  type_def        *LastCmpType;
-static  unsigned_32     UnrollValue = 0;
+static  uint_32         UnrollValue = 0;
 
 an      BGVarargsBasePtr( type_def *tipe )
 /****************************************/
@@ -75,8 +75,8 @@ an      BGStackValue( type_def *tipe )
     return( addr );
 }
 
-an      BGInteger( signed_32 value, type_def *tipe )
-/**************************************************/
+an      BGInteger( int_32 value, type_def *tipe )
+/***********************************************/
 {
     float_handle    cf;
 
@@ -461,10 +461,10 @@ void    BGBigGoto( label_handle lbl, level_depth level )
 }
 
 
-unsigned_32 BGUnrollCount( unsigned_32 unroll_count )
-/***************************************************/
+uint_32 BGUnrollCount( uint_32 unroll_count )
+/*******************************************/
 {
-    unsigned_32         old_value;
+    uint_32     old_value;
 
     old_value = UnrollValue;
     UnrollValue = unroll_count;

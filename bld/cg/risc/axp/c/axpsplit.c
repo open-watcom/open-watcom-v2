@@ -497,9 +497,9 @@ instruction     *rMOVEXX_8( instruction *ins )
 instruction      *rCONSTLOAD( instruction *ins )
 /**********************************************/
 {
-    signed_16           high;
-    signed_16           low;
-    signed_16           extra;
+    int_16          high;
+    int_16          low;
+    int_16          extra;
 
     assert( ins->operands[0]->n.class == N_CONSTANT );
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
@@ -521,10 +521,10 @@ instruction      *rCONSTLOAD( instruction *ins )
     name                *low_part;
     name                *temp;
     name                *cons;
-    unsigned_32         high;
-    unsigned_32         low;
-    unsigned_32         k;
-    unsigned_32         c;
+    uint_32             high;
+    uint_32             low;
+    uint_32             k;
+    uint_32             c;
     type_class_def      index_type_class;
     bool                cruft_in_high_dword;
 
@@ -540,7 +540,7 @@ instruction      *rCONSTLOAD( instruction *ins )
         high += 1;
         low -= k;
     }
-    assert( ( (signed_16)high * k + (signed_16)low ) == c );
+    assert( ( (int_16)high * k + (int_16)low ) == c );
     high_part = AllocAddrConst( NULL, high, CONS_HIGH_ADDR, ins->type_class );
     if( low == 0 ) {
         first_ins = MakeMove( high_part, ins->result, ins->type_class );
@@ -630,7 +630,7 @@ instruction *rALLOCA( instruction *ins )
     name                *amount;
     name                *real_amount;
     name                *temp;
-    unsigned_32         value;
+    uint_32             value;
     instruction         *first;
     instruction         *last;
     type_class_def      type_class;

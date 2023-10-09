@@ -31,11 +31,11 @@
 
 
 extern sel_handle   BGSelInit( void );
-extern void         BGSelCase( sel_handle s_node, label_handle label, signed_32 value );
-extern void         BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );
+extern void         BGSelCase( sel_handle s_node, label_handle label, int_32 value );
+extern void         BGSelRange( sel_handle s_node, int_32 lo, int_32 hi, label_handle label );
 extern void         BGSelOther( sel_handle s_node, label_handle other );
 extern void         BGSelect( sel_handle s_node, an node, cg_switch_type allowed );
-extern int          SelCompare( signed_32 lo1, signed_32 lo2 );
-extern cg_type      SelType( unsigned_32 value_range );
-extern signed_32    NumValues( select_list *list, signed_32 hi );
+extern int          SelCompare( int_32 lo1, int_32 lo2 );
+extern cg_type      SelType( uint_32 value_range );
+extern int_32       NumValues( select_list *list, int_32 hi );
 extern void         FreeTable( tbl_control *table );

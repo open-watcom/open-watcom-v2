@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,4 +36,4 @@
 extern struct cg_interface * _CGDLLEXPORT BEDLLInit( struct fe_interface * );
 extern void                  _CGDLLEXPORT BEDLLFini( struct cg_interface * );
 
-extern int __stdcall LibMain( unsigned_32 hdll, unsigned_32 reason, void *reserved );
+extern int __stdcall LibMain( uint_32 hdll, uint_32 reason, void *reserved );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 typedef int                     instruction_id;
 #define MAX_INS_ID              INT_MAX
 
-typedef unsigned_32             source_line_number;
+typedef uint_32                 source_line_number;
 
 typedef byte                    opcnt;
 
@@ -120,7 +120,7 @@ typedef struct instruction {
         instruction_id          id;
         type_class_def          type_class;
         type_class_def          base_type_class;
-        unsigned_16             sequence;
+        uint_16                 sequence;
         union {
                 byte            byte;
                 bool            bool_flag;

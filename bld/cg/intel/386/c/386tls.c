@@ -210,7 +210,7 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
             PrefixIns( ins, new_ins );
             index = op->i.index;
             if( op->i.scale != 0 ) {
-                const signed_32 values[] = { 1, 2, 4, 8, 16 };
+                const int_32 values[] = { 1, 2, 4, 8, 16 };
                 if( op->i.scale > 4 ) _Zoiks( ZOIKS_134 );
                 index = AllocTemp( WD );
                 new_ins = MakeBinary( OP_MUL, op->i.index,

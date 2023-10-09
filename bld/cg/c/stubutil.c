@@ -108,8 +108,8 @@ char    *DoIToHS( char * buff, int buff_len, int i )
     return( buff );
 }
 
-char    *DoIToS( char * buff, int buff_len, signed_32 i )
-//=======================================================
+char    *DoIToS( char * buff, int buff_len, int_32 i )
+//====================================================
 {
     char        *p;
     bool        neg;
@@ -154,7 +154,7 @@ void    PutFmt( int out, const char *str, va_list args )
                 }
                 break;
             case 'l':
-                str2 = DoIToS( buff, 79, va_arg( args, signed_32 ) );
+                str2 = DoIToS( buff, 79, va_arg( args, int_32 ) );
                 while( *str2 ) {
                     FPut( out, str2++, 1 );
                 }
@@ -309,8 +309,8 @@ char    *FtnTipe( dbg_ftn_type tipe )
     return( NULL );
 }
 
-char    *LToS( signed_32 i )
-//==========================
+char    *LToS( int_32 i )
+//=======================
 {
     return( DoIToS( UBuff, UBUFF_LEN, i ) );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,10 +46,10 @@ void    FiniIndVars( void );
 bool    Inducable( block *blk, instruction *ins );
 void    SuffixPreHeader( instruction *ins );
 void    MoveDownLoop( block *cond );
-instruction     *DupIns( instruction *blk_end, instruction *ins, name *var, signed_32 adjust );
-instruction     *DupInstrs( instruction *blk_end, instruction *first, instruction *last, induction *var, signed_32 adjust );
+instruction     *DupIns( instruction *blk_end, instruction *ins, name *var, int_32 adjust );
+instruction     *DupInstrs( instruction *blk_end, instruction *first, instruction *last, induction *var, int_32 adjust );
 bool    AnalyseLoop( induction *var, bool *ponecond, instruction **pcond, block **pcond_blk );
-bool    CalcFinalValue( induction *var, block *blk, instruction *ins, signed_32 *final, signed_32 *initial );
+bool    CalcFinalValue( induction *var, block *blk, instruction *ins, int_32 *final, int_32 *initial );
 bool    LoopInvariant( void );
 bool    LoopRegInvariant( void );
 void    LoopEnregister( void );

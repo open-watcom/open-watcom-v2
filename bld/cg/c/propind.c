@@ -78,8 +78,9 @@ static  byte    NumRefs( instruction *ins, name *op ) {
     return( refs );
 }
 
-static  bool    Adjusted( name **pop, name *res, signed_32 c ) {
-/*************************************************************/
+static  bool    Adjusted( name **pop, name *res, int_32 c )
+/*********************************************************/
+{
     name        *op;
 
     op = *pop;
@@ -94,11 +95,12 @@ static  bool    Adjusted( name **pop, name *res, signed_32 c ) {
 }
 
 
-static  bool    AdjustIndex( instruction *ins, name *res, signed_32 c ) {
-/************************************************************************
+static  bool    AdjustIndex( instruction *ins, name *res, int_32 c )
+/*******************************************************************
     If any operands or results of ins refer to res in an index, adjust the
     constant by the given amount and return true.
 */
+{
     opcnt       i;
 
     if( NumRefs( ins, res ) != 1 )

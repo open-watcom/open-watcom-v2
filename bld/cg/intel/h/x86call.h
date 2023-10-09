@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,3 +34,4 @@
         CALL_POPS_PARMS         = 0x0040,
         CALL_INTERRUPT          = 0x0080,
         CALL_FAR16              = 0x0100,
+        CALL_NEEDFRAME          = 0x0200,

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -293,10 +293,10 @@ void    ScoreInfo( score_info *info, name *op )
             /* FIXME: not sure what to do here */
             if( op->c.value != NULL ) {
                 info->symbol.p = &HighAddrSymbol;
-                info->offset = (signed_32)(pointer_uint)op->c.value;
+                info->offset = (int_32)(pointer_uint)op->c.value;
             } else {
                 info->symbol.p = &HighAddrConst;
-                info->offset = (signed_32)op->c.lo.int_value;
+                info->offset = (int_32)op->c.lo.int_value;
             }
             break;
         default:
