@@ -257,9 +257,9 @@ static  hw_reg_set      FloatRegs[] = {
 };
 
 /*
-* NOTE: ordering is important here - see state->curr_entry
-* and relating code in ParmReg and CallState. BBB
-*/
+ * NOTE: ordering is important here - see state->curr_entry
+ * and relating code in ParmReg and CallState.
+ */
 
 static  hw_reg_set      AllParmRegs[] = {
     HW_D_1( HW_R16 ),
@@ -406,12 +406,13 @@ hw_reg_set GetArchReg( int idx, reg_cls cls )
 }
 #endif
 
-/*      Information for register set intersections
- *      if sets are of different classes {
- *          intersection is empty
- *      } else {
- *          intersection given in square matrix for class
- *      }
+/*
+ *  Information for register set intersections
+ *  if sets are of different classes {
+ *      intersection is empty
+ *  } else {
+ *      intersection given in square matrix for class
+ *  }
  */
 
 reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
@@ -860,7 +861,7 @@ reg_idx RegTrans( hw_reg_set regs )
  * Translate reg to register index
  */
 {
-    int     i;
+    int         i;
 
     for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
         if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
@@ -871,9 +872,9 @@ reg_idx RegTrans( hw_reg_set regs )
 }
 
 int GetArchIndex( hw_reg_set regs )
-/***********************************************/
+/*********************************/
 {
-    int     i;
+    int         i;
 
     for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
         if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
@@ -883,15 +884,15 @@ int GetArchIndex( hw_reg_set regs )
     return( 0 );
 }
 
-dw_regs   RegTransDW( hw_reg_set regs )
-/**************************************
- * Translate reg to register index
+dw_regs   RegTransDW( hw_reg_set reg )
+/*************************************
+ * Translate reg to Dwarf enum name
  */
 {
-    int     i;
+    int         i;
 
     for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
-        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+        if( HW_Equal( reg, RegsTab[i].hw_reg ) ) {
             return( RegsTab[i].dw_idx );
         }
     }
@@ -901,14 +902,14 @@ dw_regs   RegTransDW( hw_reg_set regs )
 
 hw_reg_set      FirstReg( reg_set_index regs_idx )
 /*************************************************
-    The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
-    they are only one byte long.  This retrieves the first hw_reg_set
-    from the reg_set table "index".
-
-    the tables above use RL_ consts rather that hw_reg_sets cause
-    it cheaper. This just picks off the first register from a
-    register list and returns it.
-*/
+ * The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
+ * they are only one byte long.  This retrieves the first hw_reg_set
+ * from the reg_set table "index".
+ *
+ * the tables above use RL_ consts rather that hw_reg_sets cause
+ * it cheaper. This just picks off the first register from a
+ * register list and returns it.
+ */
 {
     return( *RegSets[regs_idx] );
 }

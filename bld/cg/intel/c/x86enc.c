@@ -250,7 +250,7 @@ void    EmitOffset( offset i )
     ICur += sizeof( offset );
 }
 
-static  void    TransferIns( void )
+static void     TransferIns( void )
 /**********************************
  * Transfer an instruction from Inst[] to Temp
  */
@@ -295,7 +295,7 @@ void    Finalize( void )
 }
 
 
-static  void    LayInitial( instruction *ins, gentype gen )
+static void     LayInitial( instruction *ins, gentype gen )
 /**********************************************************
  * Do some really magical jiggery pokery based on "gen" to get the
  * right opcode int Inst[].  See PCCodeTable if you want, but this is
@@ -356,12 +356,12 @@ static  void    LayInitial( instruction *ins, gentype gen )
     }
 }
 
-static  byte    SegTrans( hw_reg_set regs )
+static reg_idx  SegTrans( hw_reg_set regs )
 /******************************************
  * Return the encoding of a segment register name
  */
 {
-    int     i;
+    int         i;
 
     HW_COnlyOn( regs, HW_SEGS );
     for( i = ARCH_SEG_START; i < ARCH_SEG_END; i++ ) {
@@ -375,10 +375,10 @@ static  byte    SegTrans( hw_reg_set regs )
 
 reg_idx  RegTrans( hw_reg_set regs )
 /***********************************
- * Return the encoding of a register name
+ * Return the arch index of a register name
  */
 {
-    int     i;
+    int         i;
 
     HW_CTurnOff( regs, HW_SEGS );
     for( i = ARCH_GPR_START; i < ARCH_GPR_END; i++ ) {
@@ -390,26 +390,28 @@ reg_idx  RegTrans( hw_reg_set regs )
     return( 0 );
 }
 
-static int FPRegTrans( hw_reg_set regs )
-/**************************************/
+static int FPRegTrans( hw_reg_set reg )
+/*************************************/
 {
     int         i;
 
     for( i = ARCH_FPR_START; i < ARCH_FPR_END; i++ ) {
-        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+        if( HW_Equal( reg, RegsTab[i].hw_reg ) ) {
             return( RegsTab[i].idx );
         }
     }
-    return( -1 );
+    return( 0 );
 }
 
-dw_regs RegTransDW( hw_reg_set regs )
-/***********************************/
+dw_regs RegTransDW( hw_reg_set reg )
+/***********************************
+ * Translate reg to Dwarf enum name
+ */
 {
-    int     i;
+    int         i;
 
     for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
-        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+        if( HW_Equal( reg, RegsTab[i].hw_reg ) ) {
             return( RegsTab[i].dw_idx );
         }
     }
@@ -418,13 +420,15 @@ dw_regs RegTransDW( hw_reg_set regs )
 }
 
 
-int RegTransWV( hw_reg_set regs )
-/*******************************/
+int RegTransWV( hw_reg_set reg )
+/*******************************
+ * Translate reg to WATCOM enum name
+ */
 {
-    int     i;
+    int         i;
 
     for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
-        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+        if( HW_Equal( reg, RegsTab[i].hw_reg ) ) {
             return( RegsTab[i].wv_idx );
         }
     }

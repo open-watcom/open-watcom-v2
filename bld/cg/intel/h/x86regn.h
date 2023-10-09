@@ -57,11 +57,11 @@ typedef enum {
 typedef uint_8      reg_idx;
 
 typedef struct arch_reg_info {
-    hw_reg_set  hw_reg;
-    reg_idx     idx;
-    reg_cls     cls;
-    wv_regs     wv_idx;
-    dw_regs     dw_idx;
+    hw_reg_set      hw_reg;
+    reg_idx         idx;
+    reg_cls         cls;
+    wv_regs         wv_idx;
+    dw_regs         dw_idx;
 } arch_reg_info;
 
 extern const arch_reg_info  RegsTab[];
