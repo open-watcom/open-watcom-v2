@@ -345,8 +345,8 @@ static void     LayInitial( instruction *ins, gentype gen )
     }
     if( table->flags & SIGN_UNSIGN ) {
         if( ins->type_class == I1
-         || ins->type_class == I2
-         || ins->type_class == I4 ) {
+          || ins->type_class == I2
+          || ins->type_class == I4 ) {
             if( ins->head.opcode >= OP_MUL && ins->head.opcode <= OP_MOD ) {
                 Inst[RMR] |= B_RMR_MUL_SGN;
             } else if( ins->head.opcode == OP_RSHIFT ) {
@@ -375,7 +375,7 @@ static reg_idx  SegTrans( hw_reg_set regs )
 
 reg_idx  RegTrans( hw_reg_set regs )
 /***********************************
- * Return the arch index of a register name
+ * Translate reg to register class (8/16/32-bit) relative index
  */
 {
     int         i;
@@ -477,7 +477,7 @@ int     CountFPRegs( hw_reg_set regs )
 }
 
 #if _TARGET & _TARG_80386
-static  bool    NeedOpndSize( instruction *ins )
+static bool     NeedOpndSize( instruction *ins )
 /***********************************************
  * Do we REALLY, REALLY need the operand size override.
  */

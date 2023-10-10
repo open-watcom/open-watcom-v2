@@ -65,8 +65,8 @@
 #define _BinaryOpcode( a, b )       { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d ) { { a, b }, { c, d } }
 
-#define RDTEB_ENCODING          0x000000ab
-#define RDTEB_MAGIC_CONST       0x2c
+#define RDTEB_ENCODING              0x000000ab
+#define RDTEB_MAGIC_CONST           0x2c
 
 /*
  * Our table for opcode values is really a list of pairs of
@@ -283,8 +283,8 @@ static  void EmitIns( axp_ins ins )
     EmitInsReloc( &ins, NULL, 0 );
 }
 
-static  void GenFPOPINS( uint_8 opcode, uint_16 function, reg_idx ra, reg_idx rb, reg_idx rc )
-/********************************************************************************************/
+static void GenFPOPINS( uint_8 opcode, uint_16 function, reg_idx ra, reg_idx rb, reg_idx rc )
+/*******************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _Rc( rc ) | _FPFunction( function );
     EmitIns( ins_encoding );
@@ -297,8 +297,8 @@ void GenOPINS( uint_8 opcode, uint_8 function, reg_idx ra, reg_idx rb, reg_idx r
     EmitIns( ins_encoding );
 }
 
-static  void    GenOPIMM8( uint_8 opcode, uint_8 function, reg_idx ra, uint_8 imm, reg_idx rc )
-/*********************************************************************************************/
+static void GenOPIMM8( uint_8 opcode, uint_8 function, reg_idx ra, uint_8 imm, reg_idx rc )
+/*****************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _LIT( imm ) | _LIT_bit | _Rc( rc ) | _Function( function );
     EmitIns( ins_encoding );
@@ -398,8 +398,8 @@ void GenMEMINS( uint_8 opcode, reg_idx ra, reg_idx rb, int_16 displacement )
     EmitIns( ins_encoding );
 }
 
-static  void    GenBRANCH( uint_8 opcode, reg_idx reg, pointer label )
-/********************************************************************/
+static void GenBRANCH( uint_8 opcode, reg_idx reg, pointer label )
+/****************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Ra( reg );
     EmitInsReloc( &ins_encoding, label, OWL_RELOC_BRANCH_REL );
@@ -548,7 +548,7 @@ static void addressTemp( name *temp, reg_idx *reg_mem, int_16 *offset )
         *offset = 0;
         *reg_mem = AT_REG_IDX;
     } else {
-        *offset = temp_offset;
+        *offset = (int_16)temp_offset;
         *reg_mem = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
             *reg_mem = FP_REG_IDX;
@@ -779,9 +779,8 @@ static  void    Encode( instruction *ins )
         break;
     case G_MOVE_FP:
         /* CPYS r1,r1,r2 */
-        GenFPOPINS( 0x17, 0x20,
-                _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[0] ),
-                _NameRegTrans( ins->result ) );
+        GenFPOPINS( 0x17, 0x20, _NameRegTrans( ins->operands[0] ),
+            _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->result ) );
         break;
     case G_ZERO:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -799,8 +798,8 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         GenFPOPINS( 0x16, 0xac,
-                ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
-                _NameRegTrans( ins->result ) );
+            ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_FREGTOMI8:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -824,8 +823,8 @@ static  void    Encode( instruction *ins )
         assert( ins->result->n.class == N_REGISTER );
         function = FindFloatingOpcodes( ins );
         GenFPOPINS( 0x16, function,
-                _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ),
-                _NameRegTrans( ins->result ) );
+            _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_BINARY:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -833,8 +832,8 @@ static  void    Encode( instruction *ins )
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
         GenOPINS( opcodes[0], opcodes[1],
-                        _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ),
-                        _NameRegTrans( ins->result ) );
+            _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_BINARY_IMM:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -862,8 +861,8 @@ static  void    Encode( instruction *ins )
          * generate a "BIS R31,Rn,Rm" instruction
          */
         GenOPINS( 0x11, 0x20,
-                        ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
-                        _NameRegTrans( ins->result ) );
+            ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_ZAP:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -880,14 +879,16 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
-        GenMEMINS( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value & 0xffff );
+        GenMEMINS( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+            (int_16)ins->operands[0]->c.lo.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
-            GenMEMINS( 0x08, _NameRegTrans( ins->result ), ZERO_REG_IDX, ins->operands[0]->c.lo.int_value );
+            GenMEMINS( 0x08, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+                (int_16)ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -912,10 +913,11 @@ static  void    Encode( instruction *ins )
                 _Zoiks( ZOIKS_132 );
             }
             if( !encodeThreadDataRef( ins ) ) {
-                GenMEMINSRELOC( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX, high,
-                            symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
-                GenMEMINSRELOC( 0x08, _NameRegTrans( ins->result ), _NameRegTrans( ins->result ), low,
-                            symLabel( ins->operands[0] ), OWL_RELOC_HALF_LO );
+                GenMEMINSRELOC( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+                    high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
+                GenMEMINSRELOC( 0x08, _NameRegTrans( ins->result ),
+                    _NameRegTrans( ins->result ), low, symLabel( ins->operands[0] ),
+                    OWL_RELOC_HALF_LO );
             }
             break;
         default:
@@ -971,7 +973,7 @@ void    GenJumpIf( instruction *ins, pointer label )
 /**************************************************/
 {
     GenBRANCH( BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][_IsFloating( ins->type_class )],
-                _NameRegTrans( ins->operands[0] ), label );
+        _NameRegTrans( ins->operands[0] ), label );
 #ifdef DEVBUILD
     if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "Jcc L" );

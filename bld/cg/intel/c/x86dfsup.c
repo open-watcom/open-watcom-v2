@@ -165,7 +165,7 @@ void DFAbbrevRef( void )
 {
     back_handle bck;
 
-    bck =  BENewBack( NULL );
+    bck = BENewBack( NULL );
     BackImpPtr( ABBREV_NAME, bck, 0 );
     BEFreeBack( bck );
 }

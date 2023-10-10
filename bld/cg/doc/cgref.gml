@@ -2778,7 +2778,7 @@ No return values in the 8087.
 Load ds with dgroup on entry.
 .note FECALL_GEN_DLL_EXPORT
 Is routine an OS/2 export symbol?
-.note FECALL_X86_FAT_WINDOWS_PROLOG
+.note FECALL_X86_PROLOG_FAT_WINDOWS
 Generate the real mode windows prolog code.
 .note FECALL_X86_GENERATE_STACK_FRAME
 Always generate a traceable prolog.

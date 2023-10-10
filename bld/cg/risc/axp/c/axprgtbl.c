@@ -33,7 +33,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "axpenc.h"
+#include "axpregn.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"

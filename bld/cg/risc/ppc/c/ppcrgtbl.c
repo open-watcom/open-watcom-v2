@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "ppcenc.h"
+#include "ppcregn.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"

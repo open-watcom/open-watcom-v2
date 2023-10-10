@@ -191,7 +191,7 @@ static  void    genAdd( reg_idx src, int_16 disp, reg_idx dst )
     GenOPIMM( ADDI_OPCODE, dst, src, disp );
 }
 
-static  void    saveReg( int index, type_length offset, bool fp )
+static void saveReg( reg_idx index, type_length offset, bool fp )
 /***************************************************************/
 {
     uint_8              opcode;
@@ -200,10 +200,10 @@ static  void    saveReg( int index, type_length offset, bool fp )
     if( fp ) {
         opcode = STORE_DOUBLE;
     }
-    GenMEMINS( opcode, (reg_idx)index, SP_REG_IDX, offset );
+    GenMEMINS( opcode, index, SP_REG_IDX, offset );
 }
 
-static  void    loadReg( int index, type_length offset, bool fp )
+static void loadReg( reg_idx index, type_length offset, bool fp )
 /***************************************************************/
 {
     uint_8              opcode;
@@ -217,10 +217,10 @@ static  void    loadReg( int index, type_length offset, bool fp )
     if( CurrProc->targ.base_is_fp ) {
         frame_reg = FP_REG_IDX;
     }
-    GenMEMINS( opcode, (reg_idx)index, frame_reg, offset + CurrProc->locals.size );
+    GenMEMINS( opcode, index, frame_reg, offset + CurrProc->locals.size );
 }
 
-static  int     regSize( bool fp )
+static int      regSize( bool fp )
 /********************************/
 {
     return( fp ? 8 : 4 );
@@ -229,7 +229,7 @@ static  int     regSize( bool fp )
 static  void    saveRegSet( uint_32 reg_set, type_length offset, bool fp )
 /************************************************************************/
 {
-    int         index;
+    reg_idx     index;
     uint_32     high_bit;
 
     index = sizeof( reg_set ) * 8 - 1;
@@ -247,7 +247,7 @@ static  void    saveRegSet( uint_32 reg_set, type_length offset, bool fp )
 static  void    loadRegSet( uint_32 reg_set, type_length offset, bool fp )
 /************************************************************************/
 {
-    int         index;
+    reg_idx     index;
 
     index = 0;
     while( reg_set != 0 ) {
@@ -298,15 +298,15 @@ static  void    initVarargs( stack_record *varargs, type_length *offset )
 static  void    emitVarargsProlog( stack_record *varargs )
 /********************************************************/
 {
-    type_length         offset;
-    int                 i;
+    type_length     offset;
+    reg_idx         i;
 
     /* unused parameters */ (void)varargs;
 
     if( CurrProc->state.attr & ROUTINE_HAS_VARARGS ) {
         // save our registers in our caller's context - uhg!
         offset = CurrProc->targ.frame_size + STACK_HEADER_SIZE;
-        for( i = CurrProc->state.parm.gr; i <= LAST_SCALAR_PARM_REG_IDX; i++ ) {
+        for( i = (reg_idx)CurrProc->state.parm.gr; i <= LAST_SCALAR_PARM_REG_IDX; i++ ) {
             saveReg( i, offset + ( i - FIRST_SCALAR_PARM_REG_IDX ) * 4, false );
         }
     }
@@ -410,7 +410,7 @@ static  void    emitProlog( stack_map *map )
     }
     if( frame_size != 0 ) {
         // stwu sp,-frame_size(sp)
-        GenMEMINS( 37, SP_REG_IDX, SP_REG_IDX, -frame_size );
+        GenMEMINS( 37, SP_REG_IDX, SP_REG_IDX, -(int_16)frame_size );
         emitVarargsProlog( &map->varargs );
         emitSlopProlog( &map->varargs );
         emitSavedRegsProlog( &map->saved_regs );
@@ -444,7 +444,7 @@ static  void    emitEpilog( stack_map *map )
         if( CurrProc->targ.base_is_fp ) {
             frame_reg = FP_REG_IDX;
         }
-        genAdd( frame_reg, frame_size, SP_REG_IDX );
+        genAdd( frame_reg, (int_16)frame_size, SP_REG_IDX );
     }
 }
 
