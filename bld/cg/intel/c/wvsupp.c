@@ -69,7 +69,7 @@ static  uint    MultiReg( register_name *reg )
     if( HW_CEqual( hw_reg, HW_EMPTY ) ) {
         BuffByte( RegTransWV( reg->reg ) );
         return( 1 );
-   } else {
+    } else {
         BuffByte( RegTransWV( hw_reg ) );
         tmp = reg->reg;
         HW_TurnOff( tmp, hw_reg );
