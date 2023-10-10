@@ -533,8 +533,8 @@ static  void    doCall( instruction *ins )
     }
 }
 
-static  void    addressTemp( name *temp, reg_idx *regidx_mem, int_16 *offset )
-/****************************************************************************/
+static void addressTemp( name *temp, reg_idx *reg_mem, int_16 *offset )
+/*********************************************************************/
 {
     type_length         temp_offset;
 
@@ -546,18 +546,18 @@ static  void    addressTemp( name *temp, reg_idx *regidx_mem, int_16 *offset )
         GenLOADS32( temp_offset, AT_REG_IDX );
         GenOPINS( 0x10, 0x00, SP_REG_IDX, AT_REG_IDX, AT_REG_IDX );
         *offset = 0;
-        *regidx_mem = AT_REG_IDX;
+        *reg_mem = AT_REG_IDX;
     } else {
         *offset = temp_offset;
-        *regidx_mem = SP_REG_IDX;
+        *reg_mem = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
-            *regidx_mem = FP_REG_IDX;
+            *reg_mem = FP_REG_IDX;
         }
     }
 }
 
-static void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
-/*****************************************************************************/
+static void getMemEncoding( name *mem, reg_idx *reg_mem, int_16 *offset )
+/***********************************************************************/
 {
     switch( mem->n.class ) {
     case N_INDEXED:
@@ -565,28 +565,28 @@ static void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
         assert( mem->i.scale == 0 );
         assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
-        *regidx_mem = _NameRegTrans( mem->i.index );
+        *reg_mem = _NameRegTrans( mem->i.index );
         *offset = (int_16)mem->i.constant;
         break;
     case N_TEMP:
-        addressTemp( mem, regidx_mem, offset );
+        addressTemp( mem, reg_mem, offset );
         break;
     case N_MEMORY:
     default:
-        *regidx_mem = ZERO_REG_IDX;
+        *reg_mem = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_078 );
         break;
     }
 }
 
-static  void    doLoadStore( instruction *ins, bool load )
-/********************************************************/
+static void doLoadStore( instruction *ins, bool load )
+/****************************************************/
 {
     name        *mem;
     name        *reg;
     uint_8      opcode;
-    reg_idx     regidx_mem;
+    reg_idx     reg_mem;
     int_16      offset;
 
     if( load ) {
@@ -605,31 +605,31 @@ static  void    doLoadStore( instruction *ins, bool load )
         }
     }
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &regidx_mem, &offset );
-    GenMEMINS( opcode, _NameRegTrans( reg ), regidx_mem, offset );
+    getMemEncoding( mem, &reg_mem, &offset );
+    GenMEMINS( opcode, _NameRegTrans( reg ), reg_mem, offset );
 }
 
 static  void    GenCallIndirect( instruction *call )
 /**************************************************/
 {
-    reg_idx     regidx;
-    reg_idx     regidx_mem;
+    reg_idx     reg_addr;
+    reg_idx     reg_mem;
     int_16      mem_offset;
     name        *addr;
 
-    regidx = AT_REG_IDX;        /* use the volatile scratch reg if possible */
+    reg_addr = AT_REG_IDX;        /* use the volatile scratch reg if possible */
     addr = call->operands[CALL_OP_ADDR];
     switch( addr->n.class ) {
     case N_REGISTER:
-        regidx = _NameRegTrans( addr );
+        reg_addr = _NameRegTrans( addr );
         break;
     case N_TEMP:
     case N_INDEXED:
-        getMemEncoding( addr, &regidx_mem, &mem_offset );
-        GenMEMINS( 0x28, regidx, regidx_mem, mem_offset );
+        getMemEncoding( addr, &reg_mem, &mem_offset );
+        GenMEMINS( 0x28, reg_addr, reg_mem, mem_offset );
         break;
     }
-    GenMEMINS( 0x1a, RA_REG_IDX, regidx, 0x4000 );
+    GenMEMINS( 0x1a, RA_REG_IDX, reg_addr, 0x4000 );
 }
 
 static  void    doChop( instruction *ins, type_class_def type_class )
@@ -663,22 +663,22 @@ static  void    doSignExtend( instruction *ins, type_class_def type_class )
 /*************************************************************************/
 {
     unsigned    from_size;
-    reg_idx     regidx_res;
-    reg_idx     regidx_src;
+    reg_idx     reg_res;
+    reg_idx     reg_src;
     int         shift_amt;
 
-    regidx_res = _NameRegTrans( ins->result );
-    regidx_src = _NameRegTrans( ins->operands[0] );
+    reg_res = _NameRegTrans( ins->result );
+    reg_src = _NameRegTrans( ins->operands[0] );
     from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
         /* addl r31, src -> dst */
-        GenOPINS( 0x10, 0x00, ZERO_REG_IDX, regidx_src, regidx_res );
+        GenOPINS( 0x10, 0x00, ZERO_REG_IDX, reg_src, reg_res );
     } else {
         shift_amt = ( REG_SIZE - from_size ) * 8;
         /* shl */
-        GenOPIMM8( 0x12, 0x39, regidx_src, (uint_8)shift_amt, regidx_res );
+        GenOPIMM8( 0x12, 0x39, reg_src, (uint_8)shift_amt, reg_res );
         /* sra */
-        GenOPIMM8( 0x12, 0x3c, regidx_res, (uint_8)shift_amt, regidx_res );
+        GenOPIMM8( 0x12, 0x3c, reg_res, (uint_8)shift_amt, reg_res );
     }
 }
 
@@ -728,8 +728,8 @@ static  void    Encode( instruction *ins )
 {
     uint_8          *opcodes;
     uint_16         function;
-    reg_idx         regidx;
-    reg_idx         regidx_mem;
+    reg_idx         reg_addr;
+    reg_idx         reg_mem;
     int_16          mem_offset;
     int_16          high;
     int_16          extra;
@@ -805,18 +805,18 @@ static  void    Encode( instruction *ins )
     case G_FREGTOMI8:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class != N_REGISTER );
-        regidx = _NameRegTrans( ins->operands[0] );
-        GenFPOPINS( 0x16, 0x2f, ZERO_REG_IDX, regidx, FP_AT_REG_IDX );
-        getMemEncoding( ins->result, &regidx_mem, &mem_offset );
-        GenMEMINS( 0x27, FP_AT_REG_IDX, regidx_mem, mem_offset );
+        reg_addr = _NameRegTrans( ins->operands[0] );
+        GenFPOPINS( 0x16, 0x2f, ZERO_REG_IDX, reg_addr, FP_AT_REG_IDX );
+        getMemEncoding( ins->result, &reg_mem, &mem_offset );
+        GenMEMINS( 0x27, FP_AT_REG_IDX, reg_mem, mem_offset );
         break;
     case G_MI8TOFREG:
         assert( ins->operands[0]->n.class != N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        regidx = _NameRegTrans( ins->result );
-        getMemEncoding( ins->operands[0], &regidx_mem, &mem_offset );
-        GenMEMINS( 0x23, regidx, regidx_mem, mem_offset );
-        GenFPOPINS( 0x16, 0xbe, ZERO_REG_IDX, regidx, regidx );
+        reg_addr = _NameRegTrans( ins->result );
+        getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
+        GenMEMINS( 0x23, reg_addr, reg_mem, mem_offset );
+        GenFPOPINS( 0x16, 0xbe, ZERO_REG_IDX, reg_addr, reg_addr );
         break;
     case G_BINARY_FP:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -902,8 +902,8 @@ static  void    Encode( instruction *ins )
         case N_INDEXED:
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
-            getMemEncoding( ins->operands[0], &regidx_mem, &mem_offset );
-            GenMEMINS( 0x08, _NameRegTrans( ins->result ), regidx_mem, mem_offset );
+            getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
+            GenMEMINS( 0x08, _NameRegTrans( ins->result ), reg_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );

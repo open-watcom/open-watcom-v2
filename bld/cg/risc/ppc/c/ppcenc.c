@@ -417,8 +417,8 @@ static  void    doCall( instruction *ins )
 }
 
 
-static  void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
-/*************************************************************************/
+static void getMemEncoding( name *mem, reg_idx *reg_mem, int_16 *offset )
+/***********************************************************************/
 {
     switch( mem->n.class ) {
     case N_INDEXED:
@@ -426,16 +426,16 @@ static  void    getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
         assert( mem->i.scale == 0 );
         assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
-        *regidx_mem = RegTrans( mem->i.index->r.reg );
+        *reg_mem = RegTrans( mem->i.index->r.reg );
         *offset = (int_16)mem->i.constant;
         break;
     case N_TEMP:
-        *regidx_mem = RegTrans( FrameReg() );
+        *reg_mem = RegTrans( FrameReg() );
         *offset = TempLocation( mem );
         break;
     case N_MEMORY:
     default:
-        *regidx_mem = ZERO_REG_IDX;
+        *reg_mem = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_119 );
         break;
@@ -449,7 +449,7 @@ static  void    doLoadStore( instruction *ins, bool load )
     name        *mem;
     name        *reg;
     gen_opcode  op;
-    reg_idx     regidx_mem;
+    reg_idx     reg_mem;
     int_16      offset;
 
     if( load ) {
@@ -463,8 +463,8 @@ static  void    doLoadStore( instruction *ins, bool load )
     }
     assert( op != 0 );
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &regidx_mem, &offset );
-    GenMEMINS( op, RegTrans( reg->r.reg ), regidx_mem, offset );
+    getMemEncoding( mem, &reg_mem, &offset );
+    GenMEMINS( op, RegTrans( reg->r.reg ), reg_mem, offset );
 }
 
 
@@ -521,7 +521,7 @@ static  void    GenCallIndirect( instruction *call )
 {
     reg_idx     src;
     reg_idx     reg;
-    reg_idx     regidx_mem;
+    reg_idx     reg_mem;
     int_16      mem_offset;
     name        *addr;
     gen_opcode  ldw;
@@ -539,8 +539,8 @@ static  void    GenCallIndirect( instruction *call )
         break;
     case N_TEMP:
     case N_INDEXED:
-        getMemEncoding( addr, &regidx_mem, &mem_offset );
-        GenMEMINS( ldw, src, regidx_mem, mem_offset );
+        getMemEncoding( addr, &reg_mem, &mem_offset );
+        GenMEMINS( ldw, src, reg_mem, mem_offset );
         break;
     }
     GenMEMINS( ldw, RTOC_REG_IDX, src, 4 );  // careful - src, reg could be same reg
@@ -612,7 +612,7 @@ static  void    Encode( instruction *ins )
     gen_opcode          op2;
     gen_opcode          *ops;
     int_16              mem_offset;
-    reg_idx             regidx_mem;
+    reg_idx             reg_mem;
 
 
     switch( G( ins ) ) {
@@ -668,9 +668,9 @@ static  void    Encode( instruction *ins )
         case N_INDEXED:
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
-            getMemEncoding( ins->operands[0], &regidx_mem, &mem_offset );
+            getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
             // addi rd,off(ri|sp)
-            GenOPIMM( 14, _NameRegTrans( ins->result ), regidx_mem, mem_offset );
+            GenOPIMM( 14, _NameRegTrans( ins->result ), reg_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );

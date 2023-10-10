@@ -508,7 +508,7 @@ void GenCallLabelReg( pointer label, reg_idx reg )
     /*
      * 'jalr reg,$at'
      */
-    GenRType( 0x00, 0x09, reg, AT_REG_IDX, 0 );
+    GenRType( 0x00, 0x09, reg, AT_REG_IDX, ZERO_REG_IDX );
     /*
      * WARNING! WARNING! WARNING!
      * There's no delay slot here. Caller must handle that.
@@ -595,7 +595,7 @@ static  void addressTemp( name *temp, reg_idx *reg, int_16 *offset )
 }
 
 
-static  void getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
+static  void getMemEncoding( name *mem, reg_idx *reg_mem, int_16 *offset )
 /***************************************************************************/
 {
     switch( mem->n.class ) {
@@ -604,15 +604,15 @@ static  void getMemEncoding( name *mem, reg_idx *regidx_mem, int_16 *offset )
         assert( mem->i.scale == 0 );
         assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
-        *regidx_mem = _NameRegTrans( mem->i.index );
+        *reg_mem = _NameRegTrans( mem->i.index );
         *offset = (int_16)mem->i.constant;
         break;
     case N_TEMP:
-        addressTemp( mem, regidx_mem, offset );
+        addressTemp( mem, reg_mem, offset );
         break;
     case N_MEMORY:
     default:
-        *regidx_mem = ZERO_REG_IDX;
+        *reg_mem = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_078 );
         break;
@@ -626,7 +626,7 @@ static  void doLoadStore( instruction *ins, bool load )
     name        *mem;
     name        *reg;
     uint_8      opcode;
-    reg_idx     regidx_mem;
+    reg_idx     reg_mem;
     int_16      offset;
 
     if( load ) {
@@ -639,8 +639,8 @@ static  void doLoadStore( instruction *ins, bool load )
         opcode = storeOpcodes[ins->type_class];
     }
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &regidx_mem, &offset );
-    GenMEMINS( opcode, _NameRegTrans( reg ), regidx_mem, offset );
+    getMemEncoding( mem, &reg_mem, &offset );
+    GenMEMINS( opcode, _NameRegTrans( reg ), reg_mem, offset );
 }
 
 
@@ -652,7 +652,7 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
     name        *reg;
     uint_8      opcode1;
     uint_8      opcode2;
-    reg_idx     regidx_mem;
+    reg_idx     reg_mem;
     int_16      offset;
 
     if( load ) {
@@ -671,12 +671,12 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
         opcode1 = 0x2a; opcode2 = 0x2e;
     }
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &regidx_mem, &offset );
+    getMemEncoding( mem, &reg_mem, &offset );
     /*
      * TODO: make sure offset can't overflow
      */
-    GenMEMINS( opcode1, _NameRegTrans( reg ), regidx_mem, offset + 3 );
-    GenMEMINS( opcode2, _NameRegTrans( reg ), regidx_mem, offset );
+    GenMEMINS( opcode1, _NameRegTrans( reg ), reg_mem, offset + 3 );
+    GenMEMINS( opcode2, _NameRegTrans( reg ), reg_mem, offset );
 #else
     doLoadStore( ins, load );
 #endif
@@ -686,30 +686,30 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
 static  void GenCallIndirect( instruction *call )
 /***********************************************/
 {
-    reg_idx     regidx;
-    reg_idx     regidx_mem;
+    reg_idx     reg_addr;
+    reg_idx     reg_mem;
     int_16      mem_offset;
     name        *addr;
 
     /*
      * use the scratch register if possible
      */
-    regidx = AT_REG_IDX;
+    reg_addr = AT_REG_IDX;
     addr = call->operands[CALL_OP_ADDR];
     switch( addr->n.class ) {
     case N_REGISTER:
-        regidx = _NameRegTrans( addr );
+        reg_addr = _NameRegTrans( addr );
         break;
     case N_TEMP:
     case N_INDEXED:
-        getMemEncoding( addr, &regidx_mem, &mem_offset );
-        GenMEMINS( 0x23, regidx, regidx_mem, mem_offset );
+        getMemEncoding( addr, &reg_mem, &mem_offset );
+        GenMEMINS( 0x23, reg_addr, reg_mem, mem_offset );
         break;
     }
     /*
-     * 'jalr ra,regidx'
+     * 'jalr ra,reg_addr'
      */
-    GenRType( 0x00, 0x09, RA_REG_IDX, regidx, 0 );
+    GenRType( 0x00, 0x09, RA_REG_IDX, reg_addr, ZERO_REG_IDX );
     /*
      * TODO: Handle delay slot better
      */
@@ -833,8 +833,8 @@ static  void Encode( instruction *ins )
     uint_8          *opcodes;
     uint_8          opcode;
     uint_16         function;
-    reg_idx         regidx;
-    reg_idx         regidx_mem;
+    reg_idx         reg_addr;
+    reg_idx         reg_mem;
     int_16          mem_offset;
     int_16          high;
     int_16          extra;
@@ -861,7 +861,7 @@ static  void Encode( instruction *ins )
             case FS:
             case FD:
             case FL:
-                GenFloatRType( ins->type_class, 0x07, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0 );
+                GenFloatRType( ins->type_class, 0x07, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
                 break;
             default:
                 /*
@@ -886,7 +886,7 @@ static  void Encode( instruction *ins )
         /*
          * 'mov.s fd,fs'
          */
-        GenFloatRType( FS, 0x06, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0 );
+        GenFloatRType( FS, 0x06, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
         break;
     case G_ZERO:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -906,35 +906,35 @@ static  void Encode( instruction *ins )
         /*
          * 'cvt.s.d fd,fs'
          */
-        GenFloatRType( FD, 0x20, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0 );
+        GenFloatRType( FD, 0x20, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
         break;
     case G_FREGTOMI8:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class != N_REGISTER );
-        regidx = _NameRegTrans( ins->operands[0] );
-        getMemEncoding( ins->result, &regidx_mem, &mem_offset );
+        reg_addr = _NameRegTrans( ins->operands[0] );
+        getMemEncoding( ins->result, &reg_mem, &mem_offset );
         /*
          * 'sdc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
          */
-        GenIType( 0x3d, regidx, regidx_mem, mem_offset );
+        GenIType( 0x3d, reg_addr, reg_mem, mem_offset );
         break;
     case G_MI8TOFREG:
         assert( ins->operands[0]->n.class != N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        regidx = _NameRegTrans( ins->result );
-        getMemEncoding( ins->operands[0], &regidx_mem, &mem_offset );
+        reg_addr = _NameRegTrans( ins->result );
+        getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
         /*
          * 'ldc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
          */
-        GenIType( 0x35, regidx, regidx_mem, mem_offset );
+        GenIType( 0x35, reg_addr, reg_mem, mem_offset );
         break;
     case G_BINARY_FP:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         function = FindFloatingOpcodes( ins );
-        regidx = _OpIsSet( ins->head.opcode ) ? 0 : _NameRegTrans( ins->result );
-        GenFloatRType( ins->type_class, function, regidx, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
+        reg_addr = _OpIsSet( ins->head.opcode ) ? ZERO_REG_IDX : _NameRegTrans( ins->result );
+        GenFloatRType( ins->type_class, function, reg_addr, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
         break;
     case G_BINARY:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -950,31 +950,31 @@ static  void Encode( instruction *ins )
             GenRType( opcodes[0], opcodes[1], _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[1] ), _NameRegTrans( ins->operands[0] ) );
             break;
         case OP_MUL:
-            GenRType( opcodes[0], opcodes[1], 0, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             /*
              * 'mflo rd'
              */
-            GenRType( 0, 0x12, _NameRegTrans( ins->result ), 0, 0 );
+            GenRType( 0, 0x12, _NameRegTrans( ins->result ), ZERO_REG_IDX, ZERO_REG_IDX );
             break;
         case OP_DIV:
             /*
              * TODO: do something if divisor is zero
              */
-            GenRType( opcodes[0], opcodes[1], 0, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             /*
              * 'mflo rd'
              */
-            GenRType( 0, 0x12, _NameRegTrans( ins->result ), 0, 0 );
+            GenRType( 0, 0x12, _NameRegTrans( ins->result ), ZERO_REG_IDX, ZERO_REG_IDX );
             break;
         case OP_MOD:
             /*
              * TODO: do something if divisor is zero
              */
-            GenRType( opcodes[0], opcodes[1], 0, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             /*
              * 'mfhi rd'
              */
-            GenRType( 0, 0x10, _NameRegTrans( ins->result ), 0, 0 );
+            GenRType( 0, 0x10, _NameRegTrans( ins->result ), ZERO_REG_IDX, ZERO_REG_IDX );
             break;
         default:
             GenRType( opcodes[0], opcodes[1], _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
@@ -1079,11 +1079,11 @@ static  void Encode( instruction *ins )
         case N_INDEXED:
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
-            getMemEncoding( ins->operands[0], &regidx_mem, &mem_offset );
+            getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
             /*
              * 'addiu rt,rs,immed'
              */
-            GenIType( 0x09, _NameRegTrans( ins->result ), regidx_mem, mem_offset );
+            GenIType( 0x09, _NameRegTrans( ins->result ), reg_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );

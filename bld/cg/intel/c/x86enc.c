@@ -2148,23 +2148,23 @@ void    GenObjCode( instruction *ins )
             {
                 uint    ins_loc;
                 byte    extra_bits;
-                byte    reg_index;
+                reg_idx reg_seg;
 
                 ins_loc = KEY;
                 if( ins->head.opcode == OP_POP ) {
                     extra_bits = B_KEY_POPSEG;
-                    reg_index = SegTrans( result->r.reg );
+                    reg_seg = SegTrans( result->r.reg );
                 } else {
                     extra_bits = 0;
-                    reg_index = SegTrans( left->r.reg );
+                    reg_seg = SegTrans( left->r.reg );
                 }
-                if( reg_index > 3 ) {
+                if( reg_seg > 3 ) {
                     ins_loc += 1;
                     Inst[KEY] = 0x0f;
                     AddByte( 0x80 );
                 }
                 Inst[ins_loc] |= extra_bits;
-                Inst[ins_loc] |= reg_index << S_KEY_SR;
+                Inst[ins_loc] |= reg_seg << S_KEY_SR;
             }
             break;
         case G_MOVAM:
