@@ -204,8 +204,8 @@ typedef union name {
         union   name            *_n;
 } name;
 
-#define _FrontEndTmp( op ) ( ((op)->t.temp_flags & CONST_TEMP) == 0 && \
+#define _FrontEndTmp( op )  ( ((op)->t.temp_flags & CONST_TEMP) == 0 && \
                                 (op)->v.symbol != NULL )
 
-#define _ConstTemp( op ) ( ( (op)->n.class == N_TEMP ) && \
-                           ( (op)->t.temp_flags & CONST_TEMP ) )
+#define _ConstTemp( op )    ( ( (op)->n.class == N_TEMP ) && \
+                                ( (op)->t.temp_flags & CONST_TEMP ) )

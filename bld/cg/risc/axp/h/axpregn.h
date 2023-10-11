@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Alpha AXP register info processing.
 *
 ****************************************************************************/
 
@@ -46,10 +45,10 @@ typedef enum {
 typedef uint_8      reg_idx;
 
 typedef struct arch_reg_info {
-    hw_reg_set      hw_reg;
-    reg_idx         idx;
-    reg_cls         cls;
-    dw_regs         dw_idx;
+    hw_reg_set      hw_reg;     /* CG register value */
+    reg_idx         idx;        /* register encoding index */
+    reg_cls         cls;        /* register class */
+    dw_regs         dw_idx;     /* Dwarf debug register index */
 } arch_reg_info;
 
 extern const arch_reg_info  RegsTab[];
