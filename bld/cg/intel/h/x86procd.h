@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,6 +55,7 @@ typedef enum {
         ROUTINE_STACK_RESERVE           = 0x00020000,
         ROUTINE_PREFER_REGS             = 0x00040000,
         ROUTINE_FARSS                   = 0x00080000,
+        ROUTINE_NEEDS_BP_CHAIN          = 0x00100000,
 } call_attributes;
 
 #define _RoutineIsLong( x ) \

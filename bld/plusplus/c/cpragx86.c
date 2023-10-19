@@ -827,12 +827,7 @@ AUX_INFO *AsmSysCreateAux( const char *name )
 void AsmSysUsesAuto( void )
 /*************************/
 {
-    /*
-       We want to force the calling routine to set up a [E]BP frame
-       for the use of this pragma. This is done by saying the pragma
-       modifies the [E]SP register. A kludge, but it works.
-    */
-    HW_CTurnOff( CurrInfo->save, HW_xSP );
+    CurrInfo->cclass_target |= FECALL_X86_NEEDS_BP_CHAIN;
     ScopeASMUsesAuto();
 }
 

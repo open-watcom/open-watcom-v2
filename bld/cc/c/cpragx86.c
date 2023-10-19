@@ -345,13 +345,7 @@ enum sym_type AsmQueryType( void *handle )
 void AsmUsesAuto( aux_info *info )
 /********************************/
 {
-    /*
-     * We want to force the calling routine to set up a [E]BP frame
-     * for the use of this pragma. This is done by saying the pragma
-     * modifies the [E]SP register. A kludge, but it works.
-     */
-//    info->cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
-    HW_CTurnOff( info->save, HW_xSP );
+    info->cclass_target |= FECALL_X86_NEEDS_BP_CHAIN;
 }
 
 bool AsmInsertFixups( aux_info *info )

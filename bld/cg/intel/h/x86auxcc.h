@@ -57,4 +57,5 @@ typedef enum {
     FECALL_X86_FARSS                    = 0x00200000,
     FECALL_X86_PARMS_STACK_RESERVE      = 0x00400000,
     FECALL_X86_PARMS_PREFER_REGS        = 0x00800000,
+    FECALL_X86_NEEDS_BP_CHAIN           = 0x01000000,
 } call_class_target;

@@ -215,6 +215,9 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
     if( _RoutineIsInterrupt( state->attr ) ) {
         call_ins->flags.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
     }
+    if( state->attr & ROUTINE_NEEDS_BP_CHAIN ) {
+        call_ins->flags.call_flags |= CALL_NEEDS_BP_CHAIN;
+    }
     if( !use_return ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }

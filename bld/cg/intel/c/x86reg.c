@@ -128,6 +128,9 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass_target & FECALL_X86_FARSS ) {
         state->attr |= ROUTINE_FARSS;
     }
+    if( cclass_target & FECALL_X86_NEEDS_BP_CHAIN ) {
+        state->attr |= ROUTINE_NEEDS_BP_CHAIN;
+    }
     if( state == &CurrProc->state ) {
         if( cclass_target & (FECALL_X86_GENERATE_STACK_FRAME | FECALL_X86_PROLOG_HOOKS | FECALL_X86_EPILOG_HOOKS) ) {
             CurrProc->prolog_state |= PST_PROLOG_FAT;

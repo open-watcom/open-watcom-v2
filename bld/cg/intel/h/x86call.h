@@ -34,4 +34,4 @@
         CALL_POPS_PARMS         = 0x0040,
         CALL_INTERRUPT          = 0x0080,
         CALL_FAR16              = 0x0100,
-        CALL_NEEDFRAME          = 0x0200,
+        CALL_NEEDS_BP_CHAIN     = 0x0200,

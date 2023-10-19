@@ -73,6 +73,7 @@
                && ( !WINDOWS_CHEAP || CurrProc->contains_call ) )
 
 #define DO_BP_CHAIN ( ( ( _IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) \
+                          || (CurrProc->state.attr & ROUTINE_NEEDS_BP_CHAIN) \
                           || _IsModel( CGSW_GEN_DBG_CV ) ) \
                         && CurrProc->contains_call ) \
                       || (CurrProc->prolog_state & PST_PROLOG_FAT) )
@@ -138,6 +139,9 @@ static  bool    ScanInstructions( void )
                 if( HW_COvlap( ins->zap->reg, HW_xSP ) ) {
                     CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
                     sp_constant = false;
+                }
+                if( ins->flags.call_flags & CALL_NEEDS_BP_CHAIN ) {
+                    CurrProc->state.attr |= ROUTINE_NEEDS_BP_CHAIN;
                 }
             }
         }
