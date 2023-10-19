@@ -61,12 +61,10 @@ void AsmUsesAuto( aux_info *info )
     /* unused parameters */ (void)info;
 
     /*
-     * We want to force the calling routine to set up a [E]BP frame
-     * for the use of this pragma. This is done by saying the pragma
-     * modifies the [E]SP register. A kludge, but it works.
+     * We want to force the calling routine to set up a stack frame
+     * for the use of this pragma.
      */
 //    info->cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
-//    HW_CTurnOff( info->save, HW_xSP );
 }
 
 bool AsmInsertFixups( aux_info *info )

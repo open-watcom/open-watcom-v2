@@ -271,6 +271,11 @@ AUX_INFO *AsmSysCreateAux( const char *name )
 void AsmSysUsesAuto( void )
 /*************************/
 {
+    /*
+     * We want to force the calling routine to set up a stack frame
+     * for the use of this pragma.
+     */
+//    info->cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
     ScopeASMUsesAuto();
 }
 
