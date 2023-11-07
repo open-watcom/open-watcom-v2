@@ -69,6 +69,8 @@ synonym for "netware"
 32-bit x86 OS/2 Presentation Manager executable
 .note pharlap
 32-bit x86 Phar Lap executable
+.note pmodew
+32-bit x86 PMODE/W executable
 .note tnt
 32-bit x86 Phar Lap TNT dos style executable
 .note qnx

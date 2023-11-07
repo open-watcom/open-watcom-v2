@@ -164,6 +164,8 @@ session
 session
 .notebreak
 32-bit Linux executables (synonym for "LINUX") under Linux
+.note CAUSEWAY
+32-bit Causeway DOS Extender executables
 .note COM
 16-bit DOS "COM" files
 .note DOS
@@ -196,6 +198,8 @@ session
 32-bit OS/2 PM executables
 .note PHARLAP
 32-bit PharLap DOS Extender executables
+.note PMODEW
+32-bit PMODE/W DOS Extender executables
 .note QNX
 16-bit QNX executables
 .note QNX386
