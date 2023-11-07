@@ -352,7 +352,7 @@ see the chapter entitled :HDREF refid='os2chap'..
 .*
 .np
 .ix '32-bit PMODE/W executables'
-To create these files, use one of the following structures.
+To create this type of file, use the following structure.
 .millust begin
 system   pmodew
 .im tutsteps
