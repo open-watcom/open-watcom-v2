@@ -1933,6 +1933,10 @@ EXTERN_C const IID  __cdecl IID_IDirect3DDevice2;
 EXTERN_C const IID  __cdecl IID_IDirect3DMaterial2;
 EXTERN_C const IID  __cdecl IID_IDirect3DTexture2;
 EXTERN_C const IID  __cdecl IID_IDirect3DViewport2;
+EXTERN_C const IID  __cdecl IID_IDirect3DRampDevice;
+EXTERN_C const IID  __cdecl IID_IDirect3DRGBDevice;
+EXTERN_C const IID  __cdecl IID_IDirect3DHALDevice;
+EXTERN_C const IID  __cdecl IID_IDirect3DMMXDevice;
 #endif
 #if (DIRECT3D_VERSION >= 0x0600)
 EXTERN_C const IID  __cdecl IID_IDirect3D3;
@@ -1940,11 +1944,14 @@ EXTERN_C const IID  __cdecl IID_IDirect3DDevice3;
 EXTERN_C const IID  __cdecl IID_IDirect3DMaterial3;
 EXTERN_C const IID  __cdecl IID_IDirect3DViewport3;
 EXTERN_C const IID  __cdecl IID_IDirect3DVertexBuffer;
+EXTERN_C const IID  __cdecl IID_IDirect3DRefDevice;
+EXTERN_C const IID  __cdecl IID_IDirect3DNullDevice;
 #endif
 #if (DIRECT3D_VERSION >= 0x0700)
 EXTERN_C const IID  __cdecl IID_IDirect3D7;
 EXTERN_C const IID  __cdecl IID_IDirect3DDevice7;
 EXTERN_C const IID  __cdecl IID_IDirect3DVertexBuffer7;
+EXTERN_C const IID  __cdecl IID_IDirect3DTnLHalDevice;
 #endif
 
 #endif /* _D3D_H_ */
