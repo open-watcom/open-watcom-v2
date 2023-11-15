@@ -1485,6 +1485,7 @@ typedef enum _D3DTEXTUREOP {
 #endif
 
 /* Direct3D texture magnification filters */
+#if (DIRECT3D_VERSION >= 0x0600)
 typedef enum _D3DTEXTUREMAGFILTER {
     D3DTFG_POINT            = 1,
     D3DTFG_LINEAR           = 2,
@@ -1493,6 +1494,7 @@ typedef enum _D3DTEXTUREMAGFILTER {
     D3DTFG_ANISOTROPIC      = 5,
     D3DTFG_FORCE_DWORD      = 0x7FFFFFFF
 } D3DTEXTUREMAGFILTER;
+#endif
 
 /* Direct3D texture minification filters */
 #if (DIRECT3D_VERSION >= 0x0600)
