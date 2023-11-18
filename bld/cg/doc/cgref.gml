@@ -356,7 +356,7 @@ enum {
 };
 :eXMP.
 .*
-.section void BEStart()
+.section void BEStart( void )
 .*
 .ix BEStart
 .np
@@ -365,28 +365,28 @@ Must be called immediately after all calls to BEDefSeg have been made.
 This restriction is relaxed somewhat for the 80(x)86 code generator.
 See BEDefSeg for details.
 .*
-.section void BEStop()
+.section void BEStop( void )
 .*
 .ix BEStop
 .np
 Normal termination of code generator.
 This must be the second last routine called.
 .*
-.section void BEAbort()
+.section void BEAbort( void )
 .*
 .ix BEAbort
 .np
 Abnormal termination of code generator.
 This must be the second last routine called.
 .*
-.section void BEFini()
+.section void BEFini( void )
 .*
 .ix BEFini
 .np
 Finalize the code generator.
 This must be the last routine called.
 .*
-.section patch_handle BEPatch()
+.section patch_handle BEPatch( void )
 .*
 .np
 Allocate a patch handle which can be used to create a patchable
@@ -579,7 +579,7 @@ These labels may only be used for flow of control.
 In order to define a label in a data segment, a :HP2.back_handle:eHP2.
 must be used.
 .*
-.section label_handle BENewLabel()
+.section label_handle BENewLabel( void )
 .*
 .ix BENewLabel
 .ix label, code
@@ -889,7 +889,7 @@ The symbol table entry for the parameter.
 The type of the parameter.
 .endnote
 .*
-.section label_handle CGLastParm()
+.section label_handle CGLastParm( void )
 .*
 .ix CGLastParm
 .np
@@ -1650,7 +1650,7 @@ CGSelect( sel_handle );
 CGControl( O_LABEL, NULL, end_label );
 :eXMP.
 .*
-.section sel_handle CGSelInit()
+.section sel_handle CGSelInit( void )
 .*
 .ix CGSelInit
 .ix 'control flow'
@@ -2168,7 +2168,7 @@ The location within the segment.
 The current location in the segment before the seek takes place.
 .endnote
 .*
-.section unsigned long DGTell()
+.section unsigned long DGTell( void )
 .*
 .ix DGTell
 .ix segments
@@ -2252,7 +2252,7 @@ A cg_sym_handle.
 A segment_id.
 .endnote
 .*
-.section char *FEModuleName()
+.section char *FEModuleName( void )
 .*
 .ix FEModuleName
 .begnote
@@ -2328,7 +2328,7 @@ passing it to a procedure.
 Type will be a dealiased type.
 .endnote
 .*
-.section int FETrue()
+.section int FETrue( void )
 .*
 .ix FETrue
 .begnote
@@ -2419,13 +2419,17 @@ Relays information to the front end.
 .notehd1 Parameter
 .notehd2 Definition
 .note femsg
-Defined below.
+Front-end message.
 .note extra
 Extra information.
 The type and meaning depends on the value of :HP2.femsg:eHP2. and is
 indicated below.
 .endnote
-.begnote $break $setptnt 2i
+.np
+The femsg parameter values and extra information description.
+.begnote
+.notehd1 Value
+.notehd2 Description
 .note FEMSG_INFO_FILE
 .ix 'error messages'
 Informational message about file.
@@ -2623,17 +2627,17 @@ Only called if the routine has the FEINF_SPECIAL_STRUCT_RETURN attribute.
 .note ( void *, FEINF_NEXT_IMPORT )
 void * (See notes at end) - A handle for the next symbol to
 generate a reference to in the object file.
-.note ( void*, FEINF_IMPORT_NAME )
+.note ( void *, FEINF_IMPORT_NAME )
 char * - The EXTDEF name to generate given a handle
 .note ( void *, FEINF_NEXT_IMPORT_S )
 void * (See notes at end) - A handle for the next symbol to
 generate a reference to in the object file.
-.note ( void*, FEINF_IMPORT_NAME_S )
+.note ( void *, FEINF_IMPORT_NAME_S )
 Returns a cg_sym_handle. The EXTDEF name symbol reference to generate given
 a handle.
-.note ( void*, FEINF_NEXT_LIBRARY )
+.note ( void *, FEINF_NEXT_LIBRARY )
 void * (See notes at end) - Handle for the next library required
-.note ( void*, FEINF_LIBRARY_NAME )
+.note ( void *, FEINF_LIBRARY_NAME )
 char * - The library name to generate given a handle
 .note ( NULL, FEINF_DATA_GROUP )
 char * - Used to name DGROUP exactly.
@@ -2667,7 +2671,7 @@ following three aux requests.
 IMPORT_IS_CONDITIONAL_PURE is used for eliminating unused pure virtual
 functions.
 .note ( cg_sym_handle, FEINF_CONDITIONAL_IMPORT )
- Returns void *.
+Returns void *.
 Once the back end determines that it has a conditional import, it
 performs this request to get a conditional list handle which is the
 head of the list of conditional symbols.
@@ -2895,13 +2899,13 @@ locate the lvalue of the symbol.
 whether the symbol is file scoped or not.
 .endnote
 .*
-.section void DBBegBlock()
+.section void DBBegBlock( void )
 .*
 .ix DBBegBlock
 .np
 Open a new scope level.
 .*
-.section void DBEndBlock()
+.section void DBEndBlock( void )
 .*
 .ix DBEndBlock
 .np
@@ -2974,7 +2978,7 @@ Before the location expression is evalated, the current lvalue of the
 pointer symbol associated with this type is pushed onto the expression
 stack (needed for based on self pointers).
 .*
-.section dbg_struct DBBegStruct()
+.section dbg_struct DBBegStruct( void )
 .*
 .ix DBBegStruct
 .np
