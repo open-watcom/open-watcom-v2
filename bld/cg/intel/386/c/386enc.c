@@ -100,7 +100,8 @@ void    DoRepOp( instruction *ins )
 
     size = ins->result->n.size;
     first = true;
-    if( ins->head.opcode == OP_MOV && !UseRepForm( size ) ) {
+    if( ins->head.opcode == OP_MOV
+      && !UseRepForm( size ) ) {
         for( ; size >= 4; size -= 4 ) {
             if( first ) {
                 LayOpbyte( M_MOVSW );
@@ -116,7 +117,8 @@ void    DoRepOp( instruction *ins )
     } else {
         LayOpbyte( M_REPE );
         if( ins->head.opcode == OP_MOV ) {
-            if( ( size & ( 4 - 1 ) ) == 0 || OptForSize <= 50 ) {
+            if( (size & ( 4 - 1 )) == 0
+              || OptForSize <= 50 ) {
                 if( _IsntTargetModel( CGSW_X86_USE_32 ) )
                     AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
@@ -139,14 +141,14 @@ void    DoRepOp( instruction *ins )
 
 
 static  hw_reg_set IndexTab[] = {
-        HW_D( HW_EAX ),
-        HW_D( HW_ECX ),
-        HW_D( HW_EDX ),
-        HW_D( HW_EBX ),
-        HW_D( HW_ESP ),
-        HW_D( HW_EBP ),
-        HW_D( HW_ESI ),
-        HW_D( HW_EDI )
+    HW_D( HW_EAX ),
+    HW_D( HW_ECX ),
+    HW_D( HW_EDX ),
+    HW_D( HW_EBX ),
+    HW_D( HW_ESP ),
+    HW_D( HW_EBP ),
+    HW_D( HW_ESI ),
+    HW_D( HW_EDI )
 };
 
 
@@ -162,9 +164,11 @@ static  void    Add32Displacement( int_32 val )
 byte    Displacement( int_32 val, hw_reg_set regs )
 /*************************************************/
 {
-    if( val == 0 && !HW_COvlap( regs, HW_EBP ) )
+    if( val == 0
+      && !HW_COvlap( regs, HW_EBP ) )
         return( DISP0 );
-    if( val <= 127 && val >= -128 ) {
+    if( val <= 127
+      && val >= -128 ) {
         AddByte( val & 0xff );
         return( DISP8 );
     } else {
@@ -261,14 +265,17 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
         _Zoiks( ZOIKS_079 );
     if( HW_CEqual( base, HW_EMPTY ) ) {
         if( HW_CEqual( index, HW_EMPTY ) ) {
-            // [disp32]
+            /*
+             * [disp32]
+             */
             if( scale != 0 || val != 0 )
                 _Zoiks( ZOIKS_079 );
             Inst[RMR] |= DoMDisp( mem_loc, true );
-
         } else {
             if( scale != 0 ) {
-                // [disp32+scale_index]
+                /*
+                 * [disp32+scale_index]
+                 */
                 Inst[RMR] |= DoScaleIndex( HW_EBP, index, scale );
                 Inst[RMR] |= DISP0;
                 if( mem_loc != NULL ) {
@@ -278,27 +285,33 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
                     Add32Displacement( val );
                 }
             } else {
-                // [(disp0|disp8|disp32)+index]
+                /*
+                 * [(disp0|disp8|disp32)+index]
+                 */
                 Inst[RMR] |= DoIndex( index );
                 Inst[RMR] |= DoDisp( val, index, mem_loc );
             }
         }
     } else {
-        // [(disp0|disp8|disp32)+base+scale_index]
+        /*
+         * [(disp0|disp8|disp32)+base+scale_index]
+         */
         if( HW_CEqual( index, HW_EMPTY ) ) {
-            if( scale == 0 && !HW_CEqual( base, HW_ESP ) ) {
+            if( scale == 0
+              && !HW_CEqual( base, HW_ESP ) ) {
                 Inst[RMR] |= DoIndex( base );
             } else {
                 Inst[RMR] |= DoScaleIndex( base, HW_ESP, scale );
             }
         } else {
-            if( scale == 0 && HW_CEqual( base, HW_EBP )
+            if( scale == 0
+              && HW_CEqual( base, HW_EBP )
               && ( lea || _IsntTargetModel( CGSW_X86_FLOATING_DS ) && _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) ) {
                 /*
-                   flip base & index registers so that we might avoid having
-                   to output a byte displacement (can't have a zero sized
-                   displacement with EBP as the base register)
-                */
+                 * flip base & index registers so that we might avoid having
+                 * to output a byte displacement (can't have a zero sized
+                 * displacement with EBP as the base register)
+                 */
                 base = index;
                 HW_CAsgn( index, HW_EBP );
             }
@@ -341,16 +354,18 @@ static int_32   GetNextAddConstant( instruction *ins )
             break;
         if( next->operands[1]->c.const_type != CONS_ABSOLUTE )
             break;
-        /* we should not remove the ADD if its flags are used! */
+        /*
+         * we should not remove the ADD if its flags are used!
+         */
         if( next->ins_flags & INS_CC_USED )
             break;
         /*
-           we've got something like:
-                LEA     EAX, [ECX+EDX]
-                ADD     EAX, 3
-           turn it into:
-                LEA     EAX, 3[ECX+EDX]
-        */
+         * we've got something like:
+         *      LEA     EAX, [ECX+EDX]
+         *      ADD     EAX, 3
+         * turn it into:
+         *      LEA     EAX, 3[ECX+EDX]
+         */
         disp = neg * next->operands[1]->c.lo.int_value,
         DoNothing( next );
         break;
@@ -400,8 +415,10 @@ void    LayLeaRegOp( instruction *ins )
         switch( right->c.lo.int_value ) {
         case 1:
             if( _CPULevel( CPU_586 ) ) {
-                // want to avoid the extra big-fat 0 on 586's
-                // but two base registers is slower on a 486
+                /*
+                 * want to avoid the extra big-fat 0 on 586's
+                 * but two base registers is slower on a 486
+                 */
                 EA( left->r.reg, left->r.reg, 0, disp, NULL, true );
                 break;
             }
@@ -432,7 +449,9 @@ static  void    LayIdxModRM( name *op )
 
     CheckSize();
     if( HW_COvlap( op->i.index->r.reg, HW_SEGS ) ) {
-        /* check for seg override*/
+        /*
+         * check for seg override
+         */
         GenSeg( op->i.index->r.reg );
     }
     idx_reg = op->i.index->r.reg;
@@ -461,7 +480,8 @@ static  void    LayIdxModRM( name *op )
         }
     }
     HW_TurnOff( idx_reg, base_reg );
-    if( HW_CEqual( idx_reg, HW_ESP ) && HW_CEqual( base_reg, HW_EMPTY ) ) {
+    if( HW_CEqual( idx_reg, HW_ESP )
+      && HW_CEqual( base_reg, HW_EMPTY ) ) {
         HW_CAsgn( base_reg, HW_ESP );
         HW_CAsgn( idx_reg, HW_EMPTY );
     }
@@ -507,7 +527,10 @@ void    DoMAddr( name *op )
     ILen += 4;
     if( op->n.class == N_CONSTANT ) {
         _Zoiks( ZOIKS_035 );
-    } else {        /* assume global name*/
+    } else {
+        /*
+         * assume global name
+         */
         DoSymRef( op, op->v.offset, false );
     }
 }
@@ -526,7 +549,8 @@ void    DoRelocConst( name *op, type_class_def type_class )
         } else {
             DoSymRef( op->c.value, 0, true );
         }
-        if( type_class == U4 || type_class == I4 ) {        /* as in PUSH seg _x */
+        if( type_class == U4
+          || type_class == I4 ) {        /* as in PUSH seg _x */
             AddByte( 0 );
             AddByte( 0 );
         }
@@ -566,7 +590,7 @@ pointer GenFar16Thunk( pointer label, uint_16 parms_size, bool remove_parms )
     pointer     code_32;
 
     old_segid = SetOP( AskCode16Seg() );
-    // CodeLabel( label, DepthAlign( PROC_ALIGN ) );
+//    CodeLabel( label, DepthAlign( PROC_ALIGN ) );
     code_32 = AskForNewLabel();
     TellOptimizerByPassed();
     SetUpObj( false );
@@ -584,7 +608,9 @@ pointer GenFar16Thunk( pointer label, uint_16 parms_size, bool remove_parms )
         OutDataByte( 0xcb );
         OutDataShort( 0 );              // padding
     }
-    // emit "reloc for offset of code_32 label"
+    /*
+     * emit "reloc for offset of code_32 label"
+     */
     SetUpObj( true );
     TellKeepLabel( code_32 );
     OutReloc( AskCodeSeg(), F_OFFSET, false );
@@ -691,9 +717,9 @@ void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
 #endif
 
 segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
-/*********************************************************************************/
-/* generate P5 profiler code                                                     */
-/*********************************************************************************/
+/**********************************************************************************
+ * generate P5 profiler code
+ */
 {
     segment_id      old_segid;
     segment_id      data_segid = (segment_id)(pointer_uint)FEAuxInfo( NULL, FEINF_P5_PROF_SEG );
@@ -776,16 +802,18 @@ void    Do4Shift( instruction *ins )
 
 
 void    Do4RShift( instruction *ins )
-/***********************************/
-/* NOT NEEDED ON 386 */
+/************************************
+ * NOT NEEDED ON 386
+ */
 {
     /* unused parameters */ (void)ins;
 }
 
 
 void    Gen4RNeg( instruction *ins )
-/**********************************/
-/* NOT NEEDED ON 386 */
+/***********************************
+ * NOT NEEDED ON 386
+ */
 {
     /* unused parameters */ (void)ins;
 }
@@ -860,16 +888,18 @@ void    By2Div( instruction *ins )
 
 
 void    Gen4Neg( instruction *ins )
-/*********************************/
-/* NOT NEEDED ON 386 */
+/**********************************
+ * NOT NEEDED ON 386
+ */
 {
     /* unused parameters */ (void)ins;
 }
 
 
 void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
-/****************************************************************/
-/* NOT NEEDED ON 386 */
+/*****************************************************************
+ * NOT NEEDED ON 386
+ */
 {
     /* unused parameters */ (void)ins; (void)rtn;
 }
