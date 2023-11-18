@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,7 +32,7 @@
 extern void             InitCG( void );
 extern void             AbortCG( void );
 extern void             FiniCG( void );
-extern void             ProcMessage( msg_class msg );
+extern void             FEMessageCurrProc( fe_msg femsg );
 extern void             Generate( bool routine_done );
 
 extern void             OptSegs( void );

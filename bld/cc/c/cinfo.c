@@ -742,14 +742,14 @@ const char *FEName( CGSYM_HANDLE cgsym_handle )
 }
 
 
-void FEMessage( int class, CGPOINTER parm )
-/*****************************************/
+void FEMessage( fe_msg femsg, CGPOINTER parm )
+/********************************************/
 {
     char    msgtxt[80];
     char    msgbuf[MAX_MSG_LEN];
 
-    switch( class ) {
-    case MSG_SYMBOL_TOO_LONG:
+    switch( femsg ) {
+    case FEMSG_SYMBOL_TOO_LONG:
         {
             SYM_ENTRY   *sym;
 
@@ -759,23 +759,23 @@ void FEMessage( int class, CGPOINTER parm )
             InitErrLoc();
         }
         break;
-    case MSG_BLIP:
+    case FEMSG_BLIP:
         if( GlobalCompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 ConBlip();
             }
         }
         break;
-    case MSG_INFO:
-    case MSG_INFO_FILE:
-    case MSG_INFO_PROC:
+    case FEMSG_INFO:
+    case FEMSG_INFO_FILE:
+    case FEMSG_INFO_PROC:
         if( GlobalCompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 NoteMsg( parm );
             }
         }
         break;
-    case MSG_CODE_SIZE:
+    case FEMSG_CODE_SIZE:
         if( GlobalCompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 CGetMsg( msgtxt, PHRASE_CODE_SIZE );
@@ -784,28 +784,28 @@ void FEMessage( int class, CGPOINTER parm )
             }
         }
         break;
-    case MSG_DATA_SIZE:
+    case FEMSG_DATA_SIZE:
         break;
-    case MSG_ERROR:
+    case FEMSG_ERROR:
         CErr2p( ERR_INTERNAL_ERROR_MSG, parm );
         break;
-    case MSG_FATAL:
+    case FEMSG_FATAL:
         CErr2p( ERR_FATAL_ERROR, parm );
         CloseFiles();       /* get rid of temp file */
         MyExit( 1 );        /* exit to DOS do not pass GO */
         break;
-    case MSG_BAD_PARM_REGISTER:
+    case FEMSG_BAD_PARM_REGISTER:
         /*
          * this will be issued after a call to CGInitCall or CGProcDecl
          */
         CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_uint)parm );
         break;
-    case MSG_BAD_RETURN_REGISTER:
+    case FEMSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_SCHEDULER_DIED:
-    case MSG_REGALLOC_DIED:
-    case MSG_SCOREBOARD_DIED:
+    case FEMSG_SCHEDULER_DIED:
+    case FEMSG_REGALLOC_DIED:
+    case FEMSG_SCOREBOARD_DIED:
         if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( LastFuncOutOfMem != parm ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE, FEName( (CGSYM_HANDLE)parm ) );
@@ -813,7 +813,7 @@ void FEMessage( int class, CGPOINTER parm )
             }
         }
         break;
-    case MSG_PEEPHOLE_FLUSHED:
+    case FEMSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( !CompFlags.low_on_memory_printed ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
@@ -821,19 +821,19 @@ void FEMessage( int class, CGPOINTER parm )
             }
         }
         break;
-    case MSG_BACK_END_ERROR:
+    case FEMSG_BACK_END_ERROR:
         CErr2( ERR_BACK_END_ERROR, (int)(pointer_uint)parm );
         break;
-    case MSG_BAD_SAVE:
+    case FEMSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_BAD_LINKAGE:
+    case FEMSG_BAD_LINKAGE:
         CErr2p( ERR_BAD_LINKAGE, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_NO_SEG_REGS:
+    case FEMSG_NO_SEG_REGS:
         CErr2p( ERR_NO_SEG_REGS, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_BAD_PEG_REG:
+    case FEMSG_BAD_PEG_REG:
         CErr2p( ERR_BAD_PEG_REG, FEName( (CGSYM_HANDLE)parm ) );
         break;
     default:

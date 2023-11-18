@@ -2410,7 +2410,7 @@ The symbol is "volatile" (in the C language sense).
 The symbol is not at file scope.
 .endnote
 .*
-.section void FEMessage( msg_class msg, void *extra )
+.section void FEMessage( fe_msg femsg, void *extra )
 .*
 .ix FEMessage
 .np
@@ -2418,80 +2418,80 @@ Relays information to the front end.
 .begnote
 .notehd1 Parameter
 .notehd2 Definition
-.note msg
+.note femsg
 Defined below.
 .note extra
 Extra information.
-The type and meaning depends on the value of :HP2.msg:eHP2. and is
+The type and meaning depends on the value of :HP2.femsg:eHP2. and is
 indicated below.
 .endnote
 .begnote $break $setptnt 2i
-.note MSG_INFO_FILE
+.note FEMSG_INFO_FILE
 .ix 'error messages'
 Informational message about file.
 extra (void) is ignored.
-.note MSG_CODE_SIZE
+.note FEMSG_CODE_SIZE
 Code size.
 Extra (int) is the size of the generated code.
-.note MSG_DATA_SIZE
+.note FEMSG_DATA_SIZE
 Data size.
 Extra (int) is the size of the generated data.
-.note MSG_ERROR
+.note FEMSG_ERROR
 A back end error message.
 Extra (char *) is the error message.
-.note MSG_FATAL
+.note FEMSG_FATAL
 A fatal code generator error.
 Extra (char *) is the reason for the fatal error.
 The front end should issue this message and exit immediately to the
 system.
-.note MSG_INFO_PROC
+.note FEMSG_INFO_PROC
 Informational message about current procedure.
 Extra (char *) is a message.
-.note MSG_BAD_PARM_REGISTER
+.note FEMSG_BAD_PARM_REGISTER
 Invalid parameter register returned from FEAuxInfo.
 Extra (int) is position of the offending parameter.
-.note MSG_BAD_RETURN_REGISTER
+.note FEMSG_BAD_RETURN_REGISTER
 Invalid return register returned from FEAuxInfo.
 Extra (aux_handle) is the offending aux_handle.
-.note MSG_REGALLOC_DIED
+.note FEMSG_REGALLOC_DIED
 The register alloc ran out of memory.
 Extra (cg_sym_handle) is the procedure which was not fully optimized.
-.note MSG_SCOREBOARD_DIED
+.note FEMSG_SCOREBOARD_DIED
 The register scoreboard ran out of memory.
 Extra (cg_sym_handle) is the procedure which was not fully optimized.
-.note MSG_PEEPHOLE_FLUSHED
+.note FEMSG_PEEPHOLE_FLUSHED
 Peep hole optimizer flushed due to lack of memory.
 (void)
-.note MSG_BACK_END_ERROR
+.note FEMSG_BACK_END_ERROR
 BAD NEWS!
 Internal compiler error.
 Extra (int) is an internal error number.
-.note MSG_BAD_SAVE
+.note FEMSG_BAD_SAVE
 Invalid register modification information return from FEAuxInfo.
 Extra (aux_handle) is the offending aux_handle.
-.note MSG_WANT_MORE_DATA
+.note FEMSG_WANT_MORE_DATA
 The back end wants more data space.
 Extra (int) is amount of additional memory needed to run.
 (DOS real mode hosts only).
-.note MSG_BLIP
+.note FEMSG_BLIP
 Blip.
 Let the world know we're still alive by printing a dot on the screen.
 This is called approximately every 4 seconds during code generation.
 (void)
-.note MSG_BAD_LINKAGE
+.note FEMSG_BAD_LINKAGE
 Cannot resolve linkage conventions.
 370 only.
 (sym)
-.note MSG_SCHEDULER_DIED
+.note FEMSG_SCHEDULER_DIED
 Instruction scheduler ran out of memory.
 Extra (cg_sym_handle) is the procedure which was not fully optimized.
-.note MSG_NO_SEG_REGS
+.note FEMSG_NO_SEG_REGS
 (Only occurs in the x86 version).
 The cg_switches did not allow any segment registers to float, but the
 user has requested a far pointer indirection.
 Extra (cg_sym_handle) is the procedure which contained the far pointer
 usage.
-.note MSG_SYMBOL_TOO_LONG
+.note FEMSG_SYMBOL_TOO_LONG
 Given symbol is too long and is truncated to maximum permited
 length for current module output format.
 Extra (cg_sym_handle) is the symbol which was truncated.
@@ -3449,7 +3449,7 @@ generator options.
 (struct) For 370 linkage conventions.
 .note more_cg_types
 (enum)
-.note msg_class
+.note fe_msg
 (enum) The 1st parameter to FEMessage.
 .note proc_revision
 (enum) The 3rd parameter to BEInit.

@@ -270,7 +270,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                         if( attr & (FE_STATIC | FE_GLOBAL) ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_BASE );
                         } else {
-                            FEMessage( MSG_ERROR, "aux seg used with local symbol" );
+                            FEMessage( FEMSG_ERROR, "aux seg used with local symbol" );
                         }
                         break;
                     case FIX_SYM_OFFSET:
@@ -282,7 +282,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                             if( temp->t.location != NO_LOCATION ) {
                                 EmitOffset( NewBase( temp ) - temp->v.offset + off );
                             } else {
-                                FEMessage( MSG_ERROR, "aux offset used with register symbol" );
+                                FEMessage( FEMSG_ERROR, "aux offset used with register symbol" );
                             }
                         }
                         break;
@@ -291,7 +291,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                         if( attr & FE_PROC ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_SELF );
                         } else {
-                            FEMessage( MSG_ERROR, "aux reloff used with data symbol" );
+                            FEMessage( FEMSG_ERROR, "aux reloff used with data symbol" );
                         }
                         break;
                     }

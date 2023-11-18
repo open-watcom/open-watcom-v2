@@ -120,14 +120,14 @@ const char *FEName(             // RETURN THE SYMBOL'S NAME
 
 
 void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
-    int class,                  // - message class
+    fe_msg femsg,               // - fron-end message
     pointer parm )              // - parameter
 {
-    switch( (msg_class)class ) {
-    case MSG_SYMBOL_TOO_LONG:
+    switch( femsg ) {
+    case FEMSG_SYMBOL_TOO_LONG:
         CErr2p( WARN_MANGLED_NAME_TOO_LONG, (SYMBOL)parm );
         break;
-    case MSG_BLIP:
+    case FEMSG_BLIP:
         if( CompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 putchar( '.' );
@@ -135,16 +135,16 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-    case MSG_INFO:
-    case MSG_INFO_FILE:
-    case MSG_INFO_PROC:
+    case FEMSG_INFO:
+    case FEMSG_INFO_FILE:
+    case FEMSG_INFO_PROC:
         if( CompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 MsgDisplayLine( parm );
             }
         }
         break;
-    case MSG_CODE_SIZE:
+    case FEMSG_CODE_SIZE:
         if( CompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 char buffer[30];
@@ -153,24 +153,24 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-    case MSG_DATA_SIZE:
+    case FEMSG_DATA_SIZE:
         break;
-    case MSG_ERROR:
+    case FEMSG_ERROR:
         CErr2p( ERR_INTERNAL_ERROR_MSG, parm );
         break;
-    case MSG_FATAL:
+    case FEMSG_FATAL:
         CErr2p( ERR_FATAL_ERROR, parm );
         CppExit( 1 );         /* exit to DOS do not pass GO */
         break;
-    case MSG_BAD_PARM_REGISTER:
+    case FEMSG_BAD_PARM_REGISTER:
         CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_uint)parm );
         break;
-    case MSG_BAD_RETURN_REGISTER:
+    case FEMSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (SYMBOL)parm ) );
         break;
-    case MSG_SCHEDULER_DIED:
-    case MSG_REGALLOC_DIED:
-    case MSG_SCOREBOARD_DIED:
+    case FEMSG_SCHEDULER_DIED:
+    case FEMSG_REGALLOC_DIED:
+    case FEMSG_SCOREBOARD_DIED:
         if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( lastFunctionOutOfMem != parm ) {
                 lastFunctionOutOfMem = parm;
@@ -178,7 +178,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-    case MSG_PEEPHOLE_FLUSHED:
+    case FEMSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( !CompFlags.low_on_memory_printed ) {
                 CompFlags.low_on_memory_printed = true;
@@ -186,13 +186,13 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-    case MSG_BACK_END_ERROR:
+    case FEMSG_BACK_END_ERROR:
         CErr2( ERR_BACK_END_ERROR, (int)(pointer_uint)parm );
         break;
-    case MSG_BAD_SAVE:
+    case FEMSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (SYMBOL)parm ) );
         break;
-    case MSG_NO_SEG_REGS:
+    case FEMSG_NO_SEG_REGS:
         CErr2p( ERR_NO_SEG_REGS, FEName( (SYMBOL)parm ) );
         break;
     }

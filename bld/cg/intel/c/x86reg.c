@@ -70,7 +70,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_TurnOff( tmp, StackReg() );
     HW_CTurnOff( tmp, HW_xBP ); /* should be able to call routine which modifies [E]BP */
     if( HW_Ovlap( state->unalterable, tmp ) ) {
-        FEMessage( MSG_BAD_SAVE, aux );
+        FEMessage( FEMSG_BAD_SAVE, aux );
     }
     state->attr = ROUTINE_REMOVES_PARMS;
     cclass = (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS );
@@ -167,7 +167,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     for( parm_src = FEAuxInfo( aux, FEINF_PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
-            FEMessage( MSG_BAD_SAVE, aux );
+            FEMessage( FEMSG_BAD_SAVE, aux );
         }
         HW_CTurnOff( *parm_dst, HW_UNUSED );
         parm_dst++;
@@ -223,7 +223,7 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
     if( tipe == TypeNone ) {
         if( HW_CEqual( state->return_reg, HW_EMPTY ) )
             return;
-        FEMessage( MSG_BAD_RETURN_REGISTER, aux );
+        FEMessage( FEMSG_BAD_RETURN_REGISTER, aux );
         HW_CAsgn( state->return_reg, HW_EMPTY );
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     } else if( type_class == XX ) {
@@ -237,7 +237,7 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
 //            return;
         if( IsRegClass( state->return_reg, WD ) )
             return;
-        FEMessage( MSG_BAD_RETURN_REGISTER, aux );
+        FEMessage( FEMSG_BAD_RETURN_REGISTER, aux );
         state->return_reg = normal;
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     } else {
@@ -249,7 +249,7 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
 //            return;
         if( IsRegClass( state->return_reg, type_class ) )
             return;
-        FEMessage( MSG_BAD_RETURN_REGISTER, aux );
+        FEMessage( FEMSG_BAD_RETURN_REGISTER, aux );
         state->return_reg = normal;
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     }

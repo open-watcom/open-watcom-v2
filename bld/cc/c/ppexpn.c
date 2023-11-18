@@ -139,7 +139,7 @@ static int  Prec[] = {     // table of token precedences
 static void CFatal( char *msg )
 /*****************************/
 {
-    FEMessage( MSG_FATAL, msg );
+    FEMessage( FEMSG_FATAL, msg );
 }
 #endif
 

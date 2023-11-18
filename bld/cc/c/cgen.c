@@ -1821,7 +1821,7 @@ static void GenModuleCode( void )
 
 static void NoCodeGenDLL( void )
 {
-    FEMessage( MSG_FATAL, "Unable to load code generator DLL" );
+    FEMessage( FEMSG_FATAL, "Unable to load code generator DLL" );
 }
 
 static void EmitSyms( void )

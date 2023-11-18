@@ -324,7 +324,7 @@ void    FixSegments( void ) {
 #endif
                 /* throw away override */
                 ins->num_operands--;
-                FEMessage( MSG_NO_SEG_REGS, AskForLblSym( CurrProc->label ) );
+                FEMessage( FEMSG_NO_SEG_REGS, AskForLblSym( CurrProc->label ) );
             }
         }
     }

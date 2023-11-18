@@ -129,7 +129,7 @@ static  void    CheckEvents( void )
     if( ticks < LastBlipCount || ticks >= NextTickCount ) {
         OSCall();       /* force a DOS call to get version number */
         if( ticks < LastBlipCount || ticks >= NextBlipCount ) {
-            FEMessage( MSG_BLIP, NULL );
+            FEMessage( FEMSG_BLIP, NULL );
             LastBlipCount = ticks;
             SetNextBlipCount();
         }

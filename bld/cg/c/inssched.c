@@ -1076,7 +1076,7 @@ void    Schedule( void )
     for( SBlock = HeadBlock; SBlock != NULL; SBlock = SBlock->next_block ) {
         if( Spawn( &SchedBlock ) != 0 ) {
             if( first_time ) {
-                ProcMessage( MSG_SCHEDULER_DIED );
+                FEMessageCurrProc( FEMSG_SCHEDULER_DIED );
                 first_time = false;
             }
             FreeDataDag();

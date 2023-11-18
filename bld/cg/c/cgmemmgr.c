@@ -293,7 +293,7 @@ static  void    CalcMemSize( void )
 #endif
     if( max_size_queried || size_queried ) {
         sprintf( buff, "Maximum WCGMEMORY=%d\n", (int)( memory_available / _1K ) );
-        FEMessage( MSG_INFO, buff );
+        FEMessage( FEMSG_INFO, buff );
     }
 }
 
@@ -552,7 +552,7 @@ void MemFini( void )
         char    buff[80];
 
         sprintf( buff, "Peak WCG memory usage (KB): %d\n", (int)(PeakAlloc/_1K) );
-        FEMessage( MSG_INFO, buff );
+        FEMessage( FEMSG_INFO, buff );
         PeakAlloc = 0;
     }
 #endif

@@ -243,7 +243,7 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
         // copy + truncate base symbol name
         len = copyBaseName( c, dst_basename, dst_len, src, base_len );
         if( len < 0 ) {
-            FEMessage( MSG_SYMBOL_TOO_LONG, sym );
+            FEMessage( FEMSG_SYMBOL_TOO_LONG, sym );
         } else {
             // shift sufix to the end of symbol name
             memcpy( dst_basename + len, tmp_suffix, sufix_len + 1 );

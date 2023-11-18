@@ -592,11 +592,11 @@ void    ParmIns( pn parm, call_state *state )
                 AddIns( ins );
             } else if( !CvtOk( TypeClass( addr->tipe ), reg->n.type_class ) ) {
                 ins = NULL;
-                FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
+                FEMessage( FEMSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
   #if _TARGET_INTEL
             } else if( HW_CEqual( reg->r.reg, HW_ABCD ) ) {
                 ins = NULL;
-                FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
+                FEMessage( FEMSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
   #endif
             } else {
                 ins = MakeConvert( curr, reg, reg->n.type_class, TypeClass( addr->tipe ) );
@@ -837,7 +837,7 @@ bool        AssgnParms( cn call, bool aux_inline )
             parm->regs = ParmInLineReg( &state->parm );
             if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
                 if( !HW_CEqual( *(state->parm.curr_entry), HW_EMPTY ) ) {
-                    FEMessage( MSG_ERROR, "More parameters than registers in pragma" );
+                    FEMessage( FEMSG_ERROR, "More parameters than registers in pragma" );
                 } else {
                     parm->offset = ParmMem( parm->name->tipe->length, ParmAlignment( parm->name->tipe ), state );
                     push_no_pop = true;
@@ -847,7 +847,7 @@ bool        AssgnParms( cn call, bool aux_inline )
                 reg_type_class  = AllocRegName( parm->regs )->n.type_class;
                 if( parm_type_class != FD || reg_type_class != U8 ) {
                     if( !CvtOk( parm_type_class, reg_type_class ) ) {
-                        FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)( parms + 1 ) );
+                        FEMessage( FEMSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)( parms + 1 ) );
                     }
                 }
             }

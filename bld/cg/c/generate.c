@@ -471,9 +471,8 @@ static  void    FlushBlocks( bool partly_done )
     block       *curr;
     block_class classes;
 
-    if( !BlockByBlock
-      && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
-        ProcMessage( MSG_REGALLOC_DIED );
+    if( !BlockByBlock ) {
+        FEMessageCurrProc( FEMSG_REGALLOC_DIED );
     }
     if( !partly_done ) {
         Renumber();
@@ -618,14 +617,14 @@ static  void            GenPartialRoutine( bool routine_done )
 }
 
 
-void    ProcMessage( msg_class msg )
-/**********************************/
+void    FEMessageCurrProc( fe_msg femsg )
+/***************************************/
 {
     static proc_def *lastproc = NULL;
 
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
       && lastproc != CurrProc ) {
-        FEMessage( msg, AskForLblSym( CurrProc->label ) );
+        FEMessage( femsg, AskForLblSym( CurrProc->label ) );
         lastproc = CurrProc;
     }
 }

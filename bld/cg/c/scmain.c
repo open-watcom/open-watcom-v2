@@ -279,7 +279,7 @@ void    Score( void )
         blk->u1.scoreboard = NULL;
     }
     if( Spawn( &ScoreRoutine ) != 0 ) {
-        ProcMessage( MSG_SCOREBOARD_DIED );
+        FEMessageCurrProc( FEMSG_SCOREBOARD_DIED );
     }
     CleanUp();
     SetMemOut( old_memout );

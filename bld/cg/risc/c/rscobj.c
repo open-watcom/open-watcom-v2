@@ -361,7 +361,7 @@ void    ObjFini( void )
     OWLFini( owlHandle );
     DeleteSections();
     CloseObj();
-    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_uint)code_size );
+    FEMessage( FEMSG_CODE_SIZE, (pointer)(pointer_uint)code_size );
 }
 
 
@@ -1179,7 +1179,7 @@ void    ObjEmitSeq( byte_seq *code )
             case OWL_RELOC_FP_OFFSET:
                 loc = TempLocation( SymBackUserTemp( curr->sym ) );
                 if( loc > 32767 ) {
-                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
+                    FEMessage( FEMSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
                 }
                 InsRelocAddSignedImmed( loc );
                 break;

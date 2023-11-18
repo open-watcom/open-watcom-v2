@@ -118,7 +118,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     for( parm_src = ParmRegs(); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
-            FEMessage( MSG_BAD_SAVE, aux );
+            FEMessage( FEMSG_BAD_SAVE, aux );
         }
         HW_CTurnOff( *parm_dst, HW_UNUSED );
         parm_dst++;

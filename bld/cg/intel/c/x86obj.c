@@ -835,8 +835,8 @@ static  void    OutName( const char *name, array_control *dest )
     len = Length( name );
     if( len >= 256 ) {
         len = 255;
-        FEMessage( MSG_INFO_PROC, "Code generator truncated name, its length exceeds allowed maximum." );
-        FEMessage( MSG_INFO_PROC, (pointer)name );
+        FEMessage( FEMSG_INFO_PROC, "Code generator truncated name, its length exceeds allowed maximum." );
+        FEMessage( FEMSG_INFO_PROC, (pointer)name );
     }
     OutByte( len, dest );
     OutBuffer( name, len, dest );
@@ -2118,8 +2118,8 @@ void    ObjFini( void )
     FiniAbsPatches();
     EndModule();
     CloseObj();
-    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_uint)CodeSize );
-    FEMessage( MSG_DATA_SIZE, (pointer)(pointer_uint)DataSize );
+    FEMessage( FEMSG_CODE_SIZE, (pointer)(pointer_uint)CodeSize );
+    FEMessage( FEMSG_DATA_SIZE, (pointer)(pointer_uint)DataSize );
 }
 
 
