@@ -184,8 +184,21 @@ set name of text segment
 .note o
 allow C form of octal constants
 .note zcm=<mode>
-set compatibility mode - watcom, masm or tasm, if <mode> is not
-specified then masm is used, default mode is watcom
+set compatibility mode to <mode>
+.begnote
+.notehd1 Values
+.notehd2 Description
+.note watcom (default)
+&company WASM mode
+.note masm
+Microsoft MASM mode
+.note tasm
+Borland TASM mode
+.note ideal
+Borland TASM IDEAL mode
+.note not specified
+MASM mode is used
+.endnote
 .note zld
 remove file dependency information
 .note zq or q
