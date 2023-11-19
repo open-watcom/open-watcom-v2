@@ -1214,7 +1214,7 @@ dlg-resource
         {
             SemWINWriteDialogBox( $1,
                 MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-                $4, SemWINNewDiagOptions( &($3 ) ), $6, $5, $2 );
+                $4, SemWINNewDiagOptions( &($3) ), $6, $5, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
                diag-options-section diag-control-section
@@ -1244,7 +1244,7 @@ dlg-resource
             SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.flags, $6,
-                               SemWINNewDiagOptions( &($5 ) ), $8, $7, $2 );
+                               SemWINNewDiagOptions( &($5) ), $8, $7, $2 );
         }
     ;
 

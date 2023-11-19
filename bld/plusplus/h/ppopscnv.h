@@ -218,30 +218,30 @@
 // The number is stored in the operator-flags table in PTREE.C.
 //
 #ifdef OPCNV
-{   OPCNV( PLUS,      OPM_AA | OPM_PI | OPM_IP | OPM_NV ) // op + op
-,   OPCNV( MINUS,     OPM_PP | OPM_AA | OPM_PI | OPM_NV ) // op - op
-,   OPCNV( ONE_AR,    OPM_A                             ) // one arithmetic
-,   OPCNV( ONE_RAP,   OPM_RA | OPM_RP | OPM_ASSIGN|OPM_NV)// one ref.(ar,ptr)
-,   OPCNV( POST_OP,   OPM_RA | OPM_RP | OPM_POST | OPM_NV)// op++, op--
-,   OPCNV( TWO_AR,    OPM_AA                            ) // two arithmetic
-,   OPCNV( ONE_INT,   OPM_I                             ) // one integer
-,   OPCNV( TWO_INT,   OPM_II                            ) // two integer
-,   OPCNV( SHIFT,     OPM_SH                            ) // shift operation
-,   OPCNV( RELEQ,     OPM_AA | OPM_PP | OPM_MM          ) // ==, !=
-//  OPCNV( COLON,     OPM_AA | OPM_PP | OPM_MM | OPM_RR ) // : (in ?)
-,   OPCNV( NOT_USED,  OPM_AA | OPM_PP | OPM_MM | OPM_RR ) // : (in ?)
-,   OPCNV( RELN,      OPM_AA | OPM_PP                   ) // >=, <=, >, <
-,   OPCNV( LOG1,      OPM_B                             ) // logical op
-,   OPCNV( LOG2,      OPM_BB                            ) // op logical op
-,   OPCNV( SUBSCR,    OPM_PI | OPM_IP | OPM_SUB | OPM_NV) // subscript
-,   OPCNV( PTR,       OPM_P                             ) // one pointer
-,   OPCNV( FUNCTION,  OPM_FUN | OPM_LT                  ) // function call
-,   OPCNV( EQAP,      OPM_RPI | OPM_RA | OPM_ASSIGN     ) // op assign (ar,ptr)
-,   OPCNV( EQAR,      OPM_RA | OPM_ASSIGN               ) // op assign arith
-,   OPCNV( EQINT,     OPM_RI | OPM_ASSIGN               ) // op assign int
-,   OPCNV( QUESTION,  OPM_A | OPM_P | OPM_QUEST | OPM_LT) // ?:
-,   OPCNV( ARROW,     OPM_LT                            ) // -> operator
-,   OPCNV( EQUALS,    OPM_ASSIGN | OPM_RA | OPM_RPI | OPM_RP    ) // = operator
-,   OPCNV( ARROW_STAR,OPM_PM                            ) // ->* operator
+{   OPCNV( PLUS,        OPM_AA | OPM_PI | OPM_IP | OPM_NV       ) // op + op
+,   OPCNV( MINUS,       OPM_PP | OPM_AA | OPM_PI | OPM_NV       ) // op - op
+,   OPCNV( ONE_AR,      OPM_A                                   ) // one arithmetic
+,   OPCNV( ONE_RAP,     OPM_RA | OPM_RP | OPM_ASSIGN | OPM_NV   ) // one ref.(ar,ptr)
+,   OPCNV( POST_OP,     OPM_RA | OPM_RP | OPM_POST | OPM_NV     ) // op++, op--
+,   OPCNV( TWO_AR,      OPM_AA                                  ) // two arithmetic
+,   OPCNV( ONE_INT,     OPM_I                                   ) // one integer
+,   OPCNV( TWO_INT,     OPM_II                                  ) // two integer
+,   OPCNV( SHIFT,       OPM_SH                                  ) // shift operation
+,   OPCNV( RELEQ,       OPM_AA | OPM_PP | OPM_MM                ) // ==, !=
+//,   OPCNV( COLON,       OPM_AA | OPM_PP | OPM_MM | OPM_RR       ) // : (in ?)
+,   OPCNV( NOT_USED,    OPM_AA | OPM_PP | OPM_MM | OPM_RR       ) // : (in ?)
+,   OPCNV( RELN,        OPM_AA | OPM_PP                         ) // >=, <=, >, <
+,   OPCNV( LOG1,        OPM_B                                   ) // logical op
+,   OPCNV( LOG2,        OPM_BB                                  ) // op logical op
+,   OPCNV( SUBSCR,      OPM_PI | OPM_IP | OPM_SUB | OPM_NV      ) // subscript
+,   OPCNV( PTR,         OPM_P                                   ) // one pointer
+,   OPCNV( FUNCTION,    OPM_FUN | OPM_LT                        ) // function call
+,   OPCNV( EQAP,        OPM_RPI | OPM_RA | OPM_ASSIGN           ) // op assign (ar,ptr)
+,   OPCNV( EQAR,        OPM_RA | OPM_ASSIGN                     ) // op assign arith
+,   OPCNV( EQINT,       OPM_RI | OPM_ASSIGN                     ) // op assign int
+,   OPCNV( QUESTION,    OPM_A | OPM_P | OPM_QUEST | OPM_LT      ) // ?:
+,   OPCNV( ARROW,       OPM_LT                                  ) // -> operator
+,   OPCNV( EQUALS,      OPM_ASSIGN | OPM_RA | OPM_RPI | OPM_RP  ) // = operator
+,   OPCNV( ARROW_STAR,  OPM_PM                                  ) // ->* operator
 }
 #endif
