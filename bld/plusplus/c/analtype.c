@@ -368,7 +368,7 @@ TYPE TypeConvertFromPcPtr(      // TRANSFORM TYPE AFTER CONVERSION FROM PC PTR
 
 
 static type_id intPromo[] = {   // Table of integral promotions
-    #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, promo ),
+    #define pick(id,promo,promo_asm,type_text)  promo,
     #include "_typdefs.h"
     #undef pick
 };

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -496,7 +496,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
 }
 
 static const char *id_names[] = {
-    #define pick(id,promo,promo_asm,type_text)  __STR( __PASTE( TYP_, id ) ),
+    #define pick(id,promo,promo_asm,type_text)  __STR( id ),
     #include "_typdefs.h"
     #undef pick
 };

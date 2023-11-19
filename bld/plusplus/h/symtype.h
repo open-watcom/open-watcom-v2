@@ -227,7 +227,7 @@ PCH_struct decl_info {
 // types dealing with representing types
 
 typedef enum {
-    #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+    #define pick(id,promo,promo_asm,type_text)  id,
     #include "_typdefs.h"
     #undef pick
     TYP_MAX,

@@ -8411,7 +8411,7 @@ static void initBasicTypes( void )
     type_id typ;
     static type_id basics_init_list[] = {
         #define BASETYPES
-        #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+        #define pick(id,promo,promo_asm,type_text)  id,
         #include "_typdefs.h"
         #undef pick
         #undef BASETYPES
@@ -8609,7 +8609,7 @@ static void typesInit(          // TYPES INITIALIZATION
 #ifdef XTRA_RPT
     {
         static char const * const typeIdNames[] = {
-            #define pick(id,promo,promo_asm,type_text)  __STR( __PASTE( TYP_, id ) ),
+            #define pick(id,promo,promo_asm,type_text)  __STR( id ),
             #include "_typdefs.h"
             #undef pick
             "TYP_NONE",
