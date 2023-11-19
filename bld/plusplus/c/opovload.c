@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ static OP_MASK opfun_mask[] =
 ;
 
 static type_id op_basic_arg[][2] =
-    #define OPBASIC( arg1, arg2, mask ) { __PASTE( TYP_, arg1 ), __PASTE( TYP_, arg2 ) }
+    #define OPBASIC( arg1, arg2, mask ) { arg1, arg2 }
     #include "ppopscnv.h"
     #undef OPBASIC
 ;
@@ -122,7 +122,7 @@ static OP_MASK opfun_mask_extra[] =
 ;
 
 static type_id op_basic_arg_extra[][2] =
-    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) { __PASTE( TYP_, arg1 ), __PASTE( TYP_, arg2 ) }
+    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) { arg1, arg2 }
     #include "ppopscnv.h"
     #undef OPBASIC_EXTRA
 ;
