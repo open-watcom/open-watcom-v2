@@ -495,12 +495,6 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
     }
 }
 
-static const char *id_names[] = {
-    #define pick(id,promo,promo_asm,type_text)  __STR( id ),
-    #include "_typdefs.h"
-    #undef pick
-};
-
 static const char unknown_type[] = "***UNKNOWN**=xx";
 
 void DumpType(                  // DUMP TYPE ENTRY
@@ -516,7 +510,7 @@ void DumpType(                  // DUMP TYPE ENTRY
         sprintf( (char *)( unknown_type + ( sizeof( unknown_type ) - 1 ) - 2 ), "%2x", tp->id );
         id = unknown_type;
     } else {
-        id = id_names[tp->id];
+        id = TypeIdNames[tp->id];
     }
     printf( "TYPE"          F_BADDR
             " next"         F_PTR

@@ -230,10 +230,13 @@ typedef enum {
     #define pick(id,promo,promo_asm,type_text)  id,
     #include "_typdefs.h"
     #undef pick
+    TYP_NONE,
     TYP_MAX,
+#ifdef XTRA_RPT
+    TYP_TOTAL = TYP_MAX,
+#endif
+    RPT_TYP_MAX,
 } type_id;
-
-#define TYP_NONE                TYP_MAX
 
 #define TYP_FIRST_FUNDAMENTAL   TYP_BOOL
 #define TYP_LAST_FUNDAMENTAL    TYP_LONG_DOUBLE
@@ -1764,6 +1767,10 @@ typedef enum typc_index {
 } typc_index;
 
 extern TYPE TypeCache[];
+#if defined( DEVBUILD ) || defined( XTRA_RPT )
+extern char const * const TypeIdNames[];
+#endif
+
 #define TypeGetCache( tci )     ( TypeCache[(tci)] )
 #define TypeSetCache( tci, ty ) ( TypeCache[(tci)] = ( ty ) )
 

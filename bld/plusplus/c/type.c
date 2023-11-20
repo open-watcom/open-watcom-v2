@@ -80,10 +80,6 @@
 #define RPT_ARGS_TOTAL          ARGS_MAX+1
 #define RPT_ARGS_MAX            ARGS_MAX+1+1
 
-#define RPT_TYP_NONE            TYP_MAX
-#define RPT_TYP_TOTAL           TYP_MAX+1
-#define RPT_TYP_MAX             TYP_MAX+1+1
-
 #define zero_table( table ) memset( table, 0, sizeof( table ) )
 
 enum {
@@ -93,6 +89,18 @@ enum {
 
 TYPE TypeError;
 TYPE TypeCache[TYPC_LAST];
+
+#if defined( DEVBUILD ) || defined( XTRA_RPT )
+char const * const TypeIdNames[] = {
+    #define pick(id,promo,promo_asm,type_text)  __STR( id ),
+    #include "_typdefs.h"
+    #undef pick
+    "TYP_NONE",
+#if defined( XTRA_RPT )
+    "Total"
+#endif
+};
+#endif
 
 static TYPE basicTypes[TYP_MAX];
 static TYPE typeTable[TYP_MAX];
@@ -983,7 +991,7 @@ void CheckUniqueType( TYPE newtype )
 {
 #ifdef XTRA_RPT
     ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+    ExtraRptTabIncr( ctr_type_ids, TYP_TOTAL, 0 );
     if( newtype->id == TYP_FUNCTION ) {
         unsigned num_args = newtype->u.f.args->num_args;
         if( num_args < ARGS_MAX ) {
@@ -1031,7 +1039,7 @@ static TYPE typeDuplicated(     // GET DUPLICATED TYPE
         ExtraRptIncrementCtr( ctr_cg_dups_fail );
     }
     ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+    ExtraRptTabIncr( ctr_type_ids, TYP_TOTAL, 0 );
     if( newtype->id == TYP_FUNCTION ) {
         unsigned num_args = newtype->u.f.args->num_args;
         if( num_args < ARGS_MAX ) {
@@ -1105,7 +1113,7 @@ TYPE CheckDupType( TYPE newtype )
                 ExtraRptIncrementCtr( ctr_cg_dups_fail );
             }
             ExtraRptTabIncr( ctr_type_ids, id, 0 );
-            ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+            ExtraRptTabIncr( ctr_type_ids, TYP_TOTAL, 0 );
             if( id == TYP_FUNCTION ) {
                 num_args = newtype->u.f.args->num_args;
                 if( num_args < ARGS_MAX ) {
@@ -8608,14 +8616,7 @@ static void typesInit(          // TYPES INITIALIZATION
     ExtraRptRegisterCtr( &ctr_cg_dups_fail, "dup. checks failed (back-end)" );
 #ifdef XTRA_RPT
     {
-        static char const * const typeIdNames[] = {
-            #define pick(id,promo,promo_asm,type_text)  __STR( id ),
-            #include "_typdefs.h"
-            #undef pick
-            "TYP_NONE",
-            "Total"
-        };
-        ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], RPT_TYP_MAX, 1 );
+        ExtraRptRegisterTab( "type id frequency table", TypeIdNames, &ctr_type_ids[0][0], RPT_TYP_MAX, 1 );
         ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, &ctr_fn_args[0][0], RPT_ARGS_MAX, 1 );
     }
 #endif

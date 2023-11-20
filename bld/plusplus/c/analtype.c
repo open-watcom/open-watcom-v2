@@ -371,6 +371,7 @@ static type_id intPromo[] = {   // Table of integral promotions
     #define pick(id,promo,promo_asm,type_text)  promo,
     #include "_typdefs.h"
     #undef pick
+    TYP_NONE
 };
 
 
