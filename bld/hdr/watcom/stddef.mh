@@ -61,11 +61,18 @@
 
 :include ptrdifft.sp
 
-:include ext.sp
-
+::
 :: Thread symbols section.
+::
+:include ext.sp
 :segment BITS16
+:segment DOS
+#ifdef _M_I86
+ _WCRTDATA extern int _WCFAR *_threadid;   /* pointer to thread id */
+#else
+:elsesegment
 #ifndef _M_I86
+:endsegment
 :endsegment
  #define _threadid (__threadid())
  _WCRTLINK extern int *__threadid( void ); /* pointer to thread id */
@@ -73,13 +80,10 @@
  #ifdef __NT__
 :include thrdhndl.sp
  #endif
-#else
- _WCRTDATA extern int _WCFAR *_threadid;   /* pointer to thread id */
 :endsegment
 :segment BITS16
 #endif
 :endsegment
-
 :include extepi.sp
 
 ::::::::: Safer C :::::::::
