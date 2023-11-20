@@ -89,6 +89,7 @@
 .fnc break&grpsfx             break                    breakoff.gml  DOS
 .fnc break_off                break                    breakoff.gml  DOS
 .fnc break_on                 break                    breakoff.gml  DOS
+.fnc brk                      brk                      brk.gml       DOS QNX W
 .fnc bsearch                  bsearch                  bsearch.gml   DOS QNX W WIN32
 .fnc bsearch_s                bsearch_s                bsrch_s.gml   DOS QNX W WIN32
 .fnc btom                     btom                     btom.gml      NEC
@@ -564,7 +565,7 @@
 .fnc intr                     intr                     intr.gml      DOS QNX W
 .fnc intrf                    intrf                    intrf.gml     DOS QNX W
 .fnc isalkana                 isalkana                 isalkana.gml  NEC
-.fnc isalnmkana               isalnmkana               isalnmkana.gmlNEC
+.fnc isalnmkana               isalnmkana               isalnmka.gml  NEC
 .fnc isalnum                  isalnum                  isalnum.gml   DOS QNX W WIN32
 .fnw iswalnum                 isalnum                  isalnum.gml   DOS QNX W WIN32
 .fnc isalpha                  isalpha                  isalpha.gml   DOS QNX W WIN32

@@ -1326,6 +1326,8 @@ allocate a memory block from a based heap
 return the size of a memory block
 .fd _brealloc
 re-allocate a memory block in a based heap
+.fd brk
+set allocation "break" position
 .fd calloc
 allocate and zero memory
 .fd _expand
