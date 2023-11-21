@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -231,15 +231,18 @@ typedef enum {
     #include "_typdefs.h"
     #undef pick
     TYP_NONE,
-    TYP_MAX,
-#ifdef XTRA_RPT
-    TYP_TOTAL = TYP_MAX,
-#endif
-    RPT_TYP_MAX,
+    TYP_MAX
 } type_id;
 
 #define TYP_FIRST_FUNDAMENTAL   TYP_BOOL
 #define TYP_LAST_FUNDAMENTAL    TYP_LONG_DOUBLE
+
+#ifdef XTRA_RPT
+#define RPT_TYP_TOTAL   TYP_MAX
+#define RPT_TYP_MAX     (TYP_MAX + 1)
+#else
+#define RPT_TYP_MAX     TYP_MAX
+#endif
 
 typedef enum {
     TF1_FIRST           = 0x00000001,               // TYP_ERROR

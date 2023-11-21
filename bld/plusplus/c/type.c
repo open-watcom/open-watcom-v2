@@ -991,7 +991,7 @@ void CheckUniqueType( TYPE newtype )
 {
 #ifdef XTRA_RPT
     ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-    ExtraRptTabIncr( ctr_type_ids, TYP_TOTAL, 0 );
+    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
     if( newtype->id == TYP_FUNCTION ) {
         unsigned num_args = newtype->u.f.args->num_args;
         if( num_args < ARGS_MAX ) {
@@ -1039,7 +1039,7 @@ static TYPE typeDuplicated(     // GET DUPLICATED TYPE
         ExtraRptIncrementCtr( ctr_cg_dups_fail );
     }
     ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-    ExtraRptTabIncr( ctr_type_ids, TYP_TOTAL, 0 );
+    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
     if( newtype->id == TYP_FUNCTION ) {
         unsigned num_args = newtype->u.f.args->num_args;
         if( num_args < ARGS_MAX ) {
@@ -1113,7 +1113,7 @@ TYPE CheckDupType( TYPE newtype )
                 ExtraRptIncrementCtr( ctr_cg_dups_fail );
             }
             ExtraRptTabIncr( ctr_type_ids, id, 0 );
-            ExtraRptTabIncr( ctr_type_ids, TYP_TOTAL, 0 );
+            ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
             if( id == TYP_FUNCTION ) {
                 num_args = newtype->u.f.args->num_args;
                 if( num_args < ARGS_MAX ) {
