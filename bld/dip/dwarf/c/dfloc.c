@@ -150,7 +150,7 @@ typedef enum {
     #include "dwregx86.h"
     #undef pick
     DW_X86_MAX
-}dw_X86_regs;
+} dw_X86_regs;
 
 typedef struct {
     unsigned    ci      : 5;
