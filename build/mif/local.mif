@@ -348,19 +348,26 @@ common_cppflags_osx_arm     = -D__OSX_ARM__
 common_cppflags_osx_a64     = -D__OSX_ARM64__
 
 # common release/debug options
-common_flags_rel = -O -g1 -gz -gdwarf-2
-common_flags_dbg = -g -gz -gdwarf
+common_flags_rel = -O -g1 -gdwarf-2
+common_flags_dbg = -g -gdwarf
+# common debug info compression options
+!ifdef __CLANG_TOOLS__
+common_flags_compr = -gz
+!else ifndef __OSX__
+common_flags_compr = -gz
+!endif
+
 !ifeq debug 0
-common_flags = $(common_flags_rel)
+common_flags = $(common_flags_rel) $(common_flags_compr)
 !else
-common_flags = $(common_flags_dbg)
+common_flags = $(common_flags_dbg) $(common_flags_compr)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
 !ifdef __CLANG_TOOLS__
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 !else
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack
 !endif
 common_cflags = $(common_cflags_wng)
 
