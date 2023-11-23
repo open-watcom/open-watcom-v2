@@ -74,7 +74,7 @@ The directory layout is as follows:
         several environment variables.
 
         Note: the rel directory structure is created on the fly. The
-        location of rel tree can be changed by `OWRELROOT` environment
+        location of rel tree can be changed by OWRELROOT environment
         variable.
 
 OpenWatcom Installation
