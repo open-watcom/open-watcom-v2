@@ -496,7 +496,7 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                 CurrProc->targ.debug = CGAlloc( sizeof( dbg_rtn ) );
                 memset( CurrProc->targ.debug, 0, sizeof( dbg_rtn ) );
                 CurrProc->targ.debug->parms = NULL;
-                CurrProc->targ.debug->reeturn = LocDupl( loc );
+                CurrProc->targ.debug->return_loc = LocDupl( loc );
                 CurrProc->targ.debug->obj_type = DBG_NIL_TYPE;
                 CurrProc->targ.debug->obj_loc = NULL;
                 CurrProc->targ.debug->rtn_blk = MkBlock();
@@ -745,7 +745,7 @@ void    DbgRetLoc( void )
 {
     dbg_loc loc;
 
-    if( CurrProc->targ.debug->reeturn == NULL ) {
+    if( CurrProc->targ.debug->return_loc == NULL ) {
         loc = DBLocInit();
         loc = LocReg( loc, AllocRegName( CurrProc->state.return_reg ) );
 #if _TARGET_INTEL
@@ -757,7 +757,7 @@ void    DbgRetLoc( void )
             loc->class = LOC_IND_REG + IND_CALLOC_NEAR;
         }
 #endif
-        CurrProc->targ.debug->reeturn = loc;
+        CurrProc->targ.debug->return_loc = loc;
     }
 }
 

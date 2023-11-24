@@ -666,7 +666,7 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     SymReloc( CVSyms, sym, 0 );
     BuffSkip( out, &ptr->proctype );
     buffEnd( out );
-    DBLocFini( rtn->reeturn );
+    DBLocFini( rtn->return_loc );
     DBLocFini( rtn->obj_loc );
     if( rtn->parms != NULL ) {
         DumpParms( rtn->parms, &rtn->rtn_blk->locals );

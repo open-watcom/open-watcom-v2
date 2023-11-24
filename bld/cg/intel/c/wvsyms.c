@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,10 +268,10 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     BuffByte( lc - rtn->epi_start );
     BuffOffset( rtn->ret_offset );
     BuffIndex( (uint) tipe );
-    if( rtn->reeturn == NULL ) {
+    if( rtn->return_loc == NULL ) {
         BuffByte( 0 ); /* no return location */
     } else {
-        LocDump( rtn->reeturn );
+        LocDump( rtn->return_loc );
     }
     count = 0;
     parm = rtn->parms;

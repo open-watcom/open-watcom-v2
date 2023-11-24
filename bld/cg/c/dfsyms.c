@@ -1091,9 +1091,9 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         DBLocFini( parm->loc );
         CGFree( parm );
     }
-    if( rtn->reeturn != NULL ) {
-        GenRetSym( rtn->reeturn, tipe );
-        DBLocFini( rtn->reeturn );
+    if( rtn->return_loc != NULL ) {
+        GenRetSym( rtn->return_loc, tipe );
+        DBLocFini( rtn->return_loc );
     }
     DFBlkBeg( rtn->rtn_blk, lc );
 //   DumpLocals( rtn->blk->locals );

@@ -318,7 +318,7 @@ typedef struct dbg_block {
 
 typedef struct dbg_rtn {
 //    struct dbg_rtn          *parent;
-    dbg_loc                 reeturn;
+    dbg_loc                 return_loc;
     dbg_block               *rtn_blk;
     dbg_block               *blk;
     dbg_local               *parms;
