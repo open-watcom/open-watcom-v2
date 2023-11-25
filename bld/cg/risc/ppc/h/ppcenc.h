@@ -31,6 +31,7 @@
 
 
 #include "ppcencod.h"
+#include "ppcrega.h"
 #include "ppcregn.h"
 
 

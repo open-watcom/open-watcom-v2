@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "mpsregn.h"
+#include "mpsenc.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"
@@ -808,7 +808,7 @@ hw_reg_set FixedRegs( void )
     hw_reg_set          fixed;
 
     HW_CAsgn( fixed, HW_R0 );       // $zero
-    HW_CTurnOn( fixed, HW_R1 );     // $at (needed as scratch register)
+    HW_CTurnOn( fixed, HW_AT_REG ); // $at (needed as scratch register)
     HW_CTurnOn( fixed, HW_R28 );    // $gp
     HW_CTurnOn( fixed, HW_R29 );    // $sp
     // We should be able to use $fp as $s8 in theory, but that isn't working
@@ -857,7 +857,7 @@ hw_reg_set FrameReg( void )
 hw_reg_set ScratchReg( void )
 /***************************/
 {
-    return( HW_R1 );
+    return( HW_AT_REG );
 }
 
 

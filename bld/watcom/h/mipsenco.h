@@ -69,11 +69,6 @@ typedef uint_32                 mips_ins;
 #define RA_REG_IDX              31      // Contains the Return address
 //#define AT_FP_REG_IDX           1       // Reserved for the temporary floating-point
 
-#define VARARGS_PTR_REG_IDX     23      // $s7 !TODO!
-#define RT_PARM2_REG_IDX        9       // $t1
-#define RT_PARM1_REG_IDX        8       // $t0
-#define RT_RET_REG_IDX          2       // $v0
-
 #define MIPS_MAX_OFFSET         0x7fff  // immediate displacement range
 
 #define MIPS_NOP                0       // actually 'sll $zero,$zero,0'

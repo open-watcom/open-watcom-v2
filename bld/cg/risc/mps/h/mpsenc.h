@@ -31,6 +31,7 @@
 
 
 #include "mipsenco.h"
+#include "mpsrega.h"
 #include "mpsregn.h"
 
 

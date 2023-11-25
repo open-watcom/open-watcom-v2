@@ -69,16 +69,10 @@
 #define SPR_LR                  8
 #define SPR_CTR                 9
 
-#define ZERO_REG_IDX            0       // $zero
 #define SP_REG_IDX              1       // $sp
 #define RTOC_REG_IDX            2       // $rtoc
 #define AT_REG_IDX              12      // Reserved for the temporary
 #define AT_FP_REG_IDX           13      // Reserved for the temporary floating-point
 #define FP_REG_IDX              31      // $fp
-
-#define VARARGS_PTR_REG_IDX     14
-#define RT_PARM2_REG_IDX        9       // $t1
-#define RT_PARM1_REG_IDX        8       // $t0
-#define RT_RET_REG_IDX          2       // $v0
 
 typedef uint_32                 ppc_ins;

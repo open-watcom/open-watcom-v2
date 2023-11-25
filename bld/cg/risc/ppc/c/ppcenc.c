@@ -75,6 +75,8 @@
 #define NORMAL          0x0C
 #define INVERT          0x04
 
+#define ZERO_SINK       0
+
 /*
  * Our table for gen_opcode values is really a list of pairs of
  * primary opcode / function code pairs. Their is two entries
@@ -435,7 +437,7 @@ static void getMemEncoding( name *mem, reg_idx *reg_mem, int_16 *offset )
         break;
     case N_MEMORY:
     default:
-        *reg_mem = ZERO_REG_IDX;
+        *reg_mem = ZERO_SINK;
         *offset = 0;
         _Zoiks( ZOIKS_119 );
         break;
@@ -477,7 +479,7 @@ static  void    doSign( instruction *ins )
         /*
          * extsb
          */
-        GenOPINS( 31, 954, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+        GenOPINS( 31, 954, _NameRegTrans( ins->result ), 0,
             _NameRegTrans( ins->operands[0] ) );
         break;
     case U2:
@@ -485,7 +487,7 @@ static  void    doSign( instruction *ins )
         /*
          * extsh
          */
-        GenOPINS( 31, 922, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+        GenOPINS( 31, 922, _NameRegTrans( ins->result ), 0,
             _NameRegTrans( ins->operands[0] ) );
         break;
     default:
@@ -572,9 +574,9 @@ static  void    GenVaStart( instruction *ins )
     stb = storeOpcodes[U1];
     stw = storeOpcodes[U4];
     li = 14;    // addi
-    GenOPIMM( li, tmp, ZERO_REG_IDX, CurrProc->state.parm.gr );
+    GenOPIMM( li, tmp, ZERO_SINK, CurrProc->state.parm.gr );
     GenMEMINS( stb, tmp, reg, 0 );
-    GenOPIMM( li, tmp, ZERO_REG_IDX, CurrProc->state.parm.fr );
+    GenOPIMM( li, tmp, ZERO_SINK, CurrProc->state.parm.fr );
     GenMEMINS( stb, tmp, reg, 1 );
     GenOPIMM( li, tmp, stack, CurrProc->state.parm.offset + CurrProc->targ.frame_size + STACK_HEADER_SIZE );
     GenMEMINS( stw, tmp, reg, 4 );
@@ -623,7 +625,7 @@ static  void    Encode( instruction *ins )
     case G_MOVE_FP:
         assert( ins->result->n.class == N_REGISTER );
         assert( ins->operands[0]->n.class == N_REGISTER );
-        GenOPINS( 63, 72, ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
+        GenOPINS( 63, 72, 0, _NameRegTrans( ins->operands[0] ),
             _NameRegTrans( ins->result ) );
         break;
     case G_MOVE:
@@ -644,14 +646,14 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
-        /* addis k(r0) -> rn */
-        GenOPIMM( 15, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+        /* addis rd, imm(0) */
+        GenOPIMM( 15, _NameRegTrans( ins->result ), ZERO_SINK,
             ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_MOVE_UI:
         /* a load of an unsigned 16-bit immediate */
-        /* use or rd, imm(r0) */
-        GenOPIMM( 24, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+        /* use addi rd, imm(0) */
+        GenOPIMM( 14, _NameRegTrans( ins->result ), ZERO_SINK,
             ins->operands[0]->c.lo.int_value );
         break;
     case G_LEA:
@@ -659,8 +661,8 @@ static  void    Encode( instruction *ins )
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
-            // addi rd, imm(r0)
-            GenOPIMM( 14, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+            // addi rd, imm(0)
+            GenOPIMM( 14, _NameRegTrans( ins->result ), ZERO_SINK,
                 ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
@@ -817,7 +819,7 @@ static  void    Encode( instruction *ins )
         switch( ins->head.opcode ) {
         case OP_NEGATE:
             // neg src -> dst
-            GenOPINS( 31, 104, a, ZERO_REG_IDX, s );
+            GenOPINS( 31, 104, a, 0, s );
             break;
         case OP_COMPLEMENT:
             GenOPINS( 31, 124, a, a, s );

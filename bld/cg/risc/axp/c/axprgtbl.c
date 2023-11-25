@@ -33,7 +33,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "axpregn.h"
+#include "axpenc.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"
@@ -763,30 +763,30 @@ hw_reg_set      FixedRegs( void )
 {
     hw_reg_set          fixed;
 
-    HW_CAsgn( fixed, HW_R30 );
-    HW_CTurnOn( fixed, HW_R31 );
-    HW_CTurnOn( fixed, HW_R15 );
-    HW_CTurnOn( fixed, HW_F30 ); // Used to generate problematic converts (I8->FD and such)
+    HW_CAsgn( fixed, HW_SP_REG );
+    HW_CTurnOn( fixed, HW_ZERO_REG );
+    HW_CTurnOn( fixed, HW_FP_REG );
+    HW_CTurnOn( fixed, HW_AT_FP_REG ); // Used to generate problematic converts (I8->FD and such)
     return( fixed );
 }
 
 hw_reg_set      VarargsHomePtr( void )
 /************************************/
 {
-    return( HW_D14 );
+    return( HW_VARARGS_REG32 );
 }
 
 hw_reg_set      StackReg( void )
 /**********************************/
 /* MJC should be up to linkage conventions */
 {
-    return( HW_D30 );
+    return( HW_SP_REG32 );
 }
 
 hw_reg_set      FrameBaseReg( void )
 /**********************************/
 {
-    return( HW_D15 );
+    return( HW_FP_REG32 );
 }
 
 hw_reg_set      FrameReg( void )
@@ -794,22 +794,22 @@ hw_reg_set      FrameReg( void )
 /* MJC should be up to linkage conventions */
 {
     if( CurrProc->targ.base_is_fp ) {
-        return( HW_D15 );
+        return( HW_FP_REG32 );
     }
-    return( HW_D30 );
+    return( HW_SP_REG32 );
 }
 
 hw_reg_set      ScratchReg( void )
 /********************************/
 {
-    return( HW_D28 );
+    return( HW_AT_REG32 );
 }
 
 hw_reg_set      ReturnAddrReg( void )
 /***********************************/
 /* BBB Like MJC said ^ */
 {
-    return( HW_D26 );
+    return( HW_RA_REG32 );
 }
 
 
