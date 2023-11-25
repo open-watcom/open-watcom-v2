@@ -67,7 +67,7 @@ typedef uint_32                 mips_ins;
 #define SP_REG_IDX              29      // Contains the Stack pointer
 #define FP_REG_IDX              30      // Contains the Frame pointer
 #define RA_REG_IDX              31      // Contains the Return address
-//#define FP_AT_REG_IDX           1       // Reserved for the temporary floating-point
+//#define AT_FP_REG_IDX           1       // Reserved for the temporary floating-point
 
 #define VARARGS_PTR_REG_IDX     23      // $s7 !TODO!
 #define RT_PARM2_REG_IDX        9       // $t1

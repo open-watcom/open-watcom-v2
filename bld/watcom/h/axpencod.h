@@ -62,7 +62,7 @@ typedef uint_32                 axp_ins;
 #define GP_REG_IDX              29      // Contains the Global pointer
 #define SP_REG_IDX              30      // Contains the Stack pointer
 #define ZERO_REG_IDX            31      // Contains 0
-#define FP_AT_REG_IDX           30      // Reserved for the temporary floating-point
+#define AT_FP_REG_IDX           30      // Reserved for the temporary floating-point
 
 #define VARARGS_PTR_REG_IDX     14      // $s5
 #define RT_PARM2_REG_IDX        2       // $t1

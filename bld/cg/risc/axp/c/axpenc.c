@@ -805,9 +805,9 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class != N_REGISTER );
         reg_addr = _NameRegTrans( ins->operands[0] );
-        GenFPOPINS( 0x16, 0x2f, ZERO_REG_IDX, reg_addr, FP_AT_REG_IDX );
+        GenFPOPINS( 0x16, 0x2f, ZERO_REG_IDX, reg_addr, AT_FP_REG_IDX );
         getMemEncoding( ins->result, &reg_mem, &mem_offset );
-        GenMEMINS( 0x27, FP_AT_REG_IDX, reg_mem, mem_offset );
+        GenMEMINS( 0x27, AT_FP_REG_IDX, reg_mem, mem_offset );
         break;
     case G_MI8TOFREG:
         assert( ins->operands[0]->n.class != N_REGISTER );

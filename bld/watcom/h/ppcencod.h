@@ -73,7 +73,7 @@
 #define SP_REG_IDX              1       // $sp
 #define RTOC_REG_IDX            2       // $rtoc
 #define AT_REG_IDX              12      // Reserved for the temporary
-#define FP_AT_REG_IDX           13      // Reserved for the temporary floating-point
+#define AT_FP_REG_IDX           13      // Reserved for the temporary floating-point
 #define FP_REG_IDX              31      // $fp
 
 #define VARARGS_PTR_REG_IDX     14
