@@ -42,6 +42,7 @@
 #include "makeblk.h"
 #include "bldcall.h"
 #include "ppcparm.h"
+#include "ppcenc.h"
 #include "feprotos.h"
 
 
@@ -215,7 +216,7 @@ bool            IsStackReg( name *n )
         return( false );
     if( n->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( n->r.reg, HW_R1 ) && !HW_CEqual( n->r.reg, HW_D1 ) )
+    if( !HW_CEqual( n->r.reg, HW_SP_REG ) && !HW_CEqual( n->r.reg, HW_SP_REG32 ) )
         return( false );
     return( true );
 }

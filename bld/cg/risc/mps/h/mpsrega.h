@@ -28,11 +28,10 @@
 #define HW_FP_REG               HW_R30      // $fp
 #define HW_RA_REG               HW_R31      // $ra
 
-#define HW_RT_RET_REG           HW_R2       // $v0
 #define HW_RT_RET_REG8          HW_B2       // $v0
 #define HW_RT_RET_REG16         HW_W2       // $v0
 #define HW_RT_RET_REG32         HW_D2       // $v0
-#define HW_RT_RET_REG64         HW_Q2       // $v0
+#define HW_RT_RET_REG64         HW_Q2       // $v0+$v1
 #define HW_RT_RET_REGFP         HW_F0       // $f0
 
 #define HW_RT_TEMP_REG          HW_R10      // $t2

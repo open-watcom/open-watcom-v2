@@ -39,14 +39,14 @@
 #include "rgtbl.h"
 
 
-#define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
+#define _Combine( a, b )    ((a) * RL_NUMBER_OF_SETS + (b))
 
 /*
  * register, register class and range definitions
  */
-#define pick_item(id)    ARCH_IDX_ ## id
-#define pick_start(id)   ARCH_ ## id ## _START
-#define pick_end(id)     ARCH_ ## id ## _END
+#define pick_item(id)   ARCH_IDX_ ## id
+#define pick_start(id)  ARCH_ ## id ## _START
+#define pick_end(id)    ARCH_ ## id ## _END
 
 enum {
     #define pick(id,idx,cls) pick_item(id),

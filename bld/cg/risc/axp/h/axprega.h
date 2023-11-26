@@ -37,7 +37,7 @@
 #define HW_RT_RET_REG16         HW_W0       // $v0
 #define HW_RT_RET_REG32         HW_D0       // $v0
 #define HW_RT_RET_REG64         HW_R0       // $v0
-#define HW_RT_RET_REGFP         HW_F0       // $v0
+#define HW_RT_RET_REGFP         HW_F0       // $f0
 
 #define HW_RT_TEMP_REG          HW_R3       // $t2
 #define HW_RT_PARM2_REG         HW_R2       // $t1

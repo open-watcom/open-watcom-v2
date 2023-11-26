@@ -37,16 +37,16 @@
 #include "cghwreg.h"
 
 /*
- *       Target dependent set of hardware registers available
+ * Target dependent set of hardware registers available
  *
- *      Note: after having contemplated all sorts of horrific
- *      manners in which to automate the following in terms of
- *      preprocessor abuse, I have decided that brute force is good.
+ *  Note: after having contemplated all sorts of horrific
+ *  manners in which to automate the following in terms of
+ *  preprocessor abuse, I have decided that brute force is good.
  *
- *  Due to some strange assumptions in the code generator about register
- *  names being tightly linked to the size of data contained therein, we
- *  have to give each register a unique name to correspond to each of the
- *  data types which can be held within it.
+ * Due to some strange assumptions in the code generator about register
+ * names being tightly linked to the size of data contained therein, we
+ * have to give each register a unique name to correspond to each of the
+ * data types which can be held within it.
  */
 
 /*
@@ -237,7 +237,7 @@ HW_DEFINE_SIMPLE( HW_SEGS,   0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U,
 
 /*
  * HW_GPR - general purpose registers - can use for any integer ops
- * HW_IR - integer registers - above plus the R31 sink
+ * HW_IR  - integer registers - above plus the R31 sink
  * HW_FPR - floating point registers
  */
 
@@ -549,7 +549,9 @@ HW_DEFINE_GLOBAL_CONST( HW_F29 );
 HW_DEFINE_GLOBAL_CONST( HW_F30 );
 HW_DEFINE_GLOBAL_CONST( HW_F31 );
 
-// TODO: Shouldn't this be much higher? Like 32?
+/*
+ * TODO: Shouldn't this be much higher? Like 32?
+ */
 #define MAX_POSSIBLE_REG        8
 
 #endif

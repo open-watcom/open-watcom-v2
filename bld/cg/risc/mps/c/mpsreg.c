@@ -41,6 +41,7 @@
 #include "typemap.h"
 #include "makeblk.h"
 #include "bldcall.h"
+#include "mpsenc.h"
 #include "feprotos.h"
 
 
@@ -58,8 +59,8 @@ hw_reg_set SavedRegs( void )
     HW_CTurnOn( saved, HW_R21 );
     HW_CTurnOn( saved, HW_R22 );
     HW_CTurnOn( saved, HW_R23 );
-    HW_CTurnOn( saved, HW_R30 );
-    HW_CTurnOn( saved, HW_R31 );
+    HW_CTurnOn( saved, HW_FP_REG );
+    HW_CTurnOn( saved, HW_RA_REG );
     HW_CTurnOn( saved, HW_F20 );
     HW_CTurnOn( saved, HW_F21 );
     HW_CTurnOn( saved, HW_F22 );
@@ -172,7 +173,7 @@ void UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class,
 hw_reg_set RAReg( void )
 /**********************/
 {
-    return( HW_R31 );
+    return( HW_RA_REG );
 }
 #endif
 
@@ -242,7 +243,7 @@ bool IsStackReg( name *n )
         return( false );
     if( n->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( n->r.reg, HW_R29 ) && !HW_CEqual( n->r.reg, HW_D29 ) )
+    if( !HW_CEqual( n->r.reg, HW_SP_REG ) )
         return( false );
     return( true );
 }

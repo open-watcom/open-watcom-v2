@@ -38,14 +38,14 @@
 #include "rgtbl.h"
 
 
-#define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
+#define _Combine( a, b )    ((a) * RL_NUMBER_OF_SETS + (b))
 
 /*
  * register, register class and range definitions
  */
-#define pick_item(id)    ARCH_IDX_ ## id
-#define pick_start(id)   ARCH_ ## id ## _START
-#define pick_end(id)     ARCH_ ## id ## _END
+#define pick_item(id)   ARCH_IDX_ ## id
+#define pick_start(id)  ARCH_ ## id ## _START
+#define pick_end(id)    ARCH_ ## id ## _END
 
 enum {
     #define pick(id,idx,cls) pick_item(id),
@@ -508,12 +508,11 @@ hw_reg_set ReturnReg( type_class_def type_class )
         return( HW_RT_RET_REG16 );
     case U4:
     case I4:
+    default:
         return( HW_RT_RET_REG32 );
     case U8:
     case I8:
         return( HW_RT_RET_REG64 );
-    default:
-        return( HW_RT_RET_REG );
     }
 }
 
