@@ -3270,7 +3270,7 @@ Is :HP2.a:eHP2. equal to :HP2.c:eHP2.
 .note HW_COvlap( a, c )
 Does :HP2.a:eHP2. overlap with :HP2.c:eHP2.
 .note HW_CSubset( a, c )
-Is :HP2.a:eHP2. subset of :HP2.c:eHP2.
+Is :HP2.c:eHP2. subset of :HP2.a:eHP2.
 .note HW_CAsgn( dst, c )
 Assign :HP2.c:eHP2. to :HP2.dst:eHP2.
 .note HW_CTurnOn( dst, c )
@@ -3284,7 +3284,7 @@ Is :HP2.a:eHP2. equal to :HP2.b:eHP2.
 .note HW_Ovlap( a, b )
 Does :HP2.a:eHP2. overlap with :HP2.b:eHP2.
 .note HW_Subset( a, b )
-Is :HP2.a:eHP2. subset of :HP2.b:eHP2.
+Is :HP2.b:eHP2. subset of :HP2.a:eHP2.
 .note HW_Asgn( dst, b )
 Assign :HP2.b:eHP2. to :HP2.dst:eHP2.
 .note HW_TurnOn( dst, b )
