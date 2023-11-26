@@ -549,10 +549,10 @@ static  void    GenCallIndirect( instruction *call )
         GenMEMINS( ldw, src, reg_mem, mem_offset );
         break;
     }
-    GenMEMINS( ldw, RTOC_REG_IDX, src, 4 );  // careful - src, reg could be same reg
+    GenMEMINS( ldw, RTOC_REG_IDX, src, 4 ); // careful - src, reg could be same reg
     GenMEMINS( ldw, reg, src, 0 );
     GenMTSPR( reg, SPR_CTR, false );
-    GenRAWINS( 0x4e9e0421 );
+    GenRAWINS( 0x4e9e0421 );                // bcctrl 20,30
     GenMEMINS( ldw, RTOC_REG_IDX, SP_REG_IDX, 4 );
 }
 
@@ -602,7 +602,7 @@ static  void    DbgBlkInfo( instruction *ins )
 void    GenReturn( void )
 /***********************/
 {
-   ins_encoding = 0x4e800020;       // FIXME - need linkage docs
+   ins_encoding = 0x4e800020;   // "blr" FIXME - need linkage docs
    _EmitIns( ins_encoding );
 }
 
@@ -679,12 +679,13 @@ static  void    Encode( instruction *ins )
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
             getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
-            // addi rd,off(ri|sp)
+            // addi rd, imm(rs|sp)
             GenOPIMM( 14, _NameRegTrans( ins->result ), reg_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );
             OutReloc( symLabel( ins->operands[0] ), PPC_RELOC_TOC_OFFSET, 2 );
+            // lwz rd, imm(rtoc)
             GenMEMINS( 32, _NameRegTrans( ins->result ), RTOC_REG_IDX, 0 );
             break;
         default:
@@ -822,6 +823,7 @@ static  void    Encode( instruction *ins )
             GenOPINS( 31, 104, a, 0, s );
             break;
         case OP_COMPLEMENT:
+            // not src -> dst
             GenOPINS( 31, 124, a, a, s );
             break;
         default:
