@@ -69,10 +69,10 @@
 #define SPR_LR                  8
 #define SPR_CTR                 9
 
-#define SP_REG_IDX              1       // $sp
+#define SP_REG_IDX              1       // Contains the Stack pointer
 #define RTOC_REG_IDX            2       // $rtoc
 #define AT_REG_IDX              12      // Reserved for the temporary
 #define AT_FP_REG_IDX           13      // Reserved for the temporary floating-point
-#define FP_REG_IDX              31      // $fp
+#define FP_REG_IDX              31      // Contains the Frame pointer (if needed)
 
 typedef uint_32                 ppc_ins;

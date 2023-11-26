@@ -293,7 +293,7 @@ static  hw_reg_set      Parm8Regs2[] = {
 };
 
 static  hw_reg_set      Return8[] = {
-    HW_D_1( HW_R0 ),
+    HW_D_1( HW_RT_RET_REG64 ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -318,7 +318,7 @@ static  hw_reg_set      Parm4Regs3[] = {
 };
 
 static  hw_reg_set      Return4[] = {
-    HW_D_1( HW_D0 ),
+    HW_D_1( HW_RT_RET_REG32 ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -338,7 +338,7 @@ static  hw_reg_set      ParmFRegs2[] = {
 };
 
 static  hw_reg_set      ReturnD[] = {
-    HW_D_1( HW_F0 ),
+    HW_D_1( HW_RT_RET_REGFP ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -470,22 +470,22 @@ hw_reg_set  ReturnReg( type_class_def type_class )
     case FS:
     case FD:
     case FL:
-        return( HW_F0 );
+        return( HW_RT_RET_REGFP );
     case XX:
         return( HW_EMPTY );
     case U1:
     case I1:
-        return( HW_B0 );
+        return( HW_RT_RET_REG8 );
     case U2:
     case I2:
-        return( HW_W0 );
+        return( HW_RT_RET_REG16 );
     case U4:
     case I4:
-        return( HW_D0 );
+        return( HW_RT_RET_REG32 );
     case U8:
     case I8:
     default:
-        return( HW_R0 );
+        return( HW_RT_RET_REG64 );
     }
 }
 

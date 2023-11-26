@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "ppcregn.h"
+#include "ppcenc.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"
@@ -304,7 +304,7 @@ static  hw_reg_set      Parm8Regs2[] = {
 };
 
 static  hw_reg_set      Return8[] = {
-    HW_D_1( HW_Q3 ),
+    HW_D_1( HW_RT_RET_REG64 ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -331,7 +331,7 @@ static  hw_reg_set      Parm4Regs3[] = {
 };
 
 static  hw_reg_set      Return4[] = {
-    HW_D_1( HW_D3 ),
+    HW_D_1( HW_RT_RET_REG32 ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -350,7 +350,7 @@ static  hw_reg_set      ParmFRegs[] = {
 };
 
 static  hw_reg_set      ReturnD[] = {
-    HW_D_1( HW_F1 ),
+    HW_D_1( HW_RT_RET_REGFP ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -479,17 +479,17 @@ hw_reg_set  ReturnReg( type_class_def type_class )
     case FS:
     case FD:
     case FL:
-        return( HW_F1 );
+        return( HW_RT_RET_REGFP );
     case XX:
         return( HW_EMPTY );
     case U4:
     case I4:
-        return( HW_D3 );
+        return( HW_RT_RET_REG32 );
     case U8:
     case I8:
-        return( HW_Q3 );
+        return( HW_RT_RET_REG64 );
     default:
-        return( HW_D3 );
+        return( HW_RT_RET_REG32 );
     }
 }
 
@@ -748,18 +748,17 @@ hw_reg_set      FixedRegs( void )
 {
     hw_reg_set          fixed;
 
-    HW_CAsgn( fixed, HW_R0 );
-    HW_CTurnOn( fixed, HW_R1 );         // stack
-    HW_CTurnOn( fixed, HW_R2 );         // toc
+    HW_CAsgn( fixed, HW_SP_REG );       // stack
+    HW_CTurnOn( fixed, HW_RTOC_REG );   // toc
     HW_CTurnOn( fixed, HW_R13 );        // must not be used (unlucky)
-    HW_CTurnOn( fixed, HW_R31 );        // frame reg
+    HW_CTurnOn( fixed, HW_FP_REG );     // frame reg
     return( fixed );
 }
 
 hw_reg_set      VarargsHomePtr( void )
 /************************************/
 {
-    return( HW_D14 );
+    return( HW_VARARGS_REG32 );
 }
 
 hw_reg_set      StackReg( void )
@@ -767,7 +766,7 @@ hw_reg_set      StackReg( void )
  * MJC should be up to linkage conventions
  */
 {
-    return( HW_D1 );
+    return( HW_SP_REG32 );
 }
 
 hw_reg_set      FrameReg( void )
@@ -776,27 +775,27 @@ hw_reg_set      FrameReg( void )
  */
 {
     if( CurrProc->targ.base_is_fp ) {
-        return( HW_D31 );
+        return( HW_FP_REG32 );
     }
-    return( HW_D1 );
+    return( HW_SP_REG32 );
 }
 
 hw_reg_set      TocReg( void )
 /****************************/
 {
-    return( HW_D2 );
+    return( HW_RTOC_REG32 );
 }
 
 hw_reg_set      FrameBaseReg( void )
 /**********************************/
 {
-    return( HW_D31 );
+    return( HW_FP_REG32 );
 }
 
 hw_reg_set      ScratchReg( void )
 /********************************/
 {
-    return( HW_D12 );
+    return( HW_AT_REG32 );
 }
 
 hw_reg_set      ReturnAddrReg( void )

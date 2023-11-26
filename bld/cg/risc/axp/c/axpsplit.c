@@ -39,6 +39,7 @@
 #include "namelist.h"
 #include "rscconst.h"
 #include "rgtbl.h"
+#include "axpenc.h"
 #include "split.h"
 #include "insutil.h"
 #include "liveinfo.h"
@@ -598,9 +599,9 @@ static instruction *CheapCall( instruction *ins, rt_class rtindex, name *p1, nam
     call->num_operands = 2;         /* special case for OP_CALL*/
     HW_TurnOn( reg, ReturnAddrReg() );
     HW_TurnOn( reg, ScratchReg() );
-    HW_CTurnOn( reg, HW_R1 );   // know this is only other reg modified!
-    HW_CTurnOn( reg, HW_R2 );   // and this one two!
-    HW_CTurnOn( reg, HW_R3 );   // and this one three!
+    HW_CTurnOn( reg, HW_RT_PARM1_REG );
+    HW_CTurnOn( reg, HW_RT_PARM2_REG );
+    HW_CTurnOn( reg, HW_RT_TEMP_REG );
     reg_name = AllocRegName( reg );
     call->zap = &reg_name->r;
     PrefixIns( ins, call );
@@ -614,10 +615,10 @@ static void CopyStack( instruction *ins, name *alloc_size, type_length arg_size 
     name                *p1;
     name                *p2;
 
-    p1 = AllocRegName( HW_D1 );
+    p1 = AllocRegName( HW_RT_PARM1_REG32 );
     new_ins = MakeMove( alloc_size, p1, WD );
     PrefixIns( ins, new_ins );
-    p2 = AllocRegName( HW_D2 );
+    p2 = AllocRegName( HW_RT_PARM2_REG32 );
     new_ins = MakeMove( AllocS32Const( arg_size ), p2, WD );
     PrefixIns( ins, new_ins );
     CheapCall( ins, RT_STK_COPY, p1, p2 );
