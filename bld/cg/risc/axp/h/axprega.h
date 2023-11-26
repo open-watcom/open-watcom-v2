@@ -11,9 +11,11 @@
 ****************************************************************************/
 
 
+#define AT_FP_REG_IDX           30          // Reserved for the temporary floating-point
+
 #define RT_RET_REG_IDX          0           // $v0
 
-#define RT_VARARGS_PTR_REG_IDX  14          // $s5
+#define RT_VARARGS_REG_IDX      14          // $s5
 #define RT_TEMP_REG_IDX         3           // $t2
 #define RT_PARM2_REG_IDX        2           // $t1
 #define RT_PARM1_REG_IDX        1           // $t0

@@ -448,10 +448,10 @@ static  void    SetupVarargsReg( stack_map *map )
             offset += REG_SIZE;
         }
         if( offset > AXP_MAX_OFFSET ) {
-            GenLOADS32( offset, RT_VARARGS_PTR_REG_IDX );
-            GenOPINS( 0x10, 0x00, SP_REG_IDX, RT_VARARGS_PTR_REG_IDX, RT_VARARGS_PTR_REG_IDX );
+            GenLOADS32( offset, RT_VARARGS_REG_IDX );
+            GenOPINS( 0x10, 0x00, SP_REG_IDX, RT_VARARGS_REG_IDX, RT_VARARGS_REG_IDX );
         } else {
-            genLea( SP_REG_IDX, offset, RT_VARARGS_PTR_REG_IDX );
+            genLea( SP_REG_IDX, offset, RT_VARARGS_REG_IDX );
         }
     }
 }

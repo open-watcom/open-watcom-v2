@@ -39,8 +39,9 @@
 #define _FourteenBits( x )      ( (x) & 0x00003fff )
 #define _SixteenBits( x )       ( (x) & 0x0000ffff )
 #define _TwentyOneBits( x )     ( (x) & 0x001fffff )
-
-// these correspond to letters in section 3.3 of the Alpha Architecture Manual
+/*
+ * these correspond to letters in section 3.3 of the Alpha Architecture Manual
+ */
 #define _Ra( x )                ( _FiveBits(x) << 21 )
 #define _Rb( x )                ( _FiveBits(x) << 16 )
 #define _Rc( x )                ( _FiveBits(x) << 0 )
@@ -50,18 +51,18 @@
 #define _Opcode( x )            ( _SixBits(x) << 26 )
 #define _Function( x )          ( _SevenBits(x) << 5 )
 #define _FPFunction( x )        ( _ElevenBits(x) << 5 )
-
-// sixteen bit signed immediate
+/*
+ * sixteen bit signed immediate
+ */
 #define _SignedImmed( x )       _SixteenBits( x )
 
 typedef uint_32                 axp_ins;
 
+#define ZERO_REG_IDX            31      // Contains 0
 #define FP_REG_IDX              15      // Contains the Frame pointer (if needed)
 #define RA_REG_IDX              26      // Contains the Return address
 #define AT_REG_IDX              28      // Reserved for the temporary
 #define GP_REG_IDX              29      // Contains the Global pointer
 #define SP_REG_IDX              30      // Contains the Stack pointer
-#define ZERO_REG_IDX            31      // Contains 0
-#define AT_FP_REG_IDX           30      // Reserved for the temporary floating-point
 
 #define AXP_MAX_OFFSET          0x7fff

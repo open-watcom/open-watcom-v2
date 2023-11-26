@@ -39,8 +39,9 @@
 #define _SixteenBits( x )       ( (x) & 0x0000ffff )
 #define _TwentyBits( x )        ( (x) & 0x000fffff )
 #define _TwentySixBits( x )     ( (x) & 0x03ffffff )
-
-// MIPS operand encodings, from Appendix A of MIPS RISC Architecture
+/*
+ * MIPS operand encodings, from Appendix A of MIPS RISC Architecture
+ */
 #define _Rs( x )                ( _FiveBits(x)      << 21 )
 #define _Rt( x )                ( _FiveBits(x)      << 16 )
 #define _Rd( x )                ( _FiveBits(x)      << 11 )
@@ -52,11 +53,12 @@
 
 #define _Opcode( x )            ( _SixBits(x)       << 26 )
 #define _Function( x )          ( _SixBits(x)       << 0 )
+#define _FPOpcode( x )          ( _ElevenBits(x)    << 21 )
+#define _FPFunction( x )        ( _SixBits(x)       << 0 )
 #define _FPFormat( x )          ( _FiveBits(x)      << 21 )
-
-#define _LIT( x )               ( ( ( _EightBits(x) << 1 ) | 1 ) << 12 )
-
-// sixteen bit signed immediate
+/*
+ * sixteen bit signed immediate
+ */
 #define _SignedImmed( x )       _SixteenBits(x)
 
 typedef uint_32                 mips_ins;
@@ -67,7 +69,6 @@ typedef uint_32                 mips_ins;
 #define SP_REG_IDX              29      // Contains the Stack pointer
 #define FP_REG_IDX              30      // Contains the Frame pointer
 #define RA_REG_IDX              31      // Contains the Return address
-//#define AT_FP_REG_IDX           1       // Reserved for the temporary floating-point
 
 #define MIPS_MAX_OFFSET         0x7fff  // immediate displacement range
 

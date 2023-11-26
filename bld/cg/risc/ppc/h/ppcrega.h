@@ -11,9 +11,11 @@
 ****************************************************************************/
 
 
+//#define AT_FP_REG_IDX           13          // Reserved for the temporary floating-point
+
 #define RT_RET_REG_IDX          3           // r3 or r3+r4
 
-#define RT_VARARGS_PTR_REG_IDX  14          // r14
+#define RT_VARARGS_REG_IDX      14          // r14
 #define RT_TEMP_REG_IDX         5           // r5
 #define RT_PARM2_REG_IDX        4           // r4
 #define RT_PARM1_REG_IDX        3           // r3
@@ -33,4 +35,3 @@
 #define HW_RT_RET_REG32         HW_D3       // r3
 #define HW_RT_RET_REG64         HW_Q3       // r3+r4
 #define HW_RT_RET_REGFP         HW_F1       // f1
-

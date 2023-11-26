@@ -487,13 +487,13 @@ static  void SetupVarargsReg( stack_map *map )
             offset += REG_SIZE;
         }
         if( offset > MIPS_MAX_OFFSET ) {
-            GenLOADS32( offset, RT_VARARGS_PTR_REG_IDX );
+            GenLOADS32( offset, RT_VARARGS_REG_IDX );
             /*
              * 'add va_home,va_home,sp'
              */
-            GenRType( 0x00, 0x21, SP_REG_IDX, RT_VARARGS_PTR_REG_IDX, RT_VARARGS_PTR_REG_IDX );
+            GenRType( 0x00, 0x21, SP_REG_IDX, RT_VARARGS_REG_IDX, RT_VARARGS_REG_IDX );
         } else {
-            genLoadImm( SP_REG_IDX, offset, RT_VARARGS_PTR_REG_IDX );
+            genLoadImm( SP_REG_IDX, offset, RT_VARARGS_REG_IDX );
         }
     }
 }

@@ -40,8 +40,9 @@
 #define _FourteenBits( x )      ( (x) & 0x00003fff )
 #define _SixteenBits( x )       ( (x) & 0x0000ffff )
 #define _TwentyFourBits( x )    ( (x) & 0x00ffffff )
-
-// these correspond to letters in section 3.3 of the Alpha Architecture Manual
+/*
+ * these correspond to letters in section 3.3 of the Alpha Architecture Manual
+ */
 #define _A( x )                 ( _FiveBits(x) << 16 )
 #define _B( x )                 ( _FiveBits(x) << 11 )
 #define _C( x )                 ( _FiveBits(x) <<  6 )
@@ -50,29 +51,32 @@
 
 #define _Opcode( x )            ( _SixBits(x) << 26 )
 #define _Opcode2( x )           ( _TenBits(x) << 1 )
-
-// Note: this assumes SPR[5-9] is 0 (so we can put simple decimal value as parm)
+/*
+ * Note: this assumes SPR[5-9] is 0 (so we can put simple decimal value as parm)
+ */
 #define _SPR( x )               ( _TenBits( x ) << 11 )
 
 #define __AA( x )               ( _OneBit( x ) << 1 )
 #define __LK( x )               _OneBit( x )
 #define __OE( x )               ( _OneBit( x ) << 10 )
 #define __RC( x )               _OneBit( x )
-
-// sixteen bit signed immediate
+/*
+ * sixteen bit signed immediate
+ */
 #define _SignedImmed( x )       _SixteenBits( x )
-
-// twenty-four bit signed immediate (note - this effectively divides by 4)
+/*
+ * twenty-four bit signed immediate (note - this effectively divides by 4)
+ */
 #define _BranchImmed( x )       ( (x) & 0x3fffffc )
-
-// SPR registers (page 10-131)
+/*
+ * SPR registers (page 10-131)
+ */
 #define SPR_LR                  8
 #define SPR_CTR                 9
 
 #define SP_REG_IDX              1       // Contains the Stack pointer
 #define RTOC_REG_IDX            2       // $rtoc
 #define AT_REG_IDX              12      // Reserved for the temporary
-#define AT_FP_REG_IDX           13      // Reserved for the temporary floating-point
 #define FP_REG_IDX              31      // Contains the Frame pointer (if needed)
 
 typedef uint_32                 ppc_ins;
