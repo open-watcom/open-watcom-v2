@@ -948,7 +948,7 @@ static void ITSMLoadImmed( ins_table *table, instruction *ins, uint_32 *buffer, 
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
     doEncode2( buffer, table->primary, RegIndex( ins->operands[0]->reg ),
-        0, op->constant,
+        ZERO_SINK, op->constant,
         ( ins->format->flags & table->optional ) | table->required );
     doReloc( reloc, op, OWL_RELOC_HALF_LO, 0 );
 }

@@ -43,12 +43,14 @@
 
 #define AT_REG          NULL_REG
 
+#define ZERO_SINK       0
+
 typedef uint_16         reg;
 typedef uint_8          reg_idx;
 
 typedef enum {
     #define PICK( a, b )    RC_##a,
-    #include "_regclass.h"
+    #include "_regclas.h"
     #undef PICK
     RC_LAST
 } reg_class;

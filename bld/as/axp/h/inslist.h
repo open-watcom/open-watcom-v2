@@ -67,7 +67,7 @@ typedef enum {
 
 typedef enum {
     #define PICK( a, b ) OP_##a = b,
-    #include "_regclass.h"
+    #include "_regclas.h"
     #undef PICK
     OP_IMMED            = (1 << REGCLASS_COUNT),        // an immediate constant (could have reloc with it)
     OP_REG_INDIRECT     = (1 << (REGCLASS_COUNT+1)),    // register with an immediate attached
