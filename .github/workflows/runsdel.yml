@@ -11,6 +11,7 @@ jobs:
     permissions:
       actions: write
     steps:
+      # delete cancelled workflow runs
       - name: Delete cancelled workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
@@ -19,6 +20,7 @@ jobs:
           retain_days: 0
           keep_minimum_runs: 0
           delete_run_by_conclusion_pattern: cancelled
+      # delete workflow runs after retension period
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
