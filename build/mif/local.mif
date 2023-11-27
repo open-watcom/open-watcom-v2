@@ -10,11 +10,11 @@
 # use native tools for x64 cpu
 # skip build for unsupported platforms
 !ifeq host_cpu x64
-!ifneq bld_cpu x64
+! ifneq bld_cpu x64
 skip_build: .SYMBOLIC
-!else ifndef bldonly_$(host_os)
+! else ifndef bldonly_$(host_os)
 skip_build: .SYMBOLIC
-!endif
+! endif
 ##################################
 #
 # arm CPU (32-bit)
@@ -23,11 +23,11 @@ skip_build: .SYMBOLIC
 # use native tools for arm cpu
 # skip build for unsupported platforms
 !else ifeq host_cpu arm
-!ifneq bld_cpu arm
+! ifneq bld_cpu arm
 skip_build: .SYMBOLIC
-!else ifndef bldonly_$(host_os)
+! else ifndef bldonly_$(host_os)
 skip_build: .SYMBOLIC
-!endif
+! endif
 ##################################
 #
 # arm CPU (64-bit)
@@ -36,11 +36,11 @@ skip_build: .SYMBOLIC
 # use native tools for a64 cpu
 # skip build for unsupported platforms
 !else ifeq host_cpu a64
-!ifneq bld_cpu a64
+! ifneq bld_cpu a64
 skip_build: .SYMBOLIC
-!else ifndef bldonly_$(host_os)
+! else ifndef bldonly_$(host_os)
 skip_build: .SYMBOLIC
-!endif
+! endif
 ##################################
 #
 # others
@@ -55,7 +55,6 @@ skip_build: .SYMBOLIC
 
 !ifdef bootstrap
 !ifdef __WATCOM_TOOLS__
-
 !ifdef __LOADDLL__
 !loaddll wcc    wccd.dll
 !loaddll wcc386 wccd386.dll
@@ -67,7 +66,6 @@ skip_build: .SYMBOLIC
 !loaddll wppaxp wppdaxp.dll
 !loaddll wrc    wrcd.dll
 !endif
-
 !endif
 !endif
 
@@ -297,9 +295,9 @@ incl_file_opts = -FI
 !if defined("__LINUX__") || defined("__BSD__") || defined("__HAIKU__") || defined("__OSX__")
 
 !ifdef __LINUX__
-!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm" || "$(bld_cpu)" == "a64"
+! if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm" || "$(bld_cpu)" == "a64"
 use_for_build = 1
-!endif
+! endif
 !else ifdef __BSD__
 use_for_build = 1
 !else ifdef __HAIKU__
@@ -353,8 +351,11 @@ common_flags_dbg = -g -gdwarf
 # common debug info compression options
 !ifdef __CLANG_TOOLS__
 common_flags_compr = -gz
-!else ifndef __OSX__
+!else
+! ifdef __OSX__
+! else
 common_flags_compr = -gz
+! endif
 !endif
 
 !ifeq debug 0
@@ -365,9 +366,9 @@ common_flags = $(common_flags_dbg) $(common_flags_compr)
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
 !ifdef __CLANG_TOOLS__
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 !else
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 !endif
 common_cflags = $(common_cflags_wng)
 
@@ -477,13 +478,13 @@ bld_ldflags_dll_cxx = -lc++
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
 !else ifdef __GCC_TOOLS__
-!if $(__GCC_TOOLS__) < 7
+! if $(__GCC_TOOLS__) < 7
 bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
-!else
+! else
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
-!endif
+! endif
 !else
 bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
@@ -581,3 +582,4 @@ incl_file_opts = -include
 !endif
 
 ##############################################################################
+
