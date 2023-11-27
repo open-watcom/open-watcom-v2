@@ -3910,18 +3910,6 @@ fi
 
 done
 
-for ac_header in cstdint
-do :
-  ac_fn_cxx_check_header_mongrel "$LINENO" "cstdint" "ac_cv_header_cstdint" "$ac_includes_default"
-if test "x$ac_cv_header_cstdint" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_CSTDINT 1
-_ACEOF
-
-fi
-
-done
-
 for ac_header in cstdio
 do :
   ac_fn_cxx_check_header_mongrel "$LINENO" "cstdio" "ac_cv_header_cstdio" "$ac_includes_default"

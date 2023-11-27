@@ -15,7 +15,6 @@ AC_LANG([C++])
 # Checks for header files.
 AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_HEADERS([algorithm])
-AC_CHECK_HEADERS([cstdint])
 AC_CHECK_HEADERS([cstdio])
 AC_CHECK_HEADERS([cstdlib])
 AC_CHECK_HEADERS([cstring])
