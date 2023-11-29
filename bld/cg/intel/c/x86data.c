@@ -115,8 +115,9 @@ void    IterBytes( offset len, byte pat )
 
 
 void    DoBigBckPtr( back_handle bck, offset off )
-/*****************************************************/
-/* Careful! Make sure a DGLabel has been done first! */
+/*************************************************
+ * Careful! Make sure a DGLabel has been done first!
+ */
 {
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, bck->segid, F_PTR, off );
@@ -218,7 +219,8 @@ void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
     if( tipe->length != WORD_SIZE ) {
         class = F_PTR;
     }
-    if( (attr & (FE_PROC | FE_DLLIMPORT)) == (FE_PROC | FE_DLLIMPORT) && (tipe->attr & TYPE_CODE) ) {
+    if( (attr & (FE_PROC | FE_DLLIMPORT)) == (FE_PROC | FE_DLLIMPORT)
+      && (tipe->attr & TYPE_CODE) ) {
         class |= F_ALT_DLLIMP;
     }
     if( UseImportForm( attr ) ) {
@@ -236,7 +238,7 @@ void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus )
 
     TellOptimizerByPassed();
     attr = FEAttr( sym );
-    if( UseImportForm( attr ) ) { /* 90-05-22 */
+    if( UseImportForm( attr ) ) {
         DoImpPtr( sym, F_PTR, plus );
     } else {
         DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), F_PTR, plus );

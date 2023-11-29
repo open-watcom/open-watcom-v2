@@ -51,17 +51,17 @@
 
 
 static  void            Merge( name **pname, instruction *ins );
-static  void            PropSegments(void);
+static  void            PropSegments( void );
 
-instruction     *NeedIndex( instruction *ins ) {
-/*******************************************************
-    Mark conflicts for any name used in instruction as as segment as
-    NEEDS_SEGMENT, or split out the segment if it is marked as
-    NEEDS_SEGMENT_SPLIT (move the segment operand to a temp and use the
-    temp as the segment override).  Also, if any index conflicts are
-    marked as NEEDS_INDEX_SPLIT, split them out into a temp as well.
-*/
-
+instruction     *NeedIndex( instruction *ins )
+/*********************************************
+ * Mark conflicts for any name used in instruction as as segment as
+ * NEEDS_SEGMENT, or split out the segment if it is marked as
+ * NEEDS_SEGMENT_SPLIT (move the segment operand to a temp and use the
+ * temp as the segment override).  Also, if any index conflicts are
+ * marked as NEEDS_INDEX_SPLIT, split them out into a temp as well.
+ */
+{
     name                *temp;
     name                *index;
     conflict_node       *conf;
@@ -70,7 +70,8 @@ instruction     *NeedIndex( instruction *ins ) {
     if( ins->num_operands > OpcodeNumOperands( ins ) ) {
         name = ins->operands[ins->num_operands - 1];
         conf = NameConflict( ins, name );
-        if( conf != NULL && _Isnt( conf, CST_NEEDS_SEGMENT_SPLIT ) ) {
+        if( conf != NULL
+          && _Isnt( conf, CST_NEEDS_SEGMENT_SPLIT ) ) {
             _SetTrue( conf, CST_NEEDS_SEGMENT );
             MarkSegment( ins, name );
         } else if( name->n.class != N_REGISTER ) {
@@ -91,7 +92,8 @@ instruction     *NeedIndex( instruction *ins ) {
         temp = IndexToTemp( ins, index );
         conf = NameConflict( ins, temp );
         _SetTrue( conf, CST_INDEX_SPLIT );
-        if( HasTrueBase( index ) && index->i.base->n.class == N_TEMP ) {
+        if( HasTrueBase( index )
+          && index->i.base->n.class == N_TEMP ) {
             MarkIndex( ins, temp, true );
         } else {
             MarkIndex( ins, temp, false );
@@ -102,17 +104,18 @@ instruction     *NeedIndex( instruction *ins ) {
 }
 
 
-bool    IndexOkay( instruction *ins, name *index ) {
-/***********************************************************
-    return true if "index" needs to be split out of instruction and a
-    short lived temporary used instead.
-*/
-
+bool    IndexOkay( instruction *ins, name *index )
+/*************************************************
+ * return true if "index" needs to be split out of instruction and a
+ * short lived temporary used instead.
+ */
+{
     name                *name;
     bool                is_temp_index;
     conflict_node       *conf;
 
-    if( HasTrueBase( index ) && index->i.base->n.class == N_TEMP ) {
+    if( HasTrueBase( index )
+      && index->i.base->n.class == N_TEMP ) {
         is_temp_index = true;
     } else {
         is_temp_index = false;
@@ -123,10 +126,12 @@ bool    IndexOkay( instruction *ins, name *index ) {
     if( name->n.class == N_REGISTER ) {
         return( IsIndexReg( name->r.reg, name->n.type_class, is_temp_index ) );
     }
-/* The next two lines require some explanation. If there is a CP/PT
-   index still hanging around, it is because a reduction routine
-   created it, so it can be handled. Normally, all CP/PT indecies are broken
-   up into seg:foo[offset] before we ever get to register allocation */
+    /*
+     * The next two lines require some explanation. If there is a CP/PT
+     * index still hanging around, it is because a reduction routine
+     * created it, so it can be handled. Normally, all CP/PT indecies are broken
+     * up into seg:foo[offset] before we ever get to register allocation
+     */
     if( name->n.type_class == CP )
         return( true );
     if( name->n.type_class == PT )
@@ -152,13 +157,13 @@ bool    IndexOkay( instruction *ins, name *index ) {
 }
 
 
-static  bool    SegIsBase( name **index ) {
-/******************************************
-    return true if the segment override for N_INDEXED "*index" is the
-    same as the segment override for its N_MEMORY base location, and if
-    it is, change *index to point to the N_MEMORY base location.
-*/
-
+static  bool    SegIsBase( name **index )
+/****************************************
+ * return true if the segment override for N_INDEXED "*index" is the
+ * same as the segment override for its N_MEMORY base location, and if
+ * it is, change *index to point to the N_MEMORY base location.
+ */
+{
     if( (*index)->n.class == N_MEMORY )
         return( true );
     if( (*index)->i.index->n.size == WORD_SIZE ) {
@@ -168,12 +173,12 @@ static  bool    SegIsBase( name **index ) {
     return( false );
 }
 
-static  name    *FindSegment( instruction *ins ) {
-/*************************************************
-    return a pointer to a name within "ins" which requires a segment
-    override but does not already have one.
-*/
-
+static  name    *FindSegment( instruction *ins )
+/***********************************************
+ * return a pointer to a name within "ins" which requires a segment
+ * override but does not already have one.
+ */
+{
     name        *index;
     opcnt       i;
 
@@ -190,7 +195,8 @@ static  name    *FindSegment( instruction *ins ) {
             }
         }
     }
-    if( ins->head.opcode != OP_LA && ins->head.opcode != OP_CAREFUL_LA ) {
+    if( ins->head.opcode != OP_LA
+      && ins->head.opcode != OP_CAREFUL_LA ) {
         for( i = ins->num_operands; i-- > 0; ) {
             index = ins->operands[i];
             if( SegOver( index ) ) {
@@ -198,18 +204,19 @@ static  name    *FindSegment( instruction *ins ) {
             }
         }
     }
-    if( ins->result != NULL && SegOver( ins->result ) )
+    if( ins->result != NULL
+      && SegOver( ins->result ) )
         return( ins->result );
     return( NULL );
 }
 
 
-void    AddSegment( instruction *ins ) {
-/***********************************************
-    Look at instruction "ins" and if any of its operands need a segment
-    override, add it to the instruction as an extra operand.
-*/
-
+void    AddSegment( instruction *ins )
+/*************************************
+ * Look at instruction "ins" and if any of its operands need a segment
+ * override, add it to the instruction as an extra operand.
+ */
+{
     opcnt               i;
     name                *index;
     name                *new_index;
@@ -245,7 +252,10 @@ void    AddSegment( instruction *ins ) {
                     conf = NameConflict( new_ins, *seg_ptr );
                 }
             }
-        } else { /* segment is the high part of the index */
+        } else {
+            /*
+             * segment is the high part of the index
+             */
             new_index = ScaleIndex( OffsetPart( index->i.index ),
                                     index->i.base,
                                     index->i.constant,
@@ -271,15 +281,15 @@ void    AddSegment( instruction *ins ) {
     }
 }
 
-void    FixMemRefs( void ) {
-/*****************************
-    Make sure that no N_MEMORY names are used as indecies.  This would
-    cause problems since we might need a segment override for the INDEX
-    as well as the memory which we're indexing to get to.  This is no
-    good since each instruction can only have one segment override,
-    hence one memory reference.
-*/
-
+void    FixMemRefs( void )
+/*************************
+ * Make sure that no N_MEMORY names are used as indecies.  This would
+ * cause problems since we might need a segment override for the INDEX
+ * as well as the memory which we're indexing to get to.  This is no
+ * good since each instruction can only have one segment override,
+ * hence one memory reference.
+ */
+{
     block       *blk;
     instruction *ins;
 
@@ -294,19 +304,20 @@ void    FixMemRefs( void ) {
 }
 
 
-void    FixSegments( void ) {
-/******************************
-    Add segment overrides to any instruction in the routine that needs
-    them.
-*/
-
+void    FixSegments( void )
+/**************************
+ * Add segment overrides to any instruction in the routine that needs
+ * them.
+ */
+{
     block       *blk;
     instruction *ins;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             AddSegment( ins );
-            /* Generate an error if segment override is requested and all segment
+            /*
+             * Generate an error if segment override is requested and all segment
              * registers are pegged. However we do NOT want to generate an error
              * if this is a CS override in flat model - that particular case is not
              * an error because the CS override is essentially a no-op.  MN
@@ -322,7 +333,9 @@ void    FixSegments( void ) {
             if( _IsntTargetModel( CGSW_X86_ANY_FLOATING )
               && ins->num_operands > OpcodeNumOperands( ins ) ) {
 #endif
-                /* throw away override */
+                /*
+                 * throw away override
+                 */
                 ins->num_operands--;
                 FEMessage( FEMSG_NO_SEG_REGS, AskForLblSym( CurrProc->label ) );
             }
@@ -331,12 +344,12 @@ void    FixSegments( void ) {
 }
 
 
-static  type_class_def  FltClass( instruction *ins ) {
-/*****************************************************
-    return the floating point class (FD or FS) of "ins", or XX if it
-    does not involve floating point.
-*/
-
+static  type_class_def  FltClass( instruction *ins )
+/***************************************************
+ * return the floating point class (FD or FS) of "ins", or XX if it
+ * does not involve floating point.
+ */
+{
     if( _IsFloating( ins->type_class ) )
         return( ins->type_class );
     if( _IsFloating( _OpClass( ins ) ) )
@@ -344,13 +357,13 @@ static  type_class_def  FltClass( instruction *ins ) {
     return( XX );
 }
 
-void    MergeIndex( void ) {
-/*****************************
-    Merge segment overrides back into the index registers.  This is
-    called just before scoreboarding to simplify matters.  For example
-    MOV  [DI], ES => AX becomes MOV [ES:DI] => AX.
-*/
-
+void    MergeIndex( void )
+/*************************
+ * Merge segment overrides back into the index registers.  This is
+ * called just before scoreboarding to simplify matters.  For example
+ * MOV  [DI], ES => AX becomes MOV [ES:DI] => AX.
+ */
+{
     block       *blk;
     instruction *ins;
     opcnt       i;
@@ -383,11 +396,11 @@ void    MergeIndex( void ) {
     }
 }
 
-static  void    Merge( name **pname, instruction *ins ) {
-/********************************************************
-    called by MergeIndex ^
-*/
-
+static  void    Merge( name **pname, instruction *ins )
+/******************************************************
+ * called by MergeIndex ^
+ */
+{
     name        *index;
     name        *reg;
     hw_reg_set  tmp;
@@ -402,14 +415,14 @@ static  void    Merge( name **pname, instruction *ins ) {
 }
 
 
-void    FixChoices( void ) {
-/*****************************
-    Run through the conflict list and make sure that no conflict is
-    allowed to get cached in a segment register unless it was actually
-    used as a segment override somewhere in the program.  This avoids
-    loads of bad selectors in protected mode.
-*/
-
+void    FixChoices( void )
+/*************************
+ * Run through the conflict list and make sure that no conflict is
+ * allowed to get cached in a segment register unless it was actually
+ * used as a segment override somewhere in the program.  This avoids
+ * loads of bad selectors in protected mode.
+ */
+{
     conflict_node       *conf;
 #if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     name                *temp;
@@ -443,13 +456,13 @@ void    FixChoices( void ) {
     }
 }
 
-static  void    PropSegments( void ) {
-/*******************************
-    For every instruction of the form MOV X => Y, mark the conflict node
-    for X as a valid segment if the conflict for Y is marked as a valid
-    segment.
-*/
-
+static  void    PropSegments( void )
+/***********************************
+ * For every instruction of the form MOV X => Y, mark the conflict node
+ * for X as a valid segment if the conflict for Y is marked as a valid
+ * segment.
+ */
+{
     block               *blk;
     instruction         *ins;
     conflict_node       *src;
@@ -467,9 +480,11 @@ static  void    PropSegments( void ) {
             for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 if( ins->head.opcode == OP_MOV ) {
                     dst = NameConflict( ins, ins->result );
-                    if( dst != NULL && _Is( dst, CST_WAS_SEGMENT ) ) {
+                    if( dst != NULL
+                      && _Is( dst, CST_WAS_SEGMENT ) ) {
                         src = NameConflict( ins, ins->operands[0] );
-                        if( src != NULL && _Isnt( src, CST_WAS_SEGMENT ) ) {
+                        if( src != NULL
+                          && _Isnt( src, CST_WAS_SEGMENT ) ) {
                             _SetTrue( src, CST_WAS_SEGMENT );
                             change = true;
                         }
@@ -481,15 +496,15 @@ static  void    PropSegments( void ) {
 }
 
 
-void    FixFPConsts( instruction *ins ) {
-/************************************************
-    Fix floating point constants, by forcing them into memory if they
-    are not going to be segment register addressable.  This is done so that
-    OneMemRef, the routine that ensures that we will have only one
-    memory reference, (therefore one segment override), will see it as a
-    memory reference and treat it accordingly.
-*/
-
+void    FixFPConsts( instruction *ins )
+/**************************************
+ * Fix floating point constants, by forcing them into memory if they
+ * are not going to be segment register addressable.  This is done so that
+ * OneMemRef, the routine that ensures that we will have only one
+ * memory reference, (therefore one segment override), will see it as a
+ * memory reference and treat it accordingly.
+ */
+{
     opcnt               i;
     type_class_def      type_class;
 
