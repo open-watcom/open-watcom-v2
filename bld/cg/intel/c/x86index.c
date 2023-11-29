@@ -503,14 +503,17 @@ void    FixFPConsts( instruction *ins )
  * OneMemRef, the routine that ensures that we will have only one
  * memory reference, (therefore one segment override), will see it as a
  * memory reference and treat it accordingly.
+ *
+ * now it is useless due to wrong condition, always false (dead code)
  */
 {
+#if 0
     opcnt               i;
     type_class_def      type_class;
 
-    if( !FPCInCode()
-      && _IsTargetModel( CGSW_X86_FLOATING_SS )
-      && _IsTargetModel( CGSW_X86_FLOATING_DS ) ) {
+    if( _IsTargetModel( CGSW_X86_CONST_IN_CODE ) ) {
+    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
+    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
         type_class = FltClass( ins );
         if( type_class != XX ) {
             for( i = ins->num_operands; i-- > 0; ) {
@@ -518,4 +521,7 @@ void    FixFPConsts( instruction *ins )
             }
         }
     }
+#else
+    /* unused parameters */ (void)ins;
+#endif
 }

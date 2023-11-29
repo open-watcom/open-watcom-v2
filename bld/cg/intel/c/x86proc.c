@@ -766,7 +766,7 @@ static  void    DoEpilog( void )
         HW_CTurnOff( to_pop, HW_FLTS );
         if( CHAIN_FRAME ) {
             if( (CurrProc->state.attr & ROUTINE_NEEDS_PROLOG)
-             || ( CurrProc->locals.size + CurrProc->targ.push_local_size ) != 0 ) {
+              || ( CurrProc->locals.size + CurrProc->targ.push_local_size ) != 0 ) {
                 if( CurrProc->targ.base_adjust == 0 ) {
                     GenRegMove( HW_xBP, HW_xSP );
                 } else {
