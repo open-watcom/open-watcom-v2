@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,10 @@
 #include "zoiks.h"
 
 
+/*
+ * If you add a new routine, add it to the debugger's symbol list
+ * so the debugger can recognize it.
+ */
 rtn_info RTInfo[] = {
     #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
     #include "_rtinfo.h"

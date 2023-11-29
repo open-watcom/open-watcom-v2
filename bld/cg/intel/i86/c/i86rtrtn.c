@@ -61,15 +61,14 @@
 
 
 /*
- * If you add a new routine, let John know as the debugger recognizes
- * these.
+ * OK, so I'm going to go to hell for this, it works don't it?
  */
-
-/*
-    OK, so I'm going to go to hell for this, it works don't it?
-*/
 #define RL_SI   RL_TEMP_INDEX
 
+/*
+ * If you add a new routine, add it to the debugger's symbol list
+ * so the debugger can recognize it.
+ */
 rtn_info RTInfo[] = {
     #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
     #define PICK1(e,name,op,class,left,right,result) __FP80BIT(PICK(e,name,op,class,left,right,result),)
@@ -116,10 +115,10 @@ const char  *AskRTName( rt_class rtindex )
 
 
 name    *Addressable( name *cons, type_class_def type_class )
-/***************************************************************
-    make sure a floating point constant is addressable (dropped
-    it into memory if it isnt)
-*/
+/************************************************************
+ * make sure a floating point constant is addressable (dropped
+ * it into memory if it isnt)
+ */
 {
     unsigned_64         buffer;
 
@@ -146,13 +145,13 @@ name    *Addressable( name *cons, type_class_def type_class )
 
 static rt_class CheckForPCS( instruction *ins, rt_class rtindex )
 /****************************************************************
-    check to see if pointer subtract is really pointer - pointer
-    or pointer - integer (PCS = Pointer Constant Subtract)
-*/
+ * check to see if pointer subtract is really pointer - pointer
+ * or pointer - integer (PCS = Pointer Constant Subtract)
+ */
 {
     if( rtindex == RT_PTS ) {
         if( ins->operands[1]->n.type_class != PT
-         && ins->operands[1]->n.type_class != CP ) {
+          && ins->operands[1]->n.type_class != CP ) {
             rtindex = RT_PCS;
         }
     }
@@ -162,9 +161,9 @@ static rt_class CheckForPCS( instruction *ins, rt_class rtindex )
 
 bool    RTLeaveOp2( instruction *ins )
 /*************************************
-    return true if it's a bad idea to put op2 into a temporary since we're
-    gonna take the bugger's address in rMAKECALL anyway for FDD, FDC, EDA, etc
-*/
+ * return true if it's a bad idea to put op2 into a temporary since we're
+ * gonna take the bugger's address in rMAKECALL anyway for FDD, FDC, EDA, etc
+ */
 {
     switch( ins->type_class ) {
     case FD:
@@ -187,8 +186,8 @@ bool    RTLeaveOp2( instruction *ins )
 
 static  void    FlipIns( instruction *ins )
 /******************************************
-   maybe flip the const/mem into the second operand so it goes in local data
-*/
+ * maybe flip the const/mem into the second operand so it goes in local data
+ */
 {
     name        *temp;
 
@@ -209,8 +208,8 @@ static  void    FlipIns( instruction *ins )
     }
     temp = ins->operands[0];
     if( temp->n.class == N_CONSTANT
-     || temp->n.class == N_MEMORY
-     || temp->n.class == N_INDEXED ) {
+      || temp->n.class == N_MEMORY
+      || temp->n.class == N_INDEXED ) {
         ins->operands[0] = ins->operands[1];
         ins->operands[1] = temp;
     }
@@ -219,9 +218,9 @@ static  void    FlipIns( instruction *ins )
 
 instruction     *rMAKECALL( instruction *ins )
 /*********************************************
-    turn an instruction into the approprate runtime call sequence, using
-    the tables above to decide where parms go.
-*/
+ * turn an instruction into the approprate runtime call sequence, using
+ * the tables above to decide where parms go.
+ */
 {
     rtn_info            *info;
     label_handle        lbl;
@@ -241,7 +240,10 @@ instruction     *rMAKECALL( instruction *ins )
 
     if( !_IsConvert( ins ) ) {
         rtindex = CheckForPCS( ins, LookupRoutine( ins ) );
-    } else { /* rtindex might be wrong if we ran out of memory in ExpandIns*/
+    } else {
+        /*
+         * rtindex might be wrong if we ran out of memory in ExpandIns
+         */
         rtindex = LookupConvertRoutine( ins );
     }
     FlipIns( ins );
@@ -259,7 +261,8 @@ instruction     *rMAKECALL( instruction *ins )
     if( !HW_CEqual( regs, HW_EMPTY ) ) {
         if( info->right == RL_8 ) {
             temp = ins->operands[1];
-            if( temp->n.class==N_TEMP && ( temp->t.temp_flags & CONST_TEMP ) ) {
+            if( temp->n.class == N_TEMP
+              && (temp->t.temp_flags & CONST_TEMP) ) {
                 temp = temp->v.symbol;
             }
             if( temp->n.class == N_CONSTANT ) {
@@ -293,9 +296,11 @@ instruction     *rMAKECALL( instruction *ins )
                 PrefixIns( ins, la_ins );
                 HW_CTurnOn( all_regs, HW_ES );
                 ++rtindex;
-            } else if( ( temp->n.class == N_MEMORY && !SegIsSS( temp ) ) ||
-                       ( temp->n.class == N_INDEXED && temp->i.base != NULL &&
-                         !SegIsSS( temp->i.base ) ) ) {
+            } else if( ( temp->n.class == N_MEMORY
+                    && !SegIsSS( temp ) )
+                  || ( temp->n.class == N_INDEXED
+                    && temp->i.base != NULL
+                    && !SegIsSS( temp->i.base ) ) ) {
                 la_ins = MakeUnary( OP_CAREFUL_LA, ins->operands[1], AllocRegName( HW_ES_SI ), PT );
                 also_used = ins->operands[1];
                 ins->operands[1] = la_ins->result;
@@ -312,8 +317,10 @@ instruction     *rMAKECALL( instruction *ins )
             }
             HW_CTurnOn( all_regs, HW_SI );
         } else {
-            /* If I knew how to turn a register list index into a type class,
-               I'd do that, and avoid this if */
+            /*
+             * If I knew how to turn a register list index into a type class,
+             * I'd do that, and avoid this if
+             */
             if( info->right == RL_SI ) {
                 new_ins = MakeMove( ins->operands[1], AllocRegName( regs ), U2 );
             } else {
@@ -348,14 +355,18 @@ instruction     *rMAKECALL( instruction *ins )
             break;
         case N_MEMORY:
         case N_TEMP:
-            also_used->v.usage |= ( USE_MEMORY | NEEDS_MEMORY );
+            also_used->v.usage |= (USE_MEMORY | NEEDS_MEMORY);
             conf = also_used->v.conflict;
             if( conf != NULL ) {
                 InMemory( conf );
             }
             break;
         case N_INDEXED:
-            also_used = reg_name;  /* - the index doesn't need an index register!*/
+            /*
+             * ! the index doesn't need an index register !
+             */
+            also_used = reg_name;
+            /* fall through */
         default:
             break;
         }
@@ -380,11 +391,14 @@ instruction     *rMAKECALL( instruction *ins )
         MoveSegRes( ins, last_ins );
         SuffixIns( ins, last_ins );
         ReplIns( ins, new_ins );
-    } else {                /* comparison, still need conditional jumps*/
+    } else {
+        /*
+         * comparison, still need conditional jumps
+         */
         ins->operands[0] = AllocIntConst( 0 );
         ins->operands[1] = AllocIntConst( 1 );
         DelSeg( ins );
-        DoNothing( ins );               /* just conditional jumps for ins*/
+        DoNothing( ins );       /* just conditional jumps for ins */
         PrefixIns( ins, new_ins );
         new_ins->ins_flags |= INS_CC_USED;
         last_ins = ins;
@@ -395,13 +409,13 @@ instruction     *rMAKECALL( instruction *ins )
 
 
 name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
-/*********************************************************************************
-    generates a fake call to a runtime routine that looks up "value" in a table
-    and jumps to the appropriate case, using either a pointer or index
-    returned by the "routine". The "routine" will be generated inline later.
-    See BEAuxInfo for the code sequences generated. That will explain
-    how the jump destination is determined as well.
-*/
+/******************************************************************************
+ * generates a fake call to a runtime routine that looks up "value" in a table
+ * and jumps to the appropriate case, using either a pointer or index
+ * returned by the "routine". The "routine" will be generated inline later.
+ * See BEAuxInfo for the code sequences generated. That will explain
+ * how the jump destination is determined as well.
+ */
 {
     instruction *new_ins;
     name        *reg_name;
@@ -470,11 +484,13 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
     } else {
         result = AllocIndex( reg_name, result, 0, U2 );
     }
-    // this is here because we can get ourselves into trouble
-    // by hoisting expressions into the spot between the call and
-    // the OP_SELECT instruction at the end of the block if those
-    // expressions expand to instructions which require ECX.
-    // Same goes for EDI in the U4 case.        BBB - July, 1996
+    /*
+     * this is here because we can get ourselves into trouble
+     * by hoisting expressions into the spot between the call and
+     * the OP_SELECT instruction at the end of the block if those
+     * expressions expand to instructions which require ECX.
+     * Same goes for EDI in the U4 case.
+     */
     temp_result = AllocTemp( WD );
     new_ins = MakeMove( result, temp_result, WD );
     AddIns( new_ins );
@@ -483,13 +499,13 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
 
 
 instruction     *rMAKEFNEG( instruction *ins )
-/*****************************************************
-    negating a floating point value which is in the 386 registers only
-    needs to change the register containing the exponent, so this is
-    handled as a special case rather than using rMAKERTCALL that would
-    assume all of the registers containing the number were used
-    and modified by the call.
-*/
+/*********************************************
+ * negating a floating point value which is in the 386 registers only
+ * needs to change the register containing the exponent, so this is
+ * handled as a special case rather than using rMAKERTCALL that would
+ * assume all of the registers containing the number were used
+ * and modified by the call.
+ */
 {
     rtn_info            *info;
     label_handle        lbl;
@@ -508,9 +524,15 @@ instruction     *rMAKEFNEG( instruction *ins )
     ins->operands[0] = left_ins->result;
     MoveSegOp( ins, left_ins, 0 );
     PrefixIns( ins, left_ins );
-    if( ins->type_class == FD ) { /* exponent in AX*/
+    if( ins->type_class == FD ) {
+        /*
+         * exponent in AX
+         */
         exp_reg = AllocRegName( HW_AX );
-    } else {                           /* exponent in DX*/
+    } else {
+        /*
+         * exponent in DX
+         */
         exp_reg = AllocRegName( HW_DX );
     }
     new_ins = NewIns( 3 );
@@ -536,8 +558,8 @@ instruction     *rMAKEFNEG( instruction *ins )
 
 pointer BEAuxInfo( pointer hdl, aux_class request )
 /**************************************************
-    see ScanCall for explanation
-*/
+ * see ScanCall for explanation
+ */
 {
     switch( request ) {
     case FEINF_AUX_LOOKUP:

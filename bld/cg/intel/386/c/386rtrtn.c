@@ -55,10 +55,9 @@
 
 
 /*
- * If you add a new routine, let John know as the debugger recognizes
- * these.
+ * If you add a new routine, add it to the debugger's symbol list
+ * so the debugger can recognize it.
  */
-
 rtn_info RTInfo[] = {
     #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
     #define PICK1(e,name,op,class,left,right,result) __FP80BIT(PICK(e,name,op,class,left,right,result),)
@@ -145,9 +144,9 @@ const char  *AskRTName( rt_class rtindex )
 
 bool    RTLeaveOp2( instruction *ins )
 /*************************************
-    return true if it's a bad idea to put op2 into a temporary since we're
-    gonna take the bugger's address in rMAKECALL.
-*/
+ * return true if it's a bad idea to put op2 into a temporary since we're
+ * gonna take the bugger's address in rMAKECALL.
+ */
 {
     /* unused parameters */ (void)ins;
 
@@ -156,13 +155,13 @@ bool    RTLeaveOp2( instruction *ins )
 
 
 name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
-/*********************************************************************************
-    generates a fake call to a runtime routine that looks up "value" in a table
-    and jumps to the appropriate case, using either a pointer or index
-    returned by the "routine". The "routine" will be generated inline later.
-    See BEAuxInfo for the code sequences generated. That will explain
-    how the jump destination is determined as well.
-*/
+/******************************************************************************
+ * generates a fake call to a runtime routine that looks up "value" in a table
+ * and jumps to the appropriate case, using either a pointer or index
+ * returned by the "routine". The "routine" will be generated inline later.
+ * See BEAuxInfo for the code sequences generated. That will explain
+ * how the jump destination is determined as well.
+ */
 {
     instruction *new_ins;
     name        *reg_name;
@@ -242,10 +241,10 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
 
 
 name    *Addressable( name *cons, type_class_def type_class )
-/***************************************************************
-    make sure a floating point constant is addressable (dropped
-    it into memory if it isnt)
-*/
+/************************************************************
+ * make sure a floating point constant is addressable (dropped
+ * it into memory if it isnt)
+ */
 {
     if( cons->n.class == N_CONSTANT )
         return( GenFloat( cons, type_class ) );
@@ -302,8 +301,8 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
 
 instruction     *rMAKEFNEG( instruction *ins )
 /*********************************************
-    this is intentionally a stub for the 386.
-*/
+ * this is intentionally a stub for the 386.
+ */
 {
     return( ins );
 }
