@@ -793,8 +793,10 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
             codeSegId = segid;
             first_code_segid = segid;
         }
-        if( OptForSize == 0 && new->align < 16 ) {
-            new->align = 16;
+        if( OptForSize == 0 ) {
+            if( new->align < 16 ) {
+                new->align = 16;
+            }
         }
     }
     if( attr & BACK ) {
@@ -2592,11 +2594,11 @@ void    SetBigLocation( long_offset loc )
 {
     CurrSeg->location = loc;
     if( CurrSeg->comdat_label != NULL ) {
-        if( loc > CurrSeg->comdat_size ) {
+        if( CurrSeg->comdat_size < loc ) {
             CurrSeg->comdat_size = loc;
         }
     } else {
-        if( loc > CurrSeg->max_size ) {
+        if( CurrSeg->max_size < loc ) {
             CurrSeg->max_size = loc;
         }
     }
@@ -2637,11 +2639,11 @@ void    SetLocation( offset loc )
 {
     CurrSeg->location = loc;
     if( CurrSeg->comdat_label != NULL ) {
-        if( loc > CurrSeg->comdat_size ) {
+        if( CurrSeg->comdat_size < loc ) {
             CurrSeg->comdat_size = loc;
         }
     } else {
-        if( loc > CurrSeg->max_size ) {
+        if( CurrSeg->max_size < loc ) {
             CurrSeg->max_size = loc;
         }
     }
@@ -2820,7 +2822,7 @@ static  void    SetPendingLine( void )
 static  void    SetMaxWritten( void )
 /***********************************/
 {
-    if( CurrSeg->location > CurrSeg->max_written ) {
+    if( CurrSeg->max_written < CurrSeg->location ) {
         CurrSeg->max_written = CurrSeg->location;
     }
 }
@@ -2839,7 +2841,7 @@ void    OutDataByte( byte value )
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     IncLocation( sizeof( byte ) );
     need = i + sizeof( byte );
-    if( need > obj->data.used ) {
+    if( obj->data.used < need ) {
         if( need > obj->data.alloc ) {
             ReallocArray( &obj->data, need );
         }
@@ -2862,7 +2864,7 @@ void    OutDataShort( uint_16 value )
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     IncLocation( sizeof( uint_16 ) );
     need = i + sizeof( uint_16 );
-    if( need > obj->data.used ) {
+    if( obj->data.used < need ) {
         if( need > obj->data.alloc ) {
             ReallocArray( &obj->data, need );
         }
@@ -2886,7 +2888,7 @@ void    OutDataLong( uint_32 value )
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     IncLocation( sizeof( uint_32 ) );
     need = i + sizeof( uint_32 );
-    if( need > obj->data.used ) {
+    if( obj->data.used < need ) {
         if( need > obj->data.alloc ) {
             ReallocArray( &obj->data, need );
         }
@@ -3123,7 +3125,7 @@ void    OutLineNum( cg_linenum  line, bool label_line )
     obj = CurrSeg->obj;
     if( obj->pending_line_number == 0
         || obj->pending_label_line
-        || line < obj->pending_line_number ) {
+        || obj->pending_line_number > line ) {
         obj->pending_line_number = line;
         obj->pending_label_line = label_line;
     }
@@ -3188,7 +3190,7 @@ void    OutDBytes( unsigned len, const byte *src )
             n = len;
         }
         need = i + n;
-        if( need > obj->data.used ) {
+        if( obj->data.used < need ) {
             if( need > obj->data.alloc ) {
                 ReallocArray( &obj->data, need );
             }
