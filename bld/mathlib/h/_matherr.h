@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,18 +31,18 @@
 
 
 
-extern  void    __rterrmsg( int errcode, const char *funcname );
-extern  char    *__rtmathfuncname( int funccode );
+extern  void        __rterrmsg( int errcode, const char *funcname );
+extern  const char  *__rtmathfuncname( int funccode );
 
 /* Internal call for reporting errors - performs runtime-defined
  * action based on math_errhandling flags
  */
-extern  int     __math_errhandling_flag;
+extern  int         __math_errhandling_flag;
 
-extern  void    __reporterrorsimple( int type );
-extern  int     __reporterror( int     type,     /* type of error*/
-                               const char    *name,    /* name of math function */
-                               double  arg1,     /* value of first argument to function */
-                               double  arg2,     /* second argument (if indicated) */
-                               double  retval );  /* default return value */
+extern  void        __reporterrorsimple( int type );
+extern  int         __reporterror( int          type,       /* type of error*/
+                                    const char  *name,      /* name of math function */
+                                    double      arg1,       /* value of first argument to function */
+                                    double      arg2,       /* second argument (if indicated) */
+                                    double      retval );   /* default return value */
 
