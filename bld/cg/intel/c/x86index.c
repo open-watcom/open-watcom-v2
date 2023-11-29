@@ -343,11 +343,11 @@ void    FixSegments( void )
     }
 }
 
-
+#if 0
 static  type_class_def  FltClass( instruction *ins )
 /***************************************************
- * return the floating point class (FD or FS) of "ins", or XX if it
- * does not involve floating point.
+ * return the floating point class (FL, FD or FS) of "ins",
+ * or XX if it does not involve floating point.
  */
 {
     if( _IsFloating( ins->type_class ) )
@@ -356,6 +356,7 @@ static  type_class_def  FltClass( instruction *ins )
         return( _OpClass( ins ) );
     return( XX );
 }
+#endif
 
 void    MergeIndex( void )
 /*************************
