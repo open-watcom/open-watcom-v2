@@ -28,7 +28,11 @@
 :endsegment
 :endsegment
 :segment !CNAME
- #define NULL ((void *)0)
+ #ifdef __RDOSDEV__
+  #define NULL 0
+ #else
+  #define NULL ((void *)0)
+ #endif
 :segment !CONLY
 #endif
 :endsegment
