@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -39,12 +40,7 @@
 ;  Outputs:     ST(0)   chopped float, condition codes unmodified
 ;  Volatile:    none
 ;
-ifdef __386__
- .386
- .387
-else
- .8087
-endif
+
 include mdef.inc
 include math87.inc
 

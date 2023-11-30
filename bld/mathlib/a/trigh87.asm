@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -62,11 +58,6 @@ endif
         xdefp   "C",tanh        ; calc tanh(fac1)
 
 ifndef __386__
-if _MODEL and _BIG_CODE
-argx    equ     6
-else
-argx    equ     4
-endif
 status  equ     -6
 endif
 ;
@@ -203,7 +194,7 @@ endif
 
         defp    cosh
 ifdef __386__
-        fld     qword ptr 4[ESP]; load argument
+        fld     qword ptr argx[ESP]; load argument
         call    IF@DCOSH        ; calculate cosh(x)
         loadres                 ; load result
 else
@@ -219,7 +210,7 @@ endif
 
         defp    sinh
 ifdef __386__
-        fld     qword ptr 4[ESP]; load argument
+        fld     qword ptr argx[ESP]; load argument
         call    IF@DSINH        ; calculate sinh(x)
         loadres                 ; load result
 else
@@ -235,7 +226,7 @@ endif
 
         defp    tanh
 ifdef __386__
-        fld     qword ptr 4[ESP]; load argument
+        fld     qword ptr argx[ESP]; load argument
         call    IF@DTANH        ; calculate tanh(x)
         loadres                 ; load result
 else

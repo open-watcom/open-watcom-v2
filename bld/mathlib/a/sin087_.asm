@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -37,7 +38,7 @@ include math87.inc
         extern_chipbug
 
         modstart        sin087
-.8087
+
         xdefp   __sin87         ; calc sin(fac1)
         xdefp   __cos87         ; calc cos(fac1)
 

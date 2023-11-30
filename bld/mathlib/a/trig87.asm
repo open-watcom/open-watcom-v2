@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -34,10 +34,15 @@
 ;
 ;   interface to floating point library for trig functions
 ;
-.387
+
 include mdef.inc
 include struct.inc
 include math87.inc
+
+;
+; trigonometric FP functions are available only on .387+
+;
+.387
 
         extern_chipbug
         xrefp           __8087  ; indicate that NDP instructions are present
@@ -52,11 +57,6 @@ include math87.inc
         xdefp   "C",tan         ; calc tan(fac1)
 
 ifndef __386__
-if _MODEL and _BIG_CODE
-argx    equ     6
-else
-argx    equ     4
-endif
 status  equ     -4
 endif                           ; __386__
 
@@ -337,7 +337,7 @@ chk_C2  proc    near
 
         defp    cos
 ifdef __386__
-        fld     qword ptr 4[ESP]; load argument
+        fld     qword ptr argx[ESP]; load argument
         call    IF@DCOS         ; calculate cos(x)
         loadres                 ; load result
 else
@@ -353,7 +353,7 @@ endif                           ; __386__
 
         defp    sin
 ifdef __386__
-        fld     qword ptr 4[ESP]; load argument
+        fld     qword ptr argx[ESP]; load argument
         call    IF@DSIN         ; calculate sin(x)
         loadres                 ; load result
 else
@@ -514,7 +514,7 @@ endif                           ; __FPI87__
 
         defp    tan
 ifdef __386__
-        fld     qword ptr 4[ESP]; load argument
+        fld     qword ptr argx[ESP]; load argument
         call    IF@DTAN         ; calc the tan
         loadres                 ; load result
 else

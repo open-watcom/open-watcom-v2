@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -33,11 +34,7 @@
 ;
 ;   double pow( double x, double y )
 ;
-ifdef __386__
- .387
-else
- .8087
-endif
+
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -51,15 +48,6 @@ include math87.inc
         xrefp   __@DEXP
 
         xdefp   "C",pow ; calc pow(x,y)
-
-ifndef __386__
-        if _MODEL and _BIG_CODE
-         argx    equ     6
-        else
-         argx    equ     4
-        endif
-endif
-
 
         public  IF@DPOW
         public  IF@POW
@@ -246,8 +234,8 @@ pow_ri  proc    near
 
         defp    pow
 ifdef __386__
-        fld     qword ptr 4+8[ESP]      ; load y
-        fld     qword ptr 4[ESP]        ; load x
+        fld     qword ptr argx+8[ESP]   ; load y
+        fld     qword ptr argx[ESP]     ; load x
         call    IF@DPOW                 ; calculate pow(x,y)
         loadres                         ; load result
 else

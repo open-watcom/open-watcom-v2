@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -32,7 +33,6 @@
 
 include mdef.inc
 
-.287
         modstart        sqrt387
 
         xdefp   __sqrt87        ; calc sqrt(fac1)

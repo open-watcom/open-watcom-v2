@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -115,15 +111,10 @@ endif
 ;
         defp    atanh
 ifdef __386__
-        fld     qword ptr 4[ESP]    ; load argument x
+        fld     qword ptr argx[ESP] ; load argument x
         call    IF@DATANH           ; calculate atanh(x)
         loadres                     ; load result
 else
-if _MODEL and _BIG_CODE
-argx    equ     6
-else
-argx    equ     4
-endif
         prolog
         fld     qword ptr argx[BP]  ; load argument x
         lcall   IF@DATANH           ; calculate atanh(x)
