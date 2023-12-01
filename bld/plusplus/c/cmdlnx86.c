@@ -42,7 +42,11 @@
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
-typedef enum {                  // flags to control memory model settings
+
+/*
+ * flags to control memory model settings
+ */
+typedef enum {
     MMC_DS      = 0x01,         // 'ds' reg is pegged/floated by user
     MMC_FS      = 0x02,         // 'fs' reg is pegged/floated by user
     MMC_GS      = 0x04,         // 'gs' reg is pegged/floated by user
@@ -115,19 +119,20 @@ char *CmdSysEnvVar( void )
 }
 
 void CmdX86CheckStack87( unsigned *p )
-/************************************/
+/*************************************
+ * 0 means no change to default
+ */
 {
-    // 0 means no change to default
-    if( *p <= 8 ) {
-        return;
+    if( *p > 8 ) {
+        *p = 0;
     }
-    *p = 0;
 }
 
 void CmdX86CheckThreshold( unsigned *p )
-/**************************************/
+/***************************************
+ * 0 is allowed
+ */
 {
-    // 0 is allowed
     if( *p > TARGET_INT_MAX ) {
         *p = 256;
     }
@@ -238,7 +243,9 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         TargetSystem = TS_NETWARE5;
         PreDefineStringMacro( "__NETWARE_386__" );
         PreDefineStringMacro( "__NETWARE__" );
-        /* can get away with this because "netware5" is longer */
+        /*
+         * can get away with this because "netware5" is longer
+         */
         strcpy( target_name, "NETWARE" );
     } else if( 0 == strcmp( target_name, "NT" ) ) {
         TargetSystem = TS_NT;
@@ -264,7 +271,9 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 #else
         TargetSystem = TS_WINDOWS;
 #endif
-        /* can get away with this because "cheap_windows" is longer */
+        /*
+         * can get away with this because "cheap_windows" is longer
+         */
         strcpy( target_name, "WINDOWS" );
         setWindowsSystem();
     } else {
@@ -274,10 +283,9 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     strcat( buff, target_name );
     strcat( buff, "__" );
     PreDefineStringMacro( buff );
-
     /*
-    //  Note the hacks for windows/cheap_windows & netware/netware5, above.
-    */
+     * Note the hacks for windows/cheap_windows & netware/netware5, above.
+     */
     strcpy( buff, target_name );
     strcat( buff, "_INCLUDE" );
     MergeIncludeFromEnv( buff );
@@ -407,11 +415,15 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     default:
         DbgNever();
     }
-// setup default "floating" segment registers
+    /*
+     * setup default "floating" segment registers
+     */
 #if _CPU == 8086
     bit |= CGSW_X86_FLOATING_ES;
 #else
-    // 386 flat model needs at least one floating segment register
+    /*
+     * 386 flat model needs at least one floating segment register
+     */
     bit |= CGSW_X86_FLOATING_GS;
     if( (bit & CGSW_X86_FLAT_MODEL) == 0 ) {
         bit |= CGSW_X86_FLOATING_ES;
@@ -420,7 +432,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     if( bit & CGSW_X86_BIG_DATA ) {
         bit |= CGSW_X86_FLOATING_DS;
     }
-    if( control & ( MMC_DS | MMC_WIN ) ) {
+    if( control & (MMC_DS | MMC_WIN) ) {
         bit &= ~CGSW_X86_FLOATING_DS;
     } else {
         TargetSwitches &= ~ CGSW_X86_FLOATING_DS;
@@ -438,7 +450,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     TargetSwitches &= ~(CGSW_X86_FLAT_MODEL | CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER | CGSW_X86_FLOATING_ES);
     TargetSwitches |= bit;
 #if _CPU == 8086
-    if( data->bm ) { // .DLL
+    if( data->bm ) { /* .DLL */
         strcpy( DLL_CLIB_Name, "2clibmt?" );
     } else {
         if( control & MMC_WIN ) {
@@ -459,7 +471,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         strcpy( CLIB_Name, "2clib?" );
     }
     if( CompFlags.excs_enabled ) {
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plbxmt?" );
         } else {
             if( control & MMC_WIN ) {
@@ -480,7 +492,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
             strcpy( WCPPLIB_Name, "4plbx?" );
         }
     } else {
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plibmt?" );
         } else {
             if( control & MMC_WIN ) {
@@ -524,7 +536,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     strcpy( DLL_CLIB_Name, "2clib3?" );
     if( CompFlags.excs_enabled ) {
         strcpy( WCPPDLL_Name, "3plb?dllx" );
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plbxmt3?" );
         } else {
             if( control & MMC_WIN ) {
@@ -546,7 +558,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         }
     } else {
         strcpy( WCPPDLL_Name, "3plb?dll" );
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plibmt3?" );
         } else {
             if( control & MMC_WIN ) {
@@ -676,7 +688,8 @@ static void defineFSRegistration( void )
     }
     CompFlags.rw_registration = true;
 #if _CPU == 386
-    if( TargetSystem == TS_NT || TargetSystem == TS_OS2 ) {
+    if( TargetSystem == TS_NT
+      || TargetSystem == TS_OS2 ) {
         CompFlags.fs_registration = true;
     }
 #endif
@@ -926,14 +939,17 @@ static void macroDefs( void )
 static void miscAnalysis( OPT_STORAGE *data )
 {
 #if _CPU == 8086
-    if( data->bd || data->zu ) {
+    if( data->bd
+      || data->zu ) {
         if( TargetSwitches & CGSW_X86_SMART_WINDOWS ) {
             CErr1( ERR_ZWS_MUST_HAVE_SS_DS_SAME );
         }
     }
 #endif
     if( GET_CPU( CpuSwitches ) < CPU_386 ) {
-        /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
+        /*
+         * issue warning message if /zf[f|p] or /zg[f|p] spec'd?
+         */
         TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
     }
     if( !CompFlags.save_restore_segregs ) {
@@ -1004,11 +1020,11 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zfw ) {
         TargetSwitches |= CGSW_X86_GEN_FWAIT_386;
     }
-    if( data->zro && data->zri ) {
+    if( data->zro
+      && data->zri ) {
 //        DbgDefault( "invalid fp rounding flags - ignored" );
         data->zro = data->zri = 0;
-    }
-    if( data->zri ) {
+    } else if( data->zri ) {
         GenSwitches |= CGSW_GEN_FPU_ROUNDING_INLINE;
     } else if( data->zro ) {
         GenSwitches |= CGSW_GEN_FPU_ROUNDING_OMIT;
@@ -1040,13 +1056,15 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         mmc |= MMC_GS;
         break;
     }
-    // -zw overrides a build target setting
+    /*
+     * -zw overrides a build target setting
+     */
     if( data->bt ) {
         char *target = SetStringOption( NULL, &(data->bt_value) );
         SetTargetLiteral( &target_name, target );
         if( target_name != NULL ) {
-            if( strcmp( target_name, "WINDOWS" ) == 0 ||
-                  strcmp( target_name, "CHEAP_WINDOWS" ) == 0 ) {
+            if( strcmp( target_name, "WINDOWS" ) == 0
+              || strcmp( target_name, "CHEAP_WINDOWS" ) == 0 ) {
                 mmc |= MMC_WIN;
             } else if( strcmp( target_name, "NETWARE" ) == 0 ) {
                 mmc |= MMC_NETWARE;
@@ -1085,7 +1103,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         break;
     }
 #endif
-    // depends on 'mmc' being set fully
+    /*
+     * depends on 'mmc' being set fully
+     */
     setIntelArchitecture( data, mmc );
 
     switch( data->intel_fpu_model ) {
@@ -1123,24 +1143,28 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         SET_FPU_LEVEL( CpuSwitches, FPU_87 );
         break;
     }
-
-    // depends on architecture and fpu being set
+    /*
+     * depends on architecture and fpu being set
+     */
     setMemoryModel( data, mmc );
     if( data->fpd ) {
         TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK;
     }
     /*
-    //  Changed the ordering.
-    //      Always set Stack87 if fpr switch is used.
-    //      If fpr switch is not present but are using NetWare then set Stack87
-    //      unless the target is NetWare 5 or above.
-    */
+     * Changed the ordering.
+     * Always set Stack87 if fpr switch is used.
+     * If fpr switch is not present but are using NetWare then set Stack87
+     * unless the target is NetWare 5 or above.
+     */
     if( data->fpr ) {
         Stack87 = 4;
     } else {
         if( mmc & MMC_NETWARE ) {
             if(TS_NETWARE5 != TargetSystem) {
-                Stack87 = 4;    /* no fpr for netware 5 */
+                /*
+                 * no fpr for netware 5
+                 */
+                Stack87 = 4;
             }
         }
     }
@@ -1273,7 +1297,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         DftCallConv = &WatcallInfo;
         break;
     }
-    // frees 'target_name' memory
+    /*
+     * frees 'target_name' memory
+     */
     setFinalTargetSystem( data, target_name );
     miscAnalysis( data );
     defineFSRegistration();

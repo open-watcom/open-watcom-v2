@@ -177,7 +177,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
     CmdRecogEquals();
     for( ; ; ) {
         if( CmdScanSwEnd()
-         || CmdPeekChar() == '-' ) {
+          || CmdPeekChar() == '-' ) {
             if( 0 == kind ) {
                 kind = def_kind;
             }
@@ -312,14 +312,16 @@ static char *reduceToOneString( OPT_STRING **h )
         if( s->data[0] != '\0' ) {
             *h = s->next;
             OPT_CLEAN_STRING( h );
-            /* HACK: Whoever wrote this assumed that strcpy() did a byte-by-byte copy.
+            /*
+             * HACK: Whoever wrote this assumed that strcpy() did a byte-by-byte copy.
              *       GCC's version however may use DWORD-sized copies instead.
              *       If source and dest overlap there is NO guarantee of data integrity.
              *       To avoid corrupting the string, use memmove() instead.
              *
              *  NTS: So why can't we just go and return s->data instead of strcpy'ing
              *       over the struct with it's own string data? Why this bizarre code
-             *       in the first place? --J.C. */
+             *       in the first place?
+             */
             {
                 int l = strlen(s->data)+1; /* string + NUL */
                 p = (char *)s;
@@ -551,7 +553,8 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
                 break;
             CmdScanSwitchBegin();
             CmdLnCtxSwitch( CmdScanAddr() - 1 );
-            if( c == '-'  ||  c == SwitchChar ) {
+            if( c == '-'
+              || c == SwitchChar ) {
                 if( OPT_PROCESS( data ) ) {
                     BadCmdLine( ERR_INVALID_OPTION );
                 }
@@ -640,7 +643,8 @@ static bool debugOptionAfterOptOption( OPT_STORAGE *data )
 static void analyseAnyTargetOptions( OPT_STORAGE *data )
 {
     // quickly do the quiet option so the banner can be printed
-    if( data->q || data->zq ) {
+    if( data->q
+      || data->zq ) {
         CompFlags.quiet_mode = true;
     }
     switch( data->char_set ) {
@@ -881,7 +885,8 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.use_pcheaders = true;
         CompFlags.fhwe_switch_used = true;
     }
-    if( data->fh || data->fhq ) {
+    if( data->fh
+      || data->fhq ) {
         char *fh_name;
         char *fhq_name;
         char *p;
@@ -894,7 +899,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         if( fh_name != NULL ) {
             p = fh_name;
             if( fhq_name != NULL ) {
-                /* use the latest file-name specified */
+                /*
+                 * use the latest file-name specified
+                 */
                 if( data->fh_timestamp > data->fhq_timestamp ) {
                     CMemFree( fhq_name );
                 } else {

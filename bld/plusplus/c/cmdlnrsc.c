@@ -117,7 +117,9 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     PreDefineStringMacro( "__MIPS__" );
 #endif
     if( target_name == NULL ) {
-        /* right now, the only targeted system is NT */
+        /*
+         * right now, the only targeted system is NT
+         */
         SetTargetLiteral( &target_name, "NT" );
     }
     if( 0 == strcmp( target_name, "NT" ) ) {
@@ -132,7 +134,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     MergeIncludeFromEnv( buff );
     MergeIncludeFromEnv( "INCLUDE" );
     CMemFree( target_name );
-    if( data->bm || data->bd ) {
+    if( data->bm
+      || data->bd ) {
         CompFlags.target_multi_thread = true;
     }
 }
@@ -307,7 +310,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     }
-    // -zw overrides a build target setting
+    /*
+     * -zw overrides a build target setting
+     */
     if( data->bt ) {
         char *target = SetStringOption( NULL, &(data->bt_value) );
         SetTargetLiteral( &target_name, target );
@@ -355,8 +360,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         CompFlags.zm_switch_used = true;
     }
 #endif
-
-    // frees 'target_name' memory
+    /*
+     * frees 'target_name' memory
+     */
     setFinalTargetSystem( data, target_name );
     miscAnalysis( data );
     macroDefs();

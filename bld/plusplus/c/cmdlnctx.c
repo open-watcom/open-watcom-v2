@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,49 +45,66 @@ typedef struct ctx_cl_file      CTX_CL_FILE;
 typedef struct ctx_cl_env       CTX_CL_ENV;
 typedef union  ctx_cl           CTX_CL;
 
-struct ctx_cl_base              // CTX_CL_BASE -- base for all contexts
+/*
+ * CTX_CL_BASE -- base for all contexts¨
+ */
+struct ctx_cl_base
 {   CTX_CLTYPE ctx_type;        // - type of context
-    unsigned :0;                // - alignment
-    char const *sw_ptr;         // - switch pointer
-    char const *cmd_line;       // - command line
-    char const *cmd_scan;       // - scan position
+    unsigned    :0;             // - alignment
+    char const  *sw_ptr;        // - switch pointer
+    char const  *cmd_line;      // - command line
+    char const  *cmd_scan;      // - scan position
 };
-
-struct ctx_cl_env               // CTX_CL_ENV -- environment variable
+/*
+ * CTX_CL_ENV -- environment variable
+ */
+struct ctx_cl_env
 {   CTX_CL_BASE base;           // - base
     char const *var;            // - environment variable
 };
-
-struct ctx_cl_file              // CTX_CL_FILE -- file of commands
+/*
+ * CTX_CL_FILE -- file of commands
+ */
+struct ctx_cl_file
 {   CTX_CL_BASE base;           // - base
     SRCFILE source;             // - source file
 };
-
-union ctx_cl                    // CTX_CL -- one of:
+/*
+ * CTX_CL -- one of:
+ */
+union ctx_cl
 {   CTX_CL_BASE base;           // - base
     CTX_CL_FILE file;           // - file
     CTX_CL_ENV env;             // - environment variable
 };
+/*
+ * ACTIVE CONTEXTS
+ */
+static VSTK_CTL cmdLnContexts;
 
-static VSTK_CTL cmdLnContexts;  // ACTIVE CONTEXTS
-
-
-void CmdLnCtxInit(              // INITIALIZE CMD-LN CONTEXT
-    void )
+void CmdLnCtxInit( void )
+/************************
+ * INITIALIZE CMD-LN CONTEXT
+ */
 {
     VstkOpen( &cmdLnContexts, sizeof( CTX_CL ), 8 );
 }
 
 
-void CmdLnCtxFini(              // COMPLETE CMD-LN CONTEXT
-    void )
+void CmdLnCtxFini( void )
+/************************
+ * COMPLETE CMD-LN CONTEXT
+ */
 {
     VstkClose( &cmdLnContexts );
 }
 
 
-static CTX_CL* cmdLnCtxAlloc(   // ALLOCATE NEW CONTEXT
-    CTX_CLTYPE type )           // - type of context
+static CTX_CL* cmdLnCtxAlloc( CTX_CLTYPE type )
+/**********************************************
+ * ALLOCATE NEW CONTEXT
+ * type - type of context
+ */
 {
     CTX_CL* entry;
 
@@ -105,15 +122,21 @@ static CTX_CL* cmdLnCtxAlloc(   // ALLOCATE NEW CONTEXT
 }
 
 
-void CmdLnCtxPush(              // PUSH NEW CONTEXT
-    CTX_CLTYPE type )           // - type of context
+void CmdLnCtxPush( CTX_CLTYPE type )
+/***********************************
+ * PUSH NEW CONTEXT
+ * type - type of context
+ */
 {
     cmdLnCtxAlloc( type );
 }
 
 
-void CmdLnCtxPushEnv(           // PUSH FOR ENVIRONMENT-VARIABLE PROCESSING
-    char const *var )           // - environment variable
+void CmdLnCtxPushEnv( char const *var )
+/**************************************
+ * PUSH FOR ENVIRONMENT-VARIABLE PROCESSING
+ * var - environment variable
+ */
 {
     CTX_CL* entry;              // - new entry
     size_t size;                // - variable size
@@ -125,8 +148,11 @@ void CmdLnCtxPushEnv(           // PUSH FOR ENVIRONMENT-VARIABLE PROCESSING
 }
 
 
-void CmdLnCtxPushCmdFile(       // PUSH FOR FILE PROCESSING
-    SRCFILE cmdfile )           // - command file
+void CmdLnCtxPushCmdFile( SRCFILE cmdfile )
+/******************************************
+ * PUSH FOR FILE PROCESSING
+ * cmdfile - command file
+ */
 {
     CTX_CL* entry;              // - new entry
 
@@ -135,8 +161,11 @@ void CmdLnCtxPushCmdFile(       // PUSH FOR FILE PROCESSING
 }
 
 
-void CmdLnCtxSwitch(            // RECORD SWITCH POSITION
-    char const * sw_ptr )       // - current switch location
+void CmdLnCtxSwitch( char const * sw_ptr )
+/*****************************************
+ * RECORD SWITCH POSITION
+ * sw_ptr - current switch location
+ */
 {
     CTX_CL* entry;              // - new entry
 
@@ -145,8 +174,10 @@ void CmdLnCtxSwitch(            // RECORD SWITCH POSITION
 }
 
 
-void CmdLnCtxPop(               // POP A CONTEXT
-    void )
+void CmdLnCtxPop( void )
+/***********************
+ * POP A CONTEXT
+ */
 {
     CTX_CL* entry;              // - new entry
 
@@ -161,13 +192,16 @@ void CmdLnCtxPop(               // POP A CONTEXT
 }
 
 
-void CmdLnCtxInfo(              // PRINT CONTEXT INFO
-    void )
+void CmdLnCtxInfo( void )
+/************************
+ * PRINT CONTEXT INFO
+ */
 {
     CTX_CL* entry;              // - current entry
     VBUF buf;                   // - buffer
 
     VbufInit( &buf );
+
     VstkIterBeg( &cmdLnContexts, entry ) {
         VbufRewind( &buf );
         switch( entry->base.ctx_type ) {
