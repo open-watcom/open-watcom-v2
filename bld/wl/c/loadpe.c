@@ -585,8 +585,8 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     entry_export        *exp;
     size_t              i;
     pe_va               eat;
-    ordinal_t           next_ordinal;
-    ordinal_t           high_ordinal = 0;
+    ordinal_t           next_ord;
+    ordinal_t           high_ord = 0;
     size_t              num_entries;
 
     strncpy( object->name, ".edata", PE_OBJ_NAME_LEN );
@@ -610,7 +610,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     dir.address_table_rva = __ROUND_UP_SIZE( dir.name_rva + namelen, sizeof( pe_va ) );
     num_entries = 0;
     for( exp = FmtData.u.os2fam.exports; exp != NULL; exp = exp->next ) {
-        high_ordinal = exp->ordinal;
+        high_ord = exp->ordinal;
         ++num_entries;
         if( !exp->isprivate ) {
             if( exp->impname != NULL ) {
@@ -620,7 +620,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
             }
         }
     }
-    dir.num_eat_entries = high_ordinal - dir.ordinal_base + 1;
+    dir.num_eat_entries = high_ord - dir.ordinal_base + 1;
     dir.num_name_ptrs = num_entries;
     dir.name_ptr_table_rva = dir.address_table_rva + dir.num_eat_entries * sizeof( pe_va );
     dir.ordinal_table_rva = dir.name_ptr_table_rva + num_entries * sizeof( pe_va );
@@ -632,14 +632,14 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     NullAlign( sizeof( pe_va ) );
     /* write the export address table */
     i = 0;
-    next_ordinal = dir.ordinal_base;
+    next_ord = dir.ordinal_base;
     for( exp = FmtData.u.os2fam.exports; exp != NULL; exp = exp->next ) {
         sort[i++] = exp;
         eat = exp->addr.off;
-        if( next_ordinal < exp->ordinal ) {
-            PadLoad( ( exp->ordinal - next_ordinal ) * sizeof( pe_va ) );
+        if( next_ord < exp->ordinal ) {
+            PadLoad( ( exp->ordinal - next_ord ) * sizeof( pe_va ) );
         }
-        next_ordinal = exp->ordinal + 1;
+        next_ord = exp->ordinal + 1;
         WriteLoadU32( eat );
     }
     qsort( sort, num_entries, sizeof( entry_export * ), &namecmp_exp );
@@ -1488,8 +1488,8 @@ unsigned long GetPEHeaderSize( void )
 
 static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
                          unsigned_32 ordstart, unsigned numords,
-                         ordinal_t ordinal_base, f_handle file, char *fname )
-/***************************************************************************/
+                         ordinal_t ord_base, f_handle file, char *fname )
+/***********************************************************************/
 {
     unsigned_16         *ordbuf;
     unsigned_16         *ordptr;
@@ -1503,7 +1503,7 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     nameptr = TokBuff,
     ordptr = ordbuf;
     for( ; numords > 0; --numords ) {
-        CheckExport( nameptr, *ordptr + ordinal_base, true );
+        CheckExport( nameptr, *ordptr + ord_base, true );
         while( *nameptr != '\0' )
             nameptr++;
         nameptr++;

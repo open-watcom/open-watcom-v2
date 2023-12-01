@@ -505,9 +505,7 @@ void    FixFPConsts( instruction *ins )
  * memory reference, (therefore one segment override), will see it as a
  * memory reference and treat it accordingly.
  *
- * TODO!
  * now it is useless due to wrong condition, always false (dead code)
- * need review
  */
 {
 #if 0
@@ -515,10 +513,8 @@ void    FixFPConsts( instruction *ins )
     type_class_def      type_class;
 
     if( _IsTargetModel( CGSW_X86_CONST_IN_CODE ) ) {
-    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS )
-            && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
-    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS )
-            && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
+    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
+    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
         type_class = FltClass( ins );
         if( type_class != XX ) {
             for( i = ins->num_operands; i-- > 0; ) {

@@ -359,8 +359,9 @@ static unsigned_16 findResOrTypeName( ResTable *restab, WResID *name )
     return( name_id );
 }
 
-static FullTypeRecord *addExeTypeRecord( ResTable *restab, WResTypeInfo *type )
-/*****************************************************************************/
+static FullTypeRecord *addExeTypeRecord( ResTable *restab,
+                            WResTypeInfo *type )
+/**********************************************************/
 {
     FullTypeRecord      *exe_type;
 
@@ -693,7 +694,7 @@ static unsigned long WriteEntryTable( void )
     entry_export    *start;
     entry_export    *place;
     entry_export    *prev;
-    ordinal_t       prev_ordinal;
+    ordinal_t       prevord;
     unsigned long   size;
     unsigned        gap;
     unsigned        entries;
@@ -706,9 +707,9 @@ static unsigned long WriteEntryTable( void )
     size = 0;
     start = FmtData.u.os2fam.exports;
     if( start != NULL ) {
-        prev_ordinal = 0;
+        prevord = 0;
         for( place = start; place != NULL; ) {
-            gap = place->ordinal - prev_ordinal;
+            gap = place->ordinal - prevord;
             if( gap > 1 ) {  // fill in gaps in ordinals.
                 gap--;       // fix 'off by 1' problem.
                 prefix.number = 0xFF;
@@ -721,9 +722,7 @@ static unsigned long WriteEntryTable( void )
                 WriteLoad( &prefix, sizeof( bundle_prefix ) );
                 size += sizeof( bundle_prefix );
             }
-            /*
-             * now get a bundle of ordinals.
-             */
+            // now get a bundle of ordinals.
             entries = 1;
             prev = start = place;
             for( place = place->next; place != NULL; place = place->next ) {
@@ -752,7 +751,7 @@ static unsigned long WriteEntryTable( void )
                 prefix.type = start->addr.seg;     // fixed segment records.
                 size += entries * sizeof( fixed_record );
             }
-            prev_ordinal = prev->ordinal;
+            prevord = prev->ordinal;
             prefix.number = (unsigned_8)entries;
             WriteLoad( &prefix, sizeof( bundle_prefix ) );
             size += sizeof( bundle_prefix );
@@ -800,18 +799,12 @@ static void CheckGrpFlags( void *_leader )
     unsigned_16     sflags;
 
     sflags = leader->segflags;
-    /*
-     * if any of these flags are on, turn it on for the entire group.
-     */
+    // if any of these flags are on, turn it on for the entire group.
     leader->group->segflags |= sflags & DEF_SEG_OFF;
-    /*
-     * if any of these flags off, make sure they are off in the group.
-     */
+    // if any of these flags off, make sure they are off in the group.
     leader->group->segflags &= (sflags & DEF_SEG_ON) | ~DEF_SEG_ON;
     if( (sflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
-        /*
-         * if any are level 2 then all have to be.
-         */
+        /* if any are level 2 then all have to be. */
         leader->group->segflags &= ~SEG_LEVEL_MASK;
         leader->group->segflags |= SEG_LEVEL_2;
     }
@@ -850,9 +843,7 @@ void ChkOS2Exports( void )
     unsigned        num_entries;
 
     num_entries = 0;
-    /*
-     * NOTE: there is a continue in this loop!
-     */
+    // NOTE: there is a continue in this loop!
     for( exp = FmtData.u.os2fam.exports; exp != NULL; exp = exp->next ) {
         num_entries++;
         sym = exp->sym;
@@ -864,10 +855,8 @@ void ChkOS2Exports( void )
             } else if( exp->sym->info & SYM_WAS_LAZY ) {
                 LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name.u.ptr );
             }
-            /*
-             * Keep the import name. If an alias is exported, we want the
-             * alias name in the import lib, not the substitute name
-             */
+            // Keep the import name. If an alias is exported, we want the
+            // alias name in the import lib, not the substitute name
             if( exp->impname == NULL ) {
                 exp->impname = ChkStrDup( exp->sym->name.u.ptr );
             }
@@ -880,11 +869,9 @@ void ChkOS2Exports( void )
             exp->addr = sym->addr;
             if( sym->p.seg == NULL || IS_SYM_IMPORTED( sym ) ) {
                 if( FmtData.type & MK_OS2_FLAT ) {
-                    /*
-                     * MN: Create a forwarder - add a special flag?
-                     * Currently WriteFlatEntryTable() in loadflat.c will
-                     * recognize a forwarder by segment == 0xFFFF
-                     */
+                    // MN: Create a forwarder - add a special flag?
+                    // Currently WriteFlatEntryTable() in loadflat.c will
+                    // recognize a forwarder by segment == 0xFFFF
                 } else {
                     LnkMsg( ERR+MSG_CANT_EXPORT_ABSOLUTE, "S", sym );
                 }
@@ -895,9 +882,7 @@ void ChkOS2Exports( void )
                     if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
                         exp->isiopl = true; // Conforming or not doesn't matter!
                         if( exp->addr.off > 65535 ) {
-                            /*
-                             * Call gates are 16-bit only
-                             */
+                            // Call gates are 16-bit only
                             LnkMsg( LOC+ERR+MSG_BAD_TARG_OFF, "a", &exp->addr );
                         }
                     }
@@ -947,12 +932,10 @@ static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
                 } else {
                     outRes->Dir.NumTypes = WResGetNumTypes( dir );
                     outRes->Dir.NumResources = WResGetNumResources( dir );
-                    /*
-                     * the 2 * unsigned_16 are the resource shift count and the type 0 record
-                     */
                     outRes->Dir.TableSize = outRes->Dir.NumTypes * sizeof( resource_type_record ) +
                                         outRes->Dir.NumResources * sizeof( resource_record ) +
                                         2 * sizeof( unsigned_16 );
+                    /* the 2 * unsigned_16 are the resource shift count and the type 0 record */
                     outRes->Dir.Head = NULL;
                     outRes->Dir.Tail = NULL;
                     StringBlockBuild( &outRes->Str, dir, false );
@@ -1206,8 +1189,7 @@ void FiniOS2LoadFile( void )
     } else {
         exe_head.expver = 0;
     }
-    /*
-     * Check default data segment size. On OS/2, data segment + heap + stack
+    /* Check default data segment size. On OS/2, data segment + heap + stack
      * may be up to 64K. On Windows, the max is about 0xfffe. Windows may also
      * tweak the default heap/stack size so this check isn't bulletproof.
      */
@@ -1279,9 +1261,7 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
             dosheader.reloc_offset = 0x40;
             code_start = dosheader.hdr_size * 16ul;
             read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
-            /*
-             * make sure reloc_size is a multiple of 16.
-             */
+            // make sure reloc_size is a multiple of 16.
             reloc_size = __ROUND_UP_SIZE_PARA( dosheader.num_relocs * 4ul );
             dosheader.hdr_size = 4 + reloc_size / 16;
             stub_len = read_len + dosheader.hdr_size * 16ul;

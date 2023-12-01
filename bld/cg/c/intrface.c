@@ -492,7 +492,7 @@ back_handle _CGAPI      BENewBack( cg_sym_handle sym )
     }
     if( NewBackReturn != NULL ) {
 #ifdef DEVBUILD
-        EchoAPI( " -> %B\n", NewBackReturn );
+    EchoAPI( " -> %B\n", NewBackReturn );
 #endif
         return( NewBackReturn );
     }

@@ -307,13 +307,30 @@ static char *reduceToOneString( OPT_STRING **h )
     OPT_STRING *s;
     char *p;
 
-    p = NULL;
     s = *h;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            p = CMemStrDup( s->data );
+            *h = s->next;
+            OPT_CLEAN_STRING( h );
+            /* HACK: Whoever wrote this assumed that strcpy() did a byte-by-byte copy.
+             *       GCC's version however may use DWORD-sized copies instead.
+             *       If source and dest overlap there is NO guarantee of data integrity.
+             *       To avoid corrupting the string, use memmove() instead.
+             *
+             *  NTS: So why can't we just go and return s->data instead of strcpy'ing
+             *       over the struct with it's own string data? Why this bizarre code
+             *       in the first place? --J.C. */
+            {
+                int l = strlen(s->data)+1; /* string + NUL */
+                p = (char *)s;
+                memmove(p,s->data,l);
+            }
+        } else {
+            OPT_CLEAN_STRING( h );
+            p = NULL;
         }
-        OPT_CLEAN_STRING( h );
+    } else {
+        p = NULL;
     }
     return( p );
 }
@@ -369,13 +386,22 @@ void ConcatBase10( char *buff, unsigned num )
     sprintf( dest, "%u", num );
 }
 
+static void setTarget( char **n, char *t )
+{
+    if( *n ) {
+        CMemFree( *n );
+    }
+    *n = strupr( t );
+}
+
 void SetTargetLiteral( char **n, char *t )
 /****************************************/
 {
-    if( *n != NULL ) {
-        CMemFree( *n );
+    if( t != NULL ) {
+        setTarget( n, strsave( t ) );
+    } else {
+        *n = t;
     }
-    *n = strsave( t );
 }
 
 static void procOptions(        // PROCESS AN OPTIONS LINE
@@ -856,27 +882,30 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.fhwe_switch_used = true;
     }
     if( data->fh || data->fhq ) {
+        char *fh_name;
+        char *fhq_name;
         char *p;
-
         if( data->fhq ) {
             CompFlags.no_pch_warnings = true;
         }
         CompFlags.use_pcheaders = true;
-        if( data->fh ) {
-            if( data->fhq ) {
+        fh_name = reduceToOneString( &(data->fh_value) );
+        fhq_name = reduceToOneString( &(data->fhq_value) );
+        if( fh_name != NULL ) {
+            p = fh_name;
+            if( fhq_name != NULL ) {
                 /* use the latest file-name specified */
                 if( data->fh_timestamp > data->fhq_timestamp ) {
-                    p = reduceToOneString( &(data->fh_value) );
+                    CMemFree( fhq_name );
                 } else {
-                    p = reduceToOneString( &(data->fhq_value) );
+                    CMemFree( fh_name );
+                    p = fhq_name;
                 }
-            } else {
-                p = reduceToOneString( &(data->fh_value) );
             }
         } else {
-            p = reduceToOneString( &(data->fhq_value) );
+            p = fhq_name;
         }
-        PCHFileNameSet( p );
+        PCHSetFileName( p );
     }
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );

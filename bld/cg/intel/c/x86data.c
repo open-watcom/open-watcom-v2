@@ -295,8 +295,8 @@ static  cg_class ConstDataClass( void )
 {
     if( _IsTargetModel( CGSW_X86_CONST_IN_CODE ) ) {
         return( CG_CLB );
-//    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
-//        return( CG_CLB );
+    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
+        return( CG_CLB );
     } else {
         return( CG_LBL );
     }

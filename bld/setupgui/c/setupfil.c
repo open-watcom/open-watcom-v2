@@ -951,7 +951,6 @@ bool ModifyAutoExec( bool uninstall )
     bool            ok;
     VBUF            OrigAutoExec;
     VBUF            OrigConfig;
-    bool            isFreeDos;
 
 
     num_auto = SimNumAutoExec();
@@ -969,15 +968,10 @@ bool ModifyAutoExec( bool uninstall )
 #endif
 
     ok = true;
-    isFreeDos = GetVariableBoolVal( "IsFreeDos" );
 #ifdef __OS2__
     SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_CONFIG" ) );
 #else
-    if( isFreeDos ) {
-        SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_FDAUTOEXEC" ) );
-    } else {
-        SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_AUTOEXEC" ) );
-    }
+    SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_AUTOEXEC" ) );
 #endif
     if( DoDialog( "Modify" ) == DLG_CANCEL ) {
         ok = false;
@@ -1005,29 +999,16 @@ bool ModifyAutoExec( bool uninstall )
             boot_drive = 'C';       // assume C
 #endif
         }
-        if( isFreeDos ) {
-            VbufSetStr( &OrigAutoExec, "?:\\FDAUTO.BAT" );
-            VbufSetStr( &OrigConfig, "?:\\FDCONFIG.SYS" );
-        } else {
-            VbufSetStr( &OrigAutoExec, "?:\\AUTOEXEC.BAT" );
-            VbufSetStr( &OrigConfig, "?:\\CONFIG.SYS" );
-        }
+        VbufSetStr( &OrigAutoExec, "?:\\AUTOEXEC.BAT" );
+        VbufSetStr( &OrigConfig, "?:\\CONFIG.SYS" );
         VbufSetPathDrive( &OrigAutoExec, boot_drive );
         VbufSetPathDrive( &OrigConfig, boot_drive );
 
-        if( isFreeDos ) {
-            SetVariableByName( "FileToFind", "FDCONFIG.SYS" );
-        } else {
-            SetVariableByName( "FileToFind", "CONFIG.SYS" );
-        }
+        SetVariableByName( "FileToFind", "CONFIG.SYS" );
         while( access_vbuf( &OrigConfig, F_OK ) != 0 ) {
             SetVariableByName_vbuf( "CfgDir", &OrigConfig );
             if( DoDialog( "LocCfg" ) == DLG_CANCEL ) {
-                if( isFreeDos ) {
-                    MsgBox( NULL, "IDS_CANTFINDFDCONFIGSYS", GUI_OK );
-                } else {
-                    MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
-                }
+                MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
                 ok = false;
                 break;
             }
@@ -1047,19 +1028,11 @@ bool ModifyAutoExec( bool uninstall )
     }
 #ifndef __OS2__
     if( ok ) {
-        if( isFreeDos ) {
-            SetVariableByName( "FileToFind", "FDAUTO.BAT" );
-        } else {
-            SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
-        }
+        SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
         while( access_vbuf( &OrigAutoExec, F_OK ) != 0 ) {
             SetVariableByName_vbuf( "CfgDir", &OrigAutoExec );
             if( DoDialog( "LocCfg" ) == DLG_CANCEL ) {
-                if( isFreeDos ) {
-                    MsgBox( NULL, "IDS_CANTFINDFDAUTO", GUI_OK );
-                } else {
-                    MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
-                }
+                MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
                 ok = false;
                 break;
             }
@@ -1081,11 +1054,12 @@ bool ModifyAutoExec( bool uninstall )
         if( GetVariableBoolVal( "ModNow" ) ) {
             // copy current files to AUTOEXEC.BAK and CONFIG.BAK
 
-            BackupName( &newcfg, &OrigConfig );
-#ifdef __OS2__
-            MsgBoxVbuf( NULL, "IDS_COPYCONFIGSYS", GUI_OK, &newcfg );
-#else
+#ifndef __OS2__
             BackupName( &newauto, &OrigAutoExec );
+#endif
+            BackupName( &newcfg, &OrigConfig );
+
+#ifndef __OS2__
             MsgBoxVbuf2( NULL, "IDS_COPYAUTOEXEC", GUI_OK, &newauto, &newcfg );
             if( DoCopyFile( &OrigAutoExec, &newauto, false ) != CFE_NOERROR ) {
                 MsgBox( NULL, "IDS_ERRORBACKAUTO", GUI_OK );
@@ -1094,6 +1068,8 @@ bool ModifyAutoExec( bool uninstall )
                     ok = false;
                 }
             }
+#else
+            MsgBoxVbuf( NULL, "IDS_COPYCONFIGSYS", GUI_OK, &newcfg );
 #endif
             if( ok ) {
                 if( DoCopyFile( &OrigConfig, &newcfg, false ) != CFE_NOERROR ) {
@@ -1123,13 +1099,13 @@ bool ModifyAutoExec( bool uninstall )
             VbufConcVbufPos( &newcfg, &OrigConfig, 2 );
             VbufSetPathExt( &newcfg, &new_ext );
 
-#ifdef __OS2__
-            MsgBoxVbuf( NULL, "IDS_NEWCONFIGSYS", GUI_OK, &newcfg );
-#else
+#ifndef __OS2__
             MsgBoxVbuf2( NULL, "IDS_NEWAUTOEXEC", GUI_OK, &newauto, &newcfg );
             if( !ModAuto( &OrigAutoExec, &newauto, uninstall ) ) {
                 ok = false;
             }
+#else
+            MsgBoxVbuf( NULL, "IDS_NEWCONFIGSYS", GUI_OK, &newcfg );
 #endif
             if( ok ) {
                 if( !ModConfig( &OrigConfig, &newcfg, uninstall ) ) {

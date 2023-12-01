@@ -701,23 +701,23 @@
 :target. any
 
 :option. MD
-:usage. emit make rules to default output
+:usage. output autodepend make rule
 :group. 6
 :target. any
 
 :option. MF
-:usage. emit make rules to <file>
+:usage. autodepend output file name
 :group. 6
 :file.
 :target. any
 
 :option. MMD
-:usage. emit make rules without system header files
+:usage. output autodepend make rule
 :group. 6
 :target. any
 
 :option. MT
-:usage. emit make rules, set main 'target' to <target>
+:usage. autodepend target name
 :group. 6
 :special. . <target>
 :target. any

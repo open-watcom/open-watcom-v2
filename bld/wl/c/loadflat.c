@@ -56,9 +56,8 @@
 
 
 static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf )
-/*********************************************************************************
- * fill a buffer with consecutive numbers
- */
+/********************************************************************************/
+/* fill a buffer with consecutive numbers */
 {
     unsigned    size;
     unsigned_32 num;
@@ -95,10 +94,9 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf
     return( size );
 }
 
-static unsigned_32 WriteObjectTables( os2_flat_header *header, unsigned long loc )
-/*********************************************************************************
- * write the object table and the object page map
- */
+static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
+/******************************************************************************/
+/* write the object table and the object page map */
 {
     unsigned_32     numpages;
     unsigned_32     numobjects;
@@ -209,14 +207,13 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header, unsigned long loc
  *       one as well.
  */
 static unsigned long WriteFlatEntryTable( void )
-/***********************************************
- * Write the entry table to the file
- */
+/**********************************************/
+/* Write the entry table to the file */
 {
     entry_export        *start;
     entry_export        *place;
     entry_export        *prev;
-    ordinal_t           prev_ordinal;
+    ordinal_t           prevord;
     unsigned long       size;
     unsigned            gap;
     unsigned            entries;
@@ -228,20 +225,18 @@ static unsigned long WriteFlatEntryTable( void )
     flat_bundle_entryfwd bundle_fwd;
     flat_bundle_gate16  bundle_gate;
 
-    /*
-     * NB: The logic here relies on the fact that entries into a particular
-     * object will always be of the same type. All forwarder entries will be
-     * associated with nonexistent object 0. IOPL objects will have call gate
-     * entries, and the rest will have 32-bit entries.
-     * Note: 16-bit objects smaller than 64K could use 16-bit entries to save
-     * space, but that should not be required.
-     */
+    // NB: The logic here relies on the fact that entries into a particular
+    // object will always be of the same type. All forwarder entries will be
+    // associated with nonexistent object 0. IOPL objects will have call gate
+    // entries, and the rest will have 32-bit entries.
+    // Note: 16-bit objects smaller than 64K could use 16-bit entries to save
+    // space, but that should not be required.
     size = 0;
     start = FmtData.u.os2fam.exports;
     if( start != NULL ) {
-        prev_ordinal = 0;
+        prevord = 0;
         for( place = start; place != NULL; ) {
-            gap = place->ordinal - prev_ordinal;
+            gap = place->ordinal - prevord;
             if( gap > 1 ) {  // fill in gaps in ordinals.
                 gap--;       // fix 'off by 1' problem.
                 prefix.null.b32_cnt = 0xFF;
@@ -254,9 +249,7 @@ static unsigned long WriteFlatEntryTable( void )
                 WriteLoad( &prefix.null, sizeof( prefix.null ) );
                 size += sizeof( prefix.null );
             }
-            /*
-             * now get a bundle of ordinals.
-             */
+            // now get a bundle of ordinals.
             entries = 1;
             prev = start = place;
             for( place = place->next; place != NULL; place = place->next ) {
@@ -272,35 +265,27 @@ static unsigned long WriteFlatEntryTable( void )
             }
             prefix.real.b32_cnt = entries;
             if( start->addr.seg == 0xFFFF ) {
-                /*
-                 * Forwarder entry
-                 */
+                // Forwarder entry
                 prefix.real.b32_type = FLT_BNDL_ENTRYFWD;
                 prefix.real.b32_obj = 0;
                 size += entries * sizeof( flat_bundle_entryfwd );
             } else if( start->isiopl ) {
-                /*
-                 * Call gate entry
-                 */
+                // Call gate entry
                 prefix.real.b32_type = FLT_BNDL_GATE16;
                 prefix.real.b32_obj  = start->addr.seg;
                 size += entries * sizeof( flat_bundle_gate16 );
             } else {
-                /*
-                 * 32-bit entry
-                 */
+                // 32-bit entry
                 prefix.real.b32_type = FLT_BNDL_ENTRY32;
                 prefix.real.b32_obj = start->addr.seg;
                 size += entries * sizeof( flat_bundle_entry32 );
             }
-            prev_ordinal = prev->ordinal;
+            prevord = prev->ordinal;
             WriteLoad( &prefix.real, sizeof( prefix.real ) );
             size += sizeof( prefix.real );
             for( ; entries > 0; --entries, start = start->next ) {
                 if( start->addr.seg == 0xFFFF ) {
-                    /*
-                     * Forwarder entry
-                     */
+                    // Forwarder entry
                     dll_sym_info   *dll = start->sym->p.import;
 
                     bundle_fwd.e32_flags = 0;
@@ -313,9 +298,7 @@ static unsigned long WriteFlatEntryTable( void )
                     }
                     WriteLoad( &bundle_fwd, sizeof( flat_bundle_entryfwd ) );
                 } else if( start->isiopl ) {
-                    /*
-                     * Call gate entry
-                     */
+                    // Call gate entry
                     bundle_gate.e32_flags = (start->iopl_words << IOPL_WORD_SHIFT);
                     if( start->isexported )
                         bundle_gate.e32_flags |= ENTRY_EXPORTED | ENTRY_SHARED;
@@ -323,9 +306,7 @@ static unsigned long WriteFlatEntryTable( void )
                     bundle_gate.callgate = 0;
                     WriteLoad( &bundle_gate, sizeof( bundle_gate ) );
                 } else {
-                    /*
-                     * 32-bit entry
-                     */
+                    // 32-bit entry
                     bundle_item.e32_flags = (start->iopl_words << IOPL_WORD_SHIFT);
                     if( start->isexported )
                         bundle_item.e32_flags |= ENTRY_EXPORTED;
@@ -335,10 +316,7 @@ static unsigned long WriteFlatEntryTable( void )
             }
         }
     }
-    /*
-     * A bundle with zero count terminates the entry table
-     */
-    PadLoad( 1 );
+    PadLoad( 1 );   // A bundle with zero count terminates the entry table
     return( size + 1 );
 }
 

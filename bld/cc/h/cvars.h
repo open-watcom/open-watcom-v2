@@ -389,7 +389,7 @@ extern void         ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool
 /* ccmain.c */
 extern void         FreeRDir( void );
 extern void         FrontEndInit( bool reuse );
-extern int          FrontEnd(char **);
+extern bool         FrontEnd(char **);
 extern void         FrontEndFini( void );
 extern void         CppComment(int);
 extern bool         CppPrinting( void );

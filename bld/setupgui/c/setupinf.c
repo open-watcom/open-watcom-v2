@@ -82,7 +82,6 @@
 
 #define NONMAGICVARS( x, y ) \
     x( IsDos, y ) \
-    x( IsFreeDos, y ) \
     x( IsOS2, y ) \
     x( IsOS2DosBox, y ) \
     x( IsWin16, y ) \

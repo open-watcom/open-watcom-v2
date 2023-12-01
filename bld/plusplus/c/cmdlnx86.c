@@ -238,7 +238,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         TargetSystem = TS_NETWARE5;
         PreDefineStringMacro( "__NETWARE_386__" );
         PreDefineStringMacro( "__NETWARE__" );
-        SetTargetLiteral( &target_name, "NETWARE" );
+        /* can get away with this because "netware5" is longer */
+        strcpy( target_name, "NETWARE" );
     } else if( 0 == strcmp( target_name, "NT" ) ) {
         TargetSystem = TS_NT;
         PreDefineStringMacro( "_WIN32" );
@@ -263,7 +264,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 #else
         TargetSystem = TS_WINDOWS;
 #endif
-        SetTargetLiteral( &target_name, "WINDOWS" );
+        /* can get away with this because "cheap_windows" is longer */
+        strcpy( target_name, "WINDOWS" );
         setWindowsSystem();
     } else {
         TargetSystem = TS_OTHER;
@@ -1041,11 +1043,10 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     // -zw overrides a build target setting
     if( data->bt ) {
         char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetLiteral( &target_name, strupr( target ) );
-        CMemFree( target );
+        SetTargetLiteral( &target_name, target );
         if( target_name != NULL ) {
-            if( strcmp( target_name, "WINDOWS" ) == 0
-              || strcmp( target_name, "CHEAP_WINDOWS" ) == 0 ) {
+            if( strcmp( target_name, "WINDOWS" ) == 0 ||
+                  strcmp( target_name, "CHEAP_WINDOWS" ) == 0 ) {
                 mmc |= MMC_WIN;
             } else if( strcmp( target_name, "NETWARE" ) == 0 ) {
                 mmc |= MMC_NETWARE;
@@ -1053,24 +1054,25 @@ void CmdSysAnalyse( OPT_STORAGE *data )
                 mmc |= MMC_NETWARE;
             }
         }
+        CMemFree( target );
     }
 #if _CPU == 8086
     switch( data->win ) {
     case OPT_ENUM_win_zw:
-        SetTargetLiteral( &target_name, "WINDOWS" );
+        SetTargetLiteral( &target_name, "windows" );
         mmc |= MMC_WIN;
         break;
     case OPT_ENUM_win_zW:
-        SetTargetLiteral( &target_name, "CHEAP_WINDOWS" );
+        SetTargetLiteral( &target_name, "cheap_windows" );
         mmc |= MMC_WIN;
         break;
     case OPT_ENUM_win_zws:
-        SetTargetLiteral( &target_name, "WINDOWS" );
+        SetTargetLiteral( &target_name, "windows" );
         TargetSwitches |= CGSW_X86_SMART_WINDOWS;
         mmc |= MMC_WIN;
         break;
     case OPT_ENUM_win_zWs:
-        SetTargetLiteral( &target_name, "CHEAP_WINDOWS" );
+        SetTargetLiteral( &target_name, "cheap_windows" );
         TargetSwitches |= CGSW_X86_SMART_WINDOWS;
         mmc |= MMC_WIN;
         break;
@@ -1078,7 +1080,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 #else
     switch( data->win ) {
     case OPT_ENUM_win_zw:
-        SetTargetLiteral( &target_name, "WINDOWS" );
+        SetTargetLiteral( &target_name, "windows" );
         mmc |= MMC_WIN;
         break;
     }
@@ -1123,6 +1125,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 
     // depends on architecture and fpu being set
+    setMemoryModel( data, mmc );
     if( data->fpd ) {
         TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK;
     }
@@ -1270,8 +1273,6 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         DftCallConv = &WatcallInfo;
         break;
     }
-    setMemoryModel( data, mmc );
-
     // frees 'target_name' memory
     setFinalTargetSystem( data, target_name );
     miscAnalysis( data );

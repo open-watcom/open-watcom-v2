@@ -142,15 +142,14 @@ void PCHActivate( void )
 #endif
 
 
-void PCHFileNameSet( char *name )
+void PCHSetFileName( char *name )
 /*******************************/
 {
     CMemFree( pchName );
     pchName = name;
 }
 
-char *PCHFileNameGet( void )
-/**************************/
+char *PCHFileName( void )
 {
     if( pchName != NULL ) {
         return( pchName );
@@ -492,7 +491,7 @@ void PCHeaderCreate( char *include_file )
         // treat any .PCH as read-only (do not create one)
         return;
     }
-    pch_fname = PCHFileNameGet();
+    pch_fname = PCHFileName();
     pchFile = _sopen4( pch_fname, O_RDWR | O_BINARY | O_CREAT | O_TRUNC, SH_DENYRW, PMODE_RW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_CREATE_ERROR, pch_fname );
@@ -796,7 +795,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     if( CompFlags.fhw_switch_used ) {
         return( PCHA_IGNORE );
     }
-    pchFile = _sopen3( PCHFileNameGet(), O_RDONLY | O_BINARY, SH_DENYWR );
+    pchFile = _sopen3( PCHFileName(), O_RDONLY | O_BINARY, SH_DENYWR );
     if( pchFile == -1 ) {
         return( PCHA_NOT_PRESENT );
     }
@@ -1055,7 +1054,7 @@ void PCHPerformReloc( pch_reloc_index ri )
         return;
     }
     stop_position = relocInfo[ri].stop;
-    pch_fname = PCHFileNameGet();
+    pch_fname = PCHFileName();
     pchFile = _sopen3( pch_fname, O_RDWR | O_BINARY | O_EXCL, SH_DENYRW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_OPEN_ERROR, pch_fname );

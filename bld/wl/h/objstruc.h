@@ -502,9 +502,9 @@ typedef struct {
     void                *entry;
 } node;
 
-//#define NOT_IMP_BY_ORDINAL ((ordinal_t)-1)
+#define NOT_IMP_BY_ORDINAL ((ordinal_t)-1)
 
-typedef unsigned_16     ordinal_t;
+typedef signed_32       ordinal_t;
 
 typedef struct {
     union {

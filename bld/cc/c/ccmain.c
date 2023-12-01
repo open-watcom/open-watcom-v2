@@ -1418,7 +1418,7 @@ void CloseFiles( void )
 }
 
 
-int FrontEnd( char **cmdline )
+bool FrontEnd( char **cmdline )
 {
 #if defined(__WATCOMC__) && defined( _M_IX86 )
     /*

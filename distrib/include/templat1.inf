@@ -395,10 +395,6 @@ IDS_CANTFINDCONFIGSYS=\
     //1"@ cannot find the original CONFIG.SYS file"\
     //2"@ は元の CONFIG.SYS を見つけられません"\
     //0
-IDS_CANTFINDFDCONFIGSYS=\
-    //1"@ cannot find the original FDCONFIG.SYS file"\
-    //2"@ は元の FDCONFIG.SYS を見つけられません"\
-    //0
 IDS_COPYAUTOEXEC=\
     //1"@ will place the contents of your original\nAUTOEXEC.BAT and CONFIG.SYS files\n in the following backup files:\n\n    %s\n    %s"\
     //2"@ はAUTOEXEC.BAT と\n CONFIG.SYS の元の内容\nを以下のバックアップ・ファイルに入れます。\n\n    %s\n    %s"\
@@ -518,10 +514,6 @@ IDS_DRIVE_AVAILABLE=\
 IDS_MODIFY_AUTOEXEC=\
     //1"@ needs to modify AUTOEXEC.BAT and CONFIG.SYS."\
     //2"@ AUTOEXEC.BAT と CONFIG.SYS を更新する必要があります。"\
-    //0
-IDS_MODIFY_FDAUTOEXEC=\
-    //1"@ needs to modify FDAUTO.BAT and FDCONFIG.SYS."\
-    //2"@ FDAUTO.BAT と FDCONFIG.SYS を更新する必要があります。"\
     //0
 IDS_MODIFY_CONFIG=\
     //1"@ needs to modify CONFIG.SYS."\

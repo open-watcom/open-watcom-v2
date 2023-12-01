@@ -52,9 +52,6 @@
 // If too slow make hash size bigger
 #define HASH_SIZE   1021
 
-/*
- * only reference to this Structure is through functions
- */
 typedef struct  a_variable {
     char        *name;
     char        *strval;    /* value */
@@ -64,23 +61,11 @@ typedef struct  a_variable {
     void        (*hook)( vhandle );
 } a_variable;
 
+            //only reference to this Structure is through functions.
 static a_variable   *GlobalVarList = NULL;
-
 static array_info   GlobalVarArray;
 static hash_table   *GlobalVarHash = NULL;
 
-
-#if defined( __DOS__ )
-static bool checkFreeDOS( void )
-{
-    union REGS  r;
-
-    r.w.ax = 0x3000;
-    r.w.bx = 0;
-    intdos( &r, &r );
-    return( r.h.bh == 0xFD );
-}
-#endif
 
 vhandle NextGlobalVar( vhandle var_handle )
 /*****************************************/
@@ -352,7 +337,6 @@ void SetDefaultGlobalVarList( void )
 #if defined( __DOS__ )
     // 16/32-bit DOS
     SetBoolVariableByName(      "IsDos",        true );
-    SetBoolVariableByName(      "IsFreeDos",    checkFreeDOS() );
     SetBoolVariableByName(      "IsOS2DosBox",  _osmajor >= 10 );
 #else
     SetBoolVariableByName(      "IsDos",        false );

@@ -59,13 +59,11 @@ skip_build: .SYMBOLIC
 !loaddll wcc    wccd.dll
 !loaddll wcc386 wccd386.dll
 !loaddll wccaxp wccdaxp.dll
-!loaddll wccmps wccdmps.dll
 !loaddll wlib   wlibd.dll
 !loaddll wlink  wlinkd.dll
 !loaddll wpp    wppdi86.dll
 !loaddll wpp386 wppd386.dll
 !loaddll wppaxp wppdaxp.dll
-!loaddll wppmps wppdmps.dll
 !loaddll wrc    wrcd.dll
 !endif
 !endif
@@ -203,7 +201,7 @@ bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
-bld_cflags   = $(common_cflags) $(common_flags) -Fo$@ -Za
+bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
 bld_c_flags   =
 bld_cxx_flags = -EHsc

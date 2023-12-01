@@ -841,18 +841,18 @@
 :target. any
 :group. 8
 :option. fd
-:usage. write linker directives to <file>
+:usage. write directives
 :file.
 :optional.
 :target. any
 :group. 8
 :option. fe
-:usage. name of output executable file
+:usage. name executable file
 :file.
 :target. any
 :group. 8
 :option. fm
-:usage. emit map information to <file>
+:usage. generate map file
 :file.
 :optional.
 :target. any

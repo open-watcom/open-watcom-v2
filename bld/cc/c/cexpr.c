@@ -703,7 +703,6 @@ static TREEPTR AddrOp( TREEPTR tree )
     if( tree->op.opr == OPR_ERROR )
         return( tree );
     typ = tree->u.expr_type;
-    SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
         CErr1( ERR_CANT_TAKE_ADDR_OF_BIT_FIELD );
         return( ErrorNode( tree ) );

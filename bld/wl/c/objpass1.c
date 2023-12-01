@@ -90,11 +90,11 @@ static void DoSavedImport( symbol *sym )
         modname.name = dll->m.modname.u.ptr;
         modname.len = strlen( modname.name );
         if( dll->isordinal ) {
-            MSImportKeyword( sym, &modname, NULL, dll->u.ordinal, false );
+            MSImportKeyword( sym, &modname, NULL, dll->u.ordinal );
         } else {
             extname.name = dll->u.entname.u.ptr;
             extname.len = strlen( extname.name );
-            MSImportKeyword( sym, &modname, &extname, 0, true );
+            MSImportKeyword( sym, &modname, &extname, NOT_IMP_BY_ORDINAL );
         }
         FreeImport( dll );
     }
@@ -1267,7 +1267,7 @@ bool SeenDLLRecord( void )
 }
 
 void HandleImport( const length_name *intname, const length_name *modname,
-                const length_name *extname, ordinal_t ordinal, bool by_name )
+                            const length_name *extname, ordinal_t ordinal )
 /*************************************************************************/
 // handle the import coment record
 {
@@ -1285,7 +1285,7 @@ void HandleImport( const length_name *intname, const length_name *modname,
         }
 #ifdef _OS2
         if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
-            MSImportKeyword( sym, modname, extname, ordinal, by_name );
+            MSImportKeyword( sym, modname, extname, ordinal );
         } else {
 #endif
             SET_SYM_TYPE( sym, SYM_IMPORTED );
