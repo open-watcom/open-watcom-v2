@@ -1061,7 +1061,8 @@ void CmdSysAnalyse( OPT_STORAGE *data )
      */
     if( data->bt ) {
         char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetLiteral( &target_name, target );
+        SetTargetLiteral( &target_name, strupr( target ) );
+        CMemFree( target );
         if( target_name != NULL ) {
             if( strcmp( target_name, "WINDOWS" ) == 0
               || strcmp( target_name, "CHEAP_WINDOWS" ) == 0 ) {
@@ -1072,25 +1073,24 @@ void CmdSysAnalyse( OPT_STORAGE *data )
                 mmc |= MMC_NETWARE;
             }
         }
-        CMemFree( target );
     }
 #if _CPU == 8086
     switch( data->win ) {
     case OPT_ENUM_win_zw:
-        SetTargetLiteral( &target_name, "windows" );
+        SetTargetLiteral( &target_name, "WINDOWS" );
         mmc |= MMC_WIN;
         break;
     case OPT_ENUM_win_zW:
-        SetTargetLiteral( &target_name, "cheap_windows" );
+        SetTargetLiteral( &target_name, "CHEAP_WINDOWS" );
         mmc |= MMC_WIN;
         break;
     case OPT_ENUM_win_zws:
-        SetTargetLiteral( &target_name, "windows" );
+        SetTargetLiteral( &target_name, "WINDOWS" );
         TargetSwitches |= CGSW_X86_SMART_WINDOWS;
         mmc |= MMC_WIN;
         break;
     case OPT_ENUM_win_zWs:
-        SetTargetLiteral( &target_name, "cheap_windows" );
+        SetTargetLiteral( &target_name, "CHEAP_WINDOWS" );
         TargetSwitches |= CGSW_X86_SMART_WINDOWS;
         mmc |= MMC_WIN;
         break;
@@ -1098,7 +1098,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 #else
     switch( data->win ) {
     case OPT_ENUM_win_zw:
-        SetTargetLiteral( &target_name, "windows" );
+        SetTargetLiteral( &target_name, "WINDOWS" );
         mmc |= MMC_WIN;
         break;
     }

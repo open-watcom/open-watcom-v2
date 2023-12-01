@@ -315,7 +315,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
      */
     if( data->bt ) {
         char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetLiteral( &target_name, target );
+        SetTargetLiteral( &target_name, strupr( target ) );
         CMemFree( target );
     }
     setMemoryModel( data );

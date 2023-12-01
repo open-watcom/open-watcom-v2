@@ -350,8 +350,8 @@ char *SetStringOption( char **o, OPT_STRING **h )
     return( p );
 }
 
-bool MergeIncludeFromEnv( char *env )
-/***********************************/
+bool MergeIncludeFromEnv( const char *env )
+/*****************************************/
 {
     const char  *env_value;
 
@@ -366,8 +366,8 @@ bool MergeIncludeFromEnv( char *env )
     return( false );
 }
 
-void DefSwitchMacro( char *n )
-/****************************/
+void DefSwitchMacro( const char *n )
+/**********************************/
 {
     char *p;
     char buff[64];
@@ -388,22 +388,13 @@ void ConcatBase10( char *buff, unsigned num )
     sprintf( dest, "%u", num );
 }
 
-static void setTarget( char **n, char *t )
+void SetTargetLiteral( char **n, const char *t )
+/**********************************************/
 {
-    if( *n ) {
+    if( *n != NULL ) {
         CMemFree( *n );
     }
-    *n = strupr( t );
-}
-
-void SetTargetLiteral( char **n, char *t )
-/****************************************/
-{
-    if( t != NULL ) {
-        setTarget( n, CMemStrDup( t ) );
-    } else {
-        *n = t;
-    }
+    *n = CMemStrDup( t );
 }
 
 static void procOptions(        // PROCESS AN OPTIONS LINE
