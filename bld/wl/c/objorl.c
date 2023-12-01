@@ -76,9 +76,10 @@ static long                     ORLPos;
 static ORL_STRUCT( orl_reloc )  SavedReloc;
 static char                     *ImpExternalName;
 static char                     *ImpModName;
+static ordinal_t                ImpOrdinal;
+static bool                     ImpByName;
 static const char               *FirstCodeSymName;
 static const char               *FirstDataSymName;
-static ordinal_t                ImpOrdinal;
 
 static readcache                *ReadCacheList;
 
@@ -147,6 +148,7 @@ static orl_file_handle InitFile( void )
     ImpExternalName = NULL;
     ImpModName = NULL;
     ImpOrdinal = 0;
+    ImpByName = false;
     FirstCodeSymName = NULL;
     FirstDataSymName = NULL;
     if( IS_FMT_ELF( ObjFormat ) ) {
@@ -458,7 +460,6 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     segdata                 *sdata;
     segnode                 *snode;
     const char              *name;
-    unsigned_32 _WCUNALIGNED *contents;
     size_t                  len;
     orl_sec_flags           flags;
     orl_sec_type            type;
@@ -483,16 +484,27 @@ static orl_return DeclareSegment( orl_sec_handle sec )
         CurrMod->modinfo |= MOD_IMPORT_LIB;
         if( name[len] == '$' && name[len + 1] == '6' ) {
             /*
-             * .idata$6 it is the segment containg the name
+             * .idata$6 it is the segment containg the entry name
              */
             ORLSecGetContents( sec, (unsigned_8 **)&ImpExternalName );
             ImpExternalName += 2;
+            ImpOrdinal = 0;
+            ImpByName = true;
         } else if( name[len] == '$' && name[len + 1] == '4' ) {
             /*
              * .idata$4 it is an import by ordinal
              */
-            ORLSecGetContents( sec, (void *)&contents );
-            ImpOrdinal = *contents;
+            if( flags & ORL_SEC_FLAG_USE_64 ) {
+                unsigned_64 *contents;
+                ORLSecGetContents( sec, (void *)&contents );
+                ImpOrdinal = contents->u._64[0];
+            } else {
+                unsigned_32 *contents;
+                ORLSecGetContents( sec, (void *)&contents );
+                ImpOrdinal = *contents;
+            }
+            ImpExternalName = NULL;
+            ImpByName = false;
         }
         sdata->isdead = true;
         sdata->isidata = true;
@@ -836,16 +848,11 @@ static void HandleImportSymbol( const char *name )
     modname.name = ImpModName;
     modname.len = strlen( ImpModName );
     if( ImpExternalName == NULL ) {
-        if( ImpOrdinal == 0 ) {
-            ImpOrdinal = NOT_IMP_BY_ORDINAL;
-        } else {
-            ImpOrdinal &= 0x7FFFFFFF;           // get rid of that high bit
-        }
-        HandleImport( &intname, &modname, &intname, ImpOrdinal );
+        HandleImport( &intname, &modname, &intname, ImpOrdinal, ImpByName );
     } else {
         extname.name = ImpExternalName;
         extname.len = strlen( ImpExternalName );
-        HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
+        HandleImport( &intname, &modname, &extname, 0, true );
     }
     _LnkFree( ImpModName );
     ImpModName = NULL;

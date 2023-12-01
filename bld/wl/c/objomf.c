@@ -216,15 +216,15 @@ static void ProcImportKeyword( void )
     ObjBuff += modname.len;
     if( info == DLL_RELOC_NAME ) {
         if( *ObjBuff == 0 ) {   /* use internal name */
-            HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
+            HandleImport( &intname, &modname, &intname, 0, true );
         } else {
             extname.len = *ObjBuff++;
             extname.name = (char *)ObjBuff;
             ObjBuff += extname.len;
-            HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
+            HandleImport( &intname, &modname, &extname, 0, true );
         }
     } else {
-        HandleImport(&intname, &modname, &extname, MGET_U16_UN( ObjBuff ) );
+        HandleImport(&intname, &modname, &extname, MGET_U16_UN( ObjBuff ), false );
     }
 }
 

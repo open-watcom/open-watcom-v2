@@ -41,7 +41,6 @@
 ;
 
 include mdef.inc
-include math87.inc
 
         xrefp           __8087  ; indicate that NDP instructions are present
 
@@ -64,22 +63,22 @@ ifdef __386__
         pop     EAX                     ; retrieve value
         cwde                            ; sign extend value
 else
-        push    _BP                     ; allocate 2 bytes on stack
-        mov     _BP,_SP                 ; get access to stack
-        push    _AX                     ; allocate temporary
-        push    _AX                     ; allocate temporary
-        fstcw   -4[_BP]                 ; get 8087 control word
+        push    BP                      ; allocate 2 bytes on stack
+        mov     BP,SP                   ; get access to stack
+        push    AX                      ; allocate temporary
+        push    AX                      ; allocate temporary
+        fstcw   -4[BP]                  ; get 8087 control word
         fwait                           ; wait until store complete
-        mov     AX,-4[_BP]              ; remember old control word
-        mov     byte ptr -3[_BP],1Fh    ; set control word to truncate
-        fldcw   -4[_BP]                 ; load new control word
-        fistp   word ptr -2[_BP]        ; store value as 16-bit integer
-        mov     -4[_BP],AX              ; restore old 8087 control word
-        fldcw   -4[_BP]                 ; ...
+        mov     AX,-4[BP]               ; remember old control word
+        mov     byte ptr -3[BP],1Fh     ; set control word to truncate
+        fldcw   -4[BP]                  ; load new control word
+        fistp   word ptr -2[BP]         ; store value as 16-bit integer
+        mov     -4[BP],AX               ; restore old 8087 control word
+        fldcw   -4[BP]                  ; ...
         fwait                           ; wait until load complete
-        pop     _AX                     ; remove control word
-        pop     _AX                     ; load 16-bit integer value
-        pop     _BP                     ; restore BP
+        pop     AX                      ; remove control word
+        pop     AX                      ; load 16-bit integer value
+        pop     BP                      ; restore BP
 endif
         ret                             ; return
         endproc __87LDI2

@@ -126,7 +126,6 @@ _OE( _Un(    C,    M,    NONE ),       V_NO,           RG_##reg,     R_MOVOP1TEM
 _OE( _Un(    M,    R,    NONE ),       V_NO,           RG_##reg,     load,           FU_MEM ), \
 _OE( _Un(    C,    R,    NONE ),       V_OP1HIGHADDR,  RG_##reg,     G_LEA_HIGH,     FU_NO ),  \
 _OE( _Un(    C,    R,    NONE ),       V_HALFWORDCONST1,RG_##reg,    G_LEA,          FU_NO ),  \
-_OE( _Un(    C,    R,    NONE ),       V_UHALFWORDCONST1,RG_##reg,   G_MOVE_UI,      FU_NO ),  \
 _OE( _Un(    C,    R,    NONE ),       V_NO,           RG_##reg,     R_CONSTLOAD,    FU_NO ),  \
 _OE( _Un(    M,    M,    NONE ),       V_NO,           RG_,          R_MOVOP1TEMP,   FU_NO ),  \
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_##reg##_NEED,G_UNKNOWN,    FU_NO ),  \

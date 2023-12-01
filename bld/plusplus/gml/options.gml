@@ -217,39 +217,39 @@
 :target. any
 :file.
 :optional.
-:usage.  generate make style automatic dependency file
-:jusage. generate make style automatic dependency file
+:usage.  emit make rules file
+:jusage. emit make rules file
 
 :option. adbs
 :target. any
-:usage.  force path separators to '\\' in auto-depend file
-:jusage. force path separators to '\\' in auto-depend file
+:usage.  force path separators to '\\' in make rules file
+:jusage. force path separators to '\\' in make rules file
 
 :option. adfs
 :target. any
-:usage.  force path separators to '/' in auto-depend file
-:jusage. force path separators to '/' in auto-depend file
+:usage.  force path separators to '/' in make rules file
+:jusage. force path separators to '/' in make rules file
 
 :option. add
 :target. any
 :file.
 :optional.
-:usage.  specify first dependency in make style auto-depend file
-:jusage. specify first dependency in make style auto-depend file
+:usage.  set main 'source' in make rules file
+:jusage. set main 'source' in make rules file
 
 :option. adhp
 :target. any
 :file.
 :optional.
-:usage.  specify default path for headers without one
-:jusage. specify default path for headers without one
+:usage.  specify default path for 'source' in make rules file
+:jusage. specify default path for 'source' in make rules file
 
 :option. adt
 :target. any
 :file.
 :optional.
-:usage.  specify target in make style auto-depend file
-:jusage. specify target in make style auto-depend file
+:usage.  set main 'target' in make rules file
+:jusage. set main 'target' in make rules file
 
 :option. as
 :target. axp

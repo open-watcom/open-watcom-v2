@@ -82,7 +82,7 @@ extern void             DefineComdat( segdata *, symbol *, offset, sym_info, uns
 extern group_entry      *GetGroup( const char * );
 extern group_entry      *SearchGroups( const char * );
 extern bool             SeenDLLRecord( void );
-extern void             HandleImport( const length_name *, const length_name *, const length_name *, ordinal_t );
+extern void             HandleImport( const length_name *, const length_name *, const length_name *, ordinal_t, bool );
 extern void             HandleExport( const length_name *, const length_name *, unsigned, ordinal_t );
 extern bool             CheckVFList( symbol * );
 extern void             SetCurrSeg( segdata *, offset, unsigned_8 * );

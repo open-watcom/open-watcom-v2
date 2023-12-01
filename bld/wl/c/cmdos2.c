@@ -92,7 +92,7 @@ void FreeOS2Fmt( void )
 static entry_export *ProcWlibDLLImportEntry( void )
 /*************************************************/
 {
-    unsigned_16     ordinal;
+    ordinal_t       ordinal;
     entry_export    *exp;
     length_name     symname;
     length_name     internal;
@@ -127,10 +127,10 @@ static entry_export *ProcWlibDLLImportEntry( void )
     } else {
         exp->sym = SymOp( ST_CREATE_REFERENCE, symname.name, symname.len );
     }
-    exp->sym->info |= SYM_DCE_REF;      // make sure it isn't removed
+    exp->sym->info |= SYM_DCE_REF;  // make sure it isn't removed
     exp->ordinal = ordinal;
     if( ordinal == 0 ) {
-        exp->isresident = true;   // no ord spec'd so must be resident
+        exp->isresident = true;     // no ord spec'd so must be resident
     }
     return( exp );
 }
@@ -475,7 +475,7 @@ static bool getimport( void )
     length_name         intname;
     length_name         modname;
     length_name         extname;
-    unsigned_16         ordinal;
+    ordinal_t           ordinal;
     ord_state           state;
 
     DUPSTR_STACK( intname.name, Token.this, Token.len );
@@ -498,12 +498,12 @@ static bool getimport( void )
         }
     }
     if( state == ST_IS_ORDINAL ) {
-        HandleImport( &intname, &modname, &intname, ordinal );
+        HandleImport( &intname, &modname, &intname, ordinal, false );
     } else {
         if( state == ST_NOT_ORDINAL ) {
-            HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
+            HandleImport( &intname, &modname, &extname, 0, true );
         } else {
-            HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
+            HandleImport( &intname, &modname, &intname, 0, true );
         }
     }
     return( true );

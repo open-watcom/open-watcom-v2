@@ -223,7 +223,8 @@ typedef enum {
 // PROTOTYPES
 
 extern void         PCHActivate( void );
-extern void         PCHSetFileName( char * );
+extern void         PCHFileNameSet( char * );
+extern char         *PCHFileNameGet( void );
 extern void         PCHeaderCreate( char * );
 extern pch_absorb   PCHeaderAbsorb( char * );
 extern void         PCHWrite( void const *, unsigned );
@@ -239,7 +240,6 @@ extern void         PCHPerformReloc( pch_reloc_index );
 extern void         PCHWarn2p( unsigned, void * );
 extern NAME         PCHDebugInfoName( void );
 extern void         PCHFlushBuffer( void );
-extern char         *PCHFileName( void );
 
 extern void         *PCHReadCVIndexElement( cvinit_t * );
 

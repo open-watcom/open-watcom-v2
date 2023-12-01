@@ -650,12 +650,6 @@ static  void    Encode( instruction *ins )
         GenOPIMM( 15, _NameRegTrans( ins->result ), ZERO_SINK,
             ins->operands[0]->c.lo.int_value & 0xffff );
         break;
-    case G_MOVE_UI:
-        /* a load of an unsigned 16-bit immediate */
-        /* use addi rd, imm(0) */
-        GenOPIMM( 14, _NameRegTrans( ins->result ), ZERO_SINK,
-            ins->operands[0]->c.lo.int_value );
-        break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );

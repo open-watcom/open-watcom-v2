@@ -58,13 +58,18 @@ endif
         public  IF@ATANH        ; double atanh( double x )
         defp    IF@DATANH
         defp    IF@ATANH
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         fld1                        ; get 1.0
         fld     st(1)               ; duplicate the number
         fabs                        ; get absolute value of number

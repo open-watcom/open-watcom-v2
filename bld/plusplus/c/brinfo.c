@@ -1128,7 +1128,7 @@ static void startBrinfPCH       // START A BROWSE-FILE WHICH HAS PCH REFERENCE
     TOKEN_LOCN start = { 0, 0, 0 };
 
     BrinfInit( false );
-    fname = IoSuppFullPath( PCHFileName(), full_name, sizeof( full_name ) );
+    fname = IoSuppFullPath( PCHFileNameGet(), full_name, sizeof( full_name ) );
     fname = FNameAdd( fname );
     BrinfWriteIns( IC_BR_PCH, fname );
     srcf = SrcFileCurrent();

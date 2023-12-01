@@ -70,22 +70,22 @@ ifdef __386__
         fldcw   word ptr [esp+2]        ; restore old control word
         lea     esp,[esp+4]             ; adjust stack pointer
 else
-        push    _AX                     ; save a register
-        push    _BP                     ; allocate 2 bytes on stack
-        mov     _BP,_SP                 ; get access to stack
-        push    _AX                     ; allocate temporary
-        fstcw   -2[_BP]                 ; get 8087 control word
+        push    AX                      ; save a register
+        push    BP                      ; allocate 2 bytes on stack
+        mov     BP,SP                   ; get access to stack
+        push    AX                      ; allocate temporary
+        fstcw   -2[BP]                  ; get 8087 control word
         fwait                           ; wait until store complete
-        mov     AX,-2[_BP]              ; remember old control word
-        mov     byte ptr -1[_BP],1Fh    ; set control word to truncate
-        fldcw   -2[_BP]                 ; load new control word
+        mov     AX,-2[BP]               ; remember old control word
+        mov     byte ptr -1[BP],1Fh     ; set control word to truncate
+        fldcw   -2[BP]                  ; load new control word
         frndint                         ; truncate top of stack
-        mov     -2[_BP],AX              ; restore old 8087 control word
-        fldcw   -2[_BP]                 ; ...
+        mov     -2[BP],AX               ; restore old 8087 control word
+        fldcw   -2[BP]                  ; ...
         fwait                           ; wait until load complete
-        mov     _SP,_BP                 ; remove temporary
-        pop     _BP                     ; restore BP
-        pop     _AX                     ; restore AX
+        mov     SP,BP                   ; remove temporary
+        pop     BP                      ; restore BP
+        pop     AX                      ; restore AX
 endif
         ret                             ; return
         endproc __CHP

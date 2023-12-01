@@ -107,13 +107,18 @@ endif
 
         public  __@DSQRT
         defp    __@DSQRT
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         ftst                            ; test sign of argument
         fstsw   word ptr func           ; get status
         fwait                           ; wait for it

@@ -343,8 +343,8 @@
 :target. any
 :enumerate. debug_info
 :timestamp.
-:usage. only line numbers
-:jusage. 行番号デバッグ情報
+:usage. line numbers and some type info
+:jusage. line numbers and some type info
 
 :option. d2
 :target. any

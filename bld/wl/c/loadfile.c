@@ -1003,7 +1003,7 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
     if( by_name ) {
         otherlen = strlen( extname );
     } else {
-        otherlen = 10;          // max length of a 32-bit int.
+        otherlen = 5;           // max length of a 16-bit int.
     }
     buff = alloca( intlen + otherlen + ImpLib.module_name_len + 13 );
     buff[0] = '+';

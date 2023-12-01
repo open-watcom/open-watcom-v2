@@ -49,13 +49,18 @@ include math87.inc
         public  IF@ACOSH        ; double acosh( double x )
         defp    IF@DACOSH
         defp    IF@ACOSH
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         fld1                        ; get 1.0
         fcomp                       ; compare against 1.0
         fstsw   word ptr func       ; get status word
@@ -66,7 +71,8 @@ endif
           fstp  qword ptr data      ; - push argument on stack
           mov   AL,FP_FUNC_ACOSH    ; - indicate "acosh"
           mov   func,_AX            ; - push code
-ifdef __STACK__
+ifdef __386__
+ ifdef __STACK__
           mov   sedx,EDX            ; - save EDX (-3s)
           mov   secx,ECX            ; - save ECX (-3s)
           call  __log_matherr       ; - log error
@@ -76,6 +82,9 @@ ifdef __STACK__
           mov   ECX,secx            ; - restore ECX (-3s)
           mov   EDX,sedx            ; - restore EDX (-3s)
           fwait                     ; - ...
+ else
+          call  __log_matherr       ; - log error
+ endif
 else
           call  __log_matherr       ; - log error
 endif

@@ -49,13 +49,18 @@ include math87.inc
         public  IF@DLOG
         defp    IF@DLOG
         defp    IF@LOG
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         mov     AL,FP_FUNC_LOG          ; indicate log
 do_log:
         ftst                            ; test sign of argument
@@ -105,13 +110,18 @@ endif
         public  IF@DLOG2
         defp    IF@DLOG2
         defp    IF@LOG2
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         mov     AL,FP_FUNC_LOG2         ; indicate log2
         jmp     do_log                  ; calculate log2
         endproc IF@LOG2
@@ -122,13 +132,18 @@ endif
         public  IF@DLOG10
         defp    IF@DLOG10
         defp    IF@LOG10
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         mov     AL,FP_FUNC_LOG10        ; indicate log10
         jmp     do_log                  ; calculate log10
         endproc IF@LOG10

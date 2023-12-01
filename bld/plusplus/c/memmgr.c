@@ -158,6 +158,14 @@ void *CMemAlloc( size_t size )
     return( p );
 }
 
+char *CMemStrDup( const char *str )
+/*********************************/
+{
+    if( str != NULL )
+        return( strcpy( CMemAlloc( strlen( str ) + 1 ), str ) );
+    return( NULL );
+}
+
 #ifdef TRMEM
     #define _doFree( p )    _trmem_free( p, _trmem_guess_who(), trackerHdl );
 #else

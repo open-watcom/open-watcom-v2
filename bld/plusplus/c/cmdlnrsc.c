@@ -310,10 +310,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     // -zw overrides a build target setting
     if( data->bt ) {
         char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetLiteral( &target_name, target );
+        SetTargetLiteral( &target_name, strupr( target ) );
         CMemFree( target );
     }
-    setMemoryModel( data );
 #if _CPU == _AXP
     if( data->as ) {
         TargetSwitches |= CGSW_RISC_ALIGNED_SHORT;
@@ -355,6 +354,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         CompFlags.zm_switch_used = true;
     }
 #endif
+    setMemoryModel( data );
 
     // frees 'target_name' memory
     setFinalTargetSystem( data, target_name );

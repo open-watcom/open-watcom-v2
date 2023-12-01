@@ -63,13 +63,18 @@ endif
 
         public  __@DEXP1
         defp    __@DEXP1                ; calc. exp(x) with no check
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         jmp     short calc_exp          ; go calculate exp(x)
         endproc __@DEXP1
 
@@ -83,13 +88,18 @@ endif
 
         public  __@DEXP
         defp    __@DEXP
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         fcom    qword ptr MaxExpVal     ; compare with largest valid argument
         fstsw   word ptr func           ; get status
         fwait                           ; wait for it

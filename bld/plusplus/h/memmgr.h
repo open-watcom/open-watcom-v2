@@ -36,6 +36,7 @@
 
 extern void CMemRegisterCleanup( void (*)( void ) );
 extern void *CMemAlloc( size_t );
+extern char *CMemStrDup( const char *str );
 extern void CMemFree( void * );
 extern void CMemFreePtr( void * );
 extern void *CPermAlloc( size_t );

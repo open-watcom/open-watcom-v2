@@ -49,6 +49,16 @@
 
 #include "clibint.h"
 #include "clibext.h"
+#ifdef _MT
+#pragma message("_MT defined")
+#else
+#pragma message("_MT undefined")
+#endif
+#ifdef _DLL
+#pragma message("_DLL defined")
+#else
+#pragma message("_DLL undefined")
+#endif
 
 
 extern void             Fatal( unsigned msg, ... );

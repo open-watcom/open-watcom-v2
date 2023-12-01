@@ -51,7 +51,7 @@ extern ordinal_t        FindEntryOrdinal( targ_addr, group_entry * );
 extern void             FreeExportList( void );
 extern void             AddToExportList( entry_export * );
 extern void             MSExportKeyword( const length_name *, const length_name *, unsigned, ordinal_t );
-extern void             MSImportKeyword( symbol *, const length_name *, const length_name *, ordinal_t );
+extern void             MSImportKeyword( symbol *, const length_name *, const length_name *, ordinal_t, bool );
 extern dll_sym_info     *AllocDLLInfo( void );
 extern void             FreeImport( dll_sym_info * );
 extern entry_export     *AllocExport( const char *, size_t );

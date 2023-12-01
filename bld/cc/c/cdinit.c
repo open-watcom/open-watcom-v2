@@ -1494,7 +1494,7 @@ static void InitArraySimpleVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ, 
     AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
 }
 
-static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
+static target_size InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ, target_size start )
 {
     target_size i;
     target_size n;
@@ -1504,6 +1504,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
     TOKEN       token;
     target_size j;
     target_size dim;
+    target_size idx;
 
     typ2 = typ->object;
     SKIP_TYPEDEFS( typ2 );
@@ -1530,6 +1531,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
          * skip over T_LEFT_BRACE
          */
         NextToken();
+        dim = 1;
         if( CharArray( typ->object ) ) {
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
@@ -1569,7 +1571,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 token = CurToken;
                 if( token == T_LEFT_BRACE )
                     NextToken();
-                InitArraySimpleVar( sym, sym_handle, typ2, i, CommaExpr() );
+                InitArraySimpleVar( sym, sym_handle, typ2, start + i, CommaExpr() );
                 if( token == T_LEFT_BRACE )
                     MustRecog( T_RIGHT_BRACE );
                 ++i;
@@ -1577,12 +1579,14 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                     dim = i;
                 if( CurToken == T_EOF )
                     break;
+                if( CurToken == T_SEMI_COLON )
+                    break;
                 if( CurToken == T_RIGHT_BRACE )
                     break;
                 MustRecog( T_COMMA );
                 if( CurToken == T_RIGHT_BRACE )
                     break;
-                if( n && i >= n ) {
+                if( n && i > n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
             }
@@ -1590,12 +1594,45 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 typ->u.array->dimension = dim;
             } else {
                 for( i = dim; i < n; i++ ) {
-                    InitArraySimpleVar( sym, sym_handle, typ2, i, IntLeaf( 0 ) );
+                    InitArraySimpleVar( sym, sym_handle, typ2, start + i, IntLeaf( 0 ) );
+                    dim++;
                 }
             }
         }
         MustRecog( T_RIGHT_BRACE );
-        break;
+        return( dim );
+    case TYP_ARRAY:
+        n = typ->u.array->dimension;
+        dim = 0;
+        i = 0;
+        idx = start;
+        for( ;; ) {     // accept some C++ { {1},.. }
+            idx += InitArrayVar( sym, sym_handle, typ2, idx );
+            ++i;
+            if( dim < i )
+                dim = i;
+            if( CurToken == T_EOF )
+                break;
+            if( CurToken == T_SEMI_COLON )
+                break;
+            if( CurToken == T_RIGHT_BRACE )
+                break;
+            MustRecog( T_COMMA );
+            if( CurToken == T_RIGHT_BRACE )
+                break;
+            if( n && i > n ) {
+                CErr1( ERR_TOO_MANY_INITS );
+            }
+        }
+        if( typ->u.array->unspecified_dim ) {
+            typ->u.array->dimension = dim;
+        } else {
+            for( i = dim; i < n; i++ ) {
+                InitArraySimpleVar( sym, sym_handle, typ2, start + i, IntLeaf( 0 ) );
+                idx++;
+            }
+        }
+        return( idx );
     case TYP_FCOMPLEX:
     case TYP_DCOMPLEX:
     case TYP_LDCOMPLEX:
@@ -1655,6 +1692,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
         AggregateVarDeclEquals( sym, sym_handle );
         break;
     }
+    return( 1 );
 }
 
 void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
@@ -1682,7 +1720,7 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
             sym->flags |= SYM_ASSIGNED;
         } else if( typ->decl_type == TYP_ARRAY ) {
             if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits ) {
-                InitArrayVar( sym, sym_handle, typ );
+                InitArrayVar( sym, sym_handle, typ, 0 );
             } else {
                 AggregateVarDeclEquals( sym, sym_handle );
             }
