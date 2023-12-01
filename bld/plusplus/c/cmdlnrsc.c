@@ -60,9 +60,9 @@ void CmdSysInit( void )
     GenSwitches = DEF_CGSW_GEN_SWITCHES | DEF_CGSW_GEN_SWITCHES_ALL;
     TargetSwitches = DEF_CGSW_RSC_SWITCHES;
     CodeClassName = NULL;
-    TextSegName = strsave( "" );
-    DataSegName = strsave( "" );
-    GenCodeGroup = strsave( "" );
+    TextSegName = CMemStrDup( "" );
+    DataSegName = CMemStrDup( "" );
+    GenCodeGroup = CMemStrDup( "" );
     CompFlags.make_enums_an_int = true;
     CompFlags.original_enum_setting = true;
 }

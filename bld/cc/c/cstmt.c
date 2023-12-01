@@ -312,7 +312,7 @@ static void JumpTrue( TREEPTR expr, LABEL_INDEX label )
 
 void LookAhead( void )
 {
-    SavedId = CStrSave( Buffer );       /* save current id */
+    SavedId = CMemStrDup( Buffer );     /* save current id */
     SavedTokenLoc = TokenLoc;           /* save linenum and fno */
     NextToken();                        /* get next token */
     LAToken = CurToken;                 /* save it in look ahead */

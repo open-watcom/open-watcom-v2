@@ -59,7 +59,6 @@ common_objs = &
     $(_subdir_)cusage.obj &
     $(_subdir_)cutil.obj &
     $(_subdir_)ftoa.obj &
-    $(_subdir_)strsave.obj &
     $(_subdir_)watcom.obj &
     $(_subdir_)cgetch.obj &
     $(_subdir_)cmacadd.obj &

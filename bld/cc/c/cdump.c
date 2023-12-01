@@ -74,7 +74,7 @@ static char *ChunkToStr( STRCHUNK *pch )
     }
     ret = pch->data;
     if( ret == NULL ) {
-        ret = CStrSave( "" );
+        ret = CMemStrDup( "" );
     }
     return( ret );
 }

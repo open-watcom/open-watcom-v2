@@ -341,7 +341,7 @@ void InitModInfo( void )
     WholeFName = NULL;
     ObjectFileName = NULL;
     ModuleName = NULL;
-    ErrorFileName = strsave( "*" );
+    ErrorFileName = CMemStrDup( "*" );
     ErrLimit = 20;
     WngLevel = WLEVEL_DEFAULT;
     /*

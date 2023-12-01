@@ -1089,7 +1089,7 @@ static int GetByteSeq( void )
                 if( !IS_ID_OR_KEYWORD( CurToken ) ) {
                     CErr1( ERR_EXPECTING_ID );
                 } else {
-                    name = strsave( Buffer );
+                    name = CMemStrDup( Buffer );
                     offset = 0;
                     NextToken();
                     if( CurToken == T_PLUS ) {

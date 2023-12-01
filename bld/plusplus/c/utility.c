@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,12 +111,6 @@ char *vctsave(                  // ALLOCATE AND SAVE VECTOR AS STRING
     return( new_str );
 }
 
-
-char *strsave(                  // ALLOCATE AND SAVE A STRING
-    const char *str )           // - source string
-{
-    return( vctsave( str, strlen( str ) ) );
-}
 
 char *strpermsave(              // ALLOCATE AND SAVE A STRING IN PERMANENT STORAGE
     const char *str )           // - source string

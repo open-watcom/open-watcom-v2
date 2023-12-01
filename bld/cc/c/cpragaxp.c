@@ -231,7 +231,7 @@ static void GetPdata( void )
     if( CurToken != T_ID ) {
         CErr1( ERR_EXPECTING_ID );
     } else {
-        name = CStrSave( Buffer );
+        name = CMemStrDup( Buffer );
         AuxInfo.except_rtn = name;
         NextToken();
     }

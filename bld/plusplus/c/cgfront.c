@@ -872,7 +872,7 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
         stxpcpy( seg_name, TS_SEG_CODE );
 #endif
         CMemFree( TextSegName );
-        TextSegName = strsave( seg_name );
+        TextSegName = CMemStrDup( seg_name );
     }
     SegmentInit( TextSegName );
     codeCGFILE = NULL;

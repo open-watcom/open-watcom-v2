@@ -377,13 +377,13 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            seg_name = strsave( Buffer );
+            seg_name = CMemStrDup( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
                 NextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-                    seg_class = strsave( Buffer );
+                    seg_class = CMemStrDup( Buffer );
                     NextToken();
                 } else {
                     MustRecog( T_STRING );
@@ -423,13 +423,13 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            seg_name = strsave( Buffer );
+            seg_name = CMemStrDup( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
                 NextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-                    seg_class = strsave( Buffer );
+                    seg_class = CMemStrDup( Buffer );
                     NextToken();
                 } else {
                     MustRecog( T_STRING );
@@ -1547,7 +1547,7 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 {
     if( CurToken == T_STRING ) {
         CMemFree( CurrInfo->objname );
-        CurrInfo->objname = strsave( Buffer );
+        CurrInfo->objname = CMemStrDup( Buffer );
         NextToken();
     }
 }
@@ -1728,7 +1728,7 @@ struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
     }
     seg = CMemAlloc( sizeof( struct textsegment ) );
     seg->next = TextSegList;
-    seg->segname = strsave( name );
+    seg->segname = CMemStrDup( name );
     seg->segment_number = 0;
     TextSegList = seg;
     return( seg );

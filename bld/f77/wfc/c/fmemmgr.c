@@ -152,8 +152,8 @@ void    wres_free( void *p )
 #endif
 }
 
-char *FStrDup( const char *buf )
-//==============================
+char *FMemStrDup( const char *buf )
+//=================================
 {
     char    *new;
     size_t  len;

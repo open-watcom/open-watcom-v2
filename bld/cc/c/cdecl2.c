@@ -234,7 +234,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
                       && old_typ->object->decl_type == TYP_FUNCTION ) {
                         SymGet( &sym_typedef, old_typ->u.typedefn );
                         sym_name = SymName( &sym_typedef, old_typ->u.typedefn );
-                        name = CStrSave( sym_name );
+                        name = CMemStrDup( sym_name );
                         XferPragInfo( name, sym->name );
                         CMemFree( name );
                     }

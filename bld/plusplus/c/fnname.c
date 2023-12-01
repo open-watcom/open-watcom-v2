@@ -878,7 +878,7 @@ static char* setMangling(       // SET FOR MANGLING
     char *save;                 // - saved name
 
     setPrefix( last );
-    save = strsave( VbufString( &mangled_name ) );
+    save = CMemStrDup( VbufString( &mangled_name ) );
     VbufRewind( &mangled_name );
     return( save );
 }

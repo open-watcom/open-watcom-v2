@@ -380,11 +380,11 @@ static user_seg *AllocUserSeg( const char *segname, const char *class_name, seg_
 
     useg = CMemAlloc( sizeof( user_seg ) );
     useg->next = NULL;
-    useg->name = CStrSave( segname );
+    useg->name = CMemStrDup( segname );
     useg->class_name = NULL;
     useg->segtype = segtype;
     if( class_name != NULL ) {
-        useg->class_name = CStrSave( class_name );
+        useg->class_name = CMemStrDup( class_name );
     }
     useg->segid = userSegId++;
     return( useg );

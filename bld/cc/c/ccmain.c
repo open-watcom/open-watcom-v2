@@ -755,7 +755,7 @@ char *FNameFullPath( FNAMEPTR flist )
     if( flist->fullpath == NULL ) {
         fullpath = SrcFullPath( flist->name, fullbuff, sizeof( fullbuff ) );
         if( fullpath != NULL ) {
-            fullpath = CStrSave( fullpath );
+            fullpath = CMemStrDup( fullpath );
             flist->fullpath = fullpath;
         } else {
             fullpath = flist->name;
@@ -932,9 +932,9 @@ static void ParseInit( void )
     SegInit();
     force = FEGetEnv( "FORCE" );
     if( force != NULL ) {
-        ForceInclude = CStrSave( force );
+        ForceInclude = CMemStrDup( force );
     }
-    ForcePreInclude = CStrSave( "_preincl.h" );
+    ForcePreInclude = CMemStrDup( "_preincl.h" );
 }
 
 static bool OpenPgmFile( void )

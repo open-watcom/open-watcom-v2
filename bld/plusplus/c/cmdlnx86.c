@@ -92,9 +92,9 @@ void CmdSysInit( void )
     SET_FPU_EMU( CpuSwitches );
     Stack87 = 8;
     CodeClassName = NULL;
-    TextSegName = strsave( "" );
-    DataSegName = strsave( "" );
-    GenCodeGroup = strsave( "" );
+    TextSegName = CMemStrDup( "" );
+    DataSegName = CMemStrDup( "" );
+    GenCodeGroup = CMemStrDup( "" );
     CompFlags.use_stdcall_at_number = true;
     CompFlags.register_conventions = true;
 }

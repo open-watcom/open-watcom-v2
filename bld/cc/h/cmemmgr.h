@@ -29,11 +29,13 @@
 ****************************************************************************/
 
 
-extern  void    CMemInit(void);
-extern  void    CMemFini(void);
-extern  void    *CPermAlloc(size_t);
-extern  void    *CMemAlloc(size_t);
-extern  void    *CMemRealloc( void *loc, size_t size );
-extern  void    CMemFree(void *);
-extern  void    *FEmalloc(size_t);
-extern  void    FEfree(void *);
+extern void     CMemInit(void);
+extern void     CMemFini(void);
+extern void     *CPermAlloc(size_t);
+extern void     *CMemAlloc(size_t);
+extern char     *ToString( const char *buf, size_t len );
+extern char     *CMemStrDup( const char *str );
+extern void     *CMemRealloc( void *loc, size_t size );
+extern void     CMemFree(void *);
+extern void     *FEmalloc(size_t);
+extern void     FEfree(void *);

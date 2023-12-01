@@ -294,6 +294,22 @@ void *CMemAlloc( size_t size )
     return( memset( p, 0, size ) );
 }
 
+char *ToString( const char *buf, size_t len )
+{
+    char    *str;
+
+    str = CMemAlloc( len + 1 );
+    if( str != NULL ) {
+        memcpy( str, buf, len );
+        str[len] = '\0';
+    }
+    return( str );
+}
+
+char *CMemStrDup( const char *buf )
+{
+    return( ToString( buf, strlen( buf ) ) );
+}
 
 void *CMemRealloc( void *old_p, size_t size )
 /*******************************************/

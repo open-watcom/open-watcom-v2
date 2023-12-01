@@ -361,7 +361,7 @@ MEPTR MacroScan( void )
         CErr1( ERR_CANT_DEFINE_DEFINED );
         return( NULL );
     }
-    token_buf = CStrSave( Buffer );
+    token_buf = CMemStrDup( Buffer );
     formal_parms = NULL;
     macro_loc = SrcFileLoc;
     parm_count = 0;             /* 0 ==> no () following */
@@ -393,9 +393,9 @@ MEPTR MacroScan( void )
                 prev_mp->next = mp;
             }
             if( CurToken == T_DOT_DOT_DOT ) {
-                mp->parm = CStrSave( "__VA_ARGS__" );
+                mp->parm = CMemStrDup( "__VA_ARGS__" );
             } else {
-                mp->parm = CStrSave( Buffer );
+                mp->parm = CMemStrDup( Buffer );
             }
             prev_mp = mp;
             PPNextToken();
@@ -892,7 +892,7 @@ TOKEN Process_Pragma( void )
         if( CurToken == T_STRING ) {
             char        *token_buf;
 
-            token_buf = CStrSave( Buffer );
+            token_buf = CMemStrDup( Buffer );
             PPNextToken();
             if( CurToken == T_RIGHT_PAREN ) {
                 ppctl_t old_ppctl;

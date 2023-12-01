@@ -72,10 +72,7 @@ hw_reg_set *AuxParmDup(         // DUPLICATE AUX PARMS
 char *AuxObjnameDup(            // DUPLICATE AUX OBJNAME
     char *objname )
 {
-    if( objname == NULL ) {
-        return( objname );
-    }
-    return( strsave( objname ) );
+    return( CMemStrDup( objname ) );
 }
 
 void freeAuxInfo( AUX_INFO *i ) // FREE ALL AUX INFO MEM

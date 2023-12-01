@@ -202,7 +202,7 @@ void AddUndefMacro( const char *str )
         if( !MacroDel( str ) ) {
             uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;
-            uname->name = CStrSave( str );
+            uname->name = CMemStrDup( str );
             UndefNames = uname;
         }
     }
@@ -302,7 +302,7 @@ void InitModInfo( void )
     UndefNames = NULL;
     WholeFName = NULL;
     ObjectFileName = NULL;
-    ErrorFileName = CStrSave( "*" );
+    ErrorFileName = CMemStrDup( "*" );
     DependFileName = NULL;
     DependForceSlash = 0;
     ModuleName = NULL;

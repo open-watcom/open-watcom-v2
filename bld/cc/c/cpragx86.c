@@ -682,7 +682,7 @@ static bool GetByteSeq( aux_info *info )
                 if( !IS_ID_OR_KEYWORD( CurToken ) ) {
                     CErr1( ERR_EXPECTING_ID );
                 } else {
-                    name = CStrSave( Buffer );
+                    name = CMemStrDup( Buffer );
                     PPNextToken();
                     if( CurToken == T_PLUS ) {
                         PPNextToken();

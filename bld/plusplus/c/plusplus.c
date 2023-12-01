@@ -122,9 +122,7 @@ static void MakePgmName(        // MAKE CANONICAL FILE NAME
 
     _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     SrcFName = FNameAdd( pg.fname );
-    if( ModuleName == NULL ) {
-        ModuleName = strsave( SrcFName );
-    }
+    ModuleName = CMemStrDup( SrcFName );
 }
 
 
@@ -217,11 +215,7 @@ static void setForceIncludeFromEnv( void )
     const char  *force;
 
     force = CppGetEnv( "FORCE" );
-    if( force != NULL ) {
-        ForceInclude = strsave( force );
-    } else {
-        ForceInclude = NULL;
-    }
+    ForceInclude = CMemStrDup( force );
 }
 
 static bool openForcePreIncludeFile( void )
@@ -240,7 +234,7 @@ static bool openForcePreIncludeFile( void )
 
 static void setForcePreInclude( void )
 {
-    ForcePreInclude = strsave( DEFAULT_PREINCLUDE_FILE );
+    ForcePreInclude = CMemStrDup( DEFAULT_PREINCLUDE_FILE );
 }
 
 static int doCCompile(          // COMPILE C++ PROGRAM

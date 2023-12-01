@@ -503,7 +503,7 @@ static void CopyObjName( void )
         return;
     if( CurrInfo->objname != CurrAlias->objname )
         return;
-    CurrInfo->objname = CStrSave( CurrInfo->objname );
+    CurrInfo->objname = CMemStrDup( CurrInfo->objname );
 }
 
 #if _CPU == _AXP
@@ -514,7 +514,7 @@ static void CopyExceptRtn( void )
         return;
     if( CurrInfo->except_rtn != CurrAlias->except_rtn )
         return;
-    CurrInfo->except_rtn = CStrSave( CurrInfo->except_rtn );
+    CurrInfo->except_rtn = CMemStrDup( CurrInfo->except_rtn );
 }
 #endif
 
@@ -563,7 +563,7 @@ void PragObjNameInfo( char **objname )
 /************************************/
 {
     if( CurToken == T_STRING ) {
-        *objname = CStrSave( Buffer );
+        *objname = CMemStrDup( Buffer );
         PPNextToken();
     }
 }
@@ -1316,15 +1316,15 @@ static void pragCodeSeg( void )
         tseg = NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            segname = CStrSave( Buffer );
-            classname = CStrSave( "" );
+            segname = CMemStrDup( Buffer );
+            classname = CMemStrDup( "" );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     CMemFree( classname );
-                    classname = CStrSave( Buffer );
-//                    CodeClassName = CStrSave( Buffer ); */
+                    classname = CMemStrDup( Buffer );
+//                    CodeClassName = CMemStrDup( Buffer ); */
                     PPNextToken();
                 }
             }
@@ -1357,7 +1357,7 @@ static void pragDataSeg( void )
         segid = SEG_NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            segname = CStrSave( Buffer );
+            segname = CMemStrDup( Buffer );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
@@ -1470,7 +1470,7 @@ static void pragIncludeAlias( void )
         if( CurToken == T_STRING ) {
             char    *alias_name;
 
-            alias_name = CStrSave( Buffer );
+            alias_name = CMemStrDup( Buffer );
             PPNextToken();
             MustRecog( T_COMMA );
             if( CurToken == T_STRING ) {
@@ -1656,7 +1656,7 @@ static void pragAlias( void )
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
         } else if( CurToken == T_STRING ) {
-            alias_name = CStrSave( Buffer );
+            alias_name = CMemStrDup( Buffer );
         }
         PPNextToken();
         MustRecog( T_COMMA );
@@ -1666,7 +1666,7 @@ static void pragAlias( void )
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
         } else if( CurToken == T_STRING ) {
-            subst_name = CStrSave( Buffer );
+            subst_name = CMemStrDup( Buffer );
         }
         PPNextToken();
         MustRecog( T_RIGHT_PAREN );

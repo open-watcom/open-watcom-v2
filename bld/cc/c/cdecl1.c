@@ -96,7 +96,7 @@ static void FuncDefn( SYMPTR sym )
      * duplicate name in near space
      */
     sym_name = SymName( sym, CurFuncHandle );
-    sym->name = CStrSave( sym_name );
+    sym->name = CMemStrDup( sym_name );
     if( sym->flags & SYM_DEFINED ) {
         CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
     }

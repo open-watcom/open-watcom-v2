@@ -400,7 +400,7 @@ void SetTargetLiteral( char **n, char *t )
 /****************************************/
 {
     if( t != NULL ) {
-        setTarget( n, strsave( t ) );
+        setTarget( n, CMemStrDup( t ) );
     } else {
         *n = t;
     }

@@ -1099,7 +1099,7 @@ TOKEN Process_Pragma( bool internal )
         if( CurToken == T_STRING ) {
             char    *token_buf;
 
-            token_buf = CStrSave( Buffer );
+            token_buf = CMemStrDup( Buffer );
             PpNextToken();
             if( CurToken == T_RIGHT_PAREN ) {
                 ppctl_t old_ppctl;
