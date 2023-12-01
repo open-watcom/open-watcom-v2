@@ -122,7 +122,9 @@ static void MakePgmName(        // MAKE CANONICAL FILE NAME
 
     _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     SrcFName = FNameAdd( pg.fname );
-    ModuleName = CMemStrDup( SrcFName );
+    if( ModuleName == NULL ) {
+        ModuleName = CMemStrDup( SrcFName );
+    }
 }
 
 
