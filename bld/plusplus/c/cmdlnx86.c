@@ -314,7 +314,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 
 static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
 {
-    char model = '\0';
+    char lib_model = '\0';
     unsigned bit;
 
     if( data->mem_model == OPT_ENUM_mem_model_default ) {
@@ -362,7 +362,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
     CodePtrSize = TARGET_POINTER;
     switch( data->mem_model ) {
     case OPT_ENUM_mem_model_ms:
-        model = 's';
+        lib_model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "SM" );
         PreDefineStringMacro( "__SMALL__" );
         CompFlags.strings_in_code_segment = false;
@@ -370,7 +370,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
         bit |= CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_mm:
-        model = 'm';
+        lib_model = 'm';
         WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
@@ -380,14 +380,14 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
         bit |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_mc:
-        model = 'c';
+        lib_model = 'c';
         PreDefineStringMacro( "_M_" MM_ARCH "CM" );
         PreDefineStringMacro( "__COMPACT__" );
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_ml:
-        model = 'l';
+        lib_model = 'l';
         PreDefineStringMacro( "_M_" MM_ARCH "LM" );
         PreDefineStringMacro( "__LARGE__" );
         WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
@@ -397,7 +397,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
         break;
 #if _CPU == 8086
     case OPT_ENUM_mem_model_mh:
-        model = 'h';
+        lib_model = 'h';
         PreDefineStringMacro( "_M_" MM_ARCH "HM" );
         PreDefineStringMacro( "__HUGE__" );
         WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
@@ -410,7 +410,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
         CompFlags.mfi_switch_used = true;
         /* fall through */
     case OPT_ENUM_mem_model_mf:
-        model = 's';
+        lib_model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );
         PreDefineStringMacro( "__FLAT__" );
         bit |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
@@ -529,10 +529,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
     }
 #else
     if( CompFlags.register_conventions ) {
-        model = 'r';
+        lib_model = 'r';
         PreDefineStringMacro( "__3R__" );
     } else {
-        model = 's';
+        lib_model = 's';
         PreDefineStringMacro( "__3S__" );
     }
     strcpy( CDLL_Name, "1clb?dll" );
@@ -605,14 +605,14 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
         }
         EmuLib_Name = "8noemu387";
     }
-    *strchr( CDLL_Name, '?' ) = model;
-    *strchr( WCPPDLL_Name, '?' ) = model;
+    *strchr( CDLL_Name, '?' ) = lib_model;
+    *strchr( WCPPDLL_Name, '?' ) = lib_model;
 #endif
-    *strchr( CLIB_Name, '?' ) = model;
-    *strchr( MATHLIB_Name, '?' ) = model;
-    *strchr( WCPPLIB_Name, '?' ) = model;
-    *strchr( DLL_CLIB_Name, '?' ) = model;
-    *strchr( DLL_WCPPLIB_Name, '?' ) = model;
+    *strchr( CLIB_Name, '?' ) = lib_model;
+    *strchr( MATHLIB_Name, '?' ) = lib_model;
+    *strchr( WCPPLIB_Name, '?' ) = lib_model;
+    *strchr( DLL_CLIB_Name, '?' ) = lib_model;
+    *strchr( DLL_WCPPLIB_Name, '?' ) = lib_model;
 }
 
 static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control mmc )
