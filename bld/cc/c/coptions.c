@@ -312,6 +312,8 @@ static void SetTargetSystem( void )
         TargetSystem = TS_QNX;
     } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
         TargetSystem = TS_OS2;
+    } else if( strcmp( SwData.sys_name, "RDOS" ) == 0 ) {
+        TargetSystem = TS_RDOS;
     } else if( strcmp( SwData.sys_name, "HAIKU" ) == 0
             || strcmp( SwData.sys_name, "OSX" ) == 0
             || strcmp( SwData.sys_name, "SOLARIS" ) == 0
