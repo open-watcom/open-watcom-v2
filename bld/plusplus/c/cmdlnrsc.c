@@ -42,7 +42,7 @@
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
-#include "clibext.gh"
+#include "clibext.h"
 
 
 #define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS)
