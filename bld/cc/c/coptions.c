@@ -394,7 +394,7 @@ static void SetTargetSystem( void )
 
 #if _RISC_CPU
     if( (GenSwitches & (CGSW_GEN_OBJ_ELF | CGSW_GEN_OBJ_COFF)) == 0 ) {
-        if( TargetSystem == TS_WINDOWS ) {
+        if( TargetSystem == TS_NT ) {
             GenSwitches |= CGSW_GEN_OBJ_COFF;
         } else {
             GenSwitches |= CGSW_GEN_OBJ_ELF;
