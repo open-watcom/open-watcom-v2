@@ -297,13 +297,13 @@ static void SetTargetSystem( void )
     } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
         TargetSystem = TS_NETWARE5;
         PreDefine_Macro( "__NETWARE5__" );
-        strcpy( SwData.sys_name, "NETWARE" );
+        SetTargetName( "NETWARE" );
     } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
         TargetSystem = TS_WINDOWS;
     } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
         TargetSystem = TS_CHEAP_WINDOWS;
         PreDefine_Macro( "__CHEAP_WINDOWS__" );
-        strcpy( SwData.sys_name, "WINDOWS" );
+        SetTargetName( "WINDOWS" );
     } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
         TargetSystem = TS_NT;
     } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
@@ -861,8 +861,7 @@ void MergeInclude( void )
 #endif
         AddIncList( env_var );
     }
-    CMemFree( SwData.sys_name );
-    SwData.sys_name = NULL;
+    SetTargetName( NULL );
 }
 
 
