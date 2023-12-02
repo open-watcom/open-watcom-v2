@@ -92,7 +92,7 @@ ExtraRptTable( ctr_pchw_region, PCHRW_MAX + 1, 1 );
 
 static pch_reloc_info relocInfo[PCHRELOC_MAX];
 
-static char *pchName;
+static char *pchFileName;
 static NAME pchDebugInfoName;
 static int  pchFile;
 
@@ -142,17 +142,16 @@ void PCHActivate( void )
 #endif
 
 
-void PCHSetFileName( char *name )
+char **PCHFileNamePtr( void )
 /*******************************/
 {
-    CMemFree( pchName );
-    pchName = name;
+    return( &pchFileName );
 }
 
-char *PCHFileName( void )
+char *PCHFileNameGet( void )
 {
-    if( pchName != NULL ) {
-        return( pchName );
+    if( pchFileName != NULL ) {
+        return( pchFileName );
     }
     return( PCH_DEFAULT_FILE_NAME );
 }
@@ -491,7 +490,7 @@ void PCHeaderCreate( char *include_file )
         // treat any .PCH as read-only (do not create one)
         return;
     }
-    pch_fname = PCHFileName();
+    pch_fname = PCHFileNameGet();
     pchFile = _sopen4( pch_fname, O_RDWR | O_BINARY | O_CREAT | O_TRUNC, SH_DENYRW, PMODE_RW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_CREATE_ERROR, pch_fname );
@@ -795,7 +794,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     if( CompFlags.fhw_switch_used ) {
         return( PCHA_IGNORE );
     }
-    pchFile = _sopen3( PCHFileName(), O_RDONLY | O_BINARY, SH_DENYWR );
+    pchFile = _sopen3( PCHFileNameGet(), O_RDONLY | O_BINARY, SH_DENYWR );
     if( pchFile == -1 ) {
         return( PCHA_NOT_PRESENT );
     }
@@ -1054,7 +1053,7 @@ void PCHPerformReloc( pch_reloc_index ri )
         return;
     }
     stop_position = relocInfo[ri].stop;
-    pch_fname = PCHFileName();
+    pch_fname = PCHFileNameGet();
     pchFile = _sopen3( pch_fname, O_RDWR | O_BINARY | O_EXCL, SH_DENYRW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_OPEN_ERROR, pch_fname );
@@ -1113,7 +1112,7 @@ static void pchInit( INITFINI* defn )
 
     /* unused parameters */ (void)defn;
 
-    pchName = NULL;
+    pchFileName = NULL;
     pchDebugInfoName = NULL;
     for( cri = relocInfo; cri < &relocInfo[PCHRELOC_MAX]; ++cri ) {
         cri->start = 0;
@@ -1132,7 +1131,7 @@ static void pchFini( INITFINI* defn )
 {
     /* unused parameters */ (void)defn;
 
-    CMemFreePtr( &pchName );
+    CMemFreePtr( &pchFileName );
 }
 
 INITDEFN( pchdrs, pchInit, pchFini )

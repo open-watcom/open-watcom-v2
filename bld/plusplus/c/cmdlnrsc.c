@@ -94,8 +94,8 @@ void CmdSysSetMaxOptimization( void )
 static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 {
     char buff[128];
+    bool target_multi_thread;
 
-    TargetSystem = TS_OTHER;
 #if _CPU == _AXP
     if( CompFlags.non_iso_compliant_names_enabled ) {
         PreDefineStringMacro( "M_ALPHA" );
@@ -127,20 +127,30 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     }
     if( 0 == strcmp( target_name, "NT" ) ) {
         TargetSystem = TS_NT;
+    } else {
+        TargetSystem = TS_OTHER;
     }
     strcpy( buff, "__" );
     strcat( buff, target_name );
     strcat( buff, "__" );
     PreDefineStringMacro( buff );
+
+    target_multi_thread = true;
+    switch( TargetSystem ) {
+    case TS_NT:
+        PreDefineStringMacro( "_WIN32" );
+        break;
+    }
+    if( data->bm
+      || target_multi_thread && data->bd ) {
+        CompFlags.target_multi_thread = true;
+    }
+
     strcpy( buff, target_name );
     strcat( buff, "_INCLUDE" );
     MergeIncludeFromEnv( buff );
     MergeIncludeFromEnv( "INCLUDE" );
     CMemFree( target_name );
-    if( data->bm
-      || data->bd ) {
-        CompFlags.target_multi_thread = true;
-    }
 }
 
 static void macroDefs( void )
