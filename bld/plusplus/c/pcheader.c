@@ -117,7 +117,6 @@ static jmp_buf  *abortData;
 static clock_t start_parse;
 
 static void PCHTrashAlreadyRead( void )
-/*************************************/
 {
     if( ioBuffer != NULL && ioBuffer < pch_buff_cur ) {
         unsigned amt = pch_buff_cur - ioBuffer;
@@ -126,6 +125,7 @@ static void PCHTrashAlreadyRead( void )
 }
 
 void PCHActivate( void )
+/**********************/
 {
     start_parse = clock();
 }
@@ -143,12 +143,13 @@ void PCHActivate( void )
 
 
 char **PCHFileNamePtr( void )
-/*******************************/
+/***************************/
 {
     return( &pchFileName );
 }
 
 char *PCHFileNameGet( void )
+/**************************/
 {
     if( pchFileName != NULL ) {
         return( pchFileName );
@@ -349,6 +350,7 @@ static void execControlFunctions( bool writing, pch_status (**tbl)( void ) )
 }
 
 void PCHFlushBuffer( void )
+/*************************/
 {
     unsigned amount;
     unsigned amt_written;
@@ -371,6 +373,7 @@ void PCHFlushBuffer( void )
 
 #ifdef DEVBUILD
 void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
+/********************************/
 {
     DbgVerify( (int)(pointer_uint)handle == pchFile, "PCH handle is bad" );
 }
@@ -379,6 +382,7 @@ void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
 
 #ifdef OPT_BR
 long PCHSeek( long offset, int type )
+/***********************************/
 {
     lseek( pchFile, offset, type );
     return( tell( pchFile ) );
@@ -906,7 +910,6 @@ void *PCHReadUnaligned( void *p, unsigned size )
 }
 
 static unsigned doReadUnsigned( void )
-/************************************/
 {
     unsigned read_value;
     PCHRead( &read_value, sizeof( read_value ) );

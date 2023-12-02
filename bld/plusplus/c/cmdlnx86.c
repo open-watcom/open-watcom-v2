@@ -243,7 +243,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     } else if( 0 == strcmp( target_name, "NETWARE5" ) ) {
         TargetSystem = TS_NETWARE5;
         PreDefineStringMacro( "__NETWARE_386__" );
-        PreDefineStringMacro( "__NETWARE__" );
+        PreDefineStringMacro( "__NETWARE5__" );
         SetTargetLiteral( &target_name, "NETWARE" );
     } else if( 0 == strcmp( target_name, "NT" ) ) {
         TargetSystem = TS_NT;
@@ -1164,7 +1164,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         Stack87 = 4;
     } else {
         if( mmc & MMC_NETWARE ) {
-            if(TS_NETWARE5 != TargetSystem) {
+            if( TS_NETWARE5 != TargetSystem ) {
                 /*
                  * no fpr for netware 5
                  */
