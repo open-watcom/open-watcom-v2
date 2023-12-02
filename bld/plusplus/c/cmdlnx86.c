@@ -42,6 +42,8 @@
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
+#include "clibext.h"
+
 
 /*
  * flags to control memory model settings
@@ -186,7 +188,6 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 {
     char buff[128];
 
-    TargetSystem = TS_OTHER;
     if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
         PreDefineStringMacro( "M_I86" );
@@ -243,16 +244,12 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         TargetSystem = TS_NETWARE5;
         PreDefineStringMacro( "__NETWARE_386__" );
         PreDefineStringMacro( "__NETWARE__" );
-        /*
-         * can get away with this because "netware5" is longer
-         */
-        strcpy( target_name, "NETWARE" );
+        SetTargetLiteral( &target_name, "NETWARE" );
     } else if( 0 == strcmp( target_name, "NT" ) ) {
         TargetSystem = TS_NT;
         PreDefineStringMacro( "_WIN32" );
     } else if( 0 == strcmp( target_name, "LINUX" ) ) {
         TargetSystem = TS_LINUX;
-        PreDefineStringMacro( "__UNIX__" );
     } else if( 0 == strcmp( target_name, "RDOS" ) ) {
         TargetSystem = TS_RDOS;
         PreDefineStringMacro( "_RDOS" );
@@ -261,7 +258,6 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         TargetSystem = TS_OS2;
     } else if( 0 == strcmp( target_name, "QNX" ) ) {
         TargetSystem = TS_QNX;
-        PreDefineStringMacro( "__UNIX__" );
     } else if( 0 == strcmp( target_name, "WINDOWS" ) ) {
         TargetSystem = TS_WINDOWS;
         setWindowsSystem();
@@ -271,11 +267,13 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 #else
         TargetSystem = TS_WINDOWS;
 #endif
-        /*
-         * can get away with this because "cheap_windows" is longer
-         */
-        strcpy( target_name, "WINDOWS" );
         setWindowsSystem();
+        SetTargetLiteral( &target_name, "WINDOWS" );
+    } else if( 0 == strcmp( target_name, "HAIKU" )
+          || 0 == strcmp( target_name, "OSX" )
+          || 0 == strcmp( target_name, "SOLARIS" )
+          || 0 == strcmp( target_name, "BSD" ) ) {
+        TargetSystem = TS_UNIX;
     } else {
         TargetSystem = TS_OTHER;
     }
@@ -286,29 +284,35 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     /*
      * Note the hacks for windows/cheap_windows & netware/netware5, above.
      */
-    strcpy( buff, target_name );
-    strcat( buff, "_INCLUDE" );
-    MergeIncludeFromEnv( buff );
-
-    MergeIncludeFromEnv( "INCLUDE" );
-    CMemFree( target_name );
     if( data->bm ) {
         CompFlags.target_multi_thread = true;
     }
-    if( data->bd ) {
-        switch( TargetSystem ) {
-        case TS_WINDOWS:
+    switch( TargetSystem ) {
+    case TS_WINDOWS:
 #if _CPU == 8086
-        case TS_CHEAP_WINDOWS:
+    case TS_CHEAP_WINDOWS:
 #endif
-            break;
-        default:
+        break;
+    case TS_QNX:
+    case TS_LINUX:
+    case TS_UNIX:
+        PreDefineStringMacro( "__UNIX__" );
+        /* fall through */
+    default:
+        if( data->bd ) {
             CompFlags.target_multi_thread = true;
         }
+        break;
     }
+
+    strcpy( buff, target_name );
+    strcat( buff, "_INCLUDE" );
+    MergeIncludeFromEnv( buff );
+    MergeIncludeFromEnv( "INCLUDE" );
+    CMemFree( target_name );
 }
 
-static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
+static void setMemoryModel( OPT_STORAGE *data, mem_model_control mmc )
 {
     char model = '\0';
     unsigned bit;
@@ -321,7 +325,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
 #endif
     }
 #if _CPU == 386
-    if( control & MMC_NETWARE ) {
+    if( mmc & MMC_NETWARE ) {
         data->mem_model = OPT_ENUM_mem_model_ms;
     }
 #endif
@@ -432,17 +436,17 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     if( bit & CGSW_X86_BIG_DATA ) {
         bit |= CGSW_X86_FLOATING_DS;
     }
-    if( control & (MMC_DS | MMC_WIN) ) {
+    if( mmc & (MMC_DS | MMC_WIN) ) {
         bit &= ~CGSW_X86_FLOATING_DS;
     } else {
         TargetSwitches &= ~ CGSW_X86_FLOATING_DS;
     }
-    if( control & MMC_FS ) {
+    if( mmc & MMC_FS ) {
         bit &= ~CGSW_X86_FLOATING_FS;
     } else {
         TargetSwitches &= ~ CGSW_X86_FLOATING_FS;
     }
-    if( control & MMC_GS ) {
+    if( mmc & MMC_GS ) {
         bit &= ~CGSW_X86_FLOATING_GS;
     } else {
         TargetSwitches &= ~ CGSW_X86_FLOATING_GS;
@@ -453,7 +457,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     if( data->bm ) { /* .DLL */
         strcpy( DLL_CLIB_Name, "2clibmt?" );
     } else {
-        if( control & MMC_WIN ) {
+        if( mmc & MMC_WIN ) {
             strcpy( DLL_CLIB_Name, "2clib?" );
         } else {
             strcpy( DLL_CLIB_Name, "2clibdl?" );
@@ -462,7 +466,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     if( data->bm ) {
         strcpy( CLIB_Name, "2clibmt?" );
     } else if( data->bd ) {
-        if( control & MMC_WIN ) {
+        if( mmc & MMC_WIN ) {
             strcpy( CLIB_Name, "2clib?" );
         } else {
             strcpy( CLIB_Name, "2clibdl?" );
@@ -474,7 +478,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plbxmt?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( DLL_WCPPLIB_Name, "4plbx?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plbxmt?" );
@@ -483,7 +487,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plbxmt?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( WCPPLIB_Name, "4plbx?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plbxmt?" );
@@ -495,7 +499,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plibmt?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( DLL_WCPPLIB_Name, "4plib?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plibmt?" );
@@ -504,7 +508,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plibmt?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( WCPPLIB_Name, "4plib?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plibmt?" );
@@ -539,7 +543,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plbxmt3?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( DLL_WCPPLIB_Name, "4plbx3?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plbxmt3?" );
@@ -548,7 +552,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plbxmt3?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( WCPPLIB_Name, "4plbx3?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plbxmt3?" );
@@ -561,7 +565,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plibmt3?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( DLL_WCPPLIB_Name, "4plib3?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plibmt3?" );
@@ -570,7 +574,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plibmt3?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( mmc & MMC_WIN ) {
                 strcpy( WCPPLIB_Name, "4plib3?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plibmt3?" );
@@ -611,10 +615,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     *strchr( DLL_WCPPLIB_Name, '?' ) = model;
 }
 
-static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
+static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control mmc )
 {
 #if _CPU == 8086
-    /* unused parameters */ (void)control;
+    /* unused parameters */ (void)mmc;
 
     switch( data->arch_i86 ) {
     case OPT_ENUM_arch_i86__0:
@@ -674,7 +678,7 @@ static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
         SET_CPU( CpuSwitches, CPU_686 );
         break;
     }
-    if( control & MMC_NETWARE ) {
+    if( mmc & MMC_NETWARE ) {
         CompFlags.register_conventions = false;
     }
 #endif

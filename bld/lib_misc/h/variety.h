@@ -156,7 +156,6 @@
     #endif
 #elif defined(__QNX__)
     #define __PROTECT_MODE__
-    #define __UNIX__
     #if defined( _M_I86 )
         #define __QNX_286__
     #elif defined( _M_IX86 )
@@ -166,7 +165,6 @@
     #endif
 #elif defined(__LINUX__)
     #define __PROTECT_MODE__
-    #define __UNIX__
     #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __LINUX_386__
     #elif defined(__PPC__)
@@ -178,7 +176,6 @@
     #endif
 #elif defined(__HAIKU__)
     #define __PROTECT_MODE__
-    #define __UNIX__
     #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __HAIKU_386__
     #elif defined(__PPC__)
@@ -188,11 +185,6 @@
     #endif
 #elif defined(__NETWARE__)
     #define __PROTECT_MODE__
-    #if defined( _M_IX86 ) && !defined( _M_I86 )
-        #define __NETWARE_386__
-    #else
-        #error unrecognized processor for NETWARE
-    #endif
 #elif defined(__RDOS__)
     #define __PROTECT_MODE__
 #elif defined(__RDOSDEV__)

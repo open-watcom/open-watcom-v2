@@ -324,6 +324,11 @@ static void SetTargetSystem( void )
         TargetSystem = TS_QNX;
     } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
         TargetSystem = TS_OS2;
+    } else if( strcmp( SwData.sys_name, "HAIKU" ) == 0
+            || strcmp( SwData.sys_name, "OSX" ) == 0
+            || strcmp( SwData.sys_name, "SOLARIS" ) == 0
+            || strcmp( SwData.sys_name, "BSD" ) == 0 ) {
+        TargetSystem = TS_UNIX;
     } else {
         TargetSystem = TS_OTHER;
     }
@@ -360,8 +365,8 @@ static void SetTargetSystem( void )
         break;
 #endif
     case TS_QNX:
-        /* fall through */
     case TS_LINUX:
+    case TS_UNIX:
         PreDefine_Macro( "__UNIX__" );
         break;
 
