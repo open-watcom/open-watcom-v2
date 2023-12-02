@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -294,7 +294,8 @@ void *CMemAlloc( size_t size )
     return( memset( p, 0, size ) );
 }
 
-char *ToString( const char *buf, size_t len )
+char *ToStringDup( const char *buf, size_t len )
+/**********************************************/
 {
     char    *str;
 
@@ -307,8 +308,9 @@ char *ToString( const char *buf, size_t len )
 }
 
 char *CMemStrDup( const char *buf )
+/*********************************/
 {
-    return( ToString( buf, strlen( buf ) ) );
+    return( ToStringDup( buf, strlen( buf ) ) );
 }
 
 void *CMemRealloc( void *old_p, size_t size )

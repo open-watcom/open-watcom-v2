@@ -220,7 +220,7 @@ STR_HANDLE GetLiteral( void )
         q = p;
         p->next_string = NULL;
         p->length = TokenLen + 1;
-        p->literal = ToString( Buffer, TokenLen );
+        p->literal = ToStringDup( Buffer, TokenLen );
     } while( NextToken() == T_STRING );
     CompFlags.wide_char_string = is_wide;
     /*

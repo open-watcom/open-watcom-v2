@@ -61,8 +61,6 @@
 #define CHECK_SET_PEGGED( r, b )    if( !SwData.peg_##r##s_used ) { SwData.peg_##r##s_used = true; SwData.peg_##r##s_on = b; }
 #define CHECK_TO_PEGGED( r )        if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
 
-#define _SetTargetNameConst( name ) SetTargetName( name, sizeof( name ) - 1 )
-
 #define INC_VAR "INCLUDE"
 
 #define MAX_NESTING 32
@@ -191,22 +189,12 @@ static void SetCharacterEncoding( void )
     }
 }
 
-static void SetTargetName( const char *name, size_t len )
+static void SetTargetName( const char *name )
 {
-    char        *p;
-
     if( SwData.sys_name != NULL ) {
         CMemFree( SwData.sys_name );
-        SwData.sys_name = NULL;
     }
-    if( name == NULL || len == 0 )
-        return;
-    SwData.sys_name = CMemAlloc( len + 1 ); /* for NULLCHAR */
-    p = SwData.sys_name;
-    while( len-- > 0 ) {
-        *p++ = (char)toupper( *(unsigned char *)name++ );
-    }
-    *p++ = '\0';
+    SwData.sys_name = CMemStrDup( name );
 }
 
 static void SetTargetSystem( void )
@@ -266,27 +254,27 @@ static void SetTargetSystem( void )
     if( SwData.sys_name == NULL ) {
 #if _INTEL_CPU
     #if defined( __NOVELL__ )
-        _SetTargetNameConst( "netware" );
+        SetTargetName( "NETWARE" );
     #elif defined( __QNX__ )
-        _SetTargetNameConst( "qnx" );
+        SetTargetName( "QNX" );
     #elif defined( __LINUX__ )
-        _SetTargetNameConst( "linux" );
+        SetTargetName( "LINUX" );
     #elif defined( __HAIKU__ )
-        _SetTargetNameConst( "haiku" );
+        SetTargetName( "HAIKU" );
     #elif defined( __SOLARIS__ ) || defined( __sun__ )
-        _SetTargetNameConst( "solaris" );
+        SetTargetName( "SOLARIS" );
     #elif defined( __OSX__ ) || defined( __APPLE__ )
-        _SetTargetNameConst( "osx" );
+        SetTargetName( "OSX" );
     #elif defined( __OS2__ )
-        _SetTargetNameConst( "os2" );
+        SetTargetName( "OS2" );
     #elif defined( __NT__ )
-        _SetTargetNameConst( "nt" );
+        SetTargetName( "NT" );
     #elif defined( __DOS__ )
-        _SetTargetNameConst( "dos" );
+        SetTargetName( "DOS" );
     #elif defined( __BSD__ )
-        _SetTargetNameConst( "bsd" );
+        SetTargetName( "BSD" );
     #elif defined( __RDOS__ )
-        _SetTargetNameConst( "rdos" );
+        SetTargetName( "RDOS" );
     #else
         #error "Target OS not defined"
     #endif
@@ -294,9 +282,9 @@ static void SetTargetSystem( void )
         /*
          * we only have NT libraries for Alpha right now
          */
-        _SetTargetNameConst( "nt" );
+        SetTargetName( "NT" );
 #elif _CPU == _SPARC
-        _SetTargetNameConst( "solaris" );
+        SetTargetName( "SOLARIS" );
 #else
     #error Target Machine OS not configured
 #endif
@@ -922,7 +910,7 @@ static void StripQuotes( char *fname )
 }
 static char *CopyOfParm( void )
 {
-    return( ToString( OptParm, OptScanPtr - OptParm ) );
+    return( ToStringDup( OptParm, OptScanPtr - OptParm ) );
 }
 static char *GetAFileName( void )
 {
@@ -966,7 +954,14 @@ static void Set_BR( void )          { CompFlags.br_switch_used = true; }
 #endif
 
 static void Set_BW( void )          { CompFlags.bw_switch_used = true; }
-static void Set_BT( void )          { SetTargetName( OptParm,  OptScanPtr - OptParm ); }
+static void Set_BT( void )
+{
+    char    *p;
+
+    p = CopyOfParm();
+    SetTargetName( strupr( p ) );
+    CMemFree( p );
+}
 
 static void SetExtendedDefines( void )
 {
@@ -1405,14 +1400,14 @@ static void ChkSmartWindows( void )
 
 static void SetCheapWindows( void )
 {
-    _SetTargetNameConst( "cheap_windows" );
+    SetTargetName( "CHEAP_WINDOWS" );
     ChkSmartWindows();
 }
   #endif
 
 static void SetWindows( void )
 {
-    _SetTargetNameConst( "windows" );
+    SetTargetName( "WINDOWS" );
   #if _CPU == 8086
     ChkSmartWindows();
   #endif
@@ -2079,7 +2074,7 @@ static void ProcOptions( const char *str )
 #endif
                     }
                 }
-                p = ToString( beg, str - beg );
+                p = ToStringDup( beg, str - beg );
                 StripQuotes( p );
                 if( WholeFName != NULL ) {
                     /*

@@ -385,7 +385,7 @@ static char *ExpandMacroToken( void )
     }
     buf = NULL;
     if( len > 0 ) {
-        buf = ToString( p, len );
+        buf = ToStringDup( p, len );
     }
     return( buf );
 }
