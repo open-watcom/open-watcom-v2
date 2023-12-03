@@ -310,7 +310,10 @@ char *ToStringDup( const char *buf, size_t len )
 char *CMemStrDup( const char *buf )
 /*********************************/
 {
-    return( ToStringDup( buf, strlen( buf ) ) );
+    if( buf != NULL ) {
+        return( strcpy( CMemAlloc( strlen( buf ) + 1 ), buf ) );
+    }
+    return( NULL );
 }
 
 void *CMemRealloc( void *old_p, size_t size )
