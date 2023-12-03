@@ -156,7 +156,7 @@ static void DefSwitchMacro( const char *str )
 {
     char buff[64];
 
-    Define_Macro( strcpy( strcpy( buff, "__SW_" ) + 5, str ) );
+    Define_Macro( strcpy( strcpy( buff, "__SW_" ) + 5, str ) - 5 );
 }
 
 static void SetCharacterEncoding( void )
