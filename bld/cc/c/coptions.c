@@ -90,7 +90,10 @@ static struct
 {
     char        *sys_name;
 
-    enum {  /* TARGET CPU SUPPORT - Intel defined (AXP/PPC uses CPU0 as default CPU) */
+    /*
+     * TARGET CPU SUPPORT - Intel defined (AXP/PPC uses CPU0 as default CPU)
+     */
+    enum {
         SW_CPU_DEF,     /*  No target CPU specified     */
         SW_CPU0,        /*  Target 8086/8               */
         SW_CPU1,        /*  Target 80186/8              */
@@ -100,23 +103,29 @@ static struct
         SW_CPU5,        /*  Target Pentium              */
         SW_CPU6         /*  Target Pentium-Pro          */
     } cpu;
-
-    enum {  /* TARGET FPU SUPPORT */
+    /*
+     * TARGET FPU SUPPORT
+     */
+    enum {
         SW_FPU_DEF,     /*  No target FPU specified     */
         SW_FPU0,        /*  Target 8087 co-pro          */
         SW_FPU3,        /*  Target 80387 co-pro         */
         SW_FPU5,        /*  Target Pentium int fpu      */
         SW_FPU6         /*  Target Pentium-Pro int fpu  */
     } fpu;
-
-    enum {  /* FPU CALL TYPES */
+    /*
+     * FPU CALL TYPES
+     */
+    enum {
         SW_FPT_DEF,     /*  No FPU call type specified  */
         SW_FPT_CALLS,   /*  FPU calls via library       */
         SW_FPT_EMU,     /*  FPU calls inline & emulated */
         SW_FPT_INLINE   /*  FPU calls inline            */
     } fpt;
-
-    enum {  /* MEMORY MODELS */
+    /*
+     * MEMORY MODELS
+     */
+    enum {
         SW_M_DEF,       /*  No memory model specified   */
         SW_MF,          /*  Flat memory model           */
         SW_MS,          /*  Small memory model          */
@@ -125,8 +134,10 @@ static struct
         SW_ML,          /*  Large memory model          */
         SW_MH           /*  Huge memory model           */
     } mem;
-
-    enum {  /*  DEBUGGING INFORMATION TYPE */
+    /*
+     *  DEBUGGING INFORMATION TYPE
+     */
+    enum {
         SW_DF_DEF,      /*  No debug type specified     */
         SW_DF_WATCOM,   /*  Use Watcom                  */
         SW_DF_CV,       /*  Use CodeView                */
@@ -142,14 +153,17 @@ static struct
     boolbit     nd_used : 1;
 } SwData;
 
-// local variables
+/*
+ * local variables
+ */
 static bool     debug_optimization_change = false;
 static int      character_encoding = 0;
 static unsigned unicode_CP = 0;
 
 bool EqualChar( int c )
 {
-    return( c == '#' || c == '=' );
+    return( c == '#'
+        || c == '=' );
 }
 
 static void DefSwitchMacro( const char *str )
@@ -337,7 +351,6 @@ static void SetTargetSystem( void )
         }
         PreDefine_Macro( "_DOS" );
         break;
-
 #if _CPU == 386
     case TS_NETWARE:
         Stack87 = 4;
@@ -356,7 +369,6 @@ static void SetTargetSystem( void )
          */
         CompFlags.register_conventions = false;
         break;
-
     case TS_NT:
         PreDefine_Macro( "_WIN32" );
         break;
@@ -366,7 +378,6 @@ static void SetTargetSystem( void )
     case TS_UNIX:
         PreDefine_Macro( "__UNIX__" );
         break;
-
     case TS_CHEAP_WINDOWS:
 #if _CPU == 8086
         PreDefine_Macro( "_WINDOWS" );
@@ -378,7 +389,7 @@ static void SetTargetSystem( void )
 #if _INTEL_CPU
   #if _CPU == 8086
         CHECK_SET_PEGGED( d, true )
-  #else /* _CPU == 386 */
+  #else
         PreDefine_Macro( "__WINDOWS_386__" );
         CHECK_SET_PEGGED( f, false )
         switch( SwData.fpt ) {
@@ -422,7 +433,7 @@ static void SetGenSwitches( void )
         SwData.mem = SW_MS;
     CHECK_TO_PEGGED( f );
     CHECK_TO_PEGGED( g );
-  #else /* _CPU == 386 */
+  #else
     if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU6;
     if( SwData.fpu == SW_FPU_DEF )
@@ -531,7 +542,7 @@ static void MacroDefs( void )
 #if _INTEL_CPU
   #if _CPU == 8086
     #define MX86 "M_I86"
-  #else /* _CPU == 386 */
+  #else
     #define MX86 "M_386"
   #endif
     if( CompFlags.non_iso_compliant_names_enabled ) {
@@ -560,7 +571,7 @@ static void MacroDefs( void )
     }
   #if _CPU == 8086
     #define X86 "_M_I86"
-  #else /* _CPU == 386 */
+  #else
     #define X86 "_M_386"
   #endif
     switch( SwData.mem ) {
@@ -721,7 +732,10 @@ static void MacroDefs( void )
     if( CompFlags.bd_switch_used ) {
         DefSwitchMacro( "BD" );
     }
-    if( CompFlags.bc_switch_used ) { /* Target is console application */
+    /*
+     * Target is console application
+     */
+    if( CompFlags.bc_switch_used ) {
         DefSwitchMacro( "BC" );
     }
     if( CompFlags.bg_switch_used ) {
@@ -828,7 +842,8 @@ static void AddIncList( const char *path_list )
     char        *old_list;
     char        *p;
 
-    if( path_list != NULL && *path_list != '\0' ) {
+    if( path_list != NULL
+      && *path_list != '\0' ) {
         len = strlen( path_list );
         old_list = IncPathList;
         old_len = strlen( old_list );
@@ -876,7 +891,11 @@ void MergeInclude( void )
 
 static bool OptionDelimiter( char c )
 {
-    return( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar );
+    return( c == ' '
+        || c == '-'
+        || c == '\0'
+        || c == '\t'
+        || c == SwitchChar );
 }
 
 static void EnsureEndOfSwitch( void )
@@ -884,9 +903,10 @@ static void EnsureEndOfSwitch( void )
     char        c;
 
     if( !OptionDelimiter( *OptScanPtr ) ) {
-        for( ;; ) {                       // find start of switch
+        for( ;; ) {         /* find start of switch */
             c = *OptScanPtr;
-            if( c == '-' || c == SwitchChar )
+            if( c == '-'
+              || c == SwitchChar )
                 break;
             --OptScanPtr;
         }
@@ -900,14 +920,19 @@ static void StripQuotes( char *fname )
     char    c;
 
     if( *fname == '"' ) {
-        // string will shrink so we can reduce in place
+        /*
+         * string will shrink so we can reduce in place
+         */
         d = fname;
         for( s = fname + 1; (c = *s++) != '\0'; ) {
             if( c == '"' )
                 break;
-            // collapse double backslashes, only then look for escaped quotes
+            /*
+             * collapse double backslashes, only then look for escaped quotes
+             */
             if( c == '\\' ) {
-                if( *s == '\\' || *s == '"' ) {
+                if( *s == '\\'
+                  || *s == '"' ) {
                     c = *s++;
                 }
             }
@@ -1435,7 +1460,9 @@ static void SetGenerateMakeAutoDepend( void )
 
 static void SetAutoDependTarget( void )
 {
-   // auto set depend yes...
+    /*
+     * auto set depend yes...
+     */
     CompFlags.generate_auto_depend = true;
     CMemFree( DependTarget );
     DependTarget = GetAFileName();
@@ -1475,7 +1502,8 @@ static void Set_PC( void )
 }
 static void Set_PW( void )
 {
-    if( OptValue != 0 && OptValue < 20 )
+    if( OptValue != 0
+      && OptValue < 20 )
         OptValue = 20;
     if( OptValue > 10000 )
         OptValue = 10000;
@@ -1526,15 +1554,15 @@ static void Set_OX( void )
     GenSwitches |= CGSW_GEN_I_MATH_INLINE;
 }
 static void Set_OZ( void )          { GenSwitches |= CGSW_GEN_NULL_DEREF_OK; }
-
-// '=' indicates optional '='
-// '#' indicates a decimal numeric value
-// '$' indicates identifier
-// '@' indicates filename
-// '*' indicates additional characters will be scanned by option routine
-// if a capital letter appears in the option, then input must match exactly
-// otherwise all input characters are changed to lower case before matching
-
+/*
+ * '=' indicates optional '='
+ * '#' indicates a decimal numeric value
+ * '$' indicates identifier
+ * '@' indicates filename
+ * '*' indicates additional characters will be scanned by option routine
+ * if a capital letter appears in the option, then input must match exactly
+ * otherwise all input characters are changed to lower case before matching
+ */
 static struct option const Optimization_Options[] = {
     { "a",      0,              Set_OA },
     { "b",      0,              Set_OB },
@@ -1590,7 +1618,7 @@ static struct option const CFE_Options[] = {
     { "4",      SW_CPU4,        SetCPU },
     { "5",      SW_CPU5,        SetCPU },
     { "6",      SW_CPU6,        SetCPU },
-  #else /* _CPU == 386 */
+  #else
     { "6r",     SW_CPU6,        SetCPU_xR },
     { "6s",     SW_CPU6,        SetCPU_xS },
     { "6",      SW_CPU6,        SetCPU },
@@ -1606,8 +1634,10 @@ static struct option const CFE_Options[] = {
   #endif
 #endif
     { "aa",     0,              Set_AA },
-    // more specific commands first ... otherwise the
-    // short command sets us up for failure...
+    /*
+     * more specific commands first ... otherwise the
+     * short command sets us up for failure...
+     */
     { "adt=@",  0,              SetAutoDependTarget },
     { "adbs",   0,              SetAutoDependBackSlash },
     { "add=@",  0,              SetAutoDependSrcDepend },
@@ -1685,7 +1715,7 @@ static struct option const CFE_Options[] = {
     { "ml",     SW_ML,          SetMemoryModel },
   #if _CPU == 8086
     { "mh",     SW_MH,          SetMemoryModel },
-  #else /* _CPU == 386 */
+  #else
     { "mf",     SW_MF,          SetMemoryModel },
   #endif
     { "nc=$",   0,              SetCodeClass },
@@ -1813,7 +1843,7 @@ static struct option const CFE_Options[] = {
   #if _CPU == 8086
     { "zW*",    0,              SetCheapWindows },
     { "zw*",    0,              SetWindows },
-  #else /* _CPU == 386 */
+  #else
     { "zw",     0,              SetWindows },
     { "zz",     0,              Set_ZZ },
   #endif
@@ -1838,7 +1868,9 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                 if( *opt == '\0' || *opt == '*' ) {
                     if( *opt == '\0' ) {
                         if( p - option_start == 1 ) {
-                            // make sure end of option
+                            /*
+                             * make sure end of option
+                             */
                             if( !OptionDelimiter( p[j] ) ) {
                                 break;
                             }
@@ -1848,8 +1880,9 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                     op_table[i].function();
                     return( OptScanPtr );
                 }
-                if( *opt == '#' ) {             // collect a number
-                    if( p[j] >= '0' && p[j] <= '9' ) {
+                if( *opt == '#' ) {         /* collect a number */
+                    if( p[j] >= '0'
+                      && p[j] <= '9' ) {
                         OptValue = 0;
                         for( ;; ) {
                             c = p[j];
@@ -1859,7 +1892,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                             ++j;
                         }
                     }
-                } else if( *opt == '$' ) {      // collect an identifer
+                } else if( *opt == '$' ) {  /* collect an identifer */
                     OptParm = &p[j];
                     for( ; (c = p[j]) != '\0'; ) {
                         if( c == '-' )
@@ -1870,10 +1903,10 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                             break;
                         ++j;
                     }
-                } else if( *opt == '@' ) {      // collect a filename
+                } else if( *opt == '@' ) {  /* collect a filename */
                     OptParm = &p[j];
                     c = p[j];
-                    if( c == '"' ) { // "filename"
+                    if( c == '"' ) {        /* "filename" */
                         for( ; (c = p[++j]) != '\0'; ) {
                             if( c == '"' ) {
                                 ++j;
@@ -1896,7 +1929,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                             ++j;
                         }
                     }
-                } else if( *opt == '=' ) {      // collect an optional '='
+                } else if( *opt == '=' ) {  /* collect an optional '=' */
                     if( EqualChar( p[j] ) ) {
                         ++j;
                     }
@@ -1992,15 +2025,20 @@ static char *ReadIndirectFile( void )
         len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
-        // zip through characters changing \r, \n etc into ' '
+        /*
+         * zip through characters changing \r, \n etc into ' '
+         */
         str = env;
         while( (ch = *str) != '\0' ) {
             if( ch == '\r' || ch == '\n' ) {
                 *str = ' ';
             }
 #if !defined( __UNIX__ )
-            if( ch == 0x1A ) {      // if end of file
-                *str = '\0';        // - mark end of str
+            /*
+             * if end of file - mark end of str
+             */
+            if( ch == 0x1A ) {
+                *str = '\0';
                 break;
             }
 #endif
@@ -2199,7 +2237,7 @@ static void Define_Memory_Model( void )
     if( CompFlags.br_switch_used ) {
         strcpy( CLIB_Name, "1clb?dll" );
     } else {
-        strcpy( CLIB_Name, "1clib3?" );     // There is only 1 CLIB now!
+        strcpy( CLIB_Name, "1clib3?" );     /* There is only 1 CLIB now! */
     }
     if( GET_FPU_EMU( ProcRevision ) ) {
         if( CompFlags.br_switch_used ) {
@@ -2251,7 +2289,7 @@ static void SetDebug( void )
 
 void GenCOptions( char **cmdline )
 {
-    memset( &SwData,0, sizeof( SwData ) ); //re-useable
+    memset( &SwData,0, sizeof( SwData ) ); /* re-useable */
     /*
      * Add precision warning but disabled by default
      */
@@ -2291,7 +2329,10 @@ void GenCOptions( char **cmdline )
         CompFlags.cpp_output = true;
         CompFlags.quiet_mode = true;
     }
-    CBanner();          /* print banner if -zq not specified */
+    /*
+     * print banner if -zq not specified
+     */
+    CBanner();
     GblPackAmount = PackAmount;
     SetDebug();
     SetTargetSystem();
