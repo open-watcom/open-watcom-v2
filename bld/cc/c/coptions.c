@@ -152,6 +152,13 @@ bool EqualChar( int c )
     return( c == '#' || c == '=' );
 }
 
+static void DefSwitchMacro( const char *str )
+{
+    char buff[64];
+
+    Define_Macro( strcpy( strcpy( buff, "__SW_" ) + 5, str ) );
+}
+
 static void SetCharacterEncoding( void )
 {
     CompFlags.jis_to_unicode = false;
@@ -519,7 +526,7 @@ static void SetGenSwitches( void )
 static void MacroDefs( void )
 {
     if( GenSwitches & CGSW_GEN_I_MATH_INLINE ) {
-        Define_Macro( "__SW_OM" );
+        DefSwitchMacro( "OM" );
     }
 #if _INTEL_CPU
   #if _CPU == 8086
@@ -558,32 +565,32 @@ static void MacroDefs( void )
   #endif
     switch( SwData.mem ) {
     case SW_MS:
-        Define_Macro( "__SW_MS" );
+        DefSwitchMacro( "MS" );
         Define_Macro( X86 "SM" );
         Define_Macro( "__SMALL__" );
         break;
     case SW_MM:
-        Define_Macro( "__SW_MM" );
+        DefSwitchMacro( "MM" );
         Define_Macro( X86 "MM" );
         Define_Macro( "__MEDIUM__" );
         break;
     case SW_MC:
-        Define_Macro( "__SW_MC" );
+        DefSwitchMacro( "MC" );
         Define_Macro( X86 "CM" );
         Define_Macro( "__COMPACT__" );
         break;
     case SW_ML:
-        Define_Macro( "__SW_ML" );
+        DefSwitchMacro( "ML" );
         Define_Macro( X86 "LM" );
         Define_Macro( "__LARGE__" );
         break;
     case SW_MH:
-        Define_Macro( "__SW_MH" );
+        DefSwitchMacro( "MH" );
         Define_Macro( X86 "HM" );
         Define_Macro( "__HUGE__" );
         break;
     case SW_MF:
-        Define_Macro( "__SW_MF" );
+        DefSwitchMacro( "MF" );
         Define_Macro( X86 "FM" );
         Define_Macro( "__FLAT__" );
         break;
@@ -591,34 +598,34 @@ static void MacroDefs( void )
         break;
     }
     if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
-        Define_Macro( "__SW_ZFF" );
+        DefSwitchMacro( "ZFF" );
     } else {
-        Define_Macro( "__SW_ZFP" );
+        DefSwitchMacro( "ZFP" );
     }
     if( TargetSwitches & CGSW_X86_FLOATING_GS ) {
-        Define_Macro( "__SW_ZGF" );
+        DefSwitchMacro( "ZGF" );
     } else {
-        Define_Macro( "__SW_ZGP" );
+        DefSwitchMacro( "ZGP" );
     }
     if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
-        Define_Macro( "__SW_ZDF" );
+        DefSwitchMacro( "ZDF" );
     } else {
-        Define_Macro( "__SW_ZDP" );
+        DefSwitchMacro( "ZDP" );
     }
     if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
-        Define_Macro( "__SW_ZU" );
+        DefSwitchMacro( "ZU" );
     }
     if( TargetSwitches & CGSW_X86_INDEXED_GLOBALS ) {
-        Define_Macro( "__SW_XGV" );
+        DefSwitchMacro( "XGV" );
     }
     if( TargetSwitches & CGSW_X86_WINDOWS ) {
-        Define_Macro( "__SW_ZW" );
+        DefSwitchMacro( "ZW" );
     }
     if( TargetSwitches & CGSW_X86_NEED_STACK_FRAME ) {
-        Define_Macro( "__SW_OF" );
+        DefSwitchMacro( "OF" );
     }
     if( TargetSwitches & CGSW_X86_GEN_FWAIT_386 ) {
-        Define_Macro( "__SW_ZFW" );
+        DefSwitchMacro( "ZFW" );
     }
 #endif
 #if _RISC_CPU
@@ -627,160 +634,160 @@ static void MacroDefs( void )
     }
 #endif
     if( GenSwitches & CGSW_GEN_NO_CALL_RET_TRANSFORM ) {
-        Define_Macro( "__SW_OC" );
+        DefSwitchMacro( "OC" );
     }
     if( GenSwitches & CGSW_GEN_SUPER_OPTIMAL ) {
-        Define_Macro( "__SW_OH" );
+        DefSwitchMacro( "OH" );
     }
     if( GenSwitches & CGSW_GEN_FLOW_REG_SAVES ) {
-        Define_Macro( "__SW_OK" );
+        DefSwitchMacro( "OK" );
     }
     if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION ) {
-        Define_Macro( "__SW_OD" );
+        DefSwitchMacro( "OD" );
     }
     if( GenSwitches & CGSW_GEN_RELAX_ALIAS ) {
-        Define_Macro( "__SW_OA" );
+        DefSwitchMacro( "OA" );
     }
     if( GenSwitches & CGSW_GEN_LOOP_OPTIMIZATION ) {
-        Define_Macro( "__SW_OL" );
+        DefSwitchMacro( "OL" );
     }
     if( GenSwitches & CGSW_GEN_INS_SCHEDULING ) {
-        Define_Macro( "__SW_OR" );
+        DefSwitchMacro( "OR" );
     }
     if( GenSwitches & CGSW_GEN_FP_UNSTABLE_OPTIMIZATION ) {
-        Define_Macro( "__SW_ON" );
+        DefSwitchMacro( "ON" );
     }
     if( GenSwitches & CGSW_GEN_FPU_ROUNDING_OMIT ) {
-        Define_Macro( "__SW_ZRO" );
+        DefSwitchMacro( "ZRO" );
     }
     if( GenSwitches & CGSW_GEN_FPU_ROUNDING_INLINE ) {
-        Define_Macro( "__SW_ZRI" );
+        DefSwitchMacro( "ZRI" );
     }
     if( CompFlags.use_long_double ) {
-        Define_Macro( "__SW_FLD" );
+        DefSwitchMacro( "FLD" );
     }
     if( CompFlags.signed_char ) {
-        Define_Macro( "__SW_J" );
+        DefSwitchMacro( "J" );
     }
     if( PCH_FileName != NULL ) {
-        Define_Macro( "__SW_FH" );
+        DefSwitchMacro( "FH" );
     }
     if( CompFlags.no_pch_warnings ) {
-        Define_Macro( "__SW_FHQ" );
+        DefSwitchMacro( "FHQ" );
     }
     if( CompFlags.inline_functions ) {
-        Define_Macro( "__SW_OI" );
+        DefSwitchMacro( "OI" );
     }
     if( CompFlags.unique_functions ) {
-        Define_Macro( "__SW_OU" );
+        DefSwitchMacro( "OU" );
     }
 #if _CPU == 386
     if( CompFlags.register_conventions ) {
-        Define_Macro( "__SW_3R" );
+        DefSwitchMacro( "3R" );
     } else {
-        Define_Macro( "__SW_3S" );
+        DefSwitchMacro( "3S" );
     }
 #endif
     if( CompFlags.emit_names ) {
-        Define_Macro( "__SW_EN" );
+        DefSwitchMacro( "EN" );
     }
     if( CompFlags.make_enums_an_int ) {
-        Define_Macro( "__SW_EI" );
+        DefSwitchMacro( "EI" );
     }
     if( CompFlags.zc_switch_used ) {
-        Define_Macro( "__SW_ZC" );
+        DefSwitchMacro( "ZC" );
     }
     if( !CompFlags.use_unicode ) {
-        Define_Macro( "__SW_ZK" );
+        DefSwitchMacro( "ZK" );
     }
 #if _INTEL_CPU
     if( CompFlags.save_restore_segregs ) {
-        Define_Macro( "__SW_R" );
+        DefSwitchMacro( "R" );
     }
     if( CompFlags.sg_switch_used ) {
-        Define_Macro( "__SW_SG" );
+        DefSwitchMacro( "SG" );
     }
     if( CompFlags.st_switch_used ) {
-        Define_Macro( "__SW_ST" );
+        DefSwitchMacro( "ST" );
     }
     if( CompFlags.zu_switch_used ) {
-        Define_Macro( "__SW_ZU" );
+        DefSwitchMacro( "ZU" );
     }
 #endif
     if( CompFlags.bm_switch_used ) {
-        Define_Macro( "__SW_BM" );
+        DefSwitchMacro( "BM" );
         Define_Macro( "_MT" );
     }
     if( CompFlags.bd_switch_used ) {
-        Define_Macro( "__SW_BD" );
+        DefSwitchMacro( "BD" );
     }
     if( CompFlags.bc_switch_used ) { /* Target is console application */
-        Define_Macro( "__SW_BC" );
+        DefSwitchMacro( "BC" );
     }
     if( CompFlags.bg_switch_used ) {
-        Define_Macro( "__SW_BG" );
+        DefSwitchMacro( "BG" );
     }
     if( CompFlags.br_switch_used ) {
-        Define_Macro( "__SW_BR" );
+        DefSwitchMacro( "BR" );
         Define_Macro( "_DLL" );
     }
     if( CompFlags.bw_switch_used ) {
-        Define_Macro( "__SW_BW" );
+        DefSwitchMacro( "BW" );
     }
     if( CompFlags.zm_switch_used ) {
-        Define_Macro( "__SW_ZM" );
+        DefSwitchMacro( "ZM" );
     }
     if( CompFlags.ep_switch_used ) {
-        Define_Macro( "__SW_EP" );
+        DefSwitchMacro( "EP" );
     }
     if( CompFlags.ee_switch_used ) {
-        Define_Macro( "__SW_EE" );
+        DefSwitchMacro( "EE" );
     }
     if( CompFlags.ec_switch_used ) {
-        Define_Macro( "__SW_EC" );
+        DefSwitchMacro( "EC" );
     }
 #if _INTEL_CPU
     switch( GET_CPU( ProcRevision ) ) {
     case CPU_86:
-        Define_Macro( "__SW_0" );
+        DefSwitchMacro( "0" );
         PreDefine_Macro( "_M_IX86=0" );
         break;
     case CPU_186:
-        Define_Macro( "__SW_1" );
+        DefSwitchMacro( "1" );
         PreDefine_Macro( "_M_IX86=100" );
         break;
     case CPU_286:
-        Define_Macro( "__SW_2" );
+        DefSwitchMacro( "2" );
         PreDefine_Macro( "_M_IX86=200" );
         break;
     case CPU_386:
-        Define_Macro( "__SW_3" );
+        DefSwitchMacro( "3" );
         PreDefine_Macro( "_M_IX86=300" );
         break;
     case CPU_486:
-        Define_Macro( "__SW_4" );
+        DefSwitchMacro( "4" );
         PreDefine_Macro( "_M_IX86=400" );
         break;
     case CPU_586:
-        Define_Macro( "__SW_5" );
+        DefSwitchMacro( "5" );
         PreDefine_Macro( "_M_IX86=500" );
         break;
     case CPU_686:
-        Define_Macro( "__SW_6" );
+        DefSwitchMacro( "6" );
         PreDefine_Macro( "_M_IX86=600" );
         break;
     }
     switch( SwData.fpt ) {
     case SW_FPT_CALLS:
         CompFlags.op_switch_used = false;
-        Define_Macro( "__SW_FPC" );
+        DefSwitchMacro( "FPC" );
         break;
     case SW_FPT_EMU:
-        Define_Macro( "__SW_FPI" );
+        DefSwitchMacro( "FPI" );
         Define_Macro( "__FPI__" );
         break;
     case SW_FPT_INLINE:
-        Define_Macro( "__SW_FPI87" );
+        DefSwitchMacro( "FPI87" );
         Define_Macro( "__FPI__" );
         break;
     default:
@@ -790,27 +797,27 @@ static void MacroDefs( void )
     case FPU_NONE:
         break;
     case FPU_87:
-        Define_Macro( "__SW_FP2" );
+        DefSwitchMacro( "FP2" );
         break;
     case FPU_387:
-        Define_Macro( "__SW_FP3" );
+        DefSwitchMacro( "FP3" );
         break;
     case FPU_586:
-        Define_Macro( "__SW_FP5" );
+        DefSwitchMacro( "FP5" );
         break;
     case FPU_686:
-        Define_Macro( "__SW_FP6" );
+        DefSwitchMacro( "FP6" );
         break;
     }
     if( SwData.nd_used ) {
-        Define_Macro( "__SW_ND" );
+        DefSwitchMacro( "ND" );
     }
     if( CompFlags.op_switch_used ) {
-        Define_Macro( "__SW_OP" );
+        DefSwitchMacro( "OP" );
     }
 #endif
     if( !TOGGLE( check_stack ) ) {
-        Define_Macro( "__SW_S" );
+        DefSwitchMacro( "S" );
     }
 }
 
