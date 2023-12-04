@@ -187,6 +187,7 @@ static void setWindowsSystem( void )
 static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 {
     char buff[128];
+    bool target_multi_thread;
 
     if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
@@ -204,6 +205,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 #endif
     PreDefineStringMacro( "__X86__" );
     PreDefineStringMacro( "_X86_" );
+
     if( target_name == NULL ) {
 #if defined( __QNX__ )
         SetTargetLiteral( &target_name, "QNX" );
@@ -229,85 +231,97 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         #error "Target System not defined"
 #endif
     }
-    if( 0 == strcmp( target_name, "DOS" ) ) {
-        TargetSystem = TS_DOS;
+
+    TargetSystem = TS_OTHER;
+    if( target_name != NULL ) {
+        if( 0 == strcmp( target_name, "DOS" ) ) {
+            TargetSystem = TS_DOS;
+        } else if( 0 == strcmp( target_name, "OS2" ) ) {
+            TargetSystem = TS_OS2;
+        } else if( 0 == strcmp( target_name, "QNX" ) ) {
+            TargetSystem = TS_QNX;
+        } else if( 0 == strcmp( target_name, "WINDOWS" ) ) {
+            TargetSystem = TS_WINDOWS;
+        } else if( 0 == strcmp( target_name, "CHEAP_WINDOWS" ) ) {
+#if _CPU == 8086
+            TargetSystem = TS_CHEAP_WINDOWS;
+#else
+            TargetSystem = TS_WINDOWS;
+#endif
+            SetTargetLiteral( &target_name, "WINDOWS" );
+#if _CPU == 386
+        } else if( 0 == strcmp( target_name, "NETWARE" ) ) {
+            TargetSystem = TS_NETWARE;
+        } else if( 0 == strcmp( target_name, "NETWARE5" ) ) {
+            TargetSystem = TS_NETWARE5;
+            SetTargetLiteral( &target_name, "NETWARE" );
+        } else if( 0 == strcmp( target_name, "NT" ) ) {
+            TargetSystem = TS_NT;
+        } else if( 0 == strcmp( target_name, "LINUX" ) ) {
+            TargetSystem = TS_LINUX;
+        } else if( 0 == strcmp( target_name, "RDOS" ) ) {
+            TargetSystem = TS_RDOS;
+        } else if( 0 == strcmp( target_name, "HAIKU" )
+              || 0 == strcmp( target_name, "OSX" )
+              || 0 == strcmp( target_name, "SOLARIS" )
+              || 0 == strcmp( target_name, "BSD" ) ) {
+            TargetSystem = TS_UNIX;
+#endif
+        }
+        /*
+         * create main macro for target system
+         */
+        strcpy( buff, "__" );
+        strcat( buff, target_name );
+        strcat( buff, "__" );
+        PreDefineStringMacro( buff );
+    }
+    /*
+     * additional setup for target system
+     */
+    target_multi_thread = true;
+    switch( TargetSystem ) {
+    case TS_DOS:
         if( CompFlags.non_iso_compliant_names_enabled ) {
             PreDefineStringMacro( "MSDOS" );
         }
-        PreDefineStringMacro( "__DOS__" );
         PreDefineStringMacro( "_DOS" );
-#if _CPU == 386
-    } else if( 0 == strcmp( target_name, "NETWARE" ) ) {
-        TargetSystem = TS_NETWARE;
-        PreDefineStringMacro( "__NETWARE_386__" );
-    } else if( 0 == strcmp( target_name, "NETWARE5" ) ) {
-        TargetSystem = TS_NETWARE5;
-        PreDefineStringMacro( "__NETWARE_386__" );
-        PreDefineStringMacro( "__NETWARE5__" );
-        SetTargetLiteral( &target_name, "NETWARE" );
-    } else if( 0 == strcmp( target_name, "NT" ) ) {
-        TargetSystem = TS_NT;
-        PreDefineStringMacro( "_WIN32" );
-    } else if( 0 == strcmp( target_name, "LINUX" ) ) {
-        TargetSystem = TS_LINUX;
-    } else if( 0 == strcmp( target_name, "RDOS" ) ) {
-        TargetSystem = TS_RDOS;
-        PreDefineStringMacro( "_RDOS" );
-#endif
-    } else if( 0 == strcmp( target_name, "OS2" ) ) {
-        TargetSystem = TS_OS2;
-    } else if( 0 == strcmp( target_name, "QNX" ) ) {
-        TargetSystem = TS_QNX;
-    } else if( 0 == strcmp( target_name, "WINDOWS" ) ) {
-        TargetSystem = TS_WINDOWS;
-        setWindowsSystem();
-    } else if( 0 == strcmp( target_name, "CHEAP_WINDOWS" ) ) {
-#if _CPU == 8086
-        TargetSystem = TS_CHEAP_WINDOWS;
-#else
-        TargetSystem = TS_WINDOWS;
-#endif
-        setWindowsSystem();
-        SetTargetLiteral( &target_name, "WINDOWS" );
-    } else if( 0 == strcmp( target_name, "HAIKU" )
-          || 0 == strcmp( target_name, "OSX" )
-          || 0 == strcmp( target_name, "SOLARIS" )
-          || 0 == strcmp( target_name, "BSD" ) ) {
-        TargetSystem = TS_UNIX;
-    } else {
-        TargetSystem = TS_OTHER;
-    }
-    strcpy( buff, "__" );
-    strcat( buff, target_name );
-    strcat( buff, "__" );
-    PreDefineStringMacro( buff );
-    /*
-     * Note the hacks for windows/cheap_windows & netware/netware5, above.
-     */
-    if( data->bm ) {
-        CompFlags.target_multi_thread = true;
-    }
-    switch( TargetSystem ) {
-    case TS_WINDOWS:
-#if _CPU == 8086
+        break;
     case TS_CHEAP_WINDOWS:
-#endif
+    case TS_WINDOWS:
+        target_multi_thread = false;
+        setWindowsSystem();
+        break;
+    case TS_NETWARE5:
+        PreDefineStringMacro( "__NETWARE5__" );
+        /* fall through */
+    case TS_NETWARE:
+        PreDefineStringMacro( "__NETWARE_386__" );
+        break;
+    case TS_RDOS:
+        PreDefineStringMacro( "_RDOS" );
+        break;
+    case TS_NT:
+        PreDefineStringMacro( "_WIN32" );
         break;
     case TS_QNX:
     case TS_LINUX:
     case TS_UNIX:
         PreDefineStringMacro( "__UNIX__" );
-        /* fall through */
+        break;
     default:
-        if( data->bd ) {
-            CompFlags.target_multi_thread = true;
-        }
         break;
     }
+    if( data->bm
+      || target_multi_thread && data->bd ) {
+        CompFlags.target_multi_thread = true;
+    }
 
-    strcpy( buff, target_name );
-    strcat( buff, "_INCLUDE" );
-    MergeIncludeFromEnv( buff );
+    if( target_name != NULL ) {
+        strcpy( buff, target_name );
+        strcat( buff, "_INCLUDE" );
+        MergeIncludeFromEnv( buff );
+    }
     MergeIncludeFromEnv( "INCLUDE" );
     CMemFree( target_name );
 }
