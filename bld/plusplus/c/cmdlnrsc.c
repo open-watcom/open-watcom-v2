@@ -91,6 +91,32 @@ void CmdSysSetMaxOptimization( void )
     GenSwitches |= CGSW_GEN_I_MATH_INLINE;
 }
 
+static char *setTargetSystem( OPT_STORAGE *data )
+{
+    char *target_name = NULL;
+
+    /*
+     * right now, the only targeted system is NT
+     */
+    if( data->bt ) {
+        char *target = SetStringOption( NULL, &(data->bt_value) );
+        SetTargetLiteral( &target_name, strupr( target ) );
+        CMemFree( target );
+    }
+    if( target_name == NULL ) {
+        SetTargetLiteral( &target_name, "NT" );
+    }
+    TargetSystem = TS_OTHER;
+    if( target_name != NULL ) {
+        if( 0 == strcmp( target_name, "NT" ) ) {
+            TargetSystem = TS_NT;
+        } else if( 0 == strcmp( target_name, "LINUX" ) ) {
+            TargetSystem = TS_LINUX;
+        }
+    }
+    return( target_name );
+}
+
 static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 {
     char buff[128];
@@ -119,26 +145,25 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     PreDefineStringMacro( "_M_MRX000" );
     PreDefineStringMacro( "__MIPS__" );
 #endif
-    if( target_name == NULL ) {
-        /*
-         * right now, the only targeted system is NT
-         */
-        SetTargetLiteral( &target_name, "NT" );
+    /*
+     * create macro for target system
+     */
+    if( target_name != NULL ) {
+        strcpy( buff, "__" );
+        strcat( buff, target_name );
+        strcat( buff, "__" );
+        PreDefineStringMacro( buff );
     }
-    if( 0 == strcmp( target_name, "NT" ) ) {
-        TargetSystem = TS_NT;
-    } else {
-        TargetSystem = TS_OTHER;
-    }
-    strcpy( buff, "__" );
-    strcat( buff, target_name );
-    strcat( buff, "__" );
-    PreDefineStringMacro( buff );
-
+    /*
+     * additional setup for target system
+     */
     target_multi_thread = true;
     switch( TargetSystem ) {
     case TS_NT:
         PreDefineStringMacro( "_WIN32" );
+        break;
+    case TS_LINUX:
+        PreDefineStringMacro( "__UNIX__" );
         break;
     }
     if( data->bm
@@ -146,9 +171,11 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         CompFlags.target_multi_thread = true;
     }
 
-    strcpy( buff, target_name );
-    strcat( buff, "_INCLUDE" );
-    MergeIncludeFromEnv( buff );
+    if( target_name != NULL ) {
+        strcpy( buff, target_name );
+        strcat( buff, "_INCLUDE" );
+        MergeIncludeFromEnv( buff );
+    }
     MergeIncludeFromEnv( "INCLUDE" );
     CMemFree( target_name );
 }
@@ -254,6 +281,7 @@ static void setMemoryModel( OPT_STORAGE *data )
 {
     DataPtrSize = TARGET_POINTER;
     CodePtrSize = TARGET_POINTER;
+
     if( data->br ) {
         strcpy( CLIB_Name, "1clbdll" );
     } else {
@@ -297,7 +325,9 @@ static void miscAnalysis( OPT_STORAGE *data )
 void CmdSysAnalyse( OPT_STORAGE *data )
 /*************************************/
 {
-    char *target_name = NULL;
+    char *target_name;
+
+    target_name = setTargetSystem( data );
 
     GenSwitches &= ~(CGSW_GEN_DBG_CV | CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF);
     switch( data->dbg_output ) {
@@ -323,15 +353,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     }
-    /*
-     * -zw overrides a build target setting
-     */
-    if( data->bt ) {
-        char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetLiteral( &target_name, strupr( target ) );
-        CMemFree( target );
-    }
+
     setMemoryModel( data );
+
 #if _CPU == _AXP
     if( data->as ) {
         TargetSwitches |= CGSW_RISC_ALIGNED_SHORT;
