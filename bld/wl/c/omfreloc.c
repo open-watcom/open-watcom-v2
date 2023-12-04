@@ -209,7 +209,7 @@ void DoRelocs( void )
             case LOC_BASE_OFFSET_32:
                 fixtype = FIX_BASE_OFFSET_32;
                 break;
-            case LOC_OFFSET_32_LOADER:
+            case LOC_OFFSET_LOADER_32:
                 fixtype = FIX_OFFSET_32; //| FIX_LOADER_RES;
                 break;
             default:

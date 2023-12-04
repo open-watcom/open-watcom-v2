@@ -1268,7 +1268,7 @@ static void explicitFixup( byte typ )
     case LOC_PHARLAP_BASE_OFFSET_32:    /* fall through */
     case LOC_BASE_OFFSET_32:    Output( "  POINTER386 " );   break;
     case LOC_OFFSET_32:         Output( "  OFFSET386  " );   break;
-    case LOC_OFFSET_32_LOADER:  Output( "  LROFFSET386" );   break;
+    case LOC_OFFSET_LOADER_32:  Output( "  LROFFSET386" );   break;
     default:
         Output( BAILOUT "Unknown loc, type = %b\n", typ );
         longjmp( BailOutJmp, 1 );

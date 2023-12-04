@@ -2499,7 +2499,7 @@ static omf_fix_loc getOMFFixLoc( fix_class class )
         if( _IsTargetModel( CGSW_X86_EZ_OMF ) ) {
             return( LOC_PHARLAP_OFFSET_32 );
         } else {
-            return( LOC_OFFSET_32_LOADER );
+            return( LOC_OFFSET_LOADER_32 );
         }
     case F_PTR:
         if( _IsTargetModel( CGSW_X86_EZ_OMF ) ) {

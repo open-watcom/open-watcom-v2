@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1212,7 +1212,7 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, bool mode, omf_fix_loc 
         }
         break;
     case( LOC_OFFSET_32 ):
-    case( LOC_OFFSET_32_LOADER ):
+    case( LOC_OFFSET_LOADER_32 ):
         /*
          * relocate 32-bit offset
          * relocate 32-bit offset, loader resolved
