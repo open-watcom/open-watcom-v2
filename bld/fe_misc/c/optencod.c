@@ -173,11 +173,18 @@ typedef struct target {
     const char      *name;
 } TARGET;
 
-typedef struct name {
-    struct name     *next;
-    boolbit         is_timestamp : 1;
+typedef struct iname {
+    struct iname    *next;
     char            name[1];
-} NAME;
+} INAME;
+
+typedef struct ename {
+    struct ename    *next;
+    INAME           *items;
+    boolbit         is_timestamp : 1;
+    boolbit         used         : 1;
+    char            name[1];
+} ENAME;
 
 typedef struct title {
     struct title    *next;
@@ -215,7 +222,7 @@ typedef struct option {
     char            *usage_argid;
     char            *field_name;
     char            *value_field_name;
-    NAME            *enumerate;
+    ENAME           *enumerate;
     char            *code;
     unsigned        number_default;
     targmask        target_mask;
@@ -396,8 +403,7 @@ static struct {
 } optFlag;
 
 static TARGET   *targetList;
-static NAME     *enumList;
-static NAME     *enumeratorList;
+static ENAME    *enumList;
 static OPTION   *optionList;
 static OPTION   *uselessOptionList;
 static TITLE    *titleList;
@@ -678,10 +684,10 @@ static void finiTargets( void )
     free( targetList );
 }
 
-static NAME *addEnumName( NAME **h, const char *n )
+static ENAME *addEnumName( ENAME **h, const char *n )
 {
     size_t len;
-    NAME *e;
+    ENAME *e;
 
     for( e = *h; e != NULL; e = e->next ) {
         if( strcmp( n, e->name ) == 0 ) {
@@ -693,15 +699,29 @@ static NAME *addEnumName( NAME **h, const char *n )
     strcpy( e->name, n );
     e->next = *h;
     *h = e;
+    e->items = NULL;
     return( e );
 }
 
-static NAME *addEnumerator( const char *enumerate, const char *field_name )
+static INAME *addEnumerator( ENAME *en, const char *field_name )
 {
-    strcpy( tmpbuff, enumerate );
+    INAME *ei;
+    size_t len;
+
+    strcpy( tmpbuff, en->name );
     strcat( tmpbuff, "_" );
     strcat( tmpbuff, field_name );
-    return( addEnumName( &enumeratorList, tmpbuff ) );
+    for( ei = en->items; ei != NULL; ei = ei->next ) {
+        if( strcmp( tmpbuff, ei->name ) == 0 ) {
+            return( ei );
+        }
+    }
+    len = strlen( tmpbuff );
+    ei = malloc( sizeof( *ei ) + len );
+    strcpy( ei->name, tmpbuff );
+    ei->next = en->items;
+    en->items = ei;
+    return( ei );
 }
 
 static GROUP *findGroup( const char *pattern )
@@ -1252,7 +1272,7 @@ static void doCHAIN( const char *p )
 // :enumerate. <name> [<option>]
 static void doENUMERATE( const char *p )
 {
-    NAME *en;
+    ENAME *en;
     OPTION *o;
 
     if( *p == '\0' ) {
@@ -1262,13 +1282,13 @@ static void doENUMERATE( const char *p )
     en = addEnumName( &enumList, tokbuff );
     p = nextWord( p, tokbuff );
     if( *tokbuff != '\0' ) {
-        addEnumerator( en->name, tokbuff );
+        addEnumerator( en, tokbuff );
     }
-    addEnumerator( en->name, "default" );
+    addEnumerator( en, "default" );
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->enumerate = en;
         if( o->is_timestamp ) {
-            o->enumerate->is_timestamp = true;
+            en->is_timestamp = true;
         }
         if( *tokbuff != '\0' ) {
             o->field_name = strdup( tokbuff );
@@ -1644,6 +1664,8 @@ static void stripUselessOptions( void )
     for( o = *h; o != NULL; o = o_next ) {
         o_next = o->next;
         if( IS_SELECTED( o ) ) {
+            if( o->enumerate != NULL )
+                o->enumerate->used = true;
             h = &(o->next);
         } else {
             o->next = uselessOptionList;
@@ -1745,7 +1767,7 @@ static void initOptionFields( void )
 static void startParserH( void )
 {
     OPTION *o;
-    NAME *en;
+    ENAME *en;
 
     if( ofp != NULL ) {
         fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
@@ -1782,6 +1804,8 @@ static void startParserH( void )
             }
         }
         for( en = enumList; en != NULL; en = en->next ) {
+            if( !en->used )
+                continue;
             fprintf( ofp, "    unsigned     %s;\n", en->name );
             if( en->is_timestamp ) {
                 fprintf( ofp, "    unsigned     %s_timestamp;\n", en->name );
@@ -1800,14 +1824,19 @@ static void startParserH( void )
 
 static void finishParserH( void )
 {
-    NAME *en;
+    ENAME *en;
     unsigned value;
+    INAME *ei;
 
     if( ofp != NULL ) {
         value = 0;
-        for( en = enumeratorList; en != NULL; en = en->next ) {
-            ++value;
-            fprintf( ofp, "#define OPT_ENUM_%s %u\n", en->name, value );
+        for( en = enumList; en != NULL; en = en->next ) {
+            if( !en->used )
+                continue;
+            for( ei = en->items; ei != NULL; ei = ei->next ) {
+                ++value;
+                fprintf( ofp, "#define OPT_ENUM_%s %u\n", ei->name, value );
+            }
         }
     }
 }
@@ -1970,7 +1999,7 @@ static void emitSuccessCode( unsigned depth, flow_control control )
 
 static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
 {
-    NAME *ei;
+    INAME *ei;
     OPTION *o;
     struct {
         boolbit     close_value_if : 1;
@@ -2036,7 +2065,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         emitPrintf( depth, "%s( &(data->%s) );\n", o->check_func, o->value_field_name );
     }
     if( o->enumerate != NULL ) {
-        ei = addEnumerator( o->enumerate->name, o->field_name );
+        ei = addEnumerator( o->enumerate, o->field_name );
         if( o->is_timestamp ) {
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->enumerate->name );
         }
@@ -2189,8 +2218,8 @@ static void outputFN_PROCESS( void )
 static void outputFN_INIT( void )
 {
     OPTION *o;
-    NAME *en;
-    NAME *ei;
+    ENAME *en;
+    INAME *ei;
     unsigned depth = 0;
 
     emitPrintf( depth, "void " FN_INIT "( OPT_STORAGE *data )\n" );
@@ -2203,7 +2232,9 @@ static void outputFN_INIT( void )
         }
     }
     for( en = enumList; en != NULL; en = en->next ) {
-        ei = addEnumerator( en->name, "default" );
+        if( !en->used )
+            continue;
+        ei = addEnumerator( en, "default" );
         emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", en->name, ei->name );
     }
     --depth;
