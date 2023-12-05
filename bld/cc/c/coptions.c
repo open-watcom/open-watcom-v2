@@ -37,6 +37,8 @@
 *       to predefine a __SW_xx macro                                         *
 *                                                                            *
 *****************************************************************************/
+
+
 #include "cvars.h"
 #include <ctype.h>
 #include "wio.h"
@@ -135,7 +137,7 @@ static struct
         SW_MH           /*  Huge memory model           */
     } mem;
     /*
-     *  DEBUGGING INFORMATION TYPE
+     * DEBUGGING INFORMATION TYPE
      */
     enum {
         SW_DF_DEF,      /*  No debug type specified     */
@@ -385,22 +387,19 @@ static void SetFinalTargetSystem( void )
          */
         CompFlags.register_conventions = false;
         break;
-    case TS_NT:
-        PreDefine_Macro( "_WIN32" );
+    case TS_RDOS:
+        PreDefine_Macro( "_RDOS" );
         break;
-#endif
     case TS_QNX:
-    case TS_LINUX:
-    case TS_UNIX:
         PreDefine_Macro( "__UNIX__" );
         break;
     case TS_CHEAP_WINDOWS:
         PreDefine_Macro( "__CHEAP_WINDOWS__" );
         /* fall through */
     case TS_WINDOWS:
-#if _INTEL_CPU
   #if _CPU == 8086
         PreDefine_Macro( "_WINDOWS" );
+        TargetSwitches |= CGSW_X86_WINDOWS | CGSW_X86_CHEAP_WINDOWS;
         CHECK_SET_PEGGED( d, true )
   #else
         PreDefine_Macro( "__WINDOWS_386__" );
@@ -414,8 +413,16 @@ static void SetFinalTargetSystem( void )
             break;
         }
   #endif
-        TargetSwitches |= CGSW_X86_WINDOWS | CGSW_X86_CHEAP_WINDOWS;
+        break;
 #endif
+    case TS_NT:
+        PreDefine_Macro( "_WIN32" );
+        break;
+    case TS_LINUX:
+    case TS_UNIX:
+        PreDefine_Macro( "__UNIX__" );
+        break;
+    case TS_OTHER:
         break;
     }
 
@@ -741,9 +748,6 @@ static void MacroDefs( void )
     if( CompFlags.bd_switch_used ) {
         DefSwitchMacro( "BD" );
     }
-    /*
-     * Target is console application
-     */
     if( CompFlags.bc_switch_used ) {
         DefSwitchMacro( "BC" );
     }
@@ -1874,7 +1878,8 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
             j = 1;
             for( ;; ) {
                 ++opt;
-                if( *opt == '\0' || *opt == '*' ) {
+                if( *opt == '\0'
+                  || *opt == '*' ) {
                     if( *opt == '\0' ) {
                         if( p - option_start == 1 ) {
                             /*
@@ -1889,13 +1894,14 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                     op_table[i].function();
                     return( OptScanPtr );
                 }
-                if( *opt == '#' ) {         /* collect a number */
+                if( *opt == '#' ) { /* collect a number */
                     if( p[j] >= '0'
                       && p[j] <= '9' ) {
                         OptValue = 0;
                         for( ;; ) {
                             c = p[j];
-                            if( c < '0' || c > '9' )
+                            if( c < '0'
+                              || c > '9' )
                                 break;
                             OptValue = OptValue * 10 + c - '0';
                             ++j;
@@ -1915,7 +1921,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                 } else if( *opt == '@' ) {  /* collect a filename */
                     OptParm = &p[j];
                     c = p[j];
-                    if( c == '"' ) {        /* "filename" */
+                    if( c == '"' ) { /* "filename" */
                         for( ; (c = p[++j]) != '\0'; ) {
                             if( c == '"' ) {
                                 ++j;
@@ -1945,7 +1951,8 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                 } else {
                     c = (char)tolower( (unsigned char)p[j] );
                     if( *opt != c ) {
-                        if( *opt < 'A' || *opt > 'Z' )
+                        if( *opt < 'A'
+                          || *opt > 'Z' )
                             break;
                         if( *opt != p[j] ) {
                             break;
@@ -1995,7 +2002,8 @@ static const char *CollectEnvOrFileName( const char *str )
     char        *env;
     char        ch;
 
-    while( *str == ' ' || *str == '\t' )
+    while( *str == ' '
+      || *str == '\t' )
         ++str;
     env = TokenBuf;
     for( ; (ch = *str) != '\0'; ) {
@@ -2039,12 +2047,13 @@ static char *ReadIndirectFile( void )
          */
         str = env;
         while( (ch = *str) != '\0' ) {
-            if( ch == '\r' || ch == '\n' ) {
+            if( ch == '\r'
+              || ch == '\n' ) {
                 *str = ' ';
             }
 #if !defined( __UNIX__ )
             /*
-             * if end of file - mark end of str
+             * if DOS end of file (^Z) -> mark end of str
              */
             if( ch == 0x1A ) {
                 *str = '\0';
@@ -2068,7 +2077,8 @@ static void ProcOptions( const char *str )
     if( str != NULL ) {
         level = -1;
         for( ;; ) {
-            while( *str == ' ' || *str == '\t' )
+            while( *str == ' '
+              || *str == '\t' )
                 ++str;
             if( *str == '@' ) {
                 str = CollectEnvOrFileName( str + 1 );
@@ -2097,7 +2107,8 @@ static void ProcOptions( const char *str )
                 level--;
                 continue;
             }
-            if( *str == '-' || *str == SwitchChar ) {
+            if( *str == '-'
+              || *str == SwitchChar ) {
                 str = ProcessOption( CFE_Options, str + 1, str );
             } else {  /* collect  file name */
                 const char  *beg;
@@ -2222,8 +2233,8 @@ static void Define_Memory_Model( void )
         strcpy( CLIB_Name, "1clibmt?" );
     }
     if( CompFlags.bd_switch_used ) {
-        if( TargetSystem == TS_WINDOWS ||
-            TargetSystem == TS_CHEAP_WINDOWS ) {
+        if( TargetSystem == TS_WINDOWS
+          || TargetSystem == TS_CHEAP_WINDOWS ) {
             strcpy( CLIB_Name, "1clib?" );
         } else {
             strcpy( CLIB_Name, "1clibdl?" );

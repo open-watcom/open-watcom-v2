@@ -1154,17 +1154,12 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK;
     }
     /*
-     * Changed the ordering.
-     * Always set Stack87 if fpr switch is used.
-     * If fpr switch is not present but are using NetWare then set Stack87
-     * unless the target is NetWare 5 or above.
+     * If using NetWare, set Stack87 unless the target
+     * is NetWare 5 or higher.
      */
     if( data->fpr ) {
         Stack87 = 4;
     } else if( TargetSystem == TS_NETWARE ) {
-        /*
-         * no fpr for netware 5
-         */
         Stack87 = 4;
     }
     if( data->g ) {

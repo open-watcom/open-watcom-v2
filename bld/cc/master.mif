@@ -231,4 +231,4 @@ optencod_targets += dbg
 
 usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
     @%make echo_optencod
-    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ . . usage.gh $(optencod_targets)
+    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh $(optencod_targets)
