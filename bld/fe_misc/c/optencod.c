@@ -1796,13 +1796,22 @@ static void startParserH( void )
                 } else if( HAS_OPT_STRING( o ) ) {
                     fprintf( ofp, "    OPT_STRING   *%s;\n", o->value_field_name );
                 }
-                if( o->is_timestamp ) {
-                    if( o->enumerate == NULL ) {
+                /*
+                 * the enumeration is shared by several options that
+                 * require enumeration timestamp to be processed instead
+                 * of option simple timestamp
+                 * in case of enumeration it is skiped and processed in next code
+                 */
+                if( o->enumerate == NULL ) {
+                    if( o->is_timestamp ) {
                         fprintf( ofp, "    unsigned     %s_timestamp;\n", o->field_name );
                     }
                 }
             }
         }
+        /*
+         * this section process only enumerations (field + timestamp)
+         */
         for( en = enumList; en != NULL; en = en->next ) {
             if( !en->used )
                 continue;
