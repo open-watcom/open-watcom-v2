@@ -220,8 +220,84 @@ static void SetTargetName( const char *name )
 
 static void SetTargetSystem( void )
 {
-    char        *buff;
+    if( SwData.sys_name == NULL ) {
+#if _INTEL_CPU
+    #if defined( __NOVELL__ )
+        SetTargetName( "NETWARE" );
+    #elif defined( __QNX__ )
+        SetTargetName( "QNX" );
+    #elif defined( __LINUX__ )
+        SetTargetName( "LINUX" );
+    #elif defined( __HAIKU__ )
+        SetTargetName( "HAIKU" );
+    #elif defined( __SOLARIS__ ) || defined( __sun__ )
+        SetTargetName( "SOLARIS" );
+    #elif defined( __OSX__ ) || defined( __APPLE__ )
+        SetTargetName( "OSX" );
+    #elif defined( __OS2__ )
+        SetTargetName( "OS2" );
+    #elif defined( __NT__ )
+        SetTargetName( "NT" );
+    #elif defined( __DOS__ )
+        SetTargetName( "DOS" );
+    #elif defined( __BSD__ )
+        SetTargetName( "BSD" );
+    #elif defined( __RDOS__ )
+        SetTargetName( "RDOS" );
+    #else
+        #error "Target OS not defined"
+    #endif
+#elif _RISC_CPU
+        /*
+         * we only have NT libraries for Alpha right now
+         */
+        SetTargetName( "NT" );
+#elif _CPU == _SPARC
+        SetTargetName( "SOLARIS" );
+#else
+    #error Target Machine OS not configured
+#endif
+    }
 
+    TargetSystem = TS_OTHER;
+    if( SwData.sys_name != NULL ) {
+        if( strcmp( SwData.sys_name, "DOS" ) == 0 ) {
+            TargetSystem = TS_DOS;
+        } else if( strcmp( SwData.sys_name, "NETWARE" ) == 0 ) {
+            TargetSystem = TS_NETWARE;
+        } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
+            TargetSystem = TS_NETWARE5;
+            SetTargetName( "NETWARE" );
+        } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
+            TargetSystem = TS_WINDOWS;
+        } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
+#if _CPU == 8086
+            TargetSystem = TS_CHEAP_WINDOWS;
+#else
+            TargetSystem = TS_WINDOWS;
+#endif
+            SetTargetName( "WINDOWS" );
+        } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
+            TargetSystem = TS_NT;
+        } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
+            TargetSystem = TS_LINUX;
+        } else if( strcmp( SwData.sys_name, "QNX" ) == 0 ) {
+            TargetSystem = TS_QNX;
+        } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
+            TargetSystem = TS_OS2;
+        } else if( strcmp( SwData.sys_name, "RDOS" ) == 0 ) {
+            TargetSystem = TS_RDOS;
+        } else if( strcmp( SwData.sys_name, "HAIKU" ) == 0
+                || strcmp( SwData.sys_name, "OSX" ) == 0
+                || strcmp( SwData.sys_name, "SOLARIS" ) == 0
+                || strcmp( SwData.sys_name, "BSD" ) == 0 ) {
+            TargetSystem = TS_UNIX;
+        }
+    }
+}
+
+static void SetFinalTargetSystem( void )
+{
     if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
         PreDefine_Macro( "M_I86" );
@@ -272,76 +348,12 @@ static void SetTargetSystem( void )
 
     PreDefine_Macro( "__WATCOM_INT64__" );
     PreDefine_Macro( "_INTEGRAL_MAX_BITS=64" );
-    if( SwData.sys_name == NULL ) {
-#if _INTEL_CPU
-    #if defined( __NOVELL__ )
-        SetTargetName( "NETWARE" );
-    #elif defined( __QNX__ )
-        SetTargetName( "QNX" );
-    #elif defined( __LINUX__ )
-        SetTargetName( "LINUX" );
-    #elif defined( __HAIKU__ )
-        SetTargetName( "HAIKU" );
-    #elif defined( __SOLARIS__ ) || defined( __sun__ )
-        SetTargetName( "SOLARIS" );
-    #elif defined( __OSX__ ) || defined( __APPLE__ )
-        SetTargetName( "OSX" );
-    #elif defined( __OS2__ )
-        SetTargetName( "OS2" );
-    #elif defined( __NT__ )
-        SetTargetName( "NT" );
-    #elif defined( __DOS__ )
-        SetTargetName( "DOS" );
-    #elif defined( __BSD__ )
-        SetTargetName( "BSD" );
-    #elif defined( __RDOS__ )
-        SetTargetName( "RDOS" );
-    #else
-        #error "Target OS not defined"
-    #endif
-#elif _RISC_CPU
-        /*
-         * we only have NT libraries for Alpha right now
-         */
-        SetTargetName( "NT" );
-#elif _CPU == _SPARC
-        SetTargetName( "SOLARIS" );
-#else
-    #error Target Machine OS not configured
-#endif
-    }
 
-    if( strcmp( SwData.sys_name, "DOS" ) == 0 ) {
-        TargetSystem = TS_DOS;
-    } else if( strcmp( SwData.sys_name, "NETWARE" ) == 0 ) {
-        TargetSystem = TS_NETWARE;
-    } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
-        TargetSystem = TS_NETWARE5;
-        PreDefine_Macro( "__NETWARE5__" );
-        SetTargetName( "NETWARE" );
-    } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
-        TargetSystem = TS_WINDOWS;
-    } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
-        TargetSystem = TS_CHEAP_WINDOWS;
-        PreDefine_Macro( "__CHEAP_WINDOWS__" );
-        SetTargetName( "WINDOWS" );
-    } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
-        TargetSystem = TS_NT;
-    } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
-        TargetSystem = TS_LINUX;
-    } else if( strcmp( SwData.sys_name, "QNX" ) == 0 ) {
-        TargetSystem = TS_QNX;
-    } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
-        TargetSystem = TS_OS2;
-    } else if( strcmp( SwData.sys_name, "RDOS" ) == 0 ) {
-        TargetSystem = TS_RDOS;
-    } else if( strcmp( SwData.sys_name, "HAIKU" ) == 0
-            || strcmp( SwData.sys_name, "OSX" ) == 0
-            || strcmp( SwData.sys_name, "SOLARIS" ) == 0
-            || strcmp( SwData.sys_name, "BSD" ) == 0 ) {
-        TargetSystem = TS_UNIX;
-    } else {
-        TargetSystem = TS_OTHER;
+    if( SwData.sys_name != NULL ) {
+        char *buff = CMemAlloc( 2 + strlen( SwData.sys_name ) + 2 + 1 );
+        sprintf( buff, "__%s__", SwData.sys_name );
+        PreDefine_Macro( buff );
+        CMemFree( buff );
     }
 
     switch( TargetSystem ) {
@@ -352,17 +364,21 @@ static void SetTargetSystem( void )
         PreDefine_Macro( "_DOS" );
         break;
 #if _CPU == 386
-    case TS_NETWARE:
-        Stack87 = 4;
-        /* fall through */
     case TS_NETWARE5:
+        PreDefine_Macro( "__NETWARE5__" );
+        /* fall through */
+    case TS_NETWARE:
+        PreDefine_Macro( "__NETWARE_386__" );
         /*
-         * no "fpr" for Netware 5.0
+         * If using NetWare, set Stack87 unless the target
+         * is NetWare 5 or higher.
          */
+        if( TargetSystem == TS_NETWARE ) {
+            Stack87 = 4;
+        }
         if( SwData.mem == SW_M_DEF ) {
             SwData.mem = SW_MS;
         }
-        PreDefine_Macro( "__NETWARE_386__" );
         /*
          * NETWARE uses stack based calling conventions
          * by default - silly people.
@@ -379,15 +395,12 @@ static void SetTargetSystem( void )
         PreDefine_Macro( "__UNIX__" );
         break;
     case TS_CHEAP_WINDOWS:
-#if _CPU == 8086
-        PreDefine_Macro( "_WINDOWS" );
-#else
-        TargetSystem = TS_WINDOWS;
-#endif
+        PreDefine_Macro( "__CHEAP_WINDOWS__" );
         /* fall through */
     case TS_WINDOWS:
 #if _INTEL_CPU
   #if _CPU == 8086
+        PreDefine_Macro( "_WINDOWS" );
         CHECK_SET_PEGGED( d, true )
   #else
         PreDefine_Macro( "__WINDOWS_386__" );
@@ -405,10 +418,6 @@ static void SetTargetSystem( void )
 #endif
         break;
     }
-    buff = CMemAlloc( 2 + strlen( SwData.sys_name ) + 2 + 1 );
-    sprintf( buff, "__%s__", SwData.sys_name );
-    PreDefine_Macro( buff );
-    CMemFree( buff );
 
 #if _RISC_CPU
     if( (GenSwitches & (CGSW_GEN_OBJ_ELF | CGSW_GEN_OBJ_COFF)) == 0 ) {
@@ -2163,7 +2172,7 @@ static void InitCPUModInfo( void )
 static void Define_Memory_Model( void )
 {
 #if _INTEL_CPU
-    char        model;
+    char        lib_model;
 #endif
 
     DataPtrSize = TARGET_POINTER;
@@ -2171,39 +2180,39 @@ static void Define_Memory_Model( void )
 #if _INTEL_CPU
     switch( SwData.mem ) {
     case SW_MF:
-        model = 's';
+        lib_model = 's';
         TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
         break;
     case SW_MS:
-        model = 's';
+        lib_model = 's';
         CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
         break;
     case SW_MM:
-        model = 'm';
+        lib_model = 'm';
         WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
         CodePtrSize = TARGET_FAR_POINTER;
         break;
     case SW_MC:
-        model = 'c';
+        lib_model = 'c';
         DataPtrSize = TARGET_FAR_POINTER;
         break;
     case SW_ML:
-        model = 'l';
+        lib_model = 'l';
         WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         break;
     case SW_MH:
-        model = 'h';
+        lib_model = 'h';
         WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         break;
     default:
-        model = '?';
+        lib_model = '?';
         break;
     }
 #endif
@@ -2231,9 +2240,9 @@ static void Define_Memory_Model( void )
         EmuLib_Name = "8noemu87";
     }
 #elif _CPU == 386
-    model = 'r';
+    lib_model = 'r';
     if( !CompFlags.register_conventions )
-        model = 's';
+        lib_model = 's';
     if( CompFlags.br_switch_used ) {
         strcpy( CLIB_Name, "1clb?dll" );
     } else {
@@ -2274,8 +2283,8 @@ static void Define_Memory_Model( void )
     #error Define_Memory_Model not configured
 #endif
 #if _INTEL_CPU
-    *strchr( CLIB_Name, '?' ) = model;
-    *strchr( MATHLIB_Name, '?' ) = model;
+    *strchr( CLIB_Name, '?' ) = lib_model;
+    *strchr( MATHLIB_Name, '?' ) = lib_model;
 #endif
 }
 
@@ -2336,6 +2345,7 @@ void GenCOptions( char **cmdline )
     GblPackAmount = PackAmount;
     SetDebug();
     SetTargetSystem();
+    SetFinalTargetSystem();
     SetGenSwitches();
     SetCharacterEncoding();
     Define_Memory_Model();
