@@ -297,16 +297,15 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         PreDefineStringMacro( "_DOS" );
         break;
     case TS_CHEAP_WINDOWS:
+        PreDefineStringMacro( "__CHEAP_WINDOWS__" );
+        /* fall through */
     case TS_WINDOWS:
         target_multi_thread = false;
 #if _CPU == 8086
         PreDefineStringMacro( "_WINDOWS" );
         TargetSwitches |= CGSW_X86_WINDOWS | CGSW_X86_CHEAP_WINDOWS;
-        TargetSwitches &= ~ CGSW_X86_FLOATING_DS;
 #else
         PreDefineStringMacro( "__WINDOWS_386__" );
-        TargetSwitches |= CGSW_X86_FLOATING_FS;
-        SET_FPU_INLINE( CpuSwitches );
 #endif
         break;
     case TS_NETWARE5:
@@ -452,31 +451,50 @@ static void setMemoryModel( OPT_STORAGE *data )
     default:
         DbgNever();
     }
-    target_win = false;
-    if( TargetSystem == TS_WINDOWS
-      || TargetSystem == TS_CHEAP_WINDOWS ) {
-        target_win = true;
-    }
     /*
-     * setup default "floating" segment registers
+     * setup "floating" segment registers
+     * any memory model needs at least one floating segment register
+     * by default it is ES segment register for 16-bit code and
+     * GS segment register for 32-bit code
      */
 
     /*
-     * setup ES segment registers floating/pegged
+     * setup SS segment register floating
      */
-#if _CPU == 8086
-    bit |= CGSW_X86_FLOATING_ES;
-#else
+    if( data->zu ) {
+        CompFlags.zu_switch_used = true;
+        bit |= CGSW_X86_FLOATING_SS;
+    }
+    /*
+     * setup ES segment register floating
+     */
     if( (bit & CGSW_X86_FLAT_MODEL) == 0 ) {
         bit |= CGSW_X86_FLOATING_ES;
     }
-#endif
     /*
-     * setup DS segment registers floating/pegged
+     * setup DS segment register floating
      */
     if( bit & CGSW_X86_BIG_DATA ) {
         bit |= CGSW_X86_FLOATING_DS;
     }
+#if _CPU == 386
+    /*
+     * 32-bit code with zld option has DS pegged
+     */
+    if( data->zdl ) {
+        TargetSwitches |= CGSW_X86_LOAD_DS_DIRECTLY;
+        bit &= ~CGSW_X86_FLOATING_DS;
+    }
+#endif
+#if _CPU == 8086
+    /*
+     * any model of 16-bit Windows has DS pegged
+     */
+    if( TargetSystem == TS_WINDOWS
+      || TargetSystem == TS_CHEAP_WINDOWS ) {
+        bit &= ~CGSW_X86_FLOATING_DS;
+    }
+#endif
     switch( data->ds_peg ) {
     case OPT_ENUM_ds_peg_zdp:
         TargetSwitches &= ~CGSW_X86_FLOATING_DS;
@@ -487,57 +505,59 @@ static void setMemoryModel( OPT_STORAGE *data )
         bit &= ~CGSW_X86_FLOATING_DS;
         break;
     }
-#if _CPU == 386
-    if( data->zdl ) {
-        TargetSwitches |= CGSW_X86_LOAD_DS_DIRECTLY;
-        bit &= ~CGSW_X86_FLOATING_DS;
-    }
-#endif
-    if( target_win ) {
-        bit &= ~CGSW_X86_FLOATING_DS;
-    } else {
-        TargetSwitches &= ~CGSW_X86_FLOATING_DS;
-    }
     /*
-     * setup FS segment registers floating/pegged
+     * setup FS segment register floating
+     *
+     * FS segment register is used by 32-bit C++ run-time libraries
      */
+    if( GET_CPU( CpuSwitches ) >= CPU_386 ) {
+#if _CPU == 8086
+        bit |= CGSW_X86_FLOATING_FS;
+#else
+        if( TargetSystem == TS_WINDOWS ) {
+            bit |= CGSW_X86_FLOATING_FS;
+        }
+#endif
+    }
     switch( data->fs_peg ) {
     case OPT_ENUM_fs_peg_zfp:
-        TargetSwitches &= ~ CGSW_X86_FLOATING_FS;
+        TargetSwitches &= ~CGSW_X86_FLOATING_FS;
         bit &= ~CGSW_X86_FLOATING_FS;
         break;
     case OPT_ENUM_fs_peg_zff:
         TargetSwitches |= CGSW_X86_FLOATING_FS;
         bit &= ~CGSW_X86_FLOATING_FS;
         break;
-    default:
-        TargetSwitches &= ~CGSW_X86_FLOATING_FS;
-        break;
     }
     /*
-     * setup GS segment registers floating/pegged
+     * setup GS segment register floating
      */
-#if _CPU == 386
-    bit |= CGSW_X86_FLOATING_GS;
-#endif
+    if( GET_CPU( CpuSwitches ) >= CPU_386 ) {
+        bit |= CGSW_X86_FLOATING_GS;
+    }
     switch( data->gs_peg ) {
     case OPT_ENUM_gs_peg_zgp:
-        TargetSwitches &= ~ CGSW_X86_FLOATING_GS;
+        TargetSwitches &= ~CGSW_X86_FLOATING_GS;
         bit &= ~CGSW_X86_FLOATING_GS;
         break;
     case OPT_ENUM_gs_peg_zgf:
         TargetSwitches |= CGSW_X86_FLOATING_GS;
         bit &= ~CGSW_X86_FLOATING_GS;
         break;
-    default:
-        TargetSwitches &= ~ CGSW_X86_FLOATING_GS;
-        break;
     }
 
-    TargetSwitches &= ~(CGSW_X86_FLAT_MODEL | CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER | CGSW_X86_FLOATING_ES);
+    TargetSwitches &= ~(CGSW_X86_FLAT_MODEL | CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER);
     TargetSwitches |= bit;
 
+    if( GET_CPU( CpuSwitches ) < CPU_386 ) {
+        /*
+         * issue warning message if /zf[f|p] or /zg[f|p] spec'd?
+         */
+        TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
+    }
+
 #if _CPU == 8086
+    target_win = ( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS );
     if( data->bm ) { /* .DLL */
         strcpy( DLL_CLIB_Name, "2clibmt?" );
     } else {
@@ -612,6 +632,7 @@ static void setMemoryModel( OPT_STORAGE *data )
         EmuLib_Name = "8noemu87";
     }
 #else
+    target_win = ( TargetSystem == TS_WINDOWS );
     if( CompFlags.register_conventions ) {
         lib_model = 'r';
         PreDefineStringMacro( "__3R__" );
@@ -1012,7 +1033,8 @@ static void macroDefs( void )
 #endif
     if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
-        if( TargetSwitches & CGSW_X86_WINDOWS ) {
+        if( TargetSystem == TS_WINDOWS
+          || TargetSystem == TS_CHEAP_WINDOWS ) {
             PreDefineStringMacro( "SOMLINK=__cdecl" );
             PreDefineStringMacro( "SOMDLINK=__far" );
         }
@@ -1033,12 +1055,6 @@ static void miscAnalysis( OPT_STORAGE *data )
         }
     }
 #endif
-    if( GET_CPU( CpuSwitches ) < CPU_386 ) {
-        /*
-         * issue warning message if /zf[f|p] or /zg[f|p] spec'd?
-         */
-        TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
-    }
     if( !CompFlags.save_restore_segregs ) {
         if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             HW_CTurnOff( WatcallInfo.save, HW_DS );
@@ -1130,6 +1146,11 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         }
         break;
     }
+#if _CPU == 386
+    if( TargetSystem == TS_WINDOWS ) {
+        SET_FPU_INLINE( CpuSwitches );
+    }
+#endif
 
     switch( data->intel_fpu_level ) {
     case OPT_ENUM_intel_fpu_level_fp6:
@@ -1213,10 +1234,6 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zmf ) {
         CompFlags.zm_switch_used = true;
         CompFlags.zmf_switch_used = true;
-    }
-    if( data->zu ) {
-        CompFlags.zu_switch_used = true;
-        TargetSwitches |= CGSW_X86_FLOATING_SS;
     }
     if( data->zx ) {
         CompFlags.zx_switch_used = true;
