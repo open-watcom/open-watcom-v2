@@ -112,7 +112,7 @@ trap_retval TRAP_RUN_THREAD( get_runtime )( void )
     run_thread_get_runtime_ret *ret;
     int                        ok;
     int                        i;
-    struct ThreadState         state;
+    struct RdosThreadState     state;
     char                       *time_txt;
     char                       tempstr[10];
     int                        day;

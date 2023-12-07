@@ -146,7 +146,7 @@ void SetCurrentDebug( struct TDebug *obj )
 
 static void ReadThreadState( struct TDebugThread *obj )
 {
-    struct ThreadState state;
+    struct RdosThreadState state;
     int i;
     int ok;
     char str[21];
@@ -296,8 +296,8 @@ static int GetThreadMemoryModel( struct TDebugThread *obj )
 
 static void SetupGo( struct TDebugThread *obj, struct TDebugBreak *b )
 {
-    int         update = false;
-    Tss         tss;
+    int             update = false;
+    struct RdosTss  tss;
 
     obj->FDebug = false;
     obj->FWasTrace = false;
@@ -327,8 +327,8 @@ static void SetupGo( struct TDebugThread *obj, struct TDebugBreak *b )
 
 static void SetupTrace( struct TDebugThread *obj, struct TDebugBreak *b )
 {
-    int         update = false;
-    Tss         tss;
+    int             update = false;
+    struct RdosTss  tss;
 
     obj->FDebug = false;
     obj->FWasTrace = true;
@@ -384,10 +384,10 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *HwBrea
 
 static void SetException( struct TDebugThread *obj, struct TExceptionEvent *event )
 {
-    Tss         tss;
-    int         i;
-    opcode_type brk_opcode = 0;
-    int         bnum;
+    struct RdosTss  tss;
+    int             i;
+    opcode_type     brk_opcode = 0;
+    int             bnum;
 
     for( bnum = 0; bnum < 4; bnum++ ) {
         RdosClearBreak( obj->ThreadID, bnum );
@@ -545,9 +545,9 @@ static void SetException( struct TDebugThread *obj, struct TExceptionEvent *even
 
 static void SetKernelException( struct TDebugThread *obj, struct TKernelExceptionEvent *event )
 {
-    Tss tss;
-    int i;
-    int         bnum;
+    struct RdosTss  tss;
+    int             i;
+    int             bnum;
 
     for( bnum = 0; bnum < 4; bnum++ ) {
         RdosClearBreak( obj->ThreadID, bnum );
@@ -656,8 +656,8 @@ static void SetKernelException( struct TDebugThread *obj, struct TKernelExceptio
 
 void WriteRegs( struct TDebugThread *obj )
 {
-    Tss tss;
-    int i;
+    struct RdosTss  tss;
+    int             i;
 
     RdosGetThreadTss( obj->ThreadID, &tss );
 
@@ -1423,8 +1423,8 @@ void ClearWatch( struct TDebug *obj, int Sel, long Offset, int Size )
 
 static struct TDebugBreak *PrepareToRun( struct TDebug *obj )
 {
-    struct Tss         tss;
-    struct TDebugBreak *bp;
+    struct RdosTss      tss;
+    struct TDebugBreak  *bp;
     opcode_type         brk_opcode;
 
     RdosGetThreadTss( obj->CurrentThread->ThreadID, &tss );
