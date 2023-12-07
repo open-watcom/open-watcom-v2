@@ -140,10 +140,10 @@
 #define usergate_close_file 0x0000007D
 #define usergate_dupl_file 0x0000007E
 #define usergate_get_ioctl_data 0x0000007F
-#define usergate_get_file_size 0x00000080
-#define usergate_set_file_size 0x00000081
-#define usergate_get_file_pos 0x00000082
-#define usergate_set_file_pos 0x00000083
+#define usergate_get_file_size32 0x00000080
+#define usergate_set_file_size32 0x00000081
+#define usergate_get_file_pos32 0x00000082
+#define usergate_set_file_pos32 0x00000083
 #define usergate_get_file_time 0x00000084
 #define usergate_set_file_time 0x00000085
 #define usergate_read_file 0x00000086
@@ -263,9 +263,10 @@
 #define usergate_add_wait_for_mouse 0x000000F2
 #define usergate_remove_wait 0x000000F3
 
-#define usergate_add_wait_for_adc 0x000000F4
-#define usergate_open_adc 0x000000F5
-#define usergate_close_adc 0x000000F6
+#define usergate_add_wait_for_adc_chan 0x000000F4
+#define usergate_open_adc_chan 0x000000F5
+#define usergate_close_adc_chan 0x000000F6
+
 #define usergate_define_adc_time 0x000000F7
 #define usergate_read_adc 0x000000F8
 
@@ -533,11 +534,6 @@
 #define usergate_get_acpi_device_io 0x000001C4
 #define usergate_get_acpi_device_mem 0x000001C5
 
-#define usergate_get_pci_device_name 0x000001C6
-#define usergate_get_pci_device_info 0x000001C7
-#define usergate_get_pci_device_vendor 0x000001C8
-#define usergate_get_pci_device_class 0x000001C9
-#define usergate_get_pci_device_irq 0x000001CA
 
 #define usergate_get_core_load 0x000001CE
 #define usergate_get_core_duty 0x000001CF
@@ -750,16 +746,16 @@
 #define usergate_write_handle 0x00000266
 #define usergate_dup_handle 0x00000267
 #define usergate_dup2_handle 0x00000268
-#define usergate_get_handle_size 0x00000269
-#define usergate_set_handle_size 0x0000026A
+#define usergate_get_handle_size32 0x00000269
+#define usergate_set_handle_size32 0x0000026A
 #define usergate_get_handle_mode 0x0000026B
 #define usergate_set_handle_mode 0x0000026C
-#define usergate_get_handle_pos 0x0000026D
-#define usergate_set_handle_pos 0x0000026E
+#define usergate_get_handle_pos32 0x0000026D
+#define usergate_set_handle_pos32 0x0000026E
 #define usergate_eof_handle 0x0000026F
 #define usergate_is_handle_device 0x00000270
-#define usergate_get_handle_time 0x00000271
-#define usergate_set_handle_time 0x00000272
+#define usergate_get_handle_modify_time 0x00000271
+#define usergate_set_handle_modify_time 0x00000272
 
 #define usergate_dup_ini 0x00000273
 
@@ -961,8 +957,6 @@
 
 #define usergate_read_file_legacy 0x00000311
 
-#define usergate_read_vfs_file 0x00000312
-
 #define usergate_used_user_sections 0x00000313
 
 #define usergate_user_get_system_time 0x00000314
@@ -971,6 +965,43 @@
 #define usergate_has_power_card 0x00000316
 
 #define usergate_create_secure_connection 0x00000317
+
+#define usergate_get_pci_bus 0x00000318
+#define usergate_get_pci_irq 0x00000319
+#define usergate_get_pci_class 0x0000031A
+#define usergate_get_pci_device_name 0x0000031B
+#define usergate_get_pci_device_vendor 0x0000031C
+#define usergate_get_pci_irq_pin 0x0000031D
+#define usergate_get_pci_interface 0x0000031E
+#define usergate_get_pci_msi 0x0000031F
+#define usergate_get_pci_msix 0x00000320
+#define usergate_is_pci_function_used 0x00000321
+
+#define usergate_read_adc_chan 0x00000322
+
+#define usergate_create_vfs_disc_cmd 0x00000325
+#define usergate_close_vfs_cmd 0x00000326
+#define usergate_add_wait_for_vfs_cmd 0x00000327
+#define usergate_is_vfs_cmd_done 0x00000328
+#define usergate_get_vfs_resp_size 0x00000329
+#define usergate_get_vfs_resp_data 0x0000032A
+#define usergate_is_vfs_disc 0x0000032B
+
+#define usergate_get_file_size64 0x0000032C
+#define usergate_set_file_size64 0x0000032D
+#define usergate_get_file_pos64 0x0000032E
+#define usergate_set_file_pos64 0x0000032F
+
+#define usergate_get_handle_size64 0x00000330
+#define usergate_set_handle_size64 0x00000331
+#define usergate_get_handle_pos64 0x00000332
+#define usergate_set_handle_pos64 0x00000333
+#define usergate_get_handle_create_time 0x00000334
+#define usergate_get_handle_access_time 0x00000335
+
+#define usergate_get_handle_map 0x00000336
+#define usergate_map_handle 0x00000337
+#define usergate_grow_handle 0x00000338
 
 
 
@@ -1117,10 +1148,10 @@
 #define CallGate_close_file 0x55 0x67 0x9a 125 0 0 0 3 0 0x5d
 #define CallGate_dupl_file 0x55 0x67 0x9a 126 0 0 0 3 0 0x5d
 #define CallGate_get_ioctl_data 0x55 0x67 0x9a 127 0 0 0 3 0 0x5d
-#define CallGate_get_file_size 0x55 0x67 0x9a 128 0 0 0 3 0 0x5d
-#define CallGate_set_file_size 0x55 0x67 0x9a 129 0 0 0 3 0 0x5d
-#define CallGate_get_file_pos 0x55 0x67 0x9a 130 0 0 0 3 0 0x5d
-#define CallGate_set_file_pos 0x55 0x67 0x9a 131 0 0 0 3 0 0x5d
+#define CallGate_get_file_size32 0x55 0x67 0x9a 128 0 0 0 3 0 0x5d
+#define CallGate_set_file_size32 0x55 0x67 0x9a 129 0 0 0 3 0 0x5d
+#define CallGate_get_file_pos32 0x55 0x67 0x9a 130 0 0 0 3 0 0x5d
+#define CallGate_set_file_pos32 0x55 0x67 0x9a 131 0 0 0 3 0 0x5d
 #define CallGate_get_file_time 0x55 0x67 0x9a 132 0 0 0 3 0 0x5d
 #define CallGate_set_file_time 0x55 0x67 0x9a 133 0 0 0 3 0 0x5d
 #define CallGate_read_file 0x55 0x67 0x9a 134 0 0 0 3 0 0x5d
@@ -1240,9 +1271,10 @@
 #define CallGate_add_wait_for_mouse 0x55 0x67 0x9a 242 0 0 0 3 0 0x5d
 #define CallGate_remove_wait 0x55 0x67 0x9a 243 0 0 0 3 0 0x5d
 
-#define CallGate_add_wait_for_adc 0x55 0x67 0x9a 244 0 0 0 3 0 0x5d
-#define CallGate_open_adc 0x55 0x67 0x9a 245 0 0 0 3 0 0x5d
-#define CallGate_close_adc 0x55 0x67 0x9a 246 0 0 0 3 0 0x5d
+#define CallGate_add_wait_for_adc_chan 0x55 0x67 0x9a 244 0 0 0 3 0 0x5d
+#define CallGate_open_adc_chan 0x55 0x67 0x9a 245 0 0 0 3 0 0x5d
+#define CallGate_close_adc_chan 0x55 0x67 0x9a 246 0 0 0 3 0 0x5d
+
 #define CallGate_define_adc_time 0x55 0x67 0x9a 247 0 0 0 3 0 0x5d
 #define CallGate_read_adc 0x55 0x67 0x9a 248 0 0 0 3 0 0x5d
 
@@ -1510,11 +1542,6 @@
 #define CallGate_get_acpi_device_io 0x55 0x67 0x9a 196 1 0 0 3 0 0x5d
 #define CallGate_get_acpi_device_mem 0x55 0x67 0x9a 197 1 0 0 3 0 0x5d
 
-#define CallGate_get_pci_device_name 0x55 0x67 0x9a 198 1 0 0 3 0 0x5d
-#define CallGate_get_pci_device_info 0x55 0x67 0x9a 199 1 0 0 3 0 0x5d
-#define CallGate_get_pci_device_vendor 0x55 0x67 0x9a 200 1 0 0 3 0 0x5d
-#define CallGate_get_pci_device_class 0x55 0x67 0x9a 201 1 0 0 3 0 0x5d
-#define CallGate_get_pci_device_irq 0x55 0x67 0x9a 202 1 0 0 3 0 0x5d
 
 #define CallGate_get_core_load 0x55 0x67 0x9a 206 1 0 0 3 0 0x5d
 #define CallGate_get_core_duty 0x55 0x67 0x9a 207 1 0 0 3 0 0x5d
@@ -1727,16 +1754,16 @@
 #define CallGate_write_handle 0x55 0x67 0x9a 102 2 0 0 3 0 0x5d
 #define CallGate_dup_handle 0x55 0x67 0x9a 103 2 0 0 3 0 0x5d
 #define CallGate_dup2_handle 0x55 0x67 0x9a 104 2 0 0 3 0 0x5d
-#define CallGate_get_handle_size 0x55 0x67 0x9a 105 2 0 0 3 0 0x5d
-#define CallGate_set_handle_size 0x55 0x67 0x9a 106 2 0 0 3 0 0x5d
+#define CallGate_get_handle_size32 0x55 0x67 0x9a 105 2 0 0 3 0 0x5d
+#define CallGate_set_handle_size32 0x55 0x67 0x9a 106 2 0 0 3 0 0x5d
 #define CallGate_get_handle_mode 0x55 0x67 0x9a 107 2 0 0 3 0 0x5d
 #define CallGate_set_handle_mode 0x55 0x67 0x9a 108 2 0 0 3 0 0x5d
-#define CallGate_get_handle_pos 0x55 0x67 0x9a 109 2 0 0 3 0 0x5d
-#define CallGate_set_handle_pos 0x55 0x67 0x9a 110 2 0 0 3 0 0x5d
+#define CallGate_get_handle_pos32 0x55 0x67 0x9a 109 2 0 0 3 0 0x5d
+#define CallGate_set_handle_pos32 0x55 0x67 0x9a 110 2 0 0 3 0 0x5d
 #define CallGate_eof_handle 0x55 0x67 0x9a 111 2 0 0 3 0 0x5d
 #define CallGate_is_handle_device 0x55 0x67 0x9a 112 2 0 0 3 0 0x5d
-#define CallGate_get_handle_time 0x55 0x67 0x9a 113 2 0 0 3 0 0x5d
-#define CallGate_set_handle_time 0x55 0x67 0x9a 114 2 0 0 3 0 0x5d
+#define CallGate_get_handle_modify_time 0x55 0x67 0x9a 113 2 0 0 3 0 0x5d
+#define CallGate_set_handle_modify_time 0x55 0x67 0x9a 114 2 0 0 3 0 0x5d
 
 #define CallGate_dup_ini 0x55 0x67 0x9a 115 2 0 0 3 0 0x5d
 
@@ -1938,8 +1965,6 @@
 
 #define CallGate_read_file_legacy 0x55 0x67 0x9a 17 3 0 0 3 0 0x5d
 
-#define CallGate_read_vfs_file 0x55 0x67 0x9a 18 3 0 0 3 0 0x5d
-
 #define CallGate_used_user_sections 0x55 0x67 0x9a 19 3 0 0 3 0 0x5d
 
 #define CallGate_user_get_system_time 0x55 0x67 0x9a 20 3 0 0 3 0 0x5d
@@ -1948,6 +1973,43 @@
 #define CallGate_has_power_card 0x55 0x67 0x9a 22 3 0 0 3 0 0x5d
 
 #define CallGate_create_secure_connection 0x55 0x67 0x9a 23 3 0 0 3 0 0x5d
+
+#define CallGate_get_pci_bus 0x55 0x67 0x9a 24 3 0 0 3 0 0x5d
+#define CallGate_get_pci_irq 0x55 0x67 0x9a 25 3 0 0 3 0 0x5d
+#define CallGate_get_pci_class 0x55 0x67 0x9a 26 3 0 0 3 0 0x5d
+#define CallGate_get_pci_device_name 0x55 0x67 0x9a 27 3 0 0 3 0 0x5d
+#define CallGate_get_pci_device_vendor 0x55 0x67 0x9a 28 3 0 0 3 0 0x5d
+#define CallGate_get_pci_irq_pin 0x55 0x67 0x9a 29 3 0 0 3 0 0x5d
+#define CallGate_get_pci_interface 0x55 0x67 0x9a 30 3 0 0 3 0 0x5d
+#define CallGate_get_pci_msi 0x55 0x67 0x9a 31 3 0 0 3 0 0x5d
+#define CallGate_get_pci_msix 0x55 0x67 0x9a 32 3 0 0 3 0 0x5d
+#define CallGate_is_pci_function_used 0x55 0x67 0x9a 33 3 0 0 3 0 0x5d
+
+#define CallGate_read_adc_chan 0x55 0x67 0x9a 34 3 0 0 3 0 0x5d
+
+#define CallGate_create_vfs_disc_cmd 0x55 0x67 0x9a 37 3 0 0 3 0 0x5d
+#define CallGate_close_vfs_cmd 0x55 0x67 0x9a 38 3 0 0 3 0 0x5d
+#define CallGate_add_wait_for_vfs_cmd 0x55 0x67 0x9a 39 3 0 0 3 0 0x5d
+#define CallGate_is_vfs_cmd_done 0x55 0x67 0x9a 40 3 0 0 3 0 0x5d
+#define CallGate_get_vfs_resp_size 0x55 0x67 0x9a 41 3 0 0 3 0 0x5d
+#define CallGate_get_vfs_resp_data 0x55 0x67 0x9a 42 3 0 0 3 0 0x5d
+#define CallGate_is_vfs_disc 0x55 0x67 0x9a 43 3 0 0 3 0 0x5d
+
+#define CallGate_get_file_size64 0x55 0x67 0x9a 44 3 0 0 3 0 0x5d
+#define CallGate_set_file_size64 0x55 0x67 0x9a 45 3 0 0 3 0 0x5d
+#define CallGate_get_file_pos64 0x55 0x67 0x9a 46 3 0 0 3 0 0x5d
+#define CallGate_set_file_pos64 0x55 0x67 0x9a 47 3 0 0 3 0 0x5d
+
+#define CallGate_get_handle_size64 0x55 0x67 0x9a 48 3 0 0 3 0 0x5d
+#define CallGate_set_handle_size64 0x55 0x67 0x9a 49 3 0 0 3 0 0x5d
+#define CallGate_get_handle_pos64 0x55 0x67 0x9a 50 3 0 0 3 0 0x5d
+#define CallGate_set_handle_pos64 0x55 0x67 0x9a 51 3 0 0 3 0 0x5d
+#define CallGate_get_handle_create_time 0x55 0x67 0x9a 52 3 0 0 3 0 0x5d
+#define CallGate_get_handle_access_time 0x55 0x67 0x9a 53 3 0 0 3 0 0x5d
+
+#define CallGate_get_handle_map 0x55 0x67 0x9a 54 3 0 0 3 0 0x5d
+#define CallGate_map_handle 0x55 0x67 0x9a 55 3 0 0 3 0 0x5d
+#define CallGate_grow_handle 0x55 0x67 0x9a 56 3 0 0 3 0 0x5d
 
 #else
 
@@ -2092,10 +2154,10 @@
 #define CallGate_close_file 0x3e 0x67 0x9a 125 0 0 0 3 0
 #define CallGate_dupl_file 0x3e 0x67 0x9a 126 0 0 0 3 0
 #define CallGate_get_ioctl_data 0x3e 0x67 0x9a 127 0 0 0 3 0
-#define CallGate_get_file_size 0x3e 0x67 0x9a 128 0 0 0 3 0
-#define CallGate_set_file_size 0x3e 0x67 0x9a 129 0 0 0 3 0
-#define CallGate_get_file_pos 0x3e 0x67 0x9a 130 0 0 0 3 0
-#define CallGate_set_file_pos 0x3e 0x67 0x9a 131 0 0 0 3 0
+#define CallGate_get_file_size32 0x3e 0x67 0x9a 128 0 0 0 3 0
+#define CallGate_set_file_size32 0x3e 0x67 0x9a 129 0 0 0 3 0
+#define CallGate_get_file_pos32 0x3e 0x67 0x9a 130 0 0 0 3 0
+#define CallGate_set_file_pos32 0x3e 0x67 0x9a 131 0 0 0 3 0
 #define CallGate_get_file_time 0x3e 0x67 0x9a 132 0 0 0 3 0
 #define CallGate_set_file_time 0x3e 0x67 0x9a 133 0 0 0 3 0
 #define CallGate_read_file 0x3e 0x67 0x9a 134 0 0 0 3 0
@@ -2215,9 +2277,10 @@
 #define CallGate_add_wait_for_mouse 0x3e 0x67 0x9a 242 0 0 0 3 0
 #define CallGate_remove_wait 0x3e 0x67 0x9a 243 0 0 0 3 0
 
-#define CallGate_add_wait_for_adc 0x3e 0x67 0x9a 244 0 0 0 3 0
-#define CallGate_open_adc 0x3e 0x67 0x9a 245 0 0 0 3 0
-#define CallGate_close_adc 0x3e 0x67 0x9a 246 0 0 0 3 0
+#define CallGate_add_wait_for_adc_chan 0x3e 0x67 0x9a 244 0 0 0 3 0
+#define CallGate_open_adc_chan 0x3e 0x67 0x9a 245 0 0 0 3 0
+#define CallGate_close_adc_chan 0x3e 0x67 0x9a 246 0 0 0 3 0
+
 #define CallGate_define_adc_time 0x3e 0x67 0x9a 247 0 0 0 3 0
 #define CallGate_read_adc 0x3e 0x67 0x9a 248 0 0 0 3 0
 
@@ -2485,11 +2548,6 @@
 #define CallGate_get_acpi_device_io 0x3e 0x67 0x9a 196 1 0 0 3 0
 #define CallGate_get_acpi_device_mem 0x3e 0x67 0x9a 197 1 0 0 3 0
 
-#define CallGate_get_pci_device_name 0x3e 0x67 0x9a 198 1 0 0 3 0
-#define CallGate_get_pci_device_info 0x3e 0x67 0x9a 199 1 0 0 3 0
-#define CallGate_get_pci_device_vendor 0x3e 0x67 0x9a 200 1 0 0 3 0
-#define CallGate_get_pci_device_class 0x3e 0x67 0x9a 201 1 0 0 3 0
-#define CallGate_get_pci_device_irq 0x3e 0x67 0x9a 202 1 0 0 3 0
 
 #define CallGate_get_core_load 0x3e 0x67 0x9a 206 1 0 0 3 0
 #define CallGate_get_core_duty 0x3e 0x67 0x9a 207 1 0 0 3 0
@@ -2702,16 +2760,16 @@
 #define CallGate_write_handle 0x3e 0x67 0x9a 102 2 0 0 3 0
 #define CallGate_dup_handle 0x3e 0x67 0x9a 103 2 0 0 3 0
 #define CallGate_dup2_handle 0x3e 0x67 0x9a 104 2 0 0 3 0
-#define CallGate_get_handle_size 0x3e 0x67 0x9a 105 2 0 0 3 0
-#define CallGate_set_handle_size 0x3e 0x67 0x9a 106 2 0 0 3 0
+#define CallGate_get_handle_size32 0x3e 0x67 0x9a 105 2 0 0 3 0
+#define CallGate_set_handle_size32 0x3e 0x67 0x9a 106 2 0 0 3 0
 #define CallGate_get_handle_mode 0x3e 0x67 0x9a 107 2 0 0 3 0
 #define CallGate_set_handle_mode 0x3e 0x67 0x9a 108 2 0 0 3 0
-#define CallGate_get_handle_pos 0x3e 0x67 0x9a 109 2 0 0 3 0
-#define CallGate_set_handle_pos 0x3e 0x67 0x9a 110 2 0 0 3 0
+#define CallGate_get_handle_pos32 0x3e 0x67 0x9a 109 2 0 0 3 0
+#define CallGate_set_handle_pos32 0x3e 0x67 0x9a 110 2 0 0 3 0
 #define CallGate_eof_handle 0x3e 0x67 0x9a 111 2 0 0 3 0
 #define CallGate_is_handle_device 0x3e 0x67 0x9a 112 2 0 0 3 0
-#define CallGate_get_handle_time 0x3e 0x67 0x9a 113 2 0 0 3 0
-#define CallGate_set_handle_time 0x3e 0x67 0x9a 114 2 0 0 3 0
+#define CallGate_get_handle_modify_time 0x3e 0x67 0x9a 113 2 0 0 3 0
+#define CallGate_set_handle_modify_time 0x3e 0x67 0x9a 114 2 0 0 3 0
 
 #define CallGate_dup_ini 0x3e 0x67 0x9a 115 2 0 0 3 0
 
@@ -2913,8 +2971,6 @@
 
 #define CallGate_read_file_legacy 0x3e 0x67 0x9a 17 3 0 0 3 0
 
-#define CallGate_read_vfs_file 0x3e 0x67 0x9a 18 3 0 0 3 0
-
 #define CallGate_used_user_sections 0x3e 0x67 0x9a 19 3 0 0 3 0
 
 #define CallGate_user_get_system_time 0x3e 0x67 0x9a 20 3 0 0 3 0
@@ -2923,5 +2979,42 @@
 #define CallGate_has_power_card 0x3e 0x67 0x9a 22 3 0 0 3 0
 
 #define CallGate_create_secure_connection 0x3e 0x67 0x9a 23 3 0 0 3 0
+
+#define CallGate_get_pci_bus 0x3e 0x67 0x9a 24 3 0 0 3 0
+#define CallGate_get_pci_irq 0x3e 0x67 0x9a 25 3 0 0 3 0
+#define CallGate_get_pci_class 0x3e 0x67 0x9a 26 3 0 0 3 0
+#define CallGate_get_pci_device_name 0x3e 0x67 0x9a 27 3 0 0 3 0
+#define CallGate_get_pci_device_vendor 0x3e 0x67 0x9a 28 3 0 0 3 0
+#define CallGate_get_pci_irq_pin 0x3e 0x67 0x9a 29 3 0 0 3 0
+#define CallGate_get_pci_interface 0x3e 0x67 0x9a 30 3 0 0 3 0
+#define CallGate_get_pci_msi 0x3e 0x67 0x9a 31 3 0 0 3 0
+#define CallGate_get_pci_msix 0x3e 0x67 0x9a 32 3 0 0 3 0
+#define CallGate_is_pci_function_used 0x3e 0x67 0x9a 33 3 0 0 3 0
+
+#define CallGate_read_adc_chan 0x3e 0x67 0x9a 34 3 0 0 3 0
+
+#define CallGate_create_vfs_disc_cmd 0x3e 0x67 0x9a 37 3 0 0 3 0
+#define CallGate_close_vfs_cmd 0x3e 0x67 0x9a 38 3 0 0 3 0
+#define CallGate_add_wait_for_vfs_cmd 0x3e 0x67 0x9a 39 3 0 0 3 0
+#define CallGate_is_vfs_cmd_done 0x3e 0x67 0x9a 40 3 0 0 3 0
+#define CallGate_get_vfs_resp_size 0x3e 0x67 0x9a 41 3 0 0 3 0
+#define CallGate_get_vfs_resp_data 0x3e 0x67 0x9a 42 3 0 0 3 0
+#define CallGate_is_vfs_disc 0x3e 0x67 0x9a 43 3 0 0 3 0
+
+#define CallGate_get_file_size64 0x3e 0x67 0x9a 44 3 0 0 3 0
+#define CallGate_set_file_size64 0x3e 0x67 0x9a 45 3 0 0 3 0
+#define CallGate_get_file_pos64 0x3e 0x67 0x9a 46 3 0 0 3 0
+#define CallGate_set_file_pos64 0x3e 0x67 0x9a 47 3 0 0 3 0
+
+#define CallGate_get_handle_size64 0x3e 0x67 0x9a 48 3 0 0 3 0
+#define CallGate_set_handle_size64 0x3e 0x67 0x9a 49 3 0 0 3 0
+#define CallGate_get_handle_pos64 0x3e 0x67 0x9a 50 3 0 0 3 0
+#define CallGate_set_handle_pos64 0x3e 0x67 0x9a 51 3 0 0 3 0
+#define CallGate_get_handle_create_time 0x3e 0x67 0x9a 52 3 0 0 3 0
+#define CallGate_get_handle_access_time 0x3e 0x67 0x9a 53 3 0 0 3 0
+
+#define CallGate_get_handle_map 0x3e 0x67 0x9a 54 3 0 0 3 0
+#define CallGate_map_handle 0x3e 0x67 0x9a 55 3 0 0 3 0
+#define CallGate_grow_handle 0x3e 0x67 0x9a 56 3 0 0 3 0
 
 #endif

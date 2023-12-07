@@ -80,7 +80,7 @@
 #endif
 
 #if defined( __RDOS__ )
-static ThreadState state;
+static struct RdosThreadState state;
 static char FatalErrorStr[256];
 #endif
 

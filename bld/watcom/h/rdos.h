@@ -54,13 +54,13 @@
 
 typedef void (TRdosCallback)(void *param, char ch);
 
-typedef struct ThreadEntryPoint
+struct RdosThreadEntryPoint
 {
     long long Offset;
     short int Sel;
-} ThreadEntryPoint;
+};
 
-typedef struct ThreadState
+struct RdosThreadState
 {
      short int ID;
      char Name[32];
@@ -69,9 +69,9 @@ typedef struct ThreadState
      char List[32];
      long Offset;
      short int Sel;
-} ThreadState;
+};
 
-typedef struct ThreadActionState
+struct RdosThreadActionState
 {
      short int ID;
      char Name[32];
@@ -79,12 +79,12 @@ typedef struct ThreadActionState
      unsigned long LsbTime;
      char List[32];
      char Action[32];
-     struct ThreadEntryPoint Pos;
+     struct RdosThreadEntryPoint Pos;
      short int UserCount;
-     struct ThreadEntryPoint UserCall[64];
-} ThreadActionState;
+     struct RdosThreadEntryPoint UserCall[64];
+};
 
-typedef struct Tss
+struct RdosTss
 {
     long cr3;
     long eip;
@@ -115,19 +115,26 @@ typedef struct Tss
     short int MathDataSel;
     real_math st[8];
     char WcSpace[16];
-} Tss;
+};
 
-
-typedef struct UsbEvent
+struct RdosUsbEvent
 {
     short int Event;
     short int Controller;
     short int Port;
     char Pipe;
-} UsbEvent;
+};
 
+struct RdosFutex
+{
+    int Handle;
+    int Counter;
+    short int Val;
+    short int Owner;
+    char *Name;
+};
 
-typedef struct DirEntry
+struct RdosDirEntry
 {
     long long Inode;
     long long Size;
@@ -138,19 +145,59 @@ typedef struct DirEntry
     int Flags;
     int Uid;
     int Gid;
-    long long Sector;
-    short int Offset;
+    int Pos;
 
     short int PathNameSize;
     char PathName[];
-} DirEntry;
+};
 
-typedef struct DirInfo
+struct RdosDirInfo
 {
-    struct DirEntry *Entry;
+    struct RdosDirEntry *Entry;
     int HeaderSize;
     int Count;
-} DirInfo;
+};
+
+struct RdosFileInfo
+{
+    long long SectorCount;
+    long long DiscSize;
+    long long CurrSize;
+    long long AccessTime;
+    long long ModifyTime;
+    int Attrib;
+    int Flags;
+    int Uid;
+    int Gid;
+    int ServHandle;
+    int BytesPerSector;
+    char Name[1];
+};
+
+struct RdosFileMapEntry
+{
+    long long Pos;
+    int Size;
+    char *Base;
+};
+
+struct RdosFileHandleInfo
+{
+    long long ReqSize;
+    long long PosArr[480];
+    int Bitmap[15];
+    struct RdosFutex Futex;
+};
+
+struct RdosFileMap
+{
+    unsigned char SortedArr[241];
+    char Resv[3];
+    int Count;
+    struct RdosFileHandleInfo *Handle;
+    struct RdosFileInfo *Info;
+    struct RdosFileMapEntry MapArr[240];
+};
 
 #define USB_EVENT_ATTACH                1
 #define USB_EVENT_DETACH                2
@@ -298,6 +345,16 @@ void RDOSAPI RdosCreateUuid(char *uuid);
 
 void RDOSAPI RdosWaitAnio(int Irq);
 
+int RDOSAPI RdosGetPciBus(int ReqBus, int *Bus, int *Device, int *Function);
+int RDOSAPI RdosIsPciFunctionUsed(int Bus, int Dev, int Func);
+int RDOSAPI RdosGetPciIrq(int Bus, int Dev, int Func);
+int RDOSAPI RdosGetPciClass(int Bus, int Dev, int Func, int *Class, int *Subclass);
+int RDOSAPI RdosGetPciInterface(int Bus, int Dev, int Func);
+int RDOSAPI RdosGetPciMsi(int Bus, int Dev, int Func, int *Reg, int *IrqCount);
+int RDOSAPI RdosGetPciMsiX(int Bus, int Dev, int Func, int *Reg, int *IrqCount);
+int RDOSAPI RdosGetPciDeviceName(int Bus, int Dev, int Func, char *AcpiName);
+int RDOSAPI RdosGetPciDeviceVendor(int Bus, int Dev, int Func, int *Vendor, int *Device);
+
 long RDOSAPI RdosGetAcpiStatus();
 int RDOSAPI RdosGetAcpiObject(int Index, char *AcpiName);
 int RDOSAPI RdosGetAcpiMethod(int Object, int Index, char *AcpiName);
@@ -305,11 +362,6 @@ int RDOSAPI RdosGetAcpiDevice(int Index, char *AcpiName);
 int RDOSAPI RdosGetAcpiDeviceIrq(int Device, int Index, int *Share, int *Polarity, int *TriggerMode);
 int RDOSAPI RdosGetAcpiDeviceIo(int Device, int Index, int *Start, int *End);
 int RDOSAPI RdosGetAcpiDeviceMem(int Device, int Index, int *Start, int *End);
-int RDOSAPI RdosGetPciDeviceName(int Index, char *AcpiName);
-int RDOSAPI RdosGetPciDeviceInfo(int Index, int *Bus, int *Device, int *Function);
-int RDOSAPI RdosGetPciDeviceVendor(int Index, int *Vendor, int *Device);
-int RDOSAPI RdosGetPciDeviceClass(int Index, int *Class, int *Subclass);
-int RDOSAPI RdosGetPciDeviceIrq(int Index);
 int RDOSAPI RdosGetCpuTemperature();
 
 int RDOSAPI RdosGetHidDevice(int Device, int *UsbController, int *UsbPort);
@@ -398,8 +450,8 @@ long RDOSAPI RdosGetThreadLinear(int Thread, int Sel, long Offset);
 int RDOSAPI RdosReadThreadMem(int Thread, int Sel, long Offset, char *Buf, int Size);
 int RDOSAPI RdosWriteThreadMem(int Thread, int Sel, long Offset, char *Buf, int Size);
 int RDOSAPI RdosGetDebugThread(void);
-void RDOSAPI RdosGetThreadTss(int Thread, Tss *tss);
-void RDOSAPI RdosSetThreadTss(int Thread, Tss *tss);
+void RDOSAPI RdosGetThreadTss(int Thread, struct RdosTss *tss);
+void RDOSAPI RdosSetThreadTss(int Thread, struct RdosTss *tss);
 
 int RDOSAPI RdosSetCodeBreak(int Thread, int Reg, int Sel, long Offset);
 int RDOSAPI RdosSetReadDataBreak(int Thread, int Reg, int Sel, long Offset, int Size);
@@ -525,21 +577,26 @@ int RDOSAPI RdosWaitForCanBridgeProgramming(int *ErrorCode, int *Position);
 
 int RDOSAPI RdosOpenHandle(const char *Name, int Mode);
 int RDOSAPI RdosCloseHandle(int Handle);
+struct RdosFileMap *RDOSAPI RdosGetHandleMap(int Handle, int *HandleId);
+int RDOSAPI RdosMapHandle(int Handle, long long Pos, int Size);
+int RDOSAPI RdosGrowHandle(int Handle, long long Pos, int Size);
 int RDOSAPI RdosPollHandle(int Handle, void *Buf, int Size);
 int RDOSAPI RdosReadHandle(int Handle, void *Buf, int Size);
 int RDOSAPI RdosWriteHandle(int Handle, const void *Buf, int Size);
 int RDOSAPI RdosDupHandle(int Handle);
 int RDOSAPI RdosDup2Handle(int Src, int Dest);
-long RDOSAPI RdosGetHandleSize(int Handle);
-int RDOSAPI RdosSetHandleSize(int Handle, long Size);
+long long RDOSAPI RdosGetHandleSize(int Handle);
+long long RDOSAPI RdosSetHandleSize(int Handle, long long Size);
 int RDOSAPI RdosGetHandleMode(int Handle);
 int RDOSAPI RdosSetHandleMode(int Handle, int Mode);
-long RDOSAPI RdosGetHandlePos(int Handle);
-int RDOSAPI RdosSetHandlePos(int Handle, long Size);
+long long RDOSAPI RdosGetHandlePos(int Handle);
+long long RDOSAPI RdosSetHandlePos(int Handle, long long Size);
 int RDOSAPI RdosEofHandle(int Handle);
 int RDOSAPI RdosIsHandleDevice(int Handle);
-int RDOSAPI RdosGetHandleTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
-int RDOSAPI RdosSetHandleTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
+int RDOSAPI RdosGetHandleCreateTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
+int RDOSAPI RdosGetHandleModifyTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
+int RDOSAPI RdosGetHandleAccessTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
+int RDOSAPI RdosSetHandleModifyTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
 int RDOSAPI RdosGetHandleReadBufferCount(int Handle);
 int RDOSAPI RdosGetHandleWriteBufferSpace(int Handle);
 int RDOSAPI RdosHasHandleException(int Handle);
@@ -555,10 +612,10 @@ long RDOSAPI RdosCreateFile(const char *FileName, int Attrib);
 void RDOSAPI RdosCloseFile(long Handle);
 int RDOSAPI RdosIsDevice(long Handle);
 long RDOSAPI RdosDuplFile(long Handle);
-long RDOSAPI RdosGetFileSize(long Handle);
-void RDOSAPI RdosSetFileSize(long Handle, long Size);
-long RDOSAPI RdosGetFilePos(long Handle);
-void RDOSAPI RdosSetFilePos(long Handle, long Pos);
+long long RDOSAPI RdosGetFileSize(long Handle);
+void RDOSAPI RdosSetFileSize(long Handle, long long Size);
+long long RDOSAPI RdosGetFilePos(long Handle);
+void RDOSAPI RdosSetFilePos(long Handle, long long Pos);
 int RDOSAPI RdosReadFile(long Handle, void *Buf, int Size);
 int RDOSAPI RdosWriteFile(long Handle, const void *Buf, int Size);
 void RDOSAPI RdosGetFileTime(long Handle, unsigned long *MsbTime, unsigned long *LsbTime);
@@ -588,10 +645,17 @@ void RDOSAPI RdosCloseDir(int Handle);
 int RDOSAPI RdosReadDir(int Handle, int EntryNr, int MaxNameSize, char *PathName, long *FileSize, int *Attribute, unsigned long *MsbTime, unsigned long *LsbTime);
 long long RDOSAPI RdosReadLongDir(int Handle, int EntryNr, int MaxNameSize, char *PathName, long *FileSize, int *Attribute);
 
+int RDOSAPI RdosCreateVfsDiscCmd(int DiscNr, const char *Cmd);
+void RDOSAPI RdosCloseVfsCmd(int Handle);
+void RDOSAPI RdosAddWaitForVfsCmd(int WaitHandle, int CmdHandle, int ID);
+int RDOSAPI RdosIsVfsCmdDone(int Handle);
+int RDOSAPI RdosGetVfsResponseSize(int Handle);
+int RDOSAPI RdosGetVfsResponseData(int Handle, char *Buf, int MaxSize);
+
 void RDOSAPI RdosDefineFaultSave(int DiscNr, long StartSector, long Sectors);
 void RDOSAPI RdosClearFaultSave();
-int RDOSAPI RdosGetFaultThreadState(int ThreadNr, ThreadActionState *State);
-int RDOSAPI RdosGetFaultThreadTss(int ThreadNr, Tss *tss);
+int RDOSAPI RdosGetFaultThreadState(int ThreadNr, struct RdosThreadActionState *State);
+int RDOSAPI RdosGetFaultThreadTss(int ThreadNr, struct RdosTss *tss);
 
 int RDOSAPI RdosHasCrashInfo();
 int RDOSAPI RdosGetCrashCoreInfo(int Core, char *CrashBuf);
@@ -599,8 +663,8 @@ int RDOSAPI RdosGetCrashCoreInfo(int Core, char *CrashBuf);
 void RDOSAPI RdosSetThreadAction(const char *ActionStr);
 
 int RDOSAPI RdosGetThreadCount();
-int RDOSAPI RdosGetThreadState(int ThreadNr, ThreadState *State);
-int RDOSAPI RdosGetThreadActionState(int ThreadNr, ThreadActionState *State);
+int RDOSAPI RdosGetThreadState(int ThreadNr, struct RdosThreadState *State);
+int RDOSAPI RdosGetThreadActionState(int ThreadNr, struct RdosThreadActionState *State);
 int RDOSAPI RdosSuspendThread(int Thread);
 int RDOSAPI RdosSuspendAndSignalThread(int Thread);
 void RDOSAPI RdosMoveToCore(int Core);
@@ -671,6 +735,7 @@ int RDOSAPI RdosShowExceptionText();
 void RDOSAPI RdosWaitMilli(int ms);
 void RDOSAPI RdosWaitMicro(int us);
 void RDOSAPI RdosWaitUntil(unsigned long msb, unsigned long lsb);
+void RDOSAPI RdosWaitRealUntil(unsigned long msb, unsigned long lsb);
 
 void RDOSAPI RdosGetSysTime(unsigned long *msb, unsigned long *lsb);
 long long RDOSAPI RdosGetLongSysTime(void);
@@ -688,6 +753,7 @@ int RDOSAPI RdosDayOfWeek(int year, int month, int day);
 void RDOSAPI RdosDosTimeDateToTics(unsigned short date, unsigned short time, unsigned long *msb, unsigned long *lsb);
 void RDOSAPI RdosTicsToDosTimeDate(unsigned long msb, unsigned long lsb, unsigned short *date, unsigned short *time);
 
+void RDOSAPI RdosDecodeTicsBase(unsigned long msb, unsigned long lsb);
 void RDOSAPI RdosDecodeMsbTics(unsigned long msb, int *year, int *month, int *day, int *hour);
 void RDOSAPI RdosDecodeLsbTics(unsigned long lsb, int *min, int *sec, int *milli, int *micro);
 
@@ -720,7 +786,7 @@ void RDOSAPI RdosRemoveWait(int Handle, int ID);
 void RDOSAPI RdosAddWaitForKeyboard(int Handle, int ID);
 void RDOSAPI RdosAddWaitForMouse(int Handle, int ID);
 void RDOSAPI RdosAddWaitForCom(int Handle, int ComHandle, int ID);
-void RDOSAPI RdosAddWaitForAdc(int Handle, int AdcHandle, int ID);
+void RDOSAPI RdosAddWaitForAdcChannel(int Handle, int AdcHandle, int ID);
 void RDOSAPI RdosAddWaitForSysLog(int Handle, int SyslogHandle, int ID);
 
 int RDOSAPI RdosCreateSignal(void);
@@ -850,6 +916,8 @@ void RDOSAPI RdosSyncDiscPart(int DiscNr);
 int RDOSAPI RdosSetDiscInfo(int DiscNr, int SectorSize, long Sectors, int BiosSectorsPerCyl, int BiosHeads);
 int RDOSAPI RdosGetDiscInfo(int DiscNr, int *SectorSize, long long *Sectors, int *BiosSectorsPerCyl, int *BiosHeads);
 void RDOSAPI RdosGetDiscVendorInfo(int DiscNr, char *Buf, int Size);
+
+int RDOSAPI RdosIsVfsDisc(int DiscNr);
 int RDOSAPI RdosGetDiscCacheSize(int DiscNr);
 long long RDOSAPI RdosGetDiscCache(int DiscNr);
 long long RDOSAPI RdosGetDiscLocked(int DiscNr);
@@ -872,10 +940,8 @@ long long RDOSAPI RdosGetVfsDriveStart(int DriveNr);
 long long RDOSAPI RdosGetVfsDriveSize(int DriveNr);
 long long RDOSAPI RdosGetVfsDriveFree(int DriveNr);
 int RDOSAPI RdosIsVfsPath(const char *PathName);
-int RDOSAPI RdosOpenVfsDir(const char *PathName, struct DirInfo *Info);
+int RDOSAPI RdosOpenVfsDir(const char *PathName, struct RdosDirInfo *Info);
 void RDOSAPI RdosCloseVfsDir(int Handle);
-int RDOSAPI RdosOpenVfsFile(const char *PathName);
-int RDOSAPI RdosReadVfsFile(int Handle, void *Buf, int Size);
 
 int RDOSAPI RdosCreateFileDrive(int Drive, long Size, const char *FsName, const char *FileName);
 int RDOSAPI RdosOpenFileDrive(int Drive, const char *FileName);
@@ -917,10 +983,9 @@ int RDOSAPI RdosOpenSyslog();
 void RDOSAPI RdosCloseSyslog(int handle);
 int RDOSAPI RdosGetSyslog(int handle, int *severity, unsigned long *msb, unsigned long *lsb, char *buf, int size);
 
-int RDOSAPI RdosOpenAdc(int channel);
-void RDOSAPI RdosCloseAdc(int handle);
-void RDOSAPI RdosDefineAdcTime(int handle, unsigned long msg, unsigned long lsb);
-long RDOSAPI RdosReadAdc(int handle);
+int RDOSAPI RdosOpenAdcChannel(int Channel, int Freq, int Periods);
+void RDOSAPI RdosCloseAdcChannel(int handle);
+int RDOSAPI RdosReadAdcChannel(int handle, void *buf);
 
 void RDOSAPI RdosSetupAdc(char TestMode, char Speed, int BufCount);
 int RDOSAPI RdosStartAdc();
@@ -1000,7 +1065,7 @@ void RDOSAPI RdosAddWaitForUsbPipe(int whandle, int devhandle, char pipe, int ID
 int RDOSAPI RdosOpenUsbEvent(int QueueSize);
 void RDOSAPI RdosCloseUsbEvent(int handle);
 void RDOSAPI RdosAddWaitForUsbEvent(int whandle, int evhandle, int ID);
-int RDOSAPI RdosGetUsbEvent(int handle, UsbEvent *event);
+int RDOSAPI RdosGetUsbEvent(int handle, struct RdosUsbEvent *event);
 
 int RDOSAPI RdosGetAllocatedUsbBlocks();
 int RDOSAPI RdosGetUsbCloseCount();

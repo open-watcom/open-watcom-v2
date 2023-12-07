@@ -558,23 +558,38 @@
     __value [__ebx]
 
 #pragma aux RdosGetFileSize = \
-    CallGate_get_file_size  \
+    CallGate_get_file_size64  \
+    "jnc gfsDone" \
+    CallGate_get_file_size32 \
+    "xor edx,edx" \
     ValidateEax \
+    "gfsDone:" \
     __parm [__ebx]  \
-    __value [__eax]
+    __value [__edx __eax]
 
 #pragma aux RdosSetFileSize = \
-    CallGate_set_file_size  \
-    __parm [__ebx] [__eax]
+    CallGate_set_file_size64  \
+    "jnc sfsDone" \
+    CallGate_set_file_size32 \
+    "sfsDone:" \
+    __parm [__ebx] [__edx __eax]
 
 #pragma aux RdosGetFilePos = \
-    CallGate_get_file_pos  \
+    CallGate_get_file_pos64 \
+    "jnc gfpDone" \
+    CallGate_get_file_pos32 \
+    "xor edx,edx" \
     ValidateEax \
+    "gfpDone:" \
     __parm [__ebx]  \
-    __value [__eax]
+    __modify [__ecx] \
+    __value [__edx __eax]
 
 #pragma aux RdosSetFilePos = \
-    CallGate_set_file_pos  \
+    CallGate_set_file_pos64  \
+    "jnc sfpDone" \
+    CallGate_set_file_pos32 \
+    "sfpDone:" \
     __parm [__ebx] [__eax]
 
 #pragma aux RdosReadFile = \
@@ -998,6 +1013,11 @@
     __parm [__edx] [__eax] [__fs __esi] [__es __edi] \
     __modify [__eax __ebx __ecx __edx]
 
+#pragma aux RdosDecodeTicsBase = \
+    CallGate_binary_to_time  \
+    __parm [__edx] [__eax] \
+    __modify [__eax __ebx __ecx __edx]
+
 #pragma aux RdosDecodeMsbTics = \
     "push ds" \
     "mov ds,eax" \
@@ -1216,10 +1236,6 @@
 
 #pragma aux RdosAddWaitForSyslog = \
     CallGate_add_wait_for_syslog  \
-    __parm [__ebx] [__eax] [__ecx]
-
-#pragma aux RdosAddWaitForAdc = \
-    CallGate_add_wait_for_adc  \
     __parm [__ebx] [__eax] [__ecx]
 
 #pragma aux RdosCreateSignal = \
@@ -1767,25 +1783,6 @@
     "mov al,ah" \
     "xor ah,ah" \
     __parm [__ebx] [__fs __esi] [__gs __edx] [__gs __eax] [__es __edi] [__ecx] \
-    __value [__eax]
-
-#pragma aux RdosOpenAdc = \
-    CallGate_open_adc  \
-    ValidateHandle \
-    __parm [__eax] \
-    __value [__ebx]
-
-#pragma aux RdosCloseAdc = \
-    CallGate_close_adc  \
-    __parm [__ebx]
-
-#pragma aux RdosDefineAdcTime = \
-    CallGate_define_adc_time  \
-    __parm [__ebx] [__edx] [__eax]
-
-#pragma aux RdosReadAdc = \
-    CallGate_read_adc  \
-    __parm [__ebx] \
     __value [__eax]
 
 #pragma aux RdosReadSerialLines = \

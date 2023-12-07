@@ -135,6 +135,160 @@
     CallGate_create_uuid  \
     __parm [__edi]
 
+#pragma aux RdosGetPciBus = \
+    "mov bh,al" \
+    CallGate_get_pci_bus  \
+    "jc PciFail" \
+    "movzx eax,bh" \
+    "mov [edx],eax" \
+    "movzx eax,bl" \
+    "mov [esi],eax" \
+    "movzx eax,ch" \
+    "mov [edi],eax" \
+    "mov eax,1" \
+    "jmp PciDone" \
+    "PciFail: " \
+    "xor eax,eax" \
+    "PciDone: " \
+    __parm [__eax] [__edx] [__esi] [__edi] \
+    __value [__eax]
+
+#pragma aux RdosIsPciFunctionUsed = \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_is_pci_function_used  \
+    "jc Fail" \
+    "mov eax,1" \
+    "jmp Done" \
+    "Fail:" \
+    "xor eax,eax" \
+    "Done:" \
+    __parm [__eax] [__ecx] [__edx] \
+    __value [__eax] \
+    __modify [__ebx]
+
+#pragma aux RdosGetPciIrq = \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_get_pci_irq  \
+    "jc Fail" \
+    "movzx eax,al" \
+    "jmp Done" \
+    "Fail:" \
+    "xor eax,eax" \
+    "Done:" \
+    __parm [__eax] [__ecx] [__edx] \
+    __value [__eax] \
+    __modify [__ebx]
+
+#pragma aux RdosGetPciClass = \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_get_pci_class  \
+    "jc Fail" \
+    "push edx" \
+    "movzx edx,ah" \
+    "mov [esi],edx" \
+    "movzx edx,al" \
+    "mov [edi],edx" \
+    "mov eax,1" \
+    "pop edx" \
+    "jmp Done" \
+    "Fail:" \
+    "xor eax,eax" \
+    "Done:" \
+    __parm [__eax] [__ecx] [__edx] [__esi] [__edi] \
+    __value [__eax] \
+    __modify [__ebx]
+
+#pragma aux RdosGetPciInterface = \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_get_pci_interface  \
+    "jc Fail" \
+    "movzx eax,al" \
+    "jmp Done" \
+    "Fail:" \
+    "xor eax,eax" \
+    "Done:" \
+    __parm [__eax] [__ecx] [__edx] \
+    __value [__eax] \
+    __modify [__ebx]
+
+#pragma aux RdosGetPciDeviceName = \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_get_pci_device_name  \
+    CarryToBool \
+    __parm [__eax] [__ecx] [__edx] [__edi] \
+    __value [__eax] \
+    __modify [__ebx]
+
+#pragma aux RdosGetPciMsi = \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_get_pci_msi  \
+    "jc Fail" \
+    "movzx eax,al" \
+    "mov [esi],eax" \
+    "movzx edx,dl" \
+    "mov [edi],edx" \
+    "mov eax,1" \
+    "jmp Done" \
+    "Fail:" \
+    "xor eax,eax" \
+    "Done:" \
+    __parm [__eax] [__ecx] [__edx] [__esi] [__edi] \
+    __value [__eax] \
+    __modify [__ebx __edx]
+
+
+#pragma aux RdosGetPciMsiX = \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_get_pci_msix  \
+    "jc Fail" \
+    "movzx eax,al" \
+    "mov [esi],eax" \
+    "movzx edx,dl" \
+    "mov [edi],edx" \
+    "mov eax,1" \
+    "jmp Done" \
+    "Fail:" \
+    "xor eax,eax" \
+    "Done:" \
+    __parm [__eax] [__ecx] [__edx] [__esi] [__edi] \
+    __value [__eax] \
+    __modify [__ebx __edx]
+
+#pragma aux RdosGetPciDeviceVendor = \
+    "push edx" \
+    "mov bh,al" \
+    "mov bl,cl" \
+    "mov ch,dl" \
+    CallGate_get_pci_device_vendor  \
+    "jc Fail" \
+    "movzx eax,ax" \
+    "mov [esi],eax" \
+    "movzx edx,dx" \
+    "mov [edi],edx" \
+    "mov eax,1" \
+    "jmp Done" \
+    "Fail:" \
+    "xor eax,eax" \
+    "Done:" \
+    "pop edx" \
+    __parm [__eax] [__ecx] [__edx] [__esi] [__edi] \
+    __value [__eax] \
+    __modify [__ebx]
+
 #pragma aux RdosGetAcpiStatus = \
     CallGate_get_acpi_status  \
     "jnc AcpiDone" \
@@ -225,83 +379,6 @@
     "MemDone:" \
     "pop ecx" \
     __parm [__eax] [__edx] [__esi] [__edi] \
-    __value [__eax]
-
-#pragma aux RdosGetPciDeviceName = \
-    CallGate_get_pci_device_name  \
-    CarryToBool \
-    __parm [__eax] [__edi] \
-    __value [__eax]
-
-#pragma aux RdosGetPciDeviceInfo = \
-    "push ecx" \
-    "push ebx" \
-    "push esi" \
-    CallGate_get_pci_device_info  \
-    "jc Fail" \
-    "movzx eax,bh" \
-    "pop esi" \
-    "mov [esi],eax" \
-    "movzx eax,bl" \
-    "pop ebx" \
-    "mov [ebx],eax" \
-    "movzx eax,ch" \
-    "pop ecx" \
-    "mov [ecx],eax" \
-    "mov eax,1" \
-    "jmp Done" \
-    "Fail:" \
-    "pop esi" \
-    "pop ebx" \
-    "pop ecx" \
-    "xor eax,eax" \
-    "Done:" \
-    __parm [__eax] [__esi] [__ebx] [__ecx] \
-    __value [__eax]
-
-#pragma aux RdosGetPciDeviceVendor = \
-    "push edx" \
-    CallGate_get_pci_device_vendor  \
-    "jc Fail" \
-    "movzx eax,ax" \
-    "mov [esi],eax" \
-    "movzx edx,dx" \
-    "mov [edi],edx" \
-    "mov eax,1" \
-    "jmp Done" \
-    "Fail:" \
-    "xor eax,eax" \
-    "Done:" \
-    "pop edx" \
-    __parm [__eax] [__esi] [__edi] \
-    __value [__eax]
-
-#pragma aux RdosGetPciDeviceClass = \
-    CallGate_get_pci_device_class  \
-    "jc Fail" \
-    "push edx" \
-    "movzx edx,ah" \
-    "mov [esi],edx" \
-    "movzx edx,al" \
-    "mov [edi],edx" \
-    "mov eax,1" \
-    "pop edx" \
-    "jmp Done" \
-    "Fail:" \
-    "xor eax,eax" \
-    "Done:" \
-    __parm [__eax] [__esi] [__edi] \
-    __value [__eax]
-
-#pragma aux RdosGetPciDeviceIrq = \
-    CallGate_get_pci_device_irq  \
-    "jc Fail" \
-    "movzx eax,al" \
-    "jmp Done" \
-    "Fail:" \
-    "mov eax,-1" \
-    "Done:" \
-    __parm [__eax] \
     __value [__eax]
 
 #pragma aux RdosGetCpuTemperature = \
@@ -1476,6 +1553,28 @@
     __parm [__ebx] \
     __value [__ebx]
 
+#pragma aux RdosGetHandleMap = \
+    CallGate_get_handle_map  \
+    "jnc Done" \
+    "xor eax,eax" \
+    "xor edi,edi" \
+    "Done:" \
+    "mov [esi],eax" \
+    __parm [__ebx] [__esi] \
+    __value [__edi]
+
+#pragma aux RdosMapHandle = \
+    CallGate_map_handle  \
+    CarryToBool \
+    __parm [__ebx] [__edx __eax] [__ecx] \
+    __value [__edi]
+
+#pragma aux RdosGrowHandle = \
+    CallGate_grow_handle  \
+    CarryToBool \
+    __parm [__ebx] [__edx __eax] [__ecx] \
+    __value [__edi]
+
 #pragma aux RdosPollHandle = \
     CallGate_poll_handle  \
     __parm [__ebx] [__edi] [__ecx]  \
@@ -1502,14 +1601,26 @@
     __value [__ebx]
 
 #pragma aux RdosGetHandleSize = \
-    CallGate_get_handle_size  \
+    CallGate_get_handle_size64  \
+    "jnc ghsDone" \
+    CallGate_get_handle_size32  \
+    "ghsDone:" \
     __parm [__ebx]  \
-    __value [__eax]
+    __value [__edx __eax]
 
 #pragma aux RdosSetHandleSize = \
-    CallGate_set_handle_size  \
-    __parm [__ebx] [__eax] \
-    __value [__eax]
+    CallGate_set_handle_size64  \
+    "jnc shsDone" \
+    CallGate_set_handle_size32  \
+    "jc shsFail" \
+    "xor edx,edx" \
+    "jmp shsDone" \
+    "shsFail:" \
+    "mov eax,-1" \
+    "mov edx,-1" \
+    "shsDone:" \
+    __parm [__ebx] [__edx __eax] \
+    __value [__edx __eax]
 
 #pragma aux RdosGetHandleMode = \
     CallGate_get_handle_mode  \
@@ -1522,14 +1633,26 @@
     __value [__eax]
 
 #pragma aux RdosGetHandlePos = \
-    CallGate_get_handle_pos  \
+    CallGate_get_handle_pos64  \
+    "jnc ghpDone" \
+    CallGate_get_handle_pos32  \
+    "ghpDone:" \
     __parm [__ebx]  \
-    __value [__eax]
+    __value [__edx __eax]
 
 #pragma aux RdosSetHandlePos = \
-    CallGate_set_handle_pos  \
-    __parm [__ebx] [__eax] \
-    __value [__eax]
+    CallGate_set_handle_pos64  \
+    "jnc shpDone" \
+    CallGate_set_handle_pos32  \
+    "jc shpFail" \
+    "xor edx,edx" \
+    "jmp shpDone" \
+    "shpFail:" \
+    "mov eax,-1" \
+    "mov edx,-1" \
+    "shpDone:" \
+    __parm [__ebx] [__edx __eax] \
+    __value [__edx __eax]
 
 #pragma aux RdosEofHandle = \
     CallGate_eof_handle  \
@@ -1542,8 +1665,8 @@
     __parm [__ebx] \
     __value [__eax]
 
-#pragma aux RdosGetHandleTime = \
-    CallGate_get_handle_time  \
+#pragma aux RdosGetHandleCreateTime = \
+    CallGate_get_handle_create_time  \
     "mov [esi],edx" \
     "mov [edi],eax" \
     "and eax,edx" \
@@ -1551,8 +1674,26 @@
     __modify [__edx] \
     __value [__eax]
 
-#pragma aux RdosSetHandleTime = \
-    CallGate_set_handle_time  \
+#pragma aux RdosGetHandleModifyTime = \
+    CallGate_get_handle_modify_time  \
+    "mov [esi],edx" \
+    "mov [edi],eax" \
+    "and eax,edx" \
+    __parm [__ebx] [__esi] [__edi]  \
+    __modify [__edx] \
+    __value [__eax]
+
+#pragma aux RdosGetHandleAccessTime = \
+    CallGate_get_handle_access_time  \
+    "mov [esi],edx" \
+    "mov [edi],eax" \
+    "and eax,edx" \
+    __parm [__ebx] [__esi] [__edi]  \
+    __modify [__edx] \
+    __value [__eax]
+
+#pragma aux RdosSetModifyHandleTime = \
+    CallGate_set_handle_modify_time  \
     __parm [__ebx] [__edx] [__eax] \
     __value [__eax]
 
@@ -1625,23 +1766,38 @@
     __value [__ebx]
 
 #pragma aux RdosGetFileSize = \
-    CallGate_get_file_size  \
+    CallGate_get_file_size64  \
+    "jnc gfsDone" \
+    CallGate_get_file_size32 \
+    "xor edx,edx" \
     ValidateEax \
+    "gfsDone:" \
     __parm [__ebx]  \
-    __value [__eax]
+    __value [__edx __eax]
 
 #pragma aux RdosSetFileSize = \
-    CallGate_set_file_size  \
-    __parm [__ebx] [__eax]
+    CallGate_set_file_size64  \
+    "jnc sfsDone" \
+    CallGate_set_file_size32 \
+    "sfsDone:" \
+    __parm [__ebx] [__edx __eax]
 
 #pragma aux RdosGetFilePos = \
-    CallGate_get_file_pos  \
+    CallGate_get_file_pos64 \
+    "jnc gfpDone" \
+    CallGate_get_file_pos32 \
+    "xor edx,edx" \
     ValidateEax \
+    "gfpDone:" \
     __parm [__ebx]  \
-    __value [__eax]
+    __modify [__ecx] \
+    __value [__edx __eax]
 
 #pragma aux RdosSetFilePos = \
-    CallGate_set_file_pos  \
+    CallGate_set_file_pos64  \
+    "jnc sfpDone" \
+    CallGate_set_file_pos32 \
+    "sfpDone:" \
     __parm [__ebx] [__eax]
 
 #pragma aux RdosReadFile = \
@@ -1795,6 +1951,41 @@
     "mov edx,eax" \
     "done:" \
     __parm [__ebx] [__edx] [__ecx] [__edi] [__esi] [__eax]
+
+#pragma aux RdosCreateVfsDiscCmd = \
+    CallGate_create_vfs_disc_cmd  \
+   "jc fail" \
+   "movzx ebx,bx" \
+   "jmp done" \
+   "fail:" \
+   "xor ebx,ebx" \
+   "done:" \
+    __parm [__eax] [__edi]  \
+    __value [__ebx]
+
+#pragma aux RdosCloseVfsCmd = \
+    CallGate_close_vfs_cmd  \
+    __parm [__ebx]
+
+#pragma aux RdosAddWaitForVfsCmd = \
+    CallGate_add_wait_for_vfs_cmd  \
+    __parm [__eax] [__ebx] [__ecx]
+
+#pragma aux RdosIsVfsCmdDone = \
+    CallGate_is_vfs_cmd_done  \
+    CarryToBool \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosGetVfsResponseSize = \
+    CallGate_get_vfs_resp_size  \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosGetVfsResponseData = \
+    CallGate_get_vfs_resp_data  \
+    __parm [__ebx] [__edi] [__ecx] \
+    __value [__eax]
 
 #pragma aux RdosDefineFaultSave = \
     CallGate_define_fault_save  \
@@ -2175,6 +2366,11 @@
     CallGate_wait_until  \
     __parm [__edx] [__eax]
 
+#pragma aux RdosWaitRealUntil = \
+    CallGate_time_to_system_time  \
+    CallGate_wait_until  \
+    __parm [__edx] [__eax]
+
 #pragma aux RdosGetSysTime = \
     CallGate_get_system_time  \
     "mov [esi],edx" \
@@ -2313,6 +2509,11 @@
     "mov [esi],dx" \
     "mov [edi],bx" \
     __parm [__edx] [__eax] [__esi] [__edi] \
+    __modify [__eax __ebx __ecx __edx]
+
+#pragma aux RdosDecodeTicsBase = \
+    CallGate_binary_to_time  \
+    __parm [__edx] [__eax] \
     __modify [__eax __ebx __ecx __edx]
 
 #pragma aux RdosDecodeMsbTics = \
@@ -2538,8 +2739,8 @@
     CallGate_add_wait_for_syslog  \
     __parm [__ebx] [__eax] [__ecx]
 
-#pragma aux RdosAddWaitForAdc = \
-    CallGate_add_wait_for_adc  \
+#pragma aux RdosAddWaitForAdcChannel = \
+    CallGate_add_wait_for_adc_chan  \
     __parm [__ebx] [__eax] [__ecx]
 
 #pragma aux RdosCreateSignal = \
@@ -3196,6 +3397,12 @@
     __parm [__eax] \
     __value [__eax]
 
+#pragma aux RdosIsVfsDisc = \
+    CallGate_is_vfs_disc  \
+    CarryToBool \
+    __parm [__eax] \
+    __value [__eax]
+
 #pragma aux RdosGetDiscCache = \
     CallGate_get_disc_cache  \
     "jnc Ok"\
@@ -3356,12 +3563,6 @@
     CallGate_close_vfs_dir  \
     __parm [__ebx]
 
-#pragma aux RdosReadVfsFile = \
-    CallGate_read_vfs_file  \
-    ValidateEax \
-    __parm [__ebx] [__edi] [__ecx]  \
-    __value [__eax]
-
 #pragma aux RdosCreateFileDrive = \
     CallGate_create_file_drive  \
     CarryToBool \
@@ -3506,25 +3707,21 @@
     __parm [__ebx] [__esi] [__edx] [__eax] [__edi] [__ecx] \
     __value [__eax]
 
-#pragma aux RdosOpenAdc = \
-    CallGate_open_adc  \
+#pragma aux RdosOpenAdcChannel = \
+    CallGate_open_adc_chan  \
     ValidateHandle \
-    __parm [__eax] \
+    __parm [__ebx] [__eax] [__ecx] \
     __value [__ebx]
 
-#pragma aux RdosCloseAdc = \
-    CallGate_close_adc  \
+#pragma aux RdosCloseAdcChannel = \
+    CallGate_close_adc_chan  \
     __parm [__ebx]
 
-#pragma aux RdosDefineAdcTime = \
-    CallGate_define_adc_time  \
-    __parm [__ebx] [__edx] [__eax]
-
-#pragma aux RdosReadAdc = \
-    CallGate_read_adc  \
-    __parm [__ebx] \
+#pragma aux RdosReadAdcChannel = \
+    CallGate_read_adc_chan  \
+    CarryToBool \
+    __parm [__ebx] [__edi] \
     __value [__eax]
-
 
 #pragma aux RdosSetupAdc = \
     CallGate_setup_adc  \
@@ -3547,7 +3744,6 @@
 #pragma aux RdosSetAdcTrigger = \
     CallGate_set_adc_trigger  \
     __parm [__eax] [__cl]
-
 
 #pragma aux RdosReadSerialLines = \
     "mov dh,cl" \

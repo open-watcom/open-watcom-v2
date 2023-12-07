@@ -185,7 +185,7 @@
 #define osgate_write_pci_byte 193
 #define osgate_write_pci_word 194
 #define osgate_write_pci_dword 195
-#define osgate_find_pci_class 196
+#define osgate_find_pci_class_interface 196
 #define osgate_find_pci_device 197
 
 #define osgate_install_static_disc 199
@@ -377,11 +377,9 @@
 
 #define osgate_get_debug_thread_sel 379
 
-#define osgate_find_pci_class_all 380
+#define osgate_find_pci_class 380
 
 #define osgate_show_proc_debug 381
-
-#define osgate_get_pci_irq 382
 
 #define osgate_preempt_expired 383
 
@@ -412,8 +410,6 @@
 
 #define osgate_hook_init_pci 408
 
-#define osgate_register_msi 409
-
 #define osgate_allocate_ints 410
 #define osgate_free_int 411
 
@@ -428,7 +424,6 @@
 
 #define osgate_enter_c3 418
 
-#define osgate_get_pci_msi 419
 #define osgate_setup_pci_msi 420
 #define osgate_request_msi_handler 421
 #define osgate_request_irq_handler 422
@@ -576,7 +571,6 @@
 
 #define osgate_get_disc_vendor_info_buf 549
 
-#define osgate_get_pci_msix 550
 #define osgate_enable_pci_msix 551
 #define osgate_setup_pci_msix_entry 552
 
@@ -621,11 +615,11 @@
 #define osgate_setup_nmi_core_dump 581
 
 #define osgate_allocate_c_handle 584
-#define osgate_open_c_file 585
-#define osgate_close_c_file 586
+#define osgate_open_legacy_file 585
+#define osgate_close_legacy_file 586
 #define osgate_ref_c_handle 587
-#define osgate_read_c_file 588
-#define osgate_write_c_file 589
+#define osgate_read_legacy_file 588
+#define osgate_write_legacy_file 589
 #define osgate_get_c_file_size 590
 #define osgate_set_c_file_size 591
 #define osgate_get_c_file_time 592
@@ -900,6 +894,23 @@
 
 #define osgate_link_usergate 815
 
+#define osgate_set_pci_device_name 816
+#define osgate_get_msi_vector 817
+
+#define osgate_add_wait_for_adc_chan 818
+
+#define osgate_create_blk 819
+#define osgate_delete_blk 820
+#define osgate_allocate_blk 821
+#define osgate_free_blk 822
+
+#define osgate_write_vfs_disc 823
+#define osgate_close_vfs_drive 824
+
+#define osgate_read_kernel_handle 825
+#define osgate_write_kernel_handle 826
+#define osgate_close_kernel_handle 827
+
 
 
 
@@ -1089,7 +1100,7 @@
 #define OsGate_write_pci_byte 0x3E 0x67 0x9a 193 0 0 0 2 0
 #define OsGate_write_pci_word 0x3E 0x67 0x9a 194 0 0 0 2 0
 #define OsGate_write_pci_dword 0x3E 0x67 0x9a 195 0 0 0 2 0
-#define OsGate_find_pci_class 0x3E 0x67 0x9a 196 0 0 0 2 0
+#define OsGate_find_pci_class_interface 0x3E 0x67 0x9a 196 0 0 0 2 0
 #define OsGate_find_pci_device 0x3E 0x67 0x9a 197 0 0 0 2 0
 
 #define OsGate_install_static_disc 0x3E 0x67 0x9a 199 0 0 0 2 0
@@ -1281,11 +1292,9 @@
 
 #define OsGate_get_debug_thread_sel 0x3E 0x67 0x9a 123 1 0 0 2 0
 
-#define OsGate_find_pci_class_all 0x3E 0x67 0x9a 124 1 0 0 2 0
+#define OsGate_find_pci_class 0x3E 0x67 0x9a 124 1 0 0 2 0
 
 #define OsGate_show_proc_debug 0x3E 0x67 0x9a 125 1 0 0 2 0
-
-#define OsGate_get_pci_irq 0x3E 0x67 0x9a 126 1 0 0 2 0
 
 #define OsGate_preempt_expired 0x3E 0x67 0x9a 127 1 0 0 2 0
 
@@ -1316,8 +1325,6 @@
 
 #define OsGate_hook_init_pci 0x3E 0x67 0x9a 152 1 0 0 2 0
 
-#define OsGate_register_msi 0x3E 0x67 0x9a 153 1 0 0 2 0
-
 #define OsGate_allocate_ints 0x3E 0x67 0x9a 154 1 0 0 2 0
 #define OsGate_free_int 0x3E 0x67 0x9a 155 1 0 0 2 0
 
@@ -1332,7 +1339,6 @@
 
 #define OsGate_enter_c3 0x3E 0x67 0x9a 162 1 0 0 2 0
 
-#define OsGate_get_pci_msi 0x3E 0x67 0x9a 163 1 0 0 2 0
 #define OsGate_setup_pci_msi 0x3E 0x67 0x9a 164 1 0 0 2 0
 #define OsGate_request_msi_handler 0x3E 0x67 0x9a 165 1 0 0 2 0
 #define OsGate_request_irq_handler 0x3E 0x67 0x9a 166 1 0 0 2 0
@@ -1480,7 +1486,6 @@
 
 #define OsGate_get_disc_vendor_info_buf 0x3E 0x67 0x9a 37 2 0 0 2 0
 
-#define OsGate_get_pci_msix 0x3E 0x67 0x9a 38 2 0 0 2 0
 #define OsGate_enable_pci_msix 0x3E 0x67 0x9a 39 2 0 0 2 0
 #define OsGate_setup_pci_msix_entry 0x3E 0x67 0x9a 40 2 0 0 2 0
 
@@ -1525,11 +1530,11 @@
 #define OsGate_setup_nmi_core_dump 0x3E 0x67 0x9a 69 2 0 0 2 0
 
 #define OsGate_allocate_c_handle 0x3E 0x67 0x9a 72 2 0 0 2 0
-#define OsGate_open_c_file 0x3E 0x67 0x9a 73 2 0 0 2 0
-#define OsGate_close_c_file 0x3E 0x67 0x9a 74 2 0 0 2 0
+#define OsGate_open_legacy_file 0x3E 0x67 0x9a 73 2 0 0 2 0
+#define OsGate_close_legacy_file 0x3E 0x67 0x9a 74 2 0 0 2 0
 #define OsGate_ref_c_handle 0x3E 0x67 0x9a 75 2 0 0 2 0
-#define OsGate_read_c_file 0x3E 0x67 0x9a 76 2 0 0 2 0
-#define OsGate_write_c_file 0x3E 0x67 0x9a 77 2 0 0 2 0
+#define OsGate_read_legacy_file 0x3E 0x67 0x9a 76 2 0 0 2 0
+#define OsGate_write_legacy_file 0x3E 0x67 0x9a 77 2 0 0 2 0
 #define OsGate_get_c_file_size 0x3E 0x67 0x9a 78 2 0 0 2 0
 #define OsGate_set_c_file_size 0x3E 0x67 0x9a 79 2 0 0 2 0
 #define OsGate_get_c_file_time 0x3E 0x67 0x9a 80 2 0 0 2 0
@@ -1803,4 +1808,21 @@
 #define OsGate_setup_net_cachable 0x3E 0x67 0x9a 46 3 0 0 2 0
 
 #define OsGate_link_usergate 0x3E 0x67 0x9a 47 3 0 0 2 0
+
+#define OsGate_set_pci_device_name 0x3E 0x67 0x9a 48 3 0 0 2 0
+#define OsGate_get_msi_vector 0x3E 0x67 0x9a 49 3 0 0 2 0
+
+#define OsGate_add_wait_for_adc_chan 0x3E 0x67 0x9a 50 3 0 0 2 0
+
+#define OsGate_create_blk 0x3E 0x67 0x9a 51 3 0 0 2 0
+#define OsGate_delete_blk 0x3E 0x67 0x9a 52 3 0 0 2 0
+#define OsGate_allocate_blk 0x3E 0x67 0x9a 53 3 0 0 2 0
+#define OsGate_free_blk 0x3E 0x67 0x9a 54 3 0 0 2 0
+
+#define OsGate_write_vfs_disc 0x3E 0x67 0x9a 55 3 0 0 2 0
+#define OsGate_close_vfs_drive 0x3E 0x67 0x9a 56 3 0 0 2 0
+
+#define OsGate_read_kernel_handle 0x3E 0x67 0x9a 57 3 0 0 2 0
+#define OsGate_write_kernel_handle 0x3E 0x67 0x9a 58 3 0 0 2 0
+#define OsGate_close_kernel_handle 0x3E 0x67 0x9a 59 3 0 0 2 0
 

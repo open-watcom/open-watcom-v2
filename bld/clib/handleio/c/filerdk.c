@@ -85,7 +85,7 @@ static void FreeHandleObj( rdos_handle_type *h)
 
     if( h->ref_count == 0 ) {
         if( h->rdos_handle )
-            RdosCloseCFile( h->rdos_handle );
+            RdosCloseKernelFile( h->rdos_handle );
         lib_free( h );
     }
 }
@@ -597,7 +597,7 @@ int __qread( int handle, void *buffer, unsigned len )
 
     if( rdos_handle > 0 ) {
         pos = GetHandlePos( handle );
-        count = RdosReadCFile( rdos_handle, buffer, len, pos );
+        count = RdosReadKernelFile( rdos_handle, buffer, len, pos );
         pos += count;
         SetHandlePos( handle, pos );
         return( count );
@@ -615,7 +615,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 
     if( rdos_handle > 0 ) {
         pos = GetHandlePos( handle );
-        count = RdosWriteCFile( rdos_handle, buffer, len, pos );
+        count = RdosWriteKernelFile( rdos_handle, buffer, len, pos );
         pos += count;
         SetHandlePos( handle, pos );
         return( count );
