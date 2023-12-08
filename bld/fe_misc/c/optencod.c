@@ -256,7 +256,7 @@ typedef struct codeseq {
     struct codeseq  *children;
     OPTION          *option;
     char            c;
-    boolbit         sensitive  : 1;
+    char            sensitive;
     boolbit         accept     : 1;
     boolbit         chain      : 1;
     boolbit         chain_root : 1;
@@ -413,7 +413,7 @@ static GROUP    *groupList = NULL;
 static TITLE    *targetTitle;
 static TITLE    *targetFooter;
 
-static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
+static void emitCode( CODESEQ *head, unsigned depth, flow_control control );
 
 static int mystricmp( const char *p1, const char *p2 )
 {
@@ -1850,20 +1850,20 @@ static void finishParserH( void )
     }
 }
 
-static CODESEQ *newCode( OPTION *o, char c, bool sensitive )
+static CODESEQ *newCode( OPTION *o, char c, char sensitive )
 {
     CODESEQ *p;
 
     p = calloc( 1, sizeof( *p ) );
     p->option = o;
     p->c = c;
-    p->sensitive = sensitive ? true : false;
+    p->sensitive = sensitive;
     return( p );
 }
 
 static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
 {
-    bool    sensitive;
+    char    sensitive;
     char    *pattern;
     char    c;
     CODESEQ *head;
@@ -1872,16 +1872,15 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
     head = code;
     splice = &head;
     for( pattern = o->pattern; (c = *pattern++) != '\0'; ) {
-        sensitive = false;
+        sensitive = '\0';
         if( c == '\\' ) {
             c = *pattern++;
-            sensitive = true;
-        } else {
-            c = mytolower( c );
+            sensitive = c;
         }
+        c = mytolower( c );
         for( code = *splice; code != NULL; code = *splice ) {
-            if( code->sensitive == sensitive ) {
-                if( code->c == c ) {
+            if( code->c == c ) {
+                if( code->sensitive == sensitive ) {
                     break;
                 }
             }
@@ -1894,7 +1893,7 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
         splice = &(code->children);
     }
     if( code == NULL ) {
-        code = newCode( o, '\0', false );
+        code = newCode( o, '\0', '\0' );
         *splice = code;
     }
     code->accept = true;
@@ -1905,16 +1904,16 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
 static CODESEQ *reorderCode( CODESEQ *c )
 {
     CODESEQ *a;
-    CODESEQ *h;
+    CODESEQ *head;
     CODESEQ *n;
     CODESEQ **s;
 
-    h = c;
+    head = c;
     if( c->sibling != NULL ) {
         a = NULL;
-        s = &h;
+        s = &head;
         // accepting states move to the end
-        for( c = h; c != NULL; c = n ) {
+        for( c = head; c != NULL; c = n ) {
             n = c->sibling;
             if( c->accept ) {
                 *s = n;
@@ -1925,34 +1924,34 @@ static CODESEQ *reorderCode( CODESEQ *c )
             }
         }
         *s = a;
-        s = &(h->sibling);
+        s = &(head->sibling);
         // sensitive states move to the front
-        for( c = h; c != NULL; c = n ) {
+        for( c = head; c != NULL; c = n ) {
             n = c->sibling;
             if( c->sensitive ) {
                 *s = n;
-                c->sibling = h;
-                h = c;
+                c->sibling = head;
+                head = c;
             } else {
                 s = &(c->sibling);
             }
         }
     }
-    for( c = h; c != NULL; c = c->sibling ) {
+    for( c = head; c != NULL; c = c->sibling ) {
         if( c->children != NULL ) {
             c->children = reorderCode( c->children );
         }
     }
-    return( h );
+    return( head );
 }
 
-static bool markChainCode( CODESEQ *h, size_t level )
+static bool markChainCode( CODESEQ *head, size_t level )
 {
     CODESEQ *c;
     bool    rc;
 
     rc = false;
-    for( c = h; c != NULL; c = c->sibling ) {
+    for( c = head; c != NULL; c = c->sibling ) {
         if( c->option->chain != NULL && c->option->chain->code_used ) {
             if( c->children != NULL ) {
                 if( level == c->option->chain->name_len ) {
@@ -1982,13 +1981,13 @@ static CODESEQ *genCode( OPTION *o )
     return( head );
 }
 
-static bool useSwitchStmt( CODESEQ *h )
+static bool useSwitchStmt( CODESEQ *head )
 {
     unsigned count;
     CODESEQ *c;
 
     count = 0;
-    for( c = h; c != NULL; c = c->sibling ) {
+    for( c = head; c != NULL; c = c->sibling ) {
         if( c->option->is_prefix ) {
             return( true );
         }
@@ -2157,7 +2156,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
 static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
 {
     if( c->sensitive ) {
-        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->c );
+        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->sensitive );
     } else {
         emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG_LOWER, c->c );
     }
@@ -2165,12 +2164,12 @@ static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
     emitPrintf( depth, "}\n" );
 }
 
-static void emitCode( CODESEQ *h, unsigned depth, flow_control control )
+static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
 {
     bool use_switch;
     CODESEQ *c;
 
-    for( c = h; c != NULL; c = c->sibling ) {
+    for( c = head; c != NULL; c = c->sibling ) {
         if( c->sensitive || (control & EC_CHAIN) && !c->chain ) {
             emitIfCode( c, depth, control );
         } else {
@@ -3079,3 +3078,4 @@ int main( int argc, char **argv )
         return( EXIT_SUCCESS );
     return( EXIT_FAILURE );
 }
+
