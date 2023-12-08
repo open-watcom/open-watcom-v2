@@ -1862,15 +1862,15 @@ static CODESEQ *newCode( OPTION *o, char c, char sensitive )
     return( p );
 }
 
-static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
+static CODESEQ *addOptionCodeSeq( CODESEQ *head, OPTION *o )
 {
     char    sensitive;
     char    *pattern;
     char    c;
-    CODESEQ *head;
+    CODESEQ *code;
     CODESEQ **splice;
 
-    head = code;
+    code = head;
     splice = &head;
     for( pattern = o->pattern; (c = *pattern++) != '\0'; ) {
         sensitive = '\0';
@@ -1904,14 +1904,14 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
     return( head );
 }
 
-static CODESEQ *reorderCode( CODESEQ *c )
+static CODESEQ *reorderCode( CODESEQ *head )
 {
     CODESEQ *a;
-    CODESEQ *head;
+    CODESEQ *c;
     CODESEQ *n;
     CODESEQ **s;
 
-    head = c;
+    c = head;
     if( c->sibling != NULL ) {
         a = NULL;
         s = &head;
