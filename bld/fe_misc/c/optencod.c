@@ -2193,7 +2193,11 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
     }
     for( ; c != NULL; c = c->sibling ) {
         if( use_switch ) {
-            emitPrintf( depth - 1, "case '%c':\n", c->c );
+            if( c->sensitive != '\0' ) {
+                emitPrintf( depth - 1, "case '%c':\n", c->sensitive );
+            } else {
+                emitPrintf( depth - 1, "case '%c':\n", c->c );
+            }
             emitCodeTree( c, depth, control );
         } else {
             emitIfCode( c, depth, control );
