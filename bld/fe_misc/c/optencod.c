@@ -260,6 +260,7 @@ typedef struct codeseq {
     boolbit         accept     : 1;
     boolbit         chain      : 1;
     boolbit         chain_root : 1;
+    boolbit         followup   : 1;
 } CODESEQ;
 
 static unsigned     line;
@@ -1882,6 +1883,8 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
             if( code->c == c ) {
                 if( code->sensitive == sensitive ) {
                     break;
+                } else {
+                    code->followup = true;
                 }
             }
             splice = &(code->sibling);
@@ -2126,7 +2129,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
-            } else {
+            } else if( !c->followup ) {
                 emitPrintf( depth, "return( true );\n" );
             }
         } else if( c->chain_root ) {
@@ -2140,7 +2143,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             emitCode( c->children, depth, control & ~EC_CHAIN );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control );
-            } else {
+            } else if( !c->followup ) {
                 emitPrintf( depth, "return( true );\n" );
             }
         }
