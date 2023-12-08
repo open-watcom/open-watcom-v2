@@ -1435,13 +1435,13 @@
 :usage.  enable virtual function removal optimization
 :jusage. 仮想関数を削除する最適化を行います
 
-:option. zw
-:target. i86 386
+:option. z\w
+:target. i86
 :enumerate. win
 :usage.  generate code for Microsoft Windows
 :jusage. Microsoft Windows用のコードを生成します
 
-:option. zws
+:option. z\ws
 :target. i86
 :enumerate. win
 :usage.  generate code for Microsoft Windows with smart callbacks
@@ -1458,6 +1458,12 @@
 :enumerate. win
 :usage.  generate code for Microsoft Windows with smart callbacks
 :jusage. スマート･コールバックをするMicrosoft Windows用コードを生成します
+
+:option. zw
+:target. 386
+:enumerate. win
+:usage.  generate code for Microsoft Windows
+:jusage. Microsoft Windows用のコードを生成します
 
 :option. zx
 :target. i86 386
