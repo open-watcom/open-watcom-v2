@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,6 +175,21 @@ bool CmdRecogChar(              // RECOGNIZE A CHARACTER
         retn = true;
     } else {
         CmdScanUngetChar();
+        retn = false;
+    }
+    return( retn );
+}
+
+
+bool CmdReRecogChar(            // RECOGNIZE LAST CHARACTER
+    int recog )                 // - character to be recognized
+{
+    bool retn;                  // - true ==> got it
+
+    CmdScanUngetChar();
+    if( recog == CmdScanChar() ) {
+        retn = true;
+    } else {
         retn = false;
     }
     return( retn );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -323,6 +324,12 @@ bool OPT_RECOG                  // RECOGNIZE CHAR
     ( int c )                   // - to be recog'ed
 {
     return( CmdRecogChar( c ) );
+}
+
+bool OPT_RERECOG                // RECOGNIZE CHAR
+    ( int c )                   // - to be recog'ed
+{
+    return( CmdReRecogChar( c ) );
 }
 
 bool OPT_RECOG_LOWER            // RECOGNIZE LOWERCASE CHAR
