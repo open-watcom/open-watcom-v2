@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,9 @@ bool CmdRecogLowerChar(         // RECOGNIZE A LOWER CASE CHARACTER
     int recog )                 // - character to be recognized
 ;
 bool CmdRecogChar(              // RECOGNIZE A CHARACTER
+    int recog )                 // - character to be recognized
+;
+bool CmdReRecogChar(            // RE-RECOGNIZE LAST CHARACTER
     int recog )                 // - character to be recognized
 ;
 size_t CmdScanNumber(           // SCAN A NUMBER

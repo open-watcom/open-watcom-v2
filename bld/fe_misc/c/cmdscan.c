@@ -181,7 +181,7 @@ bool CmdRecogChar(              // RECOGNIZE A CHARACTER
 }
 
 
-bool CmdReRecogChar(            // RECOGNIZE LAST CHARACTER
+bool CmdReRecogChar(            // RE-RECOGNIZE LAST CHARACTER
     int recog )                 // - character to be recognized
 {
     bool retn;                  // - true ==> got it
