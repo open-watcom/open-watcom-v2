@@ -1862,6 +1862,27 @@ static CODESEQ *newCode( OPTION *o, char c, char sensitive )
     return( p );
 }
 
+static CODESEQ *addCode( CODESEQ **splice, OPTION *o, char c, char sensitive )
+{
+    CODESEQ *code;
+
+    for( code = *splice; code != NULL; code = *splice ) {
+        if( code->c == c ) {
+            if( code->sensitive == sensitive ) {
+                break;
+            } else {
+                code->followup = true;
+            }
+        }
+        splice = &(code->sibling);
+    }
+    if( code == NULL ) {
+        code = newCode( o, c, sensitive );
+        *splice = code;
+    }
+    return( code );
+}
+
 static CODESEQ *addOptionCodeSeq( CODESEQ *head, OPTION *o )
 {
     char    sensitive;
@@ -1879,20 +1900,7 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *head, OPTION *o )
             sensitive = c;
         }
         c = mytolower( c );
-        for( code = *splice; code != NULL; code = *splice ) {
-            if( code->c == c ) {
-                if( code->sensitive == sensitive ) {
-                    break;
-                } else {
-                    code->followup = true;
-                }
-            }
-            splice = &(code->sibling);
-        }
-        if( code == NULL ) {
-            code = newCode( o, c, sensitive );
-            *splice = code;
-        }
+        code = addCode( splice, o, c, sensitive );
         splice = &(code->children);
     }
     if( code == NULL ) {
