@@ -98,6 +98,7 @@ TAG( USAGEOGRP )
 #define FN_GET_LOWER        "OPT_GET_LOWER"             // int ( void )
 #define FN_RECOG            "OPT_RECOG"                 // bool ( int )
 #define FN_RECOG_LOWER      "OPT_RECOG_LOWER"           // bool ( int )
+#define FN_RERECOG          "OPT_RERECOG"               // bool ( int )
 #define FN_END              "OPT_END"                   // bool ( void )
 
 #define FN_NUMBER           "OPT_GET_NUMBER"            // bool ( unsigned * )
@@ -130,6 +131,8 @@ TAG( USAGEOGRP )
 #define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
 
 #define mytolower(c)            ((c < 'A' || c > 'Z') ? c : c - 'A' + 'a')
+#define mytoupper(c)            ((c < 'a' || c > 'z') ? c : c - 'a' + 'A')
+#define myisalpha(c)            ((c >= 'a' || c <= 'z') || (c >= 'A' || c <= 'Z'))
 #define myisspace(c)            (c == ' ' || c == '\t')
 
 #define IS_SELECTED(s)          ((s->target_mask & targetMask) && (s->ntarget_mask & targetMask) == 0)
@@ -2600,24 +2603,24 @@ static void clearChainUsage( void )
     }
 }
 
-static bool createChainHeaderPrefix( OPTION **t, char *buf, size_t max )
+static bool createChainHeaderPrefix( OPTION **o, char *buf, size_t max )
 {
     size_t      len;
     CHAIN       *cn;
     char        *stop;
 
     stop = buf + max;
-    cn = (*t)->chain;
+    cn = (*o)->chain;
     *buf++ = '-';
     buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
     *buf++ = '{';
     len = 0;
-    for( ; *t != NULL && (*t)->chain == cn; t++ ) {
-        if( (*t)->chain != NULL ) {
+    for( ; *o != NULL && (*o)->chain == cn; o++ ) {
+        if( (*o)->chain != NULL ) {
             if( len > 0 ) {
                 *buf++ = ',';
             }
-            buf = genOptionUsageStart( *t, buf, true );
+            buf = genOptionUsageStart( *o, buf, true );
             ++len;
         }
     }
@@ -2629,24 +2632,24 @@ static bool createChainHeaderPrefix( OPTION **t, char *buf, size_t max )
     return( buf == stop );
 }
 
-static void outputChainHeader( OPTION **t, process_line_fn *process_line, size_t max )
+static void outputChainHeader( OPTION **o, process_line_fn *process_line, size_t max )
 {
     char        *buf;
     size_t      len;
     language_id lang;
 
-    if( createChainHeaderPrefix( t, hdrbuff, max ) ) {
+    if( createChainHeaderPrefix( o, hdrbuff, max ) ) {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             strcpy( buf, hdrbuff );
-            strcpy( buf + max, getLangData( (*t)->chain->Usage, lang ) );
+            strcpy( buf + max, getLangData( (*o)->chain->Usage, lang ) );
         }
     } else {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             for( len = max / 2; len-- > 0; )
                 *buf++ = ' ';
-            strcpy( buf, getLangData( (*t)->chain->Usage, lang ) );
+            strcpy( buf, getLangData( (*o)->chain->Usage, lang ) );
         }
         process_output( process_line );
         for( lang = 0; lang < LANG_MAX; lang++ ) {
@@ -2699,7 +2702,7 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
     size_t      max;
     size_t      len;
     OPTION      *o;
-    OPTION      **t;
+    OPTION      **oo;
     OPTION      **c;
 
     maxUsageLen = 0;
@@ -2715,25 +2718,25 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
         }
     }
     ++max;
-    t = calloc( count + 1, sizeof( OPTION * ) );
-    c = t;
+    oo = calloc( count + 1, sizeof( OPTION * ) );
+    c = oo;
     for( o = optionList; o != NULL; o = o->next ) {
         if( usageValid( o, gr ) ) {
             *c++ = o;
         }
     }
     *c = NULL;
-    qsort( t, count, sizeof( OPTION * ), usageCmp );
+    qsort( oo, count, sizeof( OPTION * ), usageCmp );
 
     clearChainUsage();
     for( i = 0; i < count; ++i ) {
-        if( t[i]->chain != NULL && !t[i]->chain->usage_used ) {
-            t[i]->chain->usage_used = true;
-            outputChainHeader( &t[i], process_line, max );
+        if( oo[i]->chain != NULL && !oo[i]->chain->usage_used ) {
+            oo[i]->chain->usage_used = true;
+            outputChainHeader( &oo[i], process_line, max );
         }
-        outputOption( t[i], process_line, max );
+        outputOption( oo[i], process_line, max );
     }
-    free( t );
+    free( oo );
     if( checkUsageLength( maxUsageLen ) ) {
         fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
     }
