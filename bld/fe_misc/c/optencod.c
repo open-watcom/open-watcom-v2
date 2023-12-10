@@ -162,7 +162,8 @@ typedef enum tag_id {
 typedef enum flow_control {
     EC_NULL             = 0,
     EC_CONTINUE         = 0x01,
-    EC_CHAIN            = 0x02
+    EC_CHAIN            = 0x02,
+    EC_SWITCH           = 0x04
 } flow_control;
 
 typedef enum cvt_name {
@@ -264,6 +265,7 @@ typedef struct codeseq {
     boolbit         chain      : 1;
     boolbit         chain_root : 1;
     boolbit         followup   : 1;
+    boolbit         sel        : 1;
 } CODESEQ;
 
 static unsigned     line;
@@ -1995,21 +1997,6 @@ static CODESEQ *genCode( OPTION *o )
     return( head );
 }
 
-static bool useSwitchStmt( CODESEQ *head )
-{
-    unsigned count;
-    CODESEQ *c;
-
-    count = 0;
-    for( c = head; c != NULL; c = c->sibling ) {
-        if( c->option->is_prefix ) {
-            return( true );
-        }
-        ++count;
-    }
-    return( count >= USE_SWITCH_THRESHOLD );
-}
-
 static void emitSuccessCode( unsigned depth, flow_control control )
 {
     if( control & EC_CONTINUE ) {
@@ -2178,51 +2165,63 @@ static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
     emitPrintf( depth, "}\n" );
 }
 
-static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
+static void emitCodeBlk( CODESEQ *head, unsigned depth, flow_control control )
 {
-    bool use_switch;
     CODESEQ *c;
 
-    for( c = head; c != NULL; c = c->sibling ) {
-        if( c->sensitive || (control & EC_CHAIN) && !c->chain ) {
-            emitIfCode( c, depth, control );
-        } else {
-            break;
-        }
-    }
-    if( c == NULL ) {
-        return;
-    }
     if( control & EC_CHAIN ) {
         emitPrintf( depth, "do {\n" );
         ++depth;
     }
-    use_switch = useSwitchStmt( c );
-    if( use_switch ) {
+    if( control & EC_SWITCH ) {
         emitPrintf( depth, "switch( " FN_GET_LOWER "() ) {\n" );
         ++depth;
-    }
-    for( ; c != NULL; c = c->sibling ) {
-        if( use_switch ) {
-            if( c->sensitive != '\0' ) {
-                emitPrintf( depth - 1, "case '%c':\n", c->sensitive );
-            } else {
-                emitPrintf( depth - 1, "case '%c':\n", c->c );
+        for( c = head; c != NULL; c = c->sibling ) {
+            if( c->sel ) {
+                if( c->sensitive != '\0' ) {
+                    emitPrintf( depth - 1, "case '%c':\n", c->sensitive );
+                } else {
+                    emitPrintf( depth - 1, "case '%c':\n", c->c );
+                }
+                emitCodeTree( c, depth, control & ~EC_SWITCH );
             }
-            emitCodeTree( c, depth, control );
-        } else {
-            emitIfCode( c, depth, control );
         }
-    }
-    if( use_switch ) {
         --depth;
         emitPrintf( depth, "}\n" );
         emitPrintf( depth, FN_UNGET "();\n" );
+    } else {
+        for( c = head; c != NULL; c = c->sibling ) {
+            if( c->sel ) {
+                emitIfCode( c, depth, control );
+            }
+        }
     }
     if( control & EC_CHAIN ) {
         emitPrintf( depth, "break;\n" );
         --depth;
         emitPrintf( depth, "} while( ! " FN_END "() );\n" );
+    }
+}
+
+static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
+{
+    CODESEQ     *c;
+    unsigned    count;
+
+    count = 0;
+    for( c = head; c != NULL; c = c->sibling ) {
+        if( count == 0 && ( c->sensitive || (control & EC_CHAIN) && !c->chain ) ) {
+            emitIfCode( c, depth, control );
+            c->sel = false;
+        } else {
+            ++count;
+            c->sel = true;
+        }
+    }
+    if( count > 0 ) {
+	    if( count >= USE_SWITCH_THRESHOLD )
+    	    control |= EC_SWITCH;
+    	emitCodeBlk( head, depth, control );
     }
 }
 
