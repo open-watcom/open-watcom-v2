@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,6 +95,9 @@ bool OPT_GET_CHAR_OPT           // PARSE: OPTIONAL CHAR
     ( int *c )                  // - target
 ;
 bool OPT_RECOG                  // RECOGNIZE CHAR
+    ( int c )                   // - to be recog'ed
+;
+bool OPT_RERECOG                // RE-RECOGNIZE LAST CHAR
     ( int c )                   // - to be recog'ed
 ;
 bool OPT_RECOG_LOWER            // RECOGNIZE LOWERCASE CHAR

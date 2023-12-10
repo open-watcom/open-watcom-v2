@@ -326,7 +326,7 @@ bool OPT_RECOG                  // RECOGNIZE CHAR
     return( CmdRecogChar( c ) );
 }
 
-bool OPT_RERECOG                // RECOGNIZE CHAR
+bool OPT_RERECOG                // RE-RECOGNIZE LAST CHAR
     ( int c )                   // - to be recog'ed
 {
     return( CmdReRecogChar( c ) );
