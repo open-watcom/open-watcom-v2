@@ -1969,13 +1969,16 @@ static bool markChainCode( CODESEQ *head, size_t level )
     rc = false;
     for( c = head; c != NULL; c = c->sibling ) {
         if( c->option->chain != NULL && c->option->chain->code_used ) {
-            if( c->children != NULL ) {
-                if( level == c->option->chain->name_len ) {
-                    if( markChainCode( c->children, level + 1 ) ) {
+            if( c->children != NULL && level <= c->option->chain->name_len ) {
+                if( markChainCode( c->children, level + 1 ) ) {
+                    if( level == c->option->chain->name_len ) {
                         c->chain_root = true;
                     }
                 }
             } else if( c->option->name_len == c->option->chain->name_len + 1 ) {
+                if( c->children != NULL && c->children->c == '+' ) {
+                    c->children->chain = true;
+                }
                 c->chain = true;
                 rc = true;
             }
@@ -2126,7 +2129,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
         if( c->chain ) {
             emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
-                emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+                emitAcceptCode( c, depth, control );
             } else if( !c->followup ) {
                 emitPrintf( depth, "return( true );\n" );
             }
@@ -2219,9 +2222,9 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
         }
     }
     if( count > 0 ) {
-	    if( count >= USE_SWITCH_THRESHOLD )
-    	    control |= EC_SWITCH;
-    	emitCodeBlk( head, depth, control );
+        if( count >= USE_SWITCH_THRESHOLD )
+            control |= EC_SWITCH;
+        emitCodeBlk( head, depth, control );
     }
 }
 
