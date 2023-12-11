@@ -129,6 +129,9 @@ TAG( USAGEOGRP )
 #define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
 
 #define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
+#define NOSENSITIVE             ' '
+
+#define IS_SENSITIVE(c)         ((c)->s != NOSENSITIVE)
 
 #define mytolower(c)            ((c < 'A' || c > 'Z') ? c : c - 'A' + 'a')
 #define mytoupper(c)            ((c < 'a' || c > 'z') ? c : c - 'a' + 'A')
@@ -260,11 +263,10 @@ typedef struct codeseq {
     struct codeseq  *children;
     OPTION          *option;
     char            c;
-    char            sensitive;
+    char            s;
     boolbit         accept     : 1;
     boolbit         chain      : 1;
     boolbit         chain_root : 1;
-    boolbit         followup   : 1;
     boolbit         sel        : 1;
 } CODESEQ;
 
@@ -1856,33 +1858,30 @@ static void finishParserH( void )
     }
 }
 
-static CODESEQ *newCode( OPTION *o, char c, char sensitive )
+static CODESEQ *newCode( OPTION *o, char c, char s )
 {
-    CODESEQ *p;
+    CODESEQ *code;
 
-    p = calloc( 1, sizeof( *p ) );
-    p->option = o;
-    p->c = c;
-    p->sensitive = sensitive;
-    return( p );
+    code = calloc( 1, sizeof( *code ) );
+    code->option = o;
+    code->c = c;
+    code->s = s;
+    return( code );
 }
 
-static CODESEQ *addCode( CODESEQ **splice, OPTION *o, char c, char sensitive )
+static CODESEQ *addCode( CODESEQ **splice, OPTION *o, char c, char s )
 {
     CODESEQ *code;
 
     for( code = *splice; code != NULL; code = *splice ) {
-        if( code->c == c ) {
-            if( code->sensitive == sensitive ) {
-                break;
-            } else {
-                code->followup = true;
-            }
+        if( code->c == c
+          && code->s == s ) {
+            break;
         }
         splice = &(code->sibling);
     }
     if( code == NULL ) {
-        code = newCode( o, c, sensitive );
+        code = newCode( o, c, s );
         *splice = code;
     }
     return( code );
@@ -1890,27 +1889,25 @@ static CODESEQ *addCode( CODESEQ **splice, OPTION *o, char c, char sensitive )
 
 static CODESEQ *addOptionCodeSeq( CODESEQ *head, OPTION *o )
 {
-    char    sensitive;
     char    *pattern;
     char    c;
+    char    s;
     CODESEQ *code;
     CODESEQ **splice;
 
     code = head;
     splice = &head;
     for( pattern = o->pattern; (c = *pattern++) != '\0'; ) {
-        sensitive = '\0';
+        s = NOSENSITIVE;
         if( c == '\\' ) {
             c = *pattern++;
-            sensitive = c;
+            if( myisalpha( c ) ) {
+                s = c;
+                c = mytolower( c );
+            }
         }
-        c = mytolower( c );
-        code = addCode( splice, o, c, sensitive );
+        code = addCode( splice, o, c, s );
         splice = &(code->children);
-    }
-    if( code == NULL ) {
-        code = newCode( o, '\0', '\0' );
-        *splice = code;
     }
     code->accept = true;
     code->option = o;
@@ -1944,7 +1941,7 @@ static CODESEQ *reorderCode( CODESEQ *head )
         // sensitive states move to the front
         for( c = head; c != NULL; c = n ) {
             n = c->sibling;
-            if( c->sensitive ) {
+            if( IS_SENSITIVE( c ) ) {
                 *s = n;
                 c->sibling = head;
                 head = c;
@@ -2135,13 +2132,13 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control );
-            } else if( !c->followup ) {
+            } else {
                 emitPrintf( depth, "return( true );\n" );
             }
         } else if( c->chain_root ) {
             emitCode( c->children, depth, control | EC_CHAIN | EC_CONTINUE );
             if( c->accept ) {
-                emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+                emitAcceptCode( c, depth, control & ~EC_CONTINUE );
             } else {
                 emitSuccessCode( depth, control );
             }
@@ -2149,7 +2146,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             emitCode( c->children, depth, control & ~EC_CHAIN );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control );
-            } else if( !c->followup ) {
+            } else {
                 emitPrintf( depth, "return( true );\n" );
             }
         }
@@ -2157,15 +2154,15 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
         if( c->option->chain != NULL && c->option->chain->code_used ) {
             emitAcceptCode( c, depth, control );
         } else {
-            emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+            emitAcceptCode( c, depth, control & ~EC_CONTINUE );
         }
     }
 }
 
 static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
 {
-    if( c->sensitive ) {
-        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->sensitive );
+    if( IS_SENSITIVE( c ) ) {
+        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->s );
     } else {
         emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG_LOWER, c->c );
     }
@@ -2186,8 +2183,8 @@ static void emitCodeBlk( CODESEQ *head, unsigned depth, flow_control control )
         ++depth;
         for( c = head; c != NULL; c = c->sibling ) {
             if( c->sel ) {
-                if( c->sensitive != '\0' ) {
-                    emitPrintf( depth - 1, "case '%c':\n", c->sensitive );
+                if( IS_SENSITIVE( c ) ) {
+                    emitPrintf( depth - 1, "case '%c':\n", c->s );
                 } else {
                     emitPrintf( depth - 1, "case '%c':\n", c->c );
                 }
@@ -2218,7 +2215,9 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
 
     count = 0;
     for( c = head; c != NULL; c = c->sibling ) {
-        if( count == 0 && ( c->sensitive || (control & EC_CHAIN) && !c->chain ) ) {
+        if( count == 0 && ( IS_SENSITIVE( c )
+          || (control & EC_CHAIN)
+          && !c->chain ) ) {
             emitIfCode( c, depth, control );
             c->sel = false;
         } else {
