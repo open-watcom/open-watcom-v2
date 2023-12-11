@@ -1059,21 +1059,21 @@
 :usage. disable all extensions (strict ISO/ANSI C)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI Cのみ受け付けます)
 
-:option. za89
+:option. z\a89 z\A89
 :target. any
 :internal.
 :enumerate. iso
 :usage. use ISO/ANSI C89 standard (default)
 :jusage. use ISO/ANSI C89 standard (default)
 
-:option. za99
+:option. z\a99 z\A99
 :target. any
 :internal.
 :enumerate. iso
 :usage. use ISO/ANSI C99 standard
 :jusage. use ISO/ANSI C99 standard
 
-:option. zam
+:option. z\am z\Am
 :target. any
 :usage. disable all non-ISO compliant names (macros, symbols)
 :jusage. disable all non-ISO compliant names (macros, symbols)
