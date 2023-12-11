@@ -579,6 +579,7 @@
 
 :option. ft
 :target. any
+:enumerate. file_83
 :usage. check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックします
 
@@ -589,6 +590,7 @@
 
 :option. fx
 :target. any
+:enumerate. file_83
 :usage. do not check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックしません
 
@@ -668,6 +670,20 @@
 :option. hd
 :target. any
 :enumerate. dbg_output
+:usage. generate DWARF debugging information
+:jusage. DWARFデバッグ情報を生成します
+
+:option. hda
+:target. any
+:enumerate. dbg_output
+:internal.
+:usage. generate DWARF debugging information
+:jusage. DWARFデバッグ情報を生成します
+
+:option. hdg
+:target. any
+:enumerate. dbg_output
+:internal.
 :usage. generate DWARF debugging information
 :jusage. DWARFデバッグ情報を生成します
 
@@ -775,7 +791,7 @@
 
 :option. oe
 :target. any
-:number. checkOENumber 100
+:number. checkOENumber 20
 :usage. expand user functions inline (<num> controls max size)
 :jusage. ユーザ関数をインライン展開します(<num>は最大ｻｲｽﾞを制御します)
 
@@ -1075,8 +1091,8 @@
 
 :option. z\am z\Am
 :target. any
-:usage. disable all non-ISO compliant names (macros, symbols)
-:jusage. disable all non-ISO compliant names (macros, symbols)
+:usage. disable old non-ISO compliant names (macros, symbols)
+:jusage. disable old non-ISO compliant names (macros, symbols)
 
 :option. zc
 :target. i86 386
@@ -1259,7 +1275,7 @@
 
 :option. zt
 :target. i86 386
-:number. SetDataThreshold 256
+:number. checkDataThreshold 256
 :usage. far data threshold (i.e., larger objects go in far memory)
 :jusage. farデータ敷居値(つまり, 敷居値より大きいオブジェクトをfarメモリに置きます)
 

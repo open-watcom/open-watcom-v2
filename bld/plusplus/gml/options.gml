@@ -849,7 +849,7 @@
 
 :option. oe
 :target. any
-:number. checkOENumber 100
+:number. checkOENumber 20
 :usage.  expand user functions inline (<num> controls max size)
 :jusage. ユーザ関数をインライン展開します(<num>は最大ｻｲｽﾞを制御します)
 
