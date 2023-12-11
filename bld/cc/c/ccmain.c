@@ -382,7 +382,7 @@ static unsigned CppWidth = 0;
 static unsigned CommentChar = '\0';
 static bool     CppFirstChar = false;
 
-void SetCppWidth( unsigned width )
+void SetPPWidth( unsigned width )
 {
     CppWidth = width - 1;
 }

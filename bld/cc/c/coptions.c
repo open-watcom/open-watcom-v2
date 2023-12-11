@@ -1520,7 +1520,7 @@ static void Set_PW( void )
         OptValue = 20;
     if( OptValue > 10000 )
         OptValue = 10000;
-    SetCppWidth( OptValue );
+    SetPPWidth( OptValue );
 }
 static void Set_PreProcChar( void ) { PreProcChar = *OptScanPtr++; }
 

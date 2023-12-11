@@ -395,7 +395,7 @@ extern void         CppComment(int);
 extern bool         CppPrinting( void );
 extern void         CppPuts(const char *);
 extern void         CppPutsQuoted(const char *);
-extern void         SetCppWidth(unsigned);
+extern void         SetPPWidth(unsigned);
 extern void         CppPrtChar(int);
 extern void         CppPrtToken(TOKEN);
 extern bool         OpenSrcFile(const char *, src_file_type);

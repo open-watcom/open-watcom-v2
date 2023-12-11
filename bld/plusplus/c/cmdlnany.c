@@ -83,7 +83,7 @@ static void checkWarnLevel( unsigned *p )
 
 static void checkPPWidth( unsigned *p )
 {
-    *p = PpVerifyWidth( *p );
+    *p = VerifyPPWidth( *p );
 }
 
 static void checkTabWidth( unsigned *p )
@@ -991,12 +991,12 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->pw ) {
         CompFlags.cpp_mode = true;
-        PpSetWidth( data->pw_value );
+        SetPPWidth( data->pw_value );
     } else {
         // #line directives get screwed by wrapped lines but we don't want
         // to interfere with a user's setting of the width
         if( data->pl ) {
-            PpSetWidth( 0 );
+            SetPPWidth( 0 );
         }
     }
     if( CompFlags.cpp_mode ) {
