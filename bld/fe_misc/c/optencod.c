@@ -1976,11 +1976,16 @@ static bool markChainCode( CODESEQ *head, size_t level )
                     }
                 }
             } else if( c->option->name_len == c->option->chain->name_len + 1 ) {
+                c->chain = true;
+                rc = true;
+                /*
+                 * this is an extension, you can use two forms of input
+                 * with one character <option character> or <option character>+
+                 * even if only one character is allowed
+                 */
                 if( c->children != NULL && c->children->c == '+' ) {
                     c->children->chain = true;
                 }
-                c->chain = true;
-                rc = true;
             }
         }
     }
