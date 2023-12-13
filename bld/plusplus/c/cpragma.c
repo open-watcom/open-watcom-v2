@@ -120,13 +120,13 @@ static void fini                // MODULE COMPLETION
 
 INITDEFN( pragma_extref, init, fini );
 
-bool GetMsgNum( const char *str, unsigned *val )
+bool GetMsgNum( const char *str, MSG_NUM *msgnum )
 {
     if( tolower( *(unsigned char *)str ) == 'c' ) {
         /*
          * skip C compiler messages, prefixed by 'C' character
          */
-        *val = 0;
+        *msgnum = 0;
         return( true );
     }
     /*
@@ -136,32 +136,32 @@ bool GetMsgNum( const char *str, unsigned *val )
     if( tolower( *(unsigned char *)str ) == 'p' )
         str++;
     if( isdigit( *(unsigned char *)str ) ) {
-        *val = atol( str );
+        *msgnum = atol( str );
         return( true );
     }
     return( false );
 }
 
-static bool getMessageNum( unsigned *val )
+static bool getMessageNum( MSG_NUM *msgnum )
 {
     if( CurToken == T_CONSTANT ) {
-        *val = U32Fetch( Constant64 );
+        *msgnum = U32Fetch( Constant64 );
         return( true );
     } else if( CurToken == T_ID ) {
-        return( GetMsgNum( Buffer, val ) );
+        return( GetMsgNum( Buffer, msgnum ) );
     }
     return( false );
 }
 
-static bool grabMessageNum( unsigned *val )
+static bool grabMessageNum( MSG_NUM *msgnum )
 {
-    if( getMessageNum( val ) ) {
+    if( getMessageNum( msgnum ) ) {
         NextToken();
         return( true );
     }
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
-        if( getMessageNum( val ) ) {
+        if( getMessageNum( msgnum ) ) {
             NextToken();
             MustRecog( T_RIGHT_PAREN );
             return( true );
@@ -511,7 +511,7 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
 static bool pragWarning(        // PROCESS #PRAGMA WARNING
     void )
 {
-    unsigned msgnum;            // - message number
+    MSG_NUM msgnum;             // - message number
     unsigned level;             // - new level
     bool change_all;            // - true ==> change all levels
     bool ignore;
@@ -523,9 +523,7 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
     NextToken();
     if( CurToken == T_TIMES ) {
         change_all = true;
-    } else if( CurToken == T_CONSTANT ) {
-        msgnum = U32Fetch( Constant64 );
-    } else {
+    } else if( !getMessageNum( &msgnum ) ) {
         // ignore; MS or other vendor's #pragma
         ignore = true;
     }
@@ -556,7 +554,7 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
 static void pragEnableMessage(  // ENABLE WARNING MESSAGE
     void )
 {
-    unsigned msgnum;
+    MSG_NUM msgnum;
     bool error_occurred;
 
     error_occurred = false;
@@ -591,7 +589,7 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
 static void pragDisableMessage( // DISABLE WARNING MESSAGE
     void )
 {
-    unsigned msgnum;
+    MSG_NUM msgnum;
     bool error_occurred;
 
     error_occurred = false;

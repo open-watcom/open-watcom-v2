@@ -606,11 +606,11 @@ static bool debugOptionAfterOptOption( OPT_STORAGE *data )
 
 static void setMessageStatus( OPT_STRING *s, bool state )
 {
-    unsigned    num;
+    MSG_NUM     msgnum;
 
     while( s != NULL ) {
-        if( GetMsgNum( s->data, &num ) ) {
-            WarnEnableDisable( state, num );
+        if( GetMsgNum( s->data, &msgnum ) ) {
+            WarnEnableDisable( state, msgnum );
         } else {
             CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, 0 );
         }

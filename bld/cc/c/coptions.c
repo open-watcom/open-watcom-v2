@@ -1308,22 +1308,22 @@ static void SetWarningLevel( void ) { WngLevel = OptValue; if( WngLevel > WLEVEL
 static void Set_WCD( void )
 {
     char        *p;
-    msg_codes   num;
+    msg_codes   msgnum;
 
     p = CopyOfParm();
-    GetMsgNum( p, &num );
+    GetMsgNum( p, &msgnum );
     CMemFree( p );
-    WarnEnableDisable( false, num );
+    WarnEnableDisable( false, msgnum );
 }
 static void Set_WCE( void )
 {
     char        *p;
-    msg_codes   num;
+    msg_codes   msgnum;
 
     p = CopyOfParm();
-    GetMsgNum( p, &num );
+    GetMsgNum( p, &msgnum );
     CMemFree( p );
-    WarnEnableDisable( true, num );
+    WarnEnableDisable( true, msgnum );
 }
 
 #if _CPU == 386
