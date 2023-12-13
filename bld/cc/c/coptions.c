@@ -184,7 +184,7 @@ static void DefSwitchMacro( const char *str )
 {
     char buff[64];
 
-    Define_Macro( strcpy( strcpy( buff, "__SW_" ) + 5, str ) - 5 );
+    PreDefine_Macro( strcpy( strcpy( buff, "__SW_" ) + 5, str ) - 5 );
 }
 
 static void SetCharacterEncoding( void )
@@ -2031,7 +2031,7 @@ static const char *CollectEnvOrFileName( const char *str )
     return( str );
 }
 
-static char *ReadIndirectFile( void )
+static char *ReadIndirectFile( const char *fname )
 {
     char        *env;
     char        *str;
@@ -2040,7 +2040,7 @@ static char *ReadIndirectFile( void )
     char        ch;
 
     env = NULL;
-    fp = fopen( TokenBuf, "rb" );
+    fp = fopen( fname, "rb" );
     if( fp != NULL ) {
         fseek( fp, 0, SEEK_END );
         len = (size_t)ftell( fp );
@@ -2095,7 +2095,7 @@ static void ProcOptions( const char *str )
                     ptr = NULL;
                     penv = FEGetEnv( TokenBuf );
                     if( penv == NULL ) {
-                        ptr = ReadIndirectFile();
+                        ptr = ReadIndirectFile( TokenBuf );
                         penv = ptr;
                     }
                     buffers[level] = ptr;

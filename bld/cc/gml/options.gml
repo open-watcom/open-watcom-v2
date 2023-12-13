@@ -1231,20 +1231,26 @@
 :option. zk0 zk
 :target. any
 :enumerate. char_set
-:usage. Kanji
-:jusage. 2バイト文字サポート: 日本語
+:usage. Japanese (Kanji, CP 932)
+:jusage.
 
 :option. zk1
 :target. any
 :enumerate. char_set
-:usage. Chinese/Taiwanese
-:jusage. 2バイト文字サポート: 中国語/台湾語
+:usage. Chinese/Taiwanese (Traditional, CP 950)
+:jusage.
 
 :option. zk2
 :target. any
 :enumerate. char_set
-:usage. Korean
-:jusage. 2バイト文字サポート: 韓国語
+:usage. Korean (Wansung, CP 949)
+:jusage.
+
+:option. zk3
+:target. any
+:enumerate. char_set
+:usage. Chinese (Simplified, CP 936)
+:jusage.
 
 :option. zk0u
 :target. any
