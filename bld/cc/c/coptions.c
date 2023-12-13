@@ -67,6 +67,18 @@
 
 #define MAX_NESTING 32
 
+#if _CPU == 8086
+    #define MX86    "M_I86"
+    #define UMX86   "_M_I86"
+    #define IMX86   "M_I86"
+    #define UIMX86  "_M_I86"
+#elif _CPU == 386
+    #define MX86    "M_386"
+    #define UMX86   "_M_386"
+    #define IMX86   "M_I386"
+    #define UIMX86  "_M_I386"
+#endif
+
 enum encoding {
     ENC_ZK = 1,
     ENC_ZK0,
@@ -556,11 +568,40 @@ static void MacroDefs( void )
         DefSwitchMacro( "OM" );
     }
 #if _INTEL_CPU
-  #if _CPU == 8086
-    #define MX86 "M_I86"
-  #else
-    #define MX86 "M_386"
-  #endif
+    switch( SwData.mem ) {
+    case SW_MS:
+        DefSwitchMacro( "MS" );
+        Define_Macro( UMX86 "SM" );
+        Define_Macro( "__SMALL__" );
+        break;
+    case SW_MM:
+        DefSwitchMacro( "MM" );
+        Define_Macro( UMX86 "MM" );
+        Define_Macro( "__MEDIUM__" );
+        break;
+    case SW_MC:
+        DefSwitchMacro( "MC" );
+        Define_Macro( UMX86 "CM" );
+        Define_Macro( "__COMPACT__" );
+        break;
+    case SW_ML:
+        DefSwitchMacro( "ML" );
+        Define_Macro( UMX86 "LM" );
+        Define_Macro( "__LARGE__" );
+        break;
+    case SW_MH:
+        DefSwitchMacro( "MH" );
+        Define_Macro( UMX86 "HM" );
+        Define_Macro( "__HUGE__" );
+        break;
+    case SW_MF:
+        DefSwitchMacro( "MF" );
+        Define_Macro( UMX86 "FM" );
+        Define_Macro( "__FLAT__" );
+        break;
+    default:
+        break;
+    }
     if( CompFlags.non_iso_compliant_names_enabled ) {
         switch( SwData.mem ) {
         case SW_MS:
@@ -585,45 +626,7 @@ static void MacroDefs( void )
             break;
         }
     }
-  #if _CPU == 8086
-    #define X86 "_M_I86"
-  #else
-    #define X86 "_M_386"
-  #endif
-    switch( SwData.mem ) {
-    case SW_MS:
-        DefSwitchMacro( "MS" );
-        Define_Macro( X86 "SM" );
-        Define_Macro( "__SMALL__" );
-        break;
-    case SW_MM:
-        DefSwitchMacro( "MM" );
-        Define_Macro( X86 "MM" );
-        Define_Macro( "__MEDIUM__" );
-        break;
-    case SW_MC:
-        DefSwitchMacro( "MC" );
-        Define_Macro( X86 "CM" );
-        Define_Macro( "__COMPACT__" );
-        break;
-    case SW_ML:
-        DefSwitchMacro( "ML" );
-        Define_Macro( X86 "LM" );
-        Define_Macro( "__LARGE__" );
-        break;
-    case SW_MH:
-        DefSwitchMacro( "MH" );
-        Define_Macro( X86 "HM" );
-        Define_Macro( "__HUGE__" );
-        break;
-    case SW_MF:
-        DefSwitchMacro( "MF" );
-        Define_Macro( X86 "FM" );
-        Define_Macro( "__FLAT__" );
-        break;
-    default:
-        break;
-    }
+
     if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
         DefSwitchMacro( "ZFF" );
     } else {
@@ -873,30 +876,39 @@ static void AddIncList( const char *path_list )
     }
 }
 
+static bool MergeIncludeFromEnv( const char *env )
+{
+    const char  *env_value;
+
+    if( CompFlags.cpp_ignore_env )
+        return( false );
+    env_value = FEGetEnv( env );
+    if( env_value != NULL ) {
+        AddIncList( env_value );
+        return( true );
+    }
+    return( false );
+}
+
 void MergeInclude( void )
 /************************
  * must be called after GenCOptions to get req'd IncPathList
  */
 {
-    const char  *env_var;
-    char        *buff;
+    char    buff[128];
 
     if( !CompFlags.cpp_ignore_env ) {
-        buff = CMemAlloc( strlen( SwData.sys_name ) + LENLIT( "_" INC_VAR ) + 1 );
-        sprintf( buff, "%s_" INC_VAR, SwData.sys_name );
-        env_var = FEGetEnv( buff );
-        CMemFree( buff );
-        AddIncList( env_var );
+        strcpy( buff, SwData.sys_name );
+        strcat( buff, "_INCLUDE" );
+        MergeIncludeFromEnv( buff );
 
 #if _CPU == 386
-        env_var = FEGetEnv( "INC386" );
-        if( env_var == NULL ) {
-            env_var = FEGetEnv( INC_VAR );
+        if( !MergeIncludeFromEnv( "INC386" ) ) {
+            MergeIncludeFromEnv( "INCLUDE" );
         }
 #else
-        env_var = FEGetEnv( INC_VAR );
+        MergeIncludeFromEnv( "INCLUDE" );
 #endif
-        AddIncList( env_var );
     }
     SetTargetName( NULL );
 }
