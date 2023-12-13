@@ -1308,7 +1308,7 @@ static void SetWarningLevel( void ) { WngLevel = OptValue; if( WngLevel > WLEVEL
 static void Set_WCD( void )
 {
     char        *p;
-    unsigned    num;
+    msg_codes   num;
 
     p = CopyOfParm();
     GetMsgNum( p, &num );
@@ -1318,7 +1318,7 @@ static void Set_WCD( void )
 static void Set_WCE( void )
 {
     char        *p;
-    unsigned    num;
+    msg_codes   num;
 
     p = CopyOfParm();
     GetMsgNum( p, &num );
