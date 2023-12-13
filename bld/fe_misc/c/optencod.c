@@ -125,7 +125,7 @@ TAG( USAGEOGRP )
 
 #define BUFF_SIZE               1024
 
-#define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_path || (o)->is_special )
+#define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_path || (o)->is_text )
 #define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
 
 #define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
@@ -244,6 +244,7 @@ typedef struct option {
     boolbit         is_id             : 1;
     boolbit         is_char           : 1;
     boolbit         is_file           : 1;
+    boolbit         is_text           : 1;
     boolbit         is_optional       : 1;
     boolbit         is_path           : 1;
     boolbit         is_special        : 1;
@@ -1043,6 +1044,7 @@ static void doNUMBER( const char *p )
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_number = true;
         o->is_simple = false;
+        o->is_text = false;
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1311,6 +1313,7 @@ static void doSPECIAL( const char *p )
 
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_special = true;
+        o->is_text = true;
         o->is_simple = false;
     }
     if( *p == '\0' ) {
@@ -2028,7 +2031,11 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         ++depth;
     }
     flag.close_value_if = false;
-    if( o->is_number ) {
+    if( o->is_special ) {
+        emitPrintf( depth, "if( %s( &(data->%s) ) ) {\n", o->special_func, o->value_field_name );
+        ++depth;
+        flag.close_value_if = true;
+    } else if( o->is_number ) {
         if( o->default_specified ) {
             emitPrintf( depth, "if( " FN_NUMBER_DEFAULT "( &(data->%s ), %u ) ) {\n", o->value_field_name, o->number_default );
         } else if( o->is_multiple ) {
@@ -2068,10 +2075,6 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         } else {
             emitPrintf( depth, "if( " FN_PATH "( &(data->%s) ) ) {\n", o->value_field_name );
         }
-        ++depth;
-        flag.close_value_if = true;
-    } else if( o->is_special ) {
-        emitPrintf( depth, "if( %s( &(data->%s) ) ) {\n", o->special_func, o->value_field_name );
         ++depth;
         flag.close_value_if = true;
     }
@@ -2384,8 +2387,13 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
     }
     if( o->is_special ) {
         if( o->usage_argid != NULL ) {
-            strcpy( buf, o->usage_argid );
-            buf += strlen( buf );
+            if( o->is_optional ) {
+                buf = catArg( "[", buf, o->equal_char );
+                buf = catArg( o->usage_argid, buf, '\0' );
+                buf = catArg( "]", buf, '\0' );
+            } else {
+                buf = catArg( o->usage_argid, buf, '\0' );
+            }
         }
     } else if( o->usage_argid != NULL ) {
         if( o->is_optional ) {
