@@ -502,6 +502,7 @@
 :jusage.
 
 :option. eoo
+:target. i86 386
 :internal.
 :usage. emit OMF object files
 :jusage.
@@ -523,6 +524,23 @@
 :usage. emit Pentium profiling code
 :jusage. Pentiumプロファイリング･コードを生成します
 
+:option. et0
+:target. 386
+:usage.  emit Pentium-CTR0 profiling code
+:jusage. Pentium-CTR0プロファイリング･コードを生成します
+
+:option. etp
+:target. 386
+:internal.
+:usage.  emit Timing for Profiler
+:jusage. プロファイラのタイミングを出力します
+
+:option. esp
+:target. 386
+:internal.
+:usage.  emit Statement counting for Profiler
+:jusage. プロファイラ用ステートメント･カウンティングを出力します
+
 :option. ez
 :target. 386
 :usage. generate PharLap EZ-OMF object files
@@ -530,7 +548,7 @@
 
 :option. e
 :target. any
-:number. checkErrorLimit
+:number. checkErrorLimit 20
 :usage. set limit on number of error messages
 :jusage. エラーメッセージ数の制限を設定します
 
@@ -653,6 +671,13 @@
 :usage. enable Pentium FDIV bug check
 :jusage. Pentium FDIVチェックをします
 
+:option. fld
+:target. i86 386
+:nochain.
+:internal.
+:usage. enable 10-byte long double
+:jusage. enable 10-byte long double
+
 :option. g
 :target. i86 386
 :id. . <name>
@@ -703,6 +728,23 @@
 :target. any
 :usage. change char default from unsigned to signed
 :jusage. char型のデフォルトをunsignedからsignedに変更します
+
+:option. lc
+:target. dbg
+:usage. enable API logging
+:jusage. enable API logging
+
+:option. la
+:target. dbg
+:ntarget. i86 386
+:usage. enable Asm listing
+:jusage. enable Asm listing
+
+:option. lo
+:target. dbg
+:ntarget. i86 386
+:usage. enable OWL logging
+:jusage. enable OWL logging
 
 :usageogrp. m Memory model
 :jusage. メモリ・モデル
@@ -937,10 +979,23 @@
 :usage. save/restore segment registers across calls
 :jusage. 関数呼び出しの前後でセグメントレジスタを退避/リストアします
 
+:option. re
+:target. 386
+:internal.
+:usage.  special Neutrino R/W data access code generation
+:jusage.
+
 :option. ri
 :target. i86 386
 :usage. return chars and shorts as ints
 :jusage. 全ての関数の引数と戻り値をint型に変換します
+
+:option. rod
+:target. any
+:path.
+:internal.
+:usage.  specified <path> contains read-only files
+:jusage. 指定された<path>には読み込み専用ファイルが含まれています
 
 :option. s
 :target. any
@@ -963,7 +1018,7 @@
 :jusage. まず最初にSSを通してスタック・タッチします
 
 :option. tp
-:target. any
+:target. dbg
 :id. . <name>
 :usage. set #pragma on( <name> )
 :jusage. #pragma on( <name> )を設定します
@@ -1001,15 +1056,15 @@
 :target. any
 :id.
 :multiple.
-:usage. disable warning message <num>
-:jusage. 警告制御: 警告メッセージ<num>を禁止します
+:usage. disable warning message <id>
+:jusage. 警告制御: 警告メッセージ<id>を禁止します
 
 :option. wce
 :target. any
 :id.
 :multiple.
-:usage. enable warning message <num>
-:jusage. 警告制御: 警告メッセージ <num> の表示をします
+:usage. enable warning message <id>
+:jusage. 警告制御: 警告メッセージ <id> の表示をします
 
 :option. we
 :target. any
@@ -1079,13 +1134,6 @@
 :usage. disable all extensions (strict ISO/ANSI C)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI Cのみ受け付けます)
 
-:option. z\a89 z\A89
-:target. any
-:internal.
-:enumerate. iso
-:usage. use ISO/ANSI C89 standard (default)
-:jusage. use ISO/ANSI C89 standard (default)
-
 :option. z\a99 z\A99
 :target. any
 :internal.
@@ -1097,6 +1145,13 @@
 :target. any
 :usage. disable old non-ISO compliant names (macros, symbols)
 :jusage. disable old non-ISO compliant names (macros, symbols)
+
+:option. z\astd z\Astd
+:target. any
+:special. checkSTD =c99
+:number. . 0
+:usage. use ISO/ANSI C99 standard
+:jusage. use ISO/ANSI C99 standard
 
 :option. zc
 :target. i86 386
@@ -1235,6 +1290,11 @@
 :target. any
 :usage. remove automatically inserted symbols
 :jusage.
+
+:option. zi
+:target. dbg
+:usage. dump informational statistics to stdout
+:jusage. 情報として統計値をstdoutに出力します
 
 :option. zm
 :target. any
