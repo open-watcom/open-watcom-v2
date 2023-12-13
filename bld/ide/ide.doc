@@ -582,6 +582,16 @@ III. Reference
 Appendix A: IDE and Batch IDE configuration file (ide.cfg)
 ----------------------------------------------------------
 
+    Current version of configuration files is 5.
+    Version 5 fix a problem with Switch texts which were part of key value, 
+    therefore if any text were changed then cfg file was not compatible
+    with any previous version or subversions and it was not simply fixable.
+    Now text are replaced by unique key values which are necessary for background
+    processing, that they need not change anymore. 
+    For GUI IDE these keys are translated to real text to be displayed in GUI.
+    In configuration are new items for thanslation key to real text, that 
+    translation is possible etc.
+    
     This appendix describes the syntax of the commands used in the
     IDE configuration file (ide.cfg).  The example listing included
     is representative of those found in the actual ide.cfg file included
