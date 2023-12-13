@@ -132,7 +132,7 @@ char _viperRequest[] = { "IDE Request" };
 char _viperInfo[] = { "IDE Information" };
 
 #ifdef __WATCOMC__
-#pragma disable_message( 438 )
+#pragma disable_message( P438 )
 #endif
 
 const char* _viperDesc[] = {

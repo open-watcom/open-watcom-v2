@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 
 #ifdef __WATCOMC__
 // disable "integral value may be truncated" warning
-#pragma disable_message( 389 )
+#pragma disable_message( P389 )
 #endif
 
 #include "chfile.h"

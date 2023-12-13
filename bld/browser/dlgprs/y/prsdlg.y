@@ -6,7 +6,7 @@
     #include "styles.h"
 
 #ifdef __WATCOMC__    
-    #pragma warning 17 5        // shut off the unreferenced goto warning
+    #pragma warning P17 5        // shut off the unreferenced goto warning
 #endif
 
     #define YYPARSER DialogParser

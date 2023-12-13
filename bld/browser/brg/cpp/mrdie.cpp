@@ -427,7 +427,7 @@ void MergeDIE::writeSelf( MergeInfoSection * sect, MergeFile & outFile,
 #endif
 
 // Complain about defining trivial destructor inside class
-#pragma disable_message( 657 )
+#pragma disable_message( P657 )
 
 MergeDIE::~MergeDIE()
 //-------------------

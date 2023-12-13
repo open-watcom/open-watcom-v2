@@ -5,8 +5,8 @@
     #include "assure.h"
     #include "opgram.h"
 
-#pragma warning 17 5    // shut off the unreferenced goto warning
-#pragma warning 389 5   // shut off the integral truncated warning
+#pragma warning P17 5    // shut off the unreferenced goto warning
+#pragma warning P389 5   // shut off the integral truncated warning
 
 %}
 

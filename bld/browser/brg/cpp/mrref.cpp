@@ -364,7 +364,7 @@ void MergeRefSection::skipDeadScope( MergeFile * file,
 }
 
 // Complain about defining trivial destructor inside class
-#pragma disable_message( 657 )
+#pragma disable_message( P657 )
 
 MergeRefSection::~MergeRefSection()
 //--------------------------------

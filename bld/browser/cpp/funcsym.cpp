@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,9 @@
 
 const int POOLSIZE = 32;
 
-#pragma disable_message( 549 )      // sizeof contains compiler genned info.
+#pragma disable_message( P549 )      // sizeof contains compiler genned info.
 MemoryPool FunctionSym::_pool( sizeof( FunctionSym ), "FunctionSym", POOLSIZE );
-#pragma enable_message( 549 )
+#pragma enable_message( P549 )
 
 struct FuncSearchData {
     FunctionSym *   me;

@@ -38,7 +38,7 @@
 #ifndef __ELFFILE_H__
 
 // disable "integral value may be truncated" warning
-#pragma disable_message( 389 )
+#pragma disable_message( P389 )
 
 #include <time.h>
 #include "watcom.h"

@@ -35,7 +35,7 @@
 
 #ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
-#pragma disable_message( 665 )
+#pragma disable_message( P665 )
 #endif
 
 #include <vector>

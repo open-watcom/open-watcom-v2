@@ -36,7 +36,7 @@
 
 #include <assert.h>
 
-#pragma disable_message( 433 )      // mangled name truncated
+#pragma disable_message( P433 )      // mangled name truncated
 
 template <class Type> class              WCValSList;
 template <class Type, class FType> class WCStack;

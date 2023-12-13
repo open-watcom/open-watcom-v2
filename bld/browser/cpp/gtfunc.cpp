@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,12 +50,12 @@
 const int PTRPOOLSIZE = 128;
 const int NODEPOOLSIZE = 64;
 
-#pragma disable_message( 549 )  // sizeof contains compiler genned info.
+#pragma disable_message( P549 )  // sizeof contains compiler genned info.
 MemoryPool TreeFuncPtr::_pool( sizeof( TreeFuncPtr ), "TreeFuncPtr",
                                 PTRPOOLSIZE );
 MemoryPool TreeFuncNode::_pool( sizeof( TreeFuncNode ), "TreeFuncNode",
                                 NODEPOOLSIZE );
-#pragma enable_message( 549 )
+#pragma enable_message( P549 )
 
 /*---------------------------- TreeFuncPtr --------------------------*/
 

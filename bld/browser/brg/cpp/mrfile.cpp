@@ -463,7 +463,7 @@ uint_32 MergeFile::readForm( dr_section sect, uint_32& off, uint_32 form,
 
 
 // Complain about defining trivial destructor inside class
-#pragma disable_message( 657 )
+#pragma disable_message( P657 )
 
 MergeFile::~MergeFile()
 //---------------------
