@@ -221,7 +221,7 @@ static void FreeUndefNames( void )
 }
 
 
-static void Define_Macros_Extension( void )
+static void PreDefine_Macros_Extension( void )
 {
     PreDefine_Macro( "_far16=__far16" );
     PreDefine_Macro( "near=__near" );
@@ -279,7 +279,7 @@ void MiscMacroDefs( void )
         }
     }
     if( CompFlags.non_iso_compliant_names_enabled ) {
-        Define_Macros_Extension();
+        PreDefine_Macros_Extension();
     }
     if( CompFlags.signed_char ) {
         Define_Macro( "__CHAR_SIGNED__" );
@@ -288,7 +288,7 @@ void MiscMacroDefs( void )
         Define_Macro( "__RENT__" );
     }
     PreDefine_Macro( "_PUSHPOP_SUPPORTED" );
-    PreDefine_Macro( "__STDC_NO_VLA__" );
+    Define_Macro( "__STDC_NO_VLA__" );
     PreDefine_Macro( CompilerID );
     FreeUndefNames();
 }

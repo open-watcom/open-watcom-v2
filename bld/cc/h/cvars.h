@@ -682,6 +682,7 @@ extern void         WarnEnableDisable( bool enabled, msg_codes msgnum );
 extern void         AddLibraryName( const char *, char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
+extern unsigned     VerifyPackAmount( unsigned amount );
 extern void         SetPackAmount( unsigned amount );
 extern bool         GetPragmaAuxAliasInfo( void );
 extern aux_info     *PragmaAuxAlias( const char *name );

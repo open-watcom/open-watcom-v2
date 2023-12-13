@@ -839,20 +839,27 @@ static void pragComment( void )
     PPCTL_DISABLE_MACROS();
 }
 
+unsigned VerifyPackAmount( unsigned amount )
+/******************************************/
+{
+    if( amount <= 1 ) {
+        amount = 1;
+    } else if( amount <= 2 ) {
+        amount = 2;
+    } else if( amount <= 4 ) {
+        amount = 4;
+    } else if( amount <= 8 ) {
+        amount = 8;
+    } else {
+        amount = 16;
+    }
+    return( amount );
+}
+
 void SetPackAmount( unsigned amount )
 /***********************************/
 {
-    if( amount <= 1 ) {
-        PackAmount = 1;
-    } else if( amount <= 2 ) {
-        PackAmount = 2;
-    } else if( amount <= 4 ) {
-        PackAmount = 4;
-    } else if( amount <= 8 ) {
-        PackAmount = 8;
-    } else {
-        PackAmount = 16;
-    }
+    PackAmount = VerifyPackAmount( amount );
 }
 
 static void getPackArgs( void )

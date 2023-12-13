@@ -677,6 +677,7 @@ typedef struct global_comp_flags {  // things that live across compiles
 } global_comp_flags;
 
 typedef enum {
+    CSTD_NONE,
     CSTD_C89,
     CSTD_C99,
     CSTD_C23
