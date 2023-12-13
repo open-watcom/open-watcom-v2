@@ -1040,7 +1040,6 @@ static void DoCCompile( char **cmdline )
         }
         MakePgmName();
         DelErrFile();               /* delete old error file */
-        MergeInclude();             /* merge INCLUDE= with IncPathList */
         CPragmaInit();              /* memory model is known now */
 #if _CPU == 370
         ParseAuxFile();

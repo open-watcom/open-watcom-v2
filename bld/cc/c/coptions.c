@@ -876,7 +876,8 @@ static void AddIncList( const char *path_list )
     }
 }
 
-static bool MergeIncludeFromEnv( const char *env )
+bool MergeIncludeFromEnv( const char *env )
+/*****************************************/
 {
     const char  *env_value;
 
@@ -889,30 +890,6 @@ static bool MergeIncludeFromEnv( const char *env )
     }
     return( false );
 }
-
-void MergeInclude( void )
-/************************
- * must be called after GenCOptions to get req'd IncPathList
- */
-{
-    char    buff[128];
-
-    if( !CompFlags.cpp_ignore_env ) {
-        strcpy( buff, SwData.sys_name );
-        strcat( buff, "_INCLUDE" );
-        MergeIncludeFromEnv( buff );
-
-#if _CPU == 386
-        if( !MergeIncludeFromEnv( "INC386" ) ) {
-            MergeIncludeFromEnv( "INCLUDE" );
-        }
-#else
-        MergeIncludeFromEnv( "INCLUDE" );
-#endif
-    }
-    SetTargetName( NULL );
-}
-
 
 static bool OptionDelimiter( char c )
 {
@@ -2337,6 +2314,29 @@ static void SetDebug( void )
     }
 }
 
+static void MergeInclude( void )
+/*******************************
+ * must be called after GenCOptions to get req'd IncPathList
+ */
+{
+    char    buff[128];
+
+    if( !CompFlags.cpp_ignore_env ) {
+        strcpy( buff, SwData.sys_name );
+        strcat( buff, "_INCLUDE" );
+        MergeIncludeFromEnv( buff );
+
+#if _CPU == 386
+        if( !MergeIncludeFromEnv( "INC386" ) ) {
+            MergeIncludeFromEnv( "INCLUDE" );
+        }
+#else
+        MergeIncludeFromEnv( "INCLUDE" );
+#endif
+    }
+    SetTargetName( NULL );
+}
+
 void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); /* re-useable */
@@ -2416,6 +2416,7 @@ void GenCOptions( char **cmdline )
         SetAuxStackConventions();
   #endif
 #endif
+    MergeInclude();
     MacroDefs();
     MiscMacroDefs();
 }

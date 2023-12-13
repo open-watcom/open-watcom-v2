@@ -651,7 +651,7 @@ extern unsigned     GetMsgIndex( msg_codes msgnum );
 /* coptions */
 extern bool         EqualChar(int);
 extern void         GenCOptions(char **);
-extern void         MergeInclude( void );
+extern bool         MergeIncludeFromEnv( const char *env );
 
 /* cpragma */
 extern void         CPragmaInit( void );
