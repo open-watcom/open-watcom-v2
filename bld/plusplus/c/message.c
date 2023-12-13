@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -879,6 +879,8 @@ void WarnEnableDisable(     // ENABLE/DISABLE A MESSAGE
     bool enabled,           // - new status
     MSG_NUM msgnum )        // - message number
 {
+    if( msgnum == 0 )
+        return;
     if( msgnum >= ARRAY_SIZE( msg_level ) ) {
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
@@ -901,6 +903,8 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
     unsigned level,             // - new level
     MSG_NUM msgnum )            // - message number
 {
+    if( msgnum == 0 )
+        return;
     if( msgnum >= ARRAY_SIZE( msg_level ) ) {
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;

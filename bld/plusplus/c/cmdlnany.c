@@ -604,6 +604,20 @@ static bool debugOptionAfterOptOption( OPT_STORAGE *data )
     return( false );
 }
 
+static void setMessageStatus( OPT_STRING *s, bool state )
+{
+    unsigned    num;
+
+    while( s != NULL ) {
+        if( GetMsgNum( s->data, &num ) ) {
+            WarnEnableDisable( state, num );
+        } else {
+            CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, 0 );
+        }
+        s = s->next;
+    }
+}
+
 static void analyseAnyTargetOptions( OPT_STORAGE *data )
 {
     // quickly do the quiet option so the banner can be printed
@@ -1022,16 +1036,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.dump_prototypes = true;
     }
     if( data->wcd ) {
-        OPT_NUMBER *n;
-        for( n = data->wcd_value; n != NULL; n = n->next ) {
-            WarnEnableDisable( false, n->number );
-        }
+        setMessageStatus( data->wcd_value, false );
     }
     if( data->wce ) {
-        OPT_NUMBER *n;
-        for( n = data->wce_value; n != NULL; n = n->next ) {
-            WarnEnableDisable( true, n->number );
-        }
+        setMessageStatus( data->wce_value, true );
     }
     if( data->we ) {
         CompFlags.warnings_cause_bad_exit = true;

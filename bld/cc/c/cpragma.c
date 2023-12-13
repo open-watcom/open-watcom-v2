@@ -1034,6 +1034,42 @@ static void changeStatus( bool enabled, int msg_index )
     }
 }
 
+bool GetMsgNum( const char *str, msg_codes *val )
+/***********************************************/
+{
+    /*
+     * skip, C++ compiler messages, prefixed by 'P' character
+     */
+    if( tolower( *(unsigned char *)str ) == 'p' ) {
+        *val = 0;
+        return( true );
+    }
+    /*
+     * process C compiler messages, prefixed by 'C' character
+     * or old messages without prefix which can be C or C++ message
+     * it is for backward compatibility
+     */
+    if( tolower( *(unsigned char *)str ) == 'c' )
+        str++;
+    if( isdigit( *(unsigned char *)str ) ) {
+        *val = atol( str );
+        return( true );
+    }
+    return( false );
+}
+
+static bool getMessageNum( msg_codes *val )
+/*****************************************/
+{
+    if( CurToken == T_CONSTANT ) {
+        *val = Constant;
+        return( true );
+    } else if( CurToken == T_ID ) {
+        return( GetMsgNum( Buffer, val ) );
+    }
+    return( false );
+}
+
 static void warnChangeLevel( unsigned level, msg_codes msgnum )
 /**************************************************************
  * CHANGE WARNING LEVEL FOR A MESSAGE
@@ -1041,6 +1077,8 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
 {
     unsigned    msg_index;
 
+    if( msgnum == 0 )
+        return;
     msg_index = GetMsgIndex( msgnum );
     if( IS_MSGIDX_INVALID( msg_index ) ) {
         CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
@@ -1085,6 +1123,8 @@ void WarnEnableDisable( bool enabled, msg_codes msgnum )
 {
     unsigned    msg_index;
 
+    if( msgnum == 0 )
+        return;
     msg_index = GetMsgIndex( msgnum );
     if( IS_MSGIDX_INVALID( msg_index ) ) {
         CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
@@ -1116,7 +1156,7 @@ static bool pragWarning( void )
  * "level==0" implies warning will be treated as an error
  */
 {
-    unsigned msgnum;            // - message number
+    msg_codes msgnum;           // - message number
     unsigned level;             // - new level
     bool change_all;            // - true ==> change all levels
     bool ignore;
@@ -1128,9 +1168,7 @@ static bool pragWarning( void )
     NextToken();
     if( CurToken == T_TIMES ) {
         change_all = true;
-    } else if( CurToken == T_CONSTANT ) {
-        msgnum = Constant;
-    } else {
+    } else if( !getMessageNum( &msgnum ) ) {
         /*
          * ignore; MS or other vendor's #pragma
          */
@@ -1165,12 +1203,14 @@ static void pragEnableDisableMessage( bool enabled )
  * disable/enable display of selected message number
  */
 {
+    msg_codes msgnum;
+
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
-        while( CurToken == T_CONSTANT ) {
-            WarnEnableDisable( enabled, Constant );
+        while( getMessageNum( &msgnum ) ) {
+            WarnEnableDisable( enabled, msgnum );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();

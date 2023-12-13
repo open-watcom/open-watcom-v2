@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,6 +194,10 @@ void AsmSysPCHWriteCode(        // write code sequence to PCH
 ;
 void AsmSysPCHReadCode(         // read code sequence from PCH
     AUX_INFO *info )            // - code sequence
+;
+bool GetMsgNum(                 // decode C++ message number from string
+    const char *str,            // - input string
+    unsigned *val )             // - output message number
 ;
 const char *SkipUnderscorePrefix(
     const char *str )

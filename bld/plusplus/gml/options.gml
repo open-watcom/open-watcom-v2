@@ -1079,16 +1079,20 @@
 :usage.  set warning level number
 :jusage. 警告レベル番号を設定します
 
+:cmt.
+:cmt. wcd  and wce uses list of values which are 'P' prefix and C++ compiler
+:cmt. message number without any prefix
+:cmt.
 :option. wcd
 :target. any
-:number.
+:id.
 :multiple.
 :usage.  disable warning message <num>
 :jusage. 警告制御: 警告メッセージ<num>を禁止します
 
 :option. wce
 :target. any
-:number.
+:id.
 :multiple.
 :usage.  enable warning message <num>
 :jusage. 警告制御: 警告メッセージ <num> の表示をします

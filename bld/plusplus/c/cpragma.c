@@ -120,6 +120,57 @@ static void fini                // MODULE COMPLETION
 
 INITDEFN( pragma_extref, init, fini );
 
+bool GetMsgNum( const char *str, unsigned *val )
+{
+    if( tolower( *(unsigned char *)str ) == 'c' ) {
+        /*
+         * skip C compiler messages, prefixed by 'C' character
+         */
+        *val = 0;
+        return( true );
+    }
+    /*
+     * process C++ compiler messages, prefixed by 'P' character
+     * or old messages, may be C or C+++ message
+     */
+    if( tolower( *(unsigned char *)str ) == 'p' )
+        str++;
+    if( isdigit( *(unsigned char *)str ) ) {
+        *val = atol( str );
+        return( true );
+    }
+    return( false );
+}
+
+static bool getMessageNum( unsigned *val )
+{
+    if( CurToken == T_CONSTANT ) {
+        *val = U32Fetch( Constant64 );
+        return( true );
+    } else if( CurToken == T_ID ) {
+        return( GetMsgNum( Buffer, val ) );
+    }
+    return( false );
+}
+
+static bool grabMessageNum( unsigned *val )
+{
+    if( getMessageNum( val ) ) {
+        NextToken();
+        return( true );
+    }
+    if( CurToken == T_LEFT_PAREN ) {
+        NextToken();
+        if( getMessageNum( val ) ) {
+            NextToken();
+            MustRecog( T_RIGHT_PAREN );
+            return( true );
+        }
+    }
+    NextToken();
+    return( false );
+}
+
 static bool grabNum( unsigned *val )
 {
     if( CurToken == T_CONSTANT ) {
@@ -513,7 +564,7 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
     NextToken();
     MustRecog( T_LEFT_PAREN );
     for( ;; ) {
-        if( !grabNum( &msgnum ) ) {
+        if( !grabMessageNum( &msgnum ) ) {
             CErr1( ERR_PRAG_ENABLE_MESSAGE );
             error_occurred = true;
         }
@@ -548,7 +599,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
     NextToken();
     MustRecog( T_LEFT_PAREN );
     for( ;; ) {
-        if( !grabNum( &msgnum ) ) {
+        if( !grabMessageNum( &msgnum ) ) {
             CErr1( ERR_PRAG_DISABLE_MESSAGE );
             error_occurred = true;
         }

@@ -677,6 +677,7 @@ extern void         CreateAux( const char * );
 extern void         CreateAuxInlineFunc( bool too_many_bytes );
 extern void         SetCurrInfo( const char * );
 extern void         XferPragInfo( const char *, const char * );
+extern bool         GetMsgNum( const char *str, msg_codes *val );
 extern void         WarnEnableDisable( bool enabled, msg_codes msgnum );
 extern void         AddLibraryName( const char *, char );
 extern void         AddExtRefN( const char * );

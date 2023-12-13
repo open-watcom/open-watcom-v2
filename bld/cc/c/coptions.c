@@ -1305,8 +1305,26 @@ static void Set_WO( void )          { CompFlags.using_overlays = true; }
 static void Set_WPX( void )         { Check_global_prototype = true; }
 static void Set_WX( void )          { WngLevel = WLEVEL_WX; }
 static void SetWarningLevel( void ) { WngLevel = OptValue; if( WngLevel > WLEVEL_MAX ) WngLevel = WLEVEL_MAX; }
-static void Set_WCD( void )         { WarnEnableDisable( false, OptValue ); }
-static void Set_WCE( void )         { WarnEnableDisable( true, OptValue ); }
+static void Set_WCD( void )
+{
+    char        *p;
+    unsigned    num;
+
+    p = CopyOfParm();
+    GetMsgNum( p, &num );
+    CMemFree( p );
+    WarnEnableDisable( false, num );
+}
+static void Set_WCE( void )
+{
+    char        *p;
+    unsigned    num;
+
+    p = CopyOfParm();
+    GetMsgNum( p, &num );
+    CMemFree( p );
+    WarnEnableDisable( true, num );
+}
 
 #if _CPU == 386
 static void Set_XGV( void )         { TargetSwitches |= CGSW_X86_INDEXED_GLOBALS; }
@@ -1798,8 +1816,8 @@ static struct option const CFE_Options[] = {
     { "tp=$",   0,              Set_TP },
     { "u$",     0,              Set_U },
     { "v",      0,              Set_V },
-    { "wcd=#",  0,              Set_WCD },
-    { "wce=#",  0,              Set_WCE },
+    { "wcd=$",  0,              Set_WCD },
+    { "wce=$",  0,              Set_WCE },
     { "we",     0,              Set_WE },
     { "wo",     0,              Set_WO },
     { "wpx",    0,              Set_WPX },
