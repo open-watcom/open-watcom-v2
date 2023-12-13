@@ -157,8 +157,8 @@ bldonly_osx = 1
 
 nested_wmake = wmake
 
-watcom_common_cflags   =-wx-wce=310
-watcom_common_cxxflags =-w8-wce=579
+watcom_common_cflags   =-wx-wce=C310
+watcom_common_cxxflags =-w8-wce=P579
 
 bld_dft_oflags = -ox
 dft_oflags     = -oaxt

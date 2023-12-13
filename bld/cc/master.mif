@@ -118,6 +118,7 @@ prebuild_objs = &
     msgattr.gh &
     weights.gh &
     keywords.gh &
+    cmdlnprs.gh &
     $(asminline_deps) &
     code$(target_cpu).gh &
     $(bin_intname)01.int
@@ -229,6 +230,6 @@ optencod_targets = $(target_cpu) $(host_os)
 optencod_targets += dbg
 !endif
 
-usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
+cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
     @%make echo_optencod
     $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh $(optencod_targets)
