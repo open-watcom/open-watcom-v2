@@ -1331,6 +1331,22 @@ static void Set_ZA23( void )
     CompVars.cstd = CSTD_C23;
 }
 
+static void Set_ZASTD( void )
+{
+    char        *p;
+
+    p = strupr( CopyOfParm() );
+    if( strcmp( p, "C89" ) == 0 ) {
+        CompVars.cstd = CSTD_C89;
+    } else if( strcmp( p, "C99" ) == 0 ) {
+        CompVars.cstd = CSTD_C99;
+    } else if( strcmp( p, "C23" ) == 0 ) {
+        CompVars.cstd = CSTD_C23;
+    }
+    CMemFree( p );
+}
+
+
 static void Set_ZA( void )
 {
     CompFlags.extensions_enabled = false;
@@ -1809,6 +1825,7 @@ static struct option const CFE_Options[] = {
     { "xd",     0,              Set_XD },
 #endif
     { "xx",     0,              Set_XX },
+    { "zastd=$",0,              Set_ZASTD },
     { "za89",   0,              Set_ZA89 },
     { "za99",   0,              Set_ZA99 },
     { "za23",   0,              Set_ZA23 },
