@@ -960,7 +960,11 @@ static char *GetAFileName( void )
 static void SetStructPack( void )   { CompFlags.align_structs_on_qwords = true; }
 #endif
 
-static void Set_ZP( void )          { SetPackAmount( OptValue ); }
+static void Set_ZP( void )
+{
+    SetPackAmount( OptValue );
+    GblPackAmount = PackAmount;
+}
 static void Set_DbgFmt( void )      { SwData.dbg_fmt = OptValue; }
 
 #if _INTEL_CPU
@@ -2394,7 +2398,6 @@ void GenCOptions( char **cmdline )
      * print banner if -zq not specified
      */
     CBanner();
-    GblPackAmount = PackAmount;
     SetDebug();
     SetTargetSystem();
     SetFinalTargetSystem();
