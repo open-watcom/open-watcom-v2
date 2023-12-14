@@ -61,7 +61,7 @@
 
 #define SET_PEGGED( r, b )          SwData.peg_##r##s_used = true; SwData.peg_##r##s_on = b;
 #define CHECK_SET_PEGGED( r, b )    if( !SwData.peg_##r##s_used ) { SwData.peg_##r##s_used = true; SwData.peg_##r##s_on = b; }
-#define CHECK_TO_PEGGED( r )        if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
+#define CHECK_PRESET_PEGGED( r )    if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
 
 #define INC_VAR "INCLUDE"
 
@@ -441,14 +441,6 @@ static void SetFinalTargetSystem( void )
   #else
         PreDefine_Macro( "__WINDOWS_386__" );
         CHECK_SET_PEGGED( f, false )
-        switch( SwData.fpt ) {
-        case SW_FPT_DEF:
-        case SW_FPT_EMU:
-            SwData.fpt = SW_FPT_INLINE;
-            break;
-        default:
-            break;
-        }
   #endif
         break;
 #endif
@@ -493,8 +485,6 @@ static void SetGenSwitches( void )
         SwData.fpu = SW_FPU0;
     if( SwData.mem == SW_M_DEF )
         SwData.mem = SW_MS;
-    CHECK_TO_PEGGED( f );
-    CHECK_TO_PEGGED( g );
   #else
     if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU6;
@@ -523,6 +513,13 @@ static void SetGenSwitches( void )
     switch( SwData.fpt ) {
     case SW_FPT_DEF:
     case SW_FPT_EMU:
+  #if _CPU == 386
+        if( TargetSystem == TS_WINDOWS ) {
+            SwData.fpt = SW_FPT_INLINE;
+            SET_FPU_INLINE( ProcRevision );
+            break;
+        }
+  #endif
         SwData.fpt = SW_FPT_EMU;
         SET_FPU_EMU( ProcRevision );
         break;
@@ -537,16 +534,16 @@ static void SetGenSwitches( void )
     switch( SwData.mem ) {
     case SW_MF:
         TargetSwitches |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
-        CHECK_TO_PEGGED( d );
-        CHECK_TO_PEGGED( e );
-        CHECK_TO_PEGGED( f );
+        CHECK_PRESET_PEGGED( d );
+        CHECK_PRESET_PEGGED( e );
+        CHECK_PRESET_PEGGED( f );
     case SW_MS:
         TargetSwitches |= CGSW_X86_CHEAP_POINTER;
-        CHECK_TO_PEGGED( d );
+        CHECK_PRESET_PEGGED( d );
         break;
     case SW_MM:
         TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
-        CHECK_TO_PEGGED( d );
+        CHECK_PRESET_PEGGED( d );
         break;
     case SW_MC:
         TargetSwitches |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
