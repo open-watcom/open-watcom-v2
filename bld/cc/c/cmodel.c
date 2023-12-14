@@ -297,6 +297,7 @@ void InitModInfo( void )
 {
     GenSwitches = 0;
     TargetSwitches = 0;
+    TargetSystem = TS_OTHER;
     DataThreshold = TARGET_INT_MAX;
     OptSize = 50;
     UndefNames = NULL;
@@ -306,22 +307,13 @@ void InitModInfo( void )
     DependFileName = NULL;
     DependForceSlash = 0;
     ModuleName = NULL;
+    CodeClassName = NULL;
+    PCH_FileName = NULL;
     ErrLimit = 20;
     WngLevel = WLEVEL_DEFAULT;
-#if _INTEL_CPU
-  #if _CPU == 8086
-    PackAmount = TARGET_INT;     /* pack structs on word boundaries */
-  #else /* _CPU == 386 */
-    PackAmount = 8;
-  #endif
-#else /* _RISC_CPU */
-    CompFlags.make_enums_an_int = true;     // make enums ints
-    CompFlags.original_enum_setting = true;
-    PackAmount = 8;
-#endif
-    PreProcChar = '#';
 
-    CompVars.cstd                               = CSTD_C89;
+    PreProcChar = '#';
+    CompVars.cstd = CSTD_C89;
 
     CompFlags.check_syntax                      = false;
     CompFlags.signed_char                       = false;
@@ -360,6 +352,4 @@ void InitModInfo( void )
     TOGGLE( check_stack ) = true;
     TOGGLE( unreferenced ) = true;
     TOGGLE( reuse_duplicate_strings ) = true;
-
-    SetAuxWatcallInfo();
 }

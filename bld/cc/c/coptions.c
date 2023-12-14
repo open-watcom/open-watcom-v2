@@ -2182,26 +2182,34 @@ static void ProcOptions( const char *str )
 
 static void InitCPUModInfo( void )
 {
-    CodeClassName = NULL;
-    PCH_FileName = NULL;
-    TargetSwitches = 0;
-    TargetSystem = TS_OTHER;
-    GenSwitches = CGSW_GEN_MEMORY_LOW_FAILS;
+    SetAuxWatcallInfo();
+
+    GenSwitches |= CGSW_GEN_MEMORY_LOW_FAILS;
+    DataPtrSize = TARGET_POINTER;
+    CodePtrSize = TARGET_POINTER;
 #if _INTEL_CPU
+  #if _CPU == 8086
+    PackAmount = TARGET_INT;                /* pack structs on word boundaries */
+  #else
+    PackAmount = 8;
+  #endif
     Stack87 = 8;
+    CompFlags.register_conventions = true;
     TextSegName = "";
     DataSegName = "";
     GenCodeGroup = "";
-    CompFlags.register_conventions = true;
 #elif _RISC_CPU || _CPU == _SPARC
+    PackAmount = 8;
+    CompFlags.make_enums_an_int = true;     /* make enums ints */
+    CompFlags.original_enum_setting = true;
     TextSegName = "";
     DataSegName = ".data";
     GenCodeGroup = "";
-    DataPtrSize = TARGET_POINTER;
-    CodePtrSize = TARGET_POINTER;
-#else
+#else /* unknown */
     #error InitCPUModInfo not configured for system
 #endif
+    GblPackAmount = PackAmount;
+    Inline_Threshold = 20;
 }
 
 static void Define_Memory_Model( void )
@@ -2210,8 +2218,6 @@ static void Define_Memory_Model( void )
     char        lib_model;
 #endif
 
-    DataPtrSize = TARGET_POINTER;
-    CodePtrSize = TARGET_POINTER;
 #if _INTEL_CPU
     switch( SwData.mem ) {
     case SW_MF:
@@ -2274,6 +2280,8 @@ static void Define_Memory_Model( void )
         strcpy( MATHLIB_Name, "7math87?" );
         EmuLib_Name = "8noemu87";
     }
+    *strchr( CLIB_Name, '?' ) = lib_model;
+    *strchr( MATHLIB_Name, '?' ) = lib_model;
 #elif _CPU == 386
     lib_model = 'r';
     if( !CompFlags.register_conventions )
@@ -2305,6 +2313,8 @@ static void Define_Memory_Model( void )
         }
         EmuLib_Name = "8noemu387";
     }
+    *strchr( CLIB_Name, '?' ) = lib_model;
+    *strchr( MATHLIB_Name, '?' ) = lib_model;
 #elif _RISC_CPU || _CPU == _SPARC
     if( CompFlags.br_switch_used ) {
         strcpy( CLIB_Name, "1clbdll" );
@@ -2316,10 +2326,6 @@ static void Define_Memory_Model( void )
     EmuLib_Name = NULL;
 #else
     #error Define_Memory_Model not configured
-#endif
-#if _INTEL_CPU
-    *strchr( CLIB_Name, '?' ) = lib_model;
-    *strchr( MATHLIB_Name, '?' ) = lib_model;
 #endif
 }
 
