@@ -61,15 +61,13 @@ __INTEL_TOOLS__ = $+$(%OWTOOLSVER)$-
 __WATCOM_TOOLS__ = 0
 !endif
 
-# setup WATCOM tools version
-bld_watcom_ver = 0
+# setup run-time WATCOM tools version
 !ifndef bootstrap
 # if it is not bootstrap then use current build version
 __WATCOM_TOOLS__ = $(bld_ver_tool)
 !else ifeq %OWTOOLS WATCOM
 # if bootstrap and WATCOM tools then use tools version
-bld_watcom_ver = $+$(%OWTOOLSVER)$-
-__WATCOM_TOOLS__ = $(bld_watcom_ver)
+__WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
 !endif
 
 !ifdef %BOOTSTRAP_CPU
@@ -167,7 +165,6 @@ watcom_common_cxxflags =-w8-wce=579
 !endif
 !endif
 
-bld_dft_oflags = -ox
 dft_oflags     = -oaxt
 
 !ifdef nulldevice_$(bld_os)

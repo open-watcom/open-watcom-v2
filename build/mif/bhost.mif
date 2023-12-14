@@ -29,21 +29,28 @@ bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-!ifdef __WATCOM_TOOLS__
-!if $(__WATCOM_TOOLS__) >= 1300
-bld_new_cflags  = -xx-zam
-bld_std = -zastd=c99
+bld_watcom_ver = 0
+!ifeq %OWTOOLS WATCOM
+bld_watcom_ver = $+$(%OWTOOLSVER)$-
+!endif
+!if $(bld_watcom_ver) >= 1300
+bld_new_cflags             =-xx-zam
+bld_std_cflags             =-zastd=c99
+bld_watcom_common_cflags   =-wx-wce=C310
+bld_watcom_common_cxxflags =-w8-wce=P579
 !else
-bld_std = -za99
+bld_std_cflags             =-za99
+bld_watcom_common_cflags   =-wx-wce=310
+bld_watcom_common_cxxflags =-w8-wce=579
 !endif
-!endif
+bld_dft_oflags = -ox
 
 !ifeq debug 1
-bld_gen_cflags  = $(watcom_common_cflags)-j-$(bld_std)-d2$(bld_new_cflags)-fo=.obj
+bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-d2$(bld_new_cflags)-fo=.obj
 !else ifeq debug 2
-bld_gen_cflags  = $(watcom_common_cflags)-j-$(bld_std)-d2-DDEVBUILD $(bld_new_cflags)-fo=.obj
+bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-d2-DDEVBUILD $(bld_new_cflags)-fo=.obj
 !else
-bld_gen_cflags  = $(watcom_common_cflags)-j-$(bld_std)-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
+bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
 !endif
 
 # options for source compilations
