@@ -1316,19 +1316,9 @@ static void Set_XBSA( void )
 static void Set_XD( void )          { TargetSwitches |= CGSW_RISC_EXCEPT_FILTER_USED; }
 #endif
 
-static void Set_ZA89( void )
-{
-    CompVars.cstd = CSTD_C89;
-}
-
 static void Set_ZA99( void )
 {
     CompVars.cstd = CSTD_C99;
-}
-
-static void Set_ZA23( void )
-{
-    CompVars.cstd = CSTD_C23;
 }
 
 static void Set_ZASTD( void )
@@ -1826,9 +1816,7 @@ static struct option const CFE_Options[] = {
 #endif
     { "xx",     0,              Set_XX },
     { "zastd=$",0,              Set_ZASTD },
-    { "za89",   0,              Set_ZA89 },
     { "za99",   0,              Set_ZA99 },
-    { "za23",   0,              Set_ZA23 },
     { "zam",    0,              Set_ZAM },
     { "zA",     0,              SetStrictANSI },
     { "za",     0,              Set_ZA },
