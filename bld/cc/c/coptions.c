@@ -474,8 +474,17 @@ static void SetFinalTargetSystem( void )
 #endif
 }
 
+static void SetDebug( void )
+{
+    if( debug_optimization_change ) {
+        GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
+        CompFlags.inline_functions = false;
+    }
+}
+
 static void SetGenSwitches( void )
 {
+    SetDebug();
 #if _INTEL_CPU
   #if _CPU == 8086
     if( SwData.cpu == SW_CPU_DEF )
@@ -2321,14 +2330,6 @@ static void Define_Memory_Model( void )
 #endif
 }
 
-static void SetDebug( void )
-{
-    if( debug_optimization_change ) {
-        GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
-        CompFlags.inline_functions = false;
-    }
-}
-
 static void MergeInclude( void )
 /*******************************
  * must be called after GenCOptions to get req'd IncPathList
@@ -2398,7 +2399,6 @@ void GenCOptions( char **cmdline )
      * print banner if -zq not specified
      */
     CBanner();
-    SetDebug();
     SetTargetSystem();
     SetFinalTargetSystem();
     SetGenSwitches();
