@@ -35,7 +35,11 @@
 
 #ifdef __WATCOMC__
 // disable "integral value may be truncated" warning
+#if __WATCOMC__ > 1290
 #pragma disable_message( P389 )
+#else
+#pragma disable_message( 389 )
+#endif
 #endif
 
 #include "chfile.h"
