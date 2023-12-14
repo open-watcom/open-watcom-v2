@@ -46,7 +46,8 @@ static void addString           // STORE A STRING
     OPT_STRING *value;
 
     value = _MemoryAllocate( sizeof( *value ) + len );
-    stxvcpy( value->data, s, len );
+    strncpy( value->data, s, len );
+    value->data[len] = '\0';
     value->next = *h;
     *h = value;
 }
