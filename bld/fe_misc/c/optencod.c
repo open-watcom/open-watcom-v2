@@ -125,8 +125,9 @@ TAG( USAGEOGRP )
 
 #define BUFF_SIZE               1024
 
-#define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_path || (o)->is_text )
-#define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
+#define HAS_OPT_STRING(o)       ((o)->is_id || (o)->is_file || (o)->is_path || (o)->is_text)
+#define HAS_OPT_NUMBER(o)       ((o)->is_number && (o)->is_multiple)
+#define HAS_OPT_CHAIN(o)        ((o)->chain != NULL && (o)->chain->code_used)
 
 #define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
 #define NOSENSITIVE             ' '
@@ -501,7 +502,8 @@ static const char *getLangData( lang_data langdata, language_id lang )
     const char *p;
 
     p = langdata[lang];
-    if( p == NULL || *p == '\0' ) {
+    if( p == NULL
+      || *p == '\0' ) {
         p = langdata[LANG_English];
     }
     return( p );
@@ -531,7 +533,7 @@ static void fail( const char *msg, ... )
 {
     va_list args;
 
-    if( line ) {
+    if( line > 0 ) {
         fprintf( stderr, "error on line %u\n", line );
     }
     va_start( args, msg );
@@ -809,7 +811,9 @@ static FILE *initFILE( const char *fnam, const char *fmod )
 
     fp = NULL;
     open_read = ( strchr( fmod, 'r' ) != NULL );
-    if( open_read || fnam[0] != '.' || fnam[1] != '\0' ) {
+    if( open_read
+      || fnam[0] != '.'
+      || fnam[1] != '\0' ) {
         fp = fopen( fnam, fmod );
         if( fp == NULL ) {
             fail( "cannot open '%s' for %s", fnam, ( open_read ) ? "input" : "output" );
@@ -912,9 +916,12 @@ static char *pickUpRest( const char *p )
     // if only two '.' character than it is single space text
     len = strlen( p );
     out = dst = malloc( len + 1 );
-    if( p[0] == '.' && p[1] == '\0' ) {
+    if( p[0] == '.'
+      && p[1] == '\0' ) {
         len = 0;
-    } else if( p[0] == '.' && p[1] == '.' && p[2] == '\0' ) {
+    } else if( p[0] == '.'
+      && p[1] == '.'
+      && p[2] == '\0' ) {
         len = 0;
         *dst++ = ' ';
     } else {
@@ -939,7 +946,8 @@ static void doARGEQUAL( const char *p )
     if( *p == '\0' ) {
         fail( ":argequal. must have <char> specified\n" );
     } else {
-        if( p[0] == '.' && p[1] == '.' ) {
+        if( p[0] == '.'
+          && p[1] == '.' ) {
             c = ' ';
         } else {
             c = *p;
@@ -1570,15 +1578,18 @@ static void checkForGMLEscape( const char *p )
     char c1, c2;
 
     c1 = *p++;
-    if( c1 == '\0' || ! isalpha( c1 ) ) {
+    if( c1 == '\0'
+      || ! isalpha( c1 ) ) {
         return;
     }
     c2 = *p++;
-    if( c2 == '\0' || ! isalpha( c2 ) ) {
+    if( c2 == '\0'
+      || ! isalpha( c2 ) ) {
         return;
     }
     is_escape = false;
-    if( *p == '\0' || ! isalpha( *p ) ) {
+    if( *p == '\0'
+      || ! isalpha( *p ) ) {
         is_escape = true;
     }
     if( is_escape ) {
@@ -1642,7 +1653,8 @@ static void checkForMissingUsages( void )
         end_lang = start_lang + 1;
     }
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->chain == NULL || cmpOptPattern( o->pattern, o->chain->pattern ) ) {
+        if( o->chain == NULL
+          || cmpOptPattern( o->pattern, o->chain->pattern ) ) {
             for( i = start_lang; i < end_lang; ++i ) {
                 if( o->lang_usage[i] == NULL ) {
                     fail( "option '%s' has no %s usage\n", o->pattern, langName[i] );
@@ -1740,7 +1752,8 @@ static void makeFieldName( const char *pattern, char *f )
                 continue;
             }
             if( isalnum( c ) ) {
-                if( is_special && *( f - 1 ) != '_' )
+                if( is_special
+                  && *( f - 1 ) != '_' )
                     *f++ = '_';
                 if( !sensitive )
                     c = mytolower( c );
@@ -1968,8 +1981,9 @@ static bool markChainCode( CODESEQ *head, size_t level )
 
     rc = false;
     for( c = head; c != NULL; c = c->sibling ) {
-        if( c->option->chain != NULL && c->option->chain->code_used ) {
-            if( c->children != NULL && level <= c->option->chain->name_len ) {
+        if( HAS_OPT_CHAIN( c->option ) ) {
+            if( c->children != NULL
+              && level <= c->option->chain->name_len ) {
                 if( markChainCode( c->children, level + 1 ) ) {
                     if( level == c->option->chain->name_len ) {
                         c->chain_root = true;
@@ -1983,7 +1997,8 @@ static bool markChainCode( CODESEQ *head, size_t level )
                  * with one character <option character> or <option character>+
                  * even if only one character is allowed
                  */
-                if( c->children != NULL && c->children->c == '+' ) {
+                if( c->children != NULL
+                  && c->children->c == '+' ) {
                     c->children->chain = true;
                 }
             }
@@ -2154,7 +2169,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             }
         }
     } else {
-        if( c->option->chain != NULL && c->option->chain->code_used ) {
+        if( HAS_OPT_CHAIN( c->option ) ) {
             emitAcceptCode( c, depth, control );
         } else {
             emitAcceptCode( c, depth, control & ~EC_CONTINUE );
@@ -2218,7 +2233,8 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
 
     count = 0;
     for( c = head; c != NULL; c = c->sibling ) {
-        if( count == 0 && ( IS_SENSITIVE( c )
+        if( count == 0
+          && ( IS_SENSITIVE( c )
           || (control & EC_CHAIN)
           && !c->chain ) ) {
             emitIfCode( c, depth, control );
@@ -2262,7 +2278,9 @@ static void outputFN_INIT( void )
     ++depth;
     emitPrintf( depth, "memset( data, 0, sizeof( *data ) );\n" );
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->synonym == NULL && o->is_number && o->default_specified ) {
+        if( o->synonym == NULL
+          && o->is_number
+          && o->default_specified ) {
             emitPrintf( depth, "data->%s = %u;\n", o->value_field_name, o->number_default );
         }
     }
@@ -2405,7 +2423,8 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
             buf = catArg( o->usage_argid, buf, '\0' );
         }
     } else if( o->is_number ) {
-        if( o->default_specified || o->is_optional ) {
+        if( o->default_specified
+          || o->is_optional ) {
             buf = catArg( "[=<num>]", buf, o->equal_char );
         } else {
             buf = catArg( "=<num>", buf, o->equal_char );
@@ -2446,7 +2465,8 @@ static bool usageValid( OPTION *o, GROUP *gr )
         return( false );
     if( o->synonym != NULL )
         return( false );
-    if( o->is_internal && (targetMask & targetDbgMask) == 0 )
+    if( o->is_internal
+      && (targetMask & targetDbgMask) == 0 )
         return( false );
     return( true );
 }
@@ -2526,7 +2546,8 @@ static void expand_tab( const char *s, char *buf )
     int len;
 
     for( ; *s != '\0'; ++s ) {
-        if( s[0] == '\\' && s[1] == 't' ) {
+        if( s[0] == '\\'
+          && s[1] == 't' ) {
             ++s;
             for( len = 8; len-- > 0; ) {
                 *buf++ = ' ';
@@ -2744,7 +2765,8 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
 
     clearChainUsage();
     for( i = 0; i < count; ++i ) {
-        if( oo[i]->chain != NULL && !oo[i]->chain->usage_used ) {
+        if( oo[i]->chain != NULL
+          && !oo[i]->chain->usage_used ) {
             oo[i]->chain->usage_used = true;
             outputChainHeader( &oo[i], process_line, max );
         }
@@ -2882,7 +2904,8 @@ static char *ReadIndirectFile( char *name )
                 *str = '\0';        // - mark end of str
                 break;
             }
-            if( ch != ' ' && myisspace( ch ) ) {
+            if( ch != ' '
+              && myisspace( ch ) ) {
                 *str = ' ';
             }
         }
@@ -2903,13 +2926,15 @@ static char *getFileName( char *str, char *name )
             if( ch == '"' ) {
                 break;
             }
-            if( ch == '\\' && *str == '"' ) {
+            if( ch == '\\'
+              && *str == '"' ) {
                 ch = *str++;
             }
             *name++ = ch;
         }
     } else {
-        while( *str != '\0' && !myisspace( *str ) ) {
+        while( *str != '\0'
+          && !myisspace( *str ) ) {
             *name++ = *str++;
         }
     }
@@ -2945,7 +2970,8 @@ static char *ProcessOption( char *s, char *option_start )
         optFlag.quiet = true;
         return( s );
     case 'r':
-        if( *s++ == 'c' && *s++ == '=' ) {
+        if( *s++ == 'c'
+          && *s++ == '=' ) {
             optFlag.rc = true;
             SKIP_SPACES( s );
             optFlag.rc_macro = option_start;
@@ -2968,7 +2994,9 @@ static char *ProcessOption( char *s, char *option_start )
                 fail( "cannot open '%s' for output", option_start );
             }
             return( s );
-        } else if( *s++ == 't' && *s++ == 'f' && *s++ == '8' ) {
+        } else if( *s++ == 't'
+          && *s++ == 'f'
+          && *s++ == '8' ) {
             optFlag.out_utf8 = true;
             return( s );
         }
@@ -3083,7 +3111,8 @@ int main( int argc, char **argv )
             break;
         }
     }
-    if( !ok || fno < NUM_FILES ) {
+    if( !ok
+      || fno < NUM_FILES ) {
         ok = false;
         dumpUsage();
     } else {
