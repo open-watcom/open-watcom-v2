@@ -187,6 +187,31 @@ static void DefSwitchMacro( const char *str )
     PreDefine_Macro( strcpy( strcpy( buff, "__SW_" ) + 5, str ) - 5 );
 }
 
+static void AddIncList( const char *path_list )
+{
+    size_t      old_len;
+    size_t      len;
+    char        *old_list;
+    char        *p;
+
+    if( path_list != NULL
+      && *path_list != '\0' ) {
+        len = strlen( path_list );
+        old_list = IncPathList;
+        old_len = strlen( old_list );
+        IncPathList = CMemAlloc( old_len + 1 + len + 1 );
+        strcpy( IncPathList, old_list );
+        CMemFree( old_list );
+        p = IncPathList + old_len;
+        while( *path_list != '\0' ) {
+            if( p != IncPathList )
+                *p++ = PATH_LIST_SEP;
+            path_list = GetPathElement( path_list, NULL, &p );
+        }
+        *p = '\0';
+    }
+}
+
 static void SetCharacterEncoding( void )
 {
     CompFlags.jis_to_unicode = false;
@@ -848,31 +873,6 @@ static void MacroDefs( void )
 #endif
     if( !TOGGLE( check_stack ) ) {
         DefSwitchMacro( "S" );
-    }
-}
-
-static void AddIncList( const char *path_list )
-{
-    size_t      old_len;
-    size_t      len;
-    char        *old_list;
-    char        *p;
-
-    if( path_list != NULL
-      && *path_list != '\0' ) {
-        len = strlen( path_list );
-        old_list = IncPathList;
-        old_len = strlen( old_list );
-        IncPathList = CMemAlloc( old_len + 1 + len + 1 );
-        strcpy( IncPathList, old_list );
-        CMemFree( old_list );
-        p = IncPathList + old_len;
-        while( *path_list != '\0' ) {
-            if( p != IncPathList )
-                *p++ = PATH_LIST_SEP;
-            path_list = GetPathElement( path_list, NULL, &p );
-        }
-        *p = '\0';
     }
 }
 
