@@ -255,7 +255,11 @@ void* WEXPORT WListBox::tagPtr( int index ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
+#if __WATCOMC__ >= 1300
 #pragma disable_message( P656 )
+#else
+#pragma disable_message( 656 )
+#endif
 #endif
 
 WEXPORT WListBox::~WListBox() {

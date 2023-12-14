@@ -47,7 +47,11 @@ WEXPORT WProcessInfo::WProcessInfo() {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
+#if __WATCOMC__ >= 1300
 #pragma disable_message( P657 )
+#else
+#pragma disable_message( 657 )
+#endif
 #endif
 
 WEXPORT WProcessInfo::~WProcessInfo() {
