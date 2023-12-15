@@ -54,18 +54,12 @@
 #include "clibext.h"
 
 
-#define __isdigit(c)    ((c) >= '0' && (c) <= '9')
-
 #define PEGGED( r ) boolbit     peg_##r##s_used : 1; \
                     boolbit     peg_##r##s_on   : 1
 
 #define SET_PEGGED( r, b )          SwData.peg_##r##s_used = true; SwData.peg_##r##s_on = b;
 #define CHECK_SET_PEGGED( r, b )    if( !SwData.peg_##r##s_used ) { SwData.peg_##r##s_used = true; SwData.peg_##r##s_on = b; }
 #define CHECK_PRESET_PEGGED( r )    if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
-
-#define INC_VAR "INCLUDE"
-
-#define MAX_NESTING 32
 
 #if _CPU == 8086
     #define MX86    "M_I86"
@@ -337,21 +331,6 @@ static void SetTargetSystem( void )
 
 static void SetFinalTargetSystem( void )
 {
-    if( CompFlags.non_iso_compliant_names_enabled ) {
-#if _CPU == 8086
-        PreDefine_Macro( "M_I86" );
-#elif _CPU == 386
-        PreDefine_Macro( "M_I386" );
-#elif _CPU == _AXP
-        PreDefine_Macro( "M_ALPHA" );
-#elif _CPU == _PPC
-        PreDefine_Macro( "M_PPC" );
-#elif _CPU == _MIPS
-        PreDefine_Macro( "M_MRX000" );
-#elif _CPU == _SPARC
-        PreDefine_Macro( "M_SPARC" );
-#endif
-    }
 #if _CPU == 8086
     PreDefine_Macro( "_M_I86" );
     PreDefine_Macro( "__I86__" );
@@ -384,6 +363,21 @@ static void SetFinalTargetSystem( void )
 #else
     #error SetTargetSystem not configured
 #endif
+    if( CompFlags.non_iso_compliant_names_enabled ) {
+#if _CPU == 8086
+        PreDefine_Macro( "M_I86" );
+#elif _CPU == 386
+        PreDefine_Macro( "M_I386" );
+#elif _CPU == _AXP
+        PreDefine_Macro( "M_ALPHA" );
+#elif _CPU == _PPC
+        PreDefine_Macro( "M_PPC" );
+#elif _CPU == _MIPS
+        PreDefine_Macro( "M_MRX000" );
+#elif _CPU == _SPARC
+        PreDefine_Macro( "M_SPARC" );
+#endif
+    }
 
     PreDefine_Macro( "__WATCOM_INT64__" );
     PreDefine_Macro( "_INTEGRAL_MAX_BITS=64" );
@@ -397,10 +391,10 @@ static void SetFinalTargetSystem( void )
 
     switch( TargetSystem ) {
     case TS_DOS:
+        PreDefine_Macro( "_DOS" );
         if( CompFlags.non_iso_compliant_names_enabled ) {
             PreDefine_Macro( "MSDOS" );
         }
-        PreDefine_Macro( "_DOS" );
         break;
 #if _CPU == 386
     case TS_NETWARE5:
@@ -2090,6 +2084,7 @@ static char *ReadIndirectFile( const char *fname )
 
 static void ProcOptions( const char *str )
 {
+#define MAX_NESTING 32
     int         level;
     const char  *save[MAX_NESTING];
     char        *buffers[MAX_NESTING];
@@ -2176,6 +2171,7 @@ static void ProcOptions( const char *str )
             }
         }
     }
+#undef MAX_NESTING
 }
 
 static void InitCPUModInfo( void )
