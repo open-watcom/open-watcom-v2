@@ -217,7 +217,7 @@ mode_cflags  += -x-wpx
 mode_clflags += -x-wpx
 !endif
 !ifdef __WATCOM_TOOLS__
-!if $(__WATCOM_TOOLS__) >= 1300
+!ifndef bootstrap
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
 !endif
@@ -436,8 +436,8 @@ cflags_dll_os2  = -bd
 
 c_flags          =$(watcom_common_cflags)
 !ifdef __WATCOM_TOOLS__
-!if $(__WATCOM_TOOLS__) >= 1300
-c_flags          +=-za99
+!ifndef bootstrap
+c_flags          +=-zastd=c99
 !endif
 !endif
 

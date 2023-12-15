@@ -156,7 +156,7 @@ bldonly_osx = 1
 nested_wmake = wmake
 
 !ifdef __WATCOM_TOOLS__
-!if $(__WATCOM_TOOLS__) >= 1300
+!ifndef bootstrap
 watcom_common_cflags   =-wx-wce=C310
 watcom_common_cxxflags =-w8-wce=P579
 !else

@@ -16,7 +16,7 @@ awk_autodepends = .autodepend
 inc_dirs = -I"../h"
 
 !ifdef __WATCOM_TOOLS__
-!if $(__WATCOM_TOOLS__) >= 1300
+!ifndef bootstrap
 extra_c_flags_ytab = -wcd=C118 -wcd=C202
 !else
 extra_c_flags_ytab = -wcd=118 -wcd=202

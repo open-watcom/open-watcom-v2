@@ -33,7 +33,7 @@ bld_watcom_ver = 0
 !ifeq %OWTOOLS WATCOM
 bld_watcom_ver = $+$(%OWTOOLSVER)$-
 !endif
-!if $(bld_watcom_ver) >= 1300
+!if $(bld_watcom_ver) >= 1300 && 0
 bld_new_cflags             =-xx-zam
 bld_std_cflags             =-zastd=c99
 bld_watcom_common_cflags   =-wx-wce=C310

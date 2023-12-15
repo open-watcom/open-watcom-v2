@@ -44,7 +44,7 @@ WObject* WEXPORT WVCollection::remove( WObject* obj )
 
 #ifdef __WATCOMC__
 // Complain about defining trivial constructor/destructor inside class
-#if __WATCOMC__ >= 1300
+#if !defined( BOOTSTRAP )
 #pragma disable_message( P656 )
 #else
 #pragma disable_message( 656 )

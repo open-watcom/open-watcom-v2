@@ -230,7 +230,7 @@ void * WEXPORT WCombo::tagPtr( int index ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-#if __WATCOMC__ >= 1300
+#if !defined( BOOTSTRAP )
 #pragma disable_message( P656 )
 #pragma disable_message( P657 )
 #else

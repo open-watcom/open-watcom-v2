@@ -35,7 +35,7 @@
 
 #ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
-#if __WATCOMC__ > 1290
+#if !defined( BOOTSTRAP )
 #pragma disable_message( P665 )
 #else
 #pragma disable_message( 665 )
