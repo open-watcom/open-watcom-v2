@@ -610,12 +610,12 @@ static void PreDefine_UMIX86Macro( void )
 
     switch( GET_CPU( ProcRevision ) ) {
     case CPU_86:        cpu = 0; break;
-    case CPU_186:       cpu = 1; break;
-    case CPU_286:       cpu = 2; break;
-    case CPU_386:       cpu = 3; break;
-    case CPU_486:       cpu = 4; break;
-    case CPU_586:       cpu = 5; break;
-    case CPU_686:       cpu = 6; break;
+    case CPU_186:       cpu = 100; break;
+    case CPU_286:       cpu = 200; break;
+    case CPU_386:       cpu = 300; break;
+    case CPU_486:       cpu = 400; break;
+    case CPU_586:       cpu = 500; break;
+    case CPU_686:       cpu = 600; break;
     default:
         return;
     }
@@ -2379,7 +2379,7 @@ static void MergeInclude( void )
 
 void GenCOptions( char **cmdline )
 {
-    memset( &SwData,0, sizeof( SwData ) ); /* re-useable */
+    memset( &SwData, 0, sizeof( SwData ) ); /* re-useable */
     /*
      * Add precision warning but disabled by default
      */
