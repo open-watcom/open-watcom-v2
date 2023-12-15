@@ -158,9 +158,9 @@ char *Define_Macro( const char *str )
     return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_NONE ) );
 }
 
-char *Define_UserMacro( const char *str )
+char *Define_UserMacro( const char *str, bool multiple_tokens )
 {
-    return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_USER_DEFINED ) );
+    return( Def_Macro_Tokens( str, multiple_tokens, MFLAG_USER_DEFINED ) );
 }
 
 void PreDefine_Macro( const char *str )

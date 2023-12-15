@@ -1035,8 +1035,11 @@ static void Set_BT( void )
 
 static void SetExtendedDefines( void )
 {
-    CompFlags.extended_defines = true;
-    EnsureEndOfSwitch();
+    if( OptionDelimiter( *OptScanPtr ) ) {
+        CompFlags.extended_defines = true;
+    } else {
+        OptScanPtr = Define_UserMacro( OptScanPtr, true );
+    }
 }
 static void SetBrowserInfo( void )  { CompFlags.emit_browser_info = true; }
 
@@ -1084,7 +1087,10 @@ static void Set_D3( void )
     Set_D2();
 }
 static void Set_D9( void )          { CompFlags.use_full_codegen_od = true; }
-static void DefineMacro( void )     { OptScanPtr = Define_UserMacro( OptScanPtr ); }
+static void DefineMacro( void )
+{
+    OptScanPtr = Define_UserMacro( OptScanPtr, CompFlags.extended_defines );
+}
 
 static void SetErrorLimit( void )   { ErrLimit = OptValue; }
 
