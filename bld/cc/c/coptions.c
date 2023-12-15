@@ -472,21 +472,27 @@ static void SetGenSwitches( void )
 {
     SetDebug();
 #if _INTEL_CPU
+    /*
+     * setup CPU, if not specified then use default CPU
+     */
   #if _CPU == 8086
     if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU0;
-    if( SwData.fpu == SW_FPU_DEF )
-        SwData.fpu = SW_FPU0;
-    if( SwData.mem == SW_M_DEF )
-        SwData.mem = SW_MS;
   #else
     if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU6;
+  #endif
+    SET_CPU( ProcRevision, SwData.cpu - SW_CPU0 + CPU_86 );
+
+    /*
+     * setup FPU, if not specified then use default FPU
+     */
+  #if _CPU == 8086
+    if( SwData.fpu == SW_FPU_DEF )
+        SwData.fpu = SW_FPU0;
+  #else
     if( SwData.fpu == SW_FPU_DEF )
         SwData.fpu = SW_FPU3;
-    if( SwData.mem == SW_M_DEF )
-        SwData.mem = SW_MF;
-    TargetSwitches |= CGSW_X86_USE_32;
   #endif
     switch( SwData.fpu ) {
     case SW_FPU0:
@@ -524,7 +530,18 @@ static void SetGenSwitches( void )
         SET_FPU( ProcRevision, FPU_NONE );
         break;
     }
-    SET_CPU( ProcRevision, SwData.cpu - SW_CPU0 + CPU_86 );
+
+    /*
+     * setup memory model, if not specified then use default model
+     */
+  #if _CPU == 8086
+    if( SwData.mem == SW_M_DEF )
+        SwData.mem = SW_MS;
+  #else
+    if( SwData.mem == SW_M_DEF )
+        SwData.mem = SW_MF;
+    TargetSwitches |= CGSW_X86_USE_32;
+  #endif
     switch( SwData.mem ) {
     case SW_MF:
         TargetSwitches |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
@@ -586,6 +603,28 @@ static void SetGenSwitches( void )
         break;
     }
 }
+
+#if _INTEL_CPU
+static void PreDefine_UMIX86Macro( void )
+{
+    unsigned    cpu;
+    char        buff[32];
+
+    switch( GET_CPU( ProcRevision ) ) {
+    case CPU_86:        cpu = 0; break;
+    case CPU_186:       cpu = 1; break;
+    case CPU_286:       cpu = 2; break;
+    case CPU_386:       cpu = 3; break;
+    case CPU_486:       cpu = 4; break;
+    case CPU_586:       cpu = 5; break;
+    case CPU_686:       cpu = 6; break;
+    default:
+        return;
+    }
+    sprintf( buff, "_M_IX86=%u", cpu );
+    PreDefine_Macro( buff );
+}
+#endif
 
 static void MacroDefs( void )
 {
@@ -802,34 +841,28 @@ static void MacroDefs( void )
         DefSwitchMacro( "EC" );
     }
 #if _INTEL_CPU
+    PreDefine_UMIX86Macro();
     switch( GET_CPU( ProcRevision ) ) {
     case CPU_86:
         DefSwitchMacro( "0" );
-        PreDefine_Macro( "_M_IX86=0" );
         break;
     case CPU_186:
         DefSwitchMacro( "1" );
-        PreDefine_Macro( "_M_IX86=100" );
         break;
     case CPU_286:
         DefSwitchMacro( "2" );
-        PreDefine_Macro( "_M_IX86=200" );
         break;
     case CPU_386:
         DefSwitchMacro( "3" );
-        PreDefine_Macro( "_M_IX86=300" );
         break;
     case CPU_486:
         DefSwitchMacro( "4" );
-        PreDefine_Macro( "_M_IX86=400" );
         break;
     case CPU_586:
         DefSwitchMacro( "5" );
-        PreDefine_Macro( "_M_IX86=500" );
         break;
     case CPU_686:
         DefSwitchMacro( "6" );
-        PreDefine_Macro( "_M_IX86=600" );
         break;
     }
     switch( SwData.fpt ) {
