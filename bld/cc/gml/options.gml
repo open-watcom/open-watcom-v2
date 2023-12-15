@@ -306,7 +306,7 @@
 :jusage. 構築ターゲットはマルチスレッド環境です
 
 :option. br
-:target. 386 axp ppc
+:target. 386 axp ppc mps
 :usage. build target uses DLL version of C/C++ run-time library
 :jusage. 構築ターゲットはDLL版のC/C++実行時ライブラリを使用します
 
@@ -1183,7 +1183,6 @@
 
 :option. zev
 :target. any
-:enumerate. iso
 :usage. enable arithmetic on void derived types
 :jusage.
 
