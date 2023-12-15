@@ -172,11 +172,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
                     c = read_inp();
                 }
             } else if( CompFlags.wide_char_string ) {
-                if( CompFlags.use_unicode ) {
-                    c = UniCode[c];
-                } else if( CompFlags.jis_to_unicode ) {
-                    c = JIS2Unicode( c );
-                }
+                c = EncodeWchar( c );
                 WRITE_BYTE( c );
                 c = c >> 8;
 #if _CPU == 370

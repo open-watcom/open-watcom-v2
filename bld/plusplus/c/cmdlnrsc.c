@@ -225,7 +225,7 @@ static void macroDefs( void )
     if( CompFlags.emit_names ) {
         DefSwitchMacro( "EN" );
     }
-    if( CompFlags.use_unicode ) {
+    if( CompFlags.use_double_byte ) {
         DefSwitchMacro( "ZK" );
     }
     if( CompFlags.bm_switch_used ) {

@@ -616,7 +616,7 @@ typedef struct comp_flags {
     boolbit make_enums_an_int                   : 1;    /* force all enums to be int */
     boolbit original_enum_setting               : 1;    /* reset value if pragma used*/
     boolbit zc_switch_used                      : 1;    /* -zc switch specified   */
-    boolbit use_unicode                         : 1;    /* use unicode for L"abc" */
+    boolbit use_double_byte                     : 1;    /* use double-byte encoding for L"abc" */
     boolbit op_switch_used                      : 1;    /* -op force floats to mem */
     boolbit no_debug_type_names                 : 1;    /* -d2~ switch specified  */
 

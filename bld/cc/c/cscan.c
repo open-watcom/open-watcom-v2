@@ -1416,6 +1416,19 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
     return( n );
 }
 
+int EncodeWchar( int c )
+/**********************/
+{
+    if( CompFlags.use_double_byte ) {
+        if( CompFlags.jis_to_unicode ) {
+            c = JIS2Unicode( c );
+        }
+    } else {
+        c = UniCode[c];
+    }
+    return( c );
+}
+
 static TOKEN doScanCharConst( DATA_TYPE char_type )
 /**************************************************
  * TokenLen is alway lower then BUF_SIZE that
@@ -1508,11 +1521,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     Buffer[TokenLen++] = CurrChar;
                     NextChar();
                 } else if( char_type == TYP_WCHAR ) {
-                    if( CompFlags.use_unicode ) {
-                        c = UniCode[c];
-                    } else if( CompFlags.jis_to_unicode ) {
-                        c = JIS2Unicode( c );
-                    }
+                    c = EncodeWchar( c );
                     ++i;
                     value = (value << 8) + ((c & 0xFF00) >> 8);
                     c &= 0x00FF;

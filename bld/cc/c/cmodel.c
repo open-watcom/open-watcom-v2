@@ -335,7 +335,6 @@ void InitModInfo( void )
     CompFlags.emit_library_names                = true;
     CompFlags.emit_dependencies                 = true;
     CompFlags.emit_targimp_symbols              = true;
-    CompFlags.use_unicode                       = true;
     CompFlags.no_debug_type_names               = false;
     CompFlags.auto_agg_inits                    = false;
     CompFlags.no_check_inits                    = false;

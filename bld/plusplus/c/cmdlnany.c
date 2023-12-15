@@ -627,22 +627,25 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->char_set ) {
     case OPT_ENUM_char_set_zku:
-        CompFlags.use_unicode = true;
         loadUnicodeTable( data->zku_value );
         break;
     case OPT_ENUM_char_set_zk0u:
         CompFlags.jis_to_unicode = true;
         /* fall through */
     case OPT_ENUM_char_set_zk0:
+        CompFlags.use_double_byte = true;
         SetDBChar( 0 );
         break;
     case OPT_ENUM_char_set_zk1:
+        CompFlags.use_double_byte = true;
         SetDBChar( 1 );
         break;
     case OPT_ENUM_char_set_zk2:
+        CompFlags.use_double_byte = true;
         SetDBChar( 2 );
         break;
     case OPT_ENUM_char_set_zkl:
+        CompFlags.use_double_byte = true;
         SetDBChar( -1 );
         break;
     }

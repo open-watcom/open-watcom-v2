@@ -354,6 +354,19 @@ static int doESCChar( int c, bool expanding, type_id char_type )
     return( n );
 }
 
+int EncodeWchar( int c )
+/**********************/
+{
+    if( CompFlags.use_double_byte ) {
+        if( CompFlags.jis_to_unicode ) {
+            c = JIS2Unicode( c );
+        }
+    } else {
+        c = UniCode[c];
+    }
+    return( c );
+}
+
 static TOKEN doScanCharConst( type_id char_type, bool expanding )
 {
     int c;
@@ -402,11 +415,7 @@ static TOKEN doScanCharConst( type_id char_type, bool expanding )
                     c &= 0x00FF;
                     flag.double_byte_char = true;
                 } else if( char_type == TYP_WCHAR ) {
-                    if( CompFlags.use_unicode ) {
-                        c = UniCode[c];
-                    } else if( CompFlags.jis_to_unicode ) {
-                        c = JIS2Unicode( c );
-                    }
+                    c = EncodeWchar( c );
                     ++i;
                     value = (value << 8) + ((c & 0xFF00) >> 8);
                     c &= 0x00FF;

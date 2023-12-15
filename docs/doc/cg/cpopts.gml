@@ -5589,6 +5589,12 @@ execution time.
 .np
 This group of options deals with compile-time aspects of character
 sets used in the source code.
+.np
+By default, the compiler uses output Unicode encoding and source code page 437
+(US-ASCII) to output wide characters. 
+.if &e'&$SWzku ne 0 .do begin
+This setting is equivalent to using the -zku=437 option.
+.do end
 .*
 :OPTLIST.
 .*

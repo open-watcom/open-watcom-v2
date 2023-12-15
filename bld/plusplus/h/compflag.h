@@ -126,7 +126,7 @@ typedef struct comp_flags {
     boolbit     no_debug_type_names             : 1;
     boolbit     emit_names                      : 1;
     boolbit     warnings_cause_bad_exit         : 1;
-    boolbit     use_unicode                     : 1;
+    boolbit     use_double_byte                 : 1;
     boolbit     unique_functions                : 1;
     boolbit     jis_to_unicode                  : 1;
     boolbit     emit_dependencies               : 1;

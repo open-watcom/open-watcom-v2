@@ -928,7 +928,7 @@ static void macroDefs( void )
     if( CompFlags.zc_switch_used ) {
         DefSwitchMacro( "ZC" );
     }
-    if( CompFlags.use_unicode ) {
+    if( CompFlags.use_double_byte ) {
         DefSwitchMacro( "ZK" );
     }
     if( CompFlags.sg_switch_used ) {

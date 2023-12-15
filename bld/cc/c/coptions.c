@@ -215,29 +215,27 @@ static void SetCharacterEncoding( void )
         LoadUnicodeTable( unicode_CP );
         break;
     case ENC_ZK0U:
-        CompFlags.use_unicode = false;
-        SetDBChar( 0 );                     /* set double-byte char type */
         CompFlags.jis_to_unicode = true;
-        break;
+        /* fall through */
     case ENC_ZK:
     case ENC_ZK0:
-        CompFlags.use_unicode = false;
+        CompFlags.use_double_byte = true;
         SetDBChar( 0 );                     /* set double-byte char type */
         break;
     case ENC_ZK1:
-        CompFlags.use_unicode = false;
+        CompFlags.use_double_byte = true;
         SetDBChar( 1 );                     /* set double-byte char type */
         break;
     case ENC_ZK2:
-        CompFlags.use_unicode = false;
+        CompFlags.use_double_byte = true;
         SetDBChar( 2 );                     /* set double-byte char type */
         break;
     case ENC_ZK3:
-        CompFlags.use_unicode = false;
+        CompFlags.use_double_byte = true;
         SetDBChar( 3 );                     /* set double-byte char type */
         break;
     case ENC_ZKL:
-        CompFlags.use_unicode = false;
+        CompFlags.use_double_byte = true;
         SetDBChar( -1 );                    /* set double-byte char type to default */
         break;
     }
@@ -791,7 +789,7 @@ static void MacroDefs( void )
     if( CompFlags.zc_switch_used ) {
         DefSwitchMacro( "ZC" );
     }
-    if( !CompFlags.use_unicode ) {
+    if( CompFlags.use_double_byte ) {
         DefSwitchMacro( "ZK" );
     }
 #if _INTEL_CPU
