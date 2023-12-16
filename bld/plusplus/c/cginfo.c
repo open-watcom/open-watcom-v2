@@ -489,7 +489,7 @@ static const inline_funcs *InlineLookup( NAME name )
 {
     const inline_funcs  *ifunc;
 
-    if( GET_FPU( CpuSwitches ) > FPU_NONE ) {
+    if( !GET_FPU_FPC( CpuSwitches ) ) {
         ifunc = _8087_Functions;
         while( ifunc->name ) {
             if( strcmp( ifunc->name, NameStr( name ) ) == 0 )
@@ -1106,7 +1106,7 @@ static void addDefaultImports( void )
                 CgInfoAddImport( "__init_387_emulator" );
     #endif
             }
-            if( GET_FPU( CpuSwitches ) > FPU_NONE ) {
+            if( !GET_FPU_FPC( CpuSwitches ) ) {
                 if( Stack87 == 4 ) {
                     CgInfoAddImport( "__old_8087" );
                 } else {

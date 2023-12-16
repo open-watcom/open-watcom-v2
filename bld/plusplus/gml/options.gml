@@ -630,7 +630,6 @@
 :option. 87d
 :target. i86 386
 :number. CmdX86CheckStack87 0
-:enumerate. intel_fpu_model
 :internal.
 :usage.  inline 80x87 instructions with specified depth
 :jusage. 指定した深さのインライン80x87命令
@@ -1410,11 +1409,13 @@
 
 :option. zro
 :target. any
+:enumerate. fp_rounding
 :usage.  omit floating point rounding calls (non ANSI)
 :jusage. omit floating point rounding calls (non ANSI)
 
 :option. zri
 :target. i86 386
+:enumerate. fp_rounding
 :usage.  inline floating point rounding calls
 :jusage. inline floating point rounding calls
 

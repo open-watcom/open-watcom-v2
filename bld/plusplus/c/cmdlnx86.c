@@ -77,10 +77,6 @@ void CmdSysInit( void )
 {
     GenSwitches = DEF_CGSW_GEN_SWITCHES | DEF_CGSW_GEN_SWITCHES_ALL;
     TargetSwitches = DEF_CGSW_X86_SWITCHES;
-    SET_CPU( CpuSwitches, DEFAULT_CPU );
-    SET_FPU( CpuSwitches, DEFAULT_FPU );
-    SET_FPU_EMU( CpuSwitches );
-    Stack87 = 8;
     CodeClassName = NULL;
     TextSegName = CMemStrDup( "" );
     DataSegName = CMemStrDup( "" );
@@ -139,22 +135,16 @@ static void defineM_IX86Macro( void )
     unsigned cpu;
     char buff[32];
 
-    strcpy( buff, "_M_IX86=" );
-#if _CPU == 8086
-    cpu = 0;
-#else
-    cpu = 3;
-#endif
     switch( GET_CPU( CpuSwitches ) ) {
     case CPU_86:        cpu = 0; break;
-    case CPU_186:       cpu = 1; break;
-    case CPU_286:       cpu = 2; break;
-    case CPU_386:       cpu = 3; break;
-    case CPU_486:       cpu = 4; break;
-    case CPU_586:       cpu = 5; break;
-    case CPU_686:       cpu = 6; break;
+    case CPU_186:       cpu = 100; break;
+    case CPU_286:       cpu = 200; break;
+    case CPU_386:       cpu = 300; break;
+    case CPU_486:       cpu = 400; break;
+    case CPU_586:       cpu = 500; break;
+    case CPU_686:       cpu = 600; break;
     }
-    ConcatBase10( buff, cpu * 100 );
+    sprintf( buff, "_M_IX86=%u", cpu );
     PreDefineStringMacro( buff );
 }
 
@@ -621,15 +611,16 @@ static void setMemoryModel( OPT_STORAGE *data )
             strcpy( WCPPLIB_Name, "4plib?" );
         }
     }
-    if( GET_FPU_EMU( CpuSwitches ) ) {
-        strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8emu87";
-    } else if( GET_FPU_LEVEL( CpuSwitches ) == FPU_NONE ) {
+    if( GET_FPU_FPC( CpuSwitches ) ) {
         strcpy( MATHLIB_Name, "5math?" );
         EmuLib_Name = NULL;
     } else {
         strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8noemu87";
+        if( GET_FPU_EMU( CpuSwitches ) ) {
+            EmuLib_Name = "8emu87";
+        } else {
+            EmuLib_Name = "8noemu87";
+        }
     }
 #else
     target_win = ( TargetSystem == TS_WINDOWS );
@@ -688,14 +679,7 @@ static void setMemoryModel( OPT_STORAGE *data )
             strcpy( WCPPLIB_Name, "4plib3?" );
         }
     }
-    if( GET_FPU_EMU( CpuSwitches ) ) {
-        if( data->br ) {
-            strcpy( MATHLIB_Name, "7mt7?dll" );
-        } else {
-            strcpy( MATHLIB_Name, "7math387?" );
-        }
-        EmuLib_Name = "8emu387";
-    } else if( GET_FPU_LEVEL( CpuSwitches ) == FPU_NONE ) {
+    if( GET_FPU_FPC( CpuSwitches ) ) {
         if( data->br ) {
             strcpy( MATHLIB_Name, "5mth?dll" );
         } else {
@@ -708,7 +692,11 @@ static void setMemoryModel( OPT_STORAGE *data )
         } else {
             strcpy( MATHLIB_Name, "7math387?" );
         }
-        EmuLib_Name = "8noemu387";
+        if( GET_FPU_EMU( CpuSwitches ) ) {
+            EmuLib_Name = "8emu387";
+        } else {
+            EmuLib_Name = "8noemu387";
+        }
     }
     *strchr( CDLL_Name, '?' ) = lib_model;
     *strchr( WCPPDLL_Name, '?' ) = lib_model;
@@ -724,6 +712,7 @@ static void setIntelArchitecture( OPT_STORAGE *data )
 {
 #if _CPU == 8086
     switch( data->arch_i86 ) {
+    case OPT_ENUM_arch_i86_default:
     case OPT_ENUM_arch_i86__0:
         SET_CPU( CpuSwitches, CPU_86 );
         break;
@@ -776,6 +765,7 @@ static void setIntelArchitecture( OPT_STORAGE *data )
         CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_686 );
         break;
+    case OPT_ENUM_arch_386_default:
     case OPT_ENUM_arch_386__6r:
         CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_686 );
@@ -786,7 +776,81 @@ static void setIntelArchitecture( OPT_STORAGE *data )
         CompFlags.register_conventions = false;
     }
 #endif
-    defineM_IX86Macro();
+
+    switch( data->intel_fpu_level ) {
+    case OPT_ENUM_intel_fpu_level_fp6:
+        SET_FPU_LEVEL( CpuSwitches, FPU_686 );
+        break;
+    case OPT_ENUM_intel_fpu_level_fp5:
+        SET_FPU_LEVEL( CpuSwitches, FPU_586 );
+        break;
+#if _CPU == 386
+    case OPT_ENUM_intel_fpu_level_default:
+#endif
+    case OPT_ENUM_intel_fpu_level_fp3:
+        SET_FPU_LEVEL( CpuSwitches, FPU_387 );
+        break;
+#if _CPU == 8086
+    case OPT_ENUM_intel_fpu_level_default:
+#endif
+    case OPT_ENUM_intel_fpu_level_fp2:
+        SET_FPU_LEVEL( CpuSwitches, FPU_87 );
+        break;
+    }
+    switch( data->intel_fpu_model ) {
+    case OPT_ENUM_intel_fpu_model_default:
+    case OPT_ENUM_intel_fpu_model_fpi:
+#if _CPU == 386
+        if( TargetSystem != TS_WINDOWS ) {
+#endif
+            SET_FPU_EMU( CpuSwitches );
+            break;
+#if _CPU == 386
+        }
+        /* fall through */
+#endif
+    case OPT_ENUM_intel_fpu_model_fpi87:
+        SET_FPU_INLINE( CpuSwitches );
+        break;
+    case OPT_ENUM_intel_fpu_model_fpc:
+        SET_FPU_FPC( CpuSwitches );
+        CompFlags.op_switch_used = false;
+        break;
+    }
+
+    if( data->fpd ) {
+        TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK;
+    }
+    /*
+     * If using NetWare, set Stack87 unless the target
+     * is NetWare 5 or higher.
+     */
+    if( data->fpr ) {
+        Stack87 = 4;
+    } else if( TargetSystem == TS_NETWARE ) {
+        Stack87 = 4;
+    } else {
+        Stack87 = 8;
+    }
+    if( data->_87d ) {
+        if( data->_87d_value > 0 ) {
+            Stack87 = data->_87d_value;
+        }
+    }
+
+    if( data->zfw ) {
+        TargetSwitches |= CGSW_X86_GEN_FWAIT_386;
+    }
+    switch( data->fp_rounding ) {
+    case OPT_ENUM_fp_rounding_zri:
+        GenSwitches |= CGSW_GEN_FPU_ROUNDING_INLINE;
+        break;
+    case OPT_ENUM_fp_rounding_zro:
+        GenSwitches |= CGSW_GEN_FPU_ROUNDING_OMIT;
+        break;
+    default:
+        break;
+    }
 }
 
 static void defineFSRegistration( void )
@@ -801,15 +865,6 @@ static void defineFSRegistration( void )
         CompFlags.fs_registration = true;
     }
 #endif
-}
-
-static void defEmu( void )
-{
-    if( GET_FPU_EMU( CpuSwitches ) ) {
-        DefSwitchMacro( "FPI" );
-    } else {
-        DefSwitchMacro( "FPI87" );
-    }
 }
 
 static void macroDefs( void )
@@ -1002,27 +1057,32 @@ static void macroDefs( void )
         DefSwitchMacro( "6" );
         break;
     }
+
+    defineM_IX86Macro();
+
     switch( GET_FPU_LEVEL( CpuSwitches ) ) {
-    case FPU_NONE:
-        CompFlags.op_switch_used = false;
-        DefSwitchMacro( "FPC" );
-        break;
     case FPU_87:
         DefSwitchMacro( "FP287" );
-        defEmu();
         break;
     case FPU_387:
         DefSwitchMacro( "FP387" );
-        defEmu();
         break;
     case FPU_586:
         DefSwitchMacro( "FP5" );
-        defEmu();
         break;
     case FPU_686:
         DefSwitchMacro( "FP6" );
-        defEmu();
         break;
+    }
+    if( GET_FPU_FPC( CpuSwitches ) ) {
+        DefSwitchMacro( "FPC" );
+    } else {
+        if( GET_FPU_EMU( CpuSwitches ) ) {
+            DefSwitchMacro( "FPI" );
+        } else {
+            DefSwitchMacro( "FPI87" );
+        }
+        PreDefineStringMacro( "__FPI__" );
     }
     if( CompFlags.op_switch_used ) {
         DefSwitchMacro( "OP" );
@@ -1069,9 +1129,6 @@ static void miscAnalysis( OPT_STORAGE *data )
             HW_CTurnOff( WatcallInfo.save, HW_GS );
         }
     }
-    if( GET_FPU( CpuSwitches ) > FPU_NONE ) {
-        PreDefineStringMacro( "__FPI__" );
-    }
 #if _CPU == 386
     if( !CompFlags.register_conventions ) {
         SetAuxStackConventions();
@@ -1111,78 +1168,13 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         break;
     }
 
-    if( data->zfw ) {
-        TargetSwitches |= CGSW_X86_GEN_FWAIT_386;
-    }
-    if( data->zro
-      && data->zri ) {
-//        DbgDefault( "invalid fp rounding flags - ignored" );
-        data->zro = data->zri = 0;
-    } else if( data->zri ) {
-        GenSwitches |= CGSW_GEN_FPU_ROUNDING_INLINE;
-    } else if( data->zro ) {
-        GenSwitches |= CGSW_GEN_FPU_ROUNDING_OMIT;
-    }
-
     setIntelArchitecture( data );
 
-    switch( data->intel_fpu_model ) {
-    case OPT_ENUM_intel_fpu_model_fpi:
-        SET_FPU_EMU( CpuSwitches );
-        break;
-#ifdef OPT_ENUM_intel_fpu_model__7
-    case OPT_ENUM_intel_fpu__7:
-        /* fall through */
-#endif
-    case OPT_ENUM_intel_fpu_model_fpi87:
-        SET_FPU_INLINE( CpuSwitches );
-        break;
-    case OPT_ENUM_intel_fpu_model_fpc:
-        SET_FPU( CpuSwitches, FPU_NONE );
-        break;
-    case OPT_ENUM_intel_fpu_model__87d:
-        if( data->_87d_value ) {
-            Stack87 = data->_87d_value;
-        }
-        break;
-    }
-#if _CPU == 386
-    if( TargetSystem == TS_WINDOWS ) {
-        SET_FPU_INLINE( CpuSwitches );
-    }
-#endif
-
-    switch( data->intel_fpu_level ) {
-    case OPT_ENUM_intel_fpu_level_fp6:
-        SET_FPU_LEVEL( CpuSwitches, FPU_686 );
-        break;
-    case OPT_ENUM_intel_fpu_level_fp5:
-        SET_FPU_LEVEL( CpuSwitches, FPU_586 );
-        break;
-    case OPT_ENUM_intel_fpu_level_fp3:
-        SET_FPU_LEVEL( CpuSwitches, FPU_387 );
-        break;
-    case OPT_ENUM_intel_fpu_level_fp2:
-        SET_FPU_LEVEL( CpuSwitches, FPU_87 );
-        break;
-    }
     /*
      * depends on architecture and fpu being set
      */
     setMemoryModel( data );
 
-    if( data->fpd ) {
-        TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK;
-    }
-    /*
-     * If using NetWare, set Stack87 unless the target
-     * is NetWare 5 or higher.
-     */
-    if( data->fpr ) {
-        Stack87 = 4;
-    } else if( TargetSystem == TS_NETWARE ) {
-        Stack87 = 4;
-    }
     if( data->g ) {
         SetStringOption( &GenCodeGroup, &(data->g_value) );
     }

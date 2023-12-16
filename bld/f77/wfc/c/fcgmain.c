@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -297,16 +297,6 @@ static  void    CGStart( void )
             SET_CPU( cpu, CPU_686 );
         }
 
-        // set floating-point model
-
-        SET_FPU( cpu, FPU_NONE );   // floating-point calls
-        if( CPUOpts & CPUOPT_FPI ) {
-            SET_FPU_EMU( cpu );
-        }
-        if( CPUOpts & CPUOPT_FPI87 ) {
-            SET_FPU_INLINE( cpu );
-        }
-
         // Set Floating-point level
 
         if( CPUOpts & CPUOPT_FP287 ) {
@@ -324,6 +314,19 @@ static  void    CGStart( void )
     #else
             SET_FPU_LEVEL( cpu, FPU_387 );
     #endif
+        }
+
+        // set floating-point model
+
+        if( CPUOpts & (CPUOPT_FPI | CPUOPT_FPI87) ) {
+            if( CPUOpts & CPUOPT_FPI ) {
+                SET_FPU_EMU( cpu );
+            }
+            if( CPUOpts & CPUOPT_FPI87 ) {
+                SET_FPU_INLINE( cpu );
+            }
+        } else {
+            SET_FPU_FPC( cpu );   // floating-point calls
         }
 
         if( CPUOpts & CPUOPT_FPD ) {
@@ -366,7 +369,7 @@ static  void    CGStart( void )
             }
         }
 #if _INTEL_CPU
-        if( GET_FPU( cpu ) > FPU_NONE ) {
+        if( !GET_FPU_FPC( cpu ) ) {
             CGFlags |= CG_FP_MODEL_80x87;
         }
 #endif

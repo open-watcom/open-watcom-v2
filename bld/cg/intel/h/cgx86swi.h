@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,5 +84,7 @@ typedef enum {
 #define SET_FPU_LEVEL( r, v ) SET_FPU( r, (v) | ( GET_FPU( r ) & FPU_EMU ) )
 #define SET_FPU_EMU( r )      SET_FPU( r, GET_FPU( r ) | FPU_EMU )
 #define SET_FPU_INLINE( r )   SET_FPU( r, GET_FPU( r ) & ~FPU_EMU )
+#define SET_FPU_FPC( r )      SET_FPU( r, FPU_NONE )
 
 #define GET_FPU_EMU( r )      ( ( GET_FPU( r ) & FPU_EMU ) != FPU_NONE )
+#define GET_FPU_FPC( r )      ( GET_FPU( r ) == FPU_NONE )

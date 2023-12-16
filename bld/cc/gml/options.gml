@@ -1328,12 +1328,14 @@
 :jusage. 無メッセージモードで動作します(エラーメッセージのみ表示されます)
 
 :option. zro
-:target. any
+:target. i86 386
+:enumerate. fp_rounding
 :usage. omit floating point rounding calls (non ANSI)
 :jusage.
 
 :option. zri
 :target. i86 386
+:enumerate. fp_rounding
 :usage. inline floating point rounding calls
 :jusage.
 

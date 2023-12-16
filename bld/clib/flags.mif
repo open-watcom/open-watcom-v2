@@ -37,7 +37,7 @@ clib_cpp_flags += $(clib_cpp_flags_$(system)) $(clib_cpp_flags_$(system)_$(proce
 ##########################
 # C COMPILER SETINGS
 ######
-sw_c_common = $(watcom_common_cflags)-we-j-za99-zl-x-xx-zam-wpx
+sw_c_common = $(watcom_common_cflags)-we-j-zastd=c99-zl-x-xx-zam-wpx
 !ifneq debug 0
 !else
 sw_c_common += -s

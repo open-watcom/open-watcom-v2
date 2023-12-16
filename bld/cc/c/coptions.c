@@ -238,6 +238,8 @@ static void SetCharacterEncoding( void )
         CompFlags.use_double_byte = true;
         SetDBChar( -1 );                    /* set double-byte char type to default */
         break;
+    default:
+        break;
     }
 }
 
@@ -401,16 +403,6 @@ static void SetFinalTargetSystem( void )
     case TS_NETWARE:
         PreDefine_Macro( "__NETWARE_386__" );
         /*
-         * If using NetWare, set Stack87 unless the target
-         * is NetWare 5 or higher.
-         */
-        if( TargetSystem == TS_NETWARE ) {
-            Stack87 = 4;
-        }
-        if( SwData.mem == SW_M_DEF ) {
-            SwData.mem = SW_MS;
-        }
-        /*
          * NETWARE uses stack based calling conventions
          * by default - silly people.
          */
@@ -473,25 +465,25 @@ static void SetGenSwitches( void )
     /*
      * setup CPU, if not specified then use default CPU
      */
+    if( SwData.cpu == SW_CPU_DEF ) {
   #if _CPU == 8086
-    if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU0;
   #else
-    if( SwData.cpu == SW_CPU_DEF )
         SwData.cpu = SW_CPU6;
   #endif
+    }
     SET_CPU( ProcRevision, SwData.cpu - SW_CPU0 + CPU_86 );
 
     /*
      * setup FPU, if not specified then use default FPU
      */
+    if( SwData.fpu == SW_FPU_DEF ) {
   #if _CPU == 8086
-    if( SwData.fpu == SW_FPU_DEF )
         SwData.fpu = SW_FPU0;
   #else
-    if( SwData.fpu == SW_FPU_DEF )
         SwData.fpu = SW_FPU3;
   #endif
+    }
     switch( SwData.fpu ) {
     case SW_FPU0:
         SET_FPU_LEVEL( ProcRevision, FPU_87 );
@@ -512,34 +504,48 @@ static void SetGenSwitches( void )
     case SW_FPT_DEF:
     case SW_FPT_EMU:
   #if _CPU == 386
-        if( TargetSystem == TS_WINDOWS ) {
-            SwData.fpt = SW_FPT_INLINE;
-            SET_FPU_INLINE( ProcRevision );
-            break;
-        }
+        if( TargetSystem != TS_WINDOWS ) {
   #endif
-        SwData.fpt = SW_FPT_EMU;
-        SET_FPU_EMU( ProcRevision );
-        break;
+            SET_FPU_EMU( ProcRevision );
+            break;
+  #if _CPU == 386
+        }
+        /* fall through */
+  #endif
     case SW_FPT_INLINE:
         SET_FPU_INLINE( ProcRevision );
         break;
     case SW_FPT_CALLS:
-        SET_FPU( ProcRevision, FPU_NONE );
+        SET_FPU_FPC( ProcRevision );
+        CompFlags.op_switch_used = false;
         break;
     }
+    /*
+     * If using NetWare, set Stack87 unless the target
+     * is NetWare 5 or higher.
+     */
+    if( TargetSystem == TS_NETWARE ) {
+        Stack87 = 4;
+    }
+
+  #if _CPU == 386
+    TargetSwitches |= CGSW_X86_USE_32;
+  #endif
 
     /*
      * setup memory model, if not specified then use default model
      */
+    if( SwData.mem == SW_M_DEF ) {
   #if _CPU == 8086
-    if( SwData.mem == SW_M_DEF )
         SwData.mem = SW_MS;
   #else
-    if( SwData.mem == SW_M_DEF )
-        SwData.mem = SW_MF;
-    TargetSwitches |= CGSW_X86_USE_32;
+        if( TargetSystem == TS_NETWARE ) {
+            SwData.mem = SW_MS;
+        } else {
+            SwData.mem = SW_MF;
+        }
   #endif
+    }
     switch( SwData.mem ) {
     case SW_MF:
         TargetSwitches |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
@@ -575,6 +581,10 @@ static void SetGenSwitches( void )
     if( !SwData.peg_gs_on )
         TargetSwitches |= CGSW_X86_FLOATING_GS;
 #endif
+
+    /*
+     * DWARF is the default
+     */
     switch( SwData.dbg_fmt ) {
     case SW_DF_WATCOM:
         /*
@@ -585,9 +595,6 @@ static void SetGenSwitches( void )
         GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     case SW_DF_DEF:
-        /*
-         * DWARF is the default
-         */
     case SW_DF_DWARF:
         GenSwitches |= CGSW_GEN_DBG_DF;
         break;
@@ -599,11 +606,13 @@ static void SetGenSwitches( void )
         GenSwitches |= CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF;
         SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYP_USHORT ), SC_NONE );
         break;
+    default:
+        break;
     }
 }
 
 #if _INTEL_CPU
-static void PreDefine_UMIX86Macro( void )
+static void PreDefine_UMIX86_Macro( void )
 {
     unsigned    cpu;
     char        buff[32];
@@ -839,7 +848,7 @@ static void MacroDefs( void )
         DefSwitchMacro( "EC" );
     }
 #if _INTEL_CPU
-    PreDefine_UMIX86Macro();
+    PreDefine_UMIX86_Macro();
     switch( GET_CPU( ProcRevision ) ) {
     case CPU_86:
         DefSwitchMacro( "0" );
@@ -862,26 +871,10 @@ static void MacroDefs( void )
     case CPU_686:
         DefSwitchMacro( "6" );
         break;
-    }
-    switch( SwData.fpt ) {
-    case SW_FPT_CALLS:
-        CompFlags.op_switch_used = false;
-        DefSwitchMacro( "FPC" );
-        break;
-    case SW_FPT_EMU:
-        DefSwitchMacro( "FPI" );
-        Define_Macro( "__FPI__" );
-        break;
-    case SW_FPT_INLINE:
-        DefSwitchMacro( "FPI87" );
-        Define_Macro( "__FPI__" );
-        break;
     default:
         break;
     }
     switch( GET_FPU_LEVEL( ProcRevision ) ) {
-    case FPU_NONE:
-        break;
     case FPU_87:
         DefSwitchMacro( "FP2" );
         break;
@@ -894,7 +887,20 @@ static void MacroDefs( void )
     case FPU_686:
         DefSwitchMacro( "FP6" );
         break;
+    default:
+        break;
     }
+    if( GET_FPU_FPC( ProcRevision ) ) {
+        DefSwitchMacro( "FPC" );
+    } else {
+        if( GET_FPU_EMU( ProcRevision ) ) {
+            DefSwitchMacro( "FPI" );
+        } else {
+            DefSwitchMacro( "FPI87" );
+        }
+        Define_Macro( "__FPI__" );
+    }
+
     if( SwData.nd_used ) {
         DefSwitchMacro( "ND" );
     }
@@ -2301,15 +2307,16 @@ static void Define_Memory_Model( void )
             strcpy( CLIB_Name, "1clibdl?" );
         }
     }
-    if( GET_FPU_EMU( ProcRevision ) ) {
-        strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8emu87";
-    } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
+    if( GET_FPU_FPC( ProcRevision ) ) {
         strcpy( MATHLIB_Name, "5math?" );
         EmuLib_Name = NULL;
     } else {
         strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8noemu87";
+        if( GET_FPU_EMU( ProcRevision ) ) {
+            EmuLib_Name = "8emu87";
+        } else {
+            EmuLib_Name = "8noemu87";
+        }
     }
     *strchr( CLIB_Name, '?' ) = lib_model;
     *strchr( MATHLIB_Name, '?' ) = lib_model;
@@ -2322,14 +2329,7 @@ static void Define_Memory_Model( void )
     } else {
         strcpy( CLIB_Name, "1clib3?" );     /* There is only 1 CLIB now! */
     }
-    if( GET_FPU_EMU( ProcRevision ) ) {
-        if( CompFlags.br_switch_used ) {
-            strcpy( MATHLIB_Name, "7mt7?dll" );
-        } else {
-            strcpy( MATHLIB_Name, "7math387?" );
-        }
-        EmuLib_Name = "8emu387";
-    } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
+    if( GET_FPU_FPC( ProcRevision ) ) {
         if( CompFlags.br_switch_used ) {
             strcpy( MATHLIB_Name, "5mth?dll" );
         } else {
@@ -2342,7 +2342,11 @@ static void Define_Memory_Model( void )
         } else {
             strcpy( MATHLIB_Name, "7math387?" );
         }
-        EmuLib_Name = "8noemu387";
+        if( GET_FPU_EMU( ProcRevision ) ) {
+            EmuLib_Name = "8emu387";
+        } else {
+            EmuLib_Name = "8noemu387";
+        }
     }
     *strchr( CLIB_Name, '?' ) = lib_model;
     *strchr( MATHLIB_Name, '?' ) = lib_model;

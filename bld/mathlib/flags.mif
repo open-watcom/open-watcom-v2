@@ -1,7 +1,7 @@
 !ifneq debug 0
-sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-oax-zl-wpx
+sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-x-xx-zam-oax-zl-wpx
 !else
-sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-s-oax-zl-wpx
+sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-x-xx-zam-s-oax-zl-wpx
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
