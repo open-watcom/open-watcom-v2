@@ -210,7 +210,7 @@ static const inline_funcs *IF_Lookup( const char *name )
 {
     const inline_funcs  *ifunc;
 
-    if( GET_FPU( ProcRevision ) > FPU_NONE ) {
+    if( !GET_FPU_FPC( ProcRevision ) ) {
         for( ifunc = _8087_Functions; ifunc->name != NULL; ++ifunc ) {
             if( strcmp( ifunc->name, name ) == 0 ) {
                 return( Flat( ifunc ) );
@@ -894,14 +894,14 @@ static void addDefaultImports( void )
   #endif
         if( CompFlags.pgm_used_8087
           || CompFlags.float_used ) {
-            if( GET_FPU( ProcRevision ) & FPU_EMU ) {
+            if( GET_FPU_EMU( ProcRevision ) ) {
   #if _CPU == 8086
                 AddExtRefN( "__init_87_emulator" );
   #else /* _CPU == 386 */
                 AddExtRefN( "__init_387_emulator" );
   #endif
             }
-            if( GET_FPU( ProcRevision ) > FPU_NONE ) {
+            if( !GET_FPU_FPC( ProcRevision ) ) {
                 if( Stack87 == 4 ) {
                     AddExtRefN( "__old_8087" );
                 } else {
