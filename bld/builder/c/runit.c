@@ -186,6 +186,7 @@ static int ProcSet( const char *cmd )
     rep++;
     if( *rep == '\0' ) {
 #if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+        /* fix for OW 1.9 */
         setenv( tmp_buf, NULL, 1 );
 #else
         /* Delete the environment variable! */

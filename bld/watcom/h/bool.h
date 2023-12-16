@@ -34,6 +34,10 @@
 #if !defined( __cplusplus )
   #if !defined( __bool_true_false_are_defined )
     #if !defined( __STDC_VERSION__ ) || __STDC_VERSION__ < 199901L || defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+        /*
+         * support for pre C99 compilers
+         * fix for OW 1.9 bug in _Bool implementation
+         */
         #define bool        unsigned char
         #define true        1
         #define false       0

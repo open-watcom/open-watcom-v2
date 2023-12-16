@@ -5,7 +5,7 @@ bld_ver       = $+$(%OWBLDVER)$-
 bld_ver_str   = $+$(%OWBLDVERSTR)$-
 bld_ver_tool  = $+$(%OWBLDVERTOOL)$-
 curr_year     = xxxx
-!if $(__VERSION__) > 1290
+!if $(__VERSION__) >= 1300
 curr_year     = $+$(%__CYEAR__)$-
 !endif
 patch_level   = 0

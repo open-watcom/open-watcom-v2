@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+    /* fix for OW 1.9 */
     #include <share.h>
     #define _sopen3             sopen
     #define _sopen4             sopen
