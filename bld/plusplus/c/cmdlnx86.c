@@ -1297,10 +1297,10 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         DftCallConv = &PascalInfo;
         break;
     case OPT_ENUM_intel_call_conv_ecr:
-        DftCallConv = &SyscallInfo;
+        DftCallConv = &FortranInfo;
         break;
     case OPT_ENUM_intel_call_conv_ecs:
-        DftCallConv = &FortranInfo;
+        DftCallConv = &SyscallInfo;
         break;
     case OPT_ENUM_intel_call_conv_ecw:
     case OPT_ENUM_intel_call_conv_default:
