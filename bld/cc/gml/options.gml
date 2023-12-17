@@ -1148,7 +1148,7 @@
 
 :option. z\astd z\Astd
 :target. any
-:special. checkSTD =<standard>
+:special. checkSTD =<std>
 :number. . 0
 :enumerate. cstd
 :usage. use specified ISO/ANSI C language standard (c89,c99)
@@ -1388,5 +1388,5 @@
 
 :option. zz
 :target. 386
-:usage. remove "@size" from __stdcall function names (10.0 compatible)
-:jusage. "@size"を__stdcall関数名から削除します(10.0との互換性)
+:usage. remove "@size" from __stdcall names (10.0 compatible)
+:jusage. remove "@size" from __stdcall names (10.0 compatible)
