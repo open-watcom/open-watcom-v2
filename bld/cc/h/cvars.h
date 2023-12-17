@@ -608,26 +608,26 @@ extern MEPTR        MacroScan( void );
 extern TOKEN        Process_Pragma( void );
 
 /* cmath.c */
-extern TREEPTR      AddOp(TREEPTR,TOKEN,TREEPTR);
-extern TREEPTR      InitAsgn( TYPEPTR,TREEPTR );
-extern TREEPTR      AsgnOp(TREEPTR,TOKEN,TREEPTR);
-extern TREEPTR      BinOp(TREEPTR,TOKEN,TREEPTR);
+extern TREEPTR      AddOp( TREEPTR, TOKEN, TREEPTR );
+extern TREEPTR      InitAsgn( TYPEPTR, TREEPTR );
+extern TREEPTR      AsgnOp( TREEPTR, TOKEN, TREEPTR );
+extern TREEPTR      BinOp( TREEPTR, TOKEN, TREEPTR );
 extern bool         IsPtrConvSafe( TREEPTR, TYPEPTR, TYPEPTR );
 extern TREEPTR      CnvOp( TREEPTR, TYPEPTR, bool );
-extern TREEPTR      FlowOp(TREEPTR,opr_code,TREEPTR);
-extern TREEPTR      IntOp(TREEPTR,TOKEN,TREEPTR);
-extern TREEPTR      RelOp(TREEPTR,TOKEN,TREEPTR);
-extern TREEPTR      ShiftOp(TREEPTR,TOKEN,TREEPTR);
-extern TYPEPTR      TernType(TREEPTR,TREEPTR);
-extern TYPEPTR      TypeOf(TREEPTR);
-extern TREEPTR      UComplement(TREEPTR);
-extern TREEPTR      UMinus(TREEPTR);
+extern TREEPTR      FlowOp( TREEPTR, opr_code, TREEPTR );
+extern TREEPTR      IntOp( TREEPTR, TOKEN, TREEPTR );
+extern TREEPTR      RelOp( TREEPTR, TOKEN, TREEPTR );
+extern TREEPTR      ShiftOp( TREEPTR, TOKEN, TREEPTR );
+extern TYPEPTR      TernType( TREEPTR, TREEPTR );
+extern TYPEPTR      TypeOf( TREEPTR );
+extern TREEPTR      UComplement( TREEPTR );
+extern TREEPTR      UMinus( TREEPTR );
 extern DATA_TYPE    BinExprType( TYPEPTR, TYPEPTR );
 extern DATA_TYPE    DataTypeOf( TYPEPTR );
 extern bool         IsFuncPtr( TYPEPTR );
 extern TREEPTR      FixupAss( TREEPTR opnd, TYPEPTR newtyp );
 extern pointer_class ExprTypeClass( TYPEPTR typ );
-extern TREEPTR      LCastAdj(  TREEPTR tree );
+extern TREEPTR      LCastAdj( TREEPTR tree );
 
 /* cmodel */
 extern char         *BadCmdLine( int, const char * );

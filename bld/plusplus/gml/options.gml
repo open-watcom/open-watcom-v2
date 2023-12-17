@@ -1418,7 +1418,7 @@
 :jusage. 無メッセージモードで動作します(エラーメッセージのみ表示されます)
 
 :option. zro
-:target. any
+:target. i86 386
 :enumerate. fp_rounding
 :usage.  omit floating point rounding calls (non ANSI)
 :jusage. omit floating point rounding calls (non ANSI)

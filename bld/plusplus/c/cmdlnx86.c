@@ -342,15 +342,14 @@ static void setMemoryModel( OPT_STORAGE *data )
 #if _CPU == 8086
         data->mem_model = OPT_ENUM_mem_model_ms;
 #else
-        data->mem_model = OPT_ENUM_mem_model_mf;
+        if( TargetSystem == TS_NETWARE
+          || TargetSystem == TS_NETWARE5 ) {
+            data->mem_model = OPT_ENUM_mem_model_ms;
+        } else {
+            data->mem_model = OPT_ENUM_mem_model_mf;
+        }
 #endif
     }
-#if _CPU == 386
-    if( TargetSystem == TS_NETWARE
-      || TargetSystem == TS_NETWARE5 ) {
-        data->mem_model = OPT_ENUM_mem_model_ms;
-    }
-#endif
     bit = 0;
     if( CompFlags.non_iso_compliant_names_enabled ) {
         switch( data->mem_model ) {
@@ -469,7 +468,7 @@ static void setMemoryModel( OPT_STORAGE *data )
     }
 #if _CPU == 386
     /*
-     * 32-bit code with zld option has DS pegged
+     * 32-bit code with zdl option has DS pegged
      */
     if( data->zdl ) {
         TargetSwitches |= CGSW_X86_LOAD_DS_DIRECTLY;
@@ -711,6 +710,9 @@ static void setMemoryModel( OPT_STORAGE *data )
 static void setIntelArchitecture( OPT_STORAGE *data )
 {
 #if _CPU == 8086
+    /*
+     * Set CPU for 16-bit architecture, default is 8086
+     */
     switch( data->arch_i86 ) {
     case OPT_ENUM_arch_i86_default:
     case OPT_ENUM_arch_i86__0:
@@ -736,6 +738,9 @@ static void setIntelArchitecture( OPT_STORAGE *data )
         break;
     }
 #else
+    /*
+     * Set CPU for 32-bit architecture, default is 80686
+     */
     switch( data->arch_386 ) {
     case OPT_ENUM_arch_386__3s:
         CompFlags.register_conventions = false;
@@ -771,12 +776,19 @@ static void setIntelArchitecture( OPT_STORAGE *data )
         SET_CPU( CpuSwitches, CPU_686 );
         break;
     }
+    /*
+     * NETWARE uses stack based calling conventions
+     * by default - silly people.
+     */
     if( TargetSystem == TS_NETWARE
       || TargetSystem == TS_NETWARE5 ) {
         CompFlags.register_conventions = false;
     }
 #endif
 
+    /*
+     * Set FPU level, default is 8087/80387
+     */
     switch( data->intel_fpu_level ) {
     case OPT_ENUM_intel_fpu_level_fp6:
         SET_FPU_LEVEL( CpuSwitches, FPU_686 );
@@ -797,6 +809,9 @@ static void setIntelArchitecture( OPT_STORAGE *data )
         SET_FPU_LEVEL( CpuSwitches, FPU_87 );
         break;
     }
+    /*
+     * Set FPU model, default is fpi
+     */
     switch( data->intel_fpu_model ) {
     case OPT_ENUM_intel_fpu_model_default:
     case OPT_ENUM_intel_fpu_model_fpi:
@@ -1034,6 +1049,7 @@ static void macroDefs( void )
         break;
     DbgDefault( "macroDefs -- invalid exception switch" );
     }
+
     switch( GET_CPU( CpuSwitches ) ) {
     case CPU_86:
         DefSwitchMacro( "0" );

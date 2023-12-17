@@ -1099,7 +1099,7 @@ static void addDefaultImports( void )
         }
     #endif
         if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
-            if( CpuSwitches & FPU_EMU ) {
+            if( GET_FPU_EMU( CpuSwitches ) ) {
     #if _CPU == 8086
                 CgInfoAddImport( "__init_87_emulator" );
     #else
