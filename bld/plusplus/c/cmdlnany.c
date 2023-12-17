@@ -113,6 +113,34 @@ static void checkErrorLimit( unsigned *p )
     /* unused parameters */ (void)p;
 }
 
+static bool checkSTD( unsigned *value )
+{
+    cxxstd_ver  cxxstd;
+    bool        fail;
+
+    fail = true;
+    cxxstd = STD_NONE;
+    CmdRecogEquals();
+    while( !CmdScanSwEnd() ) {
+        if( CmdRecogChar( 'c' )
+          && CmdRecogChar( '+' )
+          && CmdRecogChar( '+' ) ) {
+            if( CmdRecogChar( '9' ) && CmdRecogChar( '8' ) ) {
+                cxxstd = STD_CXX98;
+                fail = false;
+            } else if( CmdRecogChar( '0' ) && CmdRecogChar( 'x' ) ) {
+                cxxstd = STD_CXX0X;
+                fail = false;
+            }
+        }
+    }
+    if( cxxstd != STD_NONE ) {
+        *value = cxxstd;
+        return( true );
+    }
+    return( false );
+}
+
 static bool scanDefine( OPT_STRING **p )
 {
     MEPTR cmdln_mentry;
@@ -1077,8 +1105,14 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->zat ) {
         CompFlags.no_alternative_tokens = true;
     }
-    if( data->za0x ) {
-        CompFlags.enable_std0x = true;
+    switch( data->cxxstd ) {
+    case OPT_ENUM_cxxstd_za0x:
+        SET_STD( CXX0X );
+        break;
+    case OPT_ENUM_cxxstd_zastd:
+        if( data->zastd_value != STD_NONE )
+            CompVars.cxxstd = data->zastd_value;
+        break;
     }
     if( data->zf ) {
         CompFlags.use_old_for_scope = true;

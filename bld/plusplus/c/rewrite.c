@@ -721,7 +721,7 @@ REWRITE *RewritePackageTemplateArgument( void )
             break;
         case T_RSHIFT:
             // see Right Angle Brackets (N1757/05-0017)
-            if( CompFlags.enable_std0x
+            if( CHECK_STD( >= , CXX0X )
              && ( brace_depth == 0 ) && ( bracket_depth == 0 )
              && ( paren_depth == 0 ) ) {
                 if( angle_depth == 1 ) {

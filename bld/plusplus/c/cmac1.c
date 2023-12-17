@@ -335,7 +335,7 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         return( T_STRING );
     case MACRO_CPLUSPLUS:
         TokenLen = 0;
-        if( CompFlags.enable_std0x ) {
+        if( CHECK_STD( >= , CXX0X ) ) {
             /*
              * it should be modified for C++ standard specific value
              * as soon as standard support will be more complete

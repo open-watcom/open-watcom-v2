@@ -688,11 +688,11 @@ static void ForStmt( void )
 
     NextToken();
     MustRecog( T_LEFT_PAREN );
-    if( CompVars.cstd >= CSTD_C99 ) {
+    if( CHECK_STD( > , C89 ) ) {
         PushBlock();    // 'for' opens new scope
     }
     if( CurToken != T_SEMI_COLON ) {
-        if( CompVars.cstd >= CSTD_C99 ) {
+        if( CHECK_STD( > , C89 ) ) {
             TREEPTR     tree;
 
             tree = LeafNode( OPR_NEWBLOCK );
@@ -1077,7 +1077,7 @@ static void EndOfStmt( void )
             EndForStmt();
             --LoopDepth;
             DropBreakLabel();
-            if( CompVars.cstd >= CSTD_C99 ) {
+            if( CHECK_STD( > , C89 ) ) {
                 EndBlock();     /* Terminate the scope introduced by 'for' */
                 PopBlock();
             }
@@ -1245,7 +1245,7 @@ void Statement( void )
         if( GrabLabels() == 0 && declaration_allowed && IsDeclarator( CurToken ) ) {
             GetLocalVarDecls();
         }
-        if( CompVars.cstd >= CSTD_C99 ) {
+        if( CHECK_STD( > , C89 ) ) {
             declaration_allowed = true;
         }
         skip_to_next_token = false;
@@ -1390,7 +1390,7 @@ void Statement( void )
         case T_DOUBLE:
         case T_SIGNED:
         case T_UNSIGNED:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 CErr1( ERR_MISSING_RIGHT_BRACE );
             } else {
                 CErr1( ERR_UNEXPECTED_DECLARATION );
@@ -1425,7 +1425,7 @@ void Statement( void )
         }
     }
     /* C99 has special semantics for return value of main() */
-    if( CompVars.cstd >= CSTD_C99 && strcmp( CurFunc->name, "main" ) == 0 ) {
+    if( CHECK_STD( > , C89 ) && strcmp( CurFunc->name, "main" ) == 0 ) {
         if( !return_at_outer_level ) {
             FixupC99MainReturn( func_result_handle, &return_info );
             return_at_outer_level = true;

@@ -387,7 +387,7 @@ static bool COperand( void )
         case TYP_LONG_DOUBLE:
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             done = true;
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( p, SafeAtof( Buffer ) );
             } else {
                 I32ToI64( SafeAtof( Buffer ), &(p.u.sval) );
@@ -404,7 +404,7 @@ static bool COperand( void )
             p.no_sign = 1;
             break;
         case TYP_ULONG64:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( p, U32FetchTrunc( Constant64 ) );
             } else {
                 p.u.uval = Constant64;
@@ -412,7 +412,7 @@ static bool COperand( void )
             p.no_sign = 1;
             break;
         case TYP_LONG64:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( p, U32FetchTrunc( Constant64 ) );
             } else {
                 p.u.uval = Constant64;
@@ -420,7 +420,7 @@ static bool COperand( void )
             p.no_sign = 0;
             break;
         default:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( p, Constant );
             } else {
                 I32ToI64( Constant, &(p.u.sval) );
@@ -659,7 +659,7 @@ static bool COr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( CompVars.cstd < CSTD_C99 ) {
+        if( CHECK_STD( < , C99 ) ) {
             U32ToU64Set( e1, U64Low( e1 ) | U64Low( e2 ) );
         } else {
             U64OrEq( e1, e2 );
@@ -682,7 +682,7 @@ static bool CXOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( CompVars.cstd < CSTD_C99 ) {
+        if( CHECK_STD( < , C99 ) ) {
             U32ToU64Set( e1, U64Low( e1 ) ^ U64Low( e2 ) );
         } else {
             U64XOrEq( e1, e2 );
@@ -705,7 +705,7 @@ static bool CAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( CompVars.cstd < CSTD_C99 ) {
+        if( CHECK_STD( < , C99 ) ) {
             U32ToU64Set( e1, U64Low( e1 ) & U64Low( e2 ) );
         } else {
             U64AndEq( e1, e2 );
@@ -756,7 +756,7 @@ static bool CRelational( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_LT:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( e1.no_sign || e2.no_sign ) {
                     val = U64Low( e1 ) < U64Low( e2 );
                 } else {
@@ -772,7 +772,7 @@ static bool CRelational( void )
             U32ToU64Set( e1, val );
             break;
         case T_LE:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( e1.no_sign || e2.no_sign ) {
                     val = U64Low( e1 ) <= U64Low( e2 );
                 } else {
@@ -788,7 +788,7 @@ static bool CRelational( void )
             U32ToU64Set( e1, val );
             break;
         case T_GT:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( e1.no_sign || e2.no_sign ) {
                     val = U64Low( e1 ) > U64Low( e2 );
                 } else {
@@ -804,7 +804,7 @@ static bool CRelational( void )
             U32ToU64Set( e1, val );
             break;
         case T_GE:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( e1.no_sign || e2.no_sign ) {
                     val = U64Low( e1 ) >= U64Low( e2 );
                 } else {
@@ -841,7 +841,7 @@ static bool CShift( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_RSHIFT:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( U64Low( e2 ) > 32 || ( U64High( e2 ) != 0 ) ) {
                     if( e1.no_sign ) {
                         U64SetZero( e1 );
@@ -880,7 +880,7 @@ static bool CShift( void )
             }
             break;
         case T_LSHIFT:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( U64Low( e2 ) > 32 || ( U64High( e2 ) != 0 ) ) {
                     U64SetZero( e1 );
                 } else {
@@ -915,7 +915,7 @@ static bool CAdditive( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_PLUS:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( e1, U64Low( e1 ) + U64Low( e2 ) );
             } else {
                 U64AddEq( e1, e2 );
@@ -923,7 +923,7 @@ static bool CAdditive( void )
             e1.no_sign |= e2.no_sign;
             break;
         case T_MINUS:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( e1, U64Low( e1 ) - U64Low( e2 ) );
             } else {
                 U64SubEq( e1, e2 );
@@ -952,14 +952,14 @@ static bool CMultiplicative( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_TIMES:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( e1, U64Low( e1 ) * U64Low( e2 ) );
             } else {
                 U64MulEq( e1, e2 );
             }
             break;
         case T_DIV:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( U64Zero( e2 ) ) {
                     U64SetZero( e1 );
                 } else if( e1.no_sign || e2.no_sign ) {
@@ -980,7 +980,7 @@ static bool CMultiplicative( void )
             }
             break;
         case T_PERCENT:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 if( U64Zero( e2 ) ) {
                     U64SetZero( e1 );
                 } else if( e1.no_sign || e2.no_sign ) {
@@ -1026,7 +1026,7 @@ static bool CUnary( void )
         case T_UNARY_PLUS:
             break;
         case T_UNARY_MINUS:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( p, - I64Low( p ) );
             } else {
                 U64Neg( &((p).u.uval), &((p).u.uval ) );
@@ -1043,7 +1043,7 @@ static bool CUnary( void )
             break;
         case T_TILDE:
 //        case T_ALT_TILDE:
-            if( CompVars.cstd < CSTD_C99 ) {
+            if( CHECK_STD( < , C99 ) ) {
                 U32ToU64Set( p, ~U64Low( p ) );
             } else {
                 U64Not( &(p.u.sval), &(p.u.sval) );

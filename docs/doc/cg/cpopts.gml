@@ -401,15 +401,15 @@ disable/enable language extensions
 :optref refid='SWza'.
 :optref refid='SWze'.
 .do end
-.if &e'&$SWza89 ne 0 .do begin
-.note za89
-use ISO/ANSI C89 language standard
-:optref refid='SWza89'.
+.if &e'&$SWzastd ne 0 .do begin
+.note zastd=<standard>
+use specified ISO/ANSI language standard
+:optref refid='SWzastd'.
 .do end
 .if &e'&$SWza99 ne 0 .do begin
 .note za99
-use ISO/ANSI C99 language standard
-:optref refid='SWza99'.
+use ISO/ANSI C99 language standard; deprecated, use zastd=c99
+:optref refid='SWzastd'.
 .do end
 .if &e'&$SWzq ne 0 .do begin
 .note zq
@@ -2591,20 +2591,39 @@ the ISO C standard programming language specification.
 The use of C++ style comments (// comment) are not diagnosed.
 .do end
 .*
-.if &e'&$SWza89 ne 0 .do begin
-:OPT refid='SWza89' name='za89'.
-.ix 'options' 'za89'
-.ix 'ISO/ANSI C89 language standard compatibility'
+.if &e'&$SWzastd ne 0 .do begin
+:OPT refid='SWzastd' name='zastd'.=<standard>
+.ix 'options' 'zastd'
+.ix 'ISO/ANSI language standard compatibility'
 This option helps to ensure that the module to be compiled conforms to
-the ISO/ANSI C programming language standard
+the selected ISO/ANSI C programming language standard.
+.np
+.np
+.begnote $compact
+.notehd1 C compiler value
+.notehd2 Description
+.note c89
+C 1989 standard (default)
+.note c99
+C 1999 standard
+.endnote
+.np
+.begnote $compact
+.notehd1 C++ compiler value
+.notehd2 Description
+.note c++98
+C++ 1998 standard (default)
+.note c++0x
+experimental, some features of new C++ standards
+.endnote
 .do end
 .*
 .if &e'&$SWza99 ne 0 .do begin
 :OPT refid='SWza99' name='za99'.
 .ix 'options' 'za99'
 .ix 'ISO/ANSI C99 language standard compatibility'
-This option helps to ensure that the module to be compiled conforms to
-the ISO/ANSI C programming language standard
+This option is deprecated, use zastd=c99
+:optref refid='SWzastd'.
 .do end
 .*
 .if &e'&$SWze ne 0 .do begin

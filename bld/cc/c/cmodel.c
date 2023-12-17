@@ -313,7 +313,7 @@ void InitModInfo( void )
     WngLevel = WLEVEL_DEFAULT;
 
     PreProcChar = '#';
-    CompVars.cstd = CSTD_C89;
+    SET_STD( C89 );
 
     CompFlags.check_syntax                      = false;
     CompFlags.signed_char                       = false;

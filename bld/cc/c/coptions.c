@@ -1365,7 +1365,7 @@ static void Set_XD( void )          { TargetSwitches |= CGSW_RISC_EXCEPT_FILTER_
 
 static void Set_ZA99( void )
 {
-    CompVars.cstd = CSTD_C99;
+    SET_STD( C99 );
 }
 
 static void Set_ZASTD( void )
@@ -1374,11 +1374,11 @@ static void Set_ZASTD( void )
 
     p = strupr( CopyOfParm() );
     if( strcmp( p, "C89" ) == 0 ) {
-        CompVars.cstd = CSTD_C89;
+        SET_STD( C89 );
     } else if( strcmp( p, "C99" ) == 0 ) {
-        CompVars.cstd = CSTD_C99;
+        SET_STD( C99 );
     } else if( strcmp( p, "C23" ) == 0 ) {
-        CompVars.cstd = CSTD_C23;
+        SET_STD( C23 );
     }
     CMemFree( p );
 }

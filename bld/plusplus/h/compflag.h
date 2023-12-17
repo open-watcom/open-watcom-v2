@@ -187,7 +187,6 @@ typedef struct comp_flags {
     boolbit     dont_autogen_ext_src            : 1;
     boolbit     use_old_for_scope               : 1;
     boolbit     no_alternative_tokens           : 1;    // disable alternative tokens
-    boolbit     enable_std0x                    : 1;    // enable some C++0x features
     boolbit     generate_auto_depend            : 1;
     boolbit     ignore_fnf                      : 1;
     boolbit     cpp_ignore_env                  : 1;    // ignore include path env vars
@@ -217,6 +216,16 @@ typedef struct comp_flags {
     boolbit     mfi_switch_used                 : 1;    // flat model interrupts (ss stays same)
 
 } COMP_FLAGS;
+
+typedef struct comp_vars {
+/*****************************************************************************
+ *
+ *  execution status variables
+ *
+ *****************************************************************************/
+
+    cxxstd_ver      cxxstd;                 // used C++ standard
+} COMP_VARS;
 
 #ifdef OPT_BR
     #define BrinfActive() (     \

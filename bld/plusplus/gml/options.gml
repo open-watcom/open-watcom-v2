@@ -1086,15 +1086,15 @@
 :target. any
 :id.
 :multiple.
-:usage.  disable warning message <num>
-:jusage. 警告制御: 警告メッセージ<num>を禁止します
+:usage.  disable warning message <id>
+:jusage. 警告制御: 警告メッセージ<id>を禁止します
 
 :option. wce
 :target. any
 :id.
 :multiple.
-:usage.  enable warning message <num>
-:jusage. 警告制御: 警告メッセージ <num> の表示をします
+:usage.  enable warning message <id>
+:jusage. 警告制御: 警告メッセージ <id> の表示をします
 
 :option. we
 :target. any
@@ -1222,13 +1222,23 @@
 
 :option. za0x
 :target. any
+:enumerate. cxxstd
+:internal.
 :usage.  enable some features of the upcoming ISO C++0x standard
+:jusage.
+
+:option. zastd
+:target. any
+:special. checkSTD =<standard>
+:number. . 0
+:enumerate. cxxstd
+:usage.  use specified ISO C++ language standard (c++98,c++0x)
 :jusage.
 
 :option. zam
 :target. any
-:usage.  disable all compiler non-ISO compliant names (macros, symbols)
-:jusage. disable all compiler non-ISO compliant names (macros, symbols)
+:usage.  disable all non-ISO compliant names (macros, symbols)
+:jusage. disable all non-ISO compliant names (macros, symbols)
 
 :option. zat
 :target. any
@@ -1478,5 +1488,5 @@
 
 :option. zz
 :target. 386
-:usage.  remove "@size" from __stdcall function names (10.0 compatible)
-:jusage. "@size"を__stdcall関数名から削除します(10.0との互換性)
+:usage.  remove "@size" from __stdcall names (10.0 compatible)
+:jusage. remove "@size" from __stdcall names (10.0 compatible)

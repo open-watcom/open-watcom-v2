@@ -314,7 +314,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
             U64Add( &n, &Inc, &n );
             MustRecog( T_COMMA );
             if( !CompFlags.extensions_enabled
-              && CompVars.cstd < CSTD_C99
+              && CHECK_STD( < , C99 )
               && ( CurToken == T_RIGHT_BRACE )) {
                 ExpectIdentifier();
             }

@@ -1136,8 +1136,8 @@
 
 :option. z\a99 z\A99
 :target. any
+:enumerate. cstd
 :internal.
-:enumerate. iso
 :usage. use ISO/ANSI C99 standard
 :jusage. use ISO/ANSI C99 standard
 
@@ -1148,10 +1148,11 @@
 
 :option. z\astd z\Astd
 :target. any
-:special. checkSTD =c99
+:special. checkSTD =<standard>
 :number. . 0
-:usage. use ISO/ANSI C99 standard
-:jusage. use ISO/ANSI C99 standard
+:enumerate. cstd
+:usage. use specified ISO/ANSI C language standard (c89,c99)
+:jusage. use specified ISO/ANSI C language standard (c89,c99)
 
 :option. zc
 :target. i86 386

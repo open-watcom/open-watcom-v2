@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,6 +185,15 @@ enum {
     TS_MAX
 };
 
+typedef enum {
+    STD_NONE,
+    STD_CXX98,
+    STD_CXX0X,
+} cxxstd_ver;
+
+#define CHECK_STD(o,v)  (CompVars.cxxstd o STD_ ## v)
+#define SET_STD(v)      CompVars.cxxstd = STD_ ## v
+
 typedef struct {
     void                *curr_offset;
     unsigned long       undef_count;
@@ -259,6 +268,7 @@ typedef enum {
 global int              WngLevel;       // - warning severity level
 global unsigned         TargetSystem;   // - target system
 global COMP_FLAGS       CompFlags;      // - compiler flags
+global COMP_VARS        CompVars;       // - compiler variables
 global void             *Environment;   // - var for Suicide()
 
 global error_state_t    ErrLimit;       // - error limit

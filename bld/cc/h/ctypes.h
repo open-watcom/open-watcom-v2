@@ -677,15 +677,18 @@ typedef struct global_comp_flags {  // things that live across compiles
 } global_comp_flags;
 
 typedef enum {
-    CSTD_NONE,
-    CSTD_C89,
-    CSTD_C99,
-    CSTD_C23
+    STD_NONE,
+    STD_C89,
+    STD_C99,
+    STD_C23
 } cstd_ver;
 
 typedef struct comp_vars {
     cstd_ver    cstd;
 } comp_vars;
+
+#define CHECK_STD(o,v)  (CompVars.cstd o STD_ ## v)
+#define SET_STD(v)      CompVars.cstd = STD_ ## v
 
 /* Target System types */
 enum {

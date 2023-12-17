@@ -421,7 +421,7 @@ TOKEN SpecialMacro( MEPTR mentry )
         ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
-        if( CompVars.cstd < CSTD_C99 ) {
+        if( CHECK_STD( < , C99 ) ) {
             WriteBufferString( "199409L" );
             Constant = 199409;
         } else {

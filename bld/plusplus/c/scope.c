@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -831,7 +831,7 @@ static void scopeInit(          // SCOPES INITIALIZATION
     injectChipBug();
     injectDwarfAbbrev();
     injectBool();
-    if( !CompFlags.enable_std0x ) {
+    if( CHECK_STD( < , CXX0X ) ) {
         KwDisable( T_STATIC_ASSERT );
         KwDisable( T_DECLTYPE );
         KwDisable( T_NULLPTR );
@@ -862,7 +862,7 @@ static void scopeFini(          // SCOPES COMPLETION
     if( CompFlags.extensions_enabled ) {
         KwEnable( T_BOOL );
     }
-    if( !CompFlags.enable_std0x ) {
+    if( CHECK_STD( < , CXX0X ) ) {
         KwEnable( T_STATIC_ASSERT );
         KwEnable( T_DECLTYPE );
         KwEnable( T_NULLPTR );

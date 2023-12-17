@@ -840,13 +840,13 @@ disable/enable language extensions (default is ze)
 :optref refid='SWza'.
 :optref refid='SWze'.
 .*
-.note za89
-use ISO/ANSI C89 language standard
-:optref refid='SWza89'.
+.note zastd=<standard>
+use specified ISO/ANSI language standard
+:optref refid='SWzastd'.
 .*
 .note za99
-use ISO/ANSI C99 language standard
-:optref refid='SWza89'.
+use ISO/ANSI C99 language standard; deprecated, use zastd=c99
+:optref refid='SWzastd'.
 .*
 .note zam
 :CMT. .ix 'options' 'zam'

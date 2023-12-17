@@ -70,7 +70,7 @@
 #define PPOPERATOR_PRAGMA           "_Pragma"
 
 #define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
-#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompVars.cstd >= CSTD_C99) \
+#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CHECK_STD( > , C89 )) \
                                     && l == LENLIT(PPOPERATOR_PRAGMA) \
                                     && strcmp(s, PPOPERATOR_PRAGMA) == 0)
 
