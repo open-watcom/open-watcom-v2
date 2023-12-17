@@ -49,6 +49,7 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "toggles.h"
+#include "cmdscan.h"
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -167,6 +168,28 @@ static struct
 static bool     debug_optimization_change = false;
 static int      character_encoding = 0;
 static unsigned unicode_CP = 0;
+
+static void scanInputFile( void )
+/********************************
+ * PROCESS NAME OF INPUT FILE
+ */
+{
+    size_t      len;    // - length of file name
+    const char  *beg;
+    char        *p;
+
+    len = CmdScanFilename( &beg );
+    p = ToStringDup( beg, len );
+    if( WholeFName != NULL ) {
+        /*
+         * more than one file to compile ?
+         */
+        CBanner();
+        CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
+        CMemFree( WholeFName );
+    }
+    WholeFName = p;
+}
 
 bool EqualChar( int c )
 {
@@ -2056,33 +2079,6 @@ static void SetPreprocessOptions( void )
     }
 }
 
-static const char *CollectEnvOrFileName( const char *str )
-{
-    char        *env;
-    char        ch;
-
-    while( *str == ' '
-      || *str == '\t' )
-        ++str;
-    env = TokenBuf;
-    for( ; (ch = *str) != '\0'; ) {
-        ++str;
-        if( ch == ' ' )
-            break;
-        if( ch == '\t' )
-            break;
-#if ! defined( __UNIX__ )
-        if( ch == '-' )
-            break;
-        if( ch == SwitchChar )
-            break;
-#endif
-        *env++ = ch;
-    }
-    *env = '\0';
-    return( str );
-}
-
 static char *ReadIndirectFile( const char *fname )
 {
     char        *env;
@@ -2104,8 +2100,7 @@ static char *ReadIndirectFile( const char *fname )
         /*
          * zip through characters changing \r, \n etc into ' '
          */
-        str = env;
-        while( (ch = *str) != '\0' ) {
+        for( str = env; (ch = *str) != '\0'; str++ ) {
             if( ch == '\r'
               || ch == '\n' ) {
                 *str = ' ';
@@ -2119,7 +2114,6 @@ static char *ReadIndirectFile( const char *fname )
                 break;
             }
 #endif
-            ++str;
         }
     }
     return( env );
@@ -2133,84 +2127,54 @@ static void ProcOptions( const char *str )
     char        *buffers[MAX_NESTING];
     const char  *penv;
     char        *ptr;
+    const char  *beg;
+    size_t      len;
+    int         ch;                      // - next character
+    char        *p;
 
     if( str != NULL ) {
         level = -1;
+        CmdScanInit( str );
         for( ;; ) {
-            while( *str == ' '
-              || *str == '\t' )
-                ++str;
-            if( *str == '@' ) {
-                str = CollectEnvOrFileName( str + 1 );
+            ch = CmdScanWhiteSpace();
+            if( ch == '@' ) {
+                CmdScanWhiteSpace();
+                CmdScanUngetChar();
+                len = CmdScanFilename( &beg );
                 level++;
                 if( level < MAX_NESTING ) {
-                    save[level] = str;
+                    save[level] = CmdScanAddr();
+                    p = ToStringDup( beg, len );
                     ptr = NULL;
-                    penv = FEGetEnv( TokenBuf );
+                    penv = FEGetEnv( p );
                     if( penv == NULL ) {
-                        ptr = ReadIndirectFile( TokenBuf );
+                        ptr = ReadIndirectFile( p );
                         penv = ptr;
                     }
                     buffers[level] = ptr;
+                    CMemFree( p );
                     if( penv != NULL ) {
-                        str = penv;
+                        CmdScanInit( penv );
                         continue;
                     }
                 }
                 level--;
             }
-            if( *str == '\0' ) {
+            if( ch == '\0' ) {
                 if( level < 0 )
                     break;
                 CMemFree( buffers[level] );
-                str = save[level];
+                CmdScanInit( save[level] );
                 level--;
                 continue;
             }
-            if( *str == '-'
-              || *str == SwitchChar ) {
-                str = ProcessOption( CFE_Options, str + 1, str );
+            if( ch == '-'
+              || ch == SwitchChar ) {
+                beg = CmdScanAddr();
+                CmdScanInit( ProcessOption( CFE_Options, beg, beg - 1 ) );
             } else {  /* collect  file name */
-                const char  *beg;
-                char        *p;
-                char        c;
-
-                beg = str;
-                if( *str == '"' ) {
-                    ++str;
-                    for( ; (c = *str) != '\0';  ) {
-                        ++str;
-                        if( c == '"' ) {
-                            break;
-                        }
-                        if( c == '\\' ) {
-                            ++str;
-                        }
-                    }
-                } else {
-                    for( ; (c = *str) != '\0'; ++str ) {
-                        if( c == ' '  )
-                            break;
-                        if( c == '\t'  )
-                            break;
-#if ! defined( __UNIX__ )
-                        if( c == SwitchChar ) {
-                            break;
-                        }
-#endif
-                    }
-                }
-                p = ToStringDup( beg, str - beg );
-                StripQuotes( p );
-                if( WholeFName != NULL ) {
-                    /*
-                     * more than one file to compile ?
-                     */
-                    CBanner();
-                    CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
-                    CMemFree( WholeFName );
-                }
-                WholeFName = p;
+                CmdScanUngetChar();
+                scanInputFile();
             }
         }
     }
