@@ -65,7 +65,7 @@
 #define WORDS_COUNT(size)   (((size) + WORD_SIZE - 1) / WORD_SIZE)
 
 #define WINDOWS_CHEAP  ( \
-    ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE )
+    ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE ) \
       && (CurrProc->state.attr & ROUTINE_LOADS_DS) ) \
     || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS ) \
       && (CurrProc->prolog_state & PST_EXPORT) == 0 ) \
