@@ -306,7 +306,6 @@ void InitModInfo( void )
     CompFlags.slack_byte_warning                = false;
     CompFlags.errfile_written                   = false;
     CompFlags.zu_switch_used                    = false;
-    CompFlags.register_conventions              = false;
     CompFlags.pragma_library                    = false;
     CompFlags.emit_all_default_libs             = false;
     CompFlags.emit_library_names                = true;
