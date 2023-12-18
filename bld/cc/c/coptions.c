@@ -287,7 +287,7 @@ static void SetTargetName( const char *name )
     SwData.sys_name = CMemStrDup( name );
 }
 
-static void SetTargetSystem( void )
+static char *SetTargetSystem( void )
 {
     if( SwData.sys_name == NULL ) {
 #if _INTEL_CPU
@@ -363,9 +363,10 @@ static void SetTargetSystem( void )
             TargetSystem = TS_UNIX;
         }
     }
+    return( SwData.sys_name );
 }
 
-static void SetFinalTargetSystem( void )
+static void SetFinalTargetSystem( char *target_name )
 {
 #if _CPU == 8086
     PreDefine_Macro( "_M_I86" );
@@ -438,11 +439,6 @@ static void SetFinalTargetSystem( void )
         /* fall through */
     case TS_NETWARE:
         PreDefine_Macro( "__NETWARE_386__" );
-        /*
-         * NETWARE uses stack based calling conventions
-         * by default - silly people.
-         */
-        CompFlags.register_conventions = false;
         break;
     case TS_RDOS:
         PreDefine_Macro( "_RDOS" );
@@ -475,6 +471,33 @@ static void SetFinalTargetSystem( void )
         break;
     }
 
+#if _INTEL_CPU
+    if( GET_CPU( ProcRevision ) < CPU_386 ) {
+        /*
+         * issue warning message if /zf[f|p] or /zg[f|p] spec'd?
+         */
+        TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
+    }
+    if( !CompFlags.save_restore_segregs ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
+            HW_CTurnOff( WatcallInfo.save, HW_DS );
+        }
+        if( TargetSwitches & CGSW_X86_FLOATING_ES ) {
+            HW_CTurnOff( WatcallInfo.save, HW_ES );
+        }
+        if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
+            HW_CTurnOff( WatcallInfo.save, HW_FS );
+        }
+        if( TargetSwitches & CGSW_X86_FLOATING_GS ) {
+            HW_CTurnOff( WatcallInfo.save, HW_GS );
+        }
+    }
+  #if _CPU == 386
+    if( !CompFlags.register_conventions )
+        SetAuxStackConventions();
+  #endif
+#endif
+
 #if _RISC_CPU
     if( (GenSwitches & (CGSW_GEN_OBJ_ELF | CGSW_GEN_OBJ_COFF)) == 0 ) {
         if( TargetSystem == TS_NT ) {
@@ -484,7 +507,25 @@ static void SetFinalTargetSystem( void )
         }
     }
 #endif
+
+    if( !CompFlags.cpp_ignore_env ) {
+        char    buff[128];
+
+        strcpy( buff, SwData.sys_name );
+        strcat( buff, "_INCLUDE" );
+        MergeIncludeFromEnv( buff );
+
+#if _CPU == 386
+        if( !MergeIncludeFromEnv( "INC386" ) ) {
+            MergeIncludeFromEnv( "INCLUDE" );
+        }
+#else
+        MergeIncludeFromEnv( "INCLUDE" );
+#endif
+    }
+    CMemFree( target_name );
 }
+
 
 static void SetDebug( void )
 {
@@ -494,9 +535,10 @@ static void SetDebug( void )
     }
 }
 
-static void SetGenSwitches( void )
+static void SetArchitecture( void )
 {
     SetDebug();
+
 #if _INTEL_CPU
     /*
      * setup CPU, if not specified then use default CPU
@@ -509,6 +551,16 @@ static void SetGenSwitches( void )
   #endif
     }
     SET_CPU( ProcRevision, SwData.cpu - SW_CPU0 + CPU_86 );
+  #if _CPU == 386
+    /*
+     * NETWARE uses stack based calling conventions
+     * by default - silly people.
+     */
+    if( TargetSystem == TS_NETWARE
+      || TargetSystem == TS_NETWARE5 ) {
+        CompFlags.register_conventions = false;
+    }
+  #endif
 
     /*
      * setup FPU, if not specified then use default FPU
@@ -563,61 +615,18 @@ static void SetGenSwitches( void )
     if( TargetSystem == TS_NETWARE ) {
         Stack87 = 4;
     }
+#endif
+}
 
+static void SetGenSwitches( void )
+{
   #if _CPU == 386
     TargetSwitches |= CGSW_X86_USE_32;
   #endif
+}
 
-    /*
-     * setup memory model, if not specified then use default model
-     */
-    if( SwData.mem == SW_M_DEF ) {
-  #if _CPU == 8086
-        SwData.mem = SW_MS;
-  #else
-        if( TargetSystem == TS_NETWARE ) {
-            SwData.mem = SW_MS;
-        } else {
-            SwData.mem = SW_MF;
-        }
-  #endif
-    }
-    switch( SwData.mem ) {
-    case SW_MF:
-        TargetSwitches |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
-        CHECK_PRESET_PEGGED( d );
-        CHECK_PRESET_PEGGED( e );
-        CHECK_PRESET_PEGGED( f );
-    case SW_MS:
-        TargetSwitches |= CGSW_X86_CHEAP_POINTER;
-        CHECK_PRESET_PEGGED( d );
-        break;
-    case SW_MM:
-        TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
-        CHECK_PRESET_PEGGED( d );
-        break;
-    case SW_MC:
-        TargetSwitches |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
-        break;
-    case SW_ML:
-        TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
-        break;
-    case SW_MH:
-        TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA;
-        break;
-    default:
-        break;
-    }
-    if( !SwData.peg_ds_on )
-        TargetSwitches |= CGSW_X86_FLOATING_DS;
-    if( !SwData.peg_es_on )
-        TargetSwitches |= CGSW_X86_FLOATING_ES;
-    if( !SwData.peg_fs_on )
-        TargetSwitches |= CGSW_X86_FLOATING_FS;
-    if( !SwData.peg_gs_on )
-        TargetSwitches |= CGSW_X86_FLOATING_GS;
-#endif
-
+static void SetDebugInfoFormat( void )
+{
     /*
      * DWARF is the default
      */
@@ -2194,7 +2203,7 @@ static void ProcOptions( const char *str )
 #undef MAX_NESTING
 }
 
-static void InitCPUModInfo( void )
+static void CmdSysInit( void )
 {
     SetAuxWatcallInfo();
 
@@ -2220,7 +2229,7 @@ static void InitCPUModInfo( void )
     DataSegName = ".data";
     GenCodeGroup = "";
 #else /* unknown */
-    #error InitCPUModInfo not configured for system
+    #error CmdSysInit not configured for system
 #endif
     GblPackAmount = PackAmount;
     Inline_Threshold = 20;
@@ -2233,6 +2242,20 @@ static void Define_Memory_Model( void )
 #endif
 
 #if _INTEL_CPU
+    /*
+     * setup memory model, if not specified then use default model
+     */
+    if( SwData.mem == SW_M_DEF ) {
+  #if _CPU == 8086
+        SwData.mem = SW_MS;
+  #else
+        if( TargetSystem == TS_NETWARE ) {
+            SwData.mem = SW_MS;
+        } else {
+            SwData.mem = SW_MF;
+        }
+  #endif
+    }
     switch( SwData.mem ) {
     case SW_MF:
         lib_model = 's';
@@ -2270,7 +2293,42 @@ static void Define_Memory_Model( void )
         lib_model = '?';
         break;
     }
+    switch( SwData.mem ) {
+    case SW_MF:
+        TargetSwitches |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
+        CHECK_PRESET_PEGGED( d );
+        CHECK_PRESET_PEGGED( e );
+        CHECK_PRESET_PEGGED( f );
+    case SW_MS:
+        TargetSwitches |= CGSW_X86_CHEAP_POINTER;
+        CHECK_PRESET_PEGGED( d );
+        break;
+    case SW_MM:
+        TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
+        CHECK_PRESET_PEGGED( d );
+        break;
+    case SW_MC:
+        TargetSwitches |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
+        break;
+    case SW_ML:
+        TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
+        break;
+    case SW_MH:
+        TargetSwitches |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA;
+        break;
+    default:
+        break;
+    }
+    if( !SwData.peg_ds_on )
+        TargetSwitches |= CGSW_X86_FLOATING_DS;
+    if( !SwData.peg_es_on )
+        TargetSwitches |= CGSW_X86_FLOATING_ES;
+    if( !SwData.peg_fs_on )
+        TargetSwitches |= CGSW_X86_FLOATING_FS;
+    if( !SwData.peg_gs_on )
+        TargetSwitches |= CGSW_X86_FLOATING_GS;
 #endif
+
 #if _CPU == 8086
     strcpy( CLIB_Name, "1clib?" );
     if( CompFlags.bm_switch_used ) {
@@ -2298,9 +2356,11 @@ static void Define_Memory_Model( void )
     *strchr( CLIB_Name, '?' ) = lib_model;
     *strchr( MATHLIB_Name, '?' ) = lib_model;
 #elif _CPU == 386
-    lib_model = 'r';
-    if( !CompFlags.register_conventions )
+    if( CompFlags.register_conventions ) {
+        lib_model = 'r';
+    } else {
         lib_model = 's';
+    }
     if( CompFlags.br_switch_used ) {
         strcpy( CLIB_Name, "1clb?dll" );
     } else {
@@ -2341,27 +2401,23 @@ static void Define_Memory_Model( void )
 #endif
 }
 
-static void MergeInclude( void )
-/*******************************
- * must be called after GenCOptions to get req'd IncPathList
- */
+static void AnalyseAnyTargetOptions( void )
 {
-    char    buff[128];
+    CBanner();
+}
 
-    if( !CompFlags.cpp_ignore_env ) {
-        strcpy( buff, SwData.sys_name );
-        strcat( buff, "_INCLUDE" );
-        MergeIncludeFromEnv( buff );
+static void CmdSysAnalyse( void )
+{
+    char    *target_name;
 
-#if _CPU == 386
-        if( !MergeIncludeFromEnv( "INC386" ) ) {
-            MergeIncludeFromEnv( "INCLUDE" );
-        }
-#else
-        MergeIncludeFromEnv( "INCLUDE" );
-#endif
-    }
-    SetTargetName( NULL );
+    target_name = SetTargetSystem();
+    SetArchitecture();
+    SetDebugInfoFormat();
+    SetGenSwitches();
+    SetCharacterEncoding();
+    Define_Memory_Model();
+    SetFinalTargetSystem( target_name );
+    MacroDefs();
 }
 
 void GenCOptions( char **cmdline )
@@ -2383,7 +2439,7 @@ void GenCOptions( char **cmdline )
      */
     WarnEnableDisable( false, ERR_CAST_POINTER_TRUNCATION );
     InitModInfo();
-    InitCPUModInfo();
+    CmdSysInit();
 #if _CPU == 8086
     ProcOptions( FEGetEnv( "WCC" ) );
 #elif _CPU == 386
@@ -2409,39 +2465,7 @@ void GenCOptions( char **cmdline )
     /*
      * print banner if -zq not specified
      */
-    CBanner();
-    SetTargetSystem();
-    SetFinalTargetSystem();
-    SetGenSwitches();
-    SetCharacterEncoding();
-    Define_Memory_Model();
-#if _INTEL_CPU
-    if( GET_CPU( ProcRevision ) < CPU_386 ) {
-        /*
-         * issue warning message if /zf[f|p] or /zg[f|p] spec'd?
-         */
-        TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
-    }
-    if( !CompFlags.save_restore_segregs ) {
-        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
-            HW_CTurnOff( WatcallInfo.save, HW_DS );
-        }
-        if( TargetSwitches & CGSW_X86_FLOATING_ES ) {
-            HW_CTurnOff( WatcallInfo.save, HW_ES );
-        }
-        if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
-            HW_CTurnOff( WatcallInfo.save, HW_FS );
-        }
-        if( TargetSwitches & CGSW_X86_FLOATING_GS ) {
-            HW_CTurnOff( WatcallInfo.save, HW_GS );
-        }
-    }
-  #if _CPU == 386
-    if( !CompFlags.register_conventions )
-        SetAuxStackConventions();
-  #endif
-#endif
-    MergeInclude();
-    MacroDefs();
+    AnalyseAnyTargetOptions();
+    CmdSysAnalyse();
     MiscMacroDefs();
 }
