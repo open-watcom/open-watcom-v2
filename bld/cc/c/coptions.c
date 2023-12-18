@@ -169,41 +169,6 @@ static bool     debug_optimization_change = false;
 static int      character_encoding = 0;
 static unsigned unicode_CP = 0;
 
-static size_t MyCmdScanFilename( const char **beg )
-/*************************************************/
-{
-    size_t  len;
-
-    len = CmdScanFilename( beg );
-    if( *(*beg) == '"' ) {
-        (*beg)++;
-        len--;
-    }
-    return( len );
-}
-
-static void scanInputFile( void )
-/********************************
- * PROCESS NAME OF INPUT FILE
- */
-{
-    size_t      len;    // - length of file name
-    const char  *beg;
-    char        *p;
-
-    len = MyCmdScanFilename( &beg );
-    p = ToStringDup( beg, len );
-    if( WholeFName != NULL ) {
-        /*
-         * more than one file to compile ?
-         */
-        CBanner();
-        CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
-        CMemFree( WholeFName );
-    }
-    WholeFName = p;
-}
-
 bool EqualChar( int c )
 {
     return( c == '#'
@@ -2162,11 +2127,12 @@ static void ProcOptions( const char *str )
             if( ch == '@' ) {
                 CmdScanWhiteSpace();
                 CmdScanUngetChar();
-                len = MyCmdScanFilename( &beg );
                 level++;
                 if( level < MAX_NESTING ) {
+                    len = CmdScanFilename( &beg );
                     save[level] = CmdScanAddr();
                     p = ToStringDup( beg, len );
+                    StripQuotes( p );
                     ptr = NULL;
                     penv = FEGetEnv( p );
                     if( penv == NULL ) {
@@ -2196,7 +2162,18 @@ static void ProcOptions( const char *str )
                 CmdScanInit( ProcessOption( CFE_Options, beg, beg - 1 ) );
             } else {  /* collect  file name */
                 CmdScanUngetChar();
-                scanInputFile();
+                len = CmdScanFilename( &beg );
+                p = ToStringDup( beg, len );
+                StripQuotes( p );
+                if( WholeFName != NULL ) {
+                    /*
+                     * more than one file to compile ?
+                     */
+                    CBanner();
+                    CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
+                    CMemFree( WholeFName );
+                }
+                WholeFName = p;
             }
         }
     }
