@@ -169,6 +169,19 @@ static bool     debug_optimization_change = false;
 static int      character_encoding = 0;
 static unsigned unicode_CP = 0;
 
+static size_t MyCmdScanFilename( const char **beg )
+/*************************************************/
+{
+    size_t  len;
+
+    len = CmdScanFilename( beg );
+    if( *(*beg) == '"' ) {
+        (*beg)++;
+        len--;
+    }
+    return( len );
+}
+
 static void scanInputFile( void )
 /********************************
  * PROCESS NAME OF INPUT FILE
@@ -178,7 +191,7 @@ static void scanInputFile( void )
     const char  *beg;
     char        *p;
 
-    len = CmdScanFilename( &beg );
+    len = MyCmdScanFilename( &beg );
     p = ToStringDup( beg, len );
     if( WholeFName != NULL ) {
         /*
@@ -2140,7 +2153,7 @@ static void ProcOptions( const char *str )
             if( ch == '@' ) {
                 CmdScanWhiteSpace();
                 CmdScanUngetChar();
-                len = CmdScanFilename( &beg );
+                len = MyCmdScanFilename( &beg );
                 level++;
                 if( level < MAX_NESTING ) {
                     save[level] = CmdScanAddr();
