@@ -68,29 +68,6 @@ static size_t get_namelen( const char *start )
 }
 
 
-char *BadCmdLine( int error_code, const char *str )
-{
-    char        *p;
-    char        buffer[128];
-
-    p = buffer;
-    for( ; *str != '\0'; ) {
-        *p++ = *str++;
-        if( *str == ' ' )
-            break;
-        if( *str == '-' )
-            break;
-        if( *str == SwitchChar ) {
-            break;
-        }
-    }
-    *p = '\0';
-    CBanner();
-    CErr2p( error_code, buffer );
-    return( (char *)str );
-}
-
-
 static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flags mflags )
 {
     size_t      mlen;

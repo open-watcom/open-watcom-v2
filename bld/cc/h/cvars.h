@@ -630,7 +630,6 @@ extern pointer_class ExprTypeClass( TYPEPTR typ );
 extern TREEPTR      LCastAdj( TREEPTR tree );
 
 /* cmodel */
-extern char         *BadCmdLine( int, const char * );
 extern char         *Define_Macro( const char * );
 extern char         *Define_UserMacro( const char *, bool );
 extern void         PreDefine_Macro( const char * );

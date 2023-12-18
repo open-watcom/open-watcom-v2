@@ -938,6 +938,29 @@ bool MergeIncludeFromEnv( const char *env )
     return( false );
 }
 
+static char *BadCmdLine( int error_code, const char *str )
+{
+    char        *p;
+    char        buffer[128];
+
+    p = buffer;
+    for( ; *str != '\0'; ) {
+        *p++ = *str++;
+        if( *str == ' ' )
+            break;
+        if( *str == '-' )
+            break;
+        if( *str == SwitchChar ) {
+            break;
+        }
+    }
+    *p = '\0';
+    CBanner();
+    CErr2p( error_code, buffer );
+    return( (char *)str );
+}
+
+
 static bool OptionDelimiter( char c )
 {
     return( c == ' '
