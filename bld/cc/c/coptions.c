@@ -418,10 +418,8 @@ static void SetFinalTargetSystem( char *target_name )
   #if _CPU == 8086
         PreDefine_Macro( "_WINDOWS" );
         TargetSwitches |= CGSW_X86_WINDOWS | CGSW_X86_CHEAP_WINDOWS;
-        CHECK_SET_PEGGED( d, true )
   #else
         PreDefine_Macro( "__WINDOWS_386__" );
-        CHECK_SET_PEGGED( f, false )
   #endif
         break;
 #endif
@@ -2319,6 +2317,14 @@ static void Define_Memory_Model( void )
     default:
         break;
     }
+    if( TargetSystem == TS_WINDOWS ) {
+  #if _CPU == 8086
+        CHECK_SET_PEGGED( d, true )
+  #else
+        CHECK_SET_PEGGED( f, false )
+  #endif
+    }
+
     if( !SwData.peg_ds_on )
         TargetSwitches |= CGSW_X86_FLOATING_DS;
     if( !SwData.peg_es_on )
