@@ -64,10 +64,13 @@
 
 #define WORDS_COUNT(size)   (((size) + WORD_SIZE - 1) / WORD_SIZE)
 
-#define WINDOWS_CHEAP  ( ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE ) \
-                           && (CurrProc->state.attr & ROUTINE_LOADS_DS) ) \
-          || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS ) \
-               && (CurrProc->prolog_state & (PST_EXPORT | PST_PROLOG_FAT)) == 0 ) )
+#define WINDOWS_CHEAP  ( \
+    ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE )
+      && (CurrProc->state.attr & ROUTINE_LOADS_DS) ) \
+    || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS ) \
+      && (CurrProc->prolog_state & PST_EXPORT) == 0 ) \
+    || ( _IsTargetModel( CGSW_X86_WINDOWS ) \
+      && (CurrProc->prolog_state & (PST_EXPORT | PST_PROLOG_FAT)) == 0 ) )
 
 #define DO_WINDOWS_CRAP ( _IsTargetModel( CGSW_X86_WINDOWS ) \
                && ( !WINDOWS_CHEAP || CurrProc->contains_call ) )
