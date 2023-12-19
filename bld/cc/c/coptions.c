@@ -180,9 +180,7 @@ static void checkOENumber( unsigned *p )
 static bool checkSTD( unsigned *value )
 {
     cstd_ver    cstd;
-    bool        fail;
 
-    fail = true;
     cstd = STD_NONE;
     *value = 0;
     CmdRecogEquals();
@@ -190,10 +188,8 @@ static bool checkSTD( unsigned *value )
         if( CmdRecogChar( 'c' ) ) {
             if( CmdRecogChar( '8' ) && CmdRecogChar( '9' ) ) {
                 cstd = STD_C89;
-                fail = false;
             } else if( CmdRecogChar( '9' ) && CmdRecogChar( '9' ) ) {
                 cstd = STD_C99;
-                fail = false;
             }
         }
     }

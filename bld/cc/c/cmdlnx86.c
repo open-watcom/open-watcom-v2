@@ -5,6 +5,8 @@
 #include "toggles.h"
 #include "cmdlnsys.h"
 
+#include "clibext.h"
+
 
 #if !_INTEL_CPU
     #error cmdlx86.c - unsupported architecture
@@ -926,7 +928,6 @@ static void Define_Memory_Model( OPT_STORAGE *data )
 {
     char lib_model = '\0';
     unsigned bit;
-    bool target_win;
 
     DataPtrSize = TARGET_POINTER;
     CodePtrSize = TARGET_POINTER;
@@ -1110,14 +1111,12 @@ static void Define_Memory_Model( OPT_STORAGE *data )
     }
 
 #if _CPU == 8086
-    target_win = ( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS );
     strcpy( CLIB_Name, "1clib?" );
     if( data->bm ) {
         strcpy( CLIB_Name, "1clibmt?" );
     }
     if( data->bd ) {
-        if( TargetSystem == TS_WINDOWS ||
-            TargetSystem == TS_CHEAP_WINDOWS ) {
+        if( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS ) {
             strcpy( CLIB_Name, "1clib?" );
         } else {
             strcpy( CLIB_Name, "1clibdl?" );
@@ -1135,7 +1134,6 @@ static void Define_Memory_Model( OPT_STORAGE *data )
         }
     }
 #else
-    target_win = ( TargetSystem == TS_WINDOWS );
     if( CompFlags.register_conventions ) {
         lib_model = 'r';
         PreDefine_Macro( "__3R__" );

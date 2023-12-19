@@ -5,6 +5,8 @@
 #include "toggles.h"
 #include "cmdlnsys.h"
 
+#include "clibext.h"
+
 
 #ifdef DEVBUILD
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
