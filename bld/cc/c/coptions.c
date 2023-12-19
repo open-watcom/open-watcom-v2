@@ -55,8 +55,6 @@
 #include "toggles.h"
 #include "feprotos.h"
 
-#include "clibext.h"
-
 
 #ifdef DEVBUILD
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
@@ -295,12 +293,6 @@ static void setMessageStatus( OPT_STRING *s, bool state )
         }
         s = s->next;
     }
-}
-
-bool EqualChar( int c )
-{
-    return( c == '#'
-        || c == '=' );
 }
 
 void DefSwitchMacro( const char *str )
@@ -645,7 +637,9 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         OPT_STRING *s;
         reverseList( &(data->i_value) );
         for( s = data->i_value; s != NULL; s = s->next ) {
-            AddIncList( s->data );
+            if( s->data[0] != '\0' ) {
+                AddIncList( s->data );
+            }
         }
     }
     if( data->j ) {

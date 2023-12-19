@@ -650,7 +650,6 @@ extern char const   *CGetMsgPrefix( msg_codes msgnum );
 extern unsigned     GetMsgIndex( msg_codes msgnum );
 
 /* coptions */
-extern bool         EqualChar(int);
 extern void         GenCOptions(char **);
 extern bool         MergeIncludeFromEnv( const char *env );
 

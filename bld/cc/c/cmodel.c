@@ -48,6 +48,12 @@ extern  char    CompilerID[];
  * COMMAND LINE PARSING OF MACRO DEFINITIONS
  */
 
+static bool EqualChar( int c )
+{
+    return( c == '#'
+        || c == '=' );
+}
+
 static size_t get_namelen( const char *start )
 {
     char        c;
