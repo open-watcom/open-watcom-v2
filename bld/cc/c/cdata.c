@@ -147,7 +147,6 @@ void InitGlobalVars( void )
     ProEpiDataSize          = 0;        /* data to be alloc'd for pro/epi hook */
     ErrLimit                = 0;
 
-    DataThreshold           = 0;        /* sizeof(obj) > this ==> separate segment */
     Inline_Threshold        = 0;        /* -oe=num for function inlining */
 
     DataPtrSize             = 0;

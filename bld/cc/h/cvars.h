@@ -248,7 +248,9 @@ global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook *
 
 global unsigned     ErrLimit;
 
+#if _INTEL_CPU
 global target_size  DataThreshold;      /* sizeof(obj) > this ==> separate segment */
+#endif
 global unsigned     Inline_Threshold;   /* -oe=num for function inlining */
 
 global unsigned     DataPtrSize;

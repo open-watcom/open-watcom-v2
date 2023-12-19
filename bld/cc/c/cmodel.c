@@ -272,10 +272,6 @@ void MiscMacroDefs( void )
 
 void InitModInfo( void )
 {
-    GenSwitches = 0;
-    TargetSwitches = 0;
-    TargetSystem = TS_OTHER;
-    DataThreshold = TARGET_INT_MAX;
     OptSize = 50;
     UndefNames = NULL;
     WholeFName = NULL;
