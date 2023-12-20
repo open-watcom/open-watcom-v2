@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -100,23 +100,31 @@
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
-:option. ? h
+:option. h ?
 :target. any
 :usage. print this message
 :jusage. このメッセージを表示します
 
 :option. 0
 :target. any
+:enumerate. cpu_info
 :usage. 8086 instructions
 :jusage. 8086 命令
 
 :option. 1
 :target. any
+:enumerate. cpu_info
 :usage. 80186 instructions
 :jusage. 80186 命令
 
 :chain. 2 80286 instructions
 :jusage. 80286 命令
+
+:option. 2
+:target. any
+:enumerate. cpu_info
+:usage. real mode instructions
+:jusage. real mode instructions
 
 :option. 2p
 :target. any
@@ -125,6 +133,12 @@
 
 :chain. 3 80386 instructions
 :jusage. 80386 命令
+
+:option. 3
+:target. any
+:enumerate. cpu_info
+:usage. real mode instructions
+:jusage. real mode instructions
 
 :option. 3r
 :target. any
@@ -144,6 +158,12 @@
 :chain. 4 80486 instructions
 :jusage. 80486 命令
 
+:option. 4
+:target. any
+:enumerate. cpu_info
+:usage. real mode instructions
+:jusage. real mode instructions
+
 :option. 4r
 :target. any
 :usage. register calling conventions
@@ -162,23 +182,35 @@
 :chain. 5 Pentium instructions
 :jusage. Pentium 命令
 
+:option. 5
+:target. any
+:enumerate. cpu_info
+:usage. real mode instructions
+:jusage. real mode instructions
+
 :option. 5r
 :target. any
 :usage. register calling conventions
 :jusage. レジスタ呼び出し規約
-
-:option. 5p
-:target. any
-:usage. protected mode instructions
-:jusage. protected mode instructions
 
 :option. 5s
 :target. any
 :usage. stack calling conventions
 :jusage. スタック呼び出し規約
 
+:option. 5p
+:target. any
+:usage. protected mode instructions
+:jusage. protected mode instructions
+
 :chain. 6 Pentium Pro instructions
 :jusage. 6 Pentium Pro 命令
+
+:option. 6
+:target. any
+:enumerate. cpu_info
+:usage. real mode instructions
+:jusage. real mode instructions
 
 :option. 6r
 :target. any
@@ -207,18 +239,51 @@
 :usage. disable output OMF COMMENT record about data in code
 :jusage. disable output OMF COMMENT record about data in code
 
+:option. cx
+:target. any
+:usage. symbols are not case-sensitive
+:jusage. symbols are not case-sensitive
+
 :option. d
 :target. any
-:special. scanDefine <name>[=text]
+:file. . <name>[=text]
 :usage. define text macro <name>[=text]
 :jusage. テキストマクロを定義します <name>[=text]
 
+:option. d+
+:target. any
+:internal.
+:enumerate ignore
+:usage. define extended text macro <name>[=text]
+:jusage. define extended text macro <name>[=text]
+
+:option. d0
+:target. any
+:enumerate. debug_info
+:usage. 
+:jusage. 
+
 :option. d1
 :target. any
+:enumerate. debug_info
 :usage. line number debugging support
 :jusage. 行番号デバッグ情報を出力します
 
-:option. e
+:option. d2
+:target. any
+:enumerate. debug_info
+:internal.
+:usage. 
+:jusage. 
+
+:option. d3
+:target. any
+:enumerate. debug_info
+:internal.
+:usage. 
+:jusage. 
+
+:option. ee
 :target. any
 :usage. stop reading ASM file at END directive
 :jusage. ENDディレクティブでASMファイルの読み込みを止めます
@@ -235,6 +300,12 @@
 :usage. force <file> to be included
 :jusage. force <file> to be included
 
+:option. fl
+:target. any
+:file.
+:usage. listing file
+:jusage. listing file
+
 :option. fo
 :target. any
 :file.
@@ -244,41 +315,49 @@
 
 :option. fp0
 :target. any
+:enumerate. fpu_info
 :usage. floating-point for 8087
 :jusage. floating-point for 8087
 
 :option. fp2
 :target. any
+:enumerate. fpu_info
 :usage. floating-point for 287
 :jusage. floating-point for 287
 
 :option. fp3
 :target. any
+:enumerate. fpu_info
 :usage. floating-point for 387
 :jusage. floating-point for 387
 
 :option. fp5
 :target. any
+:enumerate. fpu_info
 :usage. floating-point for Pentium
 :jusage. floating-point for Pentium
 
 :option. fp6
 :target. any
+:enumerate. fpu_info
 :usage. floating-point for Pentium Pro
 :jusage. floating-point for Pentium Pro
 
 :option. fpc
 :target. any
+:enumerate. fpu_type
 :usage. calls to floating-point library
 :jusage. calls to floating-point library
 
 :option. fpi
 :target. any
+:enumerate. fpu_type
 :usage. inline 80x87 instructions with emulation
 :jusage. inline 80x87 instructions with emulation
 
 :option. fpi87
 :target. any
+:enumerate. fpu_type
 :usage. inline 80x87 instructions
 :jusage. inline 80x87 instructions
 
@@ -288,6 +367,27 @@
 :optional.
 :usage. set error file name
 :jusage. エラーファイル名を指定します
+
+:option. hc
+:target. any
+:internal.
+:enumerate ignore
+:usage. debug info format CodeView
+:jusage. debug info format CodeView
+
+:option. hd
+:target. any
+:internal.
+:enumerate ignore
+:usage. debug info format DWARF
+:jusage. debug info format DWARF
+
+:option. hw
+:target. any
+:internal.
+:enumerate ignore
+:usage. debug info format WATCOM
+:jusage. debug info format WATCOM
 
 :option. i
 :target. any
@@ -305,36 +405,43 @@
 
 :option. mc
 :target. any
+:enumerate. mem_model
 :usage. Compact
 :jusage. Compact
 
 :option. mf
 :target. any
+:enumerate. mem_model
 :usage. Flat
 :jusage. Flat
 
 :option. mh
 :target. any
+:enumerate. mem_model
 :usage. Huge
 :jusage. Huge
 
 :option. ml
 :target. any
+:enumerate. mem_model
 :usage. Large
 :jusage. Large
 
 :option. mm
 :target. any
+:enumerate. mem_model
 :usage. Medium
 :jusage. Medium
 
 :option. ms
 :target. any
+:enumerate. mem_model
 :usage. Small
 :jusage. Small
 
 :option. mt
 :target. any
+:enumerate. mem_model
 :usage. Tiny
 :jusage. Tiny
 
@@ -353,7 +460,7 @@
 
 :option. nm
 :target. any
-:id. . <name>
+:file. . <name>
 :usage. set module name
 :jusage. set module name
 
@@ -374,9 +481,22 @@
 :usage. disable all optimization
 :jusage. disable all optimization
 
+:option. of
+:target. any
+:enumerate. trace_stack
+:usage. generate traceable stack frames as needed
+:jusage. generate traceable stack frames as needed
+
+:option. of+
+:target. any
+:enumerate. trace_stack
+:usage. always generate traceable stack frames
+:jusage. always generate traceable stack frames
+
 :option. zcm
 :target. any
 :special. scanMode [=<mode>]
+:number. . 0
 :usage. set compatibility mode - watcom (default), masm, tasm or ideal
 :jusage. set compatibility mode - watcom (default), masm, tasm or ideal
 

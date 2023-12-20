@@ -46,6 +46,9 @@
 #include "pathgrp2.h"
 #include "omfgenio.h"
 #include "omfobjre.h"
+#include "cmdlnprs.gh"
+#include "cmdlnprs.h"
+#include "cmdscan.h"
 
 #include "clibint.h"
 #include "clibext.h"
@@ -66,21 +69,22 @@ static struct SWData {
     bool    protect_mode;
     int     cpu;
     int     fpu;
+    int     fpt;
+    int     mem_model;
 } SWData = {
     false, // real mode CPU instructions set
     -1,    // unspecified CPU
-    -1     // unspecified FPU
+    -1,    // unspecified FPU
+    -1,    // unspecified FP mode
+    -1     // unspecified memory model
 };
 
 #define MAX_NESTING 15
-#define BUF_SIZE 512
+#define BUF_SIZE    512
 
-static char             ParamBuf[BUF_SIZE];
 static unsigned char    SwitchChar;
-static unsigned         OptValue;
-static char             *OptScanPtr;
-static char             *OptParm;
 static char             *ForceInclude = NULL;
+static const char       *switch_start = NULL;
 
 global_options Options = {
     false,              // sign_value
@@ -96,7 +100,6 @@ global_options Options = {
     20,                 // error_limit
     2,                  // warning_level
     false,              // warning_error
-    NULL,               // build_target
 
     NULL,               // code_class
     NULL,               // data_seg
@@ -121,176 +124,58 @@ global_options Options = {
     true                // instructions optimization
 };
 
-static char *CopyOfParm( void )
-/*****************************/
+static void BadCmdLine( int error_code )
+/***************************************
+ * SIGNAL CMD-LINE ERROR
+ */
 {
-    size_t  len;
+    char        buffer[128];
+    size_t      len;
 
-    len = OptScanPtr - OptParm;
-    memcpy( ParamBuf, OptParm, len );
-    ParamBuf[len] = '\0';
-    return( ParamBuf );
+    for( CmdScanChar(); !CmdScanSwEnd(); CmdScanChar() ) {
+        ;
+    }
+    len = CmdScanAddr() - switch_start;
+    if( len > sizeof( buffer ) - 1 )
+        len = sizeof( buffer ) - 1;
+    strncpy( buffer, switch_start, len );
+    buffer[len] = '\0';
+    MsgPrintf1( error_code, buffer );
 }
 
-static void StripQuotes( char *fname )
-/************************************/
+// BAD CHAR DETECTED
+void BadCmdLineChar( void )
 {
-    char *s;
-    char *d;
-
-    if( *fname == '"' ) {
-        // string will shrink so we can reduce in place
-        d = fname;
-        for( s = d + 1; *s && *s != '"'; ++s ) {
-            // collapse double backslashes, only then look for escaped quotes
-            if( s[0] == '\\' && s[1] == '\\' ) {
-                ++s;
-            } else if( s[0] == '\\' && s[1] == '"' ) {
-                ++s;
-            }
-            *d++ = *s;
-        }
-        *d = '\0';
-    }
+    BadCmdLine( MSG_UNKNOWN_OPTION );
+}
+// BAD ID DETECTED
+void BadCmdLineId( void )
+{
+    BadCmdLine( MSG_UNKNOWN_OPTION );
+}
+// BAD NUMBER DETECTED
+void BadCmdLineNumber( void )
+{
+    BadCmdLine( MSG_UNKNOWN_OPTION );
+}
+// BAD PATH DETECTED
+void BadCmdLinePath( void )
+{
+    BadCmdLine( MSG_UNKNOWN_OPTION );
+}
+// BAD FILE DETECTED
+void BadCmdLineFile( void )
+{
+    BadCmdLine( MSG_UNKNOWN_OPTION );
 }
 
-static char *GetAFileName( void )
-/*******************************/
+static char *SetTargetName( char *target_name, const char *name )
+/***************************************************************/
 {
-    char *fname;
-    fname = CopyOfParm();
-    StripQuotes( fname );
-    return( fname );
-}
-
-static void SetTargName( char *name, size_t len )
-/***********************************************/
-{
-    char        *p;
-
-    if( Options.build_target != NULL ) {
-        AsmFree( Options.build_target );
-        Options.build_target = NULL;
+    if( target_name != NULL ) {
+        AsmFree( target_name );
     }
-    if( name == NULL || len == 0 )
-        return;
-    Options.build_target = AsmAlloc( len + 1 );
-    p = Options.build_target;
-    for( ; len != 0; --len ) {
-        *p++ = (char)toupper( *name++ );
-    }
-    *p++ = '\0';
-}
-
-static void SetCPUPMC( void )
-/***************************/
-{
-    char                *tmp;
-
-    for( tmp = OptParm; tmp < OptScanPtr; tmp++ ) {
-        if( *tmp == 'p' ) {
-            if( SWData.cpu >= 2 ) { // set protected mode
-                SWData.protect_mode = true;
-            } else {
-                MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
-            }
-        } else if( *tmp == 'r' ) {
-            if( SWData.cpu >= 3 ) { // set register based calling convention
-                Options.watcom_parms_passed_by_regs = true;
-            } else {
-                MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
-            }
-        } else if( *tmp == 's' ) {
-            if( SWData.cpu >= 3 ) { // set stack based calling convention
-                Options.watcom_parms_passed_by_regs = false;
-            } else {
-                MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
-            }
-        } else if( *tmp == '"' ) {      // set default mangler
-            char *dest;
-
-            tmp++;
-            dest = strchr(tmp, '"');
-            if( Options.default_name_mangler != NULL ) {
-                AsmFree( Options.default_name_mangler );
-            }
-            Options.default_name_mangler = AsmAlloc( dest - tmp + 1 );
-            dest = Options.default_name_mangler;
-            for( ; *tmp != '"'; dest++, tmp++ ) {
-                *dest = *tmp;
-            }
-            *dest = NULLC;
-        } else {
-            MsgPrintf1( MSG_UNKNOWN_OPTION, CopyOfParm() );
-            exit( EXIT_ERROR );
-        }
-    }
-    if( SWData.cpu < 3 ) {
-        Options.watcom_parms_passed_by_regs = true;
-        if( SWData.cpu < 2 ) {
-            SWData.protect_mode = false;
-        }
-    }
-}
-
-static void SetCPU( void )
-/************************/
-{
-    SWData.cpu = OptValue;
-    SetCPUPMC();
-}
-
-static void SetFPU( void )
-/************************/
-{
-    switch( OptValue ) {
-    case 'i':
-        floating_point = DO_FP_EMULATION;
-        break;
-    case '7':
-        floating_point = NO_FP_EMULATION;
-        break;
-    case 'c':
-        floating_point = NO_FP_ALLOWED;
-        break;
-    case 0:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-        SWData.fpu = OptValue;
-        break;
-    }
-}
-
-static char memory_model = '\0';
-
-static void SetMM( void )
-/***********************/
-{
-    char buffer[4];
-
-    switch( OptValue ) {
-    case 'c':
-    case 'f':
-    case 'h':
-    case 'l':
-    case 'm':
-    case 's':
-    case 't':
-        break;
-    default:
-        buffer[0] = '/';
-        buffer[1] = 'm';
-        buffer[2] = (char)OptValue;
-        buffer[3] = '\0';
-        MsgPrintf1( MSG_UNKNOWN_OPTION, buffer );
-        exit( EXIT_ERROR );
-    }
-
-    memory_model = (char)OptValue;
+    return( AsmStrDup( name ) );
 }
 
 static bool isvalidident( const char *id )
@@ -339,30 +224,6 @@ static void add_constant( const char *string, bool underscored )
     }
 }
 
-static void AddStringToIncludePath( char *str, const char *end )
-/**************************************************************/
-{
-    char        *src;
-    char        *p;
-    bool        have_quote;
-    char        c;
-
-    have_quote = false;
-    src = str;
-    while( isspace( *src ) && src < end )
-        src++;
-    p = str;
-    while( (c = *src) != '\0' && src < end ) {
-        ++src;
-        if( c == '\"' ) {
-            have_quote = !have_quote;
-        } else {
-            *p++ = c;
-        }
-    }
-    AddItemToIncludePath( str, p );
-}
-
 static void get_fname( char *token, int type )
 /********************************************/
 /*
@@ -394,7 +255,10 @@ static void get_fname( char *token, int type )
         AsmFiles.fname[ASM] = AsmStrDup( name );
 
         _makepath( name, pg.drive, pg.dir, NULL, NULL );
-        /* add the source path to the include path */
+        /*
+         * add the source path to the include path
+         * as first item on the include path list
+         */
         AddItemToIncludePath( name, NULL );
 
         if( AsmFiles.fname[OBJ] == NULL ) {
@@ -469,34 +333,6 @@ static void get_fname( char *token, int type )
     }
 }
 
-static void set_some_kinda_name( char token, char *name )
-/*******************************************************/
-/* set:  code class / data seg. / module name / text seg */
-{
-    char    **tmp;
-
-    switch( token ) {
-    case 'c':
-        tmp = &Options.code_class;
-        break;
-    case 'd':
-        tmp = &Options.data_seg;
-        break;
-    case 'm':
-        tmp = &Options.module_name;
-        break;
-    case 't':
-        tmp = &Options.text_seg;
-        break;
-    default:
-        return;
-    }
-    if( *tmp != NULL ) {
-        AsmFree(*tmp);
-    }
-    *tmp = AsmStrDup( name );
-}
-
 static void usage_msg( void )
 /***************************/
 {
@@ -504,175 +340,23 @@ static void usage_msg( void )
     exit( EXIT_ERROR );
 }
 
-static void Ignore( void ) {}
-
-static void Set_BT( void ) { SetTargName( OptParm,  OptScanPtr - OptParm ); }
-
-static void Set_C( void ) { Options.output_comment_data_in_code_records = false; }
-
-static void Set_CX( void ) { Options.symbols_nocasesensitive = false; }
-
-static void Set_D( void ) { Options.debug_info = (OptValue != 0); }
-
-static void DefineMacro( void ) { add_constant( CopyOfParm(), false ); }
-
-static void SetErrorLimit( void ) { Options.error_limit = OptValue; }
-
-static void SetStopEnd( void ) { Options.stop_at_end = true; }
-
-static void Set_FR( void ) { get_fname( GetAFileName(), ERR ); }
-
-static void Set_FI( void ) { ForceInclude = AsmStrDup( GetAFileName() ); }
-
-static void Set_FL( void ) { get_fname( GetAFileName(), LST ); Options.write_listing = true; }
-
-static void Set_FO( void ) { get_fname( GetAFileName(), OBJ ); }
-
-static void SetInclude( void ) { AddStringToIncludePath( OptParm, OptScanPtr ); }
-
-static void Set_S( void ) { Options.sign_value = true; }
-
-static void Set_N( void ) { set_some_kinda_name( (char)OptValue, CopyOfParm() ); }
-
-static void Set_O( void ) { Options.allow_c_octals = true; }
-
-static void Set_OD( void ) { Options.optimization = false; }
-
-static void Set_OF( void ) { Options.trace_stack = (char)OptValue; }
-
-static void Set_WE( void ) { Options.warning_error = true; }
-
-static void Set_WX( void ) { Options.warning_level = 4; }
-
-static void SetWarningLevel( void ) { Options.warning_level = (char)OptValue; }
-
-static void Set_ZCM( void )
+static void add_env_include( const char *target_name )
+/****************************************************/
 {
-    if( OptScanPtr == OptParm || strnicmp( OptParm, "MASM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode_init = MODE_MASM6;
-    } else if( strnicmp( OptParm, "WATCOM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode_init = MODE_WATCOM;
-    } else if( strnicmp( OptParm, "TASM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode_init = MODE_TASM | MODE_MASM5;
-    } else if( strnicmp( OptParm, "IDEAL", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode_init = MODE_TASM | MODE_IDEAL;
-//    } else if( strnicmp( OptParm, "MASM5", OptScanPtr - OptParm ) == 0 ) {
-//        Options.mode_init = MODE_MASM5;
+    char        buff[128];
+    const char  *env;
+
+    /*
+     * add OS_include to the include path
+     * as last items on the list
+     */
+    strcpy( buff, target_name );
+    strcat( buff, "_INCLUDE" );
+    env = getenv( buff );
+    if( env != NULL ) {
+        AddItemToIncludePath( env, NULL );
     }
-}
-
-static void Set_ZLD( void ) { Options.emit_dependencies = false; }
-
-static void Set_ZQ( void ) { Options.quiet = true; }
-
-static void Set_ZZ( void ) { Options.use_stdcall_at_number = false; }
-
-static void Set_ZZO( void ) { Options.mangle_stdcall = false; }
-
-static void HelpUsage( void ) { usage_msg();}
-
-#ifdef DEBUG_OUT
-static void Set_D6( void )
-{
-    Options.int_debug = true;
-    DebugMsg(( "debugging output on \n" ));
-}
-#endif
-
-static struct option const cmdl_options[] = {
-    { "0$",     0,        SetCPU },
-    { "1$",     1,        SetCPU },
-    { "2$",     2,        SetCPU },
-    { "3$",     3,        SetCPU },
-    { "4$",     4,        SetCPU },
-    { "5$",     5,        SetCPU },
-    { "6$",     6,        SetCPU },
-    { "7",      7,        SetFPU },
-    { "?",      0,        HelpUsage },
-    { "bt=$",   0,        Set_BT },
-    { "c",      0,        Set_C },
-    { "cx",     0,        Set_CX },
-    { "d0",     0,        Set_D },
-    { "d1",     1,        Set_D },
-    { "d2",     2,        Set_D },
-    { "d3",     3,        Set_D },
-#ifdef DEBUG_OUT
-    { "d6",     6,        Set_D6 },
-#endif
-    { "d+",     0,        Ignore },
-    { "d$",     0,        DefineMacro },
-    { "e",      0,        SetStopEnd },
-    { "e=#",    0,        SetErrorLimit },
-    { "fe=@",   0,        Set_FR },
-    { "fi=@",   0,        Set_FI },
-    { "fl=@",   0,        Set_FL },
-    { "fo=@",   0,        Set_FO },
-    { "fp0",    0,        SetFPU },
-    { "fp2",    2,        SetFPU },
-    { "fp3",    3,        SetFPU },
-    { "fp5",    5,        SetFPU },
-    { "fp6",    6,        SetFPU },
-    { "fpi87",  '7',      SetFPU },
-    { "fpi",    'i',      SetFPU },
-    { "fpc",    'c',      SetFPU },
-    { "fr=@",   0,        Set_FR },
-    { "h",      0,        HelpUsage },
-    { "hc",     'c',      Ignore },
-    { "hd",     'd',      Ignore },
-    { "hw",     'w',      Ignore },
-    { "i=@",    0,        SetInclude },
-    { "j",      0,        Set_S },
-    { "mc",     'c',      SetMM },
-    { "mf",     'f',      SetMM },
-    { "mh",     'h',      SetMM },
-    { "ml",     'l',      SetMM },
-    { "mm",     'm',      SetMM },
-    { "ms",     's',      SetMM },
-    { "mt",     't',      SetMM },
-    { "nc=$",   'c',      Set_N },
-    { "nd=$",   'd',      Set_N },
-    { "nm=$",   'm',      Set_N },
-    { "nt=$",   't',      Set_N },
-    { "o",      0,        Set_O },
-    { "od",     0,        Set_OD },
-    { "of",     1,        Set_OF },
-    { "of+",    2,        Set_OF },
-    { "q",      0,        Set_ZQ },
-    { "s",      0,        Set_S },
-    { "u",      0,        Ignore },
-    { "we",     0,        Set_WE },
-    { "wx",     0,        Set_WX },
-    { "w=#",    0,        SetWarningLevel },
-    { "zld",    0,        Set_ZLD },
-    { "zcm=$",  0,        Set_ZCM },
-    { "zz",     0,        Set_ZZ },
-    { "zzo",    0,        Set_ZZO },
-    { "zq",     0,        Set_ZQ },
-    { 0,        0,        0 }
-};
-
-static bool OptionDelimiter( char c )
-/***********************************/
-{
-    return( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar );
-}
-
-static void get_os_include( void )
-/********************************/
-{
-    char        *env;
-    char        *tmp;
-    char        *p;
-    size_t      len;
-
-    /* add OS_include to the include path */
-
-    len = strlen( Options.build_target );
-    tmp = AsmTmpAlloc( len + 10 );
-    p = CATSTR( tmp, Options.build_target, len );
-    p = CATLIT( p, "_INCLUDE" );
-    *p = '\0';
-    env = getenv( tmp );
+    env = getenv( "INCLUDE" );
     if( env != NULL ) {
         AddItemToIncludePath( env, NULL );
     }
@@ -682,9 +366,6 @@ static void free_names( void )
 /****************************/
 /* Free names set as cmdline options */
 {
-    if( Options.build_target != NULL ) {
-        AsmFree( Options.build_target );
-    }
     if( Options.code_class != NULL ) {
         AsmFree( Options.code_class );
     }
@@ -735,36 +416,6 @@ static void open_files( void )
     DelErrFile();
 }
 
-static char *CollectEnvOrFileName( char *str )
-/********************************************/
-{
-    char        *env;
-    char        ch;
-
-    while( *str == ' ' || *str == '\t' )
-        ++str;
-    env = ParamBuf;
-    for( ;; ) {
-        ch = *str;
-        if( ch == '\0' )
-            break;
-        ++str;
-        if( ch == ' ' )
-            break;
-        if( ch == '\t' )
-            break;
-#if !defined(__UNIX__)
-        if( ch == '-' )
-            break;
-        if( ch == SwitchChar )
-            break;
-#endif
-        *env++ = ch;
-    }
-    *env = '\0';
-    return( str );
-}
-
 static char *ReadIndirectFile( char *name )
 /*****************************************/
 {
@@ -801,256 +452,212 @@ static char *ReadIndirectFile( char *name )
     return( env );
 }
 
-static char *ProcessOption( char *p, char *option_start )
-/*******************************************************/
+static bool scanValues( const char *s, size_t len, unsigned *p )
 {
-    int         i;
-    int         j;
-    char        *opt;
-    int         c;
+    char        buff[32];
 
-    for( i = 0; ; i++ ) {
-        opt = cmdl_options[i].option;
-        if( opt == NULL )
-            break;
-        c = tolower( *p );
-        if( c == *opt ) {
-            OptValue = cmdl_options[i].value;
-            j = 1;
-            for( ;; ) {
-                ++opt;
-                if( *opt == '\0' || *opt == '*' ) {
-                    if( *opt == '\0' ) {
-                        if( p - option_start == 1 ) {
-                            // make sure end of option
-                            if( !OptionDelimiter( p[j] ) ) {
-                                break;
-                            }
-                        }
-                    }
-                    OptScanPtr = p + j;
-                    cmdl_options[i].function();
-                    return( OptScanPtr );
-                }
-                if( *opt == '#' ) {             // collect a number
-                    if( p[j] >= '0' && p[j] <= '9' ) {
-                        OptValue = 0;
-                        for( ;; ) {
-                            c = p[j];
-                            if( c < '0' || c > '9' )
-                                break;
-                            OptValue = OptValue * 10 + c - '0';
-                            ++j;
-                        }
-                    }
-                } else if( *opt == '$' ) {      // collect an identifer
-                    OptParm = &p[j];
-                    for( ;; ) {
-                        c = p[j];
-                        if( c == '\0' )
-                            break;
-                        if( c == '-' )
-                            break;
-                        if( c == ' ' )
-                            break;
-                        if( c == SwitchChar )
-                            break;
-                        ++j;
-                    }
-                } else if( *opt == '@' ) {      // collect a filename
-                    OptParm = &p[j];
-                    c = p[j];
-                    if( c == '"' ) { // "filename"
-                        for( ;; ) {
-                            c = p[++j];
-                            if( c == '"' ) {
-                                ++j;
-                                break;
-                            }
-                            if( c == '\0' )
-                                break;
-                            if( c == '\\' ) {
-                                ++j;
-                            }
-                        }
-                    } else {
-                        for( ;; ) {
-                            c = p[j];
-                            if( c == '\0' )
-                                break;
-                            if( c == ' ' )
-                                break;
-                            if( c == '\t' )
-                                break;
-#if !defined(__UNIX__)
-                            if( c == SwitchChar )
-                                break;
-#endif
-                            ++j;
-                        }
-                    }
-                } else if( *opt == '=' ) {      // collect an optional '='
-                    if( p[j] == '=' || p[j] == '#' ) ++j;
-                } else {
-                    c = tolower( p[j] );
-                    if( *opt != c ) {
-                        if( *opt < 'A' || *opt > 'Z' )
-                            break;
-                        if( *opt != p[j] ) {
-                            break;
-                        }
-                    }
-                    ++j;
-                }
-            }
-        }
+    if( len > sizeof( buff ) - 1 ) {
+        len = sizeof( buff ) - 1;
     }
-    MsgPrintf1( MSG_UNKNOWN_OPTION, option_start );
-    return( NULL );
+    strncpy( buff, s, len );
+    buff[len] = '\0';
+    strupr( buff );
+    if( strcmp( buff, "MASM5" ) == 0 ) {
+#if 0
+        *p = MODE_MASM5;
+        return( true );
+#else
+        return( false );
+#endif
+    } else if( strcmp( buff, "MASM" ) == 0 ) {
+        *p = MODE_MASM6;
+        return( true );
+    } else if( strcmp( buff, "WATCOM" ) == 0 ) {
+        *p = MODE_WATCOM;
+        return( true );
+    } else if( strcmp( buff, "TASM" ) == 0 ) {
+        *p = MODE_TASM | MODE_MASM5;
+        return( true );
+    } else if( strcmp( buff, "IDEAL" ) == 0 ) {
+        *p = MODE_TASM | MODE_IDEAL;
+        return( true );
+    }
+    return( false );
+}
+static bool scanMode( unsigned *p )
+{
+    const char  *s;
+    size_t      len;
+    bool        rc;
+
+    CmdRecogEquals();
+    len = CmdScanOption( &s );
+    rc = scanValues( s, len, p );
+    CmdScanInit( s + len );
+    return( rc );
 }
 
-static int ProcOptions( char *str, int *level )
-/*********************************************/
-{
-    char *save[MAX_NESTING];
-    char *buffers[MAX_NESTING];
+#include "cmdlnprs.gc"
 
-    for( ; str != NULL; ) {
-        while( *str == ' ' || *str == '\t' )
-            ++str;
-        if( *str == '@' && *level < MAX_NESTING ) {
-            buffers[*level] = NULL;
-            save[*level] = CollectEnvOrFileName( str + 1 );
-            str = getenv( ParamBuf );
-            if( str != NULL ) {
-                str = AsmStrDup( str );
-            } else {
-                str = ReadIndirectFile( ParamBuf );
-            }
-            if( str != NULL ) {
-                buffers[(*level)++] = str;
+static int ProcOptions( OPT_STORAGE *data, const char *str )
+/**********************************************************/
+{
+    const char  *save[MAX_NESTING];
+    char        *buffers[MAX_NESTING];
+    int         level;
+    int         ch;
+    OPT_STRING  *fname;
+    const char  *penv;
+    char        *ptr;
+
+    if( str != NULL ) {
+        level = -1;
+        CmdScanInit( str );
+        for( ;; ) {
+            ch = CmdScanWhiteSpace();
+            if( ch == '@' ) {
+                switch_start = CmdScanAddr() - 1;
+                CmdScanWhiteSpace();
+                CmdScanUngetChar();
+                fname = NULL;
+                if( OPT_GET_FILE( &fname ) ) {
+                    penv = NULL;
+                    level++;
+                    if( level < MAX_NESTING ) {
+                        ptr = NULL;
+                        penv = getenv( fname->data );
+                        if( penv == NULL ) {
+                            ptr = ReadIndirectFile( fname->data );
+                            penv = ptr;
+                        }
+                        if( penv != NULL ) {
+                            save[level] = CmdScanInit( penv );
+                            buffers[level] = ptr;
+                        }
+                    }
+                    if( penv == NULL ) {
+                        level--;
+                    }
+                    OPT_CLEAN_STRING( &fname );
+                }
                 continue;
             }
-            str = save[*level];
-        }
-        if( *str == '\0' ) {
-            if( *level == 0 )
-                break;
-            --(*level);
-            AsmFree( buffers[*level] );
-            buffers[*level] = NULL;
-            str = save[*level];
-            continue;
-        }
-        if( *str == '-' || *str == SwitchChar ) {
-            str = ProcessOption( str + 1, str );
-            if( str == NULL ) {
-                exit( EXIT_ERROR );
+            if( ch == '\0' ) {
+                if( level < 0 )
+                    break;
+                AsmFree( buffers[level] );
+                CmdScanInit( save[level] );
+                level--;
+                continue;
             }
-        } else {  /* collect file name */
-            char *beg, *p;
-            size_t len;
-
-            beg = str;
-            if( *str == '"' ) {
-                for( ;; ) {
-                    ++str;
-                    if( *str == '"' ) {
-                        ++str;
-                        break;
-                    }
-                    if( *str == '\0' )
-                        break;
-                    if( *str == '\\' ) {
-                        ++str;
-                    }
-                }
-            } else {
-                for( ;; ) {
-                    if( *str == '\0' )
-                        break;
-                    if( *str == ' ' )
-                        break;
-                    if( *str == '\t' )
-                        break;
-#if !defined(__UNIX__)
-                    if( *str == SwitchChar )
-                        break;
-#endif
-                    ++str;
+            if( ch == '-' || ch == SwitchChar ) {
+                switch_start = CmdScanAddr() - 1;
+                OPT_PROCESS( data );
+            } else {  /* collect file name */
+                CmdScanUngetChar();
+                switch_start = CmdScanAddr();
+                fname = NULL;
+                if( OPT_GET_FILE( &fname ) ) {
+                    get_fname( fname->data, ASM );
+                    OPT_CLEAN_STRING( &fname );
                 }
             }
-            len = str - beg;
-            p = AsmAlloc( len + 1 );
-            memcpy( p, beg, len );
-            p[len] = '\0';
-            StripQuotes( p );
-            get_fname( p, ASM );
-            AsmFree(p);
         }
     }
     return( 0 );
 }
 
-static void do_envvar_cmdline( char *envvar )
-/*******************************************/
+static char *SetStringOption( char **o, OPT_STRING **h )
+/******************************************************/
 {
-    char *cmdline;
-    int  level = 0;
+    OPT_STRING *s;
+    char *p;
 
-    cmdline = getenv( envvar );
-    if( cmdline != NULL ) {
-        ProcOptions( cmdline, &level );
+    s = *h;
+    p = NULL;
+    if( s != NULL ) {
+        if( s->data[0] != '\0' ) {
+            p = AsmStrDup( s->data );
+        }
+        OPT_CLEAN_STRING( h );
+    }
+    if( o != NULL ) {
+        AsmFree( *o );
+        *o = p;
+    }
+    return( p );
+}
+
+static void reverseList( OPT_STRING **h )
+{
+    OPT_STRING *s;
+    OPT_STRING *p;
+    OPT_STRING *n;
+
+    s = *h;
+    *h = NULL;
+    for( p = s; p != NULL; p = n ) {
+        n = p->next;
+        p->next = *h;
+        *h = p;
     }
 }
 
-static bool set_build_target( void )
-/**********************************/
+static char *set_build_target( OPT_STORAGE *data )
+/************************************************/
 {
-    if( Options.build_target == NULL ) {
+    char    *target_name = NULL;
+
+    if( data->bt ) {
+        char *target = SetStringOption( NULL, &(data->bt_value) );
+        target_name = SetTargetName( target_name, strupr( target ) );
+        AsmFree( target );
+    }
+
+    if( target_name == NULL ) {
 #if defined(__QNX__)
-        SetTargName( "QNX", 3 );
+        target_name = SetTargetName( target_name, "QNX" );
 #elif defined(__LINUX__)
-        SetTargName( "LINUX", 5 );
+        target_name = SetTargetName( target_name, "LINUX" );
 #elif defined(__HAIKU__)
-        SetTargName( "HAIKU", 5 );
+        target_name = SetTargetName( target_name, "HAIKU" );
 #elif defined(__BSD__)
-        SetTargName( "BSD", 3 );
+        target_name = SetTargetName( target_name, "BSD" );
 #elif defined(__OSX__) || defined(__APPLE__)
-        SetTargName( "OSX", 3 );
+        target_name = SetTargetName( target_name, "OSX" );
 #elif defined(__SOLARIS__) || defined( __sun )
-        SetTargName( "SOLARIS", 7 );
+        target_name = SetTargetName( target_name, "SOLARIS" );
 #elif defined(__DOS__)
-        SetTargName( "DOS", 3 );
+        target_name = SetTargetName( target_name, "DOS" );
 #elif defined(__OS2__)
-        SetTargName( "OS2", 3 );
+        target_name = SetTargetName( target_name, "OS2" );
 #elif defined(__NT__)
-        SetTargName( "NT", 2 );
+        target_name = SetTargetName( target_name, "NT" );
 #elif defined(__RDOS__)
-        SetTargName( "RDOS", 4 );
+        target_name = SetTargetName( target_name, "RDOS" );
 #else
         #error unknown host OS
 #endif
     }
 
-    add_constant( Options.build_target, true ); // always define something
+    add_constant( target_name, true ); // always define something
 
-    if( stricmp( Options.build_target, "DOS" ) == 0 ) {
+    if( strcmp( target_name, "DOS" ) == 0 ) {
         add_constant( "MSDOS", true );
-    } else if( stricmp( Options.build_target, "NETWARE" ) == 0 ) {
+    } else if( strcmp( target_name, "NETWARE" ) == 0 ) {
         if( SWData.cpu >= 3 ) {
             add_constant( "NETWARE_386", true );
         }
-    } else if( stricmp( Options.build_target, "WINDOWS" ) == 0 ) {
+    } else if( strcmp( target_name, "WINDOWS" ) == 0 ) {
         if( SWData.cpu >= 3 ) {
             add_constant( "WINDOWS_386", true );
         }
-    } else if( stricmp( Options.build_target, "QNX" ) == 0
-      || stricmp( Options.build_target, "LINUX" ) == 0
-      || stricmp( Options.build_target, "BSD" ) == 0 ) {
+    } else if( strcmp( target_name, "QNX" ) == 0
+      || strcmp( target_name, "LINUX" ) == 0
+      || strcmp( target_name, "BSD" ) == 0 ) {
         add_constant( "UNIX", true );
     }
-    return( RC_OK );
+    return( target_name );
 }
 
 static void set_cpu_mode( void )
@@ -1069,7 +676,7 @@ static void set_cpu_mode( void )
 static void set_fpu_mode( void )
 /******************************/
 {
-    switch( floating_point ) {
+    switch( SWData.fpt ) {
     case DO_FP_EMULATION:
         add_constant( "FPI", true );
         break;
@@ -1130,7 +737,7 @@ static void set_fpu_parameters( void )
     asm_token   token;
     char        buffer[MAX_KEYWORD_LEN + 1];
 
-    switch( floating_point ) {
+    switch( SWData.fpt ) {
     case NO_FP_ALLOWED:
         token = T_DOT_NO87;
         break;
@@ -1172,7 +779,7 @@ static void set_fpu_parameters( void )
             break;
         }
         break;
-    default: // unknown floating_point value
+    default: // unknown SWData.fpt value
         return;
     }
     buffer[0] = '.';
@@ -1189,7 +796,7 @@ static void SetMemoryModel( void )
     char buffer[20];
     char *model;
 
-    switch( memory_model ) {
+    switch( SWData.mem_model ) {
     case 'c':
         model = "COMPACT";
         break;
@@ -1242,43 +849,283 @@ static void set_assembler_mode( void )
     Options.locals_len = 0;
 }
 
-static void parse_cmdline( char **cmdline )
-/*****************************************/
+static void set_options( OPT_STORAGE *data )
 {
-    char msgbuf[MAX_MESSAGE_SIZE];
-    int  level = 0;
+    if( data->zq ) {
+        Options.quiet = true;
+    }
+    if( data->c ) {
+        Options.output_comment_data_in_code_records = false;
+    }
+    if( data->cx ) {
+        Options.symbols_nocasesensitive = false;
+    }
 
-    if( cmdline == NULL || *cmdline == NULL || **cmdline == 0 ) {
+    switch( data->cpu_info ) {
+    case OPT_ENUM_cpu_info__0:
+        SWData.cpu = 0;
+        Options.watcom_parms_passed_by_regs = true;
+        break;
+    case OPT_ENUM_cpu_info__1:
+        SWData.cpu = 1;
+        Options.watcom_parms_passed_by_regs = true;
+        break;
+    case OPT_ENUM_cpu_info__2:
+        SWData.cpu = 2;
+        Options.watcom_parms_passed_by_regs = true;
+        if( data->_2p ) {
+            SWData.protect_mode = true;
+        }
+        break;
+    case OPT_ENUM_cpu_info__3:
+        SWData.cpu = 3;
+        Options.watcom_parms_passed_by_regs = true;
+        if( data->_3p ) {
+            SWData.protect_mode = true;
+        }
+        if( data->_3s ) {
+            Options.watcom_parms_passed_by_regs = false;
+        }
+        break;
+    case OPT_ENUM_cpu_info__4:
+        SWData.cpu = 4;
+        Options.watcom_parms_passed_by_regs = true;
+        if( data->_4p ) {
+            SWData.protect_mode = true;
+        }
+        if( data->_4s ) {
+            Options.watcom_parms_passed_by_regs = false;
+        }
+        break;
+    case OPT_ENUM_cpu_info__5:
+        SWData.cpu = 5;
+        Options.watcom_parms_passed_by_regs = true;
+        if( data->_5p ) {
+            SWData.protect_mode = true;
+        }
+        if( data->_5s ) {
+            Options.watcom_parms_passed_by_regs = false;
+        }
+        break;
+    case OPT_ENUM_cpu_info__6:
+        SWData.cpu = 6;
+        Options.watcom_parms_passed_by_regs = true;
+        if( data->_6p ) {
+            SWData.protect_mode = true;
+        }
+        if( data->_6s ) {
+            Options.watcom_parms_passed_by_regs = false;
+        }
+        break;
+    case OPT_ENUM_cpu_info_default:
+        break;
+    }
+    switch( data->fpu_info ) {
+    case OPT_ENUM_fpu_info_fp6:
+        SWData.fpu = 6;
+        break;
+    case OPT_ENUM_fpu_info_fp5:
+        SWData.fpu = 5;
+        break;
+    case OPT_ENUM_fpu_info_fp3:
+        SWData.fpu = 3;
+        break;
+    case OPT_ENUM_fpu_info_fp2:
+        SWData.fpu = 2;
+        break;
+    case OPT_ENUM_fpu_info_fp0:
+        SWData.fpu = 0;
+        break;
+    case OPT_ENUM_fpu_info_default:
+        break;
+    }
+    switch( data->fpu_type ) {
+    case OPT_ENUM_fpu_type_fpi:
+        SWData.fpt = DO_FP_EMULATION;
+        break;
+    case OPT_ENUM_fpu_type_fpi87:
+        SWData.fpt = NO_FP_EMULATION;
+        break;
+    case OPT_ENUM_fpu_type_fpc:
+        SWData.fpt = NO_FP_ALLOWED;
+        break;
+    case OPT_ENUM_fpu_type_default:
+        break;
+    }
+    switch( data->mem_model ) {
+    case OPT_ENUM_mem_model_mt:
+        SWData.mem_model = 't';
+        break;
+    case OPT_ENUM_mem_model_ms:
+        SWData.mem_model = 's';
+        break;
+    case OPT_ENUM_mem_model_mm:
+        SWData.mem_model = 'm';
+        break;
+    case OPT_ENUM_mem_model_ml:
+        SWData.mem_model = 'l';
+        break;
+    case OPT_ENUM_mem_model_mh:
+        SWData.mem_model = 'h';
+        break;
+    case OPT_ENUM_mem_model_mf:
+        SWData.mem_model = 'f';
+        break;
+    case OPT_ENUM_mem_model_mc:
+        SWData.mem_model = 'c';
+        break;
+    case OPT_ENUM_mem_model_default:
+        break;
+    }
+    switch( data->debug_info ) {
+#ifdef DEBUG_OUT
+    case OPT_ENUM_debug_info_d6:
+        Options.int_debug = true;
+        DebugMsg(( "debugging output on \n" ));
+        break;
+#endif
+    case OPT_ENUM_debug_info_d3:
+    case OPT_ENUM_debug_info_d2:
+    case OPT_ENUM_debug_info_d1:
+        Options.debug_info = true;
+        break;
+    case OPT_ENUM_debug_info_d0:
+        Options.debug_info = false;
+        break;
+    case OPT_ENUM_debug_info_default:
+        break;
+    }
+    if( data->e ) {
+        Options.error_limit = data->e_value;
+    }
+    if( data->ee ) {
+        Options.stop_at_end = true;
+    }
+    if( data->w ) {
+        Options.warning_level = data->w_value;
+    }
+    if( data->i ) {
+        OPT_STRING *s;
+        /*
+         * Process all -i items in linked list
+         * add these items after source path and before
+         * os path items
+         */
+        reverseList( &(data->i_value) );
+        for( s = data->i_value; s != NULL; s = s->next ) {
+            if( s->data[0] != '\0' ) {
+                AddItemToIncludePath( s->data, NULL );
+            }
+        }
+    }
+    if( data->d ) {
+        OPT_STRING *s;
+        /*
+         * Process all -d items in linked list
+         */
+        reverseList( &(data->d_value) );
+        for( s = data->d_value; s != NULL; s = s->next ) {
+            if( s->data[0] != '\0' ) {
+                add_constant( s->data, false );
+            }
+        }
+    }
+    if( data->j ) {
+        Options.sign_value = true;
+    }
+    if( data->o ) {
+        Options.allow_c_octals = true;
+    }
+    if( data->od ) {
+        Options.optimization = false;
+    }
+    switch( data->trace_stack ) {
+    case OPT_ENUM_trace_stack_of:
+        Options.trace_stack = 1;
+        break;
+    case OPT_ENUM_trace_stack_of_plus:
+        Options.trace_stack = 2;
+        break;
+    case OPT_ENUM_trace_stack_default:
+        break;
+    }
+    if( data->we ) {
+        Options.warning_error = true;
+    }
+    if( data->wx ) {
+        Options.warning_level = 4;
+    }
+    if( data->zcm ) {
+        Options.mode_init = data->zcm_value;
+    }
+    if( data->zld ) {
+        Options.emit_dependencies = false;
+    }
+    if( data->zz ) {
+        Options.use_stdcall_at_number = false;
+    }
+    if( data->zzo ) {
+        Options.mangle_stdcall = false;
+    }
+    if( data->nt ) {
+        SetStringOption( &Options.text_seg, &(data->nt_value) );
+    }
+    if( data->nm ) {
+        SetStringOption( &Options.module_name, &(data->nm_value) );
+    }
+    if( data->nd ) {
+        SetStringOption( &Options.data_seg, &(data->nd_value) );
+    }
+    if( data->nc ) {
+        SetStringOption( &Options.code_class, &(data->nc_value) );
+    }
+    if( data->fr ) {
+        get_fname( data->fr_value->data, ERR );
+    }
+    if( data->fl ) {
+        get_fname( data->fl_value->data, LST );
+        Options.write_listing = true;
+    }
+    if( data->fo ) {
+        get_fname( data->fo_value->data, OBJ );
+    }
+    if( data->fi ) {
+        SetStringOption( &ForceInclude, &(data->fi_value) );
+    }
+    if( data->h ) {
         usage_msg();
     }
-    for( ; *cmdline != NULL; ++cmdline ) {
-        ProcOptions( *cmdline, &level );
-    }
-    if( AsmFiles.fname[ASM] == NULL ) {
-        MsgGet( NO_FILENAME_SPECIFIED, msgbuf );
-        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
-    }
+
 }
 
 static void do_init_stuff( char **cmdline )
 /*****************************************/
 {
-    char        *env;
+    char        msgbuf[MAX_MESSAGE_SIZE];
+    OPT_STORAGE data;
+    char        *target_name;
 
     if( !MsgInit() )
         exit( EXIT_ERROR );
 
     add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
     ForceInclude = AsmStrDup( getenv( "FORCE" ) );
-    do_envvar_cmdline( "WASM" );
-    parse_cmdline( cmdline );
-    set_build_target();
+    OPT_INIT( &data );
+    ProcOptions( &data, getenv( "WASM" ) );
+    for( ; *cmdline != NULL; ++cmdline ) {
+        ProcOptions( &data, *cmdline );
+    }
+    if( AsmFiles.fname[ASM] == NULL ) {
+        MsgGet( NO_FILENAME_SPECIFIED, msgbuf );
+        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
+    }
+    target_name = set_build_target( &data );
+    set_options( &data );
+    OPT_FINI( &data );
+    add_env_include( target_name );
+    AsmFree( target_name );
     set_cpu_mode();
     set_fpu_mode();
-    get_os_include();
-    env = getenv( "INCLUDE" );
-    if( env != NULL )
-        AddItemToIncludePath( env, NULL );
     PrintBanner();
     open_files();
 
@@ -1286,9 +1133,9 @@ static void do_init_stuff( char **cmdline )
      * insert appropriate directives for command line parameters
      * into input line queue to be processed before any source file
      */
-    if( memory_model != '\0' ) {
+    if( SWData.mem_model != 0 ) {
         if( SWData.cpu < 0 ) {
-            if( memory_model == 'f' ) {
+            if( SWData.mem_model == 'f' ) {
                 SWData.cpu = 3;
                 SWData.protect_mode = true;
             } else {

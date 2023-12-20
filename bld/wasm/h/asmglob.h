@@ -148,8 +148,6 @@ typedef struct global_options {
     char        warning_level;
     bool        warning_error;
 
-    char        *build_target;
-
     char        *code_class;
     char        *data_seg;
     char        *text_seg;
