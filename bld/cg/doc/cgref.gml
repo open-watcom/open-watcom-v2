@@ -213,10 +213,11 @@ Generate code into a use32 segment (versus use16).
 Generate all global and static variable references as an offset
 past EBX.
 .note CGSW_X86_WINDOWS
-Generate windows prolog/epilog sequences for all routines.
+Generate 16-bit Windows prolog/epilog sequences for callbacks and routines.
 .note CGSW_X86_CHEAP_WINDOWS
-Generate windows prolog/epilog sequences assuming that call backs
-functions are defined as __export.
+Generate 16-bit Windows prolog/epilog sequences assuming for callbacks only (cheap).
+.note CGSW_X86_SMART_WINDOWS
+Generate 16-bit Windows optimized prolog/epilog sequences assuming DS==SS (smart).
 .note CGSW_GEN_NO_CALL_RET_TRANSFORM
 Do not change a CALL followed by a RET into a JMP.
 This is used for some older overlay managers that cannot handle a JMP

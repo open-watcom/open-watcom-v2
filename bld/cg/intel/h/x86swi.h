@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +42,12 @@ CGSW_X86_FLOATING_SS             = 0x00000100,  /* SS selector is floating */
 CGSW_X86_FLOATING_DS             = 0x00000200,  /* DS selector is floating */
 CGSW_X86_USE_32                  = 0x00000400,  /* Generate 32-bit segments */
 CGSW_X86_INDEXED_GLOBALS         = 0x00000800,  /* Position Independent Code (faulty!) */
-CGSW_X86_WINDOWS                 = 0x00001000,  /* Generate Win16 prologs */
-CGSW_X86_CHEAP_WINDOWS           = 0x00002000,  /* Cheap Win16 prologs */
-CGSW_X86_CONST_IN_CODE           = 0x00004000,  /* FP consts in code segment */
-CGSW_X86_NEED_STACK_FRAME        = 0x00008000,  /* Always generate stack frame */
-CGSW_X86_LOAD_DS_DIRECTLY        = 0x00010000,  /* No runtime call to load DS */
-CGSW_X86_SMART_WINDOWS           = 0x00020000,  /* Smart Win16 prolog (DS==SS) */
+CGSW_X86_WINDOWS                 = 0x00001000,  /* Generate Win16 prologs for callbacks and functions */
+CGSW_X86_CHEAP_WINDOWS           = 0x00002000,  /* Generate Win16 prologs (cheap), only callbacks */
+CGSW_X86_SMART_WINDOWS           = 0x00004000,  /* Generate Win16 prologs (smart) DS==SS */
+CGSW_X86_CONST_IN_CODE           = 0x00008000,  /* FP consts in code segment */
+CGSW_X86_NEED_STACK_FRAME        = 0x00010000,  /* Always generate stack frame */
+CGSW_X86_LOAD_DS_DIRECTLY        = 0x00020000,  /* No runtime call to load DS */
 CGSW_X86_P5_PROFILING            = 0x00040000,  /* Pentium RDTSC profiling (-et) */
 CGSW_X86_P5_DIVIDE_CHECK         = 0x00080000,  /* Check for bad Pentium FDIV */
 CGSW_X86_GENERIC_TLS             = 0x00100000,  /* TLS code not NT specific (unused?) */
