@@ -721,6 +721,7 @@
 :option. i
 :target. any
 :path.
+:optional.
 :usage. add directory to list of include directories
 :jusage. インクルード・ディレクトリのリストを追加します
 
