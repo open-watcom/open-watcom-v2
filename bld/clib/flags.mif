@@ -194,7 +194,7 @@ sw_a_mps_   =
 sw_a_ppc_   =
 
 # sw_a_(processor)
-sw_a_intel    = -w8-cx-e-fpc
+sw_a_intel    = -w8-cx-ee-fpc
 sw_a_register = -5r
 sw_a_stack    = -5s
 
