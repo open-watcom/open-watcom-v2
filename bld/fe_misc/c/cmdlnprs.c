@@ -292,6 +292,23 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
 }
 
 
+bool OPT_GET_OPTION             // PARSE: OPTION TEXT
+    ( OPT_STRING **p )          // - target
+{
+    size_t len;
+    char const *option;
+
+    CmdRecogEquals();
+    len = CmdScanOption( &option );
+    if( len > 0 && ( len != 2 || option[0] != '\"' || option[1] != '\"' ) ) {
+        addString( p, option, len );
+        StripQuotes( (*p)->data );
+    }
+    CmdScanInit( option + len );
+    return( true );
+}
+
+
 bool OPT_GET_CHAR               // PARSE: CHAR
     ( int *p )                  // - target
 {

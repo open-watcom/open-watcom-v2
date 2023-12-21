@@ -94,6 +94,9 @@ bool OPT_GET_CHAR               // PARSE: CHAR
 bool OPT_GET_CHAR_OPT           // PARSE: OPTIONAL CHAR
     ( int *c )                  // - target
 ;
+bool OPT_GET_OPTION             // PARSE: OPTION TEXT
+    ( OPT_STRING **p )          // - target
+;
 bool OPT_RECOG                  // RECOGNIZE CHAR
     ( int c )                   // - to be recog'ed
 ;
