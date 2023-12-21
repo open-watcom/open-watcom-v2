@@ -86,7 +86,7 @@ sw_a_mps_   =
 sw_a_ppc_   =
 
 # sw_a_(processor)
-sw_a_intel    = -w8-cx-ee-DPDIV
+sw_a_intel    = -w8-cx-DPDIV -ee
 sw_a_16bit    = -0
 sw_a_register = -5r
 sw_a_stack    = -5s
