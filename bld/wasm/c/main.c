@@ -497,27 +497,6 @@ static bool scanMode( unsigned *p )
     return( rc );
 }
 
-bool OPT_GET_OPTION             // PARSE: TEXT
-    ( OPT_STRING **p )          // - target
-{
-    size_t len;
-    char const *str;
-
-    CmdRecogEquals();
-    len = CmdScanOption( &str );
-    if( len != 0 ) {
-        OPT_STRING *value;                                                                                                                                                                                                                              
-
-        value = AsmAlloc( sizeof( *value ) + len );                                                                      
-        strncpy( value->data, str, len );                                                                                         
-        value->data[len] = '\0';                                                                                                
-        value->next = *p;                                                                                                       
-        *p = value;      
-        StripQuotes( value->data );
-    }
-    return( true );
-}
-
 static bool scanDefine( OPT_STRING **h )
 {
     return( OPT_GET_OPTION( h ) );
