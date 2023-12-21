@@ -771,6 +771,8 @@ static void set_fpu_parameters( void )
     case NO_FP_EMULATION:
         switch( SWData.fpu ) {
         case 0:
+            token = T_DOT_NO87;
+            break;
         case 1:
             token = T_DOT_8087;
             break;
@@ -993,7 +995,7 @@ static void set_options( OPT_STORAGE *data )
         SWData.fpu = 2;
         break;
     case OPT_ENUM_fpu_info_fp0:
-        SWData.fpu = 0;
+        SWData.fpu = 1;
         break;
     case OPT_ENUM_fpu_info_default:
         break;
