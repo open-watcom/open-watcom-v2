@@ -497,6 +497,32 @@ static bool scanMode( unsigned *p )
     return( rc );
 }
 
+bool OPT_GET_OPTION             // PARSE: TEXT
+    ( OPT_STRING **p )          // - target
+{
+    size_t len;
+    char const *str;
+
+    CmdRecogEquals();
+    len = CmdScanOption( &str );
+    if( len != 0 ) {
+        OPT_STRING *value;                                                                                                                                                                                                                              
+
+        value = AsmAlloc( sizeof( *value ) + len );                                                                      
+        strncpy( value->data, str, len );                                                                                         
+        value->data[len] = '\0';                                                                                                
+        value->next = *p;                                                                                                       
+        *p = value;      
+        StripQuotes( value->data );
+    }
+    return( true );
+}
+
+static bool scanDefine( OPT_STRING **h )
+{
+    return( OPT_GET_OPTION( h ) );
+}
+
 #include "cmdlnprs.gc"
 
 static int ProcOptions( OPT_STORAGE *data, const char *str )
@@ -854,13 +880,32 @@ static void set_options( OPT_STORAGE *data )
     if( data->zq ) {
         Options.quiet = true;
     }
-    if( data->c ) {
-        Options.output_comment_data_in_code_records = false;
-    }
-    if( data->cx ) {
-        Options.symbols_nocasesensitive = false;
-    }
 
+    switch( data->mem_model ) {
+    case OPT_ENUM_mem_model_mt:
+        SWData.mem_model = 't';
+        break;
+    case OPT_ENUM_mem_model_ms:
+        SWData.mem_model = 's';
+        break;
+    case OPT_ENUM_mem_model_mm:
+        SWData.mem_model = 'm';
+        break;
+    case OPT_ENUM_mem_model_ml:
+        SWData.mem_model = 'l';
+        break;
+    case OPT_ENUM_mem_model_mh:
+        SWData.mem_model = 'h';
+        break;
+    case OPT_ENUM_mem_model_mf:
+        SWData.mem_model = 'f';
+        break;
+    case OPT_ENUM_mem_model_mc:
+        SWData.mem_model = 'c';
+        break;
+    case OPT_ENUM_mem_model_default:
+        break;
+    }
     switch( data->cpu_info ) {
     case OPT_ENUM_cpu_info__0:
         SWData.cpu = 0;
@@ -920,6 +965,20 @@ static void set_options( OPT_STORAGE *data )
     case OPT_ENUM_cpu_info_default:
         break;
     }
+    /*
+     * if memory model is setup on command line and cpu isn't
+     * then select default cpu
+     */
+    if( SWData.mem_model > 0 ) {
+        if( SWData.cpu < 0 ) {
+            if( SWData.mem_model == 'f' ) {
+                SWData.cpu = 3;
+                SWData.protect_mode = true;
+            } else {
+                SWData.cpu = 0;
+            }
+        }
+    }
     switch( data->fpu_info ) {
     case OPT_ENUM_fpu_info_fp6:
         SWData.fpu = 6;
@@ -940,6 +999,7 @@ static void set_options( OPT_STORAGE *data )
         break;
     }
     switch( data->fpu_type ) {
+    case OPT_ENUM_fpu_type_default:
     case OPT_ENUM_fpu_type_fpi:
         SWData.fpt = DO_FP_EMULATION;
         break;
@@ -949,34 +1009,8 @@ static void set_options( OPT_STORAGE *data )
     case OPT_ENUM_fpu_type_fpc:
         SWData.fpt = NO_FP_ALLOWED;
         break;
-    case OPT_ENUM_fpu_type_default:
-        break;
     }
-    switch( data->mem_model ) {
-    case OPT_ENUM_mem_model_mt:
-        SWData.mem_model = 't';
-        break;
-    case OPT_ENUM_mem_model_ms:
-        SWData.mem_model = 's';
-        break;
-    case OPT_ENUM_mem_model_mm:
-        SWData.mem_model = 'm';
-        break;
-    case OPT_ENUM_mem_model_ml:
-        SWData.mem_model = 'l';
-        break;
-    case OPT_ENUM_mem_model_mh:
-        SWData.mem_model = 'h';
-        break;
-    case OPT_ENUM_mem_model_mf:
-        SWData.mem_model = 'f';
-        break;
-    case OPT_ENUM_mem_model_mc:
-        SWData.mem_model = 'c';
-        break;
-    case OPT_ENUM_mem_model_default:
-        break;
-    }
+
     switch( data->debug_info ) {
 #ifdef DEBUG_OUT
     case OPT_ENUM_debug_info_d6:
@@ -994,6 +1028,12 @@ static void set_options( OPT_STORAGE *data )
         break;
     case OPT_ENUM_debug_info_default:
         break;
+    }
+    if( data->c ) {
+        Options.output_comment_data_in_code_records = false;
+    }
+    if( data->cx ) {
+        Options.symbols_nocasesensitive = false;
     }
     if( data->e ) {
         Options.error_limit = data->e_value;
@@ -1128,21 +1168,6 @@ static void do_init_stuff( char **cmdline )
     set_fpu_mode();
     PrintBanner();
     open_files();
-
-    /*
-     * insert appropriate directives for command line parameters
-     * into input line queue to be processed before any source file
-     */
-    if( SWData.mem_model != 0 ) {
-        if( SWData.cpu < 0 ) {
-            if( SWData.mem_model == 'f' ) {
-                SWData.cpu = 3;
-                SWData.protect_mode = true;
-            } else {
-                SWData.cpu = 0;
-            }
-        }
-    }
 }
 
 static void do_fini_stuff( void )

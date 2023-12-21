@@ -246,7 +246,7 @@
 
 :option. d
 :target. any
-:file. . <name>[=text]
+:special. scanDefine <name>[=text]
 :usage. define text macro <name>[=text]
 :jusage. テキストマクロを定義します <name>[=text]
 
@@ -392,6 +392,7 @@
 :option. i
 :target. any
 :path.
+:optional.
 :usage. add directory to list of include directories
 :jusage. インクルード・ディレクトリのリストを追加します
 
