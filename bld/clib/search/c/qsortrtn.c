@@ -61,6 +61,8 @@ typedef int WORD;
 */
 
 #if defined( __386__ )
+
+  #if defined( __FLAT__ )
     /* this is intended for 386 only... */
     #define AUX_INFO \
         __parm __caller     [__esi] [__edi] [__ecx] \
@@ -97,6 +99,40 @@ typedef int WORD;
     {
         inline_swap( p, q, size );
     }
+
+  #else
+    #define AUX_INFO \
+        __parm __caller     [__dx __esi] [__es __edi] [__ecx] \
+        __value             \
+        __modify __exact    [__eax __ecx __edi __esi]
+
+    void inline_swap( char _WCFAR *p, char _WCFAR *q, size_t size );
+    #pragma aux inline_swap =   \
+            "push   ds"         \
+            "mov    ds,edx"      \
+            "shr    ecx,1"       \
+            "je short L1"       \
+        "L2: mov    ax,es:[edi]" \
+            "xchg   ax,[esi]"    \
+            "stosw"             \
+            "inc    esi"         \
+            "inc    esi"         \
+            "dec    ecx"         \
+            "jne short L2"      \
+        "L1: jnc short L3"      \
+            "mov    al,[esi]"    \
+            "xchg   al,es:[edi]" \
+            "mov    [esi],al"    \
+        "L3: pop    ds"         \
+        AUX_INFO
+
+    #pragma aux byteswap AUX_INFO
+    static void _WCNEAR byteswap( char _WCFAR *p, char _WCFAR *q, size_t size )
+    {
+        inline_swap( p, q, size );
+    }
+
+  #endif
 
 #elif defined( _M_I86 ) && defined( __BIG_DATA__ )
     #define AUX_INFO \
