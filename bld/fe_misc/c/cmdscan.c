@@ -36,12 +36,6 @@
 #include "cmdscan.h"
 
 
-#ifdef __UNIX__
-#define _IS_SWITCH_CHAR(c)  ((c) == '-')
-#else
-#define _IS_SWITCH_CHAR(c)  ((c) == '-' || (c) == '/')
-#endif
-
 typedef struct cmd_scan_ctl {
     char const  *curr_ptr;      // current scan position
     char const  *switch_ptr;    // start of current switch
@@ -100,18 +94,6 @@ bool CmdScanSwEnd(              // TEST IF END OF SWITCH
         return( true );
     }
     return( false );
-}
-
-
-static bool cmdFileChar(        // TEST IF A FILENAME CHARACTER
-    void )
-{
-    int ch = *(unsigned char *)cmd.curr_ptr;
-
-    if( _IS_SWITCH_CHAR( ch ) ) {
-        return( true );
-    }
-    return !CmdScanSwEnd();
 }
 
 
@@ -200,8 +182,7 @@ bool CmdPathDelim(              // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
 {
     switch( CmdPeekChar() ) {
     case ' ':
-        CmdScanWhiteSpace();
-        CmdScanUngetChar();
+        CmdScanSkipWhiteSpace();
         return( true );
     case '=':
     case '#':
@@ -255,36 +236,30 @@ char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
 size_t CmdScanNumber(           // SCAN A NUMBER
     unsigned *pvalue )          // - addr( return value )
 {
-    char const *p;              // - scan position
     char const *str_beg;        // - start of string
     unsigned value;             // - base 10 value
 
-    str_beg = cmd.curr_ptr;
     value = 0;
-    for( p = str_beg; isdigit(*p); ++p ) {
+    str_beg = cmd.curr_ptr;
+    for( ; isdigit( *(unsigned char *)cmd.curr_ptr ); cmd.curr_ptr++ ) {
         value *= 10;
-        value += *p - '0';
+        value += *(unsigned char *)cmd.curr_ptr - '0';
     }
-    cmd.curr_ptr = p;
     *pvalue = value;
-    return( p - str_beg );
+    return( cmd.curr_ptr - str_beg );
 }
 
 
 size_t CmdScanId(               // SCAN AN IDENTIFIER
     char const **option )       // - addr( option pointer )
 {
-    char const *p;              // - scan position
     char const *str_beg;        // - start of string
 
-    p = CmdScanUngetChar();
-    *option = p;
-    str_beg = p;
-    while( isalnum( *p ) || *p == '_' ) {
-        ++p;
+    *option = str_beg = cmd.curr_ptr;
+    while( isalnum( *(unsigned char *)cmd.curr_ptr ) || *(unsigned char *)cmd.curr_ptr == '_' ) {
+        cmd.curr_ptr++;
     }
-    cmd.curr_ptr = p;
-    return( p - str_beg );
+    return( cmd.curr_ptr - str_beg );
 }
 
 
@@ -292,46 +267,43 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
     char const **option )       // - addr( option pointer )
 {
     char const *str_beg;        // - start of string
-    char const *p;              // - pointer into string
+    int ch;
 
-    str_beg = cmd.curr_ptr;
-    *option = str_beg;
+    *option = str_beg = cmd.curr_ptr;
     if( cmd.unix_mode ) {
-        while( *cmd.curr_ptr == '\0' ) {
+        while( *cmd.curr_ptr != '\0' ) {
             cmd.curr_ptr++;
         }
     } else if( *cmd.curr_ptr == '"' ) {
-        for( p = cmd.curr_ptr + 1; *p; ++p ) {
-            if( *p == '"' ) {
-                ++p;
+        for( cmd.curr_ptr++; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
+            if( ch == '"' ) {
+                cmd.curr_ptr++;
                 break;
             }
             // '"\\"' means '\', not '\"'
-            if( p[0] == '\\' && p[1] == '\\' ) {
-                ++p;
-            } else if( p[0] == '\\' && p[1] == '"' ) {
-                ++p;
+            if( ch == '\\' ) {
+                if( cmd.curr_ptr[1] == '\\' ) {
+                    cmd.curr_ptr++;
+                } else if( cmd.curr_ptr[1] == '"' ) {
+                    cmd.curr_ptr++;
+                }
             }
         }
-        cmd.curr_ptr = p;
     } else {
-        for( ; cmdFileChar(); ++ cmd.curr_ptr );
+        for( ; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
+            if( isspace( ch ) ) {
+                break;
+            }
+        }
     }
     return( cmd.curr_ptr - str_beg );
 }
 
 
-int CmdScanWhiteSpace(          // SCAN OVER WHITE SPACE
+void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     void )
 {
-    int c;                      // - next character
-
-    for( ; ; ) {
-        c = CmdScanLowerChar();
-        if( c == '\n' ) continue;
-        if( c == '\r' ) continue;
-        if( isspace( c ) ) continue;
-        break;
+    while( isspace( *(unsigned char *)cmd.curr_ptr ) ) {
+        cmd.curr_ptr++;
     }
-    return c;
 }

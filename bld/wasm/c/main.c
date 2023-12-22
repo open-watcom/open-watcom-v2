@@ -76,7 +76,6 @@ sw_data SWData = {
     -1     // unspecified FP mode
 };
 
-static unsigned char    SwitchChar;
 static char             *ForceInclude = NULL;
 static const char       *switch_start = NULL;
 
@@ -513,11 +512,11 @@ static int ProcOptions( OPT_STORAGE *data, const char *str )
         level = -1;
         CmdScanInit( str );
         for( ;; ) {
-            ch = CmdScanWhiteSpace();
+            CmdScanSkipWhiteSpace();
+            ch = CmdScanChar();
             if( ch == '@' ) {
                 switch_start = CmdScanAddr() - 1;
-                CmdScanWhiteSpace();
-                CmdScanUngetChar();
+                CmdScanSkipWhiteSpace();
                 fname = NULL;
                 if( OPT_GET_FILE( &fname ) ) {
                     penv = NULL;
@@ -549,7 +548,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str )
                 level--;
                 continue;
             }
-            if( ch == '-' || ch == SwitchChar ) {
+            if( _IS_SWITCH_CHAR( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
                 OPT_PROCESS( data );
             } else {  /* collect file name */
@@ -1175,7 +1174,6 @@ int main( void )
 #endif
 
     main_init();
-    SwitchChar = _dos_switch_char();
 #ifdef __UNIX__
     do_init_stuff( &argv[1] );
 #else

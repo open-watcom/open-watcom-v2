@@ -36,6 +36,13 @@
 
 #include <stdlib.h>
 
+
+#ifdef __UNIX__
+#define _IS_SWITCH_CHAR(c)  ((c) == '-')
+#else
+#define _IS_SWITCH_CHAR(c)  ((c) == '-' || (c) == '/')
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -99,7 +106,7 @@ void CmdScanSwitchBegin(        // REMEMBER START OF SWITCH
 char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
     void )
 ;
-int CmdScanWhiteSpace(          // SCAN OVER WHITE SPACE
+void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     void )
 ;
 

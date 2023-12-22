@@ -147,7 +147,6 @@ bool OPT_GET_ID                 // PARSE: ID
     char const *id;
 
     CmdRecogEquals();
-    CmdScanChar();
     len = CmdScanId( &id );
     if( len != 0 ) {
         addString( p, id, len );

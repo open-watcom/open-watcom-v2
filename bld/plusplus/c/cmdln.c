@@ -192,7 +192,6 @@ void AddUndefName( void )
     char const *opt;            // - option
     char *mac_name;             // - macro name
 
-    CmdScanChar();
     len = CmdScanId( &opt );
     if( len == 0 ) {
         CompFlags.undefine_all_macros = true;

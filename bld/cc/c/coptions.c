@@ -238,7 +238,6 @@ static bool scanUndefine( OPT_STRING **p )
 
     /* unused parameters */ (void)p;
 
-    CmdScanChar();
     len = CmdScanId( &name );
     mname = ToStringDup( name, len );
     AddUndefMacro( mname );
@@ -888,11 +887,11 @@ static void ProcOptions( OPT_STORAGE *data, const char *str )
         level = -1;
         CmdScanInit( str );
         for( ;; ) {
-            ch = CmdScanWhiteSpace();
+            CmdScanSkipWhiteSpace();
+            ch = CmdScanChar();
             if( ch == '@' ) {
                 switch_start = CmdScanAddr() - 1;
-                CmdScanWhiteSpace();
-                CmdScanUngetChar();
+                CmdScanSkipWhiteSpace();
                 fname = NULL;
                 if( OPT_GET_FILE( &fname ) ) {
                     penv = NULL;
@@ -924,8 +923,7 @@ static void ProcOptions( OPT_STORAGE *data, const char *str )
                 level--;
                 continue;
             }
-            if( ch == '-'
-              || ch == SwitchChar ) {
+            if( _IS_SWITCH_CHAR( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
                 OPT_PROCESS( data );
             } else {  /* collect  file name */

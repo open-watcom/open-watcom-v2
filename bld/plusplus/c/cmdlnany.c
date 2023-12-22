@@ -540,19 +540,18 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
         CtxSetSwitchAddr( str );
         CmdScanInit( str );
         for(;;) {
-            c = CmdScanWhiteSpace();
+            CmdScanSkipWhiteSpace();
+            c = CmdScanChar();
             if( c == '\0' )
                 break;
             CmdScanSwitchBegin();
             CmdLnCtxSwitch( CmdScanAddr() - 1 );
-            if( c == '-'
-              || c == SwitchChar ) {
+            if( _IS_SWITCH_CHAR( c ) ) {
                 if( OPT_PROCESS( data ) ) {
                     BadCmdLine( ERR_INVALID_OPTION );
                 }
             } else if( c == '@' ) {
-                CmdScanWhiteSpace();
-                CmdScanUngetChar();
+                CmdScanSkipWhiteSpace();
                 len = CmdScanFilename( &fnm );
                 env = get_env( fnm, len );
                 if( NULL == env ) {
