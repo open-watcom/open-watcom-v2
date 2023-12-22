@@ -753,16 +753,16 @@ void AsmLine( const char *string, bool use_emu )
     enum fpe        old_floating_point;
     token_buffer    tokbuf;
 
-    old_floating_point = floating_point;
+    old_floating_point = SWData.fpt;
     if( old_floating_point != NO_FP_ALLOWED ) {
-        floating_point = ( use_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
+        SWData.fpt = ( use_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
     }
     if( !AsmScan( &tokbuf, string ) ) {
         if( tokbuf.count > 0 ) {
             AsmParse( &tokbuf, string );
         }
     }
-    floating_point = old_floating_point;
+    SWData.fpt = old_floating_point;
 }
 
 #endif

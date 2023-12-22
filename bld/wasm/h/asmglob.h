@@ -86,7 +86,17 @@ enum fpe {
     NO_FP_ALLOWED
 };
 
-extern enum fpe floating_point;
+typedef struct sw_data {
+#if defined( _STANDALONE_ )
+    bool    protect_mode;
+    int     cpu;
+    int     fpu;
+    int     mem_model;
+#endif
+    int     fpt;
+} sw_data;
+
+extern sw_data  SWData;
 
 #if defined( _STANDALONE_ )
 

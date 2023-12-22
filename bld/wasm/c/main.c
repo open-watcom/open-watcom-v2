@@ -65,18 +65,14 @@ struct  option {
     void        (*function)( void );
 };
 
-static struct SWData {
-    bool    protect_mode;
-    int     cpu;
-    int     fpu;
-    int     fpt;
-    int     mem_model;
-} SWData = {
+sw_data SWData = {
+#if defined( _STANDALONE_ )
     false, // real mode CPU instructions set
     -1,    // unspecified CPU
     -1,    // unspecified FPU
-    -1,    // unspecified FP mode
-    -1     // unspecified memory model
+    -1,    // unspecified memory model
+#endif
+    -1     // unspecified FP mode
 };
 
 #define MAX_NESTING 15

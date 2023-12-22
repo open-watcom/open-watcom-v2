@@ -3062,9 +3062,9 @@ void AsmEnvInit( int use32, int cpu, int fpu, bool fpu_emu )
     case 5: Code->info.cpu = P_586p | P_K3D | P_MMX; break;
     case 6: Code->info.cpu = P_686p | P_K3D | P_MMX | P_SSE | P_SSE2 | P_SSE3; break;
     }
-    floating_point = ( fpu_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
+    SWData.fpt = ( fpu_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
     switch( fpu ) {
-    case 0: floating_point = NO_FP_ALLOWED; break;
+    case 0: SWData.fpt = NO_FP_ALLOWED; break;
     case 1: Code->info.cpu |= P_87;  break;
     case 2: Code->info.cpu |= P_287; break;
     case 3: Code->info.cpu |= P_387; break;
