@@ -115,26 +115,6 @@ static bool cmdFileChar(        // TEST IF A FILENAME CHARACTER
 }
 
 
-bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
-    void )
-{
-    bool retn;                  // - return: true ==> is a delimiter
-    int ch;                     // - next character
-
-    if( ! cmdFileChar() ) {
-        retn = true;
-    } else {
-        ch = *(unsigned char *)cmd.curr_ptr;
-        if( _IS_SWITCH_CHAR( ch ) ) {
-            retn = true;
-        } else {
-            retn = false;
-        }
-    }
-    return( retn );
-}
-
-
 int CmdScanLowerChar(           // SCAN THE NEXT CHARACTER, IN LOWER CASE
     void )
 {

@@ -160,7 +160,7 @@ bool OPT_GET_ID                 // PARSE: ID
 bool OPT_GET_ID_OPT             // PARSE: OPTIONAL ID
     ( OPT_STRING **p )          // - target
 {
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         return( OPT_GET_ID( p ) );
     }
     return( true );
@@ -239,7 +239,7 @@ bool OPT_GET_FILE_OPT           // PARSE: OPTIONAL FILE NAME
     char const *fname;
 
     // handle leading option char specially
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
         if( len != 0 ) {
@@ -277,8 +277,8 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
     size_t len;
     char const *fname;
 
-//    if( CmdPathDelim() || !CmdDelimitChar() ) {
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+//    if( CmdPathDelim() || !CmdScanSwEnd() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-path-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
         if( len != 0 ) {
@@ -314,9 +314,9 @@ bool OPT_GET_CHAR               // PARSE: CHAR
 {
     int c;
 
-    if( !CmdDelimitChar() ) {
+    if( !CmdScanSwEnd() ) {
         CmdRecogEquals();
-        if( !CmdDelimitChar() ) {
+        if( !CmdScanSwEnd() ) {
             c = CmdScanChar();
             if( isprint( c ) ) {
                 *p = c;
@@ -331,7 +331,7 @@ bool OPT_GET_CHAR               // PARSE: CHAR
 bool OPT_GET_CHAR_OPT           // PARSE: OPTIONAL CHAR
     ( int *p )                  // - target
 {
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         return OPT_GET_CHAR( p );
     }
     return( true );
@@ -364,5 +364,5 @@ void OPT_UNGET                  // UNGET A CHARACTER
 
 bool OPT_END( void )            // DETECT END OF CHAIN
 {
-    return( CmdDelimitChar() );
+    return( CmdScanSwEnd() );
 }

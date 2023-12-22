@@ -42,9 +42,6 @@ extern "C" {
 
 // PROTOTYPES
 
-bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
-    void )
-;
 bool CmdRecogLowerChar(         // RECOGNIZE A LOWER CASE CHARACTER
     int recog )                 // - character to be recognized
 ;
