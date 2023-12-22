@@ -40,9 +40,6 @@
 extern "C" {
 #endif
 
-#define _SWITCH_CHAR1   '-'
-#define _SWITCH_CHAR2   '/'
-
 // PROTOTYPES
 
 bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER

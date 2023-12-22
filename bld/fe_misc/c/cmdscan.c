@@ -36,6 +36,12 @@
 #include "cmdscan.h"
 
 
+#ifdef __UNIX__
+#define _IS_SWITCH_CHAR(c)  ((c) == '-')
+#else
+#define _IS_SWITCH_CHAR(c)  ((c) == '-' || (c) == '/')
+#endif
+
 typedef struct cmd_scan_ctl {
     char const  *curr_ptr;      // current scan position
     char const  *switch_ptr;    // start of current switch
@@ -83,14 +89,14 @@ bool CmdScanSwEnd(              // TEST IF END OF SWITCH
 {
     int ch;                     // - current character
 
-    ch = *cmd.curr_ptr;
+    ch = *(unsigned char *)cmd.curr_ptr;
     if( ch == '\0' ) {
         return( true );
     }
     if( isspace( ch ) ) {
         return( true );
     }
-    if( ch == _SWITCH_CHAR1 || ch == _SWITCH_CHAR2 ) {
+    if( _IS_SWITCH_CHAR( ch ) ) {
         return( true );
     }
     return( false );
@@ -100,9 +106,9 @@ bool CmdScanSwEnd(              // TEST IF END OF SWITCH
 static bool cmdFileChar(        // TEST IF A FILENAME CHARACTER
     void )
 {
-    char c = *cmd.curr_ptr;
+    int ch = *(unsigned char *)cmd.curr_ptr;
 
-    if( c == _SWITCH_CHAR1 || c == _SWITCH_CHAR2 ) {
+    if( _IS_SWITCH_CHAR( ch ) ) {
         return( true );
     }
     return !CmdScanSwEnd();
@@ -113,13 +119,13 @@ bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
     void )
 {
     bool retn;                  // - return: true ==> is a delimiter
-    char ch;                    // - next character
+    int ch;                     // - next character
 
     if( ! cmdFileChar() ) {
         retn = true;
     } else {
-        ch = *cmd.curr_ptr;
-        if( ch == _SWITCH_CHAR1 || ch == _SWITCH_CHAR2 ) {
+        ch = *(unsigned char *)cmd.curr_ptr;
+        if( _IS_SWITCH_CHAR( ch ) ) {
             retn = true;
         } else {
             retn = false;
@@ -250,10 +256,9 @@ size_t CmdScanOption(           // SCAN AN OPTION
     *option = str;
     for( ; ; ++str ) {
         int ch;
-        ch = *str;
+        ch = *(unsigned char *)str;
         if( ch == '\0' ) break;
-        if( ch == _SWITCH_CHAR1 ) break;
-        if( ch == _SWITCH_CHAR2 ) break;
+        if( _IS_SWITCH_CHAR( ch ) ) break;
         if( isspace( ch ) ) break;
     }
     return( str - cmd.curr_ptr );
