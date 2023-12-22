@@ -95,6 +95,8 @@ static char             *IncludePath = NULL;
 
 #else
 
+sw_data                 SWData;
+
 uint_32                 AsmCodeAddress;     // program counter
 uint_32                 AsmCodeLimit;       // program counter limit
 

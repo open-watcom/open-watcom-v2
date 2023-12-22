@@ -65,18 +65,16 @@ struct  option {
     void        (*function)( void );
 };
 
+#define MAX_NESTING 15
+#define BUF_SIZE    512
+
 sw_data SWData = {
-#if defined( _STANDALONE_ )
     false, // real mode CPU instructions set
     -1,    // unspecified CPU
     -1,    // unspecified FPU
     -1,    // unspecified memory model
-#endif
     -1     // unspecified FP mode
 };
-
-#define MAX_NESTING 15
-#define BUF_SIZE    512
 
 static unsigned char    SwitchChar;
 static char             *ForceInclude = NULL;
